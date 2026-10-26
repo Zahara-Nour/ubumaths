@@ -172,6 +172,7 @@ import {
 	geometricCommand,
 	lawEvent,
 	normalCommand,
+	typedLawRefusal,
 	uniformCommand
 } from './law-commands';
 import { filterCommand } from './filter';
@@ -4129,6 +4130,9 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		// V59 : `ln x`, `sin x` se lisaient l·n·x, s·i·n·x, sans erreur — ligne
 		// de calcul comme définition. Une commande le vérifie sur son argument
 		// Sauf une liste de mots (`L = sin; cos; ln`), que la carte accepte aussi
+		// `X suit B(10 ; 0,5)` recopié de la console : la commande à taper
+		const typedLaw = typedLawRefusal(input);
+		if (typedLaw !== null) return { kind: 'refus', message: typedLaw };
 		const bare = isSemicolonList(input) ? null : bareFunctionRefusal(input);
 		if (bare !== null) return { kind: 'refus', message: bare };
 		if (EVENT_PROBABILITY.test(input)) return eventProbability(session.atelier, input);

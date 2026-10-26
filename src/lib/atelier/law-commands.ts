@@ -51,12 +51,49 @@ const INTERVAL = /^([A-Z])\s+\[([^\]\n\r]*)\](?:\s*(.*))?$/;
 /** Un intervalle mal fermé, ou des bornes séparées par « ; » sans crochets */
 const BROKEN_INTERVAL = /^[A-Z]\s+(?:[[\]]|[^\s;[\]]+\s*;)|^[A-Z]\s+\S+\s+[^\s]*[[\];]/;
 
+/** `X suit B(10 ; 0,5)` : la réponse de la console, recopiée comme une saisie */
+const TYPED_LAW = /^\s*([A-Z])\s+suit\s+([A-Z])\s*\(([^()]*)\)\s*$/;
+
+/** La commande de chaque loi que la console écrit `X suit L(…)` */
+const LAW_COMMANDS: Readonly<Record<string, string>> = {
+	B: '.binomiale',
+	G: '.geometrique',
+	E: '.exponentielle',
+	N: '.normale'
+};
+
 /** `jusqu'à 15`, apostrophe droite ou courbe */
 const UP_TO = /^jusqu['’]à(?:\s+(.*))?$/i;
 
 // =============================================================================
 // Fonctions communes
 // =============================================================================
+
+/**
+ * `X suit B(10 ; 0,5)` tapé : c'est la RÉPONSE de `.binomiale X 10 0,5`. La
+ * console dit la commande à taper (écart du lot 9 de verifs-auto, 2026-10-26),
+ * au lieu de « Il manque « ) » ». `null` si la saisie n'a pas cette forme.
+ */
+export function typedLawRefusal(input: string): string | null {
+	const match = TYPED_LAW.exec(input);
+	if (match === null) return null;
+	const [, variable, law, inside] = match;
+	// « 10 ; 0,5 », « 10;0,5 » ou « 10, 0.5 » : séparés par « ; », sinon par « , »
+	// suivie d'une espace (la virgule seule est décimale)
+	const parameters = (inside.includes(';') ? inside.split(';') : inside.split(/,\s+/))
+		.map((parameter) => parameter.trim())
+		.filter((parameter) => parameter !== '');
+	const written = `« ${variable} suit ${law}(${parameters.join(' ; ')}) » est ce que répond la console`;
+	const command = LAW_COMMANDS[law];
+	if (command === undefined || parameters.length === 0) {
+		return `${written} : pour définir une loi, tape une commande, par exemple .binomiale X 10 0,3`;
+	}
+	// N(μ ; σ²) : la commande prend l'écart type, pas la variance
+	if (law === 'N' && parameters.length === 2) {
+		return `${written} : pour définir la loi, tape ${command} ${variable} ${parameters[0]} σ, avec σ l’écart type (ici σ² = ${parameters[1]})`;
+	}
+	return `${written} : pour définir la loi, tape ${command} ${variable} ${parameters.join(' ')}`;
+}
 
 /** Un saut de ligne glisserait une ligne dans le bloc (`diagramme: non`) : refusé dès l'entrée */
 const SINGLE_LINE = 'Écris la commande sur une seule ligne';
