@@ -239,7 +239,8 @@ erreur fait échouer la génération (message situé). Une ligne `case:` écrite
    construire (`construire: N`, au premier niveau, sinon échec ; `buildBlanks`) compte aussi pour
    **une** case, `case: N` posé dans le bloc ; sa réponse attendue est la valeur `N` du bloc, jamais
    du modèle (`blanks[]` peut l'omettre, une réponse écrite est refusée, `case:` écrite aussi, bloc en
-   erreur → échec). La case est `type: 'math'`, `construire: 'collection'`, jugée comme une case
+   erreur, non fermé ou avec `options.orderIndependent` → échec). Le bloc est délimité comme le parseur
+   (`findBuildCollections` : une ligne vide suivie d'une clé reste dans un bloc fermé). La case est `type: 'math'`, `construire: 'collection'`, jugée comme une case
    ordinaire : l'élève répond par la valeur qu'il a posée (`'34'`, `''` plan vide).
 6. Chaque case reçoit ses réglages fusionnés : **case ▸ `blankDefaults`** pour `precision`,
    `unit`, `answerKind`, `rulesSuffice`, `acceptDecimal`… ; `requiredForm` : case ▸

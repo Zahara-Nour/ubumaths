@@ -11,7 +11,9 @@ import MarkdownRenderer from '../../MarkdownRenderer.svelte';
 import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
 import type { ResolvedMarkdown } from '$lib/ubumark';
-import type { InstanceBlank } from '$lib/questions/types';
+import type { InstanceBlank, QuestionTemplate } from '$lib/questions/types';
+import { generateInstance } from '$lib/questions/generator/instance-generator';
+import { templateMarkdown } from '$lib/ubumark';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {
@@ -235,6 +237,43 @@ describe('FillBlanksInput — bloc ```collection à construire', () => {
 		const root = screen.container;
 		for (let i = 0; i < 3; i++) await userEvent.click(button(root, 'Ajouter une barre de dix'));
 		for (let i = 0; i < 4; i++) await userEvent.click(button(root, 'Ajouter un cube'));
+		expect(values[0]).toBe('34');
+	});
+
+	it('décor de la prod : la question générée, construite, remplit sa case', async () => {
+		const generated = generateInstance(
+			{
+				id: 'test-construire',
+				title: 'Construire',
+				status: 'draft',
+				variations: [
+					{
+						statement: templateMarkdown(
+							'Construis 34.\n\n```collection\ndessin: barres\n\nconstruire: 34\n```'
+						)
+					}
+				],
+				grades: ['CP'],
+				theme: 'Test',
+				domain: 'Test',
+				level: 1
+			} as QuestionTemplate,
+			42
+		);
+		if (!generated.success) throw new Error(generated.errors.join(' ; '));
+		const values: string[] = [];
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				statement: generated.instance.statement,
+				blanks: generated.instance.blanks ?? [],
+				values,
+				validationResults: []
+			}
+		});
+		const root = screen.container;
+		for (let i = 0; i < 2; i++) await userEvent.click(button(root, 'Ajouter une barre de dix'));
+		for (let i = 0; i < 14; i++) await userEvent.click(button(root, 'Ajouter un cube'));
 		expect(values[0]).toBe('34');
 	});
 

@@ -9,7 +9,7 @@ status: en cours
 _Mis à jour le 2026-10-26, phase 0 validée._
 
 - **État** : phase 0 validée (§ 4 bis) ; PR 1 (collection, § 5) écrite, tests verts, PR ouverte.
-- **Prochaine action** : revue Opus de la PR 1, CI verte → merge ; puis PR 2 (monnaie).
+- **Prochaine action** : CI verte de #1812 → merge ; puis PR 2 (monnaie).
 - **En attente de David** : rien.
 - **Pièges en cours** : toute retouche de `scene-commune.ts` garde verts les tests de la collection ET de la monnaie (instantanés figés) ; aucune réponse d'élève enregistrée (ADR 0001) ; le chantier `geometrie-validation` va réécrire les QCM en cases « choix » : ne pas en dépendre.
 - **Worktree / branche** : `../ubumaths-wt-construire` · `feat/construire`.
@@ -115,3 +115,4 @@ paquets` le matériel (clé existante). Le bloc porte sa réponse, comme ` ```op
 
 - 2026-10-26 : ouverture, worktree `construire`, phase 0 ; validée (« je suis tes recos »).
 - 2026-10-26 : PR 1 — `construire:` dans ```collection (parseur, case du générateur, `CollectionConstruire.svelte`, PDF) ; tests rouges vérifiés puis verts ; capture d'écran relue.
+- 2026-10-26 : revue Opus de #1812 — corrigés : bloc délimité comme le parseur (ligne vide + clé), bloc non fermé et `orderIndependent` refusés, test au décor de la prod. Laissé : ```operation a les mêmes angles morts (ligne vide, non fermé, ordre indifférent), à traiter à part.

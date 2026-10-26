@@ -597,6 +597,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					node.caseIndex !== undefined
 						? ['case: est posée automatiquement, retirer cette ligne du bloc']
 						: node.errors.map((e) => e.message);
+				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
+				if (template.options?.orderIndependent) {
+					errors.push('une case à construire ne se combine pas avec « ordre indifférent »');
+				}
 				if (errors.length > 0 || node.spec?.build === undefined) {
 					return {
 						success: false,

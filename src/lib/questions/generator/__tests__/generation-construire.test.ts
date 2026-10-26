@@ -143,6 +143,45 @@ describe('bloc ```collection à construire : la case et sa réponse', () => {
 		expect(result.errors.join(' ')).toMatch(/Case 1 \(bloc collection\).*1 à 100/);
 	});
 
+	// Revue de la PR 1 : le bloc se délimite comme le parseur (ligne vide gardée si la
+	// suite commence par une clé, Q66), sinon la case disparaissait sans message
+	it('ligne vide dans un bloc fermé : la case existe quand même', () => {
+		const withOther = generate(
+			template({
+				statement: `$? + 1 = 3$\n\n${block('dessin: paquets', '', 'construire: 34')}`,
+				blanks: [{ expectedAnswer: '2' }]
+			})
+		);
+		expect(withOther.blanks?.map((b) => b.expectedAnswer)).toEqual(['2', '34']);
+		const alone = generate(template({ statement: block('', 'construire: 34') }));
+		expect(alone.blanks?.map((b) => b.expectedAnswer)).toEqual(['34']);
+		expect(String(alone.statement)).toContain('case: 0');
+	});
+
+	it('bloc non fermé : refusé (l’élève verrait « Collection indisponible »)', () => {
+		const result = generateInstance(
+			template({
+				statement: ['Construis.', '```collection', 'construire: 34', '', 'Fin.'].join('\n')
+			}),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/Case 1 \(bloc collection\).*non fermé/);
+	});
+
+	it('« ordre indifférent » : refusé (une construction ne s’échange pas avec une autre case)', () => {
+		const t = template({
+			statement: `$?$\n\n${block('construire: 34')}`,
+			blanks: [{ expectedAnswer: '2' }]
+		});
+		t.options = { ...t.options, orderIndependent: true };
+		const result = generateInstance(t, 42);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/ordre indifférent/);
+	});
+
 	it('le validateur de modèle accepte une question sans blanks[] à bloc à construire', () => {
 		const errors = validateTemplate(
 			template({ statement: block('construire: 34') }) as QuestionTemplate

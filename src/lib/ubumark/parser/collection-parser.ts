@@ -114,17 +114,30 @@ export function isCollectionBlockStart(line: string): boolean {
  * jusqu'à la première ligne vide (Q63).
  */
 export function findCollectionBlocks(lines: string[]): CollectionBlockRange[] {
-	const blocks: CollectionBlockRange[] = [];
+	return findCollectionBlockSpans(lines).map(({ startIndex, endIndex }) => ({
+		startIndex,
+		endIndex
+	}));
+}
+
+/**
+ * Les mêmes blocs, avec leur fermeture : `endIndex` est la fence de fin d'un bloc
+ * fermé, la dernière ligne d'un bloc non fermé
+ */
+export function findCollectionBlockSpans(
+	lines: string[]
+): (CollectionBlockRange & { closed: boolean })[] {
+	const blocks: (CollectionBlockRange & { closed: boolean })[] = [];
 	let i = 0;
 	while (i < lines.length) {
 		if (isCollectionBlockStart(lines[i])) {
-			const { endIndex } = specialBlockEnd(
+			const { endIndex, closed } = specialBlockEnd(
 				lines,
 				i,
 				(line) => BLOCK_END_REGEX.test(line),
 				BLOCK_KEYS
 			);
-			blocks.push({ startIndex: i, endIndex });
+			blocks.push({ startIndex: i, endIndex, closed });
 			i = endIndex;
 		}
 		i++;
@@ -402,10 +415,29 @@ export function parseCollection(
  * compris : le générateur dira qu'il doit être au premier niveau) ?
  */
 export function hasCollectionToBuild(markdown: string): boolean {
-	const blocks = markdown.split(/^\s*>?\s*```collection\s*$/m).slice(1);
-	return blocks.some((rest) => {
-		const body = rest.replace(/^\n/, '').split(/^\s*>?\s*```\s*$|^\s*$/m)[0] ?? '';
-		return /^\s*>?\s*construire\s*:/im.test(body);
+	return findBuildCollections(markdown).length > 0;
+}
+
+/** Une ligne sans son retrait ni ses `>` de citation */
+const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
+
+/**
+ * Blocs ```collection à construire d'un texte, délimités comme le parseur (une
+ * ligne vide suivie d'une clé reste dans un bloc fermé, Q66) ; en retrait ou
+ * cités compris (`nested`) : le générateur les refuse.
+ */
+export function findBuildCollections(markdown: string): {
+	startIndex: number;
+	body: string[];
+	closed: boolean;
+	nested: boolean;
+}[] {
+	const lines = markdown.split('\n');
+	const plain = lines.map(unquoted);
+	return findCollectionBlockSpans(plain).flatMap(({ startIndex, endIndex, closed }) => {
+		const body = plain.slice(startIndex + 1, closed ? endIndex : endIndex + 1);
+		if (!body.some((line) => /^construire\s*:/i.test(line))) return [];
+		return [{ startIndex, body, closed, nested: lines[startIndex] !== plain[startIndex] }];
 	});
 }
 
