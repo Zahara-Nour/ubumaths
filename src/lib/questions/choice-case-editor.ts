@@ -45,6 +45,34 @@ export function statementCaseKinds(statement: string): AssignedBlankType[] {
 	return assignBlankIndices(statement).blankTypes;
 }
 
+/**
+ * `blanks[]` qui omet les cases des blocs (```operation, ```figure-a-completer,
+ * ```figure-de-travail, ```collection / ```monnaie à construire), comme le permet
+ * le générateur : la liste remise à une entrée par case, `empty()` au rang de
+ * chaque case de bloc, les autres entrées dans l'ordre — le sens que leur donne
+ * le générateur. `null` si la liste n'omet pas exactement ces cases.
+ */
+export function withBlockCases<T>(
+	blanks: readonly T[],
+	statement: string,
+	empty: () => T
+): T[] | null {
+	const result = assignBlankIndices(statement);
+	const blockCases = new Set(
+		[
+			result.operationBlanks,
+			result.constructionBlanks,
+			result.workFigureBlanks,
+			result.buildBlanks
+		].flatMap((map) => Object.keys(map ?? {}).map(Number))
+	);
+	if (blockCases.size === 0 || blanks.length !== result.totalBlanks - blockCases.size) return null;
+	const others = [...blanks];
+	return Array.from({ length: result.totalBlanks }, (_, index) =>
+		blockCases.has(index) ? empty() : others.shift()!
+	);
+}
+
 /** Le bloc choix de rang `ordinal` (0 = le premier), ou `null` s'il n'existe pas */
 export function readChoiceCase(statement: string, ordinal: number): EditableChoiceCase | null {
 	const range = findCaseChoiceBlocks(statement)[ordinal];

@@ -12,6 +12,16 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AnswerEditorChoiceHarness from './AnswerEditorChoiceHarness.svelte';
 
+interface HarnessState {
+	statement: string;
+	answers: string[];
+}
+
+function readState(): HarnessState {
+	const text = page.getByTestId('state').element().textContent ?? '{}';
+	return JSON.parse(text) as HarnessState;
+}
+
 // Constantes
 const WORK = (...header: string[]) =>
 	[
@@ -65,5 +75,25 @@ describe('AnswerEditor — figure de travail', () => {
 		await expect
 			.element(page.getByTestId('carte-figure-de-travail'))
 			.toHaveTextContent('outil « compas » inconnu');
+	});
+
+	it('énoncé collé, une seule entrée de cases : la case choix a sa carte, à sa place', async () => {
+		// Le formulaire part d'UNE entrée ; l'énoncé collé porte 2 cases (figure, choix).
+		// Comme le générateur, l'entrée revient au choix et la figure est insérée à son rang.
+		await render(AnswerEditorChoiceHarness, {
+			props: { initialStatement: `${WORK('outils: droite')}\n\n${OUI_NON}`, initialAnswers: [''] }
+		});
+		await expect.element(page.getByText('Case 2 : choix')).toBeVisible();
+		await expect.element(page.getByTestId('carte-figure-de-travail')).toBeVisible();
+		await page.getByRole('radio', { name: 'Choix B : bonne réponse' }).click();
+		expect(readState().answers).toEqual(['', '1']);
+	});
+
+	it('modèle existant qui omet la case d’un bloc : les réponses gardent leur case', async () => {
+		await render(AnswerEditorChoiceHarness, {
+			props: { initialStatement: `${WORK('outils: droite')}\n\n${OUI_NON}`, initialAnswers: ['1'] }
+		});
+		await expect.element(page.getByText('Case 2 : choix')).toBeVisible();
+		expect(readState().answers).toEqual(['', '1']);
 	});
 });

@@ -37,7 +37,8 @@
 	import {
 		appendChoiceCase,
 		statementCaseKinds,
-		type ChoiceCaseDraft
+		type ChoiceCaseDraft,
+		withBlockCases
 	} from '$lib/questions/choice-case-editor';
 	import { readWorkFigureCases, type WorkFigureCase } from '$lib/questions/work-figure-editor';
 	import ChoiceCaseEditor from './ChoiceCaseEditor.svelte';
@@ -99,6 +100,20 @@
 
 	// Genre de chaque case de l'énoncé (ordre du générateur) : une case choix a sa carte
 	let caseKinds = $derived(statement === undefined ? [] : statementCaseKinds(statement));
+	// Cases des blocs omises de `blanks[]` (permis au générateur, et cas d'un énoncé
+	// collé dans un formulaire parti d'une entrée) : remises à leur rang, réponse vide,
+	// pour que chaque carte soit celle de sa case — sinon la carte de la figure prend
+	// l'entrée que le générateur donne au choix (« aucune bonne réponse »)
+	$effect(() => {
+		if (questionType !== 'fill_in_blanks' || statement === undefined) return;
+		const aligned = withBlockCases(blanks, statement, () => ({ expectedAnswer: '' }));
+		if (!aligned) return;
+		if (Array.isArray(answer) && answer.length === blanks.length) {
+			answer = withBlockCases(answer, statement, () => '') ?? answer;
+		}
+		blanks = aligned;
+	});
+
 	// Figures de travail de l'énoncé : cartes en lecture seule, jamais notées
 	let workFigures = $derived(
 		statement === undefined ? new Map<number, WorkFigureCase>() : readWorkFigureCases(statement)
