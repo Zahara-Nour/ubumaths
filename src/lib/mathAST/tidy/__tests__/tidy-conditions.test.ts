@@ -267,7 +267,9 @@ describe('domainChange par ensembles (§ 4.2)', () => {
 		// `x > 0 et −y > 0` ne donne pas `xy > 0` : jamais une condition fausse
 		['ln(x y)', 'ln(x)+ln(-y)'],
 		// x > 0 et −x > 0 : plus aucun point
-		['ln(x y)+ln(-x)', 'ln(x)+ln(y)+ln(-x)']
+		['ln(x y)+ln(-x)', 'ln(x)+ln(y)+ln(-x)'],
+		// revue Opus : y ≥ 0 ne garantit pas y ≠ 0 (seule garde du quotient)
+		['sqrt(x/y)', 'sqrt(x)sqrt(y)']
 	])('plusieurs lettres, %s → %s : null', (before, after) => {
 		expect(change(before, after)).toBeNull();
 	});

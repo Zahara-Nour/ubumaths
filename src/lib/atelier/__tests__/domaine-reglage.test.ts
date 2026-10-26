@@ -364,6 +364,13 @@ describe('plusieurs lettres, le domaine rétrécit (§ 5, L5)', () => {
 		expect(result.note).toContain('ne garantit pas y > 0');
 	});
 
+	// Revue Opus : xy > 0 vaut aussi pour x < 0 et y < 0, où ln x n'existe pas
+	it('.simplifier ln(xy) avec x < 0 et y < 0 : la ligne garde ln(xy)', () => {
+		const result = line('.simplifier ln(xy) avec x < 0 et y < 0');
+		expect(flat(result.latex)).toBe(flat('\\ln\\left(xy\\right)'));
+		expect(result.note).toContain('ne garantit pas');
+	});
+
 	it('« Simplifier en disant la condition » : ln(x) + ln(y), pour x > 0 et y > 0', () => {
 		const result = line('.simplifier ln(xy)', 'conditions');
 		expect(flat(result.latex)).toBe(

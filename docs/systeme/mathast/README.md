@@ -1676,8 +1676,13 @@ Doublons qui restent, chacun pour un autre besoin :
   à développer (produit sans parenthèse), mais `√x³√x → (√x)⁴` (une puissance de racine déjà
   écrite) et `∛x∛x → (∛x)²` se regroupent encore.
 - Laissés par le § 4.2 de tidy-conditions (2026-10-26, `domainChanges` par ensembles), aucune
-  valeur fausse : à plusieurs lettres, une réécriture qui rétrécit le domaine
-  (`ln(xy) → ln x + ln y`) n'a ni bouton ni simplification ; une condition dont les points
+  valeur fausse : à plusieurs lettres, une réécriture qui rétrécit le domaine n'a ni bouton
+  ni simplification quand une condition d'après porte sur deux lettres (`ln((x+y)z)` ; depuis
+  le § 5, L5, `ln(xy) → ln x + ln y` a son bouton « pour x > 0 et y > 0 ») ; à plusieurs
+  lettres encore, `√x √y → √(xy)` (élargit) n'a pas de note ; le bouton de `ln(xy) − ln(xy)`
+  (et de `ln(x(x+1)) − ln(x(x+1))`) est `ln x + ln y − (ln x + ln y)`, pas `0` : le moteur
+  pédagogique s'arrête et `tidy` ne distribue pas `−(…)` — `.simplifier ln(2x) − ln(2x)` laisse
+  même cette écriture sur la ligne ; une condition dont les points
   exclus n'ont pas d'écriture exacte reste entière (`x³ − 2 ≠ 0` ; les irrationnels exacts
   s'écrivent depuis le § 5, `x ≠ √2`) ; le bouton d'un calcul qui passe par
   une étape plus étroite que sa condition n'a pas d'étapes (`e^{ln(x²)}` → `x²`, pour x ≠ 0,

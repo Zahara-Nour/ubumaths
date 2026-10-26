@@ -543,8 +543,16 @@ km/h`), 2026-09-27.
   sinon les conditions perdues puis gagnées, chacune retirée si les autres (et celles que les
   deux écritures partagent) l'impliquent : `ln(x²) → 2 ln x` dit `x > 0` (pas `x² > 0`),
   `ln(x(x+1)) → ln x + ln(x+1)` dit `x > 0`, `√x √(x+1) → √(x(x+1))` dit `x ≥ 0`. Un domaine qui rétrécit sans point commun avec celui
-  d'avant (`ln(x²) + ln(−x)`, défini pour x < 0 : « pour x > 0 » serait vide) ou qu'on ne lit
-  pas (plusieurs lettres, `ln(xy) → ln x + ln y`) : `null`, comme avant (revue Opus du § 4.2).
+  d'avant (`ln(x²) + ln(−x)`, défini pour x < 0 : « pour x > 0 » serait vide) : `null` (revue
+  Opus du § 4.2). Plusieurs lettres, domaine rétréci (§ 5, L5, `narrowedByLetters`) : accepté
+  quand chaque condition d'après porte sur une seule lettre (chaque lettre garde un point :
+  l'ensemble d'après, un produit, n'est pas vide) et que chaque condition perdue s'en déduit
+  par les signes de ses facteurs (`signsOf` : produit, quotient, opposé, puissance entière ;
+  un facteur d'une lettre lu sur son ensemble, un nombre par sa valeur) — `ln(xy) → ln x + ln y`
+  dit `x > 0, y > 0`, `ln(x/y)` aussi, `√(xy) → √x √y` dit `x ≥ 0, y ≥ 0`, `ln(−xy)` dit
+  `x < 0, y > 0` ; les conditions gagnées, élaguées lettre par lettre. Sinon `null` :
+  `ln((x+y)z) → ln(x+y) + ln z` (`x + y > 0`, deux lettres), `ln(xy) → ln x + ln(−y)` (`x > 0`
+  et `y < 0` ne donnent pas `xy > 0`).
   Plusieurs lettres, domaine élargi : la perte, sans élagage (`x/x + y/y` : `x ≠ 0`, `y ≠ 0`).
   Les conditions disent le signe d'une puissance entière (`x² > 0` → `x ≠ 0`, `x³ > 0` →
   `x > 0`, `x⁻² > 0` → `x ≠ 0`, `2/x > 0` → `x > 0`). **`plainConditions(conditions, answer)`** : `u ≠ 0` en points exclus quand `u`

@@ -404,9 +404,9 @@ function pruned(
  * domaines lisibles : les ENSEMBLES se comparent (`ln(x³) → 3 ln x` garde
  * ]0 ; +∞[, `[]`). Sinon, ou s'ils diffèrent : les conditions perdues puis
  * gagnées (`ln(x²) → 2 ln x` : `x² > 0`, `x > 0`), chacune retirée si les
- * autres l'impliquent (« x > 0 ») ; élagage impossible (plusieurs lettres) :
- * tout est dit, jamais une condition fausse. `null` : une condition ne
- * s'écrit pas (`tan`).
+ * autres l'impliquent (« x > 0 ») ; plusieurs lettres, domaine élargi : tout
+ * est dit, sans élagage ; rétréci : `narrowedByLetters` (§ 5, L5). Jamais une
+ * condition fausse. `null` : une condition ne s'écrit pas (`tan`).
  */
 export function domainChanges(
 	before: MathNode,
@@ -425,8 +425,8 @@ export function domainChanges(
 	const readable = setBefore !== null && setAfter !== null;
 	const narrows = readable ? !isIncluded(setBefore, setAfter) : gained.length > 0;
 	if (narrows && letter === null) return narrowedByLetters(was, now, lost, gained);
-	// Le domaine rétrécit sans qu'on lise les ensembles (plusieurs lettres) : on ne
-	// voit pas s'il reste un point — ne rien dire. Lus et sans point commun
+	// Le domaine rétrécit sans qu'on lise les ensembles (une lettre, famille périodique) :
+	// on ne voit pas s'il reste un point — ne rien dire. Lus et sans point commun
 	// (revue : `ln(x²) + ln(−x)`, défini pour x < 0, donnait « pour x > 0 ») : idem
 	if (narrows && (!readable || isEmpty(intersect(setBefore, setAfter)))) return null;
 	// Jamais définie (2ᵉ revue : `ln(x)/ln(x) + √(−x)`) : aucune condition n'a de sens
