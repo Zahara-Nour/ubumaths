@@ -481,6 +481,13 @@ function expandWithin(node: MathNode, domain: readonly MathNode[]): MathNode {
 	const isSum = top.type === 'addition' || top.type === 'subtraction';
 	if (isSum && terms.length === flattenSumShallow(top).length) return node;
 	const result = resolved(written(terms, domain), domain);
+	// Un produit sans parenthèse dont le calcul regroupe des racines en
+	// puissance (`√x√x → (√x)²`) : rien n'y est distribué, rien à développer
+	// (David, 2026-10-26). Une puissance de produit se distribue toujours
+	// (`(3√x)² → 9(√x)²`)
+	const product = top.type === 'opposite' ? unwrapGrouping(top.operand) : top;
+	const rootPowers = (n: MathNode) => findNodes(n, (m) => rootPower(m) !== null).length;
+	if (product.type === 'multiplication' && rootPowers(result) > rootPowers(node)) return node;
 	return nodesEqual(result, node) ? node : result;
 }
 

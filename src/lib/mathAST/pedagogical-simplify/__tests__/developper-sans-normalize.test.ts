@@ -120,3 +120,21 @@ describe('le résultat garde le domaine de l’entrée (David, 2026-10-25 ; comm
 		expect(answerOf(explain(input))).toBe(expected);
 	});
 });
+
+describe('√x·√x : rien à distribuer, rien à développer (David, 2026-10-26)', () => {
+	it.each([
+		['\\sqrt{x}\\sqrt{x}', 'unchanged'],
+		['2\\sqrt{x}\\cdot3\\sqrt{x}', 'unchanged'],
+		['-\\sqrt{x}\\sqrt{x}', 'unchanged'],
+		// revue : seul un produit sans parenthèse est gardé ; le reste se calcule
+		['(3\\sqrt{x})^2', '9 \\sqrt{x}^2'],
+		['\\sqrt{x}\\sqrt{x}+x+x', '\\sqrt{x}^2 + 2 x'],
+		// les cas frères, déjà justes
+		['\\sqrt{x}\\sqrt{x}+1', 'unchanged'],
+		['(\\sqrt{x})^2', 'unchanged'],
+		['\\sqrt{x}(\\sqrt{x}+1)', 'x + \\sqrt{x}'],
+		['2x\\cdot3x', '6 x^2']
+	])('%s → %s', (input, expected) => {
+		expect(answerOf(explain(input))).toBe(expected);
+	});
+});

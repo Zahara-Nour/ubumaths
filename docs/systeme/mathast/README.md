@@ -1660,14 +1660,22 @@ Doublons qui restent, chacun pour un autre besoin :
   flottants sur des coefficients décimaux (`domain/preimage.ts`, solveurs de degré 3-4 de
   `solve/`).
 
-## Points ouverts connus (mesurés le 2026-10-10, mis à jour le 2026-10-25)
+## Points ouverts connus (mesurés le 2026-10-10, mis à jour le 2026-10-26)
 
 - Fusion des deux moteurs : `reduire` et `auto` ne passent plus par `normalize` (2026-10-23),
   `developper` non plus (2026-10-25, chantier normalize-usages). Les copies locales de
   `denormalize(normalize())` passent par `canonicalForm` (lot b) ; restent ~75 appels écrits en
   ligne, internes (valeurs exactes, comparaisons), voulus (§ 23 de simplify-carte).
-  `extractQuarticCoefficients` (`solve/solvers/quartic.ts`) n'a pas la garde « coefficient
-  sans x » des trois autres extracteurs.
+- Laissés par le chantier normalize-usages (2026-10-26), écritures de `developper`, aucune
+  valeur fausse : `(x+1)/π → x/π + 1/π` et `(x+1)/√2` en deux écritures (le coefficient ne
+  passe devant que pour un dénominateur entier) ; `√8` seul reste écrit (`√8(x+1) → 2√2x +
+2√2`) ; ordre d'une somme d'exponentielles ; `x(1/x − 1) → −x + x/x` (« `1 − x`, pour
+  x ≠ 0 » attend la variante `{ result, conditions }` de `tidy`, ci-dessous). `√x√x` → rien
+  à développer (produit sans parenthèse), mais `√x³√x → (√x)⁴` (une puissance de racine déjà
+  écrite) et `∛x∛x → (∛x)²` se regroupent encore.
+- `solve`, quartique à paramètre littéral (relevé le 2026-10-26, revue de normalize-usages) :
+  `ax⁴ + x − 1 = 0`, `x⁴ − ax − 1 = 0`, `(a+1)x⁴ + x − 2 = 0` (inconnue x) répondent « pas de
+  solution » au lieu d'un refus. Antérieur au chantier.
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
   une valeur fausse :
   - `tidy` n'a pas de variante `{ result, conditions }` : `x/x` reste écrit au lieu de « 1, pour
