@@ -561,8 +561,11 @@ km/h`), 2026-09-27.
   dit alors « Pour x > 0, on peut écrire 2ln(x) »). `null` : une condition ne s'écrit pas
   (`cot`). `domainChange` en rend les conditions seules. **`avoidsPeriodicPoints(condition,
 domain)`** : `cos u ≠ 0` ou `sin u ≠ 0` (familles π/2 + kπ, kπ, que `conditionSet` ne lit pas) est vraie sur un
-  domaine fait d'intervalles bornés qui n'en contiennent aucun point (§ 5, L4). Sert à l'atelier pour garder le domaine
-  de toutes ses lignes (`atelier/domain-guard.ts`).
+  domaine fait d'intervalles bornés qui n'en contiennent aucun point (§ 5, L4) ; seulement
+  `cos u` ou `sin u` seul (`computeDomain(1/(sin x cos x))` rend kπ, pas kπ/2) ; un point sur
+  une borne ne se reconnaît, à 1e-9 près, que sur une borne écrite avec π (une borne décimale
+  `1.5707963267` laisse π/2 dedans). Ces fonctions servent à l'atelier pour garder le domaine
+  de toutes ses lignes (`atelier/domain-guard.ts`, `atelier/hypotheses.ts`).
 - `options.order` : `'canonical'` (défaut, l'étape 8) ou `'kept'` — les
   termes de **chaque** somme gardent l'ordre écrit, parenthèses comprises
   (`3+2x`, `3(1+x)`), les termes semblables regroupés à la place du premier

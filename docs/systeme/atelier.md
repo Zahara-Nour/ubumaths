@@ -1362,7 +1362,8 @@ condition sur la ligne. Tests : `domaine-garde.test.ts`.
   π/2 + kπ que l'inclusion ne voit pas (de même `sin(x) ≠ 0`, kπ) : garantie seulement par des
   intervalles **bornés** qui n'en contiennent aucun point, borne fermée sur un point exclue
   (`avoidsPeriodicPoints` : `cos(x)/cos(x) avec 0 < x < 1` ou `dans ]−π/2;π/2[` → 1, mais pas
-  `dans ]−π/2;π/2]` ; `sin(x)/sin(x) dans ]0;π[` → 1 ; `avec x > 0` garde l'écriture). `x − ln x ≠ 0`, non
+  `dans ]−π/2;π/2]` ni `avec 1.5707963267 < x < 2`, qui contient π/2 ; `sin(x)/sin(x) dans ]0;π[`
+  → 1 ; `avec x > 0` garde l'écriture). Un ensemble réduit à un point s'écrit « x = 0 ». `x − ln x ≠ 0`, non
   résolu, ne se garantit pas. La note ne
   propose que ce qui, recopié, simplifie vraiment la ligne (sinon la condition seule) ; une
   expression tapée sans bouton renvoie à `.simplifier`. Tests : `domaine-reglage.test.ts`.

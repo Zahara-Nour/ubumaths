@@ -534,3 +534,41 @@ describe('les limites, PR A (§ 5, David 2026-10-26)', () => {
 		expect(latex).not.toBe('0');
 	});
 });
+
+describe('revue Opus de la PR A (§ 5)', () => {
+	it.each([
+		'.simplifier cos(x)/cos(x) avec 1.5707963267 < x < 2',
+		'.simplifier sin(x)/sin(x) dans ]3.1415926535;4[',
+		'.simplifier cos(x)/cos(x) avec 1 < x < 1.5707963268'
+	])('%s : π/2 ou π dans l’intervalle, rien ne se simplifie', (input) => {
+		for (const mode of ['keep', 'conditions'] as const) {
+			expect(flat(line(input, mode).latex)).not.toBe('1');
+		}
+	});
+
+	it('une borne décimale juste avant π/2 : la famille est évitée', () => {
+		expect(flat(line('.simplifier cos(x)/cos(x) avec 1 < x < 1.5707963267').latex)).toBe('1');
+	});
+
+	it('« ou » en LaTeX : \\text{ ou }, pas une tabulation', () => {
+		const result = line('.simplifier ln(x^2-2)-ln(x^2-2)', 'conditions');
+		expect(result.latex).not.toContain('\t');
+		expect(flat(result.latex)).toContain('\\text{ou}');
+	});
+
+	it('π s’écrit π dans le texte du bouton', () => {
+		const label = line('.simplifier (arccos(x)-π)/(arccos(x)-π)').alternative?.label;
+		expect(label).toContain('π');
+		expect(label).not.toContain('\\pi');
+	});
+
+	it('un ensemble réduit à un point : « x = 0 »', () => {
+		expect(line('.simplifier sqrt(-x^2)-sqrt(-x^2)').alternative?.label).toBe(
+			'Simplifier pour x = 0'
+		);
+	});
+
+	it('E majuscule reste une lettre', () => {
+		expect(flat(line('.simplifier E/E avec E ≠ 0').latex)).toBe('1');
+	});
+});

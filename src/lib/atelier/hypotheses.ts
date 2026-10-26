@@ -64,7 +64,7 @@ const KEYWORD = /\s(avec|dans)\s/i;
  * Une lettre de condition : `x`, `y`, pas les mots `et` / `ou`, ni `e`, la
  * constante d'Euler (`avec x ≥ e`, § 5).
  */
-const LETTER = /(?<![A-Za-z])[A-DF-Za-df-z](?![A-Za-z])/g;
+const LETTER = /(?<![A-Za-z])[A-Za-df-z](?![A-Za-z])/g;
 
 const AVEC_EXAMPLE = 'avec x > 0, avec x ≠ 0 et x ≠ 1, avec 0 < x ≤ 5';
 const DANS_EXAMPLE = 'dans ]0;+∞[, dans ℝ \\ {0}, dans ]0;+∞[ ∩ ]-∞;5]';

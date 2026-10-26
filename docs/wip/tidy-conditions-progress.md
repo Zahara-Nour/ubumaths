@@ -176,5 +176,6 @@ Sondes (Atelier `runInput`, `normalize`, tests jetables supprimés).
 - L2 : `asPoints` accepte des points exacts (`isExactPoint` : sans lettre, nombres entiers), `describe` écrit `x ≠ √2` (`pointOf`, `writtenNumber`), une condition seule non affine se dit en intervalles (`describeAsIntervals` : « x < −√2 ou x > √2 », « −1 < x < 1 »), `x ≥ −1` et `x ≤ 1` en « −1 ≤ x ≤ 1 », inégalités avant les points exclus.
 - L3 : `sign.ts` : `tan u` → `cos u ≠ 0`, `arcsin u` / `arccos u` → `u + 1 ≥ 0`, `1 − u ≥ 0` ; `conditionSet` résout `f(u) − c ≠ 0` pour arctan / arcsin / arccos (`inverseCircularZero`) et `x − c ≠ 0` ; `plainConditions` ne redit pas `cos u ≠ 0` à côté de `tan u ≠ 0`.
 - L4 : `LETTER` (`hypotheses.ts`) ne compte plus `e` ; `avoidsPeriodicPoints` : une famille π/2 + kπ est garantie sur des intervalles bornés qui n'en contiennent aucun point (borne ouverte comprise).
+- Revue Opus : corrigés — borne décimale proche de π/2 prise pour la borne (`cos(x)/cos(x) avec 1.5707963267 < x < 2` donnait 1 : la tolérance ne vaut que pour une borne écrite avec π) ; tabulation dans `\text{ ou }` ; `\pi` en texte brut dans le bouton ; « 0 ≤ x ≤ 0 » → « x = 0 » ; `E` majuscule redevient une lettre ; `avoidsPeriodicPoints` limité à `cos u` / `sin u` seuls (`computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2, bug latent de `domain/compute` laissé).
 
 ## Historique

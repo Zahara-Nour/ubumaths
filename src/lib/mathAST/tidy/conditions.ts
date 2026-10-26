@@ -315,12 +315,16 @@ function inverseCircularZero(expression: MathNode, letter: string): Domain | nul
  * `assumed` évite-t-il tous les points d'une famille `a + kp` (`cos(x) ≠ 0`,
  * π/2 + kπ) ? Seulement sur des intervalles bornés, où ils se comptent
  * (§ 5, L4) : `cos(x)/cos(x) avec 0 < x < 1` → 1. Un point sur une borne
- * (à 1e-9 près) ne compte que si elle est ouverte : `]−π/2 ; π/2[` oui,
+ * (à 1e-9 près pour une borne écrite avec π, exactement sinon) ne compte que si elle est ouverte : `]−π/2 ; π/2[` oui,
  * `]−π/2 ; π/2]` non.
  */
 export function avoidsPeriodicPoints(condition: DomainCondition, assumed: Domain): boolean {
 	if (condition.relation !== 'nonzero') return false;
-	const letters = getVariables(condition.expression);
+	// `cos u` ou `sin u` seul : `computeDomain(1/(sin x cos x))` rend kπ au lieu
+	// de kπ/2, une famille fausse qu'on ne doit pas croire (revue Opus)
+	const { expression } = condition;
+	if (expression.type !== 'function' || !['cos', 'sin'].includes(expression.name)) return false;
+	const letters = getVariables(expression);
 	if (letters.size !== 1 || assumed.kind !== 'interval_set') return false;
 	const [letter] = letters;
 	const computed = computeDomain(divide(number(1), condition.expression, 'fraction'), letter);
@@ -330,18 +334,28 @@ export function avoidsPeriodicPoints(condition: DomainCondition, assumed: Domain
 	const period = decimalValue(computed.domain.period);
 	if (base === null || period === null || period <= 0) return false;
 	const epsilon = 1e-9;
+	// Seule une borne écrite avec π peut tomber sur un point a + kπ : la tolérance
+	// ne vaut que pour elle ; une borne décimale (`1.5707963267`) se compare
+	// exactement, sinon π/2, à l'intérieur, passerait pour la borne (revue Opus)
+	const hasPi = (value: MathNode) =>
+		findNodes(value, (n) => n.type === 'constant' && n.constant === 'pi').length > 0;
+	const onBound = (point: number, value: number, symbolic: boolean) =>
+		symbolic ? Math.abs(point - value) < epsilon : point === value;
 	return assumed.intervals.every((interval) => {
 		const low = decimalValue(interval.lower.value);
 		const high = decimalValue(interval.upper.value);
 		if (low === null || high === null) return false;
-		const near = (a: number, b: number) => Math.abs(a - b) < epsilon;
+		const [lowPi, highPi] = [hasPi(interval.lower.value), hasPi(interval.upper.value)];
 		// Un point sur une borne ouverte n'est pas dans l'intervalle (`]0 ; π[`)
-		for (let k = Math.ceil((low - epsilon - base) / period); ; k++) {
+		for (let k = Math.ceil((low - epsilon - base) / period) - 1; ; k++) {
 			const point = base + k * period;
-			if (point > high + epsilon) return true;
-			if (near(point, low) && interval.lower.type === 'open') continue;
-			if (near(point, high) && interval.upper.type === 'open') continue;
-			return false;
+			if (onBound(point, low, lowPi)) {
+				if (interval.lower.type === 'open') continue;
+				return false;
+			}
+			if (onBound(point, high, highPi)) return interval.upper.type === 'open';
+			if (point < low) continue;
+			return point > high;
 		}
 	});
 }
@@ -568,7 +582,7 @@ function affineRoot(expression: MathNode): { letter: string; root: Rational; a: 
 
 /** Le texte d'une condition se lit comme un titre d'étape : le vrai signe moins, `x ≠ −1`. */
 function readable(text: string): string {
-	return text.replace(/-/g, '−');
+	return text.replace(/-/g, '−').replace(/\\pi/g, 'π');
 }
 
 /** `x − c`, c sans lettre (`x − √2`, écrit par `asPoints`) : la lettre et c. */
@@ -599,6 +613,9 @@ function describeInterval(interval: Interval, letter: string): ConditionText | n
 		open ? { text: '>', latex: '>' } : { text: '≥', latex: '\\geq' };
 	if (finite(lower.value) && finite(upper.value)) {
 		const [a, b] = [writtenNumber(lower.value), writtenNumber(upper.value)];
+		// [0 ; 0] : « x = 0 », pas « 0 ≤ x ≤ 0 »
+		if (a.text === b.text)
+			return { text: `${letter} = ${a.text}`, latex: `${letter} = ${a.latex}` };
 		const [l, u] = [below(lower.type === 'open'), below(upper.type === 'open')];
 		return {
 			text: `${a.text} ${l.text} ${letter} ${u.text} ${b.text}`,
@@ -632,7 +649,7 @@ function describeAsIntervals(condition: TidyCondition): ConditionText | null {
 	const written = pieces as ConditionText[];
 	return {
 		text: written.map((p) => p.text).join(' ou '),
-		latex: written.map((p) => p.latex).join('\text{ ou }')
+		latex: written.map((p) => p.latex).join('\\text{ ou }')
 	};
 }
 
@@ -719,6 +736,13 @@ export function describeConditions(conditions: readonly TidyCondition[]): Condit
 		used.add(condition).add(partner);
 		const a = rationalToNode(low.root);
 		const b = rationalToNode(high.root);
+		if (toCustom(a) === toCustom(b)) {
+			written.push({
+				text: readable(`${bound.letter} = ${toCustom(a)}`),
+				latex: `${bound.letter} = ${toLatex(a)}`
+			});
+			continue;
+		}
 		const l = low.open ? { text: '<', latex: '<' } : { text: '≤', latex: '\\leq' };
 		const u = high.open ? { text: '<', latex: '<' } : { text: '≤', latex: '\\leq' };
 		written.push({
