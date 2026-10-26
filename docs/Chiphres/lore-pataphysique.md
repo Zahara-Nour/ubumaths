@@ -505,7 +505,7 @@ Dans Chiphre, **la pataphysique est l'art de chercher en se trompant**. C'est-à
 
 - **Rôle UI** : Avatar de progression, mascotte « élève qui réussit ». L'élève s'identifie à lui sans le savoir.
 - **Tempérament** : Sérieux, courageux, un peu trop parfait, donc cible naturelle des moqueries d'Ubu.
-- **Apparence** : Jeune, blond, fier, un peu agaçant.
+- **Apparence** 🟡 (décision de David, 2026-10-26) : adolescent d'environ 15 ans, élancé et droit, pose héroïque, menton levé, épée pointée vers le ciel ; cheveux blonds impeccablement peignés avec une mèche ondulée, regard décidé, sourire fier un peu suffisant (un peu trop parfait, donc un peu agaçant). Aux couleurs de la Pologne, pas à la livrée verte de l'usurpateur : tunique pourpre à boutons dorés et col blanc, ceinture et culotte blanches, hautes bottes, mince cercle d'or ; un petit yo-yo vert à la ceinture (Yoyolande). Prompt d'illustration : Section XI, « Illustrations ».
 - **Tics de langage** : Soutenu, héroïque. « Je vengerai mon père ! », « La justice triomphera ! »
 - **Motivation** : Reconquérir le trône (allégorie : maîtriser le programme).
 - **Quand il intervient** : pop-ups de félicitations majeures, ouverture de chapitres, débloquage de grades.
@@ -2007,6 +2007,24 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines and boots, emerald green for the tunic, white for the breeches, deep crimson for the cap and the sash, marigold yellow for the frogging, epaulettes and badge.
 
 Composition: Bordure standing at attention, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — Bougrelas 🟡
+
+Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et les images de référence des personnages déjà dessinés, au moins Père Ubu).
+
+```text
+Draw Bougrelas, the young rightful prince from Alfred Jarry's play "Ubu Roi" (1896), as a full-body character portrait in exactly the same drawing style as the attached characters.
+
+Character: a teenage boy of about 15, slender and upright, with a clean, straight silhouette, very different from the round and blocky adults; standing in a heroic pose, chin up, one hand on his hip, the other holding a sword pointed to the sky; perfectly combed blond hair with one neat wave; bright determined eyes, a proud, slightly smug smile. He is brave, serious and a little too perfect, which makes him slightly annoying, in a funny way. Never scary, for students aged 11 to 17.
+
+Clothing: a short Polish-style prince's tunic in deep crimson with a row of golden buttons and a white collar; a white sash at the waist; white breeches and tall navy ink boots; a thin golden circlet on his head; a small yo-yo hanging from his belt next to the sword's scabbard.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and boots, deep crimson for the tunic, white for the collar, sash and breeches, marigold yellow for the hair, buttons, circlet and sword hilt, emerald green only for the yo-yo.
+
+Composition: Bougrelas standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
 ```
 
 ---
