@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1807._
+_Mis à jour le 2026-10-26, phase 0 de la suite (§ 3), après #1807._
 
-- **État** : #1807 MERGÉE (pas encore en prod) : `tidyWithConditions`, `domainLoss`/`domainChange`, l'atelier garde le domaine partout, bouton « Simplifier pour x ≠ 0 ». Vérif manuelle notée dans `verifications-manuelles.md`.
-- **Prochaine action** : clore le chantier (verser le journal dans `docs/archive/wip/`, le durable est déjà dans `tidy-spec.md`, `atelier.md`, ADR 0007) après l'essai de David.
-- **En attente de David** : essayer l'atelier (lignes de la vérif #1807) ; dire si le chantier est clos.
-- **Pièges en cours** : `1/(1/x) → x` reste un bug de `tidy`, rattrapé par l'atelier seulement ; `{{eval}}` des exercices non touché.
-- **Worktree / branche** : retirés après le merge.
+- **État** : #1807 MERGÉE (pas encore en prod). David demande la suite : un réglage entre les deux modes, et une bulle qui dit qu'on peut simplifier plus, avec la syntaxe pour préciser le domaine (§ 3).
+- **Prochaine action** : coder le § 3 d'après les réponses de David (worktree `ubumaths-wt-tidy-conditions` à recréer).
+- **En attente de David** : Q5-Q9 du § 3.
+- **Pièges en cours** : aucune syntaxe de domaine n'existe pour `.simplifier` (seulement `dans` de `.résoudre`/`.variations`, `sur` d'une fonction) ; `1/(1/x) → x` reste un bug de `tidy`.
+- **Worktree / branche** : à recréer (`feat/tidy-conditions-reglage`).
 
 ## Contexte
 
@@ -69,5 +69,26 @@ Une fonction `tidyWithConditions(node, options)` → `{ result, conditions }` : 
 - **Toutes les commandes gardent le domaine**, comme une expression tapée et `.développer` (vérifié par sonde : `.simplifier` et `.factoriser` ne le gardaient pas). Révise la précision Q4 de l'ADR 0007 : `.simplifier (x²−1)/(x+1)` laisse la fraction.
 - **Variante par ligne, au bouton** (comme « Valeur approchée »), pas un mode global.
 - Q3 (« `0`, pour x > 0 ») et Q4 (« et », la plus forte seule) : recos validées.
+
+## 3. Suite : réglage et bulle (phase 0, 2026-10-26)
+
+Demande de David : une option des réglages pour passer d'un mode à l'autre — écriture non simplifiée si le domaine change, ou la variante —, et une bulle qui prévient qu'on pourrait simplifier plus en précisant le domaine, avec la syntaxe pour le préciser.
+
+Existant vérifié : la fenêtre « Réglages de l'atelier » (`AtelierSettings.svelte`, saisie / angles / déplacement des points, retenus dans le navigateur) ; une ligne porte déjà une `note` montrée sous la réponse ; **aucune syntaxe de domaine** pour `.simplifier`/`.factoriser`/`.développer` (seulement `dans ENSEMBLE` de `.résoudre`/`.variations`, lu par `parseStudentDomain`, et `f(x) = … sur I`).
+
+Comportements proposés :
+
+- **Réglage** « Simplifications qui changent le domaine » : « Garder l'écriture » (défaut, l'actuel) ou « Simplifier en disant la condition » (la ligne montre `1, pour x ≠ 0`). Le bouton de ligne reste dans les deux modes, en sens inverse (« Simplifier pour x ≠ 0 » / « Sans simplifier »). Changer le réglage bascule aussi les lignes déjà là (la ligne porte les deux écritures).
+- **Bulle** (mode « Garder l'écriture ») : une note sous la ligne, « On peut simplifier davantage pour x ≠ 0. Pour le dire : `.simplifier x/x dans ℝ\{0}` » — l'ensemble écrit d'après la condition (`x ≠ a` → `ℝ\{a}`, `x > a` → `]a;+∞[`, `x ≥ a` → `[a;+∞[`, sinon « dans ENSEMBLE »).
+- **Syntaxe** `dans ENSEMBLE` ajoutée à `.simplifier`, `.factoriser`, `.développer` (même lecture que `.résoudre`) : la simplification a lieu sans condition si l'ensemble est inclus dans celui où la condition vaut (`.simplifier x/x dans ]0;+∞[` → `1`) ; sinon la ligne garde l'écriture et le dit (« 0 est dans ℝ : x/x n'y est pas défini »). Une seule lettre (`pour VAR` si plusieurs).
+- **Limite** : plusieurs lettres (`x/x + y/y`) → pas d'ensemble proposé, la note dit seulement la condition ; condition non affine (`x²−1 ≠ 0`) → « dans ENSEMBLE ».
+
+Questions :
+
+- **Q5 — Forme de la bulle.** Reco : la note sous la ligne (existe, visible, lue par les lecteurs d'écran). Autre : une icône ⓘ avec une bulle au survol / au toucher.
+- **Q6 — Syntaxe.** Reco : `dans ENSEMBLE` pour `.simplifier`, `.factoriser`, `.développer`, comme `.résoudre`. Une expression tapée seule ne prend pas de mot-clé : sa note renvoie à `.simplifier … dans …`.
+- **Q7 — Mode « variante ».** Reco : le bouton reste (« Sans simplifier »), pas de note (la condition est déjà sur la ligne).
+- **Q8 — Lignes déjà écrites.** Reco : le réglage les bascule aussitôt. Autre : seulement les lignes suivantes.
+- **Q9 — Défaut.** Reco : « Garder l'écriture » (ta décision de ce matin).
 
 ## Historique
