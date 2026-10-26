@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, lot 9 en PR (branche `test/verifs-auto-9`)._
+_Mis à jour le 2026-10-26, après #1824._
 
-- **État** : lots 1-8 mergés (#1773 → #1818), correctifs #1813 et #1821 ; lot 9 écrit (cartes, lecture graphique, barre d'icônes, #1530, Données, Grapheur, #1627, #1546, Python), en PR. Suite complète : 127 verts ; rouges = `each_key_duplicate` (#1674, #1703, #1620, #1307) et Q1 de #1697 (bug du code non rangé dans `/python`).
-- **Prochaine action** : merger le lot 9 ; puis les écarts du lot 9 tranchés par David ; reste de la liste : lignes « à l'œil » (page à cocher), lignes prof / élève (comptes locaux).
-- **En attente de David** : les 8 écarts du lot 9 (section « Lot 9 ») — surtout `/python` qui ne range pas le code tapé, et Partager refusé pour une grille seule. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : port 5181 (5176, 5178, 5180 pris) ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; MathLive perd la 1re frappe : vider le champ jusqu'à ce qu'il le soit (`retypeCard`) ; un clic dans la console RANGE une carte en cours de frappe (preuve par Échap) ; un CSV / un collage se pose à la case CHOISIE ; prettier réaligne le tableau → rejouer ses lignes par script après rebase ; commitlint : pas de majuscule ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `../ubumaths-wt-verifs-auto`, `test/verifs-auto-9`.
+- **État** : lots 1-9 mergés (#1773 → #1824), correctifs #1813 et #1821. Suite complète : 127 verts ; rouges = `each_key_duplicate` (#1674, #1703, #1620, #1307) et Q1 de #1697 (`/python` ne range le code tapé qu'à Ctrl+S).
+- **Prochaine action** : les écarts du lot 9 une fois tranchés par David (section « Lot 9 ») ; puis le reste de la liste : lignes « à l'œil » (page à cocher), lignes prof / élève (comptes locaux).
+- **En attente de David** : les 8 écarts du lot 9 — surtout `/python` qui ne range pas le code tapé, et Partager refusé pour une grille seule. Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **Pièges en cours** : prendre un port libre (5181 au lot 9) ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; MathLive perd la 1re frappe : `retypeCard` vide jusqu'à ce que le champ le soit ; un clic dans la console RANGE une carte en cours de frappe (preuve par Échap) ; un CSV / un collage se pose à la case CHOISIE ; prettier réaligne le tableau → rejouer ses lignes par script après rebase ; commitlint : pas de majuscule ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (retiré après #1824).
 
 ## Phase 0 (validée le 2026-10-25)
 
