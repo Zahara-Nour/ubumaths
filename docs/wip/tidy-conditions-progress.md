@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-26, après #1831._
 
 - **État** : #1807→#1823, #1828 (PR A, L1-L4) et #1831 (PR B, L5 plusieurs lettres, revue Opus sans bloquant) MERGÉES, pas en prod.
-- **Prochaine action** : PR C (L6, `e^{k ln a}` dans `normalize`, § 5), nouvelle branche depuis `origin/main` dans le worktree.
+- **Prochaine action** : PR C (L6, `fix/normalize-exp-ln`) ouverte : revue Opus, CI, merge ; puis clore le chantier (versement) si David tranche Q14.
 - **En attente de David** : Q14 (`√2 + x` : ordre de `tidy`, § 5) ; essai des vérifs #1807 et #1811 ; chantier à part ou non pour `ln(xy) − ln(xy)` → `ln x + ln y − (ln x + ln y)` (trouvé en PR B, antérieur, aucune valeur fausse).
 - **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` sans condition écrivable ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2 (gardé par `avoidsPeriodicPoints`).
 - **Worktree / branche** : `../ubumaths-wt-tidy-conditions` ; `fix/conditions-plusieurs-lettres` mergée (un commit local de journal, remplacé par celui-ci sur `main`).
@@ -184,5 +184,10 @@ Sondes (Atelier `runInput`, `normalize`, tests jetables supprimés).
 - Revue Opus : aucun bloquant (34 couples et 18 lignes sondés). Corrigés : commentaires périmés de `domainChanges` ; tests aux frontières (`√(x/y) → √x √y` : null, y ≥ 0 ne dit pas y ≠ 0 ; `ln(xy) avec x < 0 et y < 0` garde). Laissés, aucune valeur fausse : condition écrite sur le facteur (`ln(ln(x) y)` → « pour ln(x) > 0 et y > 0 », sans `avec` proposé) ; `ln(xy) − ln y` sans bouton (y sans ensemble d'après, déjà avant) ; `engineAlternative` ne vérifie pas chaque étape sur l'ensemble annoncé quand le domaine rétrécit (déjà à une lettre, aucun cas faux trouvé).
 - `domaine-garde.test.ts` « plusieurs lettres : … n'a pas lieu » réécrit : la ligne garde, le bouton vient.
 - Trouvé, ANTÉRIEUR (une lettre aussi), laissé au README : `ln(xy) − ln(xy)` et `ln(x(x+1)) − ln(x(x+1))` → bouton `ln x + ln y − (ln x + ln y)` au lieu de `0` (le moteur pédagogique s'arrête, `tidy` ne distribue pas `−(…)`) ; `.simplifier ln(2x) − ln(2x)` laisse cette écriture sur la ligne. `√x √y → √(xy)` (élargit, plusieurs lettres) : pas de note.
+
+### PR C (`fix/normalize-exp-ln`)
+
+- L6 : `reduceEulerPower` (`rules/euler-identities.ts`) réduit `e^{k ln a + c}` en `aᵏ·e^{c}` par `splitRationalLogs` (`normalize.ts`, fournie par le contexte) : termes `k ln a` à k et a > 0 rationnels seulement (`exactRationalValue`), le reste garde l'exposant. `e^{2ln3}` → 9, `e^{ln2/2}` → √2, `e^{1+ln2}` → 2e, `e^{x+ln2}` → 2eˣ ; `e^{2 ln x}`, `e^{2 ln π}`, `e^{2ln(−3)+1}` gardent leur ln. Suite mathAST + questions + atelier : 35 654 verts, aucun témoin n'a bougé.
+- Revue Opus (58 entrées sondées, valeurs et formes normales justes) : corrigé — plafond |k| ≤ 1000 (`e^{10000000 ln 2}` calculait 3 millions de chiffres en 2,5 s, hors budget ; `exp(…)` a le même défaut, antérieur, laissé). Laissés, antérieurs, aucune valeur fausse : `e^{ln 1 + x}`, `e^{2 ln e}`, `e^{2 ln √2}` gardent leur écriture (forme normale ≠ `exp`) ; `2^{1/3}` ≠ `∛2` en forme normale.
 
 ## Historique

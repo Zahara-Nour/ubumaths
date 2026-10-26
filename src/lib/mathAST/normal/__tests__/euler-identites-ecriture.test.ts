@@ -109,3 +109,50 @@ describe('e^{ln a} : a nombre négatif ou nul, rien ne se réduit', () => {
 		expect(sameNormalForm(latex, value)).toBe(true);
 	});
 });
+
+// tidy-conditions, L6 (§ 5) : `e^{k ln a + c}` (k rationnel, a > 0 rationnel)
+// devient `aᵏ e^{c}`, comme `exp(k ln a + c)` ; avant, seul `e^{ln a}` se
+// réduisait et `e^{2 ln 3}` gardait une forme normale distincte de `9`.
+describe('e^{k ln a + c} : a rationnel positif, la puissance se calcule', () => {
+	it.each([
+		['\\exponentialE^{2\\ln(3)}', '9'],
+		['e^{2\\ln 3}', '9'],
+		['\\exponentialE^{3\\ln(2)}', '8'],
+		['\\exponentialE^{-\\ln(2)}', '\\frac{1}{2}'],
+		['\\exponentialE^{\\frac{\\ln(2)}{2}}', '\\sqrt{2}'],
+		['\\exponentialE^{\\frac{1}{2}\\ln(2)}', '\\sqrt{2}'],
+		['\\exponentialE^{\\ln(2)+\\ln(3)}', '6'],
+		['\\exponentialE^{1+\\ln(2)}', '2\\exponentialE'],
+		['\\exponentialE^{x+\\ln(2)}', '2\\exponentialE^{x}'],
+		['\\exponentialE^{\\ln(9)}', '9'],
+		['\\exponentialE^{2\\ln(\\frac{1}{3})}', '\\frac{1}{9}'],
+		['\\exponentialE^{1000\\ln(2)-999\\ln(2)}', '2']
+	] as const)('%s → %s', (input, expected) => {
+		expect(sameNormalForm(input, expected)).toBe(true);
+		expect(normalLatex(input)).not.toContain('\\ln');
+	});
+
+	it.each([
+		// lettre sous le ln : hors de L6, l'écriture reste
+		'\\exponentialE^{2\\ln(x)}',
+		'\\exponentialE^{\\ln(x)+1}',
+		// ln d'un nombre négatif : n'existe pas
+		'\\exponentialE^{2\\ln(-3)+1}',
+		// ln d'un irrationnel : hors de L6
+		'\\exponentialE^{2\\ln(\\pi)}',
+		// |k| > 1000 : la puissance n'est pas calculée (revue de #1834)
+		'\\exponentialE^{10000000\\ln(2)}',
+		'\\exponentialE^{-1001\\ln(2)}'
+	])('%s garde son ln', (latex) => {
+		expect(normalLatex(latex)).toContain('\\ln');
+	});
+
+	// Sans lettre : `e^{x}` et `\\exp(x)` gardent deux formes normales (#382)
+	it.each(['\\exponentialE^{2\\ln(3)}', '\\exponentialE^{1+\\ln(2)}'])(
+		'%s : même forme normale que \\exp(…)',
+		(latex) => {
+			const exp = latex.replace('\\exponentialE^', '\\exp');
+			expect(sameNormalForm(latex, exp.replace(/^\\exp\{(.*)\}$/, '\\exp($1)'))).toBe(true);
+		}
+	);
+});
