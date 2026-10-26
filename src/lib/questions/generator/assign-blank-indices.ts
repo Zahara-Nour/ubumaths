@@ -16,6 +16,8 @@
  * - Bloc ```collection à construire (`construire: N`) → UNE case, `case: N` posé dans le bloc
  * - Bloc ```figure-a-completer → UNE case (la figure de l'élève), `case: N` posé dans le bloc ;
  *   son contenu est mis à l'abri : ni `?` ni `[_]` n'y crée de case
+ * - Bloc ```choix → UNE case (type 'choice'), `case: N` posé dans le bloc ; une case
+ *   écrite dans un choix (`?` en formule, `[_]`) est refusée avec un message situé
  *
  * @module questions/generator/assign-blank-indices
  */
@@ -24,6 +26,17 @@ import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
 import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
+import {
+	CHOICE_BLOCK_NESTED_MESSAGE,
+	CHOICE_BLOCK_UNCLOSED_MESSAGE,
+	findChoiceBlocks,
+	isChoiceBlockStart,
+	isNestedChoiceBlockStart,
+	parseChoiceBody
+} from '$lib/ubumark/parser/choix-parser';
+
+/** Type d'une case : formule, texte, ou case « choix » (bloc ```choix) */
+export type AssignedBlankType = 'math' | 'text' | 'choice';
 
 /**
  * Result of assigning blank indices to a statement
@@ -35,8 +48,8 @@ export interface AssignBlankIndicesResult {
 	answerFormats?: Record<string, string>;
 	/** Total number of blanks assigned */
 	totalBlanks: number;
-	/** Type of each blank in order: 'math' for ? in $...$, 'text' for [_] in text */
-	blankTypes: ('math' | 'text')[];
+	/** Type of each blank in order: 'math' for ? in $...$, 'text' for [_] in text, 'choice' for ```choix */
+	blankTypes: AssignedBlankType[];
 	/**
 	 * Map blank index → expression name for blanks that originate from a
 	 * `<<expr:NAME>>` marker (either the `?` in `answerFormats[NAME]` or the
@@ -70,6 +83,132 @@ export interface AssignBlankIndicesResult {
 	constructionBlanks?: Record<number, string>;
 	/** Blocs ```figure-a-completer mal placés (liste, citation) : messages pour l'auteur */
 	constructionErrors?: string[];
+	/**
+	 * Case → corps du bloc ```choix qui la porte (sans `case:`, choix dans l'ordre
+	 * écrit), pour que le générateur lise ses choix et ses réglages. Absent sans tel bloc.
+	 */
+	choiceBlanks?: Record<number, string>;
+	/** Blocs ```choix mal placés, non fermés, ou qui contiennent une case : messages pour l'auteur */
+	choiceErrors?: string[];
+}
+
+/** Marque d'un bloc ```choix mis à l'abri : début, rang du bloc, fin */
+const CHOICE_MARK_START = '\u0000choice:';
+const CHOICE_MARK_END = '\u0000';
+
+interface MarkedChoiceBlock {
+	/** Clôture d'ouverture (``` ou ````) */
+	fence: string;
+	/** Lignes du bloc entre les clôtures */
+	body: string[];
+	closed: boolean;
+}
+
+/** Ouverture d'un bloc délimité au premier niveau : clôture et nom (« » pour du code) */
+const FENCE_OPEN_REGEX = /^(`{3,})([^`\s]*)\s*$/;
+/** Blocs de question qui portent leur propre case : un bloc choix n'y a pas sa place */
+const QUESTION_BLOCK_NAMES = new Set(['figure-a-completer', 'operation']);
+
+/**
+ * Bloc délimité (autre que ```choix) qui contient chaque ligne : son nom, ou `null`
+ * hors de tout bloc. Fin : une ligne de ` au moins aussi longue que l'ouverture ;
+ * ```operation finit aussi à la première ligne vide, comme son parseur.
+ */
+function enclosingBlockNames(lines: readonly string[]): (string | null)[] {
+	const names: (string | null)[] = [];
+	let open: { length: number; name: string } | null = null;
+	for (const line of lines) {
+		if (open) {
+			const closes =
+				new RegExp(`^\`{${open.length},}\\s*$`).test(line) ||
+				(open.name === 'operation' && line.trim() === '');
+			names.push(open.name === 'choix' ? null : open.name);
+			if (closes) open = null;
+			continue;
+		}
+		names.push(null);
+		const fence = line.match(FENCE_OPEN_REGEX);
+		if (fence) open = { length: fence[1].length, name: fence[2] };
+	}
+	return names;
+}
+
+/**
+ * Met à l'abri les blocs ```choix (premier niveau) : chacun devient une marque d'une
+ * ligne, numérotée ensuite avec les autres cases puis rendue avec `case: N`. Un bloc
+ * en retrait ou cité est refusé (il ne peut pas porter de case), comme un bloc écrit
+ * dans un bloc de question (```figure-a-completer, ```operation) ; dans un bloc de
+ * code (ou tout autre bloc délimité), ce n'est que du texte.
+ */
+function markChoiceBlocks(statement: string): {
+	statement: string;
+	blocks: MarkedChoiceBlock[];
+	errors: string[];
+} {
+	const lines = statement.split('\n');
+	const enclosing = enclosingBlockNames(lines);
+	// Lignes d'un autre bloc masquées : un ```choix n'y est pas repéré
+	const ranges = findChoiceBlocks(lines.map((line, i) => (enclosing[i] === null ? line : '')));
+	const out: string[] = [];
+	const blocks: MarkedChoiceBlock[] = [];
+	const errors: string[] = [];
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		const outer = enclosing[i];
+		if (outer !== null) {
+			if (QUESTION_BLOCK_NAMES.has(outer) && isChoiceBlockStart(line)) {
+				errors.push(`Ligne ${i + 1} : un bloc choix ne peut pas être dans un bloc ${outer}`);
+			}
+			out.push(line);
+			continue;
+		}
+		if (isNestedChoiceBlockStart(line)) errors.push(CHOICE_BLOCK_NESTED_MESSAGE);
+		const range = ranges.find((r) => r.startIndex === i);
+		if (!range) {
+			out.push(line);
+			continue;
+		}
+		out.push(`${CHOICE_MARK_START}${blocks.length}${CHOICE_MARK_END}`);
+		blocks.push({
+			fence: range.fence,
+			body: lines.slice(i + 1, range.closed ? range.endIndex : range.endIndex + 1),
+			closed: range.closed
+		});
+		i = range.endIndex;
+	}
+	return { statement: out.join('\n'), blocks, errors };
+}
+
+/** Le bloc rendu à son texte, sa case posée en première ligne */
+function restoreChoiceBlock(block: MarkedChoiceBlock, caseIndex: number): string {
+	return [
+		`${block.fence}choix`,
+		`case: ${caseIndex}`,
+		...block.body,
+		...(block.closed ? [block.fence] : [])
+	].join('\n');
+}
+
+/** Un choix contient-il une case (`?` dans une formule, `[_]` dans le texte) ? */
+function choiceHasBlank(choice: string): boolean {
+	return splitIntoSegments(choice).some((segment) =>
+		segment.type === 'math' ? segment.content.includes('?') : segment.content.includes('[_]')
+	);
+}
+
+/** Messages d'un bloc ```choix numéroté (case `caseIndex`) : fermeture, case dans un choix */
+function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[] {
+	const prefix = `Case ${caseIndex + 1} (bloc choix) :`;
+	const errors: string[] = [];
+	if (!block.closed) errors.push(`${prefix} ${CHOICE_BLOCK_UNCLOSED_MESSAGE}`);
+	parseChoiceBody(block.body).choices.forEach((choice, index) => {
+		if (choiceHasBlank(choice)) {
+			errors.push(
+				`${prefix} le choix ${index + 1} contient une case (? ou [_]) ; une case ne peut pas être dans un choix`
+			);
+		}
+	});
+	return errors;
 }
 
 /** Fence d'ouverture d'un bloc ```figure-a-completer, au premier niveau seulement */
@@ -288,11 +427,14 @@ export function assignBlankIndices(
 	answerFormats?: Record<string, string>
 ): AssignBlankIndicesResult {
 	let counter = 0;
-	const blankTypes: ('math' | 'text')[] = [];
+	const blankTypes: AssignedBlankType[] = [];
 	const modifiedAnswerFormats = answerFormats ? { ...answerFormats } : undefined;
 	const expressionNameByIndex: Record<number, string> = {};
 	const operationBlanks: Record<number, string> = {};
-	const constructions = markConstructionBlocks(rawStatement);
+	const choices = markChoiceBlocks(rawStatement);
+	const choiceBlanks: Record<number, string> = {};
+	const choiceErrors: string[] = [...choices.errors];
+	const constructions = markConstructionBlocks(choices.statement);
 	const constructionBlanks: Record<number, string> = {};
 	const operations = markCaseBlocks(constructions.statement, OPERATION_BLOCKS);
 	const builds = markBuildBlocks(operations.statement);
@@ -372,7 +514,17 @@ export function assignBlankIndices(
 			let i = 0;
 			const text = segment.content;
 			while (i < text.length) {
-				if (text.startsWith(CONSTRUCTION_MARK_START, i)) {
+				if (text.startsWith(CHOICE_MARK_START, i)) {
+					const rankStart = i + CHOICE_MARK_START.length;
+					const rankEnd = text.indexOf(CHOICE_MARK_END, rankStart);
+					const block = choices.blocks[Number(text.slice(rankStart, rankEnd))];
+					newText += restoreChoiceBlock(block, counter);
+					choiceBlanks[counter] = block.body.join('\n');
+					choiceErrors.push(...choiceBlockErrors(block, counter));
+					counter++;
+					blankTypes.push('choice');
+					i = rankEnd + CHOICE_MARK_END.length;
+				} else if (text.startsWith(CONSTRUCTION_MARK_START, i)) {
 					const rankStart = i + CONSTRUCTION_MARK_START.length;
 					const rankEnd = text.indexOf(CONSTRUCTION_MARK_END, rankStart);
 					const block = constructions.blocks[Number(text.slice(rankStart, rankEnd))];
@@ -428,7 +580,9 @@ export function assignBlankIndices(
 		...(buildCount > 0 && { buildBlanks }),
 		...(builds.errors.length > 0 && { buildErrors: builds.errors }),
 		...(constructions.blocks.length > 0 && { constructionBlanks }),
-		...(constructions.errors.length > 0 && { constructionErrors: constructions.errors })
+		...(constructions.errors.length > 0 && { constructionErrors: constructions.errors }),
+		...(choices.blocks.length > 0 && { choiceBlanks }),
+		...(choiceErrors.length > 0 && { choiceErrors })
 	};
 }
 

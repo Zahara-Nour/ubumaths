@@ -8,6 +8,8 @@
 	- Math blanks (\placeholder[N]{}) via MathPrompt
 	- Blanks inside table cells (same components, rendered inside TableNode)
 	- Expression convention (expressionName + answerFormat)
+	- Case « choix » (bloc ```choix) : MultipleChoiceInput à l'endroit du bloc ; valeur
+	  de la case = indices d'origine cochés (`formatChoiceAnswer`, « 0;2 »)
 	- Validation state display (correct/incorrect)
 
 	Architecture:
@@ -71,6 +73,14 @@
 	import Operation from '$lib/components/markdown/nodes/Operation.svelte';
 	import Collection from '$lib/components/markdown/nodes/Collection.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
+	import ChoiceBlock from '$lib/components/markdown/nodes/ChoiceBlock.svelte';
+	import MultipleChoiceInput from './MultipleChoiceInput.svelte';
+	import type { ChoiceNode } from '$lib/ubumark/types/choix';
+	import {
+		correctChoiceIndexesOf,
+		formatChoiceAnswer,
+		parseChoiceAnswer
+	} from '$lib/questions/choice-case';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import {
 		provideCapitalPairs,
@@ -188,6 +198,7 @@
 		if (node.type === 'operation') return node.caseIndex !== undefined;
 		if (node.type === 'collection') return node.caseIndex !== undefined;
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
+		if (node.type === 'choice') return node.caseIndex !== undefined;
 		return false;
 	}
 
@@ -636,6 +647,46 @@
 		}
 	}
 
+	// ============================================================================
+	// CASE « CHOIX »
+	// ============================================================================
+
+	/** Ordre affiché de la case choix : `order[position]` = indice d'origine */
+	function choiceOrder(caseIndex: number): number[] {
+		return blanks[caseIndex]?.choice?.order ?? [];
+	}
+
+	/** Positions affichées cochées, lues dans la valeur de la case (indices d'origine) */
+	function checkedPositions(caseIndex: number, value: string): number[] {
+		const order = choiceOrder(caseIndex);
+		return (parseChoiceAnswer(value, order.length) ?? []).map((index) => order.indexOf(index));
+	}
+
+	/** Positions affichées des bons choix (correction ; vide si la réponse n'est pas connue) */
+	function correctPositions(caseIndex: number): number[] {
+		const blank = blanks[caseIndex];
+		if (!blank?.choice) return [];
+		const order = blank.choice.order;
+		return correctChoiceIndexesOf({ ...blank, choice: blank.choice }).map((index) =>
+			order.indexOf(index)
+		);
+	}
+
+	/** Choix affichés pour la saisie, marqués justes si la réponse est connue */
+	function choiceInputItems(node: ChoiceNode, caseIndex: number) {
+		const correct = new Set(correctPositions(caseIndex));
+		return node.choices.map((content, position) => ({
+			content: content as ResolvedMarkdown,
+			isCorrect: correct.has(position)
+		}));
+	}
+
+	/** Positions cochées → valeur de la case (indices d'origine, triés) */
+	function handleChoiceChange(caseIndex: number, positions: number[]) {
+		const order = choiceOrder(caseIndex);
+		handleInputChange(caseIndex, formatChoiceAnswer(positions.map((position) => order[position])));
+	}
+
 	/**
 	 * Handle submit from text blank (Enter key)
 	 */
@@ -835,6 +886,28 @@
 							disabled: effectiveDisabled,
 							onChange: (value) => handleInputChange(caseIndex, value)
 						}}
+					/>
+				{/if}
+			{:else if node.type === 'choice' && node.caseIndex !== undefined && blanks[node.caseIndex]?.choice}
+				<!-- Case « choix » : les choix à l'endroit du bloc, ronds (une réponse) ou carrés -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{@const validated = (state?.isCorrect ?? null) !== null}
+				{@const answerKnown = correctPositions(caseIndex).length > 0}
+				{#if flashMode}
+					<ChoiceBlock {node} />
+				{:else}
+					<MultipleChoiceInput
+						choices={choiceInputItems(node, caseIndex)}
+						selectedIndexes={showCorrectAnswers
+							? correctPositions(caseIndex)
+							: checkedPositions(caseIndex, state?.value ?? '')}
+						multipleAnswers={node.multiple}
+						disabled={effectiveDisabled || validated}
+						showValidation={answerKnown && (showCorrectAnswers || validated)}
+						label={`Case ${caseIndex + 1} : choix`}
+						onSelectionChange={(positions) => handleChoiceChange(caseIndex, positions)}
+						{genericFunctions}
 					/>
 				{/if}
 			{:else if node.type === 'image'}

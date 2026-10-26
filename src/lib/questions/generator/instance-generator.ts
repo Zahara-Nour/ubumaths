@@ -55,6 +55,13 @@ import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
 import { divisionExpectedAnswers } from '$lib/ubumark/utils/operation-division-answer';
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
 import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
+import {
+	parseChoiceBody,
+	replaceChoiceBlocks,
+	serializeChoiceBlock,
+	type ChoiceBlockSpec
+} from '$lib/ubumark/parser/choix-parser';
+import { formatChoiceAnswer, readExpectedChoices } from '../choice-case';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 import { normalizeExpression, detectExpressionType } from '$lib/ubumark/parameterization';
 import {
@@ -519,6 +526,31 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			if (blankResult.buildErrors) {
 				return { success: false, errors: blankResult.buildErrors };
 			}
+			if (blankResult.choiceErrors) {
+				return { success: false, errors: blankResult.choiceErrors };
+			}
+
+			// Cases des blocs ```choix : choix et réglages lus ici ; bonne réponse portée par
+			// la case (`expectedAnswer`), lue et le mélange tiré à son rang (plus bas)
+			const choiceCases = new Map<number, ChoiceBlockSpec>();
+			for (const [key, body] of Object.entries(blankResult.choiceBlanks ?? {})) {
+				const index = Number(key);
+				const spec = parseChoiceBody(body.split('\n'));
+				const errors = [...spec.errors];
+				if (spec.caseIndex !== undefined) {
+					errors.unshift('case: est posée automatiquement, retirer cette ligne du bloc');
+				}
+				if (template.options?.orderIndependent) {
+					errors.push('une case choix ne se combine pas avec « ordre indifférent »');
+				}
+				if (errors.length > 0) {
+					return {
+						success: false,
+						errors: [`Case ${index + 1} (bloc choix) : ${errors.join(' ; ')}`]
+					};
+				}
+				choiceCases.set(index, spec);
+			}
 
 			// Cases des blocs ```figure-a-completer : la figure de l'élève, jugée par les
 			// vérifications du bloc (positions lues au jugement, cf. questions/construction)
@@ -668,7 +700,48 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			finalStatement = resolvedMarkdown(blankResult.statement);
 
 			// Build instance.blanks[] with inferred types and merged validation
+			// Ordre affiché de chaque case choix (posé dans le bloc de l'énoncé, plus bas)
+			const choiceOrders = new Map<number, NonNullable<InstanceBlank['choice']>>();
 			resolvedBlanks = alignedBlanks.map((templateBlank, i) => {
+				const choiceSpec = choiceCases.get(i);
+				if (choiceSpec) {
+					// Bonne réponse : indice(s) d'origine, dynamique possible (`{{eval:…}}`, `{{if:…}}`)
+					const raw = resolveVariableConditionals(
+						templateBlank.expectedAnswer ?? '',
+						resolvedVariables,
+						{
+							strict: true
+						}
+					);
+					const resolved = raw.includes('{{')
+						? resolveExpression(raw, resolvedVariables, random)
+						: raw;
+					const expected = readExpectedChoices(
+						resolved,
+						choiceSpec.choices.length,
+						choiceSpec.multiple
+					);
+					if (expected.errors.length > 0) {
+						throw new Error(`Case ${i + 1} (bloc choix) : ${expected.errors.join(' ; ')}`);
+					}
+					// Mélange de la case, sur la source de hasard de l'instance (à son rang)
+					const order = choiceSpec.shuffle
+						? shuffleChoices(
+								choiceSpec.choices.map((content) => ({
+									content: resolvedMarkdown(content),
+									isCorrect: false
+								})),
+								random
+							).map((choice) => choice.originalIndex)
+						: choiceSpec.choices.map((_, index) => index);
+					const choice = { choices: choiceSpec.choices, order, multiple: choiceSpec.multiple };
+					choiceOrders.set(i, choice);
+					return {
+						expectedAnswer: formatChoiceAnswer(expected.indexes),
+						type: 'choice',
+						choice
+					};
+				}
 				const construction = constructionCases.get(i);
 				if (construction) {
 					// Réponse attendue symbolique (`droite(A;B)`) : affichage du corrigé
@@ -819,6 +892,22 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				}
 				return resolved;
 			});
+
+			// Blocs ```choix de l'énoncé : choix dans l'ordre AFFICHÉ, `melanger:` retiré
+			if (choiceOrders.size > 0) {
+				finalStatement = resolvedMarkdown(
+					replaceChoiceBlocks(String(finalStatement), (block) => {
+						const choice =
+							block.caseIndex === undefined ? undefined : choiceOrders.get(block.caseIndex);
+						if (!choice || block.caseIndex === undefined) return '';
+						return serializeChoiceBlock({
+							caseIndex: block.caseIndex,
+							multiple: choice.multiple,
+							choices: choice.order.map((index) => choice.choices[index])
+						});
+					})
+				);
+			}
 
 			// Build instance.expressions[] from expression variables
 			if (expressionNames.size > 0) {

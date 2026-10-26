@@ -77,6 +77,12 @@ import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-varia
 import { expectsUnitlessValue, withoutDegreeSuffix } from '$lib/questions/answer-degree-suffix';
 import { judgeConstruction } from '$lib/questions/construction/judge';
 import { constructionPositions } from '$lib/questions/construction/positions';
+import {
+	correctChoiceIndexesOf,
+	displayedChoiceLetter,
+	isChoiceBlank,
+	parseChoiceAnswer
+} from '$lib/questions/choice-case';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -1233,6 +1239,39 @@ function constructionBlankResult(
 	return feedback ? { isCorrect: false, feedback } : { isCorrect: false };
 }
 
+/**
+ * Case « choix » (bloc ```choix) : même barème que le QCM (`statusFromChoices`),
+ * réponse en indices d'ORIGINE (« 0;2 »). Bons choix seulement, pas tous : ½
+ * (`unoptimal_form`, case acceptée ; la question n'est pas juste pour autant,
+ * cf. `aggregateOrderedBlanks`). Réponse illisible : fausse.
+ */
+function choiceBlankResult(
+	answer: string,
+	blank: InstanceBlank & { choice: NonNullable<InstanceBlank['choice']> }
+): ReturnType<typeof validateSingleBlank> {
+	const correct = correctChoiceIndexesOf(blank);
+	const letters = correct
+		.map((index) => displayedChoiceLetter(blank, index))
+		.sort()
+		.join(', ');
+	// Mêmes messages que le QCM (`validateChoice`) : lettres AFFICHÉES
+	const wrong = {
+		isCorrect: false,
+		feedback: blank.choice.multiple
+			? `Les choix corrects sont: ${letters}`
+			: `Le choix correct est: ${letters}`
+	};
+	const selected = parseChoiceAnswer(answer, blank.choice.choices.length);
+	if (selected === null) return wrong;
+	const status = statusFromChoices(selected, correct);
+	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	if (status === 'correct') return { isCorrect: true, status: 'correct' };
+	if (status === 'unoptimal_form') {
+		return { isCorrect: true, status: 'unoptimal_form', feedback: MISSING_CHOICES_FEEDBACK };
+	}
+	return wrong;
+}
+
 /** Garde Q58 sur la réponse ET sur son LaTeX (celui qui juge la forme) */
 function isBlankAnswerTooComplex(answer: string, latex: string | undefined): boolean {
 	return isAnswerTooComplex(answer) || (latex !== undefined && isAnswerTooComplex(latex));
@@ -1260,6 +1299,11 @@ function validateSingleBlank(
 	// Case « figure » (bloc ```figure-a-completer) : chaîne à part, cf. questions/construction/
 	if (blank.construction) {
 		return constructionBlankResult(userAnswer, blank.construction);
+	}
+
+	// Case « choix » (bloc ```choix) : indices cochés, barème du QCM
+	if (isChoiceBlank(blank)) {
+		return choiceBlankResult(userAnswer, blank);
 	}
 
 	// Ensemble en notation intervalle (inéquation) : chaîne à part, cf. interval-answer.ts
@@ -1582,7 +1626,10 @@ function roundingBadForm(feedback: string): {
 /** Une case où un « x = » recopié devant la valeur est ignoré (cf. answer-variable-prefix) */
 function acceptsVariablePrefix(blank: InstanceBlank): boolean {
 	return (
-		blank.type !== 'text' && blank.answerKind === undefined && expectsValue(blank.expectedAnswer)
+		blank.type !== 'text' &&
+		blank.type !== 'choice' &&
+		blank.answerKind === undefined &&
+		expectsValue(blank.expectedAnswer)
 	);
 }
 
@@ -1778,6 +1825,18 @@ function aggregateOrderedBlanks(
 		result.status = 'incorrect';
 	}
 
+	// Case choix cochée en partie (bons choix seulement) : ½ PARTIEL, comme le QCM —
+	// la question n'est pas juste (SRS : à revoir) ; son message, s'il n'y en a pas d'autre
+	const partialChoice = cases.findIndex(
+		(c, i) => c.choice !== undefined && results[i]?.status === 'unoptimal_form'
+	);
+	if (partialChoice !== -1) {
+		result.isCorrect = false;
+		if (result.status === undefined || result.status === 'correct') {
+			result.status = 'unoptimal_form';
+		}
+	}
+
 	// Question à figure (CP) : le message du juge passe avant tout autre, jamais de numéros de case
 	const hasFigureCase = cases.some((c) => c.construction);
 	const figureFeedback = cases
@@ -1798,7 +1857,7 @@ function aggregateOrderedBlanks(
 			result.feedback = `Les blancs suivants sont incorrects: ${incorrectIndexes.join(', ')}`;
 		}
 	} else if (worstStatus === 'unoptimal_form') {
-		result.feedback = allViolations[0]?.feedback;
+		result.feedback = allViolations[0]?.feedback ?? results[partialChoice]?.feedback;
 	}
 
 	return result;

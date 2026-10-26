@@ -68,6 +68,7 @@ import { generateCollectionTypst } from './collection-typst';
 import { generateMonnaieTypst } from './monnaie-typst';
 // Registre LÉGER : pas d'import de geometry-core ici (voir figure-typst-registry.ts)
 import { renderFigureTypst } from './figure-typst-registry';
+import { parseMarkdown } from '../parser/markdown-parser';
 import type { VariationTableNode } from '../types/variation-table';
 import type { ProbabilityTreeNode } from '../types/probability-tree';
 import type { TrigCircleNode } from '../types/trig-circle';
@@ -431,6 +432,16 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 			return generateCollectionTypst(node);
 		case 'monnaie':
 			return generateMonnaieTypst(node);
+		case 'choice':
+			// Bloc ```choix (case « choix ») : « A) … » par choix, chaque choix rendu en markdown
+			return node.choices
+				.map((content, index) => {
+					const body = parseMarkdown(content)
+						.children.map((block) => generateBlock(block, options))
+						.join('\n\n');
+					return `*${String.fromCharCode(65 + index)})* ${body}`;
+				})
+				.join('\n\n');
 
 		default:
 			return '';

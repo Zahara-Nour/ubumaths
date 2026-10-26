@@ -20,23 +20,13 @@
 	Couleurs : variables `--expected-*` posées ici, à partir des tokens.
 -->
 <script lang="ts">
-	import {
-		Check,
-		X,
-		TriangleAlert,
-		Info,
-		Circle,
-		CircleDot,
-		Square,
-		SquareCheck
-	} from '@lucide/svelte';
+	import { Check, X, TriangleAlert, Info } from '@lucide/svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { monnaieChoiceSize } from '$lib/ubumark/utils/monnaie-choix';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import FigureAnswer from './FigureAnswer.svelte';
-	import { choiceLetter } from '$lib/questions/choices';
+	import ChoiceCasesScope from './ChoiceCasesScope.svelte';
+	import ChoiceList from '$lib/components/markdown/nodes/ChoiceList.svelte';
 	import type {
-		ExpectedChoice,
 		ExpectedFill,
 		ExpectedResult,
 		ExpectedStatus
@@ -66,20 +56,6 @@
 		const found = result.lines.find((l) => l.kind === 'solution');
 		return found?.kind === 'solution' ? found : undefined;
 	});
-
-	/** Libellé d'un choix de QCM, selon son statut et s'il est coché */
-	/** Choix qui est un bloc (```horloge, ```collection, ```monnaie) : InlineMarkdown n'en garderait que le texte brut */
-	function isBlockChoice(content: string): boolean {
-		return content.trimStart().startsWith('```');
-	}
-
-	function choiceLabel(choice: ExpectedChoice): string {
-		if (choice.status === 'correct') return 'coché, juste';
-		if (choice.status === 'incorrect') return 'coché à tort';
-		if (choice.status === 'unoptimal') return 'bonne réponse oubliée';
-		if (choice.status === 'solution') return 'bonne réponse';
-		return choice.checked ? 'coché' : '';
-	}
 
 	/** Statut de chaque case remplie par l'élève, en toutes lettres */
 	function fillStatuses(fills: readonly ExpectedFill[]): string {
@@ -141,7 +117,10 @@
 		{:else if line.kind === 'filled-statement'}
 			<div data-kind="filled-statement" data-status="solution">
 				{#if line.possible}<p class="line-label">Une réponse possible :</p>{/if}
-				<MarkdownRenderer content={filledMarkdown(line.markdown, line.fills)} />
+				<!-- Cases « choix » : leurs choix corrigés À LEUR PLACE dans l'énoncé (ChoiceBlock) -->
+				<ChoiceCasesScope choiceCases={line.choiceCases ?? []}>
+					<MarkdownRenderer content={filledMarkdown(line.markdown, line.fills)} />
+				</ChoiceCasesScope>
 			</div>
 		{:else if line.kind === 'your-answer'}
 			<div class="your-answer" data-kind="your-answer">
@@ -150,52 +129,7 @@
 				<p class="text-xs text-muted-foreground" data-fill-statuses>{fillStatuses(line.fills)}</p>
 			</div>
 		{:else if line.kind === 'choices'}
-			{@const monnaieSize = monnaieChoiceSize(line.choices.map((c) => c.content))}
-			<ul class="space-y-2" data-kind="choices">
-				{#each line.choices as choice, position (choice.originalIndex)}
-					<li
-						class="choice {toneClass(choice.status)}"
-						class:choice-bloc={isBlockChoice(choice.content)}
-						data-status={choice.status}
-					>
-						<span class="font-semibold">{choiceLetter(position)}</span>
-						<!-- Même indicateur que la saisie (Q109 a) : case si plusieurs réponses, rond sinon -->
-						{#if line.multiple}
-							{#if choice.checked}
-								<SquareCheck
-									class="choice-box h-4 w-4"
-									aria-hidden="true"
-									data-indicator="square-check"
-								/>
-							{:else}
-								<Square class="choice-box h-4 w-4" aria-hidden="true" data-indicator="square" />
-							{/if}
-						{:else if choice.checked}
-							<CircleDot
-								class="choice-box h-4 w-4"
-								aria-hidden="true"
-								data-indicator="circle-dot"
-							/>
-						{:else}
-							<Circle class="choice-box h-4 w-4" aria-hidden="true" data-indicator="circle" />
-						{/if}
-						{#if isBlockChoice(choice.content)}
-							<!-- Choix en bloc (```horloge, ```collection, ```monnaie) : dessiné à la taille du QCM (monnaie : même échelle pour tous les choix) -->
-							<div
-								class="@container min-w-0 flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]"
-								style:--monnaie-taille={monnaieSize}
-							>
-								<MarkdownRenderer content={choice.content} />
-							</div>
-						{:else}
-							<span class="min-w-0 flex-1"><InlineMarkdown content={choice.content} /></span>
-						{/if}
-						{#if choiceLabel(choice)}
-							<span class="status-tag {toneClass(choice.status)}">{choiceLabel(choice)}</span>
-						{/if}
-					</li>
-				{/each}
-			</ul>
+			<ChoiceList corrected multiple={line.multiple} items={line.choices} />
 		{:else if line.kind === 'remark'}
 			<p class="remark" data-kind="remark">
 				<Info class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
@@ -300,45 +234,6 @@
 	.your-answer {
 		border-left: 3px solid var(--color-border);
 		padding-left: 0.75rem;
-	}
-
-	.choice {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		border: 2px solid var(--color-border);
-		border-radius: 0.5rem;
-		padding: 0.375rem 0.75rem;
-		color: var(--color-foreground);
-	}
-
-	/* Choix dessiné (monnaie…) : l'étiquette passe dessous, pour que chaque ligne laisse au dessin
-	   la même largeur (sinon « bonne réponse » rétrécit sa ligne et casse l'échelle commune) */
-	.choice-bloc {
-		flex-wrap: wrap;
-	}
-
-	.choice-bloc .status-tag {
-		flex-basis: 100%;
-	}
-
-	.choice.tone-correct,
-	.choice.tone-solution {
-		border-color: var(--expected-correct);
-	}
-
-	.choice.tone-incorrect {
-		border-color: var(--expected-incorrect);
-	}
-
-	.choice.tone-unoptimal {
-		border-color: var(--expected-unoptimal);
-		border-style: dashed;
-	}
-
-	:global(.choice-box) {
-		flex-shrink: 0;
-		color: var(--color-muted-foreground);
 	}
 
 	.remark {

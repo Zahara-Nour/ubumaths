@@ -58,6 +58,7 @@
 	import GeneratedStepsCorrection from './GeneratedStepsCorrection.svelte';
 	import ExpectedResultView from './ExpectedResultView.svelte';
 	import CorrectionView from './CorrectionView.svelte';
+	import { provideChoiceCaseResults } from '$lib/components/markdown/choice-case-results';
 	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
 
 	// Props
@@ -191,10 +192,18 @@
 	});
 
 	// Réponse attendue seule (R9) : ce que montre la vue concise si tout est détail (D6)
+	const solutionResult = $derived(isCourseCard ? null : buildExpectedResult(instance));
+	// Cases « choix » de la réponse attendue seule : bons choix marqués dans leur bloc
+	// (le résultat attendu de l'élève pose les siens, plus près, `ChoiceCasesScope`)
+	provideChoiceCaseResults(() =>
+		(solutionResult?.lines ?? []).flatMap((line) =>
+			line.kind === 'filled-statement' ? (line.choiceCases ?? []) : []
+		)
+	);
 	const expectedAnswerMarkdown = $derived.by(() => {
-		if (isCourseCard) return '';
-		return buildExpectedResult(instance)
-			.lines.flatMap((line) => {
+		if (!solutionResult) return '';
+		return solutionResult.lines
+			.flatMap((line) => {
 				if (line.kind === 'filled-statement') return [filledMarkdown(line.markdown, line.fills)];
 				// Calcul R1 : `3 + 5 = 8` encadré
 				if (line.kind === 'solution') return [solutionMarkdown(line.lhs, line.latex, true)];

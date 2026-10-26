@@ -138,6 +138,9 @@ function nodeLines(node: ASTNode): number {
 		case 'collection':
 		case 'monnaie':
 			return FIGURE_LINES;
+		case 'choice':
+			// Bloc ```choix : une ligne par choix
+			return node.choices.length;
 		default:
 			// Nœud en ligne isolé : une ligne de texte
 			return inlineLines([node]);

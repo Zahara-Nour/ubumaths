@@ -5,8 +5,9 @@
  * Une série est un exercice ORDINAIRE d'une fiche : une liste numérotée
  * d'instances de modèles de questions, chacune tirée avec une graine fixe
  * (même copie pour toute la classe). L'énoncé montre les cases en pointillés,
- * un QCM la liste de ses choix ; le corrigé met les réponses à la place des
- * cases (ou la bonne réponse du QCM), puis la correction du modèle. Une carte
+ * un QCM la liste de ses choix (une case choix aussi, à la place de son bloc) ;
+ * le corrigé met les réponses à la place des cases (ou la bonne réponse du QCM),
+ * puis la correction du modèle. Une carte
  * de cours donne son recto à l'énoncé et son verso au corrigé.
  *
  * Formules maison (`~…~`, `~~…~~`) : converties en LaTeX AU MOMENT DE FIGER, avec les
@@ -28,6 +29,8 @@ import { SCHOOL_MIN_DIGITS_FOR_GROUPING } from '$lib/mathAST/digit-grouping';
 import { withChoiceClockSize } from '$lib/ubumark/parser/horloge-parser';
 import { withChoiceCollectionSize } from '$lib/ubumark/parser/collection-parser';
 import { withChoiceMonnaieSize } from '$lib/ubumark/parser/monnaie-parser';
+import { replaceChoiceBlocks, type ChoiceBlock } from '$lib/ubumark/parser/choix-parser';
+import { correctChoiceIndexesOf, isChoiceBlank } from '$lib/questions/choice-case';
 
 export type SerieItem = { templateId: string; seed: number };
 /**
@@ -125,6 +128,29 @@ function reponse(
 	return blank.type === 'math' ? `$\\mathbf{${latex}}$` : `**${blank.expectedAnswer}**`;
 }
 
+/** Un choix à imprimer : taille des blocs (horloge, collection, monnaie) posée */
+function choixImprime(contenu: string): string {
+	return withChoiceMonnaieSize(withChoiceCollectionSize(withChoiceClockSize(contenu)));
+}
+
+/**
+ * Liste des choix `**a)** …` (ordre affiché) et bonne(s) réponse(s)
+ * `**b)** …`. Lettre en gras, pas `a) …` : une ligne `a)` serait une sous-liste,
+ * que le PDF renumérote selon sa profondeur (« 1) 2) ») alors que le corrigé dit
+ * « a) ». Un choix qui est un bloc (```horloge) : la lettre sur sa ligne, le bloc
+ * dessous (collé à la lettre, sa fence ne serait plus lue) ; la réponse du corrigé
+ * ne redessine pas le bloc.
+ */
+function listeDeChoix(contenus: readonly string[], bons: ReadonlySet<number>) {
+	const lettre = (i: number) => `**${String.fromCharCode(97 + i)})**`;
+	const enBloc = (contenu: string) => contenu.trimStart().startsWith('```');
+	const liste = contenus.map((c, i) => `${lettre(i)}${enBloc(c) ? '\n\n' : ' '}${c}`).join('\n\n');
+	const reponses = contenus
+		.map((c, i) => (bons.has(i) ? (enBloc(c) ? lettre(i) : `${lettre(i)} ${c}`) : null))
+		.filter((c): c is string => c !== null);
+	return { liste, reponse: `Réponse : ${reponses.join(' ; ')}` };
+}
+
 /** Énoncé et corrigé d'une instance, en markdown libre (avant mise en liste) */
 function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 	// Formules maison lues avec les fonctions DE CE MODÈLE (cf. en-tête)
@@ -157,49 +183,56 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 		return { statement: texte, solution: [texte, ...etapes].join('\n\n') };
 	}
 
+	// Cases choix (bloc ```choix, choix déjà dans l'ordre affiché) : la liste a) b) à
+	// la place du bloc ; au corrigé, la bonne réponse sous la liste
+	let casesChoix = 0;
+	const choixDuBloc = (bloc: ChoiceBlock) => {
+		const blank = bloc.caseIndex === undefined ? undefined : instance.blanks?.[bloc.caseIndex];
+		if (!isChoiceBlank(blank)) {
+			throw new Error(`${template.id} : bloc choix sans case choix (case ${bloc.caseIndex})`);
+		}
+		const { order } = blank.choice;
+		const bons = new Set(correctChoiceIndexesOf(blank).map((i) => order.indexOf(i)));
+		return listeDeChoix(bloc.choices.map(choixImprime), bons);
+	};
+	const enonceChoix = replaceChoiceBlocks(texte, (bloc) => {
+		casesChoix++;
+		return choixDuBloc(bloc).liste;
+	});
+	const corrigeChoix = replaceChoiceBlocks(texte, (bloc) => {
+		const { liste, reponse } = choixDuBloc(bloc);
+		return `${liste}\n\n${reponse}`;
+	});
+
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
-	const cases = [...texte.matchAll(PLACEHOLDER), ...texte.matchAll(TEXT_BLANK)].length;
+	const cases = [...texte.matchAll(PLACEHOLDER), ...texte.matchAll(TEXT_BLANK)].length + casesChoix;
 	if (cases !== (instance.blanks?.length ?? 0)) {
 		throw new Error(
 			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
 		);
 	}
 
-	const enonce = texte
+	const enonce = enonceChoix
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	let corrige = texte
+	let corrige = corrigeChoix
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 
 	const choix = (instance.choices ?? []).map((c) => ({
 		...c,
-		content: withChoiceMonnaieSize(
-			withChoiceCollectionSize(withChoiceClockSize(enLatex(c.content)))
-		)
+		content: choixImprime(enLatex(c.content))
 	}));
 	if (choix.length > 0) {
-		// Lettre en gras, pas `a) …` : une ligne `a)` serait une sous-liste, que le PDF
-		// renumérote selon sa profondeur (« 1) 2) ») alors que le corrigé dit « a) »
-		const lettre = (i: number) => `**${String.fromCharCode(97 + i)})**`;
-		// Un choix qui est un bloc (```horloge) : la lettre sur sa ligne, le bloc
-		// dessous (collé à la lettre, sa fence ne serait plus lue) ; la réponse du
-		// corrigé ne redessine pas le bloc
-		const enBloc = (contenu: string) => contenu.trimStart().startsWith('```');
-		const liste = choix
-			.map((c, i) => `${lettre(i)}${enBloc(c.content) ? '\n\n' : ' '}${c.content}`)
-			.join('\n\n');
-		const bonnes = choix
-			.map((c, i) =>
-				c.isCorrect ? (enBloc(c.content) ? lettre(i) : `${lettre(i)} ${c.content}`) : null
-			)
-			.filter((c): c is string => c !== null);
+		const bons = new Set(choix.flatMap((c, i) => (c.isCorrect ? [i] : [])));
+		const { liste, reponse } = listeDeChoix(
+			choix.map((c) => c.content),
+			bons
+		);
 		return {
 			statement: `${enonce}\n\n${liste}`,
-			solution: [`${corrige}\n\n${liste}`, `Réponse : ${bonnes.join(' ; ')}`, ...etapes].join(
-				'\n\n'
-			)
+			solution: [`${corrige}\n\n${liste}`, reponse, ...etapes].join('\n\n')
 		};
 	}
 	corrige = [corrige, ...etapes].join('\n\n');

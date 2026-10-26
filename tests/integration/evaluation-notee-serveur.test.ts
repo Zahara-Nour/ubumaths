@@ -73,10 +73,13 @@ const QCM_ID = '0a11f0e0-0000-4000-8000-00000000e601';
 const FILL_ID = '0a11f0e0-0000-4000-8000-00000000e602';
 /** QCM à plusieurs réponses (chantier 2, V5) : bonnes réponses 0 et 2 sur 4 */
 const MULTI_ID = '0a11f0e0-0000-4000-8000-00000000e603';
+/** Question à case « choix » (bloc ```choix, plusieurs réponses, mélangée) : bonnes 0 et 2 */
+const CHOICE_ID = '0a11f0e0-0000-4000-8000-00000000e604';
 const THEME = 'ZZ Éval serveur';
 const FILL_CATEGORY = { theme: THEME, domain: 'Moitié', subdomain: 'Entiers', level: 1 };
 const QCM_CATEGORY = { theme: THEME, domain: 'Comparer', subdomain: 'Relatifs', level: 1 };
 const MULTI_CATEGORY = { theme: THEME, domain: 'Plusieurs', subdomain: 'Pairs', level: 1 };
+const CHOICE_CATEGORY = { theme: THEME, domain: 'Case choix', subdomain: 'Pairs', level: 1 };
 const CATEGORIES = [
 	{ category: FILL_CATEGORY, quantity: 2, delay: 20 },
 	{ category: QCM_CATEGORY, quantity: 1, delay: 15 }
@@ -211,7 +214,7 @@ async function oracle(attemptId: string): Promise<QuestionInstance[]> {
 	const { data: templates } = await service
 		.from('question_templates')
 		.select('*')
-		.in('id', [QCM_ID, FILL_ID, MULTI_ID]);
+		.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID]);
 	const byId = new Map(
 		(templates as QuestionTemplateRow[]).map((t) => [t.id, toQuestionTemplate(t)])
 	);
@@ -337,7 +340,10 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 	afterAll(async () => {
 		await cleanupAllTestData();
-		await service.from('question_templates').delete().in('id', [QCM_ID, FILL_ID, MULTI_ID]);
+		await service
+			.from('question_templates')
+			.delete()
+			.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID]);
 	});
 
 	describe('Entraînement : démarrer → reprendre → envoyer (×2)', () => {
@@ -1015,6 +1021,69 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				.eq('template_id', MULTI_ID);
 			expect(traces).toHaveLength(3);
 			expect(traces!.filter((t) => t.success)).toHaveLength(1);
+		});
+	});
+	describe('case « choix » : positions affichées reçues, indices d’origine enregistrés', () => {
+		let choiceStudent: Person;
+		let assignmentId: string;
+
+		beforeAll(async () => {
+			choiceStudent = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: choiceStudent.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			await service.from('question_templates').delete().eq('id', CHOICE_ID);
+			const { error } = await service.from('question_templates').insert({
+				id: CHOICE_ID,
+				type: 'fill_in_blanks',
+				title: 'Case choix ZZ éval serveur',
+				...CHOICE_CATEGORY,
+				grades: ['6'],
+				status: 'published',
+				variations: [
+					{
+						statement:
+							'Quels nombres sont pairs ?\n\n```choix\nplusieurs: oui\n- $4$\n- $7$\n- $10$\n- $13$\n```',
+						blanks: [{ expectedAnswer: '0;2' }]
+					}
+				]
+			});
+			expect(error, 'décor : modèle à case choix').toBeNull();
+
+			({ assignmentId } = await createEvaluation({
+				max_attempts: 3,
+				categories: [{ category: CHOICE_CATEGORY, quantity: 1, delay: 20 }]
+			}));
+		}, 60_000);
+
+		it('réponse illisible, hors bornes ou répétée → 400, rien d’écrit, la tentative reste ouverte', async () => {
+			const attempt = await start(choiceStudent, assignmentId);
+			// L'élève ne reçoit ni la bonne réponse ni l'ordre d'origine
+			expect(attempt.questions[0].blanks?.[0]).toMatchObject({ type: 'choice' });
+			expect(JSON.stringify(attempt.questions[0])).not.toContain('"order"');
+			for (const value of ['x', '4', '1;1']) {
+				const body = submitAttemptSchema.parse({ answers: [{ position: 0, values: [value] }] });
+				expect(
+					await statusOf(submitEvaluationAttempt(actors(choiceStudent), attempt.attemptId, body)),
+					value
+				).toBe(400);
+			}
+			expect(await answersOf(attempt.attemptId)).toEqual([]);
+			expect((await sessionRow(attempt.attemptId)).completed_at).toBeNull();
+		});
+
+		it('positions affichées des bons choix → 1 point ; enregistré en indices d’origine « 0;2 »', async () => {
+			const attempt = await start(choiceStudent, assignmentId);
+			const [instance] = await oracle(attempt.attemptId);
+			const order = instance.blanks?.[0].choice?.order ?? [];
+			const positions = [order.indexOf(2), order.indexOf(0)].join(';');
+			const body = submitAttemptSchema.parse({ answers: [{ position: 0, values: [positions] }] });
+			const result = await submitEvaluationAttempt(actors(choiceStudent), attempt.attemptId, body);
+			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
+			const [row] = await answersOf(attempt.attemptId);
+			expect((row.user_answer as { value: unknown }).value).toEqual(['0;2']);
 		});
 	});
 });

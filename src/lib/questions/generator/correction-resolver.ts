@@ -22,6 +22,7 @@ import type { ResolvedVariable, InstanceBlank } from '../types';
 import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
 import { templateMarkdown, resolvedMarkdown } from '$lib/ubumark';
 import { resolveMarkdownContent, resolveVariableConditionals } from './content-resolver';
+import { parseChoiceAnswer } from '../choice-case';
 
 // ============================================================================
 // TYPES
@@ -197,7 +198,14 @@ export function buildCorrectionContext(
 
 	// Build solutions from blanks (fill-in-blanks)
 	if (resolvedBlanks && resolvedBlanks.length > 0) {
-		solutions = resolvedBlanks.map((b) => b.expectedAnswer);
+		// Case choix : le texte de ses bons choix (sa réponse attendue n'est que des indices)
+		solutions = resolvedBlanks.map((b) =>
+			b.choice
+				? (parseChoiceAnswer(b.expectedAnswer, b.choice.choices.length) ?? [])
+						.map((index) => b.choice?.choices[index] ?? '')
+						.join(' ; ')
+				: b.expectedAnswer
+		);
 	}
 	// Build solutions from choices (QCM)
 	else if (resolvedChoices && correctChoiceIndex !== undefined) {

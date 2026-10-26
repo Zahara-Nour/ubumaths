@@ -57,6 +57,7 @@
 	import Operation from './nodes/Operation.svelte';
 	import Collection from './nodes/Collection.svelte';
 	import Monnaie from './nodes/Monnaie.svelte';
+	import ChoiceBlock from './nodes/ChoiceBlock.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -379,6 +380,8 @@
 					<Collection {node} />
 				{:else if node.type === 'monnaie'}
 					<Monnaie {node} />
+				{:else if node.type === 'choice'}
+					<ChoiceBlock {node} />
 				{/if}
 			{/each}
 		{:else}

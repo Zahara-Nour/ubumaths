@@ -47,6 +47,7 @@ import {
 	type SubmittedAnswer
 } from '$lib/questions/grading';
 import { gradeWithinBudget, type GradingBudget } from '$lib/server/grading-budget';
+import { toOriginalChoiceValues } from '$lib/questions/choice-case';
 import { detailsWithinBudget, submittedCopyDetails } from '$lib/server/corrected-detail';
 import type { ValidationStatus } from '$lib/questions/types';
 import type { SeriesReview } from '$lib/server/srs/record-series-reviews';
@@ -616,7 +617,15 @@ export async function submitEvaluationAttempt(
 		// D18 : la graine ne quitte jamais le serveur, ni dans la réponse ni dans
 		// `test_answers.question_instance` (lisible par l'élève et le prof)
 		const { seed: _seed, ...instance } = full;
-		const answer = late ? null : (answersByPosition.get(stored.position) ?? null);
+		const sent = late ? null : (answersByPosition.get(stored.position) ?? null);
+		// Cases choix : positions AFFICHÉES reçues → indices d'origine (corrigés et
+		// enregistrés) ; illisibles → refus de l'envoi, rien n'est écrit
+		let answer = sent;
+		if (sent?.values) {
+			const converted = toOriginalChoiceValues(instance, sent.values);
+			if ('error' in converted) throw new EvaluationError(400, converted.error);
+			answer = { ...sent, values: converted.values };
+		}
 		return { position: stored.position, instance, answer };
 	});
 	// Q59 : budget de temps TOTAL ; au-delà, les questions restantes valent 0 et

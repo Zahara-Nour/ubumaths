@@ -242,6 +242,20 @@ erreur fait échouer la génération (message situé). Une ligne `case:` écrite
    erreur, non fermé ou avec `options.orderIndependent` → échec). Le bloc est délimité comme le parseur
    (`findBuildCollections` : une ligne vide suivie d'une clé reste dans un bloc fermé). La case est `type: 'math'`, `construire: 'collection'`, jugée comme une case
    ordinaire : l'élève répond par la valeur qu'il a posée (`'34'`, `''` plan vide).
+   Un bloc ```choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
+   compte pour **une** case, `case: N` posé en tête du bloc (`choix-parser.ts`, lu dans
+   `assignBlankIndices`) : réglages en tête (`plusieurs: oui`, `melanger: non` ; défauts : une
+   réponse, mélangé), puis un choix par ligne `- …` (suite en retrait de 2 espaces ; clôture ````
+   si un choix contient un bloc). Les choix sont résolus avec l'énoncé (variables, `{{if}}`). Une
+   case dans un choix (`?` en formule, `[_]`) est refusée, message situé. La case **est** dans
+   `blanks[]` : sa bonne réponse `expectedAnswer` = indice(s) d'**origine** (« 1 », « 0;2 »,
+   `{{eval:…}}`), contrôlée comme le QCM (≥ 2 choix ; exactement une bonne sans `plusieurs: oui`,
+   au moins une avec ; hors des choix → échec). `type: 'choice'`, `choice: { choices, order,
+multiple }` (choix dans l'ordre d'origine, `order[position]` = indice d'origine) ; mélange tiré
+   à son rang (Fisher-Yates sur la source de l'instance) ; le bloc de l'énoncé de l'instance liste
+   les choix dans l'ordre **affiché**, `melanger:` retiré. `orderIndependent` → échec. Contrôle
+   statique à l'enregistrement : `choiceAnswerCountErrors` (« Variation 1, case 2 (bloc choix) : … »),
+   bonne réponse dynamique vérifiée au tirage seulement. Un bloc choix dans un QCM est refusé.
 6. Chaque case reçoit ses réglages fusionnés : **case ▸ `blankDefaults`** pour `precision`,
    `unit`, `answerKind`, `rulesSuffice`, `acceptDecimal`… ; `requiredForm` : case ▸
    `blankDefaults` ▸ `requiredForm` de la variation ; `validationRules` : case ▸ variation.
@@ -298,6 +312,7 @@ Natures de réponse :
 | Matrice dans une case       | `answerKind: 'matrice'`                     | `matrix-answer.ts` (dimensions, puis chaque coefficient)                                                                                          |
 | Primitive / solution d'ED   | `answerKind: 'primitive'` / `'solution-ed'` | `calculus/` (dérivation / substitution) ; `solutionMode`                                                                                          |
 | QCM                         | `choices` (+ `multipleAnswers`)             | `validateChoice` ; indices d'**origine** (voir invariants)                                                                                        |
+| Case choix                  | bloc ```choix (`plusieurs:`, `melanger:`)   | `statusFromChoices`, comme le QCM ; réponse = indices d'origine cochés, triés, séparés par `;` (`choice-case.ts`)                                 |
 | Carte de cours              | `options.courseCard`                        | rien : auto-évaluation (`validateAnswer` rend un message)                                                                                         |
 
 Après « Valider », la `FlashCard` colore chaque case au recto avec le verdict par case du
@@ -306,6 +321,14 @@ le même que le verso) : verte si juste, **ambre** si juste mais perfectible (`u
 forme à améliorer », `InputState.unoptimal`), rouge sinon. Avant octobre 2026, une comparaison
 textuelle avec l'attendu rendait rouge toute bonne réponse d'une case à unité (`6m` pour `6[m]`),
 `3.1` pour `3{,}1` ou `\dfrac{1}{2}` pour `\frac{1}{2}`.
+
+Case « choix » : le parseur ubumark lit le bloc ```choix en nœud `choice` (`parseChoiceBlock`,
+choix gardés en markdown, formules non extraites) ; `FillBlanksInput` met à sa place un
+`MultipleChoiceInput` (ronds ou carrés, lettres A, B, C, groupe `radiogroup` / `group` nommé
+« Case N : choix », flèches) dont la valeur est `formatChoiceAnswer(...)` en indices d'origine ;
+après validation, choix coché à tort et bons choix marqués (réponse connue seulement). Une case
+choix vide compte comme une case vide (`QuestionCard` : Valider grisé). Hors question
+(`MarkdownRenderer`, cours, aperçu) : liste A, B, C non cliquable ; PDF (typst) : « A) … ».
 
 Il n'y a **pas** de case « tableau » (tableau de signes ou de variations) : le tableau de signes
 n'existe que dans les corrections générées, rendu par le bloc ubumark `variation`
@@ -352,6 +375,17 @@ Statuts (`ValidationStatus`) : `correct` (1), `unoptimal_form` (½), `bad_form` 
    sans vérifier est un pari (décision de David, 2026-10-26 ; `aggregateOrderedBlanks` et
    `gradeBlanks`). Dans la copie corrigée, la figure vient d'abord, comme dans l'énoncé (gardes :
    `figure-a-completer-mixte.svelte.test.ts`, `expected-result-figure.test.ts`).
+   Case « choix » (`blank.choice`), juste après la figure : `statusFromChoices` sur la réponse
+   (« 0;2 », indices d'origine) — rien coché → `empty`, un mauvais coché → faux (« Le choix correct
+   est: B », lettre **affichée**), tous les bons → juste, bons seulement mais pas tous → `unoptimal_form`
+   (« Il manque des réponses. »). Réponse illisible, hors bornes ou répétée → fausse. Une case choix
+   cochée en partie rend la question **non juste** (`isCorrect` faux) et, au barème, un ½ **partiel**
+   (`gradeBlanks`, à revoir pour le SRS) : une question réduite à une case choix est notée
+   exactement comme le QCM ; mêlée à d'autres cases, le barème des cases (`statusFromBlankStatuses`).
+   Évaluation notée : la version publique (`PublicBlank.choice`) ne donne que les choix dans l'ordre
+   affiché ; le navigateur envoie des positions affichées, que le serveur ramène aux indices
+   d'origine avant de corriger et d'enregistrer (`toOriginalChoiceValues`, dans
+   `submitEvaluationAttempt`) ; illisible → 400, rien d'écrit.
 1. **`validationRules`** (précondition) : `divisor`, `multiple`, `range`, `equation_root`,
    `equivalent`, `predicate` (`isPrime`, `isEven`…), `custom`. Une règle violée → faux, avec son
    message français. `rulesSuffice` : les règles **décident seules**, `expectedAnswer` n'est plus
@@ -424,6 +458,16 @@ pointillés par-dessus), ou la bonne droite seule sans réponse (R9) ; suivent l
 s'il n'y a pas d'énoncé rempli (la figure est la seule case), la consigne seule au-dessus
 (`showsInstructionOnly`, `instructionOf`) : la figure n'apparaît qu'une fois, au verso de la `FlashCard`
 comme dans la copie corrigée, case « figure » mêlée à d'autres cases comprise.
+
+Case « choix » : le bloc reste **à sa place** dans l'énoncé rempli ; la ligne `filled-statement`
+porte `choiceCases` (par case : ses choix, statuts du QCM, ordre affiché). À l'écran,
+`ExpectedResultView` les pose par `ChoiceCasesScope` (contexte `choice-case-results`) et le bloc
+(`ChoiceBlock` → `ChoiceList`, rendu partagé avec le QCM corrigé) les affiche. « Ta réponse » est
+écrite sans les blocs choix (`withoutChoiceCases`), et omise s'il ne reste aucune autre case :
+les choix ne sont jamais montrés deux fois. `CorrectionCard` pose aussi les bons choix de la
+réponse attendue seule (vue concise). Correction : `{{solution}}` d'une case choix = le texte de
+ses bons choix, séparés par « ; ». Série figée (PDF) : `**a)** …` à la place du bloc, `Réponse : **b)** …`
+dessous au corrigé ; le bloc compte pour une case.
 
 ### 7. Correction (concise / détaillée, étapes)
 
@@ -660,6 +704,9 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - **Case graphique (droite graduée)** : `InstanceBlank.type` admet `'graphical'` et
   `graphicalConfig`, mais aucun générateur ne la produit et `NumberLineInput.svelte` n'est importé
   par aucun composant.
+- **Case choix (2026-10-26, PR 1a)** : l'éditeur de cases ne la propose pas encore (PR 1b) ;
+  l'import du markdown dans l'éditeur riche (`rich-text/markdown-import.ts`) ignore le nœud
+  `choice`. Les QCM (`choices`) restent inchangés.
 - Composants sans appelant : `question-inputs/MathInput.svelte`, `question-inputs/OrderingInput.svelte`,
   et `src/lib/questions/examples/color-demo.ts`.
 - `question_templates.type` existe en base, mais le code déduit le type de la structure

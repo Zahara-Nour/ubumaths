@@ -39,6 +39,12 @@ export interface PublicBlank {
 	graphicalConfig?: InstanceBlank['graphicalConfig'];
 	/** Nature de la réponse (clavier « Intervalles ») — le drapeau seul, jamais l'attendu */
 	answerKind?: InstanceBlank['answerKind'];
+	/**
+	 * Case choix : les choix dans l'ordre AFFICHÉ (comme le bloc de l'énoncé), jamais
+	 * l'ordre d'origine (il trahirait la réponse) ; la réponse envoie des positions
+	 * affichées, ramenées aux indices d'origine par le serveur (`toOriginalChoiceValues`)
+	 */
+	choice?: { choices: string[]; multiple: boolean };
 }
 
 export interface PublicQuestion {
@@ -80,6 +86,10 @@ function publicBlank(blank: InstanceBlank): PublicBlank {
 	}
 	if (blank.graphicalConfig) result.graphicalConfig = blank.graphicalConfig;
 	if (blank.answerKind) result.answerKind = blank.answerKind;
+	if (blank.choice) {
+		const { choices, order, multiple } = blank.choice;
+		result.choice = { choices: order.map((index) => choices[index]), multiple };
+	}
 	return result;
 }
 
@@ -167,7 +177,15 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 		...(blank.prefilled && { prefilled: blank.prefilled }),
 		...(blank.unit && { unit: blank.unit }),
 		...(blank.graphicalConfig && { graphicalConfig: blank.graphicalConfig }),
-		...(blank.answerKind && { answerKind: blank.answerKind })
+		...(blank.answerKind && { answerKind: blank.answerKind }),
+		// Ordre affiché = ordre d'origine du navigateur : les positions cochées partent telles quelles
+		...(blank.choice && {
+			choice: {
+				choices: [...blank.choice.choices],
+				order: blank.choice.choices.map((_, index) => index),
+				multiple: blank.choice.multiple
+			}
+		})
 	}));
 	if (question.expressions?.length) instance.expressions = question.expressions;
 	return instance;

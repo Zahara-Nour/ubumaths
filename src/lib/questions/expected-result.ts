@@ -20,6 +20,8 @@
 import { getQuestionType, type QuestionInstance, type ValidationStatus } from './types';
 import { rulesDecide } from './rules-suffice';
 import { escapeStudentText, neutralizeStudentLatex } from './student-answer-safety';
+import { correctChoiceIndexesOf, isChoiceBlank, parseChoiceAnswer } from './choice-case';
+import { replaceChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
 import {
 	validateAnswerDetailed,
 	type DetailedVerdict,
@@ -55,6 +57,14 @@ export interface ExpectedChoice {
 	status: ExpectedStatus;
 }
 
+/** Case « choix » (bloc ```choix) : ses choix, statuts du QCM, ordre AFFICHÉ */
+export interface ExpectedChoiceCase {
+	/** Case de la question (`case: N` du bloc) */
+	index: number;
+	multiple: boolean;
+	choices: ExpectedChoice[];
+}
+
 export type ExpectedLine =
 	/** R1 : `lhs = réponse` (juste, forme) ou `lhs ≠ réponse` (valeur fausse) */
 	| { kind: 'comparison'; lhs: string; relation: '=' | '≠'; answer: ExpectedFill }
@@ -63,8 +73,18 @@ export type ExpectedLine =
 	 * Aussi R9 d'un calcul R1 (sans réponse) : `lhs = solution`, seule.
 	 */
 	| { kind: 'solution'; lhs: string; latex: string; possible: boolean }
-	/** R3/R9 : énoncé rempli par les solutions ; `possible` → « Une réponse possible : » */
-	| { kind: 'filled-statement'; markdown: string; fills: ExpectedFill[]; possible: boolean }
+	/**
+	 * R3/R9 : énoncé rempli par les solutions ; `possible` → « Une réponse possible : ».
+	 * Les blocs ```choix y restent À LEUR PLACE : `choiceCases` donne, pour chacun,
+	 * ses choix avec les statuts du QCM (l'écran les rend dans le bloc)
+	 */
+	| {
+			kind: 'filled-statement';
+			markdown: string;
+			fills: ExpectedFill[];
+			possible: boolean;
+			choiceCases?: ExpectedChoiceCase[];
+	  }
 	/** R3 : « Ta réponse : » — l'énoncé rempli par les cases de l'élève */
 	| { kind: 'your-answer'; markdown: string; fills: ExpectedFill[] }
 	/** R5 */
@@ -189,6 +209,11 @@ export function withoutFigureCases(statement: string): string {
 	return statement.replace(FIGURE_CASE_BLOCK, '');
 }
 
+/** L'énoncé sans ses blocs ```choix (la ligne `choices` de chaque case les montre) */
+export function withoutChoiceCases(statement: string): string {
+	return replaceChoiceBlocks(statement, () => '');
+}
+
 /**
  * Consigne seule au-dessus du résultat attendu : calcul R1 (Q104), ou case
  * « figure » quand aucun énoncé rempli ne tient lieu d'énoncé
@@ -269,7 +294,8 @@ function blankViews(
 ): BlankView[] {
 	return (instance.blanks ?? []).flatMap((blank, index) => {
 		if (!blank) return [];
-		const context = blank.type === 'text' ? 'text' : 'math';
+		// Case choix : sa réponse (indices) n'est jamais rendue en texte, cf. choiceCaseLines
+		const context = blank.type === 'text' || blank.type === 'choice' ? 'text' : 'math';
 		const detail = verdict?.blanks[index];
 		const value = answer?.values?.[index] ?? blank.prefilled ?? '';
 		// Réponse retenue par le validateur (sans « x = » recopié), sinon telle que saisie
@@ -354,25 +380,44 @@ function comparisonLines(lhs: string, view: BlankView): ExpectedLine[] {
 	return [comparison, ...remarkLines([view]), solution];
 }
 
-/** R3 avec réponse : énoncé rempli, puis « Ta réponse » et remarques */
+/** Cases choix de l'énoncé rempli (absentes : aucune clé) */
+const withChoiceCases = (choiceCases: readonly ExpectedChoiceCase[]) =>
+	choiceCases.length > 0 ? { choiceCases: [...choiceCases] } : {};
+
+/**
+ * R3 avec réponse : énoncé rempli (cases choix à leur place), puis « Ta réponse »
+ * et remarques. « Ta réponse » sans les blocs choix (déjà montrés, cochés de
+ * l'élève compris), et absente s'il ne reste aucune case à y remplir.
+ */
 function statementLines(
 	markdown: string,
 	views: readonly BlankView[],
-	status: ValidationStatus
+	status: ValidationStatus,
+	choiceCases: readonly ExpectedChoiceCase[]
 ): ExpectedLine[] {
 	if (status === 'correct') {
-		return [{ kind: 'filled-statement', markdown, fills: views.map(studentFill), possible: false }];
+		return [
+			{
+				kind: 'filled-statement',
+				markdown,
+				fills: views.map(studentFill),
+				possible: false,
+				...withChoiceCases(choiceCases)
+			}
+		];
 	}
 	const filled: ExpectedLine = {
 		kind: 'filled-statement',
 		markdown,
 		fills: views.map((v) => solutionFill(v, 'solution')),
-		possible: views.some(isOnlyPossible)
+		possible: views.some(isOnlyPossible),
+		...withChoiceCases(choiceCases)
 	};
 	if (status === 'empty') return [filled, { kind: 'empty', text: EMPTY_ANSWER_TEXT }];
+	if (views.length === 0) return [filled];
 	return [
 		filled,
-		{ kind: 'your-answer', markdown, fills: views.map(studentFill) },
+		{ kind: 'your-answer', markdown: withoutChoiceCases(markdown), fills: views.map(studentFill) },
 		...remarkLines(views)
 	];
 }
@@ -455,6 +500,51 @@ function choiceLines(
 	return lines;
 }
 
+/**
+ * Case « choix » : ses choix avec les statuts du QCM, ordre AFFICHÉ, réponse de
+ * l'élève lue dans la case (indices d'origine). Rien coché : bons choix encadrés.
+ */
+function choiceCaseOf(
+	instance: QuestionInstance,
+	index: number,
+	verdict: DetailedVerdict | undefined
+): ExpectedChoiceCase | null {
+	const blank = instance.blanks?.[index];
+	if (!isChoiceBlank(blank)) return null;
+	const { choices, order, multiple } = blank.choice;
+	const correct = new Set(correctChoiceIndexesOf(blank));
+	const answer = verdict?.blanks[index]?.answer ?? '';
+	const checked = new Set(parseChoiceAnswer(answer, choices.length) ?? []);
+	const nothingChecked = checked.size === 0;
+	return {
+		index,
+		multiple,
+		choices: order.flatMap((originalIndex) => {
+			const content = choices[originalIndex];
+			if (content === undefined) return [];
+			const isCorrect = correct.has(originalIndex);
+			const isChecked = checked.has(originalIndex);
+			let status: ExpectedStatus = isCorrect ? 'solution' : 'neutral';
+			if (verdict && !nothingChecked) {
+				if (isChecked) status = isCorrect ? 'correct' : 'incorrect';
+				// Bon choix oublié : ambre à plusieurs réponses (R5), encadré sinon
+				else if (isCorrect && multiple) status = 'unoptimal';
+			}
+			return [{ originalIndex, content, checked: isChecked, isCorrect, status }];
+		})
+	};
+}
+
+/** Cases des blocs ```choix présents dans le markdown (`case: N`) */
+function choiceBlockIndexes(markdown: string): Set<number> {
+	const indexes = new Set<number>();
+	replaceChoiceBlocks(markdown, (block) => {
+		if (block.caseIndex !== undefined) indexes.add(block.caseIndex);
+		return '';
+	});
+	return indexes;
+}
+
 function build(
 	instance: QuestionInstance,
 	answer: StudentAnswer | undefined,
@@ -468,13 +558,17 @@ function build(
 	if (type === 'multiple_choice') return { status, lines: choiceLines(instance, verdict) };
 
 	const statement = typeof instance.statement === 'string' ? instance.statement : '';
-	// Case « figure » : hors de l'énoncé rempli, sa figure est dans sa ligne
+	// Case « figure » : hors de l'énoncé rempli, sa figure est dans sa ligne. Case
+	// « choix » : son bloc reste À SA PLACE dans l'énoncé rempli (`choiceCases`)
 	const markdown = prepareStatement(withoutFigureCases(statement), instance);
 	const marked = markedIndexes(markdown);
+	const choiceBlocks = choiceBlockIndexes(markdown);
 	const views = blankViews(instance, answer, verdict);
-	const inStatement = views.filter((v) => !v.graphical && marked.has(v.index));
+	const isChoiceView = (v: BlankView) => isChoiceBlank(instance.blanks?.[v.index]);
+	const choiceViews = views.filter((v) => isChoiceView(v) && choiceBlocks.has(v.index));
+	const inStatement = views.filter((v) => !v.graphical && !isChoiceView(v) && marked.has(v.index));
 	// R8 / R10 : case graphique, ou case introuvable dans l'énoncé
-	const outside = views.filter((v) => !inStatement.includes(v));
+	const outside = views.filter((v) => !inStatement.includes(v) && !choiceViews.includes(v));
 	// La figure avant l'énoncé rempli, comme dans l'énoncé (CP-058 : la droite, puis « oui »)
 	const figures = outside.flatMap((v) =>
 		v.figure ? figureLines(v, v.figure, verdict !== undefined) : []
@@ -482,8 +576,11 @@ function build(
 	const apart = outside.flatMap((v) =>
 		v.figure ? [] : [expectedOnlyLine(v, verdict !== undefined)]
 	);
+	const choiceCases = choiceViews.flatMap((v) => choiceCaseOf(instance, v.index, verdict) ?? []);
 
-	if (inStatement.length === 0) return { status, lines: [...figures, ...apart] };
+	if (inStatement.length === 0 && choiceCases.length === 0) {
+		return { status, lines: [...figures, ...apart] };
+	}
 
 	const lhs = wholeRightHandSide(markdown, instance);
 
@@ -504,7 +601,8 @@ function build(
 			kind: 'filled-statement',
 			markdown,
 			fills: inStatement.map((v) => solutionFill(v, 'solution')),
-			possible: inStatement.some((v) => v.rulesDecide)
+			possible: inStatement.some((v) => v.rulesDecide),
+			...withChoiceCases(choiceCases)
 		};
 		return { status, lines: [...figures, filled, ...apart] };
 	}
@@ -512,7 +610,7 @@ function build(
 	const main =
 		lhs !== null && inStatement.length === 1
 			? comparisonLines(lhs, inStatement[0])
-			: statementLines(markdown, inStatement, status);
+			: statementLines(markdown, inStatement, status, choiceCases);
 	return { status, lines: [...figures, ...main, ...apart] };
 }
 

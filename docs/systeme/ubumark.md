@@ -197,6 +197,12 @@ en retrait sous un item de liste.
 | `operation`                                                                                                               | `operation`                 | `operation-parser.ts`               | `Operation.svelte`       | `operation-typst.ts`             |
 | `collection`                                                                                                              | `collection`                | `collection-parser.ts`              | `Collection.svelte`      | `collection-typst.ts`            |
 | `monnaie`                                                                                                                 | `monnaie`                   | `monnaie-parser.ts`                 | `Monnaie.svelte`         | `monnaie-typst.ts`               |
+| `choix` (clôture ```` si un choix contient un bloc)                                                                       | `choice`                    | `choix-parser.ts`                   | `ChoiceBlock.svelte`     | `typst-generator.ts` (« A) … »)  |
+
+Bloc ```choix (case « choix » d'une question, [questions.md](questions.md)) : réglages en tête
+(`plusieurs:`, `melanger:`, `case:` posée par le générateur), un choix par ligne `- …`, suite en
+retrait de 2 espaces ; les choix restent du markdown (formules non extraites, `blockLineRanges`),
+rendus un à un. Hors question : liste A, B, C non cliquable (`ChoiceList.svelte`).
 
 La liste des genres statistiques est `STAT_CHART_KINDS` (`src/lib/ubumark/types/stat-chart.ts`).
 
