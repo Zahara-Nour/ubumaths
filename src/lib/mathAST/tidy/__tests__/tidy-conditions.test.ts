@@ -295,3 +295,26 @@ describe('conditions écrites au plus simple (revue du § 4.2)', () => {
 		expect(plain(['cos(x)'], '1')).toEqual(['cos(x) ≠ 0']);
 	});
 });
+
+describe('conditions écrites au plus simple, 2ᵉ revue', () => {
+	it('x² − 1 ≠ 0 : « x ≠ −1 et x ≠ 1 »', () => {
+		const written = plainConditions(
+			[{ expression: parseCustom('x^2-1'), relation: 'nonzero' }],
+			parseCustom('1')
+		);
+		expect(describeConditions(written).map((c) => c.text)).toEqual(['x ≠ −1', 'x ≠ 1']);
+	});
+
+	it('4x² − 1 ≠ 0 : « x ≠ −1/2 et x ≠ 1/2 »', () => {
+		const written = plainConditions(
+			[{ expression: parseCustom('4x^2-1'), relation: 'nonzero' }],
+			parseCustom('1')
+		);
+		expect(describeConditions(written).map((c) => c.text)).toEqual(['x ≠ −1/2', 'x ≠ 1/2']);
+	});
+
+	it('ln(x⁻²) − ln(x⁻²) → 0 : « x ≠ 0 »', () => {
+		const found = domainChange(parseCustom('ln(x^(-2))-ln(x^(-2))'), parseCustom('0'));
+		expect(found === null ? null : describeConditions(found).map((c) => c.text)).toEqual(['x ≠ 0']);
+	});
+});

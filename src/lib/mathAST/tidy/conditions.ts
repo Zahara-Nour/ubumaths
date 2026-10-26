@@ -16,7 +16,7 @@ import type { DomainCondition, TidyCondition } from './types';
 import type { TypeContext } from '../numtype';
 import { domainConditions, writable, type AcquiredDomain } from './sign';
 import { hashMathNode } from '../normal/hash';
-import { rationalToNode } from '../common/numeric';
+import { extractExactRational, extractRational, rationalToNode } from '../common/numeric';
 import { divRational, isNegative, negRational } from '../normal/rational';
 import { toPolynomial } from '../factor/polynomial';
 import { getVariables } from '../eval/substitute';
@@ -113,15 +113,24 @@ function essential<C extends DomainCondition>(condition: C): C[] {
 /**
  * Le signe d'une puissance entière (§ 4.2) : `u²ᵏ > 0` dit `u ≠ 0`, `u²ᵏ ≥ 0`
  * ne dit rien, `u²ᵏ⁺¹` a le signe de `u` (`x³ > 0` → `x > 0`). Revue : la note
- * de `ln(x²) − ln(x²)` disait « pour x^2 > 0 ».
+ * de `ln(x²) − ln(x²)` disait « pour x^2 > 0 ». Un exposant négatif et `a/u`
+ * (`a > 0`) ne sont jamais nuls : `> 0` comme `≥ 0` y disent `u⁻ⁿ > 0`
+ * (2ᵉ revue : `ln(x⁻²) − ln(x⁻²)` disait « 1/x^2 > 0 »).
  */
 function signOfPower<C extends DomainCondition>(condition: C): C[] {
-	const { expression, relation } = condition;
+	const { expression } = condition;
 	const node = expression.type === 'delimiter' ? expression.content : expression;
-	if (node.type !== 'superscript' || node.superscript.type !== 'number') return [condition];
-	const exponent = Number(node.superscript.value);
-	if (!Number.isInteger(exponent) || exponent < 1) return [condition];
-	if (exponent % 2 === 1) return essential({ ...condition, expression: node.base });
+	if (node.type === 'division') {
+		const numerator = extractRational(node.numerator);
+		if (numerator === null || numerator.n <= 0n) return [condition];
+		return essential({ ...condition, expression: node.denominator, relation: 'positive' } as C);
+	}
+	if (node.type !== 'superscript') return [condition];
+	const exponent = extractRational(node.superscript);
+	if (exponent === null || exponent.d !== 1n || exponent.n === 0n) return [condition];
+	const relation = exponent.n < 0n ? 'positive' : condition.relation;
+	const odd = (exponent.n < 0n ? -exponent.n : exponent.n) % 2n === 1n;
+	if (odd) return essential({ ...condition, expression: node.base, relation } as C);
 	if (relation === 'nonnegative') return [];
 	return essential({ ...condition, expression: node.base, relation: 'nonzero' } as C);
 }
@@ -319,8 +328,10 @@ function asPoints(
 	}
 	const where = conditionSet(condition);
 	if (where === null || where.domain.kind !== 'interval_set') return [condition];
-	const points = where.domain.excludedPoints.map((p) => p.value);
-	if (points.length === 0 || points.some((p) => p.type !== 'number')) return [condition];
+	// Lus en rationnels : `x² − 1 ≠ 0` exclut `−1` écrit en opposé, `4x² − 1`, `±1/2`
+	const values = where.domain.excludedPoints.map((p) => extractExactRational(p.value));
+	if (values.length === 0 || values.some((v) => v === null)) return [condition];
+	const points = values.map((v) => rationalToNode(v as Rational));
 	const own = computeDomain(condition.expression, where.letter);
 	if ((own.unresolved?.length ?? 0) > 0 || !INCLUSION_READABLE.has(own.domain.kind)) {
 		return [condition];
