@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1818._
+_Mis à jour le 2026-10-26, après #1821._
 
-- **État** : lots 1-8 mergés (#1773 → #1818), correctif #1813. Lot 8 = `atelier-console.spec.ts` (console, réglages, historique, cartes valeur, 15 tests). Suite complète : rouges = `each_key_duplicate` seulement (#1674, #1703, #1620 en fin de test, #1307).
+- **État** : lots 1-8 mergés (#1773 → #1818), correctifs #1813 et #1821 (écarts du lot 8 : aide du parseur dans une carte, `\frac12\,m` lu comme une grandeur, #1356 récrite). Suite complète : rouges = `each_key_duplicate` seulement (#1674, #1703, #1620 en fin de test, #1307).
 - **Prochaine action** : lot 9 = cartes (lots 3, 4a, 4b), lecture graphique, Annuler / Rétablir (lot 5, #1530), barre d'icônes, Données (#1439, #1469, #1473, #1412), Grapheur (#1415-#1419), #1627, #1546, Python (#1697, #1746).
-- **En attente de David** : les 3 écarts du lot 8 (#1296 durée composée refusée, #1289 `1/2 m` au clavier, #1356 « Repartir de zéro »). Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : port 5179 ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; `e` = Euler, `n` réservé : prendre `k`, `s` ; MathLive perd la 1re frappe après rechargement ; console ouverte couvre toile et zoom ; prettier réaligne le tableau → conflits au merge de `main` : rejouer ses lignes par script ; commitlint : pas de majuscule, pas de type `merge`, corps ≤ 100 caractères par ligne ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retiré après #1818).
+- **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **Pièges en cours** : port 5179 pris par `construire` → 5181 ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; `e` = Euler, `n` réservé : prendre `k`, `s` ; MathLive perd la 1re frappe après rechargement ; un écart peut venir du GESTE du test (#1289 : `1/2`, →, ` m`) ; prettier réaligne le tableau → conflits au merge de `main` : rejouer ses lignes par script ; commitlint : pas de majuscule, pas de type `merge` ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (retiré après #1821).
 
 ## Phase 0 (validée le 2026-10-25)
 
