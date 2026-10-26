@@ -21,7 +21,11 @@ import type { ReplExecutionResult } from './types';
 
 /** Message anglais → message français ; dans l'ordre (le premier qui convient), ligne par ligne. */
 const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
-	[/Unexpected token: EOF/, 'Expression incomplète : il manque quelque chose à la fin'],
+	// « in atom » : le message du parseur seul, que relaie une carte de l'atelier (2026-10-26)
+	[
+		/Unexpected token(?: in [a-z]+)?: EOF/,
+		'Expression incomplète : il manque quelque chose à la fin'
+	],
 	[/Unexpected token(?: in [a-z]+)?: (\S+)/, '« $1 » inattendu ici'],
 	[/Unexpected character:? ['"]?([^'"\s]+)['"]?/, 'Caractère « $1 » inconnu'],
 	[/Unexpected (?:infix )?operator:? ?(\S*)/, 'Opérateur « $1 » inattendu'],
@@ -162,6 +166,20 @@ function lineInFrench(line: string): string {
 		return line.slice(0, match.index) + translated + line.slice(match.index + match[0].length);
 	}
 	return ENGLISH_LINE.test(line) ? GENERIC : line;
+}
+
+/**
+ * La traduction d'un message par la table seule, ou `null` si aucune entrée ne
+ * le prend : pas de formule générique. Pour une carte de l'atelier, qui garde
+ * son propre refus et n'y ajoute qu'une aide précise (verifs-auto, 2026-10-26).
+ */
+export function knownFrench(message: string): string | null {
+	for (const [english, french] of TRANSLATIONS) {
+		const match = english.exec(message);
+		if (match === null) continue;
+		return french.replace(/\$(\d)/g, (_, index: string) => match[Number(index)] ?? '');
+	}
+	return null;
 }
 
 /** Un message (texte brut, jamais du HTML) en français, ligne par ligne. */

@@ -39,8 +39,45 @@ describe('une définition en erreur', () => {
 	});
 
 	it('h(x) = x^^2 : le texte attendu, mot pour mot', () => {
+		// L'aide du parseur depuis le 2026-10-26 (écart #1296 de verifs-auto)
 		expect(last(deskWith('h(x) = x^^2')).text).toBe(
-			"« h » est dans tes objets, mais elle est en erreur : « x^^2 » n'est pas une expression valide."
+			"« h » est dans tes objets, mais elle est en erreur : « x^^2 » n'est pas une expression valide. Il manque l’exposant après ^."
+		);
+	});
+});
+
+describe('une définition refusée par le parseur : son aide, comme sur la ligne de calcul', () => {
+	// Écart de verifs-auto (#1296, 2026-10-26) : la ligne de calcul disait quoi écrire, la carte
+	// seulement « n'est pas une expression valide »
+	const DURATION_HINT =
+		'Durée composée collée à × ou ÷ : écris 2*(1 h 30 min) pour 3 h, ou 2*1 h + 30 min pour 2 h 30 min';
+
+	it('1 h 30 min * 2 : la ligne de calcul donne l’aide (témoin)', () => {
+		expect(last(deskWith('1 h 30 min * 2')).text).toContain(DURATION_HINT);
+	});
+
+	it('d = 1 h 30 min * 2 : la carte et sa ligne donnent la même aide', () => {
+		const desk = deskWith('d = 1 h 30 min * 2');
+		const card = desk.atelier.get('d')!;
+		expect(card.status).toBe('error');
+		expect(card.message).toBe(
+			`« 1[h] 30[min] * 2 » n'est pas une expression valide. ${DURATION_HINT}.`
+		);
+		expect(last(desk)).toMatchObject({ failed: true });
+		expect(last(desk).text).toContain(DURATION_HINT);
+	});
+
+	it('1/ : l’expression incomplète, comme sur la ligne de calcul', () => {
+		const desk = deskWith('1/');
+		expect(last(desk).text).toBe('Expression incomplète : il manque quelque chose à la fin');
+		expect(deskWith('h(x) = 1/').atelier.get('h')!.message).toBe(
+			"« 1/ » n'est pas une expression valide. Expression incomplète : il manque quelque chose à la fin."
+		);
+	});
+
+	it('x@2 : sans aide connue du parseur, le refus seul', () => {
+		expect(deskWith('h(x) = x@2').atelier.get('h')!.message).toBe(
+			"« x@2 » n'est pas une expression valide."
 		);
 	});
 });

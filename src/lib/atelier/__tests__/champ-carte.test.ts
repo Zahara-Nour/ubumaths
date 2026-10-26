@@ -189,7 +189,9 @@ describe('durées composées et fractions dans la carte', () => {
 		['2\\,h\\,30\\,\\min', '2\\unit{h}~30\\unit{min}'],
 		['1\\,h\\,5\\,\\min\\,30\\,s', '1\\unit{h}~5\\unit{min}~30\\unit{s}'],
 		['2\\,\\min\\,30\\,s', '2\\unit{min}~30\\unit{s}'],
-		['\\frac{1}{2}\\,m', '\\frac{1}{2}\\unit{m}']
+		['\\frac{1}{2}\\,m', '\\frac{1}{2}\\unit{m}'],
+		// Ce que MathLive écrit vraiment pour 1/2, → et « m » (verifs-auto #1289, 2026-10-26)
+		['\\frac12\\,m', '\\frac{1}{2}\\unit{m}']
 	])('%s tapé dans la carte est une grandeur', (typed, expected) => {
 		sameQuantity(definitionFromField('value', typed), expected);
 	});
@@ -214,6 +216,7 @@ describe('durées composées et fractions dans la carte', () => {
 	it('ce qui n’est pas une grandeur reste tel quel', () => {
 		expect(definitionFromField('value', '\\min\\left(2,3\\right)')).toBe('\\min\\left(2,3\\right)');
 		expect(definitionFromField('value', '\\frac{1}{2}m')).toBe('\\frac{1}{2}m');
+		expect(definitionFromField('value', '\\frac12m')).toBe('\\frac12m');
 	});
 });
 

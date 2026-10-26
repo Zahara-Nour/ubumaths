@@ -109,7 +109,7 @@ function consoleButton(page: Page): Locator {
 	return page.getByRole('button', { name: 'Console', exact: true });
 }
 
-test('#1289 — durée tapée dans une carte valeur ; .convertir', async ({ page }) => {
+test('#1289 — durée et fraction tapées dans une carte valeur ; .convertir', async ({ page }) => {
 	await calc(page, 'd = 1');
 	await typeInCard(page, 'd', '2 h 30 min');
 	expect((await calc(page, 'd')).text).toContain('2 h 30 min');
@@ -120,14 +120,36 @@ test('#1289 — durée tapée dans une carte valeur ; .convertir', async ({ page
 
 	await calc(page, '2 h 30 min');
 	expect((await calc(page, '.convertir min')).text).toContain('2 h 30 min=150 min');
-	// Reste à la main : « idem `1/2 m` » (écart, à David : MathLive met « 2 m » au dénominateur)
+
+	// `1/2 m` : la fraction 1/2, → pour en sortir, puis l'unité (`\frac{1}{2}\,m`, la forme que
+	// #1289 relit). Tapé d'un trait, MathLive met « 2 m » au dénominateur, comme toute fraction
+	await calc(page, 'v = 1');
+	await typeInCard(page, 'v', '1/2', ' m');
+	const half = await calc(page, 'v');
+	expect(half.refused).toBe(false);
+	expect(half.text).toMatch(/0,5 m|1\/2 m/);
+	await retouchCard(page, 'v');
+	expect((await card(page, 'v')).message).toBeNull();
+	expect((await calc(page, 'v')).text).toBe(half.text);
 });
 
-test('#1296 — carte valeur : virgule décimale dans le champ (sans la durée)', async ({ page }) => {
-	// Reste à la main : `d = 1 h 30 min * 2` retouchée reste une durée — refusée depuis #1562
-	// (écart, à David)
+test('#1296 — carte valeur : virgule décimale ; durée retouchée qui reste une durée', async ({
+	page
+}) => {
 	await calc(page, 'd = 2,5 km');
 	expect(await cardField(page, 'd')).toBe(normalizeLatex('2{,}5~\\operatorname{\\mathrm{km}}'));
+
+	// Sans parenthèses, refusée depuis #1562 : la carte dit quoi écrire, comme la ligne de calcul
+	const glued = await calc(page, 't = 1 h 30 min * 2');
+	expect(glued.refused).toBe(true);
+	expect(glued.text).toContain('écris 2*(1 h 30 min) pour 3 h');
+	expect((await card(page, 't')).message).toContain('écris 2*(1 h 30 min) pour 3 h');
+
+	await calc(page, 'd = (1 h 30 min) * 2');
+	expect((await calc(page, 'd')).text).toContain('3 h');
+	await retouchCard(page, 'd');
+	expect((await card(page, 'd')).message).toBeNull();
+	expect((await calc(page, 'd')).text).toContain('3 h');
 });
 
 test('#1301 — carte valeur retouchée : la grandeur reste ; virgules dans une carte fonction', async ({
@@ -282,8 +304,18 @@ test('#1356 — l’historique revient au rechargement ; ↑ ; le lien n’empor
 	await expect(cardLocator(other, 'f')).toBeVisible();
 	await expect(other.locator('ol.historique > li')).toHaveCount(0);
 	await other.close();
-	// Reste à la main : « Repartir de zéro vide tout » (écart, à David : la console garde
-	// ses lignes depuis #1530)
+
+	// « Repartir de zéro » vide les cartes ; la console garde ses lignes (décision du
+	// 2026-10-19, #1530), y compris après rechargement
+	await page.getByRole('button', { name: 'Repartir de zéro', exact: true }).click();
+	await page.getByRole('button', { name: 'Vider l’atelier', exact: true }).click();
+	await expect(page.locator('article.objet')).toHaveCount(0);
+	await expect(lines.last()).toContainText('Atelier vidé.');
+	const kept = await lines.count();
+	expect(kept).toBeGreaterThanOrEqual(5);
+	await page.reload();
+	await expect(lines).toHaveCount(kept);
+	await expect(page.locator('article.objet')).toHaveCount(0);
 });
 
 test('#1385, #1388, #1423 — « Écriture mathématique » : choix retenu, saisies au clavier', async ({

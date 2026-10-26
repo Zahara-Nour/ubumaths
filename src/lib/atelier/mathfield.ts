@@ -225,6 +225,8 @@ function naturalQuantityLatex(latex: string): string | null {
 		.replace(/\\operatorname\{\\mathrm\{([^{}]*)\}\}/g, ' $1')
 		.replace(/\\mathrm\{([^{}]*)\}/g, ' $1')
 		.replace(/\\d?frac\{(\d+)\}\{(\d+)\}/g, '$1/$2')
+		// La forme compacte que MathLive écrit pour deux chiffres seuls : `\frac12`
+		.replace(/\\d?frac(\d)(\d)/g, '$1/$2')
 		// Une grandeur prise dans un calcul : `\times`, `\cdot` et `\dfrac` restent du LaTeX
 		.replace(/\\times(?![A-Za-z])/g, '\\cdot ')
 		// MathLive écrit toujours « min » en opérateur `\min`
