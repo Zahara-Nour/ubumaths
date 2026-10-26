@@ -2,16 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, pendant la PR « côté prolongé » (§ 12)._
+_Mis à jour le 2026-10-26, après #1809._
 
-- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas en prod ; garde des tirages mergée (#1805) ;
-  PR de correctif « côté donné prolongé » en cours (§ 12), trouvée à l'essai de CP-060.
-- **Prochaine action** : merger cette PR, puis reprendre l'essai de CP-060 et CP-058 avec David.
-- **En attente de David** : fin de l'essai de CP-060 et de CP-058 (`docs/wip/verifications-manuelles.md`) ;
-  ensuite `create-questions --publier` de CP-060 et CP-058 (brouillons), puis nœud + tag (migration, comme #1787).
+- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas en prod ; garde des tirages (#1805) ; côté donné
+  prolongé, carré et rectangle, message à part (#1809, § 12).
+- **Prochaine action** : réponse de David sur la « figure de travail » (ci-dessous), puis sa phase 0 si go.
+- **En attente de David** : (1) fin de l'essai de CP-060 et CP-058 (`docs/wip/verifications-manuelles.md`) ;
+  (2) message du carré décalé qui chevauche [AB] (§ 12) ; (3) **figure de travail** (idée de David) : figure
+  manipulable NON notée dans l'énoncé (outils limités, ex. droites seules), réponse à côté, QCM compris → CP-058 en
+  QCM oui / non. À trancher : geste plus vérifié ? tracé gardé dans la copie ? un bloc figure ou un bloc à part
+  (`deplacable:` réservé aux figures stockées, ADR 0027) ? Reco : chantier à part ; **ne pas publier CP-058 en l'état**.
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
-- **Question posée à David** : message du carré décalé qui chevauche [AB] (§ 12).
-- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `fix/geometrie-validation-cote-prolonge`.
+- **Worktree / branche** : aucun (retiré après #1809).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
