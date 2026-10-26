@@ -188,5 +188,6 @@ Sondes (Atelier `runInput`, `normalize`, tests jetables supprimés).
 ### PR C (`fix/normalize-exp-ln`)
 
 - L6 : `reduceEulerPower` (`rules/euler-identities.ts`) réduit `e^{k ln a + c}` en `aᵏ·e^{c}` par `splitRationalLogs` (`normalize.ts`, fournie par le contexte) : termes `k ln a` à k et a > 0 rationnels seulement (`exactRationalValue`), le reste garde l'exposant. `e^{2ln3}` → 9, `e^{ln2/2}` → √2, `e^{1+ln2}` → 2e, `e^{x+ln2}` → 2eˣ ; `e^{2 ln x}`, `e^{2 ln π}`, `e^{2ln(−3)+1}` gardent leur ln. Suite mathAST + questions + atelier : 35 654 verts, aucun témoin n'a bougé.
+- Revue Opus (58 entrées sondées, valeurs et formes normales justes) : corrigé — plafond |k| ≤ 1000 (`e^{10000000 ln 2}` calculait 3 millions de chiffres en 2,5 s, hors budget ; `exp(…)` a le même défaut, antérieur, laissé). Laissés, antérieurs, aucune valeur fausse : `e^{ln 1 + x}`, `e^{2 ln e}`, `e^{2 ln √2}` gardent leur écriture (forme normale ≠ `exp`) ; `2^{1/3}` ≠ `∛2` en forme normale.
 
 ## Historique

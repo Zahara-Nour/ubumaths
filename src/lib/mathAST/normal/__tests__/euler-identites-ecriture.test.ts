@@ -125,7 +125,8 @@ describe('e^{k ln a + c} : a rationnel positif, la puissance se calcule', () => 
 		['\\exponentialE^{1+\\ln(2)}', '2\\exponentialE'],
 		['\\exponentialE^{x+\\ln(2)}', '2\\exponentialE^{x}'],
 		['\\exponentialE^{\\ln(9)}', '9'],
-		['\\exponentialE^{2\\ln(\\frac{1}{3})}', '\\frac{1}{9}']
+		['\\exponentialE^{2\\ln(\\frac{1}{3})}', '\\frac{1}{9}'],
+		['\\exponentialE^{1000\\ln(2)-999\\ln(2)}', '2']
 	] as const)('%s → %s', (input, expected) => {
 		expect(sameNormalForm(input, expected)).toBe(true);
 		expect(normalLatex(input)).not.toContain('\\ln');
@@ -138,7 +139,10 @@ describe('e^{k ln a + c} : a rationnel positif, la puissance se calcule', () => 
 		// ln d'un nombre négatif : n'existe pas
 		'\\exponentialE^{2\\ln(-3)+1}',
 		// ln d'un irrationnel : hors de L6
-		'\\exponentialE^{2\\ln(\\pi)}'
+		'\\exponentialE^{2\\ln(\\pi)}',
+		// |k| > 1000 : la puissance n'est pas calculée (revue de #1834)
+		'\\exponentialE^{10000000\\ln(2)}',
+		'\\exponentialE^{-1001\\ln(2)}'
 	])('%s garde son ln', (latex) => {
 		expect(normalLatex(latex)).toContain('\\ln');
 	});

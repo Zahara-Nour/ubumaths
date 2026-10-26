@@ -1993,6 +1993,14 @@ function extractPartialLinearCombinationOfLn(form: NormalForm): {
 	return { lnTerms, remainder };
 }
 
+/** |k| au-delà duquel `e^{k ln a}` n'est pas calculé (plafond du mode décimal). */
+const MAX_EXACT_LOG_COEFFICIENT = 1000n;
+
+/** Valeur absolue d'un entier. */
+function absBigInt(value: bigint): bigint {
+	return value < 0n ? -value : value;
+}
+
 /**
  * Sépare d'un exposant ses termes `k ln a`, k et a > 0 RATIONNELS : `power`
  * = Π aᵏ, `remainder` = le reste (`null` s'il est nul). `null` sans tel terme.
@@ -2014,7 +2022,11 @@ function splitRationalLogs(
 	for (const term of form.numerator) {
 		const log = tryExtractLnTerm(term);
 		const base = log === null ? null : exactRationalValue(log.base, ctx);
-		if (log === null || base === null || base.n <= 0n) {
+		// Plafond : `e^{10000000 ln 2}` calculait un entier de 3 millions de
+		// chiffres (2,5 s, hors budget d'interruption) ; au-delà, l'écriture reste
+		const tooLarge =
+			log !== null && absBigInt(log.coeff.n) > MAX_EXACT_LOG_COEFFICIENT * log.coeff.d;
+		if (log === null || base === null || base.n <= 0n || tooLarge) {
 			remainderTerms.push(term);
 			continue;
 		}
