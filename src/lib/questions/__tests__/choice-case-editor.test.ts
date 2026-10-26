@@ -212,6 +212,12 @@ describe('withBlockCases : cases des blocs omises de blanks[], remises à leur r
 		expect(withBlockCases(['5'], `${OPERATION}\n\nEt [_]`, () => '')).toEqual(['', '5']);
 	});
 
+	it('énoncé à variables ou à expressions : rien (le générateur compte sur l’énoncé résolu)', () => {
+		const division = '```operation\ncalcul: {{a}} ÷ 7\n```\n\nEt [_]';
+		expect(withBlockCases(['x'], division, () => '')).toBeNull();
+		expect(withBlockCases(['x'], `${FIGURE}\n\n$<<expr:f>>$`, () => '')).toBeNull();
+	});
+
 	it('liste déjà complète, ou sans bloc, ou d’une autre longueur : rien', () => {
 		const statement = `${FIGURE}\n\nEt [_]`;
 		expect(withBlockCases(['', 'x'], statement, () => '')).toBeNull();

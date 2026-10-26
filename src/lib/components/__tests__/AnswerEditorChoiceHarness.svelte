@@ -11,9 +11,16 @@
 		initialStatement?: string;
 		initialAnswers?: string[];
 		statementShared?: boolean;
+		/** Énoncé que le bouton « coller » met à la place (l'auteur modifie l'énoncé) */
+		pastedStatement?: string;
 	}
 
-	let { initialStatement = '', initialAnswers = [''], statementShared = false }: Props = $props();
+	let {
+		initialStatement = '',
+		initialAnswers = [''],
+		statementShared = false,
+		pastedStatement = ''
+	}: Props = $props();
 
 	// Copie de départ : le banc garde ensuite son propre état
 	const start = () => ({
@@ -27,6 +34,14 @@
 </script>
 
 <AnswerEditor questionType="fill_in_blanks" bind:statement bind:blanks {statementShared} />
+
+<button
+	type="button"
+	data-testid="coller"
+	onclick={() => (statement = templateMarkdown(pastedStatement))}
+>
+	coller
+</button>
 
 <output data-testid="state">
 	{JSON.stringify({ statement, answers: blanks.map((b) => b.expectedAnswer) })}

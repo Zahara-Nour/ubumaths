@@ -227,7 +227,7 @@ rien (valeur vide). Garde : `AnswerEditor-figure-de-travail.svelte.test.ts`.
 `AnswerEditor` remet alors la liste à une entrée par case (`withBlockCases`, `choice-case-editor.ts` :
 entrée vide au rang de chaque bloc, les autres dans l'ordre, le sens que leur donne le générateur).
 Sans cela, la carte d'une figure prenait l'entrée que le générateur donne à la case suivante (énoncé
-collé dans un formulaire parti d'une entrée : pas de carte pour le choix, « aucune bonne réponse »).
+collé dans un formulaire parti d'une entrée : pas de carte pour le choix, « aucune bonne réponse »). Seulement après une modification de l'énoncé (ouvrir un modèle ne le marque pas modifié), et jamais sur un énoncé à variables ou à expressions (`{{…}}`, `<<expr:…>>`) : le générateur compte les cases sur l'énoncé résolu (une division `{{a}} ÷ 7` en porte deux).
 
 ### 2. Fusion `shared` ⊕ variation (`resolveVariationWithShared`)
 

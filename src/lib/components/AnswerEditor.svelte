@@ -30,6 +30,7 @@
 -->
 
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import type { QuestionType, TemplateBlank } from '$lib/questions/types';
 	import type { TemplateMarkdown } from '$lib/ubumark';
 	import { templateMarkdown } from '$lib/ubumark';
@@ -103,13 +104,20 @@
 	// Cases des blocs omises de `blanks[]` (permis au générateur, et cas d'un énoncé
 	// collé dans un formulaire parti d'une entrée) : remises à leur rang, réponse vide,
 	// pour que chaque carte soit celle de sa case — sinon la carte de la figure prend
-	// l'entrée que le générateur donne au choix (« aucune bonne réponse »)
+	// l'entrée que le générateur donne au choix (« aucune bonne réponse »). Seulement
+	// après une modification de l'énoncé : ouvrir un modèle ne le marque pas modifié.
+	const openingStatement = untrack(() => statement);
 	$effect(() => {
 		if (questionType !== 'fill_in_blanks' || statement === undefined) return;
+		if (statement === openingStatement) return;
 		const aligned = withBlockCases(blanks, statement, () => ({ expectedAnswer: '' }));
 		if (!aligned) return;
-		if (Array.isArray(answer) && answer.length === blanks.length) {
-			answer = withBlockCases(answer, statement, () => '') ?? answer;
+		if (Array.isArray(answer)) {
+			const answers = withBlockCases(answer, statement, () => '') ?? answer;
+			answer = [
+				...answers,
+				...Array<string>(Math.max(0, aligned.length - answers.length)).fill('')
+			];
 		}
 		blanks = aligned;
 	});

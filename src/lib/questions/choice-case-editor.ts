@@ -39,6 +39,10 @@ export interface EditableChoiceCase extends ChoiceCaseDraft {
 	rewritable: boolean;
 }
 
+// Constantes
+/** Ce que le générateur résout avant de compter les cases */
+const UNRESOLVED_MARKERS = /\{\{|<<expr:/;
+
 // Functions
 /** Genre de chaque case de l'énoncé, dans l'ordre des cases (`blanks[i]`) */
 export function statementCaseKinds(statement: string): AssignedBlankType[] {
@@ -57,6 +61,10 @@ export function withBlockCases<T>(
 	statement: string,
 	empty: () => T
 ): T[] | null {
+	// Variables (`{{a}}`, `{{if:…}}`) ou expressions (`<<expr:…>>`) : le générateur
+	// compte les cases sur l'énoncé RÉSOLU (une division `{{a}} ÷ 7` porte deux cases) ;
+	// lu brut, le compte peut différer — ne rien toucher, le générateur aligne
+	if (UNRESOLVED_MARKERS.test(statement)) return null;
 	const result = assignBlankIndices(statement);
 	const blockCases = new Set(
 		[

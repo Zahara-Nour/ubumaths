@@ -81,19 +81,24 @@ describe('AnswerEditor — figure de travail', () => {
 		// Le formulaire part d'UNE entrée ; l'énoncé collé porte 2 cases (figure, choix).
 		// Comme le générateur, l'entrée revient au choix et la figure est insérée à son rang.
 		await render(AnswerEditorChoiceHarness, {
-			props: { initialStatement: `${WORK('outils: droite')}\n\n${OUI_NON}`, initialAnswers: [''] }
+			props: {
+				initialStatement: 'Alignés ?',
+				initialAnswers: [''],
+				pastedStatement: `Alignés ?\n\n${WORK('outils: droite')}\n\n${OUI_NON}`
+			}
 		});
+		await page.getByTestId('coller').click();
 		await expect.element(page.getByText('Case 2 : choix')).toBeVisible();
 		await expect.element(page.getByTestId('carte-figure-de-travail')).toBeVisible();
 		await page.getByRole('radio', { name: 'Choix B : bonne réponse' }).click();
 		expect(readState().answers).toEqual(['', '1']);
 	});
 
-	it('modèle existant qui omet la case d’un bloc : les réponses gardent leur case', async () => {
+	it('modèle ouvert sans modification : rien n’est réécrit (formulaire non modifié)', async () => {
 		await render(AnswerEditorChoiceHarness, {
 			props: { initialStatement: `${WORK('outils: droite')}\n\n${OUI_NON}`, initialAnswers: ['1'] }
 		});
-		await expect.element(page.getByText('Case 2 : choix')).toBeVisible();
-		expect(readState().answers).toEqual(['', '1']);
+		await expect.element(page.getByTestId('carte-figure-de-travail')).toBeVisible();
+		expect(readState().answers).toEqual(['1']);
 	});
 });
