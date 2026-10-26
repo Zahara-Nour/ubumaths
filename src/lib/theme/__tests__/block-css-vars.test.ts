@@ -29,7 +29,12 @@ const HOOKS_WITH_FALLBACK = [
 	'--slide-background',
 	'--slide-padding',
 	'--slide-color',
-	'--primary-rgb'
+	'--primary-rgb',
+	// Couleurs du résultat attendu, posées par `ExpectedResultView` ; `ChoiceList` les reprend
+	// avec un repli `light-dark(…)` quand il s'affiche hors de lui
+	'--expected-correct',
+	'--expected-incorrect',
+	'--expected-unoptimal'
 ];
 
 const COMPONENTS = [
