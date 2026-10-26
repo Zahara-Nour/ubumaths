@@ -22,6 +22,8 @@ import { toPolynomial } from '../factor/polynomial';
 import { getVariables } from '../eval/substitute';
 import { toLatex } from '../latex-generator';
 import { toCustom } from '../custom-generator';
+import { stripUnnecessaryBrackets } from '../transforms';
+import { tidyNode } from './collect';
 
 /** Une condition écrite, pour la ligne (LaTeX) et pour le texte. */
 export interface ConditionText {
@@ -34,6 +36,27 @@ const SYMBOLS: Record<TidyCondition['relation'], { text: string; latex: string }
 	positive: { text: '>', latex: '>' },
 	nonnegative: { text: '≥', latex: '\\geq' }
 };
+
+/** L'expression d'une condition, mise au propre et rangée : `1+x` et `(x+1)` sont `x+1`. */
+function canonical(expression: MathNode): MathNode {
+	return tidyNode(stripUnnecessaryBrackets(expression));
+}
+
+/**
+ * La clé d'une condition, qui ne dépend pas de son écriture (revue, 2026-10-26 :
+ * `1/(1+x)` rangé en `1/(x+1)` passait pour une perte de domaine). Affine en une
+ * lettre : la lettre, la racine et le sens (`2x+2` et `x+1` disent tous deux
+ * x ≠ −1 ; le sens ne compte pas pour « ≠ ») ; sinon le hash de la forme rangée.
+ */
+export function conditionKey(condition: DomainCondition): string {
+	if (condition.relation === 'defined') return `D${hashMathNode(canonical(condition.expression))}`;
+	const affine = affineRoot(condition.expression);
+	if (affine !== null) {
+		const sense = condition.relation === 'nonzero' || !isNegative(affine.a) ? '+' : '-';
+		return `A${affine.letter}:${affine.root.n}/${affine.root.d}:${sense}`;
+	}
+	return `V${hashMathNode(canonical(condition.expression))}`;
+}
 
 /**
  * Les conditions sur les expressions qui comptent : `√u ≠ 0` et `uⁿ ≠ 0`
@@ -77,7 +100,7 @@ export function mergeConditions<C extends DomainCondition>(conditions: readonly 
 	const merged = new Map<string, C>();
 	for (const condition of conditions.flatMap((c) => essential(c))) {
 		// « est définie » se compare à part : `tan(x) ≠ 0` ne dit pas que `tan(x)` existe
-		const key = `${condition.relation === 'defined' ? 'D' : 'V'}${hashMathNode(condition.expression)}`;
+		const key = conditionKey(condition);
 		const existing = merged.get(key);
 		merged.set(
 			key,
@@ -115,11 +138,27 @@ export function domainLoss(
 		(condition) =>
 			!still.some(
 				(other) =>
-					hashMathNode(other.expression) === hashMathNode(condition.expression) &&
+					conditionKey(other) === conditionKey(condition) &&
 					implies(other.relation, condition.relation)
 			)
 	);
 	return writable(lost);
+}
+
+/**
+ * Ce que la réécriture `before → after` perd du domaine, si elle ne fait QUE
+ * le perdre ; `null` si elle en gagne aussi (revue, 2026-10-26 : `ln(x²) →
+ * 2 ln(x)` n'est vraie que pour x > 0, pas « pour x² > 0 ») ou si une
+ * condition ne s'écrit pas. `[]` : le domaine ne change pas.
+ */
+export function domainChange(
+	before: MathNode,
+	after: MathNode,
+	typeCtx?: TypeContext
+): TidyCondition[] | null {
+	const gained = domainLoss(after, before, typeCtx);
+	if (gained === null || gained.length > 0) return null;
+	return domainLoss(before, after, typeCtx);
 }
 
 /** `a x + b`, une seule lettre, `a ≠ 0` : la lettre et la racine −b/a. */
@@ -151,9 +190,10 @@ function describe({ expression, relation }: TidyCondition): ConditionText {
 			latex: `${affine.letter} ${latex} ${toLatex(root)}`
 		};
 	}
+	const written = canonical(expression);
 	return {
-		text: readable(`${toCustom(expression)} ${SYMBOLS[relation].text} 0`),
-		latex: `${toLatex(expression)} ${SYMBOLS[relation].latex} 0`
+		text: readable(`${toCustom(written)} ${SYMBOLS[relation].text} 0`),
+		latex: `${toLatex(written)} ${SYMBOLS[relation].latex} 0`
 	};
 }
 

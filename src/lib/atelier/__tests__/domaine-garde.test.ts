@@ -35,7 +35,7 @@ describe('par défaut, le domaine est gardé', () => {
 		['.simplifier ln(x)-ln(x)', '\\ln\\left(x\\right)-\\ln\\left(x\\right)'],
 		['.simplifier sqrt(x)^2', '\\sqrt{x}^2'],
 		['x/x', '\\dfrac{x}{x}'],
-		['1/(1/x)', '\\dfrac{1}{\\left(\\dfrac{1}{x}\\right)}'],
+		['1/(1/x)', '\\dfrac{1}{\\dfrac{1}{x}}'],
 		['.développer x(1/x-1)', '-x+\\dfrac{x}{x}']
 	])('%s → %s', (input, latex) => {
 		expect(flat(line(input).latex)).toBe(flat(latex));
@@ -50,15 +50,19 @@ describe('par défaut, le domaine est gardé', () => {
 
 describe('le bouton « Simplifier pour … » montre la simplification et sa condition', () => {
 	it.each([
-		['.simplifier x/x', 'Simplifier pour x ≠ 0', '1,\\quad\\text{pour }x\\neq0'],
-		['.simplifier (x^2-1)/(x+1)', 'Simplifier pour x ≠ −1', 'x-1,\\quad\\text{pour }x\\neq-1'],
-		['.simplifier ln(x)-ln(x)', 'Simplifier pour x > 0', '0,\\quad\\text{pour }x>0'],
-		['.simplifier sqrt(x)^2', 'Simplifier pour x ≥ 0', 'x,\\quad\\text{pour }x\\geq0'],
-		['.simplifier x^2/x+x', 'Simplifier pour x ≠ 0', '2x,\\quad\\text{pour }x\\neq0'],
-		['x/x', 'Simplifier pour x ≠ 0', '1,\\quad\\text{pour }x\\neq0'],
-		['1/(1/x)', 'Simplifier pour x ≠ 0', 'x,\\quad\\text{pour }x\\neq0'],
-		['.développer x(1/x-1)', 'Simplifier pour x ≠ 0', '-x+1,\\quad\\text{pour }x\\neq0'],
-		['.factoriser x/x', 'Simplifier pour x ≠ 0', '1,\\quad\\text{pour }x\\neq0']
+		['.simplifier x/x', 'Simplifier pour x ≠ 0', '1\\text{,}\\quad\\text{pour }x\\neq0'],
+		[
+			'.simplifier (x^2-1)/(x+1)',
+			'Simplifier pour x ≠ −1',
+			'x-1\\text{,}\\quad\\text{pour }x\\neq-1'
+		],
+		['.simplifier ln(x)-ln(x)', 'Simplifier pour x > 0', '0\\text{,}\\quad\\text{pour }x>0'],
+		['.simplifier sqrt(x)^2', 'Simplifier pour x ≥ 0', 'x\\text{,}\\quad\\text{pour }x\\geq0'],
+		['.simplifier x^2/x+x', 'Simplifier pour x ≠ 0', '2x\\text{,}\\quad\\text{pour }x\\neq0'],
+		['x/x', 'Simplifier pour x ≠ 0', '1\\text{,}\\quad\\text{pour }x\\neq0'],
+		['1/(1/x)', 'Simplifier pour x ≠ 0', 'x\\text{,}\\quad\\text{pour }x\\neq0'],
+		['.développer x(1/x-1)', 'Simplifier pour x ≠ 0', '-x+1\\text{,}\\quad\\text{pour }x\\neq0'],
+		['.factoriser x/x', 'Simplifier pour x ≠ 0', '1\\text{,}\\quad\\text{pour }x\\neq0']
 	])('%s : « %s » → %s', (input, label, latex) => {
 		const { alternative } = line(input);
 		expect(alternative?.label).toBe(label);
@@ -111,5 +115,46 @@ describe('une condition qu’on ne sait pas écrire : pas de simplification, pas
 		const result = line('.simplifier tan(x)/tan(x)');
 		expect(flat(result.latex)).not.toBe('1');
 		expect(result.alternative).toBeUndefined();
+	});
+});
+
+describe('revue du 2026-10-26 : l’écriture d’une condition ne compte pas', () => {
+	it.each([
+		['.simplifier 1/(1+x)', '\\dfrac{1}{x+1}'],
+		['.simplifier 2/(2x+2)', '\\dfrac{1}{x+1}'],
+		['1/(2+x)+1/(x+2)', '\\dfrac{2}{2+x}'],
+		['x/x+ln(x)', '1+\\ln\\left(x\\right)']
+	])('%s → %s, sans bouton', (input, latex) => {
+		const result = line(input);
+		expect(flat(result.latex)).toBe(flat(latex));
+		expect(result.alternative).toBeUndefined();
+	});
+
+	it('.simplifier ln(1+x) : aucun bouton', () => {
+		expect(line('.simplifier ln(1+x)').alternative).toBeUndefined();
+	});
+
+	it('(x+1)/(1+x) : « Simplifier pour x ≠ −1 » → 1', () => {
+		const { alternative } = line('(x+1)/(1+x)');
+		expect(alternative?.label).toBe('Simplifier pour x ≠ −1');
+		expect(flat(alternative?.latex)).toBe(flat('1\\text{,}\\quad\\text{pour }x\\neq-1'));
+	});
+});
+
+describe('revue du 2026-10-26 : une réécriture qui rétrécit le domaine n’a pas lieu', () => {
+	it.each(['.simplifier ln(x^2)', '.simplifier ln(x*y)', '.simplifier ln(x/y)'])('%s', (input) => {
+		const result = line(input);
+		expect(result.alternative).toBeUndefined();
+		expect(flat(result.latex)).not.toContain('2\\ln');
+		expect(flat(result.latex)).not.toContain('\\ln\\left(x\\right)+');
+		expect(flat(result.latex)).not.toContain('\\ln\\left(x\\right)-');
+	});
+});
+
+describe('revue du 2026-10-26 : un décimal tapé reste décimal', () => {
+	it('0,5x/x → « 0,5, pour x ≠ 0 »', () => {
+		expect(flat(line('0,5x/x').alternative?.latex)).toBe(
+			flat('0{,}5\\text{,}\\quad\\text{pour }x\\neq0')
+		);
 	});
 });

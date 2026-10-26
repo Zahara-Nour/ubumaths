@@ -1307,7 +1307,7 @@ qui ne servait qu'à simplifier la fraction part avec elle) ; le repli du moteur
 (`.simplifier ln(x) − ln(x)` → `0`) et l'expression tapée (`1/(1/x)`) sont gardés de même
 (`guardedAnswer`). La simplification qui change le domaine passe par le **bouton de la ligne**,
 « Simplifier pour x ≠ 0 » (« Sans simplifier » une fois basculé) : la réponse et sa condition,
-`1,\quad\text{pour } x \neq 0`, et les étapes du calcul entier, montrées à la place de celles de la
+`1\text{,}\quad\text{pour } x \neq 0`, et les étapes du calcul entier, montrées à la place de celles de la
 ligne (`Alternative.steps`). Une expression tapée ou développée y gagne ce que `tidy` refuse
 (`tidyWithConditions` : `x/x`, `−x + x/x → −x + 1`). Le domaine ne change pas
 (`.simplifier x/x + ln(x)` → `ln(x) + 1`) : la simplification a lieu, sans bouton. Une condition

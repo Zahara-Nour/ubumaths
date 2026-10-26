@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { tidy, tidyWithConditions, describeConditions, domainLoss } from '../index';
+import { tidy, tidyWithConditions, describeConditions, domainChange, domainLoss } from '../index';
 import { parseCustom } from '../../parser/custom';
 import { toCustom } from '../../custom-generator';
 import { areEquivalent } from '../../equivalence';
@@ -168,5 +168,28 @@ describe('domainLoss : ce qu’une réécriture a perdu du domaine', () => {
 
 	it('une condition qui ne s’écrit pas : null', () => {
 		expect(loss('tan(x)/tan(x)', '1')).toBeNull();
+	});
+});
+
+describe('revue du 2026-10-26 : l’ordre d’écriture ne fait ni perdre ni inventer de condition', () => {
+	it.each([
+		['(x+1)/(1+x)', '1', ['x ≠ −1']],
+		['(x+3)^2/(3+x)', 'x+3', ['x ≠ −3']]
+	])('%s → %s, pour %j', (input, result, conditions) => {
+		const got = run(input);
+		expect(got.result).toBe(written(result));
+		expect(got.conditions).toEqual(conditions);
+	});
+
+	it.each([
+		['1/(1+x)', '1/(x+1)'],
+		['ln(1+x)', 'ln(x+1)'],
+		['2/(2x+2)', '1/(x+1)']
+	])('domainLoss(%s, %s) = []', (before, after) => {
+		expect(domainLoss(parseCustom(before), parseCustom(after))).toEqual([]);
+	});
+
+	it('domainChange : ln(x^2) → 2ln(x) gagne x > 0, null', () => {
+		expect(domainChange(parseCustom('ln(x^2)'), parseCustom('2ln(x)'))).toBeNull();
 	});
 });

@@ -19,13 +19,12 @@ import { findNodes, mapNode, stripUnnecessaryBrackets } from '../transforms';
 import { tidyNode } from './collect';
 import type { TidyOptions } from './step-recorder';
 import type { TidyCondition } from './types';
-import { hashMathNode } from '../normal/hash';
-import { domainLoss, mergeConditions } from './conditions';
+import { conditionKey, domainLoss, mergeConditions } from './conditions';
 
 export { TidyStepRecorder, TIDY_RULE_DESCRIPTIONS } from './step-recorder';
 export type { TermOrder, TidyOptions, TidyRule, TidyStep, UnitChoice } from './step-recorder';
 export type { TidyCondition } from './types';
-export { describeConditions, domainLoss, type ConditionText } from './conditions';
+export { describeConditions, domainChange, domainLoss, type ConditionText } from './conditions';
 
 /**
  * Met une expression au propre.
@@ -78,8 +77,11 @@ export function tidyWithConditions(
 		const posed = mergeConditions(conditions);
 		const lost = domainLoss(node, result, options?.typeCtx);
 		if (lost === null) return { result, conditions: posed };
-		const keys = new Set(posed.map((c) => hashMathNode(c.expression)));
-		return { result, conditions: lost.filter((c) => keys.has(hashMathNode(c.expression))) };
+		const keys = new Set(posed.map((c) => conditionKey({ ...c, relation: 'nonzero' })));
+		return {
+			result,
+			conditions: lost.filter((c) => keys.has(conditionKey({ ...c, relation: 'nonzero' })))
+		};
 	} catch (error) {
 		if (error instanceof RangeError) return { result: node, conditions: [] };
 		throw error;

@@ -525,8 +525,11 @@ km/h`), 2026-09-27.
   `settings.conditions` dans `collect.ts`, aux deux refus de S3 (`keepDomain`, somme nulle).
 - **`domainLoss(before, after)`** (`tidy/conditions.ts`) : ce que `after` a perdu du domaine de
   `before` — `[]` si rien, `null` si une condition perdue ne s'écrit pas. Comparaison
-  structurelle des conditions de définition (dénominateurs, `ln`, racines, puissances) : au
-  pire elle redit une condition vraie. Sert à l'atelier pour garder le domaine de toutes ses
+  des conditions de définition (dénominateurs, `ln`, racines, puissances), indépendante de
+  l'écriture (`1+x` et `2x+2` disent x ≠ −1 comme `x+1`, `conditionKey`) : au pire elle redit
+  une condition vraie. **`domainChange(before, after)`** : la perte seule, `null` si la
+  réécriture GAGNE aussi une condition (`ln(x²) → 2 ln(x)` n'est vraie que pour x > 0) —
+  l'atelier ne fait alors ni la simplification ni le bouton. Sert à l'atelier pour garder le domaine de toutes ses
   lignes (`atelier/domain-guard.ts`).
 - `options.order` : `'canonical'` (défaut, l'étape 8) ou `'kept'` — les
   termes de **chaque** somme gardent l'ordre écrit, parenthèses comprises

@@ -188,7 +188,7 @@ import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
-import { guardedAnswer, tidyAlternative, writtenKeepingDomain } from './domain-guard';
+import { guardedAnswer, tidyFurther, writtenKeepingDomain } from './domain-guard';
 import { expandExpression, type ExpandMode } from './expand';
 import { integrateRefusalSteps, integrateSteps } from './integrate-steps';
 import { calculationSteps, evaluateSteps } from './evaluate-steps';
@@ -1902,8 +1902,7 @@ function literalKeepingDomain(
 	if (written === null) return null;
 	const guarded = guardedAnswer(writtenKeepingDomain(written, { order: 'kept' }), shown);
 	if (guarded.alternative !== undefined) return guarded;
-	const alternative = tidyAlternative(guarded.shown, { order: 'kept' });
-	return { shown: guarded.shown, ...(alternative !== undefined && { alternative }) };
+	return tidyFurther(guarded.shown, { order: 'kept' });
 }
 
 /** Ce que répond `.exporter` suivi d'autre chose. */
