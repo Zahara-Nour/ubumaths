@@ -17,18 +17,24 @@
 	// L'instance de l'atelier qui nous contient, ou celle par défaut.
 	const grapheurStore = useGrapheurStore();
 	import { Button } from '$lib/components/ui/button';
-	import { ZoomIn, ZoomOut, House, Grid3x3 } from '@lucide/svelte';
+	import { ZoomIn, ZoomOut, House, Grid3x3, Maximize2, Minimize2 } from '@lucide/svelte';
 	import ExportButton from './ExportButton.svelte';
 
 	// Props
 	let {
 		svgRef,
 		svgWidth,
-		svgHeight
+		svgHeight,
+		expanded = false,
+		onToggleExpanded
 	}: {
 		svgRef?: SVGSVGElement;
 		svgWidth: number;
 		svgHeight: number;
+		/** Le graphe occupe-t-il toute la place de l'atelier ? */
+		expanded?: boolean;
+		/** Sans lui, pas de bouton « Agrandir le graphe ». */
+		onToggleExpanded?: () => void;
 	} = $props();
 
 	// ==========================================================================
@@ -108,6 +114,23 @@
 	</Button>
 
 	<ExportButton {svgRef} width={svgWidth} height={svgHeight} />
+
+	{#if onToggleExpanded}
+		<Button
+			variant="outline"
+			size="icon"
+			onclick={onToggleExpanded}
+			title={expanded ? 'Réduire le graphe (Échap)' : 'Agrandir le graphe'}
+			aria-label={expanded ? 'Réduire le graphe' : 'Agrandir le graphe'}
+			aria-pressed={expanded}
+		>
+			{#if expanded}
+				<Minimize2 class="h-4 w-4" />
+			{:else}
+				<Maximize2 class="h-4 w-4" />
+			{/if}
+		</Button>
+	{/if}
 </div>
 
 <style>

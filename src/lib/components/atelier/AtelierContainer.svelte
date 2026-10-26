@@ -53,8 +53,6 @@
 		ArchiveRestore,
 		EllipsisVertical,
 		FolderOpen,
-		Maximize2,
-		Minimize2,
 		Redo2,
 		RotateCcw,
 		Save,
@@ -605,11 +603,13 @@
 	let consoleOpen = $state(consoleAtStart ?? view === undefined);
 	let consoleHeight = $state(CONSOLE_HEIGHT);
 	/**
-	 * Plein écran de l'ATELIER : il recouvre l'en-tête et le menu du site, dans
-	 * la fenêtre telle qu'elle est. Le plein écran du navigateur reste le
-	 * bouton de l'en-tête ; les deux se cumulent, comme pour Python.
+	 * Le graphe agrandi (bouton de sa barre) : il prend toute la place de
+	 * l'atelier — ni « Mes objets », ni barre d'icônes, ni onglets. Le plein
+	 * écran du navigateur reste le bouton de l'en-tête ; les deux se cumulent.
 	 */
-	let fullscreen = $state(false);
+	let graphExpanded = $state(false);
+	/** Seulement sur la vue Graphe : une autre vue ouverte par une commande le défait. */
+	const graphFills = $derived(graphExpanded && activeView === 'graphe');
 	let calculView = $state<CalculView | null>(null);
 	let consoleButton = $state<ToolButton | null>(null);
 	let consolePanel = $state<HTMLElement | null>(null);
@@ -1033,29 +1033,30 @@
 		else openConsole();
 	}
 
-	/**
-	 * Échap quitte le plein écran — après tous les autres : un champ, une liste
-	 * ou un menu ouverts le prennent d'abord, une fenêtre ouverte le garde.
-	 * Pris ici, il ne recadre pas en plus le graphe (Échap du grapheur, écouté
-	 * sur `window`, donc après le `document`).
-	 */
-	function handleFullscreenEscape(event: KeyboardEvent) {
-		if (!fullscreen || event.key !== 'Escape' || event.defaultPrevented) return;
-		const target = event.target instanceof Element ? event.target : null;
-		if (target !== null && target.closest(FIELD_SELECTOR) !== null) return;
-		if (document.querySelector('[role="alertdialog"], [role="dialog"][data-state="open"]')) return;
-		event.preventDefault();
-		fullscreen = false;
+	/** Agrandir ferme la console : son bouton disparaît avec la barre. */
+	function toggleGraphExpanded() {
+		if (!graphFills) closeConsole();
+		graphExpanded = !graphFills;
 	}
 
-	// En plein écran, la page derrière ne défile plus
-	$effect(() => {
-		if (!fullscreen) return;
-		document.body.style.overflow = 'hidden';
-		return () => {
-			document.body.style.overflow = '';
-		};
-	});
+	/**
+	 * Échap rend sa taille au graphe, sauf s'il a mieux à faire : un champ le
+	 * garde, et un menu, une liste ou une fenêtre ouverts se ferment d'abord.
+	 * ⚠️ Ils écoutent `document` depuis leur ouverture, donc APRÈS nous : on
+	 * les cherche dans la page plutôt que d'attendre leur `preventDefault`.
+	 * Pris ici, Échap ne recadre pas en plus le graphe (Échap du grapheur,
+	 * écouté sur `window`, donc après le `document`).
+	 */
+	function handleExpandedEscape(event: KeyboardEvent) {
+		if (!graphFills || event.key !== 'Escape' || event.defaultPrevented) return;
+		const target = event.target instanceof Element ? event.target : null;
+		if (target !== null && target.closest(FIELD_SELECTOR) !== null) return;
+		const open =
+			'[role="alertdialog"], [role="dialog"][data-state="open"], [role="menu"], [role="listbox"]';
+		if (document.querySelector(open)) return;
+		event.preventDefault();
+		graphExpanded = false;
+	}
 
 	/**
 	 * Les raccourcis (`console-key.ts`) : la touche sous Échap hors d'un champ,
@@ -1174,9 +1175,9 @@
 </script>
 
 <svelte:window onkeydown={handleUndoKey} onkeydowncapture={handleConsoleShortcut} />
-<svelte:document onkeydown={handleFullscreenEscape} />
+<svelte:document onkeydown={handleExpandedEscape} />
 
-<div class="atelier" class:plein-ecran={fullscreen}>
+<div class="atelier" class:graphe-agrandi={graphFills}>
 	<ObjectPanel bind:selected onAction={handleAction} onTabulate={handleTabulate} />
 
 	<!-- `section` et non `main` : la page est déjà dans le `<main>` du layout,
@@ -1258,12 +1259,6 @@
 						onclick={() => shareBar?.share()}
 					/>
 				{/if}
-				<ToolButton
-					label={fullscreen ? 'Quitter le plein écran' : 'Plein écran'}
-					icon={fullscreen ? Minimize2 : Maximize2}
-					hint={fullscreen ? 'Échap' : undefined}
-					onclick={() => (fullscreen = !fullscreen)}
-				/>
 				<AtelierSettings
 					bind:inputMode={() => inputMode, chooseInputMode}
 					bind:angleUnit={() => atelier.angleUnit, chooseAngleUnit}
@@ -1355,7 +1350,11 @@
 			<section class="vue" class:pleine={activeView === 'graphe' || activeView === 'figure'}>
 				{#if activeView === 'graphe'}
 					<!-- Pas de panneau de fonctions : c'est « Mes objets » qui tient ce rôle. -->
-					<GrapheurContainer store={graph} />
+					<GrapheurContainer
+						store={graph}
+						expanded={graphFills}
+						onToggleExpanded={toggleGraphExpanded}
+					/>
 				{:else if activeView === 'figure'}
 					<!-- Une projection de l'atelier, comme les autres : elle lit l'atelier, ne garde rien -->
 					<FigureView write={writeFromFigure} />
@@ -1461,14 +1460,17 @@
 		min-height: 0;
 	}
 
-	/* Par-dessus l'en-tête et le menu du site ; les menus et fenêtres, rendus
-	   à la fin du `body` avec le même z-index, passent encore devant */
-	.atelier.plein-ecran {
-		position: fixed;
-		inset: 0;
-		z-index: 50;
-		height: auto;
-		background: var(--color-background);
+	/* Le graphe agrandi : masqués (pas démontés — un champ en cours d'écriture
+	   garde son texte), le panneau, la barre et les onglets laissent la place */
+	.atelier.graphe-agrandi {
+		grid-template-columns: 1fr;
+		grid-template-rows: minmax(0, 1fr);
+	}
+
+	.atelier.graphe-agrandi > :global(.panneau),
+	.graphe-agrandi .barre,
+	.graphe-agrandi .onglets {
+		display: none;
 	}
 
 	.zone {
