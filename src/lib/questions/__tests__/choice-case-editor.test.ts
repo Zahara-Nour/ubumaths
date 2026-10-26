@@ -191,3 +191,9 @@ describe('choiceIndexesAfterRemoval — un choix supprimé décale les suivants'
 		expect(choiceIndexesAfterRemoval([1], 1)).toEqual([]);
 	});
 });
+
+describe('readChoiceCase — `case:` écrit à la main', () => {
+	it('pas réécrivable : la réécriture perdrait le réglage', () => {
+		expect(readChoiceCase('```choix\ncase: 2\n- a\n- b\n```', 0)?.rewritable).toBe(false);
+	});
+});

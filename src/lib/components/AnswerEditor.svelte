@@ -226,6 +226,9 @@
 		const count = statementCaseKinds(statement).length;
 		const missing = Math.max(0, count - blanks.length);
 		blanks = [...blanks, ...Array.from({ length: missing }, () => ({ expectedAnswer: '' }))];
+		// Liste plus longue que les cases (trou retiré du texte) : la nouvelle case
+		// n'hérite pas de la réponse d'un ancien trou
+		blanks[count - 1] = { expectedAnswer: '' };
 		if (Array.isArray(answer) && answer.length < blanks.length) {
 			answer = [...answer, ...Array<string>(blanks.length - answer.length).fill('')];
 		}

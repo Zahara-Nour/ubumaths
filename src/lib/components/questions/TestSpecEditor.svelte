@@ -397,9 +397,10 @@
 						<div class="space-y-1">
 							{#each Array(blankCount) as _, i (i)}
 								{@const choices = choiceCases[i]}
-								{#if choices}
-									{@const picked =
-										parseChoiceAnswer(editSpec.answers?.[i] ?? '', choices.length) ?? []}
+								{@const picked = choices
+									? parseChoiceAnswer(editSpec.answers?.[i] ?? '', choices.length)
+									: null}
+								{#if choices && picked}
 									<div class="flex flex-wrap gap-3 rounded-md border p-2">
 										<span class="text-sm text-muted-foreground">Case {i + 1} : choix</span>
 										{#each choices as choice, c (c)}

@@ -180,6 +180,8 @@ export function parseChoiceBody(body: readonly string[]): ChoiceBlockSpec {
 				else spec.rewritable = false;
 			} else if (key === 'case' && CASE_INDEX_REGEX.test(setting[2].trim())) {
 				spec.caseIndex = Number(setting[2].trim());
+				// Posée par le générateur : écrite à la main, la réécriture la perdrait
+				spec.rewritable = false;
 			} else {
 				errors.push(`réglage « ${setting[1]} » inconnu (${SETTING_NAMES})`);
 				spec.rewritable = false;

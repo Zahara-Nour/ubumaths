@@ -115,6 +115,16 @@ describe('AnswerEditor — ajouter une case choix en fin d’énoncé', () => {
 	});
 });
 
+describe('AnswerEditor — case ajoutée quand la liste est plus longue que les cases', () => {
+	it('la nouvelle case n’hérite pas de la réponse d’un ancien trou', async () => {
+		await render(AnswerEditorChoiceHarness, {
+			props: { initialStatement: 'Sans case.', initialAnswers: ['7', '8'] }
+		});
+		await page.getByRole('button', { name: 'Ajouter une case choix' }).click();
+		expect(readState().answers).toEqual(['', '8']);
+	});
+});
+
 describe('AnswerEditor — réponse calculée, bloc mal écrit', () => {
 	it('réponse {{eval:…}} : champ de texte ; « Cocher à la main » revient aux ronds', async () => {
 		await render(AnswerEditorChoiceHarness, {
