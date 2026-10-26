@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1811._
+_Mis à jour le 2026-10-26, § 4 ouvert (les trois pièges)._
 
-- **État** : #1807 et #1811 MERGÉES (pas encore en prod) : `tidyWithConditions`/`domainLoss`, l'atelier garde le domaine, bouton « Simplifier pour x ≠ 0 », réglage « Simplifications qui changent le domaine », note « avec x ≠ 0 », hypothèses `avec`/`dans` (∩ sur option). Vérifs manuelles #1807 et #1811 notées.
-- **Prochaine action** : clore le chantier après l'essai de David (verser ce journal dans `docs/archive/wip/` ; le durable est dans `atelier.md`, `atelier-syntaxe.md`, `tidy-spec.md`, ADR 0007).
-- **En attente de David** : essayer (vérifs #1807 et #1811) et dire si le chantier est clos.
-- **Pièges en cours** : seule une condition polynomiale est garantie ; `ln(x²) → 2 ln x` refusé même `avec x > 0` ; `1/(1/x) → x` reste un bug de `tidy`.
-- **Worktree / branche** : retirés après le merge.
+- **État** : #1807 et #1811 MERGÉES (pas en prod). § 4 : trois pièges étudiés, recos validées par David (« je suis tes recos »). PR 3 (`tidy` et le facteur sous double barre) : revue Opus traitée, PR ouverte.
+- **Prochaine action** : PR 3 (§ 4.3), puis PR 1 (§ 4.1, `conditionDomain` non polynomial), puis PR 2 (§ 4.2, `domainChange` par ensembles + élagage).
+- **En attente de David** : essai des vérifs #1807 et #1811 (inchangé).
+- **Pièges en cours** : ceux du § 4, en cours de correction.
+- **Worktree / branche** : `../ubumaths-wt-tidy-conditions` · `fix/tidy-conditions`.
 
 ## Contexte
 
@@ -96,5 +96,31 @@ Questions :
 - **Q7 — TRANCHÉE (reco validée).** Reco : le bouton reste (« Sans simplifier »), pas de note (la condition est déjà sur la ligne).
 - **Q8 — Lignes déjà écrites. TRANCHÉE (David, 2026-10-26)** : le réglage ne s'applique qu'aux **nouvelles lignes** ; chacune se bascule ensuite à la main (bouton de ligne). Les lignes déjà écrites ne bougent pas.
 - **Q9 — TRANCHÉE (reco validée).** Reco : « Garder l'écriture » (ta décision de ce matin).
+
+## 4. Les trois pièges (2026-10-26)
+
+Sondes (Atelier `runInput`, tests jetables supprimés). David : « je suis tes recos » — il valide les recos Q1 à Q5 ci-dessous.
+
+### 4.3 — `tidy(1/(1/x)) → x` (PR 3, d'abord)
+
+Cause : `absorbFactor` (`collect.ts`, cas `division`) inverse l'exposant du dénominateur ; le `x` d'un dénominateur de dénominateur arrive en exposant +1, `keepDomain` ne le voit pas passer sous la barre. Même chose pour `1/x^{-1}`. `tidyWithConditions` rend `x` **sans** condition ; seul `domain-guard.ts` de l'Atelier rattrape (25 appelants de `tidy` hors module).
+
+- `tidy` : `1/(1/x)`, `2/(1/x)`, `x/(1/x)`, `1/x^{-1}` **gardent leur écriture** (Q4 : B, pas `x²/x`).
+- `tidyWithConditions` : `x`, `2x`, `x²`, `x`, condition `x ≠ 0`.
+- Rien ne s'annule (`1/(1/2)`, `1/(1/eˣ)`) → simplifié ; `x ≠ 0` déclaré → `x`.
+- Fait (`keepsUnderBar`, `keptUnderBar` dans `collect.ts`). Revue Opus : le terme gardé est mis au propre (numérateur d'un bloc, chaque dénominateur seul : `2·3/(1/x)` → `6/(1/x)`, `1/x⁻¹` → `1/(1/x)`), sans parenthèses dans une somme (`build.ts`, terme `verbatim` nu sauf somme/opposé) ; base déjà gardée par S3 non gelée (`1/(1/x)·1/x` → `x/x`). Restes acceptés : deux termes gardés ne se regroupent pas (`1/(1/x) + 1/(1/x)`) ; une condition non écrivable (`tan`) gèle le terme entier en mode conditions.
+
+### 4.1 — conditions non polynomiales (PR 1)
+
+`conditionDomain` (`hypotheses.ts`) : « polynôme » remplacé par « domaine calculé, rien de non résolu, pas de forme périodique » (`1/cos x` → ℝ \ {π/2 + kπ}, que l'inclusion ne lit pas : cause du bug de revue). Mesuré : `1/ln x` → ]0;+∞[ \ {1}, `1/(eˣ−1)` → ℝ \ {0}, `1/tan x` et `1/(x − ln x)` non résolus. `ln(x)/ln(x) avec x > 1` → `1` ; `cos(x)/cos(x) avec x > 0` reste refusé.
+
+### 4.2 — `domainChange` par ensembles (PR 2)
+
+Sondes : `ln(x³) → 3 ln x` refusé (même domaine, écritures différentes) ; `ln(x²) + ln x → 3 ln x` montre « pour x² > 0 » ; `ln(x(x+1)) → ln x + ln(x+1)` et `ln(x/(x+1))` refusés sans bouton (domaine rétréci).
+
+- (a) une lettre, domaines calculables (mêmes conditions que 4.1), ensembles égaux → `[]`.
+- (b) domaine rétréci → condition = perdu ∪ ajouté, chaque condition impliquée par les autres retirée : `ln(x²)` → bouton « Simplifier pour x > 0 » (Q2 : oui), `avec x > 0` → `2 ln(x)` ; perte seule inchangée (`x/x` → « x ≠ 0 »). Élagage impossible → tout garder (jamais une condition fausse).
+- Note quand le domaine rétrécit (Q5) : « Pour x > 0, on peut écrire 2 ln(x) : ajoute « avec x > 0 ». »
+- Relever avant/après de `ln-product`, `ln-quotient`, `sqrt-product` dans la PR.
 
 ## Historique

@@ -25,7 +25,7 @@ import type { TidyCondition, TidyFactor, TidyQuantity, TidyTerm } from './types'
 import type { TermOrder, TidyOptions, TidyRule, UnitChoice } from './step-recorder';
 import { TidyStepRecorder } from './step-recorder';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
-import { findNodes, getChildren } from '../transforms';
+import { findNodes, getChildren, stripUnnecessaryBrackets } from '../transforms';
 import { extractRational } from '../common/numeric';
 import { hashMathNode, hashUnit, nodesEqual } from '../normal/hash';
 import { extractPerfectPower, integerNthRoot } from '../normal/radical';
@@ -52,6 +52,7 @@ import {
 	lcm
 } from '../normal/rational';
 import {
+	divide,
 	func,
 	multiply,
 	number,
@@ -139,6 +140,12 @@ type MutableFactor = {
 	crossed: boolean;
 	/** Deux facteurs de cette base se sont rejoints (`eˣ·eˣ`, Q29). */
 	grouped: boolean;
+	/**
+	 * La base est passée sous une barre sans finir au dénominateur : `1/(1/x)`,
+	 * `1/x⁻¹` — les deux inversions se compensent, `denominator` ne le voit pas
+	 * (§ 4.3 de tidy-conditions). Lu par `keepsUnderBar`.
+	 */
+	barred: boolean;
 };
 
 /**
@@ -181,6 +188,8 @@ type Accumulator = {
 	 * terme fini : `√0,5·√0,5 → 0,5`, mais `√0,5 → √2/2` si une racine reste.
 	 */
 	decimalRoot: boolean;
+	/** L'exposant d'un facteur englobant est négatif : on lit sous une barre (`barred`). */
+	underBar: boolean;
 };
 
 /**
@@ -505,13 +514,23 @@ function addFactor(acc: Accumulator, base: MathNode, exponent: Rational): void {
 	const key = factorKey(base, acc.settings);
 	const existing = acc.factors.get(key);
 	const denominator = isNegativeRational(exponent) ? exponent : ZERO;
+	const barred = acc.underBar && !isNegativeRational(exponent);
 
 	if (existing === undefined) {
 		if (isZeroRational(exponent)) return;
-		acc.factors.set(key, { base, exponent, key, denominator, crossed: false, grouped: false });
+		acc.factors.set(key, {
+			base,
+			exponent,
+			key,
+			denominator,
+			crossed: false,
+			grouped: false,
+			barred
+		});
 		return;
 	}
 	existing.grouped = true;
+	existing.barred ||= barred;
 
 	// Deux facteurs de même base se rejoignent : « on regroupe les facteurs ».
 	// De part et d'autre de la barre, le geste n'est nommé que s'il a lieu (S3).
@@ -798,6 +817,23 @@ function absorbFactor(
 	exponent: Rational,
 	acc: Accumulator,
 	alreadyTidied = false
+): void {
+	// Sous une barre, ce qui suit l'est aussi, même si un second exposant
+	// négatif le remonte au numérateur (`1/(1/x)`, § 4.3 de tidy-conditions)
+	const underBar = acc.underBar;
+	if (isNegativeRational(exponent)) acc.underBar = true;
+	try {
+		absorbFactorBody(node, exponent, acc, alreadyTidied);
+	} finally {
+		acc.underBar = underBar;
+	}
+}
+
+function absorbFactorBody(
+	node: MathNode,
+	exponent: Rational,
+	acc: Accumulator,
+	alreadyTidied: boolean
 ): void {
 	// §D.2 / finding F2 — une grandeur affine SIGNÉE est un atome opaque en
 	// bloc : sortir son signe changerait l'atome (`2·(−20 °C)` n'est pas
@@ -1193,13 +1229,15 @@ function toTerm(
 		decimal: false,
 		fraction: false,
 		bar: false,
-		decimalRoot: false
+		decimalRoot: false,
+		underBar: false
 	};
 
 	for (const { factor } of flattenProductShallow(node)) {
 		absorbFactor(factor, ONE, acc);
 	}
 	reduceRadicalFactors(acc);
+	if (keepsUnderBar(acc)) return verbatimTerm(keptUnderBar(node, settings), false);
 
 	// Deux signes qui se rencontrent se simplifient : `−(−x)`, `(−x)·(−y)`.
 	// Un seul est porté devant — `−x·x·x` — et le vrai geste y est ailleurs.
@@ -1233,6 +1271,76 @@ function toTerm(
 				: null
 	};
 	return reduceFractionOfSums(term, settings, watch);
+}
+
+/**
+ * Une base qui peut s'annuler est passée sous une barre et en ressort (`1/(1/x)`,
+ * `1/x⁻¹`) : la simplifier ferait perdre le domaine. `tidy` garde alors le terme
+ * écrit (Q4 de tidy-conditions, David 2026-10-26 : pas `x²/x`) ;
+ * `tidyWithConditions` simplifie et note la condition, s'il sait l'écrire.
+ */
+function keepsUnderBar(acc: Accumulator): boolean {
+	const { settings } = acc;
+	const lost: TidyCondition[] = [];
+	for (const { base, exponent, key, barred, denominator } of acc.factors.values()) {
+		// Au dénominateur à la fin, ou gardé des deux côtés par `keepDomain` (S3) : rien à faire
+		if (!barred || isNegativeRational(exponent) || isNegativeRational(denominator)) continue;
+		if (settings.nonZero.has(key) || cannotVanish(base, settings.typeCtx)) continue;
+		if (settings.conditions === undefined) return true;
+		const conditions = cancelledBaseConditions(base, settings.typeCtx, settings);
+		if (conditions === null) return true;
+		lost.push(...conditions);
+	}
+	settings.conditions?.push(...lost);
+	return false;
+}
+
+/**
+ * Le terme gardé (`keepsUnderBar`), en une fraction : le numérateur (facteurs
+ * et numérateurs) mis au propre d'un bloc, chaque dénominateur mis au propre
+ * seul — sa barre reste (revue : `2·3/(1/x)` → `6/(1/x)`, `(3−1)/(1/x)` →
+ * `2/(1/x)`). Une puissance négative (`(x⁻¹)⁻¹`) reste un facteur à part. Les
+ * fractions s'écrivent empilées, comme `tidy` les écrit : `1/(1/x)` tapé en
+ * ligne donne `\dfrac{1}{\dfrac{1}{x}}`.
+ */
+function keptUnderBar(node: MathNode, settings: Settings): MathNode {
+	const tidied = (child: MathNode) => tidyExpression(child, innerOptions(settings));
+	const numerators: MathNode[] = [];
+	const denominators: MathNode[] = [];
+	const powers: MathNode[] = [];
+	const read = (part: MathNode): void => {
+		switch (part.type) {
+			case 'delimiter':
+				read(part.content);
+				return;
+			case 'multiplication':
+				read(part.left);
+				read(part.right);
+				return;
+			case 'division':
+				numerators.push(part.numerator);
+				denominators.push(part.denominator);
+				return;
+			case 'superscript':
+				powers.push(superscript(tidied(part.base), part.superscript));
+				return;
+			default:
+				numerators.push(part);
+		}
+	};
+	read(node);
+	const product = (parts: readonly MathNode[]) =>
+		parts.reduce((left, right) => multiply(left, right, 'implicit'));
+	const parts = [...powers];
+	if (numerators.length > 0 || denominators.length > 0) {
+		const numerator = tidied(numerators.length === 0 ? number('1') : product(numerators));
+		parts.push(
+			denominators.length === 0
+				? numerator
+				: divide(numerator, product(denominators.map(tidied)), 'fraction')
+		);
+	}
+	return stripUnnecessaryBrackets(product(parts));
 }
 
 /** Un terme rendu tel quel : il porte un nœud opaque (infini, zéro signé). */

@@ -72,7 +72,13 @@ forme canonique du Compute Engine, qui est une expression).
   elle reste des deux côtés de la barre, seuls les nombres se simplifient :
   `x/x`, `x²/x`, `√x/√x` inchangés, `(2x)/(4x) → x/(2x)`,
   `(−x−1)/(x+1) → −(x+1)/(x+1)`. Exception gardée : `x⁰ → 1` (convention des
-  polynômes). De même, des termes semblables de somme nulle ne disparaissent
+  polynômes). Une base passée sous deux barres compte comme au dénominateur
+  (`1/(1/x)`, `2/(1/x)`, `1/x⁻¹` : les deux inversions se compensent) : le
+  terme reste une fraction à barres empilées, son numérateur et chaque
+  dénominateur mis au propre (`2·3/(1/x) → 6/(1/x)`, `1/x⁻¹ → 1/(1/x)` ;
+  `keepsUnderBar`, `collect.ts` ; tidy-conditions § 4.3, Q4, David 2026-10-26 :
+  pas `x²/x`). Deux termes gardés ne se regroupent pas (`1/(1/x) + 1/(1/x)`
+  reste) ; `tidyWithConditions` rend `x`, pour x ≠ 0 (`2x` pour la somme). De même, des termes semblables de somme nulle ne disparaissent
   que s'ils sont définis partout (David, 2026-10-24 ; `definedEverywhere`,
   `tidy/sign.ts`) : `x − x`, `eˣ − eˣ`, `ln(x²+1) − ln(x²+1)` → `0`, mais
   `ln(x) − ln(x)`, `1/x − 1/x`, `√x − √x`, `tan(x) − tan(x)` restent écrits ;
@@ -595,3 +601,6 @@ des termes notamment).
   dénominateur 2 s'écrit avec une racine carrée (`8^{1/2} → 2√2`), une racine
   exacte d'un entier se calcule (`27^{2/3} → 9`) — Q47 ; étape
   `tidy-power-to-root`.
+- 2026-10-26 : `tidyWithConditions` (variante de S3) ; une base sous deux
+  barres ne quitte plus le dénominateur en silence (`1/(1/x)` reste, avant :
+  `x` sans condition — chantier tidy-conditions § 4.3).

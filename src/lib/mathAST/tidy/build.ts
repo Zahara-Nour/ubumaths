@@ -58,6 +58,16 @@ function needsParenthesesAsAtom(node: MathNode): boolean {
 	}
 }
 
+/** Un terme gardé tel quel qui, nu, se lirait mal dans une somme : `x + (a − b)`. */
+function needsParenthesesInSum(term: TidyTerm): boolean {
+	const [factor] = term.factors;
+	if (factor === undefined) return false;
+	const type = factor.base.type;
+	return (
+		type === 'addition' || type === 'subtraction' || type === 'opposite' || type === 'positive'
+	);
+}
+
 // =============================================================================
 // Rendu d'un facteur
 // =============================================================================
@@ -139,9 +149,10 @@ export function buildTermMagnitude(term: TidyTerm, allowBare: boolean): MathNode
 	const denominatorAtomCount = (denominatorValue !== 1n ? 1 : 0) + denominatorFactors.length;
 
 	// Un facteur seul, sans coefficient ni dénominateur ni unité : on peut
-	// l'écrire nu.
+	// l'écrire nu. Un terme gardé tel quel (`1/(1/x)`, tidy-conditions § 4.3)
+	// est déjà un terme : nu aussi dans une somme, sauf s'il en est une
 	const bare =
-		allowBare &&
+		(allowBare || (term.verbatim && !needsParenthesesInSum(term))) &&
 		!needsNumeratorNumber &&
 		numeratorAtomCount === 1 &&
 		denominatorAtomCount === 0 &&
