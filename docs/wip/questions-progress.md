@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après la publication du lot C._
+_Mis à jour le 2026-10-26, skill `couvrir-niveau` écrit (§ 4 sexdecies)._
 
-- **État** : 72 modèles CP publiés (68 + les 4 du lot C : `ded05f7c`, `541b3209`, `8f587948`, `7be00c4a`, relus 4/4 OK, publiés par David, `published` relu en base). Groupes A, H, B, M et C livrés.
-- **Prochaine action** : à choisir avec David : ce qui reste du CP attend la case « figure » (034, 059, 060, chantier `figure-et-choix`), les « réponses à placer » (008) ou un réexamen (058) ; sinon le skill réutilisable (§ 5).
-- **En attente de David** : vérification manuelle #1702 ; le choix de la suite.
+- **État** : 72 modèles CP publiés (groupes A, H, B, M, C). Skill `couvrir-niveau` + doc `docs/pratiques/couvrir-un-niveau.md` écrits (commit direct sur `main`).
+- **Prochaine action** : PR d'outillage : `scripts/questions/page-a-cocher.ts` (dossier de lot → page HTML, gabarit commun) et `scripts/questions/publier-lot.ts` (simulation / `--publier`), testés ; puis la doc y renvoie (encadré du § 8 à retirer, `couvre:` à compléter).
+- **En attente de David** : vérification manuelle #1702 (plus tard, dit-il) ; reste du CP en suspens (case « figure », réponses à placer, 058).
 - **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; prénom dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (variable) ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; **montants en `$n~\unit{€}$`, jamais « : » juste après** ; **écriture en prod refusée par le classifieur du mode auto : David la lance (`!`)** ; **`gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le run** ; migration qui change l'arbre ou les points → `LATER` + copies figées ; `create-questions` vise `.env` (prod) : pour la base locale, `set -a; . ./.env.local; set +a` avant ; 4 brouillons du lot C en base LOCALE (essais) ; `Trace la droite qui passe par deux points` (`010d81a5`) est le seul brouillon CP en prod, pas de ce chantier.
 - **Worktree / branche** : aucun (retiré après #1832).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -191,6 +191,13 @@ David suit mes recommandations (« je suis tes recos »). Les blocs à construir
 - Question d'accès : personne ne gagne ni ne perd d'accès (reco suivie par David, AVANT le SQL).
 - Phase 0 : je proposais « niveaux 1 à 3 » pour C1 en même temps que « 4 modèles » : C1 est UN modèle (niveau 1) à trois variations.
 
+## 4 sexdecies. Skill réutilisable : décisions (David, 2026-10-26)
+
+- Forme : skill `couvrir-niveau` (le déroulé) + doc `docs/pratiques/couvrir-un-niveau.md` (fait foi) ; 100 % doc, commit direct.
+- Les scripts de page à cocher et de publication deviennent réutilisables sous `scripts/questions/`, dans une PR à part, après la doc.
+- Le skill comprend la **création des outils qui manquent** (nouveaux blocs, gestes de réponse), en chantiers à part (question de David).
+- Vérifications manuelles reportées par David.
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -276,3 +283,4 @@ David suit mes recommandations (« je suis tes recos »). Les blocs à construir
 - 2026-10-26 : #1832 mergée (CI verte au 2e essai : un job navigateur annulé ; audit sécurité sans bloquant) ; `db:migrate` joué depuis le dépôt principal, vérifié en prod : 4 modèles C sur leur sous-notion, 1 tag chacun, en brouillon, `updated_at` inchangé.
 - 2026-10-26 : page à cocher du lot C publiée : https://claude.ai/artifact/Ve9QRxVDiqSuYnbg3D12gp (collection `verdicts`) ; un exemple par variation (11), tiré par le vrai générateur ; réserve, plan vide et construction juste dessinés par les scènes `collection` / `monnaie` (script `page-c.mts` du scratchpad), relue à 390 px.
 - 2026-10-26 : page à cocher du lot C relue par David, 4/4 « ok », aucun commentaire ; 4 brouillons C publiés (`publishTemplates`, script `publier-c.mts` du scratchpad, lancé par David), 0 refus, statut `published` relu en base : 72 modèles CP publiés pour ce chantier.
+- 2026-10-26 : skill `couvrir-niveau` et doc `couvrir-un-niveau.md` écrits (§ 4 sexdecies), création d'outils comprise ; § 5 versé dans la doc.

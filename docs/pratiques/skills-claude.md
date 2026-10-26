@@ -101,6 +101,18 @@ niveau) ; il refuse de travailler sans **grade** et **thème** précisés.
 - Il suit la démarche de [fiches-exercices.md](fiches-exercices.md), modèle par tâche compris.
 - Rien n'est écrit en production sans ton accord (`--publier`).
 
+## `couvrir-niveau` — couvrir un niveau en modèles de questions
+
+Se déclenche sur « couvre le CE1 », « complète les modèles de 6e », « quels points du niveau X
+n'ont pas de modèle » ; il refuse de travailler sans **niveau**.
+
+- Il suit la démarche de [couvrir-un-niveau.md](couvrir-un-niveau.md), tirée du chantier du CP :
+  relevé en lecture seule, vérification de l'existant contre les bornes, classement des points
+  sans modèle, **proposition des outils qui manquent** (nouveaux blocs, gestes de réponse, en
+  chantiers à part), lots avec phase 0, migration nœud + tag, page à cocher, publication.
+- Rien n'est écrit en production par lui : `create-questions --publier` et la publication, c'est
+  toi qui les lances.
+
 ## `reprendre` — repartir d'un chantier après un `/clear`
 
 `/reprendre <sujet>` (ou « reprends », « on en était où ? ») : la session retrouve le journal
