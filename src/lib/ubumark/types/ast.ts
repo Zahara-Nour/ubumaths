@@ -659,8 +659,11 @@ export interface InputState {
 	index: number;
 	/** Current value (text or LaTeX depending on type) */
 	value: string;
-	/** Discriminant: 'text' for {{blank:N}}, 'math' for \placeholder[N]{}, 'graphical' for graphical tools */
-	type: 'text' | 'math' | 'graphical';
+	/**
+	 * Discriminant: 'text' for {{blank:N}}, 'math' for \placeholder[N]{}, 'graphical' for graphical tools,
+	 * 'choice' pour une case « choix » (bloc ```choix ; valeur : indices d'origine cochés, « 0;2 »)
+	 */
+	type: 'text' | 'math' | 'graphical' | 'choice';
 	/** Validation state: true=correct, false=incorrect, null=not validated */
 	isCorrect: boolean | null;
 	/**

@@ -770,8 +770,11 @@ export interface InstanceBlank extends CalculusBlankFields {
 	expectedAnswer: string;
 	/** LaTeX for flash back (math blanks only) */
 	expectedAnswerLatex?: string;
-	/** Inferred from context by the generator ('math' if in $...$, 'text' otherwise) */
-	type: 'math' | 'text' | 'graphical';
+	/**
+	 * Inferred from context by the generator ('math' if in $...$, 'text' otherwise) ;
+	 * 'choice' : case portée par un bloc ```choix (voir `choice`)
+	 */
+	type: 'math' | 'text' | 'graphical' | 'choice';
 	/** Resolved pre-filled value */
 	prefilled?: string;
 	/**
@@ -787,6 +790,19 @@ export interface InstanceBlank extends CalculusBlankFields {
 	construction?: {
 		source: string;
 		checks: ConstructionCheck[];
+	};
+	/**
+	 * Case « choix » portée par un bloc ```choix (`type: 'choice'`). `expectedAnswer`
+	 * = indice(s) d'ORIGINE des bons choix, triés, séparés par `;` (« 1 », « 0;2 ») ;
+	 * la réponse de l'élève a la même forme (cf. `questions/choice-case.ts`).
+	 */
+	choice?: {
+		/** Choix résolus (markdown), dans l'ordre d'ORIGINE (celui de l'auteur) */
+		choices: string[];
+		/** Ordre affiché : `order[position]` = indice d'origine (identité sans mélange) */
+		order: number[];
+		/** `plusieurs: oui` : plusieurs bonnes réponses */
+		multiple: boolean;
 	};
 
 	/**

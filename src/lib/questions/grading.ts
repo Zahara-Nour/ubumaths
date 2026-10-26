@@ -42,8 +42,8 @@ export interface QuestionVerdict {
 	/** Juste au sens de la note : tous les points (cf. `test_answers.is_correct`) */
 	isCorrect: boolean;
 	/**
-	 * ½ point PARTIEL : cases en partie vides (le reste juste), QCM coché en
-	 * partie sans erreur. À distinguer d'une forme non optimale (même ½ point)
+	 * ½ point PARTIEL : cases en partie vides (le reste juste), QCM ou case choix
+	 * cochés en partie sans erreur. À distinguer d'une forme non optimale (même ½ point)
 	 * pour le SRS (Q40, choix a de David).
 	 */
 	partial: boolean;
@@ -165,8 +165,10 @@ function gradeBlanks(instance: QuestionInstance, answer: SubmittedAnswer): Quest
 			? 'incorrect'
 			: statusFromBlankStatuses(statuses);
 	const points = pointsOfStatus(status);
-	// ½ dû à des cases vides (le reste juste), pas à la forme
-	const partial = status === 'unoptimal_form' && statuses.includes('empty');
+	// ½ dû à des cases vides (le reste juste) ou à une case choix cochée en partie
+	// (comme le QCM), pas à la forme
+	const partialChoice = blanks.some((b, i) => b.choice && statuses[i] === 'unoptimal_form');
+	const partial = status === 'unoptimal_form' && (statuses.includes('empty') || partialChoice);
 	return {
 		status,
 		points,
