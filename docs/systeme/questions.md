@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -86,7 +86,7 @@ le SRS ([srs.md](srs.md)).
 | `src/lib/mathAST/pedagogical-*/`                                                    | Étapes de correction générées (mode B) ; stratégies par niveau `STRATEGIES`, `STRATEGIES_QUADRATIC`, `STRATEGIES_RATIONAL` (`pedagogical-solve/types.ts`). |
 | `src/lib/types/question-display.ts`, `src/lib/types/question-template.ts`           | `ValidationResult` ; `toQuestionTemplate` (ligne de base → modèle).                                                                                        |
 | `src/lib/server/validation/questions.ts`                                            | Zod des routes : `createQuestionTemplateSchema`, `updateQuestionTemplateSchema`, `bulkTemplateStatusSchema`, `generateQuestionSchema`.                     |
-| `src/lib/migration/review/check-template.ts`                                        | `checkTemplate` : le contrôle complet (structure, schéma strict, specs, 50 tirages par variation).                                                         |
+| `src/lib/migration/review/check-template.ts`                                        | `checkTemplate` : le contrôle complet (structure, schéma strict, specs, 50 tirages par variation, figure de chaque case « figure » construite).            |
 | `src/lib/server/template-publication.ts`                                            | `templatePublicationErrors` : **le** contrôle de publication, partagé par le `PUT` d'un modèle et la publication par lot.                                  |
 | `src/lib/server/questions-bulk-status.ts`                                           | Publication par lot.                                                                                                                                       |
 | `src/lib/server/evaluation-attempts.ts`, `grading-budget.ts`, `corrected-detail.ts` | Évaluations notées, corrigées par le serveur (ADR 0015).                                                                                                   |
@@ -569,7 +569,13 @@ vecteur) et `case-primitive-ed-progress.md`.
 de `CONSTRUCTION_CHECK_KINDS` (`ubumark/types/construction.ts`), sa lecture dans `readCheck`
 (`construction-parser.ts`), son jugement et son message dans `judgeConstruction`. Un nouvel outil :
 `CONSTRUCTION_TOOLS`, `CHECK_TOOL` (l'outil de chaque vérification ; un seul outil par figure), et sa
-forme dans `parseConstructionAnswer`. La case publique d'une évaluation
+forme dans `parseConstructionAnswer`. `checkTemplate` construit la figure de chaque case « figure » à
+chaque tirage (`constructionPositions`, puis `assertConstructionChecks`) : une figure qui ne se
+construit pas (coordonnée en fraction LaTeX rendue par `eval:`), un point de `verifier:` sans position
+(intersection de droites parallèles) ou des sommets donnés confondus font échouer le tirage — sans
+cela, toute réponse de l'élève serait jugée fausse et les tirages diraient « réussis » (piège de CP-058).
+Une nouvelle vérification ajoute ses erreurs d'auteur à `assertConstructionChecks`
+(`check-template-figure.test.ts`). La case publique d'une évaluation
 notée (`toPublicQuestion`) ne porte que `type: 'graphical'`, jamais les vérifications.
 
 **Nouvelle règle de superflu** (écriture inutile qu'on signale à l'élève) : ajouter sa fiche

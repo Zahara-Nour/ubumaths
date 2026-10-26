@@ -9,7 +9,10 @@
  * - chaque variation génère une instance sur `instances` tirages (0 échec) ;
  * - E1 (Q37, chantier simplify-carte) : quand une case exige une forme de l'élève
  *   (`requiredForm`), la réponse de la correction automatique d'une dérivée ou d'une
- *   primitive passe ce juge à chaque tirage, qu'elle demande une forme (`finalForm`) ou non.
+ *   primitive passe ce juge à chaque tirage, qu'elle demande une forme (`finalForm`) ou non ;
+ * - case « figure » (bloc ```figure-a-completer) : à chaque tirage, la figure se
+ *   construit et porte les points de `verifier:` (sinon toute réponse de l'élève
+ *   serait jugée fausse : `eval:` qui rend une fraction LaTeX, CP-058).
  *
  * Les avertissements (`warnings`) ne changent jamais le verdict : variable qui peut
  * être négative citée sans parenthèses (`x-{{a}}` → `x--3`), cf. negative-substitution.ts.
@@ -32,6 +35,8 @@ import {
 	findUnparenthesizedNegatives,
 	type VariableDraw
 } from '$lib/questions/validators/negative-substitution';
+import { constructionPositions } from '$lib/questions/construction/positions';
+import { assertConstructionChecks } from '$lib/questions/construction/judge';
 import {
 	courseCardFront,
 	hasCourseCardBackContent,
@@ -60,6 +65,12 @@ export interface TemplateCheckReport {
 	/** E1 (Q37) : la réponse de la correction jugée par la forme exigée de l'élève */
 	correctionForm: {
 		/** Tirages vérifiés (correction automatique de dérivée ou de primitive ET forme exigée) */
+		checked: number;
+		failures: GenerationFailure[];
+	};
+	/** Cases « figure » : la figure de chaque tirage se construit, avec les points de `verifier:` */
+	figures: {
+		/** Tirages qui portent au moins une case « figure » */
 		checked: number;
 		failures: GenerationFailure[];
 	};
@@ -93,10 +104,12 @@ function checkGeneration(
 ): TemplateCheckReport['generation'] & {
 	draws: VariableDraw[];
 	correctionForm: TemplateCheckReport['correctionForm'];
+	figures: TemplateCheckReport['figures'];
 } {
 	const failures: GenerationFailure[] = [];
 	const draws: VariableDraw[] = [];
 	const correctionForm: TemplateCheckReport['correctionForm'] = { checked: 0, failures: [] };
+	const figures: TemplateCheckReport['figures'] = { checked: 0, failures: [] };
 	const cleanCoefficients = template.shared?.cleanCoefficients === true;
 	let attempts = 0;
 
@@ -118,6 +131,13 @@ function checkGeneration(
 					correctionForm.failures.push({ variationIndex, seed, errors: formErrors });
 				}
 			}
+			const figureErrors = constructionErrors(result.instance);
+			if (figureErrors !== null) {
+				figures.checked++;
+				if (figureErrors.length > 0) {
+					figures.failures.push({ variationIndex, seed, errors: figureErrors });
+				}
+			}
 			if (isCourseCard(template)) {
 				// Carte de cours : recto et verso doivent être non vides APRÈS résolution
 				const errors: string[] = [];
@@ -128,7 +148,27 @@ function checkGeneration(
 		}
 	});
 
-	return { attempts, failures, draws, correctionForm };
+	return { attempts, failures, draws, correctionForm, figures };
+}
+
+/**
+ * Cases « figure » d'un tirage : ce qui empêche de les juger (figure qui ne se
+ * construit pas, point de `verifier:` absent…) ; `null` sans case « figure ».
+ * Même calcul que le juge de l'élève (`constructionPositions`).
+ */
+function constructionErrors(instance: QuestionInstance): string[] | null {
+	const constructions = (instance.blanks ?? []).flatMap((blank) =>
+		blank.construction ? [blank.construction] : []
+	);
+	if (constructions.length === 0) return null;
+	return constructions.flatMap(({ source, checks }) => {
+		try {
+			assertConstructionChecks(checks, constructionPositions(source));
+			return [];
+		} catch (error) {
+			return [error instanceof Error ? error.message : String(error)];
+		}
+	});
 }
 
 /**
@@ -176,7 +216,7 @@ export function checkTemplate(
 		? []
 		: schema.error.issues.map((issue) => `${issue.path.join('.')} : ${issue.message}`);
 	const specs = runAllTestSpecs(template);
-	const { draws, correctionForm, ...generation } = checkGeneration(template, instances);
+	const { draws, correctionForm, figures, ...generation } = checkGeneration(template, instances);
 	const warnings = findUnparenthesizedNegatives(template, draws);
 
 	const reasons: string[] = [];
@@ -215,12 +255,19 @@ export function checkTemplate(
 		);
 	}
 
+	if (figures.failures.length > 0) {
+		reasons.push(
+			`${figures.failures.length} tirage(s) sur ${figures.checked} où la figure à compléter ne se juge pas`
+		);
+	}
+
 	return {
 		templateErrors,
 		schemaErrors,
 		specs,
 		generation,
 		correctionForm,
+		figures,
 		passed: reasons.length === 0,
 		reasons,
 		warnings
@@ -256,6 +303,18 @@ export function formatCheckReport(report: TemplateCheckReport): string {
 			);
 		}
 		if (formFailures.length > 5) lines.push(`  … et ${formFailures.length - 5} autre(s)`);
+	}
+	const { checked: figuresChecked, failures: figureFailures } = report.figures;
+	if (figuresChecked > 0) {
+		lines.push(
+			`Figures construites : ${figuresChecked - figureFailures.length}/${figuresChecked} tirages`
+		);
+		for (const failure of figureFailures.slice(0, 5)) {
+			lines.push(
+				`  ❌ variation ${failure.variationIndex + 1}, tirage ${failure.seed} : ${failure.errors.join('; ')}`
+			);
+		}
+		if (figureFailures.length > 5) lines.push(`  … et ${figureFailures.length - 5} autre(s)`);
 	}
 	for (const error of report.templateErrors) lines.push(`Structure : ${error}`);
 	for (const error of report.schemaErrors) lines.push(`Schéma : ${error}`);

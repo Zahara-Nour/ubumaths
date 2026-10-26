@@ -6,13 +6,13 @@ _Mis à jour le 2026-10-26, après #1798._
 
 - **État** : CP-059, CP-060 et CP-058 mergés (#1793, #1798), pas en prod ; figure vide = 0 point, figure d'abord
   dans la copie corrigée (§ 10).
-- **Prochaine action** : PR « les tirages construisent la figure » (garde de `check-template`, § 10), nouveau
-  worktree depuis `origin/main`.
+- **Prochaine action** : PR « les tirages construisent la figure » (§ 11) codée, branche
+  `feat/geometrie-validation-tirages` : revue, CI, merge.
 - **En attente de David** : essai de CP-060 et de CP-058 (`docs/wip/verifications-manuelles.md`) ; ensuite
   `create-questions --publier` de CP-060 et CP-058 (brouillons), puis nœud + tag (migration, comme #1787).
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; `eval:` rend une fraction LaTeX,
   illisible par la figure, et les tirages ne le voient pas (§ 10) ; limites connues de CP-060 au § 9.
-- **Worktree / branche** : aucun (retiré après #1798).
+- **Worktree / branche** : `ubumaths-wt-geometrie-validation` · `feat/geometrie-validation-tirages`.
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -412,6 +412,18 @@ pas (exception au jugement : toute réponse fausse) et pourtant 200/200 tirages 
 construisent pas la figure. Contourné (`{{ym}}.25`) ; noté dans la fiche du catalogue. Garde possible : faire
 construire la figure à chaque tirage (`check-template`) — à proposer à David.
 
+## 11. PR 6 — les tirages construisent la figure (2026-10-26)
+
+`checkTemplate` construit, à chaque tirage, la figure de chaque case « figure » (`constructionPositions`,
+même calcul que le juge) et vérifie les points de `verifier:` (`assertConstructionChecks`, `judge.ts` :
+point sans position, sommets confondus, rectangle sans angle droit). Échec → tirage refusé, modèle NON
+importable ; le rapport compte « Figures construites : n/N tirages ». Un point de `verifier:` absent du
+texte de la figure était déjà refusé à la génération.
+
+Mesuré : CP-059, CP-060, CP-058 → 150/150, 150/150, 100/100 figures ; CP-058 avec l'ancien
+`y3 = eval:(y1 + y2)/2 + h/4` → 50/100, NON importable. 5 tests (`check-template-figure.test.ts`), 4 rouges
+sans la garde.
+
 ## Journal
 
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 1), au journal questions.
@@ -439,3 +451,4 @@ construire la figure à chaque tirage (`check-template`) — à proposer à Davi
 - 2026-10-26 : PR 5 codée : modèle CP-058 (11 specs), 3 correctifs d’écran (Valider grisé à l’entraînement, message du juge, « Blanc 1 »), exemple au catalogue et sur `/dev/carte-question` ; piège `eval:` → fraction trouvé.
 - 2026-10-26 : #1798, décisions de David : figure vide = 0 point (plus ½), la figure d'abord dans la copie corrigée ; 4 tests rouges sans.
 - 2026-10-26 : #1798 mergée (CP-058) ; worktree retiré.
+- 2026-10-26 : PR 6 codée (garde des tirages, § 11) ; 4 tests rouges sans, le piège de CP-058 attrapé.

@@ -138,8 +138,14 @@ function positionOf(points: ReadonlyMap<string, Position>, name: string): Positi
 	return position;
 }
 
-/** Les côtés donnés de la vérification (déjà tracés dans la figure de départ) */
-function givenVertices(check: PolygonCheck, points: ReadonlyMap<string, Position>): Position[] {
+/**
+ * Les sommets donnés de la vérification (côtés déjà tracés dans la figure de
+ * départ) ; erreur d'auteur s'ils manquent, sont confondus ou sans angle droit
+ */
+export function givenVertices(
+	check: PolygonCheck,
+	points: ReadonlyMap<string, Position>
+): Position[] {
 	const vertices = check.points.map((name) => positionOf(points, name));
 	const eps = tolerance(...vertices);
 	for (let i = 1; i < vertices.length; i++) {
