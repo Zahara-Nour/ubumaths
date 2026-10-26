@@ -1336,8 +1336,11 @@ condition sur la ligne. Tests : `domaine-garde.test.ts`.
   garantit chacune de ses conditions (`guarantees` : l'ensemble est inclus dans celui où `1/u`,
   `ln u` ou `√u` est défini) ; sinon la ligne garde l'écriture et le dit (« x > -1 ne garantit pas
   x ≠ 0 »), et une hypothèse sans effet est dite aussi (« ne change rien ici »). Limite : une
-  réécriture qui rétrécit le domaine (`ln(x²) → 2 ln x`) n'a pas lieu, même `avec x > 0`.
-  Tests : `domaine-reglage.test.ts`.
+  réécriture qui rétrécit le domaine (`ln(x²) → 2 ln x`) n'a pas lieu, même `avec x > 0`. Seule une
+  condition **polynomiale** en sa lettre peut être garantie : `cos(x) ≠ 0` exclut une famille
+  π/2 + kπ que l'inclusion ne voit pas (revue : `cos(x)/cos(x) avec x > 0` donnait 1). La note ne
+  propose que ce qui, recopié, simplifie vraiment la ligne (sinon la condition seule) ; une
+  expression tapée sans bouton renvoie à `.simplifier`. Tests : `domaine-reglage.test.ts`.
 
 **Valeur approchée ⇄ valeur exacte** (PR 2 de la même phase 0) : une ligne dont la réponse a une
 autre écriture porte un bouton qui bascule, ligne par ligne, sans rien sauvegarder ni exporter

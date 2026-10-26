@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, phase 0 de la suite (§ 3), après #1807._
+_Mis à jour le 2026-10-26, § 3 codé sur la branche, PR à ouvrir._
 
-- **État** : #1807 MERGÉE (pas encore en prod). David demande la suite : un réglage entre les deux modes, et une bulle qui dit qu'on peut simplifier plus, avec la syntaxe pour préciser le domaine (§ 3).
-- **Prochaine action** : coder le § 3 (toutes les questions tranchées) : `∩` dans `parseStudentDomain`, `avec`/`dans`, réglage, note.
-- **En attente de David** : rien.
-- **Pièges en cours** : aucune syntaxe de domaine n'existe pour `.simplifier` (seulement `dans` de `.résoudre`/`.variations`, `sur` d'une fonction) ; `1/(1/x) → x` reste un bug de `tidy`.
+- **État** : #1807 MERGÉE. § 3 codé (`feat/tidy-conditions-reglage`) : réglage « Simplifications qui changent le domaine », note « avec x ≠ 0 », hypothèses `avec`/`dans` (∩ sur option de `parseStudentDomain`). Revue Sonnet : 4 findings corrigés (domaine périodique jamais garanti, note recopiable, étapes de `.développer avec`, message d'une expression tapée). 37 025 tests verts.
+- **Prochaine action** : PR, CI, merge ; puis clore le chantier (verser le journal).
+- **En attente de David** : essayer sur http://localhost:5177/atelier.
+- **Pièges en cours** : seule une condition polynomiale est garantie (`cos(x) ≠ 0` jamais) ; `ln(x²) → 2 ln x` refusé même `avec x > 0` ; `1/(1/x) → x` reste un bug de `tidy`.
 - **Worktree / branche** : `../ubumaths-wt-tidy-conditions` · `feat/tidy-conditions-reglage`.
 
 ## Contexte
