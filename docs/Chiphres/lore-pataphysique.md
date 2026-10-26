@@ -415,6 +415,7 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - Pifométrie — _Probabilités et statistiques_
 
   - **Gouverneur** : 🟢 **Cheval à Phynances** (canon Jarry, _Ubu Roi_) — la monture d'Ubu, animal-instinct, dont le nom contient déjà _phynance_. Cumul de mandats avec son rôle UI de compagnon évolutif : le compagnon du Galopin est aussi son gouverneur, ce qui crée une résonance forte (l'animal qui suit l'élève dans son apprentissage est le même qui préside aux paris de la province). Le geste lui-même est ubuesque jusqu'à l'os : **Caligula a nommé son cheval Incitatus consul** ; Père Ubu, qui se prend pour empereur romain, refait le geste. Le Cheval à Phynances règne en patron des casinos, tient sa cour à Bonneteau-sur-Vistule, préside les parties de bonneteau du bout du sabot, hennit pour annoncer les résultats, et touche **une commission de 10 %** sur tous les paris. **Voix** : exclusivement par hennissements. Les Galopins doivent interpréter (un hennissement long = victoire, un court = défaite, un nasal = à recommencer).
+  - **Apparence du Cheval à Phynances** 🟡 (décision de David, 2026-10-26) : cheval maigre et dégingandé, tout en jambes et en côtes saillantes (Ubu ne le nourrit pas, d'après _Ubu Roi_, cité de mémoire), dessiné de façon comique, jamais pitoyable ; seul quadrupède de la galerie, debout fièrement sur ses quatre pattes ; long museau, œil roublard à demi fermé, sourire en coin de bookmaker, une dent en or ; robe brune, crinière bleu encre, liste blanche sur le chanfrein. Patron de casino : visière verte de croupier, couronne de laurier d'or (le consul de Caligula), gilet pourpre à boutons dorés, tapis de selle vert brodé d'une gidouille d'or, râteau de croupier tenu dans la bouche comme un cigare, paire de dés blancs à points pourpres en équilibre sur le dos. Image de départ pour les étapes du compagnon évolutif. Prompt d'illustration : Section XI, « Illustrations ».
   - **Capitale** : 🟡 **Bonneteau-sur-Vistule**
   - **Étymologie de la province** : **_Pifométrie_** bénéficie d'une **double détermination pataphysique** qui fait sa richesse :
     1. **Anatomique — le flair prédateur** : le **pif** est l'organe royal du **flair phynancier**. Le Père Ubu **renifle** où sont les biens à confisquer, où sont les paysans à pressurer, où sont les nobles à passer à la trappe. _« Calculer au pif »_ (= à l'instinct, sans méthode) est la **méthode ubuesque officielle** de Pifométrie.
@@ -2158,6 +2159,24 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines and the overalls, dark chocolate brown for the fur, marigold yellow for the brass key, goggles, buttons and badge, deep crimson for the neckerchief, white for the steam puffs and the teeth.
 
 Composition: Bosse-de-Nage standing mid-hop, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no speech bubble, no signature.
+```
+
+#### Prompt de référence — le Cheval à Phynances 🟡
+
+Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et les images de référence des personnages déjà dessinés, au moins Père Ubu). Garder « no numbers » : sans lui, l'IA écrit « 10 % » ou des numéros de roulette (les points des dés ne sont pas concernés).
+
+```text
+Draw the "Cheval à Phynances", Père Ubu's horse from Alfred Jarry's play "Ubu Roi" (1896), now governor of a province of gamblers and casino boss, as a full-body character portrait in exactly the same drawing style as the attached characters.
+
+Character: a skinny, lanky horse, all long legs and visible ribs (Ubu never feeds him), drawn in a comic way, never pitiful, standing proudly on four legs: the only four-legged character, very different from huge Père Ubu. A long muzzle, one sly half-closed eye, a knowing bookmaker's grin showing one gold tooth. He is a cunning, smug gambler who wins every bet: funny, never scary, for students aged 11 to 17.
+
+Clothing and props: a green croupier's eyeshade visor, a golden laurel crown like a Roman consul, a deep crimson waistcoat with golden buttons, an emerald green saddle cloth embroidered with a golden spiral; he holds a croupier's rake in his mouth like a cigar. A pair of white dice with crimson dots balances on his back.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and the mane, dark chocolate brown for the coat, white for a blaze on the face and the dice, emerald green for the visor and the saddle cloth, deep crimson for the waistcoat and the dice dots, marigold yellow for the laurel crown, the buttons, the spiral and the gold tooth.
+
+Composition: the horse standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no numbers, no signature.
 ```
 
 ---
