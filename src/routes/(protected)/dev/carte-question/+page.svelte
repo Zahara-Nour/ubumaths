@@ -86,11 +86,11 @@
 		'ab = segment(A, B)'
 	].join('\n');
 
-	// CP-058 : point C presque sur la droite (AB), 0,25 carreau au-dessus ; figure + case oui / non
+	// CP-058 : point C presque sur la droite (AB), 0,25 carreau au-dessus ; figure de travail
+	// (non notée) + case choix Oui / Non
 	const ALIGNES_BODY = [
 		'fenetre: 0 ; 10 ; 0 ; 6',
 		'outils: droite',
-		'verifier: droite_par A ; B',
 		'---',
 		'A = point(2, 3)',
 		'B = point(8, 5)',
@@ -101,18 +101,19 @@
 		figure_alignes: {
 			templateId: 'demo-figure-alignes',
 			statement: resolvedMarkdown(
-				`Les points A, B et C sont-ils alignés ? Trace la droite (AB) pour vérifier.\n\n\`\`\`figure-a-completer\ncase: 0\n${ALIGNES_BODY}\n\`\`\`\n\nRéponds par oui ou par non : {{blank:1}}`
+				`Les points $A$, $B$ et $C$ sont-ils alignés ? Tu peux tracer la droite $(AB)$ pour vérifier.\n\n\`\`\`figure-de-travail\ncase: 0\n${ALIGNES_BODY}\n\`\`\`\n\n\`\`\`choix\ncase: 1\n- Oui\n- Non\n\`\`\``
 			),
 			blanks: [
 				{
-					expectedAnswer: 'droite(A;B)',
+					expectedAnswer: '',
 					type: 'graphical',
-					construction: {
-						source: ALIGNES_BODY,
-						checks: [{ kind: 'droite_par', points: ['A', 'B'], line: 3 }]
-					}
+					construction: { source: ALIGNES_BODY, checks: [], work: true }
 				},
-				{ expectedAnswer: 'non', type: 'text' }
+				{
+					expectedAnswer: '1',
+					type: 'choice',
+					choice: { choices: ['Oui', 'Non'], order: [0, 1], multiple: false }
+				}
 			],
 			grades: ['CP'],
 			theme: 'Géométrie',

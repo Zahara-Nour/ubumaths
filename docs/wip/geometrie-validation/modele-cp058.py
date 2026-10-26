@@ -5,8 +5,10 @@ import sys
 DOSSIER = sys.argv[1]
 
 # Décisions de David le 2026-10-26 (journal docs/wip/geometrie-validation-progress.md § 8 et § 9) :
-# figure à compléter (outil droite, feuille blanche) + case texte oui / non tapée ; Valider grisé
-# tant que la droite manque (toute case vide grise Valider) ; écart 0,25 carreau ; delay 60 s.
+# feuille blanche, outil droite, écart 0,25 carreau, delay 60 s.
+# Réécrit au lot 3 du chantier figure-et-choix (docs/wip/figure-et-choix-progress.md § 2.5) :
+# « Tu PEUX vérifier » → figure de TRAVAIL (l'élève trace s'il veut, rien de noté) ; la réponse
+# est une case choix Oui / Non, dans cet ordre (melanger: non).
 
 # Trois points nommés A, B, C ; k choisit le point à vérifier (r), les deux autres (p, q) portent
 # la droite à tracer. Comme CP-059, les positions sont tirées par rôle (1 et 2 = la droite,
@@ -27,10 +29,9 @@ LETTRES = [
 
 
 def bloc():
-    return ('```figure-a-completer\n'
+    return ('```figure-de-travail\n'
             'fenetre: 0 ; 10 ; 0 ; 6\n'
             'outils: droite\n'
-            f'verifier: droite_par {P} ; {Q}\n'
             '---\n'
             'A = point({{xa}}, {{ya}})\n'
             'B = point({{xb}}, {{yb}})\n'
@@ -66,11 +67,13 @@ def variation(alignes):
            'alignés.')
     return {
         'statement': ('Les points $A$, $B$ et $C$ sont-ils alignés ? '
-                      f'Trace la droite $({P}{Q})$ pour vérifier.\n\n' + bloc()
-                      + '\n\nRéponds par oui ou par non : [_]'),
+                      f'Tu peux tracer la droite $({P}{Q})$ pour vérifier.\n\n' + bloc()
+                      + '\n\n```choix\nmelanger: non\n- Oui\n- Non\n```'),
         'variables': [v('k', '1..3')] + ecart + DROITE + milieu + LETTRES,
         'conditions': CONDITIONS,
-        'blanks': [{'expectedAnswer': 'oui' if alignes else 'non'}],
+        # Case 0 = la figure de travail (sans réponse), case 1 = le choix (0 = Oui, 1 = Non).
+        # La figure est écrite dans blanks[] pour que l'éditeur aligne ses cartes (#1833).
+        'blanks': [{'expectedAnswer': ''}, {'expectedAnswer': '0' if alignes else '1'}],
         'correction': {'steps': [
             f'On pose la règle sur les points ${P}$ et ${Q}$ et on trace la droite $({P}{Q})$.',
             fin,
@@ -105,22 +108,24 @@ NP, VP = fixe('2', {'s': '1', 'dx': '3', 'yb1': '3', 'dy': '1', 'yh1': '5', 'h':
 
 AB_A = d((1, 1), (9, 5))
 AC_P = d((2, 5), (8, 3))
+# Réponses : [tracé de la figure de travail, indice du choix coché (0 = Oui, 1 = Non)].
+# La figure n'est jamais notée : tracée ou non, juste ou non, seul le choix compte.
+OUI, NON = '0', '1'
 SPECS = [
-    spec('alignés : droite (AB), « oui »', 0, VA, 'correct', [AB_A, 'oui']),
-    spec('alignés : « Oui » avec majuscule', 0, VA, 'correct', [AB_A, 'Oui']),
-    spec('alignés : « OUI » et espaces', 0, VA, 'correct', [AB_A, ' OUI ']),
+    spec('alignés : droite (AB), « Oui »', 0, VA, 'correct', [AB_A, OUI]),
+    spec('alignés : « Oui » sans rien tracer (la figure n’est pas notée)', 0, VA, 'correct',
+         ['', OUI]),
     spec('alignés : droite (AC), qui passe aussi par B', 0, VA, 'correct',
-         [d((1, 1), (5, 3)), 'oui']),
-    spec('Erreur : alignés, réponse « non »', 0, VA, 'incorrect', [AB_A, 'non']),
-    spec('Erreur : temps écoulé sans la droite, 0 point', 0, VA,
-         'incorrect', ['', 'oui']),
-    spec('pas alignés : droite (AC), « non »', 1, VP, 'correct', [AC_P, 'non']),
-    spec('pas alignés : « Non » avec majuscule', 1, VP, 'correct', [AC_P, 'Non']),
-    spec('Erreur : pas alignés, réponse « oui »', 1, VP, 'incorrect', [AC_P, 'oui']),
-    spec('Erreur : droite (AB) au lieu de (AC)', 1, VP, 'incorrect',
-         [d((2, 5), (5, 4.25)), 'non']),
-    spec('Erreur : la bonne droite et une droite de trop', 1, VP, 'incorrect',
-         [AC_P + '|' + d((2, 5), (5, 4.25)), 'non']),
+         [d((1, 1), (5, 3)), OUI]),
+    spec('Erreur : alignés, réponse « Non »', 0, VA, 'incorrect', [AB_A, NON]),
+    spec('droite (AB) tracée, rien coché : vide (la figure ne compte pas)', 0, VA, 'empty',
+         [AB_A, '']),
+    spec('pas alignés : droite (AC), « Non »', 1, VP, 'correct', [AC_P, NON]),
+    spec('pas alignés : « Non » sans rien tracer', 1, VP, 'correct', ['', NON]),
+    spec('pas alignés : droite par le mauvais point, « Non » (la figure n’est pas notée)', 1, VP,
+         'correct', [d((2, 5), (5, 4.25)), NON]),
+    spec('Erreur : pas alignés, réponse « Oui »', 1, VP, 'incorrect', [AC_P, OUI]),
+    spec('Erreur : pas alignés, « Oui » sans rien tracer', 1, VP, 'incorrect', ['', OUI]),
 ]
 
 MODELE = {

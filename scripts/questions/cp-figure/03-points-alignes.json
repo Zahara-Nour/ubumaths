@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Les points $A$, $B$ et $C$ sont-ils alignés ? Trace la droite $({{if:k==3|B|A}}{{if:k==1|B|C}})$ pour vérifier.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 6\noutils: droite\nverifier: droite_par {{if:k==3|B|A}} ; {{if:k==1|B|C}}\n---\nA = point({{xa}}, {{ya}})\nB = point({{xb}}, {{yb}})\nC = point({{xc}}, {{yc}})\n```\n\nRéponds par oui ou par non : [_]",
+			"statement": "Les points $A$, $B$ et $C$ sont-ils alignés ? Tu peux tracer la droite $({{if:k==3|B|A}}{{if:k==1|B|C}})$ pour vérifier.\n\n```figure-de-travail\nfenetre: 0 ; 10 ; 0 ; 6\noutils: droite\n---\nA = point({{xa}}, {{ya}})\nB = point({{xb}}, {{yb}})\nC = point({{xc}}, {{yc}})\n```\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -88,7 +88,10 @@
 			"conditions": ["x2 <= 9", "yh1 <= 5"],
 			"blanks": [
 				{
-					"expectedAnswer": "oui"
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": "0"
 				}
 			],
 			"correction": {
@@ -99,7 +102,7 @@
 			}
 		},
 		{
-			"statement": "Les points $A$, $B$ et $C$ sont-ils alignés ? Trace la droite $({{if:k==3|B|A}}{{if:k==1|B|C}})$ pour vérifier.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 6\noutils: droite\nverifier: droite_par {{if:k==3|B|A}} ; {{if:k==1|B|C}}\n---\nA = point({{xa}}, {{ya}})\nB = point({{xb}}, {{yb}})\nC = point({{xc}}, {{yc}})\n```\n\nRéponds par oui ou par non : [_]",
+			"statement": "Les points $A$, $B$ et $C$ sont-ils alignés ? Tu peux tracer la droite $({{if:k==3|B|A}}{{if:k==1|B|C}})$ pour vérifier.\n\n```figure-de-travail\nfenetre: 0 ; 10 ; 0 ; 6\noutils: droite\n---\nA = point({{xa}}, {{ya}})\nB = point({{xb}}, {{yb}})\nC = point({{xc}}, {{yc}})\n```\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -189,7 +192,10 @@
 			"conditions": ["x2 <= 9", "yh1 <= 5"],
 			"blanks": [
 				{
-					"expectedAnswer": "non"
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": "1"
 				}
 			],
 			"correction": {
@@ -202,7 +208,7 @@
 	],
 	"testSpecs": [
 		{
-			"description": "alignés : droite (AB), « oui »",
+			"description": "alignés : droite (AB), « Oui »",
 			"variationIndex": 0,
 			"variables": {
 				"k": "1",
@@ -227,10 +233,10 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["droite(1;1;9;5)", "oui"]
+			"answers": ["droite(1;1;9;5)", "0"]
 		},
 		{
-			"description": "alignés : « Oui » avec majuscule",
+			"description": "alignés : « Oui » sans rien tracer (la figure n’est pas notée)",
 			"variationIndex": 0,
 			"variables": {
 				"k": "1",
@@ -255,35 +261,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["droite(1;1;9;5)", "Oui"]
-		},
-		{
-			"description": "alignés : « OUI » et espaces",
-			"variationIndex": 0,
-			"variables": {
-				"k": "1",
-				"x1": "1",
-				"y1": "1",
-				"x2": "9",
-				"y2": "5",
-				"x3": "5",
-				"y3": "3",
-				"s": "0",
-				"dx": "4",
-				"yb1": "1",
-				"dy": "2",
-				"yh1": "5",
-				"xa": "1",
-				"ya": "1",
-				"xb": "9",
-				"yb": "5",
-				"xc": "5",
-				"yc": "3"
-			},
-			"expected": {
-				"status": "correct"
-			},
-			"answers": ["droite(1;1;9;5)", " OUI "]
+			"answers": ["", "0"]
 		},
 		{
 			"description": "alignés : droite (AC), qui passe aussi par B",
@@ -311,10 +289,10 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["droite(1;1;5;3)", "oui"]
+			"answers": ["droite(1;1;5;3)", "0"]
 		},
 		{
-			"description": "Erreur : alignés, réponse « non »",
+			"description": "Erreur : alignés, réponse « Non »",
 			"variationIndex": 0,
 			"variables": {
 				"k": "1",
@@ -339,10 +317,10 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"answers": ["droite(1;1;9;5)", "non"]
+			"answers": ["droite(1;1;9;5)", "1"]
 		},
 		{
-			"description": "Erreur : temps écoulé sans la droite, 0 point",
+			"description": "droite (AB) tracée, rien coché : vide (la figure ne compte pas)",
 			"variationIndex": 0,
 			"variables": {
 				"k": "1",
@@ -365,12 +343,12 @@
 				"yc": "3"
 			},
 			"expected": {
-				"status": "incorrect"
+				"status": "empty"
 			},
-			"answers": ["", "oui"]
+			"answers": ["droite(1;1;9;5)", ""]
 		},
 		{
-			"description": "pas alignés : droite (AC), « non »",
+			"description": "pas alignés : droite (AC), « Non »",
 			"variationIndex": 1,
 			"variables": {
 				"k": "2",
@@ -398,10 +376,10 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["droite(2;5;8;3)", "non"]
+			"answers": ["droite(2;5;8;3)", "1"]
 		},
 		{
-			"description": "pas alignés : « Non » avec majuscule",
+			"description": "pas alignés : « Non » sans rien tracer",
 			"variationIndex": 1,
 			"variables": {
 				"k": "2",
@@ -429,10 +407,41 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["droite(2;5;8;3)", "Non"]
+			"answers": ["", "1"]
 		},
 		{
-			"description": "Erreur : pas alignés, réponse « oui »",
+			"description": "pas alignés : droite par le mauvais point, « Non » (la figure n’est pas notée)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"x1": "2",
+				"y1": "5",
+				"x2": "8",
+				"y2": "3",
+				"x3": "5",
+				"y3": "4.25",
+				"s": "1",
+				"dx": "3",
+				"yb1": "3",
+				"dy": "1",
+				"yh1": "5",
+				"h": "1",
+				"ym": "4",
+				"ymb": "3",
+				"xa": "2",
+				"ya": "5",
+				"xb": "5",
+				"yb": "4.25",
+				"xc": "8",
+				"yc": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["droite(2;5;5;4.25)", "1"]
+		},
+		{
+			"description": "Erreur : pas alignés, réponse « Oui »",
 			"variationIndex": 1,
 			"variables": {
 				"k": "2",
@@ -460,10 +469,10 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"answers": ["droite(2;5;8;3)", "oui"]
+			"answers": ["droite(2;5;8;3)", "0"]
 		},
 		{
-			"description": "Erreur : droite (AB) au lieu de (AC)",
+			"description": "Erreur : pas alignés, « Oui » sans rien tracer",
 			"variationIndex": 1,
 			"variables": {
 				"k": "2",
@@ -491,38 +500,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"answers": ["droite(2;5;5;4.25)", "non"]
-		},
-		{
-			"description": "Erreur : la bonne droite et une droite de trop",
-			"variationIndex": 1,
-			"variables": {
-				"k": "2",
-				"x1": "2",
-				"y1": "5",
-				"x2": "8",
-				"y2": "3",
-				"x3": "5",
-				"y3": "4.25",
-				"s": "1",
-				"dx": "3",
-				"yb1": "3",
-				"dy": "1",
-				"yh1": "5",
-				"h": "1",
-				"ym": "4",
-				"ymb": "3",
-				"xa": "2",
-				"ya": "5",
-				"xb": "5",
-				"yb": "4.25",
-				"xc": "8",
-				"yc": "3"
-			},
-			"expected": {
-				"status": "incorrect"
-			},
-			"answers": ["droite(2;5;8;3)|droite(2;5;5;4.25)", "non"]
+			"answers": ["", "0"]
 		}
 	]
 }
