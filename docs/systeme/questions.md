@@ -213,8 +213,9 @@ complétée jusqu'à elle. Réponse calculée (`{{eval:…}}`) ou hors des choix
 parseur et champ de texte seul, jamais réécrit ; un `case: N` écrit à la main aussi. Énoncé
 **partagé** (la variation n'a pas le sien, `statementShared`) : carte en lecture seule (on coche
 seulement), pas d'ajout de case choix — le modifier d'une variation décalerait les réponses des
-autres. `TestSpecEditor` : une case choix se coche (`answers[i]` = `"0;2"`) ; réponse calculée →
-champ de texte.
+autres. `TestSpecEditor` : une case choix se coche (`answers[i]` = `"0;2"`), chaque choix rendu
+comme dans l'aperçu, lettre devant (variable non résolue laissée telle qu'écrite) ; réponse calculée →
+champ de texte. Garde : `TestSpecEditor-case-choix.svelte.test.ts`.
 
 **Figure de travail dans l'éditeur** (`work-figure-editor.ts`, lot 2 du chantier `figure-et-choix`) :
 chaque bloc ```figure-de-travail de l'énoncé a une carte en lecture seule « Figure de travail — non
@@ -223,11 +224,15 @@ erreurs (`verifier:`, outil inconnu…) ; il se modifie dans l'énoncé. `TestSp
 rien (valeur vide). Garde : `AnswerEditor-figure-de-travail.svelte.test.ts`.
 
 **Cases de blocs omises de `blanks[]`** : le générateur permet d'omettre l'entrée d'une case de bloc
-(`operation, `figure-a-completer, `figure-de-travail, `collection / ```monnaie à construire) ;
+(`operation, `figure-a-completer, `figure-de-travail, `collection / ``monnaie à construire) ;
 `AnswerEditor` remet alors la liste à une entrée par case (`withBlockCases`, `choice-case-editor.ts` :
 entrée vide au rang de chaque bloc, les autres dans l'ordre, le sens que leur donne le générateur).
 Sans cela, la carte d'une figure prenait l'entrée que le générateur donne à la case suivante (énoncé
-collé dans un formulaire parti d'une entrée : pas de carte pour le choix, « aucune bonne réponse »). Seulement après une modification de l'énoncé (ouvrir un modèle ne le marque pas modifié), et jamais sur un énoncé à variables ou à expressions (`{{…}}`, `<<expr:…>>`) : le générateur compte les cases sur l'énoncé résolu (une division `{{a}} ÷ 7` en porte deux).
+collé dans un formulaire parti d'une entrée : pas de carte pour le choix, « aucune bonne réponse »). Seulement après une modification de l'énoncé (ouvrir un modèle ne le marque pas modifié), Énoncé à variables ou à expressions (`{{…}}`, `<<expr:…>>`) : le générateur compte les cases sur
+l'énoncé résolu ; l'éditeur ne réaligne que si l'énoncé brut compte comme lui — aucune variable dans
+un ``operation (une division `{{a}} ÷ 7` porte deux cases), et même genre de cases dans le même
+ordre en comptant aussi l'énoncé où chaque `{{…}}` vaut `1` (un `{{if:k==1|[_]|…}}` qui porte une case
+les fait différer). Forme de CP-058 (`{{if:}}` dans le texte, variables dans la figure) : réalignée.
 
 ### 2. Fusion `shared` ⊕ variation (`resolveVariationWithShared`)
 
