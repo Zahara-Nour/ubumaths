@@ -13,6 +13,7 @@ import {
 	NOT_CLOSED_FEEDBACK,
 	NOT_ON_GRID_LINES_FEEDBACK,
 	OVERSHOOT_FEEDBACK,
+	PROLONGED_RECTANGLE_SIDES_FEEDBACK,
 	PROLONGED_SIDE_FEEDBACK,
 	judgeConstruction
 } from '../judge';
@@ -262,6 +263,33 @@ describe('rectangle A ; B ; C — tableau de la phase 0', () => {
 
 	it('figure ouverte : faux', () => {
 		expect(rectangle('segment(6;2;6;5)')).toEqual({
+			status: 'incorrect',
+			feedback: NOT_CLOSED_FEEDBACK
+		});
+	});
+
+	it('fermé sur un côté donné prolongé : faux, il ne fallait pas le prolonger (décision de David)', () => {
+		// [BC] prolongé au-delà de C, puis la figure fermée
+		expect(rectangle('segment(6;2;8;2)|segment(8;2;8;5)|segment(8;5;2;5)')).toEqual({
+			status: 'incorrect',
+			feedback: PROLONGED_RECTANGLE_SIDES_FEEDBACK
+		});
+		// [AB] prolongé au-delà de A
+		expect(rectangle('segment(2;5;2;7)|segment(2;7;6;7)|segment(6;7;6;2)')).toEqual({
+			status: 'incorrect',
+			feedback: PROLONGED_RECTANGLE_SIDES_FEEDBACK
+		});
+		// Les deux
+		expect(
+			rectangle('segment(6;2;8;2)|segment(8;2;8;7)|segment(8;7;2;7)|segment(2;7;2;5)')
+		).toEqual({
+			status: 'incorrect',
+			feedback: PROLONGED_RECTANGLE_SIDES_FEEDBACK
+		});
+	});
+
+	it('côté donné prolongé mais figure ouverte : faux, pas fermée', () => {
+		expect(rectangle('segment(6;2;8;2)|segment(8;2;8;5)')).toEqual({
 			status: 'incorrect',
 			feedback: NOT_CLOSED_FEEDBACK
 		});
