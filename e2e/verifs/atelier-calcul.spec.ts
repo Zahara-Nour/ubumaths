@@ -1033,7 +1033,9 @@ test('#1374 — définitions en erreur : circulaire, dépendance, fonction prise
 	}
 	await page.keyboard.press('Escape');
 	expect((await calc(page, 'h(x) = a_1 x')).refused).toBe(false);
-	expect((await card(page, 'h')).message).toBeNull();
+	// La carte évaluée (sa formule affichée) avant de lire l'absence de message
+	await expect.poll(async () => normalizeLatex((await card(page, 'h')).latex ?? '')).toBe('a_1x');
+	await expect.poll(async () => (await card(page, 'h')).message).toBeNull();
 });
 
 test('#1404 — conversions, intégrales refusées, réciproque à paramètres', async ({ page }) => {

@@ -230,6 +230,9 @@ test('#1538 — Parallèle, Perpendiculaire (fantôme) ; Point ou Segment sur un
 
 	// L'objet visé en évidence au survol
 	await chooseTool(page, 'Point');
+	// Dans le vide d'abord : rien en évidence, puis k survolée
+	await hoverAt(page, -5, 4);
+	await expect(page.locator('.figure .hovered')).toHaveCount(0);
 	await hoverAt(page, 4, -2);
 	await expect(page.locator('.figure .hovered')).not.toHaveCount(0);
 
