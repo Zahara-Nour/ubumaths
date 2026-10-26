@@ -14,6 +14,7 @@
 	import type { InputMode } from '$lib/atelier/input-mode';
 	import type { AngleUnit } from '$lib/atelier/angle-unit';
 	import type { PointDragMode } from '$lib/atelier/point-drag-mode';
+	import type { DomainMode } from '$lib/atelier/domain-mode';
 
 	interface Choice {
 		value: InputMode;
@@ -26,8 +27,14 @@
 	let {
 		inputMode = $bindable('text'),
 		angleUnit = $bindable('deg'),
-		pointDragMode = $bindable('snap')
-	}: { inputMode?: InputMode; angleUnit?: AngleUnit; pointDragMode?: PointDragMode } = $props();
+		pointDragMode = $bindable('snap'),
+		domainMode = $bindable('keep')
+	}: {
+		inputMode?: InputMode;
+		angleUnit?: AngleUnit;
+		pointDragMode?: PointDragMode;
+		domainMode?: DomainMode;
+	} = $props();
 
 	/** Le réglage « Angles » (2026-10-18) : l'unité des mesures d'angle, seulement. */
 	const ANGLE_CHOICES: readonly { value: AngleUnit; label: string; detail: string }[] = [
@@ -41,6 +48,22 @@
 	];
 
 	/** Le réglage « Déplacement des points » (2026-10-22) : la souris dans la vue Géométrie. */
+	/** Tidy-conditions, § 3 (David, 2026-10-26) : pour les nouvelles lignes seulement */
+	const DOMAIN_CHOICES: readonly { value: DomainMode; label: string; detail: string }[] = [
+		{
+			value: 'keep',
+			label: 'Garder l’écriture',
+			detail:
+				'x/x reste x/x : une note dit qu’on peut simplifier pour x ≠ 0, et comment le préciser (avec x ≠ 0).'
+		},
+		{
+			value: 'conditions',
+			label: 'Simplifier en disant la condition',
+			detail:
+				'x/x s’écrit « 1, pour x ≠ 0 ». Vaut pour les nouvelles lignes ; le bouton de chaque ligne bascule.'
+		}
+	];
+
 	const DRAG_CHOICES: readonly { value: PointDragMode; label: string; detail: string }[] = [
 		{
 			value: 'snap',
@@ -159,6 +182,34 @@
 						<div class="flex-1">
 							<Label for="{uid}-drag-{choice.value}" class="cursor-pointer">{choice.label}</Label>
 							<p id="{uid}-drag-{choice.value}-detail" class="mt-1 text-sm text-muted-foreground">
+								{choice.detail}
+							</p>
+						</div>
+					</div>
+				{/each}
+			</RadioGroup.Root>
+		</fieldset>
+		<fieldset class="space-y-3">
+			<legend class="mb-2 font-medium">Simplifications qui changent le domaine</legend>
+			<RadioGroup.Root
+				value={domainMode}
+				onValueChange={(value) => (domainMode = value === 'conditions' ? 'conditions' : 'keep')}
+			>
+				{#each DOMAIN_CHOICES as choice (choice.value)}
+					<div class="flex items-start gap-3">
+						<RadioGroup.Item
+							value={choice.value}
+							id="{uid}-domaine-{choice.value}"
+							aria-describedby="{uid}-domaine-{choice.value}-detail"
+							class="mt-1"
+						/>
+						<div class="flex-1">
+							<Label for="{uid}-domaine-{choice.value}" class="cursor-pointer">{choice.label}</Label
+							>
+							<p
+								id="{uid}-domaine-{choice.value}-detail"
+								class="mt-1 text-sm text-muted-foreground"
+							>
 								{choice.detail}
 							</p>
 						</div>
