@@ -2,17 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1798._
+_Mis à jour le 2026-10-26, après #1805._
 
-- **État** : CP-059, CP-060 et CP-058 mergés (#1793, #1798), pas en prod ; figure vide = 0 point, figure d'abord
-  dans la copie corrigée (§ 10).
-- **Prochaine action** : PR « les tirages construisent la figure » (§ 11) codée, branche
-  `feat/geometrie-validation-tirages` : revue, CI, merge.
+- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas en prod ; garde des tirages mergée (#1805) :
+  `checkTemplate` construit la figure à chaque tirage (§ 11).
+- **Prochaine action** : aucune PR de code en vue ; attendre l'essai de David, puis publier.
 - **En attente de David** : essai de CP-060 et de CP-058 (`docs/wip/verifications-manuelles.md`) ; ensuite
   `create-questions --publier` de CP-060 et CP-058 (brouillons), puis nœud + tag (migration, comme #1787).
-- **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; `eval:` rend une fraction LaTeX,
-  illisible par la figure, et les tirages ne le voient pas (§ 10) ; limites connues de CP-060 au § 9.
-- **Worktree / branche** : `ubumaths-wt-geometrie-validation` · `feat/geometrie-validation-tirages`.
+- **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9.
+- **Worktree / branche** : aucun (retiré après #1805).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -458,3 +456,4 @@ dont 2 rouges sans leur correctif. Prod balayée : seul CP-059 (brouillon) porte
 - 2026-10-26 : #1798, décisions de David : figure vide = 0 point (plus ½), la figure d'abord dans la copie corrigée ; 4 tests rouges sans.
 - 2026-10-26 : #1798 mergée (CP-058) ; worktree retiré.
 - 2026-10-26 : PR 6 codée (garde des tirages, § 11) ; 4 tests rouges sans, le piège de CP-058 attrapé.
+- 2026-10-26 : #1805 mergée (garde des tirages, revue Sonnet traitée) ; worktree retiré.
