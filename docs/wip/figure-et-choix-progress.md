@@ -266,3 +266,22 @@ Comportements du § 2.3, plus :
   la carte ; rien dans l'éditeur de tests (valeur vide, ignorée).
 - Une question dont la seule case est une figure de travail est refusée à l'écriture (« il faut au moins
   une case notée »). Pas de numéro de case pour l'élève.
+
+### 2.10 Lot 3 : CP-058 réécrit (2026-10-26)
+
+Fait depuis un worktree frère (`../ubumaths-wt-figure-et-choix-cp058`) : celui du chantier est figé tant que
+David essaie le lot 2 sur 5179.
+
+- `docs/wip/geometrie-validation/modele-cp058.py` → `scripts/questions/cp-figure/03-points-alignes.json` :
+  « Tu **peux** tracer la droite (AB) pour vérifier. » + ` ```figure-de-travail ` (outil droite, sans
+  `verifier:`) + ` ```choix ` `melanger: non` « Oui / Non ». `blanks[]` écrit la figure (réponse vide) avant
+  le choix (`0` = Oui, `1` = Non) pour que l'éditeur aligne ses cartes sur un modèle à variables (reste
+  connu de #1833). Reste du modèle inchangé (deux variations, tirages, lettres, delay 60 s).
+- 10 specs, `create-questions` en simulation vert (« à créer ») : la figure ne compte jamais (tracée ou non,
+  juste ou non) ; droite tracée et rien coché → `empty`, pas `incorrect`.
+- Changé par la décision du lot 2 (attendu) : Valider n'est plus grisé sans droite ; « temps écoulé sans
+  droite, réponse juste » vaut désormais le point (avant : 0).
+- `/dev/carte-question`, « Points alignés ? (CP-058) » : même forme (instance écrite à la main, comme le
+  générateur la rend).
+- **Publication** : seulement après le `deploy:prod` des lots 1-2 (le code en prod ne lit ni ` ```choix ` ni
+  ` ```figure-de-travail `), puis David lance `create-questions --dir scripts/questions/cp-figure --publier`.

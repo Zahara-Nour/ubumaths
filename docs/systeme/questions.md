@@ -418,7 +418,8 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    (`loadConstructionPositions`) : pendant le chargement, la consigne et un cadre `aria-busy` ;
    chargement impossible → la bonne droite seule, sans verdict (gardes :
    `figure-a-completer-correction.svelte.test.ts`, `…-correction-echec.svelte.test.ts`).
-   Case « figure » **mêlée à d'autres cases** (CP-058 : la droite, puis « oui » / « non » tapé) :
+   Case « figure » **mêlée à d'autres cases** (une droite à tracer, puis une case texte ; CP-058 l'était avant de passer, au lot 3 de
+   `figure-et-choix`, à une figure de travail et une case choix) :
    le message global est celui du juge si la figure est fausse (avant « Tu n'as pas tout complété. »),
    sinon aucun — jamais « Les blancs suivants sont incorrects » (`aggregateOrderedBlanks`) ; la liste
    « Blanc N : » sous l'énoncé ne le répète pas et numérote sans compter la figure. Valider reste grisé tant que la figure est vide, à l'entraînement (`FlashCard`,
