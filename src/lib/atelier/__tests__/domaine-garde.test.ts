@@ -157,14 +157,24 @@ describe('revue du 2026-10-26 : une réécriture qui rétrécit le domaine passe
 	});
 });
 
-// Plusieurs lettres : on ne voit pas si le domaine rétréci garde un point
-// (revue Opus du § 4.2) — ni simplification, ni bouton, comme avant
+// Plusieurs lettres (§ 5, L5) : la ligne garde l'écriture ; le bouton vient
+// quand chaque condition d'après porte sur une lettre (`x > 0 et y > 0`) et
+// dit celles d'avant ; sinon (revue Opus du § 4.2) ni simplification ni bouton
 describe('plusieurs lettres : une réécriture qui rétrécit le domaine n’a pas lieu', () => {
-	it.each(['.simplifier ln(x*y)', '.simplifier ln(x/y)'])('%s', (input) => {
-		const result = line(input);
+	it.each(['.simplifier ln(x*y)', '.simplifier ln(x/y)'])(
+		'%s : « pour x > 0 et y > 0 »',
+		(input) => {
+			const result = line(input);
+			expect(result.alternative?.label).toBe('Simplifier pour x > 0 et y > 0');
+			expect(flat(result.latex)).not.toContain('\\ln\\left(x\\right)+');
+			expect(flat(result.latex)).not.toContain('\\ln\\left(x\\right)-');
+		}
+	);
+
+	it('.simplifier ln((x+y)z) : x + y > 0 porte sur deux lettres, ni bouton ni simplification', () => {
+		const result = line('.simplifier ln((x+y)z)');
 		expect(result.alternative).toBeUndefined();
-		expect(flat(result.latex)).not.toContain('\\ln\\left(x\\right)+');
-		expect(flat(result.latex)).not.toContain('\\ln\\left(x\\right)-');
+		expect(flat(result.latex)).not.toContain('+\\ln\\left(z\\right)');
 	});
 });
 

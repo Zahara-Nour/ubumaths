@@ -424,6 +424,7 @@ export function domainChanges(
 	const setAfter = letter === null ? null : setOf(now, letter);
 	const readable = setBefore !== null && setAfter !== null;
 	const narrows = readable ? !isIncluded(setBefore, setAfter) : gained.length > 0;
+	if (narrows && letter === null) return narrowedByLetters(was, now, lost, gained);
 	// Le domaine rétrécit sans qu'on lise les ensembles (plusieurs lettres) : on ne
 	// voit pas s'il reste un point — ne rien dire. Lus et sans point commun
 	// (revue : `ln(x²) + ln(−x)`, défini pour x < 0, donnait « pour x > 0 ») : idem
@@ -437,6 +438,137 @@ export function domainChanges(
 	if (written === null) return null;
 	const common = was.filter((c) => !lost.includes(c));
 	return { conditions: letter === null ? written : pruned(written, common, letter), narrows };
+}
+
+/**
+ * Plusieurs lettres, le domaine rétrécit (§ 5, L5) : accepté quand chaque
+ * condition d'après porte sur une seule lettre (l'ensemble d'après est alors
+ * un produit, non vide si chaque lettre garde un point) et que chaque
+ * condition perdue s'en déduit par les signes de ses facteurs (`xy > 0` ⇐
+ * `x > 0 et y > 0`). La condition : celles gagnées, élaguées lettre par
+ * lettre. Sinon `null`, comme avant : jamais une condition fausse.
+ */
+function narrowedByLetters(
+	was: readonly DomainCondition[],
+	now: readonly DomainCondition[],
+	lost: readonly DomainCondition[],
+	gained: readonly DomainCondition[]
+): DomainChangeDetail | null {
+	const sets = new Map<string, Domain>();
+	for (const condition of now) {
+		const where = conditionSet(condition);
+		if (where === null) return null;
+		sets.set(
+			where.letter,
+			intersect(sets.get(where.letter) ?? { kind: 'universal' }, where.domain)
+		);
+	}
+	if ([...sets.values()].some(isEmpty)) return null;
+	if (!lost.every((condition) => impliedBySigns(condition, sets))) return null;
+	const written = writable(gained);
+	if (written === null) return null;
+	const common = was.filter((c) => !lost.includes(c));
+	const byLetter = (c: DomainCondition) => conditionSet(c)?.letter;
+	const conditions = [...sets.keys()].flatMap((letter) =>
+		pruned(
+			written.filter((c) => byLetter(c) === letter),
+			common.filter((c) => byLetter(c) === letter),
+			letter
+		)
+	);
+	return { conditions: written.filter((c) => conditions.includes(c)), narrows: true };
+}
+
+/** Les signes qu'une expression peut prendre : −, 0, + (masque). */
+const NEGATIVE = 1;
+const ZERO = 2;
+const POSITIVE = 4;
+const ANY_SIGN = NEGATIVE | ZERO | POSITIVE;
+
+/** La condition vaut-elle partout où chaque lettre est dans son ensemble ? */
+function impliedBySigns(condition: DomainCondition, sets: ReadonlyMap<string, Domain>): boolean {
+	const signs = signsOf(condition.expression, sets);
+	switch (condition.relation) {
+		case 'positive':
+			return signs === POSITIVE;
+		case 'nonnegative':
+			return (signs & NEGATIVE) === 0;
+		case 'nonzero':
+			return (signs & ZERO) === 0;
+		default:
+			return false;
+	}
+}
+
+/**
+ * Les signes de `node` quand chaque lettre est dans son ensemble : par
+ * facteurs (produit, quotient, opposé, puissance entière) ; un facteur d'une
+ * seule lettre se lit sur son ensemble, un nombre par sa valeur. Ce qu'on ne
+ * sait pas lire (`x + y`) : tous les signes.
+ */
+function signsOf(node: MathNode, sets: ReadonlyMap<string, Domain>): number {
+	const letters = getVariables(node);
+	if (letters.size === 0) {
+		const value = decimalValue(node);
+		if (value === null) return ANY_SIGN;
+		return value > 0 ? POSITIVE : value < 0 ? NEGATIVE : ZERO;
+	}
+	if (letters.size === 1) {
+		const [letter] = letters;
+		const assumed = sets.get(letter);
+		return assumed === undefined ? ANY_SIGN : letterSigns(node, assumed);
+	}
+	switch (node.type) {
+		case 'delimiter':
+			return signsOf(node.content, sets);
+		case 'opposite':
+			return negated(signsOf(node.operand, sets));
+		case 'multiplication':
+			return product(signsOf(node.left, sets), signsOf(node.right, sets));
+		case 'division':
+			// Le dénominateur nul est exclu par sa propre condition
+			return product(signsOf(node.numerator, sets), signsOf(node.denominator, sets) & ~ZERO);
+		case 'superscript': {
+			const exponent = extractRational(node.superscript);
+			if (exponent === null || exponent.d !== 1n || exponent.n === 0n) return ANY_SIGN;
+			const base = signsOf(node.base, sets) & (exponent.n < 0n ? ~ZERO : ANY_SIGN);
+			const odd = (exponent.n < 0n ? -exponent.n : exponent.n) % 2n === 1n;
+			if (odd) return base;
+			return (base & ZERO) | (base & (NEGATIVE | POSITIVE) ? POSITIVE : 0);
+		}
+		default:
+			return ANY_SIGN;
+	}
+}
+
+/** Les signes d'une expression d'une lettre sur l'ensemble `assumed`. */
+function letterSigns(node: MathNode, assumed: Domain): number {
+	const within = (expression: MathNode, relation: TidyCondition['relation']) => {
+		const where = conditionSet({ expression, relation });
+		return where !== null && isIncluded(assumed, where.domain);
+	};
+	if (within(node, 'positive')) return POSITIVE;
+	if (within(opposite(node), 'positive')) return NEGATIVE;
+	let signs = ANY_SIGN;
+	if (within(node, 'nonnegative')) signs &= ~NEGATIVE;
+	if (within(opposite(node), 'nonnegative')) signs &= ~POSITIVE;
+	if (within(node, 'nonzero')) signs &= ~ZERO;
+	return signs;
+}
+
+function negated(signs: number): number {
+	return (signs & ZERO) | (signs & NEGATIVE ? POSITIVE : 0) | (signs & POSITIVE ? NEGATIVE : 0);
+}
+
+function product(a: number, b: number): number {
+	let signs = 0;
+	for (const s of [NEGATIVE, ZERO, POSITIVE]) {
+		for (const t of [NEGATIVE, ZERO, POSITIVE]) {
+			if ((a & s) === 0 || (b & t) === 0) continue;
+			signs |= s === ZERO || t === ZERO ? ZERO : s === t ? POSITIVE : NEGATIVE;
+		}
+	}
+	return signs;
 }
 
 /**

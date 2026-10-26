@@ -249,8 +249,27 @@ describe('domainChange par ensembles (§ 4.2)', () => {
 		expect(change(before, after)).toEqual(conditions);
 	});
 
-	it('plusieurs lettres, domaine rétréci : on ne voit pas s’il reste un point, null', () => {
-		expect(change('ln(x y)', 'ln(x)+ln(y)')).toBeNull();
+	// § 5, L5 : chaque condition d'après porte sur une lettre, celles d'avant
+	// s'en déduisent par les signes des facteurs (`xy > 0` ⇐ `x > 0 et y > 0`)
+	it.each([
+		['ln(x y)', 'ln(x)+ln(y)', ['x > 0', 'y > 0']],
+		['ln(x/y)', 'ln(x)-ln(y)', ['x > 0', 'y > 0']],
+		['sqrt(x y)', 'sqrt(x)sqrt(y)', ['x ≥ 0', 'y ≥ 0']],
+		['ln(x^2 y)', '2ln(x)+ln(y)', ['x > 0', 'y > 0']],
+		['ln(x y)+1/(y-1)', 'ln(x)+ln(y)+1/(y-1)', ['x > 0', 'y > 0']]
+	])('plusieurs lettres, %s → %s : « %s »', (before, after, conditions) => {
+		expect(change(before, after)).toEqual(conditions);
+	});
+
+	it.each([
+		// une condition d'après sur deux lettres : on ne voit pas s'il reste un point
+		['ln((x+y)z)', 'ln(x+y)+ln(z)'],
+		// `x > 0 et −y > 0` ne donne pas `xy > 0` : jamais une condition fausse
+		['ln(x y)', 'ln(x)+ln(-y)'],
+		// x > 0 et −x > 0 : plus aucun point
+		['ln(x y)+ln(-x)', 'ln(x)+ln(y)+ln(-x)']
+	])('plusieurs lettres, %s → %s : null', (before, after) => {
+		expect(change(before, after)).toBeNull();
 	});
 
 	it('plusieurs lettres, domaine élargi : la perte, sans élagage', () => {
