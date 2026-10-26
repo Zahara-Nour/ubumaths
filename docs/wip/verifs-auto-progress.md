@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1792._
+_Mis à jour le 2026-10-26, lot 5 en PR (#1795)._
 
-- **État** : lots 1-4 mergés (#1773, #1780, #1783, #1789) ; les 5 écarts tranchés par David le 2026-10-26 et repris (#1792) : l'Atelier a raison, lignes et tests réécrits. Seuls rouges : `each_key_duplicate` (#1674, fin de #1703, #1620, #1307).
-- **Prochaine action** : lot 5 dans un worktree neuf (`git worktree add -b test/verifs-auto-5 ../ubumaths-wt-verifs-auto origin/main`) : lignes Atelier restantes (Graphe, Données, Géométrie). La sonde d'abord, les écarts à David.
-- **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : ports 5175-5178 pris → `lsof` (5179) ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; suite complète à froid avec 4 workers → délais dépassés, relancer à chaud ; `each_key_duplicate` casse « Comment ? » ; champ d'une carte : 1er clic après un calcul = focus rendu à la console (`typeInCard` reclique) ; Graphe = SVG (`path.function-curve[aria-label]`, `circle.endpoint-open/closed`) : relire un tracé par `expect.poll` ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retirés après #1792).
+- **État** : lots 1-4 mergés (#1773, #1780, #1783, #1789, #1792) ; lot 5 (vue Données + « Propriétés », 17 lignes) en PR #1795, revue `code-reviewer` faite (durcissements de timing appliqués). Rouges : `each_key_duplicate` (#1674, fin de #1703, #1620, #1307) et la carte f de l'ajustement de #1413 (`2 × x + 1`).
+- **Prochaine action** : lot 6, lignes Graphe (#1400-#1405 : dézoom, asymptotes) et Géométrie à la souris (#1536, #1538), puis le reste de Calcul (#1784, #1684, #1617, #1503, #1535, #1342, #1366-#1369, #1374, #1375, #1404, #1417).
+- **En attente de David** : 3 écarts du lot 5 (voir § Lot 5). Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **Pièges en cours** : ports 5175-5178 et 5180 pris → 5179 ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; console REPLIÉE = champ encore « visible » pour Playwright : lire `aria-expanded` du bouton « Console » (`calc()` le fait) ; nom `c2` lu c·2 (prendre une lettre) ; `each_key_duplicate` casse « Comment ? » ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `../ubumaths-wt-verifs-auto` · `test/verifs-auto-5`.
 
 ## Phase 0 (validée le 2026-10-25)
 
@@ -38,6 +38,20 @@ Vu en passant, hors des lignes (à montrer à David, rien changé) : `.intégrer
 Cartes : #1305 (sans `a = 3 sur 4`, à trancher), #1307, #1309, #1315 (thème clair ; sombre et /grapheur restent), #1328 (sans le dessin ni les 3 étapes dans Calcul), #1337, #1338 (sans le gris de y = x), carte f′ et bouton « Dériver » de #1703. Sonde étendue : `CARTES` après chaque ligne, `@Réciproque f` pour un clic de menu.
 
 Écarts vus (rien changé, à David) : `f(1)` de `max(2,5 ; x)` → 2,5 (la ligne : 5/2) ; carte `g(x) = f(x)+1` sans intervalle affiché (le Graphe l'applique) ; `.réciproque sin` demande des parenthèses ; `a = 3 sur 4` en erreur. Nouveau cas `each_key_duplicate` : « Comment ? » de `.résoudre f(x)=4` avec f sur `[0;+∞[`. Vu en passant : la légende du tableau de variations dit « Tableau de variations de la fonction x » (au lieu de f).
+
+## Lot 5 — vue Données et « Propriétés » (2026-10-26)
+
+Lignes : #1410 (sans statistiques / nuage / diagramme de L, ancien atelier, tablette), #1413 (sans la note du diagramme), #1421 (sans « sans saccade » ni la carte calculée), #1422 (partie « Valeur exacte » et π), #1424 (sans poignée, copier-coller, partage), #1426 (sans Ctrl+Z), #1427 (sans tablette), #1430, #1431, #1432, #1434 (sans iPad), #1437 (sans le partage), #1444 (sans Tabuler de f_1 ni u_1), #1472 (sans iPad), #1477 ; `atelier-proprietes.spec.ts` : #1630 (sans téléphone), #1634 (sans le rendu). #1430, #1431, #1432, #1477 sortent de la liste.
+
+Outillage : `helpers/grille.ts` (taper une case par la barre, lire son nom accessible, « Valeur exacte », la note, l'aide) ; `data-latex` posé sur la case écrite en maths, sur « Valeur exacte » (`DataView.svelte`) et sur les valeurs du panneau « Propriétés » (`ObjectProperties.svelte`) — la phrase du lecteur d'écran est en anglais (« one quarter ») ; sonde : `#A1 =…`, `?A1`, `~A1 =…`, `!Données`.
+
+Écarts (à David, rien changé côté appli) :
+
+1. **#1413, test rouge** : « Ajustement avec M » crée une carte f qui montre `2 × x + 1` ; la console dit `f(x) = 2x + 1`.
+2. **#1422** : `=2/3` s'écrit en texte « 2/3 », pas en fraction — voulu par une PR suivante (`latexOf`, `formula.ts` : « une fraction en maths débordait de la ligne ») : ligne périmée ? Pas testé.
+3. **#1410** : « « Annuler » du message remet L » — plus de message ; ↶ « Annuler : retirer le nom de la colonne A » remet L. Le test passe par ↶.
+
+Vu en passant : « Valeur exacte » est lue en anglais par un lecteur d'écran (`convertLatexToSpeakableText` de MathLive, « the square root of 2 ») ; #1427 parlait d'un formulaire dans la carte, c'est une fenêtre (Dialog) et la phrase « colonnes A et B (11 lignes) » est bien dans la carte.
 
 ## Écarts tranchés par David (2026-10-26)
 

@@ -1,5 +1,6 @@
 import { test } from '@playwright/test';
 import { calc, cardAction, cards, hasSteps, openAtelier, steps } from './helpers/atelier';
+import { hintWhileTyping, openView, readCell, typeCell } from './helpers/grille';
 
 /**
  * Sonde de la console de l'Atelier — pour ÉCRIRE un test, pas un test
@@ -15,6 +16,10 @@ import { calc, cardAction, cards, hasSteps, openAtelier, steps } from './helpers
  * (`@Réciproque f`, `@Dériver f`) ; après chaque ligne, la sonde imprime aussi
  * les cartes affichées (`CARTES`).
  *
+ * La grille (vue Données) : `#A1 =2/3` tape dans une case (et imprime le refus),
+ * `?A1` lit la case (texte montré, barre, valeur exacte, note), `~A1 =RESTE(`
+ * imprime l'aide sous la barre pendant la frappe, `!Données` ouvre une vue.
+ *
  * ⚠️ Une seule page : une valeur posée (`a = 2`) vaut pour les lignes
  * suivantes, et une erreur de la page peut gâter la suite (`PAGEERROR`).
  * L'attendu d'un test vient de la ligne de `verifications-manuelles.md`,
@@ -29,6 +34,17 @@ test('sonde', async ({ page }) => {
 	page.on('pageerror', (error) => console.log('PAGEERROR', error.message.split('\n')[0]));
 	await openAtelier(page);
 	for (const input of lines) {
+		const grid = /^([#?~!])(\S+) ?(.*)$/.exec(input);
+		if (grid) {
+			const [, sign, target, text] = grid;
+			if (sign === '!') await openView(page, target as 'Graphe' | 'Géométrie' | 'Données');
+			if (sign === '#')
+				console.log('CASE', target, JSON.stringify(await typeCell(page, target, text)));
+			if (sign === '?') console.log('LIRE', target, JSON.stringify(await readCell(page, target)));
+			if (sign === '~')
+				console.log('AIDE', JSON.stringify(await hintWhileTyping(page, target, text)));
+			continue;
+		}
 		const action = /^@(\S+) (\S+)$/.exec(input);
 		if (action) {
 			await cardAction(page, action[2], action[1]);
