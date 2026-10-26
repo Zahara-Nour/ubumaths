@@ -10,7 +10,8 @@ import {
 	normalizeLatex,
 	openAtelier,
 	steps,
-	stepsAs
+	stepsAs,
+	type Answer
 } from './helpers/atelier';
 
 /**
@@ -28,6 +29,17 @@ import {
 test.beforeEach(async ({ page }) => {
 	await openAtelier(page);
 });
+
+/**
+ * Clique « Simplifier pour x ≠ … » (#1807 : la fraction reste, la
+ * simplification sous condition est au bouton) et rend le LaTeX affiché après.
+ */
+async function simplifyFor(answer: Answer, condition: string): Promise<string> {
+	await answer.line.getByRole('button', { name: `Simplifier pour ${condition}` }).click();
+	const math = answer.line.locator('.reponse .math');
+	await expect(answer.line.getByRole('button', { name: 'Sans simplifier' })).toBeVisible();
+	return normalizeLatex((await math.getAttribute('data-latex')) ?? '');
+}
 
 /** Les étapes contiennent ce texte (formules `$…$` comprises, espaces ignorés) */
 function expectStepsContaining(text: string, expected: string): void {
@@ -760,12 +772,19 @@ test('#1673 (Q30) — la valeur avant la lettre dans un produit', async ({ page 
 });
 
 test('#1620 — facteur commun simplifié avec sa condition', async ({ page }) => {
+	// Depuis #1807, la fraction reste ; « Simplifier pour x ≠ … » donne le résultat et sa condition
 	const ratio = await calc(page, '.simplifier x/x');
-	expectLatex(ratio, '1');
+	expectLatex(ratio, '\\dfrac{x}{x}');
+	expect(await simplifyFor(ratio, 'x ≠ 0')).toBe(
+		normalizeLatex('1\\text{,}\\quad\\text{pour }x \\neq 0')
+	);
 	expectStepsContaining(await steps(ratio), 'On simplifie par le facteur commun, pour x ≠ 0');
 
 	const factored = await calc(page, '.factoriser (x^2-1)/(x+1)');
-	expectLatex(factored, 'x - 1');
+	expectLatex(factored, '\\dfrac{\\left( x - 1 \\right) \\left( x + 1 \\right)}{x + 1}');
+	expect(await simplifyFor(factored, 'x ≠ −1')).toBe(
+		normalizeLatex('x - 1\\text{,}\\quad\\text{pour }x \\neq -1')
+	);
 	expectStepsContaining(await steps(factored), 'On simplifie par le facteur commun, pour x ≠ −1');
 
 	expectLatex(await calc(page, '.dériver \\ln(3x)'), '\\dfrac{1}{x}');
@@ -884,8 +903,12 @@ test('#1617 — .simplifier : telle quelle sans étapes, ou les étapes qu’il 
 	expectLatex(developed, '2 x + 1');
 	expectStepsContaining(await steps(developed), 'On reconnaît (a + b)² = a² + 2ab + b²');
 
+	// Depuis #1807, la fraction reste ; « Simplifier pour x ≠ −1 » donne x − 1 et ses deux étapes
 	const fraction = await calc(page, '.simplifier (x^2-1)/(x+1)');
-	expectLatex(fraction, 'x - 1');
+	expectLatex(fraction, '\\dfrac{x^2 - 1}{x + 1}');
+	expect(await simplifyFor(fraction, 'x ≠ −1')).toBe(
+		normalizeLatex('x - 1\\text{,}\\quad\\text{pour }x \\neq -1')
+	);
 	const fractionSteps = await steps(fraction);
 	expectStepsContaining(
 		fractionSteps,
@@ -896,7 +919,10 @@ test('#1617 — .simplifier : telle quelle sans étapes, ou les étapes qu’il 
 	// Le résumé se déplie aussi, et garde la condition
 	expectStepsContaining(await stepsAs(fraction, 'Résumé'), 'x ≠ −1');
 
-	expectLatex(await calc(page, '.simplifier (x^2-1)/(x+1)+1'), 'x');
+	const plusOne = await calc(page, '.simplifier (x^2-1)/(x+1)+1');
+	expect(await simplifyFor(plusOne, 'x ≠ −1')).toBe(
+		normalizeLatex('x\\text{,}\\quad\\text{pour }x \\neq -1')
+	);
 	expectStepsContaining(
 		await steps(await calc(page, '.simplifier sqrt(8)')),
 		'On simplifie le radical'
@@ -983,11 +1009,20 @@ test('#1342 — lignes en erreur ou en attente ; .réciproque de sin et tan', as
 	expect((await calc(page, '.réciproque f')).text).toMatch(/par exemple \][^[]*π\/2\[/);
 });
 
-test('#1367 — paramètre non défini : (a ≠ 0), résoudre', async ({ page }) => {
+test('#1367 — paramètre non défini : (a ≠ 0), dériver, carte f′ en attente, résoudre', async ({
+	page
+}) => {
 	await calc(page, 'h(x) = e^{a x}');
 	expectLatexContaining(await calc(page, '.intégrer h'), '(a \\neq 0)');
+	expectLatex(await calc(page, '.dériver a x'), 'a');
 	expect((await calc(page, '.résoudre a x = 3')).text).toContain('Le résultat dépend de a');
 	expectLatex(await calc(page, '.résoudre x + a = 0'), 'x = -a');
+	// En dernier (a = 2 posé ensuite) : la carte f′ attend a comme f, puis f′ = 2
+	await calc(page, 'f(x) = a x');
+	await cardAction(page, 'f', 'Dériver');
+	await expect.poll(async () => (await card(page, 'f′')).message).toContain('En attente de « a »');
+	await calc(page, 'a = 2');
+	await expect.poll(async () => normalizeLatex((await card(page, 'f′')).latex ?? '')).toBe('2');
 });
 
 test('#1368 — ln x sans parenthèses refusé (clavier)', async ({ page }) => {
@@ -1008,6 +1043,8 @@ test('#1369 — fonction collée à son argument : refus qui dit quoi écrire (c
 	expect((await calc(page, 'xlnx')).text).toContain('« lnx »');
 	expect((await calc(page, 'log10(100)')).text).toContain('log est le logarithme décimal');
 	expect((await calc(page, 'cos2π')).text).toContain('écris cos(');
+	// Pas de faux refus « écris sin(x) » sur un mot qui commence par sin
+	expect((await calc(page, 'sinus')).refused).toBe(false);
 });
 
 test('#1374 — définitions en erreur : circulaire, dépendance, fonction prise pour un nombre', async ({
@@ -1047,6 +1084,8 @@ test('#1404 — conversions, intégrales refusées, réciproque à paramètres',
 	await calc(page, 'f(x) = x^3');
 	await cardAction(page, 'f', 'Dériver');
 	await expect.poll(async () => normalizeLatex((await card(page, 'f′')).latex ?? '')).toBe('3x^2');
+	// L'image par f′ se lit dans la console (plus de champ d'image sur la carte, 2026-10-18)
+	expectLatex(await calc(page, "f'(2)"), '12');
 
 	expect((await calc(page, '.intégrer 1/t de -1 à 1')).text).toContain('t ≈ 0');
 	expect((await calc(page, '.intégrer tan(x) de 0 à \\pi')).text).toContain('[0 ; π]');

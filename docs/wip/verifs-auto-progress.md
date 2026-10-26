@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1808._
+_Mis à jour le 2026-10-26, lot 7 en cours._
 
-- **État** : lots 1-6 mergés (#1773 → #1808) ; suite complète en dev : 94 verts ; rouges = `each_key_duplicate` (#1674, #1703, #1307), #1617 et #1620 (changés par #1807), #1422 par intermittence (grille qui saute).
-- **Prochaine action** : les lignes Atelier restantes de `verifications-manuelles.md`, ou la page à cocher (plan, point 2) ; selon les réponses de David, corriger la grille qui saute (PR à part) et récrire #1617/#1620.
-- **En attente de David** : écarts 1-5 du lot 6 (#1367 f′ avec `a` non défini, #1369 `sinus`, #1404 image sur la carte f′, grille qui saute de 32 px, #1617/#1620 périmées par #1807 ?) ; « Résoudre f(x) = 0 » sur la carte k. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : ports 5175-5178 et 5180 pris → 5179 ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier, serveur lancé à part ; `e` = Euler (prendre `k`) ; console ouverte = couvre la toile et le zoom (`setConsole(page, false)`) ; prettier réaligne TOUT le tableau → conflits à chaque merge de `main` : rejouer ses lignes par script sur la version de `main` ; motif de cellule : espaces de remplissage ; commitlint : pas de majuscule, pas de type `merge` ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retiré après #1808).
+- **État** : lot 7 (branche `test/verifs-auto-7`) : écarts 1, 3, 5 du lot 6 récrits (tests #1367, #1404, #1369, #1617, #1620) ; rouges restants : `each_key_duplicate` (#1674, #1703, #1620 en fin de test, #1307), #1422 par intermittence.
+- **Prochaine action** : merger le lot 7 ; puis PR de correctif `fix/grille-sans-saut` (réserver la ligne « Valeur exacte », test rouge d'abord ; libellé « Résoudre k(x) = 0 » de la carte).
+- **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **Pièges en cours** : port 5179 ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; `e` = Euler (prendre `k`) ; console ouverte couvre toile et zoom ; prettier réaligne le tableau → conflits au merge de `main` : rejouer ses lignes par script ; cellules à espaces de remplissage (`split('|')` + `strip`) ; commitlint : pas de majuscule, pas de type `merge` ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `ubumaths-wt-verifs-auto` / `test/verifs-auto-7` (serveur sur 5179).
 
 ## Phase 0 (validée le 2026-10-25)
 
@@ -70,6 +70,10 @@ Outillage : Graphe = 10 clics « Zoom arrière » (±577), asymptotes comptées 
 5. **Bug, #1422 rouge par intermittence (suite complète)** : la grille saute de 32 px selon que la case choisie a une « Valeur exacte » ou non (A1 = √8 : A1.y 376 ; A2 = 5 : 344). Pendant un clic, la grille bouge sous le pointeur enfoncé → zone A2:A3 au lieu de A2. Un élève qui appuie un peu longtemps l'aurait aussi. Correctif probable : réserver la ligne sous la barre (comme la consigne de la Géométrie). Test non masqué.
 
 Vu en passant : le menu « Options » d'une carte k dit « Résoudre f(x) = 0 » (pas k) ; les 6 premiers tests d'une suite complète lancée juste après un commit expirent dans `openAtelier` (serveur de dev à froid) — relancer.
+
+## Écarts du lot 6 tranchés par David (2026-10-26)
+
+Mes recos acceptées : (1) #1367 ligne périmée : f′ attend `a` comme f ; `.dériver a x` → `a` en console ; (2) #1369 `sinus` : seul le non-refus est testé, pas de chantier ; (3) #1404 périmée : `f'(2)` → 12 en console ; (4) grille qui saute → PR de correctif à part, test rouge d'abord ; (5) #1617/#1620 récrits selon #1807 (bouton « Simplifier pour x ≠ … » → résultat, sa condition, ses étapes ; `.factoriser (x^2-1)/(x+1)` et `(x^2-1)/(x+1)+1` aussi) ; libellé « Résoudre f(x) = 0 » de la carte k → même PR que (4). Lot 7 = (1), (3), (5) ; #1367 et #1404 sortent de la liste.
 
 ## Écarts tranchés par David (2026-10-26)
 
