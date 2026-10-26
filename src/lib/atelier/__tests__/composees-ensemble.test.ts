@@ -200,10 +200,14 @@ describe('commandes sur f(u(x))', () => {
 		expect(last(d).latex).toBe('x = 1');
 	});
 
-	// ⚠️ Avec f(x) = x², le moteur rate déjà `.variations (x-3)^2` (sans tableau,
-	// même sur ℝ) : `.limite (x-3)^2 en +∞` → « Je ne sais pas calculer cette
-	// limite ». Défaut du moteur des limites, hors de ce chantier (2026-10-26)
-	it.todo('N4 .variations f(x − 3) avec f(x) = x² : tableau sur [3 ; +∞[');
+	// `.limite (x-3)^2 en +∞` répondait « Je ne sais pas calculer cette limite »
+	// (composition sans cas puissance, V66) : pas de tableau
+	it('N4 .variations f(x − 3) avec f(x) = x² : tableau sur [3 ; +∞[', () => {
+		const d = desk(F);
+		d.submit('.variations f(x-3)');
+		expect(last(d).failed).toBe(false);
+		expect(last(d).table?.domain).toEqual([{ expression: '3' }, { expression: '+\\infty' }]);
+	});
 
 	it('N4 .variations f(x − 3) : tableau sur [3 ; +∞[', () => {
 		const d = desk('f(x) = sqrt(x) sur [0;+∞[');
