@@ -4,8 +4,8 @@
 
 _Mis à jour le 2026-10-26, code écrit sur la branche (PR pas encore ouverte)._
 
-- **État** : décisions de David (§ 2) codées : `tidyWithConditions` + `domainLoss` (mathAST), l'atelier garde le domaine partout, bouton « Simplifier pour x ≠ 0 ». Tests verts (35 208), doc à jour (ADR 0007 révisée).
-- **Prochaine action** : typecheck, revue (`code-reviewer` Opus), PR, CI, merge.
+- **État** : décisions de David (§ 2) codées : `tidyWithConditions` + `domainLoss` (mathAST), l'atelier garde le domaine partout, bouton « Simplifier pour x ≠ 0 ». Tests verts (35 224), doc à jour (ADR 0007 révisée).
+- **Prochaine action** : PR ouverte, CI, merge. Revue Opus faite : 5 findings corrigés (écriture des conditions `1+x`/`x+1`, domaine rétréci `ln(x²) → 2ln x` refusé, décimal gardé, virgule de liste).
 - **En attente de David** : essayer sur http://localhost:5177/atelier (serveur de la branche).
 - **Pièges en cours** : `1/(1/x) → x` reste un bug de `tidy`, rattrapé par l'atelier seulement ; `{{eval}}` des exercices n'est pas touché (simplify() du moteur inchangé).
 - **Worktree / branche** : `../ubumaths-wt-tidy-conditions` · `feat/tidy-conditions`.
