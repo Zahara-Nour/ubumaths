@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, § 4 ouvert (les trois pièges)._
+_Mis à jour le 2026-10-26, après #1815._
 
-- **État** : #1807 et #1811 MERGÉES (pas en prod). § 4 : trois pièges étudiés, recos validées par David (« je suis tes recos »). PR 3 (`tidy` et le facteur sous double barre) : revue Opus traitée, PR ouverte.
-- **Prochaine action** : PR 3 (§ 4.3), puis PR 1 (§ 4.1, `conditionDomain` non polynomial), puis PR 2 (§ 4.2, `domainChange` par ensembles + élagage).
+- **État** : #1807, #1811, #1815 MERGÉES (pas en prod). #1815 = § 4.3 : `tidy` garde `1/(1/x)` (barres empilées, reste mis au propre), `tidyWithConditions` rend `x`, pour x ≠ 0.
+- **Prochaine action** : PR 1 (§ 4.1, `conditionDomain` non polynomial dans `hypotheses.ts`, ~5 lignes), puis PR 2 (§ 4.2, `domainChange` par ensembles + élagage, bouton « 2 ln(x), pour x > 0 », note « Pour x > 0, on peut écrire … »). Recos validées par David (« je suis tes recos »).
 - **En attente de David** : essai des vérifs #1807 et #1811 (inchangé).
-- **Pièges en cours** : ceux du § 4, en cours de correction.
-- **Worktree / branche** : `../ubumaths-wt-tidy-conditions` · `fix/tidy-conditions`.
+- **Pièges en cours** : § 4.1 et § 4.2 ouverts ; restes acceptés de #1815 (termes gardés non regroupés, `tan` gèle le terme en mode conditions).
+- **Worktree / branche** : retirés après #1815 ; recréer `../ubumaths-wt-tidy-conditions` depuis `origin/main` pour la PR 1.
 
 ## Contexte
 
