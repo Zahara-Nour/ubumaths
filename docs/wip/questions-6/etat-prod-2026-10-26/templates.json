@@ -1,0 +1,2310 @@
+[
+	{
+		"id": "059e3fc9-bc87-40b4-a8d8-b37e632fd3db",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Grandeurs",
+		"domain": "Aires",
+		"subdomain": "Aire d'un rectangle",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[mm^2]}}$ ?\n\nLa largeur du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[mm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[mm^2]}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[cm^2]}}$ ?\n\nLa largeur du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[cm]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[cm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[cm^2]}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[dm^2]}}$ ?\n\nLa largeur du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dm]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[dm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[dm^2]}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[m^2]}}$ ?\n\nLa largeur du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[m]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[m]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[m^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[m^2]}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[dam^2]}}$ ?\n\nLa largeur du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dam]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dam]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[dam^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[dam^2]}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[hm^2]}}$ ?\n\nLa largeur du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[hm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[hm]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[hm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[hm^2]}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[km^2]}}$ ?\n\nLa largeur du rectangle est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[km]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[km]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[km^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[km^2]}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Trouver la largeur d'un rectangle.",
+		"description": "A partir de son aire et de sa longueur.",
+		"shared": {
+			"conditions": ["a>b"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5\\unit{mm}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 mm² ÷ 8 mm = 5 mm",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5\\unit{mm^2}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "unité d'aire au lieu de longueur",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "sans unité",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5\\unit{cm}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 cm² ÷ 8 cm = 5 cm",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5\\unit{dm}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 dm² ÷ 8 dm = 5 dm",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5\\unit{m}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 m² ÷ 8 m = 5 m",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["5\\unit{dam}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 dam² ÷ 8 dam = 5 dam",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["5\\unit{hm}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 hm² ÷ 8 hm = 5 hm",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["5\\unit{km}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 km² ÷ 8 km = 5 km",
+				"variationIndex": 6
+			}
+		],
+		"classification_node_id": "d5e105f2-757b-4fd7-a8da-fcbee7cacd64"
+	},
+	{
+		"id": "24f7a007-bb6a-42a4-b1b0-de257308b375",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Variations",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1-b/100)}}"
+					}
+				],
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix diminuer de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "10"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1-b/100)}}"
+					}
+				],
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix diminuer de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "20"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1-b/100)}}"
+					}
+				],
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix diminuer de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "30"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1-b/100)}}"
+					}
+				],
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix diminuer de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "50"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1-b/100)}}"
+					}
+				],
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix diminuer de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "100"
+					}
+				]
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Diminution",
+		"description": null,
+		"shared": {
+			"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix diminuer de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+			"correction": {
+				"steps": [
+					"La diminution est de ${{b}}\\% \\times {{eval:a}} = {{eval:b%*a}}$ Qr. Le nouveau prix est donc ${{eval:a}} - {{eval:b%*a}} = {{solution}}$ Qr. "
+				]
+			}
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["135"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "150",
+					"b": "10",
+					"a1": "15"
+				},
+				"description": "v0 10 % de 150",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20",
+					"b": "10",
+					"a1": "2"
+				},
+				"description": "v0 10 % de 20",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["180"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "200",
+					"b": "10",
+					"a1": "20"
+				},
+				"description": "v0 10 % de 200",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["120"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "150",
+					"b": "20",
+					"a1": "15"
+				},
+				"description": "v1 20 % de 150",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20",
+					"b": "20",
+					"a1": "2"
+				},
+				"description": "v1 20 % de 20",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["160"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "200",
+					"b": "20",
+					"a1": "20"
+				},
+				"description": "v1 20 % de 200",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["105"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "150",
+					"b": "30",
+					"a1": "15"
+				},
+				"description": "v2 30 % de 150",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20",
+					"b": "30",
+					"a1": "2"
+				},
+				"description": "v2 30 % de 20",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["140"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "200",
+					"b": "30",
+					"a1": "20"
+				},
+				"description": "v2 30 % de 200",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["75"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "150",
+					"b": "50",
+					"a1": "15"
+				},
+				"description": "v3 50 % de 150",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20",
+					"b": "50",
+					"a1": "2"
+				},
+				"description": "v3 50 % de 20",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "200",
+					"b": "50",
+					"a1": "20"
+				},
+				"description": "v3 50 % de 200",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "150",
+					"b": "100",
+					"a1": "15"
+				},
+				"description": "v4 100 % de 150",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20",
+					"b": "100",
+					"a1": "2"
+				},
+				"description": "v4 100 % de 20",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "200",
+					"b": "100",
+					"a1": "20"
+				},
+				"description": "v4 100 % de 200",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "150",
+					"b": "10",
+					"a1": "15"
+				},
+				"description": "seulement la variation",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["200"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "200",
+					"b": "100",
+					"a1": "20"
+				},
+				"description": "prix de départ",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": "a013145c-68ee-4c45-aba0-2fa403973841"
+	},
+	{
+		"id": "3a7a5711-941c-466f-95c6-51a4691c767b",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Grandeurs",
+		"domain": "Périmètres",
+		"subdomain": "Périmètre d'un rectangle",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[mm^2]}}$ ?\n\nLa largeur est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[mm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[mm^2]}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[cm^2]}}$ ?\n\nLa largeur est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[cm]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[cm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[cm^2]}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[dm^2]}}$ ?\n\nLa largeur est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dm]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[dm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[dm^2]}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[m^2]}}$ ?\n\nLa largeur est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[m]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[m]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[m^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[m^2]}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[dam^2]}}$ ?\n\nLa largeur est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dam]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dam]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[dam^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[dam^2]}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[hm^2]}}$ ?\n\nLa largeur est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[hm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[hm]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[hm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[hm^2]}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"unit": {
+							"expected": true
+						},
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[km^2]}}$ ?\n\nLa largeur est de $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[km]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[km]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La largeur d'un rectangle de longueur ${{c}}$ et d'aire ${{eval:c*d;[km^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[km^2]}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Trouver la largeur d'un rectangle.",
+		"description": "A partir de son aire et de sa longueur.",
+		"shared": {
+			"conditions": ["a>b"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5\\unit{mm}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 mm² ÷ 8 mm = 5 mm",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5\\unit{mm^2}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "unité d'aire au lieu de longueur",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "sans unité",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5\\unit{cm}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 cm² ÷ 8 cm = 5 cm",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5\\unit{dm}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 dm² ÷ 8 dm = 5 dm",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5\\unit{m}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 m² ÷ 8 m = 5 m",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["5\\unit{dam}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 dam² ÷ 8 dam = 5 dam",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["5\\unit{hm}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 hm² ÷ 8 hm = 5 hm",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["5\\unit{km}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5"
+				},
+				"description": "40 km² ÷ 8 km = 5 km",
+				"variationIndex": 6
+			}
+		],
+		"classification_node_id": "d5e105f2-757b-4fd7-a8da-fcbee7cacd64"
+	},
+	{
+		"id": "819df2a9-5dd9-40c5-9525-c68e626c04b6",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["6"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de 10",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:10^a}}*{{b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ rend chaque chiffre $10$ fois plus grand : dans le tableau de numération, chaque chiffre glisse d'un rang vers la gauche. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides jusqu'aux unités reçoivent un $0$.",
+						"{{if:b>=10000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de millions}}$.}}}}|{{if:b>=1000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.}}}}|{{if:b>=100|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.}}}}|{{if:b>=10|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.}}}}|{{if:b>=1|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.}}}}|{{if:b>=1/10|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.}}}}|{{if:b>=1/100|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.}}}}|{{if:b>=1/1000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.}}}}|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.}}}}}}}}}}}}}}}}}}}}",
+						"$$\\begin{align} {{eval:10^a}} \\times {{b}} &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{b}}*{{eval:10^a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ rend chaque chiffre $10$ fois plus grand : dans le tableau de numération, chaque chiffre glisse d'un rang vers la gauche. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides jusqu'aux unités reçoivent un $0$.",
+						"{{if:b>=10000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de millions}}$.}}}}|{{if:b>=1000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.}}}}|{{if:b>=100|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.}}}}|{{if:b>=10|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.}}}}|{{if:b>=1|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.}}}}|{{if:b>=1/10|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.}}}}|{{if:b>=1/100|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.}}}}|{{if:b>=1/1000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.}}}}|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.}}}}}}}}}}}}}}}}}}}}",
+						"$$\\begin{align} {{b}} \\times {{eval:10^a}} &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer un produit",
+		"description": "Multiplier par $10$, $100$ ou $1000$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "0..4-a"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "digits:p.q"
+				}
+			],
+			"conditions": ["mod(b*10^q,10)!=0"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4\\,680{,}3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4.6803",
+					"p": "1",
+					"q": "4"
+				},
+				"description": "1000 × 4,6803",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "0.7",
+					"p": "0",
+					"q": "1"
+				},
+				"description": "10 × 0,7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4\\,496{,}803"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "449.6803",
+					"p": "3",
+					"q": "4"
+				},
+				"description": "v1 449,6803 × 10",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["325"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3.25",
+					"p": "1",
+					"q": "2"
+				},
+				"description": "v1 point",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4680.3"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "4.6803",
+					"p": "1",
+					"q": "4"
+				},
+				"description": "sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "0.7",
+					"p": "0",
+					"q": "1"
+				},
+				"description": "division au lieu de multiplication",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "41b6bef6-7831-49e9-a44f-7700a39207e9"
+	},
+	{
+		"id": "82748db8-01fe-4c2e-86b6-4ef8c1dde805",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"subdomain": "Unités composées",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a[dm^2] = ?[m^2]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+						"De $\\text{dm}^2$ à $\\text{m}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+						"$$\\begin{array}{|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "a[m^2] = ?[dm^2]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+						"De $\\text{m}^2$ à $\\text{dm}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+						"$$\\begin{array}{|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "a[dm^2] = ?[cm^2]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+						"De $\\text{dm}^2$ à $\\text{cm}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+						"$$\\begin{array}{|c|c|c|c|}  & \\text{dm}^2 &  & \\text{cm}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "a[cm^2] = ?[dm^2]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+						"De $\\text{cm}^2$ à $\\text{dm}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+						"$$\\begin{array}{|c|c|c|c|}  & \\text{dm}^2 &  & \\text{cm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "a[dm^2] = ?[m^2]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+						"De $\\text{dm}^2$ à $\\text{m}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+						"$$\\begin{array}{|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Convertir dans une autre unité",
+		"description": "Unités d'aire",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^2 = 0{,}07 m^2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m^2 = 700 dm^2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^2 = 700 cm^2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^2 = 0{,}07 dm^2",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (cm^2→dm^2)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^2 = 0{,}07 m^2",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": "918e4a82-0b8a-41f4-887d-c992a31f0c38"
+	},
+	{
+		"id": "ae7a332e-c69a-4f4a-aa32-cb38c6b1ef42",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Proportionnalité",
+		"domain": "Tableaux de proportionnalité",
+		"subdomain": "Reconnaître",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				],
+				"statement": "Quel est le coefficient de proportionnalité de ce tableau, pour passer de la première ligne à la deuxième ?\n\n$$\\begin{array}{c|c}           {{a}}  &  {{eval:a*c}} \\\\           {{b}}  &  {{eval:b*c}}         \\end{array}$$\n\nLe coefficient de proportionnalité est $?.$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!m(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le coefficient de proportionnalité du tableau  $\\begin{array}{c|c}               {{a}}  &   {{eval:a*c}} \\\\               {{b}}  &  {{eval:b*c}}           \\end{array}$ est ${{solution:0}}$ car ${{b}} \\div {{a}} = {{eval:b*c}} \\div {{eval:a*c}} = {{solution:0}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Déterminer le coefficient de proportionnalité",
+		"description": "Valeur fractionnaire",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{1}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "3",
+					"c": "3"
+				},
+				"description": "Fraction irréductible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{9}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "3",
+					"c": "3"
+				},
+				"description": "Fraction non réduite",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "3",
+					"c": "3"
+				},
+				"description": "Multiplicateur des colonnes c",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{2}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "6"
+				},
+				"description": "Fraction renversée",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "71f16931-3821-4a2b-bdb3-ed785d2aedae"
+	},
+	{
+		"id": "b79d4cb7-d138-4be0-86e5-57131c8e265d",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"subdomain": "Unités composées",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a[hm^3] = ?[m^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{hm}^3$ à $\\text{m}^3$, on passe 2 unités vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{6}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|c|c|c|}  &  & \\text{hm}^3 &  &  & \\text{dam}^3 &  &  & \\text{m}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a[dam^3] = ?[m^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{dam}^3$ à $\\text{m}^3$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{dam}^3 &  &  & \\text{m}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a[dm^3] = ?[m^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{dm}^3$ à $\\text{m}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{m}^3 &  &  & \\text{dm}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.000001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a[cm^3] = ?[m^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{cm}^3$ à $\\text{m}^3$, on passe 2 unités vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{6}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|c|c|c|}  &  & \\text{m}^3 &  &  & \\text{dm}^3 &  &  & \\text{cm}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a[km^3] = ?[hm^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{km}^3$ à $\\text{hm}^3$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{km}^3 &  &  & \\text{hm}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "a[hm^3] = ?[dam^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{hm}^3$ à $\\text{dam}^3$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{hm}^3 &  &  & \\text{dam}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "a[m^3] = ?[dm^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{m}^3$ à $\\text{dm}^3$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{m}^3 &  &  & \\text{dm}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "a[dm^3] = ?[cm^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{dm}^3$ à $\\text{cm}^3$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{dm}^3 &  &  & \\text{cm}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "a[cm^3] = ?[mm^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{cm}^3$ à $\\text{mm}^3$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{cm}^3 &  &  & \\text{mm}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "a[mm^3] = ?[cm^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{mm}^3$ à $\\text{cm}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{cm}^3 &  &  & \\text{mm}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "a[cm^3] = ?[dm^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{cm}^3$ à $\\text{dm}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{dm}^3 &  &  & \\text{cm}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "a[dm^3] = ?[m^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{dm}^3$ à $\\text{m}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{m}^3 &  &  & \\text{dm}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "a[m^3] = ?[dam^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{m}^3$ à $\\text{dam}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{dam}^3 &  &  & \\text{m}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "a[dam^3] = ?[hm^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{dam}^3$ à $\\text{hm}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{hm}^3 &  &  & \\text{dam}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression15}}$$",
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "a[hm^3] = ?[km^3]"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+						"De $\\text{hm}^3$ à $\\text{km}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+						"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{km}^3 &  &  & \\text{hm}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+						"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Convertir dans une autre unité",
+		"description": "Unités de volume",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\,000\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^3 = 7\\,000\\,000 m^3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (hm^3→m^3)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam^3 = 7\\,000 m^3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^3 = 0{,}007 m^3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0{,}000\\,007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^3 = 0{,}000\\,007 m^3",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km^3 = 7\\,000 hm^3",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^3 = 7\\,000 dam^3",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m^3 = 7\\,000 dm^3",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (m^3→dm^3)",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^3 = 7\\,000 cm^3",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^3 = 7\\,000 mm^3",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm^3 = 0{,}007 cm^3",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^3 = 0{,}007 dm^3",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^3 = 0{,}007 m^3",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m^3 = 0{,}007 dam^3",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (m^3→dam^3)",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam^3 = 0{,}007 hm^3",
+				"variationIndex": 13
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^3 = 0{,}007 km^3",
+				"variationIndex": 14
+			}
+		],
+		"classification_node_id": "8d1d42b2-d921-4c35-8bea-97787cfb1a4a"
+	},
+	{
+		"id": "f3bf4c64-5de9-4728-adb7-c86ab79e94e5",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["6"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 6,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*{{eval:10^a}} = {{eval:10^a*b;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\textcolor{{{color:primary.2}}}{{{eval:b;d}}} \\times {{eval:10^a}} = {{eval:b*10^a;d}}$ car  ${{eval:b*10^a;d}} \\div {{eval:10^a}} = {{solution:0}}$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:10^a}}*? = {{eval:10^a*b;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{eval:10^a}} \\times \\textcolor{{{color:primary.2}}}{{{eval:b;d}}} = {{eval:b*10^a;d}}$ car  ${{eval:b*10^a;d}} \\div {{eval:10^a}} = {{solution:0}}$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplier par $10$, $100$ ou $1000$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "0..4-a"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "digits:m.q"
+				}
+			],
+			"conditions": ["m<=4-a", "mod(b*10^q,10)!=0", "b>=10^(m-1)"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["449{,}680\\,3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "449.6803",
+					"m": "3",
+					"q": "4"
+				},
+				"description": "449,680 3 × 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["449{,}6803"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "449.6803",
+					"m": "3",
+					"q": "4"
+				},
+				"description": "449,6803 sans espace : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.708"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0.708",
+					"m": "0",
+					"q": "3"
+				},
+				"description": "0,708 × 1000 (point)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0{,}708"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0.708",
+					"m": "0",
+					"q": "3"
+				},
+				"description": "0,708 (virgule)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7{,}08"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0.708",
+					"m": "0",
+					"q": "3"
+				},
+				"description": "7,08 : mauvais décalage",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "41b6bef6-7831-49e9-a44f-7700a39207e9"
+	}
+]
