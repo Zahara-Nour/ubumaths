@@ -226,3 +226,23 @@ réponse »). ADR : « Le QCM est une case » (révise la séparation QCM / case
 - Réponse calculée : champ de texte + « Cocher à la main » ; bloc mal écrit : messages, champ seul, jamais réécrit.
 - Énoncé partagé (revue) : carte en lecture seule, pas d'ajout de case — option A, David suit la reco.
 - Tests : une case choix se coche (`"0;2"`). Éditeur riche : bloc gardé en code `choix` (clôture ```` si besoin).
+
+### 2.9 Lot 2 (figure de travail) : phase 0 validée par David (2026-10-26, recos suivies)
+
+Comportements du § 2.3, plus :
+
+- **Q1 — un seul point de retrait** : une fonction rend « les cases notées » (instance sans ses figures de
+  travail, réponse sans leurs tracés) ; la notation du serveur (`grading.ts`) et celle de l'élève
+  (`answer-validator.ts`) l'appellent EN PREMIER. Rien d'autre (cases vides, appariement libre, « figure
+  vide → 0 », « Tu n'as pas tout complété », ½ des cases vides) ne voit la figure de travail. Le tracé garde
+  sa place dans `values[]` (enregistré en évaluation, sans migration). Tests : figure de travail + case choix
+  (juste/vide, juste/tracée, faux, choix vide) et + deux cases texte en appariement libre, serveur ET élève.
+- **Q2 — (b) partout** : la carte de correction (`CorrectionCard`) est commune à l'entraînement, la Course et
+  la copie → une ligne « Ta figure de travail » (prof : « Sa figure de travail ») dans le résultat attendu,
+  APRÈS les réponses notées : figure de départ + traits en gris, ni vert ni rouge ni pointillés ; vide →
+  « aucun tracé ». Jamais listée parmi les réponses attendues.
+- **Q3 — (a)** : carte « Figure de travail — non notée » en lecture seule dans l'éditeur, sans numéro de
+  case, avec son outil ; erreurs (`verifier:`, `deplacable:`, outil inconnu, figure de travail seule) sur
+  la carte ; rien dans l'éditeur de tests (valeur vide, ignorée).
+- Une question dont la seule case est une figure de travail est refusée à l'écriture (« il faut au moins
+  une case notée »). Pas de numéro de case pour l'élève.
