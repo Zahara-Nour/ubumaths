@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-26, après #1838._
 
 - **État** : 72 modèles CP publiés (groupes A, H, B, M, C). Skill `couvrir-niveau` + doc `docs/pratiques/couvrir-un-niveau.md` à jour ; outils du dépôt (#1838) : `scripts/questions/page-a-cocher.ts` (page à cocher lue en base, alertes) et `scripts/questions/publier-lot.ts` (contrôles joués en simulation, tout ou rien, reprise d'un lot interrompu).
 - **Prochaine action** : utiliser le skill sur un nouveau niveau (`/couvrir-niveau <niveau>`, session neuve) ; le CP reste ici pour ses points en suspens.
-- **En attente de David** : vérification manuelle #1702 (plus tard, dit-il) ; reste du CP en suspens (case « figure », réponses à placer, 058) ; dossier non suivi `../ubumaths-wt-questions` (cache `.vite` seul) à supprimer ou non.
+- **En attente de David** : vérification manuelle #1702 (plus tard, dit-il) ; reste du CP en suspens (case « figure », réponses à placer, 058).
 - **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; montants en `$n~\unit{€}$` ; **écriture en prod : David la lance (`!`)** ; **`gh pr checks --watch` / `gh run watch` peuvent rendre la main avant la fin : suivre le statut du run** ; `create-questions` et les deux scripts visent `.env` (prod) : `set -a; . ./.env.local; set +a` pour la locale ; fichiers des anciens lots CP en retard sur la base (niveaux B1, B3, H renumérotés ; sous-domaines B2 changés) ; les 4 modèles C sont publiés en base LOCALE (essais).
 - **Worktree / branche** : aucun (retiré après #1838).
 - **But final** : skill réutilisable pour les autres niveaux (§ 5) — fait.
