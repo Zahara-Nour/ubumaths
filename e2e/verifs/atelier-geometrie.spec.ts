@@ -357,6 +357,7 @@ test('#1546 — ordinateur : rien ne change, « Mes objets » déplié sans flè
 	await calc(page, 'B = (3 ; 0)');
 	await page.reload();
 	const panel = page.getByRole('complementary').filter({ hasText: 'Mes objets' });
+	await expect(panel).toBeVisible();
 	await expect(cardLocator(page, 'A')).toBeVisible();
 	await expect(panel.getByRole('button', { name: 'Mes objets', exact: true })).toHaveCount(0);
 });

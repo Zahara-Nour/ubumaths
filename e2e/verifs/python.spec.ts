@@ -89,7 +89,8 @@ test('#1697 — « Ouvrir dans Python » : valeur et fonction, suite, liste de m
 	await sequence.press('Enter');
 	const loop = await openFromCard(page, 'u', 'Ouvrir dans Python');
 	const replace = loop.getByRole('button', { name: /Remplacer/ });
-	if (await replace.isVisible().catch(() => false)) await replace.click();
+	// Sans code rangé (écart Q1), pas de question ; si elle vient, on remplace
+	await replace.click({ timeout: 3000 }).catch(() => undefined);
 	await expect.poll(() => code(loop)).toContain('for k in range(n)');
 	await loop.close();
 
@@ -100,7 +101,9 @@ test('#1697 — « Ouvrir dans Python » : valeur et fonction, suite, liste de m
 	await cardLocator(page, 'M').getByRole('button', { name: 'Options de M', exact: true }).click();
 	const words = page.getByRole('menuitem', { name: /Ouvrir dans Python/ });
 	await expect(words).toHaveAttribute('aria-disabled', 'true');
-	await expect(words).toContainText(/.{10,}/);
+	const reason = await words.getAttribute('aria-describedby');
+	expect(reason).toBeTruthy();
+	await expect(page.locator(`[id="${reason}"]`)).toHaveText(/.{15,}/);
 	await page.keyboard.press('Escape');
 
 	// Carte d'une liste : « Ouvrir dans Python » présent, 13 actions au plus

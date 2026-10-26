@@ -383,6 +383,9 @@ test('cartes de fonction (lot 3) — une ligne, Entrée range, point de couleur,
 		.click();
 	await page.keyboard.press('Escape');
 	await expect(shown.getByRole('group', { name: 'Bornes de l’aire' })).toBeVisible();
+	// Bornes par défaut −5 et 5 : ∫ x² = 2 × 125/3 = 250/3 ≈ 83,33
+	await expect(shown.getByRole('spinbutton', { name: /borne inférieure/ })).toHaveValue('-5');
+	await expect(shown.getByRole('spinbutton', { name: /borne supérieure/ })).toHaveValue('5');
 	await expect(shown).toContainText('aire = 83,33');
 
 	// Tabuler : une petite fenêtre de / à / pas

@@ -242,9 +242,5 @@ export async function retypeCard(page: Page, name: string, keys: string): Promis
 
 /** Le LaTeX que montre le champ d'une carte */
 export async function fieldValue(page: Page, name: string): Promise<string> {
-	return normalizeLatex(
-		await cardLocator(page, name)
-			.locator('math-field')
-			.evaluate((element) => (element as HTMLElement & { value: string }).value)
-	);
+	return normalizeLatex(await mathValue(cardLocator(page, name).locator('math-field')));
 }

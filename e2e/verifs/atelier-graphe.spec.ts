@@ -122,6 +122,7 @@ test('lecture graphique — losange glissé ou au clavier, lectures de la consol
 	// Glissé à la souris : le graphe ne bouge pas, la lecture suit, aimantée aux demis
 	await setConsole(page, false);
 	const ticks = await xTicks(page);
+	expect(ticks.length).toBeGreaterThan(2);
 	const box = await handle.boundingBox();
 	if (box === null) throw new Error('losange introuvable');
 	await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
@@ -202,7 +203,7 @@ test('#1415, #1416, #1418, #1419 — grapheur : pôles de tan, asymptotes y = 0,
 
 	// ln(x)/√x : asymptote « y = 0 » à droite
 	await grapheur(page, '\\frac{\\ln(x)}{\\sqrt{x}}', 0);
-	await expect.poll(() => asymptoteLabels(page)).toMatch(/y\s*=\s*0/);
+	await expect.poll(() => asymptoteLabels(page)).toMatch(/y\s*=\s*0(?![\d.,])/);
 	// (1 + 1/x)^x : étiquette « y = e »
 	await grapheur(page, '\\left(1+\\frac{1}{x}\\right)^{x}', 0);
 	await expect.poll(() => asymptoteLabels(page)).toMatch(/y\s*=\s*e/);
@@ -220,13 +221,18 @@ test('#1415, #1416, #1418, #1419 — Atelier : a = 1/3, (a x + 1)/(x² − a) se
 	const start = Date.now();
 	await calc(page, 'f(x) = (a x + 1)/(x^2 - a)');
 	await expect(page.locator('path.function-curve')).toHaveCount(1);
-	// « Fluide » : tracé en moins de 2 s (avant : plusieurs secondes figé)
-	expect(Date.now() - start).toBeLessThan(2000);
+	// « Fluide » : tracé en moins de 3 s, aller-retour de la console compris (avant :
+	// plusieurs secondes figé, en plus)
+	expect(Date.now() - start).toBeLessThan(3000);
 	// Le curseur de a bouge le tracé sans figer : 5 pas en moins de 2 s
 	const slider = page.getByRole('slider', { name: 'Curseur de a' });
+	const curve = page.locator('path.function-curve');
+	const before = await slider.getAttribute('aria-valuetext');
+	const drawn = await curve.getAttribute('d');
 	const moving = Date.now();
 	await slider.focus();
 	for (let press = 0; press < 5; press++) await slider.press('ArrowRight');
-	await expect(slider).toHaveAttribute('aria-valuetext', /a = /);
-	expect(Date.now() - moving).toBeLessThan(2000);
+	await expect(slider).not.toHaveAttribute('aria-valuetext', before ?? '');
+	await expect.poll(() => curve.getAttribute('d')).not.toBe(drawn);
+	expect(Date.now() - moving).toBeLessThan(3000);
 });

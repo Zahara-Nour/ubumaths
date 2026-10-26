@@ -129,8 +129,12 @@ test('barre d’icônes de l’Atelier — infobulles, grisés, Enregistrer puis
 		'aria-label',
 		'B2 : 42'
 	);
+	// Les lignes de la console d'avant restent (Repartir de zéro les garde) : celles du
+	// fichier s'AJOUTENT, chaque ligne enregistrée revient donc une seconde fois
 	const after = await historyTexts(page);
-	for (const line of lines.filter((text) => text !== '')) expect(after).toContain(line);
+	for (const line of lines.filter((text) => text !== '')) {
+		expect(after.filter((text) => text === line).length, line).toBeGreaterThanOrEqual(2);
+	}
 
 	// Un ancien `calcul-….json` (exporté au début) → rejoué
 	await load(page, history);
@@ -148,6 +152,9 @@ test('barre d’icônes de l’Atelier — infobulles, grisés, Enregistrer puis
 		buffer: Buffer.from('{"bonjour": 1}')
 	});
 	await expect(notices(page).locator('li')).toHaveCount(2);
+	await expect(notices(page).locator('li').last()).toHaveText(
+		'Ce fichier n’est pas un atelier Chiphre.'
+	);
 	await expect(page.locator('article.objet')).toHaveCount(before);
 });
 
