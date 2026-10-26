@@ -36,6 +36,7 @@
 		writePointDragMode,
 		type PointDragMode
 	} from '$lib/atelier/point-drag-mode';
+	import { readDomainMode, writeDomainMode, type DomainMode } from '$lib/atelier/domain-mode';
 	import { CalcDesk } from '$lib/atelier/desk.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
@@ -252,6 +253,15 @@
 	function choosePointDragMode(mode: PointDragMode) {
 		atelier.setPointDragMode(mode);
 		writePointDragMode(readStorage(), mode);
+	}
+
+	// Les simplifications qui changent le domaine (tidy-conditions, § 3)
+	// svelte-ignore state_referenced_locally
+	atelier.setDomainMode(readDomainMode(readStorage()));
+
+	function chooseDomainMode(mode: DomainMode) {
+		atelier.setDomainMode(mode);
+		writeDomainMode(readStorage(), mode);
 	}
 
 	/** Un historique relu : confirmer s'il y a de quoi perdre, sinon rejouer (R1, R2). */
@@ -1219,6 +1229,7 @@
 					bind:inputMode={() => inputMode, chooseInputMode}
 					bind:angleUnit={() => atelier.angleUnit, chooseAngleUnit}
 					bind:pointDragMode={() => atelier.pointDragMode, choosePointDragMode}
+					bind:domainMode={() => atelier.domainMode, chooseDomainMode}
 				/>
 			</div>
 		</div>
@@ -1511,18 +1522,34 @@
 		display: flex;
 	}
 
-	/* Le volet descend du haut, façon Quake ; fermé, il remonte hors de la scène */
+	/* Le volet descend du haut, façon Quake ; fermé, il remonte hors de la scène.
+	   Sur bureau, un panneau FLOTTANT (2026-10-26) : pleine largeur et fond opaque,
+	   il donnait l'impression d'un écran coupé en deux. Décollé des bords, arrondi,
+	   ombré et en verre dépoli, on voit la vue continuer dessous. Le bas du panneau
+	   reste à `--hauteur` de la scène : la poignée mesure toujours depuis le haut. */
 	.console {
+		--marge-console: 0.75rem;
 		position: absolute;
-		inset: 0 0 auto;
+		inset: var(--marge-console) var(--marge-console) auto;
 		z-index: 20;
-		height: var(--hauteur, 40%);
+		/* Sur grand écran, une largeur de lecture, calée à gauche comme la vue
+		   (2026-10-26) : pleine largeur, les lignes courtes laissaient un grand
+		   vide à droite */
+		max-width: 52rem;
+		height: calc(var(--hauteur, 40%) - var(--marge-console));
 		display: flex;
 		flex-direction: column;
-		background: var(--color-background);
-		border-bottom: 1px solid var(--color-border);
-		box-shadow: 0 8px 20px -12px rgb(0 0 0 / 0.35);
-		transform: translateY(-100%);
+		overflow: hidden;
+		/* 90 % + flou : une courbe dessous n'est plus qu'une teinte, le contraste
+		   AA de l'accent (5,0:1, cf. CalculView) tient */
+		background: color-mix(in oklab, var(--color-background) 90%, transparent);
+		backdrop-filter: blur(12px) saturate(1.2);
+		border: 1px solid var(--color-border);
+		border-radius: 0.75rem;
+		box-shadow:
+			0 18px 40px -12px rgb(0 0 0 / 0.35),
+			0 2px 6px -2px rgb(0 0 0 / 0.15);
+		transform: translateY(calc(-100% - 2 * var(--marge-console)));
 		visibility: hidden;
 		transition:
 			transform 180ms ease,
@@ -1592,10 +1619,22 @@
 			height: 1.25rem;
 		}
 	}
-	/* Sur téléphone, la console prend toute la scène, sans poignée */
+	/* Moins de transparence demandée, ou plus de contraste : fond plein */
+	@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+		.console {
+			background: var(--color-background);
+			backdrop-filter: none;
+		}
+	}
+	/* Sur téléphone, la console prend toute la scène, sans poignée ni flottement */
 	@media (max-width: 640px) {
 		.console {
+			--marge-console: 0px;
 			height: 100%;
+			border: none;
+			border-radius: 0;
+			background: var(--color-background);
+			backdrop-filter: none;
 		}
 		.poignee {
 			display: none;

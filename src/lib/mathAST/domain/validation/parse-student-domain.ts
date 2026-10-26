@@ -69,9 +69,10 @@ import { expandExcludedPoints } from './compare-domains';
  */
 export function parseStudentDomain(
 	input: string,
-	variable: string = 'x'
+	variable: string = 'x',
+	options: StudentDomainOptions = {}
 ): ParseStudentDomainResult {
-	const result = parseStudentDomainPieces(input, variable);
+	const result = parseStudentDomainPieces(input, variable, options);
 	if (!result.success) return result;
 	return { success: true, domain: result.domain, format: result.format };
 }
@@ -85,7 +86,8 @@ export function parseStudentDomain(
  */
 export function parseStudentDomainPieces(
 	input: string,
-	variable: string = 'x'
+	variable: string = 'x',
+	options: StudentDomainOptions = {}
 ): ParseStudentDomainPiecesResult {
 	// Normalize input: trim and normalize Unicode
 	const normalizedInput = normalizeInput(input);
@@ -97,7 +99,7 @@ export function parseStudentDomainPieces(
 	// Try each parser in order of specificity
 	const parsers: Array<() => ParseStudentDomainPiecesResult> = [
 		() => asSinglePiece(normalizedInput, parseSetNotation(normalizedInput)),
-		() => parseIntervalNotation(normalizedInput),
+		() => parseIntervalNotation(normalizedInput, options),
 		() => asSinglePiece(normalizedInput, parseConditionNotation(normalizedInput, variable))
 	];
 
@@ -113,6 +115,16 @@ export function parseStudentDomainPieces(
 		error:
 			'Format non reconnu. Utilisez la notation intervalle (ex: ]0 ; +∞[), condition (ex: x > 0) ou ensemble (ex: ℝ \\ {0})'
 	};
+}
+
+/**
+ * Les écritures en plus de celles d'une réponse d'élève. `intersections` : `∩`
+ * entre intervalles (l'atelier, `avec`/`dans`, chantier tidy-conditions,
+ * 2026-10-26) — pas dans les réponses, où `]0;+∞[ ∩ ]-∞;5]` n'est pas `]0;5]`
+ * écrit.
+ */
+export interface StudentDomainOptions {
+	readonly intersections?: boolean;
 }
 
 /** Un résultat d'un seul tenant (ensemble, condition) vu comme un morceau unique */
@@ -362,7 +374,10 @@ function parseExcludedPoints(
  * as bound separators, for backwards compatibility with student input habits.
  * Rend chaque morceau de la réunion tel qu'écrit, et leur réunion.
  */
-function parseIntervalNotation(input: string): ParseStudentDomainPiecesResult {
+function parseIntervalNotation(
+	input: string,
+	options: StudentDomainOptions = {}
+): ParseStudentDomainPiecesResult {
 	const parts = input
 		.trim()
 		.split(/[∪U]/)
@@ -374,7 +389,8 @@ function parseIntervalNotation(input: string): ParseStudentDomainPiecesResult {
 	const pieces: StudentDomainPiece[] = [];
 	let result: Domain = emptyDomain();
 	for (const part of parts) {
-		const piece = parsePiece(part);
+		// `∩` lie plus fort que `∪`, comme en classe : A ∪ B ∩ C = A ∪ (B ∩ C)
+		const piece = options.intersections === true ? parseIntersection(part) : parsePiece(part);
 		if (!piece.success) return piece;
 		pieces.push(piece.piece);
 		// `union` ignore les points exclus : les développer d'abord (]0;5[ \ {2} → ]0;2[ ∪ ]2;5[)
@@ -382,6 +398,24 @@ function parseIntervalNotation(input: string): ParseStudentDomainPiecesResult {
 	}
 
 	return { success: true, domain: result, format: 'interval', pieces };
+}
+
+/** Un morceau d'une réunion fait d'intersections : `]0;+∞[ ∩ ]-∞;5]`. */
+function parseIntersection(
+	part: string
+): { success: true; piece: StudentDomainPiece } | { success: false; error: string } {
+	const factors = part.split('∩').map((s) => s.trim());
+	if (factors.length === 1) return parsePiece(part);
+	if (factors.some((factor) => factor.length === 0)) {
+		return { success: false, error: 'Intersection incomplète' };
+	}
+	let domain: Domain = universalDomain();
+	for (const factor of factors) {
+		const piece = parsePiece(factor);
+		if (!piece.success) return piece;
+		domain = intersectDomains(domain, expandExcludedPoints(piece.piece.domain));
+	}
+	return { success: true, piece: { source: part, domain } };
 }
 
 /** Un morceau d'une réunion : intervalle, intervalle privé de points, ensemble */

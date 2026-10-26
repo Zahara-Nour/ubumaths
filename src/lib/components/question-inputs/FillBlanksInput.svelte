@@ -71,6 +71,7 @@
 	import TableNode from '$lib/components/markdown/nodes/TableNode.svelte';
 	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
 	import Operation from '$lib/components/markdown/nodes/Operation.svelte';
+	import Collection from '$lib/components/markdown/nodes/Collection.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
 	import ChoiceBlock from '$lib/components/markdown/nodes/ChoiceBlock.svelte';
 	import MultipleChoiceInput from './MultipleChoiceInput.svelte';
@@ -195,6 +196,7 @@
 			);
 		}
 		if (node.type === 'operation') return node.caseIndex !== undefined;
+		if (node.type === 'collection') return node.caseIndex !== undefined;
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
 		if (node.type === 'choice') return node.caseIndex !== undefined;
 		return false;
@@ -430,12 +432,13 @@
 	/**
 	 * Une case à remplir, dans l'ordre de l'écran : prompt d'un champ MathLive, champ texte,
 	 * ou grille d'un bloc ```operation (ses cases forment UNE réponse ; division
-	 * euclidienne : deux, le quotient puis le reste)
+	 * euclidienne : deux, le quotient puis le reste), ou plan d'une collection à construire
 	 */
 	type Slot =
 		| { field: MathfieldElement; promptId: string }
 		| { input: HTMLInputElement }
-		| { operation: HTMLElement; index: number };
+		| { operation: HTMLElement; index: number }
+		| { build: HTMLElement; index: number };
 
 	/**
 	 * Cases dans l'ordre du DOM, qui est l'ordre visuel : un tableau `:table-h` est
@@ -445,10 +448,13 @@
 	function slotsInOrder(): Slot[] {
 		if (!container) return [];
 		const elements = container.querySelectorAll<HTMLElement>(
-			'math-field, input[type="text"]:not([data-operation-cell]), [data-operation-case]'
+			'math-field, input[type="text"]:not([data-operation-cell]), [data-operation-case], [data-construire-case]'
 		);
 		return [...elements].flatMap((element): Slot[] => {
 			if (element instanceof HTMLInputElement) return element.disabled ? [] : [{ input: element }];
+			if (element.dataset.construireCase !== undefined) {
+				return [{ build: element, index: Number(element.dataset.construireCase) }];
+			}
 			if (element.dataset.operationCase !== undefined) {
 				return [{ operation: element, index: Number(element.dataset.operationCase) }];
 			}
@@ -460,12 +466,17 @@
 	}
 
 	function slotValue(slot: Slot): string {
-		if ('operation' in slot) return values[slot.index] ?? '';
+		if ('operation' in slot || 'build' in slot) return values[slot.index] ?? '';
 		return 'input' in slot ? slot.input.value : (slot.field.getPromptValue(slot.promptId) ?? '');
 	}
 
 	/** Curseur dans la case */
 	function focusSlot(slot: Slot) {
+		if ('build' in slot) {
+			// Plan vide : le premier bouton de la réserve
+			slot.build.querySelector<HTMLButtonElement>('.construire-ajouter:not(:disabled)')?.focus();
+			return;
+		}
 		if ('operation' in slot) {
 			// Quotient d'une division, écrit de gauche à droite : la case vide la plus à gauche
 			const quotient = [
@@ -828,6 +839,35 @@
 								}
 							: undefined}
 					/>
+				{/if}
+			{:else if node.type === 'collection' && node.caseIndex !== undefined && node.spec?.build !== undefined}
+				<!-- Collection à construire : l'élève pose barres et cubes, la valeur posée est la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : une construction juste (le moins d'objets), sans réserve -->
+					<Collection
+						node={{
+							...node,
+							spec: {
+								...node.spec,
+								build: undefined,
+								sets: [{ tens: Math.floor(node.spec.build / 10), units: node.spec.build % 10 }]
+							}
+						}}
+					/>
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<Collection
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
 				{/if}
 			{:else if node.type === 'figure' && node.construction?.caseIndex !== undefined}
 				<!-- Case « figure » (```figure-a-completer) : l'élève trace sur la figure de départ -->

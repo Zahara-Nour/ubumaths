@@ -557,7 +557,9 @@ l'appelant (atelier, `correction-generator`) se replie sur la réponse du moteur
 `pedagogical-solve/__tests__/inequation-valeurs-interdites.test.ts`.
 **`dans` lit tout ensemble d'élève** (2026-10-13, lot 2 de l'intervalle de l'atelier) : hors d'un
 intervalle borné à la française, `solveInInterval` (`readSolvingDomain`) et `.variations` lisent
-l'ensemble par `parseStudentDomain` — borne infinie (`[0 ; +∞[`), réunion, `ℝ \ {0}`. Pour
+l'ensemble par `parseStudentDomain` — borne infinie (`[0 ; +∞[`), réunion, `ℝ \ {0}` ; l'intersection
+`∩` seulement sur option (`{ intersections: true }`, `avec`/`dans` de l'atelier, 2026-10-26 : une
+réponse d'élève ne l'accepte pas). Pour
 `.variations`, `studyDomain` (`domain/study.ts`) le croise avec le domaine de l'expression avant
 `computeVariations`, qui depuis le 2026-10-19 fait aussi ce croisement lui-même. `writeCommandArguments` écrit `dans` en
 dernier : un intervalle semi-ouvert ne referme pas ses crochets, et un `pour t` placé après y

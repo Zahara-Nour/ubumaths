@@ -13,6 +13,7 @@ import { hasCourseCardBackSource } from '../course-card';
 import { findRulesSufficeBlanksWithoutRules } from '../rules-suffice';
 import { assumptionCollisionMessage, findAssumptionCollisions } from '../answer-assumptions';
 import { choiceAnswerCountErrors } from './choice-answer-count';
+import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
 
 /**
  * Validate a question template
@@ -184,10 +185,12 @@ function validateVariation(
 	switch (questionType) {
 		case 'fill_in_blanks':
 			// Un bloc ```operation à remplir porte sa propre case (sa réponse vient du calcul),
-			// un bloc ```figure-a-completer aussi (la figure de l'élève)
+			// un bloc ```figure-a-completer aussi (la figure de l'élève), un bloc ```collection
+			// à construire aussi (sa réponse est sa valeur)
 			if (
 				(!variation.blanks || variation.blanks.length === 0) &&
 				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasCollectionToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
 				!/^\s*>?\s*```figure-a-completer\s*$/m.test(
 					String(variation.statement ?? shared?.statement ?? '')
 				)

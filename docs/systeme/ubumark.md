@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -477,6 +477,23 @@ d'enregistré, effacée à la collection suivante ; « Effacer les marques ») �
 de `nodes/scene-marks.svelte.ts`, commune aux deux blocs. Nom accessible
 « Collection d'objets », **jamais le nombre**. PDF en Typst natif, noir sur blanc. Dans un choix de
 QCM : `--collection-taille: 3cm` (comme l'horloge) ; série figée : `withChoiceCollectionSize`.
+
+**Collection à construire** (chantier [construire](../wip/construire-progress.md), CP-002) —
+`src/lib/ubumark/__tests__/collection/collection-construire.test.ts`,
+`CollectionConstruire.svelte.test.ts` : `construire: 34` (1 à 100) remplace les quantités ; `dessin:`
+choisit le matériel, `taille:` reste ; `dizaines:`, `unités:`, `unités en:`, `légendes:` sont refusées
+(plan vide, objets rangés d'office). L'élève touche la réserve (« Ajouter une barre de dix », « Ajouter
+un cube », ou paquet / jeton) pour poser un objet, touche un objet posé pour l'enlever ; « Enlever »
+à côté de chaque bouton pour le clavier, « Tout enlever » ; 10 groupes et 100 objets isolés au plus.
+Le total n'est jamais affiché ni dit (nom accessible « Ta collection »). Calcul pur
+`utils/collection-construire.ts` (valeur, réponse `''` si vide, scène en `rangées`, réserve,
+construction juste) ; dessin des objets partagé `CollectionObjets.svelte`. Dans une question, le bloc
+porte une case (`case: N`, posée par le générateur) dont la réponse est la valeur posée, jugée comme
+une case ordinaire ; la composition (2 barres + 14 cubes) vit dans le composant, redessinée en dizaines
+et unités s'il est remonté avec une seule valeur. Faux : « Ta collection vaut 32. » (ou « est vide ») et
+une construction juste à côté ; bonne réponse affichée : la construction juste seule. Hors question
+(aperçu, cours) : le même geste, rien de jugé. PDF : la réserve en petit et un cadre vide en
+pointillés, où l'enfant dessine.
 
 **Pièces et billets** (chantier [monnaie](../archive/wip/monnaie-progress.md), CP-043, CP-042 ; CP-044 et
 CP-071 en partie) — `src/lib/ubumark/__tests__/monnaie/` :

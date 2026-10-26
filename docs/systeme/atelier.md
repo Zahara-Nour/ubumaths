@@ -10,7 +10,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26).
 
 ## À quoi ça sert
 
@@ -781,7 +781,10 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   sinon `shown` (ou le mot court d'une erreur, en rouge) ; son étiquette pour lecteur d'écran est
   `shown`, en français (la lecture de MathLive est en anglais). La barre montre la formule ; sous
   la barre, la phrase de l'erreur ou de la case vide, et « Valeur exacte : … » quand la case montre
-  `≈` d'une valeur exacte, ou une écriture exacte dont le texte lu est `≈` (`√2`, `π`) (Q2). La carte d'une liste à formules montre ses valeurs et « calculée
+  `≈` d'une valeur exacte, ou une écriture exacte dont le texte lu est `≈` (`√2`, `π`) (Q2). Ces
+  phrases et l'aide d'une fonction tiennent sur une place réservée (`.sous-barre`, une seule à la fois ; une ligne, deux quand la
+  vue est étroite, container query sous 40rem) : la grille ne saute pas d'une case à l'autre — elle sautait d'une rangée, et pendant un clic
+  la case sous le pointeur enfoncé changeait, la zone s'étendait (2026-10-26). La carte d'une liste à formules montre ses valeurs et « calculée
   dans la grille » (`studentDefinitionOf`). Supprimer une liste dont des cellules d'autres colonnes
   se videront (`citingCells` : en chaîne, sans celles déjà vides) demande confirmation : « 3 cellules de la grille la citent : elles
   deviendront vides. » (`citingCellsNote`). La copie vers un autre logiciel et le CSV
@@ -1315,6 +1318,33 @@ qui ne s'écrit pas (`tan(x)/tan(x)`) : ni simplification, ni bouton. Mesuré av
 `.simplifier x/x` → `1`, `.simplifier (x²−1)/(x+1)` → `x − 1`, `.factoriser x/x` → `1`, sans
 condition sur la ligne. Tests : `domaine-garde.test.ts`.
 
+**Le réglage, la note, `avec` / `dans`** (tidy-conditions § 3, décisions de David du 2026-10-26 ;
+`domain-mode.ts`, `hypotheses.ts`, `withHypotheses` et `withDomainMode` dans `runInput`) :
+
+- **Réglage** « Simplifications qui changent le domaine » (fenêtre Réglages, retenu dans ce
+  navigateur, `chiphre-atelier-domaine`) : « Garder l'écriture » (défaut) ou « Simplifier en disant
+  la condition » — la ligne montre alors `1, pour x ≠ 0`, ses étapes celles du calcul entier, et le
+  bouton dit « Sans simplifier ». Lu à la **création** de la ligne : les lignes déjà écrites ne
+  bougent pas (Q8), chacune se bascule à la main.
+- **Note** (mode « garder ») : « On peut simplifier davantage pour x ≠ 0 : ajoute « avec x ≠ 0 »
+  (ou « dans ℝ \ {0} »). » — `dans` seulement si une seule lettre ; l'une et l'autre se recopient
+  telles quelles.
+- **`avec CONDITION` / `dans ENSEMBLE`**, sur une expression tapée et sur `.simplifier`,
+  `.factoriser`, `.développer` (pas `.résoudre`, qui garde son `dans` ; pas une définition ni une
+  équation) : coupés avant le calcul, puis lus. `avec` : les conditions de `parseStudentDomain`
+  (`x > 0`, `x ≠ 0 et x ≠ 1`, `x < 0 ou x > 2`, `0 < x ≤ 5`), une lettre par condition
+  (`x > 0 et y ≠ 0`) ; « et » et « ou » mêlés : refus (« écris l'ensemble avec des intervalles, ∪ et
+  ∩ »). `dans` : un ensemble (intervalles, `ℝ \ {0}`, `∪`, `∩` — option `intersections` de
+  `parseStudentDomain`), une seule lettre. La simplification du bouton a lieu si l'hypothèse
+  garantit chacune de ses conditions (`guarantees` : l'ensemble est inclus dans celui où `1/u`,
+  `ln u` ou `√u` est défini) ; sinon la ligne garde l'écriture et le dit (« x > -1 ne garantit pas
+  x ≠ 0 »), et une hypothèse sans effet est dite aussi (« ne change rien ici »). Limite : une
+  réécriture qui rétrécit le domaine (`ln(x²) → 2 ln x`) n'a pas lieu, même `avec x > 0`. Seule une
+  condition **polynomiale** en sa lettre peut être garantie : `cos(x) ≠ 0` exclut une famille
+  π/2 + kπ que l'inclusion ne voit pas (revue : `cos(x)/cos(x) avec x > 0` donnait 1). La note ne
+  propose que ce qui, recopié, simplifie vraiment la ligne (sinon la condition seule) ; une
+  expression tapée sans bouton renvoie à `.simplifier`. Tests : `domaine-reglage.test.ts`.
+
 **Valeur approchée ⇄ valeur exacte** (PR 2 de la même phase 0) : une ligne dont la réponse a une
 autre écriture porte un bouton qui bascule, ligne par ligne, sans rien sauvegarder ni exporter
 (`Alternative` dans `calcul.ts`, `Entry.alternative`). Règle unique, `mathAST/cli/approximation.ts`
@@ -1432,7 +1462,7 @@ de David), Échap ferme jusqu'à la frappe suivante. Garde : chaque proposition,
 est acceptée par Calcul (`completion.test.ts`).
 
 **Actions de carte** : `actionsFor` (`src/lib/atelier/actions.ts`) donne par type les actions
-(fonction : Tracer, Afficher dans Géométrie, Dériver, Réciproque, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
+(fonction : Tracer, Afficher dans Géométrie, Dériver, Réciproque, Tabuler, Résoudre f(x) = 0 (le nom de la carte : « Résoudre k(x) = 0 »), Variations ; suite : Premiers termes ;
 liste : Statistiques, diagrammes, nuage, ajustement, loi — par liste partenaire). Une action qui a
 un sens pour le type mais pas pour cet objet reste **visible, désactivée, avec sa raison**
 (`disabledReason`). Le clic passe par `CalcDesk.runFromPanel` : il **écrit une ligne dans la
@@ -1447,6 +1477,14 @@ de la hauteur, réglable à la poignée (souris, ou flèches haut / bas), toute 
 640 px. Une **région** nommée « Console », pas une `dialog` : rien n'est modal, la vue et
 « Mes objets » restent utilisables. Montée en permanence (l'historique, le brouillon, les étapes
 dépliées survivent à la fermeture), `inert` quand elle est fermée.
+
+**Au-dessus de 640 px, un panneau flottant** (2026-10-26) : pleine largeur et opaque, le volet
+donnait l'impression d'un atelier coupé en deux. Il est décollé des bords (`--marge-console`,
+0,75 rem), arrondi, ombré, **calé à gauche de la vue** et limité à 52 rem de large ; fond en
+verre dépoli (`--color-background` à 90 % + `backdrop-filter: blur`), qui redevient plein sous
+`prefers-reduced-transparency: reduce` ou `prefers-contrast: more`. Le bas du panneau reste à
+la hauteur réglée : la poignée mesure toujours depuis le haut de la scène. Sous 640 px, rien ne
+change : toute la scène, opaque, sans marge.
 
 - **Ouvrir / fermer** : le bouton « Console » de la barre (`aria-expanded`) ; la **touche
   physique sous Échap** hors d'un champ ; **Ctrl+Entrée** partout, champs compris
@@ -1474,7 +1512,7 @@ dépliées survivent à la fermeture), `inert` quand elle est fermée.
   définition réussie dit « f est correctement défini », le nom en couleur (`definedName`) ; les
   boutons d'une ligne n'apparaissent qu'au survol ou au focus (toujours au toucher :
   `any-hover: none` ou `any-pointer: coarse`, pour un portable tactile à souris). Couleur
-  d'accent `#a65800` en clair (5,0:1 sur le fond `#fafafa` de la console), `#ffc400` en sombre.
+  d'accent `#a65800` en clair (5,0:1 sur le fond `#fafafa` de la console, que le verre à 90 % et son flou laissent tenir), `#ffc400` en sombre.
 - **Défilement** : une nouvelle entrée (tapée, ou écrite par une action de carte) fait descendre
   l'historique tout en bas (`CalculView`, effet sur `desk.entries.length`, 2026-10-23).
 - **Menu de la console** : « Copier l'historique pour une fiche » et « Télécharger l'historique

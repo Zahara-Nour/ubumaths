@@ -42,6 +42,16 @@ export interface DomainAlternative {
 	readonly latex: string;
 	readonly steps?: readonly RenderedStep[];
 	readonly summary?: readonly RenderedStep[];
+	/** Ce que le réglage, la note et `avec` / `dans` lisent (§ 3) */
+	readonly domain: DomainFacts;
+}
+
+/** La simplification derrière le bouton : sa réponse seule et ses conditions. */
+export interface DomainFacts {
+	readonly conditions: readonly TidyCondition[];
+	/** La réponse en LaTeX, sans « pour … » */
+	readonly answer: string;
+	readonly ast: MathNode;
 }
 
 /** Un calcul pédagogique coupé avant la première étape qui change le domaine. */
@@ -88,7 +98,8 @@ export function domainAlternative(
 		// La virgule en texte : la virgule décimale lirait `0,5,` comme une liste (`0,5 ;`)
 		latex: `${toLatex(answer)}\\text{,}\\quad\\text{pour }${latex}`,
 		...(steps?.steps !== undefined && { steps: steps.steps }),
-		...(steps?.summary !== undefined && { summary: steps.summary })
+		...(steps?.summary !== undefined && { summary: steps.summary }),
+		domain: { conditions, answer: toLatex(answer), ast: answer }
 	};
 }
 

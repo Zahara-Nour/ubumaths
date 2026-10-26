@@ -203,3 +203,17 @@ describe('libellés', () => {
 		expect(labels.join(' ').toLowerCase()).not.toContain('diff');
 	});
 });
+
+describe('libellé de « Résoudre »', () => {
+	// La carte k disait « Résoudre f(x) = 0 » (verifs-auto, lot 6)
+	it('nomme la fonction de la carte', () => {
+		a.create({ kind: 'function', name: 'f', definition: 'x+1' });
+		a.create({ kind: 'function', name: 'k', definition: 'x+1' });
+		a.create({ kind: 'function', name: 'f_1', definition: 'x+1' });
+
+		expect(action('f', 'solve')?.label).toBe('Résoudre f(x) = 0');
+		expect(action('k', 'solve')?.label).toBe('Résoudre k(x) = 0');
+		// Le nom tel que la carte l'affiche (`displayName`)
+		expect(action('f_1', 'solve')?.label).toBe('Résoudre f_1(x) = 0');
+	});
+});
