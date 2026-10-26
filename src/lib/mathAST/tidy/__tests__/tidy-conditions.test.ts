@@ -16,7 +16,8 @@ import {
 	describeConditions,
 	domainChange,
 	domainChanges,
-	domainLoss
+	domainLoss,
+	plainConditions
 } from '../index';
 import { parseCustom } from '../../parser/custom';
 import { toCustom } from '../../custom-generator';
@@ -259,5 +260,38 @@ describe('domainChange par ensembles (§ 4.2)', () => {
 	it('narrows : vrai quand le domaine rétrécit, faux quand il s’élargit', () => {
 		expect(domainChanges(parseCustom('ln(x^2)'), parseCustom('2ln(x)'))?.narrows).toBe(true);
 		expect(domainChanges(parseCustom('x/x'), parseCustom('1'))?.narrows).toBe(false);
+	});
+});
+
+describe('conditions écrites au plus simple (revue du § 4.2)', () => {
+	it.each([
+		['ln(x^2)-ln(x^2)', '0', ['x ≠ 0']],
+		['ln(x^3)-ln(x^3)', '0', ['x > 0']],
+		['sqrt(x^4)/sqrt(x^4)', '1', ['x ≠ 0']]
+	])('%s → %s : « %s »', (before, after, conditions) => {
+		const found = domainChange(parseCustom(before), parseCustom(after));
+		expect(found === null ? null : describeConditions(found).map((c) => c.text)).toEqual(
+			conditions
+		);
+	});
+
+	const plain = (conditions: string[], answer: string) =>
+		describeConditions(
+			plainConditions(
+				conditions.map((c) => ({ expression: parseCustom(c), relation: 'nonzero' as const })),
+				parseCustom(answer)
+			)
+		).map((c) => c.text);
+
+	it('ln(x) ≠ 0, la réponse dit x > 0 : « x ≠ 1 »', () => {
+		expect(plain(['ln(x)'], 'ln(x)')).toEqual(['x ≠ 1']);
+	});
+
+	it('ln(x) ≠ 0, la réponse ne dit rien : « x > 0 et x ≠ 1 »', () => {
+		expect(plain(['ln(x)'], '1')).toEqual(['x > 0', 'x ≠ 1']);
+	});
+
+	it('cos(x) ≠ 0 : famille périodique, gardée telle quelle', () => {
+		expect(plain(['cos(x)'], '1')).toEqual(['cos(x) ≠ 0']);
 	});
 });

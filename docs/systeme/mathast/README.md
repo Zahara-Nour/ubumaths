@@ -1676,10 +1676,11 @@ Doublons qui restent, chacun pour un autre besoin :
   à développer (produit sans parenthèse), mais `√x³√x → (√x)⁴` (une puissance de racine déjà
   écrite) et `∛x∛x → (∛x)²` se regroupent encore.
 - Laissés par le § 4.2 de tidy-conditions (2026-10-26, `domainChanges` par ensembles), aucune
-  valeur fausse : le bouton montre la forme où s'arrête le moteur pédagogique
-  (`ln(x²) − ln(x²)` → `2ln(x) − 2ln(x)`, pour x > 0 ; `e^{ln(x²)}` → `e^{2ln(x)}`, pour x > 0) ;
-  `(ln x)²/ln x` dit « ln(x) ≠ 0 », x > 0 élagué (sous-entendu) ; à plusieurs lettres, une
-  réécriture qui rétrécit le domaine (`ln(xy) → ln x + ln y`) n'a ni bouton ni simplification.
+  valeur fausse : à plusieurs lettres, une réécriture qui rétrécit le domaine
+  (`ln(xy) → ln x + ln y`) n'a ni bouton ni simplification ; une condition polynomiale non
+  affine reste entière (`(x²−1)/(x²−1)` → « pour x^2−1 ≠ 0 », pas « x ≠ −1 et x ≠ 1 ») ; le
+  bouton d'un calcul qui passe par une étape plus étroite que sa condition n'a pas d'étapes
+  (`e^{ln(x²)}` → `x²`, pour x ≠ 0, sans le détour par `2 ln x`).
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
   une valeur fausse :
   - valeurs remarquables (`cos(π/3) → 1/2`) dans `réduire`, avec étape et selon le niveau (S4) :

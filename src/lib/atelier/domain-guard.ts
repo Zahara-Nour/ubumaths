@@ -20,6 +20,7 @@ import {
 	describeConditions,
 	domainChange,
 	domainChanges,
+	plainConditions,
 	tidy,
 	tidyWithConditions,
 	type TidyCondition,
@@ -97,10 +98,12 @@ export function domainAlternative(
 	steps?: { readonly steps?: readonly RenderedStep[]; readonly summary?: readonly RenderedStep[] },
 	narrows = false
 ): DomainAlternative {
-	const { text, latex } = joined(conditions);
 	// La réponse du moteur pédagogique garde ses parenthèses de travail
 	// (`ln((x+1))`, `1/((x−1))`), qu'un bouton du § 4.2 montrait
 	const cleaned = stripUnnecessaryBrackets(answer);
+	// `ln(x) ≠ 0` se dit `x ≠ 1` quand la réponse garantit x > 0 (revue du § 4.2)
+	const plain = plainConditions(conditions, cleaned);
+	const { text, latex } = joined(plain);
 	return {
 		label: `Simplifier pour ${text}`,
 		back: BACK,
@@ -108,7 +111,7 @@ export function domainAlternative(
 		latex: `${toLatex(cleaned)}\\text{,}\\quad\\text{pour }${latex}`,
 		...(steps?.steps !== undefined && { steps: steps.steps }),
 		...(steps?.summary !== undefined && { summary: steps.summary }),
-		domain: { conditions, answer: toLatex(cleaned), ast: cleaned, narrows }
+		domain: { conditions: plain, answer: toLatex(cleaned), ast: cleaned, narrows }
 	};
 }
 
@@ -173,6 +176,40 @@ export function keepingDomain(input: MathNode, result: PedagogicalSimplifyResult
 		result.steps[kept].globalBefore ??
 		(kept === 0 ? input : (result.steps[kept - 1].globalAfter ?? input));
 	return { kept: { ...result, result: at, steps, summary: undefined }, lost, narrows };
+}
+
+/**
+ * Le bouton du calcul entier du moteur pédagogique (revue du § 4.2). Le moteur
+ * s'arrête parfois avant la fin (`ln(x²) − ln(x²)` → `2ln(x) − 2ln(x)`, que
+ * `tidy` garde) : `tidy` finit (`0`, pour x ≠ 0). Les étapes ne sont montrées
+ * que si elles mènent à cette réponse et valent chacune là où la condition le
+ * dit : `ln(x²) → 2 ln x` ne vaut que pour x > 0, pas pour x ≠ 0.
+ */
+export function engineAlternative(
+	input: MathNode,
+	full: PedagogicalSimplifyResult,
+	render: () =>
+		| { readonly steps?: readonly RenderedStep[]; readonly summary?: readonly RenderedStep[] }
+		| undefined
+): DomainAlternative | undefined {
+	if (full.steps.length === 0) return undefined;
+	const finished = tidyWithConditions(full.result);
+	const end =
+		finished.conditions.length > 0
+			? withValueInRegister(finished.result, full.result)
+			: full.result;
+	const change = domainChanges(input, end);
+	if (change === null || change.conditions.length === 0) return undefined;
+	const valid =
+		end === full.result &&
+		full.steps.every((step) => {
+			// Le sous-arbre aussi : deux règles d'une même passe partagent leur
+			// instantané global (`e^(ln(x²)) → e^(2ln(x)) → x²`)
+			const at = domainChanges(input, step.globalAfter ?? step.after);
+			const local = domainChanges(step.before, step.after);
+			return at !== null && local !== null && (change.narrows || (!at.narrows && !local.narrows));
+		});
+	return domainAlternative(end, change.conditions, valid ? render() : undefined, change.narrows);
 }
 
 /**

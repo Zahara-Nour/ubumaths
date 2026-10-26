@@ -543,7 +543,11 @@ km/h`), 2026-09-27.
   d'avant (`ln(x²) + ln(−x)`, défini pour x < 0 : « pour x > 0 » serait vide) ou qu'on ne lit
   pas (plusieurs lettres, `ln(xy) → ln x + ln y`) : `null`, comme avant (revue Opus du § 4.2).
   Plusieurs lettres, domaine élargi : la perte, sans élagage (`x/x + y/y` : `x ≠ 0`, `y ≠ 0`).
-  `narrows` : le domaine d'après est plus petit (l'atelier
+  Les conditions disent le signe d'une puissance entière (`x² > 0` → `x ≠ 0`, `x³ > 0` →
+  `x > 0`). **`plainConditions(conditions, answer)`** : `u ≠ 0` en points exclus quand `u`
+  ne s'annule qu'en des nombres (`ln(x) ≠ 0` → `x ≠ 1`), le domaine de `u` redit seulement si
+  la réponse et les autres conditions ne le garantissent pas (`(ln x)²/ln x → ln x` : `x ≠ 1` ;
+  `ln(x)/ln(x) → 1` : `x > 0 et x ≠ 1`). `narrows` : le domaine d'après est plus petit (l'atelier
   dit alors « Pour x > 0, on peut écrire 2ln(x) »). `null` : une condition ne s'écrit pas
   (`tan`). `domainChange` en rend les conditions seules. Sert à l'atelier pour garder le domaine
   de toutes ses lignes (`atelier/domain-guard.ts`).

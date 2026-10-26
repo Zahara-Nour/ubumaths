@@ -36,6 +36,17 @@ const expLn = createRule(P.pow(P.lit(euler()), P.func('ln', [P._('x')])), P._('x
 	name: 'exp-ln'
 });
 
+/**
+ * e^(n·ln(x)) = xⁿ, n entier (tidy-conditions § 4.2) : le moteur passe de bas
+ * en haut, `ln-pow` récrit `e^(ln(x²))` en `e^(2ln(x))` avant que `exp-ln`
+ * ne voie la racine, et le calcul s'arrêtait là.
+ */
+const expNLn = createRule(
+	P.pow(P.lit(euler()), P.mul(P._('n', P.isInteger()), P.func('ln', [P._('x')]))),
+	P.pow(P._('x'), P._('n')),
+	{ name: 'exp-n-ln' }
+);
+
 // =============================================================================
 // Known Values
 // =============================================================================
@@ -108,6 +119,7 @@ const expProduct = createRule(
 export const logExpRules: readonly Rule[] = [
 	lnExp,
 	expLn,
+	expNLn,
 	lnOne,
 	lnE,
 	lnPow,

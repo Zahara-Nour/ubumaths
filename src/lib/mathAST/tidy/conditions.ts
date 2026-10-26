@@ -28,7 +28,7 @@ import type { Domain } from '../domain/types';
 import { computeDomain } from '../domain/compute';
 import { difference, intersect, isEmpty } from '../domain/algebra';
 import { expandExcludedPoints } from '../domain/validation/compare-domains';
-import { divide, func, number } from '../factory';
+import { divide, func, number, subtract, variable } from '../factory';
 
 /** Une condition écrite, pour la ligne (LaTeX) et pour le texte. */
 export interface ConditionText {
@@ -85,6 +85,7 @@ export function conditionKey(condition: DomainCondition): string {
  */
 function essential<C extends DomainCondition>(condition: C): C[] {
 	const { expression, relation } = condition;
+	if (relation === 'positive' || relation === 'nonnegative') return signOfPower(condition);
 	if (relation !== 'nonzero') return [condition];
 	const inner = (node: MathNode) => essential({ ...condition, expression: node });
 	switch (expression.type) {
@@ -107,6 +108,22 @@ function essential<C extends DomainCondition>(condition: C): C[] {
 		default:
 			return [condition];
 	}
+}
+
+/**
+ * Le signe d'une puissance entière (§ 4.2) : `u²ᵏ > 0` dit `u ≠ 0`, `u²ᵏ ≥ 0`
+ * ne dit rien, `u²ᵏ⁺¹` a le signe de `u` (`x³ > 0` → `x > 0`). Revue : la note
+ * de `ln(x²) − ln(x²)` disait « pour x^2 > 0 ».
+ */
+function signOfPower<C extends DomainCondition>(condition: C): C[] {
+	const { expression, relation } = condition;
+	const node = expression.type === 'delimiter' ? expression.content : expression;
+	if (node.type !== 'superscript' || node.superscript.type !== 'number') return [condition];
+	const exponent = Number(node.superscript.value);
+	if (!Number.isInteger(exponent) || exponent < 1) return [condition];
+	if (exponent % 2 === 1) return essential({ ...condition, expression: node.base });
+	if (relation === 'nonnegative') return [];
+	return essential({ ...condition, expression: node.base, relation: 'nonzero' } as C);
 }
 
 /** Deux conditions sur la même expression : la plus forte, ou leur réunion. */
@@ -281,6 +298,62 @@ export function domainChanges(
 	if (written === null) return null;
 	const common = was.filter((c) => !lost.includes(c));
 	return { conditions: letter === null ? written : pruned(written, common, letter), narrows };
+}
+
+/**
+ * `u ≠ 0` dit en points exclus, quand `u` ne s'annule qu'en des nombres
+ * (`ln(x) ≠ 0` → `x ≠ 1`, revue du § 4.2) : l'ensemble de `1/u` est celui de
+ * `u` privé de ces points. Le domaine de `u` (x > 0) n'est redit que si
+ * `context` (la réponse, les autres conditions) ne le garantit pas :
+ * `(ln x)²/ln x → ln x` dit `x ≠ 1`, `ln(x)/ln(x) → 1` dit `x > 0 et x ≠ 1`.
+ */
+function asPoints(
+	condition: TidyCondition,
+	context: readonly DomainCondition[],
+	typeCtx?: TypeContext
+): TidyCondition[] {
+	if (condition.relation !== 'nonzero' || affineRoot(condition.expression) !== null) {
+		return [condition];
+	}
+	const where = conditionSet(condition);
+	if (where === null || where.domain.kind !== 'interval_set') return [condition];
+	const points = where.domain.excludedPoints.map((p) => p.value);
+	if (points.length === 0 || points.some((p) => p.type !== 'number')) return [condition];
+	const own = computeDomain(condition.expression, where.letter);
+	if ((own.unresolved?.length ?? 0) > 0 || !INCLUSION_READABLE.has(own.domain.kind)) {
+		return [condition];
+	}
+	const withoutPoints: Domain = { ...where.domain, excludedPoints: [] };
+	if (!isIncluded(withoutPoints, own.domain) || !isIncluded(own.domain, withoutPoints)) {
+		return [condition];
+	}
+	const excluded = points.map((p): TidyCondition => ({
+		expression: subtract(variable(where.letter), p),
+		relation: 'nonzero'
+	}));
+	const ownConditions = writable(
+		mergeConditions(domainConditions(condition.expression, typeCtx, NOTHING_ACQUIRED))
+	);
+	if (ownConditions === null) return [condition];
+	const assumed = setOf(context, where.letter);
+	const implied = assumed !== null && isIncluded(assumed, own.domain);
+	return implied ? excluded : [...ownConditions, ...excluded];
+}
+
+/**
+ * Les conditions écrites au plus simple pour la réponse `answer` : `u ≠ 0`
+ * en points exclus quand on sait (`asPoints`), sans doublon.
+ */
+export function plainConditions(
+	conditions: readonly TidyCondition[],
+	answer: MathNode,
+	typeCtx?: TypeContext
+): TidyCondition[] {
+	const domainOfAnswer = mergeConditions(domainConditions(answer, typeCtx, NOTHING_ACQUIRED));
+	const written = conditions.flatMap((condition) =>
+		asPoints(condition, [...domainOfAnswer, ...conditions.filter((c) => c !== condition)], typeCtx)
+	);
+	return mergeConditions(written);
 }
 
 /**

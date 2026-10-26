@@ -1344,7 +1344,12 @@ condition sur la ligne. Tests : `domaine-garde.test.ts`.
   fait. Deux écritures du même ensemble ne changent rien : `.simplifier ln(x³)` → `3 ln x`,
   sans condition (`domainChanges` de `tidy`). Une hypothèse qui ne rencontre pas le domaine
   de l'expression (`.simplifier x/x + √(−x) avec x > 0`) ne simplifie rien et le dit
-  (`meetsDomain`). Seule une
+  (`meetsDomain`). Le bouton de `.simplifier` (`engineAlternative`) : quand le moteur
+  pédagogique s'arrête avant la fin (`ln(x²) − ln(x²)` → `2ln(x) − 2ln(x)`), `tidy` finit
+  (`0`, pour x ≠ 0) ; ses étapes ne sont montrées que si elles mènent à la réponse et valent
+  chacune là où la condition le dit (`e^{ln(x²)}` → `x²`, pour x ≠ 0, sans étapes : `ln(x²) →
+2 ln x` ne vaut que pour x > 0). Les conditions s'écrivent au plus simple (`plainConditions` :
+  `ln(x)/ln(x)` → « pour x > 0 et x ≠ 1 »). Seule une
   condition d'une lettre dont le domaine est **calculé en entier et fait d'intervalles et de
   points** peut être garantie : `ln(x) ≠ 0` (]0;+∞[ \ {1}, `ln(x)/ln(x) avec x > 1` → 1),
   `eˣ − 1 ≠ 0` (ℝ \ {0}) ; pas `cos(x) ≠ 0`, qui exclut une famille π/2 + kπ que l'inclusion ne

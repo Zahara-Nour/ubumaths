@@ -327,6 +327,42 @@ describe('domainChange par ensembles (§ 4.2)', () => {
 	});
 });
 
+// Restes de la revue Opus du § 4.2, corrigés à la demande de David (2026-10-26)
+describe('restes de la revue du § 4.2', () => {
+	it.each([
+		['.simplifier ln(x^2)-ln(x^2)', '0', 'x ≠ 0'],
+		['.simplifier ln(x^3)-ln(x^3)', '0', 'x > 0'],
+		['.simplifier e^(ln(x^2))', 'x^2', 'x ≠ 0'],
+		['.simplifier e^(2ln(x))', 'x^2', 'x > 0'],
+		['.simplifier (ln(x))^2/ln(x)', '\\ln\\left(x\\right)', 'x ≠ 1'],
+		['ln(x)/ln(x)', '1', 'x > 0 et x ≠ 1']
+	])('%s : bouton « %s, pour %s »', (input, answer, condition) => {
+		const { alternative } = line(input);
+		expect(alternative?.label).toBe(`Simplifier pour ${condition}`);
+		expect(flat(alternative?.domain?.answer)).toBe(flat(answer));
+	});
+
+	// `ln(x²) → 2 ln x` ne vaut que pour x > 0 : pas d'étapes sous « pour x ≠ 0 »
+	it.each(['.simplifier ln(x^2)-ln(x^2)', '.simplifier e^(ln(x^2))'])(
+		'%s : le bouton ne montre pas d’étape fausse pour x < 0',
+		(input) => {
+			expect(line(input).alternative?.steps).toBeUndefined();
+		}
+	);
+
+	it('.simplifier e^(ln(x)) : les étapes restent', () => {
+		expect(line('.simplifier e^(ln(x))').alternative?.steps?.length).toBeGreaterThan(0);
+	});
+
+	it.each([
+		['.simplifier ln(x^2)-ln(x^2) avec x ≠ 0', '0'],
+		['ln(x)/ln(x) avec x > 0 et x ≠ 1', '1'],
+		['.simplifier (ln(x))^2/ln(x) avec x ≠ 1', '\\ln\\left(x\\right)']
+	])('%s → %s : la note se recopie', (input, latex) => {
+		expect(flat(line(input).latex)).toBe(flat(latex));
+	});
+});
+
 describe('revue du 2026-10-26', () => {
 	it.each([
 		'cos(x)/cos(x) avec x > 0',

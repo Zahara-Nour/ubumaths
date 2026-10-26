@@ -21,7 +21,7 @@ import { toLatex } from '$lib/mathAST/latex-generator';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
 import {
-	domainAlternative,
+	engineAlternative,
 	keepingDomain,
 	writtenKeepingDomain,
 	type DomainAlternative
@@ -129,11 +129,8 @@ export function simplifySteps(expression: string): SimplifiedSteps | null {
 		});
 		// Le domaine est gardé (David, 2026-10-26) : la ligne s'arrête avant la
 		// première étape qui le change, le bouton montre le calcul entier
-		const { kept, lost, narrows } = keepingDomain(node, full);
-		const alternative =
-			lost === null || lost.length === 0 || full.steps.length === 0
-				? undefined
-				: domainAlternative(full.result, lost, rendered(full) ?? undefined, narrows);
+		const { kept } = keepingDomain(node, full);
+		const alternative = engineAlternative(node, full, () => rendered(full) ?? undefined);
 		// Zéro étape = rien à simplifier. C'est un repli, pas un échec : la ligne
 		// garde la réponse du moteur, qui dit déjà la même chose. Des étapes, mais
 		// aucune qui garde le domaine : la ligne garde l'expression, sans étapes

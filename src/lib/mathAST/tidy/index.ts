@@ -31,6 +31,7 @@ export {
 	domainChanges,
 	domainLoss,
 	isIncluded,
+	plainConditions,
 	type ConditionText,
 	type DomainChangeDetail
 } from './conditions';

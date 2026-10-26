@@ -283,6 +283,7 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	// ---- identites-log-exp ----------------------------------------------------
 	['ln-exp', 'identites-log-exp'],
 	['exp-ln', 'identites-log-exp'],
+	['exp-n-ln', 'identites-log-exp'],
 	['ln-one', 'identites-log-exp'],
 	['ln-e', 'identites-log-exp'],
 	['ln-pow', 'identites-log-exp'],
