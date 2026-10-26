@@ -133,4 +133,39 @@ Sondes : `ln(x³) → 3 ln x` refusé (même domaine, écritures différentes) ;
   - Au passage : la réponse du bouton passe par `stripUnnecessaryBrackets` (`ln((x+1))` du moteur pédagogique).
   - `domaine-garde.test.ts` « une réécriture qui rétrécit le domaine n'a pas lieu » réécrit : la ligne garde, le bouton vient.
 
+## 5. Les limites (phase 0, 2026-10-26)
+
+Sondes (Atelier `runInput`, `normalize`, tests jetables supprimés).
+
+| ligne tapée                                                  | aujourd'hui                                                                                                                                                                                                       |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.simplifier ln(xy)`                                         | `ln(xy)`, ni bouton ni note                                                                                                                                                                                       |
+| `.simplifier ln(xy) avec x > 0 et y > 0`                     | « ne change rien ici »                                                                                                                                                                                            |
+| `.simplifier (x²−2)/(x²−2)`                                  | bouton « pour x^2−2 ≠ 0 » ; la note dit pourtant `dans ℝ \ {-√2 ; √2}`                                                                                                                                            |
+| `.simplifier (x²−2)/(x−√2)`                                  | bouton « pour x−sqrt(2) ≠ 0 » (texte brut), réponse `√2 + x`                                                                                                                                                      |
+| `.simplifier ln(x²−2)−ln(x²−2)`                              | « pour x^2−2 > 0 »                                                                                                                                                                                                |
+| `.simplifier (arctan(x)−1)/(arctan(x)−1)`                    | « pour arctan(x)−1 ≠ 0 », note sans syntaxe                                                                                                                                                                       |
+| `.simplifier tan(x)/tan(x)`, `arcsin(x)/arcsin(x)`           | rien : ni bouton ni note                                                                                                                                                                                          |
+| `.simplifier cos(x)/cos(x) avec 0 < x < 1` (mode conditions) | ⚠️ la ligne dit `1, pour cos(x) ≠ 0` ET la note dit « la ligne garde l'écriture »                                                                                                                                 |
+| `.simplifier ln(x)−ln(x) avec x ≥ e`                         | refus : « x ≥ e ne se lit pas »                                                                                                                                                                                   |
+| `e^{2 ln 3}` et `9`                                          | équivalents (`areEquivalent`, `isZeroExpression`) mais formes normales différentes ; idem `e^{3ln2}`/8, `e^{−ln2}`/½, `e^{ln2/2}`/√2, `e^{ln2+ln3}`/6, `e^{1+ln2}`/2e. Seul `e^{ln 3}` → 3. Aucune valeur fausse. |
+| `1/(1/x) + 1/(1/x)` (tidy)                                   | ne se regroupe pas en `2/(1/x)`                                                                                                                                                                                   |
+
+### Comportements proposés
+
+- **L1 — contradiction (bug, d'abord)** : en mode conditions, une hypothèse qui ne garantit pas la condition → la ligne garde l'écriture (bouton « Simplifier pour cos(x) ≠ 0 »), comme le dit la note.
+- **L2 — points irrationnels écrits** : `x² − 2 ≠ 0` → « x ≠ −√2 et x ≠ √2 » ; `x − √2 ≠ 0` → « x ≠ √2 » (jamais `sqrt(2)` en texte) ; `x² − 2 > 0` → « x < −√2 ou x > √2 » ; `x²+x−1 ≠ 0` → « x ≠ (−1−√5)/2 et x ≠ (−1+√5)/2 ». Même seuil que les points rationnels. Points sans écriture exacte → condition entière (actuel). La note propose `avec …` (relu). Au passage : `√2 + x` → `x + √2`.
+- **L3 — fonctions à réciproque connue** : `arctan(x) − 1 ≠ 0` → « x ≠ tan(1) » ; `arcsin(x)/arcsin(x)` → bouton « pour −1 ≤ x ≤ 1 et x ≠ 0 » ; `tan(x)/tan(x)` → bouton « pour tan(x) ≠ 0 » (condition sous-entendant que tan existe, comme `ln(x) ≠ 0`), note sans syntaxe.
+- **L4 — constantes exactes dans `avec`/`dans`** : `avec x ≥ e`, `avec x > π/2`, `dans ]0 ; ln 2[`, `avec x ≠ √2` lus ; trigonométrie sur un intervalle borné : `cos(x)/cos(x) avec 0 < x < 1` → `1` (les points π/2 + kπ de l'intervalle se comptent : aucun).
+- **L5 — plusieurs lettres, rétrécissement** : accepté quand chaque condition d'après porte sur une seule lettre et que celles d'avant s'en déduisent par les signes des facteurs (`xy > 0` ⇐ `x > 0 et y > 0`) : `ln(xy)` → bouton « pour x > 0 et y > 0 » → `ln x + ln y` ; `avec x > 0 et y > 0` simplifie ; `ln(x/y)`, `√(xy)` pareil. Sinon refus (actuel), jamais une condition fausse.
+- **L6 — `e^{k ln a}`** (forme normale) : `normalize` réduit `e^{k ln a + c}` (k rationnel, a > 0 rationnel) en `aᵏ eᶜ` : `e^{2ln3}` → 9, `e^{ln2/2}` → √2, `e^{1+ln2}` → 2e. Rien de visible ne change (déjà équivalents) ; garde contre un écart futur.
+- **Laissé (reco)** : `1/(1/x) + 1/(1/x)` non regroupé (cas exotique, aucune valeur fausse).
+
+### Questions à David
+
+- **Q10 — L6** : reco le faire (petit, protège l'équivalence), ou le laisser puisque rien ne se voit.
+- **Q11 — L3, `tan`** : reco « pour tan(x) ≠ 0 » ; autre : « pour x ≠ kπ/2 » (exact, plus dur à lire au lycée).
+- **Q12 — `1/(1/x)` ×2** : reco laisser.
+- **Q13 — découpage** : reco PR A = L1 + L2 + L3 + L4 (écriture et lecture des conditions), PR B = L5, PR C = L6.
+
 ## Historique
