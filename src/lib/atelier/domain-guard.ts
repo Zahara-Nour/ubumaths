@@ -27,6 +27,7 @@ import {
 	type TidyOptions
 } from '$lib/mathAST/tidy';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { computeCost } from '$lib/mathAST/simplify/cost';
 import { stripUnnecessaryBrackets } from '$lib/mathAST/transforms';
 import { withValueInRegister } from '$lib/mathAST/integration/coefficient-register';
 
@@ -194,10 +195,19 @@ export function engineAlternative(
 ): DomainAlternative | undefined {
 	if (full.steps.length === 0) return undefined;
 	const finished = tidyWithConditions(full.result);
-	const end =
+	const engineEnd =
 		finished.conditions.length > 0
 			? withValueInRegister(finished.result, full.result)
 			: full.result;
+	// Le moteur pédagogique peut finir plus long que `tidy` seul : `ln(xy) −
+	// ln(xy)` devient `ln x + ln y − (ln x + ln y)`, où plus rien ne s'annule
+	// sans changer le domaine ; `tidy` y lit `0`, pour xy > 0 (tidy-conditions,
+	// PR D). La réponse la plus courte l'emporte, sans étapes.
+	const direct = tidyWithConditions(input);
+	const end =
+		direct.conditions.length > 0 && computeCost(direct.result) < computeCost(engineEnd)
+			? direct.result
+			: engineEnd;
 	const change = domainChanges(input, end);
 	if (change === null || change.conditions.length === 0) return undefined;
 	const valid =

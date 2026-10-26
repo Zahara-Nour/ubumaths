@@ -1679,10 +1679,11 @@ Doublons qui restent, chacun pour un autre besoin :
   valeur fausse : à plusieurs lettres, une réécriture qui rétrécit le domaine n'a ni bouton
   ni simplification quand une condition d'après porte sur deux lettres (`ln((x+y)z)` ; depuis
   le § 5, L5, `ln(xy) → ln x + ln y` a son bouton « pour x > 0 et y > 0 ») ; à plusieurs
-  lettres encore, `√x √y → √(xy)` (élargit) n'a pas de note ; le bouton de `ln(xy) − ln(xy)`
-  (et de `ln(x(x+1)) − ln(x(x+1))`) est `ln x + ln y − (ln x + ln y)`, pas `0` : le moteur
-  pédagogique s'arrête et `tidy` ne distribue pas `−(…)` — `.simplifier ln(2x) − ln(2x)` laisse
-  même cette écriture sur la ligne ; une condition dont les points
+  lettres encore, `√x √y → √(xy)` (élargit) n'a pas de note ; `.simplifier ln(6x) − ln(2x)`
+  s'arrête sur `ln 6 + ln x − (ln 2 + ln x)` (le développement, plus long, n'est pas retenu ; `ln 3`
+  attendu) — corrigé en PR D : `ln(xy) − ln(xy)`, `ln(2x) − ln(2x)`, `ln(x(x+1)) − ln(x(x+1))`
+  ont leur bouton `0` (parenthèses implicites écrites après la phase A, et dans `engineAlternative`
+  la réponse de `tidy` seul quand elle est plus courte) ; une condition dont les points
   exclus n'ont pas d'écriture exacte reste entière (`x³ − 2 ≠ 0` ; les irrationnels exacts
   s'écrivent depuis le § 5, `x ≠ √2`) ; le bouton d'un calcul qui passe par
   une étape plus étroite que sa condition n'a pas d'étapes (`e^{ln(x²)}` → `x²`, pour x ≠ 0,
