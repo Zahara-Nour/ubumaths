@@ -564,6 +564,7 @@ export type { HorlogeNode } from './horloge';
 export type { OperationNode } from './operation';
 export type { CollectionNode } from './collection';
 export type { MonnaieNode } from './monnaie';
+export type { ChoiceNode } from './choix';
 
 // Import the types for use in BlockNode union
 import type { VariationTableNode } from './variation-table';
@@ -578,6 +579,7 @@ import type { HorlogeNode } from './horloge';
 import type { OperationNode } from './operation';
 import type { CollectionNode } from './collection';
 import type { MonnaieNode } from './monnaie';
+import type { ChoiceNode } from './choix';
 
 /**
  * Union of block nodes (top-level document structure)
@@ -604,7 +606,8 @@ export type BlockNode =
 	| HorlogeNode
 	| OperationNode
 	| CollectionNode
-	| MonnaieNode;
+	| MonnaieNode
+	| ChoiceNode;
 
 // ============================================================================
 // COMPOSITE NODES

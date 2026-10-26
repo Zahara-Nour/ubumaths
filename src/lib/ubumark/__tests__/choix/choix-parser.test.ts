@@ -13,6 +13,8 @@ import {
 	replaceChoiceBlocks,
 	serializeChoiceBlock
 } from '$lib/ubumark/parser/choix-parser';
+import { parseMarkdown } from '$lib/ubumark';
+import { generateTypst } from '$lib/ubumark/generators/typst-generator';
 
 const lines = (text: string) => text.split('\n');
 
@@ -144,5 +146,35 @@ describe('écriture d’un bloc choix (énoncé de l’instance)', () => {
 			(block) => `[${block.caseIndex}:${block.choices.join('|')}]`
 		);
 		expect(out).toBe('Avant\n\n[1:a|b]\n\nAprès $x$');
+	});
+});
+
+describe('parseMarkdown : nœud « choice » à l’endroit du bloc', () => {
+	it('paragraphe, bloc choix (formules gardées telles quelles), paragraphe', () => {
+		const doc = parseMarkdown(
+			'Calcule $2+2$.\n\n```choix\ncase: 1\nplusieurs: oui\n- $x^2$\n- b\n```\n\nFin $y$.'
+		);
+		expect(doc.children.map((c) => c.type)).toEqual(['paragraph', 'choice', 'paragraph']);
+		expect(doc.children[1]).toEqual({
+			type: 'choice',
+			caseIndex: 1,
+			multiple: true,
+			choices: ['$x^2$', 'b'],
+			errors: []
+		});
+	});
+
+	it('clôture ```` : un bloc dans un choix ne ferme pas le bloc choix', () => {
+		const doc = parseMarkdown('````choix\n- ```horloge\n  10:30\n  ```\n- b\n````\n\nAprès');
+		expect(doc.children.map((c) => c.type)).toEqual(['choice', 'paragraph']);
+	});
+});
+
+describe('PDF (typst) d’un bloc choix hors série figée', () => {
+	it('« A) … B) … », formules converties, jamais le code du bloc', () => {
+		const typst = generateTypst(parseMarkdown('```choix\n- Oui\n- $x^2$\n```'));
+		expect(typst).toContain('*A)* Oui');
+		expect(typst).toMatch(/\*B\)\* \$/);
+		expect(typst).not.toContain('choix');
 	});
 });

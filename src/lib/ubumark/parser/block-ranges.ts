@@ -22,6 +22,7 @@ import { findMonnaieBlocks } from './monnaie-parser';
 import { findCourbeBlocks } from './courbe-parser';
 import { findFigureBlocks } from './figure-parser';
 import { findStatChartBlocks } from './stat-chart-parser';
+import { findChoiceBlocks } from './choix-parser';
 
 /**
  * La fin d'un bloc spécial : ``` seul, à la marge — la même règle que les
@@ -48,7 +49,8 @@ export function blockLineRanges(lines: string[]): [number, number][] {
 		...findMonnaieBlocks(lines),
 		...findCourbeBlocks(lines),
 		...findFigureBlocks(lines),
-		...findStatChartBlocks(lines)
+		...findStatChartBlocks(lines),
+		...findChoiceBlocks(lines)
 	].map((r): [number, number] => [r.startIndex, r.endIndex]);
 	// Les blocs de code, une fois les blocs spéciaux masqués (comme parseBlocks)
 	const masked = lines.map((line, index) =>

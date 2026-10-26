@@ -33,6 +33,7 @@
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
+	import ChoiceBlock from './ChoiceBlock.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -95,4 +96,6 @@
 	<Collection {node} />
 {:else if node.type === 'monnaie'}
 	<Monnaie {node} />
+{:else if node.type === 'choice'}
+	<ChoiceBlock {node} />
 {/if}

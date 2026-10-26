@@ -115,6 +115,7 @@ import {
 	parseMonnaieContent,
 	isMonnaieBlockStart
 } from './monnaie-parser';
+import { findChoiceBlocks, parseChoiceBlock } from './choix-parser';
 import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
@@ -496,6 +497,8 @@ function parseBlocks(
 	const operationBlocks = findOperationBlocks(lines);
 	const collectionBlocks = findCollectionBlocks(lines);
 	const monnaieBlocks = findMonnaieBlocks(lines);
+	// Bloc ```choix (case « choix ») : ses choix restent du markdown, rendus un à un
+	const choiceBlocks = findChoiceBlocks(lines);
 	type SpecialParse = (
 		source: string[],
 		start: number,
@@ -514,7 +517,8 @@ function parseBlocks(
 		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
 		{ ranges: collectionBlocks, parse: parseCollection, language: 'collection' },
-		{ ranges: monnaieBlocks, parse: parseMonnaie, language: 'monnaie' }
+		{ ranges: monnaieBlocks, parse: parseMonnaie, language: 'monnaie' },
+		{ ranges: choiceBlocks, parse: parseChoiceBlock, language: 'choix' }
 	];
 	const specialBlockAt = (index: number) => {
 		for (const { ranges, parse, language } of SPECIALS) {
@@ -581,6 +585,7 @@ function parseBlocks(
 			...operationBlocks,
 			...collectionBlocks,
 			...monnaieBlocks,
+			...choiceBlocks,
 			...courbeBlocks,
 			...figureBlocks,
 			...statChartBlocks
@@ -597,6 +602,7 @@ function parseBlocks(
 			...findOperationBlocks(originalLines),
 			...findCollectionBlocks(originalLines),
 			...findMonnaieBlocks(originalLines),
+			...findChoiceBlocks(originalLines),
 			...originalCourbeBlocks,
 			...originalFigureBlocks,
 			...originalStatChartBlocks

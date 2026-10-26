@@ -13,6 +13,9 @@
 	- disabled: Whether inputs are disabled
 	- showValidation: Whether to show correct/incorrect indicators
 	- onSubmit: Callback when a choice is clicked (in single-answer mode)
+	- onSelectionChange: positions cochées après chaque clic (case « choix » de
+	  `FillBlanksInput`, qui en tire la valeur de la case)
+	- label: nom accessible du groupe (« Choix » ; « Case 2 : choix » pour une case)
 -->
 
 <script lang="ts">
@@ -40,6 +43,10 @@
 		disabled?: boolean;
 		showValidation?: boolean;
 		onSubmit?: (index: number) => void;
+		/** Positions cochées (ordre affiché) après chaque clic */
+		onSelectionChange?: (indexes: number[]) => void;
+		/** Nom accessible du groupe de choix */
+		label?: string;
 		/** Fonctions déclarées par le modèle (`P(x)`), pour les formules `~…~` ; absent : défauts */
 		genericFunctions?: GenericFunctionConfig;
 	}
@@ -51,6 +58,8 @@
 		disabled = false,
 		showValidation = false,
 		onSubmit,
+		onSelectionChange,
+		label = 'Choix',
 		genericFunctions
 	}: Props = $props();
 
@@ -71,11 +80,12 @@
 		} else {
 			// Single selection: replace array
 			selectedIndexes = [index];
+		}
+		onSelectionChange?.(selectedIndexes);
 
-			// Trigger submit callback for single-answer mode
-			if (onSubmit) {
-				onSubmit(index);
-			}
+		// Trigger submit callback for single-answer mode
+		if (!multipleAnswers && onSubmit) {
+			onSubmit(index);
 		}
 	}
 
@@ -119,7 +129,7 @@
 	<div
 		class="choices-grid"
 		role={multipleAnswers ? 'group' : 'radiogroup'}
-		aria-label="Choix"
+		aria-label={label}
 		onkeydown={handleKeydown}
 	>
 		{#each choices as choice, i (i)}

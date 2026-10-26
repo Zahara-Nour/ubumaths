@@ -23,6 +23,8 @@
  * @module ubumark/parser/choix-parser
  */
 
+import type { ChoiceNode } from '../types/choix';
+
 // Types
 export interface ChoiceBlockRange {
 	/** Ligne d'ouverture (```choix) */
@@ -242,4 +244,29 @@ export function replaceChoiceBlocks(
 	}
 	out.push(...lines.slice(next));
 	return out.join('\n');
+}
+
+/**
+ * Nœud du bloc choix qui s'ouvre à `startIndex` (parseur markdown). `end` n'est
+ * pas lu : la clôture (``` ou ````) est retrouvée ici.
+ */
+export function parseChoiceBlock(
+	lines: string[],
+	startIndex: number,
+	_end: number
+): { node: ChoiceNode } {
+	const range = findChoiceBlocks(lines.slice(startIndex))[0];
+	const endIndex = range ? startIndex + range.endIndex : lines.length - 1;
+	const closed = range?.closed ?? false;
+	const body = lines.slice(startIndex + 1, closed ? endIndex : endIndex + 1);
+	const spec = parseChoiceBody(body);
+	return {
+		node: {
+			type: 'choice',
+			...(spec.caseIndex !== undefined && { caseIndex: spec.caseIndex }),
+			multiple: spec.multiple,
+			choices: spec.choices,
+			errors: closed ? spec.errors : [...spec.errors, CHOICE_BLOCK_UNCLOSED_MESSAGE]
+		}
+	};
 }

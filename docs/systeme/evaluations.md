@@ -181,7 +181,11 @@ dupliquer (`duplicateSeries`). Même verrou sur le `series_id` d'un contrôle co
    notée** (`readSubmittedCopy`), pour l'élève dont la réponse s'est perdue.
 2. Course reçue après temps limite + 30 s (`COURSE_GRACE_SECONDS`) → `late` : note 0, aucune réponse
    enregistrée.
-3. Correction par le serveur (`gradeWithinBudget` → `gradeQuestion`) : 1, ½ ou 0 par question, note
+3. Case « choix » : les positions AFFICHÉES reçues sont ramenées aux indices d'origine
+   (`toOriginalChoiceValues`) avant la correction et l'enregistrement (`test_answers.user_answer`
+   en indices d'origine, « 0;2 ») ; une valeur illisible, hors bornes ou répétée → **400**, rien
+   d'écrit, la tentative reste ouverte (garde : `evaluation-notee-serveur.test.ts`).
+   Correction par le serveur (`gradeWithinBudget` → `gradeQuestion`) : 1, ½ ou 0 par question, note
    sur 20 au demi-point (`gradeOutOf20`). Budget total 5 s ; au-delà, les questions restantes valent 0.
    Tout verdict envoyé par le navigateur est ignoré (le schéma Zod le retire).
 4. Écritures par le client **service_role** (la base refuse à un compte connecté d'écrire une séance

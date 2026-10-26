@@ -315,6 +315,14 @@ forme à améliorer », `InputState.unoptimal`), rouge sinon. Avant octobre 2026
 textuelle avec l'attendu rendait rouge toute bonne réponse d'une case à unité (`6m` pour `6[m]`),
 `3.1` pour `3{,}1` ou `\dfrac{1}{2}` pour `\frac{1}{2}`.
 
+Case « choix » : le parseur ubumark lit le bloc ```choix en nœud `choice` (`parseChoiceBlock`,
+choix gardés en markdown, formules non extraites) ; `FillBlanksInput` met à sa place un
+`MultipleChoiceInput` (ronds ou carrés, lettres A, B, C, groupe `radiogroup` / `group` nommé
+« Case N : choix », flèches) dont la valeur est `formatChoiceAnswer(...)` en indices d'origine ;
+après validation, choix coché à tort et bons choix marqués (réponse connue seulement). Une case
+choix vide compte comme une case vide (`QuestionCard` : Valider grisé). Hors question
+(`MarkdownRenderer`, cours, aperçu) : liste A, B, C non cliquable ; PDF (typst) : « A) … ».
+
 Il n'y a **pas** de case « tableau » (tableau de signes ou de variations) : le tableau de signes
 n'existe que dans les corrections générées, rendu par le bloc ubumark `variation`
 ([journal archivé](../archive/wip/tableau-signes-affichable-progress.md)).
@@ -444,10 +452,14 @@ s'il n'y a pas d'énoncé rempli (la figure est la seule case), la consigne seul
 (`showsInstructionOnly`, `instructionOf`) : la figure n'apparaît qu'une fois, au verso de la `FlashCard`
 comme dans la copie corrigée, case « figure » mêlée à d'autres cases comprise.
 
-Case « choix » : la ligne `choices` du QCM (mêmes statuts, ordre affiché), avec `index` = la case ;
-le bloc est retiré de l'énoncé rempli (`withoutChoiceCases`) et la ligne vient après lui (le bloc
-termine d'ordinaire l'énoncé). Correction : `{{solution}}` d'une case choix = le texte de ses bons
-choix, séparés par « ; ». Série figée (PDF) : `**a)** …` à la place du bloc, `Réponse : **b)** …`
+Case « choix » : le bloc reste **à sa place** dans l'énoncé rempli ; la ligne `filled-statement`
+porte `choiceCases` (par case : ses choix, statuts du QCM, ordre affiché). À l'écran,
+`ExpectedResultView` les pose par `ChoiceCasesScope` (contexte `choice-case-results`) et le bloc
+(`ChoiceBlock` → `ChoiceList`, rendu partagé avec le QCM corrigé) les affiche. « Ta réponse » est
+écrite sans les blocs choix (`withoutChoiceCases`), et omise s'il ne reste aucune autre case :
+les choix ne sont jamais montrés deux fois. `CorrectionCard` pose aussi les bons choix de la
+réponse attendue seule (vue concise). Correction : `{{solution}}` d'une case choix = le texte de
+ses bons choix, séparés par « ; ». Série figée (PDF) : `**a)** …` à la place du bloc, `Réponse : **b)** …`
 dessous au corrigé ; le bloc compte pour une case.
 
 ### 7. Correction (concise / détaillée, étapes)
@@ -685,10 +697,9 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - **Case graphique (droite graduée)** : `InstanceBlank.type` admet `'graphical'` et
   `graphicalConfig`, mais aucun générateur ne la produit et `NumberLineInput.svelte` n'est importé
   par aucun composant.
-- **Case choix (2026-10-26, PR 1a)** : moteur seul (lecture, génération, notation, envoi, résultat
-  attendu, PDF) ; `FillBlanksInput`, la `FlashCard` et `ExpectedResultView` ne la rendent pas
-  encore (le bloc ```choix de l'énoncé s'affiche comme du code), l'éditeur de cases non plus
-  (PR 1b). Les QCM (`choices`) restent inchangés.
+- **Case choix (2026-10-26, PR 1a)** : l'éditeur de cases ne la propose pas encore (PR 1b) ;
+  l'import du markdown dans l'éditeur riche (`rich-text/markdown-import.ts`) ignore le nœud
+  `choice`. Les QCM (`choices`) restent inchangés.
 - Composants sans appelant : `question-inputs/MathInput.svelte`, `question-inputs/OrderingInput.svelte`,
   et `src/lib/questions/examples/color-demo.ts`.
 - `question_templates.type` existe en base, mais le code déduit le type de la structure
