@@ -8,7 +8,7 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1733 (phases 0 livrées archivées ; Q93 et M1 confirmées)._
+_Mis à jour le 2026-10-26, après #1827 (graphe agrandi)._
 
 - **État** : `/spreadsheet` retiré et pont « Ouvrir dans Python » livrés et en prod (v0.47.0).
   Aucun worktree ni PR ouverts pour l'atelier.
@@ -20,7 +20,7 @@ _Mis à jour le 2026-10-25, après #1733 (phases 0 livrées archivées ; Q93 et 
   `docs/archive/wip/` ; restent ses vérifications manuelles (David).
 - **Ménage** : #1733 verse dans `docs/archive/wip/` les neuf journaux livrés (cas, copier, croiser,
   développer, intervalle, listes qualitatives, réciproque, réglages, remplacer) ; leurs restes ci-dessous.
-- **En cours (2026-10-26)** : graphe agrandi à toute la fenêtre du navigateur (bouton ⤢ de la barre du graphe, Échap le réduit), graphe qui remplit enfin la largeur et icône maison pour « Réinitialiser la vue » du graphe — worktree `ubumaths-wt-atelier`, branche `feat/atelier-plein-ecran`.
+- **Fait (2026-10-26, #1827, pas en prod)** : bouton ⤢ « Agrandir le graphe » dans la barre du graphe (toute la fenêtre, Échap le réduit), icône maison pour « Réinitialiser la vue », graphe qui remplit la largeur de sa vue. Échap quitte aussi le plein écran du NAVIGATEUR (Chrome) : verrou d'Échap proposé, refusé par David. Worktree retiré.
 - **Ensuite** : rien de lancé après #1746 ; prochain sujet à choisir par David.
 - **Déployé** : v0.47.0 (2026-10-25) livre le retrait de `/spreadsheet`, de `/calc` et le pont Python.
   Table `spreadsheets` supprimée le 2026-10-25 ([journal](../archive/wip/drop-spreadsheets-progress.md)).
