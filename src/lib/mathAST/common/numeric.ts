@@ -230,6 +230,18 @@ export function extractRational(node: MathNode): Rational | null {
 }
 
 /**
+ * Un nombre, négatif ou nul : `ln` n'y est pas défini, `e^{ln a}` ne vaut pas
+ * `a` (`e^{ln(−3)}` donnait −3 ; tidy-conditions, revues du § 4.2). Évalué en
+ * flottant : fractions et racines comprises (`−1/2`, `1 − √2`). Une lettre, ou
+ * un nombre qu'on n'évalue pas (π, e) : `false`, rien n'est refusé sans savoir.
+ */
+export function isNonPositiveConstant(node: MathNode): boolean {
+	// Aucune lettre ne s'appelle '' : une variable rend `null`
+	const value = evaluateNumeric(node, '', 0, 'undefined');
+	return value !== null && value <= 0;
+}
+
+/**
  * Rationnel EXACT porté par un nœud numérique : littéral (voir
  * `extractRational`) ou quotient de deux littéraux (`\frac{1}{2}`, `-\frac{3}{4}`).
  * Rend null pour tout le reste (radicaux, variables, constantes).

@@ -380,6 +380,33 @@ describe('restes de la revue du § 4.2', () => {
 	});
 });
 
+// Défauts restants de la 2ᵉ revue, corrigés à la demande de David (2026-10-26)
+describe('restes de la 2ᵉ revue du § 4.2', () => {
+	it.each([
+		['.simplifier e^(2ln(x^2))', 'x^4', 'x ≠ 0'],
+		['.simplifier e^(-ln(x))', '\\dfrac{1}{x}', 'x > 0'],
+		['.simplifier ln(x^(-2))-ln(x^(-2))', '0', 'x ≠ 0'],
+		['(x^2-1)/(x^2-1)', '1', 'x ≠ −1 et x ≠ 1']
+	])('%s : bouton « %s, pour %s »', (input, answer, condition) => {
+		const { alternative } = line(input);
+		expect(alternative?.label).toBe(`Simplifier pour ${condition}`);
+		expect(flat(alternative?.domain?.answer)).toBe(flat(answer));
+	});
+
+	it.each(['.simplifier e^(ln(-3))', '.simplifier exp(ln(-3))', '.simplifier e^(2ln(-3))'])(
+		'%s : ln(−3) n’existe pas, rien ne se simplifie',
+		(input) => {
+			const latex = flat(line(input).latex);
+			expect(latex).toContain('\\ln');
+			expect(line(input).alternative).toBeUndefined();
+		}
+	);
+
+	it('(x²−1)/(x²−1) avec x ≠ −1 et x ≠ 1 : la note se recopie', () => {
+		expect(flat(line('(x^2-1)/(x^2-1) avec x ≠ -1 et x ≠ 1').latex)).toBe('1');
+	});
+});
+
 describe('revue du 2026-10-26', () => {
 	it.each([
 		'cos(x)/cos(x) avec x > 0',

@@ -544,8 +544,9 @@ km/h`), 2026-09-27.
   pas (plusieurs lettres, `ln(xy) → ln x + ln y`) : `null`, comme avant (revue Opus du § 4.2).
   Plusieurs lettres, domaine élargi : la perte, sans élagage (`x/x + y/y` : `x ≠ 0`, `y ≠ 0`).
   Les conditions disent le signe d'une puissance entière (`x² > 0` → `x ≠ 0`, `x³ > 0` →
-  `x > 0`). **`plainConditions(conditions, answer)`** : `u ≠ 0` en points exclus quand `u`
-  ne s'annule qu'en des nombres (`ln(x) ≠ 0` → `x ≠ 1`), le domaine de `u` redit seulement si
+  `x > 0`, `x⁻² > 0` → `x ≠ 0`, `2/x > 0` → `x > 0`). **`plainConditions(conditions, answer)`** : `u ≠ 0` en points exclus quand `u`
+  ne s'annule qu'en des rationnels (`ln(x) ≠ 0` → `x ≠ 1`, `x² − 1 ≠ 0` → `x ≠ −1 et x ≠ 1`,
+  `4x² − 1 ≠ 0` → `x ≠ ±1/2`), l'ensemble écrit vérifié contre celui d'origine, le domaine de `u` redit seulement si
   la réponse et les autres conditions ne le garantissent pas (`(ln x)²/ln x → ln x` : `x ≠ 1` ;
   `ln(x)/ln(x) → 1` : `x > 0 et x ≠ 1`). `narrows` : le domaine d'après est plus petit (l'atelier
   dit alors « Pour x > 0, on peut écrire 2ln(x) »). `null` : une condition ne s'écrit pas

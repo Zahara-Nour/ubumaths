@@ -98,6 +98,7 @@ import {
 } from '../factory';
 import { isDelimiter, isEulerConstant, isNumber, isOpposite, isSuperscript } from '../guards';
 import { findFirst } from '../transforms';
+import { isNonPositiveConstant } from '../common/numeric';
 import { expandEulerPowers } from './rules/euler-power';
 import { applyEulerIdentities } from './rules/euler-identities';
 import { expandImaginaryExponentials } from './rules/euler-formula';
@@ -1944,6 +1945,8 @@ function tryExtractLnTerm(term: NormalTerm): { base: MathNode; coeff: Rational }
 	if ((base as { name?: string }).name !== 'ln') return null;
 	const args = (base as { args?: readonly MathNode[] }).args;
 	if (!args || args.length !== 1) return null;
+	// `ln(−3)` n'existe pas : `e^{2 ln(−3)}` ne vaut pas 9
+	if (isNonPositiveConstant(args[0])) return null;
 
 	// Extract the argument of ln and the coefficient
 	return {
@@ -4842,7 +4845,8 @@ function normalizeFunction(
 		if (
 			originalArg.type === 'function' &&
 			originalArg.name === 'ln' &&
-			originalArg.args.length === 1
+			originalArg.args.length === 1 &&
+			!isNonPositiveConstant(originalArg.args[0])
 		) {
 			const result = normalizeNode(originalArg.args[0], ctx);
 			// Record exp-ln-inverse step

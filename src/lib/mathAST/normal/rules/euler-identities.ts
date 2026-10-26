@@ -37,6 +37,7 @@
  */
 
 import { add, multiply, number, superscript } from '../../factory';
+import { isNonPositiveConstant } from '../../common/numeric';
 import { flattenProductShallow, unflattenProduct, type StyledFactor } from '../../flatten';
 import {
 	isDelimiter,
@@ -98,7 +99,12 @@ function reduceEulerPower(node: MathNode, ctx: EulerIdentitiesContext): MathNode
 
 	if (isEulerBase(node.base)) {
 		const exponent = unwrapDelimiters(node.superscript);
-		if (isFunction(exponent) && exponent.name === 'ln' && exponent.args.length === 1) {
+		if (
+			isFunction(exponent) &&
+			exponent.name === 'ln' &&
+			exponent.args.length === 1 &&
+			!isNonPositiveConstant(exponent.args[0])
+		) {
 			return exponent.args[0];
 		}
 		return null;
