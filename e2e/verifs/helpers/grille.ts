@@ -74,6 +74,7 @@ export async function typeCell(page: Page, address: string, text: string): Promi
 
 /** Le refus affiché sous la barre (`''` s'il n'y en a pas) */
 export async function refusal(page: Page): Promise<string> {
+	await rendered(page);
 	return ((await page.locator('.donnees p.refus').textContent()) ?? '').replace(/\s+/g, ' ').trim();
 }
 
@@ -85,6 +86,15 @@ export async function typeColumn(page: Page, address: string, values: string[]):
 	}
 }
 
+/**
+ * Laisse passer une image : Svelte a rendu le dernier geste. Sans elle, un
+ * attendu `null` (pas de « Valeur exacte », pas d'aide) passerait aussi sur un
+ * bloc pas encore affiché.
+ */
+async function rendered(page: Page): Promise<void> {
+	await page.evaluate(() => new Promise((done) => requestAnimationFrame(done)));
+}
+
 /** Le texte montré par une case, sans la sélectionner */
 export async function shownIn(page: Page, address: string): Promise<string> {
 	const label = (await cellLocator(page, address).getAttribute('aria-label')) ?? '';
@@ -94,6 +104,7 @@ export async function shownIn(page: Page, address: string): Promise<string> {
 /** Sélectionne une case et la lit, avec ce qu'en disent la barre et la note */
 export async function readCell(page: Page, address: string): Promise<Cell> {
 	await selectCell(page, address);
+	await rendered(page);
 	const read = async (selector: string) => {
 		const found = page.locator(selector);
 		return (await found.count()) === 0
@@ -118,6 +129,7 @@ export async function readCell(page: Page, address: string): Promise<Cell> {
 export async function hintWhileTyping(page: Page, address: string, text: string) {
 	await selectCell(page, address);
 	await bar(page).fill(text);
+	await rendered(page);
 	const hint = page.locator('.donnees .aide-formule');
 	const shown = (await hint.count()) === 0 ? null : ((await hint.textContent()) ?? '').trim();
 	await bar(page).press('Escape');

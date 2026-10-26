@@ -6,6 +6,7 @@ import {
 	openView,
 	readCell,
 	selectCell,
+	setConsole,
 	shownIn,
 	typeCell,
 	typeColumn
@@ -250,6 +251,8 @@ test('#1434 — SI, NB.SI, et les refus d’un texte ou d’une comparaison seul
 });
 
 test('#1437 — ALEA.ENTRE.BORNES, ALEA, gardés au rechargement', async ({ page }) => {
+	// Des centaines de saisies : au-delà du délai par défaut sur un serveur de dev à froid
+	test.setTimeout(120_000);
 	await typeCell(page, 'A1', '=alea.entre.bornes(1;6)');
 	const die = await readCell(page, 'A1');
 	expect(die.bar).toBe('=ALEA.ENTRE.BORNES(1;6)');
@@ -324,6 +327,8 @@ test('#1472 — RESTE, SI avec ET et OU, ET seul refusé', async ({ page }) => {
 test('#1477 — NBVAL et NB.VIDE : absents, cases laissées vides par une formule', async ({
 	page
 }) => {
+	// Des centaines de saisies : au-delà du délai par défaut sur un serveur de dev à froid
+	test.setTimeout(120_000);
 	// 30 notes en A2:A31, deux absents (A5 et A20)
 	const notes = Array.from({ length: 30 }, (_, i) => (i === 3 || i === 18 ? '' : String(i % 20)));
 	for (const [index, note] of notes.entries()) {
@@ -393,7 +398,7 @@ test('#1413 — lignes incomplètes écartées : ajustement, nuage, .stats, .cro
 	await expect(cardLocator(page, 'f')).toBeVisible();
 	// La réponse de l'ajustement s'écrit dans la console
 	const lines = page.locator('ol.historique > li');
-	await page.getByRole('button', { name: 'Console', exact: true }).click();
+	await setConsole(page, true);
 	await expect(lines.last()).toContainText('f(x) = 2x + 1');
 	await expect(lines.last()).toContainText('1 ligne incomplète écartée');
 	// La carte créée dit f(x) = 2x + 1, comme la console
