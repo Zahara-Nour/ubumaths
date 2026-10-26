@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-26, après #1846._
 
 - **État** : PR 1 **mergée** (#1846, pas en prod) : droite à placer, un point (`placer:` dans ```line, `NumberLinePlacer`, copie corrigée, catalogue, doc). Revue Opus traitée. Brouillon local d'essai `e8d7b0e3…` (base locale seulement).
-- **Prochaine action** : PR 2 — plusieurs points sur une droite (`placer: A=3 ; B=7`, une case par point, choisir l'étiquette puis toucher) ; phase 0 courte du geste d'abord. Puis aiguilles, puis barres (§ 6).
-- **En attente de David** : (1) droite trop petite sur téléphone (tout bloc ```line, § 7) : PR à part dans ce chantier, avant la PR 2 ? (2) avertir le prof quand une droite à placer, une collection ou une monnaie à construire est dans un QCM (rien n'y est jugé) ?
+- **Prochaine action** : PR « téléphone » (§ 8, décision 1) : droite ```line dessinée à la largeur réelle, avertissement d'aperçu si graduations < ~20 px ; puis PR 2 (plusieurs points `placer: A=3 ; B=7`, phase 0 courte du geste).
+- **En attente de David** : rien.
 - **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; réponse écrite par `placerAnswer` des deux côtés, jamais en notation exponentielle ; une PR = une session.
 - **Worktree / branche** : aucun (retiré après #1846) ; PR 2 : `git worktree add -b feat/reponses-a-placer-2 ../ubumaths-wt-reponses-a-placer origin/main`.
 
@@ -133,3 +133,14 @@ placer: {{a}}
 - **Limite trouvée** : sur téléphone (375 px), la droite (viewBox 600 × 120) rétrécit entière : chiffres
   minuscules, graduations à ~12 px. Vaut pour tout bloc ```line. Les boutons ◀ ▶ compensent la précision,
   pas la lisibilité. Question posée à David.
+
+## 8. Décisions (David, 2026-10-26, après #1846 : « ok pour tes recos »)
+
+1. **Téléphone** : PR à part, **avant la PR 2**. Dessiner la droite ```line à la largeur réelle du
+   conteneur (chiffres, points, traits à taille fixe ; seul l'écart entre graduations se resserre), au
+   lieu de réduire la viewBox 600 × 120. PDF inchangé. L'aperçu du modèle avertit le prof si les
+   graduations tombent sous ~20 px sur un écran de téléphone. Pas de défilement horizontal (il se battrait
+   avec le glisser). Vaut pour toutes les droites graduées.
+2. **Droite à placer (ou collection / monnaie à construire) dans un QCM** : rien à coder. L'ADR 0033
+   fait du QCM une case choix, et `multiple_choice` disparaît après la migration ; le trou n'existe que
+   pour l'ancien type. À la migration : un test qui mêle ```choix et une droite à placer (deux cases jugées).
