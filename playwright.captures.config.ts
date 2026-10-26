@@ -18,11 +18,15 @@ import { defineConfig, devices } from '@playwright/test';
  */
 
 const port = Number(process.env.VERIFS_PORT ?? 5176);
+// Un dossier de sortie par lancement : Playwright vide le sien en partant, deux
+// lancements en même temps se gâteraient leurs traces. Posé dans l'environnement
+// avant le départ des workers, qui relisent cette config et en héritent.
+process.env.CAPTURES_RUN ??= String(Date.now());
 
 export default defineConfig({
 	testDir: './e2e/verifs/captures',
 	// Pas `test-results/` : `pnpm test:verifs` le vide à chaque lancement
-	outputDir: './test-results/captures-run',
+	outputDir: `./.captures/.runs/${process.env.CAPTURES_RUN}`,
 	timeout: 90 * 1000,
 	expect: { timeout: 15 * 1000 },
 	fullyParallel: true,
