@@ -41,7 +41,7 @@ describe('assignBlankIndices — bloc ```collection à construire', () => {
 		expect(result.totalBlanks).toBe(1);
 		expect(result.blankTypes).toEqual(['math']);
 		expect(result.statement).toBe(block('case: 0', 'construire: 34'));
-		expect(result.buildBlanks).toEqual({ 0: 'construire: 34' });
+		expect(result.buildBlanks).toEqual({ 0: { kind: 'collection', source: 'construire: 34' } });
 	});
 
 	it('collection à dessiner : aucune case, bloc inchangé', () => {
@@ -58,7 +58,7 @@ describe('assignBlankIndices — bloc ```collection à construire', () => {
 		expect(result.totalBlanks).toBe(3);
 		expect(result.statement).toContain('case: 1');
 		expect(result.statement).toContain('{{blank:2}}');
-		expect(result.buildBlanks).toEqual({ 1: 'construire: 34' });
+		expect(result.buildBlanks).toEqual({ 1: { kind: 'collection', source: 'construire: 34' } });
 	});
 
 	it('bloc en retrait (liste) ou cité : pas de case, signalé', () => {
@@ -186,6 +186,106 @@ describe('bloc ```collection à construire : la case et sa réponse', () => {
 		const errors = validateTemplate(
 			template({ statement: block('construire: 34') }) as QuestionTemplate
 		);
+		expect(errors.join(' ')).not.toMatch(/requires blanks/);
+	});
+});
+
+// PR 2 : ```monnaie à construire (`docs/wip/construire-progress.md` § 6), même patron
+const coins = (...body: string[]) => ['```monnaie', ...body, '```'].join('\n');
+
+describe('bloc ```monnaie à construire : la case et sa réponse', () => {
+	it('une case, numéro posé dans le bloc, dans l’ordre du texte avec une collection', () => {
+		const statement = [block('construire: 34'), '', coins('construire: 35', 'réserve: 10 5')].join(
+			'\n'
+		);
+		const result = assignBlankIndices(statement);
+		expect(result.totalBlanks).toBe(2);
+		expect(result.statement).toContain(coins('case: 1', 'construire: 35', 'réserve: 10 5'));
+		expect(result.buildBlanks).toEqual({
+			0: { kind: 'collection', source: 'construire: 34' },
+			1: { kind: 'monnaie', source: 'construire: 35\nréserve: 10 5' }
+		});
+	});
+
+	it('monnaie à dessiner : aucune case, bloc inchangé', () => {
+		const statement = coins('billets: 10');
+		const result = assignBlankIndices(statement);
+		expect(result.totalBlanks).toBe(0);
+		expect(result.statement).toBe(statement);
+	});
+
+	it('bloc en retrait : pas de case, signalé', () => {
+		const statement = ['- Paie :', '', '  ```monnaie', '  construire: 35', '  ```'].join('\n');
+		const result = assignBlankIndices(statement);
+		expect(result.totalBlanks).toBe(0);
+		expect(result.buildErrors).toEqual([
+			'Un bloc monnaie à construire doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)'
+		]);
+	});
+
+	it('sans blanks[] : la case est créée, réponse = la somme du bloc, juge ordinaire', () => {
+		const instance = generate(
+			template({ statement: `Paie le ballon à 35 €.\n\n${coins('construire: 35')}` })
+		);
+		expect(instance.blanks?.[0]).toMatchObject({
+			type: 'math',
+			expectedAnswer: '35',
+			construire: 'monnaie'
+		});
+		expect(validateAnswer('35', instance, '35').status).toBe('correct');
+		expect(validateAnswer('30', instance, '30').isCorrect).toBe(false);
+		expect(validateAnswer('', instance, '').isCorrect).toBe(false);
+	});
+
+	it('variables résolues avant le bloc', () => {
+		const instance = generate(
+			template({
+				statement: coins('construire: {{p}}'),
+				variables: [{ name: 'p', expression: '47' }]
+			})
+		);
+		expect(instance.blanks?.[0].expectedAnswer).toBe('47');
+	});
+
+	it('bloc en erreur (somme impossible avec la réserve) : refusé avec son message', () => {
+		const result = generateInstance(
+			template({ statement: coins('construire: 1', 'réserve: 2 5') }),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/Case 1 \(bloc monnaie\).*ne se fait pas/);
+	});
+
+	it('une réponse écrite pour le bloc : refusée', () => {
+		const result = generateInstance(
+			template({ statement: coins('construire: 35'), blanks: [{ expectedAnswer: '35' }] }),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/case 1.*bloc monnaie/i);
+	});
+
+	it('ligne vide dans un bloc fermé : la case existe quand même', () => {
+		const instance = generate(
+			template({ statement: coins('réserve: 10 5', '', 'construire: 35') })
+		);
+		expect(instance.blanks?.map((b) => b.expectedAnswer)).toEqual(['35']);
+	});
+
+	it('bloc non fermé : refusé', () => {
+		const result = generateInstance(
+			template({ statement: ['Paie.', '```monnaie', 'construire: 35', '', 'Fin.'].join('\n') }),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/Case 1 \(bloc monnaie\).*non fermé/);
+	});
+
+	it('le validateur de modèle accepte une question sans blanks[] à monnaie à construire', () => {
+		const errors = validateTemplate(template({ statement: coins('construire: 35') }));
 		expect(errors.join(' ')).not.toMatch(/requires blanks/);
 	});
 });

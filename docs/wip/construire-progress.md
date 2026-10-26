@@ -111,6 +111,25 @@ paquets` le matériel (clé existante). Le bloc porte sa réponse, comme ` ```op
   enlever ». Toucher un objet du plan l'enlève. Sans case (aperçu du prof), le même geste, rien de jugé.
 - **PDF** : cadre vide en pointillés, réserve dessinée en petit au-dessus.
 
+## 6. PR 2 — conception (monnaie)
+
+- **Écriture** (même précision de Q4 que la PR 1) : `construire: 35` donne la somme à construire
+  (1 à 100 €), `réserve: 1 2 5 10 20` les coupures permises (défaut : 1, 2, 5, 10, 20, 50 €, une
+  fois chacune, coupures existantes seulement). Avec `construire:` : `billets:`, `pièces:`,
+  `montant:`, `légendes:`, `disposition:` refusées (plan vide, rangé d'office) ; `taille:` gardée ;
+  `réserve:` sans `construire:` refusée.
+- **Bloc impossible** : somme qu'on ne peut pas faire avec la réserve en 30 objets au plus
+  (`réserve: 2 5` + `construire: 1`, `réserve: 1` + `construire: 35`) → erreur située.
+- **Case** : celle de la PR 1, généralisée (`construire: 'collection' | 'monnaie'`).
+- **Réponse** : la somme posée en chiffres (`'35'`), `''` si le plan est vide. Remonté avec une seule
+  valeur, le plan la redessine « le moins d'objets » avec la réserve.
+- **Écran** : plan (scène de la monnaie, `rangé` : billets en haut, pièces dessous), réserve dessous
+  (« Ajouter un billet de 10 € », « Ajouter une pièce de 2 € », chacun avec son « Enlever »),
+  « Tout enlever ». Bouton grisé si l'ajout passe 100 € ou 30 objets. Correction : « Tu as posé
+  32 €. » + une construction juste (le moins d'objets AVEC la réserve, pas l'algorithme glouton :
+  `réserve: 2 5`, 6 € = 3 × 2 €).
+- **PDF** : cadre vide en pointillés, réserve dessinée en petit au-dessus.
+
 ## Journal
 
 - 2026-10-26 : ouverture, worktree `construire`, phase 0 ; validée (« je suis tes recos »).
