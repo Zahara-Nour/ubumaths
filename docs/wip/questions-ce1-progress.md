@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, recos validées (§ 4 bis), phase 0 du lot 0 écrite (§ 5)._
+_Mis à jour le 2026-10-26, phase 0 du lot 0 validée, question d'accès tranchée._
 
-- **État** : relevé prod fait : 107 points, 58 modèles CE1 (tous publiés), 17 points avec au moins un modèle, 90 sans. Existant vérifié contre les bornes (§ 2), points sans modèle classés A / B / C / D (§ 3).
-- **Prochaine action** : validation de la phase 0 du lot 0 (§ 5) et réponse à sa question d'accès ; puis worktree `questions-ce1`, instantané, script et migrations.
-- **En attente de David** : phase 0 du lot 0 et sa question d'accès (§ 5).
-- **Pièges en cours** : ceux du CP (doc § 9) ; QCM en réécriture (case « choix », `figure-et-choix`, rien en prod) → demander la forme au premier lot qui en a besoin ; `collection` n'a pas encore `centaines:` (réservée).
-- **Worktree / branche** : aucun.
+- **État** : recos validées (§ 4 bis) ; phase 0 du lot 0 (corrections, § 5) **validée** par David, question d'accès **tranchée** (CE2 gagne 4 modèles ; CE1 perd ces 4 et `47f97c9f` ; aucune règle ne change). Rien d'écrit encore.
+- **Prochaine action** : dans le worktree, (1) instantané prod des 12 modèles (`docs/wip/questions/etat-prod-2026-10-26/`, comme `etat-prod-2026-10-24` : templates, md5, nodes, points, tags) ; (2) `docs/wip/questions/lot-corrections-ce1.py` (calqué sur `lot-corrections-cp.py`, `generer` de `scissions_outils`) → migration de contenu + fixture + test (calqués sur `20261025000000_questions_cp_contenu.sql`, `questions-cp-contenu.test.ts`) ; (3) migration rangement / tags / grades / statut à la main (calquée sur `20261025000100_questions_cp_rangement_tags.sql` et `20261026170000_questions_cp_formes_et_niveaux.sql`, avec leurs tests) ; tests rouges sans migration puis verts ; `security-auditor` ; PR ; `db:migrate`.
+- **En attente de David** : rien.
+- **Pièges en cours** : modèles tous PUBLIÉS → `create-questions --mettre-a-jour` ne les touche pas, d'où les migrations ; nœud du point obligatoire pour un tag (CE1-005 = « écritures ») ; CE1-024 est rangé sur une notion, pas une sous-notion ; QCM en réécriture (case « choix ») → demander la forme au premier lot qui en a besoin ; `collection` n'a pas `centaines:`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `fix/questions-ce1-lot0` (créé, `pnpm install` fait, aucun commit).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
