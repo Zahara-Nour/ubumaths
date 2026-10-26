@@ -9,9 +9,14 @@
  * Décor réel : la question est générée ; saisie et verdict dans `FlashCard`, copie dans
  * `CorrectionCard`.
  */
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FlashCard from '../FlashCard.svelte';
+import QuestionCard from '../QuestionCard.svelte';
+import { toDisplayInstance, toPublicQuestion } from '$lib/questions/public-question';
+import { toSubmission } from '$lib/questions/submission';
+import { gradeQuestion } from '$lib/questions/grading';
+import type { AnswerData } from '$lib/types/question-display';
 import CorrectionCard from '../CorrectionCard.svelte';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
@@ -207,5 +212,31 @@ describe('figure de travail : carte de correction', () => {
 		await expect.poll(() => kinds(container)).toContain('work-figure');
 		const line = container.querySelector('[data-kind="work-figure"]') as HTMLElement;
 		expect(line.textContent).toContain('Ta figure de travail : aucun tracé.');
+	});
+});
+
+describe('figure de travail en évaluation notée (version publique)', () => {
+	it('rien tracé : Valider actif dès le choix ; la copie envoyée vaut 1 point', async () => {
+		const full = instance();
+		const onAnswerSubmit = vi.fn<(answer: AnswerData) => void>();
+		const { container } = await render(QuestionCard, {
+			target: mainElement(),
+			props: {
+				interactive: true,
+				collectOnly: true,
+				instance: toDisplayInstance(toPublicQuestion(full, { position: 0, delaySeconds: 20 })),
+				onAnswerSubmit
+			}
+		});
+		await zone(container);
+		choiceButton(container, 'B').click();
+		await expect.poll(() => validateButton(container).disabled).toBe(false);
+		validateButton(container).click();
+		await vi.waitFor(() => expect(onAnswerSubmit).toHaveBeenCalledTimes(1));
+		const submission = toSubmission(
+			[0],
+			[{ index: 0, instance: full, isCorrect: false, userAnswer: onAnswerSubmit.mock.calls[0][0] }]
+		);
+		expect(gradeQuestion(full, submission.answers[0]).points).toBe(1);
 	});
 });

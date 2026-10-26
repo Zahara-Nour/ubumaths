@@ -12,6 +12,8 @@ import '$lib/questions/construction/positions-setup';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { assignBlankIndices } from '$lib/questions/generator/assign-blank-indices';
 import { gradeQuestion } from '$lib/questions/grading';
+import { isWorkFigureBlank } from '$lib/questions/graded-part';
+import { toDisplayInstance, toPublicQuestion } from '$lib/questions/public-question';
 import { validateAnswer, validateAnswerDetailed } from '$lib/utils/answer-validator';
 import { parseMarkdown } from '$lib/ubumark/parser';
 import { WORK_FIGURE_ALONE_MESSAGE } from '$lib/ubumark/parser/construction-parser';
@@ -281,5 +283,15 @@ describe('notation : appariement libre de deux cases texte', () => {
 	it('cases texte vides, figure tracée → « rien répondu »', () => {
 		const { server } = verdicts(instance, [TRACE, '', '']);
 		expect(server).toMatchObject({ status: 'empty', points: 0 });
+	});
+});
+
+describe('version publique (évaluation notée)', () => {
+	it('la case dit seulement « figure de travail » ; le navigateur la laisse vide', () => {
+		const question = toPublicQuestion(generate(CP058), { position: 0, delaySeconds: 20 });
+		expect(question.blanks?.[0]).toEqual({ type: 'graphical', workFigure: true });
+		const display = toDisplayInstance(question);
+		expect(isWorkFigureBlank(display.blanks?.[0])).toBe(true);
+		expect(isWorkFigureBlank(display.blanks?.[1])).toBe(false);
 	});
 });

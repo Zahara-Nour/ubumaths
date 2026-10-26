@@ -30,6 +30,7 @@
 <script lang="ts">
 	import type { QuestionInstance } from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
+	import { isWorkFigureBlank } from '$lib/questions/graded-part';
 	import type { AnswerData } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
 	import { toOriginalChoiceIndexes } from '$lib/questions/choices';
@@ -158,8 +159,11 @@
 	 */
 	function hasValidInput(): boolean {
 		switch (getQuestionType(instance)) {
+			// Une figure de travail, jamais notée, peut rester vide
 			case 'fill_in_blanks':
-				return fillBlankValues.every((v) => v.trim().length > 0);
+				return fillBlankValues.every(
+					(v, index) => isWorkFigureBlank(instance.blanks?.[index]) || v.trim().length > 0
+				);
 
 			case 'multiple_choice':
 				return selectedChoices.length > 0;
