@@ -7,10 +7,11 @@ import {
 	cards,
 	chooseSetting,
 	expectLatex,
-	focusCardField,
+	fieldValue,
 	mathConsole,
 	normalizeLatex,
 	openAtelier,
+	retypeCard,
 	steps,
 	typeInCard
 } from './helpers/atelier';
@@ -306,27 +307,6 @@ test('#1703 — carte f′ du bouton « Dériver » de 1 − x eˣ', async ({ pa
 	await cardAction(page, 'f', 'Dériver');
 	await expectCardLatex(page, 'f′', '-\\left( x + 1 \\right) e^x');
 });
-
-/** Met le focus dans le champ d'une carte et le remplace par `keys`, SANS Entrée */
-async function retypeCard(page: Page, name: string, keys: string): Promise<void> {
-	await focusCardField(page, name);
-	// MathLive peut perdre le premier geste : on vide jusqu'à ce que le champ le soit
-	await expect(async () => {
-		await page.keyboard.press('ControlOrMeta+A');
-		await page.keyboard.press('Backspace');
-		expect(await fieldValue(page, name)).toBe('');
-	}).toPass();
-	await page.keyboard.type(keys);
-}
-
-/** Le LaTeX que montre le champ d'une carte */
-async function fieldValue(page: Page, name: string): Promise<string> {
-	return normalizeLatex(
-		await cardLocator(page, name)
-			.locator('math-field')
-			.evaluate((element) => (element as HTMLElement & { value: string }).value)
-	);
-}
 
 /** Ouvre le menu « Options » d'une carte et rend le menu */
 async function openOptions(page: Page, name: string): Promise<Locator> {

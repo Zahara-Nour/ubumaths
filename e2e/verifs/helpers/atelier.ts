@@ -227,3 +227,24 @@ export async function chooseSetting(page: Page, label: string): Promise<void> {
 export async function mathValue(field: Locator): Promise<string> {
 	return field.evaluate((element) => (element as HTMLElement & { value: string }).value);
 }
+
+/** Met le focus dans le champ d'une carte et le remplace par `keys`, SANS Entrée */
+export async function retypeCard(page: Page, name: string, keys: string): Promise<void> {
+	await focusCardField(page, name);
+	// MathLive peut perdre le premier geste : on vide jusqu'à ce que le champ le soit
+	await expect(async () => {
+		await page.keyboard.press('ControlOrMeta+A');
+		await page.keyboard.press('Backspace');
+		expect(await fieldValue(page, name)).toBe('');
+	}).toPass();
+	await page.keyboard.type(keys);
+}
+
+/** Le LaTeX que montre le champ d'une carte */
+export async function fieldValue(page: Page, name: string): Promise<string> {
+	return normalizeLatex(
+		await cardLocator(page, name)
+			.locator('math-field')
+			.evaluate((element) => (element as HTMLElement & { value: string }).value)
+	);
+}
