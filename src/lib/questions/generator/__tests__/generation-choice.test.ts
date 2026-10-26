@@ -184,7 +184,7 @@ describe('génération : choix résolus, ordre affiché, bonne réponse', () => 
 			template({
 				statement: '```choix\nplusieurs: oui\nmelanger: non\n- 2\n- 3\n- 4\n```',
 				blanks: [{ expectedAnswer: '0;2' }],
-				correction: { steps: ['Les nombres pairs : {{solution}}.'] }
+				correction: { steps: [templateMarkdown('Les nombres pairs : {{solution}}.')] }
 			})
 		);
 		expect(instance.correction?.steps).toEqual(['Les nombres pairs : 2 ; 4.']);
@@ -317,8 +317,8 @@ describe('validation du modèle (enregistrement)', () => {
 		const qcm = template({
 			statement: '```choix\n- a\n- b\n```',
 			choices: [
-				{ content: 'x', isCorrect: true },
-				{ content: 'y', isCorrect: false }
+				{ content: templateMarkdown('x'), isCorrect: true },
+				{ content: templateMarkdown('y'), isCorrect: false }
 			]
 		});
 		expect(choiceAnswerCountErrors(qcm)).toEqual([
