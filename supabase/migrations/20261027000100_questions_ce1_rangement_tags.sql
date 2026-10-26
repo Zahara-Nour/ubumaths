@@ -31,9 +31,10 @@
 -- Aucune règle (policy) ne change.
 --
 -- Rollback (aucune donnée d'élève). Il retire les tags posés, rend aux modèles leur nœud, leurs
--- niveaux et leur statut d'avant, puis repose CE1-006 et CE1-024. Bloc éprouvé par le test
--- d'intégration, à jouer dans UNE transaction (`psql -1 -v ON_ERROR_STOP=1 -f`, ou l'éditeur SQL
--- en un seul envoi) :
+-- niveaux et leur statut d'avant, puis repose CE1-006 et CE1-024. Garde : il refuse si un modèle
+-- n'a plus EXACTEMENT le nœud, les niveaux, le statut et les tags posés par la migration (sinon une
+-- saisie faite depuis serait écrasée en silence). Bloc éprouvé par le test d'intégration, à jouer
+-- dans UNE transaction (`psql -1 -v ON_ERROR_STOP=1 -f`, ou l'éditeur SQL en un seul envoi) :
 -- ROLLBACK:BEGIN
 -- set local lock_timeout = '5s';
 -- select pg_advisory_xact_lock(hashtextextended('question_template_points:' || r.id::text, 0))
@@ -43,6 +44,56 @@
 --                ('9827242b-fbcd-4b63-8003-2b898372be63'::uuid), ('de71495c-b88c-4b42-9cd7-3562847aedfc'::uuid),
 --                ('e94c03b6-604f-4074-8763-0744b97cb7dd'::uuid)) as r(id)
 --  order by r.id;
+-- do $garde_retour$
+-- declare v_presents integer; v_intacts integer; v_total integer; v_tags integer;
+-- begin
+-- 	perform 1 from public.question_templates
+-- 	 where id in ('3eedd905-1526-4c90-9005-eb1df389a9f9', '47f97c9f-5117-4817-8d10-7c17777397d8',
+-- 	              '495a397f-23b6-4bc4-82c3-2974b234b275', '579d0b00-b3a5-46e6-a076-04ec265c1c4f',
+-- 	              '7d2d412b-843c-446f-8394-2a31856556d5', '810f1824-18ac-48e5-bf15-1c0b3854f78b',
+-- 	              '9827242b-fbcd-4b63-8003-2b898372be63', 'de71495c-b88c-4b42-9cd7-3562847aedfc',
+-- 	              'e94c03b6-604f-4074-8763-0744b97cb7dd')
+-- 	 order by id for update;
+-- 	select count(*), count(*) filter (where q.grades = r.grades and q.status = r.statut
+-- 	                                     and q.classification_node_id = s.id)
+-- 	  into v_presents, v_intacts
+-- 	  from public.question_templates q join (values
+-- 		('3eedd905-1526-4c90-9005-eb1df389a9f9'::uuid, 'Entiers : numération', 'écritures', array['CE1'], 'published'),
+-- 		('47f97c9f-5117-4817-8d10-7c17777397d8'::uuid, 'Entiers : multiplication', 'double et moitié', array['CE1'], 'draft'),
+-- 		('495a397f-23b6-4bc4-82c3-2974b234b275'::uuid, 'Entiers : numération', 'écritures', array['CE1'], 'published'),
+-- 		('579d0b00-b3a5-46e6-a076-04ec265c1c4f'::uuid, 'Entiers : addition et soustraction', 'calcul astucieux', array['CE2'], 'published'),
+-- 		('7d2d412b-843c-446f-8394-2a31856556d5'::uuid, 'Entiers : addition et soustraction', 'calcul astucieux', array['CE2'], 'published'),
+-- 		('810f1824-18ac-48e5-bf15-1c0b3854f78b'::uuid, 'Entiers : addition et soustraction', 'calcul astucieux', array['CE2'], 'published'),
+-- 		('9827242b-fbcd-4b63-8003-2b898372be63'::uuid, 'Entiers : numération', 'écritures', array['CE1'], 'published'),
+-- 		('de71495c-b88c-4b42-9cd7-3562847aedfc'::uuid, 'Entiers : addition et soustraction', 'calcul astucieux', array['CE2'], 'published'),
+-- 		('e94c03b6-604f-4074-8763-0744b97cb7dd'::uuid, 'Entiers : multiplication', 'calcul astucieux', array['CE1'], 'published')
+-- 	  ) as r(id, notion, sous_notion, grades, statut) on r.id = q.id
+-- 	  left join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.archived_at is null and b.name = 'Nombres et calculs'
+-- 	  left join public.classification_nodes n on n.kind = 'notion' and n.parent_id = b.id and n.archived_at is null and n.name = r.notion
+-- 	  left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = n.id and s.archived_at is null and s.name = r.sous_notion;
+-- 	if v_intacts <> v_presents then
+-- 		raise exception 'rollback : % modèle(s) sur % ont encore le nœud, les niveaux et le statut de la migration', v_intacts, v_presents;
+-- 	end if;
+-- 	-- Tags : exactement les 4 laissés par la migration (3 × CE1-005, CE1-028), rien d'autre.
+-- 	select count(*), count(*) filter (where r.id is not null)
+-- 	  into v_total, v_tags
+-- 	  from public.question_template_points q
+-- 	  join public.curriculum_points p on p.id = q.point_id
+-- 	  left join (values
+-- 		('3eedd905-1526-4c90-9005-eb1df389a9f9'::uuid, 'CE1-005'),
+-- 		('495a397f-23b6-4bc4-82c3-2974b234b275'::uuid, 'CE1-005'),
+-- 		('9827242b-fbcd-4b63-8003-2b898372be63'::uuid, 'CE1-005'),
+-- 		('47f97c9f-5117-4817-8d10-7c17777397d8'::uuid, 'CE1-028')
+-- 	  ) as r(id, code) on r.id = q.template_id and p.grade = 'CE1' and p.code = r.code
+-- 	 where q.template_id in ('3eedd905-1526-4c90-9005-eb1df389a9f9', '47f97c9f-5117-4817-8d10-7c17777397d8',
+-- 	                         '495a397f-23b6-4bc4-82c3-2974b234b275', '579d0b00-b3a5-46e6-a076-04ec265c1c4f',
+-- 	                         '7d2d412b-843c-446f-8394-2a31856556d5', '810f1824-18ac-48e5-bf15-1c0b3854f78b',
+-- 	                         '9827242b-fbcd-4b63-8003-2b898372be63', 'de71495c-b88c-4b42-9cd7-3562847aedfc',
+-- 	                         'e94c03b6-604f-4074-8763-0744b97cb7dd');
+-- 	if v_tags <> v_total or v_total <> least(v_presents, 1) * 4 then
+-- 		raise exception 'rollback : tags changés depuis la migration (% du lot sur %, attendus %)', v_tags, v_total, least(v_presents, 1) * 4;
+-- 	end if;
+-- end $garde_retour$;
 -- delete from public.question_template_points q
 --  using public.curriculum_points p, (values
 -- 	('9827242b-fbcd-4b63-8003-2b898372be63'::uuid, 'CE1', 'CE1-005'),

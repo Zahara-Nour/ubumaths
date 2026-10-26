@@ -387,4 +387,52 @@ describe('Questions CE1, rangement et tags : les branches d’échec de la migra
 			);
 		});
 	});
+
+	it('le rollback refuse si un modèle a changé de niveaux depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query(
+				`update public.question_templates set grades = array['CE2', 'CM1'] where id = $1`,
+				['810f1824-18ac-48e5-bf15-1c0b3854f78b']
+			);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : 8 modèle\(s\) sur 9 ont encore le nœud, les niveaux et le statut de la migration/
+			);
+		});
+	});
+
+	it('le rollback refuse si un modèle a été republié depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query(`update public.question_templates set status = 'published' where id = $1`, [
+				'47f97c9f-5117-4817-8d10-7c17777397d8'
+			]);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : 8 modèle\(s\) sur 9 ont encore/
+			);
+		});
+	});
+
+	it('le rollback refuse si un tag a été posé depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query(
+				`insert into public.question_template_points (template_id, point_id)
+				 select $1, id from public.curriculum_points where grade = 'CE1' and code = 'CE1-029' and archived_at is null`,
+				['de71495c-b88c-4b42-9cd7-3562847aedfc']
+			);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : tags changés depuis la migration \(4 du lot sur 5, attendus 4\)/
+			);
+		});
+	});
+
+	it('base sans les modèles (locale) : le rollback ne touche rien et passe', async () => {
+		await enTransaction(async () => {
+			await expect(pg.query(extractRollback(MIGRATION))).resolves.toBeDefined();
+		});
+	});
 });
