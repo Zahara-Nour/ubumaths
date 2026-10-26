@@ -1,17 +1,15 @@
 ---
 title: Limite d'une puissance uⁿ quand u → ±∞ (V66)
 date: 2026-10-26
-status: en cours
+status: clos le 2026-10-26 (#1839), versé dans docs/systeme/mathast/README.md (stratégie 2.46)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, PR ouverte._
+_Mis à jour le 2026-10-26, après #1839 (mergée). Chantier CLOS._
 
-- **État** : stratégie 2.46 (`tryPowerOfUnboundedLimit`, `limits/evaluate.ts`) + `powerSign` corrigée (n < 0) ; tests verts (mathAST 25 560, atelier). PR #1839 ouverte ; revue Opus faite, son finding important corrigé (branche u → 0, n < 0 retirée de la 2.46 : limite fausse sur base de signe changeant).
-- **Prochaine action** : revue, CI, merge.
-- **En attente de David** : écarts voisins notés V67-V71 dans `ecarts-a-trier.md`, hors de cette PR (non tranché : traiter ou non) ; exposants entiers seuls.
-- **Worktree / branche** : `../ubumaths-wt-limite-puissance` · `fix/limite-puissance`.
+- **État** : V66 corrigé (stratégie 2.46, `powerSign`), versé dans `docs/systeme/mathast/README.md`. Worktree retiré.
+- **Suite** : V67-V71 (écarts voisins, `ecarts-a-trier.md`) — David a dit « traite-les » le 2026-10-26 ; phase 0 proposée (2 PR : V70+V71, puis V67-V69), en attente de sa validation.
 
 ---
 
