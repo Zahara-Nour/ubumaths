@@ -249,6 +249,137 @@ describe('conditions non polynomiales (§ 4.1)', () => {
 	);
 });
 
+describe('domainChange par ensembles (§ 4.2)', () => {
+	it.each([
+		['.simplifier ln(x^3)', '3\\ln\\left(x\\right)'],
+		['.simplifier ln(x^2)+ln(x)', '3\\ln\\left(x\\right)']
+	])('%s → %s : même ensemble, la ligne simplifie sans condition', (input, latex) => {
+		const result = line(input);
+		expect(flat(result.latex)).toBe(flat(latex));
+		expect(result.alternative).toBeUndefined();
+		expect(result.note).toBeUndefined();
+	});
+
+	it('.simplifier ln(x²) : le bouton « Simplifier pour x > 0 »', () => {
+		const result = line('.simplifier ln(x^2)');
+		expect(flat(result.latex)).toBe(flat('\\ln\\left(x^2\\right)'));
+		expect(result.alternative?.label).toBe('Simplifier pour x > 0');
+		expect(flat(result.alternative?.latex)).toBe(
+			flat('2\\ln\\left(x\\right)\\text{,}\\quad\\text{pour }x>0')
+		);
+	});
+
+	it('.simplifier ln(x²) : la note dit l’écriture qu’on peut avoir pour x > 0', () => {
+		const note = line('.simplifier ln(x^2)').note ?? '';
+		expect(note).toMatch(/^Pour x > 0, on peut écrire 2 ?ln\(x\) : ajoute « avec x > 0 »/);
+	});
+
+	it.each(['.simplifier ln(x^2) avec x > 0', '.simplifier ln(x^2) dans ]0;+∞['])(
+		'%s → 2 ln(x)',
+		(input) => {
+			const result = line(input);
+			expect(flat(result.latex)).toBe(flat('2\\ln\\left(x\\right)'));
+			expect(result.alternative).toBeUndefined();
+			expect(result.note).toBeUndefined();
+		}
+	);
+
+	it('.simplifier ln(x²) avec x ≠ 0 : ne garantit pas x > 0', () => {
+		const result = line('.simplifier ln(x^2) avec x ≠ 0');
+		expect(flat(result.latex)).toBe(flat('\\ln\\left(x^2\\right)'));
+		expect(result.note).toContain('ne garantit pas x > 0');
+	});
+
+	it.each([
+		['.simplifier ln(x(x+1))', '\\ln\\left(x\\right)+\\ln\\left(x+1\\right)', 'x>0'],
+		['.simplifier ln(x/(x+1))', '\\ln\\left(x\\right)-\\ln\\left(x+1\\right)', 'x>0'],
+		['.simplifier sqrt(x)sqrt(x+1)', '\\sqrt{x\\left(x+1\\right)}', 'x\\geq0']
+	])('%s : le bouton montre %s, pour %s, sans parenthèses de trop', (input, answer, condition) => {
+		expect(flat(line(input).alternative?.latex)).toBe(
+			flat(`${answer}\\text{,}\\quad\\text{pour }${condition}`)
+		);
+	});
+
+	// Revue Opus : défini pour x < 0 seulement, « pour x > 0 » ne laisse aucun point
+	it.each([
+		'.simplifier ln(x^2)+ln(-x)',
+		'.simplifier ln(x^2)+ln(-x) avec x > 0',
+		'.simplifier ln(x^2)*sqrt(-x)'
+	])('%s : ni bouton ni simplification', (input) => {
+		for (const mode of ['keep', 'conditions'] as const) {
+			const result = line(input, mode);
+			expect(result.alternative).toBeUndefined();
+			expect(flat(result.latex)).not.toContain('2\\ln');
+		}
+	});
+
+	it('une hypothèse hors du domaine de l’expression ne simplifie rien', () => {
+		const result = line('.simplifier x/x+sqrt(-x) avec x > 0');
+		expect(flat(result.latex)).not.toContain('1+');
+		expect(result.note).toContain('x > 0');
+		expect(result.note).toContain('n’est jamais défini');
+	});
+
+	it('« Simplifier en disant la condition » : 2 ln(x), pour x > 0', () => {
+		const result = line('.simplifier ln(x^2)', 'conditions');
+		expect(flat(result.latex)).toBe(flat('2\\ln\\left(x\\right)\\text{,}\\quad\\text{pour }x>0'));
+		expect(result.alternative?.label).toBe('Sans simplifier');
+	});
+});
+
+// Restes de la revue Opus du § 4.2, corrigés à la demande de David (2026-10-26)
+describe('restes de la revue du § 4.2', () => {
+	it.each([
+		['.simplifier ln(x^2)-ln(x^2)', '0', 'x ≠ 0'],
+		['.simplifier ln(x^3)-ln(x^3)', '0', 'x > 0'],
+		['.simplifier e^(ln(x^2))', 'x^2', 'x ≠ 0'],
+		['.simplifier e^(2ln(x))', 'x^2', 'x > 0'],
+		['.simplifier (ln(x))^2/ln(x)', '\\ln\\left(x\\right)', 'x ≠ 1'],
+		['ln(x)/ln(x)', '1', 'x > 0 et x ≠ 1']
+	])('%s : bouton « %s, pour %s »', (input, answer, condition) => {
+		const { alternative } = line(input);
+		expect(alternative?.label).toBe(`Simplifier pour ${condition}`);
+		expect(flat(alternative?.domain?.answer)).toBe(flat(answer));
+	});
+
+	// 2ᵉ revue : deux `ln(…) ≠ 0` se garantissaient l'un l'autre x > 0
+	it('ln(x)/ln(x) + ln(x/2)/ln(x/2) : x > 0 reste dit', () => {
+		const { alternative } = line('.simplifier ln(x)/ln(x)+ln(x/2)/ln(x/2)');
+		expect(alternative?.label).not.toBe('Simplifier pour x ≠ 1 et x ≠ 2');
+		const written = line('.simplifier ln(x)/ln(x)+ln(x/2)/ln(x/2) avec x ≠ 1 et x ≠ 2');
+		expect(flat(written.latex)).not.toBe('2');
+	});
+
+	// `e^(ln(−3))` → −3 vient de `normalize` (repli), noté aux Points ouverts
+	it('.simplifier e^(2ln(-3)) : ln d’un négatif n’existe pas, rien ne se simplifie', () => {
+		expect(flat(line('.simplifier e^(2ln(-3))').latex)).not.toBe('9');
+	});
+
+	it('.simplifier ln(x)/ln(x)+sqrt(-x) : jamais définie, pas de bouton', () => {
+		expect(line('.simplifier ln(x)/ln(x)+sqrt(-x)').alternative).toBeUndefined();
+	});
+
+	// `ln(x²) → 2 ln x` ne vaut que pour x > 0 : pas d'étapes sous « pour x ≠ 0 »
+	it.each(['.simplifier ln(x^2)-ln(x^2)', '.simplifier e^(ln(x^2))'])(
+		'%s : le bouton ne montre pas d’étape fausse pour x < 0',
+		(input) => {
+			expect(line(input).alternative?.steps).toBeUndefined();
+		}
+	);
+
+	it('.simplifier e^(ln(x)) : les étapes restent', () => {
+		expect(line('.simplifier e^(ln(x))').alternative?.steps?.length).toBeGreaterThan(0);
+	});
+
+	it.each([
+		['.simplifier ln(x^2)-ln(x^2) avec x ≠ 0', '0'],
+		['ln(x)/ln(x) avec x > 0 et x ≠ 1', '1'],
+		['.simplifier (ln(x))^2/ln(x) avec x ≠ 1', '\\ln\\left(x\\right)']
+	])('%s → %s : la note se recopie', (input, latex) => {
+		expect(flat(line(input).latex)).toBe(flat(latex));
+	});
+});
+
 describe('revue du 2026-10-26', () => {
 	it.each([
 		'cos(x)/cos(x) avec x > 0',

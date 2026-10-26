@@ -1675,6 +1675,18 @@ Doublons qui restent, chacun pour un autre besoin :
   bouton « Simplifier pour x ≠ 0 » donne `−x + 1`, chantier tidy-conditions). `√x√x` → rien
   à développer (produit sans parenthèse), mais `√x³√x → (√x)⁴` (une puissance de racine déjà
   écrite) et `∛x∛x → (∛x)²` se regroupent encore.
+- Laissés par le § 4.2 de tidy-conditions (2026-10-26, `domainChanges` par ensembles), aucune
+  valeur fausse : à plusieurs lettres, une réécriture qui rétrécit le domaine
+  (`ln(xy) → ln x + ln y`) n'a ni bouton ni simplification ; une condition polynomiale non
+  affine reste entière (`(x²−1)/(x²−1)` → « pour x^2−1 ≠ 0 », pas « x ≠ −1 et x ≠ 1 ») ; le
+  bouton d'un calcul qui passe par une étape plus étroite que sa condition n'a pas d'étapes
+  (`e^{ln(x²)}` → `x²`, pour x ≠ 0, sans le détour par `2 ln x`) ; `e^{2ln(x²)}` s'arrête sur
+  `e^{4ln(x)}`, pour x > 0 (le `2·2` n'est pas encore multiplié quand `exp-n-ln` passe) ;
+  `ln(x⁻²) − ln(x⁻²)` dit « 1/x² > 0 » (exposant négatif non lu par `signOfPower`).
+- ⚠️ **Valeur fausse, antérieure à tidy-conditions** : `.simplifier e^(ln(−3))` → `−3`, par le
+  repli `normalize` (`exp-ln-inverse`, `normal/normalize.ts`), qui ne vérifie pas que
+  l'argument de ln existe. Le moteur pédagogique (`exp-ln`, `exp-n-ln`) le refuse depuis la
+  2ᵉ revue du § 4.2. `normalize` sert aussi l'équivalence : à corriger à part.
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
   une valeur fausse :
   - valeurs remarquables (`cos(π/3) → 1/2`) dans `réduire`, avec étape et selon le niveau (S4) :

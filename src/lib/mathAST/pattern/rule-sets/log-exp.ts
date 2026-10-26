@@ -19,12 +19,29 @@
 
 import { P } from '../builder';
 import { createRule } from '../rule';
-import type { Rule } from '../types';
+import { isMathNodeBinding, type MatchBindings, type Rule } from '../types';
 import { euler } from '../../factory';
+import { getVariables } from '../../eval/substitute';
+import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 
 // =============================================================================
 // Log/Exp Inverse Rules
 // =============================================================================
+
+/**
+ * `ln(x)` existe-t-il ? Un nombre doit être strictement positif (revue du § 4.2 :
+ * `e^(2ln(−3))` donnait 9, `e^(ln(−3))` donnait −3) ; une lettre, le domaine le dit.
+ */
+function lnArgumentMayExist(bindings: MatchBindings): boolean {
+	const x = bindings.get('x');
+	if (x === undefined || !isMathNodeBinding(x)) return false;
+	if (getVariables(x).size > 0) return true;
+	try {
+		return evaluateNodeToApproximatedNumber(x) > 0;
+	} catch {
+		return false;
+	}
+}
 
 /** ln(e^x) = x */
 const lnExp = createRule(P.func('ln', [P.pow(P.lit(euler()), P._('x'))]), P._('x'), {
@@ -33,8 +50,20 @@ const lnExp = createRule(P.func('ln', [P.pow(P.lit(euler()), P._('x'))]), P._('x
 
 /** e^(ln(x)) = x */
 const expLn = createRule(P.pow(P.lit(euler()), P.func('ln', [P._('x')])), P._('x'), {
-	name: 'exp-ln'
+	name: 'exp-ln',
+	condition: lnArgumentMayExist
 });
+
+/**
+ * e^(n·ln(x)) = xⁿ, n entier (tidy-conditions § 4.2) : le moteur passe de bas
+ * en haut, `ln-pow` récrit `e^(ln(x²))` en `e^(2ln(x))` avant que `exp-ln`
+ * ne voie la racine, et le calcul s'arrêtait là.
+ */
+const expNLn = createRule(
+	P.pow(P.lit(euler()), P.mul(P._('n', P.isInteger()), P.func('ln', [P._('x')]))),
+	P.pow(P._('x'), P._('n')),
+	{ name: 'exp-n-ln', condition: lnArgumentMayExist }
+);
 
 // =============================================================================
 // Known Values
@@ -108,6 +137,7 @@ const expProduct = createRule(
 export const logExpRules: readonly Rule[] = [
 	lnExp,
 	expLn,
+	expNLn,
 	lnOne,
 	lnE,
 	lnPow,

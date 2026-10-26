@@ -24,12 +24,32 @@ import { toLatex } from '../latex-generator';
 import { toCustom } from '../custom-generator';
 import { stripUnnecessaryBrackets } from '../transforms';
 import { tidyNode } from './collect';
+import type { Domain } from '../domain/types';
+import { computeDomain } from '../domain/compute';
+import { difference, intersect, isEmpty } from '../domain/algebra';
+import { expandExcludedPoints } from '../domain/validation/compare-domains';
+import { divide, func, number, subtract, variable } from '../factory';
 
 /** Une condition écrite, pour la ligne (LaTeX) et pour le texte. */
 export interface ConditionText {
 	readonly latex: string;
 	readonly text: string;
 }
+
+/** Ce que la réécriture `before → after` fait du domaine (§ 4.2). */
+export interface DomainChangeDetail {
+	/** Les conditions où la réécriture vaut ; `[]` : le domaine ne change pas. */
+	readonly conditions: TidyCondition[];
+	/** Le domaine rétrécit : `ln(x²) → 2 ln x` ne vaut que pour x > 0. */
+	readonly narrows: boolean;
+}
+
+/** Les domaines que l'inclusion (`difference`) lit : pas de famille périodique. */
+const INCLUSION_READABLE: ReadonlySet<Domain['kind']> = new Set([
+	'empty',
+	'universal',
+	'interval_set'
+]);
 
 const SYMBOLS: Record<TidyCondition['relation'], { text: string; latex: string }> = {
 	nonzero: { text: '≠', latex: '\\neq' },
@@ -65,6 +85,7 @@ export function conditionKey(condition: DomainCondition): string {
  */
 function essential<C extends DomainCondition>(condition: C): C[] {
 	const { expression, relation } = condition;
+	if (relation === 'positive' || relation === 'nonnegative') return signOfPower(condition);
 	if (relation !== 'nonzero') return [condition];
 	const inner = (node: MathNode) => essential({ ...condition, expression: node });
 	switch (expression.type) {
@@ -87,6 +108,22 @@ function essential<C extends DomainCondition>(condition: C): C[] {
 		default:
 			return [condition];
 	}
+}
+
+/**
+ * Le signe d'une puissance entière (§ 4.2) : `u²ᵏ > 0` dit `u ≠ 0`, `u²ᵏ ≥ 0`
+ * ne dit rien, `u²ᵏ⁺¹` a le signe de `u` (`x³ > 0` → `x > 0`). Revue : la note
+ * de `ln(x²) − ln(x²)` disait « pour x^2 > 0 ».
+ */
+function signOfPower<C extends DomainCondition>(condition: C): C[] {
+	const { expression, relation } = condition;
+	const node = expression.type === 'delimiter' ? expression.content : expression;
+	if (node.type !== 'superscript' || node.superscript.type !== 'number') return [condition];
+	const exponent = Number(node.superscript.value);
+	if (!Number.isInteger(exponent) || exponent < 1) return [condition];
+	if (exponent % 2 === 1) return essential({ ...condition, expression: node.base });
+	if (relation === 'nonnegative') return [];
+	return essential({ ...condition, expression: node.base, relation: 'nonzero' } as C);
 }
 
 /** Deux conditions sur la même expression : la plus forte, ou leur réunion. */
@@ -145,20 +182,210 @@ export function domainLoss(
 	return writable(lost);
 }
 
+/** Les conditions de `conditions` que `others` ne dit pas. */
+function notSaidBy<C extends DomainCondition>(
+	conditions: readonly C[],
+	others: readonly DomainCondition[]
+): C[] {
+	return conditions.filter(
+		(condition) =>
+			!others.some(
+				(other) =>
+					conditionKey(other) === conditionKey(condition) &&
+					implies(other.relation, condition.relation)
+			)
+	);
+}
+
 /**
- * Ce que la réécriture `before → after` perd du domaine, si elle ne fait QUE
- * le perdre ; `null` si elle en gagne aussi (revue, 2026-10-26 : `ln(x²) →
- * 2 ln(x)` n'est vraie que pour x > 0, pas « pour x² > 0 ») ou si une
- * condition ne s'écrit pas. `[]` : le domaine ne change pas.
+ * L'ensemble où une condition vaut, pour sa lettre : celui où `1/u`, `ln(u)`
+ * ou `√u` est défini. `null` : plusieurs lettres, « est définie » (`tan`), ou
+ * un domaine que l'inclusion ne lit pas.
+ */
+export function conditionSet(
+	condition: DomainCondition
+): { letter: string; domain: Domain } | null {
+	const { expression, relation } = condition;
+	if (relation === 'defined') return null;
+	const letters = getVariables(expression);
+	if (letters.size !== 1) return null;
+	const [letter] = letters;
+	const witness: MathNode =
+		relation === 'nonzero'
+			? divide(number(1), expression, 'fraction')
+			: func(relation === 'positive' ? 'ln' : 'sqrt', [expression]);
+	const computed = computeDomain(witness, letter);
+	if ((computed.unresolved?.length ?? 0) > 0) return null;
+	// Des intervalles et des points seulement (`1/ln x` → ]0;+∞[ \ {1}) : `cos(x) ≠ 0`
+	// exclut une famille π/2 + kπ que l'inclusion ne voit pas (revue : `cos(x)/cos(x)
+	// avec x > 0` donnait 1) — on ne sait pas, on ne garantit rien
+	if (!INCLUSION_READABLE.has(computed.domain.kind)) return null;
+	return { letter, domain: computed.domain };
+}
+
+/** `a ⊆ b`, points exclus compris. */
+export function isIncluded(a: Domain, b: Domain): boolean {
+	return isEmpty(difference(expandExcludedPoints(a), expandExcludedPoints(b)));
+}
+
+/** L'ensemble où toutes les conditions valent, pour `letter` ; `null` si l'une ne se lit pas. */
+function setOf(conditions: readonly DomainCondition[], letter: string): Domain | null {
+	let domain: Domain = { kind: 'universal' };
+	for (const condition of conditions) {
+		const where = conditionSet(condition);
+		if (where === null || where.letter !== letter) return null;
+		domain = intersect(domain, where.domain);
+	}
+	return domain;
+}
+
+/**
+ * Les conditions sans celles que les autres impliquent : `x² > 0` et `x > 0`
+ * → `x > 0`. `context` (les conditions communes aux deux écritures) compte
+ * parmi les autres sans être rendu. Une condition qu'on ne lit pas reste.
+ */
+function pruned(
+	conditions: readonly TidyCondition[],
+	context: readonly DomainCondition[],
+	letter: string
+): TidyCondition[] {
+	const kept = [...conditions];
+	for (const condition of conditions) {
+		const where = conditionSet(condition);
+		if (where === null) continue;
+		const others = [...kept.filter((c) => c !== condition), ...context];
+		const elsewhere = setOf(others, letter);
+		if (elsewhere !== null && isIncluded(elsewhere, where.domain)) {
+			kept.splice(kept.indexOf(condition), 1);
+		}
+	}
+	return kept;
+}
+
+/**
+ * Ce que la réécriture `before → after` fait du domaine (§ 4.2). Une lettre,
+ * domaines lisibles : les ENSEMBLES se comparent (`ln(x³) → 3 ln x` garde
+ * ]0 ; +∞[, `[]`). Sinon, ou s'ils diffèrent : les conditions perdues puis
+ * gagnées (`ln(x²) → 2 ln x` : `x² > 0`, `x > 0`), chacune retirée si les
+ * autres l'impliquent (« x > 0 ») ; élagage impossible (plusieurs lettres) :
+ * tout est dit, jamais une condition fausse. `null` : une condition ne
+ * s'écrit pas (`tan`).
+ */
+export function domainChanges(
+	before: MathNode,
+	after: MathNode,
+	typeCtx?: TypeContext
+): DomainChangeDetail | null {
+	const was = mergeConditions(domainConditions(before, typeCtx, NOTHING_ACQUIRED));
+	const now = mergeConditions(domainConditions(after, typeCtx, NOTHING_ACQUIRED));
+	const lost = notSaidBy(was, now);
+	const gained = notSaidBy(now, was);
+	if (lost.length === 0 && gained.length === 0) return { conditions: [], narrows: false };
+	const letters = new Set([...getVariables(before), ...getVariables(after)]);
+	const letter = letters.size === 1 ? [...letters][0] : null;
+	const setBefore = letter === null ? null : setOf(was, letter);
+	const setAfter = letter === null ? null : setOf(now, letter);
+	const readable = setBefore !== null && setAfter !== null;
+	const narrows = readable ? !isIncluded(setBefore, setAfter) : gained.length > 0;
+	// Le domaine rétrécit sans qu'on lise les ensembles (plusieurs lettres) : on ne
+	// voit pas s'il reste un point — ne rien dire. Lus et sans point commun
+	// (revue : `ln(x²) + ln(−x)`, défini pour x < 0, donnait « pour x > 0 ») : idem
+	if (narrows && (!readable || isEmpty(intersect(setBefore, setAfter)))) return null;
+	// Jamais définie (2ᵉ revue : `ln(x)/ln(x) + √(−x)`) : aucune condition n'a de sens
+	if (setBefore !== null && isEmpty(setBefore)) return null;
+	if (!narrows && readable && isIncluded(setAfter, setBefore)) {
+		return { conditions: [], narrows };
+	}
+	const written = writable([...lost, ...gained]);
+	if (written === null) return null;
+	const common = was.filter((c) => !lost.includes(c));
+	return { conditions: letter === null ? written : pruned(written, common, letter), narrows };
+}
+
+/**
+ * `u ≠ 0` dit en points exclus, quand `u` ne s'annule qu'en des nombres
+ * (`ln(x) ≠ 0` → `x ≠ 1`, revue du § 4.2) : l'ensemble de `1/u` est celui de
+ * `u` privé de ces points. Le domaine de `u` (x > 0) n'est redit que si
+ * `context` (la réponse, les autres conditions) ne le garantit pas :
+ * `(ln x)²/ln x → ln x` dit `x ≠ 1`, `ln(x)/ln(x) → 1` dit `x > 0 et x ≠ 1`.
+ */
+function asPoints(
+	condition: TidyCondition,
+	context: readonly DomainCondition[],
+	typeCtx?: TypeContext
+): TidyCondition[] {
+	if (condition.relation !== 'nonzero' || affineRoot(condition.expression) !== null) {
+		return [condition];
+	}
+	const where = conditionSet(condition);
+	if (where === null || where.domain.kind !== 'interval_set') return [condition];
+	const points = where.domain.excludedPoints.map((p) => p.value);
+	if (points.length === 0 || points.some((p) => p.type !== 'number')) return [condition];
+	const own = computeDomain(condition.expression, where.letter);
+	if ((own.unresolved?.length ?? 0) > 0 || !INCLUSION_READABLE.has(own.domain.kind)) {
+		return [condition];
+	}
+	const withoutPoints: Domain = { ...where.domain, excludedPoints: [] };
+	if (!isIncluded(withoutPoints, own.domain) || !isIncluded(own.domain, withoutPoints)) {
+		return [condition];
+	}
+	const excluded = points.map((p): TidyCondition => ({
+		expression: subtract(variable(where.letter), p),
+		relation: 'nonzero'
+	}));
+	const ownConditions = writable(
+		mergeConditions(domainConditions(condition.expression, typeCtx, NOTHING_ACQUIRED))
+	);
+	if (ownConditions === null) return [condition];
+	const assumed = setOf(context, where.letter);
+	const implied = assumed !== null && isIncluded(assumed, own.domain);
+	return implied ? excluded : [...ownConditions, ...excluded];
+}
+
+/**
+ * Les conditions écrites au plus simple pour la réponse `answer` : `u ≠ 0`
+ * en points exclus quand on sait (`asPoints`), sans doublon.
+ */
+export function plainConditions(
+	conditions: readonly TidyCondition[],
+	answer: MathNode,
+	typeCtx?: TypeContext
+): TidyCondition[] {
+	const domainOfAnswer = mergeConditions(domainConditions(answer, typeCtx, NOTHING_ACQUIRED));
+	const written = mergeConditions(
+		conditions.flatMap((condition) =>
+			asPoints(
+				condition,
+				[...domainOfAnswer, ...conditions.filter((c) => c !== condition)],
+				typeCtx
+			)
+		)
+	);
+	// Deux `ln(…) ≠ 0` se garantissaient l'un l'autre x > 0 (revue : `ln(x)/ln(x) +
+	// ln(x/2)/ln(x/2)` disait « x ≠ 1 et x ≠ 2 ») : l'ensemble écrit, avec la
+	// réponse, doit tenir dans celui des conditions d'origine — sinon elles restent
+	const letters = new Set(conditions.flatMap((c) => [...getVariables(c.expression)]));
+	if (letters.size !== 1) return mergeConditions([...conditions]);
+	const [letter] = letters;
+	const said = setOf([...written, ...domainOfAnswer], letter);
+	const meant = setOf(conditions, letter);
+	if (said === null || meant === null || !isIncluded(said, meant)) {
+		return mergeConditions([...conditions]);
+	}
+	return written;
+}
+
+/**
+ * Ce que la réécriture `before → after` change du domaine : `[]` s'il ne
+ * change pas, sinon les conditions où elle vaut (`domainChanges`) ; `null` si
+ * une condition ne s'écrit pas.
  */
 export function domainChange(
 	before: MathNode,
 	after: MathNode,
 	typeCtx?: TypeContext
 ): TidyCondition[] | null {
-	const gained = domainLoss(after, before, typeCtx);
-	if (gained === null || gained.length > 0) return null;
-	return domainLoss(before, after, typeCtx);
+	return domainChanges(before, after, typeCtx)?.conditions ?? null;
 }
 
 /** `a x + b`, une seule lettre, `a ≠ 0` : la lettre et la racine −b/a. */

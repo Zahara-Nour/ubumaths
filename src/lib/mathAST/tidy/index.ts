@@ -24,7 +24,17 @@ import { conditionKey, domainLoss, mergeConditions } from './conditions';
 export { TidyStepRecorder, TIDY_RULE_DESCRIPTIONS } from './step-recorder';
 export type { TermOrder, TidyOptions, TidyRule, TidyStep, UnitChoice } from './step-recorder';
 export type { TidyCondition } from './types';
-export { describeConditions, domainChange, domainLoss, type ConditionText } from './conditions';
+export {
+	conditionSet,
+	describeConditions,
+	domainChange,
+	domainChanges,
+	domainLoss,
+	isIncluded,
+	plainConditions,
+	type ConditionText,
+	type DomainChangeDetail
+} from './conditions';
 
 /**
  * Met une expression au propre.

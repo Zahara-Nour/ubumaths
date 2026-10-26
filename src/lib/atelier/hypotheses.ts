@@ -13,22 +13,25 @@
  * (`x > 0 et y ≠ 0`) ; `dans`, un ensemble (intervalles, `ℝ \ {0}`, `∪`,
  * `∩`), pour une seule lettre.
  *
- * Limite : une hypothèse ne lève que les conditions du bouton — une
- * réécriture qui RÉTRÉCIT le domaine (`ln(x²) → 2 ln x`, refusée par
- * `domainChange`) n'a pas lieu même `avec x > 0`.
+ * Une réécriture qui RÉTRÉCIT le domaine (`ln(x²) → 2 ln x`) a son bouton
+ * (« Simplifier pour x > 0 », § 4.2) : `avec x > 0` la fait.
  *
  * @module atelier/hypotheses
  */
 
 import type { MathNode } from '$lib/mathAST/types';
 import type { Domain } from '$lib/mathAST/domain/types';
-import { describeConditions, type TidyCondition } from '$lib/mathAST/tidy';
+import {
+	conditionSet,
+	describeConditions,
+	isIncluded,
+	type TidyCondition
+} from '$lib/mathAST/tidy';
 import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
+import { intersect, isEmpty } from '$lib/mathAST/domain/algebra';
 import { computeDomain } from '$lib/mathAST/domain/compute';
-import { difference, intersect, isEmpty } from '$lib/mathAST/domain/algebra';
-import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-domains';
 import { formatInterval } from '$lib/mathAST/domain/format';
-import { divide, func, number } from '$lib/mathAST/factory';
+import { toCustom } from '$lib/mathAST/custom-generator';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 
 // =============================================================================
@@ -58,13 +61,6 @@ const KEYWORD = /\s(avec|dans)\s/i;
 
 /** Une lettre de condition : `x`, `y`, pas les mots `et` / `ou`. */
 const LETTER = /(?<![A-Za-z])[A-Za-z](?![A-Za-z])/g;
-
-/** Les domaines que l'inclusion (`difference`) lit : pas de famille périodique. */
-const INCLUSION_READABLE: ReadonlySet<Domain['kind']> = new Set([
-	'empty',
-	'universal',
-	'interval_set'
-]);
 
 const AVEC_EXAMPLE = 'avec x > 0, avec x ≠ 0 et x ≠ 1, avec 0 < x ≤ 5';
 const DANS_EXAMPLE = 'dans ]0;+∞[, dans ℝ \\ {0}, dans ]0;+∞[ ∩ ]-∞;5]';
@@ -140,35 +136,30 @@ export function readHypotheses(
 	return { ok: true, hypotheses };
 }
 
-/**
- * L'ensemble où une condition vaut, pour sa lettre : celui où `1/u`, `ln(u)`
- * ou `√u` est défini. `null` : plusieurs lettres, ou un domaine non établi.
- */
-function conditionDomain(condition: TidyCondition): { letter: string; domain: Domain } | null {
-	const letters = getVariables(condition.expression);
-	if (letters.size !== 1) return null;
-	const [letter] = letters;
-	const { expression, relation } = condition;
-	const witness: MathNode =
-		relation === 'nonzero'
-			? divide(number(1), expression, 'fraction')
-			: func(relation === 'positive' ? 'ln' : 'sqrt', [expression]);
-	const computed = computeDomain(witness, letter);
-	if ((computed.unresolved?.length ?? 0) > 0) return null;
-	// Des intervalles et des points seulement (`1/ln x` → ]0;+∞[ \ {1}) : `cos(x) ≠ 0`
-	// exclut une famille π/2 + kπ que l'inclusion ne voit pas (revue : `cos(x)/cos(x)
-	// avec x > 0` donnait 1) — on ne sait pas, on ne garantit rien
-	if (!INCLUSION_READABLE.has(computed.domain.kind)) return null;
-	return { letter, domain: computed.domain };
-}
-
 /** L'hypothèse garantit-elle la condition ? Prudent : `false` si on ne sait pas. */
 export function guarantees(hypotheses: Hypotheses, condition: TidyCondition): boolean {
-	const where = conditionDomain(condition);
+	const where = conditionSet(condition);
 	if (where === null) return false;
 	const assumed = hypotheses.get(where.letter);
 	if (assumed === undefined) return false;
-	return isEmpty(difference(expandExcludedPoints(assumed), expandExcludedPoints(where.domain)));
+	return isIncluded(assumed, where.domain);
+}
+
+/**
+ * L'hypothèse laisse-t-elle un point où `node` est défini ? Revue Opus (§ 4.2) :
+ * `.simplifier x/x + √(−x) avec x > 0` simplifiait une expression jamais définie
+ * pour x > 0. Un domaine qu'on ne lit pas : `true`, on ne refuse pas sans savoir.
+ */
+export function meetsDomain(hypotheses: Hypotheses, node: MathNode): boolean {
+	const letters = getVariables(node);
+	for (const [letter, assumed] of hypotheses) {
+		if (letters.size !== 1 || !letters.has(letter)) continue;
+		const computed = computeDomain(node, letter);
+		if ((computed.unresolved?.length ?? 0) > 0) continue;
+		if (computed.domain.kind !== 'interval_set' && computed.domain.kind !== 'empty') continue;
+		if (isEmpty(intersect(assumed, computed.domain))) return false;
+	}
+	return true;
 }
 
 /** Les conditions écrites, reliées par « et » : `x ≠ 0 et y ≠ 0`. */
@@ -180,9 +171,14 @@ export function conditionsText(conditions: readonly TidyCondition[]): string {
 
 /**
  * La note du mode « garder l'écriture » (Q5) : on peut simplifier davantage,
- * et comment le dire — `avec` toujours, `dans` si une seule lettre.
+ * et comment le dire — `avec` toujours, `dans` si une seule lettre. Le domaine
+ * rétrécit (`narrowed`, § 4.2) : l'écriture qu'on aurait, « Pour x > 0, on
+ * peut écrire 2 ln(x) ».
  */
-export function simplifyFurtherNote(conditions: readonly TidyCondition[]): string {
+export function simplifyFurtherNote(
+	conditions: readonly TidyCondition[],
+	narrowed?: MathNode
+): string {
 	const text = conditionsText(conditions);
 	// Seulement ce qui, recopié, simplifie vraiment la ligne (revue : `avec x^2−1 ≠ 0`
 	// ne se relisait pas, `dans ℝ \ {π/2 + kπ}` non plus)
@@ -190,7 +186,10 @@ export function simplifyFurtherNote(conditions: readonly TidyCondition[]): strin
 	const offers = [`avec ${text}`, ...(set === null ? [] : [`dans ${set}`])].filter((written) =>
 		worksWhenCopied(written, conditions)
 	);
-	const base = `On peut simplifier davantage pour ${text}`;
+	const base =
+		narrowed === undefined
+			? `On peut simplifier davantage pour ${text}`
+			: `Pour ${text}, on peut écrire ${toCustom(narrowed).replace(/-/g, '−')}`;
 	if (offers.length === 0) return `${base}.`;
 	const [first, second] = offers;
 	return `${base} : ajoute « ${first} »${second === undefined ? '' : ` (ou « ${second} »)`}.`;
@@ -210,7 +209,7 @@ function conditionsSet(conditions: readonly TidyCondition[]): string | null {
 	let letter: string | null = null;
 	let domain: Domain | null = null;
 	for (const condition of conditions) {
-		const where = conditionDomain(condition);
+		const where = conditionSet(condition);
 		if (where === null || (letter !== null && where.letter !== letter)) return null;
 		letter = where.letter;
 		domain = domain === null ? where.domain : intersect(domain, where.domain);
