@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-26, après #1809._
 
 - **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas en prod ; garde des tirages (#1805) ; côté donné
   prolongé, carré et rectangle, message à part (#1809, § 12).
-- **Prochaine action** : réponse de David sur la « figure de travail » (ci-dessous), puis sa phase 0 si go.
+- **Prochaine action** : aucune ici ; CP-058 attend le chantier `figure-et-choix`.
 - **En attente de David** : (1) fin de l'essai de CP-060 et CP-058 (`docs/wip/verifications-manuelles.md`) ;
   (2) message du carré décalé qui chevauche [AB] (§ 12) ; (3) **figure de travail** (idée de David) : figure
   manipulable NON notée dans l'énoncé (outils limités, ex. droites seules), réponse à côté, QCM compris → CP-058 en
@@ -14,7 +14,8 @@ _Mis à jour le 2026-10-26, après #1809._
   (`deplacable:` réservé aux figures stockées, ADR 0027) ? Reco : chantier à part ; **ne pas publier CP-058 en l'état**.
   **Tranché le 2026-10-26** (§ 13) : consigne au choix du modèle (« tu peux vérifier » = figure de travail non notée,
   « montre comment » = figure notée) ; figure déplaçable utilisable partout ; **QCM réécrit en case « choix »**,
-  TOUS les QCM migrés (« le plus propre possible, même si c'est plus de travail »). Reste : tracé gardé ou perdu.
+  TOUS les QCM migrés (« le plus propre possible, même si c'est plus de travail ») ; tracé GARDÉ, non noté.
+  → **Chantier `figure-et-choix`** (worktree `../ubumaths-wt-figure-et-choix`), ouvert le 2026-10-26.
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
 - **Worktree / branche** : aucun (retiré après #1809).
 
@@ -502,6 +503,8 @@ et pourquoi le oui / non n'est-il pas un QCM ?
    réécrits en questions à cases, migration des QCM en prod, retrait du type `multiple_choice` (migration
    destructive, après le `deploy:prod` du code qui n'en dépend plus). Écarté : A, case « choix » à côté des QCM gardés.
 
-**À trancher** : tracé sur une figure de travail gardé (copie corrigée) ou perdu à la validation ; une réponse ou
+**Tracé sur une figure de travail : GARDÉ, non noté** (reco suivie). Suite : chantier `figure-et-choix`.
+
+**À trancher (là-bas)** : une réponse ou
 plusieurs ; ordre mélangé ; notation d'une question mêlant « choix » et autres cases ; copie corrigée et PDF ; nom du
 chantier et des termes dans `CONTEXT.md` ; ADR (révise la décision QCM / cases).
