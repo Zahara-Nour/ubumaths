@@ -235,8 +235,21 @@ describe('domainChange par ensembles (§ 4.2)', () => {
 		expect(change(before, after)).toEqual(conditions);
 	});
 
-	it('plusieurs lettres : rien n’est élagué, tout est dit', () => {
-		expect(change('ln(x y)', 'ln(x)+ln(y)')).toEqual(['xy > 0', 'x > 0', 'y > 0']);
+	it('plusieurs lettres, domaine rétréci : on ne voit pas s’il reste un point, null', () => {
+		expect(change('ln(x y)', 'ln(x)+ln(y)')).toBeNull();
+	});
+
+	it('plusieurs lettres, domaine élargi : la perte, sans élagage', () => {
+		expect(change('x/x+y/y', '2')).toEqual(['x ≠ 0', 'y ≠ 0']);
+	});
+
+	// Revue Opus : `ln(x²) + ln(−x)` n'est défini que pour x < 0
+	it.each([
+		['ln(x^2)+ln(-x)', 'ln(-x)+2ln(x)'],
+		['ln(x^2)*sqrt(-x)', '2ln(x)sqrt(-x)'],
+		['ln(x^2)-2ln(-x)', '2ln(x)-2ln(-x)']
+	])('%s → %s : plus aucun point commun, null', (before, after) => {
+		expect(change(before, after)).toBeNull();
 	});
 
 	it('une condition qui ne s’écrit pas (tan) : on ne sait pas, null', () => {

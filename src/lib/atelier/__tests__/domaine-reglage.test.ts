@@ -300,6 +300,26 @@ describe('domainChange par ensembles (§ 4.2)', () => {
 		);
 	});
 
+	// Revue Opus : défini pour x < 0 seulement, « pour x > 0 » ne laisse aucun point
+	it.each([
+		'.simplifier ln(x^2)+ln(-x)',
+		'.simplifier ln(x^2)+ln(-x) avec x > 0',
+		'.simplifier ln(x^2)*sqrt(-x)'
+	])('%s : ni bouton ni simplification', (input) => {
+		for (const mode of ['keep', 'conditions'] as const) {
+			const result = line(input, mode);
+			expect(result.alternative).toBeUndefined();
+			expect(flat(result.latex)).not.toContain('2\\ln');
+		}
+	});
+
+	it('une hypothèse hors du domaine de l’expression ne simplifie rien', () => {
+		const result = line('.simplifier x/x+sqrt(-x) avec x > 0');
+		expect(flat(result.latex)).not.toContain('1+');
+		expect(result.note).toContain('x > 0');
+		expect(result.note).toContain('n’est jamais défini');
+	});
+
 	it('« Simplifier en disant la condition » : 2 ln(x), pour x > 0', () => {
 		const result = line('.simplifier ln(x^2)', 'conditions');
 		expect(flat(result.latex)).toBe(flat('2\\ln\\left(x\\right)\\text{,}\\quad\\text{pour }x>0'));

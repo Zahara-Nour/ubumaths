@@ -268,9 +268,13 @@ export function domainChanges(
 	const letter = letters.size === 1 ? [...letters][0] : null;
 	const setBefore = letter === null ? null : setOf(was, letter);
 	const setAfter = letter === null ? null : setOf(now, letter);
-	const narrows =
-		setBefore !== null && setAfter !== null ? !isIncluded(setBefore, setAfter) : gained.length > 0;
-	if (!narrows && setBefore !== null && setAfter !== null && isIncluded(setAfter, setBefore)) {
+	const readable = setBefore !== null && setAfter !== null;
+	const narrows = readable ? !isIncluded(setBefore, setAfter) : gained.length > 0;
+	// Le domaine rétrécit sans qu'on lise les ensembles (plusieurs lettres) : on ne
+	// voit pas s'il reste un point — ne rien dire. Lus et sans point commun
+	// (revue : `ln(x²) + ln(−x)`, défini pour x < 0, donnait « pour x > 0 ») : idem
+	if (narrows && (!readable || isEmpty(intersect(setBefore, setAfter)))) return null;
+	if (!narrows && readable && isIncluded(setAfter, setBefore)) {
 		return { conditions: [], narrows };
 	}
 	const written = writable([...lost, ...gained]);

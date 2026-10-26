@@ -539,9 +539,11 @@ km/h`), 2026-09-27.
   les **ensembles** se comparent — égaux, `[]` (`ln(x³) → 3 ln x`, `ln(x²) + ln x → 3 ln x`) ;
   sinon les conditions perdues puis gagnées, chacune retirée si les autres (et celles que les
   deux écritures partagent) l'impliquent : `ln(x²) → 2 ln x` dit `x > 0` (pas `x² > 0`),
-  `ln(x(x+1)) → ln x + ln(x+1)` dit `x > 0`, `√x √(x+1) → √(x(x+1))` dit `x ≥ 0`. Plusieurs
-  lettres : rien n'est élagué, tout est dit (`ln(xy) → ln x + ln y` : `xy > 0 et x > 0 et
-y > 0`) — jamais une condition fausse. `narrows` : le domaine d'après est plus petit (l'atelier
+  `ln(x(x+1)) → ln x + ln(x+1)` dit `x > 0`, `√x √(x+1) → √(x(x+1))` dit `x ≥ 0`. Un domaine qui rétrécit sans point commun avec celui
+  d'avant (`ln(x²) + ln(−x)`, défini pour x < 0 : « pour x > 0 » serait vide) ou qu'on ne lit
+  pas (plusieurs lettres, `ln(xy) → ln x + ln y`) : `null`, comme avant (revue Opus du § 4.2).
+  Plusieurs lettres, domaine élargi : la perte, sans élagage (`x/x + y/y` : `x ≠ 0`, `y ≠ 0`).
+  `narrows` : le domaine d'après est plus petit (l'atelier
   dit alors « Pour x > 0, on peut écrire 2ln(x) »). `null` : une condition ne s'écrit pas
   (`tan`). `domainChange` en rend les conditions seules. Sert à l'atelier pour garder le domaine
   de toutes ses lignes (`atelier/domain-guard.ts`).

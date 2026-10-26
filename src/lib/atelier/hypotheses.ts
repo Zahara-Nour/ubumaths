@@ -28,7 +28,8 @@ import {
 	type TidyCondition
 } from '$lib/mathAST/tidy';
 import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
-import { intersect } from '$lib/mathAST/domain/algebra';
+import { intersect, isEmpty } from '$lib/mathAST/domain/algebra';
+import { computeDomain } from '$lib/mathAST/domain/compute';
 import { formatInterval } from '$lib/mathAST/domain/format';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { getVariables } from '$lib/mathAST/eval/substitute';
@@ -142,6 +143,23 @@ export function guarantees(hypotheses: Hypotheses, condition: TidyCondition): bo
 	const assumed = hypotheses.get(where.letter);
 	if (assumed === undefined) return false;
 	return isIncluded(assumed, where.domain);
+}
+
+/**
+ * L'hypothèse laisse-t-elle un point où `node` est défini ? Revue Opus (§ 4.2) :
+ * `.simplifier x/x + √(−x) avec x > 0` simplifiait une expression jamais définie
+ * pour x > 0. Un domaine qu'on ne lit pas : `true`, on ne refuse pas sans savoir.
+ */
+export function meetsDomain(hypotheses: Hypotheses, node: MathNode): boolean {
+	const letters = getVariables(node);
+	for (const [letter, assumed] of hypotheses) {
+		if (letters.size !== 1 || !letters.has(letter)) continue;
+		const computed = computeDomain(node, letter);
+		if ((computed.unresolved?.length ?? 0) > 0) continue;
+		if (computed.domain.kind !== 'interval_set' && computed.domain.kind !== 'empty') continue;
+		if (isEmpty(intersect(assumed, computed.domain))) return false;
+	}
+	return true;
 }
 
 /** Les conditions écrites, reliées par « et » : `x ≠ 0 et y ≠ 0`. */

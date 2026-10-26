@@ -1342,7 +1342,9 @@ condition sur la ligne. Tests : `domaine-garde.test.ts`.
   qui rétrécit le domaine (`ln(x²) → 2 ln x`, § 4.2) a son bouton (« Simplifier pour x > 0 ») et
   sa note (« Pour x > 0, on peut écrire 2ln(x) : ajoute « avec x > 0 » ») ; `avec x > 0` la
   fait. Deux écritures du même ensemble ne changent rien : `.simplifier ln(x³)` → `3 ln x`,
-  sans condition (`domainChanges` de `tidy`). Seule une
+  sans condition (`domainChanges` de `tidy`). Une hypothèse qui ne rencontre pas le domaine
+  de l'expression (`.simplifier x/x + √(−x) avec x > 0`) ne simplifie rien et le dit
+  (`meetsDomain`). Seule une
   condition d'une lettre dont le domaine est **calculé en entier et fait d'intervalles et de
   points** peut être garantie : `ln(x) ≠ 0` (]0;+∞[ \ {1}, `ln(x)/ln(x) avec x > 1` → 1),
   `eˣ − 1 ≠ 0` (ℝ \ {0}) ; pas `cos(x) ≠ 0`, qui exclut une famille π/2 + kπ que l'inclusion ne

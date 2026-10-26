@@ -192,6 +192,7 @@ import { guardedAnswer, tidyFurther, writtenKeepingDomain, type DomainFacts } fr
 import {
 	conditionsText,
 	guarantees,
+	meetsDomain,
 	readHypotheses,
 	simplifyFurtherNote,
 	splitHypotheses,
@@ -3680,6 +3681,15 @@ function withHypotheses(
 				? `« ${written} » ne change rien à cette ligne : pour simplifier, écris « .simplifier ${typed} ».`
 				: `« ${written} » ne change rien ici.`;
 		return { ...echoed, note: joinedNote(result.note, hint) };
+	}
+	if (!meetsDomain(hypotheses, facts.ast)) {
+		return {
+			...echoed,
+			note: joinedNote(
+				result.note,
+				`${written} : l’expression n’est jamais définie pour ces valeurs, la ligne garde l’écriture.`
+			)
+		};
 	}
 	const missing = facts.conditions.filter((c) => !guarantees(hypotheses, c));
 	if (missing.length > 0) {
