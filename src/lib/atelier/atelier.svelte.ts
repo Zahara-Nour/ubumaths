@@ -3587,7 +3587,7 @@ export class Atelier {
 			return next;
 		});
 
-		this.#inheritIntervals(intervals.inherited);
+		this.#inheritIntervals(intervals.inherited, intervals.conditions);
 		this.#constructions();
 		this.#measures();
 		this.#geometryWaits(deps);
@@ -4052,17 +4052,35 @@ export class Atelier {
 	 * suit f quand son ensemble change ou disparaît (I6). Jamais sauvegardé.
 	 *
 	 * Décision d : toute fonction porte aussi l'ensemble hérité des fonctions
-	 * qu'elle cite (`inheritedInterval`, calculé par `citedIntervals`).
+	 * qu'elle cite (`inheritedInterval`, calculé par `citedIntervals`), et les
+	 * conditions des composées qui l'ont donné (`inheritedConditions`, chantier
+	 * composees).
 	 */
-	#inheritIntervals(inheritedDomains: ReadonlyMap<string, Domain>): void {
+	#inheritIntervals(
+		inheritedDomains: ReadonlyMap<string, Domain>,
+		inheritedConditions: ReadonlyMap<string, readonly string[]>
+	): void {
 		this.items.forEach((o, i) => {
 			if (!isFunction(o)) return;
 			const domain = inheritedDomains.get(o.name);
+			const conditions = domain === undefined ? undefined : inheritedConditions.get(o.name);
 			// Comparé par contenu : un objet neuf à chaque passage relancerait le
 			// rendu de la carte et la synchronisation du tracé pour rien
-			if (JSON.stringify(o.inheritedInterval) === JSON.stringify(domain)) return;
-			const { inheritedInterval: _stale, ...rest } = o;
-			this.items[i] = domain === undefined ? rest : { ...rest, inheritedInterval: domain };
+			if (
+				JSON.stringify(o.inheritedInterval) === JSON.stringify(domain) &&
+				JSON.stringify(o.inheritedConditions) === JSON.stringify(conditions)
+			) {
+				return;
+			}
+			const { inheritedInterval: _stale, inheritedConditions: _staleConditions, ...rest } = o;
+			this.items[i] =
+				domain === undefined
+					? rest
+					: {
+							...rest,
+							inheritedInterval: domain,
+							...(conditions !== undefined && { inheritedConditions: conditions })
+						};
 		});
 		this.items.forEach((o, i) => {
 			const derivative = derivativeOf(o.name);

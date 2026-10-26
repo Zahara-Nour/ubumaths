@@ -42,12 +42,14 @@ import {
 	reciprocalOf
 } from './names';
 import {
+	affinePreimage,
 	intervalDomainOf,
 	intervalText,
 	outsideIntervalMessage,
 	readInterval,
 	splitInterval,
-	type CitedInterval
+	type CitedInterval,
+	type ComposedCondition
 } from './interval';
 import { INTERNAL_LETTER, renameVariableIn, typedLetterOf } from './letter';
 import { astOf, type Provenance } from './parse';
@@ -647,16 +649,31 @@ export function citedReciprocalInterval(
 	const unknown = new RegExp(`(?<![A-Za-z_\\\\])${variable}(?![A-Za-z_0-9])`);
 	for (const { base, argument, written } of calls) {
 		const name = displayName(reciprocalName(base));
-		if (argument !== null && argument.trim() !== variable && unknown.test(argument)) {
-			return { kind: 'composed', call: written.replace(`${base}^{-1}`, name), name };
-		}
-		if (argument !== null && argument.trim() !== variable) continue;
+		const composed = argument !== null && argument.trim() !== variable;
+		if (composed && !unknown.test(argument)) continue;
 		const departure = departureOf(atelier.reciprocalOutcome(base));
 		if (departure === null) continue;
+		// `f⁻¹(2x)` : comme `f(2x)` (chantier composees), x tel que 2x soit au départ
+		let within = departure;
+		const conditions: ComposedCondition[] = [];
+		if (composed) {
+			const node = astOf(argument, 'text');
+			const preimage = node === null ? null : affinePreimage(node, variable, departure);
+			const call = written.replace(`${base}^{-1}`, name);
+			if (preimage === null) {
+				return { kind: 'composed', call, name, argument: argument.trim(), set: departure };
+			}
+			within = preimage;
+			conditions.push({ argument: argument.trim(), set: departure, within });
+		}
 		cited =
 			cited === null
-				? { kind: 'restricted', domain: departure, name }
-				: { ...cited, domain: intersect(cited.domain, departure) };
+				? { kind: 'restricted', domain: within, name, conditions }
+				: {
+						...cited,
+						domain: intersect(cited.domain, within),
+						conditions: [...cited.conditions, ...conditions]
+					};
 	}
 	return cited;
 }

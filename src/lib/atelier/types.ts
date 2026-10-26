@@ -175,6 +175,12 @@ export interface FunctionObject extends AtelierObjectBase {
 	 */
 	readonly inheritedInterval?: Domain;
 	/**
+	 * Les conditions des composées qui ont donné `inheritedInterval`
+	 * (`g(x) = f(2x)` → « 2x doit être dans [0 ; +∞[ », chantier composees,
+	 * Q2), dites par `.domaine g`. Recalculées avec lui, jamais sauvegardées.
+	 */
+	readonly inheritedConditions?: readonly string[];
+	/**
 	 * Carte `f⁻¹` seulement : l'intervalle I tapé dans `.réciproque f sur I`, sur
 	 * lequel f est inversée — CROISÉ avec celui de f à chaque recalcul. Absent =
 	 * celui de f (ou son domaine). L'`interval` de la carte, lui, est son ensemble de départ f(I),

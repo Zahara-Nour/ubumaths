@@ -412,7 +412,9 @@ function restrictedDomain(
 	const get = (name: string) => atelier.get(name);
 	if (cited?.kind === 'function') {
 		const domain = intervalDomainOf(get(cited.base));
-		return domain === null ? null : { kind: 'restricted', domain, name: cited.name };
+		return domain === null
+			? null
+			: { kind: 'restricted', domain, name: cited.name, conditions: [] };
 	}
 	if (cited !== null) return null;
 	return citedIntervalDomain(get, typed, letter);

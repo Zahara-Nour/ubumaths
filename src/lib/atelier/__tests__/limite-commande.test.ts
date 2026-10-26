@@ -226,8 +226,8 @@ describe('revue : une fonction citée seule, dans SA lettre', () => {
 		expect(latex('.limite f(2x)+1 en 1', ['f(x) = x^2+1']).endsWith('=6')).toBe(true);
 	});
 
-	it('f(2x) avec un ensemble choisi : refus de la composée', () => {
-		expect(refusal('.limite f(2x) en 1', ['f(x) = x^2 sur [0;+∞['])).toMatch(/2x/);
+	it('f(x²) avec un ensemble choisi : refus de la composée non affine (chantier composees)', () => {
+		expect(refusal('.limite f(x^2) en 1', ['f(x) = x^2 sur [0;+∞['])).toMatch(/x\^2/);
 	});
 
 	it("f' : f'(x)", () => {

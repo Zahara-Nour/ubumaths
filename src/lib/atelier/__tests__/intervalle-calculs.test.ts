@@ -174,11 +174,11 @@ describe('suites de revue', () => {
 		expect(last(d).failed).toBe(false);
 	});
 
-	it('f(2x) : f appelée sur autre chose que l’inconnue est refusée, pas résolue sur ℝ', () => {
+	it('f(x²) : f appelée sur une expression non affine est refusée, pas résolue sur ℝ', () => {
 		const d = desk('f(x) = x^2 sur [0;+∞[');
-		d.submit('.résoudre f(2x)=4');
+		d.submit('.résoudre f(x^2)=4');
 		expect(last(d).failed).toBe(true);
-		expect(last(d).text).toContain('f(2x)');
+		expect(last(d).text).toContain('f(x^2)');
 	});
 
 	it('f(a) avec a une valeur : un nombre, l’inconnue n’est pas restreinte', () => {

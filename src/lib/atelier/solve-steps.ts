@@ -46,7 +46,7 @@ import { approximateSolutionsLatex } from '$lib/mathAST/cli/approximation';
 import type { Domain } from '$lib/mathAST/domain/types';
 import { containsValue } from '$lib/mathAST/domain/algebra';
 import { evaluate } from '$lib/mathAST/eval';
-import { intervalText } from './interval';
+import { conditionText, intervalText, type ComposedCondition } from './interval';
 
 // =============================================================================
 // Constantes
@@ -196,8 +196,14 @@ function answerFor(step: EquationStep, rendered: RenderedStep): string | null {
  *   `docs/archive/wip/atelier-intervalle-phase0.md`) : les étapes résolvent sur ℝ, puis
  *   une dernière ne garde que les solutions de l'ensemble. Seulement pour une
  *   équation qui conclut sur des solutions isolées ; sinon, repli (`null`).
+ * @param conditions - Les composées traduites (`f(2x)`, chantier composees,
+ *   Q3) : une première étape par composée dit l'ensemble de l'inconnue.
  */
-export function solveSteps(argument: string, within?: Domain): SolvedSteps | null {
+export function solveSteps(
+	argument: string,
+	within?: Domain,
+	conditions: readonly ComposedCondition[] = []
+): SolvedSteps | null {
 	try {
 		// ⚠️ **On lit l'argument comme des MATHÉMATIQUES, pas comme une ligne de
 		// commande.** Le moteur, lui, appliquait deux conventions de terminal qui
@@ -270,7 +276,7 @@ export function solveSteps(argument: string, within?: Domain): SolvedSteps | nul
 		if (within !== undefined) {
 			return solutions === null
 				? null
-				: restrictedSteps(rendered, summarized, solutions, variable, within, decimal);
+				: restrictedSteps(rendered, summarized, solutions, variable, within, decimal, conditions);
 		}
 		const approximate =
 			solutions === null
@@ -347,7 +353,8 @@ function restrictedSteps(
 	solutions: readonly MathNode[],
 	variable: string,
 	within: Domain,
-	decimal: boolean
+	decimal: boolean,
+	conditions: readonly ComposedCondition[]
 ): SolvedSteps | null {
 	const kept: MathNode[] = [];
 	for (const solution of solutions) {
@@ -362,8 +369,17 @@ function restrictedSteps(
 		title: `On ne garde que les solutions qui sont dans ${intervalText(within)}`,
 		expressionLatex: answer
 	});
-	const detailed = [...rendered, last(rendered)];
-	const summary = summaryOf(detailed, [...summarized, last(summarized)]);
+	// Q3 : « 2x doit être dans [0 ; +∞[, donc x est dans [0 ; +∞[ » en tête
+	const first: RenderedStep[] = conditions.map((condition) => ({
+		id: 0,
+		rule: 'composed-condition',
+		title: `${conditionText(condition)}, donc ${variable} est dans ${intervalText(condition.within)}`
+	}));
+	// Renumérotées à partir de 1 : la dernière reprenait l'id de la précédente (revue)
+	const numbered = (steps: readonly RenderedStep[]): RenderedStep[] =>
+		steps.map((step, i) => ({ ...step, id: i + 1 }));
+	const detailed = numbered([...first, ...rendered, last(rendered)]);
+	const summary = summaryOf(detailed, numbered([...first, ...summarized, last(summarized)]));
 	const approximate = approximateSolutionsLatex(variable, kept, kept.length > 1);
 	return {
 		steps: detailed,

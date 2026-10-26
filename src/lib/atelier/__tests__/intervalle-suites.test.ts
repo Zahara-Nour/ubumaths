@@ -224,12 +224,13 @@ describe('d) une fonction qui cite une fonction à intervalle en hérite', () =>
 		expect(label(d, 'g')).toBeNull();
 	});
 
-	it('f(2x) : g en erreur, pas calculée sur ℝ en silence (décision c)', () => {
+	// f(2x) : u affine, traduite (chantier composees, composees-ensemble.test.ts)
+	it('f(x²) : g en erreur, pas calculée sur ℝ en silence (décision c, u non affine)', () => {
 		const d = desk('f(x) = x^2 sur [0;+∞[');
-		d.submit('g(x) = f(2x)');
+		d.submit('g(x) = f(x^2)');
 		const g = d.atelier.get('g');
 		expect(g?.status).toBe('error');
-		expect(g?.message).toContain('f(2x)');
+		expect(g?.message).toContain('f(x^2)');
 	});
 
 	it('ensembles cités sans nombre en commun : erreur qui le dit, et .domaine ne l’affirme pas (revue)', () => {
