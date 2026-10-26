@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-26, après #1823._
 
 - **État** : #1807, #1811, #1815, #1817, #1819, #1823 MERGÉES (pas en prod). § 4.1, 4.2, 4.3 faits ; #1823 = `e^{ln a}` refusé pour a ≤ 0 (`normalize` et équivalence compris), `exp-n-ln` élargi, conditions écrites au plus simple (`x ≠ −1 et x ≠ 1`, `x ≠ 1`).
-- **Prochaine action** : rien d'ouvert dans le plan ; à David de dire s'il reste quelque chose ou si le chantier se clôt (versement dans `docs/systeme/`, archivage du journal).
-- **En attente de David** : essai des vérifs #1807 et #1811 (inchangé) ; clôture du chantier.
+- **Prochaine action** (David, 2026-10-26 : « on va corriger les limites dans une nouvelle session ») : phase 0 des limites — (1) plusieurs lettres, rétrécissement refusé (`ln(xy) → ln x + ln y`) ; (2) points irrationnels non écrits (`x² − 2 ≠ 0` → `x ≠ ±√2`) ; (3) `e^{2 ln 3}` et 9 de formes normales différentes ; (4) restes de #1815 et #1817 (Pièges). Comportements en français d'abord, attendre la validation.
+- **En attente de David** : validation de la phase 0 des limites ; essai des vérifs #1807 et #1811 (inchangé).
 - **Pièges en cours** : plusieurs lettres : rétrécissement refusé ; points irrationnels non écrits (`x² − 2`) ; `e^{2 ln 3}` et 9 de formes normales différentes (équivalents) ; restes de #1815 (termes gardés non regroupés, `tan` gèle le terme) et de #1817 (`arctan(x)−1 ≠ 0`, `cos(x)/cos(x) dans ]0;1[`, `arcsin`, `avec x ≥ e`).
 - **Worktree / branche** : retirés après #1823.
 
