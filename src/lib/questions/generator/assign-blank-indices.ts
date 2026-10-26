@@ -13,6 +13,7 @@
  * - `<<expr:NAME>>` in math → reserves indices for ? in answerFormats[NAME]
  * - Bloc ```operation à remplir → UNE case, numéro posé dans le bloc (`case: N`) ;
  *   division euclidienne : DEUX cases, N (quotient) et N + 1 (reste), seul N est posé
+ * - Bloc ```collection à construire (`construire: N`) → UNE case, `case: N` posé dans le bloc
  * - Bloc ```figure-a-completer → UNE case (la figure de l'élève), `case: N` posé dans le bloc ;
  *   son contenu est mis à l'abri : ni `?` ni `[_]` n'y crée de case
  *
@@ -21,6 +22,7 @@
 
 import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
 import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
+import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
 
 /**
@@ -54,6 +56,13 @@ export interface AssignBlankIndicesResult {
 	operationBlanks?: Record<number, string>;
 	/** Blocs ```operation à remplir mal placés (liste, citation) : messages pour l'auteur */
 	operationErrors?: string[];
+	/**
+	 * Case → texte du bloc ```collection à construire qui la porte (sans `case:`), pour
+	 * que le générateur lise la valeur attendue. Absent sans tel bloc.
+	 */
+	buildBlanks?: Record<number, string>;
+	/** Blocs ```collection à construire mal placés (liste, citation) : messages pour l'auteur */
+	buildErrors?: string[];
 	/**
 	 * Case → texte du bloc ```figure-a-completer qui la porte (sans `case:`), pour que
 	 * le générateur lise ses vérifications. Absent sans tel bloc.
@@ -143,6 +152,12 @@ const OPERATION_CASE_MARK = '\u0000operation-case\u0000';
 const OPERATION_NESTED_MESSAGE =
 	'Un bloc operation à remplir doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)';
 
+/** Marque provisoire de la case d'un bloc à construire */
+const BUILD_CASE_MARK = '\u0000build-case\u0000';
+
+const BUILD_NESTED_MESSAGE =
+	'Un bloc collection à construire doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)';
+
 /** Bloc `cases: aucune` : opération résolue, rien à remplir */
 function isSolvedOperation(body: string[]): boolean {
 	return body.some((line) => /^\s*cases\s*:\s*aucune\s*$/i.test(line));
@@ -154,12 +169,32 @@ function caseCountOf(source: string): number {
 	return node.spec === null || node.errors.length > 0 ? 1 : operationCaseCount(node.spec);
 }
 
+/** Un genre de bloc qui porte une case, repéré ligne à ligne : sa fence, et s'il en porte une */
+interface CaseBlockKind {
+	fence: RegExp;
+	nestedFence: RegExp;
+	hasCase: (body: string[]) => boolean;
+	mark: string;
+	nestedMessage: string;
+}
+
+const OPERATION_BLOCKS: CaseBlockKind = {
+	fence: OPERATION_FENCE_REGEX,
+	nestedFence: NESTED_OPERATION_FENCE_REGEX,
+	hasCase: (body) => !isSolvedOperation(body),
+	mark: OPERATION_CASE_MARK,
+	nestedMessage: OPERATION_NESTED_MESSAGE
+};
+
 /**
- * Repère les blocs ```operation à remplir : une marque est posée en tête de
- * chacun (numérotée ensuite, dans l'ordre du texte, avec les autres cases).
+ * Repère les blocs ```operation qui portent une case : une marque est posée en tête de chacun
+ * (numérotée ensuite, dans l'ordre du texte, avec les autres cases).
  * Fin du bloc : ``` ou ligne vide, comme le parseur.
  */
-function markOperationBlocks(statement: string): {
+function markCaseBlocks(
+	statement: string,
+	kind: CaseBlockKind
+): {
 	statement: string;
 	sources: string[];
 	errors: string[];
@@ -170,8 +205,8 @@ function markOperationBlocks(statement: string): {
 	const errors: string[] = [];
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
-		const nested = NESTED_OPERATION_FENCE_REGEX.test(line);
-		if (!OPERATION_FENCE_REGEX.test(line) && !nested) {
+		const nested = kind.nestedFence.test(line);
+		if (!kind.fence.test(line) && !nested) {
 			out.push(line);
 			continue;
 		}
@@ -181,11 +216,11 @@ function markOperationBlocks(statement: string): {
 		}
 		const body = lines.slice(i + 1, end);
 		out.push(line);
-		if (!isSolvedOperation(body)) {
+		if (kind.hasCase(body)) {
 			if (nested) {
-				errors.push(OPERATION_NESTED_MESSAGE);
+				errors.push(kind.nestedMessage);
 			} else {
-				out.push(OPERATION_CASE_MARK);
+				out.push(kind.mark);
 				sources.push(body.join('\n'));
 			}
 		}
@@ -193,6 +228,36 @@ function markOperationBlocks(statement: string): {
 		i = end - 1;
 	}
 	return { statement: out.join('\n'), sources, errors };
+}
+
+/** Bloc à construire, et sa fermeture (un bloc non fermé est refusé au générateur) */
+interface BuildBlock {
+	source: string;
+	closed: boolean;
+}
+
+/**
+ * Repère les blocs ```collection à construire : une marque est posée après la
+ * fence de chacun. Délimités comme le parseur (`findBuildCollections`) : une
+ * ligne vide suivie d'une clé reste dans le bloc, sinon sa case disparaîtrait.
+ */
+function markBuildBlocks(statement: string): {
+	statement: string;
+	blocks: BuildBlock[];
+	errors: string[];
+} {
+	const found = findBuildCollections(statement);
+	const errors = found.filter((b) => b.nested).map(() => BUILD_NESTED_MESSAGE);
+	const marked = found.filter((b) => !b.nested);
+	const markAfter = new Set(marked.map((b) => b.startIndex));
+	const out = statement
+		.split('\n')
+		.flatMap((line, i) => (markAfter.has(i) ? [line, BUILD_CASE_MARK] : [line]));
+	return {
+		statement: out.join('\n'),
+		blocks: marked.map((b) => ({ source: b.body.join('\n'), closed: b.closed })),
+		errors
+	};
 }
 
 /**
@@ -229,9 +294,12 @@ export function assignBlankIndices(
 	const operationBlanks: Record<number, string> = {};
 	const constructions = markConstructionBlocks(rawStatement);
 	const constructionBlanks: Record<number, string> = {};
-	const operations = markOperationBlocks(constructions.statement);
-	const statement = operations.statement;
+	const operations = markCaseBlocks(constructions.statement, OPERATION_BLOCKS);
+	const builds = markBuildBlocks(operations.statement);
+	const statement = builds.statement;
 	let operationCount = 0;
+	const buildBlanks: Record<number, string> = {};
+	let buildCount = 0;
 
 	// Split statement into math zones and text zones, preserving order.
 	// We need to process left-to-right, handling math zones and text zones differently.
@@ -322,6 +390,18 @@ export function assignBlankIndices(
 						blankTypes.push('math');
 					}
 					i += OPERATION_CASE_MARK.length;
+				} else if (text.startsWith(BUILD_CASE_MARK, i)) {
+					newText += `case: ${counter}`;
+					const build = builds.blocks[buildCount++];
+					buildBlanks[counter] = build.source;
+					if (!build.closed) {
+						builds.errors.push(
+							`Case ${counter + 1} (bloc collection) : bloc non fermé (\`\`\` manquant après la dernière ligne)`
+						);
+					}
+					counter++;
+					blankTypes.push('math');
+					i += BUILD_CASE_MARK.length;
 				} else if (text[i] === '[' && text[i + 1] === '_' && text[i + 2] === ']') {
 					newText += `{{blank:${counter}}}`;
 					counter++;
@@ -345,6 +425,8 @@ export function assignBlankIndices(
 		...(hasExpressionMapping && { expressionNameByIndex }),
 		...(operationCount > 0 && { operationBlanks }),
 		...(operations.errors.length > 0 && { operationErrors: operations.errors }),
+		...(buildCount > 0 && { buildBlanks }),
+		...(builds.errors.length > 0 && { buildErrors: builds.errors }),
 		...(constructions.blocks.length > 0 && { constructionBlanks }),
 		...(constructions.errors.length > 0 && { constructionErrors: constructions.errors })
 	};

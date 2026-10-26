@@ -16,6 +16,11 @@
  * Le nœud porte les quantités et les réglages ; le dessin (position de chaque
  * objet) est calculé par `utils/collection-scene.ts`, partagé écran / PDF.
  *
+ * À construire (`construire: 34`, chantier `docs/wip/construire-progress.md`) :
+ * l'élève pose barres et cubes sur un plan vide ; dans une question, le bloc
+ * porte une case (`case: N`, posée par le générateur) dont la réponse est la
+ * valeur posée (`utils/collection-construire.ts`).
+ *
  * @module ubumark/types/collection
  */
 
@@ -37,6 +42,9 @@ export const COLLECTION_MAX_SETS = 3;
 
 /** Bornes des quantités (CP : nombres jusqu'à 100) */
 export const COLLECTION_LIMITS = { tens: 10, units: 100, total: 100 } as const;
+
+/** Valeur à construire (`construire:`) */
+export const COLLECTION_BUILD_RANGE = { min: 1, max: 100 } as const;
 
 /** Longueur maximale d'une légende, en caractères */
 export const COLLECTION_CAPTION_MAX = 40;
@@ -80,6 +88,8 @@ export interface CollectionSpec {
 	unitLayout: CollectionUnitLayout;
 	/** Taille donnée par `taille:` ; null = taille par défaut du contexte */
 	sizeCm: number | null;
+	/** Valeur à construire (`construire:`) : plan vide, aucun ensemble dessiné (`sets` vide) */
+	build?: number;
 }
 
 /** Message situé, à destination de l'AUTEUR (jamais montré à l'élève) */
@@ -96,6 +106,8 @@ export interface CollectionNode extends BaseNode {
 	/** null si le bloc est en erreur */
 	spec: CollectionSpec | null;
 	errors: CollectionIssue[];
+	/** Bloc à construire dans une question : numéro de sa case (`case: N`, posé par le générateur) */
+	caseIndex?: number;
 }
 
 export interface CollectionBlockRange {

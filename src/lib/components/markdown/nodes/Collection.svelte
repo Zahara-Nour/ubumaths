@@ -19,6 +19,7 @@
 	  monnaie). Au doigt seulement : c'est une aide de comptage, la réponse se
 	  donne dans la case ou le QCM.
 	- Bloc en erreur : messages pour le prof, cadre neutre pour l'élève (Q48).
+	- Bloc à construire (`construire:`) : `CollectionConstruire.svelte`.
 
 	@module components/markdown/nodes/Collection
 -->
@@ -32,20 +33,23 @@
 	import {
 		buildCollectionScene,
 		COLLECTION_VIEW,
-		findCollectionItemAt,
-		type CollectionItem
+		findCollectionItemAt
 	} from '$lib/ubumark/utils/collection-scene';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { SceneMarks, scenePointOf } from './scene-marks.svelte';
+	import CollectionObjets from './CollectionObjets.svelte';
+	import CollectionConstruire, { type BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
 		node: CollectionNode;
 		/** Forcer l'affichage des erreurs d'auteur ; sinon, contexte du renderer (élève par défaut) */
 		showErrors?: boolean;
+		/** Bloc à construire dans une question : sa case */
+		answer?: BuildCase;
 		class?: string;
 	}
 
-	let { node, showErrors, class: className = '' }: Props = $props();
+	let { node, showErrors, answer, class: className = '' }: Props = $props();
 
 	const authoring = readAuthoringErrors();
 	let errorsVisible = $derived(showErrors ?? authoring());
@@ -74,17 +78,6 @@
 		const index = findCollectionItemAt(collections[setIndex].scene, point);
 		if (index !== null) marks.toggle(setIndex, index);
 	}
-
-	/** Trait de la marque : en travers de l'objet, du bas à gauche au haut à droite */
-	function strike(item: CollectionItem) {
-		const inset = item.kind === 'jeton' || item.kind === 'cube' ? -2 : 3;
-		return {
-			x1: item.x + inset,
-			y1: item.y + item.height - inset,
-			x2: item.x + item.width - inset,
-			y2: item.y + inset
-		};
-	}
 </script>
 
 {#if node.spec === null || node.errors.length > 0}
@@ -106,6 +99,8 @@
 			{COLLECTION_UNAVAILABLE}
 		</div>
 	{/if}
+{:else if node.spec.build !== undefined}
+	<CollectionConstruire spec={node.spec} build={node.spec.build} {answer} class={className} />
 {:else}
 	<div class="collection-bloc my-2 flex flex-col items-center gap-1 {className}">
 		<div class="flex max-w-full flex-wrap items-start justify-center gap-4">
@@ -134,62 +129,7 @@
 							height={collection.scene.height - 1}
 							rx="6"
 						/>
-						{#each collection.scene.items as item, i (i)}
-							{@const isMarked = marks.has(c, i)}
-							<g
-								class="collection-objet collection-{item.kind}"
-								class:collection-objet-marque={isMarked}
-							>
-								{#if item.kind === 'jeton'}
-									<circle class="collection-forme" cx={item.cx} cy={item.cy} r={item.width / 2} />
-								{:else if item.kind === 'cube'}
-									<rect
-										class="collection-forme"
-										x={item.x}
-										y={item.y}
-										width={item.width}
-										height={item.height}
-									/>
-								{:else if item.kind === 'barre'}
-									<rect
-										class="collection-forme"
-										x={item.x}
-										y={item.y}
-										width={item.width}
-										height={item.height}
-									/>
-									{#each { length: 9 } as _, k (k)}
-										<line
-											class="collection-separation"
-											x1={item.x}
-											x2={item.x + item.width}
-											y1={item.y + ((k + 1) * item.height) / 10}
-											y2={item.y + ((k + 1) * item.height) / 10}
-										/>
-									{/each}
-								{:else}
-									<rect
-										class="collection-contour"
-										x={item.x}
-										y={item.y}
-										width={item.width}
-										height={item.height}
-										rx="6"
-									/>
-									{#each item.jetons ?? [] as jeton, k (k)}
-										<circle
-											class="collection-forme"
-											cx={jeton.cx}
-											cy={jeton.cy}
-											r={COLLECTION_VIEW.object / 2}
-										/>
-									{/each}
-								{/if}
-							</g>
-							{#if isMarked}
-								<line class="collection-marque" {...strike(item)} />
-							{/if}
-						{/each}
+						<CollectionObjets items={collection.scene.items} isMarked={(i) => marks.has(c, i)} />
 					</svg>
 				</figure>
 			{/each}
@@ -223,38 +163,5 @@
 	.collection-cadre {
 		fill: var(--color-background);
 		stroke: var(--color-border);
-	}
-
-	/*
-	 * La seule couleur d'accent : le remplissage des objets ; leurs traits dans
-	 * une teinte foncée de la même couleur, lisible en clair comme en sombre
-	 * (un trait de la couleur du texte, clair en sombre, s'efface sur le jaune)
-	 */
-	.collection-forme {
-		fill: var(--color-primary);
-		stroke: color-mix(in oklab, var(--color-primary) 45%, black);
-		stroke-width: 0.8;
-	}
-
-	.collection-separation {
-		stroke: color-mix(in oklab, var(--color-primary) 45%, black);
-		stroke-width: 0.6;
-	}
-
-	.collection-contour {
-		fill: none;
-		stroke: var(--color-foreground);
-		stroke-width: 1.2;
-	}
-
-	.collection-objet-marque {
-		opacity: 0.35;
-	}
-
-	.collection-marque {
-		stroke: var(--color-foreground);
-		stroke-width: 2.5;
-		stroke-linecap: round;
-		pointer-events: none;
 	}
 </style>

@@ -12,6 +12,9 @@
  *
  * Noir sur blanc (photocopie) : objets gris clair cernés de noir.
  * Légendes en chaînes Typst littérales : rien n'y est lu comme du balisage.
+ * Bloc à construire (`construire:`) : rien d'interactif sur papier (Q9), un
+ * cadre vide en pointillés où l'enfant dessine, la réserve en petit au-dessus ;
+ * la consigne (« Dessine 34 avec des barres et des cubes ») est dans l'énoncé.
  * Un bloc en erreur devient le cadre neutre « Collection indisponible » —
  * jamais une erreur de compilation (une seule erreur Typst fait échouer toute
  * la fiche).
@@ -24,11 +27,13 @@ import {
 	COLLECTION_VIEW,
 	type CollectionItem
 } from '../utils/collection-scene';
+import { reserveScene } from '../utils/collection-construire';
 import {
 	COLLECTION_DEFAULT_CAPTIONS,
 	COLLECTION_SIZE_CM,
 	COLLECTION_UNAVAILABLE,
-	type CollectionNode
+	type CollectionNode,
+	type CollectionSpec
 } from '../types/collection';
 
 // ============================================================================
@@ -44,6 +49,10 @@ const ROW_MAX_CM = 16;
 const GAP_CM = 0.6;
 
 const OBJECT_FILL = 'luma(215)';
+
+/** Bloc à construire : hauteur du cadre vide (part de sa largeur), échelle de la réserve */
+const BUILD_FRAME_RATIO = 0.6;
+const RESERVE_SCALE = 0.5;
 
 // ============================================================================
 // FONCTIONS
@@ -118,10 +127,28 @@ function itemsTypst(items: CollectionItem[], k: number): string[] {
 	return parts;
 }
 
+/** Bloc à construire : la réserve en petit, puis le cadre vide en pointillés */
+function buildTypst(spec: CollectionSpec, widthCm: number): string {
+	const reserve = reserveScene(spec.drawing);
+	const k = (widthCm / COLLECTION_VIEW.fullWidth) * RESERVE_SCALE;
+	return [
+		'#align(center)[#block(breakable: false)[',
+		`#box(width: ${cm(reserve.width * k)}, height: ${cm(reserve.height * k)})[`,
+		...itemsTypst(reserve.items, k),
+		']',
+		'#v(4pt)',
+		`#box(width: ${cm(widthCm)}, height: ${cm(widthCm * BUILD_FRAME_RATIO)}, stroke: (paint: luma(120), thickness: 0.5pt, dash: "dashed"), radius: 3pt)`,
+		']]'
+	].join('\n');
+}
+
 /** Typst d'un bloc ```collection */
 export function generateCollectionTypst(node: CollectionNode): string {
 	const spec = node.spec;
 	if (node.errors.length > 0 || spec === null) return UNAVAILABLE_TYPST;
+	if (spec.build !== undefined) {
+		return buildTypst(spec, spec.sizeCm ?? COLLECTION_SIZE_CM.default);
+	}
 
 	const scenes = spec.sets.map((_, i) => buildCollectionScene(spec, i));
 	const wanted = (spec.sizeCm ?? COLLECTION_SIZE_CM.default) / COLLECTION_VIEW.fullWidth;
