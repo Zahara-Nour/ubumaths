@@ -13,6 +13,7 @@ import {
 	NOT_CLOSED_FEEDBACK,
 	NOT_ON_GRID_LINES_FEEDBACK,
 	OVERSHOOT_FEEDBACK,
+	PROLONGED_SIDE_FEEDBACK,
 	judgeConstruction
 } from '../judge';
 import { parseConstructionAnswer } from '../answer';
@@ -155,6 +156,31 @@ describe('carre A ; B — tableau de la phase 0', () => {
 		expect(square(`${ABOVE}|segment(5;3;7;3)`)).toEqual({
 			status: 'incorrect',
 			feedback: OVERSHOOT_FEEDBACK
+		});
+	});
+
+	it('fermée sur le côté donné prolongé : faux, il ne fallait pas le prolonger (essai de David)', () => {
+		// Rectangle 5 × 3 dont la base prolonge [AB] de 2 carreaux
+		expect(square('segment(5;3;7;3)|segment(7;3;7;6)|segment(7;6;2;6)|segment(2;6;2;3)')).toEqual({
+			status: 'incorrect',
+			feedback: PROLONGED_SIDE_FEEDBACK
+		});
+		// Un vrai carré 5 × 5, mais bâti sur le côté prolongé : « pas un carré » serait faux
+		expect(square('segment(5;3;7;3)|segment(7;3;7;8)|segment(7;8;2;8)|segment(2;8;2;3)')).toEqual({
+			status: 'incorrect',
+			feedback: PROLONGED_SIDE_FEEDBACK
+		});
+		// Prolongé de l'autre côté de A, figure au-dessous
+		expect(square('segment(2;3;0;3)|segment(0;3;0;0)|segment(0;0;5;0)|segment(5;0;5;3)')).toEqual({
+			status: 'incorrect',
+			feedback: PROLONGED_SIDE_FEEDBACK
+		});
+	});
+
+	it('côté donné prolongé mais figure ouverte : faux, pas fermée', () => {
+		expect(square('segment(5;3;7;3)|segment(7;3;7;6)')).toEqual({
+			status: 'incorrect',
+			feedback: NOT_CLOSED_FEEDBACK
 		});
 	});
 

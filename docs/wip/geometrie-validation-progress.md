@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1805._
+_Mis à jour le 2026-10-26, pendant la PR « côté prolongé » (§ 12)._
 
-- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas en prod ; garde des tirages mergée (#1805) :
-  `checkTemplate` construit la figure à chaque tirage (§ 11).
-- **Prochaine action** : aucune PR de code en vue ; attendre l'essai de David, puis publier.
-- **En attente de David** : essai de CP-060 et de CP-058 (`docs/wip/verifications-manuelles.md`) ; ensuite
-  `create-questions --publier` de CP-060 et CP-058 (brouillons), puis nœud + tag (migration, comme #1787).
-- **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9.
-- **Worktree / branche** : aucun (retiré après #1805).
+- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas en prod ; garde des tirages mergée (#1805) ;
+  PR de correctif « côté donné prolongé » en cours (§ 12), trouvée à l'essai de CP-060.
+- **Prochaine action** : merger cette PR, puis reprendre l'essai de CP-060 et CP-058 avec David.
+- **En attente de David** : fin de l'essai de CP-060 et de CP-058 (`docs/wip/verifications-manuelles.md`) ;
+  ensuite `create-questions --publier` de CP-060 et CP-058 (brouillons), puis nœud + tag (migration, comme #1787).
+- **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
+- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `fix/geometrie-validation-cote-prolonge`.
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -457,3 +457,19 @@ dont 2 rouges sans leur correctif. Prod balayée : seul CP-059 (brouillon) porte
 - 2026-10-26 : #1798 mergée (CP-058) ; worktree retiré.
 - 2026-10-26 : PR 6 codée (garde des tirages, § 11) ; 4 tests rouges sans, le piège de CP-058 attrapé.
 - 2026-10-26 : #1805 mergée (garde des tirages, revue Sonnet traitée) ; worktree retiré.
+
+## 12. Essai de CP-060 : le côté donné prolongé (2026-10-26)
+
+**Trouvé à l'essai de David** : l'élève prolonge le côté donné [AB] (3 carreaux) de 2 carreaux et ferme un
+rectangle 5 × 3 → « Ta figure n'est pas fermée. », alors qu'elle l'est (le juge ne cherchait les rectangles
+fermés que sur la base exacte [AB]). Verdict juste, message faux.
+
+**Décision de David** (reco suivie) : un message à part, « Le côté déjà tracé ne doit pas être prolongé : ton
+carré doit avoir ce côté-là. » — et non « Ce n'est pas un carré », faux pour un vrai carré 5 × 5 bâti sur le côté
+prolongé (cas frère). Placé après « pas fermée » / « pas un carré » : une figure fermée sur [AB] exact garde
+« pas un carré ».
+
+**Codé** : `closedOnProlongedSide` (`construction/polygon.ts`) — un rectangle dont un côté contient [AB] en étant
+plus long, sommets pris aux bouts des segments de l'élève. Tests : 5 × 3, 5 × 5, prolongé côté A au-dessous
+(rouges avant) ; prolongé mais ouvert → toujours « pas fermée ». **Limites laissées** : carré seulement (rectangle :
+même erreur possible sur [BC], message à trancher) ; fermé sur une PARTIE de [AB] → toujours « pas fermée ».

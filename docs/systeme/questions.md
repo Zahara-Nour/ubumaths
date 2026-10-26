@@ -321,7 +321,8 @@ Statuts (`ValidationStatus`) : `correct` (1), `unoptimal_form` (½), `bad_form` 
    segments de l'élève **fusionnés** par droite porteuse (côté en morceaux, trait repassé sur un côté
    donné : sans effet) ; un rectangle est présent si ses quatre côtés sont couverts ; le carré, d'un
    côté ou de l'autre de [AB]. Messages, dans l'ordre : trait hors des lignes du quadrillage (si les
-   côtés donnés les suivent), figure non fermée, pas un carré, trait de trop, trait qui dépasse.
+   côtés donnés les suivent), figure non fermée (ou, carré, fermée sur le côté donné prolongé : « Le
+   côté déjà tracé ne doit pas être prolongé… »), pas un carré, trait de trop, trait qui dépasse.
    Rectangle sans angle droit en B : erreur de l'auteur. Réponse illisible ou démesurée
    (`CONSTRUCTION_ANSWER_LIMITS`) → faux sans message. Les positions des points viennent d'un
    **registre** (`constructionPositions`), comme le PDF des figures : le juge reste léger (sans lui,
