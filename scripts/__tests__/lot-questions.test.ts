@@ -2,7 +2,13 @@ import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { apparierLot, lireLot, titresDuLot, type LigneModele } from '../lib/lot-questions';
+import {
+	apparierLot,
+	lireLot,
+	titresDuLot,
+	valeurArgument,
+	type LigneModele
+} from '../lib/lot-questions';
 
 const FIXTURES = 'tests/fixtures/lot-questions';
 
@@ -146,6 +152,15 @@ describe('apparierLot', () => {
 		expect(apparierLot(sans, [ligne(sans, 0, { subdomain: 'Dénombrer' })]).ok).toBe(false);
 	});
 
+	it('deux fichiers de même clé ne prennent pas la même ligne', () => {
+		const double = [lot[0], { ...lot[0], fichier: '09-copie.json' }];
+		const r = apparierLot(double, [ligne(lot, 0)]);
+		expect(r).toEqual({
+			ok: false,
+			erreurs: ['09-copie.json : même modèle en base que 01-construis-le-nombre.json (00000000)']
+		});
+	});
+
 	it('titresDuLot donne chaque titre une fois', () => {
 		const doublon = [...lot, lot[0]];
 		expect(titresDuLot(doublon)).toEqual([
@@ -153,5 +168,19 @@ describe('apparierLot', () => {
 			'Rends la monnaie',
 			"Qui a le plus d'argent ?"
 		]);
+	});
+});
+
+describe('valeurArgument', () => {
+	const argv = ['node', 'script', '--dir', 'scripts/questions/cp-c', '--publier'];
+
+	it('rend la valeur qui suit l’option', () => {
+		expect(valeurArgument(argv, '--dir')).toBe('scripts/questions/cp-c');
+	});
+
+	it('option absente, sans valeur, ou suivie d’une autre option : rien', () => {
+		expect(valeurArgument(argv, '--titre')).toBeUndefined();
+		expect(valeurArgument(argv, '--publier')).toBeUndefined();
+		expect(valeurArgument(['--dir', '--publier'], '--dir')).toBeUndefined();
 	});
 });

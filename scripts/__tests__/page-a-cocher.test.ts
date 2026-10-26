@@ -54,6 +54,13 @@ describe('dessinerBlocs', () => {
 		expect(r.nonDessines).toEqual([]);
 	});
 
+	it('taille: du bloc : la largeur suit, comme --monnaie-taille dans l’appli', () => {
+		const defaut = dessinerBlocs('```monnaie\nbillets: 1×10\n```').markdown;
+		const quatre = dessinerBlocs('```monnaie\nbillets: 1×10\ntaille: 4cm\n```').markdown;
+		expect(defaut).toMatch(/width:calc\(8cm \* /);
+		expect(quatre).toMatch(/width:calc\(4cm \* /);
+	});
+
 	it('monnaie sans légende et à un seul ensemble : pas de légende A', () => {
 		const r = dessinerBlocs('```monnaie\nbillets: 1×10\n```');
 		expect(r.markdown).not.toContain('figcaption');
@@ -256,6 +263,17 @@ describe('assemblerPage', () => {
 			fiches: [{ ...fiche, titre: '</script><b>' }]
 		});
 		expect(page.match(/<\/script>/g)).toHaveLength(1);
+	});
+
+	it('une donnée qui contient <!-- reste une donnée', () => {
+		const page = assemblerPage(gabarit, {
+			titre: 't',
+			intro: '',
+			fiches: [{ ...fiche, titre: '<!--<script>' }]
+		});
+		const donnees = /const MODELES = (\[.*\]);/.exec(page)?.[1] ?? '';
+		expect(donnees).not.toContain('<!--');
+		expect(JSON.parse(donnees)[0].titre).toBe('<!--<script>');
 	});
 
 	it('une introduction avec « $ » reste telle quelle (pas de motif de remplacement)', () => {

@@ -194,9 +194,15 @@ function settle(
 	return { changed: updated, refused };
 }
 
+/**
+ * Publie les brouillons `ids` qui passent le contrôle complet et ne heurtent aucune catégorie.
+ * `simulation` : mêmes contrôles, aucune écriture ; `published` liste ce qui serait publié
+ * (la simulation de `scripts/questions/publier-lot.ts`).
+ */
 export async function publishTemplates(
 	supabase: Client,
-	ids: string[]
+	ids: string[],
+	{ simulation = false }: { simulation?: boolean } = {}
 ): Promise<BulkPublishResult> {
 	const uniqueIds = [...new Set(ids)];
 	const rows = await fetchTemplates(supabase, uniqueIds);
@@ -275,6 +281,9 @@ export async function publishTemplates(
 
 	// 3. Écriture, vérifiée ligne à ligne
 	if (candidates.length === 0) return { published: [], refused };
+	if (simulation) {
+		return { published: candidates.map((row) => ({ id: row.id, title: row.title })), refused };
+	}
 	const { updated, conflicts } = await updateStatus(
 		supabase,
 		candidates.map((row) => row.id),

@@ -87,6 +87,12 @@ export interface Fiche {
 	alertes: string[];
 }
 
+/** Pleine largeur de la scène (`*_VIEW.fullWidth`) et taille d'une scène pleine largeur */
+interface Echelle {
+	pleine: number;
+	tailleCm: number;
+}
+
 interface Bloc {
 	html: string;
 	solution?: string;
@@ -105,7 +111,9 @@ const GRAINE = 7;
 
 const attr = (s: string | number) =>
 	String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-const largeur = (w: number, pleine: number) => `width:calc(8cm * ${+(w / pleine).toFixed(4)})`;
+/** Largeur à l'écran, comme `calc(var(--monnaie-taille, 8cm) * ratio)` : `taille:` du bloc, sinon 8 cm */
+const largeur = (w: number, e: Echelle) =>
+	`width:calc(${e.tailleCm}cm * ${+(w / e.pleine).toFixed(4)})`;
 
 /** Légende de chaque ensemble : celles du bloc, sinon A, B, C s'il y en a plusieurs */
 function legendes(captions: string[] | null, n: number): (string | null)[] {
@@ -238,40 +246,52 @@ interface Scene<I> {
 	items: I[];
 }
 
-function svgScene<I>(scene: Scene<I>, dessin: (items: I[]) => string, label: string): string {
-	return `<svg class="m-dessin" role="img" aria-label="${attr(label)}" viewBox="0 0 ${scene.width} ${scene.height}" style="${largeur(scene.width, MONNAIE_VIEW.fullWidth)}"><rect class="m-cadre" x="0.5" y="0.5" width="${scene.width - 1}" height="${scene.height - 1}" rx="6"/>${dessin(scene.items)}</svg>`;
+function svgScene<I>(
+	scene: Scene<I>,
+	dessin: (items: I[]) => string,
+	label: string,
+	echelle: Echelle
+): string {
+	return `<svg class="m-dessin" role="img" aria-label="${attr(label)}" viewBox="0 0 ${scene.width} ${scene.height}" style="${largeur(scene.width, echelle)}"><rect class="m-cadre" x="0.5" y="0.5" width="${scene.width - 1}" height="${scene.height - 1}" rx="6"/>${dessin(scene.items)}</svg>`;
 }
 
 /** La réserve : chaque coupure ou objet dans sa vignette, comme dans l'appli */
 function reserve<I extends { x: number; y: number; width: number; height: number }>(
 	items: I[],
-	dessin: (items: I[]) => string
+	dessin: (items: I[]) => string,
+	echelle: Echelle
 ): string {
 	const icones = items
 		.map(
 			(it) =>
-				`<svg class="r-icone" viewBox="${it.x - 1} ${it.y - 1} ${it.width + 2} ${it.height + 2}" style="${largeur(it.width + 2, MONNAIE_VIEW.fullWidth)}">${dessin([it])}</svg>`
+				`<svg class="r-icone" viewBox="${it.x - 1} ${it.y - 1} ${it.width + 2} ${it.height + 2}" style="${largeur(it.width + 2, echelle)}">${dessin([it])}</svg>`
 		)
 		.join('');
-	const plan = `<svg class="m-dessin" role="img" aria-label="Plan de travail vide" viewBox="0 0 ${MONNAIE_VIEW.fullWidth} 90" style="width:8cm"><rect class="plan" x="1" y="1" width="${MONNAIE_VIEW.fullWidth - 2}" height="88" rx="6"/><text class="plan-txt" x="${MONNAIE_VIEW.fullWidth / 2}" y="45">plan de travail (vide au départ)</text></svg>`;
+	const plan = `<svg class="m-dessin" role="img" aria-label="Plan de travail vide" viewBox="0 0 ${echelle.pleine} 90" style="width:${echelle.tailleCm}cm"><rect class="plan" x="1" y="1" width="${echelle.pleine - 2}" height="88" rx="6"/><text class="plan-txt" x="${echelle.pleine / 2}" y="45">plan de travail (vide au départ)</text></svg>`;
 	return `<div class="cons"><div class="reserve"><span class="r-tag">Réserve</span>${icones}</div>${plan}</div>`;
 }
 
 function monnaie(source: string): Bloc {
 	const spec = parseMonnaieContent(source).spec;
 	if (!spec) throw new Error('bloc monnaie en erreur : ' + source);
+	const echelle = { pleine: MONNAIE_VIEW.fullWidth, tailleCm: spec.sizeCm ?? 8 };
 	if (spec.build == null) {
 		const svgs = spec.sets.map((_, i) =>
-			svgScene(buildMonnaieScene(spec, i), monnaieObjets, 'Pièces et billets')
+			svgScene(buildMonnaieScene(spec, i), monnaieObjets, 'Pièces et billets', echelle)
 		);
 		return { html: figures(svgs, legendes(spec.captions, spec.sets.length)) };
 	}
 	const coupures = spec.reserve ?? monnaieConstruire.DEFAULT_RESERVE;
 	const juste = monnaieConstruire.solutionBuild(spec.build, coupures);
 	return {
-		html: reserve(monnaieConstruire.reserveScene(coupures).items, monnaieObjets),
+		html: reserve(monnaieConstruire.reserveScene(coupures).items, monnaieObjets, echelle),
 		solution: juste
-			? svgScene(monnaieConstruire.buildScene(juste), monnaieObjets, 'Une construction juste')
+			? svgScene(
+					monnaieConstruire.buildScene(juste),
+					monnaieObjets,
+					'Une construction juste',
+					echelle
+				)
 			: '<b>aucune construction possible avec cette réserve</b>'
 	};
 }
@@ -279,18 +299,20 @@ function monnaie(source: string): Bloc {
 function collection(source: string): Bloc {
 	const spec = parseCollectionContent(source).spec;
 	if (!spec) throw new Error('bloc collection en erreur : ' + source);
+	const echelle = { pleine: COLLECTION_VIEW.fullWidth, tailleCm: spec.sizeCm ?? 8 };
 	if (spec.build == null) {
 		const svgs = spec.sets.map((_, i) =>
-			svgScene(buildCollectionScene(spec, i), collectionObjets, 'Collection')
+			svgScene(buildCollectionScene(spec, i), collectionObjets, 'Collection', echelle)
 		);
 		return { html: figures(svgs, legendes(spec.captions, spec.sets.length)) };
 	}
 	return {
-		html: reserve(collectionConstruire.reserveScene(spec.drawing).items, collectionObjets),
+		html: reserve(collectionConstruire.reserveScene(spec.drawing).items, collectionObjets, echelle),
 		solution: svgScene(
 			collectionConstruire.buildScene(spec.drawing, collectionConstruire.solutionBuild(spec.build)),
 			collectionObjets,
-			'Une construction juste'
+			'Une construction juste',
+			echelle
 		)
 	};
 }
@@ -462,8 +484,10 @@ export function assemblerPage(
 	if (!gabarit.includes('@@TITRE@@')) throw new Error('gabarit sans la marque @@TITRE@@');
 	if (!gabarit.includes('@@INTRO@@')) throw new Error('gabarit sans la marque @@INTRO@@');
 	if (!MODELES.test(gabarit)) throw new Error('gabarit sans la marque /*@@MODELES@@*/ []');
-	// `</script>` dans une donnée fermerait le script du gabarit
-	const donnees = JSON.stringify(options.fiches).replace(/<\//g, '<\\/');
+	// `</script>` ou `<!--` dans une donnée dérègleraient le script du gabarit
+	const donnees = JSON.stringify(options.fiches)
+		.replace(/<\//g, '<\\/')
+		.replace(/<!--/g, '<\\u0021--');
 	return gabarit
 		.replaceAll('@@TITRE@@', echapperHtml(options.titre))
 		.replace('@@INTRO@@', () => options.intro)

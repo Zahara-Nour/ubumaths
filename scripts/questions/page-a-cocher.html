@@ -704,8 +704,8 @@
 
 	function fiche(m) {
 		const v = verdicts[m.id] ?? {};
-		return `<article class="fiche" data-id="${m.id}" data-etat="${v.etat ?? ''}">
-		<div class="tete"><h2>${esc(m.titre)}</h2><span class="code">${m.code}</span><span class="niv">niveau ${m.niveau}</span><span class="niv">${esc({ draft: 'brouillon', published: 'publié', archived: 'archivé' }[m.statut] ?? m.statut)}</span><span class="meta">${esc(m.rangement)} · ${m.id}</span></div>
+		return `<article class="fiche" data-id="${esc(m.id)}" data-etat="${v.etat ?? ''}">
+		<div class="tete"><h2>${esc(m.titre)}</h2><span class="code">${esc(m.code)}</span><span class="niv">niveau ${m.niveau}</span><span class="niv">${esc({ draft: 'brouillon', published: 'publié', archived: 'archivé' }[m.statut] ?? m.statut)}</span><span class="meta">${esc(m.rangement)} · ${esc(m.id)}</span></div>
 		${m.alertes.length ? `<p class="alerte">⚠ ${esc(m.alertes.join(' · '))}</p>` : ''}
         <p class="point"><b>${esc(m.libelle)}</b> ${m.bornes.length ? `Borne : ${esc(m.bornes.join(' ; '))}` : 'Aucune borne relevée.'}</p>
 		<div class="exemples">${m.exemples.map(exemple).join('')}</div>
@@ -713,9 +713,9 @@
 		<div class="verdict">
 			<button class="ok" data-v="ok" aria-pressed="${v.etat === 'ok'}">OK</button>
 			<button class="revoir" data-v="revoir" aria-pressed="${v.etat === 'revoir'}">À revoir</button>
-			<span class="etat-ecriture" id="etat-${m.id}"></span>
+			<span class="etat-ecriture" id="etat-${esc(m.id)}"></span>
 		</div>
-		<textarea id="com-${m.id}" placeholder="Commentaire (facultatif pour OK)">${esc(v.commentaire ?? '')}</textarea>
+		<textarea id="com-${esc(m.id)}" placeholder="Commentaire (facultatif pour OK)">${esc(v.commentaire ?? '')}</textarea>
 	</article>`;
 	}
 

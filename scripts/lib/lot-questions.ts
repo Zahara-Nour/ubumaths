@@ -128,9 +128,26 @@ export function apparierLot<L extends LigneModele>(
 			);
 			continue;
 		}
+		const deja = paires.find((p) => p.ligne.id === ligne.id);
+		if (deja) {
+			erreurs.push(
+				`${fichier} : même modèle en base que ${deja.fichier} (${ligne.id.slice(0, 8)})`
+			);
+			continue;
+		}
 		paires.push({ fichier, modele, ligne });
 	}
 	return erreurs.length > 0 ? { ok: false, erreurs } : { ok: true, paires };
+}
+
+/**
+ * Valeur d'une option (`--dir <dossier>`) ; absente si l'option manque ou si la suite est une
+ * autre option (`--dir --publier` ne donne pas le dossier « --publier »)
+ */
+export function valeurArgument(argv: readonly string[], option: string): string | undefined {
+	const i = argv.indexOf(option);
+	const valeur = i === -1 ? undefined : argv[i + 1];
+	return valeur === undefined || valeur.startsWith('--') ? undefined : valeur;
 }
 
 /** Titres distincts du lot : le filtre de la requête (l'appariement fin se fait ensuite) */

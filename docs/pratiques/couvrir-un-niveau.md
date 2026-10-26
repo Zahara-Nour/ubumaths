@@ -233,9 +233,11 @@ de lot, `checkTemplate` vert ; **David** lance `create-questions --publier --met
    pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/<niveau>-<lot>   # simulation
    ```
    Retrouve chaque fichier en base par la clé de `create-questions` (titre, thème, domaine,
-   sous-domaine, niveau), exige **un brouillon par fichier** (tout ou rien), puis **David** le
-   lance avec `--publier` : `publishTemplates` (contrôle de l'admin, collisions de catégorie),
-   puis le statut `published` est relu en base (`n/n publiés`, sortie 1 sinon).
+   sous-domaine, niveau), un modèle par fichier, et joue les **contrôles de la publication**
+   (`publishTemplates` en simulation : contrôle de l'admin, collisions de catégorie). Un seul
+   refus, et rien n'est écrit. **David** le lance avec `--publier`, puis le statut `published`
+   est relu en base. Un modèle déjà publié est laissé tel quel : relancer reprend une
+   publication interrompue.
 
 ## 9. Pièges
 

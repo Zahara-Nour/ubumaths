@@ -19,8 +19,8 @@
 
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { argValue, createScriptClient } from '../relecture/common';
-import { lireLot, titresDuLot, apparierLot } from '../lib/lot-questions';
+import { createScriptClient } from '../relecture/common';
+import { apparierLot, lireLot, titresDuLot, valeurArgument } from '../lib/lot-questions';
 import {
 	assemblerPage,
 	cheminDuNoeud,
@@ -50,11 +50,13 @@ function lireBornes(): Record<string, PointBornes> {
 }
 
 async function main(): Promise<number> {
-	const dossier = argValue('--dir');
-	const titre = argValue('--titre');
-	const sortie = argValue('--sortie');
-	const introFichier = argValue('--intro-fichier');
-	const intro = introFichier ? readFileSync(introFichier, 'utf8') : (argValue('--intro') ?? '');
+	const dossier = valeurArgument(process.argv, '--dir');
+	const titre = valeurArgument(process.argv, '--titre');
+	const sortie = valeurArgument(process.argv, '--sortie');
+	const introFichier = valeurArgument(process.argv, '--intro-fichier');
+	const intro = introFichier
+		? readFileSync(introFichier, 'utf8')
+		: (valeurArgument(process.argv, '--intro') ?? '');
 	if (!dossier || !titre || !sortie) {
 		console.error(
 			'Usage : pnpm tsx scripts/questions/page-a-cocher.ts --dir <dossier> --titre <titre> --sortie <fichier.html> [--intro <html> | --intro-fichier <f>]'
