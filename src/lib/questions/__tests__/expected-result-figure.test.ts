@@ -10,6 +10,8 @@ import { describe, it, expect } from 'vitest';
 import '$lib/questions/construction/positions-setup';
 import { buildExpectedResult, showsInstructionOnly } from '../expected-result';
 import { instructionOf } from '../correction-card-verdict';
+import { gradeQuestion } from '../grading';
+import { validateBlanks } from '$lib/utils/answer-validator';
 import { generateInstance } from '../generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '../types';
 import { templateMarkdown } from '$lib/ubumark';
@@ -116,5 +118,38 @@ describe('case « figure » avec une autre case (revue de #1782)', () => {
 		const { lines } = buildExpectedResult(mixed(), { values: ['droite(1;2;7;2)', 'non'] });
 		expect(showsInstructionOnly(lines)).toBe(false);
 		expect(showsInstructionOnly(buildExpectedResult(instance()).lines)).toBe(true);
+	});
+
+	it('la figure d’abord, comme dans l’énoncé (avec ou sans réponse)', () => {
+		const answered = buildExpectedResult(mixed(), { values: ['droite(1;2;7;2)', 'non'] });
+		expect(answered.lines[0].kind).toBe('figure');
+		expect(buildExpectedResult(mixed()).lines[0].kind).toBe('figure');
+	});
+});
+
+describe('case « figure » laissée vide, l’autre case remplie (temps écoulé)', () => {
+	const MIXED = `${STATEMENT}\n\nLe point C est-il sur la droite ? [_]`;
+	const mixed = () => instance(MIXED, [{ expectedAnswer: 'non' }]);
+
+	it('évaluation : 0 point, pas ½ (« non » sans vérifier est un pari)', () => {
+		expect(gradeQuestion(mixed(), { values: ['', 'non'] })).toMatchObject({
+			status: 'incorrect',
+			points: 0,
+			isCorrect: false
+		});
+	});
+
+	it('entraînement : faux, pas ½', () => {
+		expect(validateBlanks(['', 'non'], mixed())).toMatchObject({
+			isCorrect: false,
+			status: 'incorrect'
+		});
+	});
+
+	it('la droite tracée, la case texte vide : ½ comme avant', () => {
+		expect(gradeQuestion(mixed(), { values: ['droite(1;2;7;2)', ''] })).toMatchObject({
+			status: 'unoptimal_form',
+			points: 0.5
+		});
 	});
 });

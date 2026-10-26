@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, PR 5 (CP-058) codée, PR à ouvrir._
+_Mis à jour le 2026-10-26, #1798 ouverte (PR 5, CP-058)._
 
-- **État** : CP-059 et CP-060 mergés (pas en prod) ; PR 5 sur `feat/geometrie-validation-alignement` : modèle
-  `cp-figure/03-points-alignes.json` (11 specs, 200 tirages), 3 correctifs d'écran (§ 10), 5 tests d'écran.
-- **Prochaine action** : PR 5 → revue `code-reviewer` (Opus : correction des réponses) → CI → merge.
-- **En attente de David** : essai de CP-060 et de CP-058 (`docs/wip/verifications-manuelles.md`) ; go pour
-  `create-questions --publier` de CP-060 et CP-058 (brouillons), puis nœud + tag (migration, comme #1787) ; garde
-  « les tirages construisent la figure » (§ 10) : à faire ?
+- **État** : CP-059 et CP-060 mergés (pas en prod) ; #1798 (CP-058, figure + oui / non) ouverte, décisions (1) et
+  (4) du § 10 codées (figure vide = 0 ; figure d'abord dans la copie).
+- **Prochaine action** : CI verte → merge de #1798 ; puis PR « les tirages construisent la figure » (§ 10).
+- **En attente de David** : essai de CP-060 et de CP-058 (`docs/wip/verifications-manuelles.md`) ; ensuite
+  `create-questions --publier` de CP-060 et CP-058 (brouillons), puis nœud + tag (migration, comme #1787).
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; `eval:` rend une fraction LaTeX,
   illisible par la figure, et les tirages ne le voient pas (§ 10) ; limites connues de CP-060 au § 9.
 - **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `feat/geometrie-validation-alignement`.
@@ -401,8 +400,11 @@ fin du test, vaut ½ point (`grading.ts`, cases à moitié vides) — reco : cas
 corrigée : la réponse « non » s'affiche avant la figure (`expected-result.ts`, figure mise à part après l'énoncé
 rempli) — reco : la figure d'abord, avec un test du rendu.
 
-**Constaté** : temps écoulé avec la figure vide et « oui » tapé → `unoptimal_form` (½ point, statuts de `docs/systeme/questions.md` § 5) et « Tu n'as pas
-tout complété. » — règle générale des cases à moitié vides, laissée telle quelle (spec qui le fige).
+**Tranché par David (2026-10-26, « go » sur les recos)** : (1) case « figure » vide, le reste rempli → faux, 0
+point, en évaluation (`gradeBlanks`) comme à l'entraînement (`aggregateOrderedBlanks`) ; la droite tracée et la
+case texte vide restent à ½. (4) Copie corrigée : la figure d'abord (`expected-result.ts`), test du rendu
+(`CorrectionCard`). Garde des tirages : PR à part, juste après. Publication de CP-058 / CP-060 : après le merge
+et l'essai de David. Tests rouges sans les correctifs (montré).
 
 **Piège trouvé, non corrigé** : `y3 = eval:(y1 + y2)/2 + h/4` donne `\dfrac{13}{4}` ; la figure ne se construit
 pas (exception au jugement : toute réponse fausse) et pourtant 200/200 tirages « réussis » — les tirages ne
@@ -434,3 +436,4 @@ construire la figure à chaque tirage (`check-template`) — à proposer à Davi
 - 2026-10-26 : PR 4 codée (moteur, écran, modèle CP-060) ; revue Opus : 1 faux verdict corrigé (trait aligné détaché), 5 mineurs traités, 2 limites notées.
 - 2026-10-26 : #1793 mergée (CI verte après fusion de `main`, conflit d’une ligne dans `ubumark.md`).
 - 2026-10-26 : PR 5 codée : modèle CP-058 (11 specs), 3 correctifs d’écran (Valider grisé à l’entraînement, message du juge, « Blanc 1 »), exemple au catalogue et sur `/dev/carte-question` ; piège `eval:` → fraction trouvé.
+- 2026-10-26 : #1798, décisions de David : figure vide = 0 point (plus ½), la figure d'abord dans la copie corrigée ; 4 tests rouges sans.

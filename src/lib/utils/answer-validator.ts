@@ -1771,6 +1771,13 @@ function aggregateOrderedBlanks(
 	}
 	if (anyIncorrectValue && result.status !== undefined) result.status = 'incorrect';
 
+	// Figure laissée vide (temps écoulé) : 0, pas ½ — « oui » sans vérifier est un pari
+	const figureLeftEmpty = cases.some((c, i) => c.construction && results[i]?.status === 'empty');
+	if (figureLeftEmpty) {
+		result.isCorrect = false;
+		result.status = 'incorrect';
+	}
+
 	// Question à figure (CP) : le message du juge passe avant tout autre, jamais de numéros de case
 	const hasFigureCase = cases.some((c) => c.construction);
 	const figureFeedback = cases

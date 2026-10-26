@@ -158,7 +158,12 @@ function gradeBlanks(instance: QuestionInstance, answer: SubmittedAnswer): Quest
 	}
 	// Forme jugée sur la valeur elle-même (cf. `SubmittedAnswer.values`)
 	const { result, statuses } = validateBlanksDetailed(values, instance, values);
-	const status = statusFromBlankStatuses(statuses);
+	// Figure laissée vide, le reste rempli : 0, pas ½ (« oui » sans vérifier est un pari)
+	const figureLeftEmpty = blanks.some((b, i) => b.construction && statuses[i] === 'empty');
+	const status =
+		figureLeftEmpty && statuses.some((s) => s !== 'empty')
+			? 'incorrect'
+			: statusFromBlankStatuses(statuses);
 	const points = pointsOfStatus(status);
 	// ½ dû à des cases vides (le reste juste), pas à la forme
 	const partial = status === 'unoptimal_form' && statuses.includes('empty');

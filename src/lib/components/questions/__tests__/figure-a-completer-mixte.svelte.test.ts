@@ -15,8 +15,10 @@ import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
 import FlashCard from '../FlashCard.svelte';
+import CorrectionCard from '../CorrectionCard.svelte';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
+import type { TestAnswerResult } from '$lib/types/test';
 import { templateMarkdown } from '$lib/ubumark';
 
 // C presque sur la droite (AB) : 0,25 carreau au-dessus
@@ -197,5 +199,33 @@ describe('figure + case oui / non : verdict', () => {
 		expect(verdict.getAttribute('data-kind')).toBe('incorrect');
 		expect(container.textContent).not.toContain('blancs suivants');
 		expect(container.textContent).not.toContain('Blanc 2');
+	});
+});
+
+describe('figure + case oui / non : copie corrigée', () => {
+	it('la figure avant « Ta réponse », comme dans l’énoncé', async () => {
+		const answerResult: TestAnswerResult = {
+			index: 0,
+			instance: instance(),
+			userAnswer: {
+				value: ['droite(2;3;8;5)', 'non'],
+				isCorrect: true,
+				timeSpent: 3,
+				attempts: 1,
+				submittedAt: ''
+			},
+			isCorrect: true
+		};
+		const { container } = await render(CorrectionCard, {
+			target: mainElement(),
+			props: { answerResult }
+		});
+		const front = container.querySelector('.flip-front') as HTMLElement;
+		const kinds = () =>
+			[...front.querySelectorAll('[data-testid="expected-result"] > [data-kind]')].map((el) =>
+				el.getAttribute('data-kind')
+			);
+		await expect.poll(kinds).toContain('figure');
+		expect(kinds()[0]).toBe('figure');
 	});
 });

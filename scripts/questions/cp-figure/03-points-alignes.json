@@ -342,7 +342,7 @@
 			"answers": ["droite(1;1;9;5)", "non"]
 		},
 		{
-			"description": "temps écoulé sans la droite : « Tu n’as pas tout complété. »",
+			"description": "Erreur : temps écoulé sans la droite, 0 point",
 			"variationIndex": 0,
 			"variables": {
 				"k": "1",
@@ -365,7 +365,7 @@
 				"yc": "3"
 			},
 			"expected": {
-				"status": "unoptimal_form"
+				"status": "incorrect"
 			},
 			"answers": ["", "oui"]
 		},
