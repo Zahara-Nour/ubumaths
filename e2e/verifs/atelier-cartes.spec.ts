@@ -8,7 +8,8 @@ import {
 	expectLatex,
 	normalizeLatex,
 	openAtelier,
-	steps
+	steps,
+	typeInCard
 } from './helpers/atelier';
 
 /**
@@ -31,27 +32,6 @@ async function expectCardLatex(page: Page, name: string, expected: string): Prom
 	await expect
 		.poll(async () => normalizeLatex((await card(page, name)).latex ?? ''))
 		.toBe(normalizeLatex(expected));
-}
-
-/**
- * Tape au vrai clavier dans le champ d'une carte (MathLive), à la place de ce
- * qu'il contient, puis Entrée range la carte. Chaque morceau de `keys` est
- * tapé, puis → (sortir d'un exposant) ; `infty` est le raccourci de ∞.
- */
-async function typeInCard(page: Page, name: string, ...keys: string[]): Promise<void> {
-	const field = cardLocator(page, name).locator('math-field');
-	// Juste après un calcul, la console reprend le focus au premier clic
-	await expect(async () => {
-		await field.click();
-		expect(await field.evaluate((element) => element === document.activeElement)).toBe(true);
-	}).toPass();
-	await page.keyboard.press('ControlOrMeta+A');
-	await page.keyboard.press('Backspace');
-	for (const [index, part] of keys.entries()) {
-		if (index > 0) await page.keyboard.press('ArrowRight');
-		await page.keyboard.type(part);
-	}
-	await page.keyboard.press('Enter');
 }
 
 /** Les formules d'une réponse de la console, en LaTeX (celles d'un refus, `FormulaText`) */

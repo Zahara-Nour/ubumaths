@@ -174,3 +174,29 @@ export async function cardAction(page: Page, name: string, action: string): Prom
 		.click();
 	await page.getByRole('menuitem', { name: action, exact: true }).click();
 }
+
+/** Met le focus dans le champ d'une carte (MathLive) */
+export async function focusCardField(page: Page, name: string): Promise<void> {
+	const field = cardLocator(page, name).locator('math-field');
+	// Juste après un calcul, la console reprend le focus au premier clic
+	await expect(async () => {
+		await field.click();
+		expect(await field.evaluate((element) => element === document.activeElement)).toBe(true);
+	}).toPass();
+}
+
+/**
+ * Tape au vrai clavier dans le champ d'une carte (MathLive), à la place de ce
+ * qu'il contient, puis Entrée range la carte. Chaque morceau de `keys` est
+ * tapé, puis → (sortir d'un exposant) ; `infty` est le raccourci de ∞.
+ */
+export async function typeInCard(page: Page, name: string, ...keys: string[]): Promise<void> {
+	await focusCardField(page, name);
+	await page.keyboard.press('ControlOrMeta+A');
+	await page.keyboard.press('Backspace');
+	for (const [index, part] of keys.entries()) {
+		if (index > 0) await page.keyboard.press('ArrowRight');
+		await page.keyboard.type(part);
+	}
+	await page.keyboard.press('Enter');
+}
