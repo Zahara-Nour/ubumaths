@@ -16,7 +16,10 @@
 	  commune (`resolveNumberLineColors`, partagée avec le PDF)
 	- Avertissements d'auteur (couleur inconnue, hex peu lisible en sombre),
 	  visibles du prof seulement (`showErrors`, ou contexte d'édition)
-	- Responsive width via viewBox
+	- Largeur réelle : dessinée en px à la largeur du conteneur (pas de viewBox
+	  réduite) ; chiffres, points, traits à taille fixe, seul l'écart entre
+	  graduations se resserre (droite à placer : avertissement téléphone dans
+	  `NumberLinePlacer`).
 	- Droite à placer (`placer:`) : `NumberLinePlacer.svelte` (l'élève pose son point)
 
 	@module components/markdown/nodes/NumberLine
@@ -31,6 +34,7 @@
 	} from '$lib/ubumark/types/number-line';
 	import {
 		NL_LAYOUT,
+		NL_MIN_WIDTH,
 		numVal,
 		valLatex,
 		valueToX,
@@ -62,7 +66,6 @@
 	let errorsVisible = $derived(showErrors ?? authoring());
 
 	const {
-		SVG_WIDTH,
 		LINE_Y,
 		MINOR_TICK_HEIGHT,
 		MAJOR_TICK_HEIGHT,
@@ -84,7 +87,13 @@
 	let endNum = $derived(numVal(node.config.end));
 	let scale = $derived(node.config.scale ?? 'linear');
 
-	let graduations = $derived(computeGraduations(node.config));
+	/** Largeur du conteneur (0 avant le montage : la largeur de toujours) */
+	let containerWidth = $state(0);
+	let width = $derived(
+		containerWidth > 0 ? Math.max(containerWidth, NL_MIN_WIDTH) : NL_LAYOUT.SVG_WIDTH
+	);
+
+	let graduations = $derived(computeGraduations(node.config, width));
 
 	/** Couleurs sûres (variable du thème ou hex validé) et avertissements */
 	let colors = $derived(resolveNumberLineColors(node));
@@ -95,7 +104,7 @@
 
 	let renderedPoints = $derived(
 		node.points.map((p: NumberLinePoint, i: number) => ({
-			x: valueToX(numVal(p.value), startNum, endNum, scale),
+			x: valueToX(numVal(p.value), startNum, endNum, scale, width),
 			y: pointsOnLine ? LINE_Y : LINE_Y + POINT_Y_OFFSET,
 			label: p.label,
 			latex: valLatex(p.value),
@@ -109,8 +118,8 @@
 
 	let renderedSegments = $derived(
 		node.segments.map((s: NumberLineSegment, i: number) => ({
-			x1: valueToX(numVal(s.start), startNum, endNum, scale),
-			x2: valueToX(numVal(s.end), startNum, endNum, scale),
+			x1: valueToX(numVal(s.start), startNum, endNum, scale, width),
+			x2: valueToX(numVal(s.end), startNum, endNum, scale, width),
 			y: LINE_Y + SEGMENT_Y_OFFSET + i * 10,
 			startOpen: s.startOpen,
 			endOpen: s.endOpen,
@@ -122,7 +131,7 @@
 	// ARROWS & HEIGHT
 	// =========================================================================
 
-	let { lineStartX, lineEndX } = $derived(computeLineExtents(node.config.arrows));
+	let { lineStartX, lineEndX } = $derived(computeLineExtents(node.config.arrows, width));
 
 	let svgHeight = $derived.by(() => {
 		let h = SVG_HEIGHT;
@@ -134,15 +143,15 @@
 </script>
 
 {#if node.placer !== undefined}
-	<NumberLinePlacer {node} {answer} class={className} />
+	<NumberLinePlacer {node} {answer} {showErrors} class={className} />
 {:else}
-	<div class="number-line-container {className}" role="img" aria-label="Droite graduée">
-		<svg
-			viewBox="0 0 {SVG_WIDTH} {svgHeight}"
-			width="100%"
-			preserveAspectRatio="xMidYMid meet"
-			class="number-line-svg"
-		>
+	<div
+		class="number-line-container {className}"
+		role="img"
+		aria-label="Droite graduée"
+		bind:clientWidth={containerWidth}
+	>
+		<svg viewBox="0 0 {width} {svgHeight}" {width} height={svgHeight} class="number-line-svg">
 			<!-- Main horizontal line -->
 			<line
 				class="nl-axis"
@@ -264,11 +273,14 @@
 <style>
 	.number-line-container {
 		width: 100%;
-		max-width: 700px;
+		/* jamais plus large que son parent, même dans une colonne flex / grille */
+		max-width: min(700px, 100%);
+		min-width: 0;
 		margin: 0.5rem auto;
 	}
 
 	.number-line-svg {
+		display: block;
 		overflow: visible;
 	}
 

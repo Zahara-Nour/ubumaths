@@ -53,9 +53,10 @@ const BACKWARD = 'Reculer le point d’une graduation';
 function tapAt(root: Element, v: number, start = 0, end = 20) {
 	const svg = zone(root).querySelector('svg')!;
 	const rect = svg.getBoundingClientRect();
-	const { MARGIN_LEFT, LINE_WIDTH, SVG_WIDTH } = NL_LAYOUT;
-	const svgX = MARGIN_LEFT + ((v - start) / (end - start)) * LINE_WIDTH;
-	const clientX = rect.left + (svgX / SVG_WIDTH) * rect.width;
+	// la droite est dessinée à sa largeur réelle : marges fixes, la ligne entre les deux
+	const { MARGIN_LEFT, MARGIN_RIGHT } = NL_LAYOUT;
+	const lineWidth = rect.width - MARGIN_LEFT - MARGIN_RIGHT;
+	const clientX = rect.left + MARGIN_LEFT + ((v - start) / (end - start)) * lineWidth;
 	const clientY = rect.top + rect.height / 2;
 	const init = { bubbles: true, clientX, clientY, pointerId: 1 };
 	zone(root).dispatchEvent(new PointerEvent('pointerdown', init));

@@ -144,3 +144,13 @@ placer: {{a}}
 2. **Droite à placer (ou collection / monnaie à construire) dans un QCM** : rien à coder. L'ADR 0033
    fait du QCM une case choix, et `multiple_choice` disparaît après la migration ; le trou n'existe que
    pour l'ancien type. À la migration : un test qui mêle ```choix et une droite à placer (deux cases jugées).
+
+## 9. PR « téléphone » — droite à la largeur réelle (2026-10-26)
+
+Branche `feat/reponses-a-placer-telephone`. `NumberLine.svelte` dessine la droite en px à la largeur
+du conteneur (plus de viewBox 600 réduite) ; `valueToX` / `xToValue` / `computeGraduations` /
+`computeLineExtents` prennent la largeur (défaut 600 : PDF et `NumberLineInput`, code mort hors tests,
+inchangés). `phoneGapWarning` (droites à placer seulement, après revue : une droite d'affichage garde ses graduations fines) : avertissement d'auteur si l'écart minimal entre graduations, sur un
+conteneur de 320 px, passe sous 20 px (0 à 20 au pas de 1 → 12 px : avertie). Droite de correction :
+`showErrors={false}` (pas d'avertissement en double). Tests : `number-line-largeur.test.ts`,
+`NumberLine-largeur.svelte.test.ts` (320 / 700 px, chiffres de même taille, geste à 320 px).
