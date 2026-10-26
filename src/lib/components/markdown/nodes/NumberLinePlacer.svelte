@@ -20,7 +20,7 @@
 <script lang="ts">
 	import type { NumberLineNode, NumberLineValue } from '$lib/ubumark/types/number-line';
 	import { parseCustom } from '$lib/mathAST/parser/custom';
-	import { NL_LAYOUT, numVal, xToValue } from '$lib/ubumark/utils/number-line-render';
+	import { numVal, xToValue } from '$lib/ubumark/utils/number-line-render';
 	import {
 		decimalString,
 		graduationCount,
@@ -38,12 +38,14 @@
 		/** Droite à placer (`placer:` défini) */
 		node: NumberLineNode;
 		answer?: BuildCase;
+		/** Avertissements d'auteur (par défaut : contexte d'édition) ; la correction n'en montre pas */
+		showErrors?: boolean;
 		/** false : droite seule, sans boutons (copie corrigée) */
 		showControls?: boolean;
 		class?: string;
 	}
 
-	let { node, answer, showControls = true, class: className = '' }: Props = $props();
+	let { node, answer, showErrors, showControls = true, class: className = '' }: Props = $props();
 
 	/** Nom accessible de la zone : jamais la valeur attendue */
 	const ZONE_ARIA_LABEL = 'Droite graduée : ton point';
@@ -95,14 +97,19 @@
 		answer?.onChange(placerAnswer(config, next));
 	}
 
-	/** Graduation la plus proche du doigt (le SVG occupe toute la largeur de la zone) */
+	/** Graduation la plus proche du doigt (le SVG est dessiné à sa largeur réelle, en px) */
 	function indexAt(event: PointerEvent): number | null {
 		const svg = zone?.querySelector('svg');
 		if (!svg) return null;
 		const rect = svg.getBoundingClientRect();
 		if (rect.width === 0) return null;
-		const svgX = ((event.clientX - rect.left) / rect.width) * NL_LAYOUT.SVG_WIDTH;
-		return nearestIndex(config, xToValue(svgX, numVal(config.start), numVal(config.end)));
+		const value = xToValue(
+			event.clientX - rect.left,
+			numVal(config.start),
+			numVal(config.end),
+			rect.width
+		);
+		return nearestIndex(config, value);
 	}
 
 	function handlePointerDown(event: PointerEvent) {
@@ -168,7 +175,7 @@
 		onpointercancel={handlePointerUp}
 		onkeydown={handleKeyDown}
 	>
-		<NumberLine node={shown} pointsOnLine />
+		<NumberLine node={shown} {showErrors} pointsOnLine />
 	</div>
 
 	{#if showControls}
@@ -209,7 +216,7 @@
 		{#if solution !== null}
 			<div class="placer-correction flex w-full flex-col items-center gap-1">
 				<p class="text-sm font-medium text-muted-foreground">Correction</p>
-				<NumberLine node={solution} pointsOnLine />
+				<NumberLine node={solution} showErrors={false} pointsOnLine />
 			</div>
 		{/if}
 	{/if}

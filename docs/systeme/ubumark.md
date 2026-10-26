@@ -257,8 +257,19 @@ zone `role="slider"`, `aria-valuetext` « point sur 12 »). Point de l'élève *
 point `0.75`, sinon fraction LaTeX `\frac{4}{3}`), la même pour la réponse attendue et celle de
 l'élève ; `placerText` pour l'élève (`0,3`, `4/3`). Dans une question : faux → « Tu as placé le point
 sur 9. » (ou « Tu n'as rien placé. ») et la droite juste à côté, point vert. Hors question : le même
-geste, rien de jugé. PDF : la droite sans point (l'enfant fait sa croix). Limite connue : sur
-téléphone, la droite (viewBox 600 × 120) rétrécit avec la largeur, chiffres compris.
+geste, rien de jugé. PDF : la droite sans point (l'enfant fait sa croix).
+
+**Largeur réelle** (toutes les droites graduées, écran seulement) — `number-line-largeur.test.ts`,
+`NumberLine-largeur.svelte.test.ts` : `NumberLine.svelte` dessine la droite en px à la largeur de son
+conteneur (`bind:clientWidth`, plancher `NL_MIN_WIDTH` = 160 ; 600 avant le montage), sans viewBox
+réduite : marges, chiffres, points et traits gardent leur taille, seul l'écart entre graduations se
+resserre ; pas de défilement horizontal (il se battrait avec le glisser). `valueToX`, `xToValue`,
+`computeGraduations`, `computeLineExtents` prennent la largeur (défaut 600 : PDF et
+`NumberLineInput` inchangés) ; `NumberLinePlacer` lit le doigt en px (`xToValue(…, rect.width)`).
+Le prof (aperçu, éditeur) est averti quand, sur un téléphone (conteneur de référence
+`NL_PHONE_WIDTH` = 320 px), deux graduations voisines seraient à moins de 20 px
+(`phoneGapWarning`, plus petit écart, échelle log comprise) : une droite de 0 à 20 au pas de 1 en
+donne 12. L'élève ne voit jamais l'avertissement ; la droite de correction ne le répète pas.
 
 **Courbe** — `src/lib/ubumark/__tests__/courbe/courbe-markdown.test.ts` :
 

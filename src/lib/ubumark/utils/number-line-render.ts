@@ -37,6 +37,24 @@ export const NL_LAYOUT = {
 	LINE_WIDTH: 600 - 40 - 40 // SVG_WIDTH - MARGIN_LEFT - MARGIN_RIGHT
 } as const;
 
+/*
+ * Largeur réelle (téléphone, `docs/wip/reponses-a-placer-progress.md` § 8) :
+ * l'écran dessine la droite à la largeur de son conteneur, en px, sans viewBox
+ * réduite. Marges, chiffres, points et traits gardent leur taille ; seul
+ * l'écart entre graduations se resserre. Sans largeur : `SVG_WIDTH` (PDF, tests).
+ */
+/** Largeur en dessous de laquelle on ne dessine plus (la ligne resterait sans place) */
+export const NL_MIN_WIDTH = 160;
+/** Conteneur de référence sur un écran de téléphone (360 px moins les marges de page) */
+export const NL_PHONE_WIDTH = 320;
+/** En dessous, une graduation est difficile à lire et à viser du doigt */
+export const NL_MIN_GRADUATION_GAP = 20;
+
+/** Longueur de la ligne graduée pour une droite dessinée sur `width` px */
+function lineWidthFor(width: number): number {
+	return width - NL_LAYOUT.MARGIN_LEFT - NL_LAYOUT.MARGIN_RIGHT;
+}
+
 // =========================================================================
 // VALUE HELPERS
 // =========================================================================
@@ -81,19 +99,22 @@ export function valueToX(
 	val: number,
 	startNum: number,
 	endNum: number,
-	scale: 'linear' | 'log' = 'linear'
+	scale: 'linear' | 'log' = 'linear',
+	width: number = NL_LAYOUT.SVG_WIDTH
 ): number {
-	return (
-		NL_LAYOUT.MARGIN_LEFT + mapValueToRange(val, startNum, endNum, NL_LAYOUT.LINE_WIDTH, scale)
-	);
+	return NL_LAYOUT.MARGIN_LEFT + mapValueToRange(val, startNum, endNum, lineWidthFor(width), scale);
 }
 
 /**
  * Map an SVG x coordinate back to a numeric value (linear only).
  */
-export function xToValue(x: number, startNum: number, endNum: number): number {
-	const { MARGIN_LEFT, LINE_WIDTH } = NL_LAYOUT;
-	return startNum + ((x - MARGIN_LEFT) / LINE_WIDTH) * (endNum - startNum);
+export function xToValue(
+	x: number,
+	startNum: number,
+	endNum: number,
+	width: number = NL_LAYOUT.SVG_WIDTH
+): number {
+	return startNum + ((x - NL_LAYOUT.MARGIN_LEFT) / lineWidthFor(width)) * (endNum - startNum);
 }
 
 /**
@@ -142,7 +163,10 @@ export interface Graduation {
  * Compute all graduations for a number line configuration.
  * Pure function — no Svelte reactivity.
  */
-export function computeGraduations(config: NumberLineConfig): Graduation[] {
+export function computeGraduations(
+	config: NumberLineConfig,
+	width: number = NL_LAYOUT.SVG_WIDTH
+): Graduation[] {
 	const grads: Graduation[] = [];
 	const startNum = numVal(config.start);
 	const endNum = numVal(config.end);
@@ -155,7 +179,7 @@ export function computeGraduations(config: NumberLineConfig): Graduation[] {
 	let tickIndex = 0;
 	for (let val = startNum; val <= endNum + tolerance; val += stepNum) {
 		const isMajor = tickIndex % major === 0;
-		const x = valueToX(val, startNum, endNum, scale);
+		const x = valueToX(val, startNum, endNum, scale, width);
 
 		let lineValue: NumberLineValue | null = null;
 		let label: string | null = null;
@@ -191,13 +215,42 @@ export function computeGraduations(config: NumberLineConfig): Graduation[] {
 /**
  * Compute the start/end x positions of the main line, accounting for arrows.
  */
-export function computeLineExtents(arrows: boolean): { lineStartX: number; lineEndX: number } {
-	const { MARGIN_LEFT, LINE_WIDTH, ARROW_SIZE } = NL_LAYOUT;
+export function computeLineExtents(
+	arrows: boolean,
+	width: number = NL_LAYOUT.SVG_WIDTH
+): { lineStartX: number; lineEndX: number } {
+	const { MARGIN_LEFT, ARROW_SIZE } = NL_LAYOUT;
 	const offset = arrows ? ARROW_SIZE + 2 : 0;
 	return {
 		lineStartX: MARGIN_LEFT - offset,
-		lineEndX: MARGIN_LEFT + LINE_WIDTH + offset
+		lineEndX: MARGIN_LEFT + lineWidthFor(width) + offset
 	};
+}
+
+// =========================================================================
+// ÉCART ENTRE GRADUATIONS (téléphone)
+// =========================================================================
+
+/** Plus petit écart (px) entre deux graduations voisines, droite dessinée sur `width` px */
+export function minGraduationGap(config: NumberLineConfig, width: number): number {
+	const xs = computeGraduations(config, width).map((g) => g.x);
+	let gap = Infinity;
+	for (let i = 1; i < xs.length; i++) gap = Math.min(gap, xs[i] - xs[i - 1]);
+	return gap;
+}
+
+/**
+ * Avertissement pour le prof : sur un téléphone, les graduations seraient trop
+ * serrées pour être lues et visées. `null` si elles tiennent.
+ */
+export function phoneGapWarning(config: NumberLineConfig): string | null {
+	const gap = minGraduationGap(config, NL_PHONE_WIDTH);
+	if (gap >= NL_MIN_GRADUATION_GAP) return null;
+	return (
+		`sur un téléphone, les graduations ne seraient écartées que de ${Math.round(gap)} px ` +
+		`(moins de ${NL_MIN_GRADUATION_GAP} px) : difficiles à lire et à viser du doigt. ` +
+		`Moins de graduations, ou une droite plus courte.`
+	);
 }
 
 // =========================================================================

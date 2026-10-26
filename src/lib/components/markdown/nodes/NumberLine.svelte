@@ -16,7 +16,10 @@
 	  commune (`resolveNumberLineColors`, partagée avec le PDF)
 	- Avertissements d'auteur (couleur inconnue, hex peu lisible en sombre),
 	  visibles du prof seulement (`showErrors`, ou contexte d'édition)
-	- Responsive width via viewBox
+	- Largeur réelle : dessinée en px à la largeur du conteneur (pas de viewBox
+	  réduite) ; chiffres, points, traits à taille fixe, seul l'écart entre
+	  graduations se resserre. Le prof est averti si, sur un téléphone, elles
+	  tombent sous 20 px (`phoneGapWarning`).
 	- Droite à placer (`placer:`) : `NumberLinePlacer.svelte` (l'élève pose son point)
 
 	@module components/markdown/nodes/NumberLine
@@ -31,12 +34,14 @@
 	} from '$lib/ubumark/types/number-line';
 	import {
 		NL_LAYOUT,
+		NL_MIN_WIDTH,
 		numVal,
 		valLatex,
 		valueToX,
 		computeGraduations,
 		computeLineExtents,
-		resolveNumberLineColors
+		resolveNumberLineColors,
+		phoneGapWarning
 	} from '$lib/ubumark/utils/number-line-render';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import NumberLinePlacer from './NumberLinePlacer.svelte';
@@ -62,7 +67,6 @@
 	let errorsVisible = $derived(showErrors ?? authoring());
 
 	const {
-		SVG_WIDTH,
 		LINE_Y,
 		MINOR_TICK_HEIGHT,
 		MAJOR_TICK_HEIGHT,
@@ -84,10 +88,22 @@
 	let endNum = $derived(numVal(node.config.end));
 	let scale = $derived(node.config.scale ?? 'linear');
 
-	let graduations = $derived(computeGraduations(node.config));
+	/** Largeur du conteneur (0 avant le montage : la largeur de toujours) */
+	let containerWidth = $state(0);
+	let width = $derived(
+		containerWidth > 0 ? Math.max(containerWidth, NL_MIN_WIDTH) : NL_LAYOUT.SVG_WIDTH
+	);
+
+	let graduations = $derived(computeGraduations(node.config, width));
 
 	/** Couleurs sûres (variable du thème ou hex validé) et avertissements */
 	let colors = $derived(resolveNumberLineColors(node));
+
+	/** Avertissements d'auteur : couleurs, graduations trop serrées sur téléphone */
+	let warnings = $derived.by(() => {
+		const phone = phoneGapWarning(node.config);
+		return phone === null ? colors.warnings : [...colors.warnings, phone];
+	});
 
 	// =========================================================================
 	// POINTS
@@ -95,7 +111,7 @@
 
 	let renderedPoints = $derived(
 		node.points.map((p: NumberLinePoint, i: number) => ({
-			x: valueToX(numVal(p.value), startNum, endNum, scale),
+			x: valueToX(numVal(p.value), startNum, endNum, scale, width),
 			y: pointsOnLine ? LINE_Y : LINE_Y + POINT_Y_OFFSET,
 			label: p.label,
 			latex: valLatex(p.value),
@@ -109,8 +125,8 @@
 
 	let renderedSegments = $derived(
 		node.segments.map((s: NumberLineSegment, i: number) => ({
-			x1: valueToX(numVal(s.start), startNum, endNum, scale),
-			x2: valueToX(numVal(s.end), startNum, endNum, scale),
+			x1: valueToX(numVal(s.start), startNum, endNum, scale, width),
+			x2: valueToX(numVal(s.end), startNum, endNum, scale, width),
 			y: LINE_Y + SEGMENT_Y_OFFSET + i * 10,
 			startOpen: s.startOpen,
 			endOpen: s.endOpen,
@@ -122,7 +138,7 @@
 	// ARROWS & HEIGHT
 	// =========================================================================
 
-	let { lineStartX, lineEndX } = $derived(computeLineExtents(node.config.arrows));
+	let { lineStartX, lineEndX } = $derived(computeLineExtents(node.config.arrows, width));
 
 	let svgHeight = $derived.by(() => {
 		let h = SVG_HEIGHT;
@@ -134,15 +150,15 @@
 </script>
 
 {#if node.placer !== undefined}
-	<NumberLinePlacer {node} {answer} class={className} />
+	<NumberLinePlacer {node} {answer} {showErrors} class={className} />
 {:else}
-	<div class="number-line-container {className}" role="img" aria-label="Droite graduée">
-		<svg
-			viewBox="0 0 {SVG_WIDTH} {svgHeight}"
-			width="100%"
-			preserveAspectRatio="xMidYMid meet"
-			class="number-line-svg"
-		>
+	<div
+		class="number-line-container {className}"
+		role="img"
+		aria-label="Droite graduée"
+		bind:clientWidth={containerWidth}
+	>
+		<svg viewBox="0 0 {width} {svgHeight}" {width} height={svgHeight} class="number-line-svg">
 			<!-- Main horizontal line -->
 			<line
 				class="nl-axis"
@@ -252,9 +268,9 @@
 		</svg>
 	</div>
 
-	{#if errorsVisible && colors.warnings.length > 0}
+	{#if errorsVisible && warnings.length > 0}
 		<ul class="nl-warnings mt-1 text-xs text-warning">
-			{#each colors.warnings as message, i (i)}
+			{#each warnings as message, i (i)}
 				<li>Droite graduée — {message}</li>
 			{/each}
 		</ul>
@@ -269,6 +285,7 @@
 	}
 
 	.number-line-svg {
+		display: block;
 		overflow: visible;
 	}
 
