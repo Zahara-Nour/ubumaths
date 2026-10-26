@@ -202,6 +202,19 @@ function square(node: MathNode): MathNode {
 export function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: MathNode } | null {
 	// Look for √a - b
 	if (isSubtraction(expr)) {
+		// √a − √b → conjugué √a + √b, (√a − √b)(√a + √b) = a − b :
+		// 1/(√(x+1) − √x) en +∞ n'avait pas de réécriture (V69)
+		if (isSqrt(expr.left) && isSqrt(expr.right)) {
+			const leftArg = getSqrtArg(expr.left);
+			const rightArg = getSqrtArg(expr.right);
+			if (leftArg && rightArg) {
+				const conjugate = add(expr.left, expr.right);
+				const subtrahend =
+					isAddition(rightArg) || isSubtraction(rightArg) ? parentheses(rightArg) : rightArg;
+				return { conjugate, expanded: subtract(leftArg, subtrahend) };
+			}
+		}
+
 		if (isSqrt(expr.left) && !isSqrt(expr.right)) {
 			// √a - b → conjugate is √a + b
 			// (√a - b)(√a + b) = a - b²

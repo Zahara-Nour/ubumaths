@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25 ; étapes du solveur écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; inconnue divisée multipliée, membre factorisé défait, Q51-Q52, 2026-10-25 ; puissance d'exposant n/2 écrite avec une racine carrée par `tidy`, quotient et produit de puissances de même base dans `.simplifier`, lot 5f-5, 2026-10-25 ; évaluateur flottant unique des limites (`sin²`, `cos⁻¹`, `∛`), lot 6a, 2026-10-25 ; conditions de `tidyWithConditions` écrites aux points irrationnels, `tan`/`arcsin` (tidy-conditions § 5, 2026-10-26)).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25 ; étapes du solveur écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; inconnue divisée multipliée, membre factorisé défait, Q51-Q52, 2026-10-25 ; puissance d'exposant n/2 écrite avec une racine carrée par `tidy`, quotient et produit de puissances de même base dans `.simplifier`, lot 5f-5, 2026-10-25 ; évaluateur flottant unique des limites (`sin²`, `cos⁻¹`, `∛`), lot 6a, 2026-10-25 ; conditions de `tidyWithConditions` écrites aux points irrationnels, `tan`/`arcsin` (tidy-conditions § 5, 2026-10-26) ; limites en −∞ de (−∞)ⁿ, u^{p/q} hors du domaine, inverse d'une somme à conjuguer, V67-V69, 2026-10-26).
 
 ## À quoi ça sert
 
@@ -1562,7 +1562,21 @@ x(x + 2)/x = x + 2`, `(x² − 1)/(x − 1) = (x − 1)(x + 1)/(x − 1) = x + 1
   `(\frac{\sin x}{x})^{-1}` en +∞ (revue de #1839) ; les pôles `(x-3)^{-n}` passent par
   d'autres stratégies. Avant elle, `(x-3)^2` en +∞ sortait « non supportée » (la
   composition ne connaît que xⁿ, variable nue) et `.variations (x-3)^2` n'avait pas de
-  tableau. Les étapes « limite à gauche /
+  tableau. **En −∞** (V67, V69, 2026-10-26) : `powExtended` (`normal/normalize-extended.ts`)
+  calcule (−∞)ⁿ, n entier non nul, signe selon la parité — sans lui l'évaluation exacte levait
+  dès `x^2`, et `\frac{(x-3)^2}{x^2}` en −∞ n'était pas vu ∞/∞ (non supportée ; 1 en +∞). Un
+  exposant non entier y reste refusé : `undefinedTowardInfinity` sonde aussi la base de u^a, a
+  constant non entier hors du cas p/q de dénominateur impair (`nonIntegerPowerBase`, convention
+  de `computePowerDomain`) — `(x-3)^{\frac{3}{2}}` en −∞ n'existe pas, hors du domaine, comme
+  `\sqrt{x-3}`. Conséquence : x² + x en −∞ est désormais la forme exacte +∞ − ∞, que
+  `classifyWithSign` dit « inconnue » ; `isPositiveNear` demande alors la limite au moteur entier
+  (+∞ ou réel > 0 démontrés) — `\ln(x^2)-\ln(x^2-x)` en +∞, sans valeur avant, vaut 0. La
+  **stratégie 2.85** (`tryReciprocalByConjugate`, après 2.8, en ±∞ seulement) réécrit
+  l'inverse d'une somme à conjuguer par `reciprocalByConjugate` (`limits/sum-reduction.ts`) :
+  N/(√A − B) = N(√A + B)/(A − B²), (√A − B)^{−n} = ((√A + B)/(A − B²))ⁿ —
+  `\frac{1}{\sqrt{x+1}-\sqrt{x}}` en +∞ = +∞, forme 1/0 dont le signe n'était pas suivi.
+  `findConjugate` (`limits/algebraic.ts`) connaît √A − √B (conjugué √A + √B, produit A − B).
+  Les étapes « limite à gauche /
   à droite » d'une limite bilatérale s'écrivent en `a^-` / `a^+` (côté étudié, pas celui de la
   limite).
 - **Fonctions en escalier** (`limits/piecewise.ts`, `evaluatePiecewiseLimit`, V60,

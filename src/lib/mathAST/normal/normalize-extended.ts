@@ -679,6 +679,18 @@ function powExtended(
 		return signedZeroResult('positive');
 	}
 
+	// (−∞)^n, n entier non nul : signe selon la parité — (−∞)² = +∞,
+	// (−∞)³ = −∞, (−∞)^{−2} = 0⁺, (−∞)^{−1} = 0⁻. Sans ce cas, x² en −∞
+	// n'avait pas de limite exacte : (x − 3)²/x² en −∞ n'était pas vu ∞/∞ (V67).
+	// Un exposant non entier relève du domaine (x^{3/2} non défini pour x < 0).
+	if (baseIsInf && base.sign === 'negative') {
+		const expValue = getExponentValue(exp);
+		if (expValue !== null && Number.isInteger(expValue) && expValue !== 0) {
+			const sign = Math.abs(expValue) % 2 === 0 ? 'positive' : 'negative';
+			return expValue > 0 ? infinityResult(sign) : signedZeroResult(sign);
+		}
+	}
+
 	// For normal^normal: denormalize both, rebuild the superscript node,
 	// and delegate to regular normalize (which handles powNormalForm).
 	if (base.type === 'normal' && exp.type === 'normal') {
