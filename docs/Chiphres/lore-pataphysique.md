@@ -439,6 +439,7 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 #### Patatovie — _Logique et ensembles_
 
 - **Gouverneur** : 🟢 **Docteur Faustroll** (canon Jarry, _Gestes et opinions du docteur Faustroll, pataphysicien_) — **LE pataphysicien officiel** de Jarry, héros de l'œuvre théorique de la pataphysique (publiée à titre posthume en 1911). Faustroll classe les œuvres et les concepts dans un ordre pataphysique, navigue d'île en île dans son bateau-passoire (« as squelette », bateau-tamis), et incarne la **science des solutions imaginaires aux problèmes que les autres ont déjà résolus**. Patatovie est exactement son territoire intellectuel. **Voix** : érudite, lente, solennelle, taxonomiste. Cite les classiques. S'exprime en phrases longues et hypotaxiques. Vouvoie tout le monde, y compris ses chats.
+- **Apparence de Faustroll** 🟡 (décision de David, 2026-10-26) : homme digne de soixante-trois ans (né à cet âge, il le garde toute sa vie), de taille moyenne, droit et symétrique comme une classification, au centre entre les silhouettes penchées, bombées ou avachies des autres ; d'après Jarry (_Faustroll_, livre I, cité de mémoire, à vérifier) : moustaches vert de mer, cheveux en bandes alternées blond cendré et noir (dessinées or et encre), petits yeux ronds comme deux gouttes d'encre ; expression sereine, solennelle, un peu amusée. La « peau jaune d'or » de Jarry est volontairement écartée (risque de lecture comme caricature ethnique). Redingote d'érudit bleu encre, gilet pourpre, pantalon brun, livre relié sous le bras ; un chat noir sur l'épaule (clin d'œil au Chat Noir de Steinlen) ; debout dans son bateau-passoire (passoire géante) sur une ligne de vagues stylisées, une rame à la main. Prompt d'illustration : Section XI, « Illustrations ».
 - **Capitale** : 🟡 **Cracovenn**
 - **Étymologie** : **détournement de Cracovie**, ancienne capitale royale de Pologne (jusqu'au XVIIᵉ siècle), située sur la **Vistule** comme Bonneteau-sur-Vistule (les deux capitales partagent le fleuve). Fusion avec **John Venn (1834-1923)**, mathématicien britannique inventeur des **diagrammes de Venn** (1880) — c'est-à-dire **les patates** qui donnent leur nom à la province.
 - **Devise** : « **L'infini n'en finit pas d'en finir, surtout vers la fin** »
@@ -2120,6 +2121,24 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines, emerald green for the gown, dark chocolate brown for the apron and the crook, white for the whiskers, marigold yellow for the dodecahedron and the compass, deep crimson and white for the little polyhedra.
 
 Composition: Achras standing, three-quarter view, centered, his herd of polyhedra at his feet, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — le Docteur Faustroll 🟡
+
+Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et les images de référence des personnages déjà dessinés, au moins Père Ubu). Le blond cendré n'est pas au nuancier : bandes or et encre. Si le bateau-passoire envahit le portrait, le retirer et le garder pour une scène à part.
+
+```text
+Draw Doctor Faustroll, the pataphysician hero of Alfred Jarry's book "Exploits and Opinions of Doctor Faustroll, Pataphysician" (1898), as a full-body character portrait in exactly the same drawing style as the attached characters.
+
+Character: a dignified man of sixty-three, of medium height, standing perfectly upright and symmetrical, calm and composed, as orderly as a classification; very different from the slouching, bulging or stooping figures in the attached images. Following Jarry's description: a sea-green moustache, hair in alternating stripes of ash blond and jet black, small round black eyes like two drops of ink. A serene, solemn, slightly amused expression. He is erudite, slow and ceremonious: a wise and whimsical scholar, funny, never scary, for students aged 11 to 17.
+
+Clothing and props: a long navy ink scholar's frock coat, a deep crimson waistcoat, dark chocolate brown trousers, a bound book under one arm. A black cat sits calmly on his shoulder. He stands in his famous sieve-boat: a small boat shaped like a giant metal colander full of holes, floating on a simple line of stylized waves, and he holds a long oar.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines, the frock coat and the cat, emerald green for the moustache, marigold yellow and navy ink for the striped hair, deep crimson for the waistcoat, dark chocolate brown for the trousers and the oar, marigold yellow for the colander boat, white and emerald green for the waves.
+
+Composition: Faustroll standing in his sieve-boat, three-quarter view, centered, plain flat cream parchment paper background apart from the line of waves, vertical 2:3 format. No text, no letters, no signature.
 ```
 
 ---
