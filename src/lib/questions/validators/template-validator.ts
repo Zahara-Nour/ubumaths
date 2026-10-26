@@ -15,6 +15,7 @@ import { assumptionCollisionMessage, findAssumptionCollisions } from '../answer-
 import { choiceAnswerCountErrors } from './choice-answer-count';
 import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
 import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
+import { WORK_FIGURE_ALONE_MESSAGE } from '$lib/ubumark/parser/construction-parser';
 
 /**
  * Validate a question template
@@ -197,7 +198,13 @@ function validateVariation(
 					String(variation.statement ?? shared?.statement ?? '')
 				)
 			) {
-				errors.push(`${prefix} fill_in_blanks requires blanks[]`);
+				// Une figure de travail porte une case, mais jamais notée : le dire
+				const workFigureOnly = /^\s*>?\s*```figure-de-travail\s*$/m.test(
+					String(variation.statement ?? shared?.statement ?? '')
+				);
+				errors.push(
+					`${prefix} ${workFigureOnly ? WORK_FIGURE_ALONE_MESSAGE : 'fill_in_blanks requires blanks[]'}`
+				);
 			}
 			break;
 

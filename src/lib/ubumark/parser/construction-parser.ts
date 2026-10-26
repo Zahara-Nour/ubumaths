@@ -1,6 +1,6 @@
 /**
- * Bloc ```figure-a-completer — lecture de ses lignes propres
- * ====================================================
+ * Blocs ```figure-a-completer et ```figure-de-travail — lecture de leurs lignes propres
+ * ================================================================================
  *
  * Le bloc est une figure de départ : en-tête et langage de ```figure, plus
  * trois lignes d'en-tête à lui (`verifier: carre A ; B` ou
@@ -14,6 +14,9 @@
  * A = point(1, 2)
  * B = point(7, 2)
  * ```
+ *
+ * ```figure-de-travail : mêmes lignes, sans `verifier:` (refusé) — l'élève
+ * trace pour vérifier, rien n'est noté.
  *
  * `case: N` est posée par le générateur de questions, jamais écrite. Ces
  * lignes sont lues ici puis remplacées par des lignes vides : le reste passe
@@ -34,7 +37,8 @@ import {
 } from '../types/construction';
 import type { FigureIssue } from '../types/figure';
 
-const CONSTRUCTION_BLOCK_START_REGEX = /^```figure-a-completer\s*$/;
+const CONSTRUCTION_BLOCK_START_REGEX = /^```figure-(?:a-completer|de-travail)\s*$/;
+const WORK_FIGURE_BLOCK_START_REGEX = /^```figure-de-travail\s*$/;
 const SEPARATOR_REGEX = /^\s*---\s*$/;
 const KEY_LINE_REGEX = /^(outils|verifier|vérifier|case)\s*:\s*(.*)$/i;
 const POINT_NAME_REGEX = /^[A-Za-z][A-Za-z0-9_']*$/;
@@ -45,8 +49,20 @@ export const CONSTRUCTION_MISSING_CHECK_MESSAGE =
 
 class LineError extends Error {}
 
+/** Question dont les seules cases sont des figures de travail : rien à noter */
+export const WORK_FIGURE_ALONE_MESSAGE =
+	'Une figure de travail n’est pas notée : il faut au moins une case notée (choix, texte, formule…)';
+
+export const WORK_FIGURE_CHECK_MESSAGE = 'une figure de travail n’est pas notée : pas de verifier:';
+
+/** ```figure-a-completer ou ```figure-de-travail */
 export function isConstructionBlockStart(line: string): boolean {
 	return CONSTRUCTION_BLOCK_START_REGEX.test(line);
+}
+
+/** ```figure-de-travail : l'élève trace pour vérifier, rien n'est noté */
+export function isWorkFigureBlockStart(line: string): boolean {
+	return WORK_FIGURE_BLOCK_START_REGEX.test(line);
 }
 
 function readTools(value: string): ConstructionTool[] {
@@ -118,8 +134,12 @@ function coherenceError(check: ConstructionCheck, spec: ConstructionSpec): strin
 /**
  * Lire les lignes propres du bloc (avant `---`) : la spécification, les
  * erreurs situées, et le texte à donner au parseur de ```figure.
+ * `work` : bloc ```figure-de-travail (`verifier:` refusé, aucune vérification exigée).
  */
-export function readConstructionHeader(source: string): {
+export function readConstructionHeader(
+	source: string,
+	{ work = false }: { work?: boolean } = {}
+): {
 	figureSource: string;
 	spec: ConstructionSpec;
 	errors: FigureIssue[];
@@ -128,7 +148,7 @@ export function readConstructionHeader(source: string): {
 	const separator = lines.findIndex((l) => SEPARATOR_REGEX.test(l));
 	const headerEnd = separator === -1 ? lines.length : separator;
 	const errors: FigureIssue[] = [];
-	const spec: ConstructionSpec = { tools: ['droite'], checks: [] };
+	const spec: ConstructionSpec = { tools: ['droite'], checks: [], ...(work && { work: true }) };
 	let toolsSeen = false;
 	let checkErrors = 0;
 
@@ -149,6 +169,8 @@ export function readConstructionHeader(source: string): {
 					throw new LineError('case: attend un numéro de case (0, 1, 2…)');
 				}
 				spec.caseIndex = Number(value);
+			} else if (work) {
+				throw new LineError(WORK_FIGURE_CHECK_MESSAGE);
 			} else {
 				try {
 					spec.checks.push(readCheck(value, line));
@@ -162,7 +184,7 @@ export function readConstructionHeader(source: string): {
 			errors.push({ message: `Ligne ${line} : ${error.message}`, line });
 		}
 	}
-	if (spec.checks.length === 0 && checkErrors === 0) {
+	if (!work && spec.checks.length === 0 && checkErrors === 0) {
 		errors.push({ message: CONSTRUCTION_MISSING_CHECK_MESSAGE });
 	}
 	// `outils:` absent : l'outil de la première vérification (droite par défaut)

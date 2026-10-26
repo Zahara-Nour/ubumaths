@@ -488,8 +488,9 @@ function convertBlockquote(quote: BlockquoteNode): JSONContent {
 	};
 }
 
-/** Mot d'ouverture d'un nœud figure : ```figure-a-completer garde le sien */
-function figureFence(node: FigureNode): 'figure' | 'figure-a-completer' {
+/** Mot d'ouverture d'un nœud figure : ```figure-a-completer et ```figure-de-travail gardent le leur */
+function figureFence(node: FigureNode): 'figure' | 'figure-a-completer' | 'figure-de-travail' {
+	if (node.construction?.work) return 'figure-de-travail';
 	return node.construction ? 'figure-a-completer' : 'figure';
 }
 

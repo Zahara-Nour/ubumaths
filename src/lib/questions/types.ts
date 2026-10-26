@@ -792,13 +792,19 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 */
 	construire?: BuildKind;
 	/**
-	 * Case « figure » portée par un bloc ```figure-a-completer (`type: 'graphical'`) :
+	 * Case « figure » portée par un bloc ```figure-a-completer ou ```figure-de-travail (`type: 'graphical'`) :
 	 * texte du bloc (variables résolues, sans `case:`) et vérifications. Le juge
 	 * lit les positions des points dans ce texte (questions/construction).
 	 */
 	construction?: {
 		source: string;
 		checks: ConstructionCheck[];
+		/**
+		 * Bloc ```figure-de-travail : l'élève trace pour vérifier ; case JAMAIS notée
+		 * (`checks` vide, `expectedAnswer` vide), retirée avant toute notation
+		 * (`questions/graded-part.ts`), son tracé gardé dans la réponse
+		 */
+		work?: true;
 	};
 	/**
 	 * Case « choix » portée par un bloc ```choix (`type: 'choice'`). `expectedAnswer`

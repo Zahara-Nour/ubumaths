@@ -33,7 +33,11 @@
  */
 
 import { bodyOpensParagraph } from './block-closure';
-import { isConstructionBlockStart, readConstructionHeader } from './construction-parser';
+import {
+	isConstructionBlockStart,
+	isWorkFigureBlockStart,
+	readConstructionHeader
+} from './construction-parser';
 import type {
 	FigureBlockRange,
 	FigureHeader,
@@ -53,8 +57,11 @@ import { compile } from '$lib/mathAST/eval/compile';
 // CONSTANTES
 // ============================================================================
 
-/** ```figure, et ```figure-a-completer (une figure de départ à compléter, cf. construction-parser.ts) */
-const FIGURE_BLOCK_START_REGEX = /^```(?:figure|figure-a-completer)\s*$/;
+/**
+ * ```figure, ```figure-a-completer (une figure de départ à compléter) et
+ * ```figure-de-travail (l'élève y trace pour vérifier), cf. construction-parser.ts
+ */
+const FIGURE_BLOCK_START_REGEX = /^```(?:figure|figure-a-completer|figure-de-travail)\s*$/;
 const BLOCK_END_REGEX = /^```\s*$/;
 const SEPARATOR_REGEX = /^\s*---\s*$/;
 
@@ -381,11 +388,11 @@ export function parseFigureContent(source: string, options: FigureParseOptions =
 }
 
 /**
- * Bloc ```figure-a-completer : ses lignes propres lues à part, le reste analysé
+ * Bloc ```figure-a-completer ou ```figure-de-travail : ses lignes propres lues à part, le reste analysé
  * comme une figure ; le texte du bloc reste celui écrit (aller-retour).
  */
-function parseConstructionBody(source: string): FigureNode {
-	const { figureSource, spec, errors } = readConstructionHeader(source);
+function parseConstructionBody(source: string, work: boolean): FigureNode {
+	const { figureSource, spec, errors } = readConstructionHeader(source, { work });
 	const node = parseFigureContent(figureSource);
 	return {
 		...node,
@@ -402,7 +409,7 @@ export function parseFigure(lines: string[], startIndex: number, endIndex: numbe
 	const closed = endIndex > startIndex && BLOCK_END_REGEX.test(lines[endIndex]);
 	const body = lines.slice(startIndex + 1, closed ? endIndex : endIndex + 1);
 	const node = isConstructionBlockStart(lines[startIndex])
-		? parseConstructionBody(body.join('\n'))
+		? parseConstructionBody(body.join('\n'), isWorkFigureBlockStart(lines[startIndex]))
 		: parseFigureContent(body.join('\n'));
 	if (closed) return node;
 	return {
