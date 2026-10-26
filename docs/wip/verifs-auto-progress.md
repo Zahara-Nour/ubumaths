@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, lot 7 en cours._
+_Mis à jour le 2026-10-26, après #1810 ; correctif en PR._
 
-- **État** : lot 7 (branche `test/verifs-auto-7`) : écarts 1, 3, 5 du lot 6 récrits (tests #1367, #1404, #1369, #1617, #1620) ; rouges restants : `each_key_duplicate` (#1674, #1703, #1620 en fin de test, #1307), #1422 par intermittence.
-- **Prochaine action** : merger le lot 7 ; puis PR de correctif `fix/grille-sans-saut` (réserver la ligne « Valeur exacte », test rouge d'abord ; libellé « Résoudre k(x) = 0 » de la carte).
+- **État** : lots 1-7 mergés (#1773 → #1810) ; PR `fix/grille-sans-saut` : ligne réservée sous la barre de la grille (`.sous-barre`, test client rouge d'abord) et « Résoudre k(x) = 0 » sur la carte k (`actionsFor`). Rouges verifs restants : `each_key_duplicate` (#1674, #1703, #1620 en fin de test, #1307).
+- **Prochaine action** : merger le correctif, rejouer `pnpm test:verifs` (#1422 doit être vert à chaque fois) ; puis les lignes Atelier restantes, ou la page à cocher (plan, point 2).
 - **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : port 5179 ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; `e` = Euler (prendre `k`) ; console ouverte couvre toile et zoom ; prettier réaligne le tableau → conflits au merge de `main` : rejouer ses lignes par script ; cellules à espaces de remplissage (`split('|')` + `strip`) ; commitlint : pas de majuscule, pas de type `merge` ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `ubumaths-wt-verifs-auto` / `test/verifs-auto-7` (serveur sur 5179).
+- **Pièges en cours** : port 5179 ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; `e` = Euler (prendre `k`) ; console ouverte couvre toile et zoom ; prettier réaligne le tableau → conflits au merge de `main` : rejouer ses lignes par script ; cellules à espaces de remplissage ; commitlint : pas de majuscule, pas de type `merge` ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `ubumaths-wt-verifs-auto` / `fix/grille-sans-saut`.
 
 ## Phase 0 (validée le 2026-10-25)
 

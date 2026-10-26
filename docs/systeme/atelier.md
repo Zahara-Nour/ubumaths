@@ -10,7 +10,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26).
 
 ## À quoi ça sert
 
@@ -781,7 +781,10 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   sinon `shown` (ou le mot court d'une erreur, en rouge) ; son étiquette pour lecteur d'écran est
   `shown`, en français (la lecture de MathLive est en anglais). La barre montre la formule ; sous
   la barre, la phrase de l'erreur ou de la case vide, et « Valeur exacte : … » quand la case montre
-  `≈` d'une valeur exacte, ou une écriture exacte dont le texte lu est `≈` (`√2`, `π`) (Q2). La carte d'une liste à formules montre ses valeurs et « calculée
+  `≈` d'une valeur exacte, ou une écriture exacte dont le texte lu est `≈` (`√2`, `π`) (Q2). Ces
+  phrases et l'aide d'une fonction tiennent sur une ligne réservée (`.sous-barre`, une seule à la
+  fois) : la grille ne saute pas d'une case à l'autre — elle sautait d'une rangée, et pendant un clic
+  la case sous le pointeur enfoncé changeait, la zone s'étendait (2026-10-26). La carte d'une liste à formules montre ses valeurs et « calculée
   dans la grille » (`studentDefinitionOf`). Supprimer une liste dont des cellules d'autres colonnes
   se videront (`citingCells` : en chaîne, sans celles déjà vides) demande confirmation : « 3 cellules de la grille la citent : elles
   deviendront vides. » (`citingCellsNote`). La copie vers un autre logiciel et le CSV
@@ -1459,7 +1462,7 @@ de David), Échap ferme jusqu'à la frappe suivante. Garde : chaque proposition,
 est acceptée par Calcul (`completion.test.ts`).
 
 **Actions de carte** : `actionsFor` (`src/lib/atelier/actions.ts`) donne par type les actions
-(fonction : Tracer, Afficher dans Géométrie, Dériver, Réciproque, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
+(fonction : Tracer, Afficher dans Géométrie, Dériver, Réciproque, Tabuler, Résoudre f(x) = 0 (le nom de la carte : « Résoudre k(x) = 0 »), Variations ; suite : Premiers termes ;
 liste : Statistiques, diagrammes, nuage, ajustement, loi — par liste partenaire). Une action qui a
 un sens pour le type mais pas pour cet objet reste **visible, désactivée, avec sa raison**
 (`disabledReason`). Le clic passe par `CalcDesk.runFromPanel` : il **écrit une ligne dans la
