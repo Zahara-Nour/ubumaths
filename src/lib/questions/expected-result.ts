@@ -30,6 +30,7 @@ import { replaceChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
 import { isWorkFigureBlank } from './graded-part';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
+import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import {
 	validateAnswerDetailed,
 	type DetailedVerdict,
@@ -131,7 +132,8 @@ export type ExpectedLine =
 	 */
 	| { kind: 'work-figure'; index: number; source: string; answer: string | null }
 	/**
-	 * Case à construire (bloc ```collection ou ```monnaie, `construire:`) : le plan
+	 * Case à construire (bloc ```collection ou ```monnaie, `construire:`) ou droite à
+	 * placer (```line, `placer:`) : le plan
 	 * lui-même, verrouillé, avec la construction de l'élève (`answer`, la valeur
 	 * posée) ; `null` sans réponse (R9) ou réponse vide : la construction juste seule
 	 */
@@ -155,6 +157,8 @@ export interface ExpectedResult {
 export const EMPTY_ANSWER_TEXT = "Tu n'as rien répondu.";
 /** Case à construire laissée vide (plan vide) */
 export const EMPTY_BUILD_TEXT = "Tu n'as rien posé.";
+/** Droite à placer laissée vide (aucun point) */
+export const EMPTY_PLACE_TEXT = "Tu n'as rien placé.";
 /** Case sans valeur connue : pointillés, comme sur une fiche */
 const BLANK_TEXT = '……';
 
@@ -251,7 +255,8 @@ const CASE_LINE = /^case\s*:\s*(\d+)\s*$/i;
 function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 	const found = [
 		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
-		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const }))
+		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
+		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {
@@ -563,7 +568,10 @@ function buildLines(
 		status: answered ? status : 'solution'
 	};
 	// Propre à la case : une autre case de l'énoncé peut avoir sa réponse
-	if (withAnswer && status === 'empty') return [line, { kind: 'empty', text: EMPTY_BUILD_TEXT }];
+	if (withAnswer && status === 'empty') {
+		const text = build.kind === 'line' ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
+		return [line, { kind: 'empty', text }];
+	}
 	return [line];
 }
 

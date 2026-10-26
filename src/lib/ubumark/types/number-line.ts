@@ -166,6 +166,13 @@ export interface NumberLineNode extends BaseNode {
 	/** Segments (intervals) on the line */
 	segments: NumberLineSegment[];
 	/**
+	 * Droite à placer (`placer:`) : la graduation où l'élève doit poser SON point
+	 * (chantier `docs/wip/reponses-a-placer-progress.md`). Jamais dessinée.
+	 */
+	placer?: NumberLineValue;
+	/** Case d'une droite à placer dans une question (`case: N`, posée par le générateur) */
+	caseIndex?: number;
+	/**
 	 * Texte source du bloc ```line, sans les délimiteurs.
 	 *
 	 * Le nœud est STRUCTURÉ, mais l'éditeur riche, lui, stocke la droite sous

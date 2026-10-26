@@ -13,7 +13,8 @@ export const numberLineEntry: BlockCatalogEntry = {
 	title: 'Droite graduée',
 	fences: ['line'],
 	nodeType: 'number-line',
-	summary: 'Une droite graduée avec des points nommés, des intervalles et des repères cachés.',
+	summary:
+		'Une droite graduée avec des points nommés, des intervalles et des repères cachés ; dans une question, l’élève y place un point.',
 	intro:
 		'Le bloc dessine une droite entre deux bornes, avec une graduation régulière. On y place des points nommés, des intervalles colorés et des repères à retrouver. Les nombres s’écrivent comme dans les autres blocs : 1/3, sqrt(2), \\pi, 2.5. Le séparateur décimal est le point, et la virgule sépare les éléments d’une liste.',
 	settingGroups: [
@@ -94,6 +95,18 @@ export const numberLineEntry: BlockCatalogEntry = {
 						'Un intervalle, couleur facultative en dernier comme pour un point. Crochet tourné vers l’intervalle : fermé ; vers l’extérieur : ouvert, comme en cours. a doit être plus petit que b.'
 				}
 			]
+		},
+		{
+			title: 'Dans une question : placer un point',
+			settings: [
+				{
+					key: 'placer',
+					values: 'un nombre de la droite, sur une graduation (7, 3/4, 0.3)',
+					defaultValue: 'aucun',
+					description:
+						'L’élève touche la droite pour y poser son point (ou les boutons ◀ ▶) : la droite compte pour une case, juste si le point est sur ce nombre. Jamais écrit à l’écran. Sans points: (un seul point, celui de l’élève). Sur le PDF, la droite sans point : l’enfant fait sa croix.'
+				}
+			]
 		}
 	],
 	examples: [
@@ -151,6 +164,12 @@ export const numberLineEntry: BlockCatalogEntry = {
 				'segments: [-2, 1] vert, ]2, 4[ orange'
 			),
 			explanation: '[-2, 1] est fermé aux deux bouts ; ]2, 4[ est ouvert aux deux bouts.'
+		},
+		{
+			title: 'Placer un nombre (question)',
+			source: fence('line', 'start: 0', 'end: 20', 'step: 1', 'labels: 0, 10, 20', 'placer: 7'),
+			explanation:
+				'Dans une question, l’élève pose son point ; la réponse est juste s’il est sur 7. La consigne (« Place le nombre 7. ») va dans l’énoncé, au-dessus.'
 		},
 		{
 			title: 'Un nombre irrationnel',

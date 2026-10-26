@@ -21,6 +21,9 @@
  * scale: linear
  * ```
  *
+ * Droite à placer (une question) : `placer: 7` — la graduation où l'élève pose
+ * son point ; `case: N` est posée par le générateur.
+ *
  * @module ubumark/parser/number-line-parser
  */
 
@@ -269,6 +272,59 @@ function parseSegments(
 }
 
 // ============================================================================
+// DROITE À PLACER
+// ============================================================================
+
+/** `2.5` → `2,5`, pour les messages à l'auteur */
+function frenchNumber(value: number): string {
+	return String(Math.round(value * 1e9) / 1e9).replace('.', ',');
+}
+
+/** Ce qui rend `placer:` impossible : hors de la droite, entre deux graduations… */
+function placerErrors(
+	placer: NumberLineValue,
+	startNum: number,
+	endNum: number,
+	stepNum: number,
+	scale: NumberLineScale,
+	hasPoints: boolean
+): NumberLineParseError[] {
+	const shown = `placer : ${placer.expression}`;
+	if (scale === 'log') return [{ message: `${shown} — impossible sur une échelle log` }];
+	if (hasPoints) {
+		return [
+			{
+				message: `${shown} — sans points: (un seul point sur la droite, celui de l’élève)`
+			}
+		];
+	}
+	let value: number;
+	try {
+		value = numericValue(placer);
+	} catch {
+		value = Number.NaN;
+	}
+	if (!Number.isFinite(value)) return [{ message: `${shown} — valeur illisible` }];
+	const tolerance = 1e-9 * Math.max(1, Math.abs(stepNum));
+	if (value < startNum - tolerance || value > endNum + tolerance) {
+		return [
+			{
+				message: `${shown} est hors de la droite (de ${frenchNumber(startNum)} à ${frenchNumber(endNum)})`
+			}
+		];
+	}
+	const steps = (value - startNum) / stepNum;
+	if (Math.abs(steps - Math.round(steps)) * stepNum > tolerance) {
+		return [
+			{
+				message: `${shown} n’est pas sur une graduation (de ${frenchNumber(stepNum)} en ${frenchNumber(stepNum)} depuis ${frenchNumber(startNum)})`
+			}
+		];
+	}
+	return [];
+}
+
+// ============================================================================
 // CONTENT PARSING
 // ============================================================================
 
@@ -292,6 +348,8 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 	let segmentsStr: string | undefined;
 	let arrows = false;
 	let scale: NumberLineScale = 'linear';
+	let placerExpr: string | undefined;
+	let caseIndex: number | undefined;
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i].trim();
@@ -345,6 +403,20 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 				break;
 			case 'segments':
 				segmentsStr = value;
+				break;
+			case 'placer':
+				placerExpr = value;
+				break;
+			case 'case':
+				if (!/^\d+$/.test(value)) {
+					errors.push({
+						message: `case « ${value} » : numéro de case entier`,
+						line: lineNum,
+						content: line
+					});
+				} else {
+					caseIndex = Number(value);
+				}
 				break;
 			case 'arrows':
 				arrows = value.toLowerCase() === 'true';
@@ -463,6 +535,15 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 		}
 	}
 
+	// Droite à placer : une graduation de la droite, le seul point
+	const placer = placerExpr ? resolveExpression(placerExpr, errors) : undefined;
+	if (placerExpr !== undefined && placer) {
+		errors.push(...placerErrors(placer, startNum, endNum, stepNum, scale, points.length > 0));
+	}
+	if (caseIndex !== undefined && placerExpr === undefined) {
+		errors.push({ message: 'case: sans objet sans placer:' });
+	}
+
 	// Validate points are within bounds
 	for (const point of points) {
 		const pNum = numericValue(point.value);
@@ -492,10 +573,58 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 		type: 'number-line',
 		config,
 		points,
-		segments
+		segments,
+		...(placer && { placer }),
+		...(caseIndex !== undefined && { caseIndex })
 	};
 
 	return { node, errors: [], warnings };
+}
+
+// ============================================================================
+// DROITES À PLACER D'UN ÉNONCÉ
+// ============================================================================
+
+/** Ligne vue sans retrait ni marque de citation */
+const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
+
+/**
+ * Les droites à placer (`placer:`) d'un énoncé, délimitées comme le parseur :
+ * corps sans clôtures, fermeture, et `nested` pour un bloc en retrait ou cité
+ * (l'élève ne pourrait pas y répondre : sa case n'est pas créée)
+ */
+export function findLinesToPlace(markdown: string): {
+	startIndex: number;
+	body: string[];
+	closed: boolean;
+	nested: boolean;
+}[] {
+	const lines = markdown.split('\n');
+	const plain = lines.map(unquoted);
+	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
+	let i = 0;
+	while (i < plain.length) {
+		if (isNumberLineBlockStart(plain[i])) {
+			const { endIndex, closed } = specialBlockEnd(
+				plain,
+				i,
+				(line) => BLOCK_END_REGEX.test(line),
+				BLOCK_KEYS
+			);
+			const body = plain.slice(i + 1, closed ? endIndex : endIndex + 1);
+			if (body.some((line) => /^placer\s*:/i.test(line))) {
+				found.push({ startIndex: i, body, closed, nested: lines[i] !== plain[i] });
+			}
+			i = endIndex;
+		}
+		i++;
+	}
+	return found;
+}
+
+/** L'énoncé a-t-il une droite à placer ? */
+export function hasLineToPlace(markdown: string): boolean {
+	return findLinesToPlace(markdown).length > 0;
 }
 
 // ============================================================================

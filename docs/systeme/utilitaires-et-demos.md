@@ -220,7 +220,7 @@ Précisions :
   l'ouverture, l'expression de l'article Sésamath.
 - **Catalogue des blocs** (`/aide-ecriture/blocs`, chantier
   [catalogue-blocs](../archive/wip/catalogue-blocs-progress.md)) : une fiche par bloc spécial d'ubumark
-  (variations, arbre, droite graduée, courbe, figure — en-tête seulement, renvoi vers
+  (variations, arbre, droite graduée — avec `placer:` d'une question —, courbe, figure — en-tête seulement, renvoi vers
   `/aide-ecriture/geometrie` —, figure à compléter — case « figure » d'une question, rendue ici en
   figure de départ —, figure de travail — même rendu, jamais notée —, statistiques — 9 genres sur une page —, QR code, horloge, opération posée,
   cercle trigo). Contenu écrit une fois dans `src/lib/block-catalog/<bloc>.ts`

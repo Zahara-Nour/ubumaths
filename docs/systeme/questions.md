@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ```figure-de-travail, `graded-part.ts`) le 2026-10-26 ; texte d'aide des cases à écrire le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26 ; texte d'aide des cases à écrire le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -224,7 +224,7 @@ erreurs (`verifier:`, outil inconnu…) ; il se modifie dans l'énoncé. `TestSp
 rien (valeur vide). Garde : `AnswerEditor-figure-de-travail.svelte.test.ts`.
 
 **Cases de blocs omises de `blanks[]`** : le générateur permet d'omettre l'entrée d'une case de bloc
-(`operation, `figure-a-completer, `figure-de-travail, `collection / ``monnaie à construire) ;
+(`operation, `figure-a-completer, `figure-de-travail, `collection / `monnaie à construire, `line à placer) ;
 `AnswerEditor` remet alors la liste à une entrée par case (`withBlockCases`, `choice-case-editor.ts` :
 entrée vide au rang de chaque bloc, les autres dans l'ordre, le sens que leur donne le générateur).
 Sans cela, la carte d'une figure prenait l'entrée que le générateur donne à la case suivante (énoncé
@@ -279,15 +279,17 @@ refusé (`readConstructionHeader(…, { work: true })`), `options.orderIndepende
 `type: 'graphical'`, `construction: { source, checks: [], work: true }`, réponse attendue vide. Une
 question dont les seules cases sont des figures de travail est refusée
 (`WORK_FIGURE_ALONE_MESSAGE`, au générateur et dans `validateTemplate`). Un bloc `collection ou
-`monnaie à construire (`construire: N`, au premier niveau, sinon échec ; `buildBlanks`, genre et
-texte du bloc) compte aussi pour
-**une** case, `case: N` posé dans le bloc ; sa réponse attendue est la valeur `N` du bloc, jamais
+`monnaie à construire (`construire: N`), ou une droite à placer (```line, `placer: N`), au premier
+niveau, sinon échec (`buildBlanks`, genre et texte du bloc), compte aussi pour
+**une** case, `case: N` posé dans le bloc ; sa réponse attendue est la valeur `N` du bloc (droite : la graduation
+écrite par `placerAnswer` ; lecture commune `generator/build-answer.ts`), jamais
 du modèle (`blanks[]` peut l'omettre, une réponse écrite est refusée, `case:` écrite aussi, bloc en
 erreur, non fermé ou avec `options.orderIndependent` → échec). Le bloc est délimité comme le parseur
-(`findBuildCollections`, `findBuildMonnaies` : une ligne vide suivie d'une clé reste dans un bloc
+(`findBuildCollections`, `findBuildMonnaies`, `findLinesToPlace` : une ligne vide suivie d'une clé reste dans un bloc
 fermé) ; l'énoncé numéroté est relu par `parseMarkdown` : une case dont le bloc n'est pas lu à l'écran
-(fence de fin en retrait, bloc montré dans un bloc de code) → échec. La case est `type: 'math'`, `construire: 'collection' | 'monnaie'`, jugée comme une case
-ordinaire : l'élève répond par la valeur qu'il a posée (`'34'`, `'35'` €, `''` plan vide).
+(fence de fin en retrait, bloc montré dans un bloc de code) → échec. La case est `type: 'math'`, `construire: 'collection' | 'monnaie' | 'line'` (`BuildKind` ; messages
+au prof par `buildKindName` : « droite graduée »), jugée comme une case ordinaire : l'élève répond
+par la valeur qu'il a posée (`'34'`, `'35'` €, graduation `'7'`, `''` plan vide ou aucun point).
 Un bloc ``choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
    compte pour **une** case, `case: N` posé en tête du bloc (`choix-parser.ts`, lu dans
    `assignBlankIndices`) : réglages en tête (`plusieurs: oui`, `melanger: non` ; défauts : une
@@ -352,6 +354,7 @@ Natures de réponse :
 | Opération posée             | bloc ```operation (`cases: résultat`)        | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts` ; division : `operation-division-answer.ts`, quotient et reste) |
 | Collection à construire     | bloc ```collection (`construire: N`)         | case ordinaire : la valeur posée, composition libre (`collection-construire.ts`)                                                                  |
 | Monnaie à construire        | bloc ```monnaie (`construire: N`)            | case ordinaire : la somme posée, coupures libres dans la réserve (`monnaie-construire.ts`)                                                        |
+| Droite à placer             | bloc ```line (`placer: N`)                   | case ordinaire : la graduation du point de l'élève (`number-line-placer.ts`), exacte, sans tolérance                                              |
 | Texte                       | `[_]` hors formule                           | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                                                                 |
 | Grandeur                    | `unit: { expected, required? }`              | `validateQuantityAnswer` (conversion, unité imposée)                                                                                              |
 | Ensemble en intervalles     | `answerKind: 'intervalles'`                  | `interval-answer.ts` ; option `openableBounds` ; contrainte `intervalForm`                                                                        |
@@ -377,7 +380,7 @@ choix gardés en markdown, formules non extraites) ; `FillBlanksInput` met à sa
 après validation, choix coché à tort et bons choix marqués (réponse connue seulement). Une case
 choix vide compte comme une case vide (`QuestionCard` : Valider grisé). Le texte d'aide « Remplissez
 les blancs avec vos réponses » n'apparaît que s'il y a une case à écrire (ni choix, ni figure, ni
-collection ou monnaie à construire). Hors question
+collection ou monnaie à construire, ni droite à placer). Hors question
 (`MarkdownRenderer`, cours, aperçu) : liste A, B, C non cliquable ; PDF (typst) : « A) … ».
 
 Il n'y a **pas** de case « tableau » (tableau de signes ou de variations) : le tableau de signes
@@ -517,7 +520,9 @@ s'il n'y a pas d'énoncé rempli (la figure est la seule case), la consigne seul
 (`showsInstructionOnly`, `instructionOf`) : la figure n'apparaît qu'une fois, au verso de la `FlashCard`
 comme dans la copie corrigée, case « figure » mêlée à d'autres cases comprise.
 
-Case à construire (bloc `collection ou `monnaie, `construire:`) : une ligne `build` (genre, texte
+Case à construire (bloc `collection ou `monnaie, `construire:`) ou droite à placer (```line,
+`placer:` : la droite verrouillée sans boutons, point de l'élève ou point juste ; vide : « Tu n'as rien
+placé. ») : une ligne `build` (genre, texte
 du bloc sans `case:`, valeur posée), sur le même patron que la figure. `BuildAnswer.svelte` dessine le
 plan **verrouillé, sans réserve** : la construction de l'élève (cadre vert si juste ; faux : « Tu as
 posé 32 €. » ou « Ta collection vaut 32. » et une construction juste à côté), ou la construction juste
@@ -777,7 +782,7 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
   réponse attendue à majuscules collées en base au 2026-10-12 : aucun verdict ne change).
 - **Case graphique (droite graduée)** : `InstanceBlank.type` admet `'graphical'` et
   `graphicalConfig`, mais aucun générateur ne la produit et `NumberLineInput.svelte` n'est importé
-  par aucun composant.
+  par aucun composant (la droite à placer passe par `NumberLinePlacer.svelte` et `construire: 'line'`).
 - Composants sans appelant : `question-inputs/MathInput.svelte`, `question-inputs/OrderingInput.svelte`,
   et `src/lib/questions/examples/color-demo.ts`.
 - `question_templates.type` existe en base, mais le code déduit le type de la structure

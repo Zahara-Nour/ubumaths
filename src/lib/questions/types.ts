@@ -765,8 +765,16 @@ export type ResolvedVariable = SharedResolvedVariable;
 /**
  * Instance-side blank (resolved, with inferred type and merged validation)
  */
-/** Genre d'un bloc à construire (case portée par le bloc) */
-export type BuildKind = 'collection' | 'monnaie';
+/**
+ * Genre d'un bloc qui porte sa case et dont la réponse est sa valeur : à construire
+ * (```collection, ```monnaie, `construire:`) ou à placer (```line, `placer:`)
+ */
+export type BuildKind = 'collection' | 'monnaie' | 'line';
+
+/** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée » */
+export function buildKindName(kind: BuildKind): string {
+	return kind === 'line' ? 'droite graduée' : `bloc ${kind}`;
+}
 
 export interface InstanceBlank extends CalculusBlankFields {
 	/** Resolved expected answer (math: "10^5", text: "entier") */
@@ -788,7 +796,8 @@ export interface InstanceBlank extends CalculusBlankFields {
 	/**
 	 * Case portée par un bloc ```collection ou ```monnaie à construire : réponse =
 	 * la valeur du bloc (`construire:`), juge ordinaire, l'élève pose barres et
-	 * cubes, ou pièces et billets.
+	 * cubes, ou pièces et billets. Droite à placer (```line, `placer:`) : réponse =
+	 * la graduation (`placerAnswer`), l'élève y pose son point.
 	 */
 	construire?: BuildKind;
 	/**
