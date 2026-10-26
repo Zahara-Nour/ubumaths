@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-26, phase 0 de la suite (§ 3), après #1807._
 
 - **État** : #1807 MERGÉE (pas encore en prod). David demande la suite : un réglage entre les deux modes, et une bulle qui dit qu'on peut simplifier plus, avec la syntaxe pour préciser le domaine (§ 3).
 - **Prochaine action** : coder le § 3 d'après les réponses de David (worktree `ubumaths-wt-tidy-conditions` à recréer).
-- **En attente de David** : Q5-Q9 du § 3.
+- **En attente de David** : Q5, Q6, Q7, Q9 du § 3 (Q8 tranchée).
 - **Pièges en cours** : aucune syntaxe de domaine n'existe pour `.simplifier` (seulement `dans` de `.résoudre`/`.variations`, `sur` d'une fonction) ; `1/(1/x) → x` reste un bug de `tidy`.
 - **Worktree / branche** : à recréer (`feat/tidy-conditions-reglage`).
 
@@ -78,7 +78,7 @@ Existant vérifié : la fenêtre « Réglages de l'atelier » (`AtelierSettings.
 
 Comportements proposés :
 
-- **Réglage** « Simplifications qui changent le domaine » : « Garder l'écriture » (défaut, l'actuel) ou « Simplifier en disant la condition » (la ligne montre `1, pour x ≠ 0`). Le bouton de ligne reste dans les deux modes, en sens inverse (« Simplifier pour x ≠ 0 » / « Sans simplifier »). Changer le réglage bascule aussi les lignes déjà là (la ligne porte les deux écritures).
+- **Réglage** « Simplifications qui changent le domaine » : « Garder l'écriture » (défaut, l'actuel) ou « Simplifier en disant la condition » (la ligne montre `1, pour x ≠ 0`). Le bouton de ligne reste dans les deux modes, en sens inverse (« Simplifier pour x ≠ 0 » / « Sans simplifier »). Le réglage ne vaut que pour les nouvelles lignes (Q8).
 - **Bulle** (mode « Garder l'écriture ») : une note sous la ligne, « On peut simplifier davantage pour x ≠ 0. Pour le dire : `.simplifier x/x dans ℝ\{0}` » — l'ensemble écrit d'après la condition (`x ≠ a` → `ℝ\{a}`, `x > a` → `]a;+∞[`, `x ≥ a` → `[a;+∞[`, sinon « dans ENSEMBLE »).
 - **Syntaxe** `dans ENSEMBLE` ajoutée à `.simplifier`, `.factoriser`, `.développer` (même lecture que `.résoudre`) : la simplification a lieu sans condition si l'ensemble est inclus dans celui où la condition vaut (`.simplifier x/x dans ]0;+∞[` → `1`) ; sinon la ligne garde l'écriture et le dit (« 0 est dans ℝ : x/x n'y est pas défini »). Une seule lettre (`pour VAR` si plusieurs).
 - **Limite** : plusieurs lettres (`x/x + y/y`) → pas d'ensemble proposé, la note dit seulement la condition ; condition non affine (`x²−1 ≠ 0`) → « dans ENSEMBLE ».
@@ -88,7 +88,7 @@ Questions :
 - **Q5 — Forme de la bulle.** Reco : la note sous la ligne (existe, visible, lue par les lecteurs d'écran). Autre : une icône ⓘ avec une bulle au survol / au toucher.
 - **Q6 — Syntaxe.** Reco : `dans ENSEMBLE` pour `.simplifier`, `.factoriser`, `.développer`, comme `.résoudre`. Une expression tapée seule ne prend pas de mot-clé : sa note renvoie à `.simplifier … dans …`.
 - **Q7 — Mode « variante ».** Reco : le bouton reste (« Sans simplifier »), pas de note (la condition est déjà sur la ligne).
-- **Q8 — Lignes déjà écrites.** Reco : le réglage les bascule aussitôt. Autre : seulement les lignes suivantes.
+- **Q8 — Lignes déjà écrites. TRANCHÉE (David, 2026-10-26)** : le réglage ne s'applique qu'aux **nouvelles lignes** ; chacune se bascule ensuite à la main (bouton de ligne). Les lignes déjà écrites ne bougent pas.
 - **Q9 — Défaut.** Reco : « Garder l'écriture » (ta décision de ce matin).
 
 ## Historique
