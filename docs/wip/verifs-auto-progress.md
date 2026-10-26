@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-26, après #1795._
 
 - **État** : lots 1-5 mergés (#1773, #1780, #1783, #1789, #1792, #1795) ; lot 5 (vue Données + « Propriétés », 17 lignes) mergé (#1795). Rouges : `each_key_duplicate` (#1674, fin de #1703, #1620, #1307) et la carte f de l'ajustement de #1413 (`2 × x + 1`).
-- **Prochaine action** : trancher les 3 écarts du lot 5 avec David, puis lot 6 dans un worktree neuf (`git worktree add -b test/verifs-auto-6 ../ubumaths-wt-verifs-auto origin/main`) : lignes Graphe (#1400-#1405 : dézoom, asymptotes) et Géométrie à la souris (#1536, #1538), puis le reste de Calcul (#1784, #1684, #1617, #1503, #1535, #1342, #1366-#1369, #1374, #1375, #1404, #1417).
-- **En attente de David** : 3 écarts du lot 5 (voir § Lot 5). Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **Prochaine action** : appliquer les 3 décisions de David du 2026-10-26 (§ Lot 5, « Écarts tranchés ») : (a) PR `fix` : `fitDefinition` (`desk.svelte.ts:217`) écrit `2*x+1` → écrire `2x+1` (pente 1 → `x`, négative, décimale ; sans doute `affineExpression` comme `fitSummary`) → #1413 vert ; (b) ligne #1422 récrite (`=2/3` en texte, `√2`/`3π` en maths) + assertion « `=2/3` pas en maths » ; (c) ligne #1410 récrite (↶ / Ctrl+Z remet L). Puis lot 6 (worktree neuf `test/verifs-auto-6`) : lignes Graphe (#1400-#1405 : dézoom, asymptotes) et Géométrie à la souris (#1536, #1538), puis le reste de Calcul (#1784, #1684, #1617, #1503, #1535, #1342, #1366-#1369, #1374, #1375, #1404, #1417).
+- **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
 - **Pièges en cours** : ports 5175-5178 et 5180 pris → 5179 ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; console REPLIÉE = champ encore « visible » pour Playwright : lire `aria-expanded` du bouton « Console » (`calc()` le fait) ; nom `c2` lu c·2 (prendre une lettre) ; `each_key_duplicate` casse « Comment ? » ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
 - **Worktree / branche** : aucun (retirés après #1795).
 
@@ -50,6 +50,8 @@ Outillage : `helpers/grille.ts` (taper une case par la barre, lire son nom acces
 1. **#1413, test rouge** : « Ajustement avec M » crée une carte f qui montre `2 × x + 1` ; la console dit `f(x) = 2x + 1`.
 2. **#1422** : `=2/3` s'écrit en texte « 2/3 », pas en fraction — voulu par une PR suivante (`latexOf`, `formula.ts` : « une fraction en maths débordait de la ligne ») : ligne périmée ? Pas testé.
 3. **#1410** : « « Annuler » du message remet L » — plus de message ; ↶ « Annuler : retirer le nom de la colonne A » remet L. Le test passe par ↶.
+
+**Écarts tranchés par David (2026-10-26)** : les 3 recos acceptées — #1413 = bug à corriger (PR à part) ; #1422 et #1410 = lignes périmées, à récrire. « Valeur exacte » en anglais : futur petit chantier d'accessibilité (langue de la lecture vocale MathLive, console probablement aussi — non vérifié), pas maintenant.
 
 Vu en passant : « Valeur exacte » est lue en anglais par un lecteur d'écran (`convertLatexToSpeakableText` de MathLive, « the square root of 2 ») ; #1427 parlait d'un formulaire dans la carte, c'est une fenêtre (Dialog) et la phrase « colonnes A et B (11 lignes) » est bien dans la carte.
 
