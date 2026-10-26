@@ -1,0 +1,201 @@
+{
+	"title": "Ajouter des dizaines entières",
+	"description": "Exemple : 234 + 60, puis 746 + 80 (avec retenue)",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Additionner",
+	"subdomain": "Somme astucieuse",
+	"level": 8,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..8"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..{{eval:9-b}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*a+10*b+u"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}+{{eval:10*d}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+10*d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{eval:10*a+b}}$ dizaines{{if:u==0|.| et ${{u}}$ {{if:u==1|unité|unités}}.}} On ajoute ${{d}}$ {{if:d==1|dizaine|dizaines}} : ${{eval:10*a+b}}+{{d}}={{eval:10*a+b+d}}$ dizaines.",
+					"$${{n}}+{{eval:10*d}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:10-b}}..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*a+10*b+u"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}+{{eval:10*d}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+10*d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{eval:10*a+b}}$ dizaines{{if:u==0|.| et ${{u}}$ {{if:u==1|unité|unités}}.}} On ajoute ${{d}}$ {{if:d==1|dizaine|dizaines}} : ${{eval:10*a+b}}+{{d}}={{eval:10*a+b+d}}$ dizaines.",
+					"$${{n}}+{{eval:10*d}}={{solution}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "234 + 60 = 294",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "4",
+				"d": "6",
+				"n": "234"
+			},
+			"answers": ["294"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ajouté aux unités (240)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "4",
+				"d": "6",
+				"n": "234"
+			},
+			"answers": ["240"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ajouté aux centaines (834)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "4",
+				"d": "6",
+				"n": "234"
+			},
+			"answers": ["834"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "746 + 80 = 826",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"u": "6",
+				"d": "8",
+				"n": "746"
+			},
+			"answers": ["826"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retenue oubliée (726)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"u": "6",
+				"d": "8",
+				"n": "746"
+			},
+			"answers": ["726"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 890 + 10 = 900",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "9",
+				"u": "0",
+				"d": "1",
+				"n": "890"
+			},
+			"answers": ["900"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Zéro inutile 0294",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "4",
+				"d": "6",
+				"n": "234"
+			},
+			"answers": ["0294"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		}
+	]
+}

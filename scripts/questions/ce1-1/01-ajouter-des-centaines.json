@@ -1,0 +1,186 @@
+{
+	"title": "Ajouter des centaines entières",
+	"description": "Exemple : 354 + 500 ; résultat ≤ 999",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Additionner",
+	"subdomain": "Somme astucieuse",
+	"level": 7,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "r",
+					"expression": "1..99"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:9-a}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*a+r"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}+{{eval:100*c}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+100*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ajouter ${{eval:100*c}}$, c'est ajouter ${{c}}$ {{if:c==1|centaine|centaines}} : le chiffre des centaines passe de ${{a}}$ à ${{eval:a+c}}$, les dizaines et les unités ne changent pas.",
+					"$${{n}}+{{eval:100*c}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0"
+				},
+				{
+					"name": "r",
+					"expression": "10..99"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*a+r"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}+{{eval:100*c}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+100*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ajouter ${{eval:100*c}}$, c'est ajouter ${{c}}$ {{if:c==1|centaine|centaines}} : le chiffre des centaines passe de ${{a}}$ à ${{eval:a+c}}$, les dizaines et les unités ne changent pas.",
+					"$${{n}}+{{eval:100*c}}={{solution}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "354 + 500 = 854",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "54",
+				"c": "5",
+				"n": "354"
+			},
+			"answers": ["854"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 899 + 100 = 999",
+			"variationIndex": 0,
+			"variables": {
+				"a": "8",
+				"r": "99",
+				"c": "1",
+				"n": "899"
+			},
+			"answers": ["999"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ajouté aux unités (359)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "54",
+				"c": "5",
+				"n": "354"
+			},
+			"answers": ["359"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ajouté aux dizaines (404)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "54",
+				"c": "5",
+				"n": "354"
+			},
+			"answers": ["404"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "46 + 300 = 346",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0",
+				"r": "46",
+				"c": "3",
+				"n": "46"
+			},
+			"answers": ["346"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 46 + 30 (76)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0",
+				"r": "46",
+				"c": "3",
+				"n": "46"
+			},
+			"answers": ["76"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Zéro inutile 0854",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "54",
+				"c": "5",
+				"n": "354"
+			},
+			"answers": ["0854"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		}
+	]
+}

@@ -1,0 +1,131 @@
+{
+	"title": "Soustraire des dizaines entières",
+	"description": "Exemple : 541 − 20 ; sans retenue",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Soustraire",
+	"subdomain": "Différence astucieuse",
+	"level": 8,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..{{b}}"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*a+10*b+u"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}-{{eval:10*d}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-10*d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{eval:10*a+b}}$ dizaines{{if:u==0|.| et ${{u}}$ {{if:u==1|unité|unités}}.}} On retire ${{d}}$ {{if:d==1|dizaine|dizaines}} : ${{eval:10*a+b}}-{{d}}={{eval:10*a+b-d}}$ dizaines.",
+					"$${{n}}-{{eval:10*d}}={{solution}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "541 − 20 = 521",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "4",
+				"d": "2",
+				"u": "1",
+				"n": "541"
+			},
+			"answers": ["521"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 920 − 20 = 900",
+			"variationIndex": 0,
+			"variables": {
+				"a": "9",
+				"b": "2",
+				"d": "2",
+				"u": "0",
+				"n": "920"
+			},
+			"answers": ["900"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retiré aux unités (539)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "4",
+				"d": "2",
+				"u": "1",
+				"n": "541"
+			},
+			"answers": ["539"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : retiré aux centaines (341)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "4",
+				"d": "2",
+				"u": "1",
+				"n": "541"
+			},
+			"answers": ["341"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Zéro inutile 0521",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "4",
+				"d": "2",
+				"u": "1",
+				"n": "541"
+			},
+			"answers": ["0521"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		}
+	]
+}

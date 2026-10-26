@@ -1,0 +1,154 @@
+{
+	"title": "Les multiples de $25$",
+	"description": "1 × 25, 2 × 25, 3 × 25, 4 × 25",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Produit",
+	"level": 1,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{k}}*25"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:25*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|$1\\times 25=25$ : une fois $25$.|${{k}}\\times 25={{eval:k-1}}\\times 25+25={{eval:25*(k-1)}}+25={{eval:25*k}}$.}}",
+					"Les multiples de $25$ à connaître : $25$, $50$, $75$, $100$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "expression1",
+					"expression": "25*{{k}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:25*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$25\\times {{k}}={{k}}\\times 25$ : on peut échanger les deux nombres.",
+					"{{if:k==1|$1\\times 25=25$ : une fois $25$.|${{k}}\\times 25={{eval:k-1}}\\times 25+25={{eval:25*(k-1)}}+25={{eval:25*k}}$.}}",
+					"Les multiples de $25$ à connaître : $25$, $50$, $75$, $100$."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "expression1",
+					"expression": "?*25={{eval:25*k}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche combien de fois $25$ font ${{eval:25*k}}$ : $25$, $50$, $75$, $100$ en comptant de $25$ en $25$.",
+					"$${{k}}\\times 25={{eval:25*k}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 × 25 = 75",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 + 25 (28)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 65",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "25 × 4 = 100",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "? × 25 = 75 : 3",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ? × 25 = 75, répond 50",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

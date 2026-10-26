@@ -1,0 +1,222 @@
+{
+	"title": "Soustraire $9$ à un nombre",
+	"description": "Soustraire 10 puis ajouter 1 (53 − 9, 346 − 9, 305 − 9)",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Soustraire",
+	"subdomain": "Différence astucieuse",
+	"level": 3,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..8"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*d+u"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}-9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-9}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soustraire $9$, c'est soustraire $10$, puis ajouter $1$.",
+					"$$\\begin{align} {{n}}\\bold{\\textcolor{{{color:primary.0}}}{-9}} &= {{n}}\\bold{\\textcolor{{{color:primary.0}}}{-10+1}} \\\\ &= {{eval:n-10}}+1 \\\\ &= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*a+10*b+u"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}-9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-9}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soustraire $9$, c'est soustraire $10$, puis ajouter $1$.",
+					"$$\\begin{align} {{n}}\\bold{\\textcolor{{{color:primary.0}}}{-9}} &= {{n}}\\bold{\\textcolor{{{color:primary.0}}}{-10+1}} \\\\ &= {{eval:n-10}}+1 \\\\ &= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..8"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*a+u"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}-9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-9}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soustraire $9$, c'est soustraire $10$, puis ajouter $1$.",
+					"$$\\begin{align} {{n}}\\bold{\\textcolor{{{color:primary.0}}}{-9}} &= {{n}}\\bold{\\textcolor{{{color:primary.0}}}{-10+1}} \\\\ &= {{eval:n-10}}+1 \\\\ &= {{solution}} \\end{align}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "53 − 9 = 44",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"u": "3",
+				"n": "53"
+			},
+			"answers": ["44"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 10 − 9 = 1",
+			"variationIndex": 0,
+			"variables": {
+				"d": "1",
+				"u": "0",
+				"n": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "346 − 9 = 337",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"u": "6",
+				"n": "346"
+			},
+			"answers": ["337"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : − 10 seulement (336)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"u": "6",
+				"n": "346"
+			},
+			"answers": ["336"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : − 10 − 1 (335)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"u": "6",
+				"n": "346"
+			},
+			"answers": ["335"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "305 − 9 = 296",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"u": "5",
+				"n": "305"
+			},
+			"answers": ["296"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : centaine non cassée (396)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"u": "5",
+				"n": "305"
+			},
+			"answers": ["396"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 100 − 9 = 91",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"u": "0",
+				"n": "100"
+			},
+			"answers": ["91"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
