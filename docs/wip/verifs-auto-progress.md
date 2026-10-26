@@ -95,8 +95,8 @@ Vu en passant : `n = 1` → « n est réservé » (variable des suites) ; `.expo
 
 ## Écarts du lot 8 corrigés (2026-10-26, David : « corrige les écarts »)
 
-1. **#1296** : la carte refusée dit maintenant l'aide du parseur, comme la ligne de calcul (`invalidExpressionMessage`, `parse.ts` ; `knownFrench`, `french-errors.ts`) : `« 1[h] 30[min] * 2 » n'est pas une expression valide. Durée composée collée à × ou ÷ : écris 2*(1 h 30 min)…`. Vaut pour toute aide connue (`x^^2` → « Il manque l'exposant après ^. ») ; « Unexpected token in atom: EOF » se traduisait « « EOF » inattendu ici » → « Expression incomplète ». Ligne récrite : `(1 h 30 min) * 2` retouchée reste 3 h.
-2. **#1289** : un VRAI bug, masqué par mon geste. Tapé `1/2`, →, ` m`, MathLive écrit `\frac12\,m` (forme compacte, sans accolades) : la carte le lisait 1/2 × m, « En attente de m ». `naturalQuantityLatex` (`mathfield.ts`) lit aussi `\frac12`.
+1. **#1296** : la carte refusée dit maintenant l'aide du parseur, comme la ligne de calcul (`invalidExpressionMessage`, `parse.ts` ; `knownFrench`, `french-errors.ts`) : `« 1[h] 30[min] * 2 » n'est pas une expression valide. Durée composée collée à × ou ÷ : écris 2*(1 h 30 min)…`. Vaut pour toute aide précise (`x^^2` → « Il manque l'exposant après ^. »), pas pour une position seule (`a = 3 sur 4` → « « 4 » inattendu ici », trompeur : #1305 inchangé) ; « Unexpected token in atom: EOF » se traduisait « « EOF » inattendu ici » → « Expression incomplète ». Ligne récrite : `(1 h 30 min) * 2` retouchée reste 3 h.
+2. **#1289** : un VRAI bug, masqué par mon geste. Tapé `1/2`, →, ` m`, MathLive écrit `\frac12\,m` (forme compacte, sans accolades) : la carte le lisait 1/2 × m, « En attente de m ». `naturalQuantityLatex` (`mathfield.ts`) lit aussi `\frac12`. Reste connu, d'avant : `2\frac12\,m` et `\frac12\,3\,m` se recollent (21/2 m, 1/23 m), avec ou sans accolades.
 3. **#1356** : ligne périmée, récrite : « Repartir de zéro » vide les cartes, la console garde ses lignes, après rechargement aussi.
 
 #1289, #1296, #1356 sortent de la liste.

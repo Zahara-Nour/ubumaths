@@ -217,6 +217,7 @@ describe('durées composées et fractions dans la carte', () => {
 		expect(definitionFromField('value', '\\min\\left(2,3\\right)')).toBe('\\min\\left(2,3\\right)');
 		expect(definitionFromField('value', '\\frac{1}{2}m')).toBe('\\frac{1}{2}m');
 		expect(definitionFromField('value', '\\frac12m')).toBe('\\frac12m');
+		expect(definitionFromField('value', '\\frac123\\,m')).toBe('\\frac123\\,m');
 	});
 });
 

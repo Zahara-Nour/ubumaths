@@ -75,6 +75,12 @@ describe('une définition refusée par le parseur : son aide, comme sur la ligne
 		);
 	});
 
+	it('a = 3 sur 4 : une position seule (« « 4 » inattendu ici ») n’est pas une aide', () => {
+		expect(deskWith('a = 3 sur 4').atelier.get('a')!.message).toBe(
+			"« 3 sur 4 » n'est pas une expression valide."
+		);
+	});
+
 	it('x@2 : sans aide connue du parseur, le refus seul', () => {
 		expect(deskWith('h(x) = x@2').atelier.get('h')!.message).toBe(
 			"« x@2 » n'est pas une expression valide."
