@@ -1,0 +1,86 @@
+[
+	{
+		"id": "0437884a-1089-4db7-8d0e-135585b00995",
+		"parent_id": "841b9ac9-0d08-4d54-bffa-d6b9fb2170d8",
+		"kind": "notion",
+		"name": "Divisibilité"
+	},
+	{
+		"id": "0cad3e5b-da0a-4b01-8529-1a6d9ab12c2f",
+		"parent_id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"kind": "subnotion",
+		"name": "calcul astucieux"
+	},
+	{
+		"id": "1a3ed5f7-33e6-4cb5-8dcc-f334f2a99287",
+		"parent_id": "0437884a-1089-4db7-8d0e-135585b00995",
+		"kind": "subnotion",
+		"name": "pair ou impair"
+	},
+	{
+		"id": "4b4437d2-1738-4875-9f18-3aa66eedd60b",
+		"parent_id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"kind": "subnotion",
+		"name": "double et moitié"
+	},
+	{
+		"id": "6ce95f7a-c7b2-410e-814e-e46c04ac3b67",
+		"parent_id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"kind": "subnotion",
+		"name": "écritures"
+	},
+	{
+		"id": "82ec743b-5746-4969-9ee8-85811830bde0",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "calcul astucieux"
+	},
+	{
+		"id": "841b9ac9-0d08-4d54-bffa-d6b9fb2170d8",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Arithmétique"
+	},
+	{
+		"id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Entiers : multiplication"
+	},
+	{
+		"id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Entiers : numération"
+	},
+	{
+		"id": "948c8b72-f671-4d2c-aace-4c14d51d7b06",
+		"parent_id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"kind": "subnotion",
+		"name": "décomposition"
+	},
+	{
+		"id": "9ebf797e-aaf1-4cd9-869e-274d84f46d63",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "double et moitié"
+	},
+	{
+		"id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Nombres et calculs"
+	},
+	{
+		"id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Entiers : addition et soustraction"
+	},
+	{
+		"id": "f0fdc54e-1f65-4d99-8068-e02e1c316b1d",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "distributivité"
+	}
+]
