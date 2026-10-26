@@ -1,21 +1,21 @@
 ---
 title: Figure manipulable partout et case « choix » (QCM réécrit en cases)
 date: 2026-10-26
-status: phase 0 à écrire
+status: phase 0 écrite, en attente de David
 ---
 
 # Chantier « figure-et-choix »
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, à l'ouverture du chantier._
+_Mis à jour le 2026-10-26, phase 0 écrite._
 
-- **État** : décisions de David prises (§ 1) ; rien d'écrit ni de codé.
-- **Prochaine action** : écrire la phase 0 (§ 2) : lire l'existant (QCM, `figure-a-completer`, `deplacable:`),
-  comportements nominal / limite / erreur, questions restantes à David ; puis attendre sa validation.
-- **En attente de David** : rien pour l'instant.
-- **Pièges en cours** : migration destructive (retrait de `multiple_choice`) seulement après le `deploy:prod` du
-  code qui n'en dépend plus ; question d'accès AVANT tout SQL ; ADR à écrire (révise « QCM ou cases »).
+- **État** : phase 0 écrite (§ 2 : existant lu, comportements, ordre des lots) ; rien de codé.
+- **Prochaine action** : réponses de David aux questions § 2.6, puis lot 1 (case choix), tests d'abord.
+- **En attente de David** : § 2.6, Q1 à Q7 (syntaxe, plusieurs réponses, mélange, outils, `deplacable:`,
+  ordre des lots, « le PDF » + ancien format TinyMath).
+- **Pièges en cours** : migration des QCM seulement après le `deploy:prod` du lot 1 ; retrait de la contrainte
+  SQL après le `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL ; ADR à écrire.
 - **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `feat/figure-et-choix`.
 
 ---
@@ -39,9 +39,157 @@ tapée parce qu'une question est QCM **ou** à cases (`src/lib/questions/types.t
    correction (rien d'enregistré, comme aujourd'hui) ; en évaluation, enregistré avec la réponse (`test_answers`)
    et montré dans la copie corrigée et le PDF, sans vert ni rouge.
 
-## 2. Phase 0 (à écrire)
+## 2. Phase 0 (écrite le 2026-10-26, à valider par David)
 
-À trancher : une réponse ou plusieurs cochables ; ordre des choix mélangé ou non ; notation d'une question mêlant
-« choix » et autres cases ; copie corrigée et PDF ; ordre des lots (case « choix », migration des QCM, retrait de
-`multiple_choice`, figure de travail, `deplacable:` partout) ; termes dans `CONTEXT.md` ; ADR.
-Premier modèle visé : CP-058 (figure de travail + choix oui / non) — **à ne pas publier en l'état d'ici là**.
+### 2.0 L'existant, en bref (lu le 2026-10-26)
+
+- **QCM** : `choices[{content, isCorrect}]` dans la variation ou `shared`, bonne réponse par `isCorrect` ou
+  `correctChoiceIndex` (peut être dynamique, `{{eval:…}}`), `multipleAnswers` au niveau du MODÈLE, mélange
+  `options.shuffleChoices` (activé par défaut, consomme la graine en fin de génération). Type DÉDUIT
+  (`getQuestionType`), mais aussi écrit dans `question_templates.type` (filtres admin). Notation : 1 / ½ (bons
+  choix seulement, pas tous) / 0. Réponse stockée = `number[]` d'indices d'origine, les cases = `string[]` :
+  on ne les distingue que par le type JS (`[]` ambigu).
+- **Prod (2026-10-26)** : 178 QCM (80 publiés, 98 brouillons) ; 2 à plusieurs réponses ; 88 avec des maths
+  dans les choix, 4 avec un bloc (` ```courbe `) dans un choix ; 86 non mélangés ; **aucun ne mêle choix et
+  cases** ; **0 réponse de QCM dans `test_answers`** (rien à convertir). ~110 fichiers `scripts/questions/**`
+  portent `"choices"`.
+- **Figure à compléter** : une case (`type: 'graphical'`) ; `outils:` UN seul outil (droite ou segment) ;
+  `verifier:` OBLIGATOIRE ; tout-ou-rien ; figure vide → « Tu n'as pas tout complété », 0 point. Copie corrigée :
+  vert si juste, sinon traits de l'élève + bonne figure en pointillés ; aucun rendu « neutre ». PDF (fiche) :
+  la figure de départ seule.
+- **`deplacable:` / `rendu:`** : refusés hors figure enregistrée (`figure-parser.ts:300`). Surtout : une figure
+  de question est un SVG statique (`FigureBlockView`, `figureToSvg`) ; seul `StoredFigurePreview` passe par
+  `GeometryCanvas`. Ouvrir les clés = brancher `GeometryCanvas` dans le rendu des blocs, pas seulement le
+  parseur. La fenêtre n'est facultative qu'en mode interactif.
+- **Pas de PDF de copie corrigée d'évaluation** trouvé ; le seul PDF est celui des fiches (énoncé + corrigé).
+
+### 2.1 La case « choix »
+
+Proposition : une **case choix** est une case comme les autres (`blanks[i]`, positionnelle), marquée dans
+l'énoncé par un bloc :
+
+````
+Les points sont-ils alignés ?
+
+```choix
+- Oui
+- Non
+```
+````
+
+la bonne réponse étant portée par la case (`blanks[i].expectedAnswer: "1"` ou `"{{eval:…}}"`, indices
+d'origine en chaîne, ou `"0;2"` à plusieurs), et ses réglages aussi : `plusieurs: oui`, `melanger: non`.
+Un choix reste de l'ubumark (maths, blocs comme aujourd'hui).
+
+**Nominal**
+
+- L'élève voit l'énoncé, puis les choix à l'endroit du bloc (lettres A, B, C, ronds ou carrés comme
+  aujourd'hui), et coche. Il peut y avoir d'autres cases avant ou après (texte, maths, figure).
+- Notation de la case : juste / fausse / vide ; à plusieurs réponses, « bons choix seulement, pas tous »
+  = forme non optimale (½). Une question réduite à une case choix est donc notée **exactement** comme le QCM
+  d'aujourd'hui (1 / ½ / 0).
+- Question mêlant choix et autres cases : barème actuel des cases (`statusFromBlankStatuses`), la case choix
+  comptant comme une case.
+- Réponse stockée : une chaîne dans `values[]`, comme toute case (`"1"`, `"0;2"`), en indices d'origine :
+  plus de `number[]`, plus d'ambiguïté.
+- Copie corrigée : la liste des choix, cochés par l'élève, bons choix marqués (rendu `choices` actuel, à sa
+  place dans l'énoncé). PDF de fiche : `**a)** … **b)** …` dans l'énoncé, `Réponse : **b)** …` au corrigé.
+- Écriture : l'éditeur de cases gagne « case choix » (liste de choix, bonne(s) réponse(s), Vrai / Faux) ;
+  le mode QCM de l'éditeur disparaît au lot du retrait.
+
+**Limite**
+
+- Deux cases choix dans une question : permis, chacune son mélange.
+- Un seul choix, ou un choix vide → erreur à l'écriture (« au moins 2 choix »).
+- Choix contenant `?` ou `[_]` : pas une case (une case dans un choix est refusée avec message).
+- Mélange : la graine reste celle de l'instance ; l'ordre des QCM migrés **changera** pour une même graine
+  (sans conséquence : aucune réponse stockée, les instances enregistrées gardent leur ordre).
+
+**Erreur**
+
+- Bonne réponse hors des choix, ou 0 / plusieurs bonnes sans `plusieurs: oui` → erreur située à l'écriture
+  (règles de `choice-answer-count.ts`, reprises).
+- Réponse reçue illisible (`"x"`, indice hors bornes, doublon) → 400 côté serveur (Zod), case fausse côté
+  navigateur.
+
+### 2.2 Migration des QCM et retrait de `multiple_choice`
+
+- Script de migration (données, pas de schéma) : pour chaque QCM, ajouter le bloc ` ```choix ` en fin
+  d'énoncé, déplacer `choices` / `correctChoiceIndex` / `multipleAnswers` / `shuffleChoices` dans la case,
+  `type` → `fill_in_blanks`. Mêmes `id` : les contrôles, chapitres et révisions SRS qui pointent vers ces
+  modèles ne bougent pas. Vérification : chaque modèle migré génère, et ses `test_specs` (réécrits :
+  `selectedChoices` → `answers`) passent. Copie de sauvegarde des 178 lignes avant écriture.
+- Mêmes réécritures dans `scripts/questions/**` (sources des modèles).
+- Ordre imposé : code qui lit la case choix → `deploy:prod` → migration des données → code sans
+  `multiple_choice` → `deploy:prod` → migration SQL de la contrainte `question_templates_type_check`
+  (retrait de la valeur, destructive au sens « ne peut plus être écrite » : arrêt et explication avant).
+- Hors champ : le QCM des énigmes (`riddles/`, indépendant) et l'ancien format de migration
+  (`src/lib/migration/`, à décider : 2.6 Q7).
+
+### 2.3 La figure de travail
+
+Proposition : un bloc distinct ` ```figure-de-travail `, même en-tête que ` ```figure-a-completer `
+(fenêtre, `outils:`…), **sans `verifier:`** (refusé s'il est écrit). C'est une case non notée.
+
+**Nominal**
+
+- L'élève trace avec l'outil permis ; la réponse est ailleurs (case choix, texte…).
+- Notation : la figure de travail n'entre pas dans le barème ; vide, elle ne bloque pas « Valider » et ne
+  déclenche pas « Tu n'as pas tout complété ».
+- Entraînement : après correction, ses traits restent visibles, **gris, sans vert ni rouge**, à côté de la
+  correction ; rien d'enregistré (comme aujourd'hui).
+- Évaluation : le tracé est enregistré avec la réponse (`values[]`, même chaîne `droite(…)|…`), montré dans la
+  copie corrigée de l'élève et du prof, en gris.
+- PDF de fiche : la figure de départ (comme une figure à compléter).
+
+**Limite**
+
+- Figure de travail vide en évaluation : enregistrée vide, copie « aucun tracé ».
+- Outils : un seul par figure aujourd'hui (droite ou segment) — 2.6 Q4.
+
+**Erreur**
+
+- `verifier:` dans une figure de travail, outil inconnu → erreur située à l'écriture.
+- Tracé reçu illisible ou trop long (bornes actuelles : 1000 car., 20 objets) → 400 / ignoré.
+
+### 2.4 `deplacable:` (et `rendu:`) partout
+
+- Une figure de question (bloc ` ```figure `) peut porter `deplacable: oui` / `rendu: croquis|mixte` ;
+  elle s'affiche alors dans la toile (`GeometryCanvas`) au lieu du SVG statique.
+- Limite : PDF → figure statique (clés ignorées) ; sans `deplacable:` → SVG statique comme aujourd'hui
+  (rien ne change pour les figures existantes).
+- Erreur : valeur inconnue → erreur située (messages actuels).
+- À cadrer avec David (2.6 Q5) : où « partout » (questions, cours, fiches à l'écran…) et si une figure à
+  compléter / de travail peut aussi être déplaçable.
+
+### 2.5 Ordre des lots (proposé)
+
+1. **Case choix** (lecture, notation, rendu, copie, PDF, éditeur), à côté des QCM existants.
+2. **Figure de travail**.
+3. **CP-058 réécrit** (figure de travail + case choix oui / non), essai par David, puis publication.
+4. **Migration des 178 QCM** (après `deploy:prod` des lots 1-2).
+5. **Retrait de `multiple_choice`** du code, puis (après `deploy:prod`) de la contrainte SQL.
+6. **`deplacable:` partout**.
+
+Le gros risque (correction des réponses) est dans les lots 1, 4, 5 → revue `code-reviewer` opus ;
+lot 4 touche des données en prod → question d'accès (aucun accès nouveau : contenu des modèles seulement).
+
+Termes `CONTEXT.md` (dans le lot 1-2) : **Case choix** (remplace **QCM** ; « QCM » reste le nom courant d'une
+question réduite à une case choix), **Figure de travail** (≠ figure à compléter, qui est la « figure
+réponse »). ADR : « Le QCM est une case » (révise la séparation QCM / cases de `getQuestionType`).
+
+### 2.6 Questions à David
+
+1. **Syntaxe** : bloc ` ```choix ` à liste de `- …` dans l'énoncé (reco), ou choix gardés dans un champ à
+   part et un simple marqueur `[choix]` dans l'énoncé ?
+2. **Une ou plusieurs réponses** : réglage de la case (`plusieurs: oui`), demi-point gardé pour « bons choix
+   mais pas tous » (reco, = aujourd'hui) ?
+3. **Mélange** : activé par défaut, `melanger: non` pour l'empêcher (= aujourd'hui, reco) ?
+4. **Outils de la figure de travail** : un seul outil comme aujourd'hui (reco pour CP-058 : droite), ou
+   plusieurs permis (`outils: droite, segment`) ?
+5. **`deplacable:` partout** : quels lieux (questions seulement en premier, reco) ; une figure à compléter ou
+   de travail peut-elle être déplaçable (reco : non, l'élève y trace) ?
+6. **Ordre des lots** : celui de 2.5 (CP-058 dès le lot 3, reco) ?
+7. **« le PDF »** de ta décision 4 : je n'ai trouvé que le PDF des fiches (pas de PDF de copie corrigée
+   d'évaluation). Lequel voulais-tu dire ? Et l'ancien format de migration TinyMath (`src/lib/migration/`) :
+   le laisser produire des QCM à l'ancienne, ou le retirer / l'adapter ?
