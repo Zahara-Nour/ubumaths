@@ -12,6 +12,9 @@ _Mis à jour le 2026-10-26, après #1809._
   manipulable NON notée dans l'énoncé (outils limités, ex. droites seules), réponse à côté, QCM compris → CP-058 en
   QCM oui / non. À trancher : geste plus vérifié ? tracé gardé dans la copie ? un bloc figure ou un bloc à part
   (`deplacable:` réservé aux figures stockées, ADR 0027) ? Reco : chantier à part ; **ne pas publier CP-058 en l'état**.
+  **Tranché le 2026-10-26** (§ 13) : consigne au choix du modèle (« tu peux vérifier » = figure de travail non notée,
+  « montre comment » = figure notée) ; figure déplaçable utilisable partout ; **QCM réécrit en case « choix »**,
+  TOUS les QCM migrés (« le plus propre possible, même si c'est plus de travail »). Reste : tracé gardé ou perdu.
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
 - **Worktree / branche** : aucun (retiré après #1809).
 
@@ -483,3 +486,22 @@ ton rectangle doit avoir ces côtés-là. » — `closedOnProlongedSides`, recta
 **Revue Opus** : aucun faux positif ; 4 tests ajoutés (prolongé des deux côtés, côté vertical, oblique, trou).
 **Limites laissées** : carré décalé qui chevauche [AB] sans le contenir → « pas fermée » (message à trancher par
 David) ; figure fermée en L → « pas fermée » (existait avant).
+
+## 13. Figure manipulable et case « choix » : décisions de David (2026-10-26)
+
+Né de l'essai de CP-058 : pourquoi la figure est-elle une case, alors qu'on veut seulement que l'élève puisse vérifier,
+et pourquoi le oui / non n'est-il pas un QCM ?
+
+1. **Consigne au choix du modèle** : « Tu peux vérifier en traçant… » → figure de TRAVAIL (tracés possibles, rien de
+   noté, réponse à côté, QCM compris) ; « Montre comment tu vérifies que… » → figure RÉPONSE, notée (le
+   `figure-a-completer` d'aujourd'hui). Les deux doivent exister.
+2. **Figure déplaçable utilisable partout** (David : « une figure stockée ? pour moi la figure déplaçable doit pouvoir
+   être utilisable partout ») : revient sur la spécification du 2026-10-13 qui réservait `deplacable:` aux figures
+   stockées (`geometry_figures`, ADR 0027). Outils limités par l'auteur (ex. droites seules).
+3. **QCM = une case « choix »** (proposé par David) ; option B retenue, « le plus propre possible » : tous les QCM
+   réécrits en questions à cases, migration des QCM en prod, retrait du type `multiple_choice` (migration
+   destructive, après le `deploy:prod` du code qui n'en dépend plus). Écarté : A, case « choix » à côté des QCM gardés.
+
+**À trancher** : tracé sur une figure de travail gardé (copie corrigée) ou perdu à la validation ; une réponse ou
+plusieurs ; ordre mélangé ; notation d'une question mêlant « choix » et autres cases ; copie corrigée et PDF ; nom du
+chantier et des termes dans `CONTEXT.md` ; ADR (révise la décision QCM / cases).
