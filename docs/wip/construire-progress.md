@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, phase 0 validée._
+_Mis à jour le 2026-10-26, après #1812._
 
-- **État** : phase 0 validée (§ 4 bis) ; PR 1 (collection, § 5) écrite, tests verts, PR ouverte.
-- **Prochaine action** : CI verte de #1812 → merge ; puis PR 2 (monnaie).
-- **En attente de David** : rien.
-- **Pièges en cours** : toute retouche de `scene-commune.ts` garde verts les tests de la collection ET de la monnaie (instantanés figés) ; aucune réponse d'élève enregistrée (ADR 0001) ; le chantier `geometrie-validation` va réécrire les QCM en cases « choix » : ne pas en dépendre.
-- **Worktree / branche** : `../ubumaths-wt-construire` · `feat/construire`.
+- **État** : PR 1 (collection à construire, CP-002) mergée (#1812), pas en prod ; vérification manuelle notée.
+- **Prochaine action** : PR 2 — `construire:` dans ```monnaie (réserve = coupures permises, défaut 1, 2, 5, 10, 20, 50 €) sur le même patron ; puis modèles CP-002, CP-044, CP-071, CP-045 au chantier « questions » (brouillons jusqu'au `deploy:prod`).
+- **En attente de David** : rien (vérification manuelle #1812 quand il veut).
+- **Pièges en cours** : délimiter les blocs comme le parseur (`findBuildCollections`, ligne vide + clé) ; ```operation garde ses angles morts (ligne vide, non fermé, ordre indifférent) — à traiter à part, un modèle publié l'utilise ; `scene-commune.ts` intouché ; total jamais affiché avant le verdict.
+- **Worktree / branche** : aucun (retiré après #1812) ; PR 2 : nouveau worktree depuis `origin/main`.
 
 ---
 
