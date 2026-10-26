@@ -14,7 +14,7 @@ couvre:
   - 'src/lib/components/questions/**'
   - 'src/lib/components/question-inputs/**'
   - src/lib/components/markdown/nodes/BlankInput.svelte
-  - 'src/lib/components/{QuestionTemplateForm,SharedFieldsEditor}.svelte'
+  - 'src/lib/components/{QuestionTemplateForm,SharedFieldsEditor,ChoiceCaseEditor}.svelte'
   - 'src/lib/components/{QuestionTemplateCard,QuestionPreview*,QuestionCategoryFields,QuestionTemplateHelpDialogs,CategorySelector,CartFloatingButton,CartQuestionCard,DisplayOptionsEditor,ValidationOptionsEditor,PrecisionEditor,VariableEditor,AnswerEditor,CourseQuestionToggle}.svelte'
   - 'src/lib/stores/{questionCart,questionCategories,questionTemplates}.svelte.ts'
   - src/lib/components/exercises/VariationEditor.svelte
@@ -140,7 +140,7 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   (vérifié le 2026-10-13) : `QuestionCategoryFields` (thème / domaine / sous-domaine, options
   filtrées par `$lib/questions/category-options`, chaque liste est un `CategorySelector` sur
   `MySelect` avec « Ajouter… »), `VariableEditor`, `AnswerEditor` (cases ou choix de QCM selon le
-  type), `PrecisionEditor` (`none`, `decimal`, `significant`, `magnitude`, `tolerance`) — ces
+  type ; une case choix a sa carte `ChoiceCaseEditor`, voir « Case choix dans l'éditeur »), `PrecisionEditor` (`none`, `decimal`, `significant`, `magnitude`, `tolerance`) — ces
   trois-là servent aussi à `SharedFieldsEditor` —, `DisplayOptionsEditor`,
   `ValidationOptionsEditor`, `CourseQuestionToggle` (`options.courseQuestion`, cochée et
   désactivée pour une carte de cours), `QuestionPreview` (instance générée, graine affichée, autre
@@ -196,6 +196,23 @@ des `grades`, un `status` (`draft` | `published`), des `options` (contraintes, `
 
 Le **type** n'est pas déclaré : `getQuestionType` le déduit — `options.courseCard` → `course_card`
 (ADR 0009), des `choices` (variation ou `shared`) → `multiple_choice`, sinon `fill_in_blanks`.
+
+**Case choix dans l'éditeur** (`choice-case-editor.ts`, `ChoiceCaseEditor.svelte`, PR 1b du chantier
+`figure-et-choix`). L'énoncé effectif de la variation (le sien, sinon le partagé) fait foi :
+`AnswerEditor` y repère les cases comme le générateur (`statementCaseKinds` = `blankTypes` de
+`assignBlankIndices` ; `findCaseChoiceBlocks`, mêmes blocs ```choix) et donne à chaque case choix
+une carte « Case N : choix » : choix modifiables, bonne(s) réponse(s) cochée(s) → `expectedAnswer`
+(`"1"`, `"0;2"`), « Plusieurs bonnes réponses », « Mélanger les choix ». Chaque modification
+réécrit le bloc à sa place (`writeChoiceCase`), le reste du texte à l'octet près ; supprimer un
+choix décale les bonnes réponses. « Ajouter une case choix » et « Vrai / Faux » (`melanger: non`,
+rien coché) ajoutent un bloc en fin d'énoncé : sa case est la dernière, la liste des cases est
+complétée jusqu'à elle. Réponse calculée (`{{eval:…}}`) ou hors des choix : champ de texte, « Cocher
+à la main » revient aux ronds. Bloc mal écrit (réglage ou ligne illisible, non fermé) : messages du
+parseur et champ de texte seul, jamais réécrit ; un `case: N` écrit à la main aussi. Énoncé
+**partagé** (la variation n'a pas le sien, `statementShared`) : carte en lecture seule (on coche
+seulement), pas d'ajout de case choix — le modifier d'une variation décalerait les réponses des
+autres. `TestSpecEditor` : une case choix se coche (`answers[i]` = `"0;2"`) ; réponse calculée →
+champ de texte.
 
 ### 2. Fusion `shared` ⊕ variation (`resolveVariationWithShared`)
 
@@ -708,9 +725,6 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - **Case graphique (droite graduée)** : `InstanceBlank.type` admet `'graphical'` et
   `graphicalConfig`, mais aucun générateur ne la produit et `NumberLineInput.svelte` n'est importé
   par aucun composant.
-- **Case choix (2026-10-26, PR 1a)** : l'éditeur de cases ne la propose pas encore (PR 1b) ;
-  l'import du markdown dans l'éditeur riche (`rich-text/markdown-import.ts`) ignore le nœud
-  `choice`. Les QCM (`choices`) restent inchangés.
 - Composants sans appelant : `question-inputs/MathInput.svelte`, `question-inputs/OrderingInput.svelte`,
   et `src/lib/questions/examples/color-demo.ts`.
 - `question_templates.type` existe en base, mais le code déduit le type de la structure

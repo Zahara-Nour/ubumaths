@@ -255,6 +255,8 @@ function convertBlock(block: BlockNode): JSONContent | null {
 			return convertCodeBlock({ type: 'code-block', language: 'collection', code: block.source });
 		case 'monnaie':
 			return convertCodeBlock({ type: 'code-block', language: 'monnaie', code: block.source });
+		case 'choice':
+			return convertCodeBlock({ type: 'code-block', language: 'choix', code: block.source });
 
 		default:
 			return null;

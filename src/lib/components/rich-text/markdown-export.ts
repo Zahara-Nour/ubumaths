@@ -468,7 +468,11 @@ function convertBlockquoteToMarkdown(quote: JSONContent, level = 1): string {
 function convertCodeBlockToMarkdown(code: JSONContent): string {
 	const language = (code.attrs?.language as string) || '';
 	const content = code.content?.[0]?.text || '';
-	return `\`\`\`${language}\n${content}\n\`\`\``;
+	// Un bloc qui en contient un autre (```choix dont un choix est une horloge) :
+	// clôture plus longue que toute clôture intérieure
+	const inner = Math.max(0, ...[...content.matchAll(/^\s*(`{3,})/gm)].map((m) => m[1].length));
+	const fence = '`'.repeat(Math.max(3, inner + 1));
+	return `${fence}${language}\n${content}\n${fence}`;
 }
 
 /**

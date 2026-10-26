@@ -76,7 +76,7 @@
 	import MyCheckbox from './MyCheckbox.svelte';
 	import CourseQuestionToggle from './CourseQuestionToggle.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
-	import { templateMarkdown } from '$lib/ubumark';
+	import { templateMarkdown, type TemplateMarkdown } from '$lib/ubumark';
 	import QuestionCategoryFields from './QuestionCategoryFields.svelte';
 	import type { CategoryEntry } from '$lib/questions/category-options';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -1103,6 +1103,17 @@
 		_jsonErrors = errors;
 	}
 
+	// Énoncé effectif d'une variation (le sien, sinon le partagé) : l'éditeur de
+	// cases y lit ses blocs choix et les réécrit là où ils sont
+	function effectiveStatement(v: QuestionVariation): TemplateMarkdown {
+		return v.statement?.trim() ? v.statement : sharedStatement;
+	}
+
+	function setEffectiveStatement(v: QuestionVariation, value: TemplateMarkdown) {
+		if (!v.statement?.trim() && sharedStatement.trim()) sharedStatement = value;
+		else v.statement = value;
+	}
+
 	// « Plusieurs réponses » coupé dans un éditeur (case ou « Vrai / Faux ») : le
 	// réglage vaut pour tout le modèle → chaque variation et le partagé ne gardent
 	// que leur première bonne réponse
@@ -1946,6 +1957,12 @@
 														bind:choices={variation.choices}
 														bind:multipleAnswers
 														bind:shuffleChoices={optShuffleChoices}
+														bind:statement={
+															() => effectiveStatement(variation),
+															(v) => setEffectiveStatement(variation, v)
+														}
+														statementShared={!variation.statement?.trim() &&
+															sharedStatement.trim().length > 0}
 														onSingleAnswer={handleSingleAnswer}
 													/>
 												</Card.Content>

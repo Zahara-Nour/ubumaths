@@ -25,7 +25,8 @@ describe('lecture du corps d’un bloc choix', () => {
 			multiple: false,
 			shuffle: true,
 			choices: ['Oui, ils sont alignés.', 'Non, ils ne sont pas alignés.'],
-			errors: []
+			errors: [],
+			rewritable: true
 		});
 	});
 
@@ -160,7 +161,8 @@ describe('parseMarkdown : nœud « choice » à l’endroit du bloc', () => {
 			caseIndex: 1,
 			multiple: true,
 			choices: ['$x^2$', 'b'],
-			errors: []
+			errors: [],
+			source: 'case: 1\nplusieurs: oui\n- $x^2$\n- b'
 		});
 	});
 

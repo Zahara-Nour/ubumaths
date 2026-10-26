@@ -16,6 +16,13 @@
 	- multipleAnswers: boolean (bindable, for QCM)
 	- shuffleChoices: boolean (bindable, for QCM) — `false` après le préréglage
 	  « Vrai / Faux » (Q106 : jamais mélangé)
+	- statement: énoncé effectif de la variation (bindable, texte à trous) : ses
+	  blocs ```choix deviennent des cartes « Case N : choix » qui le réécrivent ;
+	  « Ajouter une case choix » et « Vrai / Faux » y ajoutent un bloc en fin
+	  (chantier figure-et-choix, PR 1b)
+	- statementShared: l'énoncé est le partagé (la variation n'a pas le sien) :
+	  cartes en lecture seule (on coche seulement) et pas d'ajout de case choix,
+	  sinon les réponses des autres variations se décaleraient
 	- onSingleAnswer: appelé quand « plusieurs réponses » est coupé ici (case
 	  décochée ou « Vrai / Faux ») : le réglage vaut pour tout le modèle, le parent
 	  normalise les AUTRES listes de choix
@@ -26,6 +33,12 @@
 	import type { TemplateMarkdown } from '$lib/ubumark';
 	import { templateMarkdown } from '$lib/ubumark';
 	import { keepFirstCorrectChoice } from '$lib/questions/single-answer';
+	import {
+		appendChoiceCase,
+		statementCaseKinds,
+		type ChoiceCaseDraft
+	} from '$lib/questions/choice-case-editor';
+	import ChoiceCaseEditor from './ChoiceCaseEditor.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
@@ -42,6 +55,8 @@
 		choices?: { content: TemplateMarkdown; isCorrect?: boolean }[];
 		multipleAnswers?: boolean;
 		shuffleChoices?: boolean;
+		statement?: TemplateMarkdown;
+		statementShared?: boolean;
 		onSingleAnswer?: () => void;
 		/**
 		 * Amorcer des champs vides (deux choix, un trou) quand il n'y en a pas.
@@ -54,6 +69,13 @@
 	// Constantes
 	/** Préréglage « Vrai / Faux » (V7) : un QCM ordinaire à deux choix */
 	const TRUE_FALSE_CONTENTS = ['Vrai', 'Faux'];
+	/** Blocs ajoutés en fin d'énoncé par l'éditeur de cases */
+	const NEW_CHOICE_CASE: ChoiceCaseDraft = { multiple: false, shuffle: true, choices: ['', ''] };
+	const TRUE_FALSE_CASE: ChoiceCaseDraft = {
+		multiple: false,
+		shuffle: false,
+		choices: TRUE_FALSE_CONTENTS
+	};
 
 	let {
 		questionType,
@@ -62,6 +84,8 @@
 		choices = $bindable([]),
 		multipleAnswers = $bindable(),
 		shuffleChoices = $bindable(),
+		statement = $bindable(),
+		statementShared = false,
 		onSingleAnswer,
 		seedEmpty = true
 	}: Props = $props();
@@ -70,6 +94,9 @@
 	const uid = $props.id();
 
 	let trueFalseConfirmOpen = $state(false);
+
+	// Genre de chaque case de l'énoncé (ordre du générateur) : une case choix a sa carte
+	let caseKinds = $derived(statement === undefined ? [] : statementCaseKinds(statement));
 
 	// Choix déjà écrits : le préréglage les effacerait
 	let writtenChoices = $derived(
@@ -191,6 +218,27 @@
 		blanks = blanks.filter((_, i) => i !== index);
 	}
 
+	// Rang d'une case choix parmi les blocs choix de l'énoncé
+	function choiceOrdinal(caseIndex: number): number {
+		return caseKinds.slice(0, caseIndex).filter((kind) => kind === 'choice').length;
+	}
+
+	// Case choix ajoutée en fin d'énoncé : elle est la dernière case, la liste
+	// des cases est complétée jusqu'à elle
+	function addChoiceCase(draft: ChoiceCaseDraft) {
+		if (statement === undefined) return;
+		statement = templateMarkdown(appendChoiceCase(statement, draft));
+		const count = statementCaseKinds(statement).length;
+		const missing = Math.max(0, count - blanks.length);
+		blanks = [...blanks, ...Array.from({ length: missing }, () => ({ expectedAnswer: '' }))];
+		// Liste plus longue que les cases (trou retiré du texte) : la nouvelle case
+		// n'hérite pas de la réponse d'un ancien trou
+		blanks[count - 1] = { expectedAnswer: '' };
+		if (Array.isArray(answer) && answer.length < blanks.length) {
+			answer = [...answer, ...Array<string>(blanks.length - answer.length).fill('')];
+		}
+	}
+
 	// Insert syntax helper into input/textarea
 	function insertSyntax(
 		elementId: string,
@@ -225,27 +273,37 @@
 			<Card.Content class="space-y-4">
 				{#if blanks}
 					{#each blanks as blank, index (index)}
-						<div class="flex gap-3">
-							<div class="flex-1 space-y-2">
-								<Label for="blank-answer-{index}">
-									Trou #{index + 1} — Réponse attendue
-								</Label>
-								<Input
-									id="blank-answer-{index}"
-									bind:value={blank.expectedAnswer}
-									class="font-mono"
-								/>
+						{#if statement !== undefined && caseKinds[index] === 'choice'}
+							<ChoiceCaseEditor
+								bind:statement
+								ordinal={choiceOrdinal(index)}
+								caseNumber={index + 1}
+								bind:expectedAnswer={blank.expectedAnswer}
+								editable={!statementShared}
+							/>
+						{:else}
+							<div class="flex gap-3">
+								<div class="flex-1 space-y-2">
+									<Label for="blank-answer-{index}">
+										Trou #{index + 1} — Réponse attendue
+									</Label>
+									<Input
+										id="blank-answer-{index}"
+										bind:value={blank.expectedAnswer}
+										class="font-mono"
+									/>
+								</div>
+								<Button
+									variant="destructive"
+									size="icon"
+									onclick={() => removeBlank(index)}
+									disabled={blanks.length === 1}
+									class="mt-8"
+								>
+									<Trash2 class="h-4 w-4" />
+								</Button>
 							</div>
-							<Button
-								variant="destructive"
-								size="icon"
-								onclick={() => removeBlank(index)}
-								disabled={blanks.length === 1}
-								class="mt-8"
-							>
-								<Trash2 class="h-4 w-4" />
-							</Button>
-						</div>
+						{/if}
 					{/each}
 				{/if}
 
@@ -253,6 +311,33 @@
 					<Plus class="h-4 w-4" />
 					Ajouter un trou
 				</Button>
+
+				{#if statement !== undefined && statementShared}
+					<p class="text-xs text-muted-foreground">
+						Énoncé partagé : les cases choix s'ajoutent dans l'énoncé partagé.
+					</p>
+				{:else if statement !== undefined}
+					<div class="flex flex-wrap gap-2">
+						<Button
+							variant="outline"
+							size="sm"
+							type="button"
+							class="gap-2"
+							onclick={() => addChoiceCase(NEW_CHOICE_CASE)}
+						>
+							<Plus class="h-4 w-4" />
+							Ajouter une case choix
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							type="button"
+							onclick={() => addChoiceCase(TRUE_FALSE_CASE)}
+						>
+							Vrai / Faux
+						</Button>
+					</div>
+				{/if}
 
 				<p class="text-xs text-muted-foreground">
 					Les trous sont positionnels par index dans l'énoncé

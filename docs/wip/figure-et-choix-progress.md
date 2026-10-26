@@ -1,26 +1,38 @@
 ---
 title: Figure manipulable partout et case « choix » (QCM réécrit en cases)
 date: 2026-10-26
-status: lot 1 en cours (PR 1a écrite)
+status: lot 1 en cours (PR 1a mergée, PR 1b à faire)
 ---
 
 # Chantier « figure-et-choix »
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, PR 1a écrite (pas encore ouverte)._
+_Mis à jour le 2026-10-26, PR 1b codée mais pas commitée (deux sessions dans ce worktree)._
 
-- **État** : PR 1a (moteur + interface élève de la case choix) commitée et poussée sur la branche ; ADR 0033,
-  `CONTEXT.md` (Case choix), `questions.md` à jour. Revues `code-reviewer` opus + `security-auditor` en cours.
-  Serveur de test : port 5177.
-- **Prochaine action** : traiter les findings des revues → ouvrir la PR 1a → CI verte → merge ; puis PR 1b
-  (éditeur de la case choix, `test_specs`).
-- **En attente de David** : essai de la case choix sur le serveur de test (facultatif avant merge).
-- **Pièges en cours** : l'éditeur riche (`rich-text/markdown-import.ts`) ignore le bloc ` ```choix ` (PR 1b) ;
-  migration des QCM seulement après le `deploy:prod` des lots 1-2 ; question d'accès AVANT tout SQL.
-- **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `feat/figure-et-choix`.
+- **État** : PR 1b (éditeur de la case choix) **écrite et vérifiée, indexée, pas commitée** :
+  `choice-case-editor.ts`, `ChoiceCaseEditor.svelte`, `AnswerEditor` (cartes, « Ajouter une case choix »,
+  « Vrai / Faux »), `QuestionTemplateForm` (énoncé effectif), `TestSpecEditor` (case choix cochée),
+  éditeur riche (bloc `choix` gardé, clôture ````), docs `questions.md` / `ubumark.md`, § 2.8 ci-dessous.
+  Tests verts, `check:incremental` 0, cliquet tenu, `lint:fast` propre.
+- **Prochaine action** : `git diff --cached --name-only` (les fichiers ci-dessus), relancer seul
+  `construction/__tests__/construction-positions.test.ts` (dépassement de délai sous charge), commit,
+  revue `code-reviewer` sonnet, push (`--force-with-lease` : branche rebasée sur `origin/main`), PR, CI.
+- **En attente de David** : quelle session garde la PR 1b (une autre session travaillait dans ce worktree en
+  parallèle : rebase à 12:09, `test-spec-choice.test.ts` non suivi, qui passe avec ce code).
+- **Pièges en cours** : migration des QCM après le `deploy:prod` des lots 1-2 ; contrainte SQL après le
+  `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL.
+- **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `feat/figure-et-choix-editeur`.
 
 ---
+
+## Historique
+
+- 2026-10-26 — **#1816 mergée** (PR 1a) : bloc ` ```choix `, case `type: 'choice'`, notation = QCM, envoi en
+  positions affichées ramenées aux indices d'origine par le serveur (400 si illisible), choix à leur place
+  dans la correction, PDF de fiche. Revues : code (2 mineurs corrigés), sécurité (rien). CI : garde
+  `block-css-vars` (couleurs `--expected-*` admises comme crochets à repli) ; conflit avec la case
+  « collection à construire » de `main` résolu.
 
 ## 1. Origine et décisions de David (2026-10-26)
 
@@ -207,3 +219,12 @@ réponse »). ADR : « Le QCM est une case » (révise la séparation QCM / case
   Revue : `code-reviewer` opus (correction des réponses).
 - **PR 1b — éditeur** : « case choix » dans l'éditeur de cases (liste, bonne(s) réponse(s), Vrai / Faux),
   `test_specs` d'une case choix. Revue : `code-reviewer` sonnet.
+
+### 2.8 PR 1b : phase 0 validée par David (2026-10-26)
+
+- La carte « Case N : choix » lit le bloc dans l'énoncé effectif (variation, sinon partagé) et le
+  **réécrit** à chaque modification (choix, `plusieurs:`, `melanger:`) ; bonne réponse cochée → `expectedAnswer`.
+- « Ajouter une case choix » / « Vrai / Faux » : bloc ajouté **en fin d'énoncé** (case dernière).
+- Réponse calculée : champ de texte + « Cocher à la main » ; bloc mal écrit : messages, champ seul, jamais réécrit.
+- Énoncé partagé (revue) : carte en lecture seule, pas d'ajout de case — option A, David suit la reco.
+- Tests : une case choix se coche (`"0;2"`). Éditeur riche : bloc gardé en code `choix` (clôture ```` si besoin).
