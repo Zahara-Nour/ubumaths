@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, § 3 codé sur la branche, PR à ouvrir._
+_Mis à jour le 2026-10-26, après #1811._
 
-- **État** : #1807 MERGÉE. § 3 codé (`feat/tidy-conditions-reglage`) : réglage « Simplifications qui changent le domaine », note « avec x ≠ 0 », hypothèses `avec`/`dans` (∩ sur option de `parseStudentDomain`). Revue Sonnet : 4 findings corrigés (domaine périodique jamais garanti, note recopiable, étapes de `.développer avec`, message d'une expression tapée). 37 025 tests verts.
-- **Prochaine action** : PR, CI, merge ; puis clore le chantier (verser le journal).
-- **En attente de David** : essayer sur http://localhost:5177/atelier.
-- **Pièges en cours** : seule une condition polynomiale est garantie (`cos(x) ≠ 0` jamais) ; `ln(x²) → 2 ln x` refusé même `avec x > 0` ; `1/(1/x) → x` reste un bug de `tidy`.
-- **Worktree / branche** : `../ubumaths-wt-tidy-conditions` · `feat/tidy-conditions-reglage`.
+- **État** : #1807 et #1811 MERGÉES (pas encore en prod) : `tidyWithConditions`/`domainLoss`, l'atelier garde le domaine, bouton « Simplifier pour x ≠ 0 », réglage « Simplifications qui changent le domaine », note « avec x ≠ 0 », hypothèses `avec`/`dans` (∩ sur option). Vérifs manuelles #1807 et #1811 notées.
+- **Prochaine action** : clore le chantier après l'essai de David (verser ce journal dans `docs/archive/wip/` ; le durable est dans `atelier.md`, `atelier-syntaxe.md`, `tidy-spec.md`, ADR 0007).
+- **En attente de David** : essayer (vérifs #1807 et #1811) et dire si le chantier est clos.
+- **Pièges en cours** : seule une condition polynomiale est garantie ; `ln(x²) → 2 ln x` refusé même `avec x > 0` ; `1/(1/x) → x` reste un bug de `tidy`.
+- **Worktree / branche** : retirés après le merge.
 
 ## Contexte
 
