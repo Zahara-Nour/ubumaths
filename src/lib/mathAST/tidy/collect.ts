@@ -25,7 +25,7 @@ import type { TidyCondition, TidyFactor, TidyQuantity, TidyTerm } from './types'
 import type { TermOrder, TidyOptions, TidyRule, UnitChoice } from './step-recorder';
 import { TidyStepRecorder } from './step-recorder';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
-import { findNodes, getChildren, mapNode, stripUnnecessaryBrackets } from '../transforms';
+import { findNodes, getChildren, stripUnnecessaryBrackets } from '../transforms';
 import { extractRational } from '../common/numeric';
 import { hashMathNode, hashUnit, nodesEqual } from '../normal/hash';
 import { extractPerfectPower, integerNthRoot } from '../normal/radical';
@@ -52,6 +52,7 @@ import {
 	lcm
 } from '../normal/rational';
 import {
+	divide,
 	func,
 	multiply,
 	number,
@@ -1236,7 +1237,7 @@ function toTerm(
 		absorbFactor(factor, ONE, acc);
 	}
 	reduceRadicalFactors(acc);
-	if (keepsUnderBar(acc)) return verbatimTerm(stackedFractions(node), false);
+	if (keepsUnderBar(acc)) return verbatimTerm(keptUnderBar(node, settings), false);
 
 	// Deux signes qui se rencontrent se simplifient : `−(−x)`, `(−x)·(−y)`.
 	// Un seul est porté devant — `−x·x·x` — et le vrai geste y est ailleurs.
@@ -1281,8 +1282,9 @@ function toTerm(
 function keepsUnderBar(acc: Accumulator): boolean {
 	const { settings } = acc;
 	const lost: TidyCondition[] = [];
-	for (const { base, exponent, key, barred } of acc.factors.values()) {
-		if (!barred || isNegativeRational(exponent)) continue;
+	for (const { base, exponent, key, barred, denominator } of acc.factors.values()) {
+		// Au dénominateur à la fin, ou gardé des deux côtés par `keepDomain` (S3) : rien à faire
+		if (!barred || isNegativeRational(exponent) || isNegativeRational(denominator)) continue;
 		if (settings.nonZero.has(key) || cannotVanish(base, settings.typeCtx)) continue;
 		if (settings.conditions === undefined) return true;
 		const conditions = cancelledBaseConditions(base, settings.typeCtx, settings);
@@ -1294,17 +1296,51 @@ function keepsUnderBar(acc: Accumulator): boolean {
 }
 
 /**
- * Le terme gardé s'écrit comme `tidy` écrit ses fractions, en barres empilées :
- * `1/(1/x)` tapé en ligne donne `\dfrac{1}{\dfrac{1}{x}}`, sans parenthèses.
+ * Le terme gardé (`keepsUnderBar`), en une fraction : le numérateur (facteurs
+ * et numérateurs) mis au propre d'un bloc, chaque dénominateur mis au propre
+ * seul — sa barre reste (revue : `2·3/(1/x)` → `6/(1/x)`, `(3−1)/(1/x)` →
+ * `2/(1/x)`). Une puissance négative (`(x⁻¹)⁻¹`) reste un facteur à part. Les
+ * fractions s'écrivent empilées, comme `tidy` les écrit : `1/(1/x)` tapé en
+ * ligne donne `\dfrac{1}{\dfrac{1}{x}}`.
  */
-function stackedFractions(node: MathNode): MathNode {
-	return stripUnnecessaryBrackets(
-		mapNode(node, (n) =>
-			n.type === 'division' && n.displayStyle !== 'fraction'
-				? { ...n, displayStyle: 'fraction' }
-				: n
-		)
-	);
+function keptUnderBar(node: MathNode, settings: Settings): MathNode {
+	const tidied = (child: MathNode) => tidyExpression(child, innerOptions(settings));
+	const numerators: MathNode[] = [];
+	const denominators: MathNode[] = [];
+	const powers: MathNode[] = [];
+	const read = (part: MathNode): void => {
+		switch (part.type) {
+			case 'delimiter':
+				read(part.content);
+				return;
+			case 'multiplication':
+				read(part.left);
+				read(part.right);
+				return;
+			case 'division':
+				numerators.push(part.numerator);
+				denominators.push(part.denominator);
+				return;
+			case 'superscript':
+				powers.push(superscript(tidied(part.base), part.superscript));
+				return;
+			default:
+				numerators.push(part);
+		}
+	};
+	read(node);
+	const product = (parts: readonly MathNode[]) =>
+		parts.reduce((left, right) => multiply(left, right, 'implicit'));
+	const parts = [...powers];
+	if (numerators.length > 0 || denominators.length > 0) {
+		const numerator = tidied(numerators.length === 0 ? number('1') : product(numerators));
+		parts.push(
+			denominators.length === 0
+				? numerator
+				: divide(numerator, product(denominators.map(tidied)), 'fraction')
+		);
+	}
+	return stripUnnecessaryBrackets(product(parts));
 }
 
 /** Un terme rendu tel quel : il porte un nœud opaque (infini, zéro signé). */

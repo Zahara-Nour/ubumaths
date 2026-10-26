@@ -13,6 +13,7 @@ import { describe, it, expect } from 'vitest';
 import { tidy, tidyWithConditions, describeConditions } from '../index';
 import { parseCustom } from '../../parser/custom';
 import { toCustom } from '../../custom-generator';
+import { toLatex } from '../../latex-generator';
 import { areEquivalent } from '../../equivalence';
 import { stripUnnecessaryBrackets } from '../../transforms';
 import type { TypeContext } from '../../numtype';
@@ -42,8 +43,45 @@ const DOUBLE_BAR = [
 ] as const;
 
 describe('tidy garde l’écriture d’un facteur sous deux barres', () => {
-	it.each(DOUBLE_BAR.map(([input]) => input))('%s reste écrit', (input) => {
-		expect(t(input)).toBe(kept(input));
+	it.each(DOUBLE_BAR.map(([input]) => input).filter((i) => !i.includes('^(-1)')))(
+		'%s reste écrit',
+		(input) => {
+			expect(t(input)).toBe(kept(input));
+		}
+	);
+
+	it('un exposant négatif sous la barre s’écrit en fraction, comme ailleurs', () => {
+		expect(t('1/x^(-1)')).toBe(kept('1/(1/x)'));
+		expect(t('(x^(-1))^(-1)')).toBe(written('(1/x)^(-1)'));
+	});
+
+	// Revue : la barre reste, le reste du terme se met au propre
+	it.each([
+		['(3-1)/(1/x)', '2/(1/x)'],
+		['2*3/(1/x)', '6/(1/x)'],
+		['1/(1/x)*2', '2/(1/x)'],
+		['x*x/(1/x)', 'x^2/(1/x)'],
+		['1/(1/(x*(3-1)))', '1/(1/(2x))']
+	])('%s → %s', (input, result) => {
+		expect(t(input)).toBe(kept(result));
+	});
+
+	// Revue : un terme gardé ne prend pas de parenthèses dans une somme
+	it.each([
+		['1/(1/x)+x', '\\dfrac{1}{\\dfrac{1}{x}} + x'],
+		['-1/(1/x)', '-\\dfrac{1}{\\dfrac{1}{x}}'],
+		['2/(1/x)+3x', '\\dfrac{2}{\\dfrac{1}{x}} + 3 x']
+	])('%s s’écrit %s', (input, latex) => {
+		expect(toLatex(tidy(parseCustom(input)))).toBe(latex);
+	});
+
+	it('deux termes gardés ne se regroupent pas (ce serait simplifier)', () => {
+		expect(t('1/(1/x)+1/(1/x)')).toBe(kept('1/(1/x)+1/(1/x)'));
+		expect(run('1/(1/x)+1/(1/x)')).toEqual({ result: '2x', conditions: ['x ≠ 0'] });
+	});
+
+	it('une base que S3 garde déjà des deux côtés n’est pas gelée en plus', () => {
+		expect(t('1/(1/x)*1/x')).toBe(written('x/x'));
 	});
 
 	it('idempotente', () => {
