@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1820._
+_Mis à jour le 2026-10-26, après #1825._
 
-- **État** : PR 1 collection (#1812) et PR 2 monnaie (#1820, `construire:` + `réserve:`) mergées, pas en prod ; vérifications manuelles notées. Le code du chantier est complet.
-- **Prochaine action** : modèles CP-002, CP-044, CP-071, CP-045 au chantier « questions » (brouillons jusqu'au `deploy:prod`) ; puis fin de chantier = versement (§ 3-6 → `docs/systeme/`, journal archivé), à faire quand David le dit.
-- **En attente de David** : vérifications manuelles #1812 et #1820 ; go pour clore le chantier ou y garder les modèles.
-- **Pièges en cours** : ```operation garde ses angles morts (ligne vide, non fermé, ordre indifférent ; et maintenant fence de fin en retrait / bloc dans un bloc de code, que le générateur refuse pour collection et monnaie depuis #1820) — à traiter à part, un modèle publié l'utilise ; test `vercel-maintenance` instable en CI (SIGPIPE 141 revenu malgré f997902ba, passé à la relance).
-- **Worktree / branche** : aucun (retiré après #1820).
+- **État** : PR 1 collection (#1812), PR 2 monnaie (#1820) et PR 3 copie corrigée (#1825 : plan verrouillé avec la construction de l'élève, sa valeur, une construction juste ; verso : construction juste) mergées, pas en prod ; vérifiées dans l'appli locale (admin@local.test, `/dashboard/admin/questions/<id>/preview`). Le code du chantier est complet.
+- **Prochaine action** : modèles CP-002, CP-044, CP-071, CP-045 au chantier « questions » (brouillons jusqu'au `deploy:prod`) ; puis fin de chantier = versement (§ 3-6 → `docs/systeme/`, journal archivé), quand David le dit.
+- **En attente de David** : vérifications manuelles #1812, #1820, #1825 (tablette, PDF) ; go pour clore le chantier ou y garder les modèles ; idée possible : garder la composition posée (pas seulement la valeur) pour que la copie montre les vrais gestes de l'élève.
+- **Pièges en cours** : ```operation garde ses angles morts (à traiter à part) ; `vercel-maintenance` instable en CI (SIGPIPE 141) ; un worktree doit avoir `.env` ET `.env.local` (sinon base distante) ; 3 brouillons « VERIF construire … (local) » en base locale.
+- **Worktree / branche** : aucun (retiré après #1825).
 
 ---
 
