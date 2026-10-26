@@ -1673,9 +1673,6 @@ Doublons qui restent, chacun pour un autre besoin :
   x ≠ 0 » attend la variante `{ result, conditions }` de `tidy`, ci-dessous). `√x√x` → rien
   à développer (produit sans parenthèse), mais `√x³√x → (√x)⁴` (une puissance de racine déjà
   écrite) et `∛x∛x → (∛x)²` se regroupent encore.
-- `solve`, quartique à paramètre littéral (relevé le 2026-10-26, revue de normalize-usages) :
-  `ax⁴ + x − 1 = 0`, `x⁴ − ax − 1 = 0`, `(a+1)x⁴ + x − 2 = 0` (inconnue x) répondent « pas de
-  solution » au lieu d'un refus. Antérieur au chantier.
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
   une valeur fausse :
   - `tidy` n'a pas de variante `{ result, conditions }` : `x/x` reste écrit au lieu de « 1, pour
