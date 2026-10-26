@@ -47,6 +47,12 @@ export interface ChoiceBlockSpec {
 	choices: string[];
 	/** Messages pour l'auteur, en français */
 	errors: string[];
+	/**
+	 * Le bloc peut être réécrit depuis ce qui a été lu sans rien perdre (aucune
+	 * ligne ni réglage illisible) ; seuls un choix vide ou trop peu de choix le
+	 * laissent réécrivable (éditeur de cases).
+	 */
+	rewritable: boolean;
 }
 
 export interface ChoiceBlock extends ChoiceBlockSpec {
@@ -123,7 +129,13 @@ function choiceContent(lines: readonly string[]): string {
 /** Lit le corps d'un bloc choix (lignes entre les clôtures) */
 export function parseChoiceBody(body: readonly string[]): ChoiceBlockSpec {
 	const errors: string[] = [];
-	const spec: ChoiceBlockSpec = { multiple: false, shuffle: true, choices: [], errors };
+	const spec: ChoiceBlockSpec = {
+		multiple: false,
+		shuffle: true,
+		choices: [],
+		errors,
+		rewritable: true
+	};
 	const items: string[][] = [];
 	/** Clôture du bloc ouvert dans le choix en cours (ses lignes lui appartiennent) */
 	let innerFence: string | null = null;
@@ -161,19 +173,23 @@ export function parseChoiceBody(body: readonly string[]): ChoiceBlockSpec {
 			if (key === 'plusieurs') {
 				const value = readYesNo('plusieurs', setting[2], errors);
 				if (value !== undefined) spec.multiple = value;
+				else spec.rewritable = false;
 			} else if (key === 'melanger' || key === 'mélanger') {
 				const value = readYesNo('melanger', setting[2], errors);
 				if (value !== undefined) spec.shuffle = value;
+				else spec.rewritable = false;
 			} else if (key === 'case' && CASE_INDEX_REGEX.test(setting[2].trim())) {
 				spec.caseIndex = Number(setting[2].trim());
 			} else {
 				errors.push(`réglage « ${setting[1]} » inconnu (${SETTING_NAMES})`);
+				spec.rewritable = false;
 			}
 			continue;
 		}
 		errors.push(
 			`ligne « ${line.trim()} » : un choix commence par « - » (sa suite : en retrait de 2 espaces)`
 		);
+		spec.rewritable = false;
 	}
 
 	spec.choices = items.map(choiceContent);
@@ -193,6 +209,22 @@ function longestFence(text: string): number {
 	return longest;
 }
 
+/** Lignes `- …` des choix (suite en retrait de 2 espaces) */
+function choiceItems(choices: readonly string[]): string[] {
+	return choices.map((choice) => {
+		const [first, ...rest] = choice.split('\n');
+		return [
+			first === '' ? '-' : `- ${first}`,
+			...rest.map((line) => (line === '' ? '' : `${CONTINUATION_INDENT}${line}`))
+		].join('\n');
+	});
+}
+
+/** Clôture plus longue que tout bloc contenu dans un choix */
+function fenceFor(choices: readonly string[]): string {
+	return '`'.repeat(Math.max(3, ...choices.map((c) => longestFence(c) + 1)));
+}
+
 /**
  * Écrit le bloc d'une instance : `case: N`, `plusieurs: oui` s'il y a lieu, les
  * choix dans l'ordre donné (suite en retrait de 2 espaces). Clôture plus longue
@@ -203,19 +235,31 @@ export function serializeChoiceBlock(block: {
 	multiple: boolean;
 	choices: readonly string[];
 }): string {
-	const fence = '`'.repeat(Math.max(3, ...block.choices.map((c) => longestFence(c) + 1)));
-	const items = block.choices.map((choice) => {
-		const [first, ...rest] = choice.split('\n');
-		return [
-			`- ${first}`,
-			...rest.map((line) => (line === '' ? '' : `${CONTINUATION_INDENT}${line}`))
-		].join('\n');
-	});
+	const fence = fenceFor(block.choices);
 	return [
 		`${fence}choix`,
 		`case: ${block.caseIndex}`,
 		...(block.multiple ? ['plusieurs: oui'] : []),
-		...items,
+		...choiceItems(block.choices),
+		fence
+	].join('\n');
+}
+
+/**
+ * Écrit le bloc d'un modèle (éditeur de cases) : réglages qui diffèrent du
+ * défaut (`plusieurs: oui`, `melanger: non`), puis les choix dans l'ordre écrit.
+ */
+export function serializeTemplateChoiceBlock(block: {
+	multiple: boolean;
+	shuffle: boolean;
+	choices: readonly string[];
+}): string {
+	const fence = fenceFor(block.choices);
+	return [
+		`${fence}choix`,
+		...(block.multiple ? ['plusieurs: oui'] : []),
+		...(block.shuffle ? [] : ['melanger: non']),
+		...choiceItems(block.choices),
 		fence
 	].join('\n');
 }
@@ -266,7 +310,8 @@ export function parseChoiceBlock(
 			...(spec.caseIndex !== undefined && { caseIndex: spec.caseIndex }),
 			multiple: spec.multiple,
 			choices: spec.choices,
-			errors: closed ? spec.errors : [...spec.errors, CHOICE_BLOCK_UNCLOSED_MESSAGE]
+			errors: closed ? spec.errors : [...spec.errors, CHOICE_BLOCK_UNCLOSED_MESSAGE],
+			source: body.join('\n')
 		}
 	};
 }

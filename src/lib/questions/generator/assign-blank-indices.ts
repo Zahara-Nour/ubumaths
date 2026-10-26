@@ -30,6 +30,7 @@ import {
 	CHOICE_BLOCK_NESTED_MESSAGE,
 	CHOICE_BLOCK_UNCLOSED_MESSAGE,
 	findChoiceBlocks,
+	type ChoiceBlockRange,
 	isChoiceBlockStart,
 	isNestedChoiceBlockStart,
 	parseChoiceBody
@@ -140,6 +141,17 @@ function enclosingBlockNames(lines: readonly string[]): (string | null)[] {
  * dans un bloc de question (```figure-a-completer, ```operation) ; dans un bloc de
  * code (ou tout autre bloc délimité), ce n'est que du texte.
  */
+/**
+ * Blocs ```choix qui portent une case, dans l'ordre des cases : ceux du premier
+ * niveau, hors de tout autre bloc (repérage de `assignBlankIndices`). Pour
+ * l'éditeur de cases, qui réécrit un bloc à sa place.
+ */
+export function findCaseChoiceBlocks(statement: string): ChoiceBlockRange[] {
+	const lines = statement.split('\n');
+	const enclosing = enclosingBlockNames(lines);
+	return findChoiceBlocks(lines.map((line, i) => (enclosing[i] === null ? line : '')));
+}
+
 function markChoiceBlocks(statement: string): {
 	statement: string;
 	blocks: MarkedChoiceBlock[];
@@ -148,7 +160,7 @@ function markChoiceBlocks(statement: string): {
 	const lines = statement.split('\n');
 	const enclosing = enclosingBlockNames(lines);
 	// Lignes d'un autre bloc masquées : un ```choix n'y est pas repéré
-	const ranges = findChoiceBlocks(lines.map((line, i) => (enclosing[i] === null ? line : '')));
+	const ranges = findCaseChoiceBlocks(statement);
 	const out: string[] = [];
 	const blocks: MarkedChoiceBlock[] = [];
 	const errors: string[] = [];

@@ -202,7 +202,11 @@ en retrait sous un item de liste.
 Bloc ```choix (case « choix » d'une question, [questions.md](questions.md)) : réglages en tête
 (`plusieurs:`, `melanger:`, `case:` posée par le générateur), un choix par ligne `- …`, suite en
 retrait de 2 espaces ; les choix restent du markdown (formules non extraites, `blockLineRanges`),
-rendus un à un. Hors question : liste A, B, C non cliquable (`ChoiceList.svelte`).
+rendus un à un. Hors question : liste A, B, C non cliquable (`ChoiceList.svelte`). Le nœud garde
+son texte (`source`) : l'éditeur riche le rend en bloc de code `choix`, et l'export pose une clôture
+plus longue que toute clôture intérieure (```` si un choix contient un bloc). Réécriture d'un bloc
+de modèle : `serializeTemplateChoiceBlock` ; `rewritable: false` quand une ligne ou un réglage est
+illisible (la réécriture le perdrait).
 
 La liste des genres statistiques est `STAT_CHART_KINDS` (`src/lib/ubumark/types/stat-chart.ts`).
 

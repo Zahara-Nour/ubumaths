@@ -21,4 +21,6 @@ export interface ChoiceNode extends BaseNode {
 	choices: string[];
 	/** Messages pour l'auteur (bloc mal écrit) */
 	errors: string[];
+	/** Texte entre les clôtures, tel qu'écrit (éditeur riche : bloc gardé tel quel) */
+	source: string;
 }

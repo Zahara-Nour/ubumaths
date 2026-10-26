@@ -24,12 +24,15 @@
 	import { getQuestionType } from '$lib/questions/types';
 	import type { TestSpecResult } from '$lib/questions/test-spec-runner';
 	import { getRootVariableNames } from '$lib/questions/generator/test-instance-builder';
+	import { readChoiceCase, statementCaseKinds } from '$lib/questions/choice-case-editor';
+	import { formatChoiceAnswer, parseChoiceAnswer } from '$lib/questions/choice-case';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MathField from '$lib/components/MathField.svelte';
 	import { Plus, Trash2, Play, Check, X, Copy, Loader2 } from '@lucide/svelte';
 
@@ -115,6 +118,26 @@
 		const variation = variations[editSpec.variationIndex ?? 0];
 		return variation?.blanks?.length ?? 0;
 	});
+
+	// Case choix (bloc ```choix de l'énoncé effectif) : ses choix, sinon null
+	let choiceCases = $derived.by(() => {
+		const variation = variations[editSpec.variationIndex ?? 0];
+		const statement = variation?.statement?.trim() ? variation.statement : shared?.statement;
+		if (!statement) return [];
+		const kinds = statementCaseKinds(statement);
+		let ordinal = 0;
+		return kinds.map((kind) =>
+			kind === 'choice' ? (readChoiceCase(statement, ordinal++)?.choices ?? null) : null
+		);
+	});
+
+	// Réponse d'une case choix : choix `index` coché ou décoché (indices d'origine)
+	function toggleSpecChoice(caseIndex: number, count: number, index: number) {
+		const current = parseChoiceAnswer(editSpec.answers?.[caseIndex] ?? '', count) ?? [];
+		const next = current.includes(index) ? current.filter((i) => i !== index) : [...current, index];
+		if (!editSpec.answers) editSpec.answers = [];
+		editSpec.answers[caseIndex] = formatChoiceAnswer(next);
+	}
 
 	function startAdd() {
 		editingIndex = null;
@@ -373,16 +396,33 @@
 						<Label>Reponses (LaTeX)</Label>
 						<div class="space-y-1">
 							{#each Array(blankCount) as _, i (i)}
-								<MathField
-									bind:value={
-										() => editSpec.answers?.[i] ?? '',
-										(v) => {
-											if (!editSpec.answers) editSpec.answers = [];
-											editSpec.answers[i] = v;
+								{@const choices = choiceCases[i]}
+								{#if choices}
+									{@const picked =
+										parseChoiceAnswer(editSpec.answers?.[i] ?? '', choices.length) ?? []}
+									<div class="flex flex-wrap gap-3 rounded-md border p-2">
+										<span class="text-sm text-muted-foreground">Case {i + 1} : choix</span>
+										{#each choices as choice, c (c)}
+											<MyCheckbox
+												checked={picked.includes(c)}
+												onCheckedChange={() => toggleSpecChoice(i, choices.length, c)}
+												label="{String.fromCharCode(65 + c)}. {choice}"
+												labelClass="font-mono"
+											/>
+										{/each}
+									</div>
+								{:else}
+									<MathField
+										bind:value={
+											() => editSpec.answers?.[i] ?? '',
+											(v) => {
+												if (!editSpec.answers) editSpec.answers = [];
+												editSpec.answers[i] = v;
+											}
 										}
-									}
-									math-mode-space="\,"
-								/>
+										math-mode-space="\,"
+									/>
+								{/if}
 							{/each}
 						</div>
 					</div>
