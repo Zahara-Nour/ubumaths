@@ -150,7 +150,7 @@ placer: {{a}}
 Branche `feat/reponses-a-placer-telephone`. `NumberLine.svelte` dessine la droite en px à la largeur
 du conteneur (plus de viewBox 600 réduite) ; `valueToX` / `xToValue` / `computeGraduations` /
 `computeLineExtents` prennent la largeur (défaut 600 : PDF et `NumberLineInput`, code mort hors tests,
-inchangés). `phoneGapWarning` : avertissement d'auteur si l'écart minimal entre graduations, sur un
+inchangés). `phoneGapWarning` (droites à placer seulement, après revue : une droite d'affichage garde ses graduations fines) : avertissement d'auteur si l'écart minimal entre graduations, sur un
 conteneur de 320 px, passe sous 20 px (0 à 20 au pas de 1 → 12 px : avertie). Droite de correction :
 `showErrors={false}` (pas d'avertissement en double). Tests : `number-line-largeur.test.ts`,
 `NumberLine-largeur.svelte.test.ts` (320 / 700 px, chiffres de même taille, geste à 320 px).

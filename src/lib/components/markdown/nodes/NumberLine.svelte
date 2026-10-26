@@ -18,8 +18,8 @@
 	  visibles du prof seulement (`showErrors`, ou contexte d'édition)
 	- Largeur réelle : dessinée en px à la largeur du conteneur (pas de viewBox
 	  réduite) ; chiffres, points, traits à taille fixe, seul l'écart entre
-	  graduations se resserre. Le prof est averti si, sur un téléphone, elles
-	  tombent sous 20 px (`phoneGapWarning`).
+	  graduations se resserre (droite à placer : avertissement téléphone dans
+	  `NumberLinePlacer`).
 	- Droite à placer (`placer:`) : `NumberLinePlacer.svelte` (l'élève pose son point)
 
 	@module components/markdown/nodes/NumberLine
@@ -40,8 +40,7 @@
 		valueToX,
 		computeGraduations,
 		computeLineExtents,
-		resolveNumberLineColors,
-		phoneGapWarning
+		resolveNumberLineColors
 	} from '$lib/ubumark/utils/number-line-render';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import NumberLinePlacer from './NumberLinePlacer.svelte';
@@ -98,12 +97,6 @@
 
 	/** Couleurs sûres (variable du thème ou hex validé) et avertissements */
 	let colors = $derived(resolveNumberLineColors(node));
-
-	/** Avertissements d'auteur : couleurs, graduations trop serrées sur téléphone */
-	let warnings = $derived.by(() => {
-		const phone = phoneGapWarning(node.config);
-		return phone === null ? colors.warnings : [...colors.warnings, phone];
-	});
 
 	// =========================================================================
 	// POINTS
@@ -268,9 +261,9 @@
 		</svg>
 	</div>
 
-	{#if errorsVisible && warnings.length > 0}
+	{#if errorsVisible && colors.warnings.length > 0}
 		<ul class="nl-warnings mt-1 text-xs text-warning">
-			{#each warnings as message, i (i)}
+			{#each colors.warnings as message, i (i)}
 				<li>Droite graduée — {message}</li>
 			{/each}
 		</ul>
@@ -280,7 +273,9 @@
 <style>
 	.number-line-container {
 		width: 100%;
-		max-width: 700px;
+		/* jamais plus large que son parent, même dans une colonne flex / grille */
+		max-width: min(700px, 100%);
+		min-width: 0;
 		margin: 0.5rem auto;
 	}
 

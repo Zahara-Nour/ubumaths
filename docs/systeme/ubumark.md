@@ -266,10 +266,11 @@ réduite : marges, chiffres, points et traits gardent leur taille, seul l'écart
 resserre ; pas de défilement horizontal (il se battrait avec le glisser). `valueToX`, `xToValue`,
 `computeGraduations`, `computeLineExtents` prennent la largeur (défaut 600 : PDF et
 `NumberLineInput` inchangés) ; `NumberLinePlacer` lit le doigt en px (`xToValue(…, rect.width)`).
-Le prof (aperçu, éditeur) est averti quand, sur un téléphone (conteneur de référence
+Droite à placer : le prof (aperçu, éditeur) est averti quand, sur un téléphone (conteneur de référence
 `NL_PHONE_WIDTH` = 320 px), deux graduations voisines seraient à moins de 20 px
 (`phoneGapWarning`, plus petit écart, échelle log comprise) : une droite de 0 à 20 au pas de 1 en
-donne 12. L'élève ne voit jamais l'avertissement ; la droite de correction ne le répète pas.
+donne 12. Une droite d'affichage (sans `placer:`) n'est pas avertie : ses graduations fines se
+lisent, on ne les vise pas. L'élève ne voit jamais l'avertissement ; la correction ne le répète pas.
 
 **Courbe** — `src/lib/ubumark/__tests__/courbe/courbe-markdown.test.ts` :
 

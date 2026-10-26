@@ -20,7 +20,7 @@
 <script lang="ts">
 	import type { NumberLineNode, NumberLineValue } from '$lib/ubumark/types/number-line';
 	import { parseCustom } from '$lib/mathAST/parser/custom';
-	import { numVal, xToValue } from '$lib/ubumark/utils/number-line-render';
+	import { numVal, phoneGapWarning, xToValue } from '$lib/ubumark/utils/number-line-render';
 	import {
 		decimalString,
 		graduationCount,
@@ -32,6 +32,7 @@
 		placerText
 	} from '$lib/ubumark/utils/number-line-placer';
 	import NumberLine from './NumberLine.svelte';
+	import { readAuthoringErrors } from '../authoring-errors';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
@@ -55,7 +56,12 @@
 	/** Le point juste, dans la correction */
 	const SOLUTION_COLOR = 'vert';
 
+	const authoring = readAuthoringErrors();
+	let errorsVisible = $derived(showErrors ?? authoring());
+
 	let config = $derived(node.config);
+	/** Prof : graduations trop serrées pour le doigt sur un téléphone */
+	let phoneWarning = $derived(phoneGapWarning(config));
 	let count = $derived(graduationCount(config));
 
 	/**
@@ -199,6 +205,12 @@
 				<span aria-hidden="true">▶</span>
 			</button>
 		</div>
+	{/if}
+
+	{#if errorsVisible && phoneWarning !== null}
+		<ul class="nl-warnings w-full text-xs text-warning">
+			<li>Droite graduée — {phoneWarning}</li>
+		</ul>
 	{/if}
 
 	{#if answer?.isCorrect != null}

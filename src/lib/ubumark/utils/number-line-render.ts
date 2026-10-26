@@ -240,15 +240,16 @@ export function minGraduationGap(config: NumberLineConfig, width: number): numbe
 }
 
 /**
- * Avertissement pour le prof : sur un téléphone, les graduations seraient trop
- * serrées pour être lues et visées. `null` si elles tiennent.
+ * Avertissement pour le prof, droite à placer : sur un téléphone, les graduations
+ * seraient trop serrées pour être visées du doigt. `null` si elles tiennent.
+ * (Une droite d'affichage peut avoir des graduations fines : pas d'avertissement.)
  */
 export function phoneGapWarning(config: NumberLineConfig): string | null {
 	const gap = minGraduationGap(config, NL_PHONE_WIDTH);
 	if (gap >= NL_MIN_GRADUATION_GAP) return null;
 	return (
-		`sur un téléphone, les graduations ne seraient écartées que de ${Math.round(gap)} px ` +
-		`(moins de ${NL_MIN_GRADUATION_GAP} px) : difficiles à lire et à viser du doigt. ` +
+		`sur un téléphone, les graduations ne seraient écartées que de ${Math.floor(gap)} px ` +
+		`(moins de ${NL_MIN_GRADUATION_GAP} px) : difficiles à viser du doigt. ` +
 		`Moins de graduations, ou une droite plus courte.`
 	);
 }

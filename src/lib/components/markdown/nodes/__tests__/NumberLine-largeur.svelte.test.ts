@@ -84,10 +84,10 @@ describe('Droite graduée — largeur réelle', () => {
 });
 
 describe('Droite graduée — avertissement téléphone', () => {
-	it('prof : graduations à 12 px sur téléphone → avertissement', async () => {
+	it('prof, droite à placer : graduations à 12 px sur téléphone → avertissement', async () => {
 		const screen = await render(NumberLine, {
 			target: mainElement(700),
-			props: { node: node(...LINE_0_20), showErrors: true }
+			props: { node: node(...LINE_0_20, 'placer: 7'), showErrors: true }
 		});
 		expect(screen.container.querySelector('.nl-warnings')?.textContent).toContain('téléphone');
 	});
@@ -95,15 +95,23 @@ describe('Droite graduée — avertissement téléphone', () => {
 	it('élève : jamais d’avertissement', async () => {
 		const screen = await render(NumberLine, {
 			target: mainElement(700),
-			props: { node: node(...LINE_0_20) }
+			props: { node: node(...LINE_0_20, 'placer: 7') }
 		});
 		expect(screen.container.querySelector('.nl-warnings')).toBeNull();
 	});
 
-	it('prof : graduations assez écartées → rien', async () => {
+	it('prof, droite à placer : graduations assez écartées → rien', async () => {
 		const screen = await render(NumberLine, {
 			target: mainElement(700),
-			props: { node: node(...LINE_0_10), showErrors: true }
+			props: { node: node(...LINE_0_10, 'placer: 7'), showErrors: true }
+		});
+		expect(screen.container.querySelector('.nl-warnings')).toBeNull();
+	});
+
+	it('prof, droite d’affichage (sans placer:) : graduations fines permises', async () => {
+		const screen = await render(NumberLine, {
+			target: mainElement(700),
+			props: { node: node(...LINE_0_20), showErrors: true }
 		});
 		expect(screen.container.querySelector('.nl-warnings')).toBeNull();
 	});
