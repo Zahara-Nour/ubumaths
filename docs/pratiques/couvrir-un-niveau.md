@@ -68,7 +68,51 @@ David). Les corrections passent avant les lots neufs (§ 7).
 Puis **questions à David** (ordre des outils, points à trancher, corrections) et découpage en
 lots de 3 à 10 modèles, un thème par lot.
 
-## 3 bis. Créer l'outil qui manque (classe C)
+## 3 bis. Les outils qui existent déjà
+
+À relire **avant** de classer un point en C ou de proposer un outil : un point classé C à tort
+coûte un chantier. Détail de chaque bloc : [ubumark.md § Blocs spéciaux](../systeme/ubumark.md#blocs-spéciaux)
+(syntaxe, rendu écran, PDF), qui fait foi si la liste ci-dessous a vieilli.
+
+**Afficher** (blocs ubumark, dans l'énoncé, le corrigé ou un choix de QCM) :
+
+| Bloc                                                                                                                           | Ce qu'il montre                                                                         |
+| ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| ` ```variation `                                                                                                               | tableau de variations (et de signes)                                                    |
+| ` ```trig `                                                                                                                    | cercle trigonométrique                                                                  |
+| ` ```courbe `                                                                                                                  | courbe de fonction, moteur du grapheur ([grapheur.md](../systeme/grapheur.md))          |
+| ` ```line `                                                                                                                    | droite graduée                                                                          |
+| ` ```probtree `                                                                                                                | arbre de probabilités                                                                   |
+| ` ```barres `, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | statistiques (`stat-chart`) ; `tableau-croise` à trous pour compléter                   |
+| ` ```figure `                                                                                                                  | figure de géométrie (DSL `geometry-core`, [geometrie/](../systeme/geometrie/README.md)) |
+| ` ```horloge `                                                                                                                 | cadran                                                                                  |
+| ` ```operation `                                                                                                               | opération posée (addition, soustraction, multiplication, division)                      |
+| ` ```collection `                                                                                                              | jetons, cubes, barres de dix, paquets                                                   |
+| ` ```monnaie `                                                                                                                 | pièces et billets en euros                                                              |
+| tableau markdown, image, ` ```qr `                                                                                             | tableaux, images fixes, QR code                                                         |
+
+**Répondre** (ce que l'élève saisit ou fait) :
+
+- **case** (MathLive, jugée par le juge ordinaire), plusieurs cases, case dans un tableau (`$?$`) ;
+- **QCM = une case** ([ADR 0033](../adr/0033-le-qcm-est-une-case.md)), choix en texte ou en dessins (bloc ` ```choix `) ;
+- **opération posée à compléter** (saisie chiffre par chiffre du bloc `operation`) ;
+- **construire** : `construire:` dans ` ```collection ` ou ` ```monnaie ` (la valeur posée est la réponse) ;
+- **figure à compléter** (` ```figure-a-completer `, case « figure » : objets de l'élève retrouvés
+  sur les nœuds) et **figure de travail** (` ```figure-de-travail `, jamais notée), `deplacable:`.
+
+**Hors questions, réutilisables comme briques** : le grapheur (`/grapheur`), l'Atelier,
+les constructions animées (`constructions-v2` : règle, compas, équerre, rapporteur), le champ
+glisser-déposer `StructureField` (en prod, mais pas encore branché aux questions), Blockly (à
+venir comme vraie fonctionnalité).
+
+⚠️ **Géométrie en refonte** (2026-10) : case « figure », figure de travail, QCM en cases et
+`deplacable:` bougent dans les chantiers `figure-et-choix` et `geometrie-validation`. Lire leur
+« Reprendre ici » (`docs/wip/`) avant de proposer un modèle ou un outil de géométrie.
+
+**Manquent encore** (connus au CP) : réponses à placer (point sur une droite graduée, étiquettes
+à ranger, hauteur de barres), aiguilles à placer sur l'horloge.
+
+## 3 ter. Créer l'outil qui manque (classe C)
 
 Couvrir un niveau, c'est aussi **inventer les outils** que ses points demandent : au CP, les
 blocs ` ```horloge `, ` ```collection `, ` ```monnaie `, ` ```operation ` (opérations posées), le
@@ -94,9 +138,8 @@ Un point de classe C n'est pas laissé sans modèle : je propose l'outil.
 5. **En prod** : les modèles qui utilisent le bloc restent en **brouillon** jusqu'au
    `deploy:prod` qui livre le bloc ; le lot de modèles suit la démarche normale (§ 4 à 8).
 
-Restent ouverts (CP) : les **réponses à placer** (point sur une droite graduée, étiquettes à
-ranger : CP-008, CP-072) et la **case « figure »** (CP-034, 059, 060 ; chantier
-`figure-et-choix`).
+Restent ouverts (CP) : les **réponses à placer** (CP-008, CP-072) et la **case « figure »**
+(CP-034, 059, 060 ; chantier `figure-et-choix`).
 
 ## 4. Phase 0 d'un lot
 

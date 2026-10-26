@@ -31,6 +31,12 @@ Chantier de référence : le CP ([journal](../../../docs/wip/questions-progress.
 
 ## 1 bis. Créer les outils qui manquent (classe C)
 
+**D'abord le catalogue** des outils existants (doc, § 3 bis) : tableau de variations, cercle
+trigo, courbes et grapheur, droite graduée, arbres, statistiques, géométrie (**en refonte** :
+lire `figure-et-choix` et `geometrie-validation`), horloge, opérations posées, collection,
+monnaie ; réponses en case, QCM, construire, figure à compléter. Un point classé C à tort coûte
+un chantier.
+
 Un point qui demande un outil absent n'est pas abandonné : je **propose l'outil** (bloc ubumark
 d'affichage, QCM de dessins, geste de réponse comme « construire » ou « placer »), ce qu'il
 couvre (ce niveau et les suivants) et sa place dans l'ordre des lots. David décide.
@@ -38,7 +44,7 @@ couvre (ce niveau et les suivants) et sa place dans l'ordre des lots. David déc
 - Chantier à part (worktree, journal, phase 0 avec la syntaxe du bloc en exemples), ADR si la
   décision est durable.
 - Recette technique : `docs/systeme/ubumark.md` § « Comment étendre — nouveau bloc spécial » ;
-  patrons `monnaie`, `collection`, `MonnaieConstruire` (doc, § 3 bis).
+  patrons `monnaie`, `collection`, `MonnaieConstruire` (doc, § 3 ter).
 - Par paliers : affichage, puis geste ; une PR et une page de démo par palier.
 - Les modèles qui s'en servent restent en brouillon jusqu'au `deploy:prod` qui livre le bloc.
 
