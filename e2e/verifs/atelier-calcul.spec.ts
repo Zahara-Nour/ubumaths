@@ -1,12 +1,18 @@
 import { expect, test, type Page } from '@playwright/test';
+import { setConsole } from './helpers/grille';
 import {
 	calc,
 	card,
 	cardAction,
 	cardLocator,
+	chooseSetting,
 	expectLatex,
 	expectLatexContaining,
+	fieldValue,
+	focusCardField,
 	hasSteps,
+	mathConsole,
+	mathValue,
 	normalizeLatex,
 	openAtelier,
 	steps,
@@ -156,6 +162,38 @@ test('#1658, #1660 — dérivée factorisée pour les variations (console)', asy
 	expectLatex(await calc(page, '.dériver -x^2/(x+2)'), '-\\dfrac{x^2 + 4x}{(x + 2)^2}');
 });
 
+/** La dernière ligne de l'historique, lue comme une réponse (pour ce qu'une carte y écrit) */
+async function lastAnswer(page: Page): Promise<Answer> {
+	const line = page.locator('ol.historique > li').last();
+	const math = line.locator('.reponse .math');
+	await expect(math.first()).toBeVisible();
+	const text = ((await line.locator('.reponse').innerText()) ?? '').replace(/\s+/g, ' ').trim();
+	return {
+		line,
+		latex: await math.first().getAttribute('data-latex'),
+		text,
+		refused: ((await line.getAttribute('class')) ?? '').includes('refus')
+	};
+}
+
+test('#1658, #1660 — Variations par le bouton « Variations » d’une carte : mêmes dérivées', async ({
+	page
+}) => {
+	await calc(page, 'f(x) = x^2/(x+1)');
+	await cardAction(page, 'f', 'Variations');
+	const quotient = await lastAnswer(page);
+	expectLatexContaining(quotient, "f'(x) = \\dfrac{x(x + 2)}{(x + 1)^2}");
+	const quotientSteps = await steps(quotient);
+	expectStepsContaining(quotientSteps, 'On factorise pour étudier le signe');
+	expectStepsContaining(quotientSteps, '\\dfrac{x(x + 2)}{(x + 1)^2}');
+
+	await calc(page, 'f(x) = x^3-3x');
+	await cardAction(page, 'f', 'Variations');
+	const cubic = await lastAnswer(page);
+	expectLatexContaining(cubic, "f'(x) = 3(x - 1)(x + 1)");
+	expectStepsContaining(await steps(cubic), '3(x - 1)(x + 1)');
+});
+
 test('#1625 — racine d’un décimal, décimaux sous une barre à variable', async ({ page }) => {
 	expectLatex(await calc(page, 'sqrt(0.5)'), '\\dfrac{\\sqrt{2}}{2}');
 	expectLatex(await calc(page, 'sqrt(0.25)'), '0{,}5');
@@ -185,6 +223,12 @@ test('#1319 — fonctions nommées k, q appelées dans Calcul', async ({ page })
 	// Comme avant
 	expectLatex(await calc(page, "k'(3)"), '1');
 	expectLatex(await calc(page, '.dériver k(x)'), '1');
+});
+
+test('#1319 — une carte fonction nommée r : r(2) se calcule dans Calcul', async ({ page }) => {
+	await calc(page, 'r(x) = x^2+1');
+	expect((await card(page, 'r')).latex).not.toBeNull();
+	expectLatex(await calc(page, 'r(2)'), '5');
 });
 
 test('#1502 — l’unité Ko', async ({ page }) => {
@@ -489,6 +533,30 @@ test('#1333 — singularité dans l’intervalle d’intégration', async ({ pag
 	expect(pole.refused).toBe(true);
 	expect(pole.text).toContain('singularité en x ≈ 1,26');
 	expectLatex(await calc(page, '.intégrer \\frac{x}{\\sqrt{1-x^2}} de 0 à 1'), '1');
+});
+
+test('#1333 — grapheur : aire sous une courbe avec un pôle dans l’intervalle, refusée', async ({
+	page
+}) => {
+	await page.goto('/grapheur');
+	await calc(page, 'f(x) = 3x^2/(x^3-2)');
+	await calc(page, 'g(x) = x^2');
+	await setConsole(page, false);
+	const areaOf = async (name: string) => {
+		await cardLocator(page, name)
+			.getByRole('button', { name: `Options de ${name}` })
+			.click();
+		await page.getByRole('menuitemcheckbox', { name: 'Aire sous la courbe' }).click();
+		await page.keyboard.press('Escape');
+		return cardLocator(page, name).getByRole('region', { name: `Sur le graphique : ${name}` });
+	};
+	// Bornes par défaut −5 et 5 : le pôle x ≈ 1,26 de f est dedans
+	const pole = await areaOf('f');
+	await expect(pole.getByRole('spinbutton', { name: /borne inférieure/ })).toHaveValue('-5');
+	await expect(pole).toContainText('aire = —');
+	// Témoin : sans pôle, la même fenêtre donne l'aire
+	const witness = await areaOf('g');
+	await expect(witness).toContainText('aire = 83,33');
 });
 
 test('#1334 — intégration par parties : u, v′, u′, v', async ({ page }) => {
@@ -994,6 +1062,70 @@ test('#1535 — longueur plus durée : la carte en erreur', async ({ page }) => 
 	expect((await card(page, 'b')).message).toBe('On ne peut pas ajouter une longueur et une durée.');
 });
 
+test('#1503 — carte d = 10^3*2[m] : retoucher le champ garde le ×', async ({ page }) => {
+	await calc(page, 'd = 10^3*2[m]');
+	await expect.poll(() => fieldValue(page, 'd')).toContain('\\times');
+	expect(await fieldValue(page, 'd')).not.toContain('\\cdot');
+	// Retoucher : un chiffre ajouté puis retiré, Entrée range la carte
+	await focusCardField(page, 'd');
+	await page.keyboard.press('End');
+	await page.keyboard.type('1');
+	await page.keyboard.press('Backspace');
+	await page.keyboard.press('Enter');
+	// Le champ s'est rangé (carte relue) : le × reste un ×, pas un ·
+	await expect.poll(async () => (await card(page, 'd')).message).toBeNull();
+	const latex = normalizeLatex((await card(page, 'd')).latex ?? '');
+	expect(latex).toContain('\\times');
+	expect(latex).not.toContain('\\cdot');
+});
+
+/** Le fichier d'historique d'AVANT le lot C : des saisies, telles que `.exporter` les écrivait */
+function oldHistory(...inputs: readonly string[]): string {
+	return JSON.stringify({
+		format: 'chiphre-calcul',
+		version: 1,
+		exportedAt: '2026-10-08T10:00:00.000Z',
+		entries: inputs.map((input) => ({
+			kind: 'saisie',
+			input,
+			label: input,
+			text: 'réussi',
+			failed: false
+		}))
+	});
+}
+
+test('#1535 — historique d’avant le lot C (5 s + 1, k = 2 h + 1) : le rejeu va au bout', async ({
+	page
+}) => {
+	const chooser = page.waitForEvent('filechooser');
+	await page.getByRole('button', { name: 'Charger un atelier', exact: true }).click();
+	await (
+		await chooser
+	).setFiles({
+		name: 'calcul.json',
+		mimeType: 'application/json',
+		buffer: Buffer.from(oldHistory('h = 3', '5 s + 1', 'k = 2 h + 1', '2k'))
+	});
+	// Atelier vide : le rejeu part sans confirmation et dit combien de lignes il a refaites
+	await expect(page.getByText('Historique rejoué : 4 lignes.')).toBeVisible();
+
+	const lines = page.locator('ol.historique > li');
+	await expect(lines).toHaveCount(4);
+	// Aucune ligne refusée : le rejeu est allé au bout
+	await expect(page.locator('ol.historique > li.refus')).toHaveCount(0);
+	// Les lignes deviennent `5s + 1` et `k = 2h + 1`
+	const shown = (await lines.locator('.saisie').allTextContents()).map((text) =>
+		text.replace(/\s+/g, ' ').trim()
+	);
+	expect(shown).toContain('5s + 1');
+	expect(shown).toContain('k = 2h + 1');
+	expect(shown).not.toContain('5 s + 1');
+	expect(shown).not.toContain('k = 2 h + 1');
+	// La définition existe : k = 2h + 1 = 7, 2k = 14
+	await expect(lines.last().locator('.reponse')).toContainText('14');
+});
+
 test('#1342 — lignes en erreur ou en attente ; .réciproque de sin et tan', async ({ page }) => {
 	const broken = await calc(page, 'h(x) = x^^2');
 	expect(broken.refused).toBe(true);
@@ -1045,6 +1177,102 @@ test('#1369 — fonction collée à son argument : refus qui dit quoi écrire (c
 	expect((await calc(page, 'cos2π')).text).toContain('écris cos(');
 	// Pas de faux refus « écris sin(x) » sur un mot qui commence par sin
 	expect((await calc(page, 'sinus')).refused).toBe(false);
+});
+
+/**
+ * Met le focus dans le champ mathématique de la console puis y tape `keys` (vrai
+ * clavier). Une frappe n'est faite que si le champ a le focus : sinon elle
+ * partirait dans la page (et ouvrirait des fenêtres).
+ */
+async function typeInMathConsole(page: Page, keys: string): Promise<void> {
+	const field = mathConsole(page);
+	await expect(async () => {
+		await field.click();
+		expect(await field.evaluate((element) => element === document.activeElement)).toBe(true);
+		await page.keyboard.type(keys);
+		expect(await mathValue(field)).not.toBe('');
+	}).toPass();
+}
+
+/** Entrée dans la console mathématique ; rend la ligne ajoutée, lue comme une réponse */
+async function submitMathLine(page: Page): Promise<Answer> {
+	const lines = page.locator('ol.historique > li');
+	const before = await lines.count();
+	await page.keyboard.press('Enter');
+	await expect(lines).toHaveCount(before + 1);
+	const line = lines.nth(before);
+	const math = line.locator('.reponse .math');
+	await expect(line.locator('.reponse .math, .reponse .texte').first()).toBeVisible();
+	return {
+		line,
+		latex: (await math.count()) > 0 ? await math.first().getAttribute('data-latex') : null,
+		text: ((await line.locator('.reponse').innerText()) ?? '').replace(/\s+/g, ' ').trim(),
+		refused: ((await line.getAttribute('class')) ?? '').includes('refus')
+	};
+}
+
+/**
+ * Appuie une touche du clavier virtuel de MathLive (onglet « Calcul ») : `ln`,
+ * `sin`… Le champ garde le focus : la suite se tape à la suite de la touche.
+ */
+async function pressVirtualKey(page: Page, label: string): Promise<void> {
+	await page.evaluate(() =>
+		(window as unknown as { mathVirtualKeyboard: { show(): void } }).mathVirtualKeyboard.show()
+	);
+	await page
+		.locator('.MLK__keycap')
+		.filter({ hasText: new RegExp(`^${label}$`) })
+		.first()
+		.click();
+}
+
+test('#1368 — « Écriture mathématique » : touche ln du clavier virtuel, \\ln x tapé : calculés', async ({
+	page
+}) => {
+	await chooseSetting(page, 'Écriture mathématique');
+	// La vraie touche ln : elle insère \ln(▢) à parenthèses, on y tape x
+	await typeInMathConsole(page, '1');
+	await page.keyboard.press('Backspace');
+	await pressVirtualKey(page, 'ln');
+	await page.keyboard.type('x');
+	expect(normalizeLatex(await mathValue(mathConsole(page)))).toBe('\\ln(x)');
+	const key = await submitMathLine(page);
+	expect(key.refused).toBe(false);
+	expectLatex(key, '\\ln\\left( x \\right)');
+
+	// \ln x tapé tel quel (sans parenthèses, LaTeX) : lu ln de x, calculé
+	await typeInMathConsole(page, '\\ln x');
+	expect(normalizeLatex(await mathValue(mathConsole(page)))).toBe('\\lnx');
+	const typed = await submitMathLine(page);
+	expect(typed.refused).toBe(false);
+	expectLatex(typed, '\\ln\\left( x \\right)');
+	// `ln x` sans parenthèses refusé : même refus qu'au clavier (test « #1368 » plus haut)
+});
+
+test('#1369 — « Écriture mathématique » : cos2π refusé, « écris cos(…) »', async ({ page }) => {
+	await chooseSetting(page, 'Écriture mathématique');
+	await typeInMathConsole(page, 'cos2pi');
+	const glued = await submitMathLine(page);
+	expect(glued.refused, `réponse : « ${glued.text} »`).toBe(true);
+	expect(glued.text).toContain('écris cos(');
+});
+
+test('#1369 — « Écriture mathématique » : \\sin x (touche sin) lu normalement', async ({
+	page
+}) => {
+	await chooseSetting(page, 'Écriture mathématique');
+	await typeInMathConsole(page, '1');
+	await page.keyboard.press('Backspace');
+	await pressVirtualKey(page, 'sin');
+	await page.keyboard.type('x');
+	const key = await submitMathLine(page);
+	expect(key.refused).toBe(false);
+	expectLatex(key, '\\sin\\left( x \\right)');
+
+	await typeInMathConsole(page, '\\sin x');
+	const typed = await submitMathLine(page);
+	expect(typed.refused).toBe(false);
+	expectLatex(typed, '\\sin\\left( x \\right)');
 });
 
 test('#1374 — définitions en erreur : circulaire, dépendance, fonction prise pour un nombre', async ({

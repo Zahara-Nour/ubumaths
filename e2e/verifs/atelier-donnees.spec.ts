@@ -86,6 +86,23 @@ test('#1421 — formules : cases, objets de l’atelier, case vide, erreur', asy
 	await expect.poll(() => shownIn(page, 'D16')).toMatch(/^≈ 33,/);
 });
 
+test('#1421 — colonne de formules nommée : la carte refuse d’être modifiée', async ({ page }) => {
+	await typeCell(page, 'A1', '1');
+	await typeCell(page, 'A2', '=A1*2');
+	await typeCell(page, 'A3', '=A2*2');
+	await nameColumn(page, 'A', 'L');
+	// La carte dit que la liste est calculée dans la grille
+	await expect(cardLocator(page, 'L')).toContainText('calculée dans la grille');
+	// Aucun champ pour la modifier sur sa carte (une liste se modifie dans Données)
+	await expect(cardLocator(page, 'L').locator('math-field, input, textarea')).toHaveCount(0);
+	// La modifier tout de même (console) : refusée, les formules restent
+	const refused = await calc(page, 'L = 5 ; 6 ; 7');
+	expect(refused.refused).toBe(true);
+	expect(refused.text).toContain('L est calculée dans la grille');
+	await expect.poll(() => shownIn(page, 'A3')).toBe('4');
+	expect((await readCell(page, 'A3')).bar).toBe('=A2*2');
+});
+
 test('#1422 — valeur exacte sous la barre, π écrit en maths', async ({ page }) => {
 	await typeCell(page, 'A1', '=sqrt(8)');
 	const root = await readCell(page, 'A1');
@@ -128,6 +145,41 @@ test('#1424 — recopier vers le bas : Ctrl+D, « Recopier vers le bas… », an
 	expect(await readCell(page, 'B1')).toMatchObject({ shown: '2', bar: '=MAX(1;2)' });
 });
 
+test('#1424 — poignée tirée jusqu’à A8, copier-coller en C5, lien partagé', async ({ page }) => {
+	await typeCell(page, 'A1', '1');
+	await typeCell(page, 'A2', '=A1*2');
+	await selectCell(page, 'A2');
+	// Tirer la poignée (coin bas-droit de A2) jusqu'à A8, au vrai pointeur
+	const handle = cellLocator(page, 'A2').locator('.poignee');
+	await expect(handle).toBeVisible();
+	const from = await handle.boundingBox();
+	const to = await cellLocator(page, 'A8').boundingBox();
+	if (from === null || to === null) throw new Error('poignée ou case A8 sans boîte');
+	await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+	await page.mouse.down();
+	await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 12 });
+	await page.mouse.up();
+	expect((await readCell(page, 'A8')).bar).toBe('=A7*2');
+	await expect.poll(() => shownIn(page, 'A8')).toBe('128');
+
+	// Copier A2, coller en C5 : la formule suit (=C4*2)
+	await selectCell(page, 'A2');
+	await page.keyboard.press('ControlOrMeta+C');
+	await selectCell(page, 'C5');
+	await page.keyboard.press('ControlOrMeta+V');
+	expect((await readCell(page, 'C5')).bar).toBe('=C4*2');
+
+	// Partager le lien, l'ouvrir : mêmes formules
+	const link = await shareLink(page);
+	const other = await page.context().newPage();
+	await other.goto(link);
+	await openView(other, 'Données');
+	expect((await readCell(other, 'A8')).bar).toBe('=A7*2');
+	expect((await readCell(other, 'C5')).bar).toBe('=C4*2');
+	await expect.poll(() => shownIn(other, 'A8')).toBe('128');
+	await other.close();
+});
+
 test('#1426 — .tabuler : colonnes A et B, valeurs décimales, la colonne suit f', async ({
 	page
 }) => {
@@ -150,6 +202,22 @@ test('#1426 — .tabuler : colonnes A et B, valeurs décimales, la colonne suit 
 
 	await typeCell(page, 'D1', '=1/3');
 	await expect.poll(() => shownIn(page, 'D1')).toBe('1/3');
+});
+
+test('#1426 — Ctrl+Z après .tabuler efface tout le tableau', async ({ page }) => {
+	await calc(page, 'f(x) = x^2-3x');
+	await calc(page, '.tabuler f de -2 à 3 pas 0,5');
+	await setConsole(page, false);
+	await expect.poll(() => shownIn(page, 'B11')).toBe('0');
+	await expect.poll(() => shownIn(page, 'A11')).toBe('3');
+	await page.locator('body').click({ position: { x: 5, y: 5 } });
+	await page.keyboard.press('ControlOrMeta+Z');
+	// Tout le tableau part : ses deux colonnes, du haut en bas (la grille vide n'affiche
+	// que dix lignes : la onzième n'y est plus du tout)
+	for (const address of ['A1', 'A2', 'A10', 'B1', 'B2', 'B6', 'B10']) {
+		await expect.poll(() => shownIn(page, address), address).toBe('vide');
+	}
+	await expect(cellLocator(page, 'A11')).toHaveCount(0);
 });
 
 test('#1430 — SOMME, MOYENNE, MEDIANE, ECARTYPE, plages, listes nommées', async ({ page }) => {
@@ -275,6 +343,26 @@ test('#1437 — ALEA.ENTRE.BORNES, ALEA, gardés au rechargement', async ({ page
 	expect(draw).toBeLessThan(1);
 	await typeCell(page, 'C3', '=ALEA.ENTRE.BORNES(6;1)');
 	expect((await readCell(page, 'C3')).error).toBe(true);
+});
+
+test('#1437 — dés ALEA.ENTRE.BORNES : le lien partagé rouvre les mêmes valeurs', async ({
+	page
+}) => {
+	await typeCell(page, 'A1', '=ALEA.ENTRE.BORNES(1;6)');
+	await selectCell(page, 'A1');
+	await fillDownTo(page, 30);
+	const rows = Array.from({ length: 30 }, (_, index) => `A${index + 1}`);
+	const dice = await Promise.all(rows.map((at) => shownIn(page, at)));
+	for (const die of dice) expect(['1', '2', '3', '4', '5', '6']).toContain(die);
+
+	const link = await shareLink(page);
+	const other = await page.context().newPage();
+	await other.goto(link);
+	await openView(other, 'Données');
+	await expect.poll(() => shownIn(other, 'A30')).not.toBe('vide');
+	const sameDice = await Promise.all(rows.map((at) => shownIn(other, at)));
+	expect(sameDice).toEqual(dice);
+	await other.close();
 });
 
 test('#1444 — fonction nommée f_1 : Calcul, grille, refus sans valeur', async ({ page }) => {
