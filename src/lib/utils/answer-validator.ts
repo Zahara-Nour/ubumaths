@@ -1771,18 +1771,22 @@ function aggregateOrderedBlanks(
 	}
 	if (anyIncorrectValue && result.status !== undefined) result.status = 'incorrect';
 
+	// Question à figure (CP) : le message du juge passe avant tout autre, jamais de numéros de case
+	const hasFigureCase = cases.some((c) => c.construction);
+	const figureFeedback = cases
+		.map((c, i) => (c.construction ? blankFeedback[i] : undefined))
+		.find((message) => message !== undefined);
 	if (!allCorrect) {
-		if (emptyCount > 0 && blanks.length > 1) {
+		if (figureFeedback) {
+			result.feedback = figureFeedback;
+		} else if (emptyCount > 0 && blanks.length > 1) {
 			result.feedback = "Tu n'as pas tout complété.";
 		} else if (worstStatus === 'bad_form') {
 			result.feedback = feedbackOf('bad_form', allViolations);
 		} else if (singleBlankFeedback) {
 			result.feedback = singleBlankFeedback;
-		} else if (cases.some((c) => c.construction)) {
-			// Question à figure (CP) : le message du juge s'il y en a un, jamais de numéros de case
-			result.feedback = cases
-				.map((c, i) => (c.construction ? blankFeedback[i] : undefined))
-				.find((message) => message !== undefined);
+		} else if (hasFigureCase) {
+			result.feedback = undefined;
 		} else {
 			result.feedback = `Les blancs suivants sont incorrects: ${incorrectIndexes.join(', ')}`;
 		}

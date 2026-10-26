@@ -394,6 +394,13 @@ de points quand ils sont alignés, réponse fausse, droite par le mauvais point,
    (`aggregateOrderedBlanks`). Avec une case « figure » : le message du juge, ou aucun ; jamais de numéros.
 3. **« Blanc 1 : Ta droite… »** sous l'énoncé (`FillBlanksInput`) : retiré pour la case « figure ».
 
+**Revue Opus** : 3 mineurs corrigés — droite fausse et case texte vide : le message du juge passe avant « Tu
+n'as pas tout complété. » (test rouge sans) ; « Blanc N » numéroté sans compter la figure ; attente avant de
+constater l'absence de verdict. **À trancher (David)** : (1) en évaluation, « oui » tapé sans droite, envoyé à la
+fin du test, vaut ½ point (`grading.ts`, cases à moitié vides) — reco : case « figure » vide = 0 ; (4) copie
+corrigée : la réponse « non » s'affiche avant la figure (`expected-result.ts`, figure mise à part après l'énoncé
+rempli) — reco : la figure d'abord, avec un test du rendu.
+
 **Constaté** : temps écoulé avec la figure vide et « oui » tapé → `unoptimal_form` (½ point, statuts de `docs/systeme/questions.md` § 5) et « Tu n'as pas
 tout complété. » — règle générale des cases à moitié vides, laissée telle quelle (spec qui le fige).
 

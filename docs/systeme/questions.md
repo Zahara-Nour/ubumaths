@@ -335,9 +335,9 @@ Statuts (`ValidationStatus`) : `correct` (1), `unoptimal_form` (½), `bad_form` 
    chargement impossible → la bonne droite seule, sans verdict (gardes :
    `figure-a-completer-correction.svelte.test.ts`, `…-correction-echec.svelte.test.ts`).
    Case « figure » **mêlée à d'autres cases** (CP-058 : la droite, puis « oui » / « non » tapé) :
-   le message global est celui du juge si la figure est fausse, sinon aucun — jamais « Les blancs
-   suivants sont incorrects » (`aggregateOrderedBlanks`) ; la liste « Blanc N : » sous l'énoncé ne
-   le répète pas. Valider reste grisé tant que la figure est vide, à l'entraînement (`FlashCard`,
+   le message global est celui du juge si la figure est fausse (avant « Tu n'as pas tout complété. »),
+   sinon aucun — jamais « Les blancs suivants sont incorrects » (`aggregateOrderedBlanks`) ; la liste
+   « Blanc N : » sous l'énoncé ne le répète pas et numérote sans compter la figure. Valider reste grisé tant que la figure est vide, à l'entraînement (`FlashCard`,
    qui accepte sinon les cases vides) comme en évaluation (`QuestionCard`) ; le temps écoulé avec
    la figure vide donne « Tu n'as pas tout complété. » (garde :
    `figure-a-completer-mixte.svelte.test.ts`).

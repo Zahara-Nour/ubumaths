@@ -139,6 +139,8 @@ describe('figure + case oui / non : saisie', () => {
 		await userEvent.type(textInput(container), 'non');
 		expect(validateButton(container).disabled).toBe(true);
 		await userEvent.keyboard('{Enter}');
+		// Laisser à l'écran le temps d'une validation tardive avant de constater l'absence
+		await new Promise((resolve) => setTimeout(resolve, 200));
 		expect(container.querySelector('[data-testid="front-verdict"]')).toBeNull();
 		expect(container.querySelector('[data-testid="zone-de-trace"]')).not.toBeNull();
 	});
@@ -174,6 +176,19 @@ describe('figure + case oui / non : verdict', () => {
 		expect(verdict.textContent).toContain('Ta droite passe par A et C, pas par B.');
 		expect(container.textContent).not.toContain('blancs suivants');
 		expect(container.textContent).not.toContain('Blanc 1');
+	});
+
+	it('droite (AC), case texte vide : le message du juge, pas « Tu n’as pas tout complété. »', async () => {
+		const screen = await render(FlashCard, {
+			target: mainElement(),
+			props: { instance: instance(), interactive: true }
+		});
+		await draw(screen.container, A, C);
+		await expect.poll(() => validateButton(screen.container).disabled).toBe(false);
+		validateButton(screen.container).click();
+		await expect
+			.poll(() => screen.container.querySelector('[data-testid="front-verdict"]')?.textContent)
+			.toContain('Ta droite passe par A et C, pas par B.');
 	});
 
 	it('droite (AB) et « oui » : faux, sans cases numérotées', async () => {
