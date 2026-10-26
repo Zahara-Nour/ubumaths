@@ -1,22 +1,20 @@
 ---
 title: Composées f(u(x)) d'une fonction à ensemble — journal du chantier
 date: 2026-10-26
-status: implémentation faite, PR à ouvrir
+status: CLOS le 2026-10-26 (#1835 mergée, pas en prod) ; versé dans docs/systeme/atelier.md ; archivé
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, avant la PR._
+_Mis à jour le 2026-10-26, après #1835._
 
-- **État** : implémentation faite et testée (`composees-ensemble.test.ts`, 32 verts + 1 todo) ; doc système à jour ; revue faite et corrigée.
-- **Prochaine action** : PR, CI, merge.
-- **En attente de David** : rien.
-- **Pièges en cours** : V65 (`.limite (x-3)^2 en +∞` non calculée) bloque `.variations f(x-3)` avec f = x² — défaut du moteur, hors chantier, noté dans `ecarts-a-trier.md`.
-- **Worktree / branche** : `../ubumaths-wt-composees` · `feat/composees`.
+- **État** : CLOS. #1835 mergée (pas encore en prod) ; doc versée dans `docs/systeme/atelier.md` ; journal archivé.
+- **Prochaine action** : aucune. Restes : V65 (`.limite (x-3)^2 en +∞`, `ecarts-a-trier.md`) → `it.todo` N4 à activer quand il sera corrigé.
+- **En attente de David** : chantier V65 ou non ; vérification manuelle (ligne #1835 de `verifications-manuelles.md`).
 
 ## Origine
 
-Décision c) de la phase 0 de l'intervalle (2026-10-13, [archive](../archive/wip/atelier-intervalle-phase0.md)) :
+Décision c) de la phase 0 de l'intervalle (2026-10-13, [archive](atelier-intervalle-phase0.md)) :
 quand f porte un ensemble choisi (`f(x) = \sqrt{x} sur [0;+∞[`), `f(2x)` est **refusé** partout
 où l'atelier étudie l'inconnue (`composedMessage`, `src/lib/atelier/interval.ts`). Règle
 générale demandée : le domaine de f(u(x)) = {x : u(x) ∈ ensemble de f}.

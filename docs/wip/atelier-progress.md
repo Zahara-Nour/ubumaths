@@ -31,7 +31,7 @@ _Mis à jour le 2026-10-26, après #1827 (graphe agrandi)._
   étaient tranchées depuis le 2026-10-02 (décisions 92 et 93 d'`outils-statistiques-v2-progress.md`) et
   confirmées par David le 2026-10-25 — 20 modalités par côté dans l'atelier, 8 dans un bloc imprimé ;
   `1e3` → 1000, `2x`/`π`/`3 m` = mots, cause nommée. Restent : `breadcrumb-ellipsis` dit encore
-  « More » (composant inutilisé) ; `f(2x)` sur un intervalle : chantier [composees](composees-progress.md) (2026-10-26).
+  « More » (composant inutilisé) ; `f(2x)` sur un intervalle : chantier [composees](../archive/wip/composees-progress.md) (2026-10-26).
 
 - **Ce qui est livré, et comment ça marche** : [docs/systeme/atelier.md](../systeme/atelier.md)
   (vérifié contre le code le 2026-10-10) ; syntaxe des commandes : [atelier-syntaxe.md](../systeme/atelier-syntaxe.md).
@@ -221,7 +221,7 @@ Relevé des points « plus tard » de ce journal et des phases 0, à la demande 
   - `0,5*0,5` → 1/4 en mode exact (décision de David en attente) ;
   - saisie, lot 2 (tournures nominales, `2,5 h en min`) ;
   - tableur : option C choisie le 2026-10-15, lot 1 livré (#1410→#1413) ; phase 0 du lot 2 validée ([atelier-tableur-lot2-phase0.md](../archive/wip/atelier-tableur-lot2-phase0.md)) ; v2, v3 non commencés ; « Renommer » désactivé ; pas de palette d'unités ;
-  - composées `f(2x)` sur un ensemble (atelier-intervalle, décision c) : chantier [composees](composees-progress.md), u affine (2026-10-26).
+  - composées `f(2x)` sur un ensemble (atelier-intervalle, décision c) : chantier [composees](../archive/wip/composees-progress.md), u affine (2026-10-26).
 - **Corrigés par #1404 (2026-10-15)** : image depuis la carte f′, « (x ≈ 0) » pour t, « [-1 ; 1:/2] »
   (et `\pi`), les trois défauts nouveaux ci-dessous ; revue : `3 en m` refusé n'efface plus la
   grandeur d'avant, lettres grecques en symboles dans « dépend de ».
