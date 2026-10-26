@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, code écrit sur la branche (PR pas encore ouverte)._
+_Mis à jour le 2026-10-26, après #1807._
 
-- **État** : décisions de David (§ 2) codées : `tidyWithConditions` + `domainLoss` (mathAST), l'atelier garde le domaine partout, bouton « Simplifier pour x ≠ 0 ». Tests verts (35 224), doc à jour (ADR 0007 révisée).
-- **Prochaine action** : PR ouverte, CI, merge. Revue Opus faite : 5 findings corrigés (écriture des conditions `1+x`/`x+1`, domaine rétréci `ln(x²) → 2ln x` refusé, décimal gardé, virgule de liste).
-- **En attente de David** : essayer sur http://localhost:5177/atelier (serveur de la branche).
-- **Pièges en cours** : `1/(1/x) → x` reste un bug de `tidy`, rattrapé par l'atelier seulement ; `{{eval}}` des exercices n'est pas touché (simplify() du moteur inchangé).
-- **Worktree / branche** : `../ubumaths-wt-tidy-conditions` · `feat/tidy-conditions`.
+- **État** : #1807 MERGÉE (pas encore en prod) : `tidyWithConditions`, `domainLoss`/`domainChange`, l'atelier garde le domaine partout, bouton « Simplifier pour x ≠ 0 ». Vérif manuelle notée dans `verifications-manuelles.md`.
+- **Prochaine action** : clore le chantier (verser le journal dans `docs/archive/wip/`, le durable est déjà dans `tidy-spec.md`, `atelier.md`, ADR 0007) après l'essai de David.
+- **En attente de David** : essayer l'atelier (lignes de la vérif #1807) ; dire si le chantier est clos.
+- **Pièges en cours** : `1/(1/x) → x` reste un bug de `tidy`, rattrapé par l'atelier seulement ; `{{eval}}` des exercices non touché.
+- **Worktree / branche** : retirés après le merge.
 
 ## Contexte
 
