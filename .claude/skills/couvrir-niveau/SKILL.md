@@ -64,10 +64,13 @@ couvre (ce niveau et les suivants) et sa place dans l'ordre des lots. David déc
 4. **Migration nœud + tag** (gabarit `20261026210000_questions_cp_c_rangement_tags.sql` + son
    test d'intégration) : test rouge sans la migration puis vert, `security-auditor`, CI verte,
    merge, `db:migrate` depuis le dépôt principal, vérification en prod.
-5. **Page à cocher** (artefact `db`, un exemple par variation tiré par le vrai générateur, rendu
-   vérifié à 390 px, ouverte dans Chrome) ; lire et **compter** les verdicts en base.
-6. **Publication** : script de publication en simulation, puis **David** le lance avec
-   `--publier` ; relire `published` en base. Journal + « Reprendre ici » à jour, commit direct.
+5. **Page à cocher** : `pnpm tsx scripts/questions/page-a-cocher.ts --dir … --titre … --intro …
+   --sortie <scratchpad>/….html` (lit la base ; alertes : sans point, sans nœud, niveau, bloc non
+   dessiné), publiée en artefact avec la capacité `db`, rendu vérifié à 390 px, ouverte dans
+   Chrome ; lire et **compter** les verdicts en base.
+6. **Publication** : `pnpm tsx scripts/questions/publier-lot.ts --dir …` en simulation (tous les
+   brouillons du lot, ou rien), puis **David** le lance avec `--publier` ; le script relit
+   `published` en base. Journal + « Reprendre ici » à jour, commit direct.
 
 ## 3. Règles
 

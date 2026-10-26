@@ -1,0 +1,291 @@
+{
+	"title": "Quelle est cette forme ?",
+	"description": "Nommer une forme pleine : disque, carré (droit ou sur une pointe), rectangle, triangle",
+	"grades": ["CP"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Propriétés",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle est cette forme ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une forme pleine, à nommer.\n---\ndo = point({{if:x==1|3.5|{{if:x==2|5|6.5}}}}, 3.5, visible=faux)\nd = cercle(do, rayon={{if:r==1|1.5|{{if:r==2|2|2.5}}}}, couleur=\"noir\", remplissage=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", opacite_fond=1)\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "x",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "C'est un disque."
+				},
+				{
+					"content": "C'est un carré."
+				},
+				{
+					"content": "C'est un rectangle."
+				},
+				{
+					"content": "C'est un triangle."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": ["C'est un disque : il est tout rond, il n'a ni côté ni sommet."]
+			}
+		},
+		{
+			"statement": "Quelle est cette forme ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une forme pleine, à nommer.\n---\nq1 = point({{if:a==1|3.5|{{if:a==2|3|2.5}}}}, {{if:a==1|2|{{if:a==2|1.5|1}}}}, visible=faux)\nq2 = point({{if:a==1|6.5|{{if:a==2|7|7.5}}}}, {{if:a==1|2|{{if:a==2|1.5|1}}}}, visible=faux)\nq3 = point({{if:a==1|6.5|{{if:a==2|7|7.5}}}}, {{if:a==1|5|{{if:a==2|5.5|6}}}}, visible=faux)\nq4 = point({{if:a==1|3.5|{{if:a==2|3|2.5}}}}, {{if:a==1|5|{{if:a==2|5.5|6}}}}, visible=faux)\nq = polygone(q1, q2, q3, q4, couleur=\"noir\", remplissage=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", opacite_fond=1)\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "C'est un disque."
+				},
+				{
+					"content": "C'est un carré."
+				},
+				{
+					"content": "C'est un rectangle."
+				},
+				{
+					"content": "C'est un triangle."
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": ["C'est un carré : il a 4 côtés de la même longueur."]
+			}
+		},
+		{
+			"statement": "Quelle est cette forme ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une forme pleine, à nommer.\n---\nq1 = point(5, {{if:a==1|1.5|{{if:a==2|1|0.5}}}}, visible=faux)\nq2 = point({{if:a==1|7|{{if:a==2|7.5|8}}}}, 3.5, visible=faux)\nq3 = point(5, {{if:a==1|5.5|{{if:a==2|6|6.5}}}}, visible=faux)\nq4 = point({{if:a==1|3|{{if:a==2|2.5|2}}}}, 3.5, visible=faux)\nq = polygone(q1, q2, q3, q4, couleur=\"noir\", remplissage=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", opacite_fond=1)\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "C'est un disque."
+				},
+				{
+					"content": "C'est un carré."
+				},
+				{
+					"content": "C'est un rectangle."
+				},
+				{
+					"content": "C'est un triangle."
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"C'est un carré : il a 4 côtés de la même longueur. Il est posé sur une pointe, mais c'est toujours un carré."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est cette forme ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une forme pleine, à nommer.\n---\nr1 = point({{if:o==1|2|3.5}}, {{if:o==1|2.5|0.5}}, visible=faux)\nr2 = point({{if:o==1|8|6.5}}, {{if:o==1|2.5|0.5}}, visible=faux)\nr3 = point({{if:o==1|8|6.5}}, {{if:o==1|4.5|6.5}}, visible=faux)\nr4 = point({{if:o==1|2|3.5}}, {{if:o==1|4.5|6.5}}, visible=faux)\nr = polygone(r1, r2, r3, r4, couleur=\"noir\", remplissage=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", opacite_fond=1)\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "o",
+					"expression": "1..2"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "C'est un disque."
+				},
+				{
+					"content": "C'est un carré."
+				},
+				{
+					"content": "C'est un rectangle."
+				},
+				{
+					"content": "C'est un triangle."
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": ["C'est un rectangle : il a 4 côtés : deux grands côtés et deux petits côtés."]
+			}
+		},
+		{
+			"statement": "Quelle est cette forme ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une forme pleine, à nommer.\n---\nt1 = point({{if:k==1|2.5|{{if:k==2|3|2}}}}, {{if:k==1|1|{{if:k==2|1|5.5}}}}, visible=faux)\nt2 = point({{if:k==1|7.5|{{if:k==2|7.5|8}}}}, {{if:k==1|1|{{if:k==2|1|5.5}}}}, visible=faux)\nt3 = point({{if:k==1|5|{{if:k==2|3|4}}}}, {{if:k==1|5.5|{{if:k==2|5.5|1}}}}, visible=faux)\nt = polygone(t1, t2, t3, couleur=\"noir\", remplissage=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", opacite_fond=1)\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "C'est un disque."
+				},
+				{
+					"content": "C'est un carré."
+				},
+				{
+					"content": "C'est un rectangle."
+				},
+				{
+					"content": "C'est un triangle."
+				}
+			],
+			"correctChoiceIndex": ["3"],
+			"correction": {
+				"steps": ["C'est un triangle : il a 3 côtés et 3 sommets."]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Disque",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"x": "2",
+				"r": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : disque pris pour un carré",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"x": "2",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Carré",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"a": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : carré pris pour un rectangle",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"a": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "Carré sur une pointe",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3",
+				"a": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : carré sur une pointe pris pour un triangle",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3",
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [3]
+		},
+		{
+			"description": "Rectangle debout",
+			"variationIndex": 3,
+			"variables": {
+				"c": "4",
+				"o": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "Erreur : rectangle pris pour un carré",
+			"variationIndex": 3,
+			"variables": {
+				"c": "4",
+				"o": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Triangle pointe en bas",
+			"variationIndex": 4,
+			"variables": {
+				"c": "1",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [3]
+		}
+	]
+}

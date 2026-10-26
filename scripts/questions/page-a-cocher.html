@@ -1,0 +1,839 @@
+<!-- Gabarit de la page à cocher d'un lot de modèles : rempli par scripts/questions/page-a-cocher.ts (docs/pratiques/couvrir-un-niveau.md § 8) -->
+<title>@@TITRE@@</title>
+<meta name="claude:viewport-fit-sides" content="cover" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+	rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400&display=swap"
+/>
+<style>
+	/* Mise en page : une colonne de fiches, comme un cahier de relecture ; bandeau d'état collant en haut (même famille que les pages A1 à H) */
+	:root {
+		--bg: #f6f7f4;
+		--surface: #ffffff;
+		--fg: #1f2421;
+		--muted: #5d6660;
+		--line: #dde2dc;
+		--accent: #2f6b4f;
+		--accent-soft: #e3efe8;
+		--warn: #a2551b;
+		--warn-soft: #f8eadf;
+		--err: #b3261e;
+		--display: 'Fraunces', Georgia, serif;
+		--body: 'Atkinson Hyperlegible', system-ui, sans-serif;
+		--mono: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			--bg: #151917;
+			--surface: #1d2320;
+			--fg: #e6ebe7;
+			--muted: #9aa59e;
+			--line: #2f3833;
+			--accent: #7cc4a0;
+			--accent-soft: #23362c;
+			--warn: #e6a36e;
+			--warn-soft: #3a2a1d;
+			--err: #ff8a80;
+			color-scheme: dark;
+		}
+	}
+	:root[data-theme='dark'] {
+		--bg: #151917;
+		--surface: #1d2320;
+		--fg: #e6ebe7;
+		--muted: #9aa59e;
+		--line: #2f3833;
+		--accent: #7cc4a0;
+		--accent-soft: #23362c;
+		--warn: #e6a36e;
+		--warn-soft: #3a2a1d;
+		--err: #ff8a80;
+		color-scheme: dark;
+	}
+	body {
+		background: var(--bg);
+		color: var(--fg);
+		font-family: var(--body);
+		font-size: 16px;
+		line-height: 1.5;
+	}
+	body::before {
+		content: '';
+		position: fixed;
+		inset: 0 0 auto;
+		height: env(safe-area-inset-top, 0px);
+		z-index: 10;
+		background: var(--bg);
+	}
+	.wrap {
+		max-width: 760px;
+		margin: 0 auto;
+		padding-left: max(16px, env(safe-area-inset-left, 0px));
+		padding-right: max(16px, env(safe-area-inset-right, 0px));
+		padding-block: 24px 64px;
+		display: grid;
+		gap: 20px;
+	}
+	h1 {
+		font-family: var(--display);
+		font-weight: 650;
+		font-size: 1.9rem;
+		margin: 0;
+		text-wrap: balance;
+	}
+	.intro {
+		color: var(--muted);
+		margin: 4px 0 0;
+		max-width: 62ch;
+	}
+	.barre {
+		position: sticky;
+		top: env(safe-area-inset-top, 0px);
+		z-index: 5;
+		background: var(--bg);
+		padding-block: 10px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		align-items: center;
+		border-bottom: 1px solid var(--line);
+	}
+	.compte {
+		font-variant-numeric: tabular-nums;
+		font-weight: 700;
+	}
+	.filtres {
+		display: flex;
+		gap: 6px;
+		margin-left: auto;
+	}
+	button {
+		font: inherit;
+		cursor: pointer;
+		border-radius: 8px;
+		border: 1px solid var(--line);
+		background: var(--surface);
+		color: var(--fg);
+		padding: 6px 12px;
+	}
+	button:focus-visible,
+	textarea:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+	button[aria-pressed='true'] {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--surface);
+	}
+	.bandeau {
+		padding: 10px 14px;
+		border-radius: 8px;
+		background: var(--warn-soft);
+		color: var(--warn);
+		font-weight: 700;
+	}
+	.bandeau.erreur {
+		color: var(--err);
+	}
+	.fiche {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 12px;
+		padding: 18px;
+		display: grid;
+		gap: 14px;
+		min-width: 0;
+	}
+	.fiche[data-etat='ok'] {
+		border-color: var(--accent);
+	}
+	.fiche[data-etat='revoir'] {
+		border-color: var(--warn);
+	}
+	.tete {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 14px;
+		align-items: baseline;
+	}
+	.tete h2 {
+		font-family: var(--display);
+		font-weight: 500;
+		font-size: 1.35rem;
+		margin: 0;
+	}
+	.code {
+		font-family: var(--mono);
+		font-size: 0.85rem;
+		color: var(--accent);
+		background: var(--accent-soft);
+		padding: 2px 8px;
+		border-radius: 6px;
+	}
+	.meta {
+		font-family: var(--mono);
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+	.point {
+		margin: 0;
+		color: var(--muted);
+	}
+	.point b {
+		color: var(--fg);
+	}
+	.exemples {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 10px;
+	}
+	.ex {
+		border: 1px dashed var(--line);
+		border-radius: 8px;
+		padding: 10px 12px;
+		display: grid;
+		gap: 6px;
+		min-width: 0;
+		align-content: start;
+	}
+	.enonce {
+		font-size: 1.05rem;
+		display: grid;
+		gap: 6px;
+	}
+	.calc {
+		font-family: var(--mono);
+		font-size: 1.15rem;
+		overflow-wrap: anywhere;
+	}
+	.case {
+		display: inline-block;
+		min-width: 2.2em;
+		border: 2px solid var(--muted);
+		border-radius: 6px;
+		text-align: center;
+		color: var(--muted);
+		padding: 0 4px;
+		font-family: var(--body);
+	}
+	.attendu {
+		font-size: 0.85rem;
+		color: var(--muted);
+	}
+	.attendu b {
+		font-family: var(--mono);
+		color: var(--fg);
+		font-weight: 400;
+	}
+	.choix {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+	.choix li {
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		padding: 2px 10px;
+	}
+	.choix li.bon {
+		border-color: var(--accent);
+		background: var(--accent-soft);
+		font-weight: 700;
+	}
+	.corrige {
+		font-size: 0.93rem;
+		color: var(--muted);
+		margin: 0;
+		padding-left: 18px;
+	}
+	.corrige li + li {
+		margin-top: 2px;
+	}
+	.corrige strong {
+		color: var(--fg);
+	}
+	details {
+		font-size: 0.9rem;
+		color: var(--muted);
+	}
+	details ul {
+		margin: 6px 0 0;
+		padding-left: 18px;
+	}
+	summary {
+		cursor: pointer;
+	}
+	.verdict {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center;
+	}
+	.verdict .ok[aria-pressed='true'] {
+		background: var(--accent);
+		border-color: var(--accent);
+	}
+	.verdict .revoir[aria-pressed='true'] {
+		background: var(--warn);
+		border-color: var(--warn);
+		color: var(--surface);
+	}
+	textarea {
+		width: 100%;
+		box-sizing: border-box;
+		font: inherit;
+		font-size: 0.95rem;
+		border-radius: 8px;
+		border: 1px solid var(--line);
+		background: var(--bg);
+		color: var(--fg);
+		padding: 8px;
+		min-height: 2.6em;
+		resize: vertical;
+	}
+	.etat-ecriture {
+		font-size: 0.85rem;
+		color: var(--muted);
+	}
+	.vide {
+		color: var(--muted);
+		text-align: center;
+		padding: 30px 0;
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.fiche {
+			transition: border-color 0.2s;
+		}
+	}
+
+	.tab-wrap {
+		overflow-x: auto;
+	}
+	.tab {
+		border-collapse: collapse;
+		font-size: 1rem;
+	}
+	.tab th,
+	.tab td {
+		border: 1px solid var(--line);
+		padding: 4px 10px;
+		text-align: center;
+		min-width: 2.2em;
+	}
+	.tab th {
+		background: var(--accent-soft);
+		font-weight: 700;
+	}
+	.formes {
+		font-size: 1.3rem;
+		letter-spacing: 0.15em;
+		overflow-wrap: anywhere;
+	}
+	/* Figures : SVG du moteur ```figure ; couleurs = jetons de l'appli */
+	:root {
+		--color-foreground: var(--fg);
+		--color-background: var(--surface);
+		--color-border: var(--line);
+		--color-fig-bleu: light-dark(#2563eb, #5d93fe);
+		--color-fig-rouge: light-dark(#dc2626, #ff6257);
+		--color-fig-vert: light-dark(#018639, #26ac52);
+		--color-fig-orange: light-dark(#b65a00, #e97607);
+		--color-fig-violet: light-dark(#9333ea, #b478fe);
+		--color-fig-jaune: light-dark(#906f06, #ddac03);
+		--color-fig-cyan: light-dark(#037e9c, #2ba2c3);
+		--color-fig-marron: light-dark(#863805, #bd8b73);
+		--color-fig-rose: light-dark(#d92475, #ff5898);
+		--color-fig-gris: light-dark(#6c727e, #9096a3);
+	}
+	.fig {
+		display: block;
+		width: 100%;
+		height: auto;
+		margin: 0 auto;
+		font-family: var(--body);
+	}
+	.fig .fe {
+		font-size: 13px;
+		stroke: var(--surface);
+		stroke-width: 3px;
+		paint-order: stroke;
+	}
+	.fig .fn {
+		font-style: italic;
+	}
+	.fig .fp {
+		stroke-width: 1.5;
+		fill: none;
+	}
+	.fig .fg {
+		stroke: var(--line);
+		stroke-width: 0.75;
+	}
+	.fig .fa {
+		stroke: var(--fg);
+		stroke-width: 1.1;
+	}
+	.fig .ff {
+		fill: var(--fg);
+	}
+	.fig .ft {
+		font-size: 11px;
+		fill: var(--muted);
+	}
+	.choix li .fig {
+		width: 9rem;
+	}
+
+	/* Bloc monnaie : balisage et couleurs de Monnaie.svelte (--color-primary de app.css) */
+	:root {
+		--m-primaire: light-dark(#fc8f1b, #ffc400);
+	}
+	.m-bloc {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px;
+		justify-content: center;
+		align-items: flex-start;
+		max-width: 100%;
+	}
+	.m-fig {
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4px;
+		max-width: 100%;
+		min-width: 0;
+	}
+	.m-fig figcaption {
+		font-size: 0.875rem;
+		font-weight: 700;
+	}
+	.m-dessin {
+		max-width: 100%;
+		height: auto;
+		overflow: visible;
+		font-family: var(--body);
+	}
+	.m-cadre {
+		fill: var(--surface);
+		stroke: var(--line);
+	}
+	.m-piece {
+		fill: var(--m-primaire);
+		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
+		stroke-width: 0.8;
+	}
+	.m-anneau {
+		fill: color-mix(in oklab, var(--m-primaire) 65%, black);
+		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
+		stroke-width: 0.8;
+	}
+	.m-billet {
+		fill: color-mix(in oklab, var(--m-primaire) 35%, white);
+		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
+		stroke-width: 0.8;
+	}
+	.m-val {
+		fill: color-mix(in oklab, var(--m-primaire) 25%, black);
+		font-weight: 700;
+		text-anchor: middle;
+		dominant-baseline: central;
+	}
+	/* Choix dessinés : un par ligne, conteneur de requête pour l'échelle commune (100cqw) */
+	.choix.dessins {
+		display: grid;
+		gap: 8px;
+	}
+	.choix.dessins li {
+		container-type: inline-size;
+		padding: 6px 10px;
+	}
+	.niv {
+		font-family: var(--mono);
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+	.var {
+		font-family: var(--mono);
+		font-size: 0.75rem;
+		color: var(--muted);
+	}
+	.ex .m-bloc {
+		margin-block: 4px;
+	}
+	.exemples {
+		grid-template-columns: 1fr;
+	}
+
+	/* Construire : réserve en vignettes, plan de travail vide, construction juste ; barres et cubes de CollectionObjets.svelte */
+	.cons {
+		display: grid;
+		gap: 8px;
+		justify-items: center;
+	}
+	.reserve {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center;
+		justify-content: center;
+		padding: 6px 10px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+	}
+	.r-tag {
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: var(--muted);
+	}
+	.r-icone {
+		height: auto;
+		overflow: visible;
+		font-family: var(--body);
+	}
+	.plan {
+		fill: none;
+		stroke: var(--line);
+		stroke-width: 2;
+		stroke-dasharray: 6 4;
+	}
+	.plan-txt {
+		fill: var(--muted);
+		font-size: 11px;
+		text-anchor: middle;
+		dominant-baseline: central;
+	}
+	.c-forme {
+		fill: var(--m-primaire);
+		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
+		stroke-width: 0.8;
+	}
+	.c-sep {
+		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
+		stroke-width: 0.6;
+	}
+	.sol {
+		display: grid;
+		gap: 4px;
+	}
+
+	/* Horloge : balisage et couleurs de Horloge.svelte */
+	.h-cadran {
+		max-width: 100%;
+		height: auto;
+		aspect-ratio: 1;
+		font-family: var(--body);
+	}
+	.h-fond {
+		fill: var(--surface);
+		stroke: var(--fg);
+	}
+	.h-trait {
+		stroke: var(--muted);
+	}
+	.h-trait.h-heure {
+		stroke: var(--fg);
+	}
+	.h-chiffre {
+		fill: var(--fg);
+		font-weight: 600;
+	}
+	.h-chiffre.h-24 {
+		fill: var(--muted);
+		font-weight: 400;
+	}
+	.h-aiguille {
+		stroke-linecap: round;
+	}
+	.h-minutes {
+		stroke: var(--fg);
+	}
+	.h-heures {
+		stroke: var(--m-primaire);
+	}
+	/* Dans un choix : 3 cm, comme withChoiceClockSize */
+	.choix li .h-cadran {
+		max-width: 3cm;
+	}
+	.h-axe {
+		fill: var(--fg);
+	}
+	.c-contour {
+		fill: none;
+		stroke: var(--fg);
+		stroke-width: 1.2;
+	}
+	/* Bloc que la page ne dessine pas : sa source, à jouer dans l'aperçu */
+	.non-dessine {
+		display: grid;
+		gap: 4px;
+		padding: 8px 10px;
+		border: 1px dashed var(--warn);
+		border-radius: 8px;
+	}
+	.non-dessine code {
+		font-family: var(--mono);
+		font-size: 0.8rem;
+		overflow-wrap: anywhere;
+	}
+	.alerte {
+		margin: 0;
+		padding: 6px 10px;
+		border-radius: 8px;
+		background: var(--warn-soft);
+		color: var(--warn);
+		font-weight: 700;
+	}
+</style>
+
+<div class="wrap">
+	<header>
+		<h1>@@TITRE@@</h1>
+		<p class="intro">@@INTRO@@</p>
+	</header>
+	<div class="barre">
+		<span class="compte" id="compte">…</span>
+		<div class="filtres">
+			<button id="f-reste" aria-pressed="true">Ce qui reste</button>
+			<button id="f-tout" aria-pressed="false">Tout</button>
+		</div>
+	</div>
+	<div class="bandeau" id="bandeau" hidden></div>
+	<main id="fiches"><p class="vide">Chargement des fiches…</p></main>
+</div>
+<script>
+	const MODELES = /*@@MODELES@@*/ [];
+	let verdicts = {};
+	let filtre = 'reste';
+	let db = null;
+	const file = [];
+	let enCours = false;
+	let delai = 2000;
+
+	function esc(s) {
+		return String(s).replace(
+			/[&<>"]/g,
+			(c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]
+		);
+	}
+	/* Les maths du CP sont des nombres et des signes : rendu texte, cases dessinées, signes typographiques */
+	function maths(t) {
+		return esc(t)
+			.replace(/\\placeholder\[\d+\]\{\}/g, '<span class="case">?</span>')
+			.replace(/\\ /g, ' ')
+			.replace(/\\rightarrow/g, '→')
+			.replace(/\\leftarrow/g, '←')
+			.replace(/\\uparrow/g, '↑')
+			.replace(/\\downarrow/g, '↓')
+			.replace(/\\ldots/g, ' … ')
+			.replace(/\\quad/g, ' ')
+			.replace(/ - /g, ' − ')
+			.replace(/^-$/, '−')
+			.replace(/\^\{\\text\{([^}]*)\}\}/g, '<sup>$1</sup>')
+			.replace(/~?\\unit\{([^}]*)\}/g, '\u00a0$1')
+			.replace(/~/g, '\u00a0')
+			.replace(/=/g, ' = ')
+			.replace(/ {2,}/g, ' ')
+			.trim();
+	}
+	function enLigne(t) {
+		return t
+			.split(/\$([^$]*)\$/)
+			.map((m, i) =>
+				i % 2
+					? maths(m)
+					: esc(m)
+							.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+							.replace(/(^|[\s(])_([^_]+)_(?=$|[\s.,;:!?)])/g, '$1<em>$2</em>')
+			)
+			.join('');
+	}
+	function tableau(par) {
+		const lignes = par
+			.split('\n')
+			.filter((l, i) => i !== 1)
+			.map((l) =>
+				l
+					.replace(/^\||\|$/g, '')
+					.split('|')
+					.map((c) => c.trim())
+			);
+		const [tete, ...corps] = lignes;
+		return `<div class="tab-wrap"><table class="tab"><thead><tr>${tete.map((c) => `<th>${enLigne(c)}</th>`).join('')}</tr></thead><tbody>${corps.map((r) => `<tr>${r.map((c, i) => (i === 0 ? `<th>${enLigne(c)}</th>` : `<td>${enLigne(c)}</td>`)).join('')}</tr>`).join('')}</tbody></table></div>`;
+	}
+	function morceau(par) {
+		if (par.startsWith('|')) return tableau(par);
+		if (/^[●▲■★○△□ ]+$/.test(par)) return `<div class="formes">${esc(par)}</div>`;
+		if (par.startsWith('@@HTML@@')) return `<div class="bloc">${par.slice(8)}</div>`;
+		if (par.startsWith('$$')) return `<div class="calc">${maths(par.slice(2, -2))}</div>`;
+		return `<div>${enLigne(par)}</div>`;
+	}
+	function rendu(t) {
+		return t
+			.split('\n\n')
+			.flatMap((p) => p.split(/\n(?=@@HTML@@)/))
+			.map(morceau)
+			.join('');
+	}
+	function etape(s) {
+		return s
+			.split(/(\$\$[\s\S]*?\$\$)/)
+			.map((p) => (p.startsWith('$$') ? morceau(p) : enLigne(p)))
+			.join('');
+	}
+
+	function compter() {
+		const ok = MODELES.filter((m) => verdicts[m.id]?.etat === 'ok').length;
+		const revoir = MODELES.filter((m) => verdicts[m.id]?.etat === 'revoir').length;
+		document.getElementById('compte').textContent =
+			`${ok} OK · ${revoir} à revoir · ${MODELES.length - ok - revoir} sans verdict, sur ${MODELES.length}`;
+	}
+
+	function exemple(e) {
+		const reponse = e.choices
+			? `<ul class="choix${e.choices.some((c) => c.content.startsWith('@@HTML@@')) ? ' dessins' : ''}">${e.choices.map((c) => `<li class="${c.bon ? 'bon' : ''}">${c.bon ? '✔ ' : ''}${c.content.startsWith('@@HTML@@') ? c.content.slice(8) : enLigne(c.content)}</li>`).join('')}</ul>`
+			: `<div class="attendu">Attendu, case par case : <b>${esc(e.answer)}</b></div>${e.solution ? `<div class="sol"><div class="attendu">Une construction juste, le moins d'objets (celle que montre la correction) :</div><div class="m-bloc">${e.solution}</div></div>` : ''}`;
+		return `<div class="ex"><div class="var">variation ${e.variation}</div><div class="enonce">${rendu(e.statement)}</div>${reponse}<ol class="corrige">${e.steps.map((s) => `<li>${s.includes('@@HTML@@') ? rendu(s) : etape(s)}</li>`).join('')}</ol></div>`;
+	}
+
+	function fiche(m) {
+		const v = verdicts[m.id] ?? {};
+		return `<article class="fiche" data-id="${m.id}" data-etat="${v.etat ?? ''}">
+		<div class="tete"><h2>${esc(m.titre)}</h2><span class="code">${m.code}</span><span class="niv">niveau ${m.niveau}</span><span class="niv">${esc({ draft: 'brouillon', published: 'publié', archived: 'archivé' }[m.statut] ?? m.statut)}</span><span class="meta">${esc(m.rangement)} · ${m.id}</span></div>
+		${m.alertes.length ? `<p class="alerte">⚠ ${esc(m.alertes.join(' · '))}</p>` : ''}
+        <p class="point"><b>${esc(m.libelle)}</b> ${m.bornes.length ? `Borne : ${esc(m.bornes.join(' ; '))}` : 'Aucune borne relevée.'}</p>
+		<div class="exemples">${m.exemples.map(exemple).join('')}</div>
+		<details><summary>Plages tirées et specs (${m.specs.length})</summary><ul>${[...m.variables, ...m.conditions.map((c) => 'condition ' + c)].map((x) => `<li><code>${esc(x)}</code></li>`).join('')}</ul><ul>${m.specs.map((s) => `<li>${esc(s)}</li>`).join('')}</ul></details>
+		<div class="verdict">
+			<button class="ok" data-v="ok" aria-pressed="${v.etat === 'ok'}">OK</button>
+			<button class="revoir" data-v="revoir" aria-pressed="${v.etat === 'revoir'}">À revoir</button>
+			<span class="etat-ecriture" id="etat-${m.id}"></span>
+		</div>
+		<textarea id="com-${m.id}" placeholder="Commentaire (facultatif pour OK)">${esc(v.commentaire ?? '')}</textarea>
+	</article>`;
+	}
+
+	function afficher() {
+		compter();
+		const liste = MODELES.filter((m) => filtre === 'tout' || verdicts[m.id]?.etat !== 'ok');
+		const zone = document.getElementById('fiches');
+		zone.innerHTML = liste.length
+			? liste.map(fiche).join('')
+			: '<p class="vide">Tout est OK — rien ne reste à relire.</p>';
+	}
+
+	function bandeau() {
+		const b = document.getElementById('bandeau');
+		if (!db) {
+			b.hidden = false;
+			b.className = 'bandeau erreur';
+			b.textContent =
+				'Base indisponible : ouvre la page connecté à claude.ai pour enregistrer tes verdicts.';
+			return;
+		}
+		if (file.length) {
+			b.hidden = false;
+			b.className = 'bandeau';
+			b.textContent = `${file.length} réponse(s) en attente d'enregistrement — nouvel essai automatique.`;
+			return;
+		}
+		b.hidden = true;
+	}
+
+	async function vider() {
+		if (enCours || !db) return;
+		enCours = true;
+		while (file.length) {
+			const { id, data } = file[0];
+			const etat = document.getElementById('etat-' + id);
+			try {
+				await db.doc('verdicts/' + id).set(data);
+				file.shift();
+				delai = 2000;
+				if (etat) etat.textContent = 'Enregistré';
+				await new Promise((r) => setTimeout(r, 400));
+			} catch (e) {
+				if (etat) etat.textContent = 'Pas encore enregistré…';
+				bandeau();
+				await new Promise((r) => setTimeout(r, delai));
+				delai = Math.min(delai * 2, 30000);
+			}
+			bandeau();
+		}
+		enCours = false;
+		bandeau();
+	}
+
+	function enregistrer(id, patch) {
+		const data = { ...(verdicts[id] ?? {}), ...patch, le: new Date().toISOString() };
+		verdicts[id] = data;
+		/* une seule entrée par fiche dans la file, sauf celle en cours d'envoi */
+		const i = file.findIndex((x) => x.id === id);
+		if (i > 0 || (i === 0 && !enCours)) file[i] = { id, data };
+		else file.push({ id, data });
+		bandeau();
+		vider();
+	}
+
+	document.getElementById('fiches').addEventListener('click', (ev) => {
+		const btn = ev.target.closest('button[data-v]');
+		if (!btn) return;
+		const art = btn.closest('.fiche');
+		const id = art.dataset.id;
+		const commentaire = document.getElementById('com-' + id).value;
+		enregistrer(id, { etat: btn.dataset.v, commentaire });
+		art.dataset.etat = btn.dataset.v;
+		art
+			.querySelectorAll('button[data-v]')
+			.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+		compter();
+	});
+	document.getElementById('fiches').addEventListener('change', (ev) => {
+		if (ev.target.tagName !== 'TEXTAREA') return;
+		const id = ev.target.id.slice(4);
+		enregistrer(id, { commentaire: ev.target.value });
+	});
+	for (const [bouton, valeur] of [
+		['f-reste', 'reste'],
+		['f-tout', 'tout']
+	]) {
+		document.getElementById(bouton).addEventListener('click', () => {
+			filtre = valeur;
+			document.getElementById('f-reste').setAttribute('aria-pressed', String(valeur === 'reste'));
+			document.getElementById('f-tout').setAttribute('aria-pressed', String(valeur === 'tout'));
+			afficher();
+		});
+	}
+
+	afficher();
+	(async () => {
+		try {
+			db = (await window.claude?.use?.('db')) ?? null;
+		} catch (e) {
+			db = null;
+		}
+		bandeau();
+		if (!db) return;
+		db.collection('verdicts').onSnapshot(
+			(snap) => {
+				const recu = {};
+				snap.docs.forEach((d) => {
+					recu[d.id] = d.data();
+				});
+				/* une réponse en attente l'emporte sur la base */
+				for (const { id, data } of file) recu[id] = data;
+				verdicts = recu;
+				const focus = document.activeElement?.tagName === 'TEXTAREA';
+				if (!focus) afficher();
+				else compter();
+			},
+			() => bandeau()
+		);
+	})();
+</script>

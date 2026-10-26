@@ -1,0 +1,92 @@
+{
+	"title": "Quelle heure est-il ? (heures entières)",
+	"description": "Lire une heure entière sur une horloge à aiguilles (1 à 12 heures)",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Lire l'heure",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle heure est-il ?\n\n```horloge\nheure: {{n}} h\nchiffres: tous\n```\n\nIl est [_] h.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..12"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La petite aiguille montre l'heure : elle est sur le ${{n}}$.",
+					"{{if:n==12|La grande aiguille est aussi sur le $12$ : c'est une heure juste.|La grande aiguille est sur le $12$ : c'est une heure juste.}}",
+					"Il est ${{n}}$ {{if:n==1|heure|heures}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 heures",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "12 heures",
+			"variationIndex": 0,
+			"variables": {
+				"n": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "Erreur : aiguilles confondues, 12 au lieu de 3",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "Erreur : heure voisine, 4 au lieu de 3",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "Refusé : 15 pour 3 heures (cadran de 12)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["15"]
+		}
+	]
+}

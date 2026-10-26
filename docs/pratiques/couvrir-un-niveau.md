@@ -1,6 +1,11 @@
 ---
 couvre:
   - scripts/create-questions.ts
+  - scripts/questions/page-a-cocher.ts
+  - scripts/questions/page-a-cocher.html
+  - scripts/questions/publier-lot.ts
+  - scripts/lib/page-a-cocher.ts
+  - scripts/lib/lot-questions.ts
 ---
 
 # Couvrir un niveau en modèles de questions — démarche, choix et pièges
@@ -201,21 +206,36 @@ de lot, `checkTemplate` vert ; **David** lance `create-questions --publier --met
 
 ## 8. Page à cocher, puis publication
 
-1. **Page à cocher** (artefact avec capacité `db`, collection `verdicts`) : une fiche par
-   modèle, **un exemple par variation tiré par le vrai générateur** (`generateInstance`), blocs
-   dessinés par les scènes de l'appli (`buildMonnaieScene`, `figureToSvg`…), le point, ses
-   bornes, les plages et les specs repliées ; « OK / À revoir » + commentaire ; filtre « Ce qui
-   reste » par défaut. Vérifier le rendu à 390 px. Gabarit durci : file d'écriture unique,
-   nouvel essai automatique, bandeau tant qu'une réponse attend.
+1. **Page à cocher** :
+   ```bash
+   pnpm tsx scripts/questions/page-a-cocher.ts --dir scripts/questions/<niveau>-<lot> \
+     --titre "Relecture CP — lot C" --intro "<une phrase : ce que le lot apporte>" \
+     --sortie <scratchpad>/relecture-<niveau>-<lot>.html
+   ```
+   Une fiche par fichier du lot, **un exemple par variation tiré par le vrai générateur**
+   (`generateInstance`, graine fixe : page reproductible). Les blocs `figure`, `monnaie`,
+   `collection` et `horloge` sont dessinés par les scènes de l'appli (à construire : réserve,
+   plan vide, et la construction juste à part) ; un autre bloc (`operation`…) est montré par sa
+   source et signalé. L'id, le statut, le nœud et le point sont **lus en base** (lecture seule,
+   `.env` = prod), avec les bornes du point (`docs/systeme/programmes/bornes/`). Alertes en tête
+   de fiche : sans point, plusieurs points, sans nœud, niveau en base différent du fichier, point
+   absent des bornes, bloc non dessiné. Le niveau n'entre pas dans la clé de la page : les anciens
+   lots ont été renumérotés en base après coup (CP B1, B3, H) ; un sous-domaine changé après coup
+   (CP B2) fait refuser le lot, et le message dit ce qui diffère.
+   Gabarit : `scripts/questions/page-a-cocher.html` (collection `verdicts`, « OK / À revoir » +
+   commentaire, filtre « Ce qui reste » par défaut, file d'écriture unique, nouvel essai
+   automatique, bandeau tant qu'une réponse attend). Publier la page en artefact avec la capacité
+   `db` ; vérifier le rendu à 390 px.
 2. David relit ; lire la base (`ArtifactData list verdicts`) et **compter** les réponses avant
    de dire « tout est relu ». Un « À revoir » → corriger (§ 7), remettre le verdict à zéro.
-3. **Publication** : script qui retrouve les brouillons du lot par titre et niveau, exige le
-   compte exact, simule par défaut ; **David** le lance avec `--publier` (`publishTemplates`).
-   Relire `status = 'published'` en base.
-
-> Les scripts de la page à cocher et de la publication vivent encore dans le scratchpad de
-> chaque session (dernier : `page-c.mts`, `publier-c.mts`) ; leur version réutilisable sous
-> `scripts/questions/` est décidée (David, 2026-10-26), PR à venir.
+3. **Publication** :
+   ```bash
+   pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/<niveau>-<lot>   # simulation
+   ```
+   Retrouve chaque fichier en base par la clé de `create-questions` (titre, thème, domaine,
+   sous-domaine, niveau), exige **un brouillon par fichier** (tout ou rien), puis **David** le
+   lance avec `--publier` : `publishTemplates` (contrôle de l'admin, collisions de catégorie),
+   puis le statut `published` est relu en base (`n/n publiés`, sortie 1 sinon).
 
 ## 9. Pièges
 

@@ -232,11 +232,6 @@ export function fillMarkdown(
 	);
 }
 
-/**
- * Énoncé prêt à remplir : marqueur `<<expr:NOM>>` retiré, et ` = format` ajouté
- * aux formules de la convention « expression » (comme `augmentASTForExpressions`
- * à l'écran), sauf si la formule a déjà ses propres cases.
- */
 /** L'énoncé sans ses blocs ```figure-a-completer et ```figure-de-travail (leur ligne les montre) */
 export function withoutFigureCases(statement: string): string {
 	return statement.replace(FIGURE_CASE_BLOCK, '');
@@ -300,7 +295,13 @@ export function showsInstructionOnly(lines: readonly ExpectedLine[]): boolean {
 	);
 }
 
-function prepareStatement(statement: string, instance: QuestionInstance): string {
+/**
+ * Énoncé prêt à remplir : marqueur `<<expr:NOM>>` retiré, et ` = format` ajouté
+ * aux formules de la convention « expression » (comme `augmentASTForExpressions`
+ * à l'écran), sauf si la formule a déjà ses propres cases. Exporté pour la page à
+ * cocher des lots (`scripts/lib/page-a-cocher.ts`).
+ */
+export function prepareStatement(statement: string, instance: QuestionInstance): string {
 	const expressions = instance.expressions ?? [];
 	return statement.replace(MATH_ZONE, (_m, block: string | undefined, inline: string) => {
 		const raw = block ?? inline;
