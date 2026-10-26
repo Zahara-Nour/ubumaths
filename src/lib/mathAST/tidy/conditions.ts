@@ -83,10 +83,8 @@ export function mergeConditions<C extends DomainCondition>(conditions: readonly 
 			key,
 			existing === undefined
 				? condition
-				: {
-						expression: existing.expression,
-						relation: strongest(existing.relation, condition.relation)
-					}
+				: // La même sorte de condition, renforcée : `C` garde sa forme
+					({ ...existing, relation: strongest(existing.relation, condition.relation) } as C)
 		);
 	}
 	return [...merged.values()];

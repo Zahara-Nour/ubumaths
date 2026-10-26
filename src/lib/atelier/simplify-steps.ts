@@ -133,7 +133,7 @@ export function simplifySteps(expression: string): SimplifiedSteps | null {
 		const alternative =
 			lost === null || lost.length === 0 || full.steps.length === 0
 				? undefined
-				: domainAlternative(full.result, lost, rendered(full));
+				: domainAlternative(full.result, lost, rendered(full) ?? undefined);
 		// Zéro étape = rien à simplifier. C'est un repli, pas un échec : la ligne
 		// garde la réponse du moteur, qui dit déjà la même chose. Des étapes, mais
 		// aucune qui garde le domaine : la ligne garde l'expression, sans étapes
