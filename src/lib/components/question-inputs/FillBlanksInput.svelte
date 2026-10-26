@@ -905,9 +905,11 @@
 					</div>
 				{/if}
 			{:else if node.type === 'figure' && node.construction?.caseIndex !== undefined}
-				<!-- Case « figure » (```figure-a-completer) : l'élève trace sur la figure de départ -->
+				<!-- Case « figure » (```figure-a-completer) : l'élève trace sur la figure de départ.
+				     Figure de travail (```figure-de-travail) : jamais notée, ni verte ni rouge -->
 				{@const caseIndex = node.construction.caseIndex}
 				{@const state = inputStates[caseIndex]}
+				{@const work = node.construction.work === true}
 				{#if flashMode}
 					<FigureBlock {node} />
 				{:else if showCorrectAnswers}
@@ -917,7 +919,7 @@
 						{node}
 						answer={{
 							value: state?.value ?? '',
-							isCorrect: state?.isCorrect ?? null,
+							isCorrect: work ? null : (state?.isCorrect ?? null),
 							disabled: effectiveDisabled,
 							onChange: (value) => handleInputChange(caseIndex, value)
 						}}

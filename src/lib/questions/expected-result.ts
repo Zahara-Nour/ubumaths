@@ -22,6 +22,7 @@ import { rulesDecide } from './rules-suffice';
 import { escapeStudentText, neutralizeStudentLatex } from './student-answer-safety';
 import { correctChoiceIndexesOf, isChoiceBlank, parseChoiceAnswer } from './choice-case';
 import { replaceChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
+import { isWorkFigureBlank } from './graded-part';
 import {
 	validateAnswerDetailed,
 	type DetailedVerdict,
@@ -115,7 +116,13 @@ export type ExpectedLine =
 			source: string;
 			answer: string | null;
 			status: ExpectedStatus;
-	  };
+	  }
+	/**
+	 * Figure de travail (bloc ```figure-de-travail) : jamais notée, montrée APRÈS
+	 * les réponses ; les traits de l'élève en gris (`answer`, chaîne `droite(…)`),
+	 * `''` sans tracé, `null` sans réponse (R9) : la figure de départ seule
+	 */
+	| { kind: 'work-figure'; index: number; source: string; answer: string | null };
 
 export interface ExpectedResult {
 	/** Statut global (celui de `validateAnswer`) ; `null` sans réponse d'élève (R9) */
@@ -128,8 +135,11 @@ export const EMPTY_ANSWER_TEXT = "Tu n'as rien répondu.";
 /** Case sans valeur connue : pointillés, comme sur une fiche */
 const BLANK_TEXT = '……';
 
-/** Bloc ```figure-a-completer : la case « figure », montrée par sa ligne `figure` */
-const FIGURE_CASE_BLOCK = /^```figure-a-completer\b[\s\S]*?^```[ \t]*$/gm;
+/**
+ * Bloc ```figure-a-completer (la case « figure », montrée par sa ligne `figure`) ou
+ * ```figure-de-travail (montrée par sa ligne `work-figure`)
+ */
+const FIGURE_CASE_BLOCK = /^```figure-(?:a-completer|de-travail)\b[\s\S]*?^```[ \t]*$/gm;
 
 /** Une formule : bloc `$$…$$` ou en ligne `$…$` (une seule passe, cf. content-resolver) */
 const MATH_ZONE = /\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g;
@@ -204,7 +214,7 @@ export function fillMarkdown(
  * aux formules de la convention « expression » (comme `augmentASTForExpressions`
  * à l'écran), sauf si la formule a déjà ses propres cases.
  */
-/** L'énoncé sans ses blocs ```figure-a-completer (la ligne `figure` les montre) */
+/** L'énoncé sans ses blocs ```figure-a-completer et ```figure-de-travail (leur ligne les montre) */
 export function withoutFigureCases(statement: string): string {
 	return statement.replace(FIGURE_CASE_BLOCK, '');
 }
@@ -293,7 +303,8 @@ function blankViews(
 	verdict: DetailedVerdict | undefined
 ): BlankView[] {
 	return (instance.blanks ?? []).flatMap((blank, index) => {
-		if (!blank) return [];
+		// Figure de travail : jamais une réponse, sa ligne à part (`workFigureLines`)
+		if (!blank || isWorkFigureBlank(blank)) return [];
 		// Case choix : sa réponse (indices) n'est jamais rendue en texte, cf. choiceCaseLines
 		const context = blank.type === 'text' || blank.type === 'choice' ? 'text' : 'math';
 		const detail = verdict?.blanks[index];
@@ -441,6 +452,25 @@ function figureLines(
 	return [line, ...remarkLines([view])];
 }
 
+/** Figures de travail : une ligne chacune, après les réponses notées */
+function workFigureLines(
+	instance: QuestionInstance,
+	answer: StudentAnswer | undefined
+): ExpectedLine[] {
+	return (instance.blanks ?? []).flatMap((blank, index) =>
+		blank?.construction && isWorkFigureBlank(blank)
+			? [
+					{
+						kind: 'work-figure' as const,
+						index,
+						source: blank.construction.source,
+						answer: answer ? (answer.values?.[index] ?? '').trim() : null
+					}
+				]
+			: []
+	);
+}
+
 function expectedOnlyLine(view: BlankView, withAnswer: boolean): ExpectedLine {
 	return {
 		kind: 'expected-only',
@@ -546,6 +576,17 @@ function choiceBlockIndexes(markdown: string): Set<number> {
 }
 
 function build(
+	instance: QuestionInstance,
+	answer: StudentAnswer | undefined,
+	given: DetailedVerdict | undefined
+): ExpectedResult {
+	const result = buildAnswers(instance, answer, given);
+	const work = workFigureLines(instance, answer);
+	return work.length === 0 ? result : { ...result, lines: [...result.lines, ...work] };
+}
+
+/** Résultat attendu des cases notées (les figures de travail viennent après, cf. `build`) */
+function buildAnswers(
 	instance: QuestionInstance,
 	answer: StudentAnswer | undefined,
 	given: DetailedVerdict | undefined

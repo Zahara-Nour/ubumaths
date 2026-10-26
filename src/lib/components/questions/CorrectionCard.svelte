@@ -127,7 +127,7 @@
 		!verdict &&
 			!positionsLoaded &&
 			!hasConstructionPositions() &&
-			(instance.blanks ?? []).some((blank) => blank?.construction)
+			(instance.blanks ?? []).some((blank) => blank?.construction && !blank.construction.work)
 	);
 	const waitsForPositions = $derived(needsPositions && !positionsFailed);
 	$effect(() => {

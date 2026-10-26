@@ -256,10 +256,14 @@
 	function hasValidInput(): boolean {
 		switch (getQuestionType(instance)) {
 			// Cases vides acceptées (« Tu n'as rien répondu. »), sauf une case « figure » :
-			// Valider grisé tant que rien n'est tracé (décision de David, CP-059 et CP-058)
+			// Valider grisé tant que rien n'est tracé (décision de David, CP-059 et CP-058) ;
+			// une figure de travail, jamais notée, peut rester vide
 			case 'fill_in_blanks':
 				return (instance.blanks ?? []).every(
-					(blank, index) => !blank.construction || (fillBlankValues[index] ?? '').trim() !== ''
+					(blank, index) =>
+						!blank.construction ||
+						blank.construction.work ||
+						(fillBlankValues[index] ?? '').trim() !== ''
 				);
 			case 'multiple_choice':
 				return selectedChoices.length > 0;

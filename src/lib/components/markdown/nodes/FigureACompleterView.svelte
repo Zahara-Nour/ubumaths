@@ -15,7 +15,9 @@
 	- « Effacer » : le départ en attente, sinon la dernière droite ;
 	- après Valider : juste → ses droites en vert ; faux → la bonne droite en
 	  pointillés par-dessus (le message est celui de l'écran) ;
-	- `showSolution` (mode correction) : la figure et la bonne droite.
+	- `showSolution` (mode correction) : la figure et la bonne droite ;
+	- figure de travail (```figure-de-travail, `construction.work`) : rien n'est
+	  noté ; une fois la saisie finie (Valider, copie), les traits sont gris.
 
 	Importé UNIQUEMENT par `FigureBlock` via `import()`. Il inscrit le calcul des
 	positions (`positions-setup`) dont le juge a besoin à la validation.
@@ -86,6 +88,8 @@
 	let corrected = $derived(answer?.isCorrect === false || showSolution);
 	let checks = $derived(node.construction?.checks ?? []);
 	let tool = $derived(node.construction?.tools[0] ?? 'droite');
+	/** Figure de travail : traits gris une fois la saisie finie, jamais de verdict */
+	let workDone = $derived(node.construction?.work === true && answer !== undefined && !interactive);
 	/** Quadrillage + segment : touchers sur les nœuds (sinon aimantation sur les points) */
 	let grid = $derived(tool === 'segment' ? node.header.grid : null);
 	/** Curseur clavier sur le quadrillage (nœud), affiché quand la zone a le focus */
@@ -240,6 +244,7 @@
 					data-testid={line.kind === 'segment' ? 'segment-eleve' : 'droite-eleve'}
 					class="droite-eleve"
 					class:droite-juste={answer?.isCorrect === true}
+					class:droite-travail={workDone}
 					x1={s.x1}
 					y1={s.y1}
 					x2={s.x2}
@@ -322,6 +327,10 @@
 
 	.droite-juste {
 		stroke: var(--color-success);
+	}
+
+	.droite-travail {
+		stroke: var(--color-muted-foreground);
 	}
 
 	.bonne-droite {

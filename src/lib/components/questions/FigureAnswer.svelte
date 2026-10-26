@@ -5,6 +5,8 @@
 	Verso de la carte flash et copie corrigée : la figure du bloc
 	```figure-a-completer, avec ce que l'élève a tracé (juste : en vert ; faux :
 	ses traits et la bonne figure en pointillés) ; sans réponse (R9), la bonne figure.
+	Figure de travail (`work`, bloc ```figure-de-travail) : ses traits en gris, sans
+	verdict ; sans réponse, la figure de départ seule.
 	Lecture seule : la saisie est désactivée.
 
 	@module components/questions/FigureAnswer
@@ -19,19 +21,32 @@
 		source: string;
 		/** Tracés de l’élève (`droite(…)`, `segment(…)`) ; null : la bonne figure seule */
 		answer: string | null;
-		status: ExpectedStatus;
+		/** Sans objet pour une figure de travail (jamais notée) */
+		status?: ExpectedStatus;
+		/** Figure de travail : traits gris, aucun verdict */
+		work?: boolean;
 	}
 
-	let { source, answer, status }: Props = $props();
+	let { source, answer, status = 'solution', work = false }: Props = $props();
 
 	let node = $derived.by(() => {
-		const lines = ['```figure-a-completer', ...source.split('\n'), '```'];
+		const fence = work ? '```figure-de-travail' : '```figure-a-completer';
+		const lines = [fence, ...source.split('\n'), '```'];
 		return parseFigure(lines, 0, lines.length - 1);
 	});
 	let isCorrect = $derived(status === 'correct' || status === 'unoptimal');
 </script>
 
-{#if answer === null}
+{#if work}
+	{#if answer === null}
+		<FigureBlock {node} />
+	{:else}
+		<FigureBlock
+			{node}
+			answer={{ value: answer, isCorrect: null, disabled: true, onChange: () => {} }}
+		/>
+	{/if}
+{:else if answer === null}
 	<FigureBlock {node} showSolution />
 {:else}
 	<FigureBlock {node} answer={{ value: answer, isCorrect, disabled: true, onChange: () => {} }} />
