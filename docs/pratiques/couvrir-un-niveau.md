@@ -94,7 +94,14 @@ coûte un chantier. Détail de chaque bloc : [ubumark.md § Blocs spéciaux](../
 **Répondre** (ce que l'élève saisit ou fait) :
 
 - **case** (MathLive, jugée par le juge ordinaire), plusieurs cases, case dans un tableau (`$?$`) ;
-- **QCM = une case** ([ADR 0033](../adr/0033-le-qcm-est-une-case.md)), choix en texte ou en dessins (bloc ` ```choix `) ;
+- **QCM** : aujourd'hui `choices[{content, isCorrect}]` (question « QCM », jamais mêlée de cases),
+  choix en texte ou en dessins. ⚠️ **En cours de réécriture en case spéciale** : la case « choix »
+  (bloc ` ```choix `, [ADR 0033](../adr/0033-le-qcm-est-une-case.md), chantier `figure-et-choix`)
+  remplace le QCM ; tous les QCM de la prod seront migrés et le type `multiple_choice` retiré. La
+  case choix n'est pas encore en prod : au premier lot qui a besoin d'un QCM, lire le « Reprendre
+  ici » de `figure-et-choix` et **demander à David** la forme à écrire (ancien QCM, migré avec les
+  autres, ou case choix, en brouillon jusqu'au `deploy:prod`). Une fois la migration faite : case
+  choix seulement, et « QCM ou cases » (§ 9) ne vaut plus.
 - **opération posée à compléter** (saisie chiffre par chiffre du bloc `operation`) ;
 - **construire** : `construire:` dans ` ```collection ` ou ` ```monnaie ` (la valeur posée est la réponse) ;
 - **figure à compléter** (` ```figure-a-completer `, case « figure » : objets de l'élève retrouvés
@@ -148,7 +155,7 @@ Pour chaque modèle, proposer à David, en français et sans écrire de fichier 
 - son **point** (un seul : [ADR 0020](../adr/0020-arbre-central-programmes-pointeurs.md)) et sa **sous-notion** (le nœud du point) ;
 - ses **variations** (une par difficulté ou par forme), leurs **plages**, leurs **niveaux**
   (numérotés dès l'écriture) ;
-- la forme de réponse : case, QCM **ou** cases (pas les deux), bloc à construire ;
+- la forme de réponse : case, QCM **ou** cases (pas les deux ; QCM en réécriture, § 3 bis), bloc à construire ;
 - la **question d'accès** de la migration, posée AVANT le SQL : « qui pourra lire quoi, qu'il ne
   pouvait pas lire avant ? » (pour un lot de modèles neufs en brouillon : personne).
 
@@ -213,7 +220,8 @@ de lot, `checkTemplate` vert ; **David** lance `create-questions --publier --met
 ## 9. Pièges
 
 - **Un point par modèle** (ADR 0020) ; deux points → deux modèles.
-- **QCM ou cases**, jamais les deux ; une case dans un tableau s'écrit `$?$`.
+- **QCM ou cases**, jamais les deux (tant que la case choix n'a pas remplacé le QCM, § 3 bis) ;
+  une case dans un tableau s'écrit `$?$`.
 - **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** : passer par une variable.
 - Jamais de variable `e` (Euler) ; lettres parlantes, jamais P / E / V.
 - Prénoms écrits dans le texte ; montants en `$n~\unit{€}$`, jamais « : » juste après un montant
