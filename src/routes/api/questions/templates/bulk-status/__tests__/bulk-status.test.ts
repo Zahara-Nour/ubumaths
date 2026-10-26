@@ -16,6 +16,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { POST } from '../+server';
+import { publishTemplates } from '$lib/server/questions-bulk-status';
 
 // ============================================================================
 // TYPES
@@ -342,6 +343,44 @@ describe('POST /api/questions/templates/bulk-status — publier', () => {
 		expect(body.refused).toHaveLength(1);
 		expect(body.refused[0].id).toBe(ID_A);
 		expect(body.refused[0].reasons.join(' ')).toMatch(/pas été enregistrée/);
+	});
+});
+
+describe('publishTemplates — simulation (scripts/questions/publier-lot.ts)', () => {
+	const client = (db: FakeDb) => fakeLocals(db).supabase as never;
+
+	it('mêmes contrôles que la publication, aucune écriture', async () => {
+		const db = fakeDb('admin', [
+			redSpecRow(ID_A),
+			templateRow(ID_B, { level: 5 }),
+			templateRow(ID_PUBLISHED, { status: 'published', title: 'Double (déjà publié)' })
+		]);
+
+		const result = await publishTemplates(client(db), [ID_A, ID_B], { simulation: true });
+
+		expect(result.published).toEqual([{ id: ID_B, title: 'Trouver le double' }]);
+		expect(result.refused.map((r) => r.id)).toEqual([ID_A]);
+		expect(statusOf(db, ID_A)).toBe('draft');
+		expect(statusOf(db, ID_B)).toBe('draft');
+	});
+
+	it('signale une collision de catégorie sans rien écrire', async () => {
+		const db = fakeDb('admin', [
+			templateRow(ID_PUBLISHED, { status: 'published', title: 'Double (déjà publié)' }),
+			templateRow(ID_A)
+		]);
+
+		const result = await publishTemplates(client(db), [ID_A], { simulation: true });
+
+		expect(result.published).toEqual([]);
+		expect(result.refused[0].reasons.join(' ')).toMatch(/catégorie.*Double \(déjà publié\)/);
+		expect(statusOf(db, ID_A)).toBe('draft');
+	});
+
+	it('sans simulation, le même appel écrit (témoin)', async () => {
+		const db = fakeDb('admin', [templateRow(ID_A)]);
+		await publishTemplates(client(db), [ID_A]);
+		expect(statusOf(db, ID_A)).toBe('published');
 	});
 });
 
