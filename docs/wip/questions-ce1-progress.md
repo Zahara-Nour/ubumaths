@@ -55,11 +55,17 @@ Specs : toutes vertes (`question:specs --template … --apercu 3`, 5 tirages par
 - Plages étroites, pas fausses : tables 6 à 10 absentes au CE1 (CE1-027/091) ; + 9 et départs > 100
   absents (CE1-031).
 
-### Doublons (mêmes nombres, seul le corrigé change : addition ou multiplication)
+### Doublons (mêmes nombres)
 
-`47f97c9f` / `022130ca` (double, niveau 4 ; `47f97c9f` pose « Quel est le résultat de 2 × 5 ? » puis
-« Le double de 5 est … ») · `e4c70b53` / `c96ecf4d` (moitié) · `0b36b0bb` / `b760b7c0` et
-`bb3cb3d3` / `21df294b` (triple) · `11a3ebb6` / `d97a3de2` (tiers).
+- Seul le corrigé change, additif (« 25 + 25 ») ou multiplicatif (« 2 × 25 ») : `c96ecf4d` / `e4c70b53`
+  (moitié) · `0b36b0bb` / `b760b7c0` et `bb3cb3d3` / `21df294b` (triple) · `d97a3de2` / `11a3ebb6` (tiers).
+- Seul l'énoncé change : `47f97c9f` / `022130ca` (double, niveau 4 ; `47f97c9f` pose « Quel est le
+  résultat de 2 × 5 ? » puis « Le double de 5 est … »).
+- BO : au **CP**, doubles et moitiés sont rangés avec les tables d'addition (« Mémoriser des faits
+  numériques », le « × » n'est pas encore là) ; au **CE1** et au CE2, ils deviennent des « faits
+  multiplicatifs usuels » (« × » introduit en périodes 1-2). Le corrigé additif est celui du CP ;
+  au CE1, le multiplicatif. Moitié d'un nombre non mémorisé (CE1-034) : par décomposition (BO).
+- Triple et tiers : aucun point au cycle 2 ; « le tiers » apparaît en 6e (6-211).
 
 ### Non tagués (26)
 
@@ -82,20 +88,25 @@ Specs : toutes vertes (`question:specs --template … --apercu 3`, 5 tirages par
   problèmes 036-040 ;
   longueurs 041-043, 045-047 ; masses 049-052, 085 ;
   monnaie 053, 058 ; durées 061, 062 ; solides 066, 067 ; figures 071.
-- **B. Outil existant (30)** :
+- **B. Outil existant (32)** :
   - `collection` : 001, 002 (`construire:`) — ⚠️ groupes de **cent** demandés, `centaines:` pas encore disponible (→ C partiel, ci-dessous) ;
   - `operation` : 022 (addition posée), 100 (soustraction, `méthode: cassage | compensation`) ;
   - `monnaie` : 054, 055, 056 et 057 (`construire:`), 086 ;
   - `horloge` (minutes déjà disponibles) : 059, 063, 104 ;
   - `figure` : 069, 070, 105, 073 (alignés ?), 075, 087 (droit / aigu / obtus) ; fractions 096, 098 (polygones remplis, secteurs) ; 044 (segment sur une règle graduée, à vérifier) ;
   - `barres` : 082, 106 ; `tableau-croise` : 089, 107 ; 081 (tableau à compléter) ;
-  - images fixes : 064, 065 (solides), 076 (positions), 077 (plan).
-- **C. Outil neuf (5 points + 001-003 en partie)** :
+  - images fixes : 064, 065 (solides), 076 (positions), 077 (plan) ;
+  - `figure` + flèches, comme CP-067 (« Le robot sur le quadrillage », `f7167af7`, QCM « où arrive
+    le robot ? ») : 080 lu (jusqu'à 15 instructions, 4 virages) ; le BO du CE1 code aussi en
+    « avancer de / pivoter d'un quart de tour » (codage relatif), pas seulement en flèches ;
+  - `horloge` en QCM de cadrans (comme au CP) : 060 « positionner les aiguilles ».
+- **C. Outil neuf (3 points + 001-003 en partie)** :
   1. `collection` : **`centaines:`** (plaques de cent) → 001, 002, 003 ; sert aussi au CE2.
   2. **Fractions à colorier** (l'élève touche les parts d'une figure partagée) → 095, 097 ; puis CE2.
-  3. **Aiguilles à placer** sur l'horloge (manque connu au CP) → 060.
-  4. **Barres à monter** (hauteur de barres, manque connu) → 088.
-  5. **Déplacement codé** sur quadrillage → 080 (lié à Blockly, futur).
+  3. **Barres à monter** (hauteur de barres, manque connu) → 088.
+  4. Plus tard, gestes plus justes que le QCM : **aiguilles à placer** (060), **suite de flèches à
+     produire** (080 « produire » ; glisser-déposer `StructureField`, pas Blockly : le BO ne parle
+     que d'un robot « si un robot est disponible », d'aucun logiciel).
 - **D. Non évaluables sans manipulation (7)** : 092 (suite orale), 048 (soupeser), 068 (construire un
   solide), 079 (assemblages de cubes), 072 et 074 (tracer : case « figure » de `figure-et-choix`), 078.
 
