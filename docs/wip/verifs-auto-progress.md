@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1810 ; correctif en PR._
+_Mis à jour le 2026-10-26, après #1813._
 
-- **État** : lots 1-7 mergés (#1773 → #1810) ; PR `fix/grille-sans-saut` : ligne réservée sous la barre de la grille (`.sous-barre`, test client rouge d'abord) et « Résoudre k(x) = 0 » sur la carte k (`actionsFor`). Rouges verifs restants : `each_key_duplicate` (#1674, #1703, #1620 en fin de test, #1307).
-- **Prochaine action** : merger le correctif, rejouer `pnpm test:verifs` (#1422 doit être vert à chaque fois) ; puis les lignes Atelier restantes, ou la page à cocher (plan, point 2).
+- **État** : lots 1-7 mergés (#1773 → #1810) ; correctif #1813 mergé (grille sans saut : `.sous-barre`, une ligne, deux sous 40rem de large ; « Résoudre k(x) = 0 »). `pnpm test:verifs` : 95 verts, rouges = `each_key_duplicate` seulement (#1674, #1703, #1620 en fin de test, #1307).
+- **Prochaine action** : les lignes Atelier restantes de `verifications-manuelles.md`, ou la page à cocher (plan, point 2).
 - **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : port 5179 ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; `e` = Euler (prendre `k`) ; console ouverte couvre toile et zoom ; prettier réaligne le tableau → conflits au merge de `main` : rejouer ses lignes par script ; cellules à espaces de remplissage ; commitlint : pas de majuscule, pas de type `merge` ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `ubumaths-wt-verifs-auto` / `fix/grille-sans-saut`.
+- **Pièges en cours** : port 5179 ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; `e` = Euler (prendre `k`) ; console ouverte couvre toile et zoom ; prettier réaligne le tableau → conflits au merge de `main` : rejouer ses lignes par script ; cellules à espaces de remplissage ; commitlint : pas de majuscule, pas de type `merge`, corps ≤ 100 caractères par ligne ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (retiré après #1813).
 
 ## Phase 0 (validée le 2026-10-25)
 
