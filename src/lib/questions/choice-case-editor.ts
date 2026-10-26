@@ -42,6 +42,8 @@ export interface EditableChoiceCase extends ChoiceCaseDraft {
 // Constantes
 /** Ce que le générateur résout avant de compter les cases */
 const UNRESOLVED_MARKERS = /\{\{|<<expr:/;
+/** Marqueur posé devant une variable expression, retiré à la résolution */
+const EXPR_MARKER = /<<expr:[a-zA-Z0-9]*>>/g;
 
 // Functions
 /** Genre de chaque case de l'énoncé, dans l'ordre des cases (`blanks[i]`) */
@@ -61,11 +63,8 @@ export function withBlockCases<T>(
 	statement: string,
 	empty: () => T
 ): T[] | null {
-	// Variables (`{{a}}`, `{{if:…}}`) ou expressions (`<<expr:…>>`) : le générateur
-	// compte les cases sur l'énoncé RÉSOLU (une division `{{a}} ÷ 7` porte deux cases) ;
-	// lu brut, le compte peut différer — ne rien toucher, le générateur aligne
-	if (UNRESOLVED_MARKERS.test(statement)) return null;
 	const result = assignBlankIndices(statement);
+	if (!countsLikeResolved(statement, result)) return null;
 	const blockCases = new Set(
 		[
 			result.operationBlanks,
@@ -79,6 +78,49 @@ export function withBlockCases<T>(
 	return Array.from({ length: result.totalBlanks }, (_, index) =>
 		blockCases.has(index) ? empty() : others.shift()!
 	);
+}
+
+/**
+ * L'énoncé brut compte-t-il les cases comme l'énoncé résolu ? Le générateur les
+ * compte APRÈS les variables (`{{a}}`, `{{if:…}}`) et les expressions
+ * (`<<expr:…>>`). Une variable dans un ```operation peut en changer le nombre
+ * (`{{a}} ÷ 7` : deux cases) ; ailleurs, seule une variable qui porte une case
+ * (`{{if:k==1|[_]|…}}`) le fait : vue en comptant aussi l'énoncé où chacune vaut
+ * `1` — même genre de cases dans le même ordre, sinon on ne sait pas.
+ */
+function countsLikeResolved(
+	statement: string,
+	raw: ReturnType<typeof assignBlankIndices>
+): boolean {
+	if (!UNRESOLVED_MARKERS.test(statement)) return true;
+	if (Object.values(raw.operationBlanks ?? {}).some((source) => UNRESOLVED_MARKERS.test(source))) {
+		return false;
+	}
+	const neutral = assignBlankIndices(withVariablesAsOne(statement));
+	return (
+		neutral.totalBlanks === raw.totalBlanks &&
+		neutral.blankTypes.every((kind, index) => kind === raw.blankTypes[index])
+	);
+}
+
+/** Chaque `{{…}}` (imbriqués compris) remplacé par `1`, marqueurs `<<expr:…>>` retirés */
+function withVariablesAsOne(statement: string): string {
+	const text = statement.replace(EXPR_MARKER, '');
+	let out = '';
+	let depth = 0;
+	for (let i = 0; i < text.length; i++) {
+		if (text.startsWith('{{', i)) {
+			if (depth === 0) out += '1';
+			depth++;
+			i++;
+		} else if (depth > 0 && text.startsWith('}}', i)) {
+			depth--;
+			i++;
+		} else if (depth === 0) {
+			out += text[i];
+		}
+	}
+	return out;
 }
 
 /** Le bloc choix de rang `ordinal` (0 = le premier), ou `null` s'il n'existe pas */
