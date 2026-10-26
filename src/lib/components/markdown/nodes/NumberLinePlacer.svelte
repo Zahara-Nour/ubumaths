@@ -47,6 +47,11 @@
 	/** Nom accessible de la zone : jamais la valeur attendue */
 	const ZONE_ARIA_LABEL = 'Droite graduée : ton point';
 
+	/** Le point de l'élève : la couleur d'accent, jamais le rouge de l'erreur */
+	const STUDENT_COLOR = 'bleu';
+	/** Le point juste, dans la correction */
+	const SOLUTION_COLOR = 'vert';
+
 	let config = $derived(node.config);
 	let count = $derived(graduationCount(config));
 
@@ -75,9 +80,11 @@
 		return { expression, ast: parseCustom(expression) };
 	}
 
-	let shown = $derived(lineWithPoint(current));
+	let shown = $derived(lineWithPoint(current, STUDENT_COLOR));
 	let solutionIndex = $derived(node.placer ? indexOfValue(config, numVal(node.placer)) : null);
-	let solution = $derived(solutionIndex === null ? null : lineWithPoint(solutionIndex));
+	let solution = $derived(
+		solutionIndex === null ? null : lineWithPoint(solutionIndex, SOLUTION_COLOR)
+	);
 
 	function place(k: number) {
 		if (locked) return;
@@ -142,7 +149,7 @@
 <div class="placer-bloc my-2 flex flex-col items-center gap-1 {className}">
 	<div
 		bind:this={zone}
-		class="placer-zone w-full rounded-md border"
+		class="placer-zone w-full rounded-md border py-3"
 		class:placer-juste={answer?.isCorrect === true}
 		class:placer-faux={answer?.isCorrect === false}
 		class:placer-verrouille={locked}
@@ -160,7 +167,7 @@
 		onpointercancel={handlePointerUp}
 		onkeydown={handleKeyDown}
 	>
-		<NumberLine node={shown} />
+		<NumberLine node={shown} pointsOnLine />
 	</div>
 
 	{#if showControls}
@@ -201,7 +208,7 @@
 		{#if solution !== null}
 			<div class="placer-correction flex w-full flex-col items-center gap-1">
 				<p class="text-sm font-medium text-muted-foreground">Correction</p>
-				<NumberLine node={solution} />
+				<NumberLine node={solution} pointsOnLine />
 			</div>
 		{/if}
 	{/if}

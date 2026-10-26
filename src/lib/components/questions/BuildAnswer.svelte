@@ -68,7 +68,12 @@
 	{:else}
 		<!-- La droite avec le point juste, sans `placer:` : dessinée seule -->
 		<NumberLine
-			node={{ ...line, placer: undefined, points: [{ label: '', value: line.placer }] }}
+			node={{
+				...line,
+				placer: undefined,
+				points: [{ label: '', value: line.placer, color: 'vert' }]
+			}}
+			pointsOnLine
 		/>
 	{/if}
 {:else if monnaie?.spec?.build !== undefined && monnaie.spec.reserve !== undefined}

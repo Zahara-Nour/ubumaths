@@ -48,10 +48,15 @@
 		showErrors?: boolean;
 		/** Droite à placer dans une question : sa case */
 		answer?: BuildCase;
+		/** Points posés SUR la droite, plus gros (droite à placer : le point de l'élève) */
+		pointsOnLine?: boolean;
 		class?: string;
 	}
 
-	let { node, showErrors, answer, class: className = '' }: Props = $props();
+	let { node, showErrors, answer, pointsOnLine = false, class: className = '' }: Props = $props();
+
+	/** Point posé sur la droite : plus gros, il doit se voir sur la graduation */
+	const ON_LINE_POINT_RADIUS = 7;
 
 	const authoring = readAuthoringErrors();
 	let errorsVisible = $derived(showErrors ?? authoring());
@@ -91,7 +96,7 @@
 	let renderedPoints = $derived(
 		node.points.map((p: NumberLinePoint, i: number) => ({
 			x: valueToX(numVal(p.value), startNum, endNum, scale),
-			y: LINE_Y + POINT_Y_OFFSET,
+			y: pointsOnLine ? LINE_Y : LINE_Y + POINT_Y_OFFSET,
 			label: p.label,
 			latex: valLatex(p.value),
 			color: colors.points[i].screen
@@ -228,7 +233,7 @@
 					class="nl-point"
 					cx={point.x}
 					cy={point.y}
-					r={POINT_RADIUS}
+					r={pointsOnLine ? ON_LINE_POINT_RADIUS : POINT_RADIUS}
 					style:fill={point.color}
 					stroke-width="1.5"
 				/>
