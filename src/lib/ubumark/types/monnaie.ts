@@ -16,6 +16,11 @@
  * de chaque ensemble ; le dessin est calculé par `utils/monnaie-scene.ts`,
  * partagé écran / PDF.
  *
+ * À construire (`construire: 35`, `réserve: 1 2 5 10 20`, chantier
+ * `docs/wip/construire-progress.md`) : l'élève pose des coupures de la réserve
+ * sur un plan vide ; dans une question, le bloc porte une case (`case: N`, posée
+ * par le générateur) dont la réponse est la somme posée (`utils/monnaie-construire.ts`).
+ *
  * @module ubumark/types/monnaie
  */
 
@@ -49,6 +54,12 @@ export const MONNAIE_MAX_SETS = 3;
 
 /** Bornes d'un ensemble : CP, montants jusqu'à 100 € ; 30 objets au plus (décision 5) */
 export const MONNAIE_LIMITS = { total: 100, objects: 30 } as const;
+
+/** Somme à construire (`construire:`), en euros */
+export const MONNAIE_BUILD_RANGE = { min: 1, max: 100 } as const;
+
+/** Coupures permises par défaut d'un bloc à construire, de la plus grande à la plus petite */
+export const MONNAIE_DEFAULT_RESERVE = [50, 20, 10, 5, 2, 1] as const;
 
 /** Longueur maximale d'une légende, en caractères */
 export const MONNAIE_CAPTION_MAX = 40;
@@ -89,6 +100,10 @@ export interface MonnaieSpec {
 	layout: MonnaieLayout;
 	/** Taille donnée par `taille:` ; null = taille par défaut du contexte */
 	sizeCm: number | null;
+	/** Somme à construire (`construire:`) : plan vide, aucun ensemble dessiné (`sets` vide) */
+	build?: number;
+	/** Coupures permises d'un bloc à construire, de la plus grande à la plus petite */
+	reserve?: number[];
 }
 
 /** Message situé, à destination de l'AUTEUR (jamais montré à l'élève) */
@@ -105,6 +120,8 @@ export interface MonnaieNode extends BaseNode {
 	/** null si le bloc est en erreur */
 	spec: MonnaieSpec | null;
 	errors: MonnaieIssue[];
+	/** Bloc à construire dans une question : numéro de sa case (`case: N`, posé par le générateur) */
+	caseIndex?: number;
 }
 
 export interface MonnaieBlockRange {

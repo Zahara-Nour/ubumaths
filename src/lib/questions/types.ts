@@ -765,6 +765,9 @@ export type ResolvedVariable = SharedResolvedVariable;
 /**
  * Instance-side blank (resolved, with inferred type and merged validation)
  */
+/** Genre d'un bloc à construire (case portée par le bloc) */
+export type BuildKind = 'collection' | 'monnaie';
+
 export interface InstanceBlank extends CalculusBlankFields {
 	/** Resolved expected answer (math: "10^5", text: "entier") */
 	expectedAnswer: string;
@@ -783,10 +786,11 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 */
 	operation?: true;
 	/**
-	 * Case portée par un bloc ```collection à construire : réponse = la valeur
-	 * du bloc (`construire:`), juge ordinaire, l'élève pose barres et cubes.
+	 * Case portée par un bloc ```collection ou ```monnaie à construire : réponse =
+	 * la valeur du bloc (`construire:`), juge ordinaire, l'élève pose barres et
+	 * cubes, ou pièces et billets.
 	 */
-	construire?: 'collection';
+	construire?: BuildKind;
 	/**
 	 * Case « figure » portée par un bloc ```figure-a-completer (`type: 'graphical'`) :
 	 * texte du bloc (variables résolues, sans `case:`) et vérifications. Le juge

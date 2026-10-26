@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -525,6 +525,21 @@ marquage au doigt `SceneMarks`. Dessin en `overflow: visible`, comme la collecti
 (l'enfant les lit), **jamais le total**. PDF en Typst natif, gris cernés de noir ; une légende a une colonne d'au moins 3 cm (si la rangée la tient), centrée, non justifiée. Dans un choix de
 QCM : **10 cm**, pas 3 (à 3 cm les valeurs ne se lisent plus ; à 6 cm, un petit porte-monnaie restait illisible, décision du 2026-10-26) ; **tous les choix d'un QCM à la même échelle** : si la colonne est plus étroite que le plus large, ils sont réduits ensemble (`monnaieChoiceSize`, `utils/monnaie-choix.ts` : `--monnaie-taille: min(10cm, 100cqw / r)`, la colonne du choix en `container-type: inline-size`) ; un bloc à `taille:` donnée par l'auteur garde sa taille et n'entre pas dans ce calcul (l'auteur décide) ; au corrigé, l'étiquette d'un choix dessiné (« bonne réponse »… ; horloge et collection comprises) passe sous le dessin, pour lui laisser la même largeur ; série
 figée : `withChoiceMonnaieSize` (10 cm ; au PDF, la page les tient).
+
+**Monnaie à construire** (chantier [construire](../wip/construire-progress.md) § 6, CP-044, CP-071,
+CP-045) — `src/lib/ubumark/__tests__/monnaie/monnaie-construire.test.ts`,
+`MonnaieConstruire.svelte.test.ts` : `construire: 35` (1 à 100 €) remplace les coupures ;
+`réserve: 1 2 5 10 20` donne les coupures permises (défaut : 1, 2, 5, 10, 20, 50 € ; existantes, une
+fois chacune) ; `taille:` reste ; `billets:`, `pièces:`, `montant:`, `légendes:`, `disposition:` sont
+refusées (plan vide, rangé d'office) ; `réserve:` sans `construire:` aussi. Une somme qui ne se fait
+pas avec la réserve en 30 objets au plus est une erreur située. L'élève touche la réserve (« Ajouter
+un billet de 10 € », « Ajouter une pièce de 2 € ») pour poser une coupure, touche une coupure posée
+pour l'enlever ; « Enlever » à côté de chaque bouton, « Tout enlever » ; bouton grisé si l'ajout passe
+100 € ou 30 objets. La somme n'est jamais affichée ni dite (nom accessible « Ton argent »). Calcul pur
+`utils/monnaie-construire.ts` (somme, réponse `''` si vide, plafonds, construction juste « le moins
+d'objets » **avec la réserve**, par programmation dynamique : avec 2 et 5 €, 6 € = 3 × 2 €) ; dessin
+des coupures partagé `MonnaieObjets.svelte`. Case, correction (« Tu as posé 32 €. », « Tu n'as rien
+posé. ») et PDF (réserve en petit, cadre vide en pointillés) : ceux de la collection à construire.
 
 ### Cases à compléter
 

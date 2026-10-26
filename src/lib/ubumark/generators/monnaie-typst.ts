@@ -12,7 +12,9 @@
  *
  * Noir sur blanc (photocopie) : billets gris très clair, pièces gris clair (la
  * pièce de 2 € a un anneau plus foncé), tout cerné de noir, valeurs écrites
- * en noir. Légendes en chaînes Typst littérales : rien n'y est lu comme du
+ * en noir. Bloc à construire (`construire:`) : rien d'interactif sur papier
+ * (Q9), un cadre vide en pointillés où l'enfant dessine, la réserve en petit
+ * au-dessus ; la consigne (« Dessine… ») est dans l'énoncé. Légendes en chaînes Typst littérales : rien n'y est lu comme du
  * balisage. Un bloc en erreur devient le cadre neutre « Monnaie
  * indisponible » — jamais une erreur de compilation (une seule erreur Typst
  * fait échouer toute la fiche).
@@ -26,6 +28,7 @@ import {
 	MONNAIE_VIEW,
 	type MonnaieItem
 } from '../utils/monnaie-scene';
+import { reserveScene } from '../utils/monnaie-construire';
 import {
 	MONNAIE_DEFAULT_CAPTIONS,
 	MONNAIE_SIZE_CM,
@@ -51,6 +54,10 @@ const CAPTION_MIN_CM = 3;
 const NOTE_FILL = 'luma(240)';
 const COIN_FILL = 'luma(215)';
 const RING_FILL = 'luma(165)';
+
+/** Bloc à construire : hauteur du cadre vide (part de sa largeur), échelle de la réserve */
+const BUILD_FRAME_RATIO = 0.6;
+const RESERVE_SCALE = 0.6;
 
 /** 1 cm = 28,35 pt : tailles de texte données en unités de scène */
 const PT_PER_CM = 72 / 2.54;
@@ -135,10 +142,28 @@ function itemsTypst(items: MonnaieItem[], k: number): string[] {
 	return parts;
 }
 
+/** Bloc à construire : la réserve en petit, puis le cadre vide en pointillés */
+function buildTypst(reserve: number[], widthCm: number): string {
+	const scene = reserveScene(reserve);
+	const k = (widthCm / MONNAIE_VIEW.fullWidth) * RESERVE_SCALE;
+	return [
+		'#align(center)[#block(breakable: false)[',
+		`#box(width: ${cm(scene.width * k)}, height: ${cm(scene.height * k)})[`,
+		...itemsTypst(scene.items, k),
+		']',
+		'#v(4pt)',
+		`#box(width: ${cm(widthCm)}, height: ${cm(widthCm * BUILD_FRAME_RATIO)}, stroke: (paint: luma(120), thickness: 0.5pt, dash: "dashed"), radius: 3pt)`,
+		']]'
+	].join('\n');
+}
+
 /** Typst d'un bloc ```monnaie */
 export function generateMonnaieTypst(node: MonnaieNode): string {
 	const spec = node.spec;
 	if (node.errors.length > 0 || spec === null) return UNAVAILABLE_TYPST;
+	if (spec.build !== undefined && spec.reserve !== undefined) {
+		return buildTypst(spec.reserve, spec.sizeCm ?? MONNAIE_SIZE_CM.default);
+	}
 
 	const scenes = spec.sets.map((_, i) => buildMonnaieScene(spec, i));
 	const wanted = (spec.sizeCm ?? MONNAIE_SIZE_CM.default) / MONNAIE_VIEW.fullWidth;

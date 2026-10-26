@@ -18,6 +18,7 @@
 	- Toucher pour marquer, comme la collection (`scene-marks.svelte.ts`) :
 	  aide non jugée, rien n'est enregistré.
 	- Bloc en erreur : messages pour le prof, cadre neutre pour l'élève (Q48).
+	- Bloc à construire (`construire:`) : `MonnaieConstruire.svelte`.
 
 	@module components/markdown/nodes/Monnaie
 -->
@@ -31,21 +32,24 @@
 	import {
 		buildMonnaieScene,
 		findMonnaieItemAt,
-		MONNAIE_LABEL,
-		MONNAIE_VIEW,
-		type MonnaieItem
+		MONNAIE_VIEW
 	} from '$lib/ubumark/utils/monnaie-scene';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { SceneMarks, scenePointOf } from './scene-marks.svelte';
+	import MonnaieObjets from './MonnaieObjets.svelte';
+	import MonnaieConstruire from './MonnaieConstruire.svelte';
+	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
 		node: MonnaieNode;
 		/** Forcer l'affichage des erreurs d'auteur ; sinon, contexte du renderer (élève par défaut) */
 		showErrors?: boolean;
+		/** Bloc à construire dans une question : sa case */
+		answer?: BuildCase;
 		class?: string;
 	}
 
-	let { node, showErrors, class: className = '' }: Props = $props();
+	let { node, showErrors, answer, class: className = '' }: Props = $props();
 
 	const authoring = readAuthoringErrors();
 	let errorsVisible = $derived(showErrors ?? authoring());
@@ -67,25 +71,12 @@
 	/** Marques de l'élève, valables pour UN bloc (un autre repart sans marque) */
 	const marks = new SceneMarks(() => JSON.stringify(node.spec));
 
-	const NOTE = MONNAIE_LABEL.note;
-
 	/** Toucher : la coupure la plus proche du doigt, en coordonnées de la scène */
 	function handleTap(event: MouseEvent, setIndex: number) {
 		const point = scenePointOf(event);
 		if (point === null) return;
 		const index = findMonnaieItemAt(ensembles[setIndex].scene, point);
 		if (index !== null) marks.toggle(setIndex, index);
-	}
-
-	/** Trait de la marque : en travers de la coupure, du bas à gauche au haut à droite */
-	function strike(item: MonnaieItem) {
-		const inset = item.kind === 'piece' ? 1 : 3;
-		return {
-			x1: item.x + inset,
-			y1: item.y + item.height - inset,
-			x2: item.x + item.width - inset,
-			y2: item.y + inset
-		};
 	}
 </script>
 
@@ -108,6 +99,14 @@
 			{MONNAIE_UNAVAILABLE}
 		</div>
 	{/if}
+{:else if node.spec.build !== undefined && node.spec.reserve !== undefined}
+	<MonnaieConstruire
+		spec={node.spec}
+		build={node.spec.build}
+		reserve={node.spec.reserve}
+		{answer}
+		class={className}
+	/>
 {:else}
 	<div class="monnaie-bloc my-2 flex flex-col items-center gap-1 {className}">
 		<div class="flex max-w-full flex-wrap items-start justify-center gap-4">
@@ -136,64 +135,7 @@
 							height={ensemble.scene.height - 1}
 							rx="6"
 						/>
-						{#each ensemble.scene.items as item, i (i)}
-							{@const isMarked = marks.has(e, i)}
-							<g
-								class="monnaie-objet monnaie-{item.kind}"
-								class:monnaie-objet-marque={isMarked}
-								aria-hidden="true"
-							>
-								{#if item.kind === 'billet'}
-									<rect
-										class="monnaie-billet-fond"
-										x={item.x}
-										y={item.y}
-										width={item.width}
-										height={item.height}
-										rx={NOTE.radius}
-									/>
-									<text class="monnaie-valeur" x={item.cx} y={item.cy} font-size={NOTE.size}
-										>{item.value} €</text
-									>
-									<text
-										class="monnaie-valeur"
-										x={item.x + NOTE.cornerInset + NOTE.cornerBox / 2}
-										y={item.y + 1 + NOTE.cornerBox / 2}
-										font-size={NOTE.cornerSize}>{item.value}</text
-									>
-									<text
-										class="monnaie-valeur"
-										x={item.x + item.width - NOTE.cornerInset - NOTE.cornerBox / 2}
-										y={item.y + item.height - 1 - NOTE.cornerBox / 2}
-										font-size={NOTE.cornerSize}>{item.value}</text
-									>
-								{:else}
-									<circle
-										class={item.value === 2 ? 'monnaie-anneau' : 'monnaie-piece-fond'}
-										cx={item.cx}
-										cy={item.cy}
-										r={item.width / 2}
-									/>
-									{#if item.value === 2}
-										<circle
-											class="monnaie-piece-fond"
-											cx={item.cx}
-											cy={item.cy}
-											r={(item.width / 2) * MONNAIE_LABEL.coin.innerRatio}
-										/>
-									{/if}
-									<text
-										class="monnaie-valeur"
-										x={item.cx}
-										y={item.cy}
-										font-size={MONNAIE_LABEL.coin.size}>{item.value} €</text
-									>
-								{/if}
-							</g>
-							{#if isMarked}
-								<line class="monnaie-marque" {...strike(item)} />
-							{/if}
-						{/each}
+						<MonnaieObjets items={ensemble.scene.items} isMarked={(i) => marks.has(e, i)} />
 					</svg>
 				</figure>
 			{/each}
@@ -227,48 +169,5 @@
 	.monnaie-cadre {
 		fill: var(--color-background);
 		stroke: var(--color-border);
-	}
-
-	/*
-	 * La seule couleur d'accent : pièces pleines, billets en teinte claire ;
-	 * traits et valeurs dans une teinte foncée de la même couleur, lisible en
-	 * clair comme en sombre (leçon du thème sombre de la collection)
-	 */
-	.monnaie-piece-fond {
-		fill: var(--color-primary);
-		stroke: color-mix(in oklab, var(--color-primary) 45%, black);
-		stroke-width: 0.8;
-	}
-
-	.monnaie-anneau {
-		fill: color-mix(in oklab, var(--color-primary) 65%, black);
-		stroke: color-mix(in oklab, var(--color-primary) 45%, black);
-		stroke-width: 0.8;
-	}
-
-	.monnaie-billet-fond {
-		fill: color-mix(in oklab, var(--color-primary) 35%, white);
-		stroke: color-mix(in oklab, var(--color-primary) 45%, black);
-		stroke-width: 0.8;
-	}
-
-	.monnaie-valeur {
-		fill: color-mix(in oklab, var(--color-primary) 25%, black);
-		font-weight: 700;
-		text-anchor: middle;
-		dominant-baseline: central;
-		pointer-events: none;
-		user-select: none;
-	}
-
-	.monnaie-objet-marque {
-		opacity: 0.35;
-	}
-
-	.monnaie-marque {
-		stroke: var(--color-foreground);
-		stroke-width: 2.5;
-		stroke-linecap: round;
-		pointer-events: none;
 	}
 </style>

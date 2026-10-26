@@ -59,6 +59,19 @@ it('un document avec des blocs ```monnaie compile en PDF', async () => {
 				'',
 				'```monnaie',
 				'pièces: 3',
+				'```',
+				'',
+				'Paie 35 € (cadre vide et réserve, chantier construire) :',
+				'',
+				'```monnaie',
+				'case: 0',
+				'construire: 35',
+				'```',
+				'',
+				'```monnaie',
+				'construire: 6',
+				'réserve: 2 5',
+				'taille: 4cm',
 				'```'
 			].join('\n')
 		)
