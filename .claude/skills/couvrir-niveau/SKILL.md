@@ -33,9 +33,9 @@ Chantier de référence : le CP ([journal](../../../docs/wip/questions-progress.
 
 **D'abord le catalogue** des outils existants (doc, § 3 bis) : tableau de variations, cercle
 trigo, courbes et grapheur, droite graduée, arbres, statistiques, géométrie (**en refonte** :
-lire `figure-et-choix` et `geometrie-validation`), horloge, opérations posées, collection,
+lire `geometrie-validation`), horloge, opérations posées, collection,
 monnaie ; réponses en case, QCM (**en cours de réécriture en case « choix »**, chantier
-`figure-et-choix` : demander à David la forme à écrire tant que ce n'est pas en prod), construire,
+`geometrie-validation` : demander à David la forme à écrire tant que ce n'est pas en prod), construire,
 figure à compléter. Un point classé C à tort coûte
 un chantier.
 
