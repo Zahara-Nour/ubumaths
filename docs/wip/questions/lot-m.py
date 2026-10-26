@@ -8,7 +8,8 @@ DOSSIER = sys.argv[1]
 # Affichage seul (bloc ```monnaie) : l'élève lit les pièces et les billets, il n'en déplace pas.
 # Un {{if:…}} imbriqué n'est pas résolu dans correctChoiceIndex : la bonne réponse y est une
 # variable (g), calculée dans les variables. Montants en `$n~\\unit{€}$` (notation-unites.md) : avec
-# une espace, même insécable, « € » passait seul à la ligne au téléphone.
+# une espace, même insécable, « € » passait seul à la ligne au téléphone. Jamais « : »
+# juste après un montant : il passait seul à la ligne, lui aussi.
 
 
 def spec(desc, vi, variables_, status, choix=None, answers=None):
@@ -225,7 +226,7 @@ EXACT = {
         'Le bon porte-monnaie : ${{eval:20*a+10*b+5*c}}~\\unit{€}$ de billets et ${{eval:2*d+u}}~\\unit{€}$ de'
         ' pièces, ${{n}}~\\unit{€}$ en tout.',
         'Les deux autres contiennent {{if:u==1|${{eval:n-1}}~\\unit{€}$ et ${{eval:n+1}}~\\unit{€}$'
-        '|${{eval:n-2}}~\\unit{€}$ et ${{eval:n-1}}~\\unit{€}$}} : pas exactement ${{n}}~\\unit{€}$.',
+        '|${{eval:n-2}}~\\unit{€}$ et ${{eval:n-1}}~\\unit{€}$}}, et non ${{n}}~\\unit{€}$.',
         'Attention : avoir autant de pièces et de billets ne veut pas dire avoir autant d\'argent.',
     ]},
 }
@@ -244,7 +245,7 @@ SANS_UN = {
     'correctChoiceIndex': ['0'],
     'correction': {'steps': [
         'Les trois porte-monnaie contiennent ${{n}}~\\unit{€}$.',
-        'Deux d\'entre eux ont des pièces de $1~\\unit{€}$ : un seul n\'en a aucune.',
+        'Un seul n\'a aucune pièce de $1~\\unit{€}$. Les deux autres en ont.',
     ]},
 }
 
@@ -329,7 +330,7 @@ def rendre(billet, prix):
         'conditions': [],
         'blanks': [{'expectedAnswer': '{{r}}'}],
         'correction': {'steps': [
-            'On part du prix et on avance jusqu\'à $' + billet + '~\\unit{€}$ : ${{p}}+{{r}}='
+            'On part du prix et on avance jusqu\'à $' + billet + '~\\unit{€}$, soit ${{p}}+{{r}}='
             + billet + '$.',
             'Le marchand rend ${{r}}~\\unit{€}$, par exemple :\n\n' + monnaie('montant: {{r}}'),
         ]},
@@ -368,7 +369,7 @@ def acheter(enonce_prix, variables_prix):
             'Tom a ${{s}}~\\unit{€}$. Le ballon coûte ${{p}}~\\unit{€}$.',
             '{{if:s>p|Tom a plus d\'argent que le prix : il peut l\'acheter.'
             '|{{if:s==p|Tom a juste assez d\'argent : il peut l\'acheter.'
-            '|Il lui manque ${{eval:p-s}}~\\unit{€}$ : il ne peut pas l\'acheter.}}}}',
+            '|Il ne peut pas l\'acheter : il lui manque ${{eval:p-s}}~\\unit{€}$.}}}}',
         ]},
     }
 

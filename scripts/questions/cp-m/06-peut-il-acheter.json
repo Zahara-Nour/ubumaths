@@ -58,7 +58,7 @@
 			"correction": {
 				"steps": [
 					"Tom a ${{s}}~\\unit{€}$. Le ballon coûte ${{p}}~\\unit{€}$.",
-					"{{if:s>p|Tom a plus d'argent que le prix : il peut l'acheter.|{{if:s==p|Tom a juste assez d'argent : il peut l'acheter.|Il lui manque ${{eval:p-s}}~\\unit{€}$ : il ne peut pas l'acheter.}}}}"
+					"{{if:s>p|Tom a plus d'argent que le prix : il peut l'acheter.|{{if:s==p|Tom a juste assez d'argent : il peut l'acheter.|Il ne peut pas l'acheter : il lui manque ${{eval:p-s}}~\\unit{€}$.}}}}"
 				]
 			}
 		},
@@ -107,7 +107,7 @@
 			"correction": {
 				"steps": [
 					"Tom a ${{s}}~\\unit{€}$. Le ballon coûte ${{p}}~\\unit{€}$.",
-					"{{if:s>p|Tom a plus d'argent que le prix : il peut l'acheter.|{{if:s==p|Tom a juste assez d'argent : il peut l'acheter.|Il lui manque ${{eval:p-s}}~\\unit{€}$ : il ne peut pas l'acheter.}}}}"
+					"{{if:s>p|Tom a plus d'argent que le prix : il peut l'acheter.|{{if:s==p|Tom a juste assez d'argent : il peut l'acheter.|Il ne peut pas l'acheter : il lui manque ${{eval:p-s}}~\\unit{€}$.}}}}"
 				]
 			}
 		}
