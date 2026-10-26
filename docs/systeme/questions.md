@@ -572,9 +572,9 @@ de `CONSTRUCTION_CHECK_KINDS` (`ubumark/types/construction.ts`), sa lecture dans
 forme dans `parseConstructionAnswer`. `checkTemplate` construit la figure de chaque case « figure » à
 chaque tirage (`constructionPositions`, puis `assertConstructionChecks`) : une figure qui ne se
 construit pas (coordonnée en fraction LaTeX rendue par `eval:`), un point de `verifier:` sans position
-(intersection de droites parallèles) ou des sommets donnés confondus font échouer le tirage — sans
+(intersection de droites parallèles), deux points de `droite_par` ou deux sommets donnés confondus font échouer le tirage — sans
 cela, toute réponse de l'élève serait jugée fausse et les tirages diraient « réussis » (piège de CP-058).
-Une nouvelle vérification ajoute ses erreurs d'auteur à `assertConstructionChecks`
+Le premier échec (variation, tirage, raison) remonte à l'éditeur (`templatePublicationErrors`). Une nouvelle vérification ajoute ses erreurs d'auteur à `assertConstructionChecks`
 (`check-template-figure.test.ts`). La case publique d'une évaluation
 notée (`toPublicQuestion`) ne porte que `type: 'graphical'`, jamais les vérifications.
 

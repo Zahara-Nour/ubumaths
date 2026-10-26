@@ -36,7 +36,12 @@ import {
 	type VariableDraw
 } from '$lib/questions/validators/negative-substitution';
 import { constructionPositions } from '$lib/questions/construction/positions';
-import { assertConstructionChecks } from '$lib/questions/construction/judge';
+import {
+	assertConstructionChecks,
+	ConstructionAuthorError
+} from '$lib/questions/construction/judge';
+// Inscrit le calcul des positions (geometry-core) dont la garde des figures a besoin
+import '$lib/questions/construction/positions-setup';
 import {
 	courseCardFront,
 	hasCourseCardBackContent,
@@ -166,7 +171,9 @@ function constructionErrors(instance: QuestionInstance): string[] | null {
 			assertConstructionChecks(checks, constructionPositions(source));
 			return [];
 		} catch (error) {
-			return [error instanceof Error ? error.message : String(error)];
+			if (error instanceof ConstructionAuthorError) return [error.message];
+			// Pas une erreur d'auteur (bug du moteur) : refusé aussi, mais dit comme tel
+			return [`erreur inattendue en construisant la figure : ${String(error)}`];
 		}
 	});
 }

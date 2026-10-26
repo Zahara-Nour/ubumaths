@@ -123,7 +123,14 @@ export function assertConstructionChecks(
 ): void {
 	for (const check of checks) {
 		if (!isPolygonCheck(check)) {
-			for (const name of check.points) positionOf(points, name);
+			// Deux points confondus : toute droite par l'un passerait pour juste
+			const [a, b] = check.points.map((name) => positionOf(points, name));
+			const scale = Math.max(1, Math.abs(a.x), Math.abs(a.y));
+			if (Math.hypot(a.x - b.x, a.y - b.y) <= ON_LINE_EPSILON * scale) {
+				throw new ConstructionAuthorError(
+					`verifier: droite_par ${check.points.join(' ; ')} : ${check.points[0]} et ${check.points[1]} sont au même endroit`
+				);
+			}
 			continue;
 		}
 		try {

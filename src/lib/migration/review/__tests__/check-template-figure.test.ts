@@ -12,6 +12,7 @@ import { describe, it, expect } from 'vitest';
 import { checkTemplate, formatCheckReport } from '../check-template';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { templateMarkdown } from '$lib/ubumark';
+import { templatePublicationErrors } from '$lib/server/template-publication';
 
 // ============================================================================
 // FIXTURES
@@ -68,6 +69,21 @@ function figureTemplate(
 	};
 }
 
+/** Le même modèle, figure retouchée (`[avant, après]`), sans spec */
+function withFigure(template: QuestionTemplate, edits: [string, string][]): QuestionTemplate {
+	const [variation] = template.variations;
+	if (!variation?.statement) throw new Error('fixture sans énoncé');
+	const statement = edits.reduce<string>(
+		(text, [from, to]) => text.replace(from, to),
+		variation.statement
+	);
+	return {
+		...template,
+		variations: [{ ...variation, statement: templateMarkdown(statement) }],
+		testSpecs: []
+	};
+}
+
 // ============================================================================
 // TESTS
 // ============================================================================
@@ -113,18 +129,54 @@ describe('checkTemplate — case « figure » construite à chaque tirage', () =
 	});
 
 	it('carré dont deux sommets donnés sont confondus : NON importable', () => {
-		const template = figureTemplate('n', { verifier: 'carre A ; B' });
-		const [variation] = template.variations;
-		if (!variation?.statement) throw new Error('fixture sans énoncé');
-		variation.statement = templateMarkdown(
-			variation.statement
-				.replace('outils: droite', 'outils: segment')
-				.replace('B = point(8, {{yb}})', 'B = point({{eval:4-n+1}}, 1)')
-		);
-		template.testSpecs = [];
+		const template = withFigure(figureTemplate('n', { verifier: 'carre A ; B' }), [
+			['outils: droite', 'outils: segment'],
+			['B = point(8, {{yb}})', 'B = point({{eval:5-n}}, 1)']
+		]);
 		const report = checkTemplate(template, { instances: 10 });
 		// n = 4 : B = (1, 1) = A
 		expect(report.figures.failures.some((f) => f.errors[0].includes('au même endroit'))).toBe(true);
+		expect(report.passed).toBe(false);
+	});
+
+	it('rectangle sans angle droit à certains tirages : NON importable', () => {
+		const template = withFigure(figureTemplate('n', { verifier: 'rectangle A ; B ; C' }), [
+			['outils: droite', 'outils: segment'],
+			['B = point(8, {{yb}})', 'B = point(8, 1)\nC = point({{eval:n+5}}, 4)']
+		]);
+		const report = checkTemplate(template, { instances: 10 });
+		// angle droit en B seulement si C = (8, 4), soit n = 3
+		expect(report.figures.failures.some((f) => f.errors[0].includes('pas d’angle droit'))).toBe(
+			true
+		);
+		expect(report.passed).toBe(false);
+	});
+
+	it('droite par deux points confondus à certains tirages : NON importable', () => {
+		// n = 4 : B = (1, 1) = A, et toute droite par A passerait pour juste
+		const template = withFigure(figureTemplate('n'), [
+			['B = point(8, {{yb}})', 'B = point({{eval:5-n}}, 1)']
+		]);
+		const report = checkTemplate(template, { instances: 10 });
+		expect(report.figures.failures.length).toBeGreaterThan(0);
+		expect(report.figures.failures[0].errors[0]).toContain('A et B sont au même endroit');
+		expect(report.passed).toBe(false);
+	});
+
+	it('figure mal écrite : refusée, sans faire planter la vérification', () => {
+		const template = withFigure(figureTemplate('n'), [
+			['B = point(8, {{yb}})', 'B = point(8, {{yb}}']
+		]);
+		const report = checkTemplate(template, { instances: 5 });
+		expect(report.passed).toBe(false);
+		expect(report.generation.failures.length + report.figures.failures.length).toBeGreaterThan(0);
+	});
+
+	it('publication : l’éditeur reçoit le détail de la figure, pas seulement le compte', () => {
+		const errors = templatePublicationErrors(
+			withFigure(figureTemplate('n'), [['B = point(8, {{yb}})', 'B = point({{eval:5-n}}, 1)']])
+		);
+		expect(errors.some((e) => /^Variation 1, tirage \d+ : .*au même endroit/.test(e))).toBe(true);
 	});
 
 	it('modèle sans case « figure » : rien à construire, rien au rapport', () => {

@@ -424,6 +424,12 @@ Mesuré : CP-059, CP-060, CP-058 → 150/150, 150/150, 100/100 figures ; CP-058 
 `y3 = eval:(y1 + y2)/2 + h/4` → 50/100, NON importable. 5 tests (`check-template-figure.test.ts`), 4 rouges
 sans la garde.
 
+**Revue (Sonnet)**, traitée : détail du premier échec de figure remonté à l'éditeur
+(`templatePublicationErrors`) ; deux points de `droite_par` confondus = erreur d'auteur (toute droite par
+l'un passait pour juste) ; `positions-setup` importé par `check-template` lui-même ; erreur hors auteur
+dite « erreur inattendue » (refusée quand même, pas de plantage de la publication). 4 tests de plus (9),
+dont 2 rouges sans leur correctif. Prod balayée : seul CP-059 (brouillon) porte une case « figure ».
+
 ## Journal
 
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 1), au journal questions.
