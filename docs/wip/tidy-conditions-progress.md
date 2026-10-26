@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1837 ; PR E (Q14) en cours._
+_Mis à jour le 2026-10-26, après #1841._
 
-- **État** : L1 à L6 du § 5 livrés (#1828, #1831, #1834) et PR D `ln(xy) − ln(xy)` → bouton 0 (#1837, revue Opus sans bloquant) MERGÉES, pas en prod.
-- **Prochaine action** : PR E (`fix/tidy-degre-lettres`, Q14 validée : degré des seules inconnues, `x + 1 + √2`) : revue Sonnet, CI, merge ; puis clôture (versement, journal archivé).
+- **État** : L1 à L6 du § 5 (#1828, #1831, #1834), PR D `ln(xy) − ln(xy)` → 0 (#1837) et PR E Q14, degré des seules inconnues `x + √2`, `x + 1 + √2` (#1841, revue Sonnet sans finding) MERGÉES, pas en prod.
+- **Prochaine action** : clôture du chantier — verser le durable dans `docs/systeme/` (tidy-spec et README mathAST déjà à jour pour Q14), restes dans les Points ouverts du README mathAST, journal archivé.
 - **En attente de David** : vérifs #1807 et #1811 au téléphone (sans bloquer).
-- **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` sans condition écrivable ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2 ; `exp(10000000 ln 2)` sans plafond ; restants PR D (§ PR D) : `.factoriser ln(xy) − ln(xy)`, `ln x + ln y − ln(xy)`, `ln(6x) − ln(2x)`.
-- **Worktree / branche** : `../ubumaths-wt-tidy-conditions` ; `fix/ln-difference-nulle` mergée, branche distante supprimée ; worktree sur `fix/tidy-degre-lettres`.
+- **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` sans condition écrivable ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2 ; `exp(10000000 ln 2)` sans plafond ; restants PR D (§ PR D) : `.factoriser ln(xy) − ln(xy)`, `ln x + ln y − ln(xy)`, `ln(6x) − ln(2x)`. Q14 : `√2 − √3 − 1` s'écrit désormais `√2 − 1 − √3` (rationnel d'abord entre constantes).
+- **Worktree / branche** : worktree retiré, `fix/tidy-degre-lettres` mergée ; la clôture est 100 % doc, sur `main`.
 
 ## Contexte
 
@@ -202,10 +202,11 @@ Sondes (Atelier `runInput`, `normalize`, tests jetables supprimés).
 - Revue Opus (74 entrées, branche contre main) : aucun bloquant, 45 témoins identiques (`.dériver`, `.développer`, `.factoriser`), tous les écarts sont des progrès (`ln(xyz) − ln(xyz)`, `e^{ln(xy) − ln(xy)}` → 1, condition `xy > 0` au lieu de « x > 0 et y > 0 »). Restants, antérieurs : `.factoriser ln(xy) − ln(xy)` (bouton toujours `ln x + ln y − (…)`) ; `.simplifier ln x + ln y − ln(xy)` (bouton « pour xy > 0 » → `ln x + ln y − (ln x + ln y)`, non réduit) ; libellés bruts « pour x^2y > 0 », « 2xy > 0 » ; conditions redondantes (« xy > 0 et x > 0 et y > 0 »).
 - Trouvé, laissé (aucune valeur fausse) : `.simplifier ln(6x) − ln(2x)` reste `ln 6 + ln x − (ln 2 + ln x)` sur la ligne (`ln 3` attendu) ; `ln(x/y) − ln(x/y)` dit « pour x/y > 0 et y ≠ 0 » (y ≠ 0 redondant) ; `.simplifier ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne.
 
-### PR E (`fix/tidy-degre-lettres`) — Q14
+### PR E (`fix/tidy-degre-lettres`, #1841) — Q14
 
 - Décision de David (2026-10-26, « je suis tes recos ») : le degré d'un terme ne compte que les inconnues ; entre constantes, le rationnel d'abord (`x + 1 + √2`, pas `x + √2 + 1`).
 - `termDegree` (`order.ts`) : facteurs avec inconnue ou `i` seulement (`i` garde son degré : complexes inchangés, `−1 + 1/i`, `−(i − 2)`) ; `sortTerms` : « positifs devant » vaut aussi pour une somme réelle sans inconnue (degré 0 : `1 + ln 3 − ln 2` inchangé).
 - Les « 22 tests » venaient de la version naïve (degré 0 sans la règle des positifs) : avec elle, 2 témoins bougent sur 41 147 (`x + √2 + 1` → `x + 1 + √2`, `1 m + √2 m` reste). Progrès : `x + √2`, `2x + ln 2`, `x² + 2x + √5` (était `x² + √5 + 2x`), `x² + πx`, `x² + ex + e²`. 18 cas + 3 idempotences dans `tidy-sum-lead.test.ts`, 15 rouges sans le correctif.
+- Revue Sonnet (~55 entrées, main contre branche, idempotence) : aucun finding ; `x/π + 1` (était `1 + x/π`, degré −1 compté à tort), `x² + 2 − √2` (était `x² − √2 + 2`) ; visible : `√2 − √3 − 1` → `√2 − 1 − √3`. CI : garde de doc → README mathAST mis à jour aussi.
 
 ## Historique
