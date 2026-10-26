@@ -1,0 +1,155 @@
+{
+	"title": "Construis le nombre",
+	"description": "Construire un nombre de 11 à 99 avec des barres de dix et des cubes",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Dénombrer",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Construis ${{n}}$ avec des barres de dix et des cubes.\n\n```collection\nconstruire: {{n}}\ndessin: barres\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*d+u"
+				}
+			],
+			"conditions": ["u >= 1"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{d}}$ {{if:d==1|dizaine|dizaines}}{{if:u==0|.| et ${{u}}$ {{if:u==1|unité|unités}}.}}",
+					"On pose ${{d}}$ {{if:d==1|barre|barres}} de dix{{if:u==0|, sans cube.| et ${{u}}$ {{if:u==1|cube|cubes}}.}}"
+				]
+			}
+		},
+		{
+			"statement": "Construis ${{n}}$ avec des barres de dix et des cubes.\n\n```collection\nconstruire: {{n}}\ndessin: barres\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*d+u"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{d}}$ {{if:d==1|dizaine|dizaines}}{{if:u==0|.| et ${{u}}$ {{if:u==1|unité|unités}}.}}",
+					"On pose ${{d}}$ {{if:d==1|barre|barres}} de dix{{if:u==0|, sans cube.| et ${{u}}$ {{if:u==1|cube|cubes}}.}}"
+				]
+			}
+		},
+		{
+			"statement": "Construis ${{n}}$ avec des barres de dix et des cubes.\n\n```collection\nconstruire: {{n}}\ndessin: barres\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "6..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*d+u"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{d}}$ {{if:d==1|dizaine|dizaines}}{{if:u==0|.| et ${{u}}$ {{if:u==1|unité|unités}}.}}",
+					"On pose ${{d}}$ {{if:d==1|barre|barres}} de dix{{if:u==0|, sans cube.| et ${{u}}$ {{if:u==1|cube|cubes}}.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "14 : une barre et 4 cubes",
+			"variationIndex": 0,
+			"variables": {
+				"d": "1",
+				"u": "4",
+				"n": "14"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["14"]
+		},
+		{
+			"description": "34 : 3 barres et 4 cubes",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"n": "34"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["34"]
+		},
+		{
+			"description": "Erreur : chiffres inversés (43 pour 34)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"n": "34"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["43"]
+		},
+		{
+			"description": "Erreur : une barre comptée pour 1 (7 pour 34)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"n": "34"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "70 : 7 barres, sans cube",
+			"variationIndex": 2,
+			"variables": {
+				"d": "7",
+				"u": "0",
+				"n": "70"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["70"]
+		}
+	]
+}

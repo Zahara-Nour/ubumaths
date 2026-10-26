@@ -1,0 +1,155 @@
+{
+	"title": "Rends la monnaie",
+	"description": "Rendre la monnaie sur un billet de 10, 20 ou 50 € en posant les pièces et les billets (rendu ≤ 20 €)",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Rendre la monnaie",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:o==1|Le livre|{{if:o==2|Le ballon|{{if:o==3|Le jeu|La trousse}}}}}} coûte ${{p}}~\\unit{€}$. Léo paie avec ce billet :\n\n```monnaie\nbillets: 1×10\n```\n\nTu es le marchand. Rends la monnaie à Léo.\n\n```monnaie\nconstruire: {{r}}\nréserve: 1 2 5 10\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..4"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "eval:10-p"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On part du prix et on avance jusqu'à $10~\\unit{€}$, soit ${{p}}+{{r}}=10$.",
+					"Le marchand rend ${{r}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:o==1|Le livre|{{if:o==2|Le ballon|{{if:o==3|Le jeu|La trousse}}}}}} coûte ${{p}}~\\unit{€}$. Léo paie avec ce billet :\n\n```monnaie\nbillets: 1×20\n```\n\nTu es le marchand. Rends la monnaie à Léo.\n\n```monnaie\nconstruire: {{r}}\nréserve: 1 2 5 10\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..4"
+				},
+				{
+					"name": "p",
+					"expression": "11..19"
+				},
+				{
+					"name": "r",
+					"expression": "eval:20-p"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On part du prix et on avance jusqu'à $20~\\unit{€}$, soit ${{p}}+{{r}}=20$.",
+					"Le marchand rend ${{r}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:o==1|Le livre|{{if:o==2|Le ballon|{{if:o==3|Le jeu|La trousse}}}}}} coûte ${{p}}~\\unit{€}$. Léo paie avec ce billet :\n\n```monnaie\nbillets: 1×50\n```\n\nTu es le marchand. Rends la monnaie à Léo.\n\n```monnaie\nconstruire: {{r}}\nréserve: 1 2 5 10\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..4"
+				},
+				{
+					"name": "p",
+					"expression": "30..49"
+				},
+				{
+					"name": "r",
+					"expression": "eval:50-p"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On part du prix et on avance jusqu'à $50~\\unit{€}$, soit ${{p}}+{{r}}=50$.",
+					"Le marchand rend ${{r}}~\\unit{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 € payé avec 10 € : rend 3 €",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"p": "7",
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur : rend le prix (7 €)",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"p": "7",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "13 € payé avec 20 € : rend 7 €",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2",
+				"p": "13",
+				"r": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "35 € payé avec 50 € : rend 15 €",
+			"variationIndex": 2,
+			"variables": {
+				"o": "3",
+				"p": "35",
+				"r": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "Erreur : rend 25 € (calcul faux)",
+			"variationIndex": 2,
+			"variables": {
+				"o": "3",
+				"p": "35",
+				"r": "15"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["25"]
+		}
+	]
+}

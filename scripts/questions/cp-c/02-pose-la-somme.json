@@ -1,0 +1,121 @@
+{
+	"title": "Pose la somme",
+	"description": "Constituer une somme donnée avec des pièces et des billets ; variation sans pièce de 1 €",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Pièces et billets",
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose exactement ${{n}}~\\unit{€}$.\n\n```monnaie\nconstruire: {{n}}\nréserve: 1 2 5\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..10"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Les pièces et les billets posés doivent valoir ${{n}}~\\unit{€}$ en tout.",
+					"Ce n'est pas le nombre de pièces et de billets qui compte, c'est ce qui est écrit dessus."
+				]
+			}
+		},
+		{
+			"statement": "Pose exactement ${{n}}~\\unit{€}$.\n\n```monnaie\nconstruire: {{n}}\nréserve: 1 2 5 10 20\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "11..50"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Les pièces et les billets posés doivent valoir ${{n}}~\\unit{€}$ en tout.",
+					"Ce n'est pas le nombre de pièces et de billets qui compte, c'est ce qui est écrit dessus."
+				]
+			}
+		},
+		{
+			"statement": "Tu n'as pas de pièce de $1~\\unit{€}$. Pose exactement ${{n}}~\\unit{€}$.\n\n```monnaie\nconstruire: {{n}}\nréserve: 2 5 10 20\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "11..49"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Les pièces et les billets posés doivent valoir ${{n}}~\\unit{€}$ en tout.",
+					"Ce n'est pas le nombre de pièces et de billets qui compte, c'est ce qui est écrit dessus."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8 € avec des pièces",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "Erreur : 7 € posés pour 8 €",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "35 € avec billets et pièces",
+			"variationIndex": 1,
+			"variables": {
+				"n": "35"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["35"]
+		},
+		{
+			"description": "Erreur : 53 € posés pour 35 €",
+			"variationIndex": 1,
+			"variables": {
+				"n": "35"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["53"]
+		},
+		{
+			"description": "27 € sans pièce de 1 €",
+			"variationIndex": 2,
+			"variables": {
+				"n": "27"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["27"]
+		}
+	]
+}

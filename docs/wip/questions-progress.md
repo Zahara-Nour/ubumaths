@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après le `deploy:prod` v0.50.0 et la publication du lot M._
+_Mis à jour le 2026-10-26, lot C (construire) en cours._
 
-- **État** : **68 modèles CP publiés** (62 + les 6 du lot M, publiés après le `deploy:prod` v0.50.0 qui a livré le bloc ```monnaie, #1804 et #1806). Rien en brouillon sur le chantier.
-- **Prochaine action** : à choisir par David — « construire » (commun avec la collection, en pause) ou réexaminer 058.
+- **État** : 68 modèles CP publiés. **Lot C** (§ 4 quindecies) : 4 modèles écrits (`scripts/questions/cp-c/`, générés par `docs/wip/questions/lot-c.py`), `checkTemplate` vert (19 specs), créés en brouillon **en base locale** pour les voir dans l'appli.
+- **Prochaine action** : relire le rendu en local (port 5176), PR des fichiers ; après le `deploy:prod` qui livre « construire » (#1812, #1820, #1825) : brouillons en prod (David, `!`), migration nœud + tag.
 - **En attente de David** : vérification manuelle #1702.
-- **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; prénom dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (variable) ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; **montants en `$n~\unit{€}$`, jamais « : » juste après** ; **écriture en prod refusée par le classifieur du mode auto : David la lance (`!`)** ; **`gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le run** ; migration qui change l'arbre ou les points → `LATER` + copies figées.
-- **Worktree / branche** : aucun (retiré après #1806).
+- **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; prénom dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (variable) ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; **montants en `$n~\unit{€}$`, jamais « : » juste après** ; **écriture en prod refusée par le classifieur du mode auto : David la lance (`!`)** ; **`gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le run** ; migration qui change l'arbre ou les points → `LATER` + copies figées ; `create-questions` vise `.env` (prod) : pour la base locale, `set -a; . ./.env.local; set +a` avant.
+- **Worktree / branche** : `../ubumaths-wt-questions` (`feat/questions-construire`).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -179,6 +179,18 @@ David suit mes recommandations (« je suis tes recos »).
 - Bloc ```monnaie pas en prod : brouillons jusqu'au `deploy:prod`.
 - Question d'accès : tranchée AVANT le SQL (personne ne gagne ni ne perd d'accès).
 
+## 4 quindecies. Lot C (construire) : décisions (David, 2026-10-26)
+
+David suit mes recommandations (« je suis tes recos »). Les blocs à construire (chantier [construire](construire-progress.md), #1812, #1820, #1825) ne sont pas en prod : brouillons jusqu'au `deploy:prod`.
+
+- 4 modèles, l'élève **construit** (bloc avec `construire:`, sa case posée par le générateur), chacun sur la sous-notion de son point, un tag.
+- C1 **CP-002** « Construis le nombre » (dénombrement ; `Entiers / Apprivoiser / Dénombrer`, niveau 1) : barres de dix et cubes ; 11 à 19, 20 à 59, 60 à 99. Pas de variation en lettres (autre point).
+- C2 **CP-044** « Pose la somme » (pièces et billets, niveau 6) : jusqu'à 10 € en pièces (réserve 1 2 5), 11 à 50 € (réserve 1 à 20 €), « sans pièce de 1 € » (réserve 2 5 10 20, 11 à 49 €).
+- C3 **CP-071** « Rends la monnaie » (rendre la monnaie, niveau 2) : les tirages de M5, l'élève pose ce qu'il rend (réserve 1 2 5 10).
+- C4 **CP-045** « Paie tes achats » (pièces et billets, niveau 7) : un objet (5 à 50 €) ; deux objets (10 à 30 € + 2 à 9 €), il additionne puis paie.
+- Question d'accès : personne ne gagne ni ne perd d'accès (reco suivie par David, AVANT le SQL).
+- Phase 0 : je proposais « niveaux 1 à 3 » pour C1 en même temps que « 4 modèles » : C1 est UN modèle (niveau 1) à trois variations.
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -258,3 +270,4 @@ David suit mes recommandations (« je suis tes recos »).
 - 2026-10-26 : page à cocher du lot M publiée : https://claude.ai/artifact/NnyA2gEWarz8r3fwjGFhmg (collection `verdicts`) ; un exemple par variation (17), tiré par le vrai générateur, pièces et billets dessinés par `buildMonnaieScene` (script `page-m.mts` du scratchpad), relue à 390 px.
 - 2026-10-26 : page à cocher du lot M relue par David : 6/6 « ok », aucun commentaire.
 - 2026-10-26 : `deploy:prod` v0.50.0 (demandé par David) ; 6 brouillons M publiés (`publishTemplates`, script `publier-m.mts` du scratchpad, lancé par David), 0 refus, statut `published` relu en base : 68/68 CP publiés.
+- 2026-10-26 : lot C (construire), phase 0 validée (§ 4 quindecies) ; 4 brouillons « VERIF construire » de la base locale supprimés (go de David) ; worktree `../ubumaths-wt-questions` (`feat/questions-construire`) ; 4 modèles écrits, `checkTemplate` vert, créés en brouillon en base locale.
