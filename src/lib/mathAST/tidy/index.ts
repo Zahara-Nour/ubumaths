@@ -19,12 +19,13 @@ import { findNodes, mapNode, stripUnnecessaryBrackets } from '../transforms';
 import { tidyNode } from './collect';
 import type { TidyOptions } from './step-recorder';
 import type { TidyCondition } from './types';
-import { mergeConditions } from './conditions';
+import { hashMathNode } from '../normal/hash';
+import { domainLoss, mergeConditions } from './conditions';
 
 export { TidyStepRecorder, TIDY_RULE_DESCRIPTIONS } from './step-recorder';
 export type { TermOrder, TidyOptions, TidyRule, TidyStep, UnitChoice } from './step-recorder';
 export type { TidyCondition } from './types';
-export { describeConditions, type ConditionText } from './conditions';
+export { describeConditions, domainLoss, type ConditionText } from './conditions';
 
 /**
  * Met une expression au propre.
@@ -70,7 +71,15 @@ export function tidyWithConditions(
 	try {
 		const written = withImpliedParentheses(node);
 		const result = tidyNode(stripUnnecessaryBrackets(written), { ...options, conditions }, written);
-		return { result, conditions: mergeConditions(conditions) };
+		if (conditions.length === 0) return { result, conditions };
+		// Ce que le résultat dit encore n'est pas redit : `x/x + ln(x) → 1 + ln(x)`
+		// garde x > 0, le domaine n'a pas changé. Un domaine acquis (`domain`) n'est
+		// pas redit non plus : seules comptent les conditions que `tidy` a posées
+		const posed = mergeConditions(conditions);
+		const lost = domainLoss(node, result, options?.typeCtx);
+		if (lost === null) return { result, conditions: posed };
+		const keys = new Set(posed.map((c) => hashMathNode(c.expression)));
+		return { result, conditions: lost.filter((c) => keys.has(hashMathNode(c.expression))) };
 	} catch (error) {
 		if (error instanceof RangeError) return { result: node, conditions: [] };
 		throw error;

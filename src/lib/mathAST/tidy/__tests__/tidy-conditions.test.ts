@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { tidy, tidyWithConditions, describeConditions } from '../index';
+import { tidy, tidyWithConditions, describeConditions, domainLoss } from '../index';
 import { parseCustom } from '../../parser/custom';
 import { toCustom } from '../../custom-generator';
 import { areEquivalent } from '../../equivalence';
@@ -135,5 +135,37 @@ describe('l’écriture LaTeX', () => {
 		expect(describeConditions(conditions).map((c) => c.latex.replace(/\s/g, ''))).toEqual(
 			latex.map((l) => l.replace(/\s/g, ''))
 		);
+	});
+});
+
+describe('ce que le résultat garde n’est pas redit', () => {
+	it('x/x + ln(x) → ln(x) + 1 : x > 0 reste dit par ln(x), aucune condition', () => {
+		expect(run('x/x+ln(x)')).toEqual({ result: written('ln(x)+1'), conditions: [] });
+	});
+});
+
+describe('domainLoss : ce qu’une réécriture a perdu du domaine', () => {
+	const loss = (before: string, after: string) => {
+		const lost = domainLoss(parseCustom(before), parseCustom(after));
+		return lost === null ? null : describeConditions(lost).map((c) => c.text);
+	};
+
+	it.each([
+		['(x^2-1)/(x+1)', 'x-1', ['x ≠ -1']],
+		['sqrt(x)^2', 'x', ['x ≥ 0']],
+		['e^(ln(x))', 'x', ['x > 0']],
+		['ln(x)-ln(x)', '0', ['x > 0']],
+		['1/(1/x)', 'x', ['x ≠ 0']],
+		['x/x+ln(x)', 'ln(x)+1', []],
+		['x^2/x', 'x^2/x', []],
+		['ln(e^x)', 'x', []],
+		['sqrt(x^2)', 'abs(x)', []],
+		['(x+1)/(x+1)+y/y', '2', ['x ≠ -1', 'y ≠ 0']]
+	])('%s → %s perd %j', (before, after, expected) => {
+		expect(loss(before, after)).toEqual(expected);
+	});
+
+	it('une condition qui ne s’écrit pas : null', () => {
+		expect(loss('tan(x)/tan(x)', '1')).toBeNull();
 	});
 });

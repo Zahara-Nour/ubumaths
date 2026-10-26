@@ -13,6 +13,8 @@
 import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
 import type { TidyCondition } from './types';
+import type { TypeContext } from '../numtype';
+import { domainConditions, type AcquiredDomain } from './sign';
 import { hashMathNode } from '../normal/hash';
 import { rationalToNode } from '../common/numeric';
 import { divRational, isNegative, negRational } from '../normal/rational';
@@ -34,24 +36,34 @@ const SYMBOLS: Record<TidyCondition['relation'], { text: string; latex: string }
 };
 
 /**
- * La condition sur l'expression qui compte : `√u ≠ 0` et `uⁿ ≠ 0` disent
- * `u ≠ 0` (le domaine de `√u` dit déjà `u ≥ 0`).
+ * Les conditions sur les expressions qui comptent : `√u ≠ 0` et `uⁿ ≠ 0`
+ * disent `u ≠ 0` (le domaine de `√u` dit déjà `u ≥ 0`), un produit non nul a
+ * chaque facteur non nul (`4x ≠ 0` → `x ≠ 0`), et `−u ≠ 0` dit `u ≠ 0`.
  */
-function essential(condition: TidyCondition): TidyCondition {
+function essential(condition: TidyCondition): TidyCondition[] {
 	const { expression, relation } = condition;
-	if (relation !== 'nonzero') return condition;
-	if (expression.type === 'delimiter')
-		return essential({ expression: expression.content, relation });
-	if (
-		expression.type === 'function' &&
-		expression.name === 'sqrt' &&
-		expression.args.length === 1
-	) {
-		return essential({ expression: expression.args[0], relation });
+	if (relation !== 'nonzero') return [condition];
+	const inner = (node: MathNode) => essential({ expression: node, relation });
+	switch (expression.type) {
+		case 'number':
+			return [];
+		case 'delimiter':
+			return inner(expression.content);
+		case 'opposite':
+		case 'positive':
+			return inner(expression.operand);
+		case 'multiplication':
+			return [...inner(expression.left), ...inner(expression.right)];
+		case 'superscript':
+			return inner(expression.base);
+		case 'function':
+			if (expression.name === 'sqrt' && expression.args.length === 1) {
+				return inner(expression.args[0]);
+			}
+			return [condition];
+		default:
+			return [condition];
 	}
-	if (expression.type === 'superscript')
-		return essential({ expression: expression.base, relation });
-	return condition;
 }
 
 /** Deux conditions sur la même expression : la plus forte, ou leur réunion. */
@@ -66,7 +78,7 @@ function strongest(
 /** Les conditions sans doublon, la plus forte par expression, dans l'ordre de lecture. */
 export function mergeConditions(conditions: readonly TidyCondition[]): TidyCondition[] {
 	const merged = new Map<string, TidyCondition>();
-	for (const condition of conditions.map(essential)) {
+	for (const condition of conditions.flatMap(essential)) {
 		const key = hashMathNode(condition.expression);
 		const existing = merged.get(key);
 		merged.set(
@@ -80,6 +92,40 @@ export function mergeConditions(conditions: readonly TidyCondition[]): TidyCondi
 		);
 	}
 	return [...merged.values()];
+}
+
+/** `a` est-elle au moins aussi forte que `b` ? `x > 0` dit `x ≠ 0` et `x ≥ 0`. */
+function implies(a: TidyCondition['relation'], b: TidyCondition['relation']): boolean {
+	return a === b || a === 'positive';
+}
+
+const NOTHING_ACQUIRED: AcquiredDomain = { nonZero: new Set(), positive: new Set() };
+
+/**
+ * Ce que `after` a perdu du domaine de `before` (chantier tidy-conditions) :
+ * les conditions qui définissent `before` et que `after` ne dit plus. `[]` :
+ * le domaine est gardé, la réécriture est permise sans rien dire ; `null` :
+ * une condition de `before` ne s'écrit pas simplement (`tan`), on ne sait pas
+ * le dire. La comparaison est STRUCTURELLE (une condition par expression,
+ * écrite comme `tidy` l'écrit) : au pire elle redit une condition vraie.
+ */
+export function domainLoss(
+	before: MathNode,
+	after: MathNode,
+	typeCtx?: TypeContext
+): TidyCondition[] | null {
+	const needed = domainConditions(before, typeCtx, NOTHING_ACQUIRED);
+	if (needed === null) return null;
+	const kept = domainConditions(after, typeCtx, NOTHING_ACQUIRED);
+	const still = mergeConditions(kept ?? []);
+	return mergeConditions(needed).filter(
+		(condition) =>
+			!still.some(
+				(other) =>
+					hashMathNode(other.expression) === hashMathNode(condition.expression) &&
+					implies(other.relation, condition.relation)
+			)
+	);
 }
 
 /** `a x + b`, une seule lettre, `a ≠ 0` : la lettre et la racine −b/a. */

@@ -361,7 +361,7 @@ function powerCondition(
  * (structure, hypothèse déclarée, domaine acquis) — mêmes règles que
  * `definedEverywhere`. `null` si l'une ne s'écrit pas simplement.
  */
-function domainConditions(
+export function domainConditions(
 	node: MathNode,
 	typeCtx: TypeContext | undefined,
 	acquired: AcquiredDomain
