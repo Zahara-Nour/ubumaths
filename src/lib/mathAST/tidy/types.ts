@@ -86,3 +86,11 @@ export type TidyCondition = {
 	readonly expression: MathNode;
 	readonly relation: 'nonzero' | 'positive' | 'nonnegative';
 };
+
+/**
+ * Une condition de domaine, telle que `domainConditions` la lit : une
+ * `TidyCondition`, ou « `expression` est définie » quand cela ne s'écrit pas
+ * simplement (`tan(x)`, `arcsin(x)`) — comparée, jamais écrite.
+ */
+export type DomainCondition =
+	TidyCondition | { readonly expression: MathNode; readonly relation: 'defined' };

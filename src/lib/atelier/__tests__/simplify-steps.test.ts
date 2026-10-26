@@ -49,13 +49,16 @@ describe('ce que le moteur ne savait pas faire', () => {
 		expect(simplified!.steps[0].title).toBe('On regroupe les termes semblables');
 	});
 
-	it('la fraction rationnelle se réduit, factorisation et condition montrées', () => {
+	it('la fraction rationnelle se réduit derrière le bouton, factorisation et condition montrées', () => {
 		const simplified = simplifySteps('(x^2-1)/(x+1)');
 
 		// Chantier simplify-carte § 33 (Q4) : la factorisation est une étape,
-		// la condition est dite — avant, une seule ligne « On réduit la fraction »
-		expect(simplified!.answer).toBe('x - 1');
-		expect(simplified!.steps.map((step) => step.title)).toEqual([
+		// la condition est dite — avant, une seule ligne « On réduit la fraction ».
+		// Chantier tidy-conditions (David, 2026-10-26) : la ligne garde le
+		// domaine, la réduction est derrière « Simplifier pour x ≠ −1 »
+		expect(simplified!.answer.replace(/\s/g, '')).toBe('\\dfrac{x^2-1}{x+1}');
+		expect(simplified!.alternative?.label).toBe('Simplifier pour x ≠ −1');
+		expect(simplified!.alternative?.steps?.map((step) => step.title)).toEqual([
 			'On factorise pour faire apparaître un facteur commun',
 			'On simplifie par le facteur commun, pour x ≠ −1'
 		]);

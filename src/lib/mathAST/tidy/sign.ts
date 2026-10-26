@@ -14,7 +14,7 @@
  */
 
 import type { MathNode } from '../types';
-import type { TidyCondition } from './types';
+import type { DomainCondition, TidyCondition } from './types';
 import type { TypeContext } from '../numtype';
 import { isNonNegativeType, isNonzeroType, isPositiveType } from '../numtype';
 import { extractExactRational, extractRational } from '../common/numeric';
@@ -324,7 +324,7 @@ export function cancelledBaseConditions(
 	typeCtx: TypeContext | undefined,
 	acquired: AcquiredDomain
 ): TidyCondition[] | null {
-	const defined = domainConditions(base, typeCtx, acquired);
+	const defined = writable(domainConditions(base, typeCtx, acquired));
 	if (defined === null) return null;
 	return [{ expression: base, relation: 'nonzero' }, ...defined];
 }
@@ -339,11 +339,21 @@ export function cancelledFactorConditions(
 	typeCtx: TypeContext | undefined,
 	acquired: AcquiredDomain
 ): TidyCondition[] | null {
-	const defined = domainConditions(base, typeCtx, acquired);
+	const defined = writable(domainConditions(base, typeCtx, acquired));
 	if (defined === null) return null;
 	const power = powerCondition(base, exponent);
 	if (power === null || powerDefinedEverywhere(base, exponent, typeCtx, acquired)) return defined;
 	return [...defined, { expression: base, relation: power }];
+}
+
+/** Les conditions, si toutes s'écrivent simplement ; `null` sinon. */
+export function writable(conditions: readonly DomainCondition[]): TidyCondition[] | null {
+	const written: TidyCondition[] = [];
+	for (const condition of conditions) {
+		if (condition.relation === 'defined') return null;
+		written.push(condition);
+	}
+	return written;
 }
 
 /** Ce qu'il faut à `base` pour que `base^exposant` soit défini, `null` : rien. */
@@ -359,20 +369,17 @@ function powerCondition(
 /**
  * Les conditions qui définissent `node`, sauf celles qu'on sait déjà vraies
  * (structure, hypothèse déclarée, domaine acquis) — mêmes règles que
- * `definedEverywhere`. `null` si l'une ne s'écrit pas simplement.
+ * `definedEverywhere`. Une fonction au domaine qui ne s'écrit pas simplement
+ * (`tan`, `arcsin`) donne « est définie » (`'defined'`).
  */
 export function domainConditions(
 	node: MathNode,
 	typeCtx: TypeContext | undefined,
 	acquired: AcquiredDomain
-): TidyCondition[] | null {
+): DomainCondition[] {
 	if (findNodes(node, isVariable).length === 0) return [];
-	const found: TidyCondition[] = [];
-	for (const child of getChildren(node)) {
-		const inner = domainConditions(child, typeCtx, acquired);
-		if (inner === null) return null;
-		found.push(...inner);
-	}
+	const found: DomainCondition[] = [];
+	for (const child of getChildren(node)) found.push(...domainConditions(child, typeCtx, acquired));
 	const need = (expression: MathNode, relation: TidyCondition['relation']): void => {
 		const known =
 			relation === 'nonzero'
@@ -396,12 +403,11 @@ export function domainConditions(
 		}
 		case 'function': {
 			if (!RESTRICTED_FUNCTIONS.has(node.name)) break;
-			if (node.args.length !== 1) return null;
 			const [arg] = node.args;
-			if (node.name === 'sqrt') {
+			if (node.args.length === 1 && node.name === 'sqrt') {
 				if (!hasOddIndex(node.base)) need(arg, 'nonnegative');
-			} else if (LOGARITHMS.has(node.name)) need(arg, 'positive');
-			else return null;
+			} else if (node.args.length === 1 && LOGARITHMS.has(node.name)) need(arg, 'positive');
+			else found.push({ expression: node, relation: 'defined' });
 			break;
 		}
 		default:

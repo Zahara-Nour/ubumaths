@@ -12,9 +12,9 @@
 
 import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
-import type { TidyCondition } from './types';
+import type { DomainCondition, TidyCondition } from './types';
 import type { TypeContext } from '../numtype';
-import { domainConditions, type AcquiredDomain } from './sign';
+import { domainConditions, writable, type AcquiredDomain } from './sign';
 import { hashMathNode } from '../normal/hash';
 import { rationalToNode } from '../common/numeric';
 import { divRational, isNegative, negRational } from '../normal/rational';
@@ -40,10 +40,10 @@ const SYMBOLS: Record<TidyCondition['relation'], { text: string; latex: string }
  * disent `u ≠ 0` (le domaine de `√u` dit déjà `u ≥ 0`), un produit non nul a
  * chaque facteur non nul (`4x ≠ 0` → `x ≠ 0`), et `−u ≠ 0` dit `u ≠ 0`.
  */
-function essential(condition: TidyCondition): TidyCondition[] {
+function essential<C extends DomainCondition>(condition: C): C[] {
 	const { expression, relation } = condition;
 	if (relation !== 'nonzero') return [condition];
-	const inner = (node: MathNode) => essential({ expression: node, relation });
+	const inner = (node: MathNode) => essential({ ...condition, expression: node });
 	switch (expression.type) {
 		case 'number':
 			return [];
@@ -67,19 +67,17 @@ function essential(condition: TidyCondition): TidyCondition[] {
 }
 
 /** Deux conditions sur la même expression : la plus forte, ou leur réunion. */
-function strongest(
-	a: TidyCondition['relation'],
-	b: TidyCondition['relation']
-): TidyCondition['relation'] {
+function strongest<R extends DomainCondition['relation']>(a: R, b: R): R {
 	if (a === b) return a;
-	return 'positive';
+	return 'positive' as R;
 }
 
 /** Les conditions sans doublon, la plus forte par expression, dans l'ordre de lecture. */
-export function mergeConditions(conditions: readonly TidyCondition[]): TidyCondition[] {
-	const merged = new Map<string, TidyCondition>();
-	for (const condition of conditions.flatMap(essential)) {
-		const key = hashMathNode(condition.expression);
+export function mergeConditions<C extends DomainCondition>(conditions: readonly C[]): C[] {
+	const merged = new Map<string, C>();
+	for (const condition of conditions.flatMap((c) => essential(c))) {
+		// « est définie » se compare à part : `tan(x) ≠ 0` ne dit pas que `tan(x)` existe
+		const key = `${condition.relation === 'defined' ? 'D' : 'V'}${hashMathNode(condition.expression)}`;
 		const existing = merged.get(key);
 		merged.set(
 			key,
@@ -95,8 +93,8 @@ export function mergeConditions(conditions: readonly TidyCondition[]): TidyCondi
 }
 
 /** `a` est-elle au moins aussi forte que `b` ? `x > 0` dit `x ≠ 0` et `x ≥ 0`. */
-function implies(a: TidyCondition['relation'], b: TidyCondition['relation']): boolean {
-	return a === b || a === 'positive';
+function implies(a: DomainCondition['relation'], b: DomainCondition['relation']): boolean {
+	return a === b || (a === 'positive' && b !== 'defined');
 }
 
 const NOTHING_ACQUIRED: AcquiredDomain = { nonZero: new Set(), positive: new Set() };
@@ -114,11 +112,8 @@ export function domainLoss(
 	after: MathNode,
 	typeCtx?: TypeContext
 ): TidyCondition[] | null {
-	const needed = domainConditions(before, typeCtx, NOTHING_ACQUIRED);
-	if (needed === null) return null;
-	const kept = domainConditions(after, typeCtx, NOTHING_ACQUIRED);
-	const still = mergeConditions(kept ?? []);
-	return mergeConditions(needed).filter(
+	const still = mergeConditions(domainConditions(after, typeCtx, NOTHING_ACQUIRED));
+	const lost = mergeConditions(domainConditions(before, typeCtx, NOTHING_ACQUIRED)).filter(
 		(condition) =>
 			!still.some(
 				(other) =>
@@ -126,6 +121,7 @@ export function domainLoss(
 					implies(other.relation, condition.relation)
 			)
 	);
+	return writable(lost);
 }
 
 /** `a x + b`, une seule lettre, `a ≠ 0` : la lettre et la racine −b/a. */
@@ -138,6 +134,11 @@ function affineRoot(expression: MathNode): { letter: string; root: Rational; a: 
 	return { letter: letters[0], root: divRational(negRational(b), a), a };
 }
 
+/** Le texte d'une condition se lit comme un titre d'étape : le vrai signe moins, `x ≠ −1`. */
+function readable(text: string): string {
+	return text.replace(/-/g, '−');
+}
+
 /** Une condition écrite : sur la lettre si l'expression est affine, entière sinon. */
 function describe({ expression, relation }: TidyCondition): ConditionText {
 	const affine = affineRoot(expression);
@@ -148,12 +149,12 @@ function describe({ expression, relation }: TidyCondition): ConditionText {
 		const latex = flipped ? (relation === 'positive' ? '<' : '\\leq') : SYMBOLS[relation].latex;
 		const root = rationalToNode(affine.root);
 		return {
-			text: `${affine.letter} ${text} ${toCustom(root)}`,
+			text: readable(`${affine.letter} ${text} ${toCustom(root)}`),
 			latex: `${affine.letter} ${latex} ${toLatex(root)}`
 		};
 	}
 	return {
-		text: `${toCustom(expression)} ${SYMBOLS[relation].text} 0`,
+		text: readable(`${toCustom(expression)} ${SYMBOLS[relation].text} 0`),
 		latex: `${toLatex(expression)} ${SYMBOLS[relation].latex} 0`
 	};
 }

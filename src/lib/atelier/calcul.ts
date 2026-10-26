@@ -188,6 +188,7 @@ import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
+import { guardedAnswer, tidyAlternative, writtenKeepingDomain } from './domain-guard';
 import { expandExpression, type ExpandMode } from './expand';
 import { integrateRefusalSteps, integrateSteps } from './integrate-steps';
 import { calculationSteps, evaluateSteps } from './evaluate-steps';
@@ -249,9 +250,14 @@ export interface CalcSession {
  * ni le rejeu, ni « Garder » ne la lisent.
  */
 export interface Alternative {
-	/** Ce que dit le bouton : ce qu'il va montrer. */
-	readonly label: 'Valeur approchée' | 'Valeur exacte';
+	/** Ce que dit le bouton : ce qu'il va montrer (« Valeur approchée », « Simplifier pour x ≠ 0 »). */
+	readonly label: string;
+	/** Ce qu'il dit une fois basculé ; absent : l'autre valeur (« Valeur exacte »). */
+	readonly back?: string;
 	readonly latex: string;
+	/** Les étapes de l'autre écriture, montrées à la place de celles de la ligne. */
+	readonly steps?: readonly RenderedStep[];
+	readonly summary?: readonly RenderedStep[];
 }
 
 /** Ce qu'une saisie a produit. */
@@ -1699,10 +1705,16 @@ function runAtelierCommand(
 				output: outcome.text,
 				latex: outcome.answer,
 				steps: outcome.steps,
-				...summaryField(outcome)
+				...summaryField(outcome),
+				...(outcome.alternative !== undefined && { alternative: outcome.alternative })
 			};
 		case 'inchangee':
-			return { kind: 'commande', input, output: outcome.message };
+			return {
+				kind: 'commande',
+				input,
+				output: outcome.message,
+				...(outcome.alternative !== undefined && { alternative: outcome.alternative })
+			};
 		case 'illisible':
 			return { kind: 'refus', message: outcome.message };
 	}
@@ -1728,7 +1740,8 @@ function runExpandCommand(input: string, argument: string, mode: ExpandMode): Ca
 				output: outcome.text,
 				latex: outcome.answer,
 				...(outcome.steps !== undefined && { steps: outcome.steps }),
-				...summaryField(outcome)
+				...summaryField(outcome),
+				...(outcome.alternative !== undefined && { alternative: outcome.alternative })
 			};
 		case 'inchangee':
 			return { kind: 'commande', input, output: outcome.message };
@@ -1870,6 +1883,27 @@ function calculationAlternative(result: ReplExecutionResult): { alternative?: Al
 		return { alternative: { label: 'Valeur exacte', latex: result.exactLatex } };
 	}
 	return {};
+}
+
+/**
+ * Une expression littérale tapée (`x/x`, `1/(1/x)`) : son écriture qui garde
+ * le domaine, et le bouton de la simplification qui le change (chantier
+ * tidy-conditions, David 2026-10-26). `null` : pas une expression littérale
+ * (nombre, grandeur), la ligne reste celle du moteur.
+ */
+function literalKeepingDomain(
+	typed: string,
+	result: ReplExecutionResult,
+	shown: MathNode | undefined
+): ReturnType<typeof guardedAnswer> | null {
+	if (!result.success || shown === undefined || result.quantityAst !== undefined) return null;
+	if (getVariables(shown).size === 0 || findNodes(shown, isUnit).length > 0) return null;
+	const written = astOf(typed, 'text');
+	if (written === null) return null;
+	const guarded = guardedAnswer(writtenKeepingDomain(written, { order: 'kept' }), shown);
+	if (guarded.alternative !== undefined) return guarded;
+	const alternative = tidyAlternative(guarded.shown, { order: 'kept' });
+	return { shown: guarded.shown, ...(alternative !== undefined && { alternative }) };
 }
 
 /** Ce que répond `.exporter` suivi d'autre chose. */
@@ -2552,14 +2586,27 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				input,
 				output: rendered.text,
 				latex: simplified.answer,
-				steps: simplified.steps,
-				...summaryField(simplified)
+				...(simplified.steps.length > 0 && { steps: simplified.steps }),
+				...summaryField(simplified),
+				...(simplified.alternative !== undefined && { alternative: simplified.alternative })
 			};
 		}
 		// Rien à simplifier (`2(x+3)`, `x²+2x+1`) : l'expression du moteur en
-		// LaTeX, jamais le bloc du terminal (« Custom: … Hash: 2*V(x)+6 »)
+		// LaTeX, jamais le bloc du terminal (« Custom: … Hash: 2*V(x)+6 »). Le
+		// moteur, lui, ne garde pas le domaine (`ln(x) − ln(x)` → 0) : gardé ici
 		if (result.success && result.ast !== undefined) {
-			return { kind: 'commande', input, output: rendered.text, latex: toLatex(result.ast) };
+			const typed = astOf(argument, 'text');
+			const guarded =
+				typed === null
+					? { shown: result.ast }
+					: guardedAnswer(writtenKeepingDomain(typed), result.ast);
+			return {
+				kind: 'commande',
+				input,
+				output: rendered.text,
+				latex: toLatex(guarded.shown),
+				...(guarded.alternative !== undefined && { alternative: guarded.alternative })
+			};
 		}
 	}
 
@@ -4194,8 +4241,11 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		};
 	}
 	const rendered = renderResult(result);
-	const latex = rendered.latex ? approximatedLatex(result, rendered.latex) : undefined;
+	const guarded = literalKeepingDomain(expanded, result, rendered.ast);
+	const shownLatex = guarded === null ? rendered.latex : toLatex(guarded.shown);
+	const latex = shownLatex ? approximatedLatex(result, shownLatex) : undefined;
 	const steps = typedCalculationSteps(input, withTerms.text, result, latex);
+	const kept = guarded?.shown ?? result.quantityAst ?? rendered.ast ?? result.ast;
 	return {
 		kind: 'calcul',
 		input,
@@ -4203,11 +4253,10 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		...(latex !== undefined && { latex }),
 		// « Garder » range la grandeur exacte, pas son écriture juxtaposée (`2 h 30 min`) ;
 		// sinon l'écriture affichée (Q27, lot 5d : `2x+3x` se garde `5x`)
-		...(result.success &&
-			(result.quantityAst ?? rendered.ast ?? result.ast) !== undefined && {
-				ast: result.quantityAst ?? rendered.ast ?? result.ast
-			}),
-		...calculationAlternative(result),
+		...(result.success && kept !== undefined && { ast: kept }),
+		...(guarded?.alternative !== undefined
+			? { alternative: guarded.alternative }
+			: calculationAlternative(result)),
 		...notesOf(...reading.notes, tooLongNote(result)),
 		...(steps !== null && { steps })
 	};
