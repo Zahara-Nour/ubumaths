@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1806 et la relecture du lot M._
+_Mis à jour le 2026-10-26, après le `deploy:prod` v0.50.0 et la publication du lot M._
 
-- **État** : 62 modèles CP publiés ; **lot M (monnaie) : 6 brouillons en prod, rangés et tagués** (#1796). Correctifs mergés : #1804 (monnaie d'un choix de QCM à 10 cm, même échelle pour tous les choix ; étiquette du corrigé sous le dessin), #1806 (corrigés sans « : » isolé). Le bloc ```monnaie et #1804 partent au prochain `deploy:prod`.
-- **Prochaine action** : (1) page à cocher du lot M relue, **6/6 OK** ; (2) publier les 6 brouillons M après le `deploy:prod` (le bloc ```monnaie n'est pas encore en prod). Ensuite : « construire » (commun avec la collection, en pause), 058 à réexaminer.
+- **État** : **68 modèles CP publiés** (62 + les 6 du lot M, publiés après le `deploy:prod` v0.50.0 qui a livré le bloc ```monnaie, #1804 et #1806). Rien en brouillon sur le chantier.
+- **Prochaine action** : à choisir par David — « construire » (commun avec la collection, en pause) ou réexaminer 058.
 - **En attente de David** : vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; prénom dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (variable) ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; **montants en `$n~\unit{€}$`, jamais « : » juste après** ; **écriture en prod refusée par le classifieur du mode auto : David la lance (`!`)** ; **`gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le run** ; migration qui change l'arbre ou les points → `LATER` + copies figées.
 - **Worktree / branche** : aucun (retiré après #1806).
@@ -257,3 +257,4 @@ David suit mes recommandations (« je suis tes recos »).
 - 2026-10-26 : 3 brouillons M mis à jour en prod (`--mettre-a-jour`, lancé par David), vérifiés : corrigés neufs, brouillon, nœud et tag inchangés.
 - 2026-10-26 : page à cocher du lot M publiée : https://claude.ai/artifact/NnyA2gEWarz8r3fwjGFhmg (collection `verdicts`) ; un exemple par variation (17), tiré par le vrai générateur, pièces et billets dessinés par `buildMonnaieScene` (script `page-m.mts` du scratchpad), relue à 390 px.
 - 2026-10-26 : page à cocher du lot M relue par David : 6/6 « ok », aucun commentaire.
+- 2026-10-26 : `deploy:prod` v0.50.0 (demandé par David) ; 6 brouillons M publiés (`publishTemplates`, script `publier-m.mts` du scratchpad, lancé par David), 0 refus, statut `published` relu en base : 68/68 CP publiés.
