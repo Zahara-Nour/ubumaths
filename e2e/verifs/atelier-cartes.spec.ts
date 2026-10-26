@@ -5,7 +5,10 @@ import {
 	cardAction,
 	cardLocator,
 	cards,
+	chooseSetting,
 	expectLatex,
+	focusCardField,
+	mathConsole,
 	normalizeLatex,
 	openAtelier,
 	steps,
@@ -302,4 +305,324 @@ test('#1703 — carte f′ du bouton « Dériver » de 1 − x eˣ', async ({ pa
 	await calc(page, 'f(x) = 1 - x e^x');
 	await cardAction(page, 'f', 'Dériver');
 	await expectCardLatex(page, 'f′', '-\\left( x + 1 \\right) e^x');
+});
+
+/** Met le focus dans le champ d'une carte et le remplace par `keys`, SANS Entrée */
+async function retypeCard(page: Page, name: string, keys: string): Promise<void> {
+	await focusCardField(page, name);
+	// MathLive peut perdre le premier geste : on vide jusqu'à ce que le champ le soit
+	await expect(async () => {
+		await page.keyboard.press('ControlOrMeta+A');
+		await page.keyboard.press('Backspace');
+		expect(await fieldValue(page, name)).toBe('');
+	}).toPass();
+	await page.keyboard.type(keys);
+}
+
+/** Le LaTeX que montre le champ d'une carte */
+async function fieldValue(page: Page, name: string): Promise<string> {
+	return normalizeLatex(
+		await cardLocator(page, name)
+			.locator('math-field')
+			.evaluate((element) => (element as HTMLElement & { value: string }).value)
+	);
+}
+
+/** Ouvre le menu « Options » d'une carte et rend le menu */
+async function openOptions(page: Page, name: string): Promise<Locator> {
+	const button = cardLocator(page, name).getByRole('button', {
+		name: `Options de ${name}`,
+		exact: true
+	});
+	// Un choix « radio » (Nuage / Escalier) laisse le menu ouvert : on le ferme d'abord
+	if ((await button.getAttribute('aria-expanded')) === 'true') {
+		await page.keyboard.press('Escape');
+		await expect(page.getByRole('menu')).toHaveCount(0);
+	}
+	await button.click();
+	const menu = page.getByRole('menu');
+	await expect(menu).toBeVisible();
+	return menu;
+}
+
+test('cartes de fonction (lot 3) — une ligne, Entrée range, point de couleur, menu ⋮, clavier', async ({
+	page
+}) => {
+	await calc(page, 'f(x) = x^2');
+	const f = cardLocator(page, 'f');
+	// Une seule ligne : point de couleur, nom, champ, œil, ⋮
+	await expect(f.getByRole('button', { name: 'Couleur et trait de f' })).toBeVisible();
+	await expect(f.locator('math-field[aria-label="Définition de f"]')).toBeVisible();
+	await expect(f.getByRole('button', { name: 'Tracer f' })).toHaveAttribute('aria-pressed', 'true');
+	await expect(f.getByRole('button', { name: 'Options de f' })).toBeVisible();
+	const curve = page.locator('path.function-curve');
+	await expect(curve).toHaveAttribute('aria-label', 'Courbe de la fonction x^2');
+
+	// Taper ne change rien avant Entrée ; « 3x+ » puis Entrée → erreur sur le champ, la
+	// courbe reste ; Échap → l'ancienne définition
+	await retypeCard(page, 'f', '3x+');
+	await page.waitForTimeout(500);
+	await expect(curve).toHaveAttribute('aria-label', 'Courbe de la fonction x^2');
+	await page.keyboard.press('Enter');
+	await expect(f.locator('math-field')).toHaveAttribute('aria-invalid', 'true');
+	await expect(f.locator('.refus')).toContainText("« 3x+ » n'est pas une expression valide");
+	await expect(curve).toHaveAttribute('aria-label', 'Courbe de la fonction x^2');
+	await page.keyboard.press('Escape');
+	await expect.poll(() => fieldValue(page, 'f')).toBe('x^2');
+	await expect(f.locator('.refus')).toHaveCount(0);
+	// Un clic ailleurs range aussi
+	await retypeCard(page, 'f', '2x');
+	await page.mouse.click(5, 5);
+	await expect(curve).toHaveAttribute('aria-label', 'Courbe de la fonction 2 x');
+	await calc(page, 'f(x) = x^2');
+
+	// Le point de couleur : couleur, épaisseur, style
+	await f.getByRole('button', { name: 'Couleur et trait de f' }).click();
+	for (const group of ['Couleur de la courbe', 'Épaisseur du trait', 'Style du trait']) {
+		await expect(page.getByRole('radiogroup', { name: group })).toBeVisible();
+	}
+	await page.keyboard.press('Escape');
+	// Jamais tracée (une carte « + Fonction » vide) : la fenêtre propose de la tracer
+	await page.getByRole('button', { name: '+ Fonction' }).click();
+	await cardLocator(page, 'g').getByRole('button', { name: 'Couleur et trait de g' }).click();
+	await expect(page.getByText('g n’est pas encore tracée')).toBeVisible();
+	await expect(
+		page.locator('[data-slot="popover-content"]').getByRole('button', { name: 'Tracer g' })
+	).toBeVisible();
+	await page.keyboard.press('Escape');
+
+	// Menu ⋮ : Tangente et Aire sous la courbe s'affichent sous la carte
+	const shown = f.getByRole('region', { name: 'Sur le graphique : f' });
+	await (await openOptions(page, 'f')).getByRole('menuitemcheckbox', { name: 'Tangente' }).click();
+	await page.keyboard.press('Escape');
+	await expect(shown.getByRole('slider', { name: 'Abscisse du point de tangence' })).toBeVisible();
+	await (
+		await openOptions(page, 'f')
+	)
+		.getByRole('menuitemcheckbox', { name: 'Aire sous la courbe' })
+		.click();
+	await page.keyboard.press('Escape');
+	await expect(shown.getByRole('group', { name: 'Bornes de l’aire' })).toBeVisible();
+	await expect(shown).toContainText('aire = 83,33');
+
+	// Tabuler : une petite fenêtre de / à / pas
+	await (await openOptions(page, 'f')).getByRole('menuitem', { name: 'Tabuler' }).click();
+	const tabulate = page.getByRole('dialog', { name: 'Tabuler f' });
+	for (const field of ['Début', 'Fin', 'Pas']) {
+		await expect(tabulate.getByRole('textbox', { name: `${field} du tableau de f` })).toBeVisible();
+	}
+	await tabulate.getByRole('button', { name: 'Fermer' }).click();
+
+	// Variations : le tableau dans la console
+	const lines = page.locator('ol.historique > li');
+	await cardAction(page, 'f', 'Variations');
+	await expect(lines.last().locator('.tableau')).toBeVisible();
+
+	// Dériver : la carte f′, son icône de lien dit ce qu'elle suit, au survol (title)
+	// comme au toucher (le bouton déplie la phrase)
+	await cardAction(page, 'f', 'Dériver');
+	const link = cardLocator(page, 'f′').getByRole('button', { name: 'dérivée de f — elle suit f' });
+	await expect(link).toHaveAttribute('title', 'dérivée de f — elle suit f');
+	await link.click();
+	await expect(link).toHaveAttribute('aria-expanded', 'true');
+	await expect(page.locator(`#${await link.getAttribute('aria-controls')}`)).toContainText(
+		'elle suit f'
+	);
+
+	// Tout au clavier : Tab jusqu'au ⋮, Entrée, flèches
+	const options = f.getByRole('button', { name: 'Options de f', exact: true });
+	await f.getByRole('button', { name: 'Tracer f' }).focus();
+	await page.keyboard.press('Tab');
+	await expect(options).toBeFocused();
+	await page.keyboard.press('Enter');
+	await expect(page.getByRole('menu')).toBeVisible();
+	// Le menu ouvert au clavier met le focus sur son premier choix ; ↓ passe au suivant
+	await expect(page.getByRole('menuitemcheckbox', { name: 'Tangente' })).toBeFocused();
+	await page.keyboard.press('ArrowDown');
+	await expect(page.getByRole('menuitemcheckbox', { name: 'Aire sous la courbe' })).toBeFocused();
+	await page.keyboard.press('Escape');
+	await expect(page.getByRole('menu')).toHaveCount(0);
+});
+
+test('cartes valeur, suite, liste (lot 4a) — curseur, bornes, escalier, liste, Simuler', async ({
+	page
+}) => {
+	// Valeur : une ligne `a = [champ]`, rangée à Entrée
+	await calc(page, 'a = 2');
+	await expect.poll(() => fieldValue(page, 'a')).toBe('2');
+	// Rien de rangé pendant la frappe : Échap rend la valeur d'avant (un clic dans la
+	// console, lui, rangerait la carte en sortant du champ)
+	await retypeCard(page, 'a', '5');
+	await page.waitForTimeout(300);
+	await page.keyboard.press('Escape');
+	await expect.poll(() => fieldValue(page, 'a')).toBe('2');
+	await retypeCard(page, 'a', '5');
+	await page.keyboard.press('Enter');
+	expectLatex(await calc(page, 'a'), '5');
+
+	// Citée par f : le curseur sous la ligne ; sinon ⋮ → Curseur l'affiche
+	await calc(page, 'f(x) = a x');
+	await expect(cardLocator(page, 'a').getByRole('slider', { name: 'Curseur de a' })).toBeVisible();
+	await calc(page, 'b = 3');
+	const bSlider = cardLocator(page, 'b').getByRole('slider', { name: 'Curseur de b' });
+	await expect(bSlider).toHaveCount(0);
+	await (await openOptions(page, 'b')).getByRole('menuitemcheckbox', { name: 'Curseur' }).click();
+	await expect(bSlider).toBeVisible();
+	// ⋮ → Bornes et pas : une petite fenêtre
+	await (
+		await openOptions(page, 'b')
+	)
+		.getByRole('menuitem', { name: 'Bornes et pas du curseur…' })
+		.click();
+	const bounds = page.getByRole('dialog', { name: 'Curseur de b' });
+	for (const field of ['de, minimum', 'à, maximum', 'pas']) {
+		await expect(
+			bounds.getByRole('spinbutton', { name: `${field} du curseur de b` })
+		).toBeVisible();
+	}
+	await bounds.getByRole('button', { name: 'Fermer' }).click();
+	// Une grandeur : « Curseur » grisé, avec sa raison
+	await calc(page, 'd = 12 km');
+	const distance = (await openOptions(page, 'd')).getByRole('menuitemcheckbox', {
+		name: /Curseur/
+	});
+	await expect(distance).toHaveAttribute('aria-disabled', 'true');
+	await expect(distance).toContainText('pas de curseur');
+	await page.keyboard.press('Escape');
+
+	// Suite : `● u(n+1) = [champ]`, dessous `u(0) = [champ]`
+	await calc(page, 'u(n+1) = 2u(n)');
+	const u = cardLocator(page, 'u');
+	await expect(u.getByRole('button', { name: 'Couleur et trait de u' })).toBeVisible();
+	await expect(u.locator('.variable')).toHaveText('(n+1) =');
+	await expect(u.getByRole('group', { name: 'Premier terme de u' })).toBeVisible();
+	await u.getByRole('button', { name: 'Couleur et trait de u' }).click();
+	await expect(page.getByRole('radiogroup', { name: 'Couleur de la courbe' })).toBeVisible();
+	await page.keyboard.press('Escape');
+	// ⋮ → Escalier : les marches (le nuage devient escalier)
+	await (await openOptions(page, 'u')).getByRole('menuitemradio', { name: 'Escalier' }).click();
+	await expect(
+		(await openOptions(page, 'u')).getByRole('menuitemradio', { name: 'Escalier' })
+	).toHaveAttribute('aria-checked', 'true');
+	await expect(u.getByRole('group', { name: 'Escalier de u' })).toBeVisible();
+	// ⋮ → Récurrence / Explicite : u se cite elle-même, Explicite est refusé avec sa raison
+	await (await openOptions(page, 'u')).getByRole('menuitemradio', { name: /^Explicite/ }).click();
+	await expect(u.getByRole('alert')).toHaveText(
+		"« u » se cite elle-même : c'est une récurrence, pas une suite explicite."
+	);
+	await expect(u.locator('.variable')).toHaveText('(n+1) =');
+	// Une définition qui ne la cite plus : Explicite passe ; l'escalier y est grisé
+	await retypeCard(page, 'u', 'n+1');
+	await page.keyboard.press('Enter');
+	await (await openOptions(page, 'u')).getByRole('menuitemradio', { name: /^Explicite/ }).click();
+	await expect(u.locator('.variable')).toHaveText('(n) =');
+	const explicit = await openOptions(page, 'u');
+	await expect(explicit.getByRole('menuitemradio', { name: /Escalier/ })).toHaveAttribute(
+		'aria-disabled',
+		'true'
+	);
+	await page.keyboard.press('Escape');
+
+	// Liste : `L = {3 ; 5 ; 8 ; …} (12 valeurs)`, pas de champ
+	await calc(page, 'L = 3 ; 5 ; 8 ; 1 ; 2 ; 4 ; 6 ; 7 ; 9 ; 10 ; 11 ; 12');
+	await calc(page, 'M = 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8 ; 9 ; 10 ; 11 ; 12');
+	const list = cardLocator(page, 'L');
+	await expect(list).toContainText('{3 ; 5 ; 8 ; …} (12 valeurs)');
+	await expect(list.locator('math-field')).toHaveCount(0);
+	// ⋮ → Avec une autre liste → Nuage avec M
+	await cardAction(page, 'L', 'Avec une autre liste');
+	await page.getByRole('menuitem', { name: 'Nuage avec M' }).click();
+	await expect(page.getByRole('img', { name: /nuage de points L \/ M/ })).toBeVisible();
+	// ⋮ → Modifier dans Données : la grille, sur la colonne de L
+	await cardAction(page, 'L', 'Modifier dans Données');
+	await expect(
+		page
+			.getByRole('navigation', { name: "Vues de l'atelier" })
+			.getByRole('button', { name: 'Données' })
+	).toHaveAttribute('aria-current', 'page');
+	await expect(page.locator('td[role="gridcell"].active')).toHaveAttribute(
+		'data-cell',
+		/^[A-Z]+1$/
+	);
+
+	// Écriture mathématique : ⋮ → Avec une autre liste → Simuler, la console prend le focus
+	await chooseSetting(page, 'Écriture mathématique');
+	await cardAction(page, 'L', 'Avec une autre liste');
+	await page.getByRole('menuitem', { name: /Simuler avec probabilités M/ }).click();
+	await expect(mathConsole(page)).toBeFocused();
+
+	// Tout au clavier : → ouvre le sous-menu
+	await page.keyboard.press('Escape');
+	const options = list.getByRole('button', { name: 'Options de L', exact: true });
+	await options.focus();
+	await page.keyboard.press('Enter');
+	await expect(page.getByRole('menuitem', { name: 'Statistiques', exact: true })).toBeFocused();
+	for (let press = 0; press < 3; press++) await page.keyboard.press('ArrowDown');
+	await expect(page.getByRole('menuitem', { name: 'Avec une autre liste' })).toBeFocused();
+	await page.keyboard.press('ArrowRight');
+	await expect(page.getByRole('menuitem', { name: 'Statistiques avec effectifs M' })).toBeFocused();
+});
+
+test('cartes point et courbe (lot 4b) — une ligne, Entrée range, lien, couleur, curseur gardé', async ({
+	page
+}) => {
+	await calc(page, 'A = (1 ; 2)');
+	const a = cardLocator(page, 'A');
+	await expect(a).toHaveAttribute('data-kind', 'point');
+	await expect(a.locator('.egal')).toHaveText('=');
+	// Taper `(1;5)` sans Entrée ne change rien ; Entrée range
+	// (même preuve que pour une valeur : Échap rend la définition d'avant)
+	await retypeCard(page, 'A', '(1;5');
+	await page.waitForTimeout(300);
+	await page.keyboard.press('Escape');
+	await expect.poll(() => fieldValue(page, 'A')).toBe('(1;2)');
+	await retypeCard(page, 'A', '(1;5');
+	await page.keyboard.press('Enter');
+	expect((await calc(page, 'A')).text).toContain('A(1;5)');
+
+	await calc(page, 'B = (0 ; 2)');
+	await calc(page, 'I = milieu(A, B)');
+	await expect(
+		cardLocator(page, 'I').getByRole('button', {
+			name: 'I se construit à partir de A et B, et suit leurs changements.'
+		})
+	).toBeVisible();
+	await calc(page, 'd : y = 3x - 2');
+	await expect(cardLocator(page, 'd').locator('.egal')).toHaveText(':');
+	await expect(cardLocator(page, 'd')).toHaveAttribute('data-kind', 'curve');
+	await calc(page, 'g = (AB)');
+	await expect(cardLocator(page, 'g')).toHaveAttribute('data-kind', 'curve');
+
+	// Point de couleur : d'un point → couleur et taille ; d'une courbe → couleur, épaisseur, style
+	await a.getByRole('button', { name: 'Couleur et taille de A' }).click();
+	await expect(page.getByRole('radiogroup', { name: 'Couleur du point' })).toBeVisible();
+	await expect(page.getByRole('radiogroup', { name: 'Taille du point' })).toBeVisible();
+	await page.keyboard.press('Escape');
+	await cardLocator(page, 'd').getByRole('button', { name: 'Couleur et trait de d' }).click();
+	for (const group of ['Couleur', 'Épaisseur du trait', 'Style du trait']) {
+		await expect(page.getByRole('radiogroup', { name: new RegExp(`^${group}`) })).toBeVisible();
+	}
+	await page.keyboard.press('Escape');
+
+	// Une valeur vide dit « à compléter »
+	await page.getByRole('button', { name: '+ Valeur' }).click();
+	await expect(page.locator('article.objet').last().locator('.etat')).toHaveText('à compléter');
+
+	// ⋮ → Curseur sur `c = 2`, recharger : le curseur est toujours là
+	await calc(page, 'c = 2');
+	await (await openOptions(page, 'c')).getByRole('menuitemcheckbox', { name: 'Curseur' }).click();
+	await expect(cardLocator(page, 'c').getByRole('slider', { name: 'Curseur de c' })).toBeVisible();
+	await page.reload();
+	await expect(cardLocator(page, 'c').getByRole('slider', { name: 'Curseur de c' })).toBeVisible();
+
+	// Suite en escalier qui ne peut plus l'être (sa définition ne la cite plus) : retour
+	// au nuage. Passer en Explicite depuis l'escalier est refusé (elle se cite elle-même)
+	await calc(page, 'u(n+1) = u(n)/2 + 1');
+	await (await openOptions(page, 'u')).getByRole('menuitemradio', { name: 'Escalier' }).click();
+	await page.keyboard.press('Escape');
+	await retypeCard(page, 'u', 'n+1');
+	await page.keyboard.press('Enter');
+	await expect(
+		(await openOptions(page, 'u')).getByRole('menuitemradio', { name: 'Nuage' })
+	).toHaveAttribute('aria-checked', 'true');
 });

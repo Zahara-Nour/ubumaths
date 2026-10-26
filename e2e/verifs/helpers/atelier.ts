@@ -200,3 +200,30 @@ export async function typeInCard(page: Page, name: string, ...keys: string[]): P
 	}
 	await page.keyboard.press('Enter');
 }
+
+/** Le champ de la console en « Écriture mathématique » (MathLive) */
+export function mathConsole(page: Page): Locator {
+	return page.locator('math-field[aria-label="Calcul, définition ou commande"]');
+}
+
+/** Ouvre la fenêtre « Réglages » de la barre du haut */
+export async function openSettings(page: Page): Promise<Locator> {
+	await page.getByRole('button', { name: 'Réglages', exact: true }).click();
+	const dialog = page.getByRole('dialog', { name: 'Réglages de l’atelier' });
+	await expect(dialog).toBeVisible();
+	return dialog;
+}
+
+/** Choisit un réglage (bouton radio) puis ferme la fenêtre */
+export async function chooseSetting(page: Page, label: string): Promise<void> {
+	const dialog = await openSettings(page);
+	await dialog.getByRole('radio', { name: label }).click();
+	await expect(dialog.getByRole('radio', { name: label })).toBeChecked();
+	await page.keyboard.press('Escape');
+	await expect(dialog).toBeHidden();
+}
+
+/** Le LaTeX du champ mathématique */
+export async function mathValue(field: Locator): Promise<string> {
+	return field.evaluate((element) => (element as HTMLElement & { value: string }).value);
+}

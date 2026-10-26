@@ -89,3 +89,72 @@ test('#1405 — sin(x)/x dézoomé : aucune asymptote verticale', async ({ page 
 	await plotZoomedOut(page, '\\frac{\\sin(x)}{x}');
 	expect(await settledVerticalCount(page)).toBe(0);
 });
+
+/** Les lectures dessinées depuis la console : le texte de leurs deux étiquettes (« 2 4 ») */
+async function consoleReadings(page: Page): Promise<string[]> {
+	return page
+		.locator('.image-readings g[data-source="console"]')
+		.evaluateAll((groups) =>
+			groups.map((group) =>
+				[...group.querySelectorAll('text')]
+					.map((label) => (label.textContent ?? '').trim().replace('−', '-'))
+					.join(' ')
+			)
+		);
+}
+
+/** Les graduations de l'axe des x, pour voir si le graphe a bougé */
+async function xTicks(page: Page): Promise<string[]> {
+	return page.locator('.x-axis-ticks .axis-label').allTextContents();
+}
+
+test('lecture graphique — losange glissé ou au clavier, lectures de la console, décocher', async ({
+	page
+}) => {
+	await calc(page, 'f(x) = x^2');
+	await page.getByRole('button', { name: 'Options de f', exact: true }).click();
+	await page.getByRole('menuitemcheckbox', { name: 'Lecture graphique' }).click();
+	await page.keyboard.press('Escape');
+	const handle = page.getByRole('slider', { name: 'Lecture graphique de f' });
+	await expect(handle).toBeVisible();
+	await expect(handle).toHaveAttribute('aria-valuetext', 'Lecture de f en x = 0 : f(0) = 0');
+
+	// Glissé à la souris : le graphe ne bouge pas, la lecture suit, aimantée aux demis
+	await setConsole(page, false);
+	const ticks = await xTicks(page);
+	const box = await handle.boundingBox();
+	if (box === null) throw new Error('losange introuvable');
+	await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+	await page.mouse.down();
+	await page.mouse.move(box.x + box.width / 2 + 97, box.y + box.height / 2, { steps: 8 });
+	await page.mouse.up();
+	const dragged = Number(await handle.getAttribute('aria-valuenow'));
+	expect(dragged).toBeGreaterThan(0);
+	expect(dragged * 2).toBe(Math.round(dragged * 2));
+	expect(await xTicks(page)).toEqual(ticks);
+	await expect(page.locator('.image-readings g[data-source="curseur"]')).toHaveCount(1);
+
+	// Au clavier : une flèche avance d'un pas de la sous-grille (0,5)
+	await handle.focus();
+	await page.keyboard.press('ArrowRight');
+	await expect(handle).toHaveAttribute('aria-valuenow', String(dragged + 0.5));
+
+	// f(2) dans la console : pointillés de 2 à 4, qui restent
+	await calc(page, 'f(2)');
+	await expect.poll(() => consoleReadings(page)).toEqual(['2 4']);
+	// f(-1), f(3), f(5) : seules les 3 dernières restent
+	for (const input of ['f(-1)', 'f(3)', 'f(5)']) await calc(page, input);
+	await expect.poll(() => consoleReadings(page)).toEqual(['-1 1', '3 9', '5 25']);
+
+	// f(x) = √x et f(-1) : rien en −1 (f(3) et f(5) se relisent sur la nouvelle courbe)
+	await calc(page, 'f(x) = sqrt(x)');
+	await calc(page, 'f(-1)');
+	await expect.poll(() => consoleReadings(page)).toEqual(['3 ≈ 1,73', '5 ≈ 2,24']);
+
+	// Décocher l'option : tout disparaît, losange compris
+	await page.getByRole('button', { name: 'Options de f', exact: true }).click();
+	await page.getByRole('menuitemcheckbox', { name: 'Lecture graphique' }).click();
+	await page.keyboard.press('Escape');
+	await expect(handle).toHaveCount(0);
+	await expect(page.locator('.image-readings g')).toHaveCount(0);
+});

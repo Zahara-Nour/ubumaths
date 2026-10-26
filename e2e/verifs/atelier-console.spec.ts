@@ -6,10 +6,14 @@ import {
 	cardLocator,
 	focusCardField,
 	cards,
+	chooseSetting,
 	expectLatex,
 	hasSteps,
+	mathConsole,
+	mathValue,
 	normalizeLatex,
 	openAtelier,
+	openSettings,
 	steps,
 	stepsAs,
 	typeInCard,
@@ -40,28 +44,6 @@ function historyLines(page: Page): Locator {
 	return page.locator('ol.historique > li');
 }
 
-/** Le champ de la console en « Écriture mathématique » (MathLive) */
-function mathConsole(page: Page): Locator {
-	return page.locator('math-field[aria-label="Calcul, définition ou commande"]');
-}
-
-/** Ouvre la fenêtre « Réglages » de la barre du haut */
-async function openSettings(page: Page): Promise<Locator> {
-	await page.getByRole('button', { name: 'Réglages', exact: true }).click();
-	const dialog = page.getByRole('dialog', { name: 'Réglages de l’atelier' });
-	await expect(dialog).toBeVisible();
-	return dialog;
-}
-
-/** Choisit un réglage (bouton radio) puis ferme la fenêtre */
-async function chooseSetting(page: Page, label: string): Promise<void> {
-	const dialog = await openSettings(page);
-	await dialog.getByRole('radio', { name: label }).click();
-	await expect(dialog.getByRole('radio', { name: label })).toBeChecked();
-	await page.keyboard.press('Escape');
-	await expect(dialog).toBeHidden();
-}
-
 /** Tape une ligne au vrai clavier dans le champ mathématique, Entrée, et rend sa ligne */
 async function calcMath(page: Page, keys: string): Promise<Locator> {
 	const before = await historyLines(page).count();
@@ -83,11 +65,6 @@ async function typeMath(page: Page, keys: string): Promise<void> {
 		await page.keyboard.type(keys);
 		expect(await mathValue(field)).not.toBe('');
 	}).toPass();
-}
-
-/** Le LaTeX du champ mathématique */
-async function mathValue(field: Locator): Promise<string> {
-	return field.evaluate((element) => (element as HTMLElement & { value: string }).value);
 }
 
 /** Ajoute puis efface un chiffre au bout du champ d'une carte, puis Entrée */
