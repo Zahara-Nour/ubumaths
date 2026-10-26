@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1832 et son `db:migrate`._
+_Mis à jour le 2026-10-26, après #1832 et son `db:migrate` ; page à cocher C publiée._
 
 - **État** : 68 modèles CP publiés. **Lot C** (construire, § 4 quindecies) : `deploy:prod` v0.51.0 fait (blocs à construire en prod) ; 4 brouillons créés en prod (`ded05f7c`, `541b3209`, `8f587948`, `7be00c4a`) ; #1832 mergée, `db:migrate` joué, vérifié : chacun sur le nœud de son point, un tag (CP-002, 044, 045, 071), brouillon, `updated_at` préservé.
-- **Prochaine action** : page à cocher du lot C (un exemple par variation, tiré par le vrai générateur), relecture par David, puis publication des 4 (`publishTemplates`, lancé par David).
-- **En attente de David** : vérification manuelle #1702 ; relecture de la page à cocher du lot C.
+- **Prochaine action** : page à cocher du lot C publiée (https://claude.ai/artifact/Ve9QRxVDiqSuYnbg3D12gp, collection `verdicts`) : relecture par David, puis publication des 4 (`publishTemplates`, lancé par David).
+- **En attente de David** : vérification manuelle #1702 ; relecture de la page à cocher du lot C (lien ci-dessus).
 - **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; prénom dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (variable) ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; **montants en `$n~\unit{€}$`, jamais « : » juste après** ; **écriture en prod refusée par le classifieur du mode auto : David la lance (`!`)** ; **`gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le run** ; migration qui change l'arbre ou les points → `LATER` + copies figées ; `create-questions` vise `.env` (prod) : pour la base locale, `set -a; . ./.env.local; set +a` avant ; 4 brouillons du lot C en base LOCALE (essais).
 - **Worktree / branche** : aucun (retiré après #1832).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -274,3 +274,4 @@ David suit mes recommandations (« je suis tes recos »). Les blocs à construir
 - 2026-10-26 : #1830 mergée (fichiers du lot C ; CI verte ; revue : aucune, contenu) ; modèles joués dans l'aperçu admin en base locale, juste et faux, pour les 4.
 - 2026-10-26 : `deploy:prod` v0.51.0 (lancé par David) ; 4 brouillons C créés en prod (`create-questions --publier`, lancé par David : `ded05f7c`, `541b3209`, `8f587948`, `7be00c4a`), vérifiés : brouillon, sans nœud ni tag, niveaux 1, 6, 7 et 2 ; migration `20261026210000` nœud + tag et test, rouge (2/9) puis vert (9/9) ; #1832.
 - 2026-10-26 : #1832 mergée (CI verte au 2e essai : un job navigateur annulé ; audit sécurité sans bloquant) ; `db:migrate` joué depuis le dépôt principal, vérifié en prod : 4 modèles C sur leur sous-notion, 1 tag chacun, en brouillon, `updated_at` inchangé.
+- 2026-10-26 : page à cocher du lot C publiée : https://claude.ai/artifact/Ve9QRxVDiqSuYnbg3D12gp (collection `verdicts`) ; un exemple par variation (11), tiré par le vrai générateur ; réserve, plan vide et construction juste dessinés par les scènes `collection` / `monnaie` (script `page-c.mts` du scratchpad), relue à 390 px.
