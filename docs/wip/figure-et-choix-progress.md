@@ -8,30 +8,28 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1836._
+_Mis à jour le 2026-10-26, après #1840._
 
-- **État** : lots 1 (#1816, #1822) et 2 (#1826, figure de travail : bloc ```figure-de-travail, jamais
-  notée via `questions/graded-part.ts`, traits gris, ligne « Ta figure de travail » dans la correction,
-  carte de l'éditeur, version publique `workFigure`) mergés, plus #1833 (éditeur : cases de blocs omises de
-  `blanks[]` remises à leur rang après une modification de l'énoncé, jamais sur énoncé à variables) et #1836
-  (« Remplissez les blancs » seulement s'il y a une case à écrire). Rien en prod.
-- **Prochaine action** : lot 3, CP-058 réécrit (figure de travail + case choix oui / non), essai par David,
-  puis publication (§ 2.5).
-- **En attente de David** : fin de l'essai du lot 2 (étape correction, « Afficher correction si faux » →
-  ligne « Ta figure de travail ») sur 5179 (worktree FIGÉ) ; éditeur ok, aperçu ok (essai du 2026-10-26).
-  (Plus de question « éditeur du prof » : `/dashboard/teacher/contenu/templates` = chapitres de cours ;
-  les modèles de questions ne s'écrivent que dans `QuestionTemplateForm`, admin.)
+- **État** : lots 1 (#1816, #1822), 2 (#1826, figure de travail) et 3 (#1840, CP-058 = figure de travail +
+  case choix Oui / Non, § 2.10) mergés, plus #1833 et #1836. Rien en prod. CP-058 pas encore en base.
+- **Prochaine action** : après le `deploy:prod` des lots 1-3 (décidé par David) : David publie CP-058
+  (`create-questions --dir scripts/questions/cp-figure --publier`), puis lot 4, migration des 178 QCM
+  (question d'accès d'abord).
+- **En attente de David** : essai du lot 2 (correction, « Ta figure de travail ») sur 5179 (worktree
+  `../ubumaths-wt-figure-et-choix`, FIGÉ) ; essai de CP-058 sur 5180 (`/dev/carte-question`, worktree
+  `../ubumaths-wt-figure-et-choix-cp058`, FIGÉ) ; libellé « Tu peux tracer… » et ordre fixe Oui / Non à confirmer.
 - **Pièges en cours** : migration des QCM seulement après le `deploy:prod` des lots 1-2 ; retrait de la
-  contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL ;
-  une seule session par worktree. Restes connus : modèle ouvert sans modification, ou à variables, qui omet
-  une case de bloc → cartes encore décalées (le générateur, lui, est juste) ; libellé brut des choix dans l'éditeur
-  de tests ; espaces de bord d'un choix rognés.
-- **Worktree / branche** : `../ubumaths-wt-figure-et-choix` ; prochaine branche à créer depuis `origin/main`.
+  contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; une seule session par worktree.
+  Restes connus : cartes de l'éditeur décalées si `blanks[]` omet une case de bloc (modèle à variables) ;
+  libellé brut des choix dans l'éditeur de tests ; espaces de bord d'un choix rognés.
+- **Worktree / branche** : deux worktrees figés par les essais, à retirer une fois les essais finis.
 
 ---
 
 ## Historique
 
+- 2026-10-26 — **#1840 mergée** (lot 3) : CP-058 réécrit, 10 specs, simulation verte ; démo
+  `/dev/carte-question` alignée ; fait depuis un worktree frère (le premier figé par l'essai du lot 2).
 - 2026-10-26 — **#1836 mergée** : vu par David à l'essai du lot 2, « Remplissez les blancs avec vos
   réponses » sous un choix seul. `FillBlanksInput` ne l'affiche plus que s'il y a une case à écrire (ni
   choix, ni figure, ni collection/monnaie à construire) ; règle ajoutée à `docs/systeme/questions.md`.
