@@ -2,13 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1841._
+_Mis à jour le 2026-10-26, clôture après #1841._
 
-- **État** : L1 à L6 du § 5 (#1828, #1831, #1834), PR D `ln(xy) − ln(xy)` → 0 (#1837) et PR E Q14, degré des seules inconnues `x + √2`, `x + 1 + √2` (#1841, revue Sonnet sans finding) MERGÉES, pas en prod.
-- **Prochaine action** : clôture du chantier — verser le durable dans `docs/systeme/` (tidy-spec et README mathAST déjà à jour pour Q14), restes dans les Points ouverts du README mathAST, journal archivé.
+- **État** : CLOS. L1 à L6 (#1828, #1831, #1834), PR D (#1837), PR E Q14 (#1841) mergées, pas en prod. Durable dans `docs/systeme/mathast/tidy-spec.md`, `docs/systeme/atelier.md`, `docs/systeme/atelier-syntaxe.md` ; restes dans les Points ouverts du README mathAST (« Laissés à la clôture de tidy-conditions »).
+- **Prochaine action** : aucune.
 - **En attente de David** : vérifs #1807 et #1811 au téléphone (sans bloquer).
-- **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` sans condition écrivable ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2 ; `exp(10000000 ln 2)` sans plafond ; restants PR D (§ PR D) : `.factoriser ln(xy) − ln(xy)`, `ln x + ln y − ln(xy)`, `ln(6x) − ln(2x)`. Q14 : `√2 − √3 − 1` s'écrit désormais `√2 − 1 − √3` (rationnel d'abord entre constantes).
-- **Worktree / branche** : worktree retiré, `fix/tidy-degre-lettres` mergée ; la clôture est 100 % doc, sur `main`.
+- **Worktree / branche** : aucun.
 
 ## Contexte
 
@@ -210,3 +209,5 @@ Sondes (Atelier `runInput`, `normalize`, tests jetables supprimés).
 - Revue Sonnet (~55 entrées, main contre branche, idempotence) : aucun finding ; `x/π + 1` (était `1 + x/π`, degré −1 compté à tort), `x² + 2 − √2` (était `x² − √2 + 2`) ; visible : `√2 − √3 − 1` → `√2 − 1 − √3`. CI : garde de doc → README mathAST mis à jour aussi.
 
 ## Historique
+
+- 2026-10-26 : chantier clos, journal archivé.

@@ -1701,6 +1701,24 @@ Doublons qui restent, chacun pour un autre besoin :
   L6 ; `e^{2 ln x}` garde son écriture) ; `e^{ln a}` pour un nombre `a ≤ 0`
   (`e^{ln(−3)}` donnait −3, `e^{ln(−1/2)}` était équivalent à −1/2) n'est plus réduit, ni par
   `normalize` ni par le moteur pédagogique (`isNonPositiveConstant`).
+- Laissés à la clôture de tidy-conditions (2026-10-26, journal archivé
+  `docs/archive/wip/tidy-conditions-progress.md`), aucune valeur fausse :
+  - conditions : `cot`, `sec`, `csc`, `arccosh` n'ont pas de condition écrivable (la
+    simplification n'a pas lieu) ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2
+    (`domain/compute`, d'où `avoidsPeriodicPoints` limité à `cos u` / `sin u` seuls) ;
+    libellés bruts (« pour x^2y > 0 », « 2xy > 0 ») et conditions redondantes (« xy > 0 et
+    x > 0 et y > 0 », « x/y > 0 et y ≠ 0 ») ; condition écrite sur le facteur
+    (`ln(ln(x) y)` → « pour ln(x) > 0 et y > 0 », sans `avec` proposé) ; `ln(xy) − ln y` sans
+    bouton ; `engineAlternative` ne vérifie pas chaque étape sur l'ensemble annoncé quand le
+    domaine rétrécit ;
+  - différences de ln : `.factoriser ln(xy) − ln(xy)` (bouton `ln x + ln y − (ln x + ln y)`) ;
+    `.simplifier ln x + ln y − ln(xy)` (bouton « pour xy > 0 » non réduit) ; `.simplifier
+ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
+  - `tidy` : deux termes gardés sous une barre ne se regroupent pas (`1/(1/x) + 1/(1/x)`) ;
+  - `normalize` : `e^{k ln a}` plafonné à |k| ≤ 1000, mais `exp(10000000 ln 2)` n'a pas de
+    plafond (antérieur) ; `e^{ln 1 + x}`, `e^{2 ln e}`, `e^{2 ln √2}` gardent leur écriture ;
+    `2^{1/3}` et `∛2` ont des formes normales différentes ;
+  - Q14 : entre constantes, le rationnel d'abord, donc `√2 − √3 − 1` s'écrit `√2 − 1 − √3`.
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
   une valeur fausse :
   - valeurs remarquables (`cos(π/3) → 1/2`) dans `réduire`, avec étape et selon le niveau (S4) :

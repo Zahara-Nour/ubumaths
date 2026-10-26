@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, relevé et état des lieux faits._
+_Mis à jour le 2026-10-26, phase 0 du lot « corrections » validée par David (§ 6)._
 
-- **État** : relevé prod (111 points, 26 avec modèle, 85 sans ; 110 modèles `grades ∋ 6`, tous publiés) ; existant vérifié contre les bornes (§ 2) ; points sans modèle classés (§ 3).
-- **Prochaine action** : réponses de David aux questions du § 5, puis lot de corrections de l'existant et premier lot de texte (phase 0). ⚠️ Les verdicts de la passe du 2026-10-20 (`sixieme.csv`) font foi (encadré du § 2).
-- **En attente de David** : § 5 (questions 1 à 8).
-- **Pièges en cours** : ceux du § 9 de la démarche ; QCM en réécriture (case « choix », chantier `figure-et-choix`, rien en prod) → demander la forme au premier lot qui en a besoin ; géométrie en refonte (`figure-et-choix`).
-- **Worktree / branche** : aucun (journal sur `main`).
+- **État** : relevé et état des lieux faits (§ 1-3) ; la passe arbre-notions du 2026-10-20 fait foi (encadré § 2) ; phase 0 du lot « corrections » **validée** (§ 6, destinations dans `questions-6/destinations-42.csv`).
+- **Prochaine action** : PR 1 (contenus) dans un worktree `../ubumaths-wt-questions-6` : instantané prod (md5) puis script de lot. ⚠️ `create-questions --mettre-a-jour` ne touche **jamais un modèle publié** (ils le sont tous) → contenu par **migration générée**, comme `docs/wip/questions/lot-corrections-cp.py` (`scissions_outils.generer`, instantané `etat-prod-…`) ; lire le § 7 de la démarche et ce script avant d'écrire. Puis PR 2 (niveaux, nœuds, tags), gabarit `20261026210000_questions_cp_c_rangement_tags.sql`.
+- **En attente de David** : rien pour le lot « corrections » ; § 5 questions 6-8 (outils, « ordonner », groupe D) : recos données le 2026-10-26, pas encore tranchées.
+- **Pièges en cours** : un tag exige le modèle sur le nœud du point (17 déplacements) ; inclusion stricte ; QCM en réécriture (`figure-et-choix`) ; géométrie en refonte ; écriture en prod lancée par David (`!`).
+- **Worktree / branche** : aucun encore (journal sur `main`).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -153,7 +153,7 @@ Coquille : ae7a332e finit par « est $?.$ » (point dans la formule).
 7. **Ordonner** (110, 134, 204) : réponse en une case « a < b < c », ou attendre « étiquettes à ranger » ?
 8. **Groupe D** laissé sans modèle ?
 
-## 6. Lot « corrections » : phase 0 (proposée le 2026-10-26, en attente de David)
+## 6. Lot « corrections » : phase 0 (validée par David le 2026-10-26)
 
 Règle validée par David (2026-10-26) : un modèle HORS_PROGRAMME prend le niveau du point qui le décrit
 (niveau suivant : `grades` remplacé ; cours moyen : niveau ajouté, 6 gardé). Destinations vérifiées
@@ -167,5 +167,11 @@ Usages en prod (2026-10-26) : 0 carte FSRS, 0 cahier de texte, 0 question d'éva
   3 décimales) ; b79d4cb7 (garder m³ / dm³ / cm³, 5 variations) ; 24f7a007 (retirer −100 %) ;
   82748db8 (variation en double) ; ae7a332e (coquille) ; 3a7a5711 archivé (doublon de 059e3fc9).
 - **PR 2, migration** : niveaux, nœuds (déplacements R2) et tags des 37 modèles TAG / MODIFIER.
-- Cas à trancher : voir le message à David du 2026-10-26 (échelle, coefficient sur nombres nus, trous
-  à facteur décimal, 5d515eb1).
+- **Décisions de David (2026-10-26, « je valide »)** :
+  - échelle 1/n (24a8e2b1, c1a54695) → 5e, déplacés sur « coefficient de proportionnalité », tag 5-088 ;
+  - coefficient sur nombres nus (8a3191ce, ae7a332e) → `grades` 5, **sans tag** (habillage en grandeurs au chantier de la 5e) ;
+  - trous à facteur décimal (6632e5c2, 59ac62a2, 99c4ab73, f9a3333d, def797c6, 9cc8cd82, c5607804) → 5-126, nœud « ax = b » (comme m-transversal-2) ;
+  - 5d515eb1 → `grades` 4, **sans tag** ;
+  - le reste comme `destinations-42.csv` (cours moyen : niveau ajouté, 6 gardé ; 5 modèles restent en 6e sans point) ;
+  - question d'accès : élèves de 5e / 4e / 3e / CM voient ces modèles ; élèves de 6e perdent les 32 qui partent au-dessus ; les tags restent lisibles par tout connecté, aucune règle ne change.
+- Bilan : 34 tags posés, niveaux changés sur 37 modèles, 17 déplacements de nœud.
