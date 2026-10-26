@@ -496,7 +496,7 @@ Dans Chiphre, **la pataphysique est l'art de chercher en se trompant**. C'est-à
 
 - **Rôle UI** : Onboarding, tutoriels initiaux, didacticiel.
 - **Tempérament** : Militaire pataud, droit, naïf, incorruptible (donc systématiquement trahi par Ubu).
-- **Apparence** : Uniforme polonais bouffant, moustache.
+- **Apparence** 🟡 (décision de David, 2026-10-26) : grand, carré, torse en tonneau, silhouette rectangulaire ; grandes mains, grands pieds ; mâchoire carrée, yeux ronds et sérieux, grosse moustache en guidon ; au garde-à-vous, salut trop appuyé. Uniforme polonais aux couleurs de la livrée d'Ubu : konfederatka pourpre à insigne doré, tunique verte à brandebourgs et épaulettes dorés, ceinture pourpre, culotte blanche bouffante, hautes bottes, sabre. Prompt d'illustration : Section XI, « Illustrations ».
 - **Tics de langage** : Phrases courtes, vocabulaire militaire. « Galopin ! Au rapport ! », « Marche ! Gauche, droite, gauche ! »
 - **Motivation** : Servir. Naïvement.
 - **Quand il intervient** : premier login, complétion de profil, tutoriels d'utilisation des features.
@@ -1989,6 +1989,24 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines, deep crimson for the dress, white for the lace collar, marigold yellow for the tiara, the trim and the chatelaine, emerald green only for a small detail (the fan or a ribbon).
 
 Composition: Mère Ubu standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — Capitaine Bordure 🟡
+
+Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et les images de référence de Père Ubu et de Mère Ubu).
+
+```text
+Draw Captain Bordure, the loyal soldier from Alfred Jarry's play "Ubu Roi" (1896), as a full-body character portrait in exactly the same drawing style as the attached Père Ubu and Mère Ubu.
+
+Character: a tall, square, barrel-chested soldier with a blocky rectangular silhouette, very different from round Père Ubu; big hands and big feet; standing stiffly at attention and giving an over-eager military salute; a square jaw, round earnest eyes, a huge handlebar mustache. He is clumsy, honest, naive and incorruptible, always betrayed by Ubu without noticing: a lovable, slightly ridiculous soldier. Funny, never scary, for students aged 11 to 17.
+
+Clothing: a Polish army uniform: a crimson konfederatka cap (square-topped Polish cap) with a small golden badge; an emerald green tunic with golden frogging across the chest and golden epaulettes; a crimson sash at the waist; puffy white breeches tucked into tall navy ink boots; a sabre at his side.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and boots, emerald green for the tunic, white for the breeches, deep crimson for the cap and the sash, marigold yellow for the frogging, epaulettes and badge.
+
+Composition: Bordure standing at attention, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
 ```
 
 ---

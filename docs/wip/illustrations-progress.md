@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après les prompts de Père Ubu et Mère Ubu (pas de PR : chantier 100 % doc pour l'instant)._
+_Mis à jour le 2026-10-26, après le prompt du Capitaine Bordure (pas de PR : chantier 100 % doc pour l'instant)._
 
-- **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu et Mère Ubu validés et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
-- **Prochaine action** : ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` (David doit les fournir) ; puis prompts des autres personnages (Bordure, Bougrelas, Conscience, Czar, gouverneurs), un par un, chacun validé par David.
-- **En attente de David** : les deux images de référence · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
+- **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu et du Capitaine Bordure validés et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
+- **Prochaine action** : ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` (David doit les fournir) ; puis prompts des autres personnages (Bougrelas, Conscience, Czar, gouverneurs), un par un, chacun validé par David.
+- **En attente de David** : les trois images de référence · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
 - **Pièges en cours** : Ubu sans chapeau pointu ni longue robe blanche (aucune ressemblance avec une cagoule) ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte. Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 
