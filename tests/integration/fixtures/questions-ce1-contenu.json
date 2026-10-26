@@ -1,0 +1,934 @@
+{
+	"modeles": [
+		{
+			"id": "9d709f5b-e079-4316-a4c7-fe51ae73544c",
+			"noeud": ["Nombres et calculs", "Entiers : multiplication", "distributivité"],
+			"grades": ["CE1"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "CE1",
+					"code": "CE1-035"
+				}
+			],
+			"avant": {
+				"title": "Utiliser la distributivité",
+				"description": "Multiplication d'un nombre à $1$ chiffre par $12$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "expression1",
+								"expression": "12*a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} 12 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}  \t\t\t\t\t\t\t\t&= 10 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} + 2 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\\\ \t\t\t\t\t\t\t\t&= {{eval:10*a}} + {{eval:2*a}} \\\\ \t\t\t\t\t\t\t\t&= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["84"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "12 × 7 = 84",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["108"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9"
+						},
+						"description": "Borne : 12 × 9 = 108",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["77"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "Erreur de signe dans la distributivité : 77",
+						"variationIndex": 0
+					}
+				]
+			},
+			"apres": {
+				"title": "Utiliser la distributivité",
+				"description": "Multiplication d'un nombre de $11$ à $19$ par un nombre à $1$ chiffre",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "u",
+								"expression": "1..9"
+							},
+							{
+								"name": "n",
+								"expression": "eval:10+u"
+							},
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "expression1",
+								"expression": "n*a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} {{n}} \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} &= 10 \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} + {{u}} \\times \\bold{\\textcolor{{{color:primary.0}}}{{{a}}}} \\\\ &= {{eval:10*a}} + {{eval:u*a}} \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["91"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"u": "3",
+							"n": "13",
+							"a": "7"
+						},
+						"description": "13 × 7 = 91",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["84"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"u": "2",
+							"n": "12",
+							"a": "7"
+						},
+						"description": "12 × 7 = 84",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["22"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"u": "1",
+							"n": "11",
+							"a": "2"
+						},
+						"description": "borne : 11 × 2 = 22",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["171"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"u": "9",
+							"n": "19",
+							"a": "9"
+						},
+						"description": "borne : 19 × 9 = 171",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["73"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"u": "3",
+							"n": "13",
+							"a": "7"
+						},
+						"description": "Erreur : unités non multipliées (70 + 3)",
+						"variationIndex": 0
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Entiers",
+				"domain": "Multiplier",
+				"subdomain": "Distributivité",
+				"level": 1,
+				"status": "published"
+			},
+			"neufs": []
+		},
+		{
+			"id": "c73734a8-aac1-4ce7-9aae-d568ce8752c5",
+			"noeud": ["Arithmétique", "Divisibilité", "pair ou impair"],
+			"grades": ["CE1"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "CE1",
+					"code": "CE1-025"
+				}
+			],
+			"avant": {
+				"title": "Parité d'un nombre entier",
+				"description": null,
+				"variations": [
+					{
+						"statement": "",
+						"variables": [
+							{
+								"name": "expression",
+								"expression": "eval:2*a"
+							}
+						],
+						"correction": {
+							"steps": ["{{expression}} est {{solution}} car il se termine par 0, 2, 4, 6, ou 8."]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "",
+						"variables": [
+							{
+								"name": "expression",
+								"expression": "eval:2*a+1"
+							}
+						],
+						"correction": {
+							"steps": ["{{expression}} est {{solution}} car il se termine par 1, 3, 5, 7, ou 9."]
+						},
+						"correctChoiceIndex": ["1"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "pair"
+						},
+						{
+							"content": "impair"
+						}
+					],
+					"statement": "Quelle est la parité de ce nombre ?\n\n$${{expression}}$$",
+					"variables": [
+						{
+							"name": "a",
+							"expression": "0..49"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "23"
+						},
+						"description": "46 est pair",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "23"
+						},
+						"description": "46 déclaré impair",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0"
+						},
+						"description": "0 est pair (borne)",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "23"
+						},
+						"description": "47 est impair",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "23"
+						},
+						"description": "47 déclaré pair",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "49"
+						},
+						"description": "99 est impair (borne haute)",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					}
+				]
+			},
+			"apres": {
+				"title": "Parité d'un nombre entier",
+				"description": null,
+				"variations": [
+					{
+						"statement": "",
+						"variables": [
+							{
+								"name": "expression",
+								"expression": "eval:2*a"
+							}
+						],
+						"correction": {
+							"steps": ["{{expression}} est {{solution}} car il se termine par 0, 2, 4, 6, ou 8."]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "",
+						"variables": [
+							{
+								"name": "expression",
+								"expression": "eval:2*a+1"
+							}
+						],
+						"correction": {
+							"steps": ["{{expression}} est {{solution}} car il se termine par 1, 3, 5, 7, ou 9."]
+						},
+						"correctChoiceIndex": ["1"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "pair"
+						},
+						{
+							"content": "impair"
+						}
+					],
+					"statement": "Quelle est la parité de ce nombre ?\n\n$${{expression}}$$",
+					"variables": [
+						{
+							"name": "a",
+							"expression": "0..499"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "23"
+						},
+						"description": "46 est pair",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "23"
+						},
+						"description": "46 déclaré impair",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0"
+						},
+						"description": "0 est pair (borne)",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "179"
+						},
+						"description": "358 est pair",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "499"
+						},
+						"description": "998 est pair (borne haute)",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "23"
+						},
+						"description": "47 est impair",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "23"
+						},
+						"description": "47 déclaré pair",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "360"
+						},
+						"description": "721 est impair",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "360"
+						},
+						"description": "721 déclaré pair",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "499"
+						},
+						"description": "999 est impair (borne haute)",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Entiers",
+				"domain": "Apprivoiser",
+				"subdomain": "Ecriture",
+				"level": 3,
+				"status": "published"
+			},
+			"neufs": []
+		},
+		{
+			"id": "c96ecf4d-caa9-4e5a-946f-c7ee0ecc352e",
+			"noeud": ["Nombres et calculs", "Entiers : addition et soustraction", "double et moitié"],
+			"grades": ["CE1"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "CE1",
+					"code": "CE1-034"
+				}
+			],
+			"avant": {
+				"title": "Trouver la moitié",
+				"description": "Nombres pairs de $1$ à $30$, $40$, $50$ et $100$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a}}"
+							}
+						],
+						"statement": "Quelle est la moitié de ${{b}}$ ?\n\nLa moitié de ${{b}}$ est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9|11..15|20|25|50"
+							},
+							{
+								"name": "b",
+								"expression": "eval:2*a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"La moitié de ${{eval:2*a}}$ est {{solution:html}} car ${{a}} + {{a}}={{eval:2*a}}$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["12"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "12",
+							"b": "24"
+						},
+						"description": "moitié de 24 → 12",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["50"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "50",
+							"b": "100"
+						},
+						"description": "moitié de 100 → 50",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["20"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "25",
+							"b": "50"
+						},
+						"description": "moitié de 50 : 20 refusé",
+						"variationIndex": 0
+					}
+				]
+			},
+			"apres": {
+				"title": "Trouver la moitié",
+				"description": "Nombres pairs jusqu'à $700$, par décomposition",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:n/2}}"
+							}
+						],
+						"statement": "Quelle est la moitié de ${{n}}$ ?\n\nLa moitié de ${{n}}$ est $?$.",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..4"
+							},
+							{
+								"name": "j",
+								"expression": "1..4"
+							},
+							{
+								"name": "g",
+								"expression": "eval:20*k"
+							},
+							{
+								"name": "p",
+								"expression": "eval:2*j"
+							},
+							{
+								"name": "n",
+								"expression": "eval:g+p"
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{n}} = {{g}} + {{p}}$",
+								"La moitié de ${{g}}$ est ${{eval:g/2}}$ ; la moitié de ${{p}}$ est ${{eval:p/2}}$.",
+								"${{eval:g/2}} + {{eval:p/2}} = {{eval:n/2}}$, donc la moitié de ${{n}}$ est {{solution:html}}."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:n/2}}"
+							}
+						],
+						"statement": "Quelle est la moitié de ${{n}}$ ?\n\nLa moitié de ${{n}}$ est $?$.",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "0..4"
+							},
+							{
+								"name": "j",
+								"expression": "1..4"
+							},
+							{
+								"name": "g",
+								"expression": "eval:20*k+10"
+							},
+							{
+								"name": "p",
+								"expression": "eval:2*j"
+							},
+							{
+								"name": "n",
+								"expression": "eval:g+p"
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{n}} = {{g}} + {{p}}$",
+								"La moitié de ${{g}}$ est ${{eval:g/2}}$ ; la moitié de ${{p}}$ est ${{eval:p/2}}$.",
+								"${{eval:g/2}} + {{eval:p/2}} = {{eval:n/2}}$, donc la moitié de ${{n}}$ est {{solution:html}}."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:n/2}}"
+							}
+						],
+						"statement": "Quelle est la moitié de ${{n}}$ ?\n\nLa moitié de ${{n}}$ est $?$.",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "2..6"
+							},
+							{
+								"name": "d",
+								"expression": "1..9"
+							},
+							{
+								"name": "j",
+								"expression": "0..4"
+							},
+							{
+								"name": "g",
+								"expression": "eval:100*c"
+							},
+							{
+								"name": "p",
+								"expression": "eval:10*d+2*j"
+							},
+							{
+								"name": "n",
+								"expression": "eval:g+p"
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{n}} = {{g}} + {{p}}$",
+								"La moitié de ${{g}}$ est ${{eval:g/2}}$ ; la moitié de ${{p}}$ est ${{eval:p/2}}$.",
+								"${{eval:g/2}} + {{eval:p/2}} = {{eval:n/2}}$, donc la moitié de ${{n}}$ est {{solution:html}}."
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["23"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "2",
+							"j": "3",
+							"g": "40",
+							"p": "6",
+							"n": "46"
+						},
+						"description": "moitié de 46 → 23",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["11"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "1",
+							"j": "1",
+							"g": "20",
+							"p": "2",
+							"n": "22"
+						},
+						"description": "borne : moitié de 22 → 11",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["44"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "4",
+							"j": "4",
+							"g": "80",
+							"p": "8",
+							"n": "88"
+						},
+						"description": "borne : moitié de 88 → 44",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["92"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "2",
+							"j": "3",
+							"g": "40",
+							"p": "6",
+							"n": "46"
+						},
+						"description": "Erreur : le double au lieu de la moitié",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["37"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "3",
+							"j": "2",
+							"g": "70",
+							"p": "4",
+							"n": "74"
+						},
+						"description": "moitié de 74 → 37",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["26"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "2",
+							"j": "1",
+							"g": "50",
+							"p": "2",
+							"n": "52"
+						},
+						"description": "moitié de 52 → 26",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "0",
+							"j": "1",
+							"g": "10",
+							"p": "2",
+							"n": "12"
+						},
+						"description": "borne : moitié de 12 → 6",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["49"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "4",
+							"j": "4",
+							"g": "90",
+							"p": "8",
+							"n": "98"
+						},
+						"description": "borne : moitié de 98 → 49",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["32"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"j": "2",
+							"g": "70",
+							"p": "4",
+							"n": "74"
+						},
+						"description": "Erreur : moitié chiffre par chiffre (74 → 32)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["148"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"j": "2",
+							"g": "70",
+							"p": "4",
+							"n": "74"
+						},
+						"description": "Erreur : le double au lieu de la moitié",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["235"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "4",
+							"d": "7",
+							"j": "0",
+							"g": "400",
+							"p": "70",
+							"n": "470"
+						},
+						"description": "moitié de 470 → 235",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["324"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "6",
+							"d": "4",
+							"j": "4",
+							"g": "600",
+							"p": "48",
+							"n": "648"
+						},
+						"description": "moitié de 648 → 324",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["105"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "2",
+							"d": "1",
+							"j": "0",
+							"g": "200",
+							"p": "10",
+							"n": "210"
+						},
+						"description": "borne : moitié de 210 → 105",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["349"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "6",
+							"d": "9",
+							"j": "4",
+							"g": "600",
+							"p": "98",
+							"n": "698"
+						},
+						"description": "borne : moitié de 698 → 349",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["230"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "4",
+							"d": "7",
+							"j": "0",
+							"g": "400",
+							"p": "70",
+							"n": "470"
+						},
+						"description": "Erreur : moitié chiffre par chiffre (470 → 230)",
+						"variationIndex": 2
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Entiers",
+				"domain": "Additionner",
+				"subdomain": "Double et moitié",
+				"level": 5,
+				"status": "published"
+			},
+			"neufs": []
+		}
+	]
+}

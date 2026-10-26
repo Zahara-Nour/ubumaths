@@ -8,10 +8,10 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1840._
+_Mis à jour le 2026-10-26, après #1842._
 
 - **État** : lots 1 (#1816, #1822), 2 (#1826, figure de travail) et 3 (#1840, CP-058 = figure de travail +
-  case choix Oui / Non, § 2.10) mergés, plus #1833 et #1836. Rien en prod. CP-058 pas encore en base.
+  case choix Oui / Non, § 2.10) mergés, plus #1833, #1836 et #1842 (restes). Rien en prod. CP-058 pas encore en base.
 - **Prochaine action** : après le `deploy:prod` des lots 1-3 (décidé par David) : David publie CP-058
   (`create-questions --dir scripts/questions/cp-figure --publier`), puis lot 4, migration des 178 QCM
   (question d'accès d'abord).
@@ -20,13 +20,19 @@ _Mis à jour le 2026-10-26, après #1840._
   `../ubumaths-wt-figure-et-choix-cp058`, FIGÉ) ; libellé « Tu peux tracer… » et ordre fixe Oui / Non à confirmer.
 - **Pièges en cours** : migration des QCM seulement après le `deploy:prod` des lots 1-2 ; retrait de la
   contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; une seule session par worktree.
-  Restes connus : cartes de l'éditeur décalées si `blanks[]` omet une case de bloc (modèle à variables) ;
-  libellé brut des choix dans l'éditeur de tests ; espaces de bord d'un choix rognés.
+  Restes connus : éditeur non réaligné sur un énoncé à `<<expr:…>>` ou à case portée par `{{if:}}`
+  (voulu, #1842).
 - **Worktree / branche** : deux worktrees figés par les essais, à retirer une fois les essais finis.
 
 ---
 
 ## Historique
+
+- 2026-10-26 — **#1842 mergée** (restes, phase 0 suivie) : `withBlockCases` réaligne un modèle à
+  variables quand l'énoncé brut compte comme le résolu (pas de variable dans un ```operation, mêmes
+  cases avec chaque `{{…}}` = `1`) — forme de CP-058 couverte ; `<<expr:…>>` jamais (format de réponse
+  `?/?`, constat de la revue sonnet). Choix rendus dans l'éditeur de tests. Espaces de bord : sondés,
+  non prouvés (seul un espace de tête disparaît du champ, sans effet) → laissés.
 
 - 2026-10-26 — **#1840 mergée** (lot 3) : CP-058 réécrit, 10 specs, simulation verte ; démo
   `/dev/carte-question` alignée ; fait depuis un worktree frère (le premier figé par l'essai du lot 2).

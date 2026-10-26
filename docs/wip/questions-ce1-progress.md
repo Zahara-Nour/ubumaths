@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, phase 0 du lot 0 validée, question d'accès tranchée._
+_Mis à jour le 2026-10-26, après #1843._
 
-- **État** : recos validées (§ 4 bis) ; phase 0 du lot 0 (corrections, § 5) **validée** par David, question d'accès **tranchée** (CE2 gagne 4 modèles ; CE1 perd ces 4 et `47f97c9f` ; aucune règle ne change). Rien d'écrit encore.
-- **Prochaine action** : dans le worktree, (1) instantané prod des 12 modèles (`docs/wip/questions/etat-prod-2026-10-26/`, comme `etat-prod-2026-10-24` : templates, md5, nodes, points, tags) ; (2) `docs/wip/questions/lot-corrections-ce1.py` (calqué sur `lot-corrections-cp.py`, `generer` de `scissions_outils`) → migration de contenu + fixture + test (calqués sur `20261025000000_questions_cp_contenu.sql`, `questions-cp-contenu.test.ts`) ; (3) migration rangement / tags / grades / statut à la main (calquée sur `20261025000100_questions_cp_rangement_tags.sql` et `20261026170000_questions_cp_formes_et_niveaux.sql`, avec leurs tests) ; tests rouges sans migration puis verts ; `security-auditor` ; PR ; `db:migrate`.
+- **État** : lot 0 (corrections) MERGÉ (#1843) et migrations JOUÉES en prod (`db:migrate`), vérifié : 3 modèles réécrits (md5 = contenu de la migration), décompositions sur « écritures » + CE1-005, CE1-024 retiré, `47f97c9f` en brouillon, 4 modèles en CE2. Vérification manuelle notée (`verifications-manuelles.md`, #1843).
+- **Prochaine action** : phase 0 du lot 1 (calcul mental : 029, 102, 084, 032, 083, 024), comportements en français, à faire valider avant d'écrire ; nouveau worktree.
 - **En attente de David** : rien.
-- **Pièges en cours** : modèles tous PUBLIÉS → `create-questions --mettre-a-jour` ne les touche pas, d'où les migrations ; nœud du point obligatoire pour un tag (CE1-005 = « écritures ») ; CE1-024 est rangé sur une notion, pas une sous-notion ; QCM en réécriture (case « choix ») → demander la forme au premier lot qui en a besoin ; `collection` n'a pas `centaines:`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `fix/questions-ce1-lot0` (créé, `pnpm install` fait, aucun commit).
+- **Pièges en cours** : modèle publié → deux migrations (gabarits CE1 lot 0, `couvrir-un-niveau.md` § 7), rollback qui garde l'état laissé ; copies de test publiées → un niveau chacune ; tag = point du nœud ou de sa notion ; QCM en réécriture (case « choix ») → demander la forme au premier lot qui en a besoin ; `collection` n'a pas `centaines:`.
+- **Worktree / branche** : aucun (retiré après #1843).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -138,7 +138,7 @@ Recommandations validées en bloc (« ok, je valide ») :
 6. Lots : 1 calcul mental (029, 102, 084, 032, 083, 024) → 2 numération → 3 fractions → 4 problèmes
    → 5 grandeurs → lots à outils existants → lots à QCM une fois la case « choix » en prod.
 
-## 5. Lot 0 : corrections — phase 0 (à valider)
+## 5. Lot 0 : corrections — phase 0 (validée le 2026-10-26)
 
 Relevé du 2026-10-26 : **0 donnée d'élève** sur les 12 modèles touchés (chapter_exercises,
 evaluation_attempt_questions, journal_entry_activities, skill_attempts, srs_cards, test_answers,
@@ -172,3 +172,10 @@ publié → comme pour les corrections du CP, **deux migrations** : contenu (gé
 élèves et le prof du **CE2** voient 4 modèles publiés de plus. En miroir, qui ne pourra plus lire ce
 qu'il lisait ? — les élèves et le prof du **CE1** ne voient plus ces 4 modèles ni `47f97c9f`
 (brouillon : admin seul). Aucune règle (policy) ne change.
+
+**Écrit (2026-10-26)** : sous-titres changés avec le contenu (moitié : « Nombres pairs jusqu'à $700$, par
+décomposition » ; distributivité : « … d'un nombre de $11$ à $19$ par un nombre à $1$ chiffre »).
+Moitié V1 = 22 à 88 (unités 2 à 8), V2 = 12 à 98, V3 = 210 à 698 (dizaines non nulles), corrigé en
+trois étapes (coupe en deux parts paires, moitié de chacune, somme). Parité : specs aux bornes 998 et 999. Contenu relu par `pnpm question:specs` (le fichier ligne de base → clés camelCase d'abord).
+
+- 2026-10-26 : #1843 mergée (CI verte, `security-auditor` sans finding bloquant ; garde d'état ajoutée au rollback du rangement), `db:migrate` (go de David : la migration retire 4 tags), vérifiée en prod.

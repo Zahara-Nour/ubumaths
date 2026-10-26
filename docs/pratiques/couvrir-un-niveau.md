@@ -211,6 +211,14 @@ Relevé MCP (contenu complet, md5, nœuds, points, tags, **0 donnée d'élève**
 de lot, `checkTemplate` vert ; **David** lance `create-questions --publier --mettre-a-jour`
 (remplace contenu et description). Retrait de tag ou niveaux seuls → migration à la main.
 
+Modèle **publié** (`--mettre-a-jour` ne le touche pas) → deux migrations, gabarits du lot 0 du
+CE1 : contenu générée par un script de lot (`docs/wip/questions/lot-corrections-ce1.py` →
+`20261027000000_questions_ce1_contenu.sql`, test `decrireLotModifier`), puis rangement, tags,
+niveaux et statut à la main (`20261027000100_questions_ce1_rangement_tags.sql` et son test). Le
+rollback écrit **garde l'état laissé par la migration** (nœud, niveaux, statut, tags) : sans
+cette garde, une saisie faite depuis serait écrasée en silence. Copies de test publiées : un
+niveau chacune (`idx_question_templates_unique_category`).
+
 ## 8. Page à cocher, puis publication
 
 1. **Page à cocher** :

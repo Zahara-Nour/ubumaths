@@ -212,10 +212,43 @@ describe('withBlockCases : cases des blocs omises de blanks[], remises à leur r
 		expect(withBlockCases(['5'], `${OPERATION}\n\nEt [_]`, () => '')).toEqual(['', '5']);
 	});
 
-	it('énoncé à variables ou à expressions : rien (le générateur compte sur l’énoncé résolu)', () => {
+	it('variable dans une opération : rien (`{{a}} ÷ 7` porte deux cases une fois résolu)', () => {
 		const division = '```operation\ncalcul: {{a}} ÷ 7\n```\n\nEt [_]';
 		expect(withBlockCases(['x'], division, () => '')).toBeNull();
-		expect(withBlockCases(['x'], `${FIGURE}\n\n$<<expr:f>>$`, () => '')).toBeNull();
+		const operator = '```operation\n12 {{op}} 7\n```\n\nEt [_]';
+		expect(withBlockCases(['x'], operator, () => '')).toBeNull();
+	});
+
+	it('variables qui ne portent aucune case (texte, figure, choix, {{if:}}) : remises à leur rang', () => {
+		// Forme de CP-058 : {{if:}} dans le texte, variables dans la figure
+		const statement = [
+			'Les points sont-ils alignés ? Trace $({{if:k==3|B|A}}{{if:k==1|B|C}})$.',
+			'',
+			'```figure-de-travail',
+			'fenetre: 0 ; 10 ; 0 ; 6',
+			'outils: droite',
+			'---',
+			'A = point({{xa}}, {{ya}})',
+			'```',
+			'',
+			'```choix',
+			'melanger: non',
+			'- Oui {{u}}',
+			'- Non',
+			'```'
+		].join('\n');
+		expect(withBlockCases(['0'], statement, () => '')).toEqual(['', '0']);
+	});
+
+	it('expression : rien (son format de réponse peut porter des cases, `?/?`)', () => {
+		expect(withBlockCases(['x'], `${FIGURE}\n\n$<<expr:expressionF>>{{f}}$`, () => '')).toBeNull();
+	});
+
+	it('{{if:}} qui porte une case : rien (le compte dépend du tirage)', () => {
+		expect(withBlockCases(['x'], `${FIGURE}\n\n{{if:k==1|Et [_]|Rien}}`, () => '')).toBeNull();
+		expect(
+			withBlockCases(['x', 'y'], `${FIGURE}\n\nEt [_] {{if:k==1|$? + 1$|}}`, () => '')
+		).toBeNull();
 	});
 
 	it('liste déjà complète, ou sans bloc, ou d’une autre longueur : rien', () => {

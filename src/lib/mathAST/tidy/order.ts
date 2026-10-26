@@ -10,7 +10,9 @@
  *   écrit reste (`(x − 1)(x + 2)`).
  * - **Termes** : degré décroissant (la constante finit donc dernière), puis,
  *   à degré égal, comparaison facteur par facteur de leur **écriture** —
- *   c'est elle qui met `4hx` avant `2h^2` et `(h+x)^2` avant `x^2`.
+ *   c'est elle qui met `4hx` avant `2h^2` et `(h+x)^2` avant `x^2`. Le degré
+ *   ne compte que les inconnues (Q14, David, 2026-10-26) : `√2`, `π`, `ln 2`
+ *   sont des constantes, `x + √2`, `x + 1 + √2`.
  * - **Somme de degré 1** (décision de David, 2026-10-06) : les termes négatifs
  *   passent derrière les positifs, chaque groupe gardant l'ordre ci-dessus —
  *   `1 − x`, `3 − 2x`, `x − 3`, `b − a`. De degré ≥ 2, l'ordre décroissant
@@ -216,10 +218,19 @@ export function sortFactors(factors: readonly TidyFactor[]): TidyFactor[] {
 // Ordre des termes
 // =============================================================================
 
-/** Degré d'un terme : la somme des exposants de ses facteurs. */
+/**
+ * Degré d'un terme : la somme des exposants de ses facteurs qui contiennent une
+ * inconnue (Q14, David, 2026-10-26). Une constante (`√2`, `π`, `e`, `ln 2`)
+ * compte comme un nombre, degré 0 : `x + √2`, `x² + 2x + √5`. `i` garde son
+ * degré : l'écriture des complexes (`i − 2` sous un `−`, `−1 + 1/i`) ne bouge pas.
+ */
 function termDegree(term: TidyTerm): Rational {
 	let degree = ZERO;
-	for (const factor of term.factors) degree = addRational(degree, factor.exponent);
+	for (const factor of term.factors) {
+		if (containsUnknown(factor.base) || containsComplex(factor.base)) {
+			degree = addRational(degree, factor.exponent);
+		}
+	}
 	return degree;
 }
 
@@ -443,15 +454,17 @@ export function sortTerms(terms: readonly TidyTerm[], realPartFirst = true): Tid
 	const sorted = decorated.map((entry) => entry.term);
 
 	const degree = sumDegree(decorated.map((entry) => entry.key));
-	// Degré 1, ou deux termes quel que soit le degré (David, 2026-10-20 : `1 − x²`,
-	// pas `−x² + 1` ; un complexe garde sa partie réelle en tête, `−1 + 1/i`) : les
-	// positifs devant, les négatifs derrière, l'ordre gardé dans chaque groupe.
+	// Degré 1, somme réelle sans inconnue (degré 0 : `1 + ln 3 − ln 2`), ou deux
+	// termes quel que soit le degré (David, 2026-10-20 : `1 − x²`, pas `−x² + 1` ;
+	// un complexe garde sa partie réelle en tête, `−1 + 1/i`) : les positifs
+	// devant, les négatifs derrière, l'ordre gardé dans chaque groupe.
 	// Idempotent : trier à nouveau redonne les mêmes groupes.
 	const isNegativeTerm = (term: TidyTerm) => isNegativeRational(term.coefficient);
-	const twoRealTerms =
-		terms.length === 2 &&
-		!terms.some((term) => term.factors.some((factor) => containsComplex(factor.base)));
-	const positivesFirst = twoRealTerms || (degree !== null && equalRational(degree, ONE));
+	const isReal = !terms.some((term) => term.factors.some((factor) => containsComplex(factor.base)));
+	const twoRealTerms = terms.length === 2 && isReal;
+	const realWithoutUnknown = isReal && degree !== null && equalRational(degree, ZERO);
+	const positivesFirst =
+		twoRealTerms || realWithoutUnknown || (degree !== null && equalRational(degree, ONE));
 	const ordered = positivesFirst
 		? [
 				...simpleTermsFirst(sorted.filter((term) => !isNegativeTerm(term))),

@@ -94,6 +94,24 @@ describe('AnswerEditor — figure de travail', () => {
 		expect(readState().answers).toEqual(['', '1']);
 	});
 
+	it('énoncé collé à variables (forme de CP-058) : la case choix a aussi sa carte', async () => {
+		// {{if:}} et variables qui ne portent aucune case : le compte brut vaut le compte résolu
+		const statement = [
+			'Alignés ? Trace $({{if:k==3|B|A}}{{if:k==1|B|C}})$.',
+			'',
+			WORK('outils: droite').replace('A = point(2, 3)', 'A = point({{xa}}, {{ya}})'),
+			'',
+			OUI_NON
+		].join('\n');
+		await render(AnswerEditorChoiceHarness, {
+			props: { initialStatement: 'Alignés ?', initialAnswers: [''], pastedStatement: statement }
+		});
+		await page.getByTestId('coller').click();
+		await expect.element(page.getByText('Case 2 : choix')).toBeVisible();
+		await page.getByRole('radio', { name: 'Choix A : bonne réponse' }).click();
+		expect(readState().answers).toEqual(['', '0']);
+	});
+
 	it('modèle ouvert sans modification : rien n’est réécrit (formulaire non modifié)', async () => {
 		await render(AnswerEditorChoiceHarness, {
 			props: { initialStatement: `${WORK('outils: droite')}\n\n${OUI_NON}`, initialAnswers: ['1'] }
