@@ -1,26 +1,35 @@
 ---
 title: Figure manipulable partout et case « choix » (QCM réécrit en cases)
 date: 2026-10-26
-status: lot 1 en cours (PR 1a écrite)
+status: lot 1 en cours (PR 1a mergée, PR 1b à faire)
 ---
 
 # Chantier « figure-et-choix »
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, PR 1a écrite (pas encore ouverte)._
+_Mis à jour le 2026-10-26, après #1816._
 
-- **État** : PR 1a (moteur + interface élève de la case choix) commitée et poussée sur la branche ; ADR 0033,
-  `CONTEXT.md` (Case choix), `questions.md` à jour. Revues `code-reviewer` opus + `security-auditor` en cours.
-  Serveur de test : port 5177.
-- **Prochaine action** : traiter les findings des revues → ouvrir la PR 1a → CI verte → merge ; puis PR 1b
-  (éditeur de la case choix, `test_specs`).
-- **En attente de David** : essai de la case choix sur le serveur de test (facultatif avant merge).
-- **Pièges en cours** : l'éditeur riche (`rich-text/markdown-import.ts`) ignore le bloc ` ```choix ` (PR 1b) ;
-  migration des QCM seulement après le `deploy:prod` des lots 1-2 ; question d'accès AVANT tout SQL.
-- **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `feat/figure-et-choix`.
+- **État** : PR 1a **mergée** (#1816) : moteur + interface élève de la case choix, ADR 0033, `CONTEXT.md`.
+  Pas en prod. Les QCM existants sont intacts.
+- **Prochaine action** : PR 1b, l'éditeur de la case choix (liste de choix, bonne(s) réponse(s), Vrai / Faux,
+  `plusieurs:` / `melanger:`), `test_specs` d'une case choix (`"0;2"`), bloc ` ```choix ` reconnu par
+  l'éditeur riche (`rich-text/markdown-import.ts`). Revue `code-reviewer` sonnet. Puis lot 2 (figure de travail).
+- **En attente de David** : essai de la case choix (serveur de test, écrite à la main dans un modèle à trous).
+- **Pièges en cours** : migration des QCM seulement après le `deploy:prod` des lots 1-2 ; retrait de la
+  contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL ;
+  le parseur ubumark ne masque pas un ` ```choix ` écrit dans un autre bloc (sans effet : la génération refuse).
+- **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `feat/figure-et-choix-editeur` (une branche par PR).
 
 ---
+
+## Historique
+
+- 2026-10-26 — **#1816 mergée** (PR 1a) : bloc ` ```choix `, case `type: 'choice'`, notation = QCM, envoi en
+  positions affichées ramenées aux indices d'origine par le serveur (400 si illisible), choix à leur place
+  dans la correction, PDF de fiche. Revues : code (2 mineurs corrigés), sécurité (rien). CI : garde
+  `block-css-vars` (couleurs `--expected-*` admises comme crochets à repli) ; conflit avec la case
+  « collection à construire » de `main` résolu.
 
 ## 1. Origine et décisions de David (2026-10-26)
 
