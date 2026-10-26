@@ -27,6 +27,7 @@
 	import { readChoiceCase, statementCaseKinds } from '$lib/questions/choice-case-editor';
 	import { readWorkFigureCases } from '$lib/questions/work-figure-editor';
 	import { formatChoiceAnswer, parseChoiceAnswer } from '$lib/questions/choice-case';
+	import { choiceLetter } from '$lib/questions/choices';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -35,6 +36,8 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MathField from '$lib/components/MathField.svelte';
+	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { Plus, Trash2, Play, Check, X, Copy, Loader2 } from '@lucide/svelte';
 
 	interface Props {
@@ -416,12 +419,20 @@
 									<div class="flex flex-wrap gap-3 rounded-md border p-2">
 										<span class="text-sm text-muted-foreground">Case {i + 1} : choix</span>
 										{#each choices as choice, c (c)}
+											<!-- Choix rendu comme dans l'aperçu ; un bloc garde son rendu de bloc -->
 											<MyCheckbox
 												checked={picked.includes(c)}
 												onCheckedChange={() => toggleSpecChoice(i, choices.length, c)}
-												label="{String.fromCharCode(65 + c)}. {choice}"
-												labelClass="font-mono"
-											/>
+											>
+												<span class="flex items-start gap-1">
+													<span>{choiceLetter(c)}.</span>
+													{#if choice.trimStart().startsWith('```')}
+														<MarkdownRenderer content={choice} />
+													{:else}
+														<InlineMarkdown content={choice} />
+													{/if}
+												</span>
+											</MyCheckbox>
 										{/each}
 									</div>
 								{:else}
