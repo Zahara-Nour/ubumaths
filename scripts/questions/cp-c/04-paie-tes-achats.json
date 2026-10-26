@@ -1,0 +1,120 @@
+{
+	"title": "Paie tes achats",
+	"description": "Payer un objet, puis deux objets (additionner les prix), en posant pièces et billets",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Pièces et billets",
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:o==1|Le livre|{{if:o==2|Le ballon|{{if:o==3|Le jeu|La trousse}}}}}} coûte ${{p}}~\\unit{€}$. Paie-le.\n\n```monnaie\nconstruire: {{p}}\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..4"
+				},
+				{
+					"name": "p",
+					"expression": "5..50"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": ["Pour payer, on pose exactement le prix : ${{p}}~\\unit{€}$."]
+			}
+		},
+		{
+			"statement": "Lina achète {{if:o==1|un livre|{{if:o==2|un ballon|un jeu}}}} à ${{a}}~\\unit{€}$ et {{if:k==1|un stylo|{{if:k==2|une gomme|un cahier}}}} à ${{b}}~\\unit{€}$. Paie ses achats.\n\n```monnaie\nconstruire: {{s}}\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "10..30"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "s",
+					"expression": "eval:a+b"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On additionne les deux prix : ${{a}}+{{b}}={{s}}$.",
+					"Lina paie ${{s}}~\\unit{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Ballon à 23 € : 23",
+			"variationIndex": 0,
+			"variables": {
+				"o": "2",
+				"p": "23"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["23"]
+		},
+		{
+			"description": "Erreur : 32 € posés pour 23 €",
+			"variationIndex": 0,
+			"variables": {
+				"o": "2",
+				"p": "23"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["32"]
+		},
+		{
+			"description": "Livre 12 € + stylo 3 € : 15",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1",
+				"k": "1",
+				"a": "12",
+				"b": "3",
+				"s": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "Erreur : ne paie que le livre (12 €)",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1",
+				"k": "1",
+				"a": "12",
+				"b": "3",
+				"s": "15"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["12"]
+		}
+	]
+}
