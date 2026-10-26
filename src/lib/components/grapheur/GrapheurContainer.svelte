@@ -27,9 +27,15 @@ Features:
 	 */
 	let {
 		class: className = '',
-		store
+		store,
+		expanded = false,
+		onToggleExpanded
 	}: {
 		class?: string;
+		/** Le graphe occupe-t-il toute la fenêtre ? */
+		expanded?: boolean;
+		/** Sans lui, pas de bouton « Agrandir le graphe ». */
+		onToggleExpanded?: () => void;
 		/**
 		 * L'instance de grapheur à piloter, possédée par l'appelant (l'atelier).
 		 *
@@ -78,7 +84,7 @@ Features:
 
 			<!-- Overlay: Viewport Controls (top-right) -->
 			<div class="graph-controls">
-				<ViewportControls {svgRef} {svgWidth} {svgHeight} />
+				<ViewportControls {svgRef} {svgWidth} {svgHeight} {expanded} {onToggleExpanded} />
 			</div>
 
 			<!-- Overlay: Coordinate Display (bottom-left) -->
@@ -97,7 +103,11 @@ Features:
      Layout
      ========================================================================== */
 
+	/* `flex: 1` : la vue Graphe de l'atelier est un conteneur flex ; sans lui,
+	   le graphe gardait sa largeur de contenu et laissait un vide à droite */
 	.grapheur-container {
+		flex: 1;
+		min-width: 0;
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: 1rem;
