@@ -42,8 +42,6 @@ export interface EditableChoiceCase extends ChoiceCaseDraft {
 // Constantes
 /** Ce que le générateur résout avant de compter les cases */
 const UNRESOLVED_MARKERS = /\{\{|<<expr:/;
-/** Marqueur posé devant une variable expression, retiré à la résolution */
-const EXPR_MARKER = /<<expr:[a-zA-Z0-9]*>>/g;
 
 // Functions
 /** Genre de chaque case de l'énoncé, dans l'ordre des cases (`blanks[i]`) */
@@ -86,13 +84,16 @@ export function withBlockCases<T>(
  * (`<<expr:…>>`). Une variable dans un ```operation peut en changer le nombre
  * (`{{a}} ÷ 7` : deux cases) ; ailleurs, seule une variable qui porte une case
  * (`{{if:k==1|[_]|…}}`) le fait : vue en comptant aussi l'énoncé où chacune vaut
- * `1` — même genre de cases dans le même ordre, sinon on ne sait pas.
+ * `1` — même genre de cases dans le même ordre, sinon on ne sait pas. Une
+ * expression peut porter des cases par son format de réponse (`?/?`), que
+ * l'éditeur ne connaît pas : jamais réalignée.
  */
 function countsLikeResolved(
 	statement: string,
 	raw: ReturnType<typeof assignBlankIndices>
 ): boolean {
 	if (!UNRESOLVED_MARKERS.test(statement)) return true;
+	if (statement.includes('<<expr:')) return false;
 	if (Object.values(raw.operationBlanks ?? {}).some((source) => UNRESOLVED_MARKERS.test(source))) {
 		return false;
 	}
@@ -103,9 +104,12 @@ function countsLikeResolved(
 	);
 }
 
-/** Chaque `{{…}}` (imbriqués compris) remplacé par `1`, marqueurs `<<expr:…>>` retirés */
-function withVariablesAsOne(statement: string): string {
-	const text = statement.replace(EXPR_MARKER, '');
+/**
+ * Chaque `{{…}}` (imbriqués compris) remplacé par `1`. Une accolade LaTeX collée
+ * (`\frac{a}{{{b}}}`) peut laisser une `}` orpheline : sans effet sur le compte
+ * (seuls `?`, `[_]` et les blocs comptent) ; au pire les comptes diffèrent → rien.
+ */
+function withVariablesAsOne(text: string): string {
 	let out = '';
 	let depth = 0;
 	for (let i = 0; i < text.length; i++) {

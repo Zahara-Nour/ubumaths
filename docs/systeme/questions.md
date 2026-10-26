@@ -232,7 +232,7 @@ collé dans un formulaire parti d'une entrée : pas de carte pour le choix, « a
 l'énoncé résolu ; l'éditeur ne réaligne que si l'énoncé brut compte comme lui — aucune variable dans
 un ``operation (une division `{{a}} ÷ 7` porte deux cases), et même genre de cases dans le même
 ordre en comptant aussi l'énoncé où chaque `{{…}}` vaut `1` (un `{{if:k==1|[_]|…}}` qui porte une case
-les fait différer). Forme de CP-058 (`{{if:}}` dans le texte, variables dans la figure) : réalignée.
+les fait différer). Une expression (`<<expr:…>>`) n'est jamais réalignée : son format de réponse peut porter des cases (`?/?`) que l'éditeur ne connaît pas. Forme de CP-058 (`{{if:}}` dans le texte, variables dans la figure) : réalignée.
 
 ### 2. Fusion `shared` ⊕ variation (`resolveVariationWithShared`)
 

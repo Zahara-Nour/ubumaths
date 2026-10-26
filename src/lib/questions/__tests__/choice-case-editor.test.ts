@@ -238,9 +238,10 @@ describe('withBlockCases : cases des blocs omises de blanks[], remises à leur r
 			'```'
 		].join('\n');
 		expect(withBlockCases(['0'], statement, () => '')).toEqual(['', '0']);
-		expect(withBlockCases(['x'], `${FIGURE}\n\n$<<expr:expressionF>>{{f}} = ?$`, () => '')).toEqual(
-			['', 'x']
-		);
+	});
+
+	it('expression : rien (son format de réponse peut porter des cases, `?/?`)', () => {
+		expect(withBlockCases(['x'], `${FIGURE}\n\n$<<expr:expressionF>>{{f}}$`, () => '')).toBeNull();
 	});
 
 	it('{{if:}} qui porte une case : rien (le compte dépend du tirage)', () => {
