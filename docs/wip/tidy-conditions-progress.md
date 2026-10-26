@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1834._
+_Mis à jour le 2026-10-26, après #1837._
 
-- **État** : L1 à L6 du § 5 livrés — #1828 (PR A), #1831 (PR B), #1834 (PR C, `e^{k ln a + c}` → `aᵏ e^{c}`, plafond |k| ≤ 1000 après revue Opus) MERGÉES, pas en prod.
-- **Prochaine action** : PR D (`fix/ln-difference-nulle`) : revue, CI, merge ; puis phase 0 de Q14 (tableau des 22 tests), puis clôture.
+- **État** : L1 à L6 du § 5 livrés (#1828, #1831, #1834) et PR D `ln(xy) − ln(xy)` → bouton 0 (#1837, revue Opus sans bloquant) MERGÉES, pas en prod.
+- **Prochaine action** : phase 0 de Q14 (`√2 + x` → `x + √2`, degré des seules lettres dans `order.ts`/`termDegree`) : montrer à David le tableau avant → après des 22 tests de rangement qui bougent, attendre sa validation ; puis la PR ; puis clôture (versement, journal archivé).
 - **En attente de David** : vérifs #1807 et #1811 au téléphone (sans bloquer).
-- **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` sans condition écrivable ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2 (gardé par `avoidsPeriodicPoints`) ; `exp(10000000 ln 2)` sans plafond (antérieur).
-- **Worktree / branche** : `../ubumaths-wt-tidy-conditions` ; `fix/normalize-exp-ln` mergée, branche distante supprimée.
+- **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` sans condition écrivable ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2 ; `exp(10000000 ln 2)` sans plafond ; restants PR D (§ PR D) : `.factoriser ln(xy) − ln(xy)`, `ln x + ln y − ln(xy)`, `ln(6x) − ln(2x)`.
+- **Worktree / branche** : `../ubumaths-wt-tidy-conditions` ; `fix/ln-difference-nulle` mergée, branche distante supprimée ; prochaine branche depuis `origin/main`.
 
 ## Contexte
 
