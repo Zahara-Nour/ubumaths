@@ -45,6 +45,7 @@ import { getPedagogicalSimplifyRuleDescription } from './descriptions-fr';
 import { commonContentFactorRules } from '../pattern/rule-sets/common-factor';
 import { categorizeRule, selectRulesForIntent } from './intent-rules';
 import { expandIfShorter, simplifyPolynomialFractions, tidyAsSteps } from './reduce-steps';
+import { withImpliedParentheses } from '../tidy';
 import { expand } from './expand';
 import {
 	flattenGroupedProducts,
@@ -510,7 +511,10 @@ function runReduce(
 	options: PedagogicalSimplifyOptions,
 	makeStep: StepFactory
 ): PedagogicalSimplifyResult {
-	const tidied = tidyAsSteps(phaseA.result, makeStep);
+	// `ln(xy) − ln(xy)` : `ln-product` laisse `ln x + ln y − (ln x + ln y)` sans
+	// nœud de parenthèse, et rien ne développait ce `−(…)` (tidy-conditions,
+	// PR D). Les parenthèses écrites, le développement s'en charge.
+	const tidied = tidyAsSteps(withImpliedParentheses(phaseA.result), makeStep);
 	const steps = [...phaseA.steps, ...tidied.steps];
 	let result = tidied.result;
 	let summary: PedagogicalSimplifyStep[] | undefined;

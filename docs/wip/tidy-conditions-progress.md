@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-26, après #1834._
 
 - **État** : L1 à L6 du § 5 livrés — #1828 (PR A), #1831 (PR B), #1834 (PR C, `e^{k ln a + c}` → `aᵏ e^{c}`, plafond |k| ≤ 1000 après revue Opus) MERGÉES, pas en prod.
-- **Prochaine action** : clore le chantier (versement dans `docs/systeme/`, journal archivé) une fois Q14 tranchée — ou la reporter et clore.
-- **En attente de David** : Q14 (`√2 + x` : ordre de `tidy`, § 5) ; essai des vérifs #1807 et #1811 ; chantier à part ou non pour `ln(xy) − ln(xy)` → `ln x + ln y − (ln x + ln y)` (trouvé en PR B, antérieur, aucune valeur fausse).
+- **Prochaine action** : PR D (`fix/ln-difference-nulle`) : revue, CI, merge ; puis phase 0 de Q14 (tableau des 22 tests), puis clôture.
+- **En attente de David** : vérifs #1807 et #1811 au téléphone (sans bloquer).
 - **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` sans condition écrivable ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2 (gardé par `avoidsPeriodicPoints`) ; `exp(10000000 ln 2)` sans plafond (antérieur).
 - **Worktree / branche** : `../ubumaths-wt-tidy-conditions` ; `fix/normalize-exp-ln` mergée, branche distante supprimée.
 
@@ -189,5 +189,17 @@ Sondes (Atelier `runInput`, `normalize`, tests jetables supprimés).
 
 - L6 : `reduceEulerPower` (`rules/euler-identities.ts`) réduit `e^{k ln a + c}` en `aᵏ·e^{c}` par `splitRationalLogs` (`normalize.ts`, fournie par le contexte) : termes `k ln a` à k et a > 0 rationnels seulement (`exactRationalValue`), le reste garde l'exposant. `e^{2ln3}` → 9, `e^{ln2/2}` → √2, `e^{1+ln2}` → 2e, `e^{x+ln2}` → 2eˣ ; `e^{2 ln x}`, `e^{2 ln π}`, `e^{2ln(−3)+1}` gardent leur ln. Suite mathAST + questions + atelier : 35 654 verts, aucun témoin n'a bougé.
 - Revue Opus (58 entrées sondées, valeurs et formes normales justes) : corrigé — plafond |k| ≤ 1000 (`e^{10000000 ln 2}` calculait 3 millions de chiffres en 2,5 s, hors budget ; `exp(…)` a le même défaut, antérieur, laissé). Laissés, antérieurs, aucune valeur fausse : `e^{ln 1 + x}`, `e^{2 ln e}`, `e^{2 ln √2}` gardent leur écriture (forme normale ≠ `exp`) ; `2^{1/3}` ≠ `∛2` en forme normale.
+
+### Décisions de David (2026-10-26, après #1834, « je suis tes recos »)
+
+- Ordre : PR D (`ln(xy) − ln(xy)`), puis phase 0 de Q14 (tableau avant → après des 22 tests de rangement) et sa PR, puis clôture. Vérifs #1807/#1811 : au téléphone, sans bloquer.
+
+### PR D (`fix/ln-difference-nulle`)
+
+- Mesuré avant : `.simplifier ln(xy) − ln(xy)` → bouton `ln x + ln y − (ln x + ln y)` ; `.simplifier ln(2x) − ln(2x)` → la ligne elle-même `ln 2 + ln x − (ln 2 + ln x)`, sans bouton ; idem `ln(x(x+1))`, `ln(x/y)`.
+- Cause : `ln-product` (phase A) rend une somme sans nœud de parenthèse sous un `−` ; `hasSumToDevelop` / `withExplicitMinusOne` ne voient que les parenthèses écrites, et `tidy` ne distribue jamais `−(…)` (contrat).
+- Correctif : `runReduce` (`pipeline.ts`) écrit les parenthèses implicites après la phase A (`withImpliedParentheses`, exportée de `tidy`) → `ln(2x) − ln(2x)`, `ln(x/y) − ln(x/y)` se finissent ; `engineAlternative` prend la réponse de `tidyWithConditions(input)` quand elle est plus courte (`computeCost`) que celle du moteur, sans étapes → `ln(xy) − ln(xy)` : « pour xy > 0 » → 0 ; `ln(x(x+1)) − …` : « pour x < −1 ou x > 0 » → 0.
+- Revue Opus (74 entrées, branche contre main) : aucun bloquant, 45 témoins identiques (`.dériver`, `.développer`, `.factoriser`), tous les écarts sont des progrès (`ln(xyz) − ln(xyz)`, `e^{ln(xy) − ln(xy)}` → 1, condition `xy > 0` au lieu de « x > 0 et y > 0 »). Restants, antérieurs : `.factoriser ln(xy) − ln(xy)` (bouton toujours `ln x + ln y − (…)`) ; `.simplifier ln x + ln y − ln(xy)` (bouton « pour xy > 0 » → `ln x + ln y − (ln x + ln y)`, non réduit) ; libellés bruts « pour x^2y > 0 », « 2xy > 0 » ; conditions redondantes (« xy > 0 et x > 0 et y > 0 »).
+- Trouvé, laissé (aucune valeur fausse) : `.simplifier ln(6x) − ln(2x)` reste `ln 6 + ln x − (ln 2 + ln x)` sur la ligne (`ln 3` attendu) ; `ln(x/y) − ln(x/y)` dit « pour x/y > 0 et y ≠ 0 » (y ≠ 0 redondant) ; `.simplifier ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne.
 
 ## Historique

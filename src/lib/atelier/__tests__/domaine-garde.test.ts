@@ -185,3 +185,38 @@ describe('revue du 2026-10-26 : un décimal tapé reste décimal', () => {
 		);
 	});
 });
+
+// tidy-conditions, PR D : le moteur pédagogique développait `ln(xy)` et
+// s'arrêtait sur `ln x + ln y − (ln x + ln y)` (bouton) ; `ln(2x) − ln(2x)`
+// laissait cette écriture sur la ligne, sans bouton
+describe('une différence de deux logarithmes égaux : le bouton rend 0', () => {
+	it.each([
+		['.simplifier ln(xy)-ln(xy)', 'Simplifier pour xy > 0', '0\\text{,}\\quad\\text{pour }xy>0'],
+		['.simplifier ln(2x)-ln(2x)', 'Simplifier pour x > 0', '0\\text{,}\\quad\\text{pour }x>0'],
+		['.simplifier ln(2x)-ln(2x)+1', 'Simplifier pour x > 0', '1\\text{,}\\quad\\text{pour }x>0'],
+		[
+			'.simplifier ln(x(x+1))-ln(x(x+1))',
+			'Simplifier pour x < −1 ou x > 0',
+			'0\\text{,}\\quad\\text{pour }x<-1\\text{ ou }x>0'
+		],
+		['ln(xy)-ln(xy)', 'Simplifier pour xy > 0', '0\\text{,}\\quad\\text{pour }xy>0']
+	])('%s : « %s » → %s', (input, label, latex) => {
+		const result = line(input);
+		expect(result.latex).not.toContain('\\left( \\ln');
+		expect(result.alternative?.label).toBe(label);
+		expect(flat(result.alternative?.latex)).toBe(flat(latex));
+	});
+
+	it('.simplifier ln(x/y)-ln(x/y) : 0', () => {
+		expect(flat(line('.simplifier ln(x/y)-ln(x/y)').alternative?.domain?.answer)).toBe('0');
+	});
+
+	it('témoin : .simplifier 2ln(xy)-ln(xy) garde ses étapes', () => {
+		const { alternative } = line('.simplifier 2ln(xy)-ln(xy)');
+		expect(alternative?.label).toBe('Simplifier pour x > 0 et y > 0');
+		expect(alternative?.steps?.map((s) => s.rule)).toEqual([
+			'ln-product',
+			'tidy-collect-like-terms'
+		]);
+	});
+});

@@ -1349,7 +1349,9 @@ condition sur la ligne. Tests : `domaine-garde.test.ts`.
   pédagogique s'arrête avant la fin (`ln(x²) − ln(x²)` → `2ln(x) − 2ln(x)`), `tidy` finit
   (`0`, pour x ≠ 0) ; ses étapes ne sont montrées que si elles mènent à la réponse et valent
   chacune là où la condition le dit (`e^{ln(x²)}` → `x²`, pour x ≠ 0, sans étapes : `ln(x²) →
-2 ln x` ne vaut que pour x > 0). Les conditions s'écrivent au plus simple (`plainConditions` :
+2 ln x` ne vaut que pour x > 0). Quand `tidy` seul, sur l'expression tapée, rend une réponse plus courte
+  que le moteur, elle l'emporte, sans étapes : `ln(xy) − ln(xy)` → `0`, pour xy > 0 (le moteur
+  s'arrêtait sur `ln x + ln y − (ln x + ln y)` ; tidy-conditions, PR D). Les conditions s'écrivent au plus simple (`plainConditions` :
   `ln(x)/ln(x)` → « pour x > 0 et x ≠ 1 »), sur la lettre, points irrationnels compris
   (§ 5 de tidy-conditions, L2-L3) : « pour x ≠ −√2 et x ≠ √2 », « pour x ≠ √2 » (jamais
   `sqrt(2)`), « pour x < −√2 ou x > √2 », « pour −1 ≤ x ≤ 1 et x ≠ 0 » (`arcsin(x)/arcsin(x)`),

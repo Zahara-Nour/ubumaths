@@ -64,7 +64,8 @@ forme canonique du Compute Engine, qui est une expression).
   la priorité impose compte comme écrite, même sans nœud de parenthèse (arbre
   construit par le moteur : règle du quotient, substitution) : `a − (b + c)`
   et `−(b + c)` gardent leur signe devant la parenthèse, `x(2x+1) − (x²+x+1)`
-  reste (Q40, lot 5f-1 ; `withImpliedParentheses`, `tidy/index.ts`).
+  reste (Q40, lot 5f-1 ; `withImpliedParentheses`, `tidy/index.ts`, exportée : le moteur pédagogique l'applique aussi
+  après sa phase A).
 - **Jamais de changement de domaine** (S3, David, 2026-10-23) : une base ne
   se simplifie entre numérateur et dénominateur que si elle **reste au
   dénominateur** (`x/x² → 1/x`, `(x+1)²/(x+1)³ → 1/(x+1)`) ou **ne peut pas
