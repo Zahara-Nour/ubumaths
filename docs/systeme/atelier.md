@@ -1475,6 +1475,14 @@ de la hauteur, réglable à la poignée (souris, ou flèches haut / bas), toute 
 « Mes objets » restent utilisables. Montée en permanence (l'historique, le brouillon, les étapes
 dépliées survivent à la fermeture), `inert` quand elle est fermée.
 
+**Au-dessus de 640 px, un panneau flottant** (2026-10-26) : pleine largeur et opaque, le volet
+donnait l'impression d'un atelier coupé en deux. Il est décollé des bords (`--marge-console`,
+0,75 rem), arrondi, ombré, **calé à gauche de la vue** et limité à 52 rem de large ; fond en
+verre dépoli (`--color-background` à 90 % + `backdrop-filter: blur`), qui redevient plein sous
+`prefers-reduced-transparency: reduce` ou `prefers-contrast: more`. Le bas du panneau reste à
+la hauteur réglée : la poignée mesure toujours depuis le haut de la scène. Sous 640 px, rien ne
+change : toute la scène, opaque, sans marge.
+
 - **Ouvrir / fermer** : le bouton « Console » de la barre (`aria-expanded`) ; la **touche
   physique sous Échap** hors d'un champ ; **Ctrl+Entrée** partout, champs compris
   (`console-key.ts` : sur Mac, `IntlBackslash` ou `Backquote` — mesure du 2026-10-18 sur un Mac
@@ -1501,7 +1509,7 @@ dépliées survivent à la fermeture), `inert` quand elle est fermée.
   définition réussie dit « f est correctement défini », le nom en couleur (`definedName`) ; les
   boutons d'une ligne n'apparaissent qu'au survol ou au focus (toujours au toucher :
   `any-hover: none` ou `any-pointer: coarse`, pour un portable tactile à souris). Couleur
-  d'accent `#a65800` en clair (5,0:1 sur le fond `#fafafa` de la console), `#ffc400` en sombre.
+  d'accent `#a65800` en clair (5,0:1 sur le fond `#fafafa` de la console, que le verre à 90 % et son flou laissent tenir), `#ffc400` en sombre.
 - **Défilement** : une nouvelle entrée (tapée, ou écrite par une action de carte) fait descendre
   l'historique tout en bas (`CalculView`, effet sur `desk.entries.length`, 2026-10-23).
 - **Menu de la console** : « Copier l'historique pour une fiche » et « Télécharger l'historique
