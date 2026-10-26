@@ -477,3 +477,310 @@ test('#1427 — « Tabuler » d’une carte : tableau dans la grille, annuler, p
 	await openView(page, 'Données');
 	await expect(page.locator('td[role="gridcell"][aria-selected="true"]')).toHaveCount(1);
 });
+
+/** Les cases montrées de `from` à `to` dans une colonne (`A1`, `A10`) */
+async function columnShown(page: Page, from: string, to: string): Promise<string[]> {
+	const [, letter, first] = /^([A-Z]+)(\d+)$/.exec(from) ?? [];
+	const last = Number(/\d+$/.exec(to)?.[0]);
+	const shown: string[] = [];
+	for (let row = Number(first); row <= last; row++) {
+		shown.push(await shownIn(page, `${letter}${row}`));
+	}
+	return shown;
+}
+
+/** Le texte montré par une case, espaces insécables ramenées à des espaces */
+async function shownText(page: Page, address: string): Promise<string> {
+	return (await shownIn(page, address)).replace(/\s/g, ' ');
+}
+
+/** Choisit un format de nombre (« Nombre », « Pourcentage », « Monnaie ») pour la sélection */
+async function chooseFormat(page: Page, format: string): Promise<void> {
+	await page.getByRole('button', { name: /^Format de nombre/ }).click();
+	await page.getByRole('option', { name: new RegExp(`^${format}`) }).click();
+}
+
+/**
+ * Le lien de « Partager », lu dans sa fenêtre. Une grille seule ne se partage pas
+ * (« Ton atelier est vide », écart signalé à David) : une carte `k = 1` est posée avant.
+ */
+async function shareLink(page: Page): Promise<string> {
+	await calc(page, 'k = 1');
+	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+	await page.getByRole('button', { name: 'Partager', exact: true }).click();
+	const field = page.getByLabel('Lien de partage');
+	await expect(field).toHaveValue(/\?/);
+	const link = await field.inputValue();
+	await page.keyboard.press('Escape');
+	return link;
+}
+
+test('#1469 — gras, formats Nombre / Pourcentage / Monnaie, copier-coller, rechargement, lien', async ({
+	page
+}) => {
+	await typeCell(page, 'A1', '=1/3');
+	await typeCell(page, 'A2', '0,125');
+	await typeCell(page, 'A3', '12,5');
+	// A1:A3 puis G : les 3 cases en gras, le bouton enfoncé ; Ctrl+Z défait
+	await selectZone(page, 'A1', 'A3');
+	const bold = page.getByRole('button', { name: 'Gras', exact: true });
+	await bold.click();
+	await expect(bold).toHaveAttribute('aria-pressed', 'true');
+	for (const address of ['A1', 'A2', 'A3']) {
+		await expect(cellLocator(page, address)).toHaveClass(/\bgras\b/);
+	}
+	await page.keyboard.press('ControlOrMeta+Z');
+	await expect(cellLocator(page, 'A2')).not.toHaveClass(/\bgras\b/);
+
+	// `=1/3` en « Nombre » → 0,33 et « Valeur exacte : 1/3 » sous la barre
+	await selectCell(page, 'A1');
+	await chooseFormat(page, 'Nombre');
+	expect(await readCell(page, 'A1')).toMatchObject({ shown: '0,33', exact: '\\frac{1}{3}' });
+	// « Pourcentage » sur 0,125 → 13 %, avec 1 décimale → 12,5 %
+	await selectCell(page, 'A2');
+	await chooseFormat(page, 'Pourcentage');
+	// Le format pose une espace insécable fine avant % et € : comparée en espace simple
+	expect(await shownText(page, 'A2')).toBe('13 %');
+	await page.getByRole('button', { name: /^Décimales/ }).click();
+	await page.getByRole('option', { name: /^1\b/ }).click();
+	expect(await shownText(page, 'A2')).toBe('12,5 %');
+	// « Monnaie » sur 12,5 → 12,50 €
+	await selectCell(page, 'A3');
+	await chooseFormat(page, 'Monnaie');
+	expect(await shownText(page, 'A3')).toBe('12,50 €');
+
+	// Copier une case mise en forme, la coller ailleurs : la mise en forme suit
+	await selectCell(page, 'A3');
+	await page.keyboard.press('ControlOrMeta+C');
+	await selectCell(page, 'C3');
+	await page.keyboard.press('ControlOrMeta+V');
+	await expect.poll(() => shownText(page, 'C3')).toBe('12,50 €');
+
+	// Recharger : la mise en forme est gardée ; un lien de partage la transporte
+	await page.reload();
+	await openView(page, 'Données');
+	expect(await shownText(page, 'A2')).toBe('12,5 %');
+	expect(await shownText(page, 'A3')).toBe('12,50 €');
+	const link = await shareLink(page);
+	const other = await page.context().newPage();
+	await other.goto(link);
+	await openView(other, 'Données');
+	expect(await shownIn(other, 'A1')).toBe('0,33');
+	expect(await shownText(other, 'A3')).toBe('12,50 €');
+	await other.close();
+});
+
+test('#1412 — Ctrl+Z / Ctrl+Maj+Z dans la grille, boutons grisés, carte rendue', async ({
+	page
+}) => {
+	const undo = page.getByRole('button', { name: /^Annuler/ });
+	const redo = page.getByRole('button', { name: /^Rétablir/ });
+	await expect(undo).toHaveAttribute('aria-disabled', 'true');
+	await expect(redo).toHaveAttribute('aria-disabled', 'true');
+
+	// Taper, coller un tableau (titres compris), effacer une zone
+	await typeCell(page, 'A1', '5');
+	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+	await page.evaluate(() => navigator.clipboard.writeText('taille\tmasse\n150\t40\n160\t52'));
+	await selectCell(page, 'C1');
+	await page.keyboard.press('ControlOrMeta+V');
+	// Les titres vont en tête des colonnes : C1 = 150, D2 = 52
+	await expect.poll(() => shownIn(page, 'D2')).toBe('52');
+	await expect(page.getByLabel('Titre de la colonne C')).toHaveValue('taille');
+	await selectZone(page, 'C1', 'C2');
+	await page.keyboard.press('Delete');
+	await expect.poll(() => columnShown(page, 'C1', 'C2')).toEqual(['vide', 'vide']);
+
+	// Chaque geste se défait, le collage d'un coup — Ctrl+Z comme ⌘Z
+	await page.keyboard.press('Control+Z');
+	await expect.poll(() => columnShown(page, 'C1', 'C2')).toEqual(['150', '160']);
+	await page.keyboard.press('Meta+Z');
+	await expect.poll(() => shownIn(page, 'D2')).toBe('vide');
+	await expect(page.getByLabel('Titre de la colonne C')).toHaveValue('');
+	expect(await shownIn(page, 'A1')).toBe('5');
+	await page.keyboard.press('ControlOrMeta+Z');
+	await expect.poll(() => shownIn(page, 'A1')).toBe('vide');
+	await expect(undo).toHaveAttribute('aria-disabled', 'true');
+	// Ctrl+Maj+Z refait
+	await page.keyboard.press('ControlOrMeta+Shift+Z');
+	await expect.poll(() => shownIn(page, 'A1')).toBe('5');
+	await page.keyboard.press('ControlOrMeta+Shift+Z');
+	await expect.poll(() => shownIn(page, 'D2')).toBe('52');
+	await expect(page.getByLabel('Titre de la colonne C')).toHaveValue('taille');
+
+	// Supprimer une carte, puis Ctrl+Z sur une case : la carte revient (pas la dernière saisie)
+	await calc(page, 'f(x) = 2x');
+	await cardLocator(page, 'f').getByRole('button', { name: 'Options de f', exact: true }).click();
+	await page.getByRole('menuitem', { name: 'Supprimer', exact: true }).click();
+	await expect(cardLocator(page, 'f')).toHaveCount(0);
+	await selectCell(page, 'B5');
+	await page.keyboard.press('ControlOrMeta+Z');
+	await expect(cardLocator(page, 'f')).toBeVisible();
+	expect(await shownIn(page, 'D2')).toBe('52');
+});
+
+test('#1439 — « Relancer », F9, Ctrl+Z / Ctrl+Y des tirages, annonce, lien gardé', async ({
+	page
+}) => {
+	const relaunch = page.getByRole('button', { name: 'Relancer', exact: true });
+	await typeCell(page, 'A1', '5');
+	await expect(relaunch).toHaveCount(0);
+
+	// A1:A10 `=ALEA.ENTRE.BORNES(1;6)`, C1 `=NB.SI(A1:A10;6)` : « Relancer » apparaît
+	await typeCell(page, 'A1', '=ALEA.ENTRE.BORNES(1;6)');
+	await selectZone(page, 'A1', 'A10');
+	await page.keyboard.press('ControlOrMeta+D');
+	await typeCell(page, 'C1', '=NB.SI(A1:A10;6)');
+	await expect(relaunch).toBeVisible();
+	const sixes = async () =>
+		String((await columnShown(page, 'A1', 'A10')).filter((die) => die === '6').length);
+	const first = await columnShown(page, 'A1', 'A10');
+	expect(first.every((die) => /^[1-6]$/.test(die))).toBe(true);
+	expect(await shownIn(page, 'C1')).toBe(await sixes());
+
+	// Un clic : nouveaux dés, C1 suit ; l'annonce dit combien de cases
+	await relaunch.click();
+	await expect.poll(() => columnShown(page, 'A1', 'A10')).not.toEqual(first);
+	const second = await columnShown(page, 'A1', 'A10');
+	expect(await shownIn(page, 'C1')).toBe(await sixes());
+	await expect(page.getByText('Nouveaux tirages : 10 cases.')).toBeAttached();
+	// Ctrl+Z aussitôt (sans cliquer une case) → les dés d'avant ; Ctrl+Y → ceux d'après.
+	// Ctrl, pas ⌘ : sur Mac ⌘Y ne rétablit pas (⌘⇧Z, oui) — écart signalé à David
+	await page.keyboard.press('ControlOrMeta+Z');
+	await expect.poll(() => columnShown(page, 'A1', 'A10')).toEqual(first);
+	await page.keyboard.press('Control+Y');
+	await expect.poll(() => columnShown(page, 'A1', 'A10')).toEqual(second);
+
+	// F9 dans une case → nouveaux dés ; F9 maintenu → une seule relance
+	await selectCell(page, 'E5');
+	await page.keyboard.press('F9');
+	await expect.poll(() => columnShown(page, 'A1', 'A10')).not.toEqual(second);
+	const third = await columnShown(page, 'A1', 'A10');
+	// Maintenu : les appuis suivants arrivent avec `repeat` (Playwright le pose tant que la
+	// touche n'est pas relâchée)
+	await page.keyboard.down('F9');
+	await page.keyboard.down('F9');
+	await page.keyboard.down('F9');
+	await page.keyboard.up('F9');
+	await expect.poll(() => columnShown(page, 'A1', 'A10')).not.toEqual(third);
+	await page.keyboard.press('ControlOrMeta+Z');
+	await expect.poll(() => columnShown(page, 'A1', 'A10')).toEqual(third);
+
+	// Le lien d'un atelier à dés, puis « Garder dans mon atelier » : les tirages sont refaits
+	const link = await shareLink(page);
+	const other = await page.context().newPage();
+	await other.goto(link);
+	await other.getByRole('button', { name: 'Garder dans mon atelier' }).click();
+	await expect(
+		other.getByText(/les tirages au hasard sont refaits dans ton atelier/)
+	).toBeVisible();
+	await other.close();
+});
+
+/** Un fichier choisi par « Ouvrir un CSV… » */
+async function openCsv(
+	page: Page,
+	file: string | { name: string; mimeType: string; buffer: Buffer }
+): Promise<void> {
+	const chooser = page.waitForEvent('filechooser');
+	await page.getByRole('button', { name: 'Ouvrir un CSV…' }).click();
+	await (await chooser).setFiles(file);
+}
+
+/** Le champ du titre d'une colonne */
+function title(page: Page, letter: string) {
+	return page.getByRole('textbox', { name: `Titre de la colonne ${letter}`, exact: true });
+}
+
+/** Le dernier message (toast) affiché */
+function lastToast(page: Page) {
+	return page
+		.getByRole('region', { name: /^Notifications/ })
+		.getByRole('listitem')
+		.first();
+}
+
+test('#1473 — « Ouvrir un CSV… » : Excel, LibreOffice, Google Sheets, aller-retour, .xlsx refusé', async ({
+	page
+}, testInfo) => {
+	// Excel sous Windows : point-virgule, Windows-1252 → accents justes, titres en tête
+	await openCsv(page, {
+		name: 'excel.csv',
+		mimeType: 'text/csv',
+		buffer: Buffer.from('Prénom;Âge;Taille\r\nZoé;12;1,52\r\nGaël;13;1,60\r\n', 'latin1')
+	});
+	await expect(lastToast(page)).toContainText(
+		'2 lignes et 3 colonnes, avec leurs titres, posées à partir de A1.'
+	);
+	await expect(title(page, 'A')).toHaveValue('Prénom');
+	await expect(title(page, 'B')).toHaveValue('Âge');
+	expect(await columnShown(page, 'A1', 'A2')).toEqual(['Zoé', 'Gaël']);
+	expect(await shownIn(page, 'C1')).toBe('1,52');
+	// Ctrl+Z défait tout
+	await page.keyboard.press('ControlOrMeta+Z');
+	await expect.poll(() => shownIn(page, 'A1')).toBe('vide');
+	await expect(title(page, 'A')).toHaveValue('');
+
+	// LibreOffice : UTF-8 avec sa marque
+	await openCsv(page, {
+		name: 'libreoffice.csv',
+		mimeType: 'text/csv',
+		buffer: Buffer.from('﻿Prénom;Âge\nZoé;12\nGaël;13\n', 'utf8')
+	});
+	await expect(title(page, 'A')).toHaveValue('Prénom');
+	expect(await columnShown(page, 'A1', 'A2')).toEqual(['Zoé', 'Gaël']);
+	await page.keyboard.press('ControlOrMeta+Z');
+	await expect.poll(() => shownIn(page, 'A1')).toBe('vide');
+
+	// Rouvrir ce que « Télécharger en CSV » a écrit (colonnes de nombres titrées) → identique
+	await title(page, 'A').fill('x');
+	await title(page, 'A').press('Enter');
+	await title(page, 'B').fill('y');
+	await title(page, 'B').press('Enter');
+	await typeColumn(page, 'A1', ['1', '2,5', '0,75']);
+	await typeColumn(page, 'B1', ['4', '5', '6']);
+	const before = [
+		...(await columnShown(page, 'A1', 'A3')),
+		...(await columnShown(page, 'B1', 'B3'))
+	];
+	const download = page.waitForEvent('download');
+	await page.getByRole('button', { name: 'Télécharger en CSV' }).click();
+	const saved = testInfo.outputPath('grille.csv');
+	await (await download).saveAs(saved);
+	// Grille vidée (Repartir de zéro), puis le fichier rouvert
+	await page.getByRole('button', { name: 'Repartir de zéro', exact: true }).click();
+	await page.getByRole('button', { name: 'Vider l’atelier', exact: true }).click();
+	await expect.poll(() => shownIn(page, 'A1')).toBe('vide');
+	// Le fichier se pose à partir de la case choisie (« posées à partir de A1 » si c'est A1)
+	await selectCell(page, 'A1');
+	await openCsv(page, saved);
+	await expect(lastToast(page)).toContainText(
+		'3 lignes et 2 colonnes, avec leurs titres, posées à partir de A1.'
+	);
+	await expect(title(page, 'A')).toHaveValue('x');
+	await expect(title(page, 'B')).toHaveValue('y');
+	expect([
+		...(await columnShown(page, 'A1', 'A3')),
+		...(await columnShown(page, 'B1', 'B3'))
+	]).toEqual(before);
+
+	// Google Sheets : virgules, décimaux à point → bien coupé
+	await selectCell(page, 'A1');
+	await openCsv(page, {
+		name: 'google.csv',
+		mimeType: 'text/csv',
+		buffer: Buffer.from('u,v\n1.5,2.25\n3,4.75\n', 'utf8')
+	});
+	await expect(title(page, 'A')).toHaveValue('u');
+	await expect(title(page, 'B')).toHaveValue('v');
+	expect(await columnShown(page, 'B1', 'B2')).toEqual(['2.25', '4.75']);
+
+	// Un .xlsx (un classeur zippé, octets nuls) → refus clair, rien ne bouge
+	await openCsv(page, {
+		name: 'classeur.xlsx',
+		mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+		buffer: Buffer.from([0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x06, 0x00, 0x08, 0x00, 0x00, 0x00])
+	});
+	await expect(page.getByText('Ce fichier n’est pas un tableau CSV')).toBeVisible();
+	expect(await shownIn(page, 'B1')).toBe('2.25');
+});
