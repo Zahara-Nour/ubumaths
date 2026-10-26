@@ -141,13 +141,19 @@ describe('revue du 2026-10-26 : l’écriture d’une condition ne compte pas', 
 	});
 });
 
-describe('revue du 2026-10-26 : une réécriture qui rétrécit le domaine n’a pas lieu', () => {
-	it.each(['.simplifier ln(x^2)', '.simplifier ln(x*y)', '.simplifier ln(x/y)'])('%s', (input) => {
+// § 4.2 (2026-10-26) : la ligne garde l'écriture, comme avant ; le bouton
+// montre la réécriture avec la condition où elle vaut (« pour x > 0 »)
+describe('revue du 2026-10-26 : une réécriture qui rétrécit le domaine passe au bouton', () => {
+	it.each([
+		['.simplifier ln(x^2)', 'Simplifier pour x > 0'],
+		['.simplifier ln(x*y)', 'Simplifier pour xy > 0 et x > 0 et y > 0'],
+		['.simplifier ln(x/y)', 'Simplifier pour']
+	])('%s : « %s »', (input, label) => {
 		const result = line(input);
-		expect(result.alternative).toBeUndefined();
 		expect(flat(result.latex)).not.toContain('2\\ln');
 		expect(flat(result.latex)).not.toContain('\\ln\\left(x\\right)+');
 		expect(flat(result.latex)).not.toContain('\\ln\\left(x\\right)-');
+		expect(result.alternative?.label).toContain(label);
 	});
 });
 

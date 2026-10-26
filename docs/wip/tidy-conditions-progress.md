@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1817._
+_Mis à jour le 2026-10-26, PR 2 (§ 4.2) en cours._
 
-- **État** : #1807, #1811, #1815, #1817 MERGÉES (pas en prod). #1817 = § 4.1 : `ln(x)/ln(x) avec x > 1` → 1 (domaines « intervalles et points » garantis).
-- **Prochaine action** : PR 2 (§ 4.2, `domainChange` par ensembles + élagage, bouton « 2 ln(x), pour x > 0 », note « Pour x > 0, on peut écrire … »). Recos validées par David (« je suis tes recos »).
+- **État** : #1807, #1811, #1815, #1817 MERGÉES (pas en prod). PR 2 (§ 4.2, `domainChanges` par ensembles + élagage) codée sur `fix/tidy-conditions-ensembles`, tests verts.
+- **Prochaine action** : revue Opus, PR, CI, merge.
 - **En attente de David** : essai des vérifs #1807 et #1811 (inchangé).
-- **Pièges en cours** : § 4.2 ouvert ; restes acceptés de #1815 (termes gardés non regroupés, `tan` gèle le terme en mode conditions) ; restes de la revue de #1817 (prudents, aucun faux) : `arctan(x)−1 ≠ 0` et `cos(x)/cos(x) dans ]0;1[` non garantis, `arcsin` répond « ne change rien » même garanti, `avec x ≥ e` ne se lit pas.
-- **Worktree / branche** : retirés après #1817 ; recréer `../ubumaths-wt-tidy-conditions` depuis `origin/main` pour la PR 2.
+- **Pièges en cours** : plusieurs lettres non élaguées (`ln(xy)` → 3 conditions) ; restes acceptés de #1815 (termes gardés non regroupés, `tan` gèle le terme) ; restes de la revue de #1817 (`arctan(x)−1 ≠ 0`, `cos(x)/cos(x) dans ]0;1[` non garantis, `arcsin` « ne change rien », `avec x ≥ e` ne se lit pas).
+- **Worktree / branche** : `../ubumaths-wt-tidy-conditions`, `fix/tidy-conditions-ensembles`.
 
 ## Contexte
 
@@ -124,5 +124,12 @@ Sondes : `ln(x³) → 3 ln x` refusé (même domaine, écritures différentes) ;
 - (b) domaine rétréci → condition = perdu ∪ ajouté, chaque condition impliquée par les autres retirée : `ln(x²)` → bouton « Simplifier pour x > 0 » (Q2 : oui), `avec x > 0` → `2 ln(x)` ; perte seule inchangée (`x/x` → « x ≠ 0 »). Élagage impossible → tout garder (jamais une condition fausse).
 - Note quand le domaine rétrécit (Q5) : « Pour x > 0, on peut écrire 2 ln(x) : ajoute « avec x > 0 ». »
 - Relever avant/après de `ln-product`, `ln-quotient`, `sqrt-product` dans la PR.
+- **Fait (PR 2, branche `fix/tidy-conditions-ensembles`)** : `domainChanges` (`tidy/conditions.ts`) rend `{ conditions, narrows }` ; `conditionSet` / `isIncluded` passent de `atelier/hypotheses.ts` à `tidy`. Relevé (Atelier, mode « garder ») :
+  - `.simplifier ln(x³)` : `ln(x³)` → `3 ln x` ; `ln(x²) + ln x` : bouton « pour x² > 0 » → `3 ln x` direct.
+  - `.simplifier ln(x²)` : rien → bouton « Simplifier pour x > 0 », note « Pour x > 0, on peut écrire 2ln(x) : ajoute « avec x > 0 » (ou « dans ]0 ; +∞[ ») » ; `avec x > 0` → `2 ln x` (avant : « ne change rien ici »).
+  - `ln-product` `ln(x(x+1))`, `ln-quotient` `ln(x/(x+1))` : rien → bouton « pour x > 0 » ; `√(x/(x+1))` → « pour x ≥ 0 » ; `sqrt-product` `√x √(x+1)` : rien → « On peut simplifier davantage pour x ≥ 0 » (élargit).
+  - Plusieurs lettres, pas d'élagage : `ln(xy)` → « pour xy > 0 et x > 0 et y > 0 » (lourd, juste).
+  - Au passage : la réponse du bouton passe par `stripUnnecessaryBrackets` (`ln((x+1))` du moteur pédagogique).
+  - `domaine-garde.test.ts` « une réécriture qui rétrécit le domaine n'a pas lieu » réécrit : la ligne garde, le bouton vient.
 
 ## Historique

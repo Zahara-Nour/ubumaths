@@ -19,6 +19,7 @@ import type { PedagogicalSimplifyResult } from '$lib/mathAST/pedagogical-simplif
 import {
 	describeConditions,
 	domainChange,
+	domainChanges,
 	tidy,
 	tidyWithConditions,
 	type TidyCondition,
@@ -52,14 +53,18 @@ export interface DomainFacts {
 	/** La réponse en LaTeX, sans « pour … » */
 	readonly answer: string;
 	readonly ast: MathNode;
+	/** Le domaine rétrécit (`ln(x²) → 2 ln x`, § 4.2) : la note dit l'écriture qu'on aurait. */
+	readonly narrows: boolean;
 }
 
 /** Un calcul pédagogique coupé avant la première étape qui change le domaine. */
 export interface KeptDomain {
 	/** Le calcul gardé : le résultat entier si le domaine ne change pas. */
 	readonly kept: PedagogicalSimplifyResult;
-	/** Ce que le résultat entier perd ; `[]` : rien, `null` : on ne sait pas l'écrire. */
+	/** Ce que le résultat entier change ; `[]` : rien, `null` : on ne sait pas l'écrire. */
 	readonly lost: readonly TidyCondition[] | null;
+	/** Le domaine du résultat entier est plus petit (§ 4.2). */
+	readonly narrows: boolean;
 }
 
 // =============================================================================
@@ -89,17 +94,21 @@ function joined(conditions: readonly TidyCondition[]): { text: string; latex: st
 export function domainAlternative(
 	answer: MathNode,
 	conditions: readonly TidyCondition[],
-	steps?: { readonly steps?: readonly RenderedStep[]; readonly summary?: readonly RenderedStep[] }
+	steps?: { readonly steps?: readonly RenderedStep[]; readonly summary?: readonly RenderedStep[] },
+	narrows = false
 ): DomainAlternative {
 	const { text, latex } = joined(conditions);
+	// La réponse du moteur pédagogique garde ses parenthèses de travail
+	// (`ln((x+1))`, `1/((x−1))`), qu'un bouton du § 4.2 montrait
+	const cleaned = stripUnnecessaryBrackets(answer);
 	return {
 		label: `Simplifier pour ${text}`,
 		back: BACK,
 		// La virgule en texte : la virgule décimale lirait `0,5,` comme une liste (`0,5 ;`)
-		latex: `${toLatex(answer)}\\text{,}\\quad\\text{pour }${latex}`,
+		latex: `${toLatex(cleaned)}\\text{,}\\quad\\text{pour }${latex}`,
 		...(steps?.steps !== undefined && { steps: steps.steps }),
 		...(steps?.summary !== undefined && { summary: steps.summary }),
-		domain: { conditions, answer: toLatex(answer), ast: answer }
+		domain: { conditions, answer: toLatex(cleaned), ast: cleaned, narrows }
 	};
 }
 
@@ -143,8 +152,10 @@ export function tidyFurther(
  * Le résumé n'est pas recoupé : il fondrait des étapes des deux côtés.
  */
 export function keepingDomain(input: MathNode, result: PedagogicalSimplifyResult): KeptDomain {
-	const lost = domainChange(input, result.result);
-	if (lost !== null && lost.length === 0) return { kept: result, lost };
+	const change = domainChanges(input, result.result);
+	const lost = change?.conditions ?? null;
+	const narrows = change?.narrows ?? false;
+	if (lost !== null && lost.length === 0) return { kept: result, lost, narrows };
 	const changes = (node: MathNode) => {
 		const loss = domainChange(input, node);
 		return loss === null || loss.length > 0;
@@ -152,7 +163,7 @@ export function keepingDomain(input: MathNode, result: PedagogicalSimplifyResult
 	const first = result.steps.findIndex((step) => changes(step.globalAfter ?? step.after));
 	// Aucune étape ne le dit (la perte vient de l'assemblage final) : rien n'est gardé
 	if (first === -1)
-		return { kept: { ...result, result: input, steps: [], summary: undefined }, lost };
+		return { kept: { ...result, result: input, steps: [], summary: undefined }, lost, narrows };
 	// La factorisation qui n'est là que pour simplifier la fraction part avec
 	// elle : `auto` ne rend jamais une forme factorisée (ADR 0007)
 	let kept = first;
@@ -161,7 +172,7 @@ export function keepingDomain(input: MathNode, result: PedagogicalSimplifyResult
 	const at =
 		result.steps[kept].globalBefore ??
 		(kept === 0 ? input : (result.steps[kept - 1].globalAfter ?? input));
-	return { kept: { ...result, result: at, steps, summary: undefined }, lost };
+	return { kept: { ...result, result: at, steps, summary: undefined }, lost, narrows };
 }
 
 /**
@@ -173,10 +184,13 @@ export function guardedAnswer(
 	input: MathNode,
 	answer: MathNode
 ): { readonly shown: MathNode; readonly alternative?: DomainAlternative } {
-	const lost = domainChange(input, answer);
-	if (lost === null) return { shown: input };
-	if (lost.length === 0) return { shown: answer };
-	return { shown: input, alternative: domainAlternative(answer, lost) };
+	const change = domainChanges(input, answer);
+	if (change === null) return { shown: input };
+	if (change.conditions.length === 0) return { shown: answer };
+	return {
+		shown: input,
+		alternative: domainAlternative(answer, change.conditions, undefined, change.narrows)
+	};
 }
 
 /**

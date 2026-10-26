@@ -1338,8 +1338,11 @@ condition sur la ligne. Tests : `domaine-garde.test.ts`.
   `parseStudentDomain`), une seule lettre. La simplification du bouton a lieu si l'hypothèse
   garantit chacune de ses conditions (`guarantees` : l'ensemble est inclus dans celui où `1/u`,
   `ln u` ou `√u` est défini) ; sinon la ligne garde l'écriture et le dit (« x > -1 ne garantit pas
-  x ≠ 0 »), et une hypothèse sans effet est dite aussi (« ne change rien ici »). Limite : une
-  réécriture qui rétrécit le domaine (`ln(x²) → 2 ln x`) n'a pas lieu, même `avec x > 0`. Seule une
+  x ≠ 0 »), et une hypothèse sans effet est dite aussi (« ne change rien ici »). Une réécriture
+  qui rétrécit le domaine (`ln(x²) → 2 ln x`, § 4.2) a son bouton (« Simplifier pour x > 0 ») et
+  sa note (« Pour x > 0, on peut écrire 2ln(x) : ajoute « avec x > 0 » ») ; `avec x > 0` la
+  fait. Deux écritures du même ensemble ne changent rien : `.simplifier ln(x³)` → `3 ln x`,
+  sans condition (`domainChanges` de `tidy`). Seule une
   condition d'une lettre dont le domaine est **calculé en entier et fait d'intervalles et de
   points** peut être garantie : `ln(x) ≠ 0` (]0;+∞[ \ {1}, `ln(x)/ln(x) avec x > 1` → 1),
   `eˣ − 1 ≠ 0` (ℝ \ {0}) ; pas `cos(x) ≠ 0`, qui exclut une famille π/2 + kπ que l'inclusion ne

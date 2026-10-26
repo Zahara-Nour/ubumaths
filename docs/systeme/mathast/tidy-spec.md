@@ -533,10 +533,18 @@ km/h`), 2026-09-27.
   `before` — `[]` si rien, `null` si une condition perdue ne s'écrit pas. Comparaison
   des conditions de définition (dénominateurs, `ln`, racines, puissances), indépendante de
   l'écriture (`1+x` et `2x+2` disent x ≠ −1 comme `x+1`, `conditionKey`) : au pire elle redit
-  une condition vraie. **`domainChange(before, after)`** : la perte seule, `null` si la
-  réécriture GAGNE aussi une condition (`ln(x²) → 2 ln(x)` n'est vraie que pour x > 0) —
-  l'atelier ne fait alors ni la simplification ni le bouton. Sert à l'atelier pour garder le domaine de toutes ses
-  lignes (`atelier/domain-guard.ts`).
+  une condition vraie. **`domainChanges(before, after)`** (§ 4.2 de tidy-conditions) : ce que
+  la réécriture fait du domaine, `{ conditions, narrows }`. Une seule lettre et des conditions
+  dont l'ensemble se lit (`conditionSet` : intervalles et points, pas de famille périodique) :
+  les **ensembles** se comparent — égaux, `[]` (`ln(x³) → 3 ln x`, `ln(x²) + ln x → 3 ln x`) ;
+  sinon les conditions perdues puis gagnées, chacune retirée si les autres (et celles que les
+  deux écritures partagent) l'impliquent : `ln(x²) → 2 ln x` dit `x > 0` (pas `x² > 0`),
+  `ln(x(x+1)) → ln x + ln(x+1)` dit `x > 0`, `√x √(x+1) → √(x(x+1))` dit `x ≥ 0`. Plusieurs
+  lettres : rien n'est élagué, tout est dit (`ln(xy) → ln x + ln y` : `xy > 0 et x > 0 et
+y > 0`) — jamais une condition fausse. `narrows` : le domaine d'après est plus petit (l'atelier
+  dit alors « Pour x > 0, on peut écrire 2ln(x) »). `null` : une condition ne s'écrit pas
+  (`tan`). `domainChange` en rend les conditions seules. Sert à l'atelier pour garder le domaine
+  de toutes ses lignes (`atelier/domain-guard.ts`).
 - `options.order` : `'canonical'` (défaut, l'étape 8) ou `'kept'` — les
   termes de **chaque** somme gardent l'ordre écrit, parenthèses comprises
   (`3+2x`, `3(1+x)`), les termes semblables regroupés à la place du premier

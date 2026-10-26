@@ -249,6 +249,64 @@ describe('conditions non polynomiales (§ 4.1)', () => {
 	);
 });
 
+describe('domainChange par ensembles (§ 4.2)', () => {
+	it.each([
+		['.simplifier ln(x^3)', '3\\ln\\left(x\\right)'],
+		['.simplifier ln(x^2)+ln(x)', '3\\ln\\left(x\\right)']
+	])('%s → %s : même ensemble, la ligne simplifie sans condition', (input, latex) => {
+		const result = line(input);
+		expect(flat(result.latex)).toBe(flat(latex));
+		expect(result.alternative).toBeUndefined();
+		expect(result.note).toBeUndefined();
+	});
+
+	it('.simplifier ln(x²) : le bouton « Simplifier pour x > 0 »', () => {
+		const result = line('.simplifier ln(x^2)');
+		expect(flat(result.latex)).toBe(flat('\\ln\\left(x^2\\right)'));
+		expect(result.alternative?.label).toBe('Simplifier pour x > 0');
+		expect(flat(result.alternative?.latex)).toBe(
+			flat('2\\ln\\left(x\\right)\\text{,}\\quad\\text{pour }x>0')
+		);
+	});
+
+	it('.simplifier ln(x²) : la note dit l’écriture qu’on peut avoir pour x > 0', () => {
+		const note = line('.simplifier ln(x^2)').note ?? '';
+		expect(note).toMatch(/^Pour x > 0, on peut écrire 2 ?ln\(x\) : ajoute « avec x > 0 »/);
+	});
+
+	it.each(['.simplifier ln(x^2) avec x > 0', '.simplifier ln(x^2) dans ]0;+∞['])(
+		'%s → 2 ln(x)',
+		(input) => {
+			const result = line(input);
+			expect(flat(result.latex)).toBe(flat('2\\ln\\left(x\\right)'));
+			expect(result.alternative).toBeUndefined();
+			expect(result.note).toBeUndefined();
+		}
+	);
+
+	it('.simplifier ln(x²) avec x ≠ 0 : ne garantit pas x > 0', () => {
+		const result = line('.simplifier ln(x^2) avec x ≠ 0');
+		expect(flat(result.latex)).toBe(flat('\\ln\\left(x^2\\right)'));
+		expect(result.note).toContain('ne garantit pas x > 0');
+	});
+
+	it.each([
+		['.simplifier ln(x(x+1))', '\\ln\\left(x\\right)+\\ln\\left(x+1\\right)', 'x>0'],
+		['.simplifier ln(x/(x+1))', '\\ln\\left(x\\right)-\\ln\\left(x+1\\right)', 'x>0'],
+		['.simplifier sqrt(x)sqrt(x+1)', '\\sqrt{x\\left(x+1\\right)}', 'x\\geq0']
+	])('%s : le bouton montre %s, pour %s, sans parenthèses de trop', (input, answer, condition) => {
+		expect(flat(line(input).alternative?.latex)).toBe(
+			flat(`${answer}\\text{,}\\quad\\text{pour }${condition}`)
+		);
+	});
+
+	it('« Simplifier en disant la condition » : 2 ln(x), pour x > 0', () => {
+		const result = line('.simplifier ln(x^2)', 'conditions');
+		expect(flat(result.latex)).toBe(flat('2\\ln\\left(x\\right)\\text{,}\\quad\\text{pour }x>0'));
+		expect(result.alternative?.label).toBe('Sans simplifier');
+	});
+});
+
 describe('revue du 2026-10-26', () => {
 	it.each([
 		'cos(x)/cos(x) avec x > 0',

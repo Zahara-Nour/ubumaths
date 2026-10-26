@@ -3718,7 +3718,13 @@ function withDomainMode(result: CalcResult, mode: DomainMode, assumed: boolean):
 	if (mode === 'keep') {
 		return assumed
 			? result
-			: { ...result, note: joinedNote(result.note, simplifyFurtherNote(facts.conditions)) };
+			: {
+					...result,
+					note: joinedNote(
+						result.note,
+						simplifyFurtherNote(facts.conditions, facts.narrows ? facts.ast : undefined)
+					)
+				};
 	}
 	// Sans écriture mathématique de départ (« rien à factoriser »), rien à basculer
 	if (result.latex === undefined) return result;

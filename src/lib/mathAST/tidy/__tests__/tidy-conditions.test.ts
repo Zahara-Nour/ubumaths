@@ -10,7 +10,14 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { tidy, tidyWithConditions, describeConditions, domainChange, domainLoss } from '../index';
+import {
+	tidy,
+	tidyWithConditions,
+	describeConditions,
+	domainChange,
+	domainChanges,
+	domainLoss
+} from '../index';
 import { parseCustom } from '../../parser/custom';
 import { toCustom } from '../../custom-generator';
 import { areEquivalent } from '../../equivalence';
@@ -188,8 +195,56 @@ describe('revue du 2026-10-26 : l’ordre d’écriture ne fait ni perdre ni inv
 	])('domainLoss(%s, %s) = []', (before, after) => {
 		expect(domainLoss(parseCustom(before), parseCustom(after))).toEqual([]);
 	});
+});
 
-	it('domainChange : ln(x^2) → 2ln(x) gagne x > 0, null', () => {
-		expect(domainChange(parseCustom('ln(x^2)'), parseCustom('2ln(x)'))).toBeNull();
+/**
+ * `domainChange` compare les ENSEMBLES quand l'expression n'a qu'une lettre
+ * (§ 4.2, recos validées par David le 2026-10-26) : deux écritures du même
+ * ensemble ne changent rien (`ln(x³)` et `3 ln x` : ]0 ; +∞[) ; un domaine
+ * rétréci dit sa condition, chaque condition impliquée par les autres retirée
+ * (`ln(x²) → 2 ln x` : « x > 0 », pas « x² > 0 et x > 0 »).
+ */
+describe('domainChange par ensembles (§ 4.2)', () => {
+	const change = (before: string, after: string) => {
+		const found = domainChange(parseCustom(before), parseCustom(after));
+		return found === null ? null : describeConditions(found).map((c) => c.text);
+	};
+
+	it.each([
+		['ln(x^3)', '3ln(x)'],
+		['ln(x^2)+ln(x)', '3ln(x)'],
+		['sqrt(x^3)', 'x sqrt(x)'],
+		['x/x+ln(x)', '1+ln(x)']
+	])('%s → %s : même ensemble, rien à dire', (before, after) => {
+		expect(change(before, after)).toEqual([]);
+	});
+
+	it.each([
+		['ln(x^2)', '2ln(x)', ['x > 0']],
+		['ln(x(x+1))', 'ln(x)+ln(x+1)', ['x > 0']],
+		['ln(x/(x+1))', 'ln(x)-ln(x+1)', ['x > 0']],
+		['ln(x^2)+1/(x-1)', '2ln(x)+1/(x-1)', ['x > 0']]
+	])('%s → %s : le domaine rétrécit, « %s »', (before, after, conditions) => {
+		expect(change(before, after)).toEqual(conditions);
+	});
+
+	it.each([
+		['x/x', '1', ['x ≠ 0']],
+		['sqrt(x)sqrt(x+1)', 'sqrt(x(x+1))', ['x ≥ 0']]
+	])('%s → %s : le domaine s’élargit, la perte seule', (before, after, conditions) => {
+		expect(change(before, after)).toEqual(conditions);
+	});
+
+	it('plusieurs lettres : rien n’est élagué, tout est dit', () => {
+		expect(change('ln(x y)', 'ln(x)+ln(y)')).toEqual(['xy > 0', 'x > 0', 'y > 0']);
+	});
+
+	it('une condition qui ne s’écrit pas (tan) : on ne sait pas, null', () => {
+		expect(change('tan(x)/tan(x)', '1')).toBeNull();
+	});
+
+	it('narrows : vrai quand le domaine rétrécit, faux quand il s’élargit', () => {
+		expect(domainChanges(parseCustom('ln(x^2)'), parseCustom('2ln(x)'))?.narrows).toBe(true);
+		expect(domainChanges(parseCustom('x/x'), parseCustom('1'))?.narrows).toBe(false);
 	});
 });
