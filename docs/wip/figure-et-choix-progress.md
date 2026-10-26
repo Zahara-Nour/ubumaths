@@ -8,23 +8,31 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1822._
+_Mis à jour le 2026-10-26, après #1826._
 
-- **État** : lot 1 **terminé** : PR 1a (#1816, moteur et interface élève) et PR 1b (#1822, éditeur : carte
-  « Case N : choix », « Ajouter une case choix », « Vrai / Faux », tests, éditeur riche ; énoncé partagé =
-  carte en lecture seule) mergées. Pas en prod. Les QCM existants sont intacts.
-- **Prochaine action** : lot 2, la figure de travail (§ 2.3) : phase 0 à relire avec David avant de coder
-  (bloc ```figure-de-travail, case non notée, tracé gris, enregistré en évaluation).
-- **En attente de David** : essai de la case choix (serveur de test, éditeur de cases compris).
+- **État** : lots 1 (#1816, #1822) et 2 (#1826, figure de travail : bloc ```figure-de-travail, jamais
+  notée via `questions/graded-part.ts`, traits gris, ligne « Ta figure de travail » dans la correction,
+  carte de l'éditeur, version publique `workFigure`) mergés. Rien en prod.
+- **Prochaine action** : lot 3, CP-058 réécrit (figure de travail + case choix oui / non), essai par David,
+  puis publication (§ 2.5).
+- **En attente de David** : essais de la case choix (lot 1) et de la figure de travail (lot 2) — serveur
+  de test du worktree, port 5179 (worktree FIGÉ tant qu'il teste).
 - **Pièges en cours** : migration des QCM seulement après le `deploy:prod` des lots 1-2 ; retrait de la
   contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL ;
-  **une seule session par worktree** (collision du 2026-10-26 sur la PR 1b). Restes mineurs de la revue 1b :
-  libellé brut des choix dans l'éditeur de tests, espaces de bord d'un choix rognés.
-- **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `feat/figure-et-choix-travail` (une branche par PR).
+  une seule session par worktree. Restes connus : éditeur de tests et `AnswerEditor` décalés si `blanks[]`
+  omet une case de bloc (figure, choix ; existait avant le lot 2) ; libellé brut des choix dans l'éditeur
+  de tests ; espaces de bord d'un choix rognés.
+- **Worktree / branche** : `../ubumaths-wt-figure-et-choix` ; prochaine branche à créer depuis `origin/main`.
 
 ---
 
 ## Historique
+
+- 2026-10-26 — **#1826 mergée** (lot 2, figure de travail) : phase 0 § 2.9 (recos suivies). Un seul point de
+  retrait (`gradedPart`) prouvé rouge sans lui ; trou trouvé en route : `QuestionCard` exigeait toutes les
+  cases en évaluation (corrigé, `workFigure` public). Revue opus : 4 mineurs, 3 corrigés (message de choix
+  en double, R1 perdu, message du modèle), le 4ᵉ préexistant noté. Conflit avec la case à construire de
+  `main` (#1825) résolu : sa ligne `build` puis la figure de travail en dernier.
 
 - 2026-10-26 — **#1816 mergée** (PR 1a) : bloc ` ```choix `, case `type: 'choice'`, notation = QCM, envoi en
   positions affichées ramenées aux indices d'origine par le serveur (400 si illisible), choix à leur place
