@@ -152,3 +152,20 @@ Coquille : ae7a332e finit par « est $?.$ » (point dans la formule).
    d'abord — il sert aussi au CP et à tout le cycle 3 — puis les assemblages de cubes, 5 points.)
 7. **Ordonner** (110, 134, 204) : réponse en une case « a < b < c », ou attendre « étiquettes à ranger » ?
 8. **Groupe D** laissé sans modèle ?
+
+## 6. Lot « corrections » : phase 0 (proposée le 2026-10-26, en attente de David)
+
+Règle validée par David (2026-10-26) : un modèle HORS_PROGRAMME prend le niveau du point qui le décrit
+(niveau suivant : `grades` remplacé ; cours moyen : niveau ajouté, 6 gardé). Destinations vérifiées
+en inclusion stricte contre les bornes du niveau cible : [questions-6/destinations-42.csv](questions-6/destinations-42.csv)
+(18 TAG, 19 MODIFIER dont 17 simples déplacements de nœud, 5 sans point).
+
+Usages en prod (2026-10-26) : 0 carte FSRS, 0 cahier de texte, 0 question d'évaluation, 1 essai d'élève
+(6ca011c9) ; une série « Essai évaluation » de 6e (0 chapitre, 0 assignation) pioche « Avec parenthèses », niveau 2.
+
+- **PR 1, contenus** (instantané d'abord, David lance `--mettre-a-jour`) : 819df2a9 et f3bf4c64 (au plus
+  3 décimales) ; b79d4cb7 (garder m³ / dm³ / cm³, 5 variations) ; 24f7a007 (retirer −100 %) ;
+  82748db8 (variation en double) ; ae7a332e (coquille) ; 3a7a5711 archivé (doublon de 059e3fc9).
+- **PR 2, migration** : niveaux, nœuds (déplacements R2) et tags des 37 modèles TAG / MODIFIER.
+- Cas à trancher : voir le message à David du 2026-10-26 (échelle, coefficient sur nombres nus, trous
+  à facteur décimal, 5d515eb1).
