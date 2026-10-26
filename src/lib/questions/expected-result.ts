@@ -17,11 +17,18 @@
  * Pur et sans exception (R10) : une instance inattendue donne un résultat réduit.
  */
 
-import { getQuestionType, type QuestionInstance, type ValidationStatus } from './types';
+import {
+	getQuestionType,
+	type BuildKind,
+	type QuestionInstance,
+	type ValidationStatus
+} from './types';
 import { rulesDecide } from './rules-suffice';
 import { escapeStudentText, neutralizeStudentLatex } from './student-answer-safety';
 import { correctChoiceIndexesOf, isChoiceBlank, parseChoiceAnswer } from './choice-case';
 import { replaceChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
+import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
+import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import {
 	validateAnswerDetailed,
 	type DetailedVerdict,
@@ -112,6 +119,20 @@ export type ExpectedLine =
 	| {
 			kind: 'figure';
 			index: number;
+			source: string;
+			answer: string | null;
+			status: ExpectedStatus;
+	  }
+	/**
+	 * Case à construire (bloc ```collection ou ```monnaie, `construire:`) : le plan
+	 * lui-même, verrouillé, avec la construction de l'élève (`answer`, la valeur
+	 * posée) ; `null` sans réponse (R9) ou réponse vide : la construction juste seule
+	 */
+	| {
+			kind: 'build';
+			index: number;
+			buildKind: BuildKind;
+			/** Texte du bloc, sans `case:` */
 			source: string;
 			answer: string | null;
 			status: ExpectedStatus;
@@ -209,6 +230,47 @@ export function withoutFigureCases(statement: string): string {
 	return statement.replace(FIGURE_CASE_BLOCK, '');
 }
 
+/** Bloc à construire d'un énoncé, repéré par sa case (`case: N`) : genre, texte sans `case:`, lignes */
+interface BuildCaseBlock {
+	kind: BuildKind;
+	source: string;
+	startIndex: number;
+	endIndex: number;
+}
+
+const CASE_LINE = /^case\s*:\s*(\d+)\s*$/i;
+
+/** Blocs à construire numérotés d'un énoncé (premier niveau, fermés : ceux du générateur) */
+function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
+	const found = [
+		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
+		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const }))
+	];
+	const blocks = new Map<number, BuildCaseBlock>();
+	for (const block of found) {
+		if (block.nested || !block.closed) continue;
+		const caseLine = block.body.map((line) => CASE_LINE.exec(line.trim())).find(Boolean);
+		if (!caseLine) continue;
+		blocks.set(Number(caseLine[1]), {
+			kind: block.kind,
+			source: block.body.filter((line) => !CASE_LINE.test(line.trim())).join('\n'),
+			startIndex: block.startIndex,
+			endIndex: block.startIndex + block.body.length + 1
+		});
+	}
+	return blocks;
+}
+
+/** L'énoncé sans ses blocs à construire numérotés (la ligne `build` de chaque case les montre) */
+export function withoutBuildCases(statement: string): string {
+	const blocks = [...buildCaseBlocks(statement).values()];
+	if (blocks.length === 0) return statement;
+	return statement
+		.split('\n')
+		.filter((_, i) => !blocks.some((b) => i >= b.startIndex && i <= b.endIndex))
+		.join('\n');
+}
+
 /** L'énoncé sans ses blocs ```choix (la ligne `choices` de chaque case les montre) */
 export function withoutChoiceCases(statement: string): string {
 	return replaceChoiceBlocks(statement, () => '');
@@ -216,12 +278,12 @@ export function withoutChoiceCases(statement: string): string {
 
 /**
  * Consigne seule au-dessus du résultat attendu : calcul R1 (Q104), ou case
- * « figure » quand aucun énoncé rempli ne tient lieu d'énoncé
+ * « figure » ou à construire quand aucun énoncé rempli ne tient lieu d'énoncé
  */
 export function showsInstructionOnly(lines: readonly ExpectedLine[]): boolean {
 	if (lines.some((l) => l.kind === 'comparison' || l.kind === 'solution')) return true;
 	return (
-		lines.some((l) => l.kind === 'figure') &&
+		lines.some((l) => l.kind === 'figure' || l.kind === 'build') &&
 		!lines.some((l) => l.kind === 'filled-statement' || l.kind === 'your-answer')
 	);
 }
@@ -285,6 +347,8 @@ interface BlankView {
 	remarks: string[];
 	/** Case « figure » : texte du bloc et réponse brute (la figure la dessine, rien n'est rendu) */
 	figure?: { source: string; answer: string };
+	/** Case à construire : son bloc et la valeur posée brute (le plan la redessine, rien n'est rendu) */
+	build?: { kind: BuildKind; source: string; answer: string };
 }
 
 function blankViews(
@@ -292,6 +356,7 @@ function blankViews(
 	answer: StudentAnswer | undefined,
 	verdict: DetailedVerdict | undefined
 ): BlankView[] {
+	const builds = buildCaseBlocks(typeof instance.statement === 'string' ? instance.statement : '');
 	return (instance.blanks ?? []).flatMap((blank, index) => {
 		if (!blank) return [];
 		// Case choix : sa réponse (indices) n'est jamais rendue en texte, cf. choiceCaseLines
@@ -323,7 +388,11 @@ function blankViews(
 				remarks: detail?.remarks ?? [],
 				...(blank.construction && {
 					figure: { source: blank.construction.source, answer: detail?.answer ?? value }
-				})
+				}),
+				...(blank.construire &&
+					builds.has(index) && {
+						build: { kind: blank.construire, source: builds.get(index)!.source, answer: value }
+					})
 			}
 		];
 	});
@@ -439,6 +508,26 @@ function figureLines(
 	if (!withAnswer) return [line];
 	if (status === 'empty') return [line, { kind: 'empty', text: EMPTY_ANSWER_TEXT }];
 	return [line, ...remarkLines([view])];
+}
+
+/** Case à construire : le plan (construction de l'élève, ou juste), « rien répondu » */
+function buildLines(
+	view: BlankView,
+	build: NonNullable<BlankView['build']>,
+	withAnswer: boolean
+): ExpectedLine[] {
+	const status = toExpectedStatus(view.status ?? 'empty');
+	const answered = withAnswer && status !== 'empty' && build.answer.trim() !== '';
+	const line: ExpectedLine = {
+		kind: 'build',
+		index: view.index,
+		buildKind: build.kind,
+		source: build.source,
+		answer: answered ? build.answer : null,
+		status: answered ? status : 'solution'
+	};
+	if (withAnswer && status === 'empty') return [line, { kind: 'empty', text: EMPTY_ANSWER_TEXT }];
+	return [line];
 }
 
 function expectedOnlyLine(view: BlankView, withAnswer: boolean): ExpectedLine {
@@ -560,7 +649,7 @@ function build(
 	const statement = typeof instance.statement === 'string' ? instance.statement : '';
 	// Case « figure » : hors de l'énoncé rempli, sa figure est dans sa ligne. Case
 	// « choix » : son bloc reste À SA PLACE dans l'énoncé rempli (`choiceCases`)
-	const markdown = prepareStatement(withoutFigureCases(statement), instance);
+	const markdown = prepareStatement(withoutBuildCases(withoutFigureCases(statement)), instance);
 	const marked = markedIndexes(markdown);
 	const choiceBlocks = choiceBlockIndexes(markdown);
 	const views = blankViews(instance, answer, verdict);
@@ -570,11 +659,16 @@ function build(
 	// R8 / R10 : case graphique, ou case introuvable dans l'énoncé
 	const outside = views.filter((v) => !inStatement.includes(v) && !choiceViews.includes(v));
 	// La figure avant l'énoncé rempli, comme dans l'énoncé (CP-058 : la droite, puis « oui »)
+	// Case à construire : son plan, comme une figure (avant l'énoncé rempli, à sa place)
 	const figures = outside.flatMap((v) =>
-		v.figure ? figureLines(v, v.figure, verdict !== undefined) : []
+		v.figure
+			? figureLines(v, v.figure, verdict !== undefined)
+			: v.build
+				? buildLines(v, v.build, verdict !== undefined)
+				: []
 	);
 	const apart = outside.flatMap((v) =>
-		v.figure ? [] : [expectedOnlyLine(v, verdict !== undefined)]
+		v.figure || v.build ? [] : [expectedOnlyLine(v, verdict !== undefined)]
 	);
 	const choiceCases = choiceViews.flatMap((v) => choiceCaseOf(instance, v.index, verdict) ?? []);
 
