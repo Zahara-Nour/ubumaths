@@ -426,6 +426,7 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 
 - #### Glitchistan — _Algorithmique_
   - **Gouverneur** : 🟢 **Bosse-de-Nage** (canon Jarry, _Gestes et opinions du docteur Faustroll, pataphysicien_) — cynocéphale (homme à tête de chien) qui **n'articule que « ha ha »**. C'est-à-dire qu'il est **mathématiquement** un programme qui boucle sur une seule instruction (`while True: print('ha ha')`). C'est un **bug humanoïde**, autorité officielle qui répond à toutes les questions par le même son glitché. **Cohérence pataphysique enrichie** : Bosse-de-Nage est aussi, par la même mécanique de répétition automatique, le **maître des bruits inattendus** — son _« ha ha »_ perpétuel **est** le chprout' permanent de la province. C'est le Régent canonique des bugs corporels-numériques. **Voix** : exclusivement « ha ha », parfois « hahaha » lors des grandes décisions, plus rarement un silence (qui est interprété comme un crash royal). Les Galopins apprennent à décoder (« ha ha » suivi d'un sourire = approbation, suivi d'un froncement = désapprobation, simultané avec une morsure = décret royal de bannissement).
+  - **Apparence de Bosse-de-Nage** 🟡 (décision de David, 2026-10-26) : petit, rond, agité, sautillant (tout le contraire du calme Faustroll) ; corps humain, bonne tête de chien de dessin animé au museau de papion (chez Jarry, c'est un singe papion, cité de mémoire), grandes oreilles tombantes, énorme sourire bouche ouverte (le « ha ha », montré sans lettres ni bulle), yeux plissés de rire ; jamais effrayant. Le bug fait corps : une grosse clé de remontoir en laiton dans le dos, comme un jouet mécanique coincé dans une boucle ; de petits nuages de vapeur s'échappent de son col et de ses oreilles (le chprout', sans rien de grossier). Mécanicien steampunk victorien : bleu de travail bleu encre à boutons de laiton, foulard pourpre, lunettes de soudeur en laiton relevées sur le front, écusson en engrenage, grosse clé à molette. Prompt d'illustration : Section XI, « Illustrations ».
   - **Capitale** : 🟡 **Turingrad**
   - **Étymologie de la province** : **_Glitchistan_** bénéficie d'une **double détermination pataphysique** :
     1. **Anatomique** : la **phlatulence** royale, désignée familièrement par l'onomatopée **_chprout'_**. C'est la **sortie inattendue du système digestif** du Père Ubu, l'imprévu corporel qui **clôt le cycle digestif** du Royaume .
@@ -2139,6 +2140,24 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines, the frock coat and the cat, emerald green for the moustache, marigold yellow and navy ink for the striped hair, deep crimson for the waistcoat, dark chocolate brown for the trousers and the oar, marigold yellow for the colander boat, white and emerald green for the waves.
 
 Composition: Faustroll standing in his sieve-boat, three-quarter view, centered, plain flat cream parchment paper background apart from the line of waves, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — Bosse-de-Nage 🟡
+
+Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et les images de référence des personnages déjà dessinés, au moins Père Ubu). Garder « no speech bubble » : sans lui, l'IA écrit « HA HA » dans une bulle.
+
+```text
+Draw Bosse-de-Nage, the dog-headed creature (a cynocephalus with a baboon-like muzzle) from Alfred Jarry's book "Doctor Faustroll", who can only say "ha ha", as a full-body character portrait in exactly the same drawing style as the attached characters.
+
+Character: a small, round, jittery figure with a human body and a friendly cartoon dog head with a baboon-like muzzle; big floppy ears, an enormous open-mouthed grin as if laughing "ha ha", eyes squinting with laughter. A big brass wind-up key sticks out of his back, like a clockwork toy stuck in a loop. Small puffs of steam escape from his collar and his ears. He is a lovable, glitchy, endlessly laughing machine-creature: goofy and funny, never scary, never threatening, for students aged 11 to 17.
+
+Clothing and props: Victorian steampunk mechanic: navy ink work overalls with brass buttons, a deep crimson neckerchief, brass welding goggles pushed up on his forehead, a small gear-shaped badge on his chest; he holds a big adjustable wrench.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and the overalls, dark chocolate brown for the fur, marigold yellow for the brass key, goggles, buttons and badge, deep crimson for the neckerchief, white for the steam puffs and the teeth.
+
+Composition: Bosse-de-Nage standing mid-hop, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no speech bubble, no signature.
 ```
 
 ---
