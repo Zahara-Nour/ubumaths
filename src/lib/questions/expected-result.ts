@@ -474,15 +474,16 @@ function build(
 	const views = blankViews(instance, answer, verdict);
 	const inStatement = views.filter((v) => !v.graphical && marked.has(v.index));
 	// R8 / R10 : case graphique, ou case introuvable dans l'énoncé
-	const apart = views
-		.filter((v) => !inStatement.includes(v))
-		.flatMap((v) =>
-			v.figure
-				? figureLines(v, v.figure, verdict !== undefined)
-				: [expectedOnlyLine(v, verdict !== undefined)]
-		);
+	const outside = views.filter((v) => !inStatement.includes(v));
+	// La figure avant l'énoncé rempli, comme dans l'énoncé (CP-058 : la droite, puis « oui »)
+	const figures = outside.flatMap((v) =>
+		v.figure ? figureLines(v, v.figure, verdict !== undefined) : []
+	);
+	const apart = outside.flatMap((v) =>
+		v.figure ? [] : [expectedOnlyLine(v, verdict !== undefined)]
+	);
 
-	if (inStatement.length === 0) return { status, lines: apart };
+	if (inStatement.length === 0) return { status, lines: [...figures, ...apart] };
 
 	const lhs = wholeRightHandSide(markdown, instance);
 
@@ -497,7 +498,7 @@ function build(
 				latex: view.expected,
 				possible: view.rulesDecide
 			};
-			return { status, lines: [solution, ...apart] };
+			return { status, lines: [...figures, solution, ...apart] };
 		}
 		const filled: ExpectedLine = {
 			kind: 'filled-statement',
@@ -505,14 +506,14 @@ function build(
 			fills: inStatement.map((v) => solutionFill(v, 'solution')),
 			possible: inStatement.some((v) => v.rulesDecide)
 		};
-		return { status, lines: [filled, ...apart] };
+		return { status, lines: [...figures, filled, ...apart] };
 	}
 
 	const main =
 		lhs !== null && inStatement.length === 1
 			? comparisonLines(lhs, inStatement[0])
 			: statementLines(markdown, inStatement, status);
-	return { status, lines: [...main, ...apart] };
+	return { status, lines: [...figures, ...main, ...apart] };
 }
 
 /**

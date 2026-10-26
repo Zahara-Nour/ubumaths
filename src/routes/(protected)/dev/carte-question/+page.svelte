@@ -86,7 +86,39 @@
 		'ab = segment(A, B)'
 	].join('\n');
 
+	// CP-058 : point C presque sur la droite (AB), 0,25 carreau au-dessus ; figure + case oui / non
+	const ALIGNES_BODY = [
+		'fenetre: 0 ; 10 ; 0 ; 6',
+		'outils: droite',
+		'verifier: droite_par A ; B',
+		'---',
+		'A = point(2, 3)',
+		'B = point(8, 5)',
+		'C = point(5, 4.25)'
+	].join('\n');
+
 	const sampleQuestions: Record<string, DebugInstance> = {
+		figure_alignes: {
+			templateId: 'demo-figure-alignes',
+			statement: resolvedMarkdown(
+				`Les points A, B et C sont-ils alignés ? Trace la droite (AB) pour vérifier.\n\n\`\`\`figure-a-completer\ncase: 0\n${ALIGNES_BODY}\n\`\`\`\n\nRéponds par oui ou par non : {{blank:1}}`
+			),
+			blanks: [
+				{
+					expectedAnswer: 'droite(A;B)',
+					type: 'graphical',
+					construction: {
+						source: ALIGNES_BODY,
+						checks: [{ kind: 'droite_par', points: ['A', 'B'], line: 3 }]
+					}
+				},
+				{ expectedAnswer: 'non', type: 'text' }
+			],
+			grades: ['CP'],
+			theme: 'Géométrie',
+			domain: 'Points alignés',
+			level: 1
+		},
 		figure_carre: {
 			templateId: 'demo-figure-carre',
 			statement: resolvedMarkdown(
@@ -275,7 +307,8 @@
 		{ value: 'qcm_pi', label: 'QCM : valeur de π' },
 		{ value: 'pythagore_blanks', label: 'Pythagore, deux trous' },
 		{ value: 'figure_a_completer', label: 'Figure à compléter (CP-059)' },
-		{ value: 'figure_carre', label: 'Terminer un carré (CP-060)' }
+		{ value: 'figure_carre', label: 'Terminer un carré (CP-060)' },
+		{ value: 'figure_alignes', label: 'Points alignés ? (CP-058)' }
 	];
 	const SIZE_ITEMS = [
 		{ value: 'sm', label: 'Petite' },

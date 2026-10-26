@@ -1676,14 +1676,21 @@ export function validateBlanks(
 	return aggregateOrderedBlanks(
 		blanks.map((blank, i) =>
 			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
-		)
+		),
+		blanks
 	);
 }
 
 type SingleBlankResult = ReturnType<typeof validateSingleBlank>;
 
-/** Verdict global d'une question à cases ordonnées, depuis le verdict de chaque case */
-function aggregateOrderedBlanks(results: readonly SingleBlankResult[]): ValidationResult {
+/**
+ * Verdict global d'une question à cases ordonnées, depuis le verdict de chaque case.
+ * `cases` : les cases de l'instance (repère une case « figure »).
+ */
+function aggregateOrderedBlanks(
+	results: readonly SingleBlankResult[],
+	cases: readonly InstanceBlank[]
+): ValidationResult {
 	// Seul le nombre de cases sert ici
 	const blanks = results;
 	// Ordered: per-blank pipeline
@@ -1764,13 +1771,29 @@ function aggregateOrderedBlanks(results: readonly SingleBlankResult[]): Validati
 	}
 	if (anyIncorrectValue && result.status !== undefined) result.status = 'incorrect';
 
+	// Figure laissée vide (temps écoulé) : 0, pas ½ — « oui » sans vérifier est un pari
+	const figureLeftEmpty = cases.some((c, i) => c.construction && results[i]?.status === 'empty');
+	if (figureLeftEmpty) {
+		result.isCorrect = false;
+		result.status = 'incorrect';
+	}
+
+	// Question à figure (CP) : le message du juge passe avant tout autre, jamais de numéros de case
+	const hasFigureCase = cases.some((c) => c.construction);
+	const figureFeedback = cases
+		.map((c, i) => (c.construction ? blankFeedback[i] : undefined))
+		.find((message) => message !== undefined);
 	if (!allCorrect) {
-		if (emptyCount > 0 && blanks.length > 1) {
+		if (figureFeedback) {
+			result.feedback = figureFeedback;
+		} else if (emptyCount > 0 && blanks.length > 1) {
 			result.feedback = "Tu n'as pas tout complété.";
 		} else if (worstStatus === 'bad_form') {
 			result.feedback = feedbackOf('bad_form', allViolations);
 		} else if (singleBlankFeedback) {
 			result.feedback = singleBlankFeedback;
+		} else if (hasFigureCase) {
+			result.feedback = undefined;
 		} else {
 			result.feedback = `Les blancs suivants sont incorrects: ${incorrectIndexes.join(', ')}`;
 		}
@@ -2201,7 +2224,7 @@ function detailBlanks(
 			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
 		);
 		return {
-			result: aggregateOrderedBlanks(results),
+			result: aggregateOrderedBlanks(results, blanks),
 			statuses: results.map(singleBlankStatus),
 			remarks: results.map((r) => remarksOf(r.feedback, r.constraintViolations)),
 			answers

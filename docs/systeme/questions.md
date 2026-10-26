@@ -334,6 +334,15 @@ Statuts (`ValidationStatus`) : `correct` (1), `unoptimal_form` (½), `bad_form` 
    (`loadConstructionPositions`) : pendant le chargement, la consigne et un cadre `aria-busy` ;
    chargement impossible → la bonne droite seule, sans verdict (gardes :
    `figure-a-completer-correction.svelte.test.ts`, `…-correction-echec.svelte.test.ts`).
+   Case « figure » **mêlée à d'autres cases** (CP-058 : la droite, puis « oui » / « non » tapé) :
+   le message global est celui du juge si la figure est fausse (avant « Tu n'as pas tout complété. »),
+   sinon aucun — jamais « Les blancs suivants sont incorrects » (`aggregateOrderedBlanks`) ; la liste
+   « Blanc N : » sous l'énoncé ne le répète pas et numérote sans compter la figure. Valider reste grisé tant que la figure est vide, à l'entraînement (`FlashCard`,
+   qui accepte sinon les cases vides) comme en évaluation (`QuestionCard`) ; le temps écoulé avec
+   la figure vide donne « Tu n'as pas tout complété. » et **0 point, jamais ½** : « oui » tapé
+   sans vérifier est un pari (décision de David, 2026-10-26 ; `aggregateOrderedBlanks` et
+   `gradeBlanks`). Dans la copie corrigée, la figure vient d'abord, comme dans l'énoncé (gardes :
+   `figure-a-completer-mixte.svelte.test.ts`, `expected-result-figure.test.ts`).
 1. **`validationRules`** (précondition) : `divisor`, `multiple`, `range`, `equation_root`,
    `equivalent`, `predicate` (`isPrime`, `isEven`…), `custom`. Une règle violée → faux, avec son
    message français. `rulesSuffice` : les règles **décident seules**, `expectedAnswer` n'est plus
