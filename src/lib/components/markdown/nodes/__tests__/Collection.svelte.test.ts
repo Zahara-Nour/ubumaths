@@ -1,5 +1,5 @@
 /**
- * Bloc ```collection à l'écran (phase 0 : `docs/wip/collection-progress.md` § 2, 4, 5, 8 bis)
+ * Bloc ```collection à l'écran (phase 0 : `docs/archive/wip/collection-progress.md` § 2, 4, 5, 8 bis)
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).
  */

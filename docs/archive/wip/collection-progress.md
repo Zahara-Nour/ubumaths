@@ -1,14 +1,14 @@
 # Chantier « collection » — bloc ubumark ` ```collection `
 
-## Reprendre ici
+## Clôture
 
-_Mis à jour le 2026-10-25, après #1770 : chantier **EN PAUSE** (David), le chantier `monnaie` prend la suite._
+_Chantier CLOS le 2026-10-26 par David (journal archivé)._
 
-- **État** : EN PAUSE. Bloc ```collection livré sur `main` (#1766 ; PDF à 8 cm par défaut #1770 ; pas en prod) : parseur, scène, écran avec marquage au doigt, PDF, QCM, série figée, éditeur riche, doc `ubumark.md`.
-- **Prochaine action (à la reprise)** : recette de David (captures 390 px clair/sombre + PDF) ; modèles CP-001/004/070 par la session « questions » ; puis « construire » (CP-002). ` ```monnaie ` : chantier à part, `docs/archive/wip/monnaie-progress.md`.
-- **En attente de David** : recette (vérification manuelle notée, en prod après `deploy:prod`).
-- **Pièges en cours** : marques gardées si deux questions de suite ont exactement le même bloc (constat 2 de la revue, accepté) ; marquage au doigt seulement (assumé) ; la monnaie partage `utils/collection-scene.ts` : toute retouche de la scène doit garder les tests de la collection verts.
-- **Worktree / branche** : aucun (`../ubumaths-wt-collection` retiré après #1770).
+- **Livré** (sur `main`, pas encore en prod) : bloc ` ```collection ` (#1766), PDF à 8 cm par défaut (#1770) ; scène partagée avec la monnaie dans `utils/scene-commune.ts` (#1776), cadre rogné à l'écran corrigé pour les deux (#1781).
+- **Recette** : pas de recette à part ; la vérification manuelle en prod reste dans `docs/wip/verifications-manuelles.md` (ligne #1766), à faire après `deploy:prod`.
+- **Doc durable** : `docs/systeme/ubumark.md` (bloc ` ```collection `, scène commune).
+- **Reste hors chantier** : modèles CP-001/004/070 → session « questions » ; « construire » (CP-002) → lot commun avec la monnaie (CP-044, CP-071, CP-045).
+- **Points acceptés** : marques gardées si deux questions de suite ont exactement le même bloc (revue, constat 2) ; marquage au doigt seulement. Toute retouche de `scene-commune.ts` garde verts les tests de la collection ET de la monnaie.
 
 ---
 
@@ -204,3 +204,4 @@ Voir le message de la session du 2026-10-25 (Q1 à Q9).
 - 2026-10-25 : David tranche la taille au PDF : **8 cm** par défaut (cubes ≈ 3,6 mm au lieu de 2,7 mm), comme à l'écran.
 - 2026-10-25 : #1770 mergée (CI verte) ; worktree retiré.
 - 2026-10-25 : chantier mis EN PAUSE par David ; lancement du chantier `monnaie` (bloc ` ```monnaie `, scène partagée).
+- 2026-10-26 : chantier CLOS par David ; journal archivé, branche `chore/collection-cloture`.

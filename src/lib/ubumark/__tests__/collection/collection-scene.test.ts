@@ -1,5 +1,5 @@
 /**
- * Bloc ```collection — la scène (phase 0 : `docs/wip/collection-progress.md` § 2, 5, 6)
+ * Bloc ```collection — la scène (phase 0 : `docs/archive/wip/collection-progress.md` § 2, 5, 6)
  *
  * Position de chaque objet, calculée une fois pour l'écran et le PDF : quantités
  * exactes, rien ne se chevauche, tout tient dans le cadre, et le vrac est

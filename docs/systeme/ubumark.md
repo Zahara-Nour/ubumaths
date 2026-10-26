@@ -441,7 +441,7 @@ milliers posés — jamais de remarque de forme que la grille impose. Petites ca
 aide, jamais jugée ni gardée. Réponse fausse : chiffres faux surlignés (`wrongResultDigits`),
 opération résolue à côté ; bonne réponse affichée (`showCorrectAnswers`) : opération résolue.
 
-**Collection d'objets** (chantier [collection](../wip/collection-progress.md), CP-001, CP-070,
+**Collection d'objets** (chantier [collection](../archive/wip/collection-progress.md), CP-001, CP-070,
 CP-004 en partie) — `src/lib/ubumark/__tests__/collection/` :
 
 ````text
