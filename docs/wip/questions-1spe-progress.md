@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, lot 0-dérivation corrigé, page à cocher publiée._
+_Mis à jour le 2026-10-27, après #1879._
 
-- **État** : lots 0-suites (42) et 0-second-degré (14) publiés. Lot 0-dérivation (15 brouillons, § 8) : 4 corrigés retouchés (D13), page à cocher https://claude.ai/artifact/LmDNo6NwUSemJ3GLwoucK8, PR ouverte.
-- **Prochaine action** : merger la PR ; David lance la simulation puis `create-questions --dir scripts/questions/1spe-0-derivation --publier --mettre-a-jour` (4 contenus différents attendus) ; relecture de la page ; `publier-lot --publier` par David ; relire statuts et contenus en base. Puis variations et courbes, exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
+- **État** : lots 0-suites (42) et 0-second-degré (14) publiés. Lot 0-dérivation (15 brouillons, § 8) : 4 corrigés retouchés (D13), instantané mergé (#1879) dans `scripts/questions/1spe-0-derivation/`, rien d'écrit en base.
+- **Prochaine action** : David lance (`!`) `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-0-derivation` (simulation : 15 en base, exactement 4 « contenu différent »), puis `--publier --mettre-a-jour` ; relecture de la page https://claude.ai/artifact/LmDNo6NwUSemJ3GLwoucK8 (compter les `verdicts`) ; `publier-lot --dir … --publier` par David ; relire statuts et contenus en base. Puis variations et courbes, exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
 - **En attente de David** : écritures en prod (`!`) et relecture de la page.
-- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance (`!`) ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts (`$lib`) ; `question:specs` n'a pas d'option de variation : copier le fichier une variation par fichier dans le scratchpad pour les voir toutes.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `chore/questions-1spe`.
+- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts ; `question:specs` n'a pas d'option de variation : une copie par variation dans le scratchpad ; CI : job « CI Summary » fantôme, juger au statut du run.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -279,7 +279,7 @@ https://claude.ai/artifact/PkSiv8xPDNCrSvM432Zq9n (568c7bee et 9e1d084e : bloc `
 
 **Publication (2026-10-27)** : `create-questions --publier --mettre-a-jour` puis `publier-lot --publier` lancés par David ; 14 / 14 `published`, les 6 corrections relues en base.
 
-## 8. Lot 0-dérivation : vérification des brouillons
+## 8. Lot 0-dérivation : vérification des brouillons (mergé #1879, publication en attente)
 
 _2026-10-27. 15 brouillons tagués d'un point de la dérivation (260, 261, 265, 270, 272, 274, 394, 395), instantané
 `scripts/questions/1spe-0-derivation/`, `question:specs --apercu 3` puis un aperçu par variation (36), sorties dans
