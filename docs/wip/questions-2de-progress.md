@@ -6,15 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, décisions du § 5 prises._
+_Mis à jour le 2026-10-27, PR du lot 1 en préparation._
 
-- **État** : relevé, existant, classement faits ; Q1-Q7 tranchées (§ 5) ; phase 0 du lot 1 « corrections » écrite (§ 6).
-- **Prochaine action** : validation du § 6, puis worktree `../ubumaths-wt-questions-2de`, PR contenu puis PR rangement.
-- **En attente de David** : § 6 (Q8 reposée : retitrer sans fusionner ; 68db64b0 / f96d3e43 vers la terminale).
-- **Pièges en cours** : QCM en réécriture (case « choix », `figure-et-choix`, pas en prod) ; droite à placer
-  (`reponses-a-placer`) mergée mais pas en prod ; géométrie en refonte ; un tag exige le modèle sur le nœud
-  du point ou sa notion ; `--mettre-a-jour` ne touche pas un modèle publié (migration de contenu).
-- **Worktree / branche** : aucun.
+- **État** : lot 1 « corrections » écrit (§ 7) : deux migrations (contenu, rangement), tests verts et rouges sans.
+- **Prochaine action** : revues (`security-auditor`, `code-reviewer`), PR, CI, merge, `db:migrate` depuis le dépôt principal, contrôle MCP ; puis lot 2 (équations).
+- **En attente de David** : rien.
+- **Pièges en cours** : QCM en réécriture (case « choix », pas en prod) ; droite à placer pas en prod ; un tag
+  exige le modèle sur le nœud du point ou sa notion ; un point par programme (garde en base) ;
+  `--mettre-a-jour` ne touche pas un modèle publié ; le cahier de texte filtre `grades` au niveau exact.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-corrections`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -254,3 +254,33 @@ pour les modèles publiés ; `--mettre-a-jour` lancé par David pour les brouill
 change, aucun brouillon n'est publié. En miroir, personne ne perd l'accès à un modèle publié (rien n'est
 archivé). Effets visibles : un prof qui filtre « seconde » voit 8b59ca4b (il ne le voyait qu'en 1re spé) ;
 2-328 n'a plus de modèle.
+
+**Décisions de David (2026-10-27)** : § 6 validé, avec mes deux corrections — **titres partagés gardés**
+(c'est la convention de la base : 124 titres partagés par 480 modèles, la marche se lit au sous-titre ;
+seuls les 4 « Développer » n'avaient pas de sous-titre) et **68db64b0 / f96d3e43 vers la terminale spé**
+(TSPE-599). Niveaux des 6 modèles de 1re spé : **[2, 1_SPE]**, convenu avec la session `questions-1spe`
+(leur D3) : le cahier de texte filtre les modèles au niveau exact de la classe
+(`.contains('grades', [classData.grade])`), avec [2] seul la 1re spé les perdrait. La session 1re spé ne
+touche pas ces 6 modèles, ni a26e6e50, 68db64b0, f96d3e43.
+
+## 7. Lot 1, PR « corrections » (contenu + rangement, 2026-10-27)
+
+Une seule PR, deux migrations (comme la 6e) ; branche `feat/questions-2de-corrections`.
+
+- Instantané `questions-2de/etat-prod-2026-10-27/` (`questions-2de/releve-prod.ts`, lecture seule, points
+  de 2 et T_SPE : la requête plafonne à 1 000 lignes) : md5 des 22 modèles = MCP ; 0 donnée d'élève.
+- **Contenu** : `questions-2de/lot-corrections-2de.py` → `20261027192000_questions_2de_contenu` + fixture ;
+  7 modèles (8b59ca4b, 8c31675a, 939153b6, 85f6e96e, 1338da34, 288c2bf0, 6909bfde). Vérifiés par
+  `questions-2de/verifier-contenu.ts` (`checkTemplate` sur les lignes générées) : specs toutes vertes,
+  1 500 tirages sans échec. 8c31675a : la réunion en deux morceaux de deux intervalles accolés est jugée
+  `unoptimal_form` (`intervalForm`), spec ajoutée. Test `questions-2de-contenu.test.ts` vert (12) ; rouge
+  sans la migration (garde du rollback : 0 modèle sur 7 au contenu posé).
+- **Rangement** : `questions-2de/lot-rangement-2de.py` (générateur de la 6e, plus les tags **gardés**) →
+  `20261027192100_questions_2de_rangement_tags` + fixture ; 11 modèles, 9 niveaux, 3 déplacements, 3 tags
+  posés, 5 retirés, 6 gardés. Test `questions-2de-rangement-tags.test.ts` vert (21) ; rouge sans la
+  migration (garde du rollback : 2 modèles sur 11).
+- Revues : `security-auditor` sans finding bloquant (gardes TOUT ou RIEN, rollback avec tags gardés, md5
+  prod = « avant » 7/7, 11 modèles conformes en prod ; mineurs : le rollback du contenu laisse avancer
+  `updated_at`, comme la 6e). `code-reviewer` (opus) sans finding bloquant ; mineur corrigé : « avec un
+  coefficient » faux une fois sur 7 (coefficient tiré = 1) → sous-titre « La lettre multipliée par un
+  entier ». DoD : `check:incremental` 0 erreur, cliquet tenu, lint rapide vert.
