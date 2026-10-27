@@ -97,9 +97,9 @@ LOT = {
     '1338da34': part('1338da34', ['2-262'], consigne_deux_points,
                      sous_titre='Une lettre seule : $(3-x)^2$'),
     '288c2bf0': part('288c2bf0', ['2-262'], consigne_deux_points,
-                     sous_titre='Une lettre avec un coefficient : $(3+5x)^2$'),
+                     sous_titre='La lettre multipliée par un entier : $(3+5x)^2$'),
     '6909bfde': part('6909bfde', ['2-262'], None,
-                     sous_titre='Une lettre avec un coefficient : $(3-5x)^2$'),
+                     sous_titre='La lettre multipliée par un entier : $(3-5x)^2$'),
 }
 
 ENTETE = """-- ============================================================================

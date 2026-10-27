@@ -372,7 +372,7 @@
 			},
 			"apres": {
 				"title": "Développer $(a+b)^2$",
-				"description": "Une lettre avec un coefficient : $(3+5x)^2$",
+				"description": "La lettre multipliée par un entier : $(3+5x)^2$",
 				"variations": [
 					{
 						"blanks": [
@@ -633,7 +633,7 @@
 			},
 			"apres": {
 				"title": "Développer $(a-b)^2$",
-				"description": "Une lettre avec un coefficient : $(3-5x)^2$",
+				"description": "La lettre multipliée par un entier : $(3-5x)^2$",
 				"variations": [
 					{
 						"blanks": [

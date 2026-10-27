@@ -279,3 +279,8 @@ Une seule PR, deux migrations (comme la 6e) ; branche `feat/questions-2de-correc
   `20261027192100_questions_2de_rangement_tags` + fixture ; 11 modèles, 9 niveaux, 3 déplacements, 3 tags
   posés, 5 retirés, 6 gardés. Test `questions-2de-rangement-tags.test.ts` vert (21) ; rouge sans la
   migration (garde du rollback : 2 modèles sur 11).
+- Revues : `security-auditor` sans finding bloquant (gardes TOUT ou RIEN, rollback avec tags gardés, md5
+  prod = « avant » 7/7, 11 modèles conformes en prod ; mineurs : le rollback du contenu laisse avancer
+  `updated_at`, comme la 6e). `code-reviewer` (opus) sans finding bloquant ; mineur corrigé : « avec un
+  coefficient » faux une fois sur 7 (coefficient tiré = 1) → sous-titre « La lettre multipliée par un
+  entier ». DoD : `check:incremental` 0 erreur, cliquet tenu, lint rapide vert.
