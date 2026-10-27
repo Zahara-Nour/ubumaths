@@ -6,14 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1887._
+_Mis à jour le 2026-10-28, lot 2 publié._
 
-- **État** : lot 2 « équations et inéquations » (§ 8 à § 10) : 10 brouillons en prod, rangés et tagués (#1882),
-  relus : **10 OK sur 10** (page à cocher, aucun commentaire). `publier-lot.ts` en simulation : 10 passent.
-  #1877 (√12 = ½) est en prod (v0.52.0).
-- **Prochaine action** : **David** lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/2de-equations --publier` ;
-  vérifier `published` en base (MCP), puis choisir le lot 3 (§ 4 : points restants).
-- **En attente de David** : le `--publier` ci-dessus.
+- **État** : lots 1 (corrections) et 2 (équations et inéquations, 10 modèles) **publiés** ; lot 2 vérifié en
+  prod (MCP : 10 `published`, 10 rangés, 10 tags).
+- **Prochaine action** : lot 2 bis « lecture graphique » (§ 4 : 492, 338, 453, 456, 340, 459, 341, 462, 342,
+  465, 343, 468, 344, 471 ; outil `courbe`) — relevé des points et du bloc `courbe`, puis phase 0 à David.
+- **En attente de David** : son go pour le lot 2 bis.
 - **Pièges en cours** : la garde de doc lit `Doc-inchangée:` dans un COMMIT, pas dans la description de PR ;
   test `scripts/corrections` « cas rare » qui dépasse 5 s en CI de temps en temps (relancer) ; QCM en réécriture.
 - **Worktree / branche** : aucun.
@@ -339,3 +338,4 @@ produit nul en base. Phase 0 validée telle que proposée (mes 4 recommandations
   Unicode (MathML de Chrome sans `double-struck`). Page republiée, verdicts gardés.
 - Relecture : 10 OK sur 10 (verdicts comptés le 2026-10-28) ; `publier-lot.ts` en simulation : 10 brouillons
   passent ; #1877 vérifié sur `production` (v0.52.0).
+- **Publié** par David le 2026-10-28 (`publier-lot.ts --publier`, 10/10) ; MCP : 10 `published`, rangés, tagués.
