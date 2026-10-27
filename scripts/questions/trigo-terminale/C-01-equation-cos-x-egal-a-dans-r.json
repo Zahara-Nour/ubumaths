@@ -8,12 +8,9 @@
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
-	"options": {
-		"shuffleChoices": true
-	},
 	"variations": [
 		{
-			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\cos x={{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est formé des réels :",
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\cos x={{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est formé des réels :\n\n```choix\n- $x={{a}}+2k\\pi$ ou $x=-{{a}}+2k\\pi,\\ k\\in\\mathbb{Z}$\n- $x={{a}}+2k\\pi,\\ k\\in\\mathbb{Z}$\n- $x={{a}}+2k\\pi$ ou $x={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}+2k\\pi,\\ k\\in\\mathbb{Z}$\n- $x={{a}}+k\\pi$ ou $x=-{{a}}+k\\pi,\\ k\\in\\mathbb{Z}$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -32,31 +29,21 @@
 					"expression": "eval:12/gcd(12-n,12)"
 				}
 			],
-			"choices": [
-				{
-					"content": "$x={{a}}+2k\\pi$ ou $x=-{{a}}+2k\\pi,\\ k\\in\\mathbb{Z}$"
-				},
-				{
-					"content": "$x={{a}}+2k\\pi,\\ k\\in\\mathbb{Z}$"
-				},
-				{
-					"content": "$x={{a}}+2k\\pi$ ou $x={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}+2k\\pi,\\ k\\in\\mathbb{Z}$"
-				},
-				{
-					"content": "$x={{a}}+k\\pi$ ou $x=-{{a}}+k\\pi,\\ k\\in\\mathbb{Z}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$\\cos{{a}}={{eval:cos(n*\\pi/12)}}$ et $\\cos(-x)=\\cos x$ : sur un tour, les solutions sont ${{a}}$ et $-{{a}}$ (points du cercle de même abscisse).",
 					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) = cos({{n}}*pi/12)\nmode: points\nmesures: principales\n```",
 					"$\\cos$ est $2\\pi$-périodique : $\\textcolor{{{color:primary.0}}}{x={{a}}+2k\\pi\\text{ ou }x=-{{a}}+2k\\pi}$, $k\\in\\mathbb{Z}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\sin x={{eval:sin(n*\\pi/12)}}$.\n\nL'ensemble des solutions est formé des réels :",
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\sin x={{eval:sin(n*\\pi/12)}}$.\n\nL'ensemble des solutions est formé des réels :\n\n```choix\n- $x={{a}}+2k\\pi$ ou $x={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}+2k\\pi,\\ k\\in\\mathbb{Z}$\n- $x={{a}}+2k\\pi$ ou $x=-{{a}}+2k\\pi,\\ k\\in\\mathbb{Z}$\n- $x={{a}}+2k\\pi,\\ k\\in\\mathbb{Z}$\n- $x={{a}}+k\\pi,\\ k\\in\\mathbb{Z}$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -75,28 +62,18 @@
 					"expression": "eval:12/gcd(12-n,12)"
 				}
 			],
-			"choices": [
-				{
-					"content": "$x={{a}}+2k\\pi$ ou $x={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}+2k\\pi,\\ k\\in\\mathbb{Z}$"
-				},
-				{
-					"content": "$x={{a}}+2k\\pi$ ou $x=-{{a}}+2k\\pi,\\ k\\in\\mathbb{Z}$"
-				},
-				{
-					"content": "$x={{a}}+2k\\pi,\\ k\\in\\mathbb{Z}$"
-				},
-				{
-					"content": "$x={{a}}+k\\pi,\\ k\\in\\mathbb{Z}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$\\sin{{a}}={{eval:sin(n*\\pi/12)}}$ et $\\sin(\\pi-x)=\\sin x$ : sur un tour, les solutions sont ${{a}}$ et $\\pi-{{a}}={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}$ (points du cercle de même ordonnée).",
 					"```trig\npreset: custom\nangles: {{n}}*pi/12, {{eval:12-n}}*pi/12\nequation: sin(x) = sin({{n}}*pi/12)\nmode: points\nmesures: principales\n```",
 					"$\\sin$ est $2\\pi$-périodique : $\\textcolor{{{color:primary.0}}}{x={{a}}+2k\\pi\\text{ ou }x={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}+2k\\pi}$, $k\\in\\mathbb{Z}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -106,10 +83,10 @@
 			"variables": {
 				"a": "\\frac{\\pi}{3}"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : une seule famille → incorrect",
@@ -117,10 +94,10 @@
 			"variables": {
 				"a": "\\frac{\\pi}{3}"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : π − α (confusion avec sin) → incorrect",
@@ -128,10 +105,10 @@
 			"variables": {
 				"a": "\\frac{\\pi}{3}"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 : période π au lieu de 2π → incorrect",
@@ -139,10 +116,10 @@
 			"variables": {
 				"a": "\\frac{\\pi}{3}"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v1 : α et π − α → correct",
@@ -150,10 +127,10 @@
 			"variables": {
 				"a": "\\frac{\\pi}{3}"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : ±α (confusion avec cos) → incorrect",
@@ -161,10 +138,10 @@
 			"variables": {
 				"a": "\\frac{\\pi}{3}"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : une seule famille → incorrect",
@@ -172,10 +149,10 @@
 			"variables": {
 				"a": "\\frac{\\pi}{3}"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v1 : période π → incorrect",
@@ -183,10 +160,10 @@
 			"variables": {
 				"a": "\\frac{\\pi}{3}"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		}
 	]
 }

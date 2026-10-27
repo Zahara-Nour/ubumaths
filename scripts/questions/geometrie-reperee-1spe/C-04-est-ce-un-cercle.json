@@ -8,12 +8,9 @@
 	"level": 3,
 	"status": "draft",
 	"delay": 120,
-	"shared": {
-		"cleanCoefficients": true
-	},
 	"variations": [
 		{
-			"statement": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n```choix\nmelanger: non\n- $\\mathcal{E}$ est un cercle.\n- $\\mathcal{E}$ est réduit à un point.\n- $\\mathcal{E}$ est l'ensemble vide.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -40,18 +37,6 @@
 					"expression": "{{eval:a^2+b^2-S}}"
 				}
 			],
-			"choices": [
-				{
-					"content": "$\\mathcal{E}$ est un cercle."
-				},
-				{
-					"content": "$\\mathcal{E}$ est réduit à un point."
-				},
-				{
-					"content": "$\\mathcal{E}$ est l'ensemble vide."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-sign(S)}}"],
 			"correction": {
 				"steps": [
 					"On complète les carrés à l'aide de $(x-k)^2=x^2-2kx+k^2$ :\n\n$x^2{{eval:-2*a;+}}x=(x{{eval:-(a);+}})^2-{{eval:a^2}}$ et $y^2{{eval:-2*b;+}}y=(y{{eval:-(b);+}})^2-{{eval:b^2}}$.",
@@ -59,10 +44,15 @@
 					"Le premier membre est $\\Omega M^2$, avec $\\Omega({{a}}\\,;{{b}})$ et $M(x\\,;y)$ : c'est le signe du second membre qui décide.",
 					"{{if:S>0|Ici ${{S}}>0$ : on reconnaît $\\Omega M^2=r^2$ avec $r=\\sqrt{ {{S}} }={{k}}$. **$\\mathcal{E}$ est le cercle de centre $\\Omega({{a}}\\,;{{b}})$ et de rayon ${{k}}$.**}}{{if:S=0|Ici le second membre est nul : $\\Omega M^2=0$, donc $M=\\Omega$. **$\\mathcal{E}$ est réduit au point $\\Omega({{a}}\\,;{{b}})$** : ce n'est pas un cercle.}}{{if:S<0|Ici ${{S}}<0$, or $\\Omega M^2\\geqslant 0$ (somme de deux carrés) : aucun point ne vérifie l'équation. **$\\mathcal{E}$ est l'ensemble vide** : ce n'est pas un cercle.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-sign(S)}}"
+				}
+			]
 		},
 		{
-			"statement": "Le plan est muni d'un repère orthonormé. L'équation $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$ est-elle l'équation d'un cercle ?",
+			"statement": "Le plan est muni d'un repère orthonormé. L'équation $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$ est-elle l'équation d'un cercle ?\n\n```choix\nmelanger: non\n- Oui, c'est l'équation d'un cercle.\n- Non, ce n'est pas l'équation d'un cercle.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -89,15 +79,6 @@
 					"expression": "{{eval:a^2+b^2-S}}"
 				}
 			],
-			"choices": [
-				{
-					"content": "Oui, c'est l'équation d'un cercle."
-				},
-				{
-					"content": "Non, ce n'est pas l'équation d'un cercle."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-(sign(S)+abs(sign(S)))/2}}"],
 			"correction": {
 				"steps": [
 					"On complète les carrés à l'aide de $(x-k)^2=x^2-2kx+k^2$ :\n\n$x^2{{eval:-2*a;+}}x=(x{{eval:-(a);+}})^2-{{eval:a^2}}$ et $y^2{{eval:-2*b;+}}y=(y{{eval:-(b);+}})^2-{{eval:b^2}}$.",
@@ -105,10 +86,15 @@
 					"Le premier membre est $\\Omega M^2$, avec $\\Omega({{a}}\\,;{{b}})$ et $M(x\\,;y)$ : c'est le signe du second membre qui décide.",
 					"{{if:S>0|Ici ${{S}}>0$ : on reconnaît $\\Omega M^2=r^2$ avec $r=\\sqrt{ {{S}} }={{k}}$. **C'est l'équation d'un cercle** : le cercle de centre $\\Omega({{a}}\\,;{{b}})$ et de rayon ${{k}}$.}}{{if:S=0|Ici le second membre est nul : $\\Omega M^2=0$, donc $M=\\Omega$. **Ce n'est pas l'équation d'un cercle** : l'ensemble des points est réduit au point $\\Omega({{a}}\\,;{{b}})$.}}{{if:S<0|Ici ${{S}}<0$, or $\\Omega M^2\\geqslant 0$ (somme de deux carrés) : aucun point ne vérifie l'équation. **Ce n'est pas l'équation d'un cercle** : l'ensemble des points est vide.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(sign(S)+abs(sign(S)))/2}}"
+				}
+			]
 		},
 		{
-			"statement": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que ${{m}}x^2+{{m}}y^2{{eval:-2*m*a;+}}x{{eval:-2*m*b;+}}y{{eval:m*c;+}}=0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que ${{m}}x^2+{{m}}y^2{{eval:-2*m*a;+}}x{{eval:-2*m*b;+}}y{{eval:m*c;+}}=0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n```choix\nmelanger: non\n- $\\mathcal{E}$ est un cercle.\n- $\\mathcal{E}$ est réduit à un point.\n- $\\mathcal{E}$ est l'ensemble vide.\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -139,18 +125,6 @@
 					"expression": "{{eval:a^2+b^2-S}}"
 				}
 			],
-			"choices": [
-				{
-					"content": "$\\mathcal{E}$ est un cercle."
-				},
-				{
-					"content": "$\\mathcal{E}$ est réduit à un point."
-				},
-				{
-					"content": "$\\mathcal{E}$ est l'ensemble vide."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-sign(S)}}"],
 			"correction": {
 				"steps": [
 					"On divise les deux membres par ${{m}}$ pour que les coefficients de $x^2$ et de $y^2$ valent $1$ : $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$.",
@@ -159,9 +133,22 @@
 					"Le premier membre est $\\Omega M^2$, avec $\\Omega({{a}}\\,;{{b}})$ et $M(x\\,;y)$ : c'est le signe du second membre qui décide.",
 					"{{if:S>0|Ici ${{S}}>0$ : on reconnaît $\\Omega M^2=r^2$ avec $r=\\sqrt{ {{S}} }={{k}}$. **$\\mathcal{E}$ est le cercle de centre $\\Omega({{a}}\\,;{{b}})$ et de rayon ${{k}}$.**}}{{if:S=0|Ici le second membre est nul : $\\Omega M^2=0$, donc $M=\\Omega$. **$\\mathcal{E}$ est réduit au point $\\Omega({{a}}\\,;{{b}})$** : ce n'est pas un cercle.}}{{if:S<0|Ici ${{S}}<0$, or $\\Omega M^2\\geqslant 0$ (somme de deux carrés) : aucun point ne vérifie l'équation. **$\\mathcal{E}$ est l'ensemble vide** : ce n'est pas un cercle.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-sign(S)}}"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : cercle (S=9)",
@@ -172,10 +159,10 @@
 				"t": "1",
 				"k": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : cercle (S=9), autre choix refusé",
@@ -186,10 +173,10 @@
 				"t": "1",
 				"k": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : point (S=0)",
@@ -200,10 +187,10 @@
 				"t": "0",
 				"k": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : point (S=0), autre choix refusé",
@@ -214,10 +201,10 @@
 				"t": "0",
 				"k": "3"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 : vide (S=−9)",
@@ -228,10 +215,10 @@
 				"t": "-1",
 				"k": "3"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 : vide (S=−9), autre choix refusé",
@@ -242,10 +229,10 @@
 				"t": "-1",
 				"k": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : cercle (S=9)",
@@ -257,10 +244,10 @@
 				"k": "3",
 				"m": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : cercle (S=9), autre choix refusé",
@@ -272,10 +259,10 @@
 				"k": "3",
 				"m": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : point (S=0)",
@@ -287,10 +274,10 @@
 				"k": "3",
 				"m": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : point (S=0), autre choix refusé",
@@ -302,10 +289,10 @@
 				"k": "3",
 				"m": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 : vide (S=−9)",
@@ -317,10 +304,10 @@
 				"k": "3",
 				"m": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 : vide (S=−9), autre choix refusé",
@@ -332,10 +319,10 @@
 				"k": "3",
 				"m": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : cercle",
@@ -346,10 +333,10 @@
 				"t": "1",
 				"k": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : cercle, autre choix refusé",
@@ -360,10 +347,10 @@
 				"t": "1",
 				"k": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : point",
@@ -374,10 +361,10 @@
 				"t": "0",
 				"k": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : point, autre choix refusé",
@@ -388,10 +375,10 @@
 				"t": "0",
 				"k": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : vide",
@@ -402,10 +389,10 @@
 				"t": "-1",
 				"k": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : vide, autre choix refusé",
@@ -416,16 +403,10 @@
 				"t": "-1",
 				"k": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": false
-	}
+	]
 }

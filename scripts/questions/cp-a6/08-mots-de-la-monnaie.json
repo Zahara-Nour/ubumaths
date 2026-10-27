@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Un livre coûte ${{a}}~\\unit{€}$. Un ballon coûte ${{b}}~\\unit{€}$.\n\nLequel est le plus **cher** ?",
+			"statement": "Un livre coûte ${{a}}~\\unit{€}$. Un ballon coûte ${{b}}~\\unit{€}$.\n\nLequel est le plus **cher** ?\n\n```choix\n- le livre\n- le ballon\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -22,23 +22,19 @@
 				}
 			],
 			"conditions": ["abs(a - b) >= 3"],
-			"choices": [
-				{
-					"content": "le livre"
-				},
-				{
-					"content": "le ballon"
-				}
-			],
-			"correctChoiceIndex": ["{{if:a>b|0|1}}"],
 			"correction": {
 				"steps": [
 					"{{if:a>b|${{a}}>{{b}}$|${{a}}<{{b}}$}} : le plus cher est celui qui coûte le plus d'euros, {{if:a>b|le livre|le ballon}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>b|0|1}}"
+				}
+			]
 		},
 		{
-			"statement": "Un livre coûte ${{a}}~\\unit{€}$. Un ballon coûte ${{b}}~\\unit{€}$.\n\nLequel est le **moins cher** ?",
+			"statement": "Un livre coûte ${{a}}~\\unit{€}$. Un ballon coûte ${{b}}~\\unit{€}$.\n\nLequel est le **moins cher** ?\n\n```choix\n- le livre\n- le ballon\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -50,23 +46,19 @@
 				}
 			],
 			"conditions": ["abs(a - b) >= 3"],
-			"choices": [
-				{
-					"content": "le livre"
-				},
-				{
-					"content": "le ballon"
-				}
-			],
-			"correctChoiceIndex": ["{{if:a<b|0|1}}"],
 			"correction": {
 				"steps": [
 					"{{if:a>b|${{a}}>{{b}}$|${{a}}<{{b}}$}} : le moins cher est celui qui coûte le moins d'euros, {{if:a<b|le livre|le ballon}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a<b|0|1}}"
+				}
+			]
 		},
 		{
-			"statement": "Est-ce que {{if:k==1|$1~\\unit{€}$|{{if:k==2|$2~\\unit{€}$|{{if:k==3|$5~\\unit{€}$|{{if:k==4|$10~\\unit{€}$|{{if:k==5|$20~\\unit{€}$|$50~\\unit{€}$}}}}}}}}}} est une pièce ou un billet ?",
+			"statement": "Est-ce que {{if:k==1|$1~\\unit{€}$|{{if:k==2|$2~\\unit{€}$|{{if:k==3|$5~\\unit{€}$|{{if:k==4|$10~\\unit{€}$|{{if:k==5|$20~\\unit{€}$|$50~\\unit{€}$}}}}}}}}}} est une pièce ou un billet ?\n\n```choix\n- une pièce\n- un billet\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -74,24 +66,20 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "une pièce"
-				},
-				{
-					"content": "un billet"
-				}
-			],
-			"correctChoiceIndex": ["{{if:k<=2|0|1}}"],
 			"correction": {
 				"steps": [
 					"Les **pièces** valent $1~\\unit{€}$ ou $2~\\unit{€}$ ; les **billets** valent $5~\\unit{€}$, $10~\\unit{€}$, $20~\\unit{€}$, $50~\\unit{€}$ ou plus.",
 					"{{if:k==1|$1~\\unit{€}$, c'est une pièce.|{{if:k==2|$2~\\unit{€}$, c'est une pièce.|{{if:k==3|$5~\\unit{€}$, c'est un billet.|{{if:k==4|$10~\\unit{€}$, c'est un billet.|{{if:k==5|$20~\\unit{€}$, c'est un billet.|$50~\\unit{€}$, c'est un billet.}}}}}}}}}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k<=2|0|1}}"
+				}
+			]
 		},
 		{
-			"statement": "Tom achète une glace à ${{p}}~\\unit{€}$. Il donne un billet de $10~\\unit{€}$. Le marchand lui **rend la monnaie**.\n\nQue veut dire « rendre la monnaie » ?",
+			"statement": "Tom achète une glace à ${{p}}~\\unit{€}$. Il donne un billet de $10~\\unit{€}$. Le marchand lui **rend la monnaie**.\n\nQue veut dire « rendre la monnaie » ?\n\n```choix\n- Le marchand donne de l'argent à Tom.\n- Tom donne encore de l'argent au marchand.\n- Le marchand donne une autre glace à Tom.\n```",
 			"variables": [
 				{
 					"name": "p",
@@ -99,23 +87,16 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "Le marchand donne de l'argent à Tom."
-				},
-				{
-					"content": "Tom donne encore de l'argent au marchand."
-				},
-				{
-					"content": "Le marchand donne une autre glace à Tom."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Tom a donné plus d'argent que le prix de la glace : le marchand lui rend ce qui est en trop. **Rendre la monnaie**, c'est donner de l'argent à celui qui a payé."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -129,7 +110,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : le ballon",
@@ -141,7 +122,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "livre 5 €, ballon 40 € : le ballon est le plus cher",
@@ -153,7 +134,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "livre 12 €, ballon 8 € : le ballon est le moins cher",
@@ -165,7 +146,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : moins cher, le livre",
@@ -177,7 +158,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "borne : livre 100 €, ballon 2 €",
@@ -189,7 +170,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "2 € : une pièce",
@@ -200,7 +181,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : 2 €, un billet",
@@ -211,7 +192,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "5 € : un billet",
@@ -222,7 +203,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "borne : 50 €, un billet",
@@ -233,7 +214,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "rendre la monnaie : le marchand donne",
@@ -244,7 +225,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : Tom donne encore",
@@ -255,7 +236,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		}
 	]
 }

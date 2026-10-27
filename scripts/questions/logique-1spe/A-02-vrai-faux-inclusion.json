@@ -10,7 +10,7 @@
 	"delay": 60,
 	"variations": [
 		{
-			"statement": "L'affirmation suivante est-elle vraie ou fausse ?\n\n$$[{{a}};{{b}}]\\subset\\,]{{c}};{{d}}[$$",
+			"statement": "L'affirmation suivante est-elle vraie ou fausse ?\n\n$$[{{a}};{{b}}]\\subset\\,]{{c}};{{d}}[$$\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -42,23 +42,19 @@
 				}
 			],
 			"conditions": ["u+v < g"],
-			"choices": [
-				{
-					"content": "Vrai"
-				},
-				{
-					"content": "Faux"
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-(1+sign(u))*(1+sign(v))/4}}"],
 			"correction": {
 				"steps": [
 					"{{if:u>0 && v>0|${{c}}<{{a}}$ et ${{b}}<{{d}}$ : tout réel $x$ de $[{{a}};{{b}}]$ vérifie ${{c}}<{{a}}\\leqslant x\\leqslant {{b}}<{{d}}$, donc $x\\in\\,]{{c}};{{d}}[$. **L'affirmation est vraie.**}}{{if:u<0|Le réel ${{a}}$ appartient à $[{{a}};{{b}}]$, mais ${{a}}\\leqslant {{c}}$, donc ${{a}}\\notin\\,]{{c}};{{d}}[$ : c'est un contre-exemple. **L'affirmation est fausse.**}}{{if:u>0 && v<0|Le réel ${{b}}$ appartient à $[{{a}};{{b}}]$, mais ${{b}}\\geqslant {{d}}$, donc ${{b}}\\notin\\,]{{c}};{{d}}[$ : c'est un contre-exemple. **L'affirmation est fausse.**}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(1+sign(u))*(1+sign(v))/4}}"
+				}
+			]
 		},
 		{
-			"statement": "L'affirmation suivante est-elle vraie ou fausse ?\n\n$${{if:m=1|\\mathbb{N}}}{{if:m=2|\\mathbb{Z}}}{{if:m=3|𝔻}}{{if:m=4|\\mathbb{Q}}}{{if:m=5|\\mathbb{R}}} \\subset {{if:n=1|\\mathbb{N}}}{{if:n=2|\\mathbb{Z}}}{{if:n=3|𝔻}}{{if:n=4|\\mathbb{Q}}}{{if:n=5|\\mathbb{R}}}$$",
+			"statement": "L'affirmation suivante est-elle vraie ou fausse ?\n\n$${{if:m=1|\\mathbb{N}}}{{if:m=2|\\mathbb{Z}}}{{if:m=3|𝔻}}{{if:m=4|\\mathbb{Q}}}{{if:m=5|\\mathbb{R}}} \\subset {{if:n=1|\\mathbb{N}}}{{if:n=2|\\mathbb{Z}}}{{if:n=3|𝔻}}{{if:n=4|\\mathbb{Q}}}{{if:n=5|\\mathbb{R}}}$$\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -70,24 +66,20 @@
 				}
 			],
 			"conditions": ["m != n"],
-			"choices": [
-				{
-					"content": "Vrai"
-				},
-				{
-					"content": "Faux"
-				}
-			],
-			"correctChoiceIndex": ["{{eval:(1+sign(m-n))/2}}"],
 			"correction": {
 				"steps": [
 					"On a $\\mathbb{N} \\subset\\mathbb{Z} \\subset 𝔻 \\subset\\mathbb{Q} \\subset\\mathbb{R}$, et chaque inclusion est stricte.",
 					"{{if:m<n|L'ensemble de gauche est placé avant celui de droite dans cette chaîne : **l'affirmation est vraie.**}}{{if:m>n && m=2|Contre-exemple : $-1\\in\\mathbb{Z}$ mais $-1\\notin\\mathbb{N}$. **L'affirmation est fausse.**}}{{if:m>n && m=3|Contre-exemple : $0{,}5\\in 𝔻$, mais $0{,}5$ n'est pas un entier : il n'appartient ni à $\\mathbb{Z}$ ni à $\\mathbb{N}$. **L'affirmation est fausse.**}}{{if:m>n && m=4|Contre-exemple : $\\dfrac{1}{3}\\in\\mathbb{Q}$, mais $\\dfrac{1}{3}=0{,}333\\ldots$ n'est pas décimal : $\\dfrac{1}{3}\\notin 𝔻$, donc $\\dfrac{1}{3}\\notin\\mathbb{Z}$ et $\\dfrac{1}{3}\\notin\\mathbb{N}$. **L'affirmation est fausse.**}}{{if:m>n && m=5|Contre-exemple : $\\sqrt{2}\\in\\mathbb{R}$, mais $\\sqrt{2}$ est irrationnel : $\\sqrt{2}\\notin\\mathbb{Q}$, donc $\\sqrt{2}\\notin 𝔻$, $\\sqrt{2}\\notin\\mathbb{Z}$ et $\\sqrt{2}\\notin\\mathbb{N}$. **L'affirmation est fausse.**}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1+sign(m-n))/2}}"
+				}
+			]
 		},
 		{
-			"statement": "On considère l'ensemble $A=\\{ {{w1}};{{w2}};{{w3}};{{w4}};{{w5}} \\}$.\n\nL'affirmation suivante est-elle vraie ou fausse ?\n\n$$\\{ {{p}};{{q}} \\}\\subset A$$",
+			"statement": "On considère l'ensemble $A=\\{ {{w1}};{{w2}};{{w3}};{{w4}};{{w5}} \\}$.\n\nL'affirmation suivante est-elle vraie ou fausse ?\n\n$$\\{ {{p}};{{q}} \\}\\subset A$$\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
 			"variables": [
 				{
 					"name": "w1",
@@ -138,22 +130,23 @@
 					"expression": "{{eval:w4+t*(2-t)}}"
 				}
 			],
-			"choices": [
-				{
-					"content": "Vrai"
-				},
-				{
-					"content": "Faux"
-				}
-			],
-			"correctChoiceIndex": ["{{eval:sign(t)}}"],
 			"correction": {
 				"steps": [
 					"{{if:t=0|${{p}}\\in A$ et ${{q}}\\in A$ : chaque élément de $\\{ {{p}};{{q}} \\}$ appartient à $A$. **L'affirmation est vraie.**}}{{if:t=1|${{q}}\\notin A$ : l'élément ${{q}}$ de $\\{ {{p}};{{q}} \\}$ n'appartient pas à $A$. **L'affirmation est fausse.**}}{{if:t=2|${{p}}\\notin A$ : l'élément ${{p}}$ de $\\{ {{p}};{{q}} \\}$ n'appartient pas à $A$. **L'affirmation est fausse.**}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sign(t)}}"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 [2;4] ⊂ ]0;5[ : vrai",
@@ -164,10 +157,10 @@
 				"u": "2",
 				"v": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 [2;4] ⊂ ]0;5[ : « faux » refusé",
@@ -178,10 +171,10 @@
 				"u": "2",
 				"v": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 [0;4] ⊂ ]0;5[ : faux (borne 0 exclue)",
@@ -192,10 +185,10 @@
 				"u": "-1",
 				"v": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 [0;4] ⊂ ]0;5[ : « vrai » refusé",
@@ -206,10 +199,10 @@
 				"u": "-1",
 				"v": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 [2;6] ⊂ ]0;5[ : faux",
@@ -220,10 +213,10 @@
 				"u": "2",
 				"v": "-1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 ℕ ⊂ ℤ : vrai",
@@ -232,10 +225,10 @@
 				"m": "1",
 				"n": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 ℝ ⊂ ℤ : faux",
@@ -244,10 +237,10 @@
 				"m": "5",
 				"n": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 𝔻 ⊂ ℕ : « vrai » refusé",
@@ -256,10 +249,10 @@
 				"m": "3",
 				"n": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 {7;15} ⊂ A : vrai",
@@ -272,10 +265,10 @@
 				"k4": "3",
 				"t": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 {7;16} ⊂ A : faux",
@@ -288,10 +281,10 @@
 				"k4": "3",
 				"t": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 {8;15} ⊂ A : « vrai » refusé",
@@ -304,16 +297,10 @@
 				"k4": "3",
 				"t": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": false
-	}
+	]
 }

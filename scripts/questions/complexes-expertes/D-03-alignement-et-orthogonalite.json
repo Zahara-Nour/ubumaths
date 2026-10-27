@@ -8,15 +8,9 @@
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
-	"shared": {
-		"cleanCoefficients": true
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Dans le plan complexe, $z_A={{a}}+({{b}})i$, $z_B={{eval:a+c}}+({{eval:b+d}})i$ et $z_C={{eval:a+X}}+({{eval:b+Y}})i$. En calculant $\\dfrac{z_C-z_A}{z_B-z_A}$, que peut-on dire ?",
+			"statement": "Dans le plan complexe, $z_A={{a}}+({{b}})i$, $z_B={{eval:a+c}}+({{eval:b+d}})i$ et $z_C={{eval:a+X}}+({{eval:b+Y}})i$. En calculant $\\dfrac{z_C-z_A}{z_B-z_A}$, que peut-on dire ?\n\n```choix\nmelanger: non\n- Les points $A$, $B$ et $C$ sont alignés.\n- Les droites $(AB)$ et $(AC)$ sont perpendiculaires.\n- Ni l'un ni l'autre.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -47,27 +41,20 @@
 					"expression": "eval:l*d"
 				}
 			],
-			"choices": [
-				{
-					"content": "Les points $A$, $B$ et $C$ sont alignés."
-				},
-				{
-					"content": "Les droites $(AB)$ et $(AC)$ sont perpendiculaires."
-				},
-				{
-					"content": "Ni l'un ni l'autre."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$z_B-z_A={{c}}+({{d}})i$ et $z_C-z_A={{X}}+({{Y}})i$, donc $\\dfrac{z_C-z_A}{z_B-z_A}={{l}}$.",
 					"Ce quotient est réel : $\\overrightarrow{AC}={{l}}\\overrightarrow{AB}$, les points $A$, $B$ et $C$ sont $\\textcolor{{{color:primary.0}}}{\\text{alignés}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Dans le plan complexe, $z_A={{a}}+({{b}})i$, $z_B={{eval:a+c}}+({{eval:b+d}})i$ et $z_C={{eval:a+X}}+({{eval:b+Y}})i$. En calculant $\\dfrac{z_C-z_A}{z_B-z_A}$, que peut-on dire ?",
+			"statement": "Dans le plan complexe, $z_A={{a}}+({{b}})i$, $z_B={{eval:a+c}}+({{eval:b+d}})i$ et $z_C={{eval:a+X}}+({{eval:b+Y}})i$. En calculant $\\dfrac{z_C-z_A}{z_B-z_A}$, que peut-on dire ?\n\n```choix\nmelanger: non\n- Les points $A$, $B$ et $C$ sont alignés.\n- Les droites $(AB)$ et $(AC)$ sont perpendiculaires.\n- Ni l'un ni l'autre.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -98,27 +85,20 @@
 					"expression": "eval:m*c"
 				}
 			],
-			"choices": [
-				{
-					"content": "Les points $A$, $B$ et $C$ sont alignés."
-				},
-				{
-					"content": "Les droites $(AB)$ et $(AC)$ sont perpendiculaires."
-				},
-				{
-					"content": "Ni l'un ni l'autre."
-				}
-			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"$z_B-z_A={{c}}+({{d}})i$ et $z_C-z_A={{X}}+({{Y}})i$, donc $\\dfrac{z_C-z_A}{z_B-z_A}={{if:m==1|i|{{if:m==-1|-i|{{eval:m}}i}}}}$.",
 					"Ce quotient est imaginaire pur : un argument vaut $\\pm\\frac{\\pi}{2}$, donc les droites $(AB)$ et $(AC)$ sont $\\textcolor{{{color:primary.0}}}{\\text{perpendiculaires}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Dans le plan complexe, $z_A={{a}}+({{b}})i$, $z_B={{eval:a+c}}+({{eval:b+d}})i$ et $z_C={{eval:a+X}}+({{eval:b+Y}})i$. En calculant $\\dfrac{z_C-z_A}{z_B-z_A}$, que peut-on dire ?",
+			"statement": "Dans le plan complexe, $z_A={{a}}+({{b}})i$, $z_B={{eval:a+c}}+({{eval:b+d}})i$ et $z_C={{eval:a+X}}+({{eval:b+Y}})i$. En calculant $\\dfrac{z_C-z_A}{z_B-z_A}$, que peut-on dire ?\n\n```choix\nmelanger: non\n- Les points $A$, $B$ et $C$ sont alignés.\n- Les droites $(AB)$ et $(AC)$ sont perpendiculaires.\n- Ni l'un ni l'autre.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -146,107 +126,103 @@
 				}
 			],
 			"conditions": ["c != d", "c != -d"],
-			"choices": [
-				{
-					"content": "Les points $A$, $B$ et $C$ sont alignés."
-				},
-				{
-					"content": "Les droites $(AB)$ et $(AC)$ sont perpendiculaires."
-				},
-				{
-					"content": "Ni l'un ni l'autre."
-				}
-			],
-			"correctChoiceIndex": ["2"],
 			"correction": {
 				"steps": [
 					"$z_B-z_A={{c}}+({{d}})i$ et $z_C-z_A={{X}}+({{Y}})i$, donc $\\dfrac{z_C-z_A}{z_B-z_A}=1+i$.",
 					"Ce quotient n'est ni réel ni imaginaire pur (un argument vaut $\\frac{\\pi}{4}$) : $\\textcolor{{{color:primary.0}}}{\\text{ni l'un ni l'autre}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"testSpecs": [
 		{
 			"description": "v0 choix 0 → correct",
 			"variationIndex": 0,
 			"variables": {},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 choix 1 → incorrect",
 			"variationIndex": 0,
 			"variables": {},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 choix 2 → incorrect",
 			"variationIndex": 0,
 			"variables": {},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v1 choix 0 → incorrect",
 			"variationIndex": 1,
 			"variables": {},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 choix 1 → correct",
 			"variationIndex": 1,
 			"variables": {},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 choix 2 → incorrect",
 			"variationIndex": 1,
 			"variables": {},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 choix 0 → incorrect",
 			"variationIndex": 2,
 			"variables": {},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 choix 1 → incorrect",
 			"variationIndex": 2,
 			"variables": {},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 choix 2 → correct",
 			"variationIndex": 2,
 			"variables": {},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		}
 	]
 }

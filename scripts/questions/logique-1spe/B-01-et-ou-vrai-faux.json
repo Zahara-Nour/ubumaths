@@ -10,7 +10,7 @@
 	"delay": 60,
 	"variations": [
 		{
-			"statement": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x{{if:s1=1|\\geqslant|>}}{{a}}$ et $x{{if:s2=1|\\leqslant|<}}{{b}}$ ».\n\nPour $x={{c}}$, la proposition $P$ est-elle vraie ou fausse ?",
+			"statement": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x{{if:s1=1|\\geqslant|>}}{{a}}$ et $x{{if:s2=1|\\leqslant|<}}{{b}}$ ».\n\nPour $x={{c}}$, la proposition $P$ est-elle vraie ou fausse ?\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -58,15 +58,6 @@
 				}
 			],
 			"conditions": ["t <= d+2"],
-			"choices": [
-				{
-					"content": "Vrai"
-				},
-				{
-					"content": "Faux"
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-T1*T2}}"],
 			"correction": {
 				"steps": [
 					"On teste chacune des deux propositions pour $x={{c}}$.",
@@ -75,10 +66,15 @@
 					"Une proposition « $A$ et $B$ » est vraie seulement quand $A$ et $B$ sont **toutes les deux** vraies.",
 					"{{if:T1*T2=1|Ici les deux sont vraies : **$P$ est vraie** pour $x={{c}}$.|Ici au moins l'une des deux est fausse : **$P$ est fausse** pour $x={{c}}$.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-T1*T2}}"
+				}
+			]
 		},
 		{
-			"statement": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x{{if:s1=1|\\leqslant|<}}{{a}}$ ou $x{{if:s2=1|\\geqslant|>}}{{b}}$ ».\n\nPour $x={{c}}$, la proposition $P$ est-elle vraie ou fausse ?",
+			"statement": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x{{if:s1=1|\\leqslant|<}}{{a}}$ ou $x{{if:s2=1|\\geqslant|>}}{{b}}$ ».\n\nPour $x={{c}}$, la proposition $P$ est-elle vraie ou fausse ?\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -126,15 +122,6 @@
 				}
 			],
 			"conditions": ["t <= d+2"],
-			"choices": [
-				{
-					"content": "Vrai"
-				},
-				{
-					"content": "Faux"
-				}
-			],
-			"correctChoiceIndex": ["{{eval:(1-T1)*(1-T2)}}"],
 			"correction": {
 				"steps": [
 					"On teste chacune des deux propositions pour $x={{c}}$.",
@@ -143,10 +130,15 @@
 					"Une proposition « $A$ ou $B$ » est vraie dès que **l'une au moins** des deux est vraie (le « ou » mathématique n'est pas exclusif).",
 					"{{if:T1+T2=0|Ici les deux sont fausses : **$P$ est fausse** pour $x={{c}}$.|Ici au moins l'une des deux est vraie : **$P$ est vraie** pour $x={{c}}$.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-T1)*(1-T2)}}"
+				}
+			]
 		},
 		{
-			"statement": "Soit $n$ un entier naturel. On considère la proposition $P$ : « $n$ est un multiple de ${{m}}$ {{if:k=1|ou|et}} $n>{{a}}$ ».\n\nPour $n={{n}}$, la proposition $P$ est-elle vraie ou fausse ?",
+			"statement": "Soit $n$ un entier naturel. On considère la proposition $P$ : « $n$ est un multiple de ${{m}}$ {{if:k=1|ou|et}} $n>{{a}}$ ».\n\nPour $n={{n}}$, la proposition $P$ est-elle vraie ou fausse ?\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -178,15 +170,6 @@
 				}
 			],
 			"conditions": ["abs(n-a) <= 8"],
-			"choices": [
-				{
-					"content": "Vrai"
-				},
-				{
-					"content": "Faux"
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-T}}"],
 			"correction": {
 				"steps": [
 					"« $n$ est un multiple de ${{m}}$ » est {{if:T1=1|**vraie** : ${{n}}={{m}}\\times{{eval:n/m}}$.|**fausse** : la division de ${{n}}$ par ${{m}}$ a pour reste ${{eval:mod(n,m)}}$.}}",
@@ -194,9 +177,19 @@
 					"{{if:k=1|Une proposition « $A$ ou $B$ » est vraie dès que l'une au moins des deux est vraie.|Une proposition « $A$ et $B$ » est vraie seulement quand les deux sont vraies.}}",
 					"{{if:T=1|Donc **$P$ est vraie** pour $n={{n}}$.|Donc **$P$ est fausse** pour $n={{n}}$.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-T}}"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "et : 5 dans ]2;6[ : bonne réponse",
@@ -208,10 +201,10 @@
 				"s1": "0",
 				"s2": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "et : 5 dans ]2;6[ : autre choix refusé",
@@ -223,10 +216,10 @@
 				"s1": "0",
 				"s2": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "et : x=a avec inégalité stricte : bonne réponse",
@@ -238,10 +231,10 @@
 				"s1": "0",
 				"s2": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "et : x=a avec inégalité stricte : autre choix refusé",
@@ -253,10 +246,10 @@
 				"s1": "0",
 				"s2": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "et : x=a avec ≥ : bonne réponse",
@@ -268,10 +261,10 @@
 				"s1": "1",
 				"s2": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "et : x=a avec ≥ : autre choix refusé",
@@ -283,10 +276,10 @@
 				"s1": "1",
 				"s2": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "et : x=b avec < : bonne réponse",
@@ -298,10 +291,10 @@
 				"s1": "0",
 				"s2": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "et : x=b avec < : autre choix refusé",
@@ -313,10 +306,10 @@
 				"s1": "0",
 				"s2": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "ou : entre les deux : bonne réponse",
@@ -328,10 +321,10 @@
 				"s1": "0",
 				"s2": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "ou : entre les deux : autre choix refusé",
@@ -343,10 +336,10 @@
 				"s1": "0",
 				"s2": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "ou : au-delà de b : bonne réponse",
@@ -358,10 +351,10 @@
 				"s1": "0",
 				"s2": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "ou : au-delà de b : autre choix refusé",
@@ -373,10 +366,10 @@
 				"s1": "0",
 				"s2": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "ou : x=a avec ≤ : bonne réponse",
@@ -388,10 +381,10 @@
 				"s1": "1",
 				"s2": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "ou : x=a avec ≤ : autre choix refusé",
@@ -403,10 +396,10 @@
 				"s1": "1",
 				"s2": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "entiers et : 12 : bonne réponse",
@@ -417,10 +410,10 @@
 				"n": "12",
 				"k": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "entiers et : 12 : autre choix refusé",
@@ -431,10 +424,10 @@
 				"n": "12",
 				"k": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "entiers et : 9 : bonne réponse",
@@ -445,10 +438,10 @@
 				"n": "9",
 				"k": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "entiers et : 9 : autre choix refusé",
@@ -459,10 +452,10 @@
 				"n": "9",
 				"k": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "entiers ou : 9 : bonne réponse",
@@ -473,10 +466,10 @@
 				"n": "9",
 				"k": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "entiers ou : 9 : autre choix refusé",
@@ -487,10 +480,10 @@
 				"n": "9",
 				"k": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "entiers ou : 7 : bonne réponse",
@@ -501,10 +494,10 @@
 				"n": "7",
 				"k": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "entiers ou : 7 : autre choix refusé",
@@ -515,16 +508,10 @@
 				"n": "7",
 				"k": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": false
-	}
+	]
 }

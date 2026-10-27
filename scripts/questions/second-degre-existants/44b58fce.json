@@ -1,5 +1,4 @@
 {
-	"id": "44b58fce-45ec-4979-819f-e4bdb8540944",
 	"title": "Reconnaître la forme d'une expression du second degré",
 	"grades": ["1_SPE"],
 	"theme": "Fonctions",
@@ -8,18 +7,122 @@
 	"level": 2,
 	"delay": 20,
 	"status": "published",
+	"variations": [
+		{
+			"statement": "Quelle est la forme de cette expression du second degré ?\n\n$${{expr1}}$$\n\n```choix\n- développée\n- factorisée\n- canonique\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expr1",
+					"expression": "eval:ax^2+bx+c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"C'est la forme {{solution:html}} $ax^2+bx+c$ avec $a={{a}}$, $b={{b}}$ et $c={{c}}$."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
+		},
+		{
+			"statement": "Quelle est la forme de cette expression du second degré ?\n\n$${{expr2}}$$\n\n```choix\n- développée\n- factorisée\n- canonique\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expr2",
+					"expression": "eval:a(x+b)(x+c)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"C'est la forme {{solution:html}} $a(x-x_1)(x-x_2)$ avec $a={{a}}$, $x_1={{eval:-(b)}}$ et $x_2={{eval:-(c)}}$."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
+		},
+		{
+			"statement": "Quelle est la forme de cette expression du second degré ?\n\n$${{expr3}}$$\n\n```choix\n- développée\n- factorisée\n- canonique\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expr3",
+					"expression": "eval:a(x+b)^2+c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"C'est la forme {{solution:html}} $a(x-\\alpha)^2+\\beta$ avec $a={{a}}$, $\\alpha={{eval:-(b)}}$ et $\\beta={{c}}$."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
+		},
+		{
+			"statement": "Sous quelle forme cette expression du second degré est-elle écrite ?\n\n$${{expr4}}$$\n\n```choix\n- factorisée seulement\n- canonique seulement\n- à la fois factorisée et canonique\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "h",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expr4",
+					"expression": "eval:a(x-h)^2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"C'est un produit de facteurs du premier degré, le carré $(x{{eval:-h;+}})^2=(x{{eval:-h;+}})(x{{eval:-h;+}})$ multiplié par $a={{a}}$ : c'est une forme **factorisée** $a(x-x_1)(x-x_2)$ avec $x_1=x_2={{h}}$ (racine double).",
+					"C'est aussi la forme **canonique** $a(x-\\alpha)^2+\\beta$ avec $a={{a}}$, $\\alpha={{h}}$ et $\\beta=0$. La réponse est donc : {{solution:html}}."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
+		}
+	],
 	"shared": {
-		"choices": [
-			{
-				"content": "développée"
-			},
-			{
-				"content": "factorisée"
-			},
-			{
-				"content": "canonique"
-			}
-		],
 		"variables": [
 			{
 				"name": "a",
@@ -35,116 +138,6 @@
 			}
 		]
 	},
-	"variations": [
-		{
-			"statement": "Quelle est la forme de cette expression du second degré ?\n\n$${{expression1}}$$",
-			"variables": [
-				{
-					"name": "x",
-					"expression": "x|x"
-				},
-				{
-					"name": "a",
-					"expression": "1..5;±"
-				},
-				{
-					"name": "expression1",
-					"expression": "eval:ax^2+bx+c"
-				}
-			],
-			"correction": {
-				"steps": [
-					"C'est la forme {{solution:html}} $ax^2+bx+c$ avec $a={{a}}$, $b={{b}}$ et $c={{c}}$."
-				]
-			},
-			"correctChoiceIndex": ["0"]
-		},
-		{
-			"statement": "Quelle est la forme de cette expression du second degré ?\n\n$${{expression2}}$$",
-			"variables": [
-				{
-					"name": "x",
-					"expression": "x|x"
-				},
-				{
-					"name": "a",
-					"expression": "1..5;±"
-				},
-				{
-					"name": "expression2",
-					"expression": "eval:a(x+b)(x+c)"
-				}
-			],
-			"correction": {
-				"steps": [
-					"C'est la forme {{solution:html}} $a(x-x_1)(x-x_2)$ avec $a={{a}}$, $x_1={{eval:-(b)}}$ et $x_2={{eval:-(c)}}$."
-				]
-			},
-			"correctChoiceIndex": ["1"]
-		},
-		{
-			"statement": "Quelle est la forme de cette expression du second degré ?\n\n$${{expression3}}$$",
-			"variables": [
-				{
-					"name": "x",
-					"expression": "x|x"
-				},
-				{
-					"name": "a",
-					"expression": "1..5;±"
-				},
-				{
-					"name": "expression3",
-					"expression": "eval:a(x+b)^2+c"
-				}
-			],
-			"correction": {
-				"steps": [
-					"C'est la forme {{solution:html}} $a(x-\\alpha)^2+\\beta$ avec $a={{a}}$, $\\alpha={{eval:-(b)}}$ et $\\beta={{c}}$."
-				]
-			},
-			"correctChoiceIndex": ["2"]
-		},
-		{
-			"statement": "Sous quelle forme cette expression du second degré est-elle écrite ?\n\n$${{expression4}}$$",
-			"variables": [
-				{
-					"name": "x",
-					"expression": "x|x"
-				},
-				{
-					"name": "a",
-					"expression": "1..3;±"
-				},
-				{
-					"name": "h",
-					"expression": "1..5;±"
-				},
-				{
-					"name": "expression4",
-					"expression": "eval:a(x-h)^2"
-				}
-			],
-			"choices": [
-				{
-					"content": "factorisée seulement"
-				},
-				{
-					"content": "canonique seulement"
-				},
-				{
-					"content": "à la fois factorisée et canonique"
-				}
-			],
-			"correctChoiceIndex": ["2"],
-			"correction": {
-				"steps": [
-					"C'est un produit de facteurs du premier degré, le carré $(x{{eval:-h;+}})^2=(x{{eval:-h;+}})(x{{eval:-h;+}})$ multiplié par $a={{a}}$ : c'est une forme **factorisée** $a(x-x_1)(x-x_2)$ avec $x_1=x_2={{h}}$ (racine double).",
-					"C'est aussi la forme **canonique** $a(x-\\alpha)^2+\\beta$ avec $a={{a}}$, $\\alpha={{h}}$ et $\\beta=0$. La réponse est donc : {{solution:html}}."
-				]
-			}
-		}
-	],
 	"testSpecs": [
 		{
 			"expected": {
@@ -158,7 +151,7 @@
 			},
 			"description": "développée",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -172,7 +165,7 @@
 			},
 			"description": "développée : canonique refusé",
 			"variationIndex": 0,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -186,7 +179,7 @@
 			},
 			"description": "factorisée",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -200,7 +193,7 @@
 			},
 			"description": "factorisée : développée refusé",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -214,7 +207,7 @@
 			},
 			"description": "canonique",
 			"variationIndex": 2,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -228,7 +221,7 @@
 			},
 			"description": "canonique : factorisée refusé",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "développée, a=1",
@@ -238,10 +231,10 @@
 				"b": "-3",
 				"c": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "factorisée, a=-1",
@@ -251,10 +244,10 @@
 				"b": "2",
 				"c": "-4"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "canonique, a=1",
@@ -264,10 +257,10 @@
 				"b": "-3",
 				"c": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "(x-1)² : factorisée et canonique",
@@ -276,10 +269,10 @@
 				"a": "1",
 				"h": "1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "(x-1)² : factorisée seulement refusé",
@@ -288,10 +281,10 @@
 				"a": "1",
 				"h": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "-2(x+3)² : canonique seulement refusé",
@@ -300,10 +293,10 @@
 				"a": "-2",
 				"h": "-3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		}
 	]
 }

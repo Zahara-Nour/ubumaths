@@ -10,7 +10,7 @@
 	"delay": 60,
 	"variations": [
 		{
-			"statement": "Le couple $({{x0}} \\,;\\, {{y0}})$ est une solution de ${{a}}x + {{b}}y = {{c}}$, et $\\mathrm{PGCD}({{a}} \\,;\\, {{b}}) = 1$.\n\nQuelles sont toutes les solutions entières ($k \\in \\mathbb{Z}$) ?",
+			"statement": "Le couple $({{x0}} \\,;\\, {{y0}})$ est une solution de ${{a}}x + {{b}}y = {{c}}$, et $\\mathrm{PGCD}({{a}} \\,;\\, {{b}}) = 1$.\n\nQuelles sont toutes les solutions entières ($k \\in \\mathbb{Z}$) ?\n\n```choix\n- $x = {{x0}} + {{b}}k$ et $y = {{y0}} - {{a}}k$\n- $x = {{x0}} + {{a}}k$ et $y = {{y0}} - {{b}}k$\n- $x = {{x0}} + {{b}}k$ et $y = {{y0}} + {{a}}k$\n- $x = {{x0}} + k$ et $y = {{y0}} - k$\n```",
 			"variables": [
 				{
 					"name": "b",
@@ -34,31 +34,21 @@
 				}
 			],
 			"conditions": ["mod(a,b) != 0", "x0 != 0", "y0 != 0", "a != b"],
-			"choices": [
-				{
-					"content": "$x = {{x0}} + {{b}}k$ et $y = {{y0}} - {{a}}k$"
-				},
-				{
-					"content": "$x = {{x0}} + {{a}}k$ et $y = {{y0}} - {{b}}k$"
-				},
-				{
-					"content": "$x = {{x0}} + {{b}}k$ et $y = {{y0}} + {{a}}k$"
-				},
-				{
-					"content": "$x = {{x0}} + k$ et $y = {{y0}} - k$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Par différence avec la solution particulière : ${{a}}(x - {{x0;()}}) = -{{b}}(y - {{y0;()}})$.",
 					"${{b}}$ divise ${{a}}(x - {{x0;()}})$ et est premier avec ${{a}}$ : d'après Gauss, $x = {{x0}} + {{b}}k$ ; en reportant, $y = {{y0}} - {{a}}k$.",
 					"Solutions : $\\textcolor{{{color:primary.0}}}{x = {{x0}} + {{b}}k,\\ y = {{y0}} - {{a}}k}$, $k \\in \\mathbb{Z}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Le couple $({{x0}} \\,;\\, {{y0}})$ est une solution de ${{eval:m*a}}x + {{eval:m*b}}y = {{eval:m*c}}$.\n\nQuelles sont toutes les solutions entières ($k \\in \\mathbb{Z}$) ?",
+			"statement": "Le couple $({{x0}} \\,;\\, {{y0}})$ est une solution de ${{eval:m*a}}x + {{eval:m*b}}y = {{eval:m*c}}$.\n\nQuelles sont toutes les solutions entières ($k \\in \\mathbb{Z}$) ?\n\n```choix\n- $x = {{x0}} + {{b}}k$ et $y = {{y0}} - {{a}}k$\n- $x = {{x0}} + {{eval:m*b}}k$ et $y = {{y0}} - {{eval:m*a}}k$\n- $x = {{x0}} + {{a}}k$ et $y = {{y0}} - {{b}}k$\n- $x = {{x0}} + {{b}}k$ et $y = {{y0}} + {{a}}k$\n```",
 			"variables": [
 				{
 					"name": "b",
@@ -86,31 +76,21 @@
 				}
 			],
 			"conditions": ["mod(a,b) != 0", "x0 != 0", "y0 != 0", "a != b"],
-			"choices": [
-				{
-					"content": "$x = {{x0}} + {{b}}k$ et $y = {{y0}} - {{a}}k$"
-				},
-				{
-					"content": "$x = {{x0}} + {{eval:m*b}}k$ et $y = {{y0}} - {{eval:m*a}}k$"
-				},
-				{
-					"content": "$x = {{x0}} + {{a}}k$ et $y = {{y0}} - {{b}}k$"
-				},
-				{
-					"content": "$x = {{x0}} + {{b}}k$ et $y = {{y0}} + {{a}}k$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$\\mathrm{PGCD}({{eval:m*a}} \\,;\\, {{eval:m*b}}) = {{m}}$ : on divise par ${{m}}$, l'équation devient ${{a}}x + {{b}}y = {{c}}$ avec ${{a}}$ et ${{b}}$ premiers entre eux.",
 					"Solutions : $\\textcolor{{{color:primary.0}}}{x = {{x0}} + {{b}}k,\\ y = {{y0}} - {{a}}k}$, $k \\in \\mathbb{Z}$.",
 					"Avec ${{eval:m*b}}k$ et ${{eval:m*a}}k$, on n'obtiendrait qu'une solution sur ${{m}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On considère l'équation ${{eval:m*a}}x + {{eval:m*b}}y = {{eval:m*c+r}}$, d'inconnues entières $x$ et $y$.\n\nQue peut-on dire ?",
+			"statement": "On considère l'équation ${{eval:m*a}}x + {{eval:m*b}}y = {{eval:m*c+r}}$, d'inconnues entières $x$ et $y$.\n\nQue peut-on dire ?\n\n```choix\n- Elle n'a aucune solution.\n- Elle a une infinité de solutions.\n- Elle a une seule solution.\n- Elle a des solutions, car $\\mathrm{PGCD}({{eval:m*a}} \\,;\\, {{eval:m*b}}) \\neq 0$.\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -134,29 +114,24 @@
 				}
 			],
 			"conditions": ["gcd(a,b) == 1", "a != b", "r < m"],
-			"choices": [
-				{
-					"content": "Elle n'a aucune solution."
-				},
-				{
-					"content": "Elle a une infinité de solutions."
-				},
-				{
-					"content": "Elle a une seule solution."
-				},
-				{
-					"content": "Elle a des solutions, car $\\mathrm{PGCD}({{eval:m*a}} \\,;\\, {{eval:m*b}}) \\neq 0$."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"${{m}}$ divise ${{eval:m*a}}x + {{eval:m*b}}y$ pour tous entiers $x$, $y$, mais ${{m}}$ ne divise pas ${{eval:m*c+r}}$.",
 					"$\\textcolor{{{color:primary.0}}}{\\text{Aucune solution}}$ : $ax + by = c$ n'a de solution que si $\\mathrm{PGCD}(a \\,;\\, b)$ divise $c$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : (x0 + bk, y0 − ak)",
@@ -168,10 +143,10 @@
 				"x0": "2",
 				"y0": "-2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : a et b inversés",
@@ -183,10 +158,10 @@
 				"x0": "2",
 				"y0": "-2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : signe",
@@ -198,10 +173,10 @@
 				"x0": "2",
 				"y0": "-2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 : pas de 1",
@@ -213,10 +188,10 @@
 				"x0": "2",
 				"y0": "-2"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v1 : après division par le PGCD",
@@ -229,10 +204,10 @@
 				"y0": "-2",
 				"m": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : sans diviser (solutions manquantes)",
@@ -245,10 +220,10 @@
 				"y0": "-2",
 				"m": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : aucune solution",
@@ -260,10 +235,10 @@
 				"c": "2",
 				"r": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : infinité",
@@ -275,16 +250,10 @@
 				"c": "2",
 				"r": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": true
-	}
+	]
 }

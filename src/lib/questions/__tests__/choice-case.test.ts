@@ -83,6 +83,34 @@ describe('format de la réponse', () => {
 	});
 });
 
+describe('bonne réponse calculée qui répète un indice (QCM migrés, lot 4)', () => {
+	// `["0","{{f1}}","{{eval:2*f2}}"]` : un choix faux rend 0, déjà compté
+	const repeated = (f1: number) => ({
+		...template('Choisis.\n\n```choix\nplusieurs: oui\n- A\n- B\n- C\n```', [
+			'0;{{f1}};{{eval:2*f2}}'
+		]),
+		variations: [
+			{
+				statement: templateMarkdown('Choisis.\n\n```choix\nplusieurs: oui\n- A\n- B\n- C\n```'),
+				variables: [
+					{ name: 'f1', expression: String(f1) },
+					{ name: 'f2', expression: '1' }
+				],
+				blanks: [{ expectedAnswer: '0;{{f1}};{{eval:2*f2}}' }]
+			}
+		]
+	});
+
+	it('un indice répété compte une fois', () => {
+		expect(generate(repeated(0)).blanks?.[0].expectedAnswer).toBe('0;2');
+		expect(generate(repeated(1)).blanks?.[0].expectedAnswer).toBe('0;1;2');
+	});
+
+	it('la réponse d’un élève qui répète un indice reste refusée', () => {
+		expect(choiceAnswerSchema(3).safeParse('0;0;2').success).toBe(false);
+	});
+});
+
 describe('notation : une case choix seule = le QCM d’aujourd’hui', () => {
 	const cases: { name: string; instance: QuestionInstance; checked: number[] }[] = [
 		{ name: '1 réponse, juste', instance: SINGLE, checked: [1] },

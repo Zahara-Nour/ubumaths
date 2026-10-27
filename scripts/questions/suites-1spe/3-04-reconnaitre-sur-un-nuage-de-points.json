@@ -8,25 +8,9 @@
 	"subdomain": "Arithmétique ou géométrique",
 	"level": 4,
 	"delay": 45,
-	"shared": {
-		"choices": [
-			{
-				"content": "arithmétique"
-			},
-			{
-				"content": "géométrique"
-			},
-			{
-				"content": "ni arithmétique, ni géométrique"
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-2}} ; {{eval:b+8*r+2}}\ngrille: 1 ; 2\nu(n) = {{b}}+{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-2}} ; {{eval:b+8*r+2}}\ngrille: 1 ; 2\nu(n) = {{b}}+{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -61,17 +45,21 @@
 					"expression": "eval:b+3*r"
 				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les points sont **alignés** : d'un rang au suivant, on monte toujours de la même hauteur.",
 					"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. On ajoute toujours $\\textcolor{{{color:primary.0}}}{{{r}}}$.",
 					"La suite semble **arithmétique**, de raison $r={{r}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-8*r-2}} ; {{eval:b+2}}\ngrille: 1 ; 2\nu(n) = {{b}}-{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-8*r-2}} ; {{eval:b+2}}\ngrille: 1 ; 2\nu(n) = {{b}}-{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -106,17 +94,21 @@
 					"expression": "eval:b-3*r"
 				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les points sont **alignés** : d'un rang au suivant, on descend toujours de la même hauteur.",
 					"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. On ajoute toujours $\\textcolor{{{color:primary.0}}}{-{{r}}}$.",
 					"La suite semble **arithmétique**, de raison $r=-{{r}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:32*a+4}}\ngrille: 1 ; {{eval:2*a}}\nu(n) = {{a}}*2^n pour n de 0 à 5   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:32*a+4}}\ngrille: 1 ; {{eval:2*a}}\nu(n) = {{a}}*2^n pour n de 0 à 5   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -147,17 +139,21 @@
 					"expression": "eval:8*a"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"Les points ne sont pas alignés : la suite n'est pas arithmétique. Ils montent de plus en plus vite.",
 					"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. Chaque terme est le **double** du précédent : $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=\\dfrac{u_3}{u_2}=\\textcolor{{{color:primary.0}}}{2}$.",
 					"La suite semble **géométrique**, de raison $q=2$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:a+4}}\ngrille: 1 ; {{eval:a/16}}\nu(n) = {{a}}*0.5^n pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:a+4}}\ngrille: 1 ; {{eval:a/16}}\nu(n) = {{a}}*0.5^n pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -188,17 +184,21 @@
 					"expression": "eval:a/8"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"Les points ne sont pas alignés : la suite n'est pas arithmétique. Ils descendent de moins en moins vite.",
 					"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. Chaque terme est la **moitié** du précédent : $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=\\dfrac{u_3}{u_2}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{2}}$.",
 					"La suite semble **géométrique**, de raison $q=\\dfrac{1}{2}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:d+28}}\ngrille: 1 ; 2\nu(n) = (n-{{c}})^2+{{d}} pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:d+28}}\ngrille: 1 ; 2\nu(n) = (n-{{c}})^2+{{d}} pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -233,17 +233,21 @@
 					"expression": "eval:(3-c)^2+d"
 				}
 			],
-			"correctChoiceIndex": ["2"],
 			"correction": {
 				"steps": [
 					"Les points ne sont pas alignés : la suite n'est pas arithmétique. Elle **diminue, puis augmente**.",
 					"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. $\\dfrac{u_1}{u_0}={{eval:(u1)/(u0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$ : on ne multiplie pas toujours par le même nombre, la suite n'est pas géométrique.",
 					"La suite ne semble **ni arithmétique, ni géométrique**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:36+c+4}}\ngrille: 1 ; 2\nu(n) = n^2+{{c}} pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:36+c+4}}\ngrille: 1 ; 2\nu(n) = n^2+{{c}} pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -274,14 +278,18 @@
 					"expression": "eval:9+c"
 				}
 			],
-			"correctChoiceIndex": ["2"],
 			"correction": {
 				"steps": [
 					"Les points ne sont pas alignés : la suite n'est pas arithmétique.",
 					"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. $\\dfrac{u_1}{u_0}={{eval:(u1)/(u0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$ : on ne multiplie pas toujours par le même nombre, la suite n'est pas géométrique.",
 					"Attention : des points qui montent de plus en plus vite ne suffisent pas pour dire « géométrique ». La suite ne semble **ni arithmétique, ni géométrique**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -298,10 +306,10 @@
 				"u2": "3",
 				"u3": "5"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 0 (alignés, croissante) : « géométrique » refusé",
@@ -316,10 +324,10 @@
 				"u2": "3",
 				"u3": "5"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 0 (alignés, croissante) : « ni arithmétique, ni géométrique » refusé",
@@ -334,10 +342,10 @@
 				"u2": "3",
 				"u3": "5"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 1 (alignés, décroissante) : « arithmétique » accepté",
@@ -352,10 +360,10 @@
 				"u2": "4",
 				"u3": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 1 (alignés, décroissante) : « géométrique » refusé",
@@ -370,10 +378,10 @@
 				"u2": "4",
 				"u3": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 1 (alignés, décroissante) : « ni arithmétique, ni géométrique » refusé",
@@ -388,10 +396,10 @@
 				"u2": "4",
 				"u3": "1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 2 (doubles) : « arithmétique » refusé",
@@ -405,10 +413,10 @@
 				"u2": "4",
 				"u3": "8"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 2 (doubles) : « géométrique » accepté",
@@ -422,10 +430,10 @@
 				"u2": "4",
 				"u3": "8"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 2 (doubles) : « ni arithmétique, ni géométrique » refusé",
@@ -439,10 +447,10 @@
 				"u2": "4",
 				"u3": "8"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 3 (moitiés) : « arithmétique » refusé",
@@ -456,10 +464,10 @@
 				"u2": "16",
 				"u3": "8"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 3 (moitiés) : « géométrique » accepté",
@@ -473,10 +481,10 @@
 				"u2": "16",
 				"u3": "8"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 3 (moitiés) : « ni arithmétique, ni géométrique » refusé",
@@ -490,10 +498,10 @@
 				"u2": "16",
 				"u3": "8"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 4 (descend puis monte) : « arithmétique » refusé",
@@ -508,10 +516,10 @@
 				"u2": "5",
 				"u3": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 4 (descend puis monte) : « géométrique » refusé",
@@ -526,10 +534,10 @@
 				"u2": "5",
 				"u3": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 4 (descend puis monte) : « ni arithmétique, ni géométrique » accepté",
@@ -544,10 +552,10 @@
 				"u2": "5",
 				"u3": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 5 (n² + c) : « arithmétique » refusé",
@@ -561,10 +569,10 @@
 				"u2": "5",
 				"u3": "10"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 5 (n² + c) : « géométrique » refusé",
@@ -578,10 +586,10 @@
 				"u2": "5",
 				"u3": "10"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 5 (n² + c) : « ni arithmétique, ni géométrique » accepté",
@@ -595,10 +603,10 @@
 				"u2": "5",
 				"u3": "10"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		}
 	]
 }

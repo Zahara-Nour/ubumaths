@@ -10,7 +10,7 @@
 	"delay": 90,
 	"variations": [
 		{
-			"statement": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n```choix\nmelanger: non\n- Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.\n```",
 			"variables": [
 				{
 					"name": "p",
@@ -60,25 +60,21 @@
 				"t*(abs(r)+abs(s)) != 1",
 				"t == 0 || r != 0 || s != 0"
 			],
-			"choices": [
-				{
-					"content": "Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."
-				},
-				{
-					"content": "Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:abs(sign(N))}}"],
 			"correction": {
 				"steps": [
 					"Deux vecteurs sont orthogonaux si et seulement si leur produit scalaire est nul. Dans un repère orthonormé, $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}\\cdot\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}=xx'+yy'$.",
 					"$\\vec{u}\\cdot\\vec{v}={{p}}\\times {{x;()}}+{{q;()}}\\times {{y;()}}={{eval:p*x}}{{eval:q*y;+}}=\\textcolor{{{color:primary.0}}}{ {{N}} }$",
 					"{{if:N=0|Le produit scalaire est nul : les vecteurs $\\vec{u}$ et $\\vec{v}$ **sont orthogonaux**.}}{{if:N!=0|Le produit scalaire n'est pas nul : les vecteurs $\\vec{u}$ et $\\vec{v}$ **ne sont pas orthogonaux**.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(sign(N))}}"
+				}
+			]
 		},
 		{
-			"statement": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est ${{T}}^\\circ$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.",
+			"statement": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est ${{T}}^\\circ$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n```choix\nmelanger: non\n- Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -118,25 +114,21 @@
 				}
 			],
 			"conditions": ["a != b"],
-			"choices": [
-				{
-					"content": "Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."
-				},
-				{
-					"content": "Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:abs(sign(N))}}"],
 			"correction": {
 				"steps": [
 					"Deux vecteurs sont orthogonaux si et seulement si leur produit scalaire est nul.",
 					"$\\vec{u}\\cdot\\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos(\\vec{u},\\vec{v})={{a}}\\times {{b}}\\times\\cos({{T}}^\\circ)={{a}}\\times {{b}}\\times {{if:s<0|\\left({{eval:s*sqrt(m)/2}}\\right)|{{eval:s*sqrt(m)/2}}}}=\\textcolor{{{color:primary.0}}}{ {{eval:s*a*b*sqrt(m)/2}} }$",
 					"{{if:N=0|Le produit scalaire est nul : les vecteurs $\\vec{u}$ et $\\vec{v}$ **sont orthogonaux**.}}{{if:N!=0|Le produit scalaire n'est pas nul : les vecteurs $\\vec{u}$ et $\\vec{v}$ **ne sont pas orthogonaux**.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(sign(N))}}"
+				}
+			]
 		},
 		{
-			"statement": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et une mesure en radians de l'angle orienté $(\\vec{u},\\vec{v})$ est ${{if:sg<0|-|}}{{if:num==1|\\dfrac{\\pi}{ {{den}} }|\\dfrac{ {{num}}\\pi}{ {{den}} }}}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.",
+			"statement": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et une mesure en radians de l'angle orienté $(\\vec{u},\\vec{v})$ est ${{if:sg<0|-|}}{{if:num==1|\\dfrac{\\pi}{ {{den}} }|\\dfrac{ {{num}}\\pi}{ {{den}} }}}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n```choix\nmelanger: non\n- Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -204,25 +196,21 @@
 				}
 			],
 			"conditions": ["a != b", "sg == 1 || tr == 0"],
-			"choices": [
-				{
-					"content": "Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."
-				},
-				{
-					"content": "Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:abs(sign(N))}}"],
 			"correction": {
 				"steps": [
 					"Deux vecteurs sont orthogonaux si et seulement si leur produit scalaire est nul.",
 					"$\\vec{u}\\cdot\\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos(\\vec{u},\\vec{v})={{a}}\\times {{b}}\\times\\cos\\left({{if:sg<0|-|}}{{if:num==1|\\dfrac{\\pi}{ {{den}} }|\\dfrac{ {{num}}\\pi}{ {{den}} }}}\\right)={{a}}\\times {{b}}\\times {{if:cv<0|\\left({{eval:cv}}\\right)|{{eval:cv}}}}=\\textcolor{{{color:primary.0}}}{ {{eval:N}} }$",
 					"{{if:N=0|Le produit scalaire est nul : les vecteurs $\\vec{u}$ et $\\vec{v}$ **sont orthogonaux**.}}{{if:N!=0|Le produit scalaire n'est pas nul : les vecteurs $\\vec{u}$ et $\\vec{v}$ **ne sont pas orthogonaux**.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(sign(N))}}"
+				}
+			]
 		},
 		{
-			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$, $B({{xb}}\\,;{{yb}})$ et $C({{xc}}\\,;{{yc}})$.\n\nLes vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$, $B({{xb}}\\,;{{yb}})$ et $C({{xc}}\\,;{{yc}})$.\n\nLes vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n```choix\nmelanger: non\n- Oui, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont orthogonaux.\n- Non, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ ne sont pas orthogonaux.\n```",
 			"variables": [
 				{
 					"name": "xa",
@@ -298,24 +286,25 @@
 				"abs(xc) <= 9",
 				"abs(yc) <= 9"
 			],
-			"choices": [
-				{
-					"content": "Oui, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont orthogonaux."
-				},
-				{
-					"content": "Non, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ ne sont pas orthogonaux."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:abs(sign(N))}}"],
 			"correction": {
 				"steps": [
 					"$\\overrightarrow{AB}\\begin{pmatrix}{{xb}}{{eval:-xa;+}}\\\\{{yb}}{{eval:-ya;+}}\\end{pmatrix}$ soit $\\overrightarrow{AB}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$, et $\\overrightarrow{AC}\\begin{pmatrix}{{xc}}{{eval:-xa;+}}\\\\{{yc}}{{eval:-ya;+}}\\end{pmatrix}$ soit $\\overrightarrow{AC}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.",
 					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}={{p}}\\times {{x;()}}+{{q;()}}\\times {{y;()}}={{eval:p*x}}{{eval:q*y;+}}=\\textcolor{{{color:primary.0}}}{ {{N}} }$",
 					"{{if:N=0|Le produit scalaire est nul : les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ **sont orthogonaux** (le triangle $ABC$ est rectangle en $A$).}}{{if:N!=0|Le produit scalaire n'est pas nul : les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ **ne sont pas orthogonaux** (le triangle $ABC$ n'est pas rectangle en $A$).}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(sign(N))}}"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : u(2;3), v(−3;2) orthogonaux",
@@ -328,10 +317,10 @@
 				"r": "0",
 				"s": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : orthogonaux, « non » refusé",
@@ -344,10 +333,10 @@
 				"r": "0",
 				"s": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : u(2;3), v(−2;3), u·v = 5, non orthogonaux",
@@ -360,10 +349,10 @@
 				"r": "1",
 				"s": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : u·v = 5, « oui » refusé",
@@ -376,10 +365,10 @@
 				"r": "1",
 				"s": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : 90°, orthogonaux",
@@ -391,10 +380,10 @@
 				"k": "1",
 				"m": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : 90°, « non » refusé",
@@ -406,10 +395,10 @@
 				"k": "1",
 				"m": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : 60°, non orthogonaux",
@@ -421,10 +410,10 @@
 				"k": "1",
 				"m": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : 150°, « oui » refusé",
@@ -436,10 +425,10 @@
 				"k": "0",
 				"m": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : 3π/2, orthogonaux",
@@ -453,10 +442,10 @@
 				"tr": "1",
 				"sg": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : −π/2, orthogonaux",
@@ -470,10 +459,10 @@
 				"tr": "0",
 				"sg": "-1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : −π/2, « non » refusé",
@@ -487,10 +476,10 @@
 				"tr": "0",
 				"sg": "-1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : −π/6, non orthogonaux",
@@ -504,10 +493,10 @@
 				"tr": "0",
 				"sg": "-1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v3 : A(1;1), B(3;4), C(−2;3) orthogonaux",
@@ -522,10 +511,10 @@
 				"r": "0",
 				"s": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v3 : non orthogonaux",
@@ -540,10 +529,10 @@
 				"r": "1",
 				"s": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v3 : non orthogonaux, « oui » refusé",
@@ -558,16 +547,10 @@
 				"r": "1",
 				"s": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": false
-	}
+	]
 }

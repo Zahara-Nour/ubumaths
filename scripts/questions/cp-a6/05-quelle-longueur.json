@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "{{if:k==1|Une trousse mesure environ|{{if:k==2|Un crayon mesure environ|{{if:k==3|Une gomme mesure environ|{{if:k==4|La largeur d'un doigt est environ|{{if:k==5|Une règle d'écolier mesure environ|{{if:k==6|La hauteur d'une porte est environ|{{if:k==7|Un lit mesure environ|{{if:k==8|La largeur de la classe est environ|{{if:k==9|Le couloir de l'école mesure environ|Un bus mesure environ}}}}}}}}}}}}}}}}}} …",
+			"statement": "{{if:k==1|Une trousse mesure environ|{{if:k==2|Un crayon mesure environ|{{if:k==3|Une gomme mesure environ|{{if:k==4|La largeur d'un doigt est environ|{{if:k==5|Une règle d'écolier mesure environ|{{if:k==6|La hauteur d'une porte est environ|{{if:k==7|Un lit mesure environ|{{if:k==8|La largeur de la classe est environ|{{if:k==9|Le couloir de l'école mesure environ|Un bus mesure environ}}}}}}}}}}}}}}}}}} …\n\n```choix\n- {{if:k==1|$20~\\unit{cm}$|{{if:k==2|$15~\\unit{cm}$|{{if:k==3|$4~\\unit{cm}$|{{if:k==4|$1~\\unit{cm}$|{{if:k==5|$20~\\unit{cm}$|{{if:k==6|$2~\\unit{m}$|{{if:k==7|$2~\\unit{m}$|{{if:k==8|$8~\\unit{m}$|{{if:k==9|$30~\\unit{m}$|$12~\\unit{m}$}}}}}}}}}}}}}}}}}}\n- {{if:k==1|$2~\\unit{cm}$|{{if:k==2|$1~\\unit{cm}$|{{if:k==3|$40~\\unit{cm}$|{{if:k==4|$10~\\unit{cm}$|{{if:k==5|$2~\\unit{cm}$|{{if:k==6|$2~\\unit{cm}$|{{if:k==7|$20~\\unit{cm}$|{{if:k==8|$8~\\unit{cm}$|{{if:k==9|$30~\\unit{cm}$|$12~\\unit{cm}$}}}}}}}}}}}}}}}}}}\n- {{if:k==1|$1~\\unit{m}$|{{if:k==2|$15~\\unit{m}$|{{if:k==3|$4~\\unit{m}$|{{if:k==4|$1~\\unit{m}$|{{if:k==5|$2~\\unit{m}$|{{if:k==6|$20~\\unit{m}$|{{if:k==7|$20~\\unit{m}$|{{if:k==8|$80~\\unit{m}$|{{if:k==9|$3~\\unit{cm}$|$1~\\unit{m}$}}}}}}}}}}}}}}}}}}\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -18,23 +18,16 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "{{if:k==1|$20~\\unit{cm}$|{{if:k==2|$15~\\unit{cm}$|{{if:k==3|$4~\\unit{cm}$|{{if:k==4|$1~\\unit{cm}$|{{if:k==5|$20~\\unit{cm}$|{{if:k==6|$2~\\unit{m}$|{{if:k==7|$2~\\unit{m}$|{{if:k==8|$8~\\unit{m}$|{{if:k==9|$30~\\unit{m}$|$12~\\unit{m}$}}}}}}}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:k==1|$2~\\unit{cm}$|{{if:k==2|$1~\\unit{cm}$|{{if:k==3|$40~\\unit{cm}$|{{if:k==4|$10~\\unit{cm}$|{{if:k==5|$2~\\unit{cm}$|{{if:k==6|$2~\\unit{cm}$|{{if:k==7|$20~\\unit{cm}$|{{if:k==8|$8~\\unit{cm}$|{{if:k==9|$30~\\unit{cm}$|$12~\\unit{cm}$}}}}}}}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:k==1|$1~\\unit{m}$|{{if:k==2|$15~\\unit{m}$|{{if:k==3|$4~\\unit{m}$|{{if:k==4|$1~\\unit{m}$|{{if:k==5|$2~\\unit{m}$|{{if:k==6|$20~\\unit{m}$|{{if:k==7|$20~\\unit{m}$|{{if:k==8|$80~\\unit{m}$|{{if:k==9|$3~\\unit{cm}$|$1~\\unit{m}$}}}}}}}}}}}}}}}}}}"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"{{if:k==1|Une trousse mesure environ $20~\\unit{cm}$. $2~\\unit{cm}$ et $1~\\unit{m}$ ne sont pas possibles : l'une est beaucoup trop petite, l'autre beaucoup trop grande.|{{if:k==2|Un crayon mesure environ $15~\\unit{cm}$. $1~\\unit{cm}$ et $15~\\unit{m}$ ne sont pas possibles : l'une est beaucoup trop petite, l'autre beaucoup trop grande.|{{if:k==3|Une gomme mesure environ $4~\\unit{cm}$. $40~\\unit{cm}$ et $4~\\unit{m}$ ne sont pas possibles : c'est beaucoup trop grand.|{{if:k==4|La largeur d'un doigt est environ $1~\\unit{cm}$. $10~\\unit{cm}$ et $1~\\unit{m}$ ne sont pas possibles : c'est beaucoup trop grand.|{{if:k==5|Une règle d'écolier mesure environ $20~\\unit{cm}$. $2~\\unit{cm}$ et $2~\\unit{m}$ ne sont pas possibles : l'une est beaucoup trop petite, l'autre beaucoup trop grande.|{{if:k==6|La hauteur d'une porte est environ $2~\\unit{m}$. $2~\\unit{cm}$ et $20~\\unit{m}$ ne sont pas possibles : l'une est beaucoup trop petite, l'autre beaucoup trop grande.|{{if:k==7|Un lit mesure environ $2~\\unit{m}$. $20~\\unit{cm}$ et $20~\\unit{m}$ ne sont pas possibles : l'une est beaucoup trop petite, l'autre beaucoup trop grande.|{{if:k==8|La largeur de la classe est environ $8~\\unit{m}$. $8~\\unit{cm}$ et $80~\\unit{m}$ ne sont pas possibles : l'une est beaucoup trop petite, l'autre beaucoup trop grande.|{{if:k==9|Le couloir de l'école mesure environ $30~\\unit{m}$. $30~\\unit{cm}$ et $3~\\unit{cm}$ ne sont pas possibles : c'est beaucoup trop petit.|Un bus mesure environ $12~\\unit{m}$. $12~\\unit{cm}$ et $1~\\unit{m}$ ne sont pas possibles : c'est beaucoup trop petit.}}}}}}}}}}}}}}}}}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -47,7 +40,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : trousse, 2 cm",
@@ -58,7 +51,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : trousse, 1 m",
@@ -69,7 +62,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "porte : 2 m",
@@ -80,7 +73,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : porte, 2 cm",
@@ -91,7 +84,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "borne : bus, 12 m",
@@ -102,7 +95,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
 	]
 }

@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Tom a cet argent :\n\n```monnaie\nbillets: {{t}}×10 {{c}}×5\npièces: {{d}}×2 {{u}}×1\n```\n\nIl veut acheter un ballon à ${{p}}~\\unit{€}$. Peut-il l'acheter ?",
+			"statement": "Tom a cet argent :\n\n```monnaie\nbillets: {{t}}×10 {{c}}×5\npièces: {{d}}×2 {{u}}×1\n```\n\nIl veut acheter un ballon à ${{p}}~\\unit{€}$. Peut-il l'acheter ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 			"variables": [
 				{
 					"name": "t",
@@ -46,24 +46,20 @@
 				}
 			],
 			"conditions": ["t + c >= 1", "d + u >= 1"],
-			"choices": [
-				{
-					"content": "Oui"
-				},
-				{
-					"content": "Non"
-				}
-			],
-			"correctChoiceIndex": ["{{g}}"],
 			"correction": {
 				"steps": [
 					"Tom a ${{s}}~\\unit{€}$. Le ballon coûte ${{p}}~\\unit{€}$.",
 					"{{if:s>p|Tom a plus d'argent que le prix : il peut l'acheter.|{{if:s==p|Tom a juste assez d'argent : il peut l'acheter.|Il ne peut pas l'acheter : il lui manque ${{eval:p-s}}~\\unit{€}$.}}}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			]
 		},
 		{
-			"statement": "Tom a cet argent :\n\n```monnaie\nbillets: {{t}}×10 {{c}}×5\npièces: {{d}}×2 {{u}}×1\n```\n\nIl veut acheter un ballon à ${{p}}~\\unit{€}$. Peut-il l'acheter ?",
+			"statement": "Tom a cet argent :\n\n```monnaie\nbillets: {{t}}×10 {{c}}×5\npièces: {{d}}×2 {{u}}×1\n```\n\nIl veut acheter un ballon à ${{p}}~\\unit{€}$. Peut-il l'acheter ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 			"variables": [
 				{
 					"name": "t",
@@ -95,21 +91,17 @@
 				}
 			],
 			"conditions": ["t + c >= 1", "d + u >= 1"],
-			"choices": [
-				{
-					"content": "Oui"
-				},
-				{
-					"content": "Non"
-				}
-			],
-			"correctChoiceIndex": ["{{g}}"],
 			"correction": {
 				"steps": [
 					"Tom a ${{s}}~\\unit{€}$. Le ballon coûte ${{p}}~\\unit{€}$.",
 					"{{if:s>p|Tom a plus d'argent que le prix : il peut l'acheter.|{{if:s==p|Tom a juste assez d'argent : il peut l'acheter.|Il ne peut pas l'acheter : il lui manque ${{eval:p-s}}~\\unit{€}$.}}}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -129,7 +121,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Tom a 17 €, ballon à 19 € : non",
@@ -147,7 +139,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : oui alors qu'il manque 2 €",
@@ -165,7 +157,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Pile au prix (23 €) : oui",
@@ -182,7 +174,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : non alors qu'il a juste assez",
@@ -199,10 +191,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		}
-	],
-	"options": {
-		"shuffleChoices": false
-	}
+	]
 }

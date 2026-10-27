@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Le robot part du carré rouge. Chaque flèche le fait avancer d'un carreau.\n\nCode : {{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\uparrow$|{{if:m==2|$\\uparrow\\ \\uparrow\\ \\rightarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\uparrow\\ \\rightarrow\\ \\uparrow$|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$}}}}}}\n\n```figure\nfenetre: -0.5 ; 7.5 ; -0.9 ; 5.5\ndescription: Un quadrillage, la case de départ du robot et trois points 1, 2 et 3.\ngrille: oui\n---\ndep1 = point(0.8, 0.8, visible=faux)\ndep2 = point(1.2, 0.8, visible=faux)\ndep3 = point(1.2, 1.2, visible=faux)\ndep4 = point(0.8, 1.2, visible=faux)\ndep = polygone(dep1, dep2, dep3, dep4, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(1, 0.45, \"départ\")\nP0 = point({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|4}}}}}}, {{if:m==1|2|{{if:m==2|3|{{if:m==3|3|3}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\ntexte({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|4}}}}}}, {{if:m==1|2.4|{{if:m==2|3.4|{{if:m==3|3.4|3.4}}}}}}, \"{{if:l==1|1|{{if:l==2|2|3}}}}\")\nP1 = point({{if:m==1|3|{{if:m==2|1|{{if:m==3|3|4}}}}}}, {{if:m==1|0|{{if:m==2|3|{{if:m==3|1|1}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\ntexte({{if:m==1|3|{{if:m==2|1|{{if:m==3|3|4}}}}}}, {{if:m==1|0.4|{{if:m==2|3.4|{{if:m==3|1.4|1.4}}}}}}, \"{{if:l==1|2|{{if:l==2|3|1}}}}\")\nP2 = point({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|3}}}}}}, {{if:m==1|1|{{if:m==2|2|{{if:m==3|2|3}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\ntexte({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|3}}}}}}, {{if:m==1|1.4|{{if:m==2|2.4|{{if:m==3|2.4|3.4}}}}}}, \"{{if:l==1|3|{{if:l==2|1|2}}}}\")\n```\n\nOù arrive le robot ?",
+			"statement": "Le robot part du carré rouge. Chaque flèche le fait avancer d'un carreau.\n\nCode : {{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\uparrow$|{{if:m==2|$\\uparrow\\ \\uparrow\\ \\rightarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\uparrow\\ \\rightarrow\\ \\uparrow$|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$}}}}}}\n\n```figure\nfenetre: -0.5 ; 7.5 ; -0.9 ; 5.5\ndescription: Un quadrillage, la case de départ du robot et trois points 1, 2 et 3.\ngrille: oui\n---\ndep1 = point(0.8, 0.8, visible=faux)\ndep2 = point(1.2, 0.8, visible=faux)\ndep3 = point(1.2, 1.2, visible=faux)\ndep4 = point(0.8, 1.2, visible=faux)\ndep = polygone(dep1, dep2, dep3, dep4, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(1, 0.45, \"départ\")\nP0 = point({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|4}}}}}}, {{if:m==1|2|{{if:m==2|3|{{if:m==3|3|3}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\ntexte({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|4}}}}}}, {{if:m==1|2.4|{{if:m==2|3.4|{{if:m==3|3.4|3.4}}}}}}, \"{{if:l==1|1|{{if:l==2|2|3}}}}\")\nP1 = point({{if:m==1|3|{{if:m==2|1|{{if:m==3|3|4}}}}}}, {{if:m==1|0|{{if:m==2|3|{{if:m==3|1|1}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\ntexte({{if:m==1|3|{{if:m==2|1|{{if:m==3|3|4}}}}}}, {{if:m==1|0.4|{{if:m==2|3.4|{{if:m==3|1.4|1.4}}}}}}, \"{{if:l==1|2|{{if:l==2|3|1}}}}\")\nP2 = point({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|3}}}}}}, {{if:m==1|1|{{if:m==2|2|{{if:m==3|2|3}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\ntexte({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|3}}}}}}, {{if:m==1|1.4|{{if:m==2|2.4|{{if:m==3|2.4|3.4}}}}}}, \"{{if:l==1|3|{{if:l==2|1|2}}}}\")\n```\n\nOù arrive le robot ?\n\n```choix\n- Au point 1.\n- Au point 2.\n- Au point 3.\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -22,26 +22,19 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "Au point 1."
-				},
-				{
-					"content": "Au point 2."
-				},
-				{
-					"content": "Au point 3."
-				}
-			],
-			"correctChoiceIndex": ["{{l}}"],
 			"correction": {
 				"steps": [
 					"On suit les flèches une par une, depuis le carré rouge : le robot arrive au point {{if:l==1|1|{{if:l==2|2|3}}}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{l}}"
+				}
+			]
 		},
 		{
-			"statement": "Le robot part du carré rouge. Chaque flèche le fait avancer d'un carreau.\n\n```figure\nfenetre: -0.5 ; 7.5 ; -0.9 ; 5.5\ndescription: Un quadrillage, le carré rouge du départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndep1 = point(0.8, 0.8, visible=faux)\ndep2 = point(1.2, 0.8, visible=faux)\ndep3 = point(1.2, 1.2, visible=faux)\ndep4 = point(0.8, 1.2, visible=faux)\ndep = polygone(dep1, dep2, dep3, dep4, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(1, 0.45, \"départ\")\narr1 = point({{if:m==1|2.8|{{if:m==2|2.8|{{if:m==3|2.8|3.8}}}}}}, {{if:m==1|1.8|{{if:m==2|2.8|{{if:m==3|2.8|2.8}}}}}}, visible=faux)\narr2 = point({{if:m==1|3.2|{{if:m==2|3.2|{{if:m==3|3.2|4.2}}}}}}, {{if:m==1|1.8|{{if:m==2|2.8|{{if:m==3|2.8|2.8}}}}}}, visible=faux)\narr3 = point({{if:m==1|3.2|{{if:m==2|3.2|{{if:m==3|3.2|4.2}}}}}}, {{if:m==1|2.2|{{if:m==2|3.2|{{if:m==3|3.2|3.2}}}}}}, visible=faux)\narr4 = point({{if:m==1|2.8|{{if:m==2|2.8|{{if:m==3|2.8|3.8}}}}}}, {{if:m==1|2.2|{{if:m==2|3.2|{{if:m==3|3.2|3.2}}}}}}, visible=faux)\narr = polygone(arr1, arr2, arr3, arr4, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|4}}}}}}, {{if:m==1|2.55|{{if:m==2|3.55|{{if:m==3|3.55|3.55}}}}}}, \"arrivée\")\n```\n\nQuel code mène le robot au carré vert ?",
+			"statement": "Le robot part du carré rouge. Chaque flèche le fait avancer d'un carreau.\n\n```figure\nfenetre: -0.5 ; 7.5 ; -0.9 ; 5.5\ndescription: Un quadrillage, le carré rouge du départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndep1 = point(0.8, 0.8, visible=faux)\ndep2 = point(1.2, 0.8, visible=faux)\ndep3 = point(1.2, 1.2, visible=faux)\ndep4 = point(0.8, 1.2, visible=faux)\ndep = polygone(dep1, dep2, dep3, dep4, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(1, 0.45, \"départ\")\narr1 = point({{if:m==1|2.8|{{if:m==2|2.8|{{if:m==3|2.8|3.8}}}}}}, {{if:m==1|1.8|{{if:m==2|2.8|{{if:m==3|2.8|2.8}}}}}}, visible=faux)\narr2 = point({{if:m==1|3.2|{{if:m==2|3.2|{{if:m==3|3.2|4.2}}}}}}, {{if:m==1|1.8|{{if:m==2|2.8|{{if:m==3|2.8|2.8}}}}}}, visible=faux)\narr3 = point({{if:m==1|3.2|{{if:m==2|3.2|{{if:m==3|3.2|4.2}}}}}}, {{if:m==1|2.2|{{if:m==2|3.2|{{if:m==3|3.2|3.2}}}}}}, visible=faux)\narr4 = point({{if:m==1|2.8|{{if:m==2|2.8|{{if:m==3|2.8|3.8}}}}}}, {{if:m==1|2.2|{{if:m==2|3.2|{{if:m==3|3.2|3.2}}}}}}, visible=faux)\narr = polygone(arr1, arr2, arr3, arr4, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|4}}}}}}, {{if:m==1|2.55|{{if:m==2|3.55|{{if:m==3|3.55|3.55}}}}}}, \"arrivée\")\n```\n\nQuel code mène le robot au carré vert ?\n\n```choix\n- {{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\uparrow$|{{if:m==2|$\\uparrow\\ \\uparrow\\ \\rightarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\uparrow\\ \\rightarrow\\ \\uparrow$|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$}}}}}}\n- {{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\downarrow$|{{if:m==2|$\\uparrow\\ \\uparrow\\ \\leftarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\downarrow\\ \\rightarrow\\ \\uparrow$|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\uparrow$}}}}}}\n- {{if:m==1|$\\rightarrow\\ \\rightarrow$|{{if:m==2|$\\uparrow\\ \\rightarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\uparrow\\ \\rightarrow$|$\\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$}}}}}}\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -49,23 +42,16 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "{{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\uparrow$|{{if:m==2|$\\uparrow\\ \\uparrow\\ \\rightarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\uparrow\\ \\rightarrow\\ \\uparrow$|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$}}}}}}"
-				},
-				{
-					"content": "{{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\downarrow$|{{if:m==2|$\\uparrow\\ \\uparrow\\ \\leftarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\downarrow\\ \\rightarrow\\ \\uparrow$|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\uparrow$}}}}}}"
-				},
-				{
-					"content": "{{if:m==1|$\\rightarrow\\ \\rightarrow$|{{if:m==2|$\\uparrow\\ \\rightarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\uparrow\\ \\rightarrow$|$\\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$}}}}}}"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On suit chaque code depuis le carré rouge. Seul {{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\uparrow$|{{if:m==2|$\\uparrow\\ \\uparrow\\ \\rightarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\uparrow\\ \\rightarrow\\ \\uparrow$|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$}}}}}} arrive au carré vert."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -79,7 +65,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Où arrive : bon point, lettres décalées",
@@ -91,7 +77,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "Erreur : point d'une flèche changée",
@@ -103,7 +89,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Quel code : le bon",
@@ -114,7 +100,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : une flèche oubliée",
@@ -125,7 +111,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "Erreur : une flèche changée",
@@ -136,7 +122,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		}
 	]
 }

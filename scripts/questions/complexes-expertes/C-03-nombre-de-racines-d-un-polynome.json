@@ -8,162 +8,219 @@
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
-	"shared": {
-		"genericFunctions": ["P"]
-	},
 	"variations": [
 		{
-			"statement": "$P$ est un polynôme de degré ${{n}}$ à coefficients complexes.\n\nQue peut-on dire du nombre de solutions dans $\\mathbb{C}$ de l'équation $P(z) = 0$ ?",
-			"variables": [{ "name": "n", "expression": "3..8" }],
-			"choices": [
-				{ "content": "Elle a au plus ${{n}}$ solutions" },
-				{ "content": "Elle a exactement ${{n}}$ solutions distinctes" },
-				{ "content": "Elle a au plus ${{eval:n-1}}$ solutions" },
-				{ "content": "Elle a au moins ${{n}}$ solutions" }
+			"statement": "$P$ est un polynôme de degré ${{n}}$ à coefficients complexes.\n\nQue peut-on dire du nombre de solutions dans $\\mathbb{C}$ de l'équation $P(z) = 0$ ?\n\n```choix\n- Elle a au plus ${{n}}$ solutions\n- Elle a exactement ${{n}}$ solutions distinctes\n- Elle a au plus ${{eval:n-1}}$ solutions\n- Elle a au moins ${{n}}$ solutions\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..8"
+				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Si $a_1$, …, $a_k$ sont des racines distinctes, on factorise successivement par $z - a_1$, …, $z - a_k$ : $k \\leqslant {{n}}$.",
 					"$\\textcolor{{{color:primary.0}}}{\\text{Au plus } {{n}} \\text{ solutions}}$. Pas forcément ${{n}}$ distinctes : $z^{ {{n}} } = 0$ n'a qu'une solution, $z = 0$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "$P$ est un polynôme de degré au plus ${{n}}$, et $P$ s'annule en ${{eval:n+1}}$ nombres complexes distincts.\n\nQue peut-on en conclure ?",
-			"variables": [{ "name": "n", "expression": "2..6" }],
-			"choices": [
-				{ "content": "$P$ est le polynôme nul" },
-				{ "content": "$P$ est de degré ${{eval:n+1}}$" },
-				{ "content": "$P$ est une constante non nulle" },
-				{ "content": "C'est impossible : aucun polynôme ne convient" }
+			"statement": "$P$ est un polynôme de degré au plus ${{n}}$, et $P$ s'annule en ${{eval:n+1}}$ nombres complexes distincts.\n\nQue peut-on en conclure ?\n\n```choix\n- $P$ est le polynôme nul\n- $P$ est de degré ${{eval:n+1}}$\n- $P$ est une constante non nulle\n- C'est impossible : aucun polynôme ne convient\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..6"
+				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Un polynôme NON NUL de degré au plus ${{n}}$ a au plus ${{n}}$ racines.",
 					"$P$ en a ${{eval:n+1}}$ : il ne peut pas être non nul. $\\textcolor{{{color:primary.0}}}{P \\text{ est le polynôme nul}}$ (qui convient : il s'annule partout)."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "$P$ est un polynôme à coefficients RÉELS, et $P({{a}}+{{b}}i) = 0$.\n\nQuel autre nombre est forcément une racine de $P$ ?",
+			"statement": "$P$ est un polynôme à coefficients RÉELS, et $P({{a}}+{{b}}i) = 0$.\n\nQuel autre nombre est forcément une racine de $P$ ?\n\n```choix\n- ${{a}}-{{b}}i$\n- ${{eval:-a}}+{{b}}i$\n- ${{eval:-a}}-{{b}}i$\n- ${{a}}$\n```",
 			"variables": [
-				{ "name": "a", "expression": "1..4;±" },
-				{ "name": "b", "expression": "2..5" }
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
 			],
-			"choices": [
-				{ "content": "${{a}}-{{b}}i$" },
-				{ "content": "${{eval:-a}}+{{b}}i$" },
-				{ "content": "${{eval:-a}}-{{b}}i$" },
-				{ "content": "${{a}}$" }
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les coefficients sont réels : $\\overline{P(z)} = P(\\bar{z})$.",
 					"$P(\\overline{ {{a}}+{{b}}i }) = \\overline{P({{a}}+{{b}}i)} = \\bar{0} = 0$ : le conjugué $\\textcolor{{{color:primary.0}}}{{{a}}-{{b}}i}$ est racine. L'opposé, lui, n'a aucune raison de l'être."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "$P$ est un polynôme de degré ${{n}}$ à coefficients RÉELS.\n\nQue peut-on affirmer ?",
-			"variables": [{ "name": "n", "expression": "3|5|7" }],
-			"choices": [
-				{ "content": "$P$ a au moins une racine réelle" },
-				{ "content": "$P$ a ${{n}}$ racines réelles" },
-				{ "content": "$P$ peut n'avoir aucune racine réelle" },
-				{ "content": "$P$ a exactement ${{eval:n-1}}$ racines non réelles" }
+			"statement": "$P$ est un polynôme de degré ${{n}}$ à coefficients RÉELS.\n\nQue peut-on affirmer ?\n\n```choix\n- $P$ a au moins une racine réelle\n- $P$ a ${{n}}$ racines réelles\n- $P$ peut n'avoir aucune racine réelle\n- $P$ a exactement ${{eval:n-1}}$ racines non réelles\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3|5|7"
+				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les racines non réelles vont par paires de conjuguées : elles sont en nombre pair (comptées avec leur ordre de multiplicité).",
 					"Le degré ${{n}}$ est impair : $\\textcolor{{{color:primary.0}}}{P \\text{ a au moins une racine réelle}}$. Par exemple $z^{ {{n}} } - z$ a la racine $0$, $z^{ {{n}} } + 1$ la racine $-1$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
+	"shared": {
+		"genericFunctions": ["P"]
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : au plus n",
 			"variationIndex": 0,
-			"variables": { "n": "5" },
-			"selectedChoices": [0],
-			"expected": { "status": "correct" }
+			"variables": {
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : exactement n distinctes",
 			"variationIndex": 0,
-			"variables": { "n": "5" },
-			"selectedChoices": [1],
-			"expected": { "status": "incorrect" }
+			"variables": {
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : au moins n",
 			"variationIndex": 0,
-			"variables": { "n": "5" },
-			"selectedChoices": [3],
-			"expected": { "status": "incorrect" }
+			"variables": {
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v1 : polynôme nul",
 			"variationIndex": 1,
-			"variables": { "n": "3" },
-			"selectedChoices": [0],
-			"expected": { "status": "correct" }
+			"variables": {
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : impossible",
 			"variationIndex": 1,
-			"variables": { "n": "3" },
-			"selectedChoices": [3],
-			"expected": { "status": "incorrect" }
+			"variables": {
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v1 : degré n + 1",
 			"variationIndex": 1,
-			"variables": { "n": "3" },
-			"selectedChoices": [1],
-			"expected": { "status": "incorrect" }
+			"variables": {
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : conjugué",
 			"variationIndex": 2,
-			"variables": { "a": "-2", "b": "3" },
-			"selectedChoices": [0],
-			"expected": { "status": "correct" }
+			"variables": {
+				"a": "-2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : opposé du conjugué",
 			"variationIndex": 2,
-			"variables": { "a": "-2", "b": "3" },
-			"selectedChoices": [1],
-			"expected": { "status": "incorrect" }
+			"variables": {
+				"a": "-2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : opposé",
 			"variationIndex": 2,
-			"variables": { "a": "-2", "b": "3" },
-			"selectedChoices": [2],
-			"expected": { "status": "incorrect" }
+			"variables": {
+				"a": "-2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v3 : au moins une racine réelle",
 			"variationIndex": 3,
-			"variables": { "n": "5" },
-			"selectedChoices": [0],
-			"expected": { "status": "correct" }
+			"variables": {
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v3 : aucune racine réelle possible",
 			"variationIndex": 3,
-			"variables": { "n": "5" },
-			"selectedChoices": [2],
-			"expected": { "status": "incorrect" }
+			"variables": {
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
 		}
-	],
-	"options": {
-		"shuffleChoices": true
-	}
+	]
 }

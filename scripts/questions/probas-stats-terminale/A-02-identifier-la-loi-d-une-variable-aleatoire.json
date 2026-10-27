@@ -10,91 +10,61 @@
 	"delay": 60,
 	"variations": [
 		{
-			"statement": "On lance ${{n}}$ fois un dé équilibré à six faces et on note $X$ le nombre de $6$ obtenus.\n\nQuelle est la loi de $X$ ?",
+			"statement": "On lance ${{n}}$ fois un dé équilibré à six faces et on note $X$ le nombre de $6$ obtenus.\n\nQuelle est la loi de $X$ ?\n\n```choix\n- $\\mathcal{B}\\left({{n}}\\,;\\dfrac{1}{6}\\right)$\n- $\\mathcal{G}\\left(\\dfrac{1}{6}\\right)$\n- $\\mathcal{B}\\left({{n}}\\,;\\dfrac{5}{6}\\right)$\n- $\\mathcal{B}\\left(6\\,;\\dfrac{1}{ {{n}} }\\right)$\n```",
 			"variables": [
 				{
 					"name": "n",
 					"expression": "5..15"
 				}
 			],
-			"choices": [
-				{
-					"content": "$\\mathcal{B}\\left({{n}}\\,;\\dfrac{1}{6}\\right)$"
-				},
-				{
-					"content": "$\\mathcal{G}\\left(\\dfrac{1}{6}\\right)$"
-				},
-				{
-					"content": "$\\mathcal{B}\\left({{n}}\\,;\\dfrac{5}{6}\\right)$"
-				},
-				{
-					"content": "$\\mathcal{B}\\left(6\\,;\\dfrac{1}{ {{n}} }\\right)$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On compte le **nombre de succès** (« obtenir $6$ », probabilité $\\dfrac{1}{6}$) dans ${{n}}$ épreuves identiques et indépendantes.",
 					"$X$ suit la loi $\\textcolor{{{color:primary.0}}}{\\mathcal{B}\\left({{n}}\\,;\\dfrac{1}{6}\\right)}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On lance un dé équilibré à six faces **jusqu'à** obtenir un $6$ pour la première fois, et on note $X$ le nombre de lancers effectués.\n\nQuelle est la loi de $X$ ?",
-			"choices": [
-				{
-					"content": "$\\mathcal{G}\\left(\\dfrac{1}{6}\\right)$"
-				},
-				{
-					"content": "$\\mathcal{G}\\left(\\dfrac{5}{6}\\right)$"
-				},
-				{
-					"content": "$\\mathcal{B}\\left(6\\,;\\dfrac{1}{6}\\right)$"
-				},
-				{
-					"content": "La loi de Bernoulli de paramètre $\\dfrac{1}{6}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
+			"statement": "On lance un dé équilibré à six faces **jusqu'à** obtenir un $6$ pour la première fois, et on note $X$ le nombre de lancers effectués.\n\nQuelle est la loi de $X$ ?\n\n```choix\n- $\\mathcal{G}\\left(\\dfrac{1}{6}\\right)$\n- $\\mathcal{G}\\left(\\dfrac{5}{6}\\right)$\n- $\\mathcal{B}\\left(6\\,;\\dfrac{1}{6}\\right)$\n- La loi de Bernoulli de paramètre $\\dfrac{1}{6}$\n```",
 			"correction": {
 				"steps": [
 					"On répète une épreuve de Bernoulli de succès « obtenir $6$ » ($p=\\dfrac{1}{6}$) et $X$ est le **rang du premier succès**.",
 					"$X$ suit la loi géométrique $\\textcolor{{{color:primary.0}}}{\\mathcal{G}\\left(\\dfrac{1}{6}\\right)}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Dans une production, ${{t}}\\,\\%$ des pièces sont défectueuses. On prélève une pièce au hasard et on note $X$ la variable qui vaut $1$ si la pièce est défectueuse, $0$ sinon.\n\nQuelle est la loi de $X$ ?",
+			"statement": "Dans une production, ${{t}}\\,\\%$ des pièces sont défectueuses. On prélève une pièce au hasard et on note $X$ la variable qui vaut $1$ si la pièce est défectueuse, $0$ sinon.\n\nQuelle est la loi de $X$ ?\n\n```choix\n- La loi de Bernoulli de paramètre ${{eval:t/100;d}}$\n- La loi de Bernoulli de paramètre ${{eval:1-t/100;d}}$\n- $\\mathcal{G}\\left({{eval:t/100;d}}\\right)$\n- $\\mathcal{B}\\left(100\\,;{{eval:t/100;d}}\\right)$\n```",
 			"variables": [
 				{
 					"name": "t",
 					"expression": "2..15"
 				}
 			],
-			"choices": [
-				{
-					"content": "La loi de Bernoulli de paramètre ${{eval:t/100;d}}$"
-				},
-				{
-					"content": "La loi de Bernoulli de paramètre ${{eval:1-t/100;d}}$"
-				},
-				{
-					"content": "$\\mathcal{G}\\left({{eval:t/100;d}}\\right)$"
-				},
-				{
-					"content": "$\\mathcal{B}\\left(100\\,;{{eval:t/100;d}}\\right)$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$X$ ne prend que les valeurs $1$ (succès) et $0$ (échec), pour **une seule** épreuve.",
 					"$X$ suit la loi **de Bernoulli de paramètre** ${{eval:t/100;d}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Une urne contient ${{r}}$ boules rouges et ${{b}}$ boules blanches. On tire successivement **et sans remise** trois boules, et on note $X$ le nombre de boules rouges obtenues.\n\nQuelle est la loi de $X$ ?",
+			"statement": "Une urne contient ${{r}}$ boules rouges et ${{b}}$ boules blanches. On tire successivement **et sans remise** trois boules, et on note $X$ le nombre de boules rouges obtenues.\n\nQuelle est la loi de $X$ ?\n\n```choix\n- Aucune de ces lois : les tirages ne sont pas indépendants\n- $\\mathcal{B}\\left(3\\,;\\dfrac{ {{r}} }{ {{eval:r+b}} }\\right)$\n- $\\mathcal{G}\\left(\\dfrac{ {{r}} }{ {{eval:r+b}} }\\right)$\n- La loi de Bernoulli de paramètre $\\dfrac{ {{r}} }{ {{eval:r+b}} }$\n```",
 			"variables": [
 				{
 					"name": "r",
@@ -105,29 +75,24 @@
 					"expression": "3..6"
 				}
 			],
-			"choices": [
-				{
-					"content": "Aucune de ces lois : les tirages ne sont pas indépendants"
-				},
-				{
-					"content": "$\\mathcal{B}\\left(3\\,;\\dfrac{ {{r}} }{ {{eval:r+b}} }\\right)$"
-				},
-				{
-					"content": "$\\mathcal{G}\\left(\\dfrac{ {{r}} }{ {{eval:r+b}} }\\right)$"
-				},
-				{
-					"content": "La loi de Bernoulli de paramètre $\\dfrac{ {{r}} }{ {{eval:r+b}} }$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Sans remise, la composition de l'urne change à chaque tirage : les épreuves ne sont **pas indépendantes** et la probabilité de « rouge » n'est pas la même à chaque tirage.",
 					"Ce n'est donc **ni une loi binomiale, ni une loi géométrique, ni une loi de Bernoulli**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : binomiale",
@@ -135,10 +100,10 @@
 			"variables": {
 				"n": "10"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : géométrique",
@@ -146,10 +111,10 @@
 			"variables": {
 				"n": "10"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : p et 1 − p",
@@ -157,37 +122,37 @@
 			"variables": {
 				"n": "10"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v1 : géométrique",
 			"variationIndex": 1,
 			"variables": {},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : G(5/6)",
 			"variationIndex": 1,
 			"variables": {},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : binomiale",
 			"variationIndex": 1,
 			"variables": {},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 : Bernoulli",
@@ -195,10 +160,10 @@
 			"variables": {
 				"t": "4"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : 1 − p",
@@ -206,10 +171,10 @@
 			"variables": {
 				"t": "4"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v3 : sans remise → aucune",
@@ -218,10 +183,10 @@
 				"r": "4",
 				"b": "5"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v3 : binomiale à tort",
@@ -230,16 +195,10 @@
 				"r": "4",
 				"b": "5"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": true
-	}
+	]
 }

@@ -8,10 +8,9 @@
 	"level": 1,
 	"status": "draft",
 	"delay": 60,
-	"multipleAnswers": true,
 	"variations": [
 		{
-			"statement": "On considère le nombre $x={{if:p<0|-}}\\dfrac{ {{eval:abs(p)}} }{ {{q}} }$.\n\nÀ quels ensembles le nombre $x$ appartient-il ?",
+			"statement": "On considère le nombre $x={{if:p<0|-}}\\dfrac{ {{eval:abs(p)}} }{ {{q}} }$.\n\nÀ quels ensembles le nombre $x$ appartient-il ?\n\n```choix\nplusieurs: oui\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
 			"variables": [
 				{
 					"name": "q",
@@ -50,24 +49,6 @@
 					"expression": "{{eval:z*(1+sign(p))/2}}"
 				}
 			],
-			"choices": [
-				{
-					"content": "$\\mathbb{N}$"
-				},
-				{
-					"content": "$\\mathbb{Z}$"
-				},
-				{
-					"content": "$𝔻$"
-				},
-				{
-					"content": "$\\mathbb{Q}$"
-				},
-				{
-					"content": "$\\mathbb{R}$"
-				}
-			],
-			"correctChoiceIndex": ["{{eval:4-4*u}}", "{{eval:4-3*z}}", "{{eval:4-2*w}}", "3", "4"],
 			"correction": {
 				"steps": [
 					"On simplifie la fraction : $x={{if:p<0|-}}\\dfrac{ {{eval:abs(p)}} }{ {{q}} }={{eval:p/q}}$.",
@@ -75,10 +56,15 @@
 					"{{if:w=1|Le dénominateur de la fraction irréductible, ${{r}}$, ne contient que les facteurs premiers $2$ et $5$ : $x={{eval:p/q;d}}$ est décimal, $x\\in 𝔻$.}}{{if:w=0|Le dénominateur de la fraction irréductible, ${{r}}$, a un facteur premier autre que $2$ et $5$ : l'écriture décimale de $x$ est illimitée, $x\\notin 𝔻$.}}",
 					"$x$ est le quotient de deux entiers : $x\\in\\mathbb{Q}$, et donc $x\\in\\mathbb{R}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4-4*u}};{{eval:4-3*z}};{{eval:4-2*w}};3;4"
+				}
+			]
 		},
 		{
-			"statement": "On considère le nombre $x={{if:s<0|-}}\\sqrt{ {{n}} }$.\n\nÀ quels ensembles le nombre $x$ appartient-il ?",
+			"statement": "On considère le nombre $x={{if:s<0|-}}\\sqrt{ {{n}} }$.\n\nÀ quels ensembles le nombre $x$ appartient-il ?\n\n```choix\nplusieurs: oui\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -113,39 +99,20 @@
 					"expression": "{{eval:z*(1+s)/2}}"
 				}
 			],
-			"choices": [
-				{
-					"content": "$\\mathbb{N}$"
-				},
-				{
-					"content": "$\\mathbb{Z}$"
-				},
-				{
-					"content": "$𝔻$"
-				},
-				{
-					"content": "$\\mathbb{Q}$"
-				},
-				{
-					"content": "$\\mathbb{R}$"
-				}
-			],
-			"correctChoiceIndex": [
-				"{{eval:4-4*u}}",
-				"{{eval:4-3*z}}",
-				"{{eval:4-2*z}}",
-				"{{eval:4-z}}",
-				"4"
-			],
 			"correction": {
 				"steps": [
 					"{{if:z=1|${{n}}={{k}}^2$ est un carré parfait : $x={{if:s<0|-}}\\sqrt{ {{n}} }={{eval:s*k}}$ est un entier relatif, donc $x\\in\\mathbb{Z}$, $x\\in 𝔻$, $x\\in\\mathbb{Q}$ et $x\\in\\mathbb{R}$.}}{{if:u=1| Il est positif : $x\\in\\mathbb{N}$.}}{{if:z=1 && u=0| Il est négatif : $x\\notin\\mathbb{N}$.}}{{if:z=0|${{eval:k^2}}<{{n}}<{{eval:(k+1)^2}}$ : ${{n}}$ n'est pas un carré parfait, donc $\\sqrt{ {{n}} }$ est irrationnel (comme $\\sqrt{2}$).}}",
 					"{{if:z=0|$x$ n'est donc ni rationnel, ni décimal, ni entier : $x\\notin\\mathbb{Q}$, $x\\notin 𝔻$, $x\\notin\\mathbb{Z}$, $x\\notin\\mathbb{N}$. Seulement $x\\in\\mathbb{R}$.}}{{if:z=1|Rappel : $\\mathbb{N} \\subset\\mathbb{Z} \\subset 𝔻 \\subset\\mathbb{Q} \\subset\\mathbb{R}$.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4-4*u}};{{eval:4-3*z}};{{eval:4-2*z}};{{eval:4-z}};4"
+				}
+			]
 		},
 		{
-			"statement": "On considère le nombre $x={{eval:m/100;d}}$.\n\nÀ quels ensembles le nombre $x$ appartient-il ?",
+			"statement": "On considère le nombre $x={{eval:m/100;d}}$.\n\nÀ quels ensembles le nombre $x$ appartient-il ?\n\n```choix\nplusieurs: oui\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
 			"variables": [
 				{
 					"name": "t",
@@ -173,32 +140,24 @@
 				}
 			],
 			"conditions": ["mod(abs(v), 100) != 0"],
-			"choices": [
-				{
-					"content": "$\\mathbb{N}$"
-				},
-				{
-					"content": "$\\mathbb{Z}$"
-				},
-				{
-					"content": "$𝔻$"
-				},
-				{
-					"content": "$\\mathbb{Q}$"
-				},
-				{
-					"content": "$\\mathbb{R}$"
-				}
-			],
-			"correctChoiceIndex": ["{{eval:4-4*u}}", "{{eval:4-3*z}}", "2", "3", "4"],
 			"correction": {
 				"steps": [
 					"{{if:u=1|$x={{eval:m/100}}$ est un entier naturel : $x\\in\\mathbb{N}$ et $x\\in\\mathbb{Z}$.}}{{if:z=1 && u=0|$x={{eval:m/100}}$ est un entier négatif : $x\\in\\mathbb{Z}$ mais $x\\notin\\mathbb{N}$.}}{{if:z=0|$x$ n'est pas entier : $x\\notin\\mathbb{Z}$ et $x\\notin\\mathbb{N}$.}}",
 					"$x=\\dfrac{ {{m}} }{100}$ : c'est un nombre décimal, donc $x\\in 𝔻$, $x\\in\\mathbb{Q}$ et $x\\in\\mathbb{R}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4-4*u}};{{eval:4-3*z}};2;3;4"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 −21/12 = −7/4 : 𝔻, ℚ, ℝ",
@@ -209,10 +168,10 @@
 				"k": "1",
 				"m": "-21"
 			},
-			"selectedChoices": [2, 3, 4],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2;3;4"]
 		},
 		{
 			"description": "v0 −7/4 : ordre de coche différent",
@@ -223,10 +182,10 @@
 				"k": "1",
 				"m": "-21"
 			},
-			"selectedChoices": [4, 2, 3],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2;3;4"]
 		},
 		{
 			"description": "v0 −7/4 : ℤ coché à tort",
@@ -237,10 +196,10 @@
 				"k": "1",
 				"m": "-21"
 			},
-			"selectedChoices": [1, 2, 3, 4],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1;2;3;4"]
 		},
 		{
 			"description": "v0 −7/4 : 𝔻 oublié (½)",
@@ -251,10 +210,10 @@
 				"k": "1",
 				"m": "-21"
 			},
-			"selectedChoices": [3, 4],
 			"expected": {
 				"status": "unoptimal_form"
-			}
+			},
+			"answers": ["3;4"]
 		},
 		{
 			"description": "v0 38/3 : ℚ, ℝ",
@@ -265,10 +224,10 @@
 				"k": "1",
 				"m": "38"
 			},
-			"selectedChoices": [3, 4],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["3;4"]
 		},
 		{
 			"description": "v0 38/3 : 𝔻 coché à tort",
@@ -279,10 +238,10 @@
 				"k": "1",
 				"m": "38"
 			},
-			"selectedChoices": [2, 3, 4],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2;3;4"]
 		},
 		{
 			"description": "v0 −12/4 = −3 : ℤ, 𝔻, ℚ, ℝ",
@@ -293,10 +252,10 @@
 				"k": "-3",
 				"m": "5"
 			},
-			"selectedChoices": [1, 2, 3, 4],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1;2;3;4"]
 		},
 		{
 			"description": "v0 −3 : ℕ coché à tort",
@@ -307,10 +266,10 @@
 				"k": "-3",
 				"m": "5"
 			},
-			"selectedChoices": [0, 1, 2, 3, 4],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0;1;2;3;4"]
 		},
 		{
 			"description": "v0 30/6 = 5 : les cinq",
@@ -321,10 +280,10 @@
 				"k": "5",
 				"m": "5"
 			},
-			"selectedChoices": [0, 1, 2, 3, 4],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0;1;2;3;4"]
 		},
 		{
 			"description": "v0 30/6 = 5 : seulement ℚ et ℝ (½)",
@@ -335,10 +294,10 @@
 				"k": "5",
 				"m": "5"
 			},
-			"selectedChoices": [3, 4],
 			"expected": {
 				"status": "unoptimal_form"
-			}
+			},
+			"answers": ["3;4"]
 		},
 		{
 			"description": "v1 −√64 = −8 : ℤ, 𝔻, ℚ, ℝ",
@@ -349,10 +308,10 @@
 				"j": "3",
 				"s": "-1"
 			},
-			"selectedChoices": [1, 2, 3, 4],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1;2;3;4"]
 		},
 		{
 			"description": "v1 √49 = 7 : les cinq",
@@ -363,10 +322,10 @@
 				"j": "3",
 				"s": "1"
 			},
-			"selectedChoices": [0, 1, 2, 3, 4],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0;1;2;3;4"]
 		},
 		{
 			"description": "v1 √43 : ℝ seul",
@@ -377,10 +336,10 @@
 				"j": "7",
 				"s": "1"
 			},
-			"selectedChoices": [4],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["4"]
 		},
 		{
 			"description": "v1 √43 : ℚ coché à tort",
@@ -391,10 +350,10 @@
 				"j": "7",
 				"s": "1"
 			},
-			"selectedChoices": [3, 4],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3;4"]
 		},
 		{
 			"description": "v2 3,93 : 𝔻, ℚ, ℝ",
@@ -404,10 +363,10 @@
 				"k": "6",
 				"v": "393"
 			},
-			"selectedChoices": [2, 3, 4],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2;3;4"]
 		},
 		{
 			"description": "v2 3,93 : ℤ coché à tort",
@@ -417,10 +376,10 @@
 				"k": "6",
 				"v": "393"
 			},
-			"selectedChoices": [1, 2, 3, 4],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1;2;3;4"]
 		},
 		{
 			"description": "v2 −29 : ℤ, 𝔻, ℚ, ℝ",
@@ -430,10 +389,10 @@
 				"k": "-29",
 				"v": "375"
 			},
-			"selectedChoices": [1, 2, 3, 4],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1;2;3;4"]
 		},
 		{
 			"description": "v2 27 : ℕ oublié (½)",
@@ -443,16 +402,10 @@
 				"k": "27",
 				"v": "375"
 			},
-			"selectedChoices": [1, 2, 3, 4],
 			"expected": {
 				"status": "unoptimal_form"
-			}
+			},
+			"answers": ["1;2;3;4"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": false
-	}
+	]
 }

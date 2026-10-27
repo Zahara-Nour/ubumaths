@@ -8,26 +8,9 @@
 	"subdomain": "Variations",
 	"level": 1,
 	"delay": 30,
-	"shared": {
-		"cleanCoefficients": true,
-		"choices": [
-			{
-				"content": "croissante"
-			},
-			{
-				"content": "décroissante"
-			},
-			{
-				"content": "constante"
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -42,16 +25,20 @@
 					"expression": "1..5"
 				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }$, soit $f'(x)={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
 					"Ici $f'(x)$ est **strictement positif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$ sur $\\mathbb{R}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -66,16 +53,20 @@
 					"expression": "-5..-1"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }$, soit $f'(x)={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
 					"Ici $f'(x)$ est **strictement négatif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$ sur $\\mathbb{R}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -90,16 +81,20 @@
 					"expression": "1..5"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }$, soit $f'(x)={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
 					"Ici $f'(x)$ est **strictement négatif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$ sur $\\mathbb{R}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -114,16 +109,20 @@
 					"expression": "-5..-1"
 				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }$, soit $f'(x)={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
 					"Ici $f'(x)$ est **strictement positif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$ sur $\\mathbb{R}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{k}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{k}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -134,15 +133,22 @@
 					"expression": "2..5;±"
 				}
 			],
-			"correctChoiceIndex": ["2"],
 			"correction": {
 				"steps": [
 					"L'exposant ${{k}}$ ne contient pas $x$ : ${{c}}e^{ {{k}} }$ est un **nombre**, le même pour tout $x$.",
 					"$f$ est $\\textcolor{{{color:primary.0}}}{\\text{constante}}$ (et $f'(x)=0$)."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"testSpecs": [
 		{
 			"description": "c>0, k>0 : croissante",
@@ -151,10 +157,10 @@
 				"c": "3",
 				"k": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "c>0, k>0 : décroissante refusé",
@@ -163,10 +169,10 @@
 				"c": "3",
 				"k": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "c>0, k>0 : constante refusé",
@@ -175,10 +181,10 @@
 				"c": "3",
 				"k": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "c>0, k<0 : décroissante",
@@ -187,10 +193,10 @@
 				"c": "4",
 				"k": "-1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "c>0, k<0 : croissante (signe de k ignoré) refusé",
@@ -199,10 +205,10 @@
 				"c": "4",
 				"k": "-1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "c>0, k<0 : constante refusé",
@@ -211,10 +217,10 @@
 				"c": "4",
 				"k": "-1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "c<0, k>0 : décroissante",
@@ -223,10 +229,10 @@
 				"c": "-5",
 				"k": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "c<0, k>0 : croissante (signe de c ignoré) refusé",
@@ -235,10 +241,10 @@
 				"c": "-5",
 				"k": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "c<0, k>0 : constante refusé",
@@ -247,10 +253,10 @@
 				"c": "-5",
 				"k": "3"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "c<0, k<0 : croissante",
@@ -259,10 +265,10 @@
 				"c": "-2",
 				"k": "-4"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "c<0, k<0 : décroissante (un seul signe vu) refusé",
@@ -271,10 +277,10 @@
 				"c": "-2",
 				"k": "-4"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "c<0, k<0 : constante refusé",
@@ -283,10 +289,10 @@
 				"c": "-2",
 				"k": "-4"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "c·eᵏ sans x : constante",
@@ -295,10 +301,10 @@
 				"c": "3",
 				"k": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "c·eᵏ sans x : croissante refusé",
@@ -307,10 +313,10 @@
 				"c": "3",
 				"k": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "c·eᵏ sans x : décroissante refusé",
@@ -319,52 +325,82 @@
 				"c": "-3",
 				"k": "-2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "c=1, k=2 (eˣ sans coefficient) : croissante",
 			"variationIndex": 0,
-			"variables": { "c": "1", "k": "2" },
-			"selectedChoices": [0],
-			"expected": { "status": "correct" }
+			"variables": {
+				"c": "1",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "c=1, k=−3 : décroissante",
 			"variationIndex": 1,
-			"variables": { "c": "1", "k": "-3" },
-			"selectedChoices": [1],
-			"expected": { "status": "correct" }
+			"variables": {
+				"c": "1",
+				"k": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "c=−1, k=2 : décroissante",
 			"variationIndex": 2,
-			"variables": { "c": "-1", "k": "2" },
-			"selectedChoices": [1],
-			"expected": { "status": "correct" }
+			"variables": {
+				"c": "-1",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "c=−1, k=−1 : croissante",
 			"variationIndex": 3,
-			"variables": { "c": "-1", "k": "-1" },
-			"selectedChoices": [0],
-			"expected": { "status": "correct" }
+			"variables": {
+				"c": "-1",
+				"k": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "c=−1, k=−1 : décroissante refusé",
 			"variationIndex": 3,
-			"variables": { "c": "-1", "k": "-1" },
-			"selectedChoices": [1],
-			"expected": { "status": "incorrect" }
+			"variables": {
+				"c": "-1",
+				"k": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "constante, c=−1 : constante",
 			"variationIndex": 4,
-			"variables": { "c": "-1", "k": "3" },
-			"selectedChoices": [2],
-			"expected": { "status": "correct" }
+			"variables": {
+				"c": "-1",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
 		}
 	]
 }

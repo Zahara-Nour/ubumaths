@@ -10,77 +10,47 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Les faces de ce cube sont toutes…\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un cube.\n---\np1 = point(2.24, 0.3, visible=faux)\np2 = point(4.84, 0.3, visible=faux)\np3 = point(4.84, 2.9, visible=faux)\np4 = point(2.24, 2.9, visible=faux)\np5 = point(3.16, 1.219, visible=faux)\np6 = point(5.76, 1.219, visible=faux)\np7 = point(5.76, 3.819, visible=faux)\np8 = point(3.16, 3.819, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```",
+			"statement": "Les faces de ce cube sont toutes…\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un cube.\n---\np1 = point(2.24, 0.3, visible=faux)\np2 = point(4.84, 0.3, visible=faux)\np3 = point(4.84, 2.9, visible=faux)\np4 = point(2.24, 2.9, visible=faux)\np5 = point(3.16, 1.219, visible=faux)\np6 = point(5.76, 1.219, visible=faux)\np7 = point(5.76, 3.819, visible=faux)\np8 = point(3.16, 3.819, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```\n\n```choix\n- … des carrés.\n- … des rectangles.\n- … des triangles.\n- … des disques.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "… des carrés."
-				},
-				{
-					"content": "… des rectangles."
-				},
-				{
-					"content": "… des triangles."
-				},
-				{
-					"content": "… des disques."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": ["Les 6 faces du cube sont des carrés, toutes pareilles."]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Les faces de ce pavé sont toutes…\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé.\n---\np1 = point(2.046, 0.3, visible=faux)\np2 = point(5.246, 0.3, visible=faux)\np3 = point(5.246, 2, visible=faux)\np4 = point(2.046, 2, visible=faux)\np5 = point(2.754, 1.007, visible=faux)\np6 = point(5.954, 1.007, visible=faux)\np7 = point(5.954, 2.707, visible=faux)\np8 = point(2.754, 2.707, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```",
+			"statement": "Les faces de ce pavé sont toutes…\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé.\n---\np1 = point(2.046, 0.3, visible=faux)\np2 = point(5.246, 0.3, visible=faux)\np3 = point(5.246, 2, visible=faux)\np4 = point(2.046, 2, visible=faux)\np5 = point(2.754, 1.007, visible=faux)\np6 = point(5.954, 1.007, visible=faux)\np7 = point(5.954, 2.707, visible=faux)\np8 = point(2.754, 2.707, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```\n\n```choix\n- … des rectangles.\n- … des carrés.\n- … des triangles.\n- … des disques.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "… des rectangles."
-				},
-				{
-					"content": "… des carrés."
-				},
-				{
-					"content": "… des triangles."
-				},
-				{
-					"content": "… des disques."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les 6 faces de ce pavé sont des rectangles. Elles vont par deux : celles d'en face sont pareilles."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Les faces de ce pavé sont toutes…\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé.\n---\np1 = point(2.853, 0.3, visible=faux)\np2 = point(4.653, 0.3, visible=faux)\np3 = point(4.653, 3.7, visible=faux)\np4 = point(2.853, 3.7, visible=faux)\np5 = point(3.347, 0.795, visible=faux)\np6 = point(5.147, 0.795, visible=faux)\np7 = point(5.147, 4.195, visible=faux)\np8 = point(3.347, 4.195, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```",
+			"statement": "Les faces de ce pavé sont toutes…\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé.\n---\np1 = point(2.853, 0.3, visible=faux)\np2 = point(4.653, 0.3, visible=faux)\np3 = point(4.653, 3.7, visible=faux)\np4 = point(2.853, 3.7, visible=faux)\np5 = point(3.347, 0.795, visible=faux)\np6 = point(5.147, 0.795, visible=faux)\np7 = point(5.147, 4.195, visible=faux)\np8 = point(3.347, 4.195, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```\n\n```choix\n- … des rectangles.\n- … des carrés.\n- … des triangles.\n- … des disques.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "… des rectangles."
-				},
-				{
-					"content": "… des carrés."
-				},
-				{
-					"content": "… des triangles."
-				},
-				{
-					"content": "… des disques."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les 6 faces de ce pavé sont des rectangles. Elles vont par deux : celles d'en face sont pareilles."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -91,7 +61,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Cube : des rectangles, erreur",
@@ -100,7 +70,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Pavé couché : des rectangles",
@@ -109,7 +79,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Pavé couché : des carrés, erreur",
@@ -118,7 +88,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Pavé debout : des rectangles",
@@ -127,7 +97,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Pavé debout : des triangles, erreur",
@@ -136,7 +106,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		}
 	]
 }

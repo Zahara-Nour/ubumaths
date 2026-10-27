@@ -8,12 +8,9 @@
 	"level": 1,
 	"status": "draft",
 	"delay": 60,
-	"shared": {
-		"cleanCoefficients": true
-	},
 	"variations": [
 		{
-			"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}$.\n\nParmi les fonctions $f$ suivantes, définies sur $\\mathbb{R}$, laquelle est solution de cette équation ?",
+			"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}$.\n\nParmi les fonctions $f$ suivantes, définies sur $\\mathbb{R}$, laquelle est solution de cette équation ?\n\n```choix\n- $f(x)={{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}$\n- $f(x)={{if:a==1|e^{{{if:k==1|x}}{{if:k==-1|-x}}{{if:k!=1 && k!=-1|{{eval:k}}x}}}}}{{if:a==-1|-e^{{{if:k==1|x}}{{if:k==-1|-x}}{{if:k!=1 && k!=-1|{{eval:k}}x}}}}}{{if:a!=1 && a!=-1|{{eval:a}}e^{{{if:k==1|x}}{{if:k==-1|-x}}{{if:k!=1 && k!=-1|{{eval:k}}x}}}}}$\n- $f(x)={{if:k==1|e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k==-1|-e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}$\n- $f(x)=e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}{{if:k>0|+{{eval:k}}}}{{if:k<0|{{eval:k}}}}$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -25,21 +22,6 @@
 				}
 			],
 			"conditions": ["k != a"],
-			"choices": [
-				{
-					"content": "$f(x)={{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}$"
-				},
-				{
-					"content": "$f(x)={{if:a==1|e^{{{if:k==1|x}}{{if:k==-1|-x}}{{if:k!=1 && k!=-1|{{eval:k}}x}}}}}{{if:a==-1|-e^{{{if:k==1|x}}{{if:k==-1|-x}}{{if:k!=1 && k!=-1|{{eval:k}}x}}}}}{{if:a!=1 && a!=-1|{{eval:a}}e^{{{if:k==1|x}}{{if:k==-1|-x}}{{if:k!=1 && k!=-1|{{eval:k}}x}}}}}$"
-				},
-				{
-					"content": "$f(x)={{if:k==1|e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k==-1|-e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}$"
-				},
-				{
-					"content": "$f(x)=e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}{{if:k>0|+{{eval:k}}}}{{if:k<0|{{eval:k}}}}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On calcule $f'(x)$ et on compare à ${{eval:a}}f(x)$, pour tout réel $x$.",
@@ -47,10 +29,15 @@
 					"Pour $f(x)=e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}{{if:k>0|+{{eval:k}}}}{{if:k<0|{{eval:k}}}}$ : $f'(x)={{if:a==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a!=1 && a!=-1|{{eval:a}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}$, alors que ${{eval:a}}f(x)={{if:a==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a!=1 && a!=-1|{{eval:a}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a*k>0|+{{eval:a*k}}}}{{if:a*k<0|{{eval:a*k}}}}$ : la constante ajoutée empêche l'égalité.",
 					"Les autres ne conviennent pas : le coefficient de $x$ dans l'exposant doit être ${{eval:a}}$, le coefficient de $y$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}$.\n\nParmi les fonctions $f$ suivantes, définies sur $\\mathbb{R}$, laquelle est solution de cette équation ?",
+			"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}$.\n\nParmi les fonctions $f$ suivantes, définies sur $\\mathbb{R}$, laquelle est solution de cette équation ?\n\n```choix\n- $f(x)={{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}}$\n- $f(x)={{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:-m>0|+{{eval:-m}}}}{{if:-m<0|{{eval:-m}}}}$\n- $f(x)={{if:k==1|e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k==-1|-e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}}$\n- $f(x)={{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -65,31 +52,21 @@
 					"expression": "1..3;±"
 				}
 			],
-			"choices": [
-				{
-					"content": "$f(x)={{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}}$"
-				},
-				{
-					"content": "$f(x)={{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:-m>0|+{{eval:-m}}}}{{if:-m<0|{{eval:-m}}}}$"
-				},
-				{
-					"content": "$f(x)={{if:k==1|e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k==-1|-e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}}$"
-				},
-				{
-					"content": "$f(x)={{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Pour $f(x)={{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}}$ : $f'(x)={{if:k*a==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k*a==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k*a!=1 && k*a!=-1|{{eval:k*a}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}$.",
 					"Et ${{if:a==1|f(x)}}{{if:a==-1|-f(x)}}{{if:a!=1 && a!=-1|{{eval:a}}f(x)}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}={{if:k*a==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k*a==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k*a!=1 && k*a!=-1|{{eval:k*a}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a*m>0|+{{eval:a*m}}}}{{if:a*m<0|{{eval:a*m}}}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}={{if:k*a==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k*a==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k*a!=1 && k*a!=-1|{{eval:k*a}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}=f'(x)$. **C'est une solution.**",
 					"Repère : la solution constante de $y'=ay+b$ est $-\\dfrac{b}{a}={{eval:m}}$, et l'exposant est ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}$ ; les autres fonctions se trompent sur l'un ou l'autre."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On considère l'équation différentielle $(E) : y'={{if:3*p==1|x^2}}{{if:3*p==-1|-x^2}}{{if:3*p!=1 && 3*p!=-1|{{eval:3*p}}x^2}}{{if:2*q==1|+x}}{{if:2*q==-1|-x}}{{if:2*q>0 && 2*q!=1|+{{eval:2*q}}x}}{{if:2*q<0 && 2*q!=-1|{{eval:2*q}}x}}{{if:r>0|+{{eval:r}}}}{{if:r<0|{{eval:r}}}}$.\n\nParmi les fonctions $f$ suivantes, définies sur $\\mathbb{R}$, laquelle est solution de cette équation ?",
+			"statement": "On considère l'équation différentielle $(E) : y'={{if:3*p==1|x^2}}{{if:3*p==-1|-x^2}}{{if:3*p!=1 && 3*p!=-1|{{eval:3*p}}x^2}}{{if:2*q==1|+x}}{{if:2*q==-1|-x}}{{if:2*q>0 && 2*q!=1|+{{eval:2*q}}x}}{{if:2*q<0 && 2*q!=-1|{{eval:2*q}}x}}{{if:r>0|+{{eval:r}}}}{{if:r<0|{{eval:r}}}}$.\n\nParmi les fonctions $f$ suivantes, définies sur $\\mathbb{R}$, laquelle est solution de cette équation ?\n\n```choix\n- $f(x)={{if:p==1|x^3}}{{if:p==-1|-x^3}}{{if:p!=1 && p!=-1|{{eval:p}}x^3}}{{if:q==1|+x^2}}{{if:q==-1|-x^2}}{{if:q>0 && q!=1|+{{eval:q}}x^2}}{{if:q<0 && q!=-1|{{eval:q}}x^2}}{{if:r==1|+x}}{{if:r==-1|-x}}{{if:r>0 && r!=1|+{{eval:r}}x}}{{if:r<0 && r!=-1|{{eval:r}}x}}{{if:k>0|+{{eval:k}}}}{{if:k<0|{{eval:k}}}}$\n- $f(x)={{if:6*p==1|x}}{{if:6*p==-1|-x}}{{if:6*p!=1 && 6*p!=-1|{{eval:6*p}}x}}{{if:2*q>0|+{{eval:2*q}}}}{{if:2*q<0|{{eval:2*q}}}}$\n- $f(x)={{if:3*p==1|x^3}}{{if:3*p==-1|-x^3}}{{if:3*p!=1 && 3*p!=-1|{{eval:3*p}}x^3}}{{if:2*q==1|+x^2}}{{if:2*q==-1|-x^2}}{{if:2*q>0 && 2*q!=1|+{{eval:2*q}}x^2}}{{if:2*q<0 && 2*q!=-1|{{eval:2*q}}x^2}}{{if:r==1|+x}}{{if:r==-1|-x}}{{if:r>0 && r!=1|+{{eval:r}}x}}{{if:r<0 && r!=-1|{{eval:r}}x}}{{if:k>0|+{{eval:k}}}}{{if:k<0|{{eval:k}}}}$\n- $f(x)={{if:p==1|x^3}}{{if:p==-1|-x^3}}{{if:p!=1 && p!=-1|{{eval:p}}x^3}}{{if:q==1|+x^2}}{{if:q==-1|-x^2}}{{if:q>0 && q!=1|+{{eval:q}}x^2}}{{if:q<0 && q!=-1|{{eval:q}}x^2}}{{if:r>0|+{{eval:r}}}}{{if:r<0|{{eval:r}}}}$\n```",
 			"variables": [
 				{
 					"name": "p",
@@ -108,30 +85,28 @@
 					"expression": "-5..5"
 				}
 			],
-			"choices": [
-				{
-					"content": "$f(x)={{if:p==1|x^3}}{{if:p==-1|-x^3}}{{if:p!=1 && p!=-1|{{eval:p}}x^3}}{{if:q==1|+x^2}}{{if:q==-1|-x^2}}{{if:q>0 && q!=1|+{{eval:q}}x^2}}{{if:q<0 && q!=-1|{{eval:q}}x^2}}{{if:r==1|+x}}{{if:r==-1|-x}}{{if:r>0 && r!=1|+{{eval:r}}x}}{{if:r<0 && r!=-1|{{eval:r}}x}}{{if:k>0|+{{eval:k}}}}{{if:k<0|{{eval:k}}}}$"
-				},
-				{
-					"content": "$f(x)={{if:6*p==1|x}}{{if:6*p==-1|-x}}{{if:6*p!=1 && 6*p!=-1|{{eval:6*p}}x}}{{if:2*q>0|+{{eval:2*q}}}}{{if:2*q<0|{{eval:2*q}}}}$"
-				},
-				{
-					"content": "$f(x)={{if:3*p==1|x^3}}{{if:3*p==-1|-x^3}}{{if:3*p!=1 && 3*p!=-1|{{eval:3*p}}x^3}}{{if:2*q==1|+x^2}}{{if:2*q==-1|-x^2}}{{if:2*q>0 && 2*q!=1|+{{eval:2*q}}x^2}}{{if:2*q<0 && 2*q!=-1|{{eval:2*q}}x^2}}{{if:r==1|+x}}{{if:r==-1|-x}}{{if:r>0 && r!=1|+{{eval:r}}x}}{{if:r<0 && r!=-1|{{eval:r}}x}}{{if:k>0|+{{eval:k}}}}{{if:k<0|{{eval:k}}}}$"
-				},
-				{
-					"content": "$f(x)={{if:p==1|x^3}}{{if:p==-1|-x^3}}{{if:p!=1 && p!=-1|{{eval:p}}x^3}}{{if:q==1|+x^2}}{{if:q==-1|-x^2}}{{if:q>0 && q!=1|+{{eval:q}}x^2}}{{if:q<0 && q!=-1|{{eval:q}}x^2}}{{if:r>0|+{{eval:r}}}}{{if:r<0|{{eval:r}}}}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Une solution de $y'=g(x)$ est une fonction dont la dérivée est $g$ : une **primitive** de $g$.",
 					"Pour $f(x)={{if:p==1|x^3}}{{if:p==-1|-x^3}}{{if:p!=1 && p!=-1|{{eval:p}}x^3}}{{if:q==1|+x^2}}{{if:q==-1|-x^2}}{{if:q>0 && q!=1|+{{eval:q}}x^2}}{{if:q<0 && q!=-1|{{eval:q}}x^2}}{{if:r==1|+x}}{{if:r==-1|-x}}{{if:r>0 && r!=1|+{{eval:r}}x}}{{if:r<0 && r!=-1|{{eval:r}}x}}{{if:k>0|+{{eval:k}}}}{{if:k<0|{{eval:k}}}}$ : $f'(x)={{if:3*p==1|x^2}}{{if:3*p==-1|-x^2}}{{if:3*p!=1 && 3*p!=-1|{{eval:3*p}}x^2}}{{if:2*q==1|+x}}{{if:2*q==-1|-x}}{{if:2*q>0 && 2*q!=1|+{{eval:2*q}}x}}{{if:2*q<0 && 2*q!=-1|{{eval:2*q}}x}}{{if:r>0|+{{eval:r}}}}{{if:r<0|{{eval:r}}}}$. **C'est une solution** (la constante ${{eval:k}}$ disparaît en dérivant).",
 					"${{if:6*p==1|x}}{{if:6*p==-1|-x}}{{if:6*p!=1 && 6*p!=-1|{{eval:6*p}}x}}{{if:2*q>0|+{{eval:2*q}}}}{{if:2*q<0|{{eval:2*q}}}}$ est la dérivée du second membre, pas une primitive ; les deux autres se dérivent en une fonction différente."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : bonne fonction",
@@ -140,10 +115,10 @@
 				"a": "3",
 				"k": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : a et k échangés refusé",
@@ -152,10 +127,10 @@
 				"a": "3",
 				"k": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : signe de l'exposant refusé",
@@ -164,10 +139,10 @@
 				"a": "3",
 				"k": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 : constante ajoutée refusée",
@@ -176,10 +151,10 @@
 				"a": "3",
 				"k": "2"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v1 : bonne fonction",
@@ -189,10 +164,10 @@
 				"m": "3",
 				"k": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : solution constante de mauvais signe",
@@ -202,10 +177,10 @@
 				"m": "3",
 				"k": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : b recopié comme solution constante",
@@ -215,10 +190,10 @@
 				"m": "3",
 				"k": "1"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v2 : primitive",
@@ -229,10 +204,10 @@
 				"r": "3",
 				"k": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : dérivée refusée",
@@ -243,10 +218,10 @@
 				"r": "3",
 				"k": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : sans diviser par l'exposant",
@@ -257,16 +232,10 @@
 				"r": "3",
 				"k": "0"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": true
-	}
+	]
 }

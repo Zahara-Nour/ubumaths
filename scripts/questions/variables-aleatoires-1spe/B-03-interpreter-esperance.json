@@ -10,7 +10,7 @@
 	"delay": 40,
 	"variations": [
 		{
-			"statement": "Dans un jeu de hasard, on note $G$ le gain algébrique (en euros) d'un joueur pour une partie. On a calculé $E(G)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
+			"statement": "Dans un jeu de hasard, on note $G$ le gain algébrique (en euros) d'un joueur pour une partie. On a calculé $E(G)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n```choix\n- Sur un grand nombre de parties, le joueur {{if:m > 0|gagne|perd}} en moyenne environ ${{eval:abs(m)/10;d}}$ € par partie.\n- À chaque partie, le joueur {{if:m > 0|gagne|perd}} exactement ${{eval:abs(m)/10;d}}$ €.\n- Le gain le plus probable pour une partie est ${{eval:m/10;d}}$ €.\n- Sur $100$ parties, le joueur est certain de {{if:m > 0|gagner|perdre}} exactement ${{eval:10*abs(m)}}$ €.\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -18,21 +18,6 @@
 				}
 			],
 			"conditions": ["mod(m,10) != 0", "abs(m) >= 3"],
-			"choices": [
-				{
-					"content": "Sur un grand nombre de parties, le joueur {{if:m > 0|gagne|perd}} en moyenne environ ${{eval:abs(m)/10;d}}$ € par partie."
-				},
-				{
-					"content": "À chaque partie, le joueur {{if:m > 0|gagne|perd}} exactement ${{eval:abs(m)/10;d}}$ €."
-				},
-				{
-					"content": "Le gain le plus probable pour une partie est ${{eval:m/10;d}}$ €."
-				},
-				{
-					"content": "Sur $100$ parties, le joueur est certain de {{if:m > 0|gagner|perdre}} exactement ${{eval:10*abs(m)}}$ €."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"L'espérance est la valeur moyenne prise par $G$ lorsqu'on répète la partie un grand nombre de fois.{{if:m < 0| Ici $E(G)<0$ : en moyenne, le joueur perd de l'argent.}}",
@@ -40,10 +25,15 @@
 					"Sur $100$ parties, le gain total est seulement proche de $100\\times{{eval:m/10;d;()}}={{eval:10*m}}$ € en moyenne ; il n'est jamais certain.",
 					"Réponse : **sur un grand nombre de parties, le joueur {{if:m > 0|gagne|perd}} en moyenne environ ${{eval:abs(m)/10;d}}$ € par partie**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On note $X$ le nombre de clients qui entrent dans une boulangerie pendant une minute, entre ${{h}}$ h et ${{eval:h+1}}$ h. On a calculé $E(X)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
+			"statement": "On note $X$ le nombre de clients qui entrent dans une boulangerie pendant une minute, entre ${{h}}$ h et ${{eval:h+1}}$ h. On a calculé $E(X)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n```choix\n- Sur un grand nombre de minutes, il entre en moyenne environ ${{eval:m/10;d}}$ clients par minute.\n- Il entre exactement ${{eval:m/10;d}}$ clients chaque minute.\n- La valeur de $X$ la plus probable est ${{eval:m/10;d}}$.\n- Pendant la moitié des minutes, il entre plus de ${{eval:m/10;d}}$ clients.\n```",
 			"variables": [
 				{
 					"name": "h",
@@ -55,31 +45,21 @@
 				}
 			],
 			"conditions": ["mod(m,10) != 0"],
-			"choices": [
-				{
-					"content": "Sur un grand nombre de minutes, il entre en moyenne environ ${{eval:m/10;d}}$ clients par minute."
-				},
-				{
-					"content": "Il entre exactement ${{eval:m/10;d}}$ clients chaque minute."
-				},
-				{
-					"content": "La valeur de $X$ la plus probable est ${{eval:m/10;d}}$."
-				},
-				{
-					"content": "Pendant la moitié des minutes, il entre plus de ${{eval:m/10;d}}$ clients."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"L'espérance est la valeur moyenne prise par $X$ lorsqu'on observe un grand nombre de minutes.",
 					"$X$ ne prend que des valeurs entières : il ne peut pas entrer exactement ${{eval:m/10;d}}$ clients en une minute, et l'espérance n'est ni la valeur la plus probable, ni une valeur « du milieu ».",
 					"Réponse : **sur un grand nombre de minutes, il entre en moyenne environ ${{eval:m/10;d}}$ clients par minute**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Un dé à ${{n}}$ faces, numérotées de $1$ à ${{n}}$, est truqué. On note $X$ le résultat d'un lancer. On a calculé $E(X)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
+			"statement": "Un dé à ${{n}}$ faces, numérotées de $1$ à ${{n}}$, est truqué. On note $X$ le résultat d'un lancer. On a calculé $E(X)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n```choix\n- Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de ${{eval:m/10;d}}$.\n- Le résultat le plus fréquent est ${{eval:round(m/10)}}$, l'arrondi de ${{eval:m/10;d}}$.\n- À chaque lancer, on obtient un résultat proche de ${{eval:m/10;d}}$.\n- La moitié des lancers donne un résultat supérieur à ${{eval:m/10;d}}$.\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -91,30 +71,25 @@
 				}
 			],
 			"conditions": ["mod(m,10) != 0", "m != 5*(n+1)"],
-			"choices": [
-				{
-					"content": "Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de ${{eval:m/10;d}}$."
-				},
-				{
-					"content": "Le résultat le plus fréquent est ${{eval:round(m/10)}}$, l'arrondi de ${{eval:m/10;d}}$."
-				},
-				{
-					"content": "À chaque lancer, on obtient un résultat proche de ${{eval:m/10;d}}$."
-				},
-				{
-					"content": "La moitié des lancers donne un résultat supérieur à ${{eval:m/10;d}}$."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"L'espérance est la moyenne des résultats obtenus lorsqu'on répète le lancer un grand nombre de fois.",
 					"Elle ne renseigne ni sur le résultat le plus fréquent, ni sur un lancer isolé, ni sur la proportion de lancers au-dessus d'elle.",
 					"Réponse : **sur un grand nombre de lancers, la moyenne des résultats est proche de ${{eval:m/10;d}}$**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : moyenne sur un grand nombre de répétitions",
@@ -122,10 +97,10 @@
 			"variables": {
 				"m": "15"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : valeur exacte à chaque fois refusée",
@@ -133,10 +108,10 @@
 			"variables": {
 				"m": "15"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : valeur la plus probable / fréquente refusée",
@@ -144,10 +119,10 @@
 			"variables": {
 				"m": "15"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 : deux cases cochées refusées",
@@ -155,10 +130,10 @@
 			"variables": {
 				"m": "15"
 			},
-			"selectedChoices": [0, 3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0;3"]
 		},
 		{
 			"description": "v1 : moyenne sur un grand nombre de répétitions",
@@ -167,10 +142,10 @@
 				"m": "23",
 				"h": "8"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : valeur exacte à chaque fois refusée",
@@ -179,10 +154,10 @@
 				"m": "23",
 				"h": "8"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : valeur la plus probable / fréquente refusée",
@@ -191,10 +166,10 @@
 				"m": "23",
 				"h": "8"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v1 : deux cases cochées refusées",
@@ -203,10 +178,10 @@
 				"m": "23",
 				"h": "8"
 			},
-			"selectedChoices": [0, 3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0;3"]
 		},
 		{
 			"description": "v2 : moyenne sur un grand nombre de répétitions",
@@ -215,10 +190,10 @@
 				"m": "38",
 				"n": "6"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : valeur exacte à chaque fois refusée",
@@ -227,10 +202,10 @@
 				"m": "38",
 				"n": "6"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : valeur la plus probable / fréquente refusée",
@@ -239,10 +214,10 @@
 				"m": "38",
 				"n": "6"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 : deux cases cochées refusées",
@@ -251,10 +226,10 @@
 				"m": "38",
 				"n": "6"
 			},
-			"selectedChoices": [0, 3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0;3"]
 		},
 		{
 			"description": "v0 : E(G) = −1,5 → perd en moyenne 1,5 €",
@@ -262,10 +237,10 @@
 			"variables": {
 				"m": "-15"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : E(G) = −1,5, « perd exactement » refusé",
@@ -273,10 +248,10 @@
 			"variables": {
 				"m": "-15"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : dé à 10 faces, E(X) = 7,3",
@@ -285,10 +260,10 @@
 				"n": "10",
 				"m": "73"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : dé à 10 faces, plus fréquent refusé",
@@ -297,15 +272,10 @@
 				"n": "10",
 				"m": "73"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		}
-	}
+	]
 }

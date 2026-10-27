@@ -8,25 +8,9 @@
 	"subdomain": "Arithmétique ou géométrique",
 	"level": 1,
 	"delay": 30,
-	"shared": {
-		"choices": [
-			{
-				"content": "arithmétique"
-			},
-			{
-				"content": "géométrique"
-			},
-			{
-				"content": "ni arithmétique, ni géométrique"
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -57,16 +41,20 @@
 					"expression": "eval:a+4*(r)"
 				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On calcule la différence entre deux termes consécutifs : elle est toujours la même, $u_1-u_0=u_2-u_1=u_3-u_2=u_4-u_3=\\textcolor{{{color:primary.0}}}{{{r}}}$.",
 					"On passe d'un terme au suivant en ajoutant toujours ${{r}}$ : la suite semble **arithmétique**, de raison $r={{r}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -97,17 +85,21 @@
 					"expression": "eval:a*(q)^4"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"On calcule le quotient de deux termes consécutifs : il est toujours le même, $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=\\dfrac{u_3}{u_2}=\\dfrac{u_4}{u_3}=\\textcolor{{{color:primary.0}}}{{{q}}}$.",
 					"Elle n'est pas arithmétique : $u_1-u_0={{eval:t1-(t0)}}$ mais $u_2-u_1={{eval:t2-(t1)}}$.",
 					"On passe d'un terme au suivant en multipliant toujours par ${{q}}$ : la suite semble **géométrique**, de raison $q={{q}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -134,17 +126,21 @@
 					"expression": "eval:m"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"Chaque terme est la moitié du précédent : $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=\\dfrac{u_3}{u_2}=\\dfrac{u_4}{u_3}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{2}}$.",
 					"Elle n'est pas arithmétique : $u_1-u_0={{eval:t1-(t0)}}$ mais $u_2-u_1={{eval:t2-(t1)}}$.",
 					"Diviser par $2$, c'est multiplier par $\\dfrac{1}{2}$ : la suite semble **géométrique**, de raison $q=\\dfrac{1}{2}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -171,17 +167,21 @@
 					"expression": "eval:16+c"
 				}
 			],
-			"correctChoiceIndex": ["2"],
 			"correction": {
 				"steps": [
 					"Les différences ne sont pas constantes : $u_1-u_0=1$, $u_2-u_1=3$, $u_3-u_2=5$… La suite n'est pas arithmétique.",
 					"Elle n'est pas géométrique : $\\dfrac{u_1}{u_0}={{eval:(t1)/(t0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(t2)/(t1)}}$.",
 					"La suite n'est **ni arithmétique, ni géométrique**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		},
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -217,14 +217,18 @@
 				}
 			],
 			"conditions": ["a+r != 0", "a+2*r != 0"],
-			"correctChoiceIndex": ["2"],
 			"correction": {
 				"steps": [
 					"Les premières différences valent ${{r}}$, mais $u_3-u_2={{eval:t3-(t2)}}$ : la différence n'est pas toujours la même, la suite n'est pas arithmétique.",
 					"Elle n'est pas géométrique : $\\dfrac{u_1}{u_0}={{eval:(t1)/(t0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(t2)/(t1)}}$.",
 					"La suite n'est **ni arithmétique, ni géométrique**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -240,10 +244,10 @@
 				"t3": "5",
 				"t4": "8"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 0 (arithmétique) : « géométrique » refusé",
@@ -257,10 +261,10 @@
 				"t3": "5",
 				"t4": "8"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 0 (arithmétique) : « ni arithmétique, ni géométrique » refusé",
@@ -274,10 +278,10 @@
 				"t3": "5",
 				"t4": "8"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 1 (géométrique) : « arithmétique » refusé",
@@ -291,10 +295,10 @@
 				"t3": "-24",
 				"t4": "48"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 1 (géométrique) : « géométrique » accepté",
@@ -308,10 +312,10 @@
 				"t3": "-24",
 				"t4": "48"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 1 (géométrique) : « ni arithmétique, ni géométrique » refusé",
@@ -325,10 +329,10 @@
 				"t3": "-24",
 				"t4": "48"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 2 (géométrique de raison 1/2) : « arithmétique » refusé",
@@ -341,10 +345,10 @@
 				"t3": "6",
 				"t4": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 2 (géométrique de raison 1/2) : « géométrique » accepté",
@@ -357,10 +361,10 @@
 				"t3": "6",
 				"t4": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 2 (géométrique de raison 1/2) : « ni arithmétique, ni géométrique » refusé",
@@ -373,10 +377,10 @@
 				"t3": "6",
 				"t4": "3"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 3 (n² + c) : « arithmétique » refusé",
@@ -389,10 +393,10 @@
 				"t3": "11",
 				"t4": "18"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 3 (n² + c) : « géométrique » refusé",
@@ -405,10 +409,10 @@
 				"t3": "11",
 				"t4": "18"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 3 (n² + c) : « ni arithmétique, ni géométrique » accepté",
@@ -421,10 +425,10 @@
 				"t3": "11",
 				"t4": "18"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 4 (différence irrégulière) : « arithmétique » refusé",
@@ -439,10 +443,10 @@
 				"t3": "0",
 				"t4": "-2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 4 (différence irrégulière) : « géométrique » refusé",
@@ -457,10 +461,10 @@
 				"t3": "0",
 				"t4": "-2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 4 (différence irrégulière) : « ni arithmétique, ni géométrique » accepté",
@@ -475,10 +479,10 @@
 				"t3": "0",
 				"t4": "-2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		}
 	]
 }

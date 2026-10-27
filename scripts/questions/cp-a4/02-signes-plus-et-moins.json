@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Comment lit-on cette écriture ?\n\n$${{a}}{{if:s==0|+|-}}{{b}}$$",
+			"statement": "Comment lit-on cette écriture ?\n\n$${{a}}{{if:s==0|+|-}}{{b}}$$\n\n```choix\n- « ${{a}}$ plus ${{b}}$ »\n- « ${{a}}$ moins ${{b}}$ »\n- « ${{a}}$ égale ${{b}}$ »\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -30,27 +30,20 @@
 				}
 			],
 			"conditions": ["a > b"],
-			"choices": [
-				{
-					"content": "« ${{a}}$ plus ${{b}}$ »"
-				},
-				{
-					"content": "« ${{a}}$ moins ${{b}}$ »"
-				},
-				{
-					"content": "« ${{a}}$ égale ${{b}}$ »"
-				}
-			],
-			"correctChoiceIndex": ["{{s}}"],
 			"correction": {
 				"steps": [
 					"{{if:s==0|Le signe $+$ se lit « plus » : on part de ${{a}}$ et on **ajoute** ${{b}}$.|Le signe $-$ se lit « moins » : on part de ${{a}}$ et on **enlève** ${{b}}$.}}",
 					"$${{a}}{{if:s==0|+|-}}{{b}}={{if:s==0|{{eval:a+b}}|{{eval:a-b}}}}$$"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			]
 		},
 		{
-			"statement": "Que veut dire cette écriture ?\n\n$${{a}}{{if:s==0|+|-}}{{b}}$$",
+			"statement": "Que veut dire cette écriture ?\n\n$${{a}}{{if:s==0|+|-}}{{b}}$$\n\n```choix\n- On part de ${{a}}$ et on ajoute ${{b}}$.\n- On part de ${{a}}$ et on enlève ${{b}}$.\n- C'est le nombre ${{eval:10*a+b}}$.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -70,27 +63,20 @@
 				}
 			],
 			"conditions": ["a > b"],
-			"choices": [
-				{
-					"content": "On part de ${{a}}$ et on ajoute ${{b}}$."
-				},
-				{
-					"content": "On part de ${{a}}$ et on enlève ${{b}}$."
-				},
-				{
-					"content": "C'est le nombre ${{eval:10*a+b}}$."
-				}
-			],
-			"correctChoiceIndex": ["{{s}}"],
 			"correction": {
 				"steps": [
 					"{{if:s==0|Le signe $+$ se lit « plus » : on part de ${{a}}$ et on **ajoute** ${{b}}$.|Le signe $-$ se lit « moins » : on part de ${{a}}$ et on **enlève** ${{b}}$.}}",
 					"$${{a}}{{if:s==0|+|-}}{{b}}={{if:s==0|{{eval:a+b}}|{{eval:a-b}}}}$$"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			]
 		},
 		{
-			"statement": "On part de ${{a}}$ et on {{if:s==0|ajoute|enlève}} ${{b}}$. Quelle écriture correspond ?",
+			"statement": "On part de ${{a}}$ et on {{if:s==0|ajoute|enlève}} ${{b}}$. Quelle écriture correspond ?\n\n```choix\n- ${{a}}+{{b}}$\n- ${{a}}-{{b}}$\n- ${{a}}={{b}}$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -110,24 +96,17 @@
 				}
 			],
 			"conditions": ["a > b"],
-			"choices": [
-				{
-					"content": "${{a}}+{{b}}$"
-				},
-				{
-					"content": "${{a}}-{{b}}$"
-				},
-				{
-					"content": "${{a}}={{b}}$"
-				}
-			],
-			"correctChoiceIndex": ["{{s}}"],
 			"correction": {
 				"steps": [
 					"{{if:s==0|Le signe $+$ se lit « plus » : on part de ${{a}}$ et on **ajoute** ${{b}}$.|Le signe $-$ se lit « moins » : on part de ${{a}}$ et on **enlève** ${{b}}$.}}",
 					"$${{a}}{{if:s==0|+|-}}{{b}}={{if:s==0|{{eval:a+b}}|{{eval:a-b}}}}$$"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -142,7 +121,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "lire : signe −",
@@ -155,7 +134,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : lire, + pris pour −",
@@ -168,7 +147,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : lire, − pris pour +",
@@ -181,7 +160,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : lire, troisième choix",
@@ -194,7 +173,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "sens : signe +",
@@ -207,7 +186,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "sens : signe −",
@@ -220,7 +199,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : sens, + pris pour −",
@@ -233,7 +212,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : sens, − pris pour +",
@@ -246,7 +225,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : sens, troisième choix",
@@ -259,7 +238,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "écrire : signe +",
@@ -272,7 +251,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "écrire : signe −",
@@ -285,7 +264,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : écrire, + pris pour −",
@@ -298,7 +277,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : écrire, − pris pour +",
@@ -311,7 +290,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : écrire, troisième choix",
@@ -324,7 +303,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		}
 	]
 }

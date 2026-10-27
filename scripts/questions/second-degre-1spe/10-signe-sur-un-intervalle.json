@@ -8,25 +8,9 @@
 	"subdomain": "Signe et inéquations",
 	"level": 2,
 	"delay": 30,
-	"shared": {
-		"choices": [
-			{
-				"content": "strictement positif"
-			},
-			{
-				"content": "strictement négatif"
-			},
-			{
-				"content": "il change de signe"
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a pour racines ${{r}}$ et ${{s}}$. Quel est le signe de $P(x)$ pour $x\\in\\left]{{s}}\\,;+\\infty\\right[$ ?",
+			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a pour racines ${{r}}$ et ${{s}}$. Quel est le signe de $P(x)$ pour $x\\in\\left]{{s}}\\,;+\\infty\\right[$ ?\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n- il change de signe\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -54,17 +38,21 @@
 				}
 			],
 			"conditions": ["r < s"],
-			"correctChoiceIndex": ["{{if:a>0|0|1}}"],
 			"correction": {
 				"steps": [
 					"$P$ a deux racines, ${{r}}$ et ${{s}}$, et son coefficient $a={{a}}$ est {{if:a>0|positif|négatif}}. Un trinôme est **du signe de $a$ à l'extérieur des racines** et du signe contraire entre les racines.",
 					"```variation\nvariable: x\ndomain: -inf, {{r}}, {{s}}, +inf\n\nsign: P(x)\n  -inf,{{r}}: {{if:a>0|+|-}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|-|+}}\n  {{s}}: z\n  {{s}},+inf: {{if:a>0|+|-}}\n```",
 					"Sur $\\left]{{s}}\\,;+\\infty\\right[$, on est à l'extérieur des racines : $P(x)$ est du signe de $a$, donc {{solution:html}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|0|1}}"
+				}
+			]
 		},
 		{
-			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a pour racines ${{r}}$ et ${{s}}$. Quel est le signe de $P(x)$ pour $x\\in\\left]-\\infty\\,;{{r}}\\right[$ ?",
+			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a pour racines ${{r}}$ et ${{s}}$. Quel est le signe de $P(x)$ pour $x\\in\\left]-\\infty\\,;{{r}}\\right[$ ?\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n- il change de signe\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -92,17 +80,21 @@
 				}
 			],
 			"conditions": ["r < s"],
-			"correctChoiceIndex": ["{{if:a>0|0|1}}"],
 			"correction": {
 				"steps": [
 					"$P$ a deux racines, ${{r}}$ et ${{s}}$, et son coefficient $a={{a}}$ est {{if:a>0|positif|négatif}}. Un trinôme est **du signe de $a$ à l'extérieur des racines** et du signe contraire entre les racines.",
 					"```variation\nvariable: x\ndomain: -inf, {{r}}, {{s}}, +inf\n\nsign: P(x)\n  -inf,{{r}}: {{if:a>0|+|-}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|-|+}}\n  {{s}}: z\n  {{s}},+inf: {{if:a>0|+|-}}\n```",
 					"Sur $\\left]-\\infty\\,;{{r}}\\right[$, on est à l'extérieur des racines : $P(x)$ est du signe de $a$, donc {{solution:html}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|0|1}}"
+				}
+			]
 		},
 		{
-			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a pour racines ${{r}}$ et ${{s}}$. Quel est le signe de $P(x)$ pour $x\\in\\left]{{r}}\\,;{{s}}\\right[$ ?",
+			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a pour racines ${{r}}$ et ${{s}}$. Quel est le signe de $P(x)$ pour $x\\in\\left]{{r}}\\,;{{s}}\\right[$ ?\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n- il change de signe\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -130,17 +122,21 @@
 				}
 			],
 			"conditions": ["r < s"],
-			"correctChoiceIndex": ["{{if:a>0|1|0}}"],
 			"correction": {
 				"steps": [
 					"$P$ a deux racines, ${{r}}$ et ${{s}}$, et son coefficient $a={{a}}$ est {{if:a>0|positif|négatif}}. Un trinôme est **du signe de $a$ à l'extérieur des racines** et du signe contraire entre les racines.",
 					"```variation\nvariable: x\ndomain: -inf, {{r}}, {{s}}, +inf\n\nsign: P(x)\n  -inf,{{r}}: {{if:a>0|+|-}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|-|+}}\n  {{s}}: z\n  {{s}},+inf: {{if:a>0|+|-}}\n```",
 					"Sur $\\left]{{r}}\\,;{{s}}\\right[$, on est entre les racines : $P(x)$ est du signe contraire de $a$, donc {{solution:html}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|1|0}}"
+				}
+			]
 		},
 		{
-			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a pour racines ${{r}}$ et ${{s}}$. Quel est le signe de $P(x)$ pour $x\\in\\left]{{eval:s-1}}\\,;{{eval:s+1}}\\right[$ ?",
+			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a pour racines ${{r}}$ et ${{s}}$. Quel est le signe de $P(x)$ pour $x\\in\\left]{{eval:s-1}}\\,;{{eval:s+1}}\\right[$ ?\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n- il change de signe\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -168,14 +164,18 @@
 				}
 			],
 			"conditions": ["s - r >= 2"],
-			"correctChoiceIndex": ["2"],
 			"correction": {
 				"steps": [
 					"$P$ a deux racines, ${{r}}$ et ${{s}}$, et son coefficient $a={{a}}$ est {{if:a>0|positif|négatif}}. Un trinôme est **du signe de $a$ à l'extérieur des racines** et du signe contraire entre les racines.",
 					"```variation\nvariable: x\ndomain: -inf, {{r}}, {{s}}, +inf\n\nsign: P(x)\n  -inf,{{r}}: {{if:a>0|+|-}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|-|+}}\n  {{s}}: z\n  {{s}},+inf: {{if:a>0|+|-}}\n```",
 					"L'intervalle $\\left]{{eval:s-1}}\\,;{{eval:s+1}}\\right[$ contient la racine ${{s}}$ : $P(x)$ y prend des valeurs des deux signes. Sur cet intervalle, {{solution:html}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -189,10 +189,10 @@
 				"b": "-4",
 				"c": "-6"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "a=2, x>3 : mauvais signe refusé",
@@ -204,10 +204,10 @@
 				"b": "-4",
 				"c": "-6"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "a=-1, racines -4,2, x>2",
@@ -219,10 +219,10 @@
 				"b": "-2",
 				"c": "8"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "a=-1, x>2 : mauvais signe refusé",
@@ -234,10 +234,10 @@
 				"b": "-2",
 				"c": "8"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "a=−3, x<1 : strictement négatif",
@@ -249,10 +249,10 @@
 				"b": "15",
 				"c": "-12"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "a=−3, x<1 : « change de signe » refusé",
@@ -264,10 +264,10 @@
 				"b": "15",
 				"c": "-12"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "a=1, entre -2 et 5",
@@ -279,10 +279,10 @@
 				"b": "-3",
 				"c": "-10"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "a=1, entre les racines : signe de a refusé",
@@ -294,10 +294,10 @@
 				"b": "-3",
 				"c": "-10"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "a=-2, entre 0 et 3",
@@ -309,10 +309,10 @@
 				"b": "6",
 				"c": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "a=-2, entre les racines : signe de a refusé",
@@ -324,10 +324,10 @@
 				"b": "6",
 				"c": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "intervalle contenant la racine 1 : change de signe",
@@ -339,10 +339,10 @@
 				"b": "4",
 				"c": "-6"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "intervalle contenant une racine : « positif » refusé",
@@ -354,10 +354,10 @@
 				"b": "4",
 				"c": "-6"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		}
 	]
 }
