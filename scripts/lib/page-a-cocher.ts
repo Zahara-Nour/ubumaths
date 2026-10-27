@@ -629,7 +629,8 @@ export function ficheDuModele(
 			(v.conditions ?? []).map((c) => `v${i + 1} : ${c}`)
 		),
 		specs: (modele.testSpecs ?? []).map(
-			(s) => `${s.description} : ${(s.answers ?? []).join(', ')} → ${s.expected.status}`
+			(s) =>
+				`${s.description} : ${(s.answers ?? []).map((a) => `$${a}$`).join(', ')} → ${s.expected.status}`
 		),
 		exemples,
 		alertes
