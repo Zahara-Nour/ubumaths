@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, relevé fait._
+_Mis à jour le 2026-10-28, phase 0 du lot 0 proposée._
 
-- **État** : relevé, vérification de l'existant et classement des 144 points sans modèle écrits (§ 1-3) ; rien en base, aucun fichier de modèle.
-- **Prochaine action** : réponses de David aux questions du § 4, puis phase 0 du lot 0 (changements de niveau) ou du lot 1.
-- **En attente de David** : les 7 questions du § 4.
-- **Pièges en cours** : la case « choix » (ADR 0033) est mergée mais pas en prod ; droite et horloge à placer mergées, pas en prod ; l'horloge n'a pas de trotteuse ; niveaux relevés parmi les publiés de la catégorie AVANT l'écriture.
+- **État** : décisions du § 4 prises (§ 4 bis) ; phase 0 du lot 0 écrite (§ 5 : 23 modèles, 1 retouche de contenu, changements de niveau, tags, 4 brouillons) ; rien en base.
+- **Prochaine action** : validation du § 5 par David, puis worktree `ubumaths-wt-questions-cm2`, migration de contenu (`edc5d7d4`) et migration de rangement + tests d'intégration.
+- **En attente de David** : validation du § 5 et réponse à la question d'accès.
+- **Pièges en cours** : `create-questions --mettre-a-jour` ne touche pas un modèle publié → migrations ; garde d'état dans le rollback ; prévenir la session `6EME` (6 modèles de plus en 6e) ; case « choix », droite et horloge à placer mergées, pas en prod.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -119,3 +119,57 @@ ses points ; fractions à colorier : décidées au CE1, chantier pas ouvert.
    grandeurs → données → probabilités → géométrie.
 7. **Premier lot** : le lot 0 (corrections avant lots neufs, comme au CE1), ou le lot 1 en même temps
    (fichiers différents, deux worktrees) ?
+
+## 4 bis. Décisions (David, 2026-10-28)
+
+Recommandations suivies en bloc (« tes recos ? » puis « go ») : lot 0 d'abord et seul ; changements
+de niveau (CM1 → CM2 ; hors programme CM2 → 6e ou 5e si un point les décrit, sinon dépubliés) ;
+modèles CM2 propres plutôt que les jumeaux ; QCM en case « choix » ; outils : trotteuse, fractions à
+colorier, courbe de données ; points D sans modèle, tracés après la case « figure » ; ordre des lots
+du § 4.6.
+
+## 5. Lot 0 : changements de niveau — phase 0 (proposée le 2026-10-28)
+
+Relevé du 2026-10-28 : **0 donnée d'élève** sur les 23 modèles (chapter_exercises,
+evaluation_attempt_questions, journal_entry_activities, skill_attempts, srs_cards, test_answers,
+user_favorite_templates). Tirages relus (`question:specs --apercu 6`, specs toutes vertes). La
+catégorie (thème / domaine / sous-domaine) et le niveau ne bougent pas : aucune collision de niveau.
+Comme au CE1 : **deux migrations**, contenu (1 modèle, instantané md5 d'abord) puis rangement / tags /
+niveaux scolaires / statut.
+
+**Contenu réécrit** : `edc5d7d4` Trouver la moitié, `a1` 0..14 → **0..7** (impairs 1 à 15 au lieu de
+1 à 29) ; sous-titre « Nombres impairs de $1$ à $15$ ».
+
+**CM1 → CM2, tagués** (nœud gardé sauf mention) :
+
+| Modèle                      | Exemple tiré                | Point   | Nœud                                              |
+| --------------------------- | --------------------------- | ------- | ------------------------------------------------- |
+| `32724446`                  | … < 3,25 < … (au dixième)   | CM2-117 | encadrement                                       |
+| `6379fa20`                  | … < 3,258 < … (au centième) | CM2-117 | encadrement                                       |
+| `e38d205a`, `19323604`      | 53,1 × 100 ; 0,07 × 1 000   | CM2-042 | multiplication (décimaux)                         |
+| `4643ed4a`                  | 40 × 30                     | CM2-046 | calcul astucieux                                  |
+| `aa788ca7`, `ac2dae38`      | 100 × ? = 7 276             | CM2-065 | **→ Premiers pas algébriques > égalités à trous** |
+| `a5d5a7a0`                  | ? × 20 = 1 200              | CM2-065 | **→ égalités à trous**                            |
+| `8fa3108c`, `e320755f`      | 5/7 × 2 ; 1/9 × 4           | CM2-021 | multiplication (fractions)                        |
+| `edc5d7d4` (après retouche) | moitié de 9 → 4,5           | CM2-037 | division (décimaux)                               |
+
+**CM2 → 6e, tagués** (nœud gardé, déjà celui du point) :
+
+- `7f0fbff0` 1,2 : 6 → **6-121** (diviser un décimal par un entier < 10) ;
+- `3c40e59b` 2 × 0,06, `814a46a9` 5,9 × 2 → **6-118** (produit de deux décimaux) ;
+- `4b543657`, `918598f5`, `9826af8b` (produits astucieux à trois facteurs : 0,2 × 11 × 50 ;
+  20 × 97,281 × 5) → **6-118**, comme le chantier de 6e tague les sommes astucieuses sur 6-114.
+
+**CM2 → 5e, tagués** : `e81493f7` (critère par 3) → **5-010**, `9c03423a` (par 9) → **5-119**.
+
+**Repassés en brouillon** (niveaux, nœud, catégorie gardés ; jamais supprimés) :
+
+- `32351845` (8 × 25, 12 × 25) et `e58b1357` (5 × 18, 6 × 15, 4 × 25) : aucun point du CM2 ni de 6e ;
+- `e009f9d0` (× 50) : sa variation paire (4 × 50, 16 × 50) entre dans CM2-052, l'impaire non ;
+  dépublié, CM2-052 aura un modèle propre (décimaux, 50 × 12,4) au lot 4 ;
+- `322f3479` (CM1, forme décimale : 2/10, 2/1 000 hors de CM2-039) : doublon de `dd7db98e`.
+
+**Question d'accès** (avant le SQL) — qui pourra lire quoi qu'il ne lisait pas ? Les élèves et le prof
+du **CM2** : 11 modèles publiés de plus ; de **6e** : 6 ; de **5e** : 2. En miroir, qui ne lira plus ce
+qu'il lisait ? Ceux du **CM1** : 12 modèles (11 passés au CM2, `322f3479` en brouillon) ; ceux du
+**CM2** : 11 (8 partis en 6e / 5e, 3 en brouillon). Aucune règle (policy) ne change.
