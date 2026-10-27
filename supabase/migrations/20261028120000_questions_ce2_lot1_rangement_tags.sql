@@ -35,8 +35,11 @@
 --
 -- Accès (question posée à David AVANT le SQL, tranchée par lui le 2026-10-28) : personne ne gagne
 -- d'accès ; aucune règle (policy) ne change. Effets visibles : « Les multiples de 25 » est aussi
--- proposé aux élèves et au prof du CE2 ; 427c735c et 44c46578 ne sont plus vus que par l'admin
--- (brouillons) ; les 5 brouillons apparaissent sous leur nœud et leur point dans l'admin.
+-- proposé aux élèves et au prof du CE2 ; 427c735c et 44c46578 (brouillons) ne sont plus lus que par
+-- le prof et l'admin (la RLS laisse les rôles teacher et admin lire les brouillons) : élèves et
+-- visiteurs les perdent ; les 5 brouillons apparaissent sous leur nœud et leur point dans l'admin.
+-- À appliquer par `pnpm db:migrate` (une transaction) : instruction par instruction, le tout ou
+-- rien et la réactivation du trigger `updated_at` ne tiendraient plus.
 --
 -- Rollback (aucune donnée d'élève). Il retire les 6 tags posés, rend aux 5 brouillons l'absence de
 -- nœud, à 03675b9b ses niveaux [CE1] et aux deux jumeaux le statut publié. Garde : il refuse si un

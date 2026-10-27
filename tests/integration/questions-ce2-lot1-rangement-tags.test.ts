@@ -331,6 +331,21 @@ describe('Questions CE2, lots 0 et 1 : les branches d’échec de la migration',
 		});
 	});
 
+	it('un nœud de destination archivé depuis le relevé fait échouer la migration (résolution stricte)', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(
+				`update public.classification_nodes s set archived_at = now()
+				   from public.classification_nodes n
+				  where s.parent_id = n.id and s.kind = 'subnotion' and s.name = 'décomposition'
+				    and n.name = 'Entiers : multiplication' and s.archived_at is null`
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/chemins ou points introuvables : 1 nœud\(s\) de modèle, 0 point\(s\)/
+			);
+		});
+	});
+
 	it('des niveaux changés depuis le relevé font échouer la migration', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
