@@ -4,7 +4,8 @@
  *
  * Lit le texte du bloc (variables résolues, sans clôtures) : la valeur de
  * `construire:` (```collection, ```monnaie) ou la graduation d'un point de
- * `placer:` (```line, écrite par `placerAnswer`, comme la réponse de l'élève).
+ * `placer:` (```line, écrite par `placerAnswer`, comme la réponse de l'élève),
+ * ou l'heure de `placer:` (```horloge, sur le cadran de 12 : `9 h 25`).
  *
  * @module questions/generator/build-answer
  */
@@ -13,6 +14,8 @@ import type { BuildKind } from '../types';
 import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
 import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
 import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
+import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
+import { timeText } from '$lib/ubumark/utils/horloge-placer';
 import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-placer';
 import { numVal } from '$lib/ubumark/utils/number-line-render';
 
@@ -39,6 +42,13 @@ export function buildAnswerOf(
 		const k = target ? indexOfValue(node.config, numVal(target.value)) : null;
 		if (k === null) return { errors: ['placer: absent ou hors graduation'] };
 		return { answer: placerAnswer(node.config, k) };
+	}
+	if (kind === 'horloge') {
+		const node = parseHorlogeContent(source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0) return { errors: node.errors.map((e) => e.message) };
+		if (node.spec?.placer === undefined) return { errors: ['placer: absent'] };
+		return { answer: timeText(node.spec.placer) };
 	}
 	const node = kind === 'collection' ? parseCollectionContent(source) : parseMonnaieContent(source);
 	if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };

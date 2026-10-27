@@ -41,13 +41,13 @@ describe('angles des aiguilles (degrés, sens horaire depuis le 12)', () => {
 	it('l’extrémité de l’aiguille suit l’angle (y vers le bas, comme en SVG)', () => {
 		const s = scene(3, 0);
 		// petite aiguille vers la droite, grande vers le haut
-		expect(s.hourHand.x).toBeGreaterThan(0);
-		expect(s.hourHand.y).toBeCloseTo(0, 9);
+		expect(s.hourHand!.x).toBeGreaterThan(0);
+		expect(s.hourHand!.y).toBeCloseTo(0, 9);
 		expect(s.minuteHand!.x).toBeCloseTo(0, 9);
 		expect(s.minuteHand!.y).toBeLessThan(0);
 		// grande aiguille plus longue que la petite
 		expect(Math.hypot(s.minuteHand!.x, s.minuteHand!.y)).toBeGreaterThan(
-			Math.hypot(s.hourHand.x, s.hourHand.y)
+			Math.hypot(s.hourHand!.x, s.hourHand!.y)
 		);
 	});
 

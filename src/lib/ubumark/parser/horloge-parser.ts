@@ -12,6 +12,10 @@
  * taille: 4cm
  * ```
  *
+ * Horloge à placer (une question) : `placer: 9 h 25` à la place de `heure:` —
+ * un cadran sans aiguilles, l'élève les pose ; `case: N` est posée par le
+ * générateur (chantier `docs/wip/reponses-a-placer-progress.md` § 13, 14).
+ *
  * - `heure:` (obligatoire) : 1 à 4 heures séparées par `;`, écrites `9 h`,
  *   `9 h 30`, `9h5` ; heures de 0 à 23, minutes de 0 à 59.
  * - Le reste est facultatif ; une clé inconnue ou une valeur hors liste est
@@ -46,6 +50,7 @@ import {
 // ============================================================================
 
 const HORLOGE_BLOCK_START_REGEX = /^```horloge\s*$/;
+const PLACER_LINE_REGEX = /^placer\s*:/i;
 const BLOCK_END_REGEX = /^```\s*$/;
 
 /** `clé: valeur` */
@@ -66,10 +71,21 @@ const BLOCK_KEYS = [
 	'graduations',
 	'minutes',
 	'cadran',
-	'taille'
+	'taille',
+	'placer',
+	'case'
 ] as const;
 
-type Key = 'heure' | 'légendes' | 'chiffres' | 'graduations' | 'minutes' | 'cadran' | 'taille';
+type Key =
+	| 'heure'
+	| 'légendes'
+	| 'chiffres'
+	| 'graduations'
+	| 'minutes'
+	| 'cadran'
+	| 'taille'
+	| 'placer'
+	| 'case';
 
 const KEY_NAMES: Key[] = [
 	'heure',
@@ -78,7 +94,9 @@ const KEY_NAMES: Key[] = [
 	'graduations',
 	'minutes',
 	'cadran',
-	'taille'
+	'taille',
+	'placer',
+	'case'
 ];
 
 const TIME_FORMAT_HINT = 'écris l’heure sous la forme 9 h 30 (ou 9 h)';
@@ -113,6 +131,48 @@ export function findHorlogeBlocks(lines: string[]): HorlogeBlockRange[] {
 		i++;
 	}
 	return blocks;
+}
+
+/** Ligne vue sans retrait ni marque de citation */
+const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
+
+/**
+ * Les horloges à placer (`placer:`) d'un énoncé, délimitées comme le parseur :
+ * corps sans clôtures, fermeture, et `nested` pour un bloc en retrait ou cité
+ * (l'élève ne pourrait pas y répondre : sa case n'est pas créée)
+ */
+export function findHorlogesToPlace(markdown: string): {
+	startIndex: number;
+	body: string[];
+	closed: boolean;
+	nested: boolean;
+}[] {
+	const lines = markdown.split('\n');
+	const plain = lines.map(unquoted);
+	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
+	let i = 0;
+	while (i < plain.length) {
+		if (isHorlogeBlockStart(plain[i])) {
+			const { endIndex, closed } = specialBlockEnd(
+				plain,
+				i,
+				(line) => BLOCK_END_REGEX.test(line),
+				BLOCK_KEYS
+			);
+			const body = plain.slice(i + 1, closed ? endIndex : endIndex + 1);
+			if (body.some((line) => PLACER_LINE_REGEX.test(line))) {
+				found.push({ startIndex: i, body, closed, nested: lines[i] !== plain[i] });
+			}
+			i = endIndex;
+		}
+		i++;
+	}
+	return found;
+}
+
+/** L'énoncé a-t-il une horloge à placer ? */
+export function hasHorlogeToPlace(markdown: string): boolean {
+	return findHorlogesToPlace(markdown).length > 0;
 }
 
 // ============================================================================
@@ -210,6 +270,9 @@ export function parseHorlogeContent(source: string): HorlogeNode {
 	let minuteHand = true;
 	let dial24 = false;
 	let sizeCm: number | null = null;
+	let placer: HorlogeTime | null = null;
+	let placerLine = 1;
+	let caseIndex: number | undefined;
 	const seen = new Map<Key, number>();
 
 	lines.forEach((line, index) => {
@@ -259,6 +322,18 @@ export function parseHorlogeContent(source: string): HorlogeNode {
 				case 'taille':
 					sizeCm = parseSize(value);
 					break;
+				case 'placer':
+					if (value.includes(';')) {
+						throw new LineError('une seule heure à placer par horloge (un bloc par horloge)');
+					}
+					placer = parseTime(value);
+					placerLine = lineNo;
+					break;
+				case 'case':
+					if (!/^\d+$/.test(value))
+						throw new LineError(`case « ${value} » : numéro de case entier`);
+					caseIndex = Number(value);
+					break;
 			}
 		} catch (e) {
 			if (!(e instanceof LineError)) throw e;
@@ -269,8 +344,33 @@ export function parseHorlogeContent(source: string): HorlogeNode {
 	// Les vérifications qui croisent deux lignes, une fois tout lu
 	const readTimes = times as HorlogeTime[] | null;
 	const readCaptions = captions as string[] | null;
-	if (readTimes === null) {
-		if (!seen.has('heure')) fail(1, 'il manque la ligne heure: (ex. heure: 9 h 30)');
+	const readPlacer = placer as HorlogeTime | null;
+	if (seen.has('placer')) {
+		if (seen.has('heure')) {
+			fail(
+				seen.get('heure') ?? 1,
+				'placer: et heure: ne vont pas ensemble (placer: dessine un cadran sans aiguilles, l’élève les pose)'
+			);
+		}
+		if (!minuteHand) {
+			fail(
+				placerLine,
+				'aiguille des minutes cachée : impossible avec placer: (l’élève pose les deux aiguilles)'
+			);
+		}
+		if (readCaptions !== null && readCaptions.length !== 1) {
+			fail(
+				captionsLine,
+				`${readCaptions.length} légendes : une seule légende pour une horloge à placer`
+			);
+		}
+	} else if (readTimes === null) {
+		if (!seen.has('heure')) {
+			fail(
+				1,
+				'il manque la ligne heure: (ex. heure: 9 h 30), ou placer: pour une horloge à placer'
+			);
+		}
 	} else {
 		if (!minuteHand && readTimes.some((t) => t.minutes !== 0)) {
 			fail(
@@ -286,8 +386,30 @@ export function parseHorlogeContent(source: string): HorlogeNode {
 		}
 	}
 
+	if (caseIndex !== undefined && !seen.has('placer')) {
+		fail(seen.get('case') ?? 1, 'case: sans objet sans placer:');
+	}
+	const withCase = caseIndex === undefined ? {} : { caseIndex };
+	if (readPlacer !== null && errors.length === 0) {
+		return {
+			type: 'horloge',
+			source,
+			spec: {
+				times: [],
+				placer: readPlacer,
+				captions: readCaptions,
+				numbers,
+				ticks,
+				minuteHand,
+				dial24,
+				sizeCm
+			},
+			errors,
+			...withCase
+		};
+	}
 	if (errors.length > 0 || readTimes === null) {
-		return { type: 'horloge', source, spec: null, errors };
+		return { type: 'horloge', source, spec: null, errors, ...withCase };
 	}
 	return {
 		type: 'horloge',

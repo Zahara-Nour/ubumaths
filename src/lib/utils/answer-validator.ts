@@ -77,6 +77,7 @@ import { ANSWER_TOO_COMPLEX_FEEDBACK, isAnswerTooComplex } from '$lib/questions/
 import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-variable-prefix';
 import { expectsUnitlessValue, withoutDegreeSuffix } from '$lib/questions/answer-degree-suffix';
 import { judgeConstruction } from '$lib/questions/construction/judge';
+import { isPlacedTimeCorrect } from '$lib/ubumark/utils/horloge-placer';
 import { constructionPositions } from '$lib/questions/construction/positions';
 import {
 	correctChoiceIndexesOf,
@@ -832,6 +833,9 @@ function validateBlankValue(
 	blank: InstanceBlank,
 	instance: QuestionInstance
 ): boolean {
+	// Horloge à placer : la même lecture des aiguilles que la correction
+	if (blank.construire === 'horloge') return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer);
+
 	// Ensemble en notation intervalle : jugé sur l'ensemble (ni règles ni expression)
 	if (blank.answerKind === 'intervalles') {
 		const { status } = judgeIntervalAnswer(
@@ -1300,6 +1304,13 @@ function validateSingleBlank(
 	// Case « figure » (bloc ```figure-a-completer) : chaîne à part, cf. questions/construction/
 	if (blank.construction) {
 		return constructionBlankResult(userAnswer, blank.construction);
+	}
+
+	// Horloge à placer : les deux aiguilles de l'élève, petite aiguille jugée sur son secteur
+	if (blank.construire === 'horloge') {
+		return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
 	}
 
 	// Case « choix » (bloc ```choix) : indices cochés, barème du QCM

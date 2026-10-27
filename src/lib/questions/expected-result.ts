@@ -19,6 +19,7 @@
 
 import {
 	getQuestionType,
+	isPlaceKind,
 	type BuildKind,
 	type QuestionInstance,
 	type ValidationStatus
@@ -31,6 +32,7 @@ import { isWorkFigureBlank } from './graded-part';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import { findLinesToPlace, parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
+import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import {
 	validateAnswerDetailed,
 	type DetailedVerdict,
@@ -132,8 +134,8 @@ export type ExpectedLine =
 	 */
 	| { kind: 'work-figure'; index: number; source: string; answer: string | null }
 	/**
-	 * Case à construire (bloc ```collection ou ```monnaie, `construire:`) ou droite à
-	 * placer (```line, `placer:`) : le plan
+	 * Case à construire (bloc ```collection ou ```monnaie, `construire:`), droite ou
+	 * horloge à placer (```line, ```horloge, `placer:`) : le plan
 	 * lui-même, verrouillé, avec la construction de l'élève (`answer`, la valeur
 	 * posée) ; `null` sans réponse (R9) ou réponse vide : la construction juste seule
 	 */
@@ -267,7 +269,8 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 	const found = [
 		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
 		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
-		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const }))
+		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const })),
+		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {
@@ -596,7 +599,7 @@ function buildLines(
 	};
 	// Propre à la case : une autre case de l'énoncé peut avoir sa réponse
 	if (withAnswer && status === 'empty') {
-		const text = build.kind === 'line' ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
+		const text = isPlaceKind(build.kind) ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
 		return [line, { kind: 'empty', text }];
 	}
 	return [line];

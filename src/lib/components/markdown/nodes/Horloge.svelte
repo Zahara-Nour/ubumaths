@@ -4,7 +4,7 @@
 
 	Cadran à aiguilles (CP-046, CP-047, puis les minutes au CE1 / CE2 ; phase 0 :
 	`docs/wip/horloge-progress.md`). Dessiné depuis `buildHorlogeScene`, la même
-	scène que le PDF.
+	scène que le PDF. Horloge à placer (`placer:`) : `HorlogePlacer.svelte`.
 
 	- Une seule couleur d'accent (la petite aiguille) ; les aiguilles se
 	  distinguent aussi par leur forme. Couleurs du thème uniquement.
@@ -29,6 +29,7 @@
 		HORLOGE_VIEW
 	} from '$lib/ubumark/utils/horloge-scene';
 	import { readAuthoringErrors } from '../authoring-errors';
+	import HorlogePlacer from './HorlogePlacer.svelte';
 
 	interface Props {
 		node: HorlogeNode;
@@ -76,6 +77,9 @@
 			{HORLOGE_UNAVAILABLE}
 		</div>
 	{/if}
+{:else if node.spec.placer}
+	<!-- Horloge à placer hors question (aperçu, cours) : le geste, rien de jugé -->
+	<HorlogePlacer {node} class={className} />
 {:else}
 	<div class="horloge-bloc my-2 flex flex-wrap items-start justify-center gap-4 {className}">
 		{#each clocks as clock, i (i)}
@@ -121,14 +125,16 @@
 							stroke-width={HORLOGE_STROKE.minuteHand}
 						/>
 					{/if}
-					<line
-						class="horloge-aiguille horloge-aiguille-heures"
-						x1="0"
-						y1="0"
-						x2={clock.scene.hourHand.x}
-						y2={clock.scene.hourHand.y}
-						stroke-width={HORLOGE_STROKE.hourHand}
-					/>
+					{#if clock.scene.hourHand}
+						<line
+							class="horloge-aiguille horloge-aiguille-heures"
+							x1="0"
+							y1="0"
+							x2={clock.scene.hourHand.x}
+							y2={clock.scene.hourHand.y}
+							stroke-width={HORLOGE_STROKE.hourHand}
+						/>
+					{/if}
 					<circle class="horloge-axe" r={HORLOGE_STROKE.center} />
 				</svg>
 				{#if clock.caption}

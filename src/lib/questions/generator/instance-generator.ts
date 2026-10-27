@@ -31,7 +31,7 @@ import type {
 	ValidationRule,
 	BuildKind
 } from '../types';
-import { buildKindName, getQuestionType } from '../types';
+import { buildKindName, getQuestionType, isPlaceKind } from '../types';
 import type { ResolvedMarkdown, TemplateMarkdown } from '$lib/ubumark';
 import { templateMarkdown, resolvedMarkdown, detectCircularDependencies } from '$lib/ubumark';
 import { validateTemplate } from '../validators/template-validator';
@@ -51,6 +51,7 @@ import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
 import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
 import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
 import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
+import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { buildAnswerOf } from './build-answer';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
@@ -88,6 +89,13 @@ import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/r
 // ============================================================================
 // SHARED DEFAULTS MERGING
 // ============================================================================
+
+/** Ce qui donne la réponse d'un bloc qui porte sa case, pour les messages au prof */
+function blockAnswerName(kind: BuildKind): string {
+	if (kind === 'line') return 'la graduation de la droite graduée (placer:)';
+	if (kind === 'horloge') return 'l’heure de l’horloge (placer:)';
+	return `la valeur du bloc ${kind} (construire:)`;
+}
 
 /**
  * Merge shared and per-variation variables.
@@ -491,7 +499,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			) ||
 				hasCollectionToBuild(String(resolvedStatement)) ||
 				hasMonnaieToBuild(String(resolvedStatement)) ||
-				hasLineToPlace(String(resolvedStatement))) &&
+				hasLineToPlace(String(resolvedStatement)) ||
+				hasHorlogeToPlace(String(resolvedStatement))) &&
 			getQuestionType({
 				choices: resolvedVariation.choices,
 				shared: template.shared,
@@ -655,8 +664,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				answers.forEach((answer, k) => operationAnswers.set(index + k, answer));
 			}
 
-			// Cases des blocs ```collection et ```monnaie à construire, des droites à placer :
-			// réponse = la valeur du bloc
+			// Cases des blocs ```collection et ```monnaie à construire, des droites et
+			// horloges à placer : réponse = la valeur du bloc
 			const buildAnswers = new Map<number, { kind: BuildKind; answer: string }>();
 			for (const [key, { kind, source, point }] of Object.entries(blankResult.buildBlanks ?? {})) {
 				const index = Number(key);
@@ -665,7 +674,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push(
-						`une ${kind === 'line' ? 'droite à placer' : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+						`une ${isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
 					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {
@@ -687,6 +696,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							const first = child.caseIndex;
 							if (child.placer === undefined || first === undefined) return [];
 							return child.placer.map((_, k) => first + k);
+						}
+						if (child.type === 'horloge') {
+							return child.spec?.placer !== undefined && child.caseIndex !== undefined
+								? [child.caseIndex]
+								: [];
 						}
 						return (child.type === 'collection' || child.type === 'monnaie') &&
 							child.spec !== null &&
@@ -743,7 +757,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						return {
 							success: false,
 							errors: [
-								`Case ${index + 1} : sa réponse est ${kind === 'line' ? 'la graduation de la droite graduée (placer:)' : `la valeur du bloc ${kind} (construire:)`} ; laisser expectedAnswer vide`
+								`Case ${index + 1} : sa réponse est ${blockAnswerName(kind)} ; laisser expectedAnswer vide`
 							]
 						};
 					}

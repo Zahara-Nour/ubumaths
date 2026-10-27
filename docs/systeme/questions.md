@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; texte d'aide des cases à écrire le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27 ; texte d'aide des cases à écrire le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -224,14 +224,14 @@ erreurs (`verifier:`, outil inconnu…) ; il se modifie dans l'énoncé. `TestSp
 rien (valeur vide). Garde : `AnswerEditor-figure-de-travail.svelte.test.ts`.
 
 **Cases de blocs omises de `blanks[]`** : le générateur permet d'omettre l'entrée d'une case de bloc
-(`operation, `figure-a-completer, `figure-de-travail, `collection / `monnaie à construire, `line à placer) ;
+(`operation, `figure-a-completer, `figure-de-travail, `collection / `monnaie à construire, `line / `horloge à placer) ;
 `AnswerEditor` remet alors la liste à une entrée par case (`withBlockCases`, `choice-case-editor.ts` :
 entrée vide au rang de chaque bloc, les autres dans l'ordre, le sens que leur donne le générateur).
 Sans cela, la carte d'une figure prenait l'entrée que le générateur donne à la case suivante (énoncé
 collé dans un formulaire parti d'une entrée : pas de carte pour le choix, « aucune bonne réponse »). Seulement après une modification de l'énoncé (ouvrir un modèle ne le marque pas modifié), Énoncé à variables ou à expressions (`{{…}}`, `<<expr:…>>`) : le générateur compte les cases sur
 l'énoncé résolu ; l'éditeur ne réaligne que si l'énoncé brut compte comme lui — aucune variable dans
-un ``operation (une division `{{a}} ÷ 7` porte deux cases), et même genre de cases dans le même
-ordre en comptant aussi l'énoncé où chaque `{{…}}` vaut `1` (un `{{if:k==1|[_]|…}}` qui porte une case
+un ``operation (une division `{{a}} ÷ 7`porte deux cases), et même genre de cases dans le même
+ordre en comptant aussi l'énoncé où chaque`{{…}}`vaut`1`(un`{{if:k==1|[_]|…}}` qui porte une case
 les fait différer). Une expression (`<<expr:…>>`) n'est jamais réalignée : son format de réponse peut porter des cases (`?/?`) que l'éditeur ne connaît pas. Forme de CP-058 (`{{if:}}` dans le texte, variables dans la figure) : réalignée.
 
 ### 2. Fusion `shared` ⊕ variation (`resolveVariationWithShared`)
@@ -279,19 +279,23 @@ refusé (`readConstructionHeader(…, { work: true })`), `options.orderIndepende
 `type: 'graphical'`, `construction: { source, checks: [], work: true }`, réponse attendue vide. Une
 question dont les seules cases sont des figures de travail est refusée
 (`WORK_FIGURE_ALONE_MESSAGE`, au générateur et dans `validateTemplate`). Un bloc `collection ou
-`monnaie à construire (`construire: N`), ou une droite à placer (```line, `placer: N`), au premier
+`monnaie à construire (`construire: N`), une droite ou une horloge à placer (```line, ```horloge, `placer: N`), au premier
 niveau, sinon échec (`buildBlanks`, genre et texte du bloc), compte aussi pour
 **une** case, `case: N` posé dans le bloc ; une droite à plusieurs points (`placer: A=3 ; B=7`) compte
 une case par point, N, N + 1…, seul N posé (`buildBlanks[…].point`, rang du point). Sa réponse attendue
-est la valeur `N` du bloc (droite : la graduation du point, écrite par `placerAnswer` ; lecture commune
+est la valeur `N` du bloc (droite : la graduation du point, écrite par `placerAnswer` ; horloge : l'heure
+sur le cadran de 12, `'2 h 25'` pour `placer: 14 h 25`, écrite par `timeText` ; lecture commune
 `generator/build-answer.ts`, `buildAnswerOf(kind, source, point)`), jamais
 du modèle (`blanks[]` peut l'omettre, une réponse écrite est refusée, `case:` écrite aussi, bloc en
 erreur, non fermé ou avec `options.orderIndependent` → échec). Le bloc est délimité comme le parseur
-(`findBuildCollections`, `findBuildMonnaies`, `findLinesToPlace` : une ligne vide suivie d'une clé reste dans un bloc
+(`findBuildCollections`, `findBuildMonnaies`, `findLinesToPlace`, `findHorlogesToPlace` : une ligne vide suivie d'une clé reste dans un bloc
 fermé) ; l'énoncé numéroté est relu par `parseMarkdown` : une case dont le bloc n'est pas lu à l'écran
-(fence de fin en retrait, bloc montré dans un bloc de code) → échec. La case est `type: 'math'`, `construire: 'collection' | 'monnaie' | 'line'` (`BuildKind` ; messages
-au prof par `buildKindName` : « droite graduée »), jugée comme une case ordinaire : l'élève répond
+(fence de fin en retrait, bloc montré dans un bloc de code) → échec. La case est `type: 'math'`, `construire: 'collection' | 'monnaie' | 'line' | 'horloge'` (`BuildKind` ; messages
+au prof par `buildKindName` : « droite graduée », « horloge »), jugée comme une case ordinaire : l'élève répond
 par la valeur qu'il a posée (`'34'`, `'35'` €, graduation `'7'`, `''` plan vide ou aucun point).
+Horloge à placer : case `type: 'text'` (une heure n'est pas un calcul), réponse de l'élève = les crans
+des deux aiguilles (`'47 25'`, `-` pour une aiguille pas posée), juge à part (`isPlacedTimeCorrect`,
+`utils/horloge-placer.ts`, dans `validateSingleBlank` et `validateBlankValue`).
 Un bloc ``choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
    compte pour **une** case, `case: N` posé en tête du bloc (`choix-parser.ts`, lu dans
    `assignBlankIndices`) : réglages en tête (`plusieurs: oui`, `melanger: non` ; défauts : une
@@ -350,25 +354,26 @@ la longueur AA'. Ailleurs, ils restent.
 
 Natures de réponse :
 
-| Nature                      | Déclaration                                  | Jugée par                                                                                                                                         |
-| --------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Expression / nombre         | case ordinaire                               | équivalence + forme (§ 5)                                                                                                                         |
-| Figure (tracé)              | bloc ```figure-a-completer (`verifier:`)     | `construction/judge.ts` (ci-dessous) ; réponse `droite(x1;y1;x2;y2)` ou `segment(x1;y1;x2;y2)`, objets séparés par `\|`                           |
-| Figure de travail           | bloc ```figure-de-travail (sans `verifier:`) | **jamais notée** : retirée avant toute notation (`gradedPart`) ; son tracé (même chaîne) reste dans la réponse, enregistré en évaluation          |
-| Opération posée             | bloc ```operation (`cases: résultat`)        | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts` ; division : `operation-division-answer.ts`, quotient et reste) |
-| Collection à construire     | bloc ```collection (`construire: N`)         | case ordinaire : la valeur posée, composition libre (`collection-construire.ts`)                                                                  |
-| Monnaie à construire        | bloc ```monnaie (`construire: N`)            | case ordinaire : la somme posée, coupures libres dans la réserve (`monnaie-construire.ts`)                                                        |
-| Droite à placer             | bloc ```line (`placer: N`)                   | case ordinaire : la graduation du point de l'élève (`number-line-placer.ts`), exacte, sans tolérance ; une case par point                         |
-| Texte                       | `[_]` hors formule                           | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                                                                 |
-| Grandeur                    | `unit: { expected, required? }`              | `validateQuantityAnswer` (conversion, unité imposée)                                                                                              |
-| Ensemble en intervalles     | `answerKind: 'intervalles'`                  | `interval-answer.ts` ; option `openableBounds` ; contrainte `intervalForm`                                                                        |
-| Équation de droite / cercle | `answerKind: 'equation'`                     | `equation-answer.ts` (même ensemble de points) ; formes `reduite`, `cartesienne`, `centre-rayon`                                                  |
-| Vecteur dans une case       | `answerKind: 'vecteur'`                      | `vector-answer.ts` ; `vectorMode` `exact` ou `colineaire`                                                                                         |
-| Matrice dans une case       | `answerKind: 'matrice'`                      | `matrix-answer.ts` (dimensions, puis chaque coefficient)                                                                                          |
-| Primitive / solution d'ED   | `answerKind: 'primitive'` / `'solution-ed'`  | `calculus/` (dérivation / substitution) ; `solutionMode`                                                                                          |
-| QCM                         | `choices` (+ `multipleAnswers`)              | `validateChoice` ; indices d'**origine** (voir invariants)                                                                                        |
-| Case choix                  | bloc ```choix (`plusieurs:`, `melanger:`)    | `statusFromChoices`, comme le QCM ; réponse = indices d'origine cochés, triés, séparés par `;` (`choice-case.ts`)                                 |
-| Carte de cours              | `options.courseCard`                         | rien : auto-évaluation (`validateAnswer` rend un message)                                                                                         |
+| Nature                      | Déclaration                                  | Jugée par                                                                                                                                                                      |
+| --------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Expression / nombre         | case ordinaire                               | équivalence + forme (§ 5)                                                                                                                                                      |
+| Figure (tracé)              | bloc ```figure-a-completer (`verifier:`)     | `construction/judge.ts` (ci-dessous) ; réponse `droite(x1;y1;x2;y2)` ou `segment(x1;y1;x2;y2)`, objets séparés par `\|`                                                        |
+| Figure de travail           | bloc ```figure-de-travail (sans `verifier:`) | **jamais notée** : retirée avant toute notation (`gradedPart`) ; son tracé (même chaîne) reste dans la réponse, enregistré en évaluation                                       |
+| Opération posée             | bloc ```operation (`cases: résultat`)        | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts` ; division : `operation-division-answer.ts`, quotient et reste)                              |
+| Collection à construire     | bloc ```collection (`construire: N`)         | case ordinaire : la valeur posée, composition libre (`collection-construire.ts`)                                                                                               |
+| Monnaie à construire        | bloc ```monnaie (`construire: N`)            | case ordinaire : la somme posée, coupures libres dans la réserve (`monnaie-construire.ts`)                                                                                     |
+| Droite à placer             | bloc ```line (`placer: N`)                   | case ordinaire : la graduation du point de l'élève (`number-line-placer.ts`), exacte, sans tolérance ; une case par point                                                      |
+| Horloge à placer            | bloc ```horloge (`placer: 9 h 25`)           | `isPlacedTimeCorrect` (`horloge-placer.ts`) : grande aiguille sur la minute ; petite pile sur l'heure à minutes = 0, entre deux heures sinon, ou sur le cran de sa vraie place |
+| Texte                       | `[_]` hors formule                           | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                                                                                              |
+| Grandeur                    | `unit: { expected, required? }`              | `validateQuantityAnswer` (conversion, unité imposée)                                                                                                                           |
+| Ensemble en intervalles     | `answerKind: 'intervalles'`                  | `interval-answer.ts` ; option `openableBounds` ; contrainte `intervalForm`                                                                                                     |
+| Équation de droite / cercle | `answerKind: 'equation'`                     | `equation-answer.ts` (même ensemble de points) ; formes `reduite`, `cartesienne`, `centre-rayon`                                                                               |
+| Vecteur dans une case       | `answerKind: 'vecteur'`                      | `vector-answer.ts` ; `vectorMode` `exact` ou `colineaire`                                                                                                                      |
+| Matrice dans une case       | `answerKind: 'matrice'`                      | `matrix-answer.ts` (dimensions, puis chaque coefficient)                                                                                                                       |
+| Primitive / solution d'ED   | `answerKind: 'primitive'` / `'solution-ed'`  | `calculus/` (dérivation / substitution) ; `solutionMode`                                                                                                                       |
+| QCM                         | `choices` (+ `multipleAnswers`)              | `validateChoice` ; indices d'**origine** (voir invariants)                                                                                                                     |
+| Case choix                  | bloc ```choix (`plusieurs:`, `melanger:`)    | `statusFromChoices`, comme le QCM ; réponse = indices d'origine cochés, triés, séparés par `;` (`choice-case.ts`)                                                              |
+| Carte de cours              | `options.courseCard`                         | rien : auto-évaluation (`validateAnswer` rend un message)                                                                                                                      |
 
 Après « Valider », la `FlashCard` colore chaque case au recto avec le verdict par case du
 validateur (`computeBlankColors`, `components/questions/blank-verdicts.ts` → `validateAnswerDetailed`,
@@ -384,7 +389,7 @@ choix gardés en markdown, formules non extraites) ; `FillBlanksInput` met à sa
 après validation, choix coché à tort et bons choix marqués (réponse connue seulement). Une case
 choix vide compte comme une case vide (`QuestionCard` : Valider grisé). Le texte d'aide « Remplissez
 les blancs avec vos réponses » n'apparaît que s'il y a une case à écrire (ni choix, ni figure, ni
-collection ou monnaie à construire, ni droite à placer). Hors question
+collection ou monnaie à construire, ni droite ou horloge à placer). Hors question
 (`MarkdownRenderer`, cours, aperçu) : liste A, B, C non cliquable ; PDF (typst) : « A) … ».
 
 Il n'y a **pas** de case « tableau » (tableau de signes ou de variations) : le tableau de signes
@@ -524,7 +529,8 @@ s'il n'y a pas d'énoncé rempli (la figure est la seule case), la consigne seul
 (`showsInstructionOnly`, `instructionOf`) : la figure n'apparaît qu'une fois, au verso de la `FlashCard`
 comme dans la copie corrigée, case « figure » mêlée à d'autres cases comprise.
 
-Case à construire (bloc `collection ou `monnaie, `construire:`) ou droite à placer (```line,
+Case à construire (bloc `collection ou `monnaie, `construire:`), horloge à placer (``horloge, `placer:` :
+le cadran verrouillé avec les aiguilles de l'élève, ou à l'heure juste) ou droite à placer (``line,
 `placer:` : la droite verrouillée sans boutons, point de l'élève ou point juste ; vide : « Tu n'as rien
 placé. » ; plusieurs points : UNE ligne `build` pour la droite, à la place de sa première case, avec
 `answers` (réponse et statut de chaque point), juste quand tous le sont, « rien placé » quand aucun ne

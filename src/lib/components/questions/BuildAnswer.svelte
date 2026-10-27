@@ -9,7 +9,9 @@
 	et une construction juste à côté) ; sans réponse (R9), la construction juste
 	seule. Lecture seule : jamais de réserve active. Droite à placer (```line,
 	`placer:`) : la droite verrouillée avec les points de l'élève (`answers`, un par
-	point, quand il y en a plusieurs), ou les points justes.
+	point, quand il y en a plusieurs), ou les points justes. Horloge à placer
+	(```horloge, `placer:`) : le cadran verrouillé avec les aiguilles de l'élève,
+	ou le cadran à l'heure juste.
 
 	@module components/questions/BuildAnswer
 -->
@@ -20,6 +22,10 @@
 	import MonnaieConstruire from '$lib/components/markdown/nodes/MonnaieConstruire.svelte';
 	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
 	import NumberLinePlacer from '$lib/components/markdown/nodes/NumberLinePlacer.svelte';
+	import Horloge from '$lib/components/markdown/nodes/Horloge.svelte';
+	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
+	import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
+	import { HORLOGE_SIZE_CM } from '$lib/ubumark/types/horloge';
 	import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 	import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
 	import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
@@ -60,6 +66,7 @@
 	let collection = $derived(kind === 'collection' ? parseCollectionContent(source) : null);
 	let monnaie = $derived(kind === 'monnaie' ? parseMonnaieContent(source) : null);
 	let line = $derived(kind === 'line' ? parseNumberLineContent(source).node : null);
+	let horloge = $derived(kind === 'horloge' ? parseHorlogeContent(source) : null);
 </script>
 
 {#if collection?.spec?.build !== undefined}
@@ -86,6 +93,24 @@
 				points: line.placer.map((t) => ({ label: t.name, value: t.value, color: 'vert' }))
 			}}
 			pointsOnLine
+		/>
+	{/if}
+{:else if horloge?.spec?.placer !== undefined}
+	{@const spec = horloge.spec}
+	{#if locked}
+		<HorlogePlacer node={horloge} answer={locked} showControls={false} />
+	{:else}
+		<!-- Le cadran à l'heure juste, sans `placer:` : dessiné seul -->
+		<Horloge
+			node={{
+				...horloge,
+				spec: {
+					...spec,
+					placer: undefined,
+					times: [spec.placer!],
+					sizeCm: spec.sizeCm ?? HORLOGE_SIZE_CM.placer
+				}
+			}}
 		/>
 	{/if}
 {:else if monnaie?.spec?.build !== undefined && monnaie.spec.reserve !== undefined}

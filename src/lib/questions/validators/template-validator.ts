@@ -17,6 +17,7 @@ import { assignBlankIndices } from '../generator/assign-blank-indices';
 import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
 import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
 import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
+import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { WORK_FIGURE_ALONE_MESSAGE } from '$lib/ubumark/parser/construction-parser';
 
 /**
@@ -190,13 +191,15 @@ function validateVariation(
 		case 'fill_in_blanks':
 			// Un bloc ```operation à remplir porte sa propre case (sa réponse vient du calcul),
 			// un bloc ```figure-a-completer aussi (la figure de l'élève), un bloc ```collection
-			// ou ```monnaie à construire aussi (sa réponse est sa valeur), une droite à placer aussi
+			// ou ```monnaie à construire aussi (sa réponse est sa valeur), une droite ou une horloge
+			// à placer aussi
 			if (
 				(!variation.blanks || variation.blanks.length === 0) &&
 				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasCollectionToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasMonnaieToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasLineToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasHorlogeToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!/^\s*>?\s*```figure-a-completer\s*$/m.test(
 					String(variation.statement ?? shared?.statement ?? '')
 				)
