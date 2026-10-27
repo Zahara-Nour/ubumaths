@@ -46,7 +46,7 @@ describe('assignBlankIndices — droite à placer', () => {
 		expect(result.blankTypes).toEqual(['math']);
 		expect(result.statement).toBe(line('case: 0', ...LINE_0_20, 'placer: 7'));
 		expect(result.buildBlanks).toEqual({
-			0: { kind: 'line', source: [...LINE_0_20, 'placer: 7'].join('\n') }
+			0: { kind: 'line', source: [...LINE_0_20, 'placer: 7'].join('\n'), point: 0 }
 		});
 	});
 
@@ -178,5 +178,53 @@ describe('droite à placer : la case et sa réponse', () => {
 	it('le validateur de modèle accepte une question sans blanks[] à droite à placer', () => {
 		const errors = validateTemplate(template({ statement: line(...LINE_0_20, 'placer: 7') }));
 		expect(errors.join(' ')).not.toMatch(/requires blanks/);
+	});
+});
+
+describe('droite à placer, plusieurs points : une case par point', () => {
+	const PLACER_3 = 'placer: A=3 ; B=7 ; C=12';
+
+	it('trois cases consécutives, `case:` = la première', () => {
+		const statement = [`Calcule $2+3=?$.`, '', line(...LINE_0_20, PLACER_3)].join('\n');
+		const result = assignBlankIndices(statement);
+		expect(result.totalBlanks).toBe(4);
+		expect(result.blankTypes).toEqual(['math', 'math', 'math', 'math']);
+		expect(result.statement).toContain('case: 1');
+		expect(result.buildBlanks).toEqual({
+			1: { kind: 'line', source: [...LINE_0_20, PLACER_3].join('\n'), point: 0 },
+			2: { kind: 'line', source: [...LINE_0_20, PLACER_3].join('\n'), point: 1 },
+			3: { kind: 'line', source: [...LINE_0_20, PLACER_3].join('\n'), point: 2 }
+		});
+	});
+
+	it('chaque case a la graduation de son point ; note partielle', () => {
+		const instance = generate(template({ statement: line(...LINE_0_20, PLACER_3) }));
+		expect(instance.blanks?.map((b) => [b.expectedAnswer, b.construire])).toEqual([
+			['3', 'line'],
+			['7', 'line'],
+			['12', 'line']
+		]);
+		const answers = ['3', '9', '12'];
+		const verdict = validateAnswer(answers, instance, answers);
+		expect(verdict.isCorrect).toBe(false);
+		expect(validateAnswer(['3', '7', '12'], instance, ['3', '7', '12']).status).toBe('correct');
+	});
+
+	it('une case après la droite garde son rang', () => {
+		const statement = [line(...LINE_0_20, 'placer: A=3 ; B=7'), '', 'Écris $5+1=?$.'].join('\n');
+		const result = assignBlankIndices(statement);
+		expect(result.totalBlanks).toBe(3);
+		expect(result.statement).toContain('case: 0');
+		expect(result.statement).toContain('\\placeholder[2]');
+	});
+
+	it('blanks[] sans les cases de la droite : alignées', () => {
+		const instance = generate(
+			template({
+				statement: [line(...LINE_0_20, 'placer: A=3 ; B=7'), '', 'Écris $5+1=?$.'].join('\n'),
+				blanks: [{ expectedAnswer: '6' }]
+			})
+		);
+		expect(instance.blanks?.map((b) => b.expectedAnswer)).toEqual(['3', '7', '6']);
 	});
 });

@@ -149,3 +149,50 @@ describe('résultat attendu : droite à placer', () => {
 		expect(lines[1]).toMatchObject({ text: "Tu n'as rien placé." });
 	});
 });
+
+// PR 2 : plusieurs points sur la même droite, une case par point
+describe('résultat attendu : droite à plusieurs points', () => {
+	const LINE = [
+		'Place A(3), B(7) et C(12).',
+		'',
+		'```line',
+		'start: 0',
+		'end: 20',
+		'step: 1',
+		'placer: A=3 ; B=7 ; C=12',
+		'```'
+	].join('\n');
+
+	it('une seule droite, la réponse et le statut de chaque point', () => {
+		const { status, lines } = buildExpectedResult(instance(LINE), { values: ['3', '9', ''] });
+		expect(status).not.toBe('correct');
+		expect(lines).toHaveLength(1);
+		expect(lines[0]).toMatchObject({
+			kind: 'build',
+			buildKind: 'line',
+			status: 'incorrect',
+			answers: [
+				{ answer: '3', status: 'correct' },
+				{ answer: '9', status: 'incorrect' },
+				{ answer: '', status: 'empty' }
+			]
+		});
+	});
+
+	it('tous justes : correct', () => {
+		const { status, lines } = buildExpectedResult(instance(LINE), { values: ['3', '7', '12'] });
+		expect(status).toBe('correct');
+		expect(lines[0]).toMatchObject({ kind: 'build', status: 'correct' });
+	});
+
+	it('aucun point : la droite juste, puis « Tu n’as rien placé. »', () => {
+		const { lines } = buildExpectedResult(instance(LINE), { values: ['', '', ''] });
+		expect(lines.map((l) => l.kind)).toEqual(['build', 'empty']);
+		expect(lines[0]).toMatchObject({ answer: null, status: 'solution' });
+	});
+
+	it('sans réponse (R9) : la droite juste seule', () => {
+		const { lines } = buildExpectedResult(instance(LINE));
+		expect(lines).toEqual([expect.objectContaining({ kind: 'build', answer: null })]);
+	});
+});

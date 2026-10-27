@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27.
 
 ## À quoi ça sert
 
@@ -247,7 +247,7 @@ Branches imbriquées par indentation (`Pile:1/2` puis `  Face:1/2`), options `ro
 `src/lib/ubumark/__tests__/number-line/number-line-placer.test.ts`,
 `NumberLinePlacer.svelte.test.ts` : `placer: 7` dans un ` ```line ` (nœud : `placer`, et `caseIndex`
 lu de `case: N`, posée par le générateur). Refusé : hors de la droite, entre deux graduations, échelle
-`log`, avec `points:` (un seul point, celui de l'élève), valeur illisible ; `case:` sans `placer:`.
+`log`, avec `points:` (seuls les points de l'élève), valeur illisible ; `case:` sans `placer:`.
 `NumberLine.svelte` passe la main à `NumberLinePlacer.svelte` : l'élève touche la droite (le point se
 pose sur la graduation la plus proche, il se glisse ; zone `touch-action: pan-y`), ou ◀ ▶ (un cran ;
 sans point, ▶ pose sur la première graduation, ◀ sur la dernière), ou le clavier (← → ↑ ↓, Début, Fin ;
@@ -258,6 +258,19 @@ point `0.75`, sinon fraction LaTeX `\frac{4}{3}`), la même pour la réponse att
 l'élève ; `placerText` pour l'élève (`0,3`, `4/3`). Dans une question : faux → « Tu as placé le point
 sur 9. » (ou « Tu n'as rien placé. ») et la droite juste à côté, point vert. Hors question : le même
 geste, rien de jugé. PDF : la droite sans point (l'enfant fait sa croix).
+
+**Plusieurs points** (PR 2, `number-line-placer-plusieurs.test.ts`) — `placer: A=3 ; B=7 ; C=12` :
+`placer` est une liste de `NumberLineTarget` (`name`, `value`), dans l'ordre écrit ; `placer: 7`
+donne un point au nom vide. Refusé : plus de 6 points, nom autre qu'une lettre majuscule, nom en
+double, point sans nom dès qu'il y en a deux, point vide (`;` en trop) ; chaque point est vérifié
+comme un point seul. Deux points sur la même graduation : permis (leurs noms côte à côte,
+`SHARED_LABEL_GAP`). Une case par point : `caseIndex` est la première, le point k a la case N + k.
+À l'écran : une étiquette par point sous la droite (entre ◀ et ▶, `aria-pressed`), A active au
+départ ; toucher la droite pose le point actif, et poser un point absent active le suivant non
+placé ; toucher un point posé (moins de 16 px) le reprend ; ◀ ▶ et le clavier déplacent le point
+actif (`aria-valuetext` « point B sur 7 »). Correction : une phrase par point faux (« Tu as placé B
+sur 9. », « Tu n'as pas placé C. ») ; cadre rouge dès qu'un point est faux, vert quand tous sont
+justes ; la droite juste avec tous les points, nommés, en vert.
 
 **Largeur réelle** (toutes les droites graduées, écran seulement) — `number-line-largeur.test.ts`,
 `NumberLine-largeur.svelte.test.ts` : `NumberLine.svelte` dessine la droite en px à la largeur de son

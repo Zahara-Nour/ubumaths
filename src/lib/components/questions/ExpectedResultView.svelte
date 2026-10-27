@@ -183,6 +183,7 @@
 					source={line.source}
 					answer={line.answer}
 					status={line.status}
+					answers={line.answers}
 				/>
 				{#if line.answer !== null}
 					<p class="flex justify-center">{@render statusTag(line.status)}</p>

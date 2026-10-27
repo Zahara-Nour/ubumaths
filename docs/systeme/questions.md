@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26 ; texte d'aide des cases à écrire le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; texte d'aide des cases à écrire le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -281,8 +281,10 @@ question dont les seules cases sont des figures de travail est refusée
 (`WORK_FIGURE_ALONE_MESSAGE`, au générateur et dans `validateTemplate`). Un bloc `collection ou
 `monnaie à construire (`construire: N`), ou une droite à placer (```line, `placer: N`), au premier
 niveau, sinon échec (`buildBlanks`, genre et texte du bloc), compte aussi pour
-**une** case, `case: N` posé dans le bloc ; sa réponse attendue est la valeur `N` du bloc (droite : la graduation
-écrite par `placerAnswer` ; lecture commune `generator/build-answer.ts`), jamais
+**une** case, `case: N` posé dans le bloc ; une droite à plusieurs points (`placer: A=3 ; B=7`) compte
+une case par point, N, N + 1…, seul N posé (`buildBlanks[…].point`, rang du point). Sa réponse attendue
+est la valeur `N` du bloc (droite : la graduation du point, écrite par `placerAnswer` ; lecture commune
+`generator/build-answer.ts`, `buildAnswerOf(kind, source, point)`), jamais
 du modèle (`blanks[]` peut l'omettre, une réponse écrite est refusée, `case:` écrite aussi, bloc en
 erreur, non fermé ou avec `options.orderIndependent` → échec). Le bloc est délimité comme le parseur
 (`findBuildCollections`, `findBuildMonnaies`, `findLinesToPlace` : une ligne vide suivie d'une clé reste dans un bloc
@@ -354,7 +356,7 @@ Natures de réponse :
 | Opération posée             | bloc ```operation (`cases: résultat`)        | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts` ; division : `operation-division-answer.ts`, quotient et reste) |
 | Collection à construire     | bloc ```collection (`construire: N`)         | case ordinaire : la valeur posée, composition libre (`collection-construire.ts`)                                                                  |
 | Monnaie à construire        | bloc ```monnaie (`construire: N`)            | case ordinaire : la somme posée, coupures libres dans la réserve (`monnaie-construire.ts`)                                                        |
-| Droite à placer             | bloc ```line (`placer: N`)                   | case ordinaire : la graduation du point de l'élève (`number-line-placer.ts`), exacte, sans tolérance                                              |
+| Droite à placer             | bloc ```line (`placer: N`)                   | case ordinaire : la graduation du point de l'élève (`number-line-placer.ts`), exacte, sans tolérance ; une case par point                         |
 | Texte                       | `[_]` hors formule                           | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                                                                 |
 | Grandeur                    | `unit: { expected, required? }`              | `validateQuantityAnswer` (conversion, unité imposée)                                                                                              |
 | Ensemble en intervalles     | `answerKind: 'intervalles'`                  | `interval-answer.ts` ; option `openableBounds` ; contrainte `intervalForm`                                                                        |
@@ -522,7 +524,9 @@ comme dans la copie corrigée, case « figure » mêlée à d'autres cases compr
 
 Case à construire (bloc `collection ou `monnaie, `construire:`) ou droite à placer (```line,
 `placer:` : la droite verrouillée sans boutons, point de l'élève ou point juste ; vide : « Tu n'as rien
-placé. ») : une ligne `build` (genre, texte
+placé. » ; plusieurs points : UNE ligne `build` pour la droite, à la place de sa première case, avec
+`answers` (réponse et statut de chaque point), juste quand tous le sont, « rien placé » quand aucun ne
+l'est) : une ligne `build` (genre, texte
 du bloc sans `case:`, valeur posée), sur le même patron que la figure. `BuildAnswer.svelte` dessine le
 plan **verrouillé, sans réserve** : la construction de l'élève (cadre vert si juste ; faux : « Tu as
 posé 32 €. » ou « Ta collection vaut 32. » et une construction juste à côté), ou la construction juste

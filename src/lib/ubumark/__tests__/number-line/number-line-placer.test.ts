@@ -33,7 +33,7 @@ describe('parseur : placer:', () => {
 	it('placer: lu comme une valeur de la droite', () => {
 		const { node, errors } = parse('start: 0', 'end: 20', 'step: 1', 'placer: 7');
 		expect(errors).toEqual([]);
-		expect(node?.placer && numVal(node.placer)).toBe(7);
+		expect(node?.placer?.map((t) => numVal(t.value))).toEqual([7]);
 		expect(node?.points).toEqual([]);
 	});
 
@@ -45,7 +45,7 @@ describe('parseur : placer:', () => {
 	it('placer: en fraction sur une droite graduée en quarts', () => {
 		const { node, errors } = parse('start: 0', 'end: 2', 'step: 1/4', 'placer: 3/4');
 		expect(errors).toEqual([]);
-		expect(node?.placer?.expression).toBe('3/4');
+		expect(node?.placer?.[0].value.expression).toBe('3/4');
 	});
 
 	it('placer: hors de la droite → refusé', () => {
@@ -66,7 +66,7 @@ describe('parseur : placer:', () => {
 		expect(errors.map((e) => e.message).join(' ')).toMatch(/placer.*log/);
 	});
 
-	it('placer: avec points: → refusé (un seul point, celui de l’élève)', () => {
+	it('placer: avec points: → refusé (seuls les points de l’élève)', () => {
 		const { node, errors } = parse('start: 0', 'end: 20', 'step: 1', 'points: A=3', 'placer: 7');
 		expect(node).toBeNull();
 		expect(errors.map((e) => e.message).join(' ')).toMatch(/placer.*points/);

@@ -8,7 +8,8 @@
 	construction, verrouillée, sans réserve (juste : cadre vert ; faux : sa valeur
 	et une construction juste à côté) ; sans réponse (R9), la construction juste
 	seule. Lecture seule : jamais de réserve active. Droite à placer (```line,
-	`placer:`) : la droite verrouillée avec le point de l'élève, ou le point juste.
+	`placer:`) : la droite verrouillée avec les points de l'élève (`answers`, un par
+	point, quand il y en a plusieurs), ou les points justes.
 
 	@module components/questions/BuildAnswer
 -->
@@ -37,13 +38,24 @@
 		/** Valeur posée par l'élève ; null : la construction juste seule */
 		answer: string | null;
 		status: ExpectedStatus;
+		/** Droite à plusieurs points : la réponse et le statut de chaque point (prime sur `answer`) */
+		answers?: { answer: string; status: ExpectedStatus }[];
 	}
 
-	let { kind, source, answer, status }: Props = $props();
+	let { kind, source, answer, status, answers }: Props = $props();
 
-	let isCorrect = $derived(status === 'correct' || status === 'unoptimal');
-	let locked = $derived(
-		answer === null ? undefined : { value: answer, isCorrect, disabled: true, onChange: () => {} }
+	const accepted = (s: ExpectedStatus) => s === 'correct' || s === 'unoptimal';
+	const lockedCase = (value: string, s: ExpectedStatus) => ({
+		value,
+		isCorrect: accepted(s),
+		disabled: true,
+		onChange: () => {}
+	});
+
+	let locked = $derived(answer === null ? undefined : lockedCase(answer, status));
+	/** Cases de la droite, une par point ; undefined : les points justes seuls */
+	let lineCases = $derived(
+		answers ? answers.map((a) => lockedCase(a.answer, a.status)) : locked ? [locked] : undefined
 	);
 	let collection = $derived(kind === 'collection' ? parseCollectionContent(source) : null);
 	let monnaie = $derived(kind === 'monnaie' ? parseMonnaieContent(source) : null);
@@ -63,15 +75,15 @@
 		/>
 	{/if}
 {:else if line?.placer !== undefined}
-	{#if locked}
-		<NumberLinePlacer node={line} answer={locked} showControls={false} />
+	{#if lineCases}
+		<NumberLinePlacer node={line} answers={lineCases} showControls={false} />
 	{:else}
-		<!-- La droite avec le point juste, sans `placer:` : dessinée seule -->
+		<!-- La droite avec les points justes, sans `placer:` : dessinée seule -->
 		<NumberLine
 			node={{
 				...line,
 				placer: undefined,
-				points: [{ label: '', value: line.placer, color: 'vert' }]
+				points: line.placer.map((t) => ({ label: t.name, value: t.value, color: 'vert' }))
 			}}
 			pointsOnLine
 		/>
