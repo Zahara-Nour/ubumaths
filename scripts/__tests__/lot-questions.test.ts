@@ -252,6 +252,23 @@ describe('apparierLot', () => {
 			"Qui a le plus d'argent ?"
 		]);
 	});
+
+	// postgrest-js met entre guillemets, sans rien échapper, une valeur qui contient , ( ou ) :
+	// PostgREST y lit alors `\,` comme une virgule échappée (lot 2 du CE1, « $1\,000$ »)
+	it('titresDuLot échappe antislash et guillemet des titres que postgrest-js met entre guillemets', () => {
+		const titre = (title: string) => ({ ...lot[0], modele: { ...lot[0].modele, title } });
+		expect(
+			titresDuLot([
+				titre("Intercaler un nombre (jusqu'à $1\\,000$)"),
+				titre('Le mot "cent", écrit'),
+				titre('Division $x \\div a=b$')
+			])
+		).toEqual([
+			"Intercaler un nombre (jusqu'à $1\\\\,000$)",
+			'Le mot \\"cent\\", écrit',
+			'Division $x \\div a=b$'
+		]);
+	});
 });
 
 describe('valeurArgument', () => {
