@@ -13,7 +13,7 @@ _Mis à jour le 2026-10-27, après #1875 (lot 0-second-degré mergé, pas encore
 
 - **État** : lot 0-suites CLOS (42 publiés). Lot 0-second-degré : 14 brouillons, 6 corrigés (D12), instantané `scripts/questions/1spe-0-second-degre/`, page à cocher https://claude.ai/artifact/PkSiv8xPDNCrSvM432Zq9n.
 - **Prochaine action** : David lance (dépôt principal, `!`) `create-questions --dir scripts/questions/1spe-0-second-degre --publier --mettre-a-jour` puis `publier-lot … --publier` ; relire les statuts. Puis dérivation, exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3 (sauf les 6 faits par questions-2de).
-- **En attente de David** : relecture de la page à cocher du second degré ; les deux écritures en prod (classifieur).
+- **En attente de David** : les deux écritures en prod (classifieur) ; page à cocher validée en entier (message, 2026-10-27).
 - **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; QCM d'ancien format publiés tels quels (lot 4 de figure-et-choix) ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur du mode auto ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts (`$lib`).
 - **Worktree / branche** : aucun (retiré après #1875).
 
@@ -274,3 +274,5 @@ _2026-10-27. 14 brouillons tagués d'un point du second degré (243, 245, 246, 2
 `create-questions` (simulation) : 14 en base, exactement 6 « contenu différent ». Page à cocher :
 https://claude.ai/artifact/PkSiv8xPDNCrSvM432Zq9n (568c7bee et 9e1d084e : bloc `variation` non dessiné par la page,
 à jouer dans l'aperçu).
+
+**Relecture (David, 2026-10-27, « je valide tout »)** : les 14 fiches validées par message (aucun verdict en base).
