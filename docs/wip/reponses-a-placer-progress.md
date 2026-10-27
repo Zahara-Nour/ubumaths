@@ -198,3 +198,9 @@ Branche `feat/reponses-a-placer-2`. Tests rouges d'abord : `number-line-placer-p
   doigt : marche. Remarque de David : pour mettre deux points sur la même graduation quand tous
   sont posés, toucher reprend l'autre point → flèches ou glisser (règle « toucher un point posé le
   reprend » gardée, à confirmer par David).
+- Glisser au doigt sur l'iPhone (2026-10-27), deux défauts corrigés (branche
+  `fix/placer-glisser-iphone`) : l'appui long ouvrait la loupe et une sélection de texte
+  (`user-select: none`, `-webkit-touch-callout: none`) ; le glisser n'était pas immédiat, Safari
+  attendant de savoir si le doigt défile (`touchstart` non passif, `preventDefault` quand le doigt
+  est sur un point posé ; ailleurs la page défile). Vu OK par David sur l'iPhone. Reste : le glisser
+  qui suit la pose d'un point absent attend encore un peu (relâcher et reprendre).

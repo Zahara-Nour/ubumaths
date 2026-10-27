@@ -49,18 +49,37 @@ const zone = (root: Element) => root.querySelector<HTMLElement>('[role="slider"]
 const FORWARD = 'Avancer le point d’une graduation';
 const BACKWARD = 'Reculer le point d’une graduation';
 
-/** Toucher la droite à la graduation de valeur v (droite de start à end), comme un doigt */
-function tapAt(root: Element, v: number, start = 0, end = 20) {
+/** Coordonnées écran de la graduation de valeur v (droite de start à end) */
+function screenAt(root: Element, v: number, start = 0, end = 20) {
 	const svg = zone(root).querySelector('svg')!;
 	const rect = svg.getBoundingClientRect();
 	// la droite est dessinée à sa largeur réelle : marges fixes, la ligne entre les deux
 	const { MARGIN_LEFT, MARGIN_RIGHT } = NL_LAYOUT;
 	const lineWidth = rect.width - MARGIN_LEFT - MARGIN_RIGHT;
 	const clientX = rect.left + MARGIN_LEFT + ((v - start) / (end - start)) * lineWidth;
-	const clientY = rect.top + rect.height / 2;
-	const init = { bubbles: true, clientX, clientY, pointerId: 1 };
+	return { clientX, clientY: rect.top + rect.height / 2 };
+}
+
+/** Toucher la droite à la graduation de valeur v (droite de start à end), comme un doigt */
+function tapAt(root: Element, v: number, start = 0, end = 20) {
+	const init = { bubbles: true, ...screenAt(root, v, start, end), pointerId: 1 };
 	zone(root).dispatchEvent(new PointerEvent('pointerdown', init));
 	zone(root).dispatchEvent(new PointerEvent('pointerup', init));
+}
+
+/** Le touchstart d'un doigt posé à la graduation v (rendu pour lire defaultPrevented) */
+function touchStartAt(root: Element, v: number): TouchEvent {
+	const target = zone(root);
+	const touch = new Touch({ identifier: 1, target, ...screenAt(root, v) });
+	const event = new TouchEvent('touchstart', {
+		bubbles: true,
+		cancelable: true,
+		touches: [touch],
+		targetTouches: [touch],
+		changedTouches: [touch]
+	});
+	target.dispatchEvent(event);
+	return event;
 }
 
 /** Points dessinés sur la droite de l'élève */
@@ -400,6 +419,23 @@ describe('Droite à placer — plusieurs points', () => {
 		expect(values()).toEqual(['4', '10']);
 		await userEvent.click(button(root, FORWARD));
 		expect(values()).toEqual(['5', '10']);
+	});
+
+	// iPhone : sans preventDefault au touchstart, Safari attend de savoir si le doigt
+	// défile avant de laisser glisser le point (David, 2026-10-27)
+	it('doigt sur un point posé : pas de défilement, le glisser part tout de suite', async () => {
+		const { values, answers } = probes(2);
+		const screen = await render(NumberLine, {
+			target: mainElement(),
+			props: { node: node(...LINE_0_20, 'placer: A=3 ; B=7'), answers }
+		});
+		const root = screen.container;
+		tapAt(root, 4);
+		tapAt(root, 10);
+		await expect.poll(values).toEqual(['4', '10']);
+		expect(touchStartAt(root, 4).defaultPrevented).toBe(true);
+		// ailleurs sur la droite : la page peut encore défiler
+		expect(touchStartAt(root, 15).defaultPrevented).toBe(false);
 	});
 
 	it('étiquette choisie : ◀ ▶ et le clavier déplacent ce point', async () => {
