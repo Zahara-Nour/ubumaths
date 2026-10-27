@@ -148,6 +148,9 @@ def rollback() -> str:
 -- 	  left join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.archived_at is null and b.name = r.branche
 -- 	  left join public.classification_nodes n on n.kind = 'notion' and n.parent_id = b.id and n.archived_at is null and n.name = r.notion
 -- 	  left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = n.id and s.archived_at is null and s.name = r.sous_notion;
+-- 	if v_presents not in (0, {N}) then
+-- 		raise exception 'rollback : identifiants partiellement présents : % modèle(s) sur {N}', v_presents;
+-- 	end if;
 -- 	if v_intacts <> v_presents then
 -- 		raise exception 'rollback : % modèle(s) sur % ont encore le nœud, les niveaux et le statut de la migration', v_intacts, v_presents;
 -- 	end if;
