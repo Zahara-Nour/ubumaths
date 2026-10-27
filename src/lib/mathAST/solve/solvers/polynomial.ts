@@ -52,7 +52,7 @@ import {
 	greaterThanOrEqual
 } from '../../factory';
 import { numericNode } from '../../common/numeric';
-import { denormalize, normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../../normal';
+import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../../normal';
 import { integerNthRoot } from '../../normal/radical';
 import {
 	canonicalForm,
@@ -174,7 +174,7 @@ export function extractPowerEquation(
 			: negatedPower
 				? constantTerm
 				: opposite(constantTerm);
-	const kSimplified = denormalize(normalize(k));
+	const kSimplified = canonicalForm(k);
 
 	return { n: powerDegree, k: kSimplified };
 }
@@ -501,7 +501,7 @@ function simpleNthRoot(k: MathNode, n: number, rootValue: number | undefined): M
 		func('sqrt', [numericNode(square.n * square.d)]),
 		numericNode(square.d)
 	);
-	const candidate = denormalize(normalize(rootValue < 0 ? opposite(magnitude) : magnitude));
+	const candidate = canonicalForm(rootValue < 0 ? opposite(magnitude) : magnitude);
 	try {
 		const raised = normalize(power(candidate, numericNode(n)));
 		return normalFormsEquivalent(raised, normalize(k)) ? candidate : null;
@@ -558,7 +558,7 @@ function handleOddExponent(
 	}
 
 	// Simplify the solution
-	const solutionSimplified = denormalize(normalize(solutionNode));
+	const solutionSimplified = canonicalForm(solutionNode);
 
 	// Record final solution
 	recorder.recordStep(
@@ -630,9 +630,9 @@ function handleEvenPositive(
 	}
 
 	// Simplify roots
-	const positiveSimplified = denormalize(normalize(positiveRoot));
+	const positiveSimplified = canonicalForm(positiveRoot);
 	const negativeRoot = opposite(positiveRoot);
-	const negativeSimplified = denormalize(normalize(negativeRoot));
+	const negativeSimplified = canonicalForm(negativeRoot);
 
 	// Record final solutions
 	recorder.recordStep(
@@ -718,7 +718,7 @@ export function solveCubicCardano(
 	const pNumerator = subtract(threeAC, bSquared);
 	const threeASquared = multiply(three, power(a, two), 'implicit');
 	const p = fraction(pNumerator, threeASquared);
-	const pSimplified = denormalize(normalize(p));
+	const pSimplified = canonicalForm(p);
 
 	// q = (2b³ - 9abc + 27a²d) / (27a³)
 	const twoBCubed = multiply(two, power(b, three), 'implicit');
@@ -731,7 +731,7 @@ export function solveCubicCardano(
 	const qNumerator = add(subtract(twoBCubed, nineABC), twentySevenASquaredD);
 	const twentySevenACubed = multiply(twentySeven, power(a, three), 'implicit');
 	const q = fraction(qNumerator, twentySevenACubed);
-	const qSimplified = denormalize(normalize(q));
+	const qSimplified = canonicalForm(q);
 
 	// Compute numeric values for discriminant check
 	const pValue = computeNumericValue(pSimplified);
@@ -745,7 +745,7 @@ export function solveCubicCardano(
 		opposite(multiply(four, pCubed, 'implicit')),
 		multiply(twentySeven, qSquared, 'implicit')
 	);
-	const deltaSimplified = denormalize(normalize(delta));
+	const deltaSimplified = canonicalForm(delta);
 	const deltaValue = computeNumericValue(deltaSimplified);
 
 	// Record discriminant computation
@@ -759,7 +759,7 @@ export function solveCubicCardano(
 
 	// Shift for back-substitution: x = t - b/(3a)
 	const shift = fraction(b, multiply(three, a, 'implicit'));
-	const shiftSimplified = denormalize(normalize(shift));
+	const shiftSimplified = canonicalForm(shift);
 
 	// Branch based on discriminant
 	if (deltaValue !== null) {
@@ -878,7 +878,7 @@ function handleCubicWithCommonFactor(
 	} else if (squareFactor) {
 		// ax + b = 0 → x = −b/a, seulement si elle diffère de 0
 		if (!isZeroNode(b) && bValue !== 0) {
-			const root = denormalize(normalize(fraction(opposite(b), a)));
+			const root = canonicalForm(fraction(opposite(b), a));
 			const approximate = aValue !== null && bValue !== null ? -bValue / aValue : undefined;
 			solutions.push({ value: root, exact: true, approximate });
 		}
@@ -897,7 +897,7 @@ function handleCubicWithCommonFactor(
 
 			if (Math.abs(discriminant) < 1e-10) {
 				// Double root
-				const root = denormalize(normalize(fraction(negB, twoA)));
+				const root = canonicalForm(fraction(negB, twoA));
 				solutions.push({ value: root, exact: true, approximate: x1 });
 			} else {
 				// Two distinct roots
@@ -911,8 +911,8 @@ function handleCubicWithCommonFactor(
 				const root1Node = fraction(add(negB, discNode), twoA);
 				const root2Node = fraction(subtract(negB, discNode), twoA);
 
-				const root1Simplified = denormalize(normalize(root1Node));
-				const root2Simplified = denormalize(normalize(root2Node));
+				const root1Simplified = canonicalForm(root1Node);
+				const root2Simplified = canonicalForm(root2Node);
 
 				solutions.push({ value: root1Simplified, exact: true, approximate: x1 });
 				solutions.push({ value: root2Simplified, exact: true, approximate: x2 });
@@ -971,7 +971,7 @@ function handleCubicOneReal(
 	const qOver2Squared = power(qOver2, two);
 	const pOver3Cubed = power(pOver3, three);
 	const discriminantInner = add(qOver2Squared, pOver3Cubed);
-	const discriminantInnerSimplified = denormalize(normalize(discriminantInner));
+	const discriminantInnerSimplified = canonicalForm(discriminantInner);
 
 	// Get numeric value for the inner discriminant
 	const innerValue = computeNumericValue(discriminantInnerSimplified);
@@ -1023,7 +1023,7 @@ function handleCubicOneReal(
 		solutionNode = subtract(tNode, shift);
 	}
 
-	const solutionSimplified = denormalize(normalize(solutionNode));
+	const solutionSimplified = canonicalForm(solutionNode);
 
 	recorder.recordStep(
 		'apply-cardano-formula',
@@ -1078,7 +1078,7 @@ function handleCubicMultipleRoot(
 	if ((pValue !== null && Math.abs(pValue) < 1e-10) || isZeroNode(p)) {
 		// Triple root: t = 0, so x = -b/(3a) = -shift
 		const tripleRoot = opposite(shift);
-		const tripleRootSimplified = denormalize(normalize(tripleRoot));
+		const tripleRootSimplified = canonicalForm(tripleRoot);
 		const approx = computeNumericValue(tripleRootSimplified);
 
 		recorder.recordStep(
@@ -1107,14 +1107,14 @@ function handleCubicMultipleRoot(
 		fraction(multiply(three, q, 'implicit'), multiply(two, p, 'implicit'))
 	);
 
-	const t1Simplified = denormalize(normalize(threeQOverP));
-	const t2Simplified = denormalize(normalize(negThreeQOver2P));
+	const t1Simplified = canonicalForm(threeQOverP);
+	const t2Simplified = canonicalForm(negThreeQOver2P);
 
 	const x1 = subtract(t1Simplified, shift);
 	const x2 = subtract(t2Simplified, shift);
 
-	const x1Simplified = denormalize(normalize(x1));
-	const x2Simplified = denormalize(normalize(x2));
+	const x1Simplified = canonicalForm(x1);
+	const x2Simplified = canonicalForm(x2);
 
 	const approx1 = computeNumericValue(x1Simplified);
 	const approx2 = computeNumericValue(x2Simplified);
@@ -1213,7 +1213,7 @@ function handleCubicThreeReal(
 				}
 			}
 
-			const solutionSimplified = denormalize(normalize(solutionNode));
+			const solutionSimplified = canonicalForm(solutionNode);
 			solutions.push({ value: solutionSimplified, exact: true, approximate: x });
 		}
 
@@ -1241,7 +1241,7 @@ function handleCubicThreeReal(
 			'implicit'
 		);
 		const x0 = subtract(t0, shift);
-		const x0Simplified = denormalize(normalize(x0));
+		const x0Simplified = canonicalForm(x0);
 
 		solutions.push({ value: x0Simplified, exact: true });
 		// Note: Full symbolic form for all three roots would be very complex

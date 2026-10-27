@@ -36,7 +36,7 @@ import type { MathNode } from '../types';
 import type { Rule } from '../pattern/types';
 import { applyRule, applyRulesDeepOnceTracked } from '../pattern/rule';
 import { nodesEqual } from '../pattern/match';
-import { normalize, denormalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { segmentLengthOracle } from '../assumptions';
 import { findNodes, mapNode } from '../transforms';
 import { isFunction } from '../guards';
@@ -388,7 +388,7 @@ function simplifyLengthRadicals(
 		if (candidate.args.length !== 1) return candidate;
 		let after: MathNode;
 		try {
-			after = denormalize(normalize(candidate, { assumptions: oracle }));
+			after = canonicalForm(candidate, { assumptions: oracle });
 		} catch {
 			return candidate;
 		}
