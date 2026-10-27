@@ -8,17 +8,15 @@
 
 _Mis à jour le 2026-10-28, après #1887._
 
-- **État** : lot 2 « équations et inéquations » (§ 8 à § 10) : 10 brouillons en prod, rangés et tagués
-  (#1882, `db:migrate` joué, vérifié MCP). Page à cocher publiée : https://claude.ai/artifact/T8Emcjbfc7wPj4qnUd5ebk
-  (collection `verdicts`, 3 OK le 2026-10-28 ; LaTeX du gabarit corrigé par #1887, page republiée). Correctif #1877 mergé, pas encore en prod.
-- **Prochaine action** : lire et COMPTER les verdicts (`ArtifactData list verdicts`) ; « À revoir » → corriger
-  (§ 7 de la démarche) ; tout OK → `publier-lot.ts --dir scripts/questions/2de-equations` en simulation.
-- **En attente de David** : sa relecture sur la page ; puis le `deploy:prod` qui livre #1877 ; puis
-  `publier-lot.ts … --publier` (lui).
-- **Pièges en cours** : publier le lot seulement **après le `deploy:prod` qui livre #1877** (sinon √12 compte juste
-  en prod) ; la garde de doc lit `Doc-inchangée:` dans un COMMIT, pas dans la description de PR ; test
-  `scripts/corrections` « cas rare » qui dépasse 5 s en CI de temps en temps (relancer) ; QCM en réécriture.
-- **Worktree / branche** : aucun (retiré après #1882).
+- **État** : lot 2 « équations et inéquations » (§ 8 à § 10) : 10 brouillons en prod, rangés et tagués (#1882),
+  relus : **10 OK sur 10** (page à cocher, aucun commentaire). `publier-lot.ts` en simulation : 10 passent.
+  #1877 (√12 = ½) est en prod (v0.52.0).
+- **Prochaine action** : **David** lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/2de-equations --publier` ;
+  vérifier `published` en base (MCP), puis choisir le lot 3 (§ 4 : points restants).
+- **En attente de David** : le `--publier` ci-dessus.
+- **Pièges en cours** : la garde de doc lit `Doc-inchangée:` dans un COMMIT, pas dans la description de PR ;
+  test `scripts/corrections` « cas rare » qui dépasse 5 s en CI de temps en temps (relancer) ; QCM en réécriture.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -339,3 +337,5 @@ produit nul en base. Phase 0 validée telle que proposée (mes 4 recommandations
 - David : « tu n'as pas mis en forme le latex » → #1887 (gabarit de la page à cocher) : libellé du point,
   bornes et réponses des specs en KaTeX ; blocs `$$…$$` en mode bloc (`align` refusé en ligne) ; ℝ en
   Unicode (MathML de Chrome sans `double-struck`). Page republiée, verdicts gardés.
+- Relecture : 10 OK sur 10 (verdicts comptés le 2026-10-28) ; `publier-lot.ts` en simulation : 10 brouillons
+  passent ; #1877 vérifié sur `production` (v0.52.0).
