@@ -72,7 +72,7 @@ export const horlogeEntry: BlockCatalogEntry = {
 					values: 'une heure, écrite 9 h, 9 h 25 ou 14 h 25 (à la place de heure:)',
 					defaultValue: 'aucune',
 					description:
-						'Un cadran sans aiguilles : l’élève pose la petite et la grande aiguille (étiquettes sous le cadran, toucher, boutons ◀ ▶). Juste si la grande aiguille est sur la bonne minute et la petite dans le bon secteur : pile sur l’heure à minutes = 0, entre l’heure et la suivante sinon. 14 h 25 se place comme 2 h 25. Jamais écrite à l’écran. Une légende au plus ; minutes: cachées refusé. Sur le PDF, le cadran sans aiguilles : l’enfant les dessine.'
+						'Un cadran sans aiguilles : l’élève pose la petite et la grande aiguille (étiquettes sous le cadran, toucher, boutons ◀ ▶). Juste si la grande aiguille est sur la bonne minute et la petite dans le bon secteur : pile sur l’heure à minutes = 0, entre l’heure et la suivante sinon, ou à sa vraie place (9 h 05 : sur le 9). 14 h 25 se place comme 2 h 25. Jamais écrite à l’écran. Une légende au plus ; minutes: cachées refusé. Sur le PDF, le cadran sans aiguilles : l’enfant les dessine.'
 				}
 			]
 		}

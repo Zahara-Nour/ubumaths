@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-27, PR « aiguilles » pas encore ouverte._
 
-- **État** : horloge à placer (§ 13 à 15) commitée sur `feat/reponses-a-placer-aiguilles`, pas poussée ; revue Opus reçue : inversion des aiguilles et légende corrigées (commités) ; tests verts.
-- **Prochaine action** : appliquer la réponse de David à Q16 (§ 16), puis pousser, PR, CI, merger ; noter la carte de correction (vraie question) dans `verifications-manuelles.md`.
-- **En attente de David** : Q16 — petite aiguille à 1-5 et 54-59 minutes (voir § 16).
+- **État** : horloge à placer (§ 13 à 16) commitée sur `feat/reponses-a-placer-aiguilles` ; revue Opus traitée ; Q16 validée par David et codée (cran de la vraie place accepté).
+- **Prochaine action** : PR ouverte → CI, merger ; noter la carte de correction (vraie question) dans `verifications-manuelles.md`.
+- **En attente de David** : rien.
 - **Pièges en cours** : réponse élève `'47 25'` (crans petite, grande), attendue `'9 h 25'` (cadran de 12), case `type: 'text'`, juge `isPlacedTimeCorrect` ; page d'aide à froid : attendre l'hydratation avant de cliquer ; une PR = une session.
 - **Worktree / branche** : `../ubumaths-wt-reponses-a-placer` · `feat/reponses-a-placer-aiguilles` · serveur 5177.
 
@@ -333,3 +333,5 @@ d'abord : `horloge-placer.test.ts` (parseur, lecture, juge, phrases, PDF),
   (9 h 55 : 49,6 → 50, refusé) ; le cadran de correction la dessine pourtant là. Reco : accepter aussi le
   cran le plus proche de la vraie place (`round(5h + m/12)`) ; l'erreur type (pile sur le 9 à 9 h 45,
   vraie place 48,75) reste refusée.
+- **Q16 validée par David (« je valide »)** : `isPlacedTimeCorrect` accepte aussi `trueHourTick`
+  (cran le plus proche de la vraie place) ; tests 9 h 05, 9 h 55, 12 h 05, et 9 h 45 pile sur le 9 refusé.
