@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1880 et #1883._
+_Mis à jour le 2026-10-28, après #1888 et la publication du lot 3._
 
-- **État** : lots 1 et 2 publiés. Lot 3 « Calcul décimal » : 13 brouillons en prod, rangés et tagués (#1873, #1883, `db:migrate` joués), retouches de relecture en prod (#1880, `--publier --mettre-a-jour` lancé par David, simulation : 13 « déjà en base »). Page à cocher republiée (même adresse) : https://claude.ai/artifact/Fyf6TTZ3h32RJ4ms7ZSwHQ ; verdicts de 01 et 08 effacés, OK de 02, 03, 04, 05, 07 gardés.
-- **Prochaine action** : lire `verdicts` (ArtifactData list) et **compter** (13 attendus) ; « À revoir » → corriger (§ 7) ; tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-calcul-decimal` en simulation, puis David `--publier` ; relire `published` au MCP. Ensuite lot 4 « Fractions » (§ 4).
-- **En attente de David** : relire 01, 06, 08, 09, 10, 11, 12, 13 (choix et division posée à jouer dans l'aperçu admin) ; revoir 02, 04, 07 s'il le veut (consigne seule changée). Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
-- **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; `--mettre-a-jour` après le merge seulement (il lit `main`) ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval` ; serveur de dev sur `localhost`.
+- **État** : lots 1, 2 et 3 publiés. Lot 3 « Calcul décimal » : 13 modèles publiés le 2026-10-28 (13/13 OK sur la page à cocher, `publier-lot --publier` lancé par David, MCP : 13 publiés, rangés, tagués). Page à cocher : décimaux à la française (#1888).
+- **Prochaine action** : lot 4 « Fractions » (§ 4 : 130, 131, 133, 203, 134, 204, 205, 136, 137) — phase 0 à écrire et à faire valider.
+- **En attente de David** : rien. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; nombres calculables de tête dans les problèmes (relecture du lot 3) ; un geste de calcul = un modèle ; `--mettre-a-jour` après le merge seulement (il lit `main`) ; page à cocher générée depuis un `main` à jour, rendu vu dans Chrome AVANT de l'annoncer ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval`.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
@@ -488,3 +488,9 @@ Verdicts lus (`verdicts`, 7 sur 10) : 5 OK (02, 03, 04, 05, 07), 2 à revoir (01
   « > soustraction », 6-198). Test rouge sans (5/9), vert avec (18/18) ; `security-auditor` sans finding bloquant ;
   CI verte, `db:migrate` (sans `--include-all`), vérifié au MCP (`updated_at` préservé).
 - Page à cocher republiée ; verdicts « à revoir » de 01 et 08 effacés.
+
+### 10.8 Publication (2026-10-28)
+
+- Page à cocher d'abord publiée sans KaTeX (gabarit #1885 arrivé sur `main` après la génération) et avec des points
+  décimaux : #1888 (`toFrenchDecimal` sur formules et réponses, rendu texte `{,}` et `\,`), page régénérée, vue dans Chrome.
+- Verdicts : 13/13 OK, aucun commentaire. `publier-lot.ts --publier` (David) : 13/13 publiés ; MCP : 13 publiés, rangés, tagués.
