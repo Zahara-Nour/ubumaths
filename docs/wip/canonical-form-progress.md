@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, phase 0 validée, code écrit (PR à ouvrir)._
+_Mis à jour le 2026-10-27, PR #1871 ouverte._
 
-- **État** : 75 appels remplacés, garde ESLint en place, `check:incremental` 0 erreur ; suites `mathAST` / `questions` / `geometry-core` lancées.
-- **Prochaine action** : suites vertes sans test modifié → revue `code-reviewer` (Sonnet) → PR → CI → merge.
+- **État** : 75 appels remplacés, garde ESLint en place ; `check:incremental` 0 erreur ; suites `mathAST` / `questions` / `geometry-core` vertes (33 749 tests, aucun modifié) ; revue `code-reviewer` sans finding.
+- **Prochaine action** : CI verte → merge #1871 → archiver le journal (fin de chantier = versement, déjà fait dans le README mathAST).
 - **En attente de David** : rien.
 - **Pièges** : le compte juste est **77**, pas 78 (le 78ᵉ était un commentaire de `rational.ts`) ; le grep rate les 3 appels sur plusieurs lignes, la règle AST les voit.
 - **Worktree / branche** : `../ubumaths-wt-canonical-form`, `refactor/canonical-form`.
