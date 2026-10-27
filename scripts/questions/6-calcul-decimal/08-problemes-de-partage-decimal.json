@@ -1,0 +1,254 @@
+{
+	"title": "Problèmes de partage décimal",
+	"description": "Diviser une somme, une longueur, un prix total par un entier d'un chiffre (22,35 € entre 3 ; 4,2 m en 6 ; 4 cahiers pour 7,60 €)",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Problèmes",
+	"subdomain": "Division",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "${{n}}$ amis partagent {{if:o==0|un gain de|une cagnotte de}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\text{€}$ en parts égales. Combien chacun reçoit-il ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "j",
+					"expression": "20..400"
+				},
+				{
+					"name": "P",
+					"expression": "eval:5*j"
+				},
+				{
+					"name": "C",
+					"expression": "eval:n*P"
+				}
+			],
+			"conditions": ["mod(C,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:P/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Partager en parts égales**, c'est diviser : part $=$ somme $\\div$ nombre de parts.",
+					"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}}$$",
+					"Vérification : ${{n}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}$."
+				]
+			}
+		},
+		{
+			"statement": "On coupe un ruban de ${{L}}~\\text{m}$ en ${{n}}$ morceaux de même longueur. Quelle est la longueur d'un morceau ?\n\n$$?~\\text{m}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "Q",
+					"expression": "11..150"
+				},
+				{
+					"name": "L",
+					"expression": "eval:n*Q/100;d"
+				}
+			],
+			"conditions": ["mod(n*Q,100)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:Q/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Partager en parts égales**, c'est diviser : longueur d'un morceau $=$ longueur du ruban $\\div$ nombre de morceaux.",
+					"$${{L}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Vérification : ${{n}} \\times {{solution}} = {{L}}$."
+				]
+			}
+		},
+		{
+			"statement": "${{n}}$ {{if:o==0|cahiers identiques coûtent|stylos identiques coûtent}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\text{€}$. Combien coûte un {{if:o==0|cahier|stylo}} ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "j",
+					"expression": "10..80"
+				},
+				{
+					"name": "P",
+					"expression": "eval:5*j"
+				},
+				{
+					"name": "C",
+					"expression": "eval:n*P"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:P/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Prix d'un objet** $=$ prix total $\\div$ nombre d'objets.",
+					"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}}$$",
+					"Vérification : ${{n}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "22,35 € entre 3 : 7,45 €",
+			"variationIndex": 0,
+			"variables": {
+				"o": "0",
+				"n": "3",
+				"j": "149",
+				"P": "745",
+				"C": "2235"
+			},
+			"answers": ["7,45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : multiplié (67,05)",
+			"variationIndex": 0,
+			"variables": {
+				"o": "0",
+				"n": "3",
+				"j": "149",
+				"P": "745",
+				"C": "2235"
+			},
+			"answers": ["67,05"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7,4 (centimes oubliés)",
+			"variationIndex": 0,
+			"variables": {
+				"o": "0",
+				"n": "3",
+				"j": "149",
+				"P": "745",
+				"C": "2235"
+			},
+			"answers": ["7,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4,2 m en 6 : 0,7 m",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6",
+				"Q": "70",
+				"L": "4.2"
+			},
+			"answers": ["0,7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6",
+				"Q": "70",
+				"L": "4.2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,07",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6",
+				"Q": "70",
+				"L": "4.2"
+			},
+			"answers": ["0,07"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7,60 € pour 4 : 1,90 €",
+			"variationIndex": 2,
+			"variables": {
+				"o": "0",
+				"n": "4",
+				"j": "38",
+				"P": "190",
+				"C": "760"
+			},
+			"answers": ["1,90"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1,9 € accepté",
+			"variationIndex": 2,
+			"variables": {
+				"o": "0",
+				"n": "4",
+				"j": "38",
+				"P": "190",
+				"C": "760"
+			},
+			"answers": ["1,9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,15 (7 ÷ 4 = 1 reste 3, puis 60 ÷ 4)",
+			"variationIndex": 2,
+			"variables": {
+				"o": "0",
+				"n": "4",
+				"j": "38",
+				"P": "190",
+				"C": "760"
+			},
+			"answers": ["1,15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

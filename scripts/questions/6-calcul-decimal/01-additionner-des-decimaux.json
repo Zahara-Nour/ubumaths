@@ -1,0 +1,227 @@
+{
+	"title": "Additionner des nombres décimaux",
+	"description": "Somme de deux décimaux de longueurs différentes (12,7 + 3,85), regroupement en un entier (2,75 + 4,6 + 0,25), entier + décimal (7 + 0,35)",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Additionner",
+	"subdomain": "Somme",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{x}} + {{y}} = ?$$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "11..999"
+				},
+				{
+					"name": "B",
+					"expression": "101..999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "y",
+					"expression": "eval:B/100;d"
+				}
+			],
+			"conditions": ["mod(A,10)!=0", "mod(B,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10*A+B)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Additionner des décimaux.** On additionne les chiffres de même rang : unités avec unités, dixièmes avec dixièmes, centièmes avec centièmes. Pour ne pas se tromper, on écrit les deux nombres avec autant de chiffres après la virgule.",
+					"${{x}} = {{x}}0$ : c'est ${{eval:10*A}}$ centièmes ; ${{y}}$, c'est ${{B}}$ centièmes. En tout : ${{eval:10*A}} + {{B}} = {{eval:10*A+B}}$ centièmes.",
+					"$${{x}} + {{y}} = {{x}}0 + {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule astucieusement.\n\n$${{p}} + {{b}} + {{q}} = ?$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..20"
+				},
+				{
+					"name": "D",
+					"expression": "5..95"
+				},
+				{
+					"name": "w",
+					"expression": "0..9"
+				},
+				{
+					"name": "M",
+					"expression": "11..99"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u+D/100;d"
+				},
+				{
+					"name": "q",
+					"expression": "eval:w+(100-D)/100;d"
+				},
+				{
+					"name": "b",
+					"expression": "eval:M/10;d"
+				}
+			],
+			"conditions": ["mod(D,10)!=0", "mod(M,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u+w+1+M/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Regrouper.** Dans une somme, on peut changer l'ordre des termes : on cherche deux nombres dont la somme est un entier.",
+					"$\\textcolor{{{color:primary.0}}}{{{p}}} + \\textcolor{{{color:primary.0}}}{{{q}}} = {{eval:u+w+1}}$ : ${{D}}$ centièmes et ${{eval:100-D}}$ centièmes font $100$ centièmes, soit $1$ unité.",
+					"$${{p}} + {{b}} + {{q}} = {{eval:u+w+1}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{n}} + {{y}} = ?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..99"
+				},
+				{
+					"name": "Y",
+					"expression": "1..999"
+				},
+				{
+					"name": "y",
+					"expression": "eval:Y/100;d"
+				}
+			],
+			"conditions": ["mod(Y,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+Y/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Additionner des décimaux.** On additionne les chiffres de même rang : unités avec unités, dixièmes avec dixièmes, centièmes avec centièmes. Pour ne pas se tromper, on écrit les deux nombres avec autant de chiffres après la virgule.",
+					"${{n}}$ est un entier : ${{n}} = {{n}}.00$. On ajoute ses unités aux unités de ${{y}}$, les dixièmes et les centièmes ne changent pas.",
+					"$${{n}} + {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12,7 + 3,85 = 16,55",
+			"variationIndex": 0,
+			"variables": {
+				"A": "127",
+				"B": "385",
+				"x": "12.7",
+				"y": "3.85"
+			},
+			"answers": ["16,55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres alignés à droite (5,12)",
+			"variationIndex": 0,
+			"variables": {
+				"A": "127",
+				"B": "385",
+				"x": "12.7",
+				"y": "3.85"
+			},
+			"answers": ["5,12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : retenue des dixièmes oubliée (15,55)",
+			"variationIndex": 0,
+			"variables": {
+				"A": "127",
+				"B": "385",
+				"x": "12.7",
+				"y": "3.85"
+			},
+			"answers": ["15,55"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,75 + 4,6 + 0,25 = 7,6",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"D": "75",
+				"w": "0",
+				"M": "46",
+				"p": "2.75",
+				"q": "0.25",
+				"b": "4.6"
+			},
+			"answers": ["7,6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4,6 lu 4,06 (7,06)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"D": "75",
+				"w": "0",
+				"M": "46",
+				"p": "2.75",
+				"q": "0.25",
+				"b": "4.6"
+			},
+			"answers": ["7,06"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 + 0,35 = 7,35",
+			"variationIndex": 2,
+			"variables": {
+				"n": "7",
+				"Y": "35",
+				"y": "0.35"
+			},
+			"answers": ["7,35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 ajouté aux centièmes (0,42)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "7",
+				"Y": "35",
+				"y": "0.35"
+			},
+			"answers": ["0,42"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

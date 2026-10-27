@@ -1,0 +1,217 @@
+{
+	"title": "Diviser un décimal par un entier",
+	"description": "Quotient d'un décimal par un entier de 2 à 9 (division finie), d'un entier par 2, 4, 5, 8 (quotient décimal), arrondi au centième d'une division qui ne s'arrête pas (10 ÷ 3, 73 ÷ 6)",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Diviser",
+	"subdomain": "Quotient",
+	"level": 8,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{x}} \\div {{d}} = ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "Q",
+					"expression": "11..999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:d*Q/100;d"
+				}
+			],
+			"conditions": ["mod(Q,10)!=0", "mod(d*Q,100)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:Q/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviser un décimal par un entier.** On divise comme pour les entiers ; on place la virgule au quotient quand on abaisse le premier chiffre après la virgule. Si la division n'est pas finie, on ajoute des zéros après la virgule et on continue.",
+					"Vérification : ${{d}} \\times \\textcolor{{{color:primary.0}}}{{{solution}}} = {{x}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule. Le quotient est un nombre décimal.\n\n$${{n}} \\div {{d}} = ?$$",
+			"variables": [
+				{
+					"name": "sd",
+					"expression": "0..3"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:sd==0|2|{{if:sd==1|4|{{if:sd==2|5|8}}}}}}"
+				},
+				{
+					"name": "n",
+					"expression": "3..99"
+				}
+			],
+			"conditions": ["mod(n,d)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/d;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviser un décimal par un entier.** On divise comme pour les entiers ; on place la virgule au quotient quand on abaisse le premier chiffre après la virgule. Si la division n'est pas finie, on ajoute des zéros après la virgule et on continue.",
+					"${{n}} = {{d}} \\times {{eval:floor(n/d)}} + {{eval:mod(n,d)}}$ : le reste n'est pas nul, on continue après la virgule (${{n}}.000$).",
+					"$${{n}} \\div {{d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Donne la valeur arrondie au centième du quotient.\n\n$${{n}} \\div {{d}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "sd",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:sd==0|3|{{if:sd==1|6|9}}}}"
+				},
+				{
+					"name": "n",
+					"expression": "2..99"
+				},
+				{
+					"name": "h",
+					"expression": "eval:mod(floor(1000*n/d),10)"
+				}
+			],
+			"conditions": ["mod(1000*n,d)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(100*n/d)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviser un décimal par un entier.** On divise comme pour les entiers ; on place la virgule au quotient quand on abaisse le premier chiffre après la virgule. Si la division n'est pas finie, on ajoute des zéros après la virgule et on continue.",
+					"${{n}} \\div {{d}} = {{eval:floor(1000*n/d)/1000;d}}\\ldots$ La division ne s'arrête jamais : on calcule jusqu'aux millièmes.",
+					"Le chiffre des millièmes est $\\textcolor{{{color:primary.1}}}{{{h}}}$ : {{if:h>=5|on arrondit au-dessus|on garde le chiffre des centièmes}}.",
+					"$${{n}} \\div {{d}} \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "6,15 ÷ 3 = 2,05",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"Q": "205",
+				"x": "6.15"
+			},
+			"answers": ["2,05"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : zéro oublié (2,5)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"Q": "205",
+				"x": "6.15"
+			},
+			"answers": ["2,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 ÷ 4 = 2,25",
+			"variationIndex": 1,
+			"variables": {
+				"sd": "1",
+				"d": "4",
+				"n": "9"
+			},
+			"answers": ["2,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le reste pris pour les décimales (2,1)",
+			"variationIndex": 1,
+			"variables": {
+				"sd": "1",
+				"d": "4",
+				"n": "9"
+			},
+			"answers": ["2,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10 ÷ 3 ≈ 3,33",
+			"variationIndex": 2,
+			"variables": {
+				"sd": "0",
+				"d": "3",
+				"n": "10",
+				"h": "3"
+			},
+			"answers": ["3,33"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "73 ÷ 6 ≈ 12,17",
+			"variationIndex": 2,
+			"variables": {
+				"sd": "1",
+				"d": "6",
+				"n": "73",
+				"h": "6"
+			},
+			"answers": ["12,17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : troncature (12,16)",
+			"variationIndex": 2,
+			"variables": {
+				"sd": "1",
+				"d": "6",
+				"n": "73",
+				"h": "6"
+			},
+			"answers": ["12,16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le reste pris pour les décimales (12,1)",
+			"variationIndex": 2,
+			"variables": {
+				"sd": "1",
+				"d": "6",
+				"n": "73",
+				"h": "6"
+			},
+			"answers": ["12,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
