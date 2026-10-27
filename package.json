@@ -13,7 +13,7 @@
 	},
 	"scripts": {
 		"dev": "vite dev",
-		"build": "bash scripts/gros-process.sh 'Un pnpm build' env NODE_OPTIONS='--max-old-space-size=8192' vite build",
+		"build": "bash scripts/gros-process.sh 'Un pnpm build' bash scripts/vite-build.sh",
 		"analyze": "ANALYZE=1 pnpm build",
 		"preview": "vite preview",
 		"prepare": "husky",
