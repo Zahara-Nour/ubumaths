@@ -102,18 +102,8 @@ un commit (`Doc-inchangée: …` / `Doc-reportée: …`). `--no-verify` n'a plus
 worktrees. Toujours `pnpm dev --port <n> --strictPort` (sans `--` : il ferait ignorer le port).
 `pnpm kill:servers` est interdit depuis un worktree (il tue 5173 et Supabase).
 
-**Tester depuis le MacBook (Tailscale).** Pas d'adresse `http://100.x.x.x:<port>` : hors `localhost`,
-SvelteKit pose les cookies en `Secure`, le navigateur jette le cookie de session et la connexion
-« ne fait rien » (côté serveur : « login successful » puis « Profile missing »). Passer par un
-tunnel SSH lancé **depuis le MacBook**, puis ouvrir `http://localhost:<port>` :
-`ssh -L <port>:localhost:<port> -L 54321:localhost:54321 david@100.79.226.105` (54321 = Supabase
-local, pour les appels du navigateur). Le serveur n'a pas besoin de `--host`. Comptes locaux :
-`supabase/seed/dev_accounts.sql` (`teacher@local.test` / `local-teacher`…). Sous `pnpm dev`, les
-connexions depuis `localhost` ne passent pas par le limiteur de connexion (`skipsLoginRateLimit`,
-`docs/systeme/auth.md`) : sessions et scripts Playwright peuvent se connecter sans compter. Depuis
-une autre IP (téléphone sur le réseau local) ou dans un build (`pnpm preview`), le limiteur
-s'applique : 5 essais par IP en 15 min, table `rate_limits` locale. Un tunnel vers `pnpm dev`
-(`ssh -L`, ngrok…) arrive en `127.0.0.1` et contourne aussi le limiteur : jamais de tunnel public.
+**Tester depuis le MacBook ou l'iPhone (Tailscale)** : [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md)
+(tunnel SSH, `--host`, Tailscale Serve ; cookie `Secure`, Supabase local, limiteur de connexion).
 
 **Supabase local.** Une seule pile pour tout le dépôt (ports 54321-54329, `project_id` figé), d'où le
 verrou `supabase`. CLI = devDependency exacte, lancée par `pnpm db:*` ou `pnpm exec supabase`.
