@@ -54,6 +54,10 @@ tunnel() {
 ⚠️ `${port}` avec accolades : en zsh, `"$port:localhost"` lit `:l` comme un modificateur
 (minuscules) et donne `5175ocalhost` (« Bad local forwarding specification »).
 
+« bind [127.0.0.1]:54321: Address already in use » = un ancien tunnel tourne encore sur le
+MacBook. Sans gravité : il mène au même Supabase, le nouveau port de l'appli marche. Pour
+nettoyer : `exit` dans l'ancien terminal, ou `lsof -nP -iTCP:54321 -sTCP:LISTEN` puis `kill <pid>`.
+
 Le navigateur se croit sur `localhost` : cookie accepté,
 Supabase joint par le tunnel 54321. « channel N: open failed: connect failed » = aucun serveur
 sur ce port au Mac mini : relancer le serveur, ou donner le bon port.
