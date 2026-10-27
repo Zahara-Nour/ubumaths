@@ -9,12 +9,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, relevé fait._
+_Mis à jour le 2026-10-27, décisions Q1-Q7 prises._
 
-- **État** : relevé (§ 1), premier regard sur l'existant (§ 2) et classement des 146 points sans modèle (§ 3) écrits.
-- **Prochaine action** : réponses de David aux questions du § 5, puis vérification complète de l'existant (§ 2) ou phase 0 du premier lot, selon Q1.
-- **En attente de David** : § 5 (Q1 à Q7).
-- **Pièges en cours** : 172 brouillons déjà en base (Q1) ; QCM en réécriture (case « choix », `figure-et-choix`, pas en prod) ; droite à placer (`reponses-a-placer`) mergée, pas en prod ; un modèle porte au plus un point **par programme** (ADR 0020), les tags 1SPE + 1TECHNO + 1GEN sont donc permis.
+- **État** : relevé, classement et décisions (§ 5) faits.
+- **Prochaine action** : lot 0-suites — vérifier par tirages réels les brouillons des suites contre les bornes (§ 6).
+- **En attente de David** : rien.
+- **Pièges en cours** : QCM → case choix en brouillon (D6) ; droite à placer (`reponses-a-placer`) mergée, pas en prod ; un modèle porte au plus un point **par programme** (ADR 0020), les tags 1SPE + 1TECHNO + 1GEN sont permis ; D3 « niveau seconde » : vérifier dans le code ce que commande `grades` avant la migration.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -179,4 +179,27 @@ _(364 compté en D ; total 146.)_
 
 ## 5. Questions à David
 
-_Posées le 2026-10-27 ; réponses consignées ici._
+_Posées le 2026-10-27. Recommandations de Claude validées par David le 2026-10-27 (« je valide »)._
+
+- **D1 — Brouillons d'abord.** Les 172 brouillons passent avant tout lot neuf, un lot par thème : tirages réels
+  contre les bornes, corrections, page à cocher, publication. Premier thème : suites.
+- **D2 — Points « = ».** Un modèle « à savoir » pour les faits à connaître : 264, 391, 392, 290, 404, 310, 412,
+  313, 311, 415, 316, 329, 336, 350 (un lot de texte). Aucun modèle pour les doublons de savoir-faire : 211, 368,
+  371, 373, 220, 389, 417, 328, 421 — notés « couverts par » leur voisin (371 → 224, 373 → 225, 211 → 223,
+  368 → 377, 220 → 231, 389 → 272, 417 → 327, 328 → 331, 421 → 340).
+- **D3 — Tags.** 174e202b, dc4b8d08 → 1SPE-307 ; eae2ff6a → 1SPE-386 ; 318ea542 → 1SPE-283 ; 93f9ecdf sans tag ;
+  f1440b52 : 1SPE-274 → 1SPE-396 ; 8b599a53, fece187e, afd9b3ff : retirer `1_SPE` des niveaux ; les 6 tagués d'un
+  point de seconde : ajouter `2`, garder `1_SPE` (à vérifier d'abord : ce que commande `grades`). f8ccc8b6 : à lire.
+- **D4 — Points P** hors chantier (5a89b292 couvre déjà le résultat de 308 / 411).
+- **D5 — Outils C.** « Tracer une droite / une tangente » (433, 271) : un chantier commun avec la seconde
+  (2-316, 2-445). « Placer un point sur le cercle » (306) : à verser dans la phase 0 des aiguilles de
+  `reponses-a-placer` (§ 6.1, même geste : un angle sur un cercle).
+- **D6 — QCM** : case choix, en brouillon jusqu'au `deploy:prod` de `figure-et-choix` ; seuls 403, 296, 407 en
+  ont besoin, placés en fin d'ordre.
+- **D7 — Ordre** : brouillons par thème → migration des tags (D3) → dérivation → variations et courbes → suites
+  (modélisation, algorithmes) → probabilités et variables aléatoires → lot « à savoir » (D2) → restes → lots en
+  attente de la case choix ou d'un outil neuf.
+
+## 6. Lot 0-suites : vérification des brouillons
+
+_En cours._
