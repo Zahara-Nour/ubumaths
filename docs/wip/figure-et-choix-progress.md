@@ -17,13 +17,13 @@ _Mis à jour le 2026-10-27, après #1855._
   (`create-questions --dir scripts/questions/cp-figure --publier`), puis lance
   `! pnpm tsx scripts/migrer-qcm-en-cases.ts --ecrire` ; je vérifie (0 QCM restant) ; puis lot 5 (retrait de
   `multiple_choice` du code, de `src/lib/migration/`, puis de la contrainte SQL après un 2ᵉ `deploy:prod`).
-- **En attente de David** : essais des lots 2 (5179) et 3 (5180), worktrees FIGÉS ; avis sur les séries PDF
+- **En attente de David** : essai de tout sur 5175 (`main`) — base LOCALE migrée (10 / 10 QCM) et CP-058 + deux
+  modèles `cp-figure` créés en brouillon en local le 2026-10-27 ; avis sur les séries PDF
   (choix d'une case mélangée imprimés dans l'ordre mélangé, avant : ordre de l'auteur).
 - **Pièges en cours** : jusqu'à `--ecrire`, `create-questions` voit « CONTENU DIFFÉRENT » sur les QCM (sources
   converties, base non) ; `--ecrire` refait la garde et ne touche que les lignes lues, encore QCM (relançable) ;
   une seule session par worktree.
-- **Worktree / branche** : deux worktrees figés par les essais (5179, 5180), à retirer une fois les essais finis ;
-  celui du lot 4 retiré.
+- **Worktree / branche** : aucun (worktrees des lots 2, 3 et 4 retirés le 2026-10-27, essais déplacés sur `main`).
 
 ---
 
