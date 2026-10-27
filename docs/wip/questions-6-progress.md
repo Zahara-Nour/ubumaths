@@ -478,3 +478,4 @@ Verdicts lus (`verdicts`, 7 sur 10) : 5 OK (02, 03, 04, 05, 07), 2 à revoir (01
   1,9 ; 2,9 en compensant » (6-114, Somme astucieuse 4), 13 « Soustraire 0,9 ; 1,9 ; 2,9 en compensant » (6-198,
   Décimaux / Soustraire / Différence astucieuse 1, sous-domaine neuf).
 - 13 fichiers, 90 specs, 10 800 tirages verts ; simulation : 7 à mettre à jour, 3 à créer.
+- Instantané `questions-6/etat-prod-2026-10-27-relecture/` (7 modèles, md5 des variations = MCP, 7 tags, 0 donnée d'élève).
