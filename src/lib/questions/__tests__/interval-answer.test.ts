@@ -564,3 +564,53 @@ describe('constante e dans une borne (sonde du 2026-10-04)', () => {
 		expect(expectedIntervalsLatex(']0;\\frac{1}{e}[')).toMatch(/\\[d]?frac\{1\}\{e\}/);
 	});
 });
+
+// Décision de David, 2026-10-27 (lot 2 de la 2de, x² = 12) : une racine simplifiable
+// (√12 pour 2√3) est une écriture à reprendre, comme une fraction simplifiable.
+describe('racine simplifiable', () => {
+	const expected = '\\{-2\\sqrt{3};2\\sqrt{3}\\}';
+	const unreduced = '\\{-\\sqrt{12};\\sqrt{12}\\}';
+
+	it('{-√12 ; √12} vaut ½ (warn), avec le message', () => {
+		expect(judgeIntervalAnswer(unreduced, expected)).toEqual({
+			status: 'unoptimal_form',
+			feedback: INTERVAL_FEEDBACK.unsimplifiedRadicalSet
+		});
+		expect(INTERVAL_FEEDBACK.unsimplifiedRadicalSet).toBe('La racine peut être simplifiée.');
+	});
+
+	it('suit le réglage intervalForm : strict → mauvaise forme, off → juste', () => {
+		expect(judgeIntervalAnswer(unreduced, expected, 'strict').status).toBe('bad_form');
+		expect(judgeIntervalAnswer(unreduced, expected, 'off').status).toBe('correct');
+	});
+
+	it('coefficient devant la racine (3√12 pour 6√3) et √4 pour 2 : ½', () => {
+		expect(judgeIntervalAnswer('\\{3\\sqrt{12}\\}', '\\{6\\sqrt{3}\\}').status).toBe(
+			'unoptimal_form'
+		);
+		expect(judgeIntervalAnswer('\\{-\\sqrt{4};\\sqrt{4}\\}', '\\{-2;2\\}').status).toBe(
+			'unoptimal_form'
+		);
+	});
+
+	it('racines simplifiées ou sans facteur carré : justes', () => {
+		expect(judgeIntervalAnswer(expected, expected).status).toBe('correct');
+		expect(judgeIntervalAnswer('\\{-2\\sqrt3;2\\sqrt3\\}', expected).status).toBe('correct');
+		expect(
+			judgeIntervalAnswer('\\{-\\sqrt{11};\\sqrt{11}\\}', '\\{-\\sqrt{11};\\sqrt{11}\\}').status
+		).toBe('correct');
+	});
+
+	it('borne d’intervalle : ]-∞ ; √8] pour ]-∞ ; 2√2] vaut ½, avec le message', () => {
+		expect(judgeIntervalAnswer(']-\\infty;\\sqrt{8}]', ']-\\infty;2\\sqrt{2}]')).toEqual({
+			status: 'unoptimal_form',
+			feedback: INTERVAL_FEEDBACK.unsimplifiedRadical
+		});
+	});
+
+	it('une valeur fausse reste fausse (√12 pour 2√2)', () => {
+		expect(
+			judgeIntervalAnswer('\\{-\\sqrt{12};\\sqrt{12}\\}', '\\{-2\\sqrt2;2\\sqrt2\\}').status
+		).toBe('incorrect');
+	});
+});

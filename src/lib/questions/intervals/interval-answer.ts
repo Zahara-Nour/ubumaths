@@ -11,7 +11,7 @@
  * - `correct` : même ensemble, écrit comme il faut (ordre des intervalles indifférent) ;
  * - `unoptimal_form` (½) SEULEMENT pour une écriture à reprendre : intervalles
  *   contigus ou chevauchants non réunis, `[a ; a]` au lieu de `{a}`, borne non
- *   simplifiée. Réglage par modèle : contrainte `intervalForm` (`warn` par défaut,
+ *   simplifiée (fraction, ou racine : √12 pour 2√3). Réglage par modèle : contrainte `intervalForm` (`warn` par défaut,
  *   `strict` → mauvaise forme, `off` → juste) ;
  * - `incorrect` : tout le reste, avec le message de l'erreur reconnue ;
  * - `empty` : rien d'écrit (un « S = » seul compris).
@@ -43,6 +43,9 @@ import { variable } from '$lib/mathAST/factory';
 import { isInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
 import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
 import { checkReducedFractions } from '$lib/questions/constraint-validators';
+import { parseLatexSafe } from '$lib/mathAST';
+import { reduceRadicalsAST } from '$lib/mathAST/superflu/transforms';
+import { nodesEqual } from '$lib/mathAST/normal/hash';
 import { judgeComplexFiniteSet, readExpectedComplexSet } from './complex-finite-set';
 
 // Types
@@ -83,7 +86,9 @@ export const INTERVAL_FEEDBACK = {
 			: `Les points ${values.slice(0, -1).join(', ')} et ${values.at(-1)} ne font pas partie de l'ensemble.`,
 	contiguous: 'Réunis en un seul intervalle ceux qui se touchent ou se chevauchent.',
 	unsimplified: 'Simplifie les bornes (par exemple 2 plutôt que 4/2).',
-	unsimplifiedSet: 'La fraction peut être simplifiée.'
+	unsimplifiedSet: 'La fraction peut être simplifiée.',
+	unsimplifiedRadical: 'Simplifie les racines des bornes (par exemple 2√3 plutôt que √12).',
+	unsimplifiedRadicalSet: 'La racine peut être simplifiée.'
 };
 
 /** Mode par défaut de `intervalForm` : écriture à reprendre = ½ */
@@ -200,6 +205,19 @@ function finiteSetValues(piece: StudentDomainPiece): string[] {
 		.map((value) => value.trim());
 }
 
+/**
+ * Racine carrée simplifiable (√12 pour 2√3, √4 pour 2), règle `reducedRadicals` du
+ * superflu (décision de David, 2026-10-27, comme une fraction simplifiable)
+ */
+function hasReducibleRadical(values: readonly string[]): boolean {
+	return values.some((latex) => {
+		if (!latex.includes('sqrt') && !latex.includes('√')) return false;
+		const parsed = parseLatexSafe(latex);
+		if (!parsed.ast || parsed.errors.length > 0) return false;
+		return !nodesEqual(parsed.ast, reduceRadicalsAST(parsed.ast));
+	});
+}
+
 /** Écriture à reprendre d'un ensemble JUSTE (½ par défaut), ou undefined */
 function writingIssue(pieces: readonly StudentDomainPiece[], domain: Domain): string | undefined {
 	const singleton = pieces.find(
@@ -216,10 +234,12 @@ function writingIssue(pieces: readonly StudentDomainPiece[], domain: Domain): st
 
 	const bounds = pieces.flatMap((piece) => piece.bounds ?? []);
 	if (checkReducedFractions(bounds).length > 0) return INTERVAL_FEEDBACK.unsimplified;
+	if (hasReducibleRadical(bounds)) return INTERVAL_FEEDBACK.unsimplifiedRadical;
 
 	// Ensemble fini `{a;b}` : ses valeurs, comme des bornes (décision de David, 2026-10-05)
-	if (checkReducedFractions(pieces.flatMap(finiteSetValues)).length > 0)
-		return INTERVAL_FEEDBACK.unsimplifiedSet;
+	const values = pieces.flatMap(finiteSetValues);
+	if (checkReducedFractions(values).length > 0) return INTERVAL_FEEDBACK.unsimplifiedSet;
+	if (hasReducibleRadical(values)) return INTERVAL_FEEDBACK.unsimplifiedRadicalSet;
 
 	return undefined;
 }
