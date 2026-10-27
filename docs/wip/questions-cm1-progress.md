@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, phase 0 du lot 0 écrite._
+_Mis à jour le 2026-10-28, lot 0 validé._
 
-- **État** : relevé fait (§ 1-3) ; recommandations du § 4 validées (« go », § 4 bis) ; phase 0 du lot 0 écrite (§ 5), rien en base ni dans le code.
-- **Prochaine action** : validation du § 5 par David, puis worktree `../ubumaths-wt-questions-cm1`, `lot-corrections-cm1.py` (contenu de 2 modèles) et migration de niveaux / tags / nœuds.
-- **En attente de David** : § 5, question 5.4 (les 8 modèles sans aucun point).
-- **Pièges en cours** : niveaux relevés parmi les publiés de la catégorie AVANT l'écriture ; case « choix » en prod (v0.51.0) mais QCM pas encore migrés ; droite à placer mergée, pas en prod ; un modèle ne peut pas rester sans niveau (`grades` jamais vide en pratique).
+- **État** : relevé fait (§ 1-3) ; § 4 validé (§ 4 bis) ; **lot 0 validé tel quel, 5.4 → A** (§ 5.6) ; rien en base ni dans le code.
+- **Prochaine action** : worktree `git worktree add -b feat/questions-cm1-lot0 ../ubumaths-wt-questions-cm1 origin/main` ; `docs/wip/questions/lot-corrections-cm1.py` (contenu de `edc5d7d4`, `322f3479`, instantané md5, gabarit `lot-corrections-ce1.py`) ; migration niveaux / tags / nœuds / statut (gabarit `20261027000100_questions_ce1_rangement_tags.sql`) + test d'intégration rouge puis vert ; `security-auditor` ; PR, CI, merge, `db:migrate`, vérification MCP ; prévenir `questions-6` des 4 modèles reçus.
+- **En attente de David** : rien.
+- **Pièges en cours** : un modèle garde toujours au moins un niveau ; trous → CM2-065 = changement de nœud ; case « choix » en prod (v0.51.0), QCM pas encore migrés ; droite à placer mergée, pas en prod ; niveaux relevés parmi les publiés de la catégorie avant toute écriture.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -174,3 +174,8 @@ user_favorite_templates). Le nœud de chaque point d'accueil a été lu en base.
   ils apparaissent au CM2 ou en 6e au lieu du CM1. En miroir : un prof qui cherche ces modèles au
   CM1 ne les y trouve plus ; avec A, les 8 du § 5.4 disparaissent du catalogue (aucun élève ne s'en
   sert).
+
+### 5.6 Décisions (David, 2026-10-28)
+
+« je suis tes recos » : lot 0 validé tel quel (§ 5.1 à 5.3, 5.5) ; § 5.4 → **A**, les 8 modèles sans
+point repassent en brouillon, niveau CM1 gardé, jamais supprimés.
