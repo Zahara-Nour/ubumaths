@@ -342,7 +342,7 @@ MODELES = {
         NON_CANONIQUES, SPECS_NON_CANONIQUES),
     '03-suite-jusqu-a-1000': modele(
         'Le nombre qui suit, le nombre qui précède (jusqu\'à $1\\,000$)',
-        'Avec passage de la dizaine, de la centaine, et 999 → 1 000', 'Ecriture', 3, SUITE,
+        'Avec passage de la dizaine, de la centaine, et 999 → 1 000', 'Ecriture', 10, SUITE,
         SPECS_SUITE),
     '04-ranger-cinq-nombres': modele(
         'Ranger cinq nombres', 'Nombres proches jusqu\'à 1 000 : 234, 243, 239, 300, 229',
