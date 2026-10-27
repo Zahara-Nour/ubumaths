@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Un rectangle mesure ${{x}}~\\text{dm}$ sur ${{y}}~\\text{dm}$. En centimètres, il mesure ${{A}}~\\text{cm}$ sur ${{B}}~\\text{cm}$.\n\nSon aire en centimètres carrés :\n\n$${{A}} \\times {{B}} = ?~\\text{cm}^2$$\n\nOr $100~\\text{cm}^2 = 1~\\text{dm}^2$. Son aire en décimètres carrés :\n\n$${{x}} \\times {{y}} = ?~\\text{dm}^2$$",
+			"statement": "Un rectangle mesure ${{x}}~\\unit{dm}$ sur ${{y}}~\\unit{dm}$. En centimètres, il mesure ${{A}}~\\unit{cm}$ sur ${{B}}~\\unit{cm}$.\n\nSon aire en centimètres carrés :\n\n$${{A}} \\times {{B}} = ?~\\text{cm}^2$$\n\nOr $100~\\unit{cm^2} = 1~\\unit{dm^2}$. Son aire en décimètres carrés :\n\n$${{x}} \\times {{y}} = ?~\\text{dm}^2$$",
 			"variables": [
 				{
 					"name": "A",
@@ -42,12 +42,12 @@
 				"steps": [
 					"**Aire d'un rectangle.** Aire $=$ longueur $\\times$ largeur, les deux dans la même unité.",
 					"En centimètres : ${{A}} \\times {{B}} = \\textcolor{{{color:primary.0}}}{{{eval:A*B}}}$ cm².",
-					"$1~\\text{dm}^2 = 100~\\text{cm}^2$ : on divise par $100$. Donc ${{x}} \\times {{y}} = \\textcolor{{{color:primary.1}}}{{{eval:A*B/100;d}}}$ dm². Chaque facteur a $1$ chiffre après la virgule, le produit en a $2$."
+					"$1~\\unit{dm^2} = 100~\\unit{cm^2}$ : on divise par $100$. Donc ${{x}} \\times {{y}} = \\textcolor{{{color:primary.1}}}{{{eval:A*B/100;d}}}$ dm². Chaque facteur a $1$ chiffre après la virgule, le produit en a $2$."
 				]
 			}
 		},
 		{
-			"statement": "Un rectangle mesure $0.{{a}}~\\text{m}$ sur $0.{{b}}~\\text{m}$. En centimètres, il mesure ${{eval:10*a}}~\\text{cm}$ sur ${{eval:10*b}}~\\text{cm}$.\n\nSon aire en centimètres carrés :\n\n$${{eval:10*a}} \\times {{eval:10*b}} = ?~\\text{cm}^2$$\n\nOr $10~000~\\text{cm}^2 = 1~\\text{m}^2$. Son aire en mètres carrés :\n\n$$0.{{a}} \\times 0.{{b}} = ?~\\text{m}^2$$",
+			"statement": "Un rectangle mesure $0.{{a}}~\\unit{m}$ sur $0.{{b}}~\\unit{m}$. En centimètres, il mesure ${{eval:10*a}}~\\unit{cm}$ sur ${{eval:10*b}}~\\unit{cm}$.\n\nSon aire en centimètres carrés :\n\n$${{eval:10*a}} \\times {{eval:10*b}} = ?~\\text{cm}^2$$\n\nOr $10~000~\\unit{cm^2} = 1~\\unit{m^2}$. Son aire en mètres carrés :\n\n$$0.{{a}} \\times 0.{{b}} = ?~\\text{m}^2$$",
 			"variables": [
 				{
 					"name": "a",
@@ -71,7 +71,7 @@
 				"steps": [
 					"**Aire d'un rectangle.** Aire $=$ longueur $\\times$ largeur, les deux dans la même unité.",
 					"En centimètres : ${{eval:10*a}} \\times {{eval:10*b}} = \\textcolor{{{color:primary.0}}}{{{eval:100*a*b}}}$ cm².",
-					"$1~\\text{m}^2 = 10~000~\\text{cm}^2$ : on divise par $10~000$. Donc $0.{{a}} \\times 0.{{b}} = \\textcolor{{{color:primary.1}}}{{{eval:a*b/100;d}}}$ m² : le produit de deux nombres plus petits que $1$ est plus petit que chacun d'eux."
+					"$1~\\unit{m^2} = 10~000~\\unit{cm^2}$ : on divise par $10~000$. Donc $0.{{a}} \\times 0.{{b}} = \\textcolor{{{color:primary.1}}}{{{eval:a*b/100;d}}}$ m² : le produit de deux nombres plus petits que $1$ est plus petit que chacun d'eux."
 				]
 			}
 		}

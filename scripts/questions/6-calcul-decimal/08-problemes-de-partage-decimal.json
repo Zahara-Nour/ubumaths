@@ -15,7 +15,7 @@
 	},
 	"variations": [
 		{
-			"statement": "${{n}}$ amis partagent {{if:o==0|un gain de|une cagnotte de}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\text{€}$ en parts égales. Combien chacun reçoit-il ?\n\n$$?~\\text{€}$$",
+			"statement": "${{n}}$ amis partagent {{if:o==0|un gain de|une cagnotte de}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\unit{€}$ en parts égales. Combien chacun reçoit-il ?\n\n$$?~\\text{€}$$",
 			"variables": [
 				{
 					"name": "o",
@@ -53,7 +53,7 @@
 			}
 		},
 		{
-			"statement": "On coupe un ruban de ${{L}}~\\text{m}$ en ${{n}}$ morceaux de même longueur. Quelle est la longueur d'un morceau ?\n\n$$?~\\text{m}$$",
+			"statement": "On coupe un ruban de ${{L}}~\\unit{m}$ en ${{n}}$ morceaux de même longueur. Quelle est la longueur d'un morceau ?\n\n$$?~\\text{m}$$",
 			"variables": [
 				{
 					"name": "n",
@@ -83,7 +83,7 @@
 			}
 		},
 		{
-			"statement": "${{n}}$ {{if:o==0|cahiers identiques coûtent|stylos identiques coûtent}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\text{€}$. Combien coûte un {{if:o==0|cahier|stylo}} ?\n\n$$?~\\text{€}$$",
+			"statement": "${{n}}$ {{if:o==0|cahiers identiques coûtent|stylos identiques coûtent}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\unit{€}$. Combien coûte un {{if:o==0|cahier|stylo}} ?\n\n$$?~\\text{€}$$",
 			"variables": [
 				{
 					"name": "o",

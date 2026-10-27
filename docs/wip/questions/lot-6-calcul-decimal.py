@@ -12,12 +12,14 @@ Décisions et pièges :
   toujours avec deux décimales dans l'énoncé (`euros()`, un `eval` retirerait le zéro) ;
 - 6-122 : diviseur d'un chiffre seulement (sans calculatrice) ;
 - choix en case choix (bloc ```choix, ADR 0033) ;
-- variables `e` et `i` interdites dans les `eval`.
+- variables `e` et `i` interdites dans les `eval` ;
+- grandeurs en `\\unit{…}` (`en_unit`), sauf juste après une case (`?~\\text{€}` : case de nombre).
 
     python3 docs/wip/questions/lot-6-calcul-decimal.py scripts/questions/6-calcul-decimal
 """
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -645,6 +647,20 @@ MODELES.append(modele(
      spec('150 min = 2 h 30 min', 2, {'s': 2, 'd': 60, 'q': 2, 'r': 30, 'N': 150},
           ['2', '30'], 'correct')],
     delay=60))
+
+# Grandeurs en `\\unit{…}` (notation-unites.md), sauf juste après une case : `?~\\text{€}` garde une
+# case de nombre (l'unité est écrite, l'élève ne la tape pas)
+GRANDEUR_TEXTE = re.compile(r'(?<!\?)~\\text\{(€|cm|dm|m|kg)\}(\^2)?')
+
+
+def en_unit(texte):
+    return GRANDEUR_TEXTE.sub(lambda g: '~\\unit{' + g.group(1) + (g.group(2) or '') + '}', texte)
+
+
+for _, m in MODELES:
+    for v in m['variations']:
+        v['statement'] = en_unit(v['statement'])
+        v['correction']['steps'] = [en_unit(x) for x in v['correction']['steps']]
 
 os.makedirs(DOSSIER, exist_ok=True)
 for nom, m in MODELES:
