@@ -9,12 +9,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1867._
+_Mis à jour le 2026-10-27, lot 0-suites publié._
 
-- **État** : #1865 mergée (outil : export paginé, appariement par id, courbes dessinées ; instantané `scripts/questions/1spe-0-suites/`, 43 brouillons des suites). Corrigés C1, C2, C4 en base (`--mettre-a-jour` lancé par David, 0 différence). Page à cocher : https://claude.ai/artifact/BdFVZ257fi9nmbV7H7aoLy — David a tout validé par message (aucun verdict en base).
-- **Prochaine action** : David lance `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-0-suites --publier` (42 brouillons, simulation verte) ; relire `published` en base ; puis lot 0 du second degré, même chemin (export → tirages → corrections → page → publication).
-- **En attente de David** : la publication ci-dessus.
-- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; QCM → case choix en brouillon (D6) ; les 6 modèles tagués d'un point de seconde sont **faits par questions-2de**.
+- **État** : lot 0-suites CLOS — 42 brouillons des suites publiés (statut relu en base) ; 0495289a reste en brouillon (D11, `scripts/questions/1spe-0-suites-attente/`). Outil prêt pour les autres thèmes (#1865).
+- **Prochaine action** : lot 0 du **second degré** (D7) : relever ses brouillons (MCP), `export-question-templates.ts --dir scripts/questions/1spe-0-second-degre --ids …`, `question:specs --apercu` contre les bornes, constats → David, corrections, page à cocher, publication. Puis dérivation, exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3 (sauf les 6 faits par questions-2de).
+- **En attente de David** : rien.
+- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; aucun verdict en base sur la page des suites (validé par message) ; QCM → case choix en brouillon (D6).
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -202,7 +202,7 @@ _Posées le 2026-10-27. Recommandations de Claude validées par David le 2026-10
   (modélisation, algorithmes) → probabilités et variables aléatoires → lot « à savoir » (D2) → restes → lots en
   attente de la case choix ou d'un outil neuf.
 
-## 6. Lot 0-suites : vérification des brouillons
+## 6. Lot 0-suites : vérification des brouillons (CLOS : 42 publiés le 2026-10-27, #1865, #1867)
 
 _2026-10-27, versé par #1865. 43 brouillons tagués d'un point des suites (`pnpm question:specs --template <id> --apercu 4`,
 sorties dans le scratchpad de la session)._
