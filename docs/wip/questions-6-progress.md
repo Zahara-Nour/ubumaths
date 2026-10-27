@@ -318,3 +318,9 @@ David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud n
 | 36991abb-b704-4c0f-9165-c5de5e18f70b | Arrondir un quotient, arrondir π     | 6-112 | Décimaux : numération > arrondis et ordres de grandeur |
 | 030e3554-0a49-4a22-9931-bebd2a8cb227 | Encadrer un nombre décimal           | 6-113 | Décimaux : numération > encadrement                    |
 | 2e982062-0fc9-473f-8aa2-affaf55c567d | Intercaler un nombre décimal         | 6-202 | Décimaux : numération > encadrement                    |
+
+### 9.3 Rangement (2026-10-27)
+
+- Prod revérifiée (MCP) avant le SQL : 10 brouillons, `[6]`, sans nœud ni tag.
+- Migration `20261027150000_questions_6_nombres_rangement_tags` (gabarit `cp_c`, grade `6`, 6-104 sur la notion)
+  - test `questions-6-nombres-rangement-tags` : rouge sans la migration (ENOENT), 9/9 vert avec.
