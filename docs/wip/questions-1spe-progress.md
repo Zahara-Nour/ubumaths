@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après la publication du lot 0-dérivation._
+_Mis à jour le 2026-10-28, constats du lot 0-variations._
 
-- **État** : lots 0-suites (42), 0-second-degré (14) et 0-dérivation (15, § 8) publiés.
-- **Prochaine action** : lot « Variations et courbes » (points 280-288, 399-403), puis exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
-- **En attente de David** : rien.
+- **État** : lots 0-suites (42), 0-second-degré (14) et 0-dérivation (15) publiés ; lot 0-variations (8 brouillons) relu, constats au § 9.
+- **Prochaine action** : corriger selon la réponse de David (§ 9), PR de l'instantané, page à cocher, publication ; puis exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
+- **En attente de David** : recos C1-C4 du § 9.
 - **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts ; `question:specs` n'a pas d'option de variation : une copie par variation dans le scratchpad ; CI : job « CI Summary » fantôme, juger au statut du run.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `chore/questions-1spe-variations`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -314,3 +314,24 @@ KaTeX (MathML), page republiée (version 3).
 **Publication (2026-10-28)** : `create-questions --publier --mettre-a-jour` (4 mis à jour, 11 déjà en base) ; page
 relue par David, 15 verdicts « ok » sans commentaire ; `publier-lot --publier` : 15/15 publiés, statuts relus en
 base (MCP). Lot clos.
+
+## 9. Lot 0-variations : vérification des brouillons
+
+_2026-10-28. 8 brouillons tagués d'un point « Variations et courbes » (281, 283, 287, 401), instantané
+`scripts/questions/1spe-0-variations/`, `question:specs --apercu 3` puis un aperçu par variation (29), sorties dans
+le scratchpad de la session. Les 3 modèles déjà publiés (1acb6d47, bb554c62, 03b3d9b3) restent hors lot._
+
+**Mécanique** : 8 / 8 verts, 126 specs, 1 450 tirages réussis. Trois QCM d'ancien format (17f64f63, 782bf7f8,
+c7b5130d), publiés tels quels comme ceux des lots précédents.
+
+**Bornes** : rien au-delà du BO (polynômes de degré 2 et 3, (ax + b)eˣ, (ax + b)e⁻ˣ, c·e^{kx} ; produit, aucune
+composée hors e^{kx}).
+
+**Constats** :
+
+- **C1** : 0113c53d (point 287, « en lien avec la dérivation ») corrige par la formule du sommet α = −b/(2a) et donne
+  β = f(α) sans calcul : la dérivée n'apparaît pas.
+- **C2** : fraction écrite deux fois quand elle est déjà irréductible : « α = 1/2 = 1/2 » (0113c53d, variations 3
+  et 4), « x = −3/2 = −3/2 » (9a04eb9f, variation 3).
+- **C3** : 2b382069, variation 3 (f′(x) = ax² − c, sans terme en x) : racines écrites « (0 − 20)/4 ».
+- **C4** : a86fc757, variation 2 : u(x) = 7 − x, mais « f(6) = (−6 + 7)e⁶ » (ordre inversé).
