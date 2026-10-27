@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1865._
+_Mis à jour le 2026-10-27, après #1867._
 
 - **État** : #1865 mergée (outil : export paginé, appariement par id, courbes dessinées ; instantané `scripts/questions/1spe-0-suites/`, 43 brouillons des suites). Corrigés C1, C2, C4 en base (`--mettre-a-jour` lancé par David, 0 différence). Page à cocher : https://claude.ai/artifact/BdFVZ257fi9nmbV7H7aoLy — David a tout validé par message (aucun verdict en base).
-- **Prochaine action** : selon Q11, petite PR qui sort `0495289a.json` du dossier (vers `scripts/questions/1spe-0-suites-attente/`) ; puis `publier-lot.ts --dir scripts/questions/1spe-0-suites` en simulation (42 brouillons), David lance `--publier`, relire `published` en base. Ensuite lot 0 du thème suivant (second degré), même chemin : export → tirages → corrections → page → publication.
-- **En attente de David** : Q11 — ma reco : laisser 0495289a en brouillon (récurrence dépendant de n, hors borne 377 ; à passer en terminale plus tard).
+- **Prochaine action** : David lance `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-0-suites --publier` (42 brouillons, simulation verte) ; relire `published` en base ; puis lot 0 du second degré, même chemin (export → tirages → corrections → page → publication).
+- **En attente de David** : la publication ci-dessus.
 - **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; QCM → case choix en brouillon (D6) ; les 6 modèles tagués d'un point de seconde sont **faits par questions-2de**.
 - **Worktree / branche** : aucun.
 
@@ -240,5 +240,7 @@ déjà créés (Q10).
 - **D9 (C3)** : 0495289a garde son point ; la variation `u_{n+1} = 3u_n + 3n` est retirée.
 - **Q11 (C3, après lecture du fichier)** : les **deux** variations de 0495289a dépendent de n (`u_{n+1} = u_n + bn + c`
   et `u_{n+1} = b·u_n + cn`) : D9 viderait le modèle. À trancher : le garder tel quel, ou le laisser en brouillon.
+- **D11 (Q11, David, 2026-10-27, « ok »)** : 0495289a reste en brouillon (hors borne 377, à passer en terminale
+  plus tard) ; son fichier est sorti du lot vers `scripts/questions/1spe-0-suites-attente/` (#1867).
 - **D10 (outil)** : `page-a-cocher.ts` et `publier-lot.ts` apprennent à partir d'une liste d'id en base (PR
   d'outil, avant les corrections C1-C4).
