@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, décisions Q1-Q7 prises._
+_Mis à jour le 2026-10-27, PR #1865 ouverte._
 
-- **État** : relevé, classement et décisions (§ 5) faits.
-- **Prochaine action** : PR outil D10 (page à cocher et publication depuis une liste d'id), puis corrections C1-C4 (D8, D9), page à cocher des suites.
-- **En attente de David** : rien.
-- **Pièges en cours** : QCM → case choix en brouillon (D6) ; droite à placer (`reponses-a-placer`) mergée, pas en prod ; un modèle porte au plus un point **par programme** (ADR 0020), les tags 1SPE + 1TECHNO + 1GEN sont permis ; D3 « niveau seconde » : vérifier dans le code ce que commande `grades` avant la migration.
-- **Worktree / branche** : aucun.
+- **État** : PR #1865 (outil + instantané des 43 brouillons des suites, C1, C2, C4 corrigés) en CI et en revue ; worktree `../ubumaths-wt-questions-1spe`.
+- **Prochaine action** : merger #1865 ; David lance `create-questions --dir scripts/questions/1spe-0-suites --publier --mettre-a-jour` ; page à cocher des suites (artefact, capacité `db`).
+- **En attente de David** : Q11 (C3, § 6).
+- **Pièges en cours** : un instantané (`export-question-templates.ts`) porte l'id de chaque modèle ; QCM → case choix en brouillon (D6) ; les 6 modèles tagués d'un point de seconde sont **faits par questions-2de** (accord du 2026-10-27).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-depuis-base`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -189,7 +189,9 @@ _Posées le 2026-10-27. Recommandations de Claude validées par David le 2026-10
   368 → 377, 220 → 231, 389 → 272, 417 → 327, 328 → 331, 421 → 340).
 - **D3 — Tags.** 174e202b, dc4b8d08 → 1SPE-307 ; eae2ff6a → 1SPE-386 ; 318ea542 → 1SPE-283 ; 93f9ecdf sans tag ;
   f1440b52 : 1SPE-274 → 1SPE-396 ; 8b599a53, fece187e, afd9b3ff : retirer `1_SPE` des niveaux ; les 6 tagués d'un
-  point de seconde : ajouter `2`, garder `1_SPE` (à vérifier d'abord : ce que commande `grades`). f8ccc8b6 : à lire.
+  point de seconde : ajouter `2`, garder `1_SPE` — **fait par questions-2de** (accord entre sessions, 2026-10-27 :
+  `grades = ['2', '1_SPE']`, car le cahier de texte filtre `grades` par égalité exacte au niveau de la classe ;
+  contenu de 8b59ca4b et 8c31675a corrigé là-bas aussi). f8ccc8b6 : à lire.
 - **D4 — Points P** hors chantier (5a89b292 couvre déjà le résultat de 308 / 411).
 - **D5 — Outils C.** « Tracer une droite / une tangente » (433, 271) : un chantier commun avec la seconde
   (2-316, 2-445). « Placer un point sur le cercle » (306) : à verser dans la phase 0 des aiguilles de
@@ -236,5 +238,7 @@ déjà créés (Q10).
 - **D8 (C2)** : garder les deux formules, mais ramenées dans le corrigé à 1 + 2 + … + n et 1 + q + … + qⁿ (une
   ligne de calcul qui fait le lien).
 - **D9 (C3)** : 0495289a garde son point ; la variation `u_{n+1} = 3u_n + 3n` est retirée.
+- **Q11 (C3, après lecture du fichier)** : les **deux** variations de 0495289a dépendent de n (`u_{n+1} = u_n + bn + c`
+  et `u_{n+1} = b·u_n + cn`) : D9 viderait le modèle. À trancher : le garder tel quel, ou le laisser en brouillon.
 - **D10 (outil)** : `page-a-cocher.ts` et `publier-lot.ts` apprennent à partir d'une liste d'id en base (PR
   d'outil, avant les corrections C1-C4).
