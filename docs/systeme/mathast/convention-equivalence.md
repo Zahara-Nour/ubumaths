@@ -491,6 +491,14 @@ que 4/2). »). Elle était jugée juste sans réserve. Mesure (même corpus) : 1
 tous des réponses « fraction doublée » dans un ensemble fini, de juste à ½ (sentinelle, 3 cartes
 trigo du dépôt, 3 modèles de prod) ; 0 changement sur les specs et les réponses attendues.
 
+Une racine carrée simplifiable aussi (décision de David, 2026-10-27, lot 2 de la 2de, x² = 12) :
+`\{-\sqrt{12};\sqrt{12}\}` pour `\{-2\sqrt{3};2\sqrt{3}\}` vaut ½, message « La racine peut être
+simplifiée. » ; en borne d'intervalle (`]-\infty;\sqrt{8}]`), « Simplifie les racines des bornes (par
+exemple 2√3 plutôt que √12). ». Même règle que la contrainte `reducedRadicals` des cases ordinaires
+(`reduceRadicalsAST` : √12 → 2√3, √4 → 2, 3√12 → 6√3) ; même réglage `intervalForm`. Mesure : specs
+de toutes les cases intervalles du dépôt inchangées ; en prod, une seule attendue avec une racine
+(9e1d084e, `p ± √r`, r sans facteur carré).
+
 ### Constante e dans une borne
 
 Une borne est un **nombre**, jamais une expression en x : la lettre `e` y est **toujours** la
