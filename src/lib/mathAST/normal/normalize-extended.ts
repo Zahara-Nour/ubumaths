@@ -108,6 +108,16 @@ function multiplySign(
 	return a === b ? 'positive' : 'negative';
 }
 
+/**
+ * Signe d'un facteur inconnu (une lettre : k, −k, λ) face à ±∞ (k·∞, k/0±,
+ * ∞/k) : le résultat dépend de lui, on ne le devine pas. Devant 0± (k·0⁺,
+ * k/∞), la valeur reste 0, sans signe. Lu « positif », −k·(+∞)
+ * donnait +∞ et e^{−kx} en +∞ rendait +∞ (chantier limites-parametres).
+ */
+function unknownSign(): Error {
+	return new Error('Sign of a symbolic factor is unknown');
+}
+
 // =============================================================================
 // Precomputed Constants
 // =============================================================================
@@ -463,11 +473,7 @@ function mulExtended(
 	if (aIsInf && b.type === 'normal') {
 		const bSign = getSignOfNormalForm(b.form);
 		if (bSign === 0) return indeterminateResult('0·∞');
-		if (bSign === null) {
-			// Cannot determine sign - treat as symbolic infinity
-			// For now, assume positive if we can't determine
-			return infinityResult(a.sign);
-		}
+		if (bSign === null) throw unknownSign();
 		const sign = bSign > 0 ? a.sign : flipSign(a.sign);
 		return infinityResult(sign);
 	}
@@ -483,8 +489,8 @@ function mulExtended(
 	// 0± × finite (≠0)
 	if (a.type === 'signed-zero' && b.type === 'normal') {
 		const bSign = getSignOfNormalForm(b.form);
-		if (bSign === 0) return normalResult(ZERO_NORMAL_FORM);
-		if (bSign === null) return signedZeroResult(a.sign);
+		// 0 sans signe : la limite vaut 0, seul son côté dépend du paramètre
+		if (bSign === 0 || bSign === null) return normalResult(ZERO_NORMAL_FORM);
 		const sign = bSign > 0 ? a.sign : flipSign(a.sign);
 		return signedZeroResult(sign);
 	}
@@ -535,7 +541,8 @@ function divExtended(
 	if (num.type === 'normal' && !isZeroNormalForm(num.form) && den.type === 'signed-zero') {
 		const numSign = getSignOfNormalForm(num.form);
 		if (numSign === 0) return indeterminateResult('0/0');
-		const sign = numSign === null ? den.sign : numSign > 0 ? den.sign : flipSign(den.sign);
+		if (numSign === null) throw unknownSign();
+		const sign = numSign > 0 ? den.sign : flipSign(den.sign);
 		return infinityResult(sign);
 	}
 
@@ -547,7 +554,8 @@ function divExtended(
 	// finite / ∞ = 0±
 	if (num.type === 'normal' && denIsInf) {
 		const numSign = getSignOfNormalForm(num.form);
-		const sign = numSign === null || numSign >= 0 ? den.sign : flipSign(den.sign);
+		if (numSign === null) return normalResult(ZERO_NORMAL_FORM);
+		const sign = numSign >= 0 ? den.sign : flipSign(den.sign);
 		return signedZeroResult(sign);
 	}
 
@@ -560,7 +568,8 @@ function divExtended(
 	if (numIsInf && den.type === 'normal') {
 		const denSign = getSignOfNormalForm(den.form);
 		if (denSign === 0) return infinityResult(num.sign);
-		const sign = denSign === null ? num.sign : denSign > 0 ? num.sign : flipSign(num.sign);
+		if (denSign === null) throw unknownSign();
+		const sign = denSign > 0 ? num.sign : flipSign(num.sign);
 		return infinityResult(sign);
 	}
 
@@ -568,7 +577,8 @@ function divExtended(
 	if (num.type === 'signed-zero' && den.type === 'normal') {
 		const denSign = getSignOfNormalForm(den.form);
 		if (denSign === 0) return indeterminateResult('0/0');
-		const sign = denSign === null ? num.sign : denSign > 0 ? num.sign : flipSign(num.sign);
+		if (denSign === null) return normalResult(ZERO_NORMAL_FORM);
+		const sign = denSign > 0 ? num.sign : flipSign(num.sign);
 		return signedZeroResult(sign);
 	}
 

@@ -599,3 +599,27 @@ describe('V60, revue : π et u − L nul d’un côté', () => {
 		);
 	});
 });
+
+describe('paramètre de signe inconnu (chantier limites-parametres)', () => {
+	it('e^(-kx) en +∞ : je ne sais pas, et le paramètre est nommé (rendait +∞)', () => {
+		expect(line('.limite e^(-kx) en x=+∞').output).toBe(
+			'Je ne sais pas calculer cette limite : elle peut dépendre du signe de k.'
+		);
+	});
+
+	it('une lettre grecque est écrite en symbole', () => {
+		expect(line('.limite e^(-λt) en t=+∞').output).toBe(
+			'Je ne sais pas calculer cette limite : elle peut dépendre du signe de λ.'
+		);
+	});
+
+	it('le signe ne décide pas : la limite est calculée', () => {
+		expect(latex('.limite (kx+1)/(x+2) en x=+∞')).toBe(
+			'\\lim\\limits_{x\\to+\\infty}\\dfrac{kx+1}{x+2}=k'
+		);
+	});
+
+	it('sans paramètre, le refus reste le même', () => {
+		expect(line('.limite floor(x)/x en +∞').output).toBe('Je ne sais pas calculer cette limite.');
+	});
+});

@@ -1,16 +1,16 @@
 ---
 title: Limites à paramètre (k, a, λ…) — signe inconnu lu comme positif
 date: 2026-10-27
-status: phase 0 écrite, en attente de David
+status: choix A (David, 2026-10-27), PR 1 en cours
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, phase 0 écrite._
+_Mis à jour le 2026-10-27, choix A codé._
 
-- **État** : relevé fait sur `main` (sonde de 41 cas), cause trouvée ; rien codé.
-- **Prochaine action** : réponse de David à la question de comportement (A / B / C ci-dessous), puis tests rouges.
-- **En attente de David** : le choix A, B ou C.
+- **État** : choix A codé et testé (22 rouges sur `main`) ; suites larges et revue à faire.
+- **Prochaine action** : suites larges, `check:incremental`, revue Opus, PR.
+- **En attente de David** : rien. **C (discussion selon le signe) plus tard** ; B (`avec k > 0`) non demandé.
 - **Pièges** : une limite FAUSSE est pire qu'un refus ; `\sqrt{kx}` mal sondé (variable `t` par erreur dans la sonde) — à resonder ; garder justes les cas où le signe ne décide pas (`\frac{e^{kx}-1}{x}` en 0 → k).
 - **Worktree / branche** : `../ubumaths-wt-limites-parametres`, `fix/limites-parametres`.
 
@@ -54,3 +54,13 @@ Mécanisme existant réutilisable : hypothèses de l'énoncé (ADR 0012, `assump
 - **A — refus honnête** quand le signe d'un paramètre décide de la limite (« la limite dépend du signe de k ») ; les cas où il ne décide pas restent calculés. Corrige toutes les valeurs fausses.
 - **B — A + hypothèse lue** : `.limite e^{-kx} en +∞ avec k > 0` → 0, par l'`avec` de l'atelier et l'oracle de l'ADR 0012.
 - **C — B + discussion** : sans hypothèse, réponse par cas (k > 0 : …, k = 0 : …, k < 0 : …).
+
+**Décision (David, 2026-10-27)** : **A** pour l'instant ; **C plus tard**.
+
+## Journal
+
+- **2026-10-27** — Phase 0 écrite, choix A. PR 1 :
+  - `normalize-extended.ts` : un signe inconnu devant ±∞ (∞ × k, k/0±, ∞/k) lève au lieu d'être lu positif (`unknownSign`) ; devant 0± (k·0⁺, k/∞, 0⁺/k), la valeur reste 0, sans signe.
+  - `algebraic.ts`, `tryDominantTerm` : `extractLeadingCoeff` lisait une lettre-paramètre comme 1, et changeait un coefficient inconnu en 0 (produit) ou le sautait (somme) — avec la garde, `(kx+1)/(x+2)` passait de k à 1, puis 0. Désormais `null`, propagé ; coefficient littéral EN HAUT seulement (bas numérique ≠ 0) : degré inférieur → 0, même degré → rapport exact (`symbolicLeadingCoefficient` : `(kx+1)/(x+2)` → k, `(kx²+1)/(2x²)` → k/2). Coefficient littéral en bas → refus (`x/(kx+1)` → 1/k faux pour k = 0).
+  - Atelier (`limit.ts`) : le refus nomme le paramètre — « Je ne sais pas calculer cette limite : elle peut dépendre du signe de k. » (λ écrit λ, `lettersText`).
+  - Tests : `parametre-de-signe-inconnu.test.ts` + 4 dans `limite-commande.test.ts`, 22 rouges sur `main`.

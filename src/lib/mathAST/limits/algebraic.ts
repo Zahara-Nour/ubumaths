@@ -45,6 +45,7 @@ import {
 	toPolynomial
 } from '../factor';
 import { substitute } from '../eval/substitute';
+import { canonicalForm } from '../normal/canonical-form';
 import { computeNumericValue } from '../eval/numeric-value';
 
 // =============================================================================
@@ -316,7 +317,46 @@ export function tryDominantTerm(
 	const denLeading = getLeadingCoefficient(expr.denominator, varName);
 
 	if (numLeading === null || denLeading === null) {
-		return { success: false };
+		// Coefficient littéral (k) en haut seulement, coefficient numérique non
+		// nul en bas : k/x → 0, (kx + 1)/(x + 2) → k, vrais pour tout k. Sinon
+		// le signe ou la nullité de k décide (x²/(kx + 1) ; x/(kx + 1) → 1/k et
+		// 1/(kx + 1) → 0 sont faux pour k = 0)
+		if (denLeading === null || denLeading === 0 || numDegree > denDegree) {
+			return { success: false };
+		}
+		if (numDegree < denDegree) {
+			const description = `Degré numérateur (${numDegree}) < degré dénominateur (${denDegree})`;
+			const zero = number('0');
+			recorder.recordStep(
+				'infinity-analysis',
+				"Analyse du comportement à l'infini",
+				expr,
+				zero,
+				'summarized',
+				undefined,
+				description
+			);
+			return { success: true, simplified: zero, technique: 'dominant-term', description };
+		}
+		const coefficient = symbolicLeadingCoefficient(expr.numerator, varName, numDegree);
+		if (coefficient === null) return { success: false };
+		let exact: MathNode;
+		try {
+			exact = canonicalForm(divide(coefficient, numericNode(denLeading), 'fraction'));
+		} catch {
+			return { success: false };
+		}
+		const description = 'Même degré, rapport des coefficients dominants';
+		recorder.recordStep(
+			'infinity-analysis',
+			"Analyse du comportement à l'infini",
+			expr,
+			exact,
+			'summarized',
+			undefined,
+			description
+		);
+		return { success: true, simplified: exact, technique: 'dominant-term', description };
 	}
 
 	let limitValue: MathNode;
@@ -436,7 +476,9 @@ function extractLeadingCoeff(expr: MathNode, varName: string, targetDegree: numb
 			if (expr.name === varName) {
 				return targetDegree === 1 ? 1 : 0;
 			}
-			return targetDegree === 0 ? 1 : 0;
+			// Un paramètre (k, a) n'a pas de valeur : lu « 1 », (kx + 1)/(x + 2)
+			// en +∞ rendait 1 au lieu de k (chantier limites-parametres)
+			return null;
 
 		case 'addition': {
 			const leftDeg = getPolynomialDegree(expr.left, varName);
@@ -446,11 +488,13 @@ function extractLeadingCoeff(expr: MathNode, varName: string, targetDegree: numb
 			let coeff = 0;
 			if (leftDeg === targetDegree) {
 				const lc = extractLeadingCoeff(expr.left, varName, targetDegree);
-				if (lc !== null) coeff += lc;
+				if (lc === null) return null;
+				coeff += lc;
 			}
 			if (rightDeg === targetDegree) {
 				const rc = extractLeadingCoeff(expr.right, varName, targetDegree);
-				if (rc !== null) coeff += rc;
+				if (rc === null) return null;
+				coeff += rc;
 			}
 			return coeff;
 		}
@@ -463,11 +507,13 @@ function extractLeadingCoeff(expr: MathNode, varName: string, targetDegree: numb
 			let coeff = 0;
 			if (leftDeg === targetDegree) {
 				const lc = extractLeadingCoeff(expr.left, varName, targetDegree);
-				if (lc !== null) coeff += lc;
+				if (lc === null) return null;
+				coeff += lc;
 			}
 			if (rightDeg === targetDegree) {
 				const rc = extractLeadingCoeff(expr.right, varName, targetDegree);
-				if (rc !== null) coeff -= rc;
+				if (rc === null) return null;
+				coeff -= rc;
 			}
 			return coeff;
 		}
@@ -480,7 +526,9 @@ function extractLeadingCoeff(expr: MathNode, varName: string, targetDegree: numb
 			if (leftDeg + rightDeg === targetDegree) {
 				const lc = extractLeadingCoeff(expr.left, varName, leftDeg);
 				const rc = extractLeadingCoeff(expr.right, varName, rightDeg);
-				if (lc !== null && rc !== null) return lc * rc;
+				// coefficient inconnu (paramètre) : pas 0
+				if (lc === null || rc === null) return null;
+				return lc * rc;
 			}
 			return 0;
 		}
@@ -504,6 +552,55 @@ function extractLeadingCoeff(expr: MathNode, varName: string, targetDegree: numb
 		case 'delimiter':
 			return extractLeadingCoeff(expr.content, varName, targetDegree);
 
+		default:
+			return null;
+	}
+}
+
+/**
+ * Coefficient de x^d d'un polynôme à coefficients littéraux (k, a) : un
+ * nœud (`k`, `2a`), ou null hors d'un polynôme. Comme `extractLeadingCoeff`,
+ * qui ne lit que des coefficients numériques.
+ */
+function symbolicLeadingCoefficient(
+	expr: MathNode,
+	varName: string,
+	targetDegree: number
+): MathNode | null {
+	const degree = getPolynomialDegree(expr, varName);
+	if (degree === null) return null;
+	if (degree < targetDegree) return number('0');
+	switch (expr.type) {
+		case 'number':
+			return expr;
+		case 'variable':
+			return expr.name === varName ? number('1') : expr;
+		case 'addition':
+		case 'subtraction': {
+			const left = symbolicLeadingCoefficient(expr.left, varName, targetDegree);
+			const right = symbolicLeadingCoefficient(expr.right, varName, targetDegree);
+			if (left === null || right === null) return null;
+			return expr.type === 'addition' ? add(left, right) : subtract(left, right);
+		}
+		case 'multiplication': {
+			const leftDegree = getPolynomialDegree(expr.left, varName);
+			const rightDegree = getPolynomialDegree(expr.right, varName);
+			if (leftDegree === null || rightDegree === null) return null;
+			const left = symbolicLeadingCoefficient(expr.left, varName, leftDegree);
+			const right = symbolicLeadingCoefficient(expr.right, varName, rightDegree);
+			if (left === null || right === null) return null;
+			return multiply(left, right);
+		}
+		case 'superscript':
+			return isVariable(expr.base) && expr.base.name === varName ? number('1') : null;
+		case 'opposite': {
+			const inner = symbolicLeadingCoefficient(expr.operand, varName, targetDegree);
+			return inner === null ? null : opposite(inner);
+		}
+		case 'positive':
+			return symbolicLeadingCoefficient(expr.operand, varName, targetDegree);
+		case 'delimiter':
+			return symbolicLeadingCoefficient(expr.content, varName, targetDegree);
 		default:
 			return null;
 	}
