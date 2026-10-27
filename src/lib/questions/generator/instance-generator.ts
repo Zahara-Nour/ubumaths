@@ -658,9 +658,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			// Cases des blocs ```collection et ```monnaie à construire, des droites à placer :
 			// réponse = la valeur du bloc
 			const buildAnswers = new Map<number, { kind: BuildKind; answer: string }>();
-			for (const [key, { kind, source }] of Object.entries(blankResult.buildBlanks ?? {})) {
+			for (const [key, { kind, source, point }] of Object.entries(blankResult.buildBlanks ?? {})) {
 				const index = Number(key);
-				const read = buildAnswerOf(kind, source);
+				const read = buildAnswerOf(kind, source, point);
 				const errors = 'errors' in read ? read.errors : [];
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
@@ -676,22 +676,25 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				}
 				buildAnswers.set(index, { kind, answer: read.answer });
 			}
-			// Chaque case à construire doit être un bloc que l'écran de l'élève lit vraiment :
+			// Chaque case à construire doit être un bloc que l'écran de l'élève lit vraiment
+			// (droite à placer : ses cases, une par point) :
 			// une fence de fin en retrait, un bloc montré dans un bloc de code ``` ne le sont
 			// pas (repérage ligne à ligne ≠ parseur), et l'élève n'aurait rien où répondre
 			if (buildAnswers.size > 0) {
 				const shown = new Set(
-					parseMarkdown(blankResult.statement).children.flatMap((child) =>
-						((child.type === 'collection' || child.type === 'monnaie') &&
+					parseMarkdown(blankResult.statement).children.flatMap((child) => {
+						if (child.type === 'number-line') {
+							const first = child.caseIndex;
+							if (child.placer === undefined || first === undefined) return [];
+							return child.placer.map((_, k) => first + k);
+						}
+						return (child.type === 'collection' || child.type === 'monnaie') &&
 							child.spec !== null &&
 							child.errors.length === 0 &&
-							child.caseIndex !== undefined) ||
-						(child.type === 'number-line' &&
-							child.placer !== undefined &&
-							child.caseIndex !== undefined)
+							child.caseIndex !== undefined
 							? [child.caseIndex]
-							: []
-					)
+							: [];
+					})
 				);
 				for (const [index, { kind }] of buildAnswers) {
 					if (!shown.has(index)) {

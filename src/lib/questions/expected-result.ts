@@ -30,7 +30,7 @@ import { replaceChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
 import { isWorkFigureBlank } from './graded-part';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
+import { findLinesToPlace, parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 import {
 	validateAnswerDetailed,
 	type DetailedVerdict,
@@ -145,6 +145,11 @@ export type ExpectedLine =
 			source: string;
 			answer: string | null;
 			status: ExpectedStatus;
+			/**
+			 * Droite à plusieurs points (une case par point) : la réponse et le statut de
+			 * chaque point ; `answer` et `status` disent alors la droite entière
+			 */
+			answers?: { answer: string; status: ExpectedStatus }[];
 	  };
 
 export interface ExpectedResult {
@@ -241,12 +246,18 @@ export function withoutFigureCases(statement: string): string {
 	return statement.replace(FIGURE_CASE_BLOCK, '');
 }
 
-/** Bloc à construire d'un énoncé, repéré par sa case (`case: N`) : genre, texte sans `case:`, lignes */
+/**
+ * Bloc à construire d'un énoncé, repéré par sa case (`case: N`) : genre, texte sans
+ * `case:`, lignes ; droite à placer : une case par point, `first` = la case posée
+ */
 interface BuildCaseBlock {
 	kind: BuildKind;
 	source: string;
 	startIndex: number;
 	endIndex: number;
+	first: number;
+	/** Nombre de cases du bloc (points d'une droite à placer, sinon 1) */
+	cases: number;
 }
 
 const CASE_LINE = /^case\s*:\s*(\d+)\s*$/i;
@@ -263,12 +274,19 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		if (block.nested || !block.closed) continue;
 		const caseLine = block.body.map((line) => CASE_LINE.exec(line.trim())).find(Boolean);
 		if (!caseLine) continue;
-		blocks.set(Number(caseLine[1]), {
+		const first = Number(caseLine[1]);
+		const source = block.body.filter((line) => !CASE_LINE.test(line.trim())).join('\n');
+		const cases =
+			block.kind === 'line' ? (parseNumberLineContent(source).node?.placer?.length ?? 1) : 1;
+		const found: BuildCaseBlock = {
 			kind: block.kind,
-			source: block.body.filter((line) => !CASE_LINE.test(line.trim())).join('\n'),
+			source,
 			startIndex: block.startIndex,
-			endIndex: block.startIndex + block.body.length + 1
-		});
+			endIndex: block.startIndex + block.body.length + 1,
+			first,
+			cases
+		};
+		for (let k = 0; k < cases; k++) blocks.set(first + k, found);
 	}
 	return blocks;
 }
@@ -368,8 +386,11 @@ interface BlankView {
 	remarks: string[];
 	/** Case « figure » : texte du bloc et réponse brute (la figure la dessine, rien n'est rendu) */
 	figure?: { source: string; answer: string };
-	/** Case à construire : son bloc et la valeur posée brute (le plan la redessine, rien n'est rendu) */
-	build?: { kind: BuildKind; source: string; answer: string };
+	/**
+	 * Case à construire : son bloc et la valeur posée brute (le plan la redessine, rien
+	 * n'est rendu) ; droite à placer : `first`, `cases` pour regrouper ses points
+	 */
+	build?: { kind: BuildKind; source: string; answer: string; first: number; cases: number };
 }
 
 function blankViews(
@@ -413,7 +434,13 @@ function blankViews(
 				}),
 				...(blank.construire &&
 					builds.has(index) && {
-						build: { kind: blank.construire, source: builds.get(index)!.source, answer: value }
+						build: {
+							kind: blank.construire,
+							source: builds.get(index)!.source,
+							answer: value,
+							first: builds.get(index)!.first,
+							cases: builds.get(index)!.cases
+						}
 					})
 			}
 		];
@@ -575,6 +602,36 @@ function buildLines(
 	return [line];
 }
 
+/**
+ * Droite à placer à plusieurs points : une seule droite, la réponse de chaque point ;
+ * juste quand tous les points le sont, « rien placé » quand aucun ne l'est
+ */
+function placeLines(
+	first: BlankView,
+	build: NonNullable<BlankView['build']>,
+	points: BlankView[],
+	withAnswer: boolean
+): ExpectedLine[] {
+	const statuses = points.map((p) => toExpectedStatus(p.status ?? 'empty'));
+	const answers = points.map((p, k) => ({
+		answer: p.build?.answer.trim() ?? '',
+		status: statuses[k]
+	}));
+	const answered = withAnswer && answers.some((a) => a.answer !== '');
+	const allAccepted = statuses.every((s) => s === 'correct' || s === 'unoptimal');
+	const line: ExpectedLine = {
+		kind: 'build',
+		index: first.index,
+		buildKind: build.kind,
+		source: build.source,
+		answer: answered ? answers.map((a) => a.answer).join(' ; ') : null,
+		status: answered ? (allAccepted ? 'correct' : 'incorrect') : 'solution',
+		...(answered && { answers })
+	};
+	if (withAnswer && !answered) return [line, { kind: 'empty', text: EMPTY_PLACE_TEXT }];
+	return [line];
+}
+
 function expectedOnlyLine(view: BlankView, withAnswer: boolean): ExpectedLine {
 	return {
 		kind: 'expected-only',
@@ -720,9 +777,16 @@ function buildAnswers(
 	);
 	// Case à construire : son plan, comme une figure, mais APRÈS l'énoncé rempli : la
 	// phrase qui le demande (« Paie le ballon à 35 €. ») vient d'abord
-	const builds = outside.flatMap((v) =>
-		v.build ? buildLines(v, v.build, verdict !== undefined) : []
-	);
+	const builds = outside.flatMap((v) => {
+		if (!v.build) return [];
+		if (v.build.cases === 1) return buildLines(v, v.build, verdict !== undefined);
+		// Droite à plusieurs points : UNE droite, à la place de sa première case
+		if (v.index !== v.build.first) return [];
+		const points = outside.filter(
+			(other) => other.build?.first === v.build!.first && other.build.kind === 'line'
+		);
+		return placeLines(v, v.build, points, verdict !== undefined);
+	});
 	const apart = [
 		...builds,
 		...outside.flatMap((v) =>

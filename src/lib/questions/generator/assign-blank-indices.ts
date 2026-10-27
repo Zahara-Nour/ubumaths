@@ -13,8 +13,9 @@
  * - `<<expr:NAME>>` in math → reserves indices for ? in answerFormats[NAME]
  * - Bloc ```operation à remplir → UNE case, numéro posé dans le bloc (`case: N`) ;
  *   division euclidienne : DEUX cases, N (quotient) et N + 1 (reste), seul N est posé
- * - Bloc ```collection ou ```monnaie à construire (`construire: N`), ou droite à placer
- *   (```line, `placer: N`) → UNE case, `case: N` posé dans le bloc
+ * - Bloc ```collection ou ```monnaie à construire (`construire: N`) → UNE case, `case: N`
+ *   posé dans le bloc ; droite à placer (```line, `placer: A=3 ; B=7`) → une case par point,
+ *   N, N + 1…, seul N est posé
  * - Bloc ```figure-a-completer → UNE case (la figure de l'élève), `case: N` posé dans le bloc ;
  *   son contenu est mis à l'abri : ni `?` ni `[_]` n'y crée de case
  * - Bloc ```figure-de-travail → de même UNE case, jamais notée (l'élève trace pour vérifier)
@@ -28,7 +29,7 @@ import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
 import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
+import { findLinesToPlace, parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 import { buildKindName, type BuildKind } from '../types';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
 import {
@@ -76,10 +77,11 @@ export interface AssignBlankIndicesResult {
 	/** Blocs ```operation à remplir mal placés (liste, citation) : messages pour l'auteur */
 	operationErrors?: string[];
 	/**
-	 * Case → genre et texte du bloc à construire (```collection, ```monnaie) qui la porte
-	 * (sans `case:`), pour que le générateur lise la valeur attendue. Absent sans tel bloc.
+	 * Case → genre et texte du bloc à construire (```collection, ```monnaie) ou de la
+	 * droite à placer qui la porte (sans `case:`), pour que le générateur lise la valeur
+	 * attendue ; droite : `point`, le rang du point de la case. Absent sans tel bloc.
 	 */
-	buildBlanks?: Record<number, { kind: BuildKind; source: string }>;
+	buildBlanks?: Record<number, BuildBlank>;
 	/** Blocs à construire mal placés (liste, citation) : messages pour l'auteur */
 	buildErrors?: string[];
 	/**
@@ -401,6 +403,20 @@ interface BuildBlock {
 	kind: BuildKind;
 	source: string;
 	closed: boolean;
+	/** Nombre de cases : une par point d'une droite à placer, sinon une */
+	cases: number;
+}
+
+/** Case d'un bloc à construire ou d'une droite à placer (`point` : rang du point) */
+export interface BuildBlank {
+	kind: BuildKind;
+	source: string;
+	point?: number;
+}
+
+/** Nombre de points d'une droite à placer ; une droite illisible compte une case (refusée au générateur) */
+function targetCount(source: string): number {
+	return Math.max(1, parseNumberLineContent(source).node?.placer?.length ?? 1);
 }
 
 /**
@@ -427,7 +443,11 @@ function markBuildBlocks(statement: string): {
 		.flatMap((line, i) => (markAfter.has(i) ? [line, BUILD_CASE_MARK] : [line]));
 	return {
 		statement: out.join('\n'),
-		blocks: marked.map((b) => ({ kind: b.kind, source: b.body.join('\n'), closed: b.closed })),
+		blocks: marked.map((b) => {
+			const source = b.body.join('\n');
+			const cases = b.kind === 'line' ? targetCount(source) : 1;
+			return { kind: b.kind, source, closed: b.closed, cases };
+		}),
 		errors
 	};
 }
@@ -474,7 +494,7 @@ export function assignBlankIndices(
 	const builds = markBuildBlocks(operations.statement);
 	const statement = builds.statement;
 	let operationCount = 0;
-	const buildBlanks: Record<number, { kind: BuildKind; source: string }> = {};
+	const buildBlanks: Record<number, BuildBlank> = {};
 	let buildCount = 0;
 
 	// Split statement into math zones and text zones, preserving order.
@@ -581,14 +601,20 @@ export function assignBlankIndices(
 				} else if (text.startsWith(BUILD_CASE_MARK, i)) {
 					newText += `case: ${counter}`;
 					const build = builds.blocks[buildCount++];
-					buildBlanks[counter] = { kind: build.kind, source: build.source };
 					if (!build.closed) {
 						builds.errors.push(
 							`Case ${counter + 1} (${buildKindName(build.kind)}) : bloc non fermé (\`\`\` manquant après la dernière ligne)`
 						);
 					}
-					counter++;
-					blankTypes.push('math');
+					for (let point = 0; point < build.cases; point++) {
+						buildBlanks[counter] = {
+							kind: build.kind,
+							source: build.source,
+							...(build.kind === 'line' && { point })
+						};
+						counter++;
+						blankTypes.push('math');
+					}
 					i += BUILD_CASE_MARK.length;
 				} else if (text[i] === '[' && text[i + 1] === '_' && text[i + 2] === ']') {
 					newText += `{{blank:${counter}}}`;

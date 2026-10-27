@@ -454,7 +454,7 @@
 		| { field: MathfieldElement; promptId: string }
 		| { input: HTMLInputElement }
 		| { operation: HTMLElement; index: number }
-		| { build: HTMLElement; index: number };
+		| { build: HTMLElement; index: number; count: number };
 
 	/**
 	 * Cases dans l'ordre du DOM, qui est l'ordre visuel : un tableau `:table-h` est
@@ -469,7 +469,8 @@
 		return [...elements].flatMap((element): Slot[] => {
 			if (element instanceof HTMLInputElement) return element.disabled ? [] : [{ input: element }];
 			if (element.dataset.construireCase !== undefined) {
-				return [{ build: element, index: Number(element.dataset.construireCase) }];
+				const index = Number(element.dataset.construireCase);
+				return [{ build: element, index, count: Number(element.dataset.construireCases ?? 1) }];
 			}
 			if (element.dataset.operationCase !== undefined) {
 				return [{ operation: element, index: Number(element.dataset.operationCase) }];
@@ -482,7 +483,12 @@
 	}
 
 	function slotValue(slot: Slot): string {
-		if ('operation' in slot || 'build' in slot) return values[slot.index] ?? '';
+		if ('build' in slot) {
+			// Droite à plusieurs points : vide tant qu'un point manque
+			const cases = Array.from({ length: slot.count }, (_, k) => values[slot.index + k] ?? '');
+			return cases.some((value) => value === '') ? '' : cases.join(' ');
+		}
+		if ('operation' in slot) return values[slot.index] ?? '';
 		return 'input' in slot ? slot.input.value : (slot.field.getPromptValue(slot.promptId) ?? '');
 	}
 
@@ -859,22 +865,23 @@
 					/>
 				{/if}
 			{:else if node.type === 'number-line' && node.caseIndex !== undefined && node.placer !== undefined}
-				<!-- Droite à placer : l'élève pose son point, la graduation est la réponse -->
-				{@const caseIndex = node.caseIndex}
-				{@const state = inputStates[caseIndex]}
+				<!-- Droite à placer : l'élève pose ses points, une case par point (N, N + 1…),
+				     la graduation de chacun est sa réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.placer.length}
 				{#if showCorrectAnswers}
-					<!-- Bonne réponse : la droite avec le point juste -->
+					<!-- Bonne réponse : la droite avec les points justes -->
 					<BuildAnswer kind="line" source={node.source ?? ''} answer={null} status="solution" />
 				{:else}
-					<div data-construire-case={caseIndex}>
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
 						<NumberLine
 							{node}
-							answer={{
-								value: state?.value ?? '',
-								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+							answers={node.placer.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
 								disabled: flashMode || effectiveDisabled,
-								onChange: (value) => handleInputChange(caseIndex, value)
-							}}
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
 						/>
 					</div>
 				{/if}

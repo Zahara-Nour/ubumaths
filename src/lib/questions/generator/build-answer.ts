@@ -3,8 +3,8 @@
  * =====================================================================
  *
  * Lit le texte du bloc (variables résolues, sans clôtures) : la valeur de
- * `construire:` (```collection, ```monnaie) ou la graduation de `placer:`
- * (```line, écrite par `placerAnswer`, comme la réponse de l'élève).
+ * `construire:` (```collection, ```monnaie) ou la graduation d'un point de
+ * `placer:` (```line, écrite par `placerAnswer`, comme la réponse de l'élève).
  *
  * @module questions/generator/build-answer
  */
@@ -22,16 +22,21 @@ const CASE_IS_AUTOMATIC = 'case: est posée automatiquement, retirer cette ligne
 
 // Functions
 
-/** La réponse du bloc, ou les messages qui l'empêchent (pour le prof) */
+/**
+ * La réponse du bloc (droite à placer : celle du point de rang `point`), ou les
+ * messages qui l'empêchent (pour le prof)
+ */
 export function buildAnswerOf(
 	kind: BuildKind,
-	source: string
+	source: string,
+	point = 0
 ): { answer: string } | { errors: string[] } {
 	if (kind === 'line') {
 		const { node, errors } = parseNumberLineContent(source);
 		if (node === null) return { errors: errors.map((e) => e.message) };
 		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
-		const k = node.placer ? indexOfValue(node.config, numVal(node.placer)) : null;
+		const target = node.placer?.[point];
+		const k = target ? indexOfValue(node.config, numVal(target.value)) : null;
 		if (k === null) return { errors: ['placer: absent ou hors graduation'] };
 		return { answer: placerAnswer(node.config, k) };
 	}

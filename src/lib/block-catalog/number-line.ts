@@ -172,6 +172,19 @@ export const numberLineEntry: BlockCatalogEntry = {
 				'Dans une question, l’élève pose son point ; la réponse est juste s’il est sur 7. La consigne (« Place le nombre 7. ») va dans l’énoncé, au-dessus.'
 		},
 		{
+			title: 'Placer plusieurs nombres (question)',
+			source: fence(
+				'line',
+				'start: 0',
+				'end: 20',
+				'step: 1',
+				'labels: 0, 10, 20',
+				'placer: A=3 ; B=7 ; C=12'
+			),
+			explanation:
+				'Un point par lettre majuscule, séparés par « ; » (6 au plus) ; chaque point compte pour une case. L’élève choisit l’étiquette A, B ou C sous la droite, puis touche la droite.'
+		},
+		{
 			title: 'Un nombre irrationnel',
 			source: fence(
 				'line',

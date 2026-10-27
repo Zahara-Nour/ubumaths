@@ -122,7 +122,7 @@ describe('Droite graduée — avertissement téléphone', () => {
 			props: {
 				node: node(...LINE_0_20, 'placer: 7'),
 				showErrors: true,
-				answer: { value: '9', isCorrect: false, disabled: true, onChange: () => {} }
+				answers: [{ value: '9', isCorrect: false, disabled: true, onChange: () => {} }]
 			}
 		});
 		expect(screen.container.querySelectorAll('.nl-warnings li')).toHaveLength(1);
@@ -136,7 +136,7 @@ describe('Droite à placer — téléphone', () => {
 			target: mainElement(320),
 			props: {
 				node: node(...LINE_0_20, 'placer: 7'),
-				answer: { value: '', isCorrect: null, disabled: false, onChange: (v) => changes.push(v) }
+				answers: [{ value: '', isCorrect: null, disabled: false, onChange: (v) => changes.push(v) }]
 			}
 		});
 		const zone = screen.container.querySelector<HTMLElement>('[role="slider"]')!;

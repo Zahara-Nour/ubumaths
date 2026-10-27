@@ -128,6 +128,15 @@ export interface NumberLineConfig {
 // ============================================================================
 
 /**
+ * Point d'une droite à placer : `A=3` dans `placer: A=3 ; B=7`. Nom vide pour
+ * un point seul écrit sans nom (`placer: 7`).
+ */
+export interface NumberLineTarget {
+	name: string;
+	value: NumberLineValue;
+}
+
+/**
  * Number Line AST Node
  *
  * Represents a complete number line visualization with:
@@ -166,11 +175,14 @@ export interface NumberLineNode extends BaseNode {
 	/** Segments (intervals) on the line */
 	segments: NumberLineSegment[];
 	/**
-	 * Droite à placer (`placer:`) : la graduation où l'élève doit poser SON point
-	 * (chantier `docs/wip/reponses-a-placer-progress.md`). Jamais dessinée.
+	 * Droite à placer (`placer:`) : les points que l'élève doit poser, dans l'ordre
+	 * écrit (chantier `docs/wip/reponses-a-placer-progress.md`). Jamais dessinés.
 	 */
-	placer?: NumberLineValue;
-	/** Case d'une droite à placer dans une question (`case: N`, posée par le générateur) */
+	placer?: NumberLineTarget[];
+	/**
+	 * Première case d'une droite à placer dans une question (`case: N`, posée par
+	 * le générateur) : le point k a la case N + k
+	 */
 	caseIndex?: number;
 	/**
 	 * Texte source du bloc ```line, sans les délimiteurs.
