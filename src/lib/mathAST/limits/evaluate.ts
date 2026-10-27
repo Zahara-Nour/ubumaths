@@ -1662,8 +1662,20 @@ function exponentialParts(
 	if (!isSuperscript(node) || containsVariable(node.base, varName)) return null;
 	if (!containsVariable(node.superscript, varName)) return null;
 	if (isEulerBase(node.base)) return { base: null, baseValue: Math.E, exponent: node.superscript };
+	// Base comparée à 1 en EXACT quand c'est possible ; sinon, un flottant
+	// proche de 1 est refusé : √3² − 2 vaut 1 mais s'évalue 0,9999999999999996,
+	// et (√3² − 2)^x en +∞ était rendu 0 (revue de #1852)
+	const exact = exactConstantRational(node.base);
+	if (exact !== null) {
+		if (exact.n <= 0n || exact.n === exact.d) return null;
+		return {
+			base: node.base,
+			baseValue: Number(exact.n) / Number(exact.d),
+			exponent: node.superscript
+		};
+	}
 	const baseValue = computeNumericValue(node.base);
-	if (baseValue === null || !(baseValue > 0) || baseValue === 1) return null;
+	if (baseValue === null || !(baseValue > 0) || Math.abs(baseValue - 1) < 1e-9) return null;
 	return { base: node.base, baseValue, exponent: node.superscript };
 }
 

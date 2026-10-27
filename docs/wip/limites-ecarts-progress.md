@@ -12,7 +12,7 @@ _Mis à jour le 2026-10-27, PR 2 ouverte._
 - **Prochaine action** : revue `code-reviewer` (Opus), CI verte → merge ; ensuite PR 3 : V70 + V71.
 - **Reste** : PR 3 V70 + V71 (substitution directe, suivi du signe). Revue `code-reviewer` en Opus sur chaque PR.
 - **En attente de David** : rien.
-- **Pièges** : une limite FAUSSE est pire qu'un refus ; rejouer la sonde de la phase 0 sur `main` avant de coder ; le repli numérique de `classifyLimitValue` classe 10²⁰ « fini » et eˣ « inconnu » (ne pas s'y fier) ; refus restants : `x^3e^{-x^2+x}`, `x^2e^{-\sqrt{x}}` en +∞, `x^{\frac{4}{2}}` en −∞.
+- **Pièges** : une limite FAUSSE est pire qu'un refus ; rejouer la sonde de la phase 0 sur `main` avant de coder ; le repli numérique de `classifyLimitValue` classe 10²⁰ « fini » et eˣ « inconnu » (ne pas s'y fier) ; paramètre k pris positif (`e^{kx}` en +∞ → +∞, ancien) ; refus restants : `x^3e^{-x^2+x}`, `x^2e^{-\sqrt{x}}` en +∞, `x^{\frac{4}{2}}` en −∞.
 - **Worktree / branche** : `../ubumaths-wt-limites-ecarts` · `fix/limites-ecarts-v68`.
 
 ---
@@ -56,3 +56,4 @@ _Mis à jour le 2026-10-27, PR 2 ouverte._
   - **∞/∞ non vu** — `x^2-6x+9` exact = +∞ − ∞, puis repli numérique « fini » (10²⁰) → `determinateExactLimit` (indeterminate.ts) demande le terme dominant (`limitByGeneralizedDegree`, cas infini seulement).
   - Tests : `exponentielles-croissances-comparees.test.ts`, 15 rouges sur `main` ; `extrema-globaux` : l'exemple « limite inconnue » `x^4e^{-x}` est désormais calculé → remplacé par `x^2e^{-\sqrt{x}}` (assertion explicite qu'elle reste inconnue) + test `x^4e^{-x}` (min global 0, max local 4), rouge sur `main`.
   - Suites : `limits` 1226, mathAST + atelier + grapheur + math 32548, questions + ubumark 9350, verts.
+  - Revue Opus (#1852) : une valeur FAUSSE — base égale à 1 écrite avec des racines (`(\sqrt{3}^2-2)^{x}` en +∞ rendait 0, flottant 0,9999999999999996). Corrigé : `exponentialParts` compare la base à 1 en exact (`exactConstantRational`), sinon refuse |a − 1| < 10⁻⁹ ; 4 tests. Récursion bornée par `nestedProducts`, aucun ∞/∞ déclaré à tort (~160 cas sondés). **Hors diff, défaut ancien** : `e^{kx}` en +∞ rend +∞ (k pris positif), sur `main` aussi — à traiter avec le suivi du signe (PR 3 ou chantier à part).

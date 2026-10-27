@@ -43,6 +43,18 @@ describe('V68 : a^u, u forme indéterminée en ±∞', () => {
 		expect(valueOf(latex, at)).toBe(expected);
 	});
 
+	// Base égale à 1 écrite avec des racines : flottant 0,9999999999999996
+	// (revue de #1852) — la vraie limite vaut 1, jamais 0 ni +∞
+	it.each([
+		['(\\sqrt{3}^2-2)^{x}', '+∞'],
+		['(\\sqrt{5}^2-4)^{x^2}', '+∞'],
+		['(\\sqrt{3}^2-2)^{x^2-x}', '+∞'],
+		['x^2(\\sqrt{3}^2-2)^{-x}', '+∞']
+	] as const)('%s en %s : base 1, ni 0 ni +∞', (latex, at) => {
+		const value = valueOf(latex, at);
+		expect(value === null || value === '1').toBe(true);
+	});
+
 	it('e^{x sin x} en +∞ : pas de limite inventée', () => {
 		expect(valueOf('e^{x\\sin x}', '+∞')).toBeNull();
 	});
