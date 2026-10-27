@@ -1,0 +1,223 @@
+{
+	"title": "Le nombre qui suit, le nombre qui précède (jusqu'à $1\\,000$)",
+	"description": "Avec passage de la dizaine, de la centaine, et 999 → 1 000",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 3,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le nombre qui suit ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "100..998"
+				}
+			],
+			"conditions": ["mod(n,10) <= 8"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre qui suit, c'est celui qu'on dit juste après en comptant : on avance de $1$.",
+					"$${{n}} \\rightarrow {{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le nombre qui suit ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*a+10*b+9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre qui suit, c'est celui qu'on dit juste après en comptant : on avance de $1$.",
+					"{{if:b==9|${{n}}$ se termine par $99$ : on passe à la centaine suivante, les dizaines et les unités reviennent à $0$.|${{n}}$ se termine par $9$ : on passe à la dizaine suivante, le chiffre des unités revient à $0$.}}",
+					"$${{n}} \\rightarrow {{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le nombre qui précède ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..10"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*a+10*b"
+				}
+			],
+			"conditions": ["100*a + 10*b <= 1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre qui précède, c'est celui qu'on dit juste avant en comptant : on recule de $1$.",
+					"{{if:b==0|${{n}}$ se termine par $00$ : on revient à la centaine précédente, les dizaines et les unités deviennent $9$.|${{n}}$ se termine par $0$ : on revient à la dizaine précédente, le chiffre des unités devient $9$.}}",
+					"$${{solution}} \\rightarrow {{n}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "suit 456 : 457",
+			"variationIndex": 0,
+			"variables": {
+				"n": "456"
+			},
+			"answers": ["457"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "suit 349 : 350",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"n": "349"
+			},
+			"answers": ["350"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3410",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"n": "349"
+			},
+			"answers": ["3410"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "suit 299 : 300",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "9",
+				"n": "299"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : suit 299 : 2100",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "9",
+				"n": "299"
+			},
+			"answers": ["2100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : suit 999 : 1000",
+			"variationIndex": 1,
+			"variables": {
+				"a": "9",
+				"b": "9",
+				"n": "999"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "précède 300 : 299",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "0",
+				"n": "300"
+			},
+			"answers": ["299"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : précède 300 : 309",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "0",
+				"n": "300"
+			},
+			"answers": ["309"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "précède 450 : 449",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"n": "450"
+			},
+			"answers": ["449"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : précède 1000 : 999",
+			"variationIndex": 2,
+			"variables": {
+				"a": "10",
+				"b": "0",
+				"n": "1000"
+			},
+			"answers": ["999"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

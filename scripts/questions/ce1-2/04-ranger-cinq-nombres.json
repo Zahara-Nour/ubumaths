@@ -1,0 +1,278 @@
+{
+	"title": "Ranger cinq nombres",
+	"description": "Nombres proches jusqu'à 1 000 : 234, 243, 239, 300, 229",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 6,
+	"delay": 40,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Range ces nombres du plus petit au plus grand.\n\n${{x1}} \\quad ; \\quad {{x2}} \\quad ; \\quad {{x3}} \\quad ; \\quad {{x4}} \\quad ; \\quad {{x5}}$\n\n$$?<?<?<?<?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..7"
+				},
+				{
+					"name": "u",
+					"expression": "{{eval:t+1}}..8"
+				},
+				{
+					"name": "s1",
+					"expression": "eval:100*c+10*(t-1)+9"
+				},
+				{
+					"name": "s2",
+					"expression": "eval:100*c+10*t+u"
+				},
+				{
+					"name": "s3",
+					"expression": "eval:100*c+10*t+9"
+				},
+				{
+					"name": "s4",
+					"expression": "eval:100*c+10*u+t"
+				},
+				{
+					"name": "s5",
+					"expression": "eval:100*(c+1)"
+				},
+				{
+					"name": "o",
+					"expression": "1..4"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:{{if:o==1|s3|{{if:o==2|s2|{{if:o==3|s4|s5}}}}}}"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:{{if:o==1|s1|{{if:o==2|s5|{{if:o==3|s2|s3}}}}}}"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:{{if:o==1|s5|{{if:o==2|s4|{{if:o==3|s1|s2}}}}}}"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:{{if:o==1|s2|{{if:o==2|s1|{{if:o==3|s5|s4}}}}}}"
+				},
+				{
+					"name": "x5",
+					"expression": "eval:{{if:o==1|s4|{{if:o==2|s3|{{if:o==3|s3|s1}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s1}}"
+				},
+				{
+					"expectedAnswer": "{{s2}}"
+				},
+				{
+					"expectedAnswer": "{{s3}}"
+				},
+				{
+					"expectedAnswer": "{{s4}}"
+				},
+				{
+					"expectedAnswer": "{{s5}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare d'abord les centaines : ${{s5}}$ a ${{eval:c+1}}$ centaines, les autres en ont ${{c}}$. Pour les nombres de la même centaine, on compare les dizaines, puis les unités.",
+					"$${{s1}} < {{s2}} < {{s3}} < {{s4}} < {{s5}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces nombres du plus grand au plus petit.\n\n${{x1}} \\quad ; \\quad {{x2}} \\quad ; \\quad {{x3}} \\quad ; \\quad {{x4}} \\quad ; \\quad {{x5}}$\n\n$$?>?>?>?>?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..7"
+				},
+				{
+					"name": "u",
+					"expression": "{{eval:t+1}}..8"
+				},
+				{
+					"name": "s1",
+					"expression": "eval:100*c+10*(t-1)+9"
+				},
+				{
+					"name": "s2",
+					"expression": "eval:100*c+10*t+u"
+				},
+				{
+					"name": "s3",
+					"expression": "eval:100*c+10*t+9"
+				},
+				{
+					"name": "s4",
+					"expression": "eval:100*c+10*u+t"
+				},
+				{
+					"name": "s5",
+					"expression": "eval:100*(c+1)"
+				},
+				{
+					"name": "o",
+					"expression": "1..4"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:{{if:o==1|s3|{{if:o==2|s2|{{if:o==3|s4|s5}}}}}}"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:{{if:o==1|s1|{{if:o==2|s5|{{if:o==3|s2|s3}}}}}}"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:{{if:o==1|s5|{{if:o==2|s4|{{if:o==3|s1|s2}}}}}}"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:{{if:o==1|s2|{{if:o==2|s1|{{if:o==3|s5|s4}}}}}}"
+				},
+				{
+					"name": "x5",
+					"expression": "eval:{{if:o==1|s4|{{if:o==2|s3|{{if:o==3|s3|s1}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s5}}"
+				},
+				{
+					"expectedAnswer": "{{s4}}"
+				},
+				{
+					"expectedAnswer": "{{s3}}"
+				},
+				{
+					"expectedAnswer": "{{s2}}"
+				},
+				{
+					"expectedAnswer": "{{s1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare d'abord les centaines : ${{s5}}$ a ${{eval:c+1}}$ centaines, les autres en ont ${{c}}$. Pour les nombres de la même centaine, on compare les dizaines, puis les unités.",
+					"$${{s5}} > {{s4}} > {{s3}} > {{s2}} > {{s1}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "croissant : 229 < 234 < 239 < 243 < 300",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"t": "3",
+				"u": "4",
+				"s1": "229",
+				"s2": "234",
+				"s3": "239",
+				"s4": "243",
+				"s5": "300",
+				"o": "1"
+			},
+			"answers": ["229", "234", "239", "243", "300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 243 avant 239 (unités lues d'abord)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"t": "3",
+				"u": "4",
+				"s1": "229",
+				"s2": "234",
+				"s3": "239",
+				"s4": "243",
+				"s5": "300",
+				"o": "1"
+			},
+			"answers": ["229", "234", "243", "239", "300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre décroissant",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"t": "3",
+				"u": "4",
+				"s1": "229",
+				"s2": "234",
+				"s3": "239",
+				"s4": "243",
+				"s5": "300",
+				"o": "1"
+			},
+			"answers": ["300", "243", "239", "234", "229"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissant : 300 > 243 > 239 > 234 > 229",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"t": "3",
+				"u": "4",
+				"s1": "229",
+				"s2": "234",
+				"s3": "239",
+				"s4": "243",
+				"s5": "300",
+				"o": "1"
+			},
+			"answers": ["300", "243", "239", "234", "229"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 909 < 912 < 919 < 921 < 1000",
+			"variationIndex": 0,
+			"variables": {
+				"c": "9",
+				"t": "1",
+				"u": "2",
+				"s1": "909",
+				"s2": "912",
+				"s3": "919",
+				"s4": "921",
+				"s5": "1000",
+				"o": "4"
+			},
+			"answers": ["909", "912", "919", "921", "1000"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

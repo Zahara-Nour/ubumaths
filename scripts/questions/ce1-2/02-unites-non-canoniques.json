@@ -1,0 +1,199 @@
+{
+	"title": "Écrire un nombre donné en unités non canoniques",
+	"description": "63 d et 5 u ; 5 u, 5 c et 13 d ; 2 c, 27 d et 14 u",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 14,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "${{d}}$ dizaines et ${{u}}$ unités, c'est le nombre $?$.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "11..99"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{d}}$ dizaines, c'est ${{eval:10*d}}$.",
+					"$${{eval:10*d}}+{{u}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "${{u}}$ {{if:u==1|unité|unités}}, ${{c}}$ {{if:c==1|centaine|centaines}} et ${{d}}$ dizaines, c'est le nombre $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "d",
+					"expression": "10..19"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["100*c + 10*d + u <= 999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*c+10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On range dans l'ordre : ${{c}}$ {{if:c==1|centaine|centaines}}, c'est ${{eval:100*c}}$ ; ${{d}}$ dizaines, c'est ${{eval:10*d}}$ ; ${{u}}$ {{if:u==1|unité|unités}}, c'est ${{u}}$.",
+					"$${{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "${{c}}$ {{if:c==1|centaine|centaines}}, ${{d}}$ dizaines et ${{u}}$ unités, c'est le nombre $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..6"
+				},
+				{
+					"name": "d",
+					"expression": "10..29"
+				},
+				{
+					"name": "u",
+					"expression": "10..19"
+				}
+			],
+			"conditions": ["100*c + 10*d + u <= 999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*c+10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{c}}$ {{if:c==1|centaine|centaines}}, c'est ${{eval:100*c}}$ ; ${{d}}$ dizaines, c'est ${{eval:10*d}}$ ; ${{u}}$ unités, c'est ${{u}}$.",
+					"$${{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "63 d et 5 u = 635",
+			"variationIndex": 0,
+			"variables": {
+				"d": "63",
+				"u": "5"
+			},
+			"answers": ["635"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 63 + 5 (68)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "63",
+				"u": "5"
+			},
+			"answers": ["68"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 u, 5 c et 13 d = 635",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"d": "13",
+				"u": "5"
+			},
+			"answers": ["635"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres recopiés dans l'ordre (5513)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"d": "13",
+				"u": "5"
+			},
+			"answers": ["5513"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dizaines sans retenue (535)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"d": "13",
+				"u": "5"
+			},
+			"answers": ["535"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 c, 27 d et 14 u = 484",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "27",
+				"u": "14"
+			},
+			"answers": ["484"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres recopiés (22714)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "27",
+				"u": "14"
+			},
+			"answers": ["22714"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : retenue des unités oubliée (474)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "27",
+				"u": "14"
+			},
+			"answers": ["474"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

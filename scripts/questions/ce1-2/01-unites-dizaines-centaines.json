@@ -1,0 +1,226 @@
+{
+	"title": "Unités, dizaines et centaines",
+	"description": "1 c = 10 d = 100 u ; nombre de dizaines dans 347",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 13,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "${{c}}$ centaines, c'est $?$ dizaines.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1$ centaine, c'est $10$ dizaines.",
+					"${{c}}$ centaines, c'est ${{c}}$ fois $10$ dizaines : ${{solution}}$ dizaines."
+				]
+			}
+		},
+		{
+			"statement": "${{eval:10*c}}$ dizaines, c'est $?$ centaines.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$10$ dizaines, c'est $1$ centaine.",
+					"Dans ${{eval:10*c}}$ dizaines, il y a ${{c}}$ paquets de $10$ dizaines : ${{solution}}$ centaines."
+				]
+			}
+		},
+		{
+			"statement": "${{c}}$ centaines, c'est $?$ unités.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1$ centaine, c'est $100$ unités.",
+					"${{c}}$ centaines, c'est ${{c}}$ fois $100$ unités : ${{solution}}$ unités."
+				]
+			}
+		},
+		{
+			"statement": "Combien y a-t-il de dizaines en tout dans ${{n}}$ ?\n\nIl y a $?$ dizaines.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*a+10*b+u"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{a}}$ {{if:a==1|centaine|centaines}}, ${{b}}$ {{if:b<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}.",
+					"${{a}}$ {{if:a==1|centaine|centaines}}, c'est ${{eval:10*a}}$ dizaines ; avec les ${{b}}$ autres : ${{eval:10*a}}+{{b}}={{solution}}$ dizaines."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 c = 40 d",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 c = 400 d",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4"
+			},
+			"answers": ["400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 c = 4 d",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "30 d = 3 c",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30 d = 300 c",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 c = 700 u",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7"
+			},
+			"answers": ["700"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 c = 70 u",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "347 : 34 dizaines",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"u": "7",
+				"n": "347"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffre des dizaines (4)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"u": "7",
+				"n": "347"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 905 : 90 dizaines",
+			"variationIndex": 3,
+			"variables": {
+				"a": "9",
+				"b": "0",
+				"u": "5",
+				"n": "905"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

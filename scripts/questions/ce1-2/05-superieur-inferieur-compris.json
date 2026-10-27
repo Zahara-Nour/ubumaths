@@ -1,0 +1,310 @@
+{
+	"title": "Supérieur à, inférieur à, compris entre",
+	"description": "Écrire un nombre qui respecte la phrase (toute réponse juste acceptée)",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 7,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris un nombre supérieur à ${{n}}$.\n\nUn nombre supérieur à ${{n}}$ : $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "100..900"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{n}}",
+							"max": "1000000",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un nombre supérieur à ${{n}}$ est plus grand que ${{n}}$ : il vient après dans la suite des nombres.",
+					"Par exemple ${{eval:n+1}}$ ou ${{eval:n+10}}$ : $${{eval:n+1}} > {{n}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris un nombre inférieur à ${{n}}$.\n\nUn nombre inférieur à ${{n}}$ : $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "100..900"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "-1",
+							"max": "{{n}}",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un nombre inférieur à ${{n}}$ est plus petit que ${{n}}$ : il vient avant dans la suite des nombres.",
+					"Par exemple ${{eval:n-1}}$ ou ${{eval:n-10}}$ : $${{eval:n-1}} < {{n}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris un nombre compris entre ${{a}}$ et ${{eval:a+10}}$.\n\nUn nombre compris entre ${{a}}$ et ${{eval:a+10}}$ : $?$.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "10..98"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*m"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+5}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{a}}",
+							"max": "{{eval:a+10}}",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un nombre compris entre ${{a}}$ et ${{eval:a+10}}$ est plus grand que ${{a}}$ et plus petit que ${{eval:a+10}}$.",
+					"Ce sont les nombres de ${{eval:a+1}}$ à ${{eval:a+9}}$ : n'importe lequel convient. $${{a}} < {{eval:a+5}} < {{eval:a+10}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris un nombre supérieur à ${{a}}$ et inférieur à ${{b}}$.\n\nUn nombre supérieur à ${{a}}$ et inférieur à ${{b}}$ : $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100..980"
+				},
+				{
+					"name": "k",
+					"expression": "3..20"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{a}}",
+							"max": "{{b}}",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre doit être plus grand que ${{a}}$ et plus petit que ${{b}}$.",
+					"Ce sont les nombres de ${{eval:a+1}}$ à ${{eval:b-1}}$ : n'importe lequel convient. $${{a}} < {{eval:a+1}} < {{b}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "supérieur à 457 : 458",
+			"variationIndex": 0,
+			"variables": {
+				"n": "457"
+			},
+			"answers": ["458"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "supérieur à 457 : 900",
+			"variationIndex": 0,
+			"variables": {
+				"n": "457"
+			},
+			"answers": ["900"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 457 lui-même",
+			"variationIndex": 0,
+			"variables": {
+				"n": "457"
+			},
+			"answers": ["457"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : inférieur (400)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "457"
+			},
+			"answers": ["400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "inférieur à 457 : 456",
+			"variationIndex": 1,
+			"variables": {
+				"n": "457"
+			},
+			"answers": ["456"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "inférieur à 457 : 0",
+			"variationIndex": 1,
+			"variables": {
+				"n": "457"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : supérieur (500)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "457"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "compris entre 340 et 350 : 345",
+			"variationIndex": 2,
+			"variables": {
+				"m": "34",
+				"a": "340"
+			},
+			"answers": ["345"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "compris entre 340 et 350 : 341",
+			"variationIndex": 2,
+			"variables": {
+				"m": "34",
+				"a": "340"
+			},
+			"answers": ["341"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : borne 350",
+			"variationIndex": 2,
+			"variables": {
+				"m": "34",
+				"a": "340"
+			},
+			"answers": ["350"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3450 (« entre » recopié)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "34",
+				"a": "340"
+			},
+			"answers": ["3450"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "supérieur à 528 et inférieur à 533 : 530",
+			"variationIndex": 3,
+			"variables": {
+				"a": "528",
+				"k": "5",
+				"b": "533"
+			},
+			"answers": ["530"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 528 lui-même",
+			"variationIndex": 3,
+			"variables": {
+				"a": "528",
+				"k": "5",
+				"b": "533"
+			},
+			"answers": ["528"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
