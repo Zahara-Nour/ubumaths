@@ -189,7 +189,15 @@ export function valeurArgument(argv: readonly string[], option: string): string 
 	return valeur === undefined || valeur.startsWith('--') ? undefined : valeur;
 }
 
-/** Titres distincts du lot : le filtre de la requête (l'appariement fin se fait ensuite) */
+/**
+ * Titres distincts du lot, prêts pour `.in('title', …)` : le filtre de la requête (l'appariement
+ * fin se fait ensuite). postgrest-js met entre guillemets, sans rien échapper, une valeur qui
+ * contient `,`, `(` ou `)` ; entre guillemets, PostgREST lit `\` comme un échappement (« $1\,000$ »
+ * devenait « $1,000$ », introuvable). Ces titres-là ont donc leur antislash et leur guillemet
+ * échappés ; les autres, transmis tels quels, sont lus à la lettre.
+ */
 export function titresDuLot(lot: readonly ModeleDuLot[]): string[] {
-	return [...new Set(lot.map((m) => m.modele.title))];
+	return [...new Set(lot.map((m) => m.modele.title))].map((t) =>
+		/[,()]/.test(t) ? t.replace(/[\\"]/g, '\\$&') : t
+	);
 }
