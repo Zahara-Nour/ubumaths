@@ -52,7 +52,22 @@ describe('le signe du paramètre décide : refus, jamais une valeur', () => {
 		['\\ln x+kx', '+∞', 'both'],
 		// coefficient littéral EN BAS : faux pour k = 0 (+∞ ; 1)
 		['\\frac{x}{kx+1}', '+∞', 'both'],
-		['\\frac{1}{kx+1}', '+∞', 'both']
+		['\\frac{1}{kx+1}', '+∞', 'both'],
+		// revue : 0⁺ − k·0⁺ restait 0⁺ (faux pour k > 1) ; refusés sur main
+		['\\frac{1}{x-kx}', '0', 'right'],
+		['\\frac{1}{x-kx}', '0', 'left'],
+		['\\frac{1}{kx+x^2}', '0', 'left'],
+		['\\frac{1}{kx+x^2}', '0', 'both'],
+		['\\frac{1}{kx^2-x^2}', '0', 'right'],
+		['\\ln(x-kx)', '0', 'right'],
+		['e^{\\frac{1}{x-kx}}', '0', 'right'],
+		['\\frac{1}{\\frac1x-\\frac kx}', '+∞', 'both'],
+		['\\frac{1}{x-\\lambda x}', '0', 'right'],
+		// même famille, déjà faux sur main (0 + 0⁺ = 0⁺)
+		['\\frac{1}{kx+x^2}', '0', 'right'],
+		['\\frac{1}{kx+x}', '0', 'right'],
+		['\\frac{1}{kx^2+x^3}', '0', 'right'],
+		['\\ln(kx+x^2)', '0', 'right']
 	] as const)('%s en %s (%s)', (latex, at, direction) => {
 		const result = limitOf(latex, at, direction);
 		expect(result.value).toBeNull();
@@ -75,6 +90,13 @@ describe('le signe du paramètre ne décide pas : limite calculée (inchangé)',
 		['\\frac{x}{x+k}', '+∞', 'both', '1'],
 		['\\frac{kx^2+1}{2x^2}', '+∞', 'both', '\\dfrac{k}{2}'],
 		['\\frac{kx+1}{x+2}', '+∞', 'both', 'k'],
+		['\\frac{(kx+1)(x+1)}{(x+2)^2}', '+∞', 'both', 'k'],
+		['\\frac{k^2x+1}{x}', '+∞', 'both', 'k^2'],
+		['\\frac{\\lambda x}{x+1}', '+∞', 'both', '\\lambda'],
+		['\\frac{\\lambda x+1}{2x}', '+∞', 'both', '\\dfrac{\\lambda}{2}'],
+		['x^2+kx', '+∞', 'both', '+\\infty'],
+		['x^2-kx', '-∞', 'both', '+\\infty'],
+		['-x^3+kx^2', '+∞', 'both', '-\\infty'],
 		['\\frac{e^{kx}-1}{x}', '0', 'both', 'k'],
 		['\\frac{\\sin(kx)}{x}', '0', 'both', 'k'],
 		['e^{kx}', '0', 'both', '1']

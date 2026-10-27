@@ -109,9 +109,10 @@ function multiplySign(
 }
 
 /**
- * Signe d'un facteur inconnu (une lettre : k, −k, λ) face à ±∞ (k·∞, k/0±,
- * ∞/k) : le résultat dépend de lui, on ne le devine pas. Devant 0± (k·0⁺,
- * k/∞), la valeur reste 0, sans signe. Lu « positif », −k·(+∞)
+ * Signe d'un facteur inconnu (une lettre : k, −k, λ) face à ±∞ ou 0± (k·∞,
+ * k/0±, ∞/k, k·0⁺, k/∞, 0⁺/k) : le résultat dépend de lui, on ne le devine
+ * pas. Un « 0 sans signe » rendu en 0 exact était neutre dans l'addition :
+ * 0⁺ − k·0⁺ restait 0⁺, et 1/(x − kx) en 0⁺ rendait +∞, faux pour k > 1. Lu « positif », −k·(+∞)
  * donnait +∞ et e^{−kx} en +∞ rendait +∞ (chantier limites-parametres).
  */
 function unknownSign(): Error {
@@ -489,8 +490,8 @@ function mulExtended(
 	// 0± × finite (≠0)
 	if (a.type === 'signed-zero' && b.type === 'normal') {
 		const bSign = getSignOfNormalForm(b.form);
-		// 0 sans signe : la limite vaut 0, seul son côté dépend du paramètre
-		if (bSign === 0 || bSign === null) return normalResult(ZERO_NORMAL_FORM);
+		if (bSign === 0) return normalResult(ZERO_NORMAL_FORM);
+		if (bSign === null) throw unknownSign();
 		const sign = bSign > 0 ? a.sign : flipSign(a.sign);
 		return signedZeroResult(sign);
 	}
@@ -554,7 +555,7 @@ function divExtended(
 	// finite / ∞ = 0±
 	if (num.type === 'normal' && denIsInf) {
 		const numSign = getSignOfNormalForm(num.form);
-		if (numSign === null) return normalResult(ZERO_NORMAL_FORM);
+		if (numSign === null) throw unknownSign();
 		const sign = numSign >= 0 ? den.sign : flipSign(den.sign);
 		return signedZeroResult(sign);
 	}
@@ -577,7 +578,7 @@ function divExtended(
 	if (num.type === 'signed-zero' && den.type === 'normal') {
 		const denSign = getSignOfNormalForm(den.form);
 		if (denSign === 0) return indeterminateResult('0/0');
-		if (denSign === null) return normalResult(ZERO_NORMAL_FORM);
+		if (denSign === null) throw unknownSign();
 		const sign = denSign > 0 ? num.sign : flipSign(num.sign);
 		return signedZeroResult(sign);
 	}

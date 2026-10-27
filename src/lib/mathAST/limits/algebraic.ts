@@ -302,19 +302,23 @@ export function tryDominantTerm(
 	positive: boolean,
 	recorder: LimitStepRecorder
 ): AlgebraicResult {
-	if (!isDivision(expr)) {
+	// Un polynôme se lit P/1 : x² + kx en +∞, coefficient dominant numérique
+	// (k·∞ ne se calcule plus sans le signe de k)
+	const numerator = isDivision(expr) ? expr.numerator : expr;
+	const denominator = isDivision(expr) ? expr.denominator : number('1');
+
+	const numDegree = getPolynomialDegree(numerator, varName);
+	const denDegree = getPolynomialDegree(denominator, varName);
+	if (!isDivision(expr) && (numDegree === null || numDegree === 0)) {
 		return { success: false };
 	}
-
-	const numDegree = getPolynomialDegree(expr.numerator, varName);
-	const denDegree = getPolynomialDegree(expr.denominator, varName);
 
 	if (numDegree === null || denDegree === null) {
 		return { success: false };
 	}
 
-	const numLeading = getLeadingCoefficient(expr.numerator, varName);
-	const denLeading = getLeadingCoefficient(expr.denominator, varName);
+	const numLeading = getLeadingCoefficient(numerator, varName);
+	const denLeading = getLeadingCoefficient(denominator, varName);
 
 	if (numLeading === null || denLeading === null) {
 		// Coefficient littéral (k) en haut seulement, coefficient numérique non
@@ -338,7 +342,7 @@ export function tryDominantTerm(
 			);
 			return { success: true, simplified: zero, technique: 'dominant-term', description };
 		}
-		const coefficient = symbolicLeadingCoefficient(expr.numerator, varName, numDegree);
+		const coefficient = symbolicLeadingCoefficient(numerator, varName, numDegree);
 		if (coefficient === null) return { success: false };
 		let exact: MathNode;
 		try {
@@ -416,6 +420,10 @@ function getPolynomialDegree(expr: MathNode, varName: string): number | null {
 		case 'variable':
 			return expr.name === varName ? 1 : 0;
 
+		// λ, un paramètre comme k
+		case 'greek':
+			return 0;
+
 		case 'addition':
 		case 'subtraction': {
 			const leftDeg = getPolynomialDegree(expr.left, varName);
@@ -480,6 +488,9 @@ function extractLeadingCoeff(expr: MathNode, varName: string, targetDegree: numb
 			// en +∞ rendait 1 au lieu de k (chantier limites-parametres)
 			return null;
 
+		case 'greek':
+			return null;
+
 		case 'addition': {
 			const leftDeg = getPolynomialDegree(expr.left, varName);
 			const rightDeg = getPolynomialDegree(expr.right, varName);
@@ -538,7 +549,13 @@ function extractLeadingCoeff(expr: MathNode, varName: string, targetDegree: numb
 				const exp = parseFloat(expr.superscript.value);
 				return exp === targetDegree ? 1 : 0;
 			}
-			return null;
+			// (x + 2)² : coefficient dominant de la base, à la puissance
+			const exponent = isNumber(expr.superscript) ? parseFloat(expr.superscript.value) : NaN;
+			const baseDegree = getPolynomialDegree(expr.base, varName);
+			if (!Number.isInteger(exponent) || exponent < 0 || baseDegree === null) return null;
+			if (baseDegree * exponent !== targetDegree) return 0;
+			const base = extractLeadingCoeff(expr.base, varName, baseDegree);
+			return base === null ? null : base ** exponent;
 		}
 
 		case 'opposite': {
@@ -591,8 +608,17 @@ function symbolicLeadingCoefficient(
 			if (left === null || right === null) return null;
 			return multiply(left, right, 'implicit');
 		}
-		case 'superscript':
-			return isVariable(expr.base) && expr.base.name === varName ? number('1') : null;
+		case 'greek':
+			return expr;
+		case 'superscript': {
+			// k² : un coefficient ; x^n : 1 ; (kx + 1)² : coefficient de la base au carré
+			if (degree === 0) return expr;
+			if (isVariable(expr.base) && expr.base.name === varName) return number('1');
+			const baseDegree = getPolynomialDegree(expr.base, varName);
+			if (baseDegree === null || !isNumber(expr.superscript)) return null;
+			const base = symbolicLeadingCoefficient(expr.base, varName, baseDegree);
+			return base === null ? null : power(parentheses(base), expr.superscript);
+		}
 		case 'opposite': {
 			const inner = symbolicLeadingCoefficient(expr.operand, varName, targetDegree);
 			return inner === null ? null : opposite(inner);

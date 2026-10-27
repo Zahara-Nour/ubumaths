@@ -8,9 +8,9 @@ status: choix A (David, 2026-10-27), PR 1 en cours
 
 _Mis à jour le 2026-10-27, choix A codé._
 
-- **État** : choix A codé et testé (22 rouges sur `main`) ; suites larges et revue à faire.
-- **Prochaine action** : suites larges, `check:incremental`, revue Opus, PR.
-- **En attente de David** : rien. **C (discussion selon le signe) plus tard** ; B (`avec k > 0`) non demandé.
+- **État** : choix A codé ; revue Opus 1 faite (valeurs fausses introduites, corrigées) ; contre-revue du correctif à faire.
+- **Prochaine action** : contre-revue courte, PR ; question à David sur la substitution directe (ci-dessous).
+- **En attente de David** : substitution directe qui suppose k ≠ 0 / k > 0 (`\\frac{1}{x^2+k}` en 0 → 1/k, `\\ln(x+k)` en 0⁺ → ln k) : refuser aussi, ou garder ? **C plus tard** ; B non demandé.
 - **Pièges** : une limite FAUSSE est pire qu'un refus ; `\sqrt{kx}` mal sondé (variable `t` par erreur dans la sonde) — à resonder ; garder justes les cas où le signe ne décide pas (`\frac{e^{kx}-1}{x}` en 0 → k).
 - **Worktree / branche** : `../ubumaths-wt-limites-parametres`, `fix/limites-parametres`.
 
@@ -64,3 +64,6 @@ Mécanisme existant réutilisable : hypothèses de l'énoncé (ADR 0012, `assump
   - `algebraic.ts`, `tryDominantTerm` : `extractLeadingCoeff` lisait une lettre-paramètre comme 1, et changeait un coefficient inconnu en 0 (produit) ou le sautait (somme) — avec la garde, `(kx+1)/(x+2)` passait de k à 1, puis 0. Désormais `null`, propagé ; coefficient littéral EN HAUT seulement (bas numérique ≠ 0) : degré inférieur → 0, même degré → rapport exact (`symbolicLeadingCoefficient` : `(kx+1)/(x+2)` → k, `(kx²+1)/(2x²)` → k/2). Coefficient littéral en bas → refus (`x/(kx+1)` → 1/k faux pour k = 0).
   - Atelier (`limit.ts`) : le refus nomme le paramètre — « Je ne sais pas calculer cette limite : elle peut dépendre du signe de k. » (λ écrit λ, `lettersText`).
   - Tests : `parametre-de-signe-inconnu.test.ts` + 4 dans `limite-commande.test.ts`, 22 rouges sur `main`.
+  - Revue Opus (≈ 125 sondes, branche contre `main`) : **valeurs fausses introduites** — mon « 0 sans signe » était un 0 exact, neutre dans l'addition : 0⁺ − k·0⁺ restait 0⁺, `\frac{1}{x-kx}` en 0⁺ → +∞ (faux pour k > 1), `\ln(x-kx)`, `e^{\frac{1}{x-kx}}`, `\frac{1}{kx+x^2}` en 0⁻… (7 cas, refusés sur `main`). Corrigé : k·0±, k/∞, 0±/k lèvent aussi ; corrige au passage 4 valeurs fausses de `main` (`\frac{1}{kx+x^2}` en 0⁺, `\frac{1}{kx+x}`, `\frac{1}{kx^2+x^3}`, `\ln(kx+x^2)`). Régressions corrigées : polynôme lu P/1 dans `tryDominantTerm` (`x^2+kx` en +∞ → +∞), λ (nœud `greek`) traité comme k, k² coefficient, (x + 2)² au dénominateur. `\frac{k}{x}` en +∞ → 0 par le terme dominant.
+  - Non traités : `\frac{k^2+1}{x}` en 0⁺ refusé (k² + 1 > 0 non vu, mineur) ; substitution directe à paramètre (question à David).
+  - Suites : 42 027 verts ; tests 40 dans le fichier limits + 4 atelier.
