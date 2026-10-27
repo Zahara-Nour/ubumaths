@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1860._
+_Mis à jour le 2026-10-27, PR « aiguilles » pas encore ouverte._
 
-- **État** : #1846, #1848, #1853, #1854 (glisser iPhone) #1858 (carte de correction trop haute qui défile, avertissement « téléphone » hors des onglets de l'aperçu) et #1860 (page d'aide d'un bloc : rendus rognés, § 12) **mergées**, pas en prod. Essai iPhone complet réussi (Tailscale Serve, machine `serveur`) ; règle « toucher un point posé le reprend » confirmée par David.
-- **Prochaine action** : aiguilles, PR en cours (décisions § 14), worktree `ubumaths-wt-reponses-a-placer`.
-- **En attente de David** : rien. Suite possible (revue #1858, à proposer) : sur une carte de correction qui défile, le bouton de retournement part avec le contenu (le passer en `sticky`).
-- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; droite à K points = K cases consécutives ; `placerAnswer` des deux côtés ; iPhone : `touchstart` non passif dans `NumberLinePlacer` ; cartes retournables : mesurer la fiche (`bind:ref`, `min-h-full shrink-0`), jamais la face ; modèle local « Placer deux nombres (essai) » (base locale seulement) ; une PR = une session.
-- **Worktree / branche** : aucun.
+- **État** : horloge à placer (§ 13 à 15) codée et commitée sur `feat/reponses-a-placer-aiguilles` (2 commits + ce journal), pas poussée ; tests verts, typecheck 0, cliquet tenu ; vu sur la page d'aide (5177).
+- **Prochaine action** : revue `code-reviewer` (Opus) lancée, résultat pas reçu → la relancer si perdue (brief : bugs de correction, fuite de l'heure attendue, oublis de `'horloge'` dans `BuildKind`/`construire`, `hourHand` nullable) ; corriger ; pousser, ouvrir la PR, CI, merger ; noter dans `verifications-manuelles.md` la carte de correction dans une vraie question (pas vue à l'écran).
+- **En attente de David** : rien. Suite possible (revue #1858) : bouton de retournement en `sticky`.
+- **Pièges en cours** : réponse élève `'47 25'` (crans petite, grande), attendue `'9 h 25'` (cadran de 12), case `type: 'text'`, juge `isPlacedTimeCorrect` ; page d'aide à froid : attendre l'hydratation avant de cliquer ; une PR = une session.
+- **Worktree / branche** : `../ubumaths-wt-reponses-a-placer` · `feat/reponses-a-placer-aiguilles` · serveur 5177.
 
 ---
 
@@ -302,3 +302,24 @@ heures 0 à 23).
 4. **Secondes (CM2-083) hors chantier** (pas de trotteuse) — reste noté.
 5. Départ : aiguilles **en attente sur le 12, grisées** ; une aiguille en attente n'est pas posée.
 6. Cadran à placer : **6 cm** par défaut (`taille:` garde la main).
+
+## 15. PR « aiguilles » — horloge à placer (2026-10-27)
+
+Branche `feat/reponses-a-placer-aiguilles`, worktree `ubumaths-wt-reponses-a-placer`. Tests rouges
+d'abord : `horloge-placer.test.ts` (parseur, lecture, juge, phrases, PDF),
+`generation-horloge-placer.test.ts` (case, réponse, juge), puis `HorlogePlacer.svelte.test.ts`.
+
+- Parseur : `placer: 9 h 25` à la place de `heure:` ; `spec.placer`, `spec.times` vide (un rendu qui
+  l'ignore ne dessine pas la réponse), `caseIndex`. Refus : avec `heure:`, avec `minutes: cachées`,
+  `;`, plus d'une légende ; `case:` sans `placer:`. `findHorlogesToPlace`, `hasHorlogeToPlace`.
+- Calcul pur `utils/horloge-placer.ts` : réponse `'47 25'` (crans petite, grande ; `-` pas posée),
+  `readHands` (secteur), `isPlacedTimeCorrect`, `timeText` (`9 h 05`, cadran de 12),
+  `handsMistakes` (rien placé, aiguille pas posée, inversées, « sur 5 h 45 », pile / entre à tort).
+- Générateur : `BuildKind` gagne `'horloge'` ; case `type: 'text'`, réponse attendue `timeText` ;
+  juge à part dans `validateSingleBlank` et `validateBlankValue`.
+- Écran : `HorlogePlacer.svelte` (étiquettes, toucher, reprise d'une aiguille posée, ◀ ▶, flèches,
+  `role="slider"`) ; `Horloge.svelte` le prend hors question ; `FillBlanksInput`, `BuildAnswer`.
+  PDF : cadran sans aiguilles, 6 cm. Page d'aide : réglage `placer`, exemple, erreur type.
+- Vu en vrai (port 5177, `teacher@local.test`, `/aide-ecriture/blocs/horloge`, Playwright) : pose
+  9 h 25, petite aiguille entre le 9 et le 10. Corrigé : à 375 px, ◀ étiquettes ▶ tenaient sur trois
+  lignes → étiquettes, puis ◀ ▶ dessous ; aiguilles en attente plus légères (faisaient une tache).
