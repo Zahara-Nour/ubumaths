@@ -589,7 +589,7 @@ function symbolicLeadingCoefficient(
 			const left = symbolicLeadingCoefficient(expr.left, varName, leftDegree);
 			const right = symbolicLeadingCoefficient(expr.right, varName, rightDegree);
 			if (left === null || right === null) return null;
-			return multiply(left, right);
+			return multiply(left, right, 'implicit');
 		}
 		case 'superscript':
 			return isVariable(expr.base) && expr.base.name === varName ? number('1') : null;
