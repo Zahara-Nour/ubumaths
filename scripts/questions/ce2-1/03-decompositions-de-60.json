@@ -1,0 +1,140 @@
+{
+	"title": "Les décompositions de $60$",
+	"description": "1 × 60, 2 × 30, 3 × 20, 4 × 15, 5 × 12, 6 × 10",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Décomposition",
+	"level": 2,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2|3|4|5|6|10|12|15|20|30|60"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{k}}*?=60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:60/k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les décompositions de $60$ à connaître : $1\\times 60$, $2\\times 30$, $3\\times 20$, $4\\times 15$, $5\\times 12$, $6\\times 10$.",
+					"$${{k}}\\times {{eval:60/k}}=60$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2|3|4|5|6|10|12|15|20|30|60"
+				},
+				{
+					"name": "expression1",
+					"expression": "60=?*{{k}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:60/k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les décompositions de $60$ à connaître : $1\\times 60$, $2\\times 30$, $3\\times 20$, $4\\times 15$, $5\\times 12$, $6\\times 10$.",
+					"$${{k}}\\times {{eval:60/k}}=60$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 × ? = 60 : 15",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 × ? = 60 → 14",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 × ? = 60 → 56 (on a soustrait)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "12 × ? = 60 : 5",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 1 × ? = 60 : 60",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "60 = ? × 3 : 20",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 60 = ? × 3 → 30",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
