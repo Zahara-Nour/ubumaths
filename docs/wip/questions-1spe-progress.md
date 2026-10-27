@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, constats du lot 0-variations._
+_Mis à jour le 2026-10-28, après #1890._
 
-- **État** : lots 0-suites (42), 0-second-degré (14) et 0-dérivation (15) publiés ; lot 0-variations (8 brouillons) relu, constats au § 9.
-- **Prochaine action** : PR des corrections (§ 9, D14), page à cocher, puis David lance `create-questions --publier --mettre-a-jour` et `publier-lot` ; puis exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
-- **En attente de David** : rien.
-- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts ; `question:specs` n'a pas d'option de variation : une copie par variation dans le scratchpad ; CI : job « CI Summary » fantôme, juger au statut du run.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `chore/questions-1spe-variations`.
+- **État** : lots 0-suites (42), 0-second-degré (14) et 0-dérivation (15) publiés ; lot 0-variations (8 brouillons, § 9) corrigé et mergé (#1890), page à cocher en ligne : https://claude.ai/artifact/8StybG87C7kCZKdxyni5hX.
+- **Prochaine action** : lire les verdicts de la page (`ArtifactData list verdicts`, compter les 8) ; puis exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
+- **En attente de David** : relire la page ; lancer `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-0-variations --publier --mettre-a-jour` (4 mis à jour), puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-0-variations --publier`.
+- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts ; `question:specs` n'a pas d'option de variation : une copie par variation dans le scratchpad ; la page à cocher ne dessine pas le bloc `variation` (le jouer dans l'aperçu) ; CI : job « CI Summary » fantôme, juger au statut du run.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -346,3 +346,6 @@ composée hors e^{kx}).
 - C4 : `(a − x₀)` quand a > 0, `(−x₀ + a)` quand a < 0 (ordre de l'énoncé).
 
 Specs des 4 modèles vertes après correction (62 specs, 650 tirages) ; h < 0 et a < 0 vérifiés par tirages forcés.
+
+PR #1890 mergée (CI verte). Page à cocher : https://claude.ai/artifact/8StybG87C7kCZKdxyni5hX (7 fiches sur 8 avec le bloc
+`variation` non dessiné, à jouer dans l'aperçu).
