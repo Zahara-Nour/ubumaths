@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1859 et le `--publier` de David._
+_Mis à jour le 2026-10-27, après #1861 et #1863._
 
-- **État** : lot 2 « Nombres » : 10 brouillons créés en prod par David (sans nœud ni tag, relevé MCP du 2026-10-27, § 9.2). Migration de rangement **pas encore écrite**.
-- **Prochaine action** : écrire `supabase/migrations/<ts>_questions_6_nombres_rangement_tags.sql` + `tests/integration/questions-6-nombres-rangement-tags.test.ts` en copiant le gabarit `20261026210000_questions_cp_c_rangement_tags` (grade `6`, 10 modèles, 6-104 sur la NOTION, sous_notion nulle) ; test rouge sans la migration, `security-auditor`, PR, CI, merge, `db:migrate` depuis le dépôt principal ; puis page à cocher, publication.
-- **En attente de David** : rien (question d'accès tranchée en phase 0 : personne ne gagne de lecture).
+- **État** : lot 2 « Nombres » rangé et tagué en prod (#1861, `db:migrate` fait, relu au MCP : 10 brouillons, nœud et point justes). Page à cocher publiée : https://claude.ai/artifact/TnCEsptg7tLHjnyBAWXbCA (#1863 : homonyme d'un autre niveau départagé et signalé).
+- **Prochaine action** : quand David a relu, compter les verdicts (`ArtifactData list verdicts`, 10 attendus) ; « À revoir » → corriger ; puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-nombres` (simulation), David lance `--publier`, relire `published` en base. Ensuite : lot suivant de la 6e.
+- **En attente de David** : la relecture des 10 fiches (05 et 06 : case choix à jouer dans l'aperçu ; 06 porte l'alerte « homonyme 9c0c47ef écarté » = le modèle de CM1, normal).
 - **Pièges en cours** : variables `e` et `i` interdites dans les `eval` ; un `?` dans un `{{if}}` ne fait pas de case ; un tag exige le modèle sur le nœud du point ou sa notion ; `db:migrate` depuis le dépôt principal.
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-nombres-rangement`.
+- **Worktree / branche** : aucun (retiré après #1863) ; le lot suivant recrée `../ubumaths-wt-questions-6`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -324,3 +324,12 @@ David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud n
 - Prod revérifiée (MCP) avant le SQL : 10 brouillons, `[6]`, sans nœud ni tag.
 - Migration `20261027150000_questions_6_nombres_rangement_tags` (gabarit `cp_c`, grade `6`, 6-104 sur la notion)
   - test `questions-6-nombres-rangement-tags` : rouge sans la migration (ENOENT), 9/9 vert avec.
+
+### 9.4 Page à cocher (2026-10-27)
+
+- #1861 mergée, `db:migrate` joué, prod relue (MCP) : 10 brouillons sur le nœud de leur point, tag juste, `updated_at` inchangé.
+- La page refusait le lot : « Comparer deux nombres décimaux » existe aussi en CM1 (9c0c47ef, niveau 2, publié), même
+  clé hors niveau. #1863 : départage par le niveau du fichier s'il en désigne un seul, signalé sur la fiche (relecture :
+  un ancien lot renuméroté prendrait sinon l'homonyme en silence).
+- `security-auditor` (#1861), non bloquant, préexistant : `question_template_points_read_authenticated` (`using (true)`)
+  laisse un élève connecté voir à quel point un brouillon est rattaché (pas son contenu). Signalé à David, rien décidé.
