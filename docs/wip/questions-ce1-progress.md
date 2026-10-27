@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, migration des niveaux écrite (branche `fix/questions-ce1-lot1-niveaux`)._
+_Mis à jour le 2026-10-27, après #1870._
 
-- **État** : lot 1 (6 modèles de calcul mental, #1847) en BROUILLON en prod, rangé et tagué (#1856), consigne « Calcule. » en base (#1864). Relecture : 6/6 « OK ». Simulation `publier-lot` : 4 refus (niveau déjà pris par un publié de la même catégorie). Migration `20261027160000_questions_ce1_lot1_niveaux` (084 7→11, 029 8→12, 083 1→10, 024 3→11) + fichiers aux mêmes niveaux ; test 7/7, rouge sans elle. Identifiants : `240bb640` (084), `cb08bf78` (029), `0b490331` (102), `ebfa8511` (032), `03675b9b` (083), `b2a4a178` (024).
-- **Prochaine action** : `security-auditor`, PR, CI, merge, `db:migrate`, vérif MCP ; puis `publier-lot.ts --dir scripts/questions/ce1-1` (simulation, 0 refus attendu), David `--publier`, relire `published`. Ensuite : lot 2.
-- **En attente de David** : rien (question d'accès tranchée : personne, 2026-10-27). À reposer plus tard : sortir 084/029/102/032 des catégories « Somme / Différence astucieuse » ? (pas de reco faite, rien changé).
+- **État** : lot 1 (6 modèles de calcul mental, #1847) en BROUILLON en prod, rangé et tagué (#1856), consigne « Calcule. » en base (#1864), niveaux libérés (#1870, `db:migrate` joué, vérifié : 10/11/11/12, `updated_at` intact, trigger `O`). Relecture 6/6 « OK ». Simulation `publier-lot` : 6/6 passent le contrôle. Identifiants : `240bb640` (084), `cb08bf78` (029), `0b490331` (102), `ebfa8511` (032), `03675b9b` (083), `b2a4a178` (024).
+- **Prochaine action** : David lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce1-1 --publier` depuis `main` → relire `published` au MCP → archiver la page à cocher (fin du lot 1). Ensuite : lot 2 (phase 0, niveaux relevés dans la catégorie AVANT l'écriture).
+- **En attente de David** : `publier-lot --publier`. À reposer plus tard : sortir 084/029/102/032 des catégories « Somme / Différence astucieuse » ? (pas de reco faite, rien changé).
 - **Pièges en cours** : tag = point du nœud ou de sa notion ; QCM en réécriture → demander la forme ; `collection` sans `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` ; un port de dev libre (5176, 5180 pris le 2026-10-26).
 - **Worktree / branche** : aucun (worktree retiré, branches du lot 1 supprimées) ; le lot 2 partira d'un worktree neuf depuis `origin/main`.
 
@@ -211,3 +211,4 @@ migration nœud + tag ne change aucune règle.
 - 2026-10-27 : relecture, 084 « À revoir » (« pourquoi de manière astucieuse ? ») → consigne « Calcule. » pour 084, 029, 102 et 032 (décision de David : « tu changes ») ; fichiers d'avant = prod (simulation : 6/6 identiques), tirages verts ; David lance ensuite `create-questions --publier --mettre-a-jour`.
 - 2026-10-27 : `--mettre-a-jour` lancé par David (après un premier essai avant le merge, sans effet), vérifié en base ; relecture 6/6 « OK ».
 - 2026-10-27 : `publier-lot` (simulation) refuse 084, 029, 083, 024 : niveaux 7, 8, 1, 3 déjà pris par des publiés de la même catégorie (choisis en phase 0 sans relever la catégorie). Décision de David (« je suis tes recos ») : premier niveau libre (11, 12 ; 10, 11), aucun publié renuméroté ; `create-questions` cherche par le niveau et `--mettre-a-jour` ne le change pas → migration des niveaux + fichiers dans la même PR ; question d'accès : personne.
+- 2026-10-27 : #1870 mergée (CI verte, `security-auditor` sans finding bloquant), `db:migrate`, vérifiée en prod ; `publier-lot` (simulation) : 6/6.
