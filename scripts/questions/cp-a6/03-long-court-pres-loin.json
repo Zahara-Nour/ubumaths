@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Le ruban rouge mesure ${{a}}$ carreaux. Le ruban bleu mesure ${{b}}$ carreaux.\n\nQuel ruban est le plus **long** ?",
+			"statement": "Le ruban rouge mesure ${{a}}$ carreaux. Le ruban bleu mesure ${{b}}$ carreaux.\n\nQuel ruban est le plus **long** ?\n\n```choix\n- le ruban rouge\n- le ruban bleu\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -22,24 +22,20 @@
 				}
 			],
 			"conditions": ["abs(a - b) >= 3"],
-			"choices": [
-				{
-					"content": "le ruban rouge"
-				},
-				{
-					"content": "le ruban bleu"
-				}
-			],
-			"correctChoiceIndex": ["{{if:a>b|0|1}}"],
 			"correction": {
 				"steps": [
 					"{{if:a>b|${{a}}>{{b}}$ : le ruban rouge est plus long que le ruban bleu.|${{a}}<{{b}}$ : le ruban rouge est plus court que le ruban bleu.}}",
 					"Le plus long est celui qui a le plus de carreaux : {{if:a>b|le ruban rouge|le ruban bleu}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>b|0|1}}"
+				}
+			]
 		},
 		{
-			"statement": "Le ruban rouge mesure ${{a}}$ carreaux. Le ruban bleu mesure ${{b}}$ carreaux.\n\nQuel ruban est le plus **court** ?",
+			"statement": "Le ruban rouge mesure ${{a}}$ carreaux. Le ruban bleu mesure ${{b}}$ carreaux.\n\nQuel ruban est le plus **court** ?\n\n```choix\n- le ruban rouge\n- le ruban bleu\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -51,24 +47,20 @@
 				}
 			],
 			"conditions": ["abs(a - b) >= 3"],
-			"choices": [
-				{
-					"content": "le ruban rouge"
-				},
-				{
-					"content": "le ruban bleu"
-				}
-			],
-			"correctChoiceIndex": ["{{if:a<b|0|1}}"],
 			"correction": {
 				"steps": [
 					"{{if:a>b|${{a}}>{{b}}$ : le ruban rouge est plus long que le ruban bleu.|${{a}}<{{b}}$ : le ruban rouge est plus court que le ruban bleu.}}",
 					"Le plus court est celui qui a le moins de carreaux : {{if:a<b|le ruban rouge|le ruban bleu}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a<b|0|1}}"
+				}
+			]
 		},
 		{
-			"statement": "Depuis sa maison, Léa fait ${{a}}$ pas pour aller à la boulangerie et ${{b}}$ pas pour aller à la piscine.\n\nQu'est-ce qui est le plus **près** de chez Léa ?",
+			"statement": "Depuis sa maison, Léa fait ${{a}}$ pas pour aller à la boulangerie et ${{b}}$ pas pour aller à la piscine.\n\nQu'est-ce qui est le plus **près** de chez Léa ?\n\n```choix\n- la boulangerie\n- la piscine\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -80,24 +72,20 @@
 				}
 			],
 			"conditions": ["abs(a - b) >= 10"],
-			"choices": [
-				{
-					"content": "la boulangerie"
-				},
-				{
-					"content": "la piscine"
-				}
-			],
-			"correctChoiceIndex": ["{{if:a<b|0|1}}"],
 			"correction": {
 				"steps": [
 					"{{if:a>b|${{a}}>{{b}}$|${{a}}<{{b}}$}} : il faut moins de pas pour aller à {{if:a<b|la boulangerie|la piscine}}.",
 					"Le plus près, c'est {{if:a<b|la boulangerie|la piscine}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a<b|0|1}}"
+				}
+			]
 		},
 		{
-			"statement": "Depuis sa maison, Léa fait ${{a}}$ pas pour aller à la boulangerie et ${{b}}$ pas pour aller à la piscine.\n\nQu'est-ce qui est le plus **loin** de chez Léa ?",
+			"statement": "Depuis sa maison, Léa fait ${{a}}$ pas pour aller à la boulangerie et ${{b}}$ pas pour aller à la piscine.\n\nQu'est-ce qui est le plus **loin** de chez Léa ?\n\n```choix\n- la boulangerie\n- la piscine\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -109,24 +97,20 @@
 				}
 			],
 			"conditions": ["abs(a - b) >= 10"],
-			"choices": [
-				{
-					"content": "la boulangerie"
-				},
-				{
-					"content": "la piscine"
-				}
-			],
-			"correctChoiceIndex": ["{{if:a>b|0|1}}"],
 			"correction": {
 				"steps": [
 					"{{if:a>b|${{a}}>{{b}}$|${{a}}<{{b}}$}} : il faut moins de pas pour aller à {{if:a<b|la boulangerie|la piscine}}.",
 					"Le plus loin, c'est {{if:a>b|la boulangerie|la piscine}} : il faut plus de pas pour y aller."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>b|0|1}}"
+				}
+			]
 		},
 		{
-			"statement": "Quel est le contraire de « **{{if:w==0|long|{{if:w==1|court|{{if:w==2|près|loin}}}}}}** » ?",
+			"statement": "Quel est le contraire de « **{{if:w==0|long|{{if:w==1|court|{{if:w==2|près|loin}}}}}}** » ?\n\n```choix\n- court\n- long\n- loin\n- près\n```",
 			"variables": [
 				{
 					"name": "w",
@@ -134,26 +118,16 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "court"
-				},
-				{
-					"content": "long"
-				},
-				{
-					"content": "loin"
-				},
-				{
-					"content": "près"
-				}
-			],
-			"correctChoiceIndex": ["{{w}}"],
 			"correction": {
 				"steps": [
 					"{{if:w==0|Le contraire de « long » est « **court** » : une corde longue, une corde courte.|{{if:w==1|Le contraire de « court » est « **long** » : une corde longue, une corde courte.|{{if:w==2|Le contraire de « près » est « **loin** » : l'école est près, la mer est loin.|Le contraire de « loin » est « **près** » : l'école est près, la mer est loin.}}}}}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -167,7 +141,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : rouge 12, bleu 5, le bleu",
@@ -179,7 +153,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "rouge 4, bleu 9 : le plus long est le bleu",
@@ -191,7 +165,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "rouge 12, bleu 5 : le plus court est le bleu",
@@ -203,7 +177,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : le plus court, le plus long (rouge)",
@@ -215,7 +189,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "boulangerie 30, piscine 80 : le plus près est la boulangerie",
@@ -227,7 +201,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : le plus près, la piscine",
@@ -239,7 +213,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "boulangerie 30, piscine 80 : le plus loin est la piscine",
@@ -251,7 +225,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "boulangerie 70, piscine 20 : le plus loin est la boulangerie",
@@ -263,7 +237,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "contraire de long : court",
@@ -274,7 +248,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : contraire de long, long",
@@ -285,7 +259,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "contraire de près : loin",
@@ -296,7 +270,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "Erreur : contraire de près, court",
@@ -307,7 +281,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "contraire de loin : près",
@@ -318,7 +292,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [3]
+			"answers": ["3"]
 		}
 	]
 }

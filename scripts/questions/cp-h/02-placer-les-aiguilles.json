@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Quelle horloge indique ${{n}}$ {{if:n==1|heure|heures}} ?",
+			"statement": "Quelle horloge indique ${{n}}$ {{if:n==1|heure|heures}} ?\n\n````choix\n- ```horloge\n  heure: {{n}} h\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{inv}}\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{v}} h\n  chiffres: tous\n  ```\n````",
 			"variables": [
 				{
 					"name": "n",
@@ -26,26 +26,19 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "```horloge\nheure: {{n}} h\nchiffres: tous\n```"
-				},
-				{
-					"content": "```horloge\nheure: {{inv}}\nchiffres: tous\n```"
-				},
-				{
-					"content": "```horloge\nheure: {{v}} h\nchiffres: tous\n```"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"{{if:n==12|Pour $12$ heures, les deux aiguilles sont sur le $12$.|Pour ${{n}}$ {{if:n==1|heure|heures}}, la petite aiguille est sur le ${{n}}$ et la grande sur le $12$. Attention à ne pas les inverser : la grande sur le ${{n}}$, ce serait une autre heure.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "{{if:k==1|Tu arrives à l'école à $8$ heures du matin.|{{if:k==2|Tu déjeunes à la cantine à midi.|{{if:k==3|Tu prends ton goûter à $4$ heures de l'après-midi.|Tu dînes à $7$ heures du soir.}}}}}} Quelle horloge montre cette heure ?",
+			"statement": "{{if:k==1|Tu arrives à l'école à $8$ heures du matin.|{{if:k==2|Tu déjeunes à la cantine à midi.|{{if:k==3|Tu prends ton goûter à $4$ heures de l'après-midi.|Tu dînes à $7$ heures du soir.}}}}}} Quelle horloge montre cette heure ?\n\n````choix\n- ```horloge\n  heure: {{n}} h\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{inv}}\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{v}} h\n  chiffres: tous\n  ```\n````",
 			"variables": [
 				{
 					"name": "k",
@@ -65,24 +58,17 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "```horloge\nheure: {{n}} h\nchiffres: tous\n```"
-				},
-				{
-					"content": "```horloge\nheure: {{inv}}\nchiffres: tous\n```"
-				},
-				{
-					"content": "```horloge\nheure: {{v}} h\nchiffres: tous\n```"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"{{if:k==2|Midi, c'est $12$ heures.|{{if:k==1|On lit $8$ heures sur le cadran.|{{if:k==3|$4$ heures de l'après-midi se lit $4$ heures sur le cadran.|$7$ heures du soir se lit $7$ heures sur le cadran.}}}}}}",
 					"{{if:n==12|Pour $12$ heures, les deux aiguilles sont sur le $12$.|Pour ${{n}}$ {{if:n==1|heure|heures}}, la petite aiguille est sur le ${{n}}$ et la grande sur le $12$. Attention à ne pas les inverser : la grande sur le ${{n}}$, ce serait une autre heure.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -97,7 +83,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : aiguilles inversées",
@@ -110,7 +96,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : heure voisine",
@@ -123,7 +109,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "12 heures : bonne horloge",
@@ -136,7 +122,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "goûter : 4 heures",
@@ -150,7 +136,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "midi : 12 heures",
@@ -164,7 +150,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : dîner, aiguilles inversées",
@@ -178,7 +164,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		}
 	]
 }

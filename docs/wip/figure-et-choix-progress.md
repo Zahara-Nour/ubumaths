@@ -8,13 +8,13 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1842._
+_Mis à jour le 2026-10-27, lot 4 en cours (branche `feat/figure-et-choix-migration-qcm`)._
 
 - **État** : lots 1 (#1816, #1822), 2 (#1826, figure de travail) et 3 (#1840, CP-058 = figure de travail +
   case choix Oui / Non, § 2.10) mergés, plus #1833, #1836 et #1842 (restes). Rien en prod. CP-058 pas encore en base.
-- **Prochaine action** : après le `deploy:prod` des lots 1-3 (décidé par David) : David publie CP-058
-  (`create-questions --dir scripts/questions/cp-figure --publier`), puis lot 4, migration des 178 QCM
-  (question d'accès d'abord).
+  Lot 4 préparé (§ 2.11, phase 0 validée) : script + garde, essai à blanc en prod 178 / 178, sources 110 / 110.
+- **Prochaine action** : PR du lot 4 (revue opus) ; après le `deploy:prod` des lots 1-4 (décidé par David) :
+  David publie CP-058, puis lance `! pnpm tsx scripts/migrer-qcm-en-cases.ts --ecrire`.
 - **En attente de David** : essai du lot 2 (correction, « Ta figure de travail ») sur 5179 (worktree
   `../ubumaths-wt-figure-et-choix`, FIGÉ) ; essai de CP-058 sur 5180 (`/dev/carte-question`, worktree
   `../ubumaths-wt-figure-et-choix-cp058`, FIGÉ) ; libellé « Tu peux tracer… » et ordre fixe Oui / Non à confirmer.
@@ -22,7 +22,8 @@ _Mis à jour le 2026-10-26, après #1842._
   contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; une seule session par worktree.
   Restes connus : éditeur non réaligné sur un énoncé à `<<expr:…>>` ou à case portée par `{{if:}}`
   (voulu, #1842).
-- **Worktree / branche** : deux worktrees figés par les essais, à retirer une fois les essais finis.
+- **Worktree / branche** : lot 4 dans `../ubumaths-wt-figure-et-choix-qcm` (`feat/figure-et-choix-migration-qcm`) ;
+  deux worktrees figés par les essais (5179, 5180), à retirer une fois les essais finis.
 
 ---
 
@@ -289,3 +290,75 @@ David essaie le lot 2 sur 5179.
   générateur la rend).
 - **Publication** : seulement après le `deploy:prod` des lots 1-2 (le code en prod ne lit ni ` ```choix ` ni
   ` ```figure-de-travail `), puis David lance `create-questions --dir scripts/questions/cp-figure --publier`.
+
+### 2.11 Lot 4 : migration des QCM, phase 0 (validée par David le 2026-10-26)
+
+Préparé avant le `deploy:prod` des lots 1-3 (décision de David) : rien n'est écrit en prod avant ce
+déploiement. Worktree `../ubumaths-wt-figure-et-choix-qcm`, branche `feat/figure-et-choix-migration-qcm`.
+
+**Relevé en prod (lecture seule, 2026-10-26)** : 178 QCM (80 publiés, 98 brouillons), 639 variations. Toutes
+ont un `statement` et une `correctChoiceIndex` (637 en tableau). Choix dans la variation (337) ou dans
+`shared.choices` (les autres). 118 bonnes réponses calculées (`{{g}}`, `{{eval:…}}`, `{{if:a>0|0|1}}`),
+5 à plusieurs bonnes réponses (2 modèles `multiple_answers`, brouillons). Aucun `isCorrect`, aucun `blanks`.
+`options.shuffleChoices` : `false` 86, absent 54, `true` 38. 7 variations ont un choix qui contient un
+bloc, 9 un choix sur plusieurs lignes. Tous ont des `test_specs`. 110 fichiers sous `scripts/questions/`.
+
+**Ce que fait la migration (une fonction, les mêmes règles pour la base et pour `scripts/questions/**`)**
+
+- Par variation : bloc ` ```choix ` ajouté **en fin d'énoncé** de la variation (choix = ceux de la variation,
+  sinon ceux de `shared`), `plusieurs: oui` si `multiple_answers`, `melanger: non` si
+  `shuffleChoices === false` ; clôture ```` si un choix contient un bloc, suite d'un choix en retrait de
+  2 espaces. `blanks: [{ expectedAnswer }]` = les indices de `correctChoiceIndex` joints par `;`
+  (calculés gardés tels quels). `choices` et `correctChoiceIndex` retirés (variation et `shared`),
+  `options.shuffleChoices` et `multiple_answers` retirés, `type` → `fill_in_blanks`. Mêmes `id`.
+- `test_specs` : `selectedChoices: [0, 2]` → `answers: ["0;2"]`.
+- **Garde avant toute écriture, modèle par modèle** : pour 50 graines, l'ancien modèle et le nouveau tirent
+  les mêmes choix (même texte), la même bonne réponse, et le nouveau n'a qu'**une** case, la case choix ;
+  ses `test_specs` réécrits passent. Un seul écart → le modèle n'est pas migré, il va au rapport.
+- Script `scripts/migrer-qcm-en-cases.ts` : par défaut **essai** (lit la prod, écrit le rapport et la copie
+  de sauvegarde des 178 lignes, n'écrit rien) ; `--ecrire`, lancé par David avec `!` après le
+  `deploy:prod` (le classifieur refuse les écritures en prod).
+
+**Question d'accès** : aucun accès nouveau ; seul le contenu des modèles change (mêmes lignes, mêmes `id`,
+mêmes policies).
+
+**Limites trouvées au relevé (à trancher)**
+
+- Q1. `?` dans une formule d'énoncé (« Déterminer le signe d'un facteur » : `$$(-a)*?=b$$`, ~10 variations
+  publiées). Aujourd'hui le QCM l'affiche tel quel ; une fois migré, il deviendrait une case à remplir.
+- Q2. Bonnes réponses calculées qui se répètent (2 brouillons à plusieurs réponses :
+  `["0","{{f1}}","{{eval:2*f2}}",…]`, où un choix faux rend `0`). La case choix refuse aujourd'hui un indice
+  répété dans la bonne réponse (« illisible »).
+
+**Tranché par David (2026-10-26)** : Q1 → « … » (comme les autres QCM : « 1 m = … cm », « f … g ») ;
+Q2 → doublon admis dans la bonne réponse de l'auteur (un indice répété compte une fois), toujours refusé dans
+la réponse d'un élève. Phase 0 validée.
+
+**Fait (2026-10-27)**
+
+- `scripts/lib/qcm-en-cases.ts` (conversion + garde `compareMigration`), `scripts/migrer-qcm-en-cases.ts`
+  (essai par défaut, `--ecrire`, `--fichiers`), tests `scripts/__tests__/qcm-en-cases.test.ts` (dont 4 où
+  la garde doit dire non : bonne réponse, case de trop, choix, correction).
+- `readExpectedChoices` : indice répété admis dans la bonne réponse (test rouge puis vert).
+- Trouvé à l'essai à blanc (135 / 178 au premier passage) :
+  - `\ldots` casse la notation maison (`(-a)*\ldots=b` reste brute, `*` affiché) → caractère « … »
+    (U+2026), converti comme avant (`\left( -30 \right) \times … = 66`) ;
+  - variable `expression…` : dans une question à cases elle porte une case (« = ? »), dans un QCM elle
+    ne fait qu'afficher → renommée `expr…` partout (`{{…}}`, conditions, specs) ; marque `<<expr:…>>`
+    retirée à l'affichage d'un QCM, donc ignorée par la garde ;
+  - énoncé vide d'une variation (« Parité ») : celui de `shared`, comme le générateur (`||`) ;
+  - choix sans `{{…}}` : non résolus dans un QCM, résolus avec l'énoncé dans le bloc (`(u_n)` →
+    `\left( u_n \right)`, `e` → `\exponentialE`, 16 brouillons) : admis par la garde s'ils valent l'ancien
+    choix passé par la même résolution.
+- **Essai à blanc en prod (lecture seule)** : 178 / 178 migrables, 31 950 tirages comparés (639 variations
+  × 50 graines), contrôle d'import sans refus nouveau. Sources : 110 / 110, 21 300 tirages, 110 fichiers
+  réécrits.
+- Revue opus (#1855) : rien qui change la notation ou l'écran aujourd'hui ; corrigé : la garde contrôle le
+  mélange (« fixe ou mélangé » : la graine ne reproduit pas l'ordre), 500 tirages quand la bonne réponse est
+  calculée (branche rare → indice que la case refuse), doublon admis seulement si la bonne réponse est
+  calculée (en dur : faute de frappe, comme l'éditeur), bilan d'écriture qui compte les échecs (exit 1).
+  Essai à blanc refait : 178 / 178, 85 050 tirages. Laissé : rendu des 16 brouillons à choix normalisés
+  (vérification à l'œil) ; séries PDF : les choix d'une case mélangée s'impriment dans l'ordre mélangé (avant :
+  ordre de l'auteur, bonne réponse souvent en a)), signalé à David.
+- Piège : les sources de `scripts/questions/**` sont réécrites dès le merge, la base seulement après
+  `--ecrire` ; d'ici là `create-questions` voit « CONTENU DIFFÉRENT » sur ces modèles (sans écrire).

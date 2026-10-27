@@ -10,7 +10,7 @@
 	"delay": 60,
 	"variations": [
 		{
-			"statement": "$x$ et $y$ sont des entiers tels que ${{a}}x = {{b}}y$.\n\nQue peut-on en déduire ?",
+			"statement": "$x$ et $y$ sont des entiers tels que ${{a}}x = {{b}}y$.\n\nQue peut-on en déduire ?\n\n```choix\n- ${{b}}$ divise $x$\n- ${{a}}$ divise $x$\n- $x = {{b}}$ et $y = {{a}}$\n- ${{b}}$ divise $y$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -22,30 +22,20 @@
 				}
 			],
 			"conditions": ["gcd(a,b) == 1", "a != b"],
-			"choices": [
-				{
-					"content": "${{b}}$ divise $x$"
-				},
-				{
-					"content": "${{a}}$ divise $x$"
-				},
-				{
-					"content": "$x = {{b}}$ et $y = {{a}}$"
-				},
-				{
-					"content": "${{b}}$ divise $y$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"${{b}}$ divise ${{a}}x$ et $\\mathrm{PGCD}({{a}} \\,;\\, {{b}}) = 1$.",
 					"D'après le théorème de Gauss, $\\textcolor{{{color:primary.0}}}{{{b}} \\text{ divise } x}$ (et de même ${{a}}$ divise $y$). $x = {{b}}$ n'est qu'une solution parmi d'autres : $x = {{eval:2*b}}$, $y = {{eval:2*a}}$ convient aussi."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "$n$ est un entier tel que ${{a}}$ divise ${{c}}n$.\n\nQue peut-on en déduire ?",
+			"statement": "$n$ est un entier tel que ${{a}}$ divise ${{c}}n$.\n\nQue peut-on en déduire ?\n\n```choix\n- ${{a}}$ divise $n$\n- ${{a}}$ divise ${{c}}$\n- ${{c}}$ divise $n$\n- $n = {{a}}$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -57,30 +47,20 @@
 				}
 			],
 			"conditions": ["gcd(a,c) == 1"],
-			"choices": [
-				{
-					"content": "${{a}}$ divise $n$"
-				},
-				{
-					"content": "${{a}}$ divise ${{c}}$"
-				},
-				{
-					"content": "${{c}}$ divise $n$"
-				},
-				{
-					"content": "$n = {{a}}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$\\mathrm{PGCD}({{a}} \\,;\\, {{c}}) = 1$ : ${{a}}$ et ${{c}}$ sont premiers entre eux.",
 					"D'après le théorème de Gauss, $\\textcolor{{{color:primary.0}}}{{{a}} \\text{ divise } n}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "$a$ et $b$ sont des entiers tels que ${{s}}a + {{t}}b = {{d}}$.\n\nQue peut-on en déduire ?",
+			"statement": "$a$ et $b$ sont des entiers tels que ${{s}}a + {{t}}b = {{d}}$.\n\nQue peut-on en déduire ?\n\n```choix\n- $\\mathrm{PGCD}(a \\,;\\, b)$ divise ${{d}}$\n- $\\mathrm{PGCD}(a \\,;\\, b) = {{d}}$\n- $a$ et $b$ sont premiers entre eux\n- ${{d}}$ divise $a$ et $b$\n```",
 			"variables": [
 				{
 					"name": "s",
@@ -96,30 +76,20 @@
 				}
 			],
 			"conditions": ["s != t"],
-			"choices": [
-				{
-					"content": "$\\mathrm{PGCD}(a \\,;\\, b)$ divise ${{d}}$"
-				},
-				{
-					"content": "$\\mathrm{PGCD}(a \\,;\\, b) = {{d}}$"
-				},
-				{
-					"content": "$a$ et $b$ sont premiers entre eux"
-				},
-				{
-					"content": "${{d}}$ divise $a$ et $b$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Tout diviseur commun de $a$ et $b$ divise ${{s}}a + {{t}}b = {{d}}$ : $\\textcolor{{{color:primary.0}}}{\\mathrm{PGCD}(a \\,;\\, b) \\text{ divise } {{d}}}$.",
 					"Seule l'égalité $au + bv = 1$ permet de conclure (Bézout). Ici le PGCD divise ${{d}}$ sans être forcément égal à ${{d}}$ : par exemple $2 \\times 3 + 1 \\times (-4) = 2$, alors que $\\mathrm{PGCD}(3 \\,;\\, -4) = 1$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "$a$ et $b$ sont des entiers tels que ${{s}}a - {{t}}b = 1$.\n\nQue peut-on en déduire ?",
+			"statement": "$a$ et $b$ sont des entiers tels que ${{s}}a - {{t}}b = 1$.\n\nQue peut-on en déduire ?\n\n```choix\n- $a$ et $b$ sont premiers entre eux\n- $\\mathrm{PGCD}(a \\,;\\, b) = {{s}}$\n- $a$ divise $b$\n- $a = {{t}}$ et $b = {{s}}$\n```",
 			"variables": [
 				{
 					"name": "s",
@@ -131,29 +101,24 @@
 				}
 			],
 			"conditions": ["s != t"],
-			"choices": [
-				{
-					"content": "$a$ et $b$ sont premiers entre eux"
-				},
-				{
-					"content": "$\\mathrm{PGCD}(a \\,;\\, b) = {{s}}$"
-				},
-				{
-					"content": "$a$ divise $b$"
-				},
-				{
-					"content": "$a = {{t}}$ et $b = {{s}}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$au + bv = 1$ avec $u = {{s}}$ et $v = {{eval:-t}}$ entiers.",
 					"D'après le théorème de Bézout, $\\textcolor{{{color:primary.0}}}{a \\text{ et } b \\text{ sont premiers entre eux}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : b divise x",
@@ -162,10 +127,10 @@
 				"a": "4",
 				"b": "9"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : a divise x (facteur inversé)",
@@ -174,10 +139,10 @@
 				"a": "4",
 				"b": "9"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : x = b seulement",
@@ -186,10 +151,10 @@
 				"a": "4",
 				"b": "9"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 : b divise y",
@@ -198,10 +163,10 @@
 				"a": "4",
 				"b": "9"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v1 : a divise n",
@@ -210,10 +175,10 @@
 				"a": "7",
 				"c": "12"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : a divise c",
@@ -222,10 +187,10 @@
 				"a": "7",
 				"c": "12"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : PGCD divise d",
@@ -235,10 +200,10 @@
 				"t": "5",
 				"d": "4"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : PGCD = d (piège)",
@@ -248,10 +213,10 @@
 				"t": "5",
 				"d": "4"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v3 : premiers entre eux",
@@ -260,10 +225,10 @@
 				"s": "3",
 				"t": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v3 : PGCD = s",
@@ -272,16 +237,10 @@
 				"s": "3",
 				"t": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": true
-	}
+	]
 }

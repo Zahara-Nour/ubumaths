@@ -8,25 +8,9 @@
 	"level": 1,
 	"status": "draft",
 	"delay": 40,
-	"shared": {
-		"choices": [
-			{
-				"content": "arithmétique"
-			},
-			{
-				"content": "géométrique"
-			},
-			{
-				"content": "ni arithmétique, ni géométrique"
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "On place ${{C}}$ € à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital **initial**. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est :",
+			"statement": "On place ${{C}}$ € à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital **initial**. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est :\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -41,16 +25,20 @@
 					"expression": "1..6"
 				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Chaque année, on ajoute la même somme : ${{t}}\\,\\%$ de ${{C}}$ €, soit $\\dfrac{ {{t}} }{100}\\times{{C}}={{eval:C*t/100}}$ €.",
 					"Pour tout $n$ : $u_{n+1}=u_n+{{eval:C*t/100}}$. La suite est **arithmétique** de raison ${{eval:C*t/100}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On place ${{C}}$ € à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts, égaux à ${{t}}\\,\\%$ du capital **de l'année**, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est :",
+			"statement": "On place ${{C}}$ € à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts, égaux à ${{t}}\\,\\%$ du capital **de l'année**, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est :\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -65,16 +53,20 @@
 					"expression": "1..6"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"Chaque année, le capital augmente de ${{t}}\\,\\%$ : $u_{n+1}=u_n+\\dfrac{ {{t}} }{100}u_n={{eval:1+t/100;d}}\\,u_n$.",
 					"On multiplie toujours par le même nombre : la suite est **géométrique** de raison ${{eval:1+t/100;d}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "On place ${{C}}$ € sur un compte : chaque année, le capital augmente de ${{t}}\\,\\%$, puis la banque prélève ${{f}}$ € de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est :",
+			"statement": "On place ${{C}}$ € sur un compte : chaque année, le capital augmente de ${{t}}\\,\\%$, puis la banque prélève ${{f}}$ € de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est :\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique, ni géométrique\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -102,7 +94,6 @@
 				}
 			],
 			"conditions": ["f != C*t/100"],
-			"correctChoiceIndex": ["2"],
 			"correction": {
 				"steps": [
 					"Pour tout $n$ : $u_{n+1}={{eval:1+t/100;d}}\\,u_n-{{f}}$.",
@@ -111,7 +102,12 @@
 					"Si elle était géométrique, on aurait $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}$, c'est-à-dire $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:a^2}}$ et $u_0\\times u_2={{eval:C*b}}$ : la suite n'est pas géométrique.",
 					"La suite n'est **ni arithmétique, ni géométrique**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -123,10 +119,10 @@
 				"C": "2000",
 				"t": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "intérêts simples : « géométrique » refusé",
@@ -136,10 +132,10 @@
 				"C": "2000",
 				"t": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "intérêts simples : « ni l'un ni l'autre » refusé",
@@ -149,10 +145,10 @@
 				"C": "2000",
 				"t": "3"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "intérêts composés : géométrique",
@@ -162,10 +158,10 @@
 				"C": "2000",
 				"t": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "intérêts composés : « arithmétique » refusé",
@@ -175,10 +171,10 @@
 				"C": "2000",
 				"t": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "intérêts composés : « ni l'un ni l'autre » refusé",
@@ -188,10 +184,10 @@
 				"C": "2000",
 				"t": "3"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "hausse puis frais fixes : ni l'un ni l'autre",
@@ -204,10 +200,10 @@
 				"a": "990",
 				"b": "979.8"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "hausse puis frais fixes : « géométrique » refusé",
@@ -220,10 +216,10 @@
 				"a": "990",
 				"b": "979.8"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "hausse puis frais fixes : « arithmétique » refusé",
@@ -236,10 +232,10 @@
 				"a": "990",
 				"b": "979.8"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		}
 	]
 }

@@ -8,26 +8,9 @@
 	"subdomain": "Suites arithmétiques et géométriques",
 	"level": 1,
 	"delay": 20,
-	"shared": {
-		"cleanCoefficients": true,
-		"choices": [
-			{
-				"content": "croissante"
-			},
-			{
-				"content": "décroissante"
-			},
-			{
-				"content": "constante"
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -38,16 +21,20 @@
 					"expression": "1..9"
 				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Une suite arithmétique de raison $r$ vérifie $u_{n+1}-u_n=r$ pour tout $n$ : elle est croissante si $r>0$, décroissante si $r<0$, constante si $r=0$.",
 					"Ici $r=\\textcolor{{{color:primary.0}}}{{{r}}}>0$ : la suite est **croissante** (le signe de $u_0$ ne compte pas)."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -58,32 +45,40 @@
 					"expression": "-9..-1"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"Une suite arithmétique de raison $r$ vérifie $u_{n+1}-u_n=r$ pour tout $n$ : elle est croissante si $r>0$, décroissante si $r<0$, constante si $r=0$.",
 					"Ici $r=\\textcolor{{{color:primary.0}}}{{{r}}}<0$ : la suite est **décroissante** (le signe de $u_0$ ne compte pas)."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r=0$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r=0$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
 					"expression": "1..20;±"
 				}
 			],
-			"correctChoiceIndex": ["2"],
 			"correction": {
 				"steps": [
 					"Une suite arithmétique de raison $r$ vérifie $u_{n+1}-u_n=r$ pour tout $n$ : elle est croissante si $r>0$, décroissante si $r<0$, constante si $r=0$.",
 					"Ici $r=\\textcolor{{{color:primary.0}}}{0}$ : tous les termes valent ${{a}}$, la suite est **constante**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$, $u_{n+1}=u_n-{{r}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$, $u_{n+1}=u_n-{{r}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -94,16 +89,20 @@
 					"expression": "1..9"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"Pour tout $n$, $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{-{{r}}}$ : la suite est arithmétique de raison $r=-{{r}}$.",
 					"Comme $r<0$, la suite est **décroissante**, même si ses premiers termes sont positifs."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{b}}-{{a}}n$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{b}}-{{a}}n$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -114,16 +113,20 @@
 					"expression": "10..50"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"$u_{n+1}-u_n={{b}}-{{a}}(n+1)-({{b}}-{{a}}n)$, soit $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{-{{a}}}$ : la suite est arithmétique de raison $r=-{{a}}$.",
 					"Comme $r<0$, la suite est **décroissante**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{eval:a*n+b}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{eval:a*n+b}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -138,15 +141,22 @@
 					"expression": "-50..-10"
 				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$u_{n+1}-u_n={{a}}(n+1){{eval:b;+}}-({{eval:a*n+b}})$, soit $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{{{a}}}$ : la suite est arithmétique de raison $r={{a}}$.",
 					"Comme $r>0$, la suite est **croissante**, même si ses premiers termes sont négatifs."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"testSpecs": [
 		{
 			"description": "variation 0 (r > 0, u0 < 0) : « croissante » accepté",
@@ -155,10 +165,10 @@
 				"a": "-7",
 				"r": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 0 (r > 0, u0 < 0) : « décroissante » refusé",
@@ -167,10 +177,10 @@
 				"a": "-7",
 				"r": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 0 (r > 0, u0 < 0) : « constante » refusé",
@@ -179,10 +189,10 @@
 				"a": "-7",
 				"r": "3"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 1 (r < 0, u0 > 0) : « croissante » refusé",
@@ -191,10 +201,10 @@
 				"a": "12",
 				"r": "-2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 1 (r < 0, u0 > 0) : « décroissante » accepté",
@@ -203,10 +213,10 @@
 				"a": "12",
 				"r": "-2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 1 (r < 0, u0 > 0) : « constante » refusé",
@@ -215,10 +225,10 @@
 				"a": "12",
 				"r": "-2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 2 (r = 0) : « croissante » refusé",
@@ -226,10 +236,10 @@
 			"variables": {
 				"a": "5"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 2 (r = 0) : « décroissante » refusé",
@@ -237,10 +247,10 @@
 			"variables": {
 				"a": "5"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 2 (r = 0) : « constante » accepté",
@@ -248,10 +258,10 @@
 			"variables": {
 				"a": "5"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 3 (u(n+1) = u(n) − r) : « croissante » refusé",
@@ -260,10 +270,10 @@
 				"a": "30",
 				"r": "4"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 3 (u(n+1) = u(n) − r) : « décroissante » accepté",
@@ -272,10 +282,10 @@
 				"a": "30",
 				"r": "4"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 3 (u(n+1) = u(n) − r) : « constante » refusé",
@@ -284,10 +294,10 @@
 				"a": "30",
 				"r": "4"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 4 (u(n) = b − an) : « croissante » refusé",
@@ -296,10 +306,10 @@
 				"a": "3",
 				"b": "20"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 4 (u(n) = b − an) : « décroissante » accepté",
@@ -308,10 +318,10 @@
 				"a": "3",
 				"b": "20"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 4 (u(n) = b − an) : « constante » refusé",
@@ -320,10 +330,10 @@
 				"a": "3",
 				"b": "20"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 5 (u(n) = an + b, b < 0) : « croissante » accepté",
@@ -332,10 +342,10 @@
 				"a": "4",
 				"b": "-25"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 5 (u(n) = an + b, b < 0) : « décroissante » refusé",
@@ -344,10 +354,10 @@
 				"a": "4",
 				"b": "-25"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 5 (u(n) = an + b, b < 0) : « constante » refusé",
@@ -356,10 +366,10 @@
 				"a": "4",
 				"b": "-25"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		}
 	]
 }

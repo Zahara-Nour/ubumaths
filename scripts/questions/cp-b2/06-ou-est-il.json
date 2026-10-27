@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Regarde la figure. Où est le carré ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un carré bleu et un disque rouge.\n---\nq1 = point({{if:p==1|1.5|{{if:p==2|6.5|{{if:p==3|4|4}}}}}}, {{if:p==1|2.5|{{if:p==2|2.5|{{if:p==3|5|0.2}}}}}}, visible=faux)\nq2 = point({{if:p==1|3.5|{{if:p==2|8.5|{{if:p==3|6|6}}}}}}, {{if:p==1|2.5|{{if:p==2|2.5|{{if:p==3|5|0.2}}}}}}, visible=faux)\nq3 = point({{if:p==1|3.5|{{if:p==2|8.5|{{if:p==3|6|6}}}}}}, {{if:p==1|4.5|{{if:p==2|4.5|{{if:p==3|7|2.2}}}}}}, visible=faux)\nq4 = point({{if:p==1|1.5|{{if:p==2|6.5|{{if:p==3|4|4}}}}}}, {{if:p==1|4.5|{{if:p==2|4.5|{{if:p==3|7|2.2}}}}}}, visible=faux)\nq = polygone(q1, q2, q3, q4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ndo = point({{if:p==1|7|{{if:p==2|3|{{if:p==3|5|5}}}}}}, {{if:p==1|3.5|{{if:p==2|3.5|{{if:p==3|2.5|5.3}}}}}}, visible=faux)\nd = cercle(do, rayon=1.2, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\n```",
+			"statement": "Regarde la figure. Où est le carré ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un carré bleu et un disque rouge.\n---\nq1 = point({{if:p==1|1.5|{{if:p==2|6.5|{{if:p==3|4|4}}}}}}, {{if:p==1|2.5|{{if:p==2|2.5|{{if:p==3|5|0.2}}}}}}, visible=faux)\nq2 = point({{if:p==1|3.5|{{if:p==2|8.5|{{if:p==3|6|6}}}}}}, {{if:p==1|2.5|{{if:p==2|2.5|{{if:p==3|5|0.2}}}}}}, visible=faux)\nq3 = point({{if:p==1|3.5|{{if:p==2|8.5|{{if:p==3|6|6}}}}}}, {{if:p==1|4.5|{{if:p==2|4.5|{{if:p==3|7|2.2}}}}}}, visible=faux)\nq4 = point({{if:p==1|1.5|{{if:p==2|6.5|{{if:p==3|4|4}}}}}}, {{if:p==1|4.5|{{if:p==2|4.5|{{if:p==3|7|2.2}}}}}}, visible=faux)\nq = polygone(q1, q2, q3, q4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ndo = point({{if:p==1|7|{{if:p==2|3|{{if:p==3|5|5}}}}}}, {{if:p==1|3.5|{{if:p==2|3.5|{{if:p==3|2.5|5.3}}}}}}, visible=faux)\nd = cercle(do, rayon=1.2, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\n```\n\n```choix\n- Le carré est à gauche du disque.\n- Le carré est à droite du disque.\n- Le carré est au-dessus du disque.\n- Le carré est en dessous du disque.\n```",
 			"variables": [
 				{
 					"name": "p",
@@ -18,29 +18,19 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "Le carré est à gauche du disque."
-				},
-				{
-					"content": "Le carré est à droite du disque."
-				},
-				{
-					"content": "Le carré est au-dessus du disque."
-				},
-				{
-					"content": "Le carré est en dessous du disque."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:p-1}}"],
 			"correction": {
 				"steps": [
 					"Le carré est {{if:p==1|à gauche du disque|{{if:p==2|à droite du disque|{{if:p==3|au-dessus du disque|en dessous du disque}}}}}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p-1}}"
+				}
+			]
 		},
 		{
-			"statement": "Regarde la figure. Quelle forme est entre {{if:k==1|le carré|{{if:k==2|le disque|{{if:k==3|le triangle|{{if:k==4|le disque|{{if:k==5|le triangle|le carré}}}}}}}}}} et {{if:k==1|le disque|{{if:k==2|le carré|{{if:k==3|le disque|{{if:k==4|le triangle|{{if:k==5|le carré|le triangle}}}}}}}}}} ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 4\ndescription: Un triangle, un carré et un disque, rangés sur une ligne.\n---\nt1 = point({{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|2|8}}}}}}}}}}-1, 1, visible=faux)\nt2 = point({{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|2|8}}}}}}}}}}+1, 1, visible=faux)\nt3 = point({{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|2|8}}}}}}}}}}, 3, visible=faux)\nt = polygone(t1, t2, t3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\nq1 = point({{if:k==1|2|{{if:k==2|8|{{if:k==3|5|{{if:k==4|5|{{if:k==5|8|2}}}}}}}}}}-1, 1, visible=faux)\nq2 = point({{if:k==1|2|{{if:k==2|8|{{if:k==3|5|{{if:k==4|5|{{if:k==5|8|2}}}}}}}}}}+1, 1, visible=faux)\nq3 = point({{if:k==1|2|{{if:k==2|8|{{if:k==3|5|{{if:k==4|5|{{if:k==5|8|2}}}}}}}}}}+1, 3, visible=faux)\nq4 = point({{if:k==1|2|{{if:k==2|8|{{if:k==3|5|{{if:k==4|5|{{if:k==5|8|2}}}}}}}}}}-1, 3, visible=faux)\nq = polygone(q1, q2, q3, q4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ndo = point({{if:k==1|8|{{if:k==2|2|{{if:k==3|8|{{if:k==4|2|{{if:k==5|5|5}}}}}}}}}}, 2, visible=faux)\nd = cercle(do, rayon=1, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\n```",
+			"statement": "Regarde la figure. Quelle forme est entre {{if:k==1|le carré|{{if:k==2|le disque|{{if:k==3|le triangle|{{if:k==4|le disque|{{if:k==5|le triangle|le carré}}}}}}}}}} et {{if:k==1|le disque|{{if:k==2|le carré|{{if:k==3|le disque|{{if:k==4|le triangle|{{if:k==5|le carré|le triangle}}}}}}}}}} ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 4\ndescription: Un triangle, un carré et un disque, rangés sur une ligne.\n---\nt1 = point({{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|2|8}}}}}}}}}}-1, 1, visible=faux)\nt2 = point({{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|2|8}}}}}}}}}}+1, 1, visible=faux)\nt3 = point({{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|2|8}}}}}}}}}}, 3, visible=faux)\nt = polygone(t1, t2, t3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\nq1 = point({{if:k==1|2|{{if:k==2|8|{{if:k==3|5|{{if:k==4|5|{{if:k==5|8|2}}}}}}}}}}-1, 1, visible=faux)\nq2 = point({{if:k==1|2|{{if:k==2|8|{{if:k==3|5|{{if:k==4|5|{{if:k==5|8|2}}}}}}}}}}+1, 1, visible=faux)\nq3 = point({{if:k==1|2|{{if:k==2|8|{{if:k==3|5|{{if:k==4|5|{{if:k==5|8|2}}}}}}}}}}+1, 3, visible=faux)\nq4 = point({{if:k==1|2|{{if:k==2|8|{{if:k==3|5|{{if:k==4|5|{{if:k==5|8|2}}}}}}}}}}-1, 3, visible=faux)\nq = polygone(q1, q2, q3, q4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ndo = point({{if:k==1|8|{{if:k==2|2|{{if:k==3|8|{{if:k==4|2|{{if:k==5|5|5}}}}}}}}}}, 2, visible=faux)\nd = cercle(do, rayon=1, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\n```\n\n```choix\n- Le triangle.\n- Le carré.\n- Le disque.\n```",
 			"variables": [
 				{
 					"name": "g",
@@ -56,26 +46,19 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "Le triangle."
-				},
-				{
-					"content": "Le carré."
-				},
-				{
-					"content": "Le disque."
-				}
-			],
-			"correctChoiceIndex": ["{{g}}"],
 			"correction": {
 				"steps": [
 					"{{if:k==1|le triangle|{{if:k==2|le triangle|{{if:k==3|le carré|{{if:k==4|le carré|{{if:k==5|le disque|le disque}}}}}}}}}} est entre {{if:k==1|le carré|{{if:k==2|le disque|{{if:k==3|le triangle|{{if:k==4|le disque|{{if:k==5|le triangle|le carré}}}}}}}}}} et {{if:k==1|le disque|{{if:k==2|le carré|{{if:k==3|le disque|{{if:k==4|le triangle|{{if:k==5|le carré|le triangle}}}}}}}}}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			]
 		},
 		{
-			"statement": "Regarde la figure. Où est le ballon ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Une table et un ballon.\n---\nplateau1 = point(3, 3, visible=faux)\nplateau2 = point(8, 3, visible=faux)\nplateau3 = point(8, 3.5, visible=faux)\nplateau4 = point(3, 3.5, visible=faux)\nplateau = polygone(plateau1, plateau2, plateau3, plateau4, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\npa1 = point(3.3, 0.5, visible=faux)\npa2 = point(3.7, 0.5, visible=faux)\npa3 = point(3.7, 3, visible=faux)\npa4 = point(3.3, 3, visible=faux)\npa = polygone(pa1, pa2, pa3, pa4, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\npb1 = point(7.3, 0.5, visible=faux)\npb2 = point(7.7, 0.5, visible=faux)\npb3 = point(7.7, 3, visible=faux)\npb4 = point(7.3, 3, visible=faux)\npb = polygone(pb1, pb2, pb3, pb4, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\nballono = point({{if:b==1|5.5|{{if:b==2|5.5|1.5}}}}, {{if:b==1|4.3|{{if:b==2|1.3|1.3}}}}, visible=faux)\nballon = cercle(ballono, rayon=0.8, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nsol1 = point(0, 0.5, visible=faux)\nsol2 = point(10, 0.5, visible=faux)\nsegment(sol1, sol2, couleur=\"noir\")\n```",
+			"statement": "Regarde la figure. Où est le ballon ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Une table et un ballon.\n---\nplateau1 = point(3, 3, visible=faux)\nplateau2 = point(8, 3, visible=faux)\nplateau3 = point(8, 3.5, visible=faux)\nplateau4 = point(3, 3.5, visible=faux)\nplateau = polygone(plateau1, plateau2, plateau3, plateau4, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\npa1 = point(3.3, 0.5, visible=faux)\npa2 = point(3.7, 0.5, visible=faux)\npa3 = point(3.7, 3, visible=faux)\npa4 = point(3.3, 3, visible=faux)\npa = polygone(pa1, pa2, pa3, pa4, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\npb1 = point(7.3, 0.5, visible=faux)\npb2 = point(7.7, 0.5, visible=faux)\npb3 = point(7.7, 3, visible=faux)\npb4 = point(7.3, 3, visible=faux)\npb = polygone(pb1, pb2, pb3, pb4, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\nballono = point({{if:b==1|5.5|{{if:b==2|5.5|1.5}}}}, {{if:b==1|4.3|{{if:b==2|1.3|1.3}}}}, visible=faux)\nballon = cercle(ballono, rayon=0.8, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nsol1 = point(0, 0.5, visible=faux)\nsol2 = point(10, 0.5, visible=faux)\nsegment(sol1, sol2, couleur=\"noir\")\n```\n\n```choix\n- Le ballon est sur la table.\n- Le ballon est sous la table.\n- Le ballon est à côté de la table.\n```",
 			"variables": [
 				{
 					"name": "b",
@@ -83,26 +66,19 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "Le ballon est sur la table."
-				},
-				{
-					"content": "Le ballon est sous la table."
-				},
-				{
-					"content": "Le ballon est à côté de la table."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:b-1}}"],
 			"correction": {
 				"steps": [
 					"Le ballon est {{if:b==1|sur la table|{{if:b==2|sous la table|à côté de la table}}}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b-1}}"
+				}
+			]
 		},
 		{
-			"statement": "Regarde la figure. Où est le disque ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Un carré et un disque, l'un cache une partie de l'autre.\n---\nd1o = point(5.8, 2.6, visible=faux)\nd1 = cercle(d1o, rayon=1.6, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:o==2|vrai|faux}})\nq1 = point(2.5, 1, visible=faux)\nq2 = point(5.5, 1, visible=faux)\nq3 = point(5.5, 4, visible=faux)\nq4 = point(2.5, 4, visible=faux)\nq = polygone(q1, q2, q3, q4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\nd2o = point(5.8, 2.6, visible=faux)\nd2 = cercle(d2o, rayon=1.6, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:o==1|vrai|faux}})\n```",
+			"statement": "Regarde la figure. Où est le disque ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Un carré et un disque, l'un cache une partie de l'autre.\n---\nd1o = point(5.8, 2.6, visible=faux)\nd1 = cercle(d1o, rayon=1.6, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:o==2|vrai|faux}})\nq1 = point(2.5, 1, visible=faux)\nq2 = point(5.5, 1, visible=faux)\nq3 = point(5.5, 4, visible=faux)\nq4 = point(2.5, 4, visible=faux)\nq = polygone(q1, q2, q3, q4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\nd2o = point(5.8, 2.6, visible=faux)\nd2 = cercle(d2o, rayon=1.6, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:o==1|vrai|faux}})\n```\n\n```choix\n- Le disque est devant le carré.\n- Le disque est derrière le carré.\n```",
 			"variables": [
 				{
 					"name": "o",
@@ -110,20 +86,16 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "Le disque est devant le carré."
-				},
-				{
-					"content": "Le disque est derrière le carré."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:o-1}}"],
 			"correction": {
 				"steps": [
 					"{{if:o==1|Le disque cache une partie du carré : il est devant le carré.|Le carré cache une partie du disque : le disque est derrière le carré.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:o-1}}"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -136,7 +108,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : gauche et droite inversées",
@@ -147,7 +119,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Carré en dessous",
@@ -158,7 +130,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [3]
+			"answers": ["3"]
 		},
 		{
 			"description": "Erreur : au-dessus au lieu d'en dessous",
@@ -169,7 +141,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "Entre : le triangle",
@@ -182,7 +154,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : une forme du bout",
@@ -195,7 +167,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Entre : le disque",
@@ -208,7 +180,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "Ballon sous la table",
@@ -219,7 +191,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : sur au lieu de sous",
@@ -230,7 +202,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Ballon à côté",
@@ -241,7 +213,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "Disque devant",
@@ -252,7 +224,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Disque derrière",
@@ -263,7 +235,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : devant au lieu de derrière",
@@ -274,7 +246,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
 	]
 }

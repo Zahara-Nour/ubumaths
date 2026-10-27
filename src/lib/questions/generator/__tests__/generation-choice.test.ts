@@ -250,13 +250,17 @@ describe('génération : erreurs situées', () => {
 		]);
 	});
 
-	it('bonne réponse illisible ou répétée', () => {
+	it('bonne réponse illisible ou répétée (écrite en dur)', () => {
 		expect(errorsOf(CINQ('B'))).toEqual([
 			'Variation 1, case 1 (bloc choix) : bonne réponse « B » illisible (indices des bons choix, 0 pour le premier, séparés par ;)'
 		]);
 		expect(errorsOf(CINQ('1;1', 'plusieurs: oui\n'))).toEqual([
 			'Variation 1, case 1 (bloc choix) : bonne réponse « 1;1 » illisible (indices des bons choix, 0 pour le premier, séparés par ;)'
 		]);
+	});
+
+	it('bonne réponse CALCULÉE qui répète un indice : il compte une fois (QCM migrés, lot 4)', () => {
+		expect(errorsOf(CINQ('1;{{eval:1}};3', 'plusieurs: oui\n'))).toEqual([]);
 	});
 
 	it('aucune bonne réponse', () => {

@@ -652,7 +652,7 @@ export function assignBlankIndices(
 /**
  * A segment of the statement — either a math zone or a text zone
  */
-interface Segment {
+export interface Segment {
 	type: 'math' | 'text';
 	content: string;
 	/** Opening delimiter for math zones ($ or $$) */
@@ -672,7 +672,7 @@ interface Segment {
  * @param statement - The statement to split
  * @returns Array of segments in order of appearance
  */
-function splitIntoSegments(statement: string): Segment[] {
+export function splitIntoSegments(statement: string): Segment[] {
 	const segments: Segment[] = [];
 	let pos = 0;
 

@@ -8,42 +8,29 @@
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
-	"shared": {
-		"cleanCoefficients": true,
-		"choices": [
-			{
-				"content": "$(u_n)$ tend vers $+\\infty$"
-			},
-			{
-				"content": "$(u_n)$ tend vers $-\\infty$"
-			},
-			{
-				"content": "$(u_n)$ converge vers $0$"
-			},
-			{
-				"content": "On ne peut pas conclure sur la limite de $(u_n)$"
-			}
-		]
-	},
 	"variations": [
 		{
-			"statement": "Pour tout entier naturel $n$, la suite $(u_n)$ vérifie $u_n\\geqslant n^{2}-{{a}}$.\n\nQue peut-on en déduire ?",
+			"statement": "Pour tout entier naturel $n$, la suite $(u_n)$ vérifie $u_n\\geqslant n^{2}-{{a}}$.\n\nQue peut-on en déduire ?\n\n```choix\n- $(u_n)$ tend vers $+\\infty$\n- $(u_n)$ tend vers $-\\infty$\n- $(u_n)$ converge vers $0$\n- On ne peut pas conclure sur la limite de $(u_n)$\n```",
 			"variables": [
 				{
 					"name": "a",
 					"expression": "1..9"
 				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$\\displaystyle\\lim_{n\\to+\\infty}\\left(n^{2}-{{a}}\\right)=+\\infty$ et $u_n$ est **supérieur** à ce terme.",
 					"Par comparaison, $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Pour tout entier naturel $n$, la suite $(u_n)$ vérifie $u_n\\leqslant{{b}}-{{a}}\\sqrt{n}$.\n\nQue peut-on en déduire ?",
+			"statement": "Pour tout entier naturel $n$, la suite $(u_n)$ vérifie $u_n\\leqslant{{b}}-{{a}}\\sqrt{n}$.\n\nQue peut-on en déduire ?\n\n```choix\n- $(u_n)$ tend vers $+\\infty$\n- $(u_n)$ tend vers $-\\infty$\n- $(u_n)$ converge vers $0$\n- On ne peut pas conclure sur la limite de $(u_n)$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -54,32 +41,40 @@
 					"expression": "1..9"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"$\\displaystyle\\lim_{n\\to+\\infty}\\left({{b}}-{{a}}\\sqrt{n}\\right)=-\\infty$ et $u_n$ est **inférieur** à ce terme.",
 					"Par comparaison, $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}u_n=-\\infty}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Pour tout entier naturel $n$, la suite $(u_n)$ vérifie $u_n\\leqslant n^{2}+{{a}}$.\n\nQue peut-on en déduire ?",
+			"statement": "Pour tout entier naturel $n$, la suite $(u_n)$ vérifie $u_n\\leqslant n^{2}+{{a}}$.\n\nQue peut-on en déduire ?\n\n```choix\n- $(u_n)$ tend vers $+\\infty$\n- $(u_n)$ tend vers $-\\infty$\n- $(u_n)$ converge vers $0$\n- On ne peut pas conclure sur la limite de $(u_n)$\n```",
 			"variables": [
 				{
 					"name": "a",
 					"expression": "1..9"
 				}
 			],
-			"correctChoiceIndex": ["3"],
 			"correction": {
 				"steps": [
 					"$n^{2}+{{a}}$ tend vers $+\\infty$, mais $u_n$ lui est **inférieur** : une majoration par une suite qui tend vers $+\\infty$ ne dit rien.",
 					"Par exemple $u_n=0$, $u_n=-n$ ou $u_n=(-1)^{n}$ vérifient tous l'inégalité. $\\textcolor{{{color:primary.0}}}{\\text{On ne peut pas conclure}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			]
 		},
 		{
-			"statement": "Pour tout entier naturel $n$, on pose $u_n={{b}}n+{{a}}\\times(-1)^{n}$.\n\nQue peut-on dire de la limite de $(u_n)$ ?",
+			"statement": "Pour tout entier naturel $n$, on pose $u_n={{b}}n+{{a}}\\times(-1)^{n}$.\n\nQue peut-on dire de la limite de $(u_n)$ ?\n\n```choix\n- $(u_n)$ tend vers $+\\infty$\n- $(u_n)$ tend vers $-\\infty$\n- $(u_n)$ converge vers $0$\n- On ne peut pas conclure sur la limite de $(u_n)$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -90,31 +85,42 @@
 					"expression": "2..4"
 				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$(-1)^{n}\\geqslant-1$, donc $u_n\\geqslant{{b}}n-{{a}}$ pour tout $n$.",
 					"$\\displaystyle\\lim_{n\\to+\\infty}\\left({{b}}n-{{a}}\\right)=+\\infty$ : par comparaison, $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{n\\to+\\infty}u_n=+\\infty}$, bien que $(-1)^{n}$ n'ait pas de limite."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Pour tout entier $n\\geqslant1$, la suite $(u_n)$ vérifie $0\\leqslant u_n\\leqslant\\dfrac{ {{a}} }{n}$.\n\nQue peut-on en déduire ?",
+			"statement": "Pour tout entier $n\\geqslant1$, la suite $(u_n)$ vérifie $0\\leqslant u_n\\leqslant\\dfrac{ {{a}} }{n}$.\n\nQue peut-on en déduire ?\n\n```choix\n- $(u_n)$ tend vers $+\\infty$\n- $(u_n)$ tend vers $-\\infty$\n- $(u_n)$ converge vers $0$\n- On ne peut pas conclure sur la limite de $(u_n)$\n```",
 			"variables": [
 				{
 					"name": "a",
 					"expression": "1..9"
 				}
 			],
-			"correctChoiceIndex": ["2"],
 			"correction": {
 				"steps": [
 					"$\\displaystyle\\lim_{n\\to+\\infty}\\dfrac{ {{a}} }{n}=0$ : $u_n$ est encadré par deux suites qui tendent vers $0$.",
 					"Par le théorème des gendarmes, $\\textcolor{{{color:primary.0}}}{(u_n)\\text{ converge vers }0}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"testSpecs": [
 		{
 			"description": "v0 minorée par n²−a → +∞",
@@ -122,10 +128,10 @@
 			"variables": {
 				"a": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : on ne peut pas conclure refusé",
@@ -133,10 +139,10 @@
 			"variables": {
 				"a": "3"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v1 majorée par b − a√n → −∞",
@@ -145,10 +151,10 @@
 				"a": "2",
 				"b": "5"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : +∞ refusé",
@@ -157,10 +163,10 @@
 				"a": "2",
 				"b": "5"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 majorée par n²+a → on ne peut pas conclure",
@@ -168,10 +174,10 @@
 			"variables": {
 				"a": "4"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v2 : +∞ refusé (sens de la comparaison)",
@@ -179,10 +185,10 @@
 			"variables": {
 				"a": "4"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v3 2n + 3(−1)ⁿ → +∞",
@@ -191,10 +197,10 @@
 				"a": "3",
 				"b": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v3 : pas de conclusion refusé ((−1)ⁿ sans limite)",
@@ -203,10 +209,10 @@
 				"a": "3",
 				"b": "2"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v4 0 ≤ uₙ ≤ a/n → 0",
@@ -214,10 +220,10 @@
 			"variables": {
 				"a": "5"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v4 : on ne peut pas conclure refusé",
@@ -225,10 +231,10 @@
 			"variables": {
 				"a": "5"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		}
 	]
 }

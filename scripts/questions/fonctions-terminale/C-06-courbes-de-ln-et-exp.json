@@ -10,95 +10,65 @@
 	"delay": 60,
 	"variations": [
 		{
-			"statement": "Laquelle de ces courbes représente la fonction $\\ln$ ?",
+			"statement": "Laquelle de ces courbes représente la fonction $\\ln$ ?\n\n````choix\n- ```courbe\n  x: -2 ; 5\n  y: -3 ; 4\n  grille: 1 ; 1\n  f(x) = ln(x)   bleu\n  taille: petite\n  description: Courbe croissante définie pour x > 0, qui passe par (1 ; 0) et plonge vers le bas près de l'axe des ordonnées.\n  ```\n- ```courbe\n  x: -2 ; 5\n  y: -3 ; 4\n  grille: 1 ; 1\n  f(x) = exp(x)   bleu\n  taille: petite\n  description: Courbe croissante définie sur tout l'axe, qui passe par (0 ; 1) et reste au-dessus de l'axe des abscisses.\n  ```\n- ```courbe\n  x: -2 ; 5\n  y: -3 ; 4\n  grille: 1 ; 1\n  f(x) = -ln(x)   bleu\n  taille: petite\n  description: Courbe décroissante définie pour x > 0, qui passe par (1 ; 0) et monte près de l'axe des ordonnées.\n  ```\n- ```courbe\n  x: -2 ; 5\n  y: -3 ; 4\n  grille: 1 ; 1\n  f(x) = ln(x+1)   bleu\n  taille: petite\n  description: Courbe croissante définie pour x > -1, qui passe par l'origine (0 ; 0).\n  ```\n````",
 			"variables": [
 				{
 					"name": "z",
 					"expression": "1"
 				}
 			],
-			"choices": [
-				{
-					"content": "```courbe\nx: -2 ; 5\ny: -3 ; 4\ngrille: 1 ; 1\nf(x) = ln(x)   bleu\ntaille: petite\ndescription: Courbe croissante définie pour x > 0, qui passe par (1 ; 0) et plonge vers le bas près de l'axe des ordonnées.\n```"
-				},
-				{
-					"content": "```courbe\nx: -2 ; 5\ny: -3 ; 4\ngrille: 1 ; 1\nf(x) = exp(x)   bleu\ntaille: petite\ndescription: Courbe croissante définie sur tout l'axe, qui passe par (0 ; 1) et reste au-dessus de l'axe des abscisses.\n```"
-				},
-				{
-					"content": "```courbe\nx: -2 ; 5\ny: -3 ; 4\ngrille: 1 ; 1\nf(x) = -ln(x)   bleu\ntaille: petite\ndescription: Courbe décroissante définie pour x > 0, qui passe par (1 ; 0) et monte près de l'axe des ordonnées.\n```"
-				},
-				{
-					"content": "```courbe\nx: -2 ; 5\ny: -3 ; 4\ngrille: 1 ; 1\nf(x) = ln(x+1)   bleu\ntaille: petite\ndescription: Courbe croissante définie pour x > -1, qui passe par l'origine (0 ; 0).\n```"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"La courbe de $\\ln$ passe par le point $(1\\,;0)$ ($\\ln 1=0$) et par $(e\\,;1)$.",
 					"Elle n'existe que pour $x>0$, monte (fonction croissante) et a l'axe des ordonnées pour asymptote : $\\displaystyle\\lim_{x\\to0}\\ln x=-\\infty$.",
 					"C'est la courbe \\textcolor{{{color:primary.0}}}{\\text{croissante passant par }(1\\,;0)}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On a tracé les courbes des fonctions $\\exp$ et $\\ln$ dans un repère orthonormé.\n\n```courbe\nx: -3 ; 5\ny: -3 ; 5\ngrille: 1 ; 1\nf(x) = exp(x)   bleu   nom=C_{exp}\ng(x) = ln(x)   rouge   nom=C_{ln}\nh(x) = x   gris pointillé\ntaille: moyenne\ndescription: Courbe de l'exponentielle (bleue) et du logarithme (rouge), symétriques par rapport à la droite y = x tracée en pointillés.\n```\n\nPar quelle transformation passe-t-on de la courbe de $\\exp$ à celle de $\\ln$ ?",
+			"statement": "On a tracé les courbes des fonctions $\\exp$ et $\\ln$ dans un repère orthonormé.\n\n```courbe\nx: -3 ; 5\ny: -3 ; 5\ngrille: 1 ; 1\nf(x) = exp(x)   bleu   nom=C_{exp}\ng(x) = ln(x)   rouge   nom=C_{ln}\nh(x) = x   gris pointillé\ntaille: moyenne\ndescription: Courbe de l'exponentielle (bleue) et du logarithme (rouge), symétriques par rapport à la droite y = x tracée en pointillés.\n```\n\nPar quelle transformation passe-t-on de la courbe de $\\exp$ à celle de $\\ln$ ?\n\n```choix\n- La symétrie par rapport à la droite d'équation $y=x$.\n- La symétrie par rapport à l'axe des ordonnées.\n- La symétrie par rapport à l'axe des abscisses.\n- La symétrie par rapport à l'origine du repère.\n```",
 			"variables": [
 				{
 					"name": "z",
 					"expression": "1"
 				}
 			],
-			"choices": [
-				{
-					"content": "La symétrie par rapport à la droite d'équation $y=x$."
-				},
-				{
-					"content": "La symétrie par rapport à l'axe des ordonnées."
-				},
-				{
-					"content": "La symétrie par rapport à l'axe des abscisses."
-				},
-				{
-					"content": "La symétrie par rapport à l'origine du repère."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$\\ln$ est la fonction réciproque de $\\exp$ : le point $(a\\,;b)$ est sur la courbe de $\\exp$ si et seulement si $(b\\,;a)$ est sur celle de $\\ln$.",
 					"Échanger abscisse et ordonnée, c'est la \\textcolor{{{color:primary.0}}}{\\text{symétrie par rapport à la droite d'équation }y=x}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Le point $A\\left({{a}}\\,;e^{ {{a}} }\\right)$ appartient à la courbe de la fonction $\\exp$.\n\nQuel point appartient à la courbe de la fonction $\\ln$ ?",
+			"statement": "Le point $A\\left({{a}}\\,;e^{ {{a}} }\\right)$ appartient à la courbe de la fonction $\\exp$.\n\nQuel point appartient à la courbe de la fonction $\\ln$ ?\n\n```choix\n- $\\left(e^{ {{a}} }\\,;{{a}}\\right)$\n- $\\left(-{{a}}\\,;e^{ {{a}} }\\right)$\n- $\\left({{a}}\\,;-e^{ {{a}} }\\right)$\n- $\\left(e^{-{{a}}}\\,;{{a}}\\right)$\n```",
 			"variables": [
 				{
 					"name": "a",
 					"expression": "2..4"
 				}
 			],
-			"choices": [
-				{
-					"content": "$\\left(e^{ {{a}} }\\,;{{a}}\\right)$"
-				},
-				{
-					"content": "$\\left(-{{a}}\\,;e^{ {{a}} }\\right)$"
-				},
-				{
-					"content": "$\\left({{a}}\\,;-e^{ {{a}} }\\right)$"
-				},
-				{
-					"content": "$\\left(e^{-{{a}}}\\,;{{a}}\\right)$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$\\ln\\left(e^{ {{a}} }\\right)={{a}}$ : le point d'abscisse $e^{ {{a}} }$ de la courbe de $\\ln$ a pour ordonnée ${{a}}$.",
 					"C'est le symétrique de $A$ par rapport à la droite $y=x$ : $\\textcolor{{{color:primary.0}}}{\\left(e^{ {{a}} }\\,;{{a}}\\right)}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -108,10 +78,10 @@
 			"variables": {
 				"z": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : courbe de exp",
@@ -119,10 +89,10 @@
 			"variables": {
 				"z": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : −ln x",
@@ -130,10 +100,10 @@
 			"variables": {
 				"z": "1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 : ln(x+1)",
@@ -141,10 +111,10 @@
 			"variables": {
 				"z": "1"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v1 : y = x",
@@ -152,10 +122,10 @@
 			"variables": {
 				"z": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : axe des ordonnées",
@@ -163,10 +133,10 @@
 			"variables": {
 				"z": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : axe des abscisses",
@@ -174,10 +144,10 @@
 			"variables": {
 				"z": "1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 : (e^a ; a)",
@@ -185,10 +155,10 @@
 			"variables": {
 				"a": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : symétrique par rapport à l'axe des ordonnées",
@@ -196,10 +166,10 @@
 			"variables": {
 				"a": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : e^{−a} (ln(1/x) confondu)",
@@ -207,13 +177,10 @@
 			"variables": {
 				"a": "3"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		}
-	],
-	"options": {
-		"shuffleChoices": true
-	}
+	]
 }

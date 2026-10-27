@@ -10,99 +10,59 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Qui suis-je ?\n\n_J'ai 3 côtés._\n\n_J'ai 3 sommets._",
+			"statement": "Qui suis-je ?\n\n_J'ai 3 côtés._\n\n_J'ai 3 sommets._\n\n```choix\n- Je suis un triangle.\n- Je suis un carré.\n- Je suis un rectangle.\n- Je suis un disque.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "Je suis un triangle."
-				},
-				{
-					"content": "Je suis un carré."
-				},
-				{
-					"content": "Je suis un rectangle."
-				},
-				{
-					"content": "Je suis un disque."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": ["C'est un triangle.", "Un triangle a 3 côtés et 3 sommets."]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Qui suis-je ?\n\n_J'ai 4 côtés et 4 sommets._\n\n_Mes 4 côtés ont la même longueur._",
+			"statement": "Qui suis-je ?\n\n_J'ai 4 côtés et 4 sommets._\n\n_Mes 4 côtés ont la même longueur._\n\n```choix\n- Je suis un triangle.\n- Je suis un carré.\n- Je suis un rectangle.\n- Je suis un disque.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "Je suis un triangle."
-				},
-				{
-					"content": "Je suis un carré."
-				},
-				{
-					"content": "Je suis un rectangle."
-				},
-				{
-					"content": "Je suis un disque."
-				}
-			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": ["C'est un carré.", "Un carré a 4 côtés, tous de la même longueur, et 4 sommets."]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Qui suis-je ?\n\n_J'ai 4 côtés et 4 sommets._\n\n_J'ai deux grands côtés et deux petits côtés._",
+			"statement": "Qui suis-je ?\n\n_J'ai 4 côtés et 4 sommets._\n\n_J'ai deux grands côtés et deux petits côtés._\n\n```choix\n- Je suis un triangle.\n- Je suis un carré.\n- Je suis un rectangle.\n- Je suis un disque.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "Je suis un triangle."
-				},
-				{
-					"content": "Je suis un carré."
-				},
-				{
-					"content": "Je suis un rectangle."
-				},
-				{
-					"content": "Je suis un disque."
-				}
-			],
-			"correctChoiceIndex": ["2"],
 			"correction": {
 				"steps": [
 					"C'est un rectangle.",
 					"Un rectangle a 4 côtés et 4 sommets : deux grands côtés et deux petits côtés."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		},
 		{
-			"statement": "Qui suis-je ?\n\n_Je suis tout rond._\n\n_Je n'ai ni côté ni sommet._",
+			"statement": "Qui suis-je ?\n\n_Je suis tout rond._\n\n_Je n'ai ni côté ni sommet._\n\n```choix\n- Je suis un triangle.\n- Je suis un carré.\n- Je suis un rectangle.\n- Je suis un disque.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "Je suis un triangle."
-				},
-				{
-					"content": "Je suis un carré."
-				},
-				{
-					"content": "Je suis un rectangle."
-				},
-				{
-					"content": "Je suis un disque."
-				}
-			],
-			"correctChoiceIndex": ["3"],
 			"correction": {
 				"steps": ["C'est un disque.", "Un disque est tout rond : il n'a ni côté ni sommet."]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -113,7 +73,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Côtés égaux : carré",
@@ -122,7 +82,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : côtés égaux, rectangle",
@@ -131,7 +91,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "Grands et petits côtés : rectangle",
@@ -140,7 +100,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "Erreur : grands et petits côtés, carré",
@@ -149,7 +109,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Tout rond : disque",
@@ -158,7 +118,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [3]
+			"answers": ["3"]
 		}
 	]
 }

@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Qu'est-ce qui est le plus **lourd** : {{if:s==0|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}}} ou {{if:s==0|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}}} ?",
+			"statement": "Qu'est-ce qui est le plus **lourd** : {{if:s==0|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}}} ou {{if:s==0|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}}} ?\n\n```choix\n- {{if:s==0|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}}}\n- {{if:s==0|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}}}\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -22,24 +22,20 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "{{if:s==0|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:s==0|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}}}"
-				}
-			],
-			"correctChoiceIndex": ["{{s}}"],
 			"correction": {
 				"steps": [
 					"On soupèse dans sa tête : {{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}} est bien plus lourd{{if:k==1|e|{{if:k==2||{{if:k==3||{{if:k==4|e|{{if:k==5||e}}}}}}}}}} {{if:k==1|qu'une cerise|{{if:k==2|qu'une plume|{{if:k==3|qu'une souris|{{if:k==4|qu'une éponge|{{if:k==5|qu'une feuille de papier|qu'un vélo}}}}}}}}}}.",
 					"Le plus lourd, c'est {{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			]
 		},
 		{
-			"statement": "Qu'est-ce qui est le plus **léger** : {{if:s==0|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}}} ou {{if:s==0|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}}} ?",
+			"statement": "Qu'est-ce qui est le plus **léger** : {{if:s==0|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}}} ou {{if:s==0|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}}} ?\n\n```choix\n- {{if:s==0|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}}}\n- {{if:s==0|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}}}\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -51,24 +47,20 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "{{if:s==0|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:s==0|{{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}|{{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}}}}"
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-s}}"],
 			"correction": {
 				"steps": [
 					"On soupèse dans sa tête : {{if:k==1|une pastèque|{{if:k==2|un cartable plein|{{if:k==3|un éléphant|{{if:k==4|une brique|{{if:k==5|un dictionnaire|une voiture}}}}}}}}}} est bien plus lourd{{if:k==1|e|{{if:k==2||{{if:k==3||{{if:k==4|e|{{if:k==5||e}}}}}}}}}} {{if:k==1|qu'une cerise|{{if:k==2|qu'une plume|{{if:k==3|qu'une souris|{{if:k==4|qu'une éponge|{{if:k==5|qu'une feuille de papier|qu'un vélo}}}}}}}}}}.",
 					"Le plus léger, c'est {{if:k==1|une cerise|{{if:k==2|une plume|{{if:k==3|une souris|{{if:k==4|une éponge|{{if:k==5|une feuille de papier|un vélo}}}}}}}}}}."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-s}}"
+				}
+			]
 		},
 		{
-			"statement": "Quel est le contraire de « **{{if:w==0|lourd|léger}}** » ?",
+			"statement": "Quel est le contraire de « **{{if:w==0|lourd|léger}}** » ?\n\n```choix\n- léger\n- lourd\n- court\n```",
 			"variables": [
 				{
 					"name": "w",
@@ -76,23 +68,16 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "léger"
-				},
-				{
-					"content": "lourd"
-				},
-				{
-					"content": "court"
-				}
-			],
-			"correctChoiceIndex": ["{{w}}"],
 			"correction": {
 				"steps": [
 					"Le contraire de « {{if:w==0|lourd|léger}} » est « **{{if:w==0|léger|lourd}}** » : une brique est lourde, une plume est légère."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -106,7 +91,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : la cerise",
@@ -118,7 +103,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "cerise ou pastèque : la pastèque (2e choix)",
@@ -130,7 +115,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "plus léger : plume ou cartable, la plume",
@@ -142,7 +127,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : plus léger, le cartable",
@@ -154,7 +139,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "borne : voiture ou vélo, le vélo est le plus léger",
@@ -166,7 +151,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "contraire de lourd : léger",
@@ -177,7 +162,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : contraire de lourd, court",
@@ -188,7 +173,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "contraire de léger : lourd",
@@ -199,7 +184,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		}
 	]
 }

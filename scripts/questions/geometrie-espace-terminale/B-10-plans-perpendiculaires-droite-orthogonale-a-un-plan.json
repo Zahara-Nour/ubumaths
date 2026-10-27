@@ -8,12 +8,9 @@
 	"level": 2,
 	"status": "draft",
 	"delay": 90,
-	"shared": {
-		"cleanCoefficients": true
-	},
 	"variations": [
 		{
-			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et ${{p1}}x+({{p2}})y+({{p3}})z+({{q}})=0$.\n\nLes plans $\\mathcal{P}$ et $\\mathcal{Q}$ sont-ils perpendiculaires ?",
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et ${{p1}}x+({{p2}})y+({{p3}})z+({{q}})=0$.\n\nLes plans $\\mathcal{P}$ et $\\mathcal{Q}$ sont-ils perpendiculaires ?\n\n```choix\n- Oui, $\\mathcal{P}$ et $\\mathcal{Q}$ sont perpendiculaires.\n- Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -57,25 +54,21 @@
 				}
 			],
 			"conditions": ["b != 0 || c != 0", "abs(p1)+abs(p2)+abs(p3) > 0"],
-			"choices": [
-				{
-					"content": "Oui, $\\mathcal{P}$ et $\\mathcal{Q}$ sont perpendiculaires."
-				},
-				{
-					"content": "Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires."
-				}
-			],
-			"correctChoiceIndex": ["{{o}}"],
 			"correction": {
 				"steps": [
 					"Deux plans sont perpendiculaires si et seulement si leurs vecteurs normaux $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$ et $\\vec{n}'\\begin{pmatrix}{{p1}}\\\\{{p2}}\\\\{{p3}}\\end{pmatrix}$ sont orthogonaux.",
 					"$\\vec{n}\\cdot\\vec{n}'={{a}}\\times{{p1;()}}+{{b;()}}\\times{{p2;()}}+{{c;()}}\\times{{p3;()}}={{eval:a*p1+b*p2+c*p3}}$.",
 					"{{if:o==0|Le produit scalaire est nul : les plans **sont perpendiculaires**.}}{{if:o==1|Le produit scalaire n'est pas nul : les plans **ne sont pas perpendiculaires**.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			]
 		},
 		{
-			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et la droite $\\Delta$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $\\Delta$ est-elle orthogonale au plan $\\mathcal{P}$ ?",
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et la droite $\\Delta$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $\\Delta$ est-elle orthogonale au plan $\\mathcal{P}$ ?\n\n```choix\n- Oui, $\\Delta$ est orthogonale à $\\mathcal{P}$.\n- Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -126,23 +119,22 @@
 					"expression": "{{eval:k*c}}"
 				}
 			],
-			"choices": [
-				{
-					"content": "Oui, $\\Delta$ est orthogonale à $\\mathcal{P}$."
-				},
-				{
-					"content": "Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$."
-				}
-			],
-			"correctChoiceIndex": ["{{o}}"],
 			"correction": {
 				"steps": [
 					"$\\Delta$ est orthogonale à $\\mathcal{P}$ si et seulement si son vecteur directeur $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ est colinéaire au vecteur normal $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$.",
 					"{{if:o==0|$\\vec{u}=k\\,\\vec{n}$ avec $k={{k}}$ : les vecteurs sont colinéaires, $\\Delta$ **est orthogonale** à $\\mathcal{P}$.}}{{if:o==1|$x_{\\vec{n}}\\,y_{\\vec{u}}-y_{\\vec{n}}\\,x_{\\vec{u}}={{a}}\\times{{u2;()}}-{{b;()}}\\times{{u1;()}}={{eval:a*u2-b*u1}}\\neq0$ : les vecteurs ne sont pas colinéaires, $\\Delta$ **n'est pas orthogonale** à $\\mathcal{P}$.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : perpendiculaires → Oui",
@@ -156,10 +148,10 @@
 				"r": "1",
 				"o": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : Non coché",
@@ -173,10 +165,10 @@
 				"r": "1",
 				"o": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : non perpendiculaires → Non",
@@ -190,10 +182,10 @@
 				"r": "1",
 				"o": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : non perpendiculaires, Oui coché",
@@ -207,10 +199,10 @@
 				"r": "1",
 				"o": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : orthogonale → Oui",
@@ -226,10 +218,10 @@
 				"y0": "0",
 				"z0": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : Non coché",
@@ -245,10 +237,10 @@
 				"y0": "0",
 				"z0": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : non orthogonale → Non",
@@ -264,10 +256,10 @@
 				"y0": "0",
 				"z0": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : non orthogonale, Oui coché",
@@ -283,10 +275,10 @@
 				"y0": "0",
 				"z0": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		}
 	]
 }

@@ -8,12 +8,9 @@
 	"level": 1,
 	"status": "draft",
 	"delay": 60,
-	"shared": {
-		"cleanCoefficients": true
-	},
 	"variations": [
 		{
-			"statement": "Le plan est muni d'un repère orthonormé. On considère le cercle $\\mathcal{C}$ d'équation $(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}}$.\n\nLe point $M({{xm}}\\,;{{ym}})$ appartient-il au cercle $\\mathcal{C}$ ?",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère le cercle $\\mathcal{C}$ d'équation $(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}}$.\n\nLe point $M({{xm}}\\,;{{ym}})$ appartient-il au cercle $\\mathcal{C}$ ?\n\n```choix\nmelanger: non\n- Oui, $M$ appartient à $\\mathcal{C}$.\n- Non, $M$ n'appartient pas à $\\mathcal{C}$.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -57,25 +54,21 @@
 				}
 			],
 			"conditions": ["R2 > 0"],
-			"choices": [
-				{
-					"content": "Oui, $M$ appartient à $\\mathcal{C}$."
-				},
-				{
-					"content": "Non, $M$ n'appartient pas à $\\mathcal{C}$."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-t}}"],
 			"correction": {
 				"steps": [
 					"$M$ appartient à $\\mathcal{C}$ si et seulement si ses coordonnées vérifient l'équation de $\\mathcal{C}$.",
 					"On remplace $x$ et $y$ par les coordonnées de $M$ dans le premier membre :\n\n$$\\begin{align*}({{xm}}{{eval:-a;+}})^2+({{ym}}{{eval:-b;+}})^2&={{p;()}}^2+{{q;()}}^2\\\\&={{D}}\\end{align*}$$",
 					"{{if:t=1|On trouve ${{D}}$, le second membre : l'égalité est vraie. **Oui, $M$ appartient à $\\mathcal{C}$.**}}{{if:t=0|On trouve ${{D}}\\neq{{R2}}$ : l'égalité est fausse. **Non, $M$ n'appartient pas à $\\mathcal{C}$.**}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-t}}"
+				}
+			]
 		},
 		{
-			"statement": "Le plan est muni d'un repère orthonormé. On considère le cercle $\\mathcal{C}$ d'équation $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$.\n\nLe point $M({{xm}}\\,;{{ym}})$ appartient-il au cercle $\\mathcal{C}$ ?",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère le cercle $\\mathcal{C}$ d'équation $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$.\n\nLe point $M({{xm}}\\,;{{ym}})$ appartient-il au cercle $\\mathcal{C}$ ?\n\n```choix\nmelanger: non\n- Oui, $M$ appartient à $\\mathcal{C}$.\n- Non, $M$ n'appartient pas à $\\mathcal{C}$.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -123,25 +116,21 @@
 				}
 			],
 			"conditions": ["R2 > 0", "xm != 0", "ym != 0"],
-			"choices": [
-				{
-					"content": "Oui, $M$ appartient à $\\mathcal{C}$."
-				},
-				{
-					"content": "Non, $M$ n'appartient pas à $\\mathcal{C}$."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-t}}"],
 			"correction": {
 				"steps": [
 					"$M$ appartient à $\\mathcal{C}$ si et seulement si ses coordonnées vérifient l'équation de $\\mathcal{C}$.",
 					"On remplace $x$ et $y$ par les coordonnées de $M$ dans le premier membre :\n\n$$\\begin{align*}&{{xm;()}}^2+{{ym;()}}^2{{eval:-2*a;+}}\\times{{xm;()}}{{eval:-2*b;+}}\\times{{ym;()}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}\\\\={}&{{eval:xm^2+ym^2}}{{eval:-2*a*xm;+}}{{eval:-2*b*ym;+}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}={{eval:D-R2}}\\end{align*}$$",
 					"{{if:t=1|On trouve $0$ : l'égalité est vraie. **Oui, $M$ appartient à $\\mathcal{C}$.**}}{{if:t=0|On ne trouve pas $0$ : l'égalité est fausse. **Non, $M$ n'appartient pas à $\\mathcal{C}$.**}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-t}}"
+				}
+			]
 		},
 		{
-			"statement": "Le plan est muni d'un repère orthonormé. On considère le cercle $\\mathcal{C}$ d'équation $(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}}$ et le point $M({{xm}}\\,;{{ym}})$.\n\nQuelle est la position du point $M$ par rapport au cercle $\\mathcal{C}$ ?",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère le cercle $\\mathcal{C}$ d'équation $(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}}$ et le point $M({{xm}}\\,;{{ym}})$.\n\nQuelle est la position du point $M$ par rapport au cercle $\\mathcal{C}$ ?\n\n```choix\nmelanger: non\n- $M$ appartient au cercle $\\mathcal{C}$.\n- $M$ est à l'intérieur du cercle $\\mathcal{C}$ (sans être sur le cercle).\n- $M$ est à l'extérieur du cercle $\\mathcal{C}$.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -185,27 +174,28 @@
 				}
 			],
 			"conditions": ["R2 > 0"],
-			"choices": [
-				{
-					"content": "$M$ appartient au cercle $\\mathcal{C}$."
-				},
-				{
-					"content": "$M$ est à l'intérieur du cercle $\\mathcal{C}$ (sans être sur le cercle)."
-				},
-				{
-					"content": "$M$ est à l'extérieur du cercle $\\mathcal{C}$."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:(3*t^2-t)/2}}"],
 			"correction": {
 				"steps": [
 					"$\\mathcal{C}$ est le cercle de centre $\\Omega({{a}}\\,;{{b}})$ et de rayon $r$ avec $r^2={{R2}}$. On compare $\\Omega M$ à $r$, ou, ce qui revient au même (ce sont des nombres positifs), $\\Omega M^2$ à $r^2$.",
 					"$$\\begin{align*}\\Omega M^2&=(x_M-x_\\Omega)^2+(y_M-y_\\Omega)^2\\\\&=({{xm}}-{{a;()}})^2+({{ym}}-{{b;()}})^2\\\\&={{p;()}}^2+{{q;()}}^2={{D}}\\end{align*}$$",
 					"{{if:t=0|$\\Omega M^2=r^2$, donc $\\Omega M=r$ : **$M$ appartient au cercle $\\mathcal{C}$.**}}{{if:t=1|${{D}}<{{R2}}$, donc $\\Omega M<r$ : **$M$ est à l'intérieur du cercle $\\mathcal{C}$.**}}{{if:t=-1|${{D}}>{{R2}}$, donc $\\Omega M>r$ : **$M$ est à l'extérieur du cercle $\\mathcal{C}$.**}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(3*t^2-t)/2}}"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : M sur C (r²=13)",
@@ -218,10 +208,10 @@
 				"t": "1",
 				"d": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : M sur C, « non » refusé",
@@ -234,10 +224,10 @@
 				"t": "1",
 				"d": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : M hors de C (r²=14)",
@@ -250,10 +240,10 @@
 				"t": "0",
 				"d": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : M hors de C, « oui » refusé",
@@ -266,10 +256,10 @@
 				"t": "0",
 				"d": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : M sur C (forme développée)",
@@ -282,10 +272,10 @@
 				"t": "1",
 				"d": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : M sur C, « non » refusé",
@@ -298,10 +288,10 @@
 				"t": "1",
 				"d": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : M hors de C (r²=11)",
@@ -314,10 +304,10 @@
 				"t": "0",
 				"d": "-2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : M hors de C, « oui » refusé",
@@ -330,10 +320,10 @@
 				"t": "0",
 				"d": "-2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : sur le cercle",
@@ -346,10 +336,10 @@
 				"t": "0",
 				"d": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : sur le cercle, « intérieur » refusé",
@@ -362,10 +352,10 @@
 				"t": "0",
 				"d": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : intérieur (r²=15)",
@@ -378,10 +368,10 @@
 				"t": "1",
 				"d": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : intérieur, « extérieur » refusé",
@@ -394,10 +384,10 @@
 				"t": "1",
 				"d": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 : extérieur (r²=11)",
@@ -410,10 +400,10 @@
 				"t": "-1",
 				"d": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 : extérieur, « sur le cercle » refusé",
@@ -426,16 +416,10 @@
 				"t": "-1",
 				"d": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": false
-	}
+	]
 }

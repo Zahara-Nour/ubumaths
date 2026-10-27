@@ -10,7 +10,7 @@
 	"delay": 90,
 	"variations": [
 		{
-			"statement": "Un jeu consiste à lancer un dé cubique équilibré. Pour jouer, on paie ${{m}}$ €. Si on obtient $6$, on reçoit ${{a}}$ € ; si on obtient $4$ ou $5$, on reçoit ${{b}}$ € ; sinon, on ne reçoit rien. On note $G$ le gain algébrique du joueur en euros, c'est-à-dire la somme reçue moins la mise.\n\nEn calculant l'espérance de $G$, détermine si ce jeu est favorable au joueur, équitable ou défavorable au joueur.",
+			"statement": "Un jeu consiste à lancer un dé cubique équilibré. Pour jouer, on paie ${{m}}$ €. Si on obtient $6$, on reçoit ${{a}}$ € ; si on obtient $4$ ou $5$, on reçoit ${{b}}$ € ; sinon, on ne reçoit rien. On note $G$ le gain algébrique du joueur en euros, c'est-à-dire la somme reçue moins la mise.\n\nEn calculant l'espérance de $G$, détermine si ce jeu est favorable au joueur, équitable ou défavorable au joueur.\n\n```choix\nmelanger: non\n- Le jeu est favorable au joueur.\n- Le jeu est équitable.\n- Le jeu est défavorable au joueur.\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -38,18 +38,6 @@
 				}
 			],
 			"conditions": ["b != m", "a > m", "a > b"],
-			"choices": [
-				{
-					"content": "Le jeu est favorable au joueur."
-				},
-				{
-					"content": "Le jeu est équitable."
-				},
-				{
-					"content": "Le jeu est défavorable au joueur."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-(abs(N+1)-abs(N-1))/2}}"],
 			"correction": {
 				"steps": [
 					"La mise est payée à chaque partie. $G$ prend les valeurs ${{eval:a-m}}$ (face $6$), ${{eval:b-m}}$ (faces $4$ et $5$) et ${{eval:-m}}$ (faces $1$ à $3$).",
@@ -58,10 +46,15 @@
 					"Un jeu est **favorable** au joueur si $E(G)>0$, **équitable** si $E(G)=0$ et **défavorable** au joueur si $E(G)<0$.",
 					"{{if:N>0|Ici $E(G)>0$ : le jeu est **favorable au joueur**. Sur un grand nombre de parties, le joueur gagne en moyenne de l'argent.}}{{if:N=0|Ici $E(G)=0$ : le jeu est **équitable**. Sur un grand nombre de parties, le joueur ne gagne ni ne perd en moyenne.}}{{if:N<0|Ici $E(G)<0$ : le jeu est **défavorable au joueur**. Sur un grand nombre de parties, le joueur perd en moyenne de l'argent.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(abs(N+1)-abs(N-1))/2}}"
+				}
+			]
 		},
 		{
-			"statement": "Une urne contient $10$ boules indiscernables au toucher : ${{r}}$ rouge{{if:r>1|s}}, ${{v}}$ vertes et ${{eval:10-r-v}}$ noires. Pour jouer, on paie ${{m}}$ € puis on tire une boule au hasard. Une boule rouge fait recevoir ${{a}}$ €, une boule verte ${{b}}$ €, une boule noire rien. On note $G$ le gain algébrique du joueur en euros, c'est-à-dire la somme reçue moins la mise.\n\nEn calculant l'espérance de $G$, détermine si ce jeu est favorable au joueur, équitable ou défavorable au joueur.",
+			"statement": "Une urne contient $10$ boules indiscernables au toucher : ${{r}}$ rouge{{if:r>1|s}}, ${{v}}$ vertes et ${{eval:10-r-v}}$ noires. Pour jouer, on paie ${{m}}$ € puis on tire une boule au hasard. Une boule rouge fait recevoir ${{a}}$ €, une boule verte ${{b}}$ €, une boule noire rien. On note $G$ le gain algébrique du joueur en euros, c'est-à-dire la somme reçue moins la mise.\n\nEn calculant l'espérance de $G$, détermine si ce jeu est favorable au joueur, équitable ou défavorable au joueur.\n\n```choix\nmelanger: non\n- Le jeu est favorable au joueur.\n- Le jeu est équitable.\n- Le jeu est défavorable au joueur.\n```",
 			"variables": [
 				{
 					"name": "r",
@@ -97,18 +90,6 @@
 				}
 			],
 			"conditions": ["mod(10*m-v*b+t*k,r) == 0", "b != m", "a > m", "a > b"],
-			"choices": [
-				{
-					"content": "Le jeu est favorable au joueur."
-				},
-				{
-					"content": "Le jeu est équitable."
-				},
-				{
-					"content": "Le jeu est défavorable au joueur."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-(abs(N+1)-abs(N-1))/2}}"],
 			"correction": {
 				"steps": [
 					"La mise est payée à chaque partie. $G$ prend les valeurs ${{eval:a-m}}$ (boule rouge), ${{eval:b-m}}$ (boule verte) et ${{eval:-m}}$ (boule noire).",
@@ -117,10 +98,15 @@
 					"Un jeu est **favorable** au joueur si $E(G)>0$, **équitable** si $E(G)=0$ et **défavorable** au joueur si $E(G)<0$.",
 					"{{if:N>0|Ici $E(G)>0$ : le jeu est **favorable au joueur**. Sur un grand nombre de parties, le joueur gagne en moyenne de l'argent.}}{{if:N=0|Ici $E(G)=0$ : le jeu est **équitable**. Sur un grand nombre de parties, le joueur ne gagne ni ne perd en moyenne.}}{{if:N<0|Ici $E(G)<0$ : le jeu est **défavorable au joueur**. Sur un grand nombre de parties, le joueur perd en moyenne de l'argent.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(abs(N+1)-abs(N-1))/2}}"
+				}
+			]
 		},
 		{
-			"statement": "Une roue de loterie est partagée en $10$ secteurs de même taille. Pour jouer, on paie ${{m}}$ € puis on fait tourner la roue. Un secteur fait recevoir ${{a}}$ €, trois secteurs font recevoir ${{b}}$ € chacun et les six autres ne rapportent rien. On note $G$ le gain algébrique du joueur en euros, c'est-à-dire la somme reçue moins la mise.\n\nEn calculant l'espérance de $G$, détermine si ce jeu est favorable au joueur, équitable ou défavorable au joueur.",
+			"statement": "Une roue de loterie est partagée en $10$ secteurs de même taille. Pour jouer, on paie ${{m}}$ € puis on fait tourner la roue. Un secteur fait recevoir ${{a}}$ €, trois secteurs font recevoir ${{b}}$ € chacun et les six autres ne rapportent rien. On note $G$ le gain algébrique du joueur en euros, c'est-à-dire la somme reçue moins la mise.\n\nEn calculant l'espérance de $G$, détermine si ce jeu est favorable au joueur, équitable ou défavorable au joueur.\n\n```choix\nmelanger: non\n- Le jeu est favorable au joueur.\n- Le jeu est équitable.\n- Le jeu est défavorable au joueur.\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -148,18 +134,6 @@
 				}
 			],
 			"conditions": ["b != m", "a > m", "a > b"],
-			"choices": [
-				{
-					"content": "Le jeu est favorable au joueur."
-				},
-				{
-					"content": "Le jeu est équitable."
-				},
-				{
-					"content": "Le jeu est défavorable au joueur."
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-(abs(N+1)-abs(N-1))/2}}"],
 			"correction": {
 				"steps": [
 					"La mise est payée à chaque partie. $G$ prend les valeurs ${{eval:a-m}}$ (secteur à ${{a}}$ €), ${{eval:b-m}}$ (secteurs à ${{b}}$ €) et ${{eval:-m}}$ (autres secteurs).",
@@ -168,9 +142,19 @@
 					"Un jeu est **favorable** au joueur si $E(G)>0$, **équitable** si $E(G)=0$ et **défavorable** au joueur si $E(G)<0$.",
 					"{{if:N>0|Ici $E(G)>0$ : le jeu est **favorable au joueur**. Sur un grand nombre de parties, le joueur gagne en moyenne de l'argent.}}{{if:N=0|Ici $E(G)=0$ : le jeu est **équitable**. Sur un grand nombre de parties, le joueur ne gagne ni ne perd en moyenne.}}{{if:N<0|Ici $E(G)<0$ : le jeu est **défavorable au joueur**. Sur un grand nombre de parties, le joueur perd en moyenne de l'argent.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(abs(N+1)-abs(N-1))/2}}"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 (dé) : favorable",
@@ -181,10 +165,10 @@
 				"k": "2",
 				"t": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 (dé) : favorable, autre choix refusé",
@@ -195,10 +179,10 @@
 				"k": "2",
 				"t": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 (dé) : équitable",
@@ -209,10 +193,10 @@
 				"k": "2",
 				"t": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 (dé) : équitable, autre choix refusé",
@@ -223,10 +207,10 @@
 				"k": "2",
 				"t": "0"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 (dé) : défavorable",
@@ -237,10 +221,10 @@
 				"k": "2",
 				"t": "-1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 (dé) : défavorable, autre choix refusé",
@@ -251,10 +235,10 @@
 				"k": "2",
 				"t": "-1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 (urne) : favorable",
@@ -267,10 +251,10 @@
 				"k": "2",
 				"t": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 (urne) : favorable, autre choix refusé",
@@ -283,10 +267,10 @@
 				"k": "2",
 				"t": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 (urne) : équitable",
@@ -299,10 +283,10 @@
 				"k": "2",
 				"t": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 (urne) : équitable, autre choix refusé",
@@ -315,10 +299,10 @@
 				"k": "2",
 				"t": "0"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v1 (urne) : défavorable",
@@ -331,10 +315,10 @@
 				"k": "2",
 				"t": "-1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v1 (urne) : défavorable, autre choix refusé",
@@ -347,10 +331,10 @@
 				"k": "2",
 				"t": "-1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 (roue) : favorable",
@@ -361,10 +345,10 @@
 				"k": "2",
 				"t": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 (roue) : favorable, autre choix refusé",
@@ -375,10 +359,10 @@
 				"k": "2",
 				"t": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 (roue) : équitable",
@@ -389,10 +373,10 @@
 				"k": "2",
 				"t": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 (roue) : équitable, autre choix refusé",
@@ -403,10 +387,10 @@
 				"k": "2",
 				"t": "0"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 (roue) : défavorable",
@@ -417,10 +401,10 @@
 				"k": "2",
 				"t": "-1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 (roue) : défavorable, autre choix refusé",
@@ -431,16 +415,10 @@
 				"k": "2",
 				"t": "-1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": false
-	}
+	]
 }

@@ -1,5 +1,4 @@
 {
-	"id": "1acb6d47-5d88-4ccf-830f-98dc57d0022c",
 	"title": "Déterminer la nature de l'extremum",
 	"grades": ["1_SPE"],
 	"theme": "Fonctions",
@@ -8,15 +7,152 @@
 	"level": 4,
 	"delay": 20,
 	"status": "published",
-	"shared": {
-		"choices": [
-			{
-				"content": "un minimum"
+	"variations": [
+		{
+			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- un minimum\n- un maximum\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "expr1",
+					"expression": "eval:ax^2+bx+c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient du terme de degré 2 est $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}$, qui est {{if:{{a}}>0|positif|négatif}}.",
+					"Le polynôme admet donc {{solution:html}}.",
+					"Le sommet a pour abscisse $\\alpha=\\dfrac{-b}{2a}={{eval:-b/(2*a)}}$ et pour ordonnée $\\beta=f(\\alpha)={{eval:c-b^2/(4*a)}}$.",
+					"En notant $f(x)$ cette expression, son tableau de variations est :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, {{if:a>0|bottom|top}}\n```"
+				]
 			},
-			{
-				"content": "un maximum"
-			}
-		],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|0|1}}"
+				}
+			]
+		},
+		{
+			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- un minimum\n- un maximum\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expr2",
+					"expression": "{{a}}(x{{eval:b;+}})(x{{eval:c;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient du terme de degré 2 est $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}$, qui est {{if:{{a}}>0|positif|négatif}}.",
+					"Le polynôme admet donc {{solution:html}}.",
+					"Les racines sont ${{eval:-b}}$ et ${{eval:-c}}$ : le sommet a pour abscisse leur milieu $\\alpha={{eval:-(b+c)/2}}$, et pour ordonnée $\\beta=f(\\alpha)={{eval:-a*(b-c)^2/4}}$.",
+					"En notant $f(x)$ cette expression, son tableau de variations est :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-(b+c)/2}}, +inf\n\nvariation: f(x)\n  {{eval:-(b+c)/2}}: {{eval:-a*(b-c)^2/4}}, {{if:a>0|bottom|top}}\n```"
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|0|1}}"
+				}
+			]
+		},
+		{
+			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expr3}}$$\n\n```choix\nmelanger: non\n- un minimum\n- un maximum\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expr3",
+					"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient du terme de degré 2 est $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}$, qui est {{if:{{a}}>0|positif|négatif}}.",
+					"Le polynôme admet donc {{solution:html}}.",
+					"C'est la forme canonique : le sommet est $S\\left({{eval:-b}}\\,;\\,{{c}}\\right)$.",
+					"En notant $f(x)$ cette expression, son tableau de variations est :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-b}}, +inf\n\nvariation: f(x)\n  {{eval:-b}}: {{c}}, {{if:a>0|bottom|top}}\n```"
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|0|1}}"
+				}
+			]
+		},
+		{
+			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expr4}}$$\n\n```choix\nmelanger: non\n- un minimum\n- un maximum\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "expr4",
+					"expression": "({{eval:dx}}{{eval:b;+}})({{eval:fx}}{{eval:c;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient du terme de degré 2 est ${{d}} \\times {{eval:f;()}}={{eval:d*(f)}}$, qui est {{if:{{d}}*({{f}})>0|positif|négatif}}.",
+					"Le polynôme admet donc {{solution:html}}.",
+					"Les racines sont ${{eval:-b/d}}$ et ${{eval:-c/f}}$ : le sommet a pour abscisse leur milieu $\\alpha={{eval:-(b*f+c*d)/(2*d*f)}}$, et pour ordonnée $\\beta=f(\\alpha)={{eval:-(b*f-c*d)^2/(4*d*f)}}$.",
+					"En notant $f(x)$ cette expression, son tableau de variations est :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-(b*f+c*d)/(2*d*f)}}, +inf\n\nvariation: f(x)\n  {{eval:-(b*f+c*d)/(2*d*f)}}: {{eval:-(b*f-c*d)^2/(4*d*f)}}, {{if:d*f>0|bottom|top}}\n```"
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:d*f>0|0|1}}"
+				}
+			]
+		},
+		{
+			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expr5}}$$\n\n```choix\nmelanger: non\n- un minimum\n- un maximum\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "expr5",
+					"expression": "{{a}}({{eval:dx}}{{eval:b;+}})({{eval:fx}}{{eval:c;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient du terme de degré 2 est ${{a}} \\times {{eval:d;()}} \\times {{eval:f;()}}={{eval:a*(d)*(f)}}$, qui est {{if:{{a}}*({{d}})*({{f}})>0|positif|négatif}}.",
+					"Le polynôme admet donc {{solution:html}}.",
+					"Les racines sont ${{eval:-b/d}}$ et ${{eval:-c/f}}$ : le sommet a pour abscisse leur milieu $\\alpha={{eval:-(b*f+c*d)/(2*d*f)}}$, et pour ordonnée $\\beta=f(\\alpha)={{eval:-a*(b*f-c*d)^2/(4*d*f)}}$.",
+					"En notant $f(x)$ cette expression, son tableau de variations est :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-(b*f+c*d)/(2*d*f)}}, +inf\n\nvariation: f(x)\n  {{eval:-(b*f+c*d)/(2*d*f)}}: {{eval:-a*(b*f-c*d)^2/(4*d*f)}}, {{if:a*d*f>0|bottom|top}}\n```"
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a*d*f>0|0|1}}"
+				}
+			]
+		}
+	],
+	"shared": {
 		"variables": [
 			{
 				"name": "a",
@@ -42,134 +178,6 @@
 		"conditions": ["abs(a) != abs(b) && abs(a) != abs(c)"],
 		"cleanCoefficients": true
 	},
-	"options": {
-		"shuffleChoices": false
-	},
-	"variations": [
-		{
-			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression1}}$$",
-			"variables": [
-				{
-					"name": "a",
-					"expression": "1..5;±"
-				},
-				{
-					"name": "x",
-					"expression": "x|x"
-				},
-				{
-					"name": "expression1",
-					"expression": "eval:ax^2+bx+c"
-				}
-			],
-			"correction": {
-				"steps": [
-					"Le coefficient du terme de degré 2 est $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}$, qui est {{if:{{a}}>0|positif|négatif}}.",
-					"Le polynôme admet donc {{solution:html}}.",
-					"Le sommet a pour abscisse $\\alpha=\\dfrac{-b}{2a}={{eval:-b/(2*a)}}$ et pour ordonnée $\\beta=f(\\alpha)={{eval:c-b^2/(4*a)}}$.",
-					"En notant $f(x)$ cette expression, son tableau de variations est :",
-					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, {{if:a>0|bottom|top}}\n```"
-				]
-			},
-			"correctChoiceIndex": ["{{if:a>0|0|1}}"]
-		},
-		{
-			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression2}}$$",
-			"variables": [
-				{
-					"name": "a",
-					"expression": "1..5;±"
-				},
-				{
-					"name": "expression2",
-					"expression": "{{a}}(x{{eval:b;+}})(x{{eval:c;+}})"
-				}
-			],
-			"correction": {
-				"steps": [
-					"Le coefficient du terme de degré 2 est $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}$, qui est {{if:{{a}}>0|positif|négatif}}.",
-					"Le polynôme admet donc {{solution:html}}.",
-					"Les racines sont ${{eval:-b}}$ et ${{eval:-c}}$ : le sommet a pour abscisse leur milieu $\\alpha={{eval:-(b+c)/2}}$, et pour ordonnée $\\beta=f(\\alpha)={{eval:-a*(b-c)^2/4}}$.",
-					"En notant $f(x)$ cette expression, son tableau de variations est :",
-					"```variation\nvariable: x\ndomain: -inf, {{eval:-(b+c)/2}}, +inf\n\nvariation: f(x)\n  {{eval:-(b+c)/2}}: {{eval:-a*(b-c)^2/4}}, {{if:a>0|bottom|top}}\n```"
-				]
-			},
-			"correctChoiceIndex": ["{{if:a>0|0|1}}"]
-		},
-		{
-			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression3}}$$",
-			"variables": [
-				{
-					"name": "a",
-					"expression": "1..5;±"
-				},
-				{
-					"name": "expression3",
-					"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
-				}
-			],
-			"correction": {
-				"steps": [
-					"Le coefficient du terme de degré 2 est $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}$, qui est {{if:{{a}}>0|positif|négatif}}.",
-					"Le polynôme admet donc {{solution:html}}.",
-					"C'est la forme canonique : le sommet est $S\\left({{eval:-b}}\\,;\\,{{c}}\\right)$.",
-					"En notant $f(x)$ cette expression, son tableau de variations est :",
-					"```variation\nvariable: x\ndomain: -inf, {{eval:-b}}, +inf\n\nvariation: f(x)\n  {{eval:-b}}: {{c}}, {{if:a>0|bottom|top}}\n```"
-				]
-			},
-			"correctChoiceIndex": ["{{if:a>0|0|1}}"]
-		},
-		{
-			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression4}}$$",
-			"variables": [
-				{
-					"name": "x",
-					"expression": "x|x"
-				},
-				{
-					"name": "expression4",
-					"expression": "({{eval:dx}}{{eval:b;+}})({{eval:fx}}{{eval:c;+}})"
-				}
-			],
-			"correction": {
-				"steps": [
-					"Le coefficient du terme de degré 2 est ${{d}} \\times {{eval:f;()}}={{eval:d*(f)}}$, qui est {{if:{{d}}*({{f}})>0|positif|négatif}}.",
-					"Le polynôme admet donc {{solution:html}}.",
-					"Les racines sont ${{eval:-b/d}}$ et ${{eval:-c/f}}$ : le sommet a pour abscisse leur milieu $\\alpha={{eval:-(b*f+c*d)/(2*d*f)}}$, et pour ordonnée $\\beta=f(\\alpha)={{eval:-(b*f-c*d)^2/(4*d*f)}}$.",
-					"En notant $f(x)$ cette expression, son tableau de variations est :",
-					"```variation\nvariable: x\ndomain: -inf, {{eval:-(b*f+c*d)/(2*d*f)}}, +inf\n\nvariation: f(x)\n  {{eval:-(b*f+c*d)/(2*d*f)}}: {{eval:-(b*f-c*d)^2/(4*d*f)}}, {{if:d*f>0|bottom|top}}\n```"
-				]
-			},
-			"correctChoiceIndex": ["{{if:d*f>0|0|1}}"]
-		},
-		{
-			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression5}}$$",
-			"variables": [
-				{
-					"name": "a",
-					"expression": "1..5;±"
-				},
-				{
-					"name": "x",
-					"expression": "x|x"
-				},
-				{
-					"name": "expression5",
-					"expression": "{{a}}({{eval:dx}}{{eval:b;+}})({{eval:fx}}{{eval:c;+}})"
-				}
-			],
-			"correction": {
-				"steps": [
-					"Le coefficient du terme de degré 2 est ${{a}} \\times {{eval:d;()}} \\times {{eval:f;()}}={{eval:a*(d)*(f)}}$, qui est {{if:{{a}}*({{d}})*({{f}})>0|positif|négatif}}.",
-					"Le polynôme admet donc {{solution:html}}.",
-					"Les racines sont ${{eval:-b/d}}$ et ${{eval:-c/f}}$ : le sommet a pour abscisse leur milieu $\\alpha={{eval:-(b*f+c*d)/(2*d*f)}}$, et pour ordonnée $\\beta=f(\\alpha)={{eval:-a*(b*f-c*d)^2/(4*d*f)}}$.",
-					"En notant $f(x)$ cette expression, son tableau de variations est :",
-					"```variation\nvariable: x\ndomain: -inf, {{eval:-(b*f+c*d)/(2*d*f)}}, +inf\n\nvariation: f(x)\n  {{eval:-(b*f+c*d)/(2*d*f)}}: {{eval:-a*(b*f-c*d)^2/(4*d*f)}}, {{if:a*d*f>0|bottom|top}}\n```"
-				]
-			},
-			"correctChoiceIndex": ["{{if:a*d*f>0|0|1}}"]
-		}
-	],
 	"testSpecs": [
 		{
 			"expected": {
@@ -185,7 +193,7 @@
 			},
 			"description": "v0 cas + : minimum",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -201,7 +209,7 @@
 			},
 			"description": "v0 cas + : maximum refusé",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -217,7 +225,7 @@
 			},
 			"description": "v1 cas + : minimum",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -233,7 +241,7 @@
 			},
 			"description": "v1 cas + : maximum refusé",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -249,7 +257,7 @@
 			},
 			"description": "v2 cas + : minimum",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -265,7 +273,7 @@
 			},
 			"description": "v2 cas + : maximum refusé",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -281,7 +289,7 @@
 			},
 			"description": "v3 cas + : minimum",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -297,7 +305,7 @@
 			},
 			"description": "v3 cas + : maximum refusé",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -313,7 +321,7 @@
 			},
 			"description": "v4 cas + : minimum",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -329,7 +337,7 @@
 			},
 			"description": "v4 cas + : maximum refusé",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -345,7 +353,7 @@
 			},
 			"description": "a<0 : maximum",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -361,7 +369,7 @@
 			},
 			"description": "a<0 : maximum",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -377,7 +385,7 @@
 			},
 			"description": "a<0 : maximum",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -393,7 +401,7 @@
 			},
 			"description": "d×f<0 : maximum",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -409,7 +417,7 @@
 			},
 			"description": "a×d×f=24>0 : minimum",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -425,7 +433,7 @@
 			},
 			"description": "a×d×f>0 : maximum (signe de a seul) refusé",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 b=-1 (énoncé 3x²-x+5, sans « 1x ») : minimum",
@@ -437,10 +445,10 @@
 				"d": "2",
 				"f": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 b=1, a<0 : maximum",
@@ -452,10 +460,10 @@
 				"d": "2",
 				"f": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 a=1 (coefficient 1 nettoyé) : minimum",
@@ -467,10 +475,10 @@
 				"d": "2",
 				"f": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 a=1 : maximum refusé",
@@ -482,10 +490,10 @@
 				"d": "2",
 				"f": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 a=-1 (−(x−2)²+3) : maximum",
@@ -497,10 +505,10 @@
 				"d": "2",
 				"f": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 a=-1 : minimum refusé",
@@ -512,10 +520,10 @@
 				"d": "2",
 				"f": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v4 a=-1, d=-1, f=5 (produit 5 > 0) : minimum",
@@ -527,10 +535,10 @@
 				"d": "-1",
 				"f": "5"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		}
 	]
 }

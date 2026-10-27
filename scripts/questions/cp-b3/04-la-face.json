@@ -10,96 +10,68 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Comment s'appelle la partie coloriée de ce cube ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un cube dont une face est coloriée.\n---\np1 = point(2.24, 0.3, visible=faux)\np2 = point(4.84, 0.3, visible=faux)\np3 = point(4.84, 2.9, visible=faux)\np4 = point(2.24, 2.9, visible=faux)\nq5 = polygone(p1, p2, p3, p4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=0.35)\np6 = point(2.24, 0.3, visible=faux)\np7 = point(4.84, 0.3, visible=faux)\np8 = point(4.84, 2.9, visible=faux)\np9 = point(2.24, 2.9, visible=faux)\np10 = point(3.16, 1.219, visible=faux)\np11 = point(5.76, 1.219, visible=faux)\np12 = point(5.76, 3.819, visible=faux)\np13 = point(3.16, 3.819, visible=faux)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p6)\nsegment(p7, p11)\nsegment(p11, p12)\nsegment(p8, p12)\nsegment(p9, p13)\nsegment(p13, p12)\nsegment(p6, p10, trait=\"tirets\")\nsegment(p10, p11, trait=\"tirets\")\nsegment(p10, p13, trait=\"tirets\")\n```",
+			"statement": "Comment s'appelle la partie coloriée de ce cube ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un cube dont une face est coloriée.\n---\np1 = point(2.24, 0.3, visible=faux)\np2 = point(4.84, 0.3, visible=faux)\np3 = point(4.84, 2.9, visible=faux)\np4 = point(2.24, 2.9, visible=faux)\nq5 = polygone(p1, p2, p3, p4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=0.35)\np6 = point(2.24, 0.3, visible=faux)\np7 = point(4.84, 0.3, visible=faux)\np8 = point(4.84, 2.9, visible=faux)\np9 = point(2.24, 2.9, visible=faux)\np10 = point(3.16, 1.219, visible=faux)\np11 = point(5.76, 1.219, visible=faux)\np12 = point(5.76, 3.819, visible=faux)\np13 = point(3.16, 3.819, visible=faux)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p6)\nsegment(p7, p11)\nsegment(p11, p12)\nsegment(p8, p12)\nsegment(p9, p13)\nsegment(p13, p12)\nsegment(p6, p10, trait=\"tirets\")\nsegment(p10, p11, trait=\"tirets\")\nsegment(p10, p13, trait=\"tirets\")\n```\n\n```choix\n- C'est une face.\n- C'est un côté.\n- C'est un sommet.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "C'est une face."
-				},
-				{
-					"content": "C'est un côté."
-				},
-				{
-					"content": "C'est un sommet."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"La partie coloriée est toute plate : c'est une face du cube.",
 					"On dit « côté » pour une figure plane, comme le carré dessiné sur une feuille ; un sommet est un coin pointu."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Comment s'appelle la partie coloriée de ce cube ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un cube dont une face est coloriée.\n---\np1 = point(2.24, 2.9, visible=faux)\np2 = point(4.84, 2.9, visible=faux)\np3 = point(5.76, 3.819, visible=faux)\np4 = point(3.16, 3.819, visible=faux)\nq5 = polygone(p1, p2, p3, p4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=0.35)\np6 = point(2.24, 0.3, visible=faux)\np7 = point(4.84, 0.3, visible=faux)\np8 = point(4.84, 2.9, visible=faux)\np9 = point(2.24, 2.9, visible=faux)\np10 = point(3.16, 1.219, visible=faux)\np11 = point(5.76, 1.219, visible=faux)\np12 = point(5.76, 3.819, visible=faux)\np13 = point(3.16, 3.819, visible=faux)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p6)\nsegment(p7, p11)\nsegment(p11, p12)\nsegment(p8, p12)\nsegment(p9, p13)\nsegment(p13, p12)\nsegment(p6, p10, trait=\"tirets\")\nsegment(p10, p11, trait=\"tirets\")\nsegment(p10, p13, trait=\"tirets\")\n```",
+			"statement": "Comment s'appelle la partie coloriée de ce cube ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un cube dont une face est coloriée.\n---\np1 = point(2.24, 2.9, visible=faux)\np2 = point(4.84, 2.9, visible=faux)\np3 = point(5.76, 3.819, visible=faux)\np4 = point(3.16, 3.819, visible=faux)\nq5 = polygone(p1, p2, p3, p4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=0.35)\np6 = point(2.24, 0.3, visible=faux)\np7 = point(4.84, 0.3, visible=faux)\np8 = point(4.84, 2.9, visible=faux)\np9 = point(2.24, 2.9, visible=faux)\np10 = point(3.16, 1.219, visible=faux)\np11 = point(5.76, 1.219, visible=faux)\np12 = point(5.76, 3.819, visible=faux)\np13 = point(3.16, 3.819, visible=faux)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p6)\nsegment(p7, p11)\nsegment(p11, p12)\nsegment(p8, p12)\nsegment(p9, p13)\nsegment(p13, p12)\nsegment(p6, p10, trait=\"tirets\")\nsegment(p10, p11, trait=\"tirets\")\nsegment(p10, p13, trait=\"tirets\")\n```\n\n```choix\n- C'est une face.\n- C'est un côté.\n- C'est un sommet.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "C'est une face."
-				},
-				{
-					"content": "C'est un côté."
-				},
-				{
-					"content": "C'est un sommet."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"La partie coloriée est toute plate : c'est une face du cube.",
 					"On dit « côté » pour une figure plane, comme le carré dessiné sur une feuille ; un sommet est un coin pointu."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Comment s'appelle la partie coloriée de ce pavé ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé dont une face est coloriée.\n---\np1 = point(5.246, 0.3, visible=faux)\np2 = point(5.954, 1.007, visible=faux)\np3 = point(5.954, 2.707, visible=faux)\np4 = point(5.246, 2, visible=faux)\nq5 = polygone(p1, p2, p3, p4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=0.35)\np6 = point(2.046, 0.3, visible=faux)\np7 = point(5.246, 0.3, visible=faux)\np8 = point(5.246, 2, visible=faux)\np9 = point(2.046, 2, visible=faux)\np10 = point(2.754, 1.007, visible=faux)\np11 = point(5.954, 1.007, visible=faux)\np12 = point(5.954, 2.707, visible=faux)\np13 = point(2.754, 2.707, visible=faux)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p6)\nsegment(p7, p11)\nsegment(p11, p12)\nsegment(p8, p12)\nsegment(p9, p13)\nsegment(p13, p12)\nsegment(p6, p10, trait=\"tirets\")\nsegment(p10, p11, trait=\"tirets\")\nsegment(p10, p13, trait=\"tirets\")\n```",
+			"statement": "Comment s'appelle la partie coloriée de ce pavé ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé dont une face est coloriée.\n---\np1 = point(5.246, 0.3, visible=faux)\np2 = point(5.954, 1.007, visible=faux)\np3 = point(5.954, 2.707, visible=faux)\np4 = point(5.246, 2, visible=faux)\nq5 = polygone(p1, p2, p3, p4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=0.35)\np6 = point(2.046, 0.3, visible=faux)\np7 = point(5.246, 0.3, visible=faux)\np8 = point(5.246, 2, visible=faux)\np9 = point(2.046, 2, visible=faux)\np10 = point(2.754, 1.007, visible=faux)\np11 = point(5.954, 1.007, visible=faux)\np12 = point(5.954, 2.707, visible=faux)\np13 = point(2.754, 2.707, visible=faux)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p6)\nsegment(p7, p11)\nsegment(p11, p12)\nsegment(p8, p12)\nsegment(p9, p13)\nsegment(p13, p12)\nsegment(p6, p10, trait=\"tirets\")\nsegment(p10, p11, trait=\"tirets\")\nsegment(p10, p13, trait=\"tirets\")\n```\n\n```choix\n- C'est une face.\n- C'est un côté.\n- C'est un sommet.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "C'est une face."
-				},
-				{
-					"content": "C'est un côté."
-				},
-				{
-					"content": "C'est un sommet."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"La partie coloriée est toute plate : c'est une face du pavé.",
 					"On dit « côté » pour une figure plane, comme le carré dessiné sur une feuille ; un sommet est un coin pointu."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Comment s'appelle la partie coloriée de ce pavé ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé dont une face est coloriée.\n---\np1 = point(2.853, 0.3, visible=faux)\np2 = point(4.653, 0.3, visible=faux)\np3 = point(4.653, 3.7, visible=faux)\np4 = point(2.853, 3.7, visible=faux)\nq5 = polygone(p1, p2, p3, p4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=0.35)\np6 = point(2.853, 0.3, visible=faux)\np7 = point(4.653, 0.3, visible=faux)\np8 = point(4.653, 3.7, visible=faux)\np9 = point(2.853, 3.7, visible=faux)\np10 = point(3.347, 0.795, visible=faux)\np11 = point(5.147, 0.795, visible=faux)\np12 = point(5.147, 4.195, visible=faux)\np13 = point(3.347, 4.195, visible=faux)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p6)\nsegment(p7, p11)\nsegment(p11, p12)\nsegment(p8, p12)\nsegment(p9, p13)\nsegment(p13, p12)\nsegment(p6, p10, trait=\"tirets\")\nsegment(p10, p11, trait=\"tirets\")\nsegment(p10, p13, trait=\"tirets\")\n```",
+			"statement": "Comment s'appelle la partie coloriée de ce pavé ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé dont une face est coloriée.\n---\np1 = point(2.853, 0.3, visible=faux)\np2 = point(4.653, 0.3, visible=faux)\np3 = point(4.653, 3.7, visible=faux)\np4 = point(2.853, 3.7, visible=faux)\nq5 = polygone(p1, p2, p3, p4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=0.35)\np6 = point(2.853, 0.3, visible=faux)\np7 = point(4.653, 0.3, visible=faux)\np8 = point(4.653, 3.7, visible=faux)\np9 = point(2.853, 3.7, visible=faux)\np10 = point(3.347, 0.795, visible=faux)\np11 = point(5.147, 0.795, visible=faux)\np12 = point(5.147, 4.195, visible=faux)\np13 = point(3.347, 4.195, visible=faux)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p6)\nsegment(p7, p11)\nsegment(p11, p12)\nsegment(p8, p12)\nsegment(p9, p13)\nsegment(p13, p12)\nsegment(p6, p10, trait=\"tirets\")\nsegment(p10, p11, trait=\"tirets\")\nsegment(p10, p13, trait=\"tirets\")\n```\n\n```choix\n- C'est une face.\n- C'est un côté.\n- C'est un sommet.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "C'est une face."
-				},
-				{
-					"content": "C'est un côté."
-				},
-				{
-					"content": "C'est un sommet."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"La partie coloriée est toute plate : c'est une face du pavé.",
 					"On dit « côté » pour une figure plane, comme le carré dessiné sur une feuille ; un sommet est un coin pointu."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -110,7 +82,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Dessin 1 : un côté, erreur",
@@ -119,7 +91,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Dessin 2 : une face",
@@ -128,7 +100,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Dessin 2 : un côté, erreur",
@@ -137,7 +109,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Dessin 3 : une face",
@@ -146,7 +118,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Dessin 3 : un côté, erreur",
@@ -155,7 +127,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Dessin 4 : une face",
@@ -164,7 +136,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Dessin 4 : un côté, erreur",
@@ -173,7 +145,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		}
 	]
 }

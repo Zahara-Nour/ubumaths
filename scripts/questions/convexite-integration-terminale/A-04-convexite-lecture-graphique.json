@@ -8,12 +8,9 @@
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
-	"shared": {
-		"cleanCoefficients": true
-	},
 	"variations": [
 		{
-			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?",
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\left[{{eval:h-1}}\\,;{{eval:h+1}}\\right]$\n- $\\mathbb{R}$\n```",
 			"variables": [
 				{
 					"name": "s",
@@ -28,31 +25,21 @@
 					"expression": "-1..1"
 				}
 			],
-			"choices": [
-				{
-					"content": "{{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}"
-				},
-				{
-					"content": "{{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}"
-				},
-				{
-					"content": "$\\left[{{eval:h-1}}\\,;{{eval:h+1}}\\right]$"
-				},
-				{
-					"content": "$\\mathbb{R}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$f$ est convexe là où sa courbe est « tournée vers le haut » (au-dessus de ses tangentes), concave là où elle est « tournée vers le bas ».",
 					"La courbure change au point d'abscisse ${{h}}$ (point d'inflexion) : $f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$.",
 					"Attention : l'intervalle $\\left[{{eval:h-1}}\\,;{{eval:h+1}}\\right]$ est celui où $f$ est {{if:s>0|décroissante|croissante}}, ce n'est pas une question de convexité."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée** $f'$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-4}} ; {{eval:h+4}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(0.5*(x-{{h}})^2-2)   rouge\ntaille: moyenne\ndescription: Courbe de la dérivée f′ : une parabole qui coupe l'axe des abscisses en deux points.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?",
+			"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée** $f'$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-4}} ; {{eval:h+4}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(0.5*(x-{{h}})^2-2)   rouge\ntaille: moyenne\ndescription: Courbe de la dérivée f′ : une parabole qui coupe l'axe des abscisses en deux points.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\left[{{eval:h-2}}\\,;{{eval:h+2}}\\right]$\n- $\\mathbb{R}$\n```",
 			"variables": [
 				{
 					"name": "s",
@@ -63,31 +50,21 @@
 					"expression": "-2..2"
 				}
 			],
-			"choices": [
-				{
-					"content": "{{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}"
-				},
-				{
-					"content": "{{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}"
-				},
-				{
-					"content": "$\\left[{{eval:h-2}}\\,;{{eval:h+2}}\\right]$"
-				},
-				{
-					"content": "$\\mathbb{R}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$f$ est convexe là où $f'$ est **croissante** (on ne regarde pas le signe de $f'$, qui donne les variations de $f$).",
 					"Sur le graphique, $f'$ est {{if:s>0|décroissante puis croissante|croissante puis décroissante}}, avec un changement en $x={{h}}$.",
 					"$f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée seconde** $f''$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(x-{{h}})   violet\ntaille: moyenne\ndescription: Courbe de la dérivée seconde f″ : une droite qui coupe l'axe des abscisses.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?",
+			"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée seconde** $f''$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(x-{{h}})   violet\ntaille: moyenne\ndescription: Courbe de la dérivée seconde f″ : une droite qui coupe l'axe des abscisses.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\mathbb{R}$\n- $\\left[0\\,;+\\infty\\right[$\n```",
 			"variables": [
 				{
 					"name": "s",
@@ -99,30 +76,20 @@
 				}
 			],
 			"conditions": ["h != 0"],
-			"choices": [
-				{
-					"content": "{{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}"
-				},
-				{
-					"content": "{{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}"
-				},
-				{
-					"content": "$\\mathbb{R}$"
-				},
-				{
-					"content": "$\\left[0\\,;+\\infty\\right[$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$f$ est convexe là où $f''(x)\\geqslant 0$, c'est-à-dire là où la courbe de $f''$ est **au-dessus** de l'axe des abscisses.",
 					"$f''$ s'annule en ${{h}}$ et est positive {{if:s>0|à droite|à gauche}} : $f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$. (Que $f''$ soit {{if:s>0|croissante|décroissante}} ne dit rien de la convexité de $f$.)"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux.\n```\n\nQuelle est l'abscisse du point d'inflexion de $\\mathcal{C}_f$ ?",
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux.\n```\n\nQuelle est l'abscisse du point d'inflexion de $\\mathcal{C}_f$ ?\n\n```choix\n- ${{h}}$\n- ${{eval:h+1}}$\n- ${{eval:h-1}}$\n- ${{k}}$\n```",
 			"variables": [
 				{
 					"name": "s",
@@ -138,29 +105,27 @@
 				}
 			],
 			"conditions": ["k != h", "k != h+1", "k != h-1"],
-			"choices": [
-				{
-					"content": "${{h}}$"
-				},
-				{
-					"content": "${{eval:h+1}}$"
-				},
-				{
-					"content": "${{eval:h-1}}$"
-				},
-				{
-					"content": "${{k}}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Au point d'inflexion, la courbe **traverse sa tangente** : elle passe de « tournée vers le {{if:s>0|bas|haut}} » à « tournée vers le {{if:s>0|haut|bas}} ».",
 					"C'est le point de coordonnées $({{h}}\\,;{{k}})$ : son abscisse est $\\textcolor{{{color:primary.0}}}{{{h}}}$. Les abscisses ${{eval:h-1}}$ et ${{eval:h+1}}$ sont celles des extremums locaux, pas de l'inflexion."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : s=1, bonne réponse",
@@ -170,10 +135,10 @@
 				"h": "1",
 				"k": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : intervalle de concavité",
@@ -183,10 +148,10 @@
 				"h": "1",
 				"k": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : intervalle de décroissance",
@@ -196,10 +161,10 @@
 				"h": "1",
 				"k": "0"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 : s=−1",
@@ -209,10 +174,10 @@
 				"h": "-1",
 				"k": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : f′ décroissante puis croissante",
@@ -221,10 +186,10 @@
 				"s": "1",
 				"h": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : là où f′ ≤ 0 (variations de f)",
@@ -233,10 +198,10 @@
 				"s": "1",
 				"h": "0"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v1 : s=−1, opposé",
@@ -245,10 +210,10 @@
 				"s": "-1",
 				"h": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : f″ ≥ 0 à droite",
@@ -257,10 +222,10 @@
 				"s": "1",
 				"h": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : f″ croissante ≠ f convexe",
@@ -269,10 +234,10 @@
 				"s": "1",
 				"h": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 : s=−1",
@@ -281,10 +246,10 @@
 				"s": "-1",
 				"h": "-2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v3 : inflexion",
@@ -294,10 +259,10 @@
 				"h": "0",
 				"k": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v3 : extremum",
@@ -307,10 +272,10 @@
 				"h": "0",
 				"k": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v3 : ordonnée",
@@ -320,16 +285,10 @@
 				"h": "0",
 				"k": "2"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": true
-	}
+	]
 }

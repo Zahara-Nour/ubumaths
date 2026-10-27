@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "À quel solide ressemble {{if:o==1|un dé à jouer|{{if:o==2|un morceau de sucre|un glaçon carré}}}} ?",
+			"statement": "À quel solide ressemble {{if:o==1|un dé à jouer|{{if:o==2|un morceau de sucre|un glaçon carré}}}} ?\n\n```choix\n- À un cube.\n- À une boule.\n- À un cône.\n- À un cylindre.\n- À un pavé.\n```",
 			"variables": [
 				{
 					"name": "o",
@@ -18,33 +18,20 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "À un cube."
-				},
-				{
-					"content": "À une boule."
-				},
-				{
-					"content": "À un cône."
-				},
-				{
-					"content": "À un cylindre."
-				},
-				{
-					"content": "À un pavé."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"{{if:o==1|Un dé à jouer|{{if:o==2|Un morceau de sucre|Un glaçon carré}}}} ressemble à un cube.",
 					"Un cube a 6 faces carrées, toutes pareilles."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "À quel solide ressemble {{if:o==1|un ballon de foot|{{if:o==2|une bille|une perle ronde}}}} ?",
+			"statement": "À quel solide ressemble {{if:o==1|un ballon de foot|{{if:o==2|une bille|une perle ronde}}}} ?\n\n```choix\n- À une boule.\n- À un cube.\n- À un cône.\n- À un cylindre.\n- À un pavé.\n```",
 			"variables": [
 				{
 					"name": "o",
@@ -52,33 +39,20 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "À une boule."
-				},
-				{
-					"content": "À un cube."
-				},
-				{
-					"content": "À un cône."
-				},
-				{
-					"content": "À un cylindre."
-				},
-				{
-					"content": "À un pavé."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"{{if:o==1|Un ballon de foot|{{if:o==2|Une bille|Une perle ronde}}}} ressemble à une boule.",
 					"Une boule est toute ronde, sans face plate."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "À quel solide ressemble {{if:o==1|un cornet de glace vide|{{if:o==2|un chapeau pointu d'anniversaire|un plot de sport pointu}}}} ?",
+			"statement": "À quel solide ressemble {{if:o==1|un cornet de glace vide|{{if:o==2|un chapeau pointu d'anniversaire|un plot de sport pointu}}}} ?\n\n```choix\n- À un cône.\n- À un cube.\n- À une boule.\n- À un cylindre.\n- À un pavé.\n```",
 			"variables": [
 				{
 					"name": "o",
@@ -86,33 +60,20 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "À un cône."
-				},
-				{
-					"content": "À un cube."
-				},
-				{
-					"content": "À une boule."
-				},
-				{
-					"content": "À un cylindre."
-				},
-				{
-					"content": "À un pavé."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"{{if:o==1|Un cornet de glace vide|{{if:o==2|Un chapeau pointu d'anniversaire|Un plot de sport pointu}}}} ressemble à un cône.",
 					"Un cône a un rond d'un côté et une pointe de l'autre."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "À quel solide ressemble {{if:o==1|une boîte de conserve|{{if:o==2|un rouleau de papier essuie-tout|une bougie toute droite}}}} ?",
+			"statement": "À quel solide ressemble {{if:o==1|une boîte de conserve|{{if:o==2|un rouleau de papier essuie-tout|une bougie toute droite}}}} ?\n\n```choix\n- À un cylindre.\n- À un cube.\n- À une boule.\n- À un cône.\n- À un pavé.\n```",
 			"variables": [
 				{
 					"name": "o",
@@ -120,33 +81,20 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "À un cylindre."
-				},
-				{
-					"content": "À un cube."
-				},
-				{
-					"content": "À une boule."
-				},
-				{
-					"content": "À un cône."
-				},
-				{
-					"content": "À un pavé."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"{{if:o==1|Une boîte de conserve|{{if:o==2|Un rouleau de papier essuie-tout|Une bougie toute droite}}}} ressemble à un cylindre.",
 					"Un cylindre a deux ronds pareils, en haut et en bas."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "À quel solide ressemble {{if:o==1|une boîte à chaussures|{{if:o==2|une brique de lait|une gomme}}}} ?",
+			"statement": "À quel solide ressemble {{if:o==1|une boîte à chaussures|{{if:o==2|une brique de lait|une gomme}}}} ?\n\n```choix\n- À un pavé.\n- À un cube.\n- À une boule.\n- À un cône.\n- À un cylindre.\n```",
 			"variables": [
 				{
 					"name": "o",
@@ -154,30 +102,17 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "À un pavé."
-				},
-				{
-					"content": "À un cube."
-				},
-				{
-					"content": "À une boule."
-				},
-				{
-					"content": "À un cône."
-				},
-				{
-					"content": "À un cylindre."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"{{if:o==1|Une boîte à chaussures|{{if:o==2|Une brique de lait|Une gomme}}}} ressemble à un pavé.",
 					"Un pavé a 6 faces rectangulaires."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -190,7 +125,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "un morceau de sucre : leurre",
@@ -201,7 +136,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "un ballon de foot : boule",
@@ -212,7 +147,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "une bille : leurre",
@@ -223,7 +158,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "un cornet de glace vide : cône",
@@ -234,7 +169,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "un chapeau pointu d'anniversaire : leurre",
@@ -245,7 +180,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "une boîte de conserve : cylindre",
@@ -256,7 +191,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "un rouleau de papier essuie-tout : leurre",
@@ -267,7 +202,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "une boîte à chaussures : pavé",
@@ -278,7 +213,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "une brique de lait : leurre",
@@ -289,7 +224,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		}
 	]
 }

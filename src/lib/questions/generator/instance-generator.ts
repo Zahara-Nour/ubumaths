@@ -786,7 +786,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					const expected = readExpectedChoices(
 						resolved,
 						choiceSpec.choices.length,
-						choiceSpec.multiple
+						choiceSpec.multiple,
+						{ computed: (templateBlank.expectedAnswer ?? '').includes('{{') }
 					);
 					if (expected.errors.length > 0) {
 						throw new Error(`Case ${i + 1} (bloc choix) : ${expected.errors.join(' ; ')}`);

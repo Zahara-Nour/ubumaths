@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Comment écrit-on ${{if:k==1|1^{\\text{er}}|{{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|{{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|20^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ en lettres ?",
+			"statement": "Comment écrit-on ${{if:k==1|1^{\\text{er}}|{{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|{{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|20^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ en lettres ?\n\n```choix\n- {{if:k==1|premier|{{if:k==2|deuxième|{{if:k==3|troisième|{{if:k==4|quatrième|{{if:k==5|cinquième|{{if:k==6|sixième|{{if:k==7|septième|{{if:k==8|huitième|{{if:k==9|neuvième|{{if:k==10|dixième|{{if:k==11|onzième|{{if:k==12|douzième|{{if:k==13|treizième|{{if:k==14|quatorzième|{{if:k==15|quinzième|{{if:k==16|seizième|{{if:k==17|dix-septième|{{if:k==18|dix-huitième|{{if:k==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==1|deuxième|{{if:k==2|premier|{{if:k==3|deuxième|{{if:k==4|troisième|{{if:k==5|quatrième|{{if:k==6|cinquième|{{if:k==7|sixième|{{if:k==8|septième|{{if:k==9|huitième|{{if:k==10|neuvième|{{if:k==11|dixième|{{if:k==12|onzième|{{if:k==13|douzième|{{if:k==14|treizième|{{if:k==15|quatorzième|{{if:k==16|quinzième|{{if:k==17|seizième|{{if:k==18|dix-septième|{{if:k==19|dix-huitième|dix-huitième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==1|troisième|{{if:k==2|troisième|{{if:k==3|quatrième|{{if:k==4|cinquième|{{if:k==5|sixième|{{if:k==6|septième|{{if:k==7|huitième|{{if:k==8|neuvième|{{if:k==9|dixième|{{if:k==10|onzième|{{if:k==11|douzième|{{if:k==12|treizième|{{if:k==13|quatorzième|{{if:k==14|quinzième|{{if:k==15|seizième|{{if:k==16|dix-septième|{{if:k==17|dix-huitième|{{if:k==18|dix-neuvième|{{if:k==19|vingtième|dix-neuvième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==1|un|{{if:k==2|deux|{{if:k==3|trois|{{if:k==4|quatre|{{if:k==5|cinq|{{if:k==6|six|{{if:k==7|sept|{{if:k==8|huit|{{if:k==9|neuf|{{if:k==10|dix|{{if:k==11|onze|{{if:k==12|douze|{{if:k==13|treize|{{if:k==14|quatorze|{{if:k==15|quinze|{{if:k==16|seize|{{if:k==17|dix-sept|{{if:k==18|dix-huit|{{if:k==19|dix-neuf|vingt}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -18,26 +18,16 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "{{if:k==1|premier|{{if:k==2|deuxième|{{if:k==3|troisième|{{if:k==4|quatrième|{{if:k==5|cinquième|{{if:k==6|sixième|{{if:k==7|septième|{{if:k==8|huitième|{{if:k==9|neuvième|{{if:k==10|dixième|{{if:k==11|onzième|{{if:k==12|douzième|{{if:k==13|treizième|{{if:k==14|quatorzième|{{if:k==15|quinzième|{{if:k==16|seizième|{{if:k==17|dix-septième|{{if:k==18|dix-huitième|{{if:k==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:k==1|deuxième|{{if:k==2|premier|{{if:k==3|deuxième|{{if:k==4|troisième|{{if:k==5|quatrième|{{if:k==6|cinquième|{{if:k==7|sixième|{{if:k==8|septième|{{if:k==9|huitième|{{if:k==10|neuvième|{{if:k==11|dixième|{{if:k==12|onzième|{{if:k==13|douzième|{{if:k==14|treizième|{{if:k==15|quatorzième|{{if:k==16|quinzième|{{if:k==17|seizième|{{if:k==18|dix-septième|{{if:k==19|dix-huitième|dix-huitième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:k==1|troisième|{{if:k==2|troisième|{{if:k==3|quatrième|{{if:k==4|cinquième|{{if:k==5|sixième|{{if:k==6|septième|{{if:k==7|huitième|{{if:k==8|neuvième|{{if:k==9|dixième|{{if:k==10|onzième|{{if:k==11|douzième|{{if:k==12|treizième|{{if:k==13|quatorzième|{{if:k==14|quinzième|{{if:k==15|seizième|{{if:k==16|dix-septième|{{if:k==17|dix-huitième|{{if:k==18|dix-neuvième|{{if:k==19|vingtième|dix-neuvième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:k==1|un|{{if:k==2|deux|{{if:k==3|trois|{{if:k==4|quatre|{{if:k==5|cinq|{{if:k==6|six|{{if:k==7|sept|{{if:k==8|huit|{{if:k==9|neuf|{{if:k==10|dix|{{if:k==11|onze|{{if:k==12|douze|{{if:k==13|treize|{{if:k==14|quatorze|{{if:k==15|quinze|{{if:k==16|seize|{{if:k==17|dix-sept|{{if:k==18|dix-huit|{{if:k==19|dix-neuf|vingt}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"${{if:k==1|1^{\\text{er}}|{{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|{{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|20^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ se lit **{{if:k==1|premier|{{if:k==2|deuxième|{{if:k==3|troisième|{{if:k==4|quatrième|{{if:k==5|cinquième|{{if:k==6|sixième|{{if:k==7|septième|{{if:k==8|huitième|{{if:k==9|neuvième|{{if:k==10|dixième|{{if:k==11|onzième|{{if:k==12|douzième|{{if:k==13|treizième|{{if:k==14|quatorzième|{{if:k==15|quinzième|{{if:k==16|seizième|{{if:k==17|dix-septième|{{if:k==18|dix-huitième|{{if:k==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}**{{if:k==1| : c'est la place numéro $1$, celle qui vient avant toutes les autres.|{{if:k==2| : c'est le rang numéro $2$ (on dit « deux », puis « deuxième » pour une place).|{{if:k==3| : c'est le rang numéro $3$ (on dit « trois », puis « troisième » pour une place).|{{if:k==4| : c'est le rang numéro $4$ (on dit « quatre », puis « quatrième » pour une place).|{{if:k==5| : c'est le rang numéro $5$ (on dit « cinq », puis « cinquième » pour une place).|{{if:k==6| : c'est le rang numéro $6$ (on dit « six », puis « sixième » pour une place).|{{if:k==7| : c'est le rang numéro $7$ (on dit « sept », puis « septième » pour une place).|{{if:k==8| : c'est le rang numéro $8$ (on dit « huit », puis « huitième » pour une place).|{{if:k==9| : c'est le rang numéro $9$ (on dit « neuf », puis « neuvième » pour une place).|{{if:k==10| : c'est le rang numéro $10$ (on dit « dix », puis « dixième » pour une place).|{{if:k==11| : c'est le rang numéro $11$ (on dit « onze », puis « onzième » pour une place).|{{if:k==12| : c'est le rang numéro $12$ (on dit « douze », puis « douzième » pour une place).|{{if:k==13| : c'est le rang numéro $13$ (on dit « treize », puis « treizième » pour une place).|{{if:k==14| : c'est le rang numéro $14$ (on dit « quatorze », puis « quatorzième » pour une place).|{{if:k==15| : c'est le rang numéro $15$ (on dit « quinze », puis « quinzième » pour une place).|{{if:k==16| : c'est le rang numéro $16$ (on dit « seize », puis « seizième » pour une place).|{{if:k==17| : c'est le rang numéro $17$ (on dit « dix-sept », puis « dix-septième » pour une place).|{{if:k==18| : c'est le rang numéro $18$ (on dit « dix-huit », puis « dix-huitième » pour une place).|{{if:k==19| : c'est le rang numéro $19$ (on dit « dix-neuf », puis « dix-neuvième » pour une place).| : c'est le rang numéro $20$ (on dit « vingt », puis « vingtième » pour une place).}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -50,7 +40,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : 7e, sixième",
@@ -61,7 +51,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : 7e, huitième",
@@ -72,7 +62,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "Erreur : 7e, le nombre « sept »",
@@ -83,7 +73,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [3]
+			"answers": ["3"]
 		},
 		{
 			"description": "borne : 1er, premier",
@@ -94,7 +84,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "borne : 20e, vingtième",
@@ -105,7 +95,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : 20e, le nombre « vingt »",
@@ -116,7 +106,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [3]
+			"answers": ["3"]
 		}
 	]
 }

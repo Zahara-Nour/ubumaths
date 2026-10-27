@@ -8,12 +8,9 @@
 	"level": 2,
 	"status": "draft",
 	"delay": 90,
-	"shared": {
-		"cleanCoefficients": true
-	},
 	"variations": [
 		{
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ solution, sur $\\mathbb{R}$, de l'une des équations différentielles proposées.\n\n```courbe\nx: -4 ; 4\ny: {{eval:m-6}} ; {{eval:m+6}}\ngrille: 1 ; 1\nf(x) = {{C}}*exp({{a}}*x)+({{m}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction exponentielle décalée, avec une asymptote horizontale.\n```\n\nDe quelle équation $f$ est-elle solution ?",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ solution, sur $\\mathbb{R}$, de l'une des équations différentielles proposées.\n\n```courbe\nx: -4 ; 4\ny: {{eval:m-6}} ; {{eval:m+6}}\ngrille: 1 ; 1\nf(x) = {{C}}*exp({{a}}*x)+({{m}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction exponentielle décalée, avec une asymptote horizontale.\n```\n\nDe quelle équation $f$ est-elle solution ?\n\n```choix\n- $y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}$\n- $y'={{if:-a==1|y}}{{if:-a==-1|-y}}{{if:-a!=1 && -a!=-1|{{eval:-a}}y}}{{if:a*m>0|+{{eval:a*m}}}}{{if:a*m<0|{{eval:a*m}}}}$\n- $y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:a*m>0|+{{eval:a*m}}}}{{if:a*m<0|{{eval:a*m}}}}$\n- $y'={{if:-a==1|y}}{{if:-a==-1|-y}}{{if:-a!=1 && -a!=-1|{{eval:-a}}y}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -28,31 +25,21 @@
 					"expression": "1..3;±"
 				}
 			],
-			"choices": [
-				{
-					"content": "$y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}$"
-				},
-				{
-					"content": "$y'={{if:-a==1|y}}{{if:-a==-1|-y}}{{if:-a!=1 && -a!=-1|{{eval:-a}}y}}{{if:a*m>0|+{{eval:a*m}}}}{{if:a*m<0|{{eval:a*m}}}}$"
-				},
-				{
-					"content": "$y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:a*m>0|+{{eval:a*m}}}}{{if:a*m<0|{{eval:a*m}}}}$"
-				},
-				{
-					"content": "$y'={{if:-a==1|y}}{{if:-a==-1|-y}}{{if:-a!=1 && -a!=-1|{{eval:-a}}y}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les solutions de $y'=ay+b$ sont les fonctions $x\\mapsto Ce^{ax}-\\dfrac{b}{a}$ : leur courbe a pour asymptote horizontale la droite d'équation $y=-\\dfrac{b}{a}$ (solution constante), en $+\\infty$ si $a<0$, en $-\\infty$ si $a>0$.",
 					"{{if:a<0|Ici la courbe se rapproche de la droite $y={{eval:m}}$ quand $x$ tend vers $+\\infty$ : $a<0$ et $-\\dfrac{b}{a}={{eval:m}}$.}}{{if:a>0|Ici la courbe se rapproche de la droite $y={{eval:m}}$ quand $x$ tend vers $-\\infty$ et s'en éloigne vers $+\\infty$ : $a>0$ et $-\\dfrac{b}{a}={{eval:m}}$.}}",
 					"Seule $y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}$ convient : $a={{eval:a}}$ et $-\\dfrac{b}{a}={{eval:m}}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}$ et sa solution $f$ définie sur $\\mathbb{R}$ telle que $f(0)={{eval:y0}}$.\n\nQuelle affirmation décrit l'allure de la courbe de $f$ ?",
+			"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:-a*m>0|+{{eval:-a*m}}}}{{if:-a*m<0|{{eval:-a*m}}}}$ et sa solution $f$ définie sur $\\mathbb{R}$ telle que $f(0)={{eval:y0}}$.\n\nQuelle affirmation décrit l'allure de la courbe de $f$ ?\n\n```choix\n- $f$ est {{if:a*(y0-m)>0|croissante}}{{if:a*(y0-m)<0|décroissante}} sur $\\mathbb{R}$ et sa limite en $+\\infty$ est {{if:a<0|${{eval:m}}$}}{{if:a>0 && y0>m|$+\\infty$}}{{if:a>0 && y0<m|$-\\infty$}}\n- $f$ est {{if:a*(y0-m)>0|décroissante}}{{if:a*(y0-m)<0|croissante}} sur $\\mathbb{R}$ et sa limite en $+\\infty$ est {{if:a<0|${{eval:m}}$}}{{if:a>0 && y0>m|$+\\infty$}}{{if:a>0 && y0<m|$-\\infty$}}\n- $f$ est {{if:a*(y0-m)>0|croissante}}{{if:a*(y0-m)<0|décroissante}} sur $\\mathbb{R}$ et sa limite en $+\\infty$ est {{if:a>0|${{eval:m}}$}}{{if:a<0 && y0>m|$-\\infty$}}{{if:a<0 && y0<m|$+\\infty$}}\n- $f$ est {{if:a*(y0-m)>0|décroissante}}{{if:a*(y0-m)<0|croissante}} sur $\\mathbb{R}$ et sa limite en $+\\infty$ est {{if:a>0|${{eval:m}}$}}{{if:a<0 && y0>m|$-\\infty$}}{{if:a<0 && y0<m|$+\\infty$}}\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -68,30 +55,28 @@
 				}
 			],
 			"conditions": ["y0 != m"],
-			"choices": [
-				{
-					"content": "$f$ est {{if:a*(y0-m)>0|croissante}}{{if:a*(y0-m)<0|décroissante}} sur $\\mathbb{R}$ et sa limite en $+\\infty$ est {{if:a<0|${{eval:m}}$}}{{if:a>0 && y0>m|$+\\infty$}}{{if:a>0 && y0<m|$-\\infty$}}"
-				},
-				{
-					"content": "$f$ est {{if:a*(y0-m)>0|décroissante}}{{if:a*(y0-m)<0|croissante}} sur $\\mathbb{R}$ et sa limite en $+\\infty$ est {{if:a<0|${{eval:m}}$}}{{if:a>0 && y0>m|$+\\infty$}}{{if:a>0 && y0<m|$-\\infty$}}"
-				},
-				{
-					"content": "$f$ est {{if:a*(y0-m)>0|croissante}}{{if:a*(y0-m)<0|décroissante}} sur $\\mathbb{R}$ et sa limite en $+\\infty$ est {{if:a>0|${{eval:m}}$}}{{if:a<0 && y0>m|$-\\infty$}}{{if:a<0 && y0<m|$+\\infty$}}"
-				},
-				{
-					"content": "$f$ est {{if:a*(y0-m)>0|décroissante}}{{if:a*(y0-m)<0|croissante}} sur $\\mathbb{R}$ et sa limite en $+\\infty$ est {{if:a>0|${{eval:m}}$}}{{if:a<0 && y0>m|$-\\infty$}}{{if:a<0 && y0<m|$+\\infty$}}"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Solution constante : $-\\dfrac{b}{a}={{eval:m}}$. Donc $f(x)=Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}}$ avec $f(0)=C{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}}={{eval:y0}}$, soit $C={{eval:y0-m}}$.",
 					"$f'(x)={{if:a*(y0-m)==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a*(y0-m)==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a*(y0-m)!=1 && a*(y0-m)!=-1|{{eval:a*(y0-m)}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}$, du signe de ${{eval:a*(y0-m)}}$ : $f$ est **{{if:a*(y0-m)>0|croissante}}{{if:a*(y0-m)<0|décroissante}}**.",
 					"{{if:a<0|$a<0$ : $e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}$ tend vers $0$ en $+\\infty$, donc $f(x)$ tend vers ${{eval:m}}$ (asymptote horizontale).}}{{if:a>0|$a>0$ : $e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}$ tend vers $+\\infty$ en $+\\infty$ et $C={{eval:y0-m}}$, donc $f(x)$ tend vers {{if:a<0|${{eval:m}}$}}{{if:a>0 && y0>m|$+\\infty$}}{{if:a>0 && y0<m|$-\\infty$}}.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : a=-1, m=2",
@@ -101,10 +86,10 @@
 				"C": "2",
 				"m": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : signe de a faux",
@@ -114,10 +99,10 @@
 				"C": "2",
 				"m": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : asymptote −m",
@@ -127,10 +112,10 @@
 				"C": "2",
 				"m": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 : a=1, m=-1",
@@ -140,10 +125,10 @@
 				"C": "-1",
 				"m": "-1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : a=1, m=-1, mauvais choix",
@@ -153,10 +138,10 @@
 				"C": "-1",
 				"m": "-1"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v1 : a=-2, m=1, y0=3",
@@ -166,10 +151,10 @@
 				"m": "1",
 				"y0": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : sens de variation faux",
@@ -179,10 +164,10 @@
 				"m": "1",
 				"y0": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : limite fausse",
@@ -192,10 +177,10 @@
 				"m": "1",
 				"y0": "3"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v1 : a=2, y0<m",
@@ -205,10 +190,10 @@
 				"m": "1",
 				"y0": "-1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : a=2, y0<m, limite m refusée",
@@ -218,16 +203,10 @@
 				"m": "1",
 				"y0": "-1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": true
-	}
+	]
 }
