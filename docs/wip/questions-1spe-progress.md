@@ -189,7 +189,7 @@ _Posées le 2026-10-27. Recommandations de Claude validées par David le 2026-10
   368 → 377, 220 → 231, 389 → 272, 417 → 327, 328 → 331, 421 → 340).
 - **D3 — Tags.** 174e202b, dc4b8d08 → 1SPE-307 ; eae2ff6a → 1SPE-386 ; 318ea542 → 1SPE-283 ; 93f9ecdf sans tag ;
   f1440b52 : 1SPE-274 → 1SPE-396 ; 8b599a53, fece187e, afd9b3ff : retirer `1_SPE` des niveaux ; les 6 tagués d'un
-  point de seconde : ajouter `2`, garder `1_SPE` — **fait par questions-2de** (accord entre sessions, 2026-10-27 :
+  point de seconde : ajouter `2`, garder `1_SPE` — **fait par questions-2de (#1866, en prod, grades relus le 2026-10-27)** (accord entre sessions, 2026-10-27 :
   `grades = ['2', '1_SPE']`, car le cahier de texte filtre `grades` par égalité exacte au niveau de la classe ;
   contenu de 8b59ca4b et 8c31675a corrigé là-bas aussi). f8ccc8b6 : à lire.
 - **D4 — Points P** hors chantier (5a89b292 couvre déjà le résultat de 308 / 411).
