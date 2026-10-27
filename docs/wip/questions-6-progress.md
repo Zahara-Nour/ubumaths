@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1859._
+_Mis à jour le 2026-10-27, après #1859 et le `--publier` de David._
 
-- **État** : lot 2 « Nombres » : 10 modèles écrits (`scripts/questions/6-nombres/`, script `docs/wip/questions/lot-6-nombres.py`), essayés en base locale, PR des fichiers #1859 mergée (§ 9). Rien en prod.
-- **Prochaine action** : après le `--publier` de David, relever les 10 `id` en prod (MCP), puis migration nœud + tag (gabarit `20261026210000_questions_cp_c_rangement_tags.sql` + son test), puis page à cocher, puis publication.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-nombres --publier` depuis le dépôt principal (brouillons en prod ; aucun bloc neuf, pas de `deploy:prod` requis : case choix en prod depuis v0.51.0).
+- **État** : lot 2 « Nombres » : 10 brouillons créés en prod par David (sans nœud ni tag, relevé MCP du 2026-10-27, § 9.2). Migration de rangement **pas encore écrite**.
+- **Prochaine action** : écrire `supabase/migrations/<ts>_questions_6_nombres_rangement_tags.sql` + `tests/integration/questions-6-nombres-rangement-tags.test.ts` en copiant le gabarit `20261026210000_questions_cp_c_rangement_tags` (grade `6`, 10 modèles, 6-104 sur la NOTION, sous_notion nulle) ; test rouge sans la migration, `security-auditor`, PR, CI, merge, `db:migrate` depuis le dépôt principal ; puis page à cocher, publication.
+- **En attente de David** : rien (question d'accès tranchée en phase 0 : personne ne gagne de lecture).
 - **Pièges en cours** : variables `e` et `i` interdites dans les `eval` ; un `?` dans un `{{if}}` ne fait pas de case ; un tag exige le modèle sur le nœud du point ou sa notion ; `db:migrate` depuis le dépôt principal.
-- **Worktree / branche** : aucun (retiré après #1859) ; la migration aura le sien.
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-nombres-rangement`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -300,3 +300,27 @@ dénominateur 2, 4, 5… (définition seule) ; 6-202 en case choix `plusieurs: o
 - Base locale : 10 brouillons créés ; joués dans l'aperçu admin (port 5182) : 01 juste + correction, 06 case choix
   « 16,800 … 16,8 » (virgule, zéros gardés) juste, 10 « 2,72 » juste (≠ exemple 2,75), « 2,07 » faux avec « Une réponse
   possible : 2,75 », 09 deux cases, 03 case dans une fraction : rendus corrects.
+
+### 9.2 En prod (2026-10-27)
+
+David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud ni tag (MCP). Identifiants et chemins
+(branche « Nombres et calculs ») :
+
+| id                                   | modèle                               | point | notion > sous-notion                                   |
+| ------------------------------------ | ------------------------------------ | ----- | ------------------------------------------------------ |
+| 4d825d44-928a-4461-9df0-3b3c3fdc74fc | Le chiffre d'un rang                 | 6-101 | Entiers : numération > décomposition                   |
+| 4bcbbaae-a01d-43c2-903c-1b365a438761 | Le nombre de dizaines, de centièmes… | 6-101 | Entiers : numération > décomposition                   |
+| 2c5bae8f-03e3-44c6-9dbd-6849c7177ceb | Liens entre les unités de numération | 6-102 | Décimaux : numération > décomposition                  |
+| 8d7edbde-d1d0-4a9d-bb6e-7e516ef1381d | Grands nombres jusqu'aux milliards   | 6-103 | Entiers : numération > écritures                       |
+| d7781eed-7930-4619-9b00-caade882a637 | Reconnaître un nombre décimal        | 6-104 | Décimaux : numération (notion)                         |
+| a1b46489-4566-449e-a4e9-e1e144a0b11d | Comparer deux nombres décimaux       | 6-109 | Décimaux : numération > ordre                          |
+| e75cb1a3-56f6-4498-b6bf-06e852b3252d | Arrondir un nombre décimal           | 6-111 | Décimaux : numération > arrondis et ordres de grandeur |
+| 36991abb-b704-4c0f-9165-c5de5e18f70b | Arrondir un quotient, arrondir π     | 6-112 | Décimaux : numération > arrondis et ordres de grandeur |
+| 030e3554-0a49-4a22-9931-bebd2a8cb227 | Encadrer un nombre décimal           | 6-113 | Décimaux : numération > encadrement                    |
+| 2e982062-0fc9-473f-8aa2-affaf55c567d | Intercaler un nombre décimal         | 6-202 | Décimaux : numération > encadrement                    |
+
+### 9.3 Rangement (2026-10-27)
+
+- Prod revérifiée (MCP) avant le SQL : 10 brouillons, `[6]`, sans nœud ni tag.
+- Migration `20261027150000_questions_6_nombres_rangement_tags` (gabarit `cp_c`, grade `6`, 6-104 sur la notion)
+  - test `questions-6-nombres-rangement-tags` : rouge sans la migration (ENOENT), 9/9 vert avec.
