@@ -8,14 +8,16 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1855._
+_Mis à jour le 2026-10-27, après #1878._
 
 - **État** : lots 1 (#1816, #1822), 2 (#1826), 3 (#1840, CP-058) et 4 (#1855, script de migration des QCM +
   garde, sources `scripts/questions/**` converties) mergés, plus #1833, #1836, #1842. Rien en prod ; base
   inchangée (essai à blanc en prod : 178 / 178, 85 050 tirages, § 2.11). CP-058 pas encore en base.
 - **Prochaine action** : après le `deploy:prod` des lots 1-4 (décidé par David) : David publie CP-058
   (`create-questions --dir scripts/questions/cp-figure --publier`), puis lance
-  `! pnpm tsx scripts/migrer-qcm-en-cases.ts --ecrire` ; je vérifie (0 QCM restant) ; puis lot 5 (retrait de
+  `! pnpm tsx scripts/migrer-qcm-en-cases.ts --ecrire` ; je vérifie (0 QCM restant) ; puis CP-057 (b5389494) :
+  consigne « Quels points semblent être alignés ? » en prod (#1878 ; `create-questions` ne le retrouve pas,
+  `level` 3 en prod contre 1 dans la source, comme 6 des 10 modèles `cp-b2`) ; puis lot 5 (retrait de
   `multiple_choice` du code, de `src/lib/migration/`, puis de la contrainte SQL après un 2ᵉ `deploy:prod`).
 - **En attente de David** : essai de tout sur 5175 (`main`) — base LOCALE migrée (10 / 10 QCM) et CP-058 + deux
   modèles `cp-figure` créés en brouillon en local le 2026-10-27 ; avis sur les séries PDF
