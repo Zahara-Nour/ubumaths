@@ -1,12 +1,12 @@
-# Chantier `evaluation-numerique` — une ligne de Calcul dont les lettres ont une valeur
+# Chantier `evaluation-numerique` — ce que rend une ligne de Calcul (nombres, lettres qui ont une valeur)
 
 ## Reprendre ici
 
 _Mis à jour le 2026-10-27, ouverture du chantier (rien codé)._
 
-- **État** : worktree et journal créés ; constat mesuré (ci-dessous) ; phase 0 en cours de discussion avec David.
+- **État** : rien codé ; constats mesurés (ci-dessous) ; **D1-D3 validées** (notation scientifique : se calcule, illisible hors de [10⁻⁶ ; 10⁹[, exact = la ligne reste exacte) ; phase 0 en cours de discussion, cadre actuel : ligne nue numérique.
 - **Prochaine action** : recueillir les points de David (« tout ce qui suit va toucher ce chantier »), puis rédiger la phase 0 (comportements nominal / limite / erreur) ; **attendre sa validation avant de coder**.
-- **En attente de David** : question A/B (ci-dessous) et des étapes pour un calcul à lettres liées ?
+- **En attente de David** : la suite de ses points sur la ligne numérique ; plus tard, question A/B (lettres liées) et des étapes pour un calcul à lettres liées ?
 - **Pièges** : ne pas confondre avec `fusion-moteurs` (ni `simplify` ni `pedagogical-simplify` en jeu) ; refaire la mesure avant de coder ; le moteur de l'Atelier EST `WebReplEngine` (`mathAST/cli/web/`), le REPL de terminal n'est qu'un outil de développeur.
 - **Worktree / branche** : `../ubumaths-wt-evaluation-numerique`, `feat/evaluation-numerique`.
 
@@ -66,9 +66,19 @@ Règle : saisie ENTIÈRE de forme `a × 10ⁿ`, 1 ≤ |a| < 10, n entier ≠ 0 �
 
 > « Ce n'est pas logique, on s'attend à ce que l'Atelier calcule cette valeur, sauf si le nombre obtenu est illisible à cause du trop grand nombre de chiffres. »
 
-**Revient sur Q24 de simplify-carte** (notation tapée gardée telle quelle). Désormais : `3*10^2 → 300`, `2,5*10^(-3) → 0,0025` ; la notation scientifique n'est plus une affaire de saisie mais de **lisibilité du résultat**. Restent à trancher : le seuil d'illisibilité, et le cas d'un résultat qui n'a pas d'écriture scientifique courte exacte (`2^100`).
+**Revient sur Q24 de simplify-carte** (notation tapée gardée telle quelle). Désormais : `3*10^2 → 300`, `2,5*10^(-3) → 0,0025` ; la notation scientifique n'est plus une affaire de saisie mais de **lisibilité du résultat**.
 
-### Question ouverte
+### Décision D2 — le seuil d'illisibilité (David, 2026-10-27, recommandation validée)
+
+La borne du mode décimal, reprise en mode exact : un résultat hors de **[10⁻⁶ ; 10⁹[** (en valeur absolue) est illisible. Un nombre s'écrit ainsi de la même façon dans les deux modes. Ex. : `10^9 → 10⁹`, `3*10^20 → 3 × 10²⁰`, `10^(-7) → 10⁻⁷` ; `123456789 → 123456789`.
+
+### Décision D3 — en mode exact, la ligne reste exacte (David, 2026-10-27, option (b) validée)
+
+Un résultat illisible qui n'a **pas** d'écriture scientifique courte EXACTE (`2^100 = 1267650600228229401496703205376`) garde l'entier exact sur la ligne ; le bouton ≈ donne `≈ 1,2677 × 10³⁰`. Écartées : (a) la ligne en `≈ 1,2677 × 10³⁰`, l'exact au bouton (le mode exact afficherait une valeur approchée) ; (c) la mantisse entière `1,267650600228229401496703205376 × 10³⁰` (exacte, pas plus lisible).
+
+Conséquence : en mode exact, D2 ne s'applique qu'à un résultat qui s'écrit exactement en notation scientifique (`3 × 10²⁰`, `10⁻⁷`, `2,5 × 10⁻¹²`). À préciser en phase 0 : la longueur de mantisse qui compte encore comme « courte ».
+
+### Question ouverte (lettres liées, pour plus tard)
 
 - **(A)** une valeur de l'Atelier est toujours remplacée, même avec une lettre libre (`x + a → x + 3`, `f(x)+a → x² + 3`), puis `tidy` — recommandation, par cohérence avec les commandes ;
 - **(B)** remplacée seulement si tout se calcule (l'actuel).
@@ -76,3 +86,4 @@ Règle : saisie ENTIÈRE de forme `a × 10ⁿ`, 1 ≤ |a| < 10, n entier ≠ 0 �
 ## Historique
 
 - 2026-10-27 : chantier ouvert sur décision de David, worktree créé depuis `origin/main` (`1623ff3be`).
+- 2026-10-27 : D1 (notation scientifique tapée calculée, revient sur Q24), D2 (seuil [10⁻⁶ ; 10⁹[), D3 (mode exact : la ligne reste exacte, `2^100` en entier, ≈ au bouton).
