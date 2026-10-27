@@ -34,7 +34,8 @@
 --
 -- Accès (question tranchée par David le 2026-10-28) : personne ne gagne de lecture. Les 16 modèles
 -- qui changent de niveau restent publiés : ils apparaissent au CM2 ou en 6e au lieu du CM1. Les 8
--- brouillons quittent le catalogue (admin seul). Aucune règle (policy) ne change.
+-- brouillons quittent le catalogue des élèves (prof et admin les lisent encore, comme avant).
+-- Aucune règle (policy) ne change.
 --
 -- Rollback (aucune donnée d'élève). Il retire les 16 tags posés, rend aux modèles leur nœud, leurs
 -- niveaux et leur statut d'avant. Garde : il refuse si un modèle n'a plus EXACTEMENT le nœud, les

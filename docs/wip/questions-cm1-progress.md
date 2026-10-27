@@ -191,7 +191,7 @@ point repassent en brouillon, niveau CM1 gardé, jamais supprimés.
   (`questions-2de/verifier-contenu.ts`) : specs 15/15 et 7/7, tirages 100/100.
 - **Rangement** `20261028100100_questions_cm1_rangement_tags.sql` (généré par `lot-rangement-cm1.py`, repris
   de la 2de) : 24 modèles, 16 niveaux changés (12 CM2, 4 en 6e), 3 déplacés (CM2-065), 16 tags posés,
-  8 brouillons ; rollback gardé.
+  8 brouillons (catalogue des élèves ; le prof les lit encore) ; rollback gardé. `security-auditor` : aucun bloquant.
 - **Tests** `questions-cm1-contenu` et `questions-cm1-rangement-tags` : rouges les migrations vidées (19
   échecs + les 2 suites en `beforeAll`), verts avec (33 verts, 15 sautés = options de scission sans objet).
   `gardeStatut` laissé de côté : le test du helper suppose une origine en brouillon.
