@@ -6,17 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, PR #1882 ouverte._
+_Mis à jour le 2026-10-27, après #1882._
 
-- **État** : lot 2 « équations et inéquations » (§ 8 à § 10) : 10 brouillons en prod ; migration nœud + tag en
-  PR #1882 (test 9/9, rouge sans elle ; `security-auditor` : rien). Correctif #1877 mergé, pas encore en prod.
-- **Prochaine action** : #1882 verte → merge → `db:migrate` depuis le dépôt principal → vérification MCP
-  (10 nœuds, 10 tags) → page à cocher (`page-a-cocher.ts --dir scripts/questions/2de-equations`).
-- **En attente de David** : rien pour l'instant ; ensuite ses verdicts sur la page à cocher.
+- **État** : lot 2 « équations et inéquations » (§ 8 à § 10) : 10 brouillons en prod, rangés et tagués
+  (#1882, `db:migrate` joué, vérifié MCP). Page à cocher publiée : https://claude.ai/artifact/T8Emcjbfc7wPj4qnUd5ebk
+  (collection `verdicts`, 0/10 au départ). Correctif #1877 mergé, pas encore en prod.
+- **Prochaine action** : lire et COMPTER les verdicts (`ArtifactData list verdicts`) ; « À revoir » → corriger
+  (§ 7 de la démarche) ; tout OK → `publier-lot.ts --dir scripts/questions/2de-equations` en simulation.
+- **En attente de David** : sa relecture sur la page ; puis le `deploy:prod` qui livre #1877 ; puis
+  `publier-lot.ts … --publier` (lui).
 - **Pièges en cours** : publier le lot seulement **après le `deploy:prod` qui livre #1877** (sinon √12 compte juste
   en prod) ; la garde de doc lit `Doc-inchangée:` dans un COMMIT, pas dans la description de PR ; test
   `scripts/corrections` « cas rare » qui dépasse 5 s en CI de temps en temps (relancer) ; QCM en réécriture.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-equations-rangement`.
+- **Worktree / branche** : aucun (retiré après #1882).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -329,3 +331,8 @@ produit nul en base. Phase 0 validée telle que proposée (mes 4 recommandations
   … › x² = a ; 2-432, 2-431, 2-280 → Algèbre › Inéquations : premier degré ; 2-266 → … › ax + b < c.
 - Migration `20261027213000_questions_2de_equations_rangement_tags` (gabarit CP-C) + test d'intégration :
   9/9 vert, 5/9 rouge avec une migration vide ; `security-auditor` : aucun finding. PR #1882.
+- #1882 mergée le 2026-10-27 (CI : garde de doc → commit `Doc-inchangée:`, test « cas rare » lent) ;
+  `db:migrate` joué ; MCP : 10 modèles sur le nœud de leur point, 1 tag chacun, `updated_at` inchangé,
+  brouillons. Page à cocher (aucune alerte sur les 10 fiches) :
+  https://claude.ai/artifact/T8Emcjbfc7wPj4qnUd5ebk — rendu à 390 px non vérifié (fenêtre Chrome
+  non redimensionnable).
