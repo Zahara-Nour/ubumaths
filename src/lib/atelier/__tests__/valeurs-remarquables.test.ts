@@ -17,15 +17,16 @@ import { runInput } from '../calcul';
 // Helpers
 // =============================================================================
 
-/** La ligne affichée (`latex`) et les titres des étapes. */
-function line(input: string): { latex: string; titles: string[] } {
+/** La ligne affichée (`latex`), les titres des étapes et leurs lignes. */
+function line(input: string): { latex: string; titles: string[]; shown: string[] } {
 	const result = runInput({ atelier: new Atelier(), engine: new WebReplEngine() }, input);
 	if (result.kind !== 'commande' && result.kind !== 'calcul') {
 		throw new Error(`pas une ligne de calcul : ${JSON.stringify(result)}`);
 	}
 	return {
 		latex: result.latex ?? '',
-		titles: (result.steps ?? []).map((step) => step.title)
+		titles: (result.steps ?? []).map((step) => step.title),
+		shown: (result.steps ?? []).map((step) => step.expressionLatex ?? '')
 	};
 }
 
@@ -136,5 +137,58 @@ describe('.simplifier — ce qui reste écrit', () => {
 
 	it('une ligne tapée seule garde l’écriture (tidy, S4)', () => {
 		expect(line('x+cos(π/3)').latex).toBe(String.raw`x + \cos\left( \dfrac{\pi}{3} \right)`);
+	});
+});
+
+// Choix de David du 2026-10-27 (journal § 2) : `.développer` et `.résoudre`
+// calculent la valeur d'abord, avec la même étape
+
+describe('.développer — la valeur d’abord, avec son étape', () => {
+	it.each([
+		['.développer (x+cos(π/3))^2', String.raw`x^2 + x + \dfrac{1}{4}`],
+		['.développer 2cos(π/3)(x+1)', 'x + 1']
+	])('%s → %s', (input, expected) => {
+		const { latex, titles } = line(input);
+		expect(latex).toBe(expected);
+		expect(titles[0]).toBe(`On utilise une valeur remarquable : ${COS_PI_3}`);
+	});
+
+	it('(x + sin(π/6))(x − 1) : la valeur, puis la distribution', () => {
+		const { titles } = line('.développer (x+sin(π/6))(x-1)');
+		expect(titles[0]).toBe(
+			String.raw`On utilise une valeur remarquable : $\sin\left( \dfrac{\pi}{6} \right) = \dfrac{1}{2}$`
+		);
+		expect(titles.some((t) => t.startsWith('On distribue'))).toBe(true);
+	});
+
+	it('angle hors table : rien de calculé', () => {
+		const { latex, titles } = line('.développer x(cos(π/5)+1)');
+		expect(latex).toBe(String.raw`\cos\left( \dfrac{\pi}{5} \right) x + x`);
+		expect(titles.some((t) => t.includes('valeur remarquable'))).toBe(false);
+	});
+});
+
+describe('.résoudre — la valeur d’abord, avec son étape', () => {
+	// `½x = 1` se résout en multipliant par 2, comme `x/2 = 1` : le titre dit
+	// ce que montre la ligne, plus « On divise par 1/2 » devant `cos(π/3)`
+	it('cos(π/3)x = 1 : la valeur, puis on multiplie par 2', () => {
+		const { latex, titles, shown } = line('.résoudre cos(π/3)x=1');
+		expect(latex).toBe('x = 2');
+		expect(titles[0]).toBe(`On utilise une valeur remarquable : ${COS_PI_3}`);
+		expect(titles[2]).toBe('On multiplie les deux membres par $2$');
+		// Une équation ne s'enchaîne pas par « = » : jamais `= ½x = 1`
+		expect(shown[0]).toContain(String.raw`\dfrac{1}{2} x = 1`);
+		expect(shown[0]).not.toContain(String.raw`= \dfrac{1}{2} x = 1`);
+	});
+
+	it('x + cos(π/3) = 1 : la valeur, puis on soustrait 1/2', () => {
+		const { latex, titles } = line('.résoudre x+cos(π/3)=1');
+		expect(latex).toBe(String.raw`x = \dfrac{1}{2}`);
+		expect(titles[0]).toBe(`On utilise une valeur remarquable : ${COS_PI_3}`);
+	});
+
+	it('angle hors table : rien de calculé', () => {
+		const { titles } = line('.résoudre cos(π/5)x=1');
+		expect(titles.some((t) => t.includes('valeur remarquable'))).toBe(false);
 	});
 });

@@ -29,6 +29,8 @@ import {
 	LinearEquationRenderer,
 	QuadraticEquationRenderer
 } from '$lib/mathAST/pedagogical-solve';
+import { generateRemarkableValueSteps } from '$lib/mathAST/pedagogical-simplify/pipeline';
+import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/renderer';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
 import { getVariables } from '$lib/mathAST/eval/substitute';
@@ -235,7 +237,16 @@ export function solveSteps(
 		);
 		if (others.length > 0) return null;
 
-		const relation: RelationNode = node;
+		const typedRelation: RelationNode = node;
+		// La valeur d'abord, avec son étape (David, 2026-10-27, chantier
+		// valeurs-remarquables) : `cos(π/3)x = 1` se résout comme `½x = 1`, et
+		// « On divise par 1/2 » dit ce que montre la ligne
+		const remarkable = generateRemarkableValueSteps(typedRelation, { schoolLevel: 'lycee' });
+		if (remarkable.result.type !== 'relation') return null;
+		const relation: RelationNode = remarkable.result;
+		const valueRenderer = new PedagogicalSimplifyRenderer();
+		const valuesIn = (verbosity: 'detailed' | 'summarized') =>
+			valueRenderer.renderAll(remarkable.steps, { schoolLevel: 'lycee', verbosity });
 		const steps =
 			relation.relation === '='
 				? generateEquationSteps(relation, { level: 'college', variable })
@@ -257,7 +268,10 @@ export function solveSteps(
 		// Les étapes écrites comme la réponse (lot 5f-4) ; `steps` garde les
 		// valeurs du calcul, lues par le garde-fou et la réponse
 		const shown = stepsAsShown(steps, relation);
-		const rendered = renderer.renderAll(shown, { schoolLevel, verbosity: 'detailed' });
+		const rendered = numbered([
+			...valuesIn('detailed'),
+			...renderer.renderAll(shown, { schoolLevel, verbosity: 'detailed' })
+		]);
 
 		// Sans réponse affichable, la ligne n'aurait RIEN à montrer : une zone
 		// mathématique vide, et le texte du moteur jamais affiché.
@@ -271,8 +285,11 @@ export function solveSteps(
 		if (!conclusionAgrees(relation, variable, steps[steps.length - 1])) return null;
 
 		const solutions = concludedSolutions(steps[steps.length - 1]);
-		const summarized = renderer.renderAll(shown, { schoolLevel, verbosity: 'summarized' });
-		const decimal = hasDecimalLiteral(relation);
+		const summarized = numbered([
+			...valuesIn('summarized'),
+			...renderer.renderAll(shown, { schoolLevel, verbosity: 'summarized' })
+		]);
+		const decimal = hasDecimalLiteral(typedRelation);
 		if (within !== undefined) {
 			return solutions === null
 				? null
@@ -301,6 +318,11 @@ export function solveSteps(
 		// qui refuse ce qu'on lui donne.
 		return null;
 	}
+}
+
+/** Les étapes numérotées dans l'ordre : le dépliage les clé par `id`. */
+function numbered(steps: readonly RenderedStep[]): RenderedStep[] {
+	return steps.map((step, index) => ({ ...step, id: index + 1 }));
 }
 
 /**

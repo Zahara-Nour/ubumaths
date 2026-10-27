@@ -56,6 +56,17 @@ export interface IntentRuleFlags {
 	readonly enableHyperbolic: boolean;
 }
 
+/**
+ * Parité, période et valeurs remarquables de sin, cos, tan : ce que `réduire`
+ * applique aux fonctions trigonométriques, et ce que `.développer` et
+ * `.résoudre` calculent d'abord (`generateRemarkableValueSteps`, pipeline).
+ */
+export const TRIG_REDUCTION_RULES: readonly Rule[] = [
+	...trigNegativeAngleRules,
+	...trigPeriodicRules,
+	...trigRemarkableStepRules
+];
+
 export interface SelectedRules {
 	/** Pattern rules active for the intent + flags. No duplicates. */
 	readonly rules: readonly Rule[];
@@ -137,9 +148,7 @@ export function selectRulesForIntent(
 			// détruirait le facteur commun (`exp(x)exp(x)+exp(x)`, revue du lot 3)
 			// Valeurs remarquables (`cos(π/3) = 1/2`) : une identité enseignée, donc ici,
 			// avec son étape, jamais dans `tidy` (S4, chantier valeurs-remarquables)
-			const trigReductions = flags.enableTrig
-				? [...trigNegativeAngleRules, ...trigPeriodicRules, ...trigRemarkableStepRules]
-				: [];
+			const trigReductions = flags.enableTrig ? TRIG_REDUCTION_RULES : [];
 			const absReductions = flags.enableAbs ? absReduceRules : [];
 			const expReductions = flags.enableLogExp ? expFunctionRules : [];
 			const rules = dedupeByName([
