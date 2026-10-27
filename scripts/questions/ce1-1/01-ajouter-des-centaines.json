@@ -4,8 +4,8 @@
 	"grades": ["CE1"],
 	"theme": "Entiers",
 	"domain": "Additionner",
-	"subdomain": "Somme astucieuse",
-	"level": 11,
+	"subdomain": "Somme",
+	"level": 20,
 	"delay": 20,
 	"status": "draft",
 	"variations": [
