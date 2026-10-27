@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1848._
+_Mis à jour le 2026-10-27, PR 2 en cours._
 
-- **État** : PR 1 (#1846) et PR « téléphone » (#1848) **mergées**, pas en prod. Droite ```line dessinée à la largeur réelle (px, chiffres fixes) ; droite à placer : le prof est averti si graduations < 20 px sur 320 px (§ 9).
-- **Prochaine action** : PR 2 — plusieurs points `placer: A=3 ; B=7` ; d'abord la phase 0 courte du geste (à poser à David).
+- **État** : PR 1 (#1846) et « téléphone » (#1848) mergées, pas en prod. PR 2 (plusieurs points) en cours, décisions § 10.
+- **Prochaine action** : finir la PR 2 (parseur → générateur → écran → copie corrigée), § 11.
 - **En attente de David** : essai sur un vrai téléphone de la droite à placer (après un `deploy:prod`, ou en local).
-- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; réponse écrite par `placerAnswer` des deux côtés ; `valueToX`/`xToValue`/`computeGraduations` prennent la largeur (défaut 600 = PDF) ; une PR = une session.
-- **Worktree / branche** : aucun (retiré après #1848) ; PR 2 : `git worktree add -b feat/reponses-a-placer-2 ../ubumaths-wt-reponses-a-placer origin/main`.
+- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; une droite à K points porte K cases consécutives (`case:` = la première, comme ```operation) ; `placerAnswer` des deux côtés.
+- **Worktree / branche** : `../ubumaths-wt-reponses-a-placer`, `feat/reponses-a-placer-2`.
 
 ---
 
@@ -154,3 +154,22 @@ inchangés). `phoneGapWarning` (droites à placer seulement, après revue : une 
 conteneur de 320 px, passe sous 20 px (0 à 20 au pas de 1 → 12 px : avertie). Droite de correction :
 `showErrors={false}` (pas d'avertissement en double). Tests : `number-line-largeur.test.ts`,
 `NumberLine-largeur.svelte.test.ts` (320 / 700 px, chiffres de même taille, geste à 320 px).
+
+## 10. Décisions PR 2 (David, 2026-10-27 : « ok go » sur les recos)
+
+Plusieurs points sur une même droite : `placer: A=3 ; B=7 ; C=12`.
+
+1. **Geste** : rangée d'étiquettes A B C sous la droite (à côté de ◀ ▶), une active (A au départ).
+   Toucher la droite pose le point actif ; l'étiquette suivante non placée devient active. Toucher /
+   glisser un point posé le reprend. ◀ ▶ et flèches : le point actif.
+2. **Séparateur `;`** (pas `,` : « 3,5 » à la française serait mal lu).
+3. **Correction** : « Tu as placé B sur 9. » par point faux, « Tu n'as pas placé C. » ; la droite juste
+   avec **tous** les points, en vert.
+4. **Au plus 6 points.** Noms : une lettre majuscule, distincts ; obligatoires dès 2 points. Deux points
+   sur la même graduation : permis (vraie erreur possible).
+5. Une case par point (note partielle) ; PDF : la droite sans point.
+
+## 11. PR 2 — plusieurs points (2026-10-27)
+
+Branche `feat/reponses-a-placer-2`. Tests rouges d'abord : `number-line-placer-plusieurs.test.ts`
+(parseur), `generation-placer.test.ts` (une case par point).
