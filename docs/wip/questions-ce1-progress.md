@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1864._
+_Mis à jour le 2026-10-27, après #1864 et la mise à jour en base._
 
-- **État** : lot 1 (6 modèles de calcul mental, #1847) en BROUILLON en prod, rangé et tagué par #1856 (`db:migrate` joué, vérifié). Relecture commencée : 084 « À revoir » → consigne « Calcule. » pour 084, 029, 102, 032 (#1864, mergée ; pas encore en base). Identifiants : `240bb640` (084), `cb08bf78` (029), `0b490331` (102), `ebfa8511` (032), `03675b9b` (083), `b2a4a178` (024).
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce1-1 --publier --mettre-a-jour` depuis `main` (simulation : 4 ↻, 2 =) → relire en base (plus de « astucieuse ») → remettre le verdict de 084 à zéro, republier la page à cocher https://claude.ai/artifact/YLgCQZNC83WZemRGUMAhg8 (même fichier source) ; COMPTER 6 verdicts « OK » ; puis `publier-lot.ts --dir scripts/questions/ce1-1` (simulation), David `--publier`, relire `published`. Ensuite : lot 2.
-- **En attente de David** : `create-questions --publier --mettre-a-jour`, puis la suite de la relecture.
+- **État** : lot 1 (6 modèles de calcul mental, #1847) en BROUILLON en prod, rangé et tagué (#1856). Consigne « Calcule. » pour 084, 029, 102, 032 (#1864) EN BASE (`--mettre-a-jour` lancé par David, vérifié au MCP : nœud et point gardés). Page à cocher republiée (v2), verdict de 084 remis à zéro. Identifiants : `240bb640` (084), `cb08bf78` (029), `0b490331` (102), `ebfa8511` (032), `03675b9b` (083), `b2a4a178` (024).
+- **Prochaine action** : David finit la relecture https://claude.ai/artifact/YLgCQZNC83WZemRGUMAhg8 ; lire `ArtifactData list verdicts`, COMPTER 6 « OK » ; « À revoir » → corriger (§ 7 de couvrir-un-niveau : fichiers, PR, David `--publier --mettre-a-jour` APRÈS le merge) ; puis `publier-lot.ts --dir scripts/questions/ce1-1` (simulation), David `--publier`, relire `published`. Ensuite : lot 2.
+- **En attente de David** : la relecture des 6 fiches.
 - **Pièges en cours** : tag = point du nœud ou de sa notion ; QCM en réécriture → demander la forme ; `collection` sans `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` ; un port de dev libre (5176, 5180 pris le 2026-10-26).
 - **Worktree / branche** : aucun (worktree retiré, branches du lot 1 supprimées) ; le lot 2 partira d'un worktree neuf depuis `origin/main`.
 
