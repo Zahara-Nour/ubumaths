@@ -177,6 +177,12 @@ describe('phrases de la correction', () => {
 			'Tu as inversé les aiguilles : la petite montre les heures, la grande les minutes.'
 		);
 	});
+
+	it('aiguilles inversées à 9 h 25 : grande sur le 9, petite sur le 5', () => {
+		expect(handsMistakes({ hour: 25, minute: 45 }, { hours: 9, minutes: 25 })).toEqual([
+			'Tu as inversé les aiguilles : la petite montre les heures, la grande les minutes.'
+		]);
+	});
 });
 
 describe('```horloge à placer au PDF', () => {

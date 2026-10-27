@@ -270,6 +270,9 @@
 			<circle class="horloge-axe" r={HORLOGE_STROKE.center} />
 		</svg>
 	</div>
+	{#if spec.captions?.[0]}
+		<p class="horloge-legende text-center text-sm">{spec.captions[0]}</p>
+	{/if}
 
 	{#if showControls}
 		<!-- Étiquettes puis ◀ ▶ : deux rangées, qui tiennent sur un téléphone -->

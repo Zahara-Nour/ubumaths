@@ -124,6 +124,15 @@ describe('Horloge à placer — le geste', () => {
 		expect(probe.changes).toEqual(['1 -', '2 -', '1 -']);
 	});
 
+	it('la légende s’affiche sous le cadran, comme au PDF', async () => {
+		const { answer } = answerProbe();
+		const screen = await render(HorlogePlacer, {
+			target: mainElement(),
+			props: { node: node('placer: 9 h', 'légendes: Départ'), answer: answer() }
+		});
+		expect(screen.container.querySelector('.horloge-legende')?.textContent).toBe('Départ');
+	});
+
 	it('jamais l’heure attendue dans le DOM', async () => {
 		const { answer } = answerProbe();
 		const screen = await render(HorlogePlacer, {

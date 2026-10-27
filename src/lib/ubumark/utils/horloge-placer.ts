@@ -128,8 +128,11 @@ export function handsMistakes(hands: HorlogeHands, expected: HorlogeTime): strin
 	if (hands.hour === null && hands.minute === null) return [NOTHING_PLACED];
 	if (hands.hour === null) return ['Tu n’as pas placé la petite aiguille.'];
 	if (hands.minute === null) return ['Tu n’as pas placé la grande aiguille.'];
-	const swapped = readHands({ hour: hands.minute, minute: hands.hour });
-	if (swapped !== null && sameTime(swapped, expected)) {
+	// Inversées : la petite sur la minute attendue, la grande dans le secteur de l'heure
+	const hourStart = (dialHour(expected.hours) % 12) * TICKS_PER_HOUR;
+	const minuteInHourSector = hands.minute >= hourStart && hands.minute < hourStart + TICKS_PER_HOUR;
+	// Deux aiguilles l'une sur l'autre (pile sur le 9 à 9 h 45) : l'erreur du secteur, dite plus bas
+	if (hands.hour === expected.minutes && minuteInHourSector && hands.hour !== hands.minute) {
 		return ['Tu as inversé les aiguilles : la petite montre les heures, la grande les minutes.'];
 	}
 	const read = readHands(hands);
