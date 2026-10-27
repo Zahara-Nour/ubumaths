@@ -216,3 +216,77 @@ Usages en prod (2026-10-26) : 0 carte FSRS, 0 cahier de texte, 0 question d'éva
 - Niveaux CM écrits `[CM2, 6]` / `[CM1, 6]` (ordre du cycle ; aucun précédent CM + 6 en prod).
 - Revues : `code-reviewer` et `security-auditor` sans finding bloquant. Corrigés : `drop if exists` + clé primaire sur les tables de nœuds (migration et rollback), garde de présence 38 / 0 dans le rollback (test ajouté, rouge sans elle), fixture passée par prettier dans le générateur. Laissés : ordre verrou consultatif / ligne opposé à celui de l'appli (interblocage possible → échec entier, à relancer ; hérité du gabarit) ; `set local` sous `db push` (même forme que les migrations passées).
 - #1849 mergée le 2026-10-27, `db:migrate` joué depuis le dépôt principal. MCP : [3] 2, [4] 2, [5] 25, [CM2, 6] 7, [CM1, 6] 1, brouillon 1 (3a7a5711, sans tag) ; 34 tags ; `updated_at` max = 2026-10-26.
+
+## 9. Lot 2 « Nombres » : phase 0 (proposée le 2026-10-27, à valider)
+
+Worktree `../ubumaths-wt-questions-6`, branche `feat/questions-6-nombres`. Bornes : `cycle3.json` → `6.points`
+(entiers ≤ 999 999 999 999 ; numération jusqu'au millième ; décimaux jusqu'à 3 décimales dans ce lot).
+Case choix (```choix, ADR 0033) **en prod** (v0.51.0, #1816 / #1822) : utilisée là où il y a un choix, jamais
+l'ancien QCM. 10 modèles, un point chacun ; sous-notion = nœud du point (posé par la migration).
+
+| #   | Point | Sous-notion (notion)                  | Modèle                               | Rangement ancien (thème / domaine / sous-domaine, niveau) |
+| --- | ----- | ------------------------------------- | ------------------------------------ | --------------------------------------------------------- |
+| 1   | 101   | décomposition (Entiers : numération)  | Le chiffre d'un rang                 | Décimaux / Apprivoiser / Décomposition, 5                 |
+| 2   | 101   | décomposition (Entiers : numération)  | Le nombre de dizaines, de centièmes… | Décimaux / Apprivoiser / Décomposition, 6                 |
+| 3   | 102   | décomposition (Décimaux : numération) | Liens entre les unités de numération | Décimaux / Apprivoiser / Décomposition, 7                 |
+| 4   | 103   | écritures (Entiers : numération)      | Grands nombres jusqu'aux milliards   | Entiers / Apprivoiser / Ecriture, 15                      |
+| 5   | 104   | Décimaux : numération                 | Reconnaître un nombre décimal        | Décimaux / Apprivoiser / Ecriture, 11                     |
+| 6   | 109   | ordre (Décimaux : numération)         | Comparer deux nombres décimaux       | Décimaux / Apprivoiser / Comparer, 3                      |
+| 7   | 111   | arrondis et ordres de grandeur        | Arrondir un nombre décimal           | Décimaux / Apprivoiser / Arrondir, 1 (sous-domaine neuf)  |
+| 8   | 112   | arrondis et ordres de grandeur        | Arrondir un quotient, arrondir π     | Décimaux / Apprivoiser / Arrondir, 2                      |
+| 9   | 113   | encadrement (Décimaux : numération)   | Encadrer un nombre décimal           | Décimaux / Apprivoiser / Encadrer, 4                      |
+| 10  | 202   | encadrement (Décimaux : numération)   | Intercaler un nombre décimal         | Décimaux / Apprivoiser / Encadrer, 5                      |
+
+Variations et réponses :
+
+1. **Chiffre d'un rang** (case) — v1 entier de 6 à 12 chiffres, rang des unités aux centaines de milliards
+   (« Dans $45~273~018$, quel est le chiffre des dizaines de mille ? ») ; v2 décimal ≤ 3 décimales, rang des
+   centaines aux millièmes. Erreurs : rang voisin, dizaines ↔ dixièmes.
+2. **Nombre de …** (case) — v1 entier (« Combien de centaines dans $45~273$ ? » → $452$) ; v2 décimal, borne
+   « 1,27 » (« Combien de centièmes dans $1,27$ ? » → $127$). Erreurs : le chiffre ($2$) au lieu du nombre.
+3. **Liens entre les unités** (case) — v1 « $1$ centaine $=$ ? dixièmes » (deux unités de la liste, de la plus
+   grande à la plus petite) ; v2 « $k$ dixièmes $=$ ? millièmes », k de 2 à 9 ; v3 sens inverse, multiple exact
+   (« $300$ centièmes $=$ ? unités ») ; v4 « $\frac{1}{100}=$ ? » en écriture décimale (1/10, 1/100, 1/1 000).
+   Erreurs : rapport inversé, un zéro de trop ou de moins.
+4. **Grands nombres** (case) — v1 écrire en chiffres une écriture par classes (« $4$ milliards $25$ millions
+   $300$ mille $12$ » → $4~025~300~012$, classes vides comprises) ; v2 « Combien de millions dans
+   $3~400~000~000$ ? » → $3~400$. Pas d'écriture en lettres (aucune aide au générateur : il faudrait des `if`
+   imbriqués). Erreurs : classe vide oubliée (zéros manquants).
+5. **Reconnaître un nombre décimal** (case choix Oui / Non, `melanger: non`) — v1 $\frac{a}{b}$ avec b dans
+   {10, 100, 1 000} → oui ; v2 b dans {3, 7, 9}, a non multiple de b → non ; v3 un entier → oui (« un entier
+   est décimal »). Voir question 1.
+6. **Comparer** (case choix $<$ / $=$ / $>$, `melanger: non`) — v1 le piège « plus de chiffres n'est pas plus
+   grand » ($3,9$ et $3,12$) ; v2 zéros de fin ($2,5$ et $2,50$) ; v3 parties entières ou millièmes qui
+   diffèrent ; v4 signe large : « $3,4 \leqslant 3,40$ : vrai ou faux ? ». Une version CM1 existe (9c0c47ef,
+   ≤ 2 décimales, ancien QCM) : celle-ci vise les pièges.
+7. **Arrondir un décimal** (case) — v1 à l'unité, v2 au dixième, v3 au centième ; 1 à 3 décimales ; une
+   variation sur 3 force la retenue ($3,96$ au dixième → $4$). Erreurs : troncature ($13,4$ pour $13,478$),
+   mauvais rang. `4,0` → forme perfectible (zéro inutile).
+8. **Arrondir un non décimal** (case) — v1 $\frac{a}{3}$ au dixième ou au centième (a de 1 à 20, non multiple
+   de 3) ; v2 $\frac{a}{9}$ ; v3 $\pi$ à l'unité, au dixième, au centième. Voir question 3.
+9. **Encadrer** (deux cases « $? < 3,47 < ?$ ») — précision unité, dixième ou centième, nombre à 2 ou 3
+   décimales ; piège du 9 ($2,98$ au dixième : $2,9 < 2,98 < 3$). Erreurs : borne supérieure non augmentée.
+10. **Intercaler** — voir question 2.
+
+Question d'accès (migration nœud + tag, après le `--publier` de David) : **personne** ne gagne de lecture —
+10 modèles neufs en brouillon, visibles des seuls admin et auteur ; ils ne deviennent lisibles qu'à la
+publication, après la page à cocher.
+
+Questions à David :
+
+1. **6-104** : la borne dit « fraction de dénominateur 1, 10, 100… ». Ajoute-t-on $\frac{3}{4}$, $\frac{7}{5}$,
+   $\frac{1}{2}$ (décimaux par fraction égale) ? Reco : **non** dans ce lot (la définition seule).
+2. **6-202 Intercaler** : une case n'accepte qu'une réponse ; aucune case « nombre compris entre a et b ». Reco :
+   **case choix** « Lesquels de ces nombres sont compris entre $3,4$ et $3,5$ ? » (`plusieurs: oui`, leurres
+   $3,04$, $3,6$, $3,39$…). Autre voie : outil neuf « case à intervalle » (chantier à part).
+3. **6-112** : $\frac{a}{3}$, $\frac{a}{9}$ et $\pi$ suffisent-ils ? (Reco : oui ; pas de $\frac{a}{7}$, trop long
+   à la main.)
+4. Hors lot, pour mémoire : 32724446 et 6379fa20 (CM1, « encadrer au dixième / centième près ») sont sans point.
+
+**Décisions de David (2026-10-27, « je te suis »)** : phase 0 du § 9 validée telle quelle ; 6-104 sans
+dénominateur 2, 4, 5… (définition seule) ; 6-202 en case choix `plusieurs: oui`, leurres 3,04 / 3,39 / 3,6 / borne
+3,5 ; 6-112 : a/3, a/9, π (pas a/7).
+
+- **6-202 revu (David, 2026-10-27)** : ma phase 0 disait « aucune case n'accepte un nombre entre a et b » — faux :
+  règle `range` (`inclusive: false`) + `rulesSuffice`. David choisit la **case libre** (l'élève produit son nombre ;
+  3,04, la borne 3,5 et 3,6 jugés faux ; la correction donne un exemple).

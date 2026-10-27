@@ -1,0 +1,301 @@
+{
+	"title": "Arrondir un nombre décimal",
+	"description": "Arrondir à l'unité, au dixième, au centième un décimal à 2 ou 3 décimales (retenue comprise : 3,96 → 4)",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Arrondir",
+	"level": 1,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Donne la valeur arrondie à l'unité de ${{x}}$.\n\n$${{x}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..99"
+				},
+				{
+					"name": "D",
+					"expression": "1..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+D/100;d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:a+floor(D/50)"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(D/10)"
+				}
+			],
+			"conditions": ["D!=50"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Arrondir.** On regarde le chiffre juste après le rang demandé : s'il vaut $5$ ou plus, on ajoute $1$ au rang demandé ; sinon, on le garde. Puis on efface les chiffres suivants.",
+					"Le chiffre des dixièmes est $\\textcolor{{{color:primary.1}}}{{{h}}}$ : {{if:{{h}}>=5|$5$ ou plus, on arrondit au-dessus|moins de $5$, on garde le chiffre}}.",
+					"$${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Donne la valeur arrondie au dixième de ${{x}}$.\n\n$${{x}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..99"
+				},
+				{
+					"name": "D",
+					"expression": "1..999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+D/1000;d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:round((1000*a+D)/100)/10;d"
+				},
+				{
+					"name": "h",
+					"expression": "eval:mod(floor(D/10),10)"
+				}
+			],
+			"conditions": ["mod(D,100)!=50", "floor(D/100)!=9"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Arrondir.** On regarde le chiffre juste après le rang demandé : s'il vaut $5$ ou plus, on ajoute $1$ au rang demandé ; sinon, on le garde. Puis on efface les chiffres suivants.",
+					"Le chiffre des centièmes est $\\textcolor{{{color:primary.1}}}{{{h}}}$ : {{if:{{h}}>=5|$5$ ou plus, on arrondit au-dessus|moins de $5$, on garde le chiffre}}.",
+					"$${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Donne la valeur arrondie au centième de ${{x}}$.\n\n$${{x}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..99"
+				},
+				{
+					"name": "D",
+					"expression": "1..999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+D/1000;d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:round((1000*a+D)/10)/100;d"
+				},
+				{
+					"name": "h",
+					"expression": "eval:mod(D,10)"
+				}
+			],
+			"conditions": ["mod(D,10)!=0", "mod(floor(D/10),10)!=9"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Arrondir.** On regarde le chiffre juste après le rang demandé : s'il vaut $5$ ou plus, on ajoute $1$ au rang demandé ; sinon, on le garde. Puis on efface les chiffres suivants.",
+					"Le chiffre des millièmes est $\\textcolor{{{color:primary.1}}}{{{h}}}$ : {{if:{{h}}>=5|$5$ ou plus, on arrondit au-dessus|moins de $5$, on garde le chiffre}}.",
+					"$${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Donne la valeur arrondie au dixième de ${{x}}$.\n\n$${{x}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..99"
+				},
+				{
+					"name": "d",
+					"expression": "5..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+0.9+d/100;d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:a+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Arrondir.** On regarde le chiffre juste après le rang demandé : s'il vaut $5$ ou plus, on ajoute $1$ au rang demandé ; sinon, on le garde. Puis on efface les chiffres suivants.",
+					"Le chiffre des centièmes est $\\textcolor{{{color:primary.1}}}{{{d}}}$ : {{if:{{d}}>=5|$5$ ou plus, on arrondit au-dessus|moins de $5$, on garde le chiffre}}.",
+					"$9$ dixièmes $+ 1$ dixième $= 10$ dixièmes $= 1$ unité : ${{a}}.9 + 0.1 = {{v}}$. On n'écrit pas de zéro inutile après la virgule.",
+					"$${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12,63 → 13",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"D": "63",
+				"x": "12.63",
+				"v": "13",
+				"h": "6"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : troncature (12)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"D": "63",
+				"x": "12.63",
+				"v": "13",
+				"h": "6"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "13,478 → 13,5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "13",
+				"D": "478",
+				"x": "13.478",
+				"v": "13.5",
+				"h": "7"
+			},
+			"answers": ["13,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : troncature (13,4)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "13",
+				"D": "478",
+				"x": "13.478",
+				"v": "13.5",
+				"h": "7"
+			},
+			"answers": ["13,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : arrondi au centième (13,48)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "13",
+				"D": "478",
+				"x": "13.478",
+				"v": "13.5",
+				"h": "7"
+			},
+			"answers": ["13,48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5,213 → 5,21",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"D": "213",
+				"x": "5.213",
+				"v": "5.21",
+				"h": "3"
+			},
+			"answers": ["5,21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3,96 → 4",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"d": "6",
+				"x": "3.96",
+				"v": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3,96 → 4,0 : forme à améliorer",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"d": "6",
+				"x": "3.96",
+				"v": "4"
+			},
+			"answers": ["4,0"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		},
+		{
+			"description": "Erreur : 3,10",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"d": "6",
+				"x": "3.96",
+				"v": "4"
+			},
+			"answers": ["3,10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
