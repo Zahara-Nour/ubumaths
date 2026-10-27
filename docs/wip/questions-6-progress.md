@@ -432,3 +432,6 @@ David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud n
 
 - Migration `20261027180000_questions_6_calcul_decimal_rangement_tags` (même gabarit que le lot 2, données seules
   changées) + test `questions-6-calcul-decimal-rangement-tags` : 9/9 vert, rouge sans la migration (ENOENT).
+- `security-auditor` (#1873) : aucun finding bloquant (diff avec le lot 2 = données seules ; 10 brouillons et nœuds
+  des points revérifiés en prod au MCP). Non bloquant hérité du gabarit : trigger `updated_at` désactivé sur toute la
+  table le temps de l'instruction.
