@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-27, après #1853._
 
 - **État** : PR 1 (#1846), « téléphone » (#1848) et PR 2 plusieurs points (#1853) **mergées**, pas en prod. Droite graduée à placer complète (`placer: A=3 ; B=7`, 6 points au plus, une case par point).
 - **Prochaine action** : (1) **essai sur l'iPhone avec David**, lui RÉEXPLIQUER la démarche : `docs/pratiques/tester-sur-un-autre-appareil.md` § « iPhone, page avec connexion » (Tailscale Serve, à activer par David une fois : lien donné par `tailscale serve` ; serveur `PUBLIC_SUPABASE_URL=https://…ts.net:8443` ; `tailscale serve reset` après) ; (2) petite PR « page d'aide : droites et avertissement rognés » (§ 11) ; (3) aiguilles (§ 6.1), phase 0 d'abord.
-- **En attente de David** : essai sur un vrai téléphone (ligne de `verifications-manuelles.md`) ; MacBook vu OK le 2026-10-27 (tunnel SSH). Tailscale Serve : activation en attente de David.
+- **En attente de David** : fin de l'essai iPhone (lisibilité, correction dans une vraie question) ; Tailscale Serve activé et vérifié le 2026-10-27 (machine `serveur`) ; règle « toucher un point posé le reprend » à confirmer.
 - **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; droite à K points = K cases consécutives (`case:` = la première) ; copie corrigée : une ligne `build` par droite (`answers`) ; `placerAnswer` des deux côtés ; une PR = une session.
 - **Worktree / branche** : aucun (retiré après #1853).
 
@@ -192,4 +192,9 @@ Branche `feat/reponses-a-placer-2`. Tests rouges d'abord : `number-line-placer-p
   graduation, étiquettes, ◀ ▶ : OK. Vu aussi : l'avertissement orange est rogné à gauche et à
   droite sur la page d'aide, même sur ordinateur (même défaut de colonne que les droites à 375 px).
 - Méthode de test sur un autre appareil écrite : `docs/pratiques/tester-sur-un-autre-appareil.md`
-  (fonctions `tunnel` / `untunnel` du MacBook, Tailscale Serve pour l'iPhone, pas encore réussi).
+  (fonctions `tunnel` / `untunnel` du MacBook, Tailscale Serve pour l'iPhone).
+- Essai de David sur l'iPhone (Tailscale Serve, 2026-10-27) : recette réussie de bout en bout
+  (Mac mini renommé `serveur` avant l'activation, nom public des certificats). Droite à placer au
+  doigt : marche. Remarque de David : pour mettre deux points sur la même graduation quand tous
+  sont posés, toucher reprend l'autre point → flèches ou glisser (règle « toucher un point posé le
+  reprend » gardée, à confirmer par David).

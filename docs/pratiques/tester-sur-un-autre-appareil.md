@@ -5,7 +5,7 @@
 
 Le serveur de dev tourne sur le Mac mini. Les autres appareils de David (iPhone, MacBook) le
 joignent par **Tailscale** : adresse du Mac mini `100.79.226.105`, nom
-`macmini-de-david.tail99357e.ts.net`.
+`serveur.tail99357e.ts.net`.
 
 ## Les deux pièges
 
@@ -22,11 +22,11 @@ joignent par **Tailscale** : adresse du Mac mini `100.79.226.105`, nom
 
 ## Quelle méthode
 
-| Appareil | Page                    | Méthode                                          | État                              |
-| -------- | ----------------------- | ------------------------------------------------ | --------------------------------- |
-| MacBook  | avec ou sans connexion  | tunnel SSH (ci-dessous)                          | ✅ utilisé souvent                |
-| iPhone   | sans connexion (public) | `--host 0.0.0.0`, `http://100.79.226.105:<port>` | ✅ utilisé (pages publiques)      |
-| iPhone   | avec connexion          | Tailscale Serve (HTTPS)                          | ⚠️ pas encore réussi (2026-10-27) |
+| Appareil | Page                    | Méthode                                          | État                         |
+| -------- | ----------------------- | ------------------------------------------------ | ---------------------------- |
+| MacBook  | avec ou sans connexion  | tunnel SSH (ci-dessous)                          | ✅ utilisé souvent           |
+| iPhone   | sans connexion (public) | `--host 0.0.0.0`, `http://100.79.226.105:<port>` | ✅ utilisé (pages publiques) |
+| iPhone   | avec connexion          | Tailscale Serve (HTTPS)                          | ✅ réussi le 2026-10-27      |
 
 ### MacBook : tunnel SSH
 
@@ -96,8 +96,8 @@ ouvre à Internet). Il faut l'activer une fois dans la console Tailscale (lien d
 
 ```bash
 # 1. L'appli, avec Supabase joint par le tailnet (8443) et le nom du Mac mini autorisé par Vite
-PUBLIC_SUPABASE_URL=https://macmini-de-david.tail99357e.ts.net:8443 \
-__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=macmini-de-david.tail99357e.ts.net \
+PUBLIC_SUPABASE_URL=https://serveur.tail99357e.ts.net:8443 \
+__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=serveur.tail99357e.ts.net \
 pnpm dev --port <n> --strictPort
 
 # 2. Les deux ports en HTTPS sur le tailnet
@@ -108,11 +108,23 @@ tailscale serve --bg --https=8443 http://localhost:54321
 tailscale serve reset
 ```
 
-Lien : `https://macmini-de-david.tail99357e.ts.net/<page>`. Comptes locaux :
+Lien : `https://serveur.tail99357e.ts.net/<page>`. Comptes locaux :
 `supabase/seed/dev_accounts.sql` (`teacher@local.test` / `local-teacher`…).
 
-⚠️ Recette pas encore vérifiée de bout en bout. Au premier essai réussi, passer la ligne du
-tableau à ✅ et noter ce qu'il a fallu corriger.
+✅ Vérifiée de bout en bout le 2026-10-27 (connexion prof, droite à placer au doigt). Rien à
+corriger dans les commandes ; deux points de mise en route :
+
+- **Activation, une fois pour toutes (faite le 2026-10-27).** La page d'activation propose deux
+  cases : « HTTPS certificates » (obligatoire) et « Tailscale Funnel » (**à décocher**).
+- **Le nom de la machine est public.** Un certificat HTTPS inscrit le nom dans les registres
+  publics de Certificate Transparency (crt.sh), sans retour possible. Le nom ne donne aucun accès
+  (il ne répond que sur le tailnet), mais il ne doit rien dire : le Mac mini a été renommé
+  `serveur` dans la console Tailscale avant l'activation (son nom d'avant contenait un prénom).
+- `tailscale serve`, lancé sans terminal (agent, tâche de fond), reste muet tant que Serve n'est
+  pas activé : le lancer par `script -q /dev/null tailscale serve …` pour voir le lien
+  d'activation.
+- Vérifier avant de donner le lien : `tailscale serve status` affiche **(tailnet only)** sur les
+  deux ports.
 
 ## Limiteur de connexion
 
