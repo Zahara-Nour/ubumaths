@@ -10,7 +10,7 @@ _Mis à jour le 2026-10-27, choix A codé._
 
 - **État** : choix A codé ; revue Opus et contre-revue faites, valeurs fausses trouvées corrigées ; suites vertes.
 - **Prochaine action** : réponse de David (ci-dessous), puis PR.
-- **En attente de David** : substitution directe qui suppose k ≠ 0 / k > 0 (`\\frac{1}{x^2+k}` en 0 → 1/k, `\\ln(x+k)` en 0⁺ → ln k) : refuser aussi, ou garder ? **C plus tard** ; B non demandé.
+- **En attente de David** : rien. **C plus tard** (reprend les cas de départ ci-dessous) ; B non demandé.
 - **Pièges** : une limite FAUSSE est pire qu'un refus ; `\sqrt{kx}` mal sondé (variable `t` par erreur dans la sonde) — à resonder ; garder justes les cas où le signe ne décide pas (`\frac{e^{kx}-1}{x}` en 0 → k).
 - **Worktree / branche** : `../ubumaths-wt-limites-parametres`, `fix/limites-parametres`.
 
@@ -69,3 +69,7 @@ Mécanisme existant réutilisable : hypothèses de l'énoncé (ADR 0012, `assump
   - Suites : 42 027 verts ; tests 40 dans le fichier limits + 4 atelier.
   - Contre-revue Opus (80 sondes) : **valeur fausse** — degré ÉCRIT ≠ degré réel : `x(x+k)-x^2` en +∞ (= kx) → −∞, `(x+k)^2-x^2`, `x^2-(x-k)^2`… (`0·c > 0` faux → « negative ») ; aussi sur `main` sans paramètre pour des quotients (`\frac{x^3-x^3+x^2}{x}` → −∞). Garde : coefficient dominant nul en haut ou en bas → refus. Régressions acceptées (refus, pas faux) : `x^2+kx`, `x+kx^2`, `x\ln x+kx` en 0⁺ (0 sur `main`, k·0⁺ lève).
   - Suites : 42 041 verts.
+
+**Décision (David, 2026-10-27, sur recommandation)** : la substitution directe qui suppose k ≠ 0 / k > 0 n'est PAS refusée dans cette PR ; elle va à C (discussion par cas).
+
+**Cas de départ de C** : `\frac{1}{x^2+k}` en 0 → 1/k (+∞ si k = 0) ; `\ln(x+k)` en 0⁺ → ln k (k ≤ 0 : pas défini) ; `\frac{x}{kx+x^2}` en 0⁺ → 1/k (k = 0 : +∞) ; refus à rattraper (valent 0 pour tout k) : `x^2+kx`, `x+kx^2`, `x\ln x+kx` en 0⁺, `\frac{k^2+1}{x}` en 0⁺ (+∞). Piste : un « zéro de côté inconnu » ABSORBANT dans l'addition (pas le 0 exact, neutre : cause des valeurs fausses de la revue 1). Option intermédiaire évoquée : « = 1/k (si k ≠ 0) » dans l'atelier.
