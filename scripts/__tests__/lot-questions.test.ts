@@ -146,6 +146,41 @@ describe('apparierLot', () => {
 		expect(apparierLot(lot, renumerote, { niveau: false }).ok).toBe(true);
 	});
 
+	it('niveau hors de la clé : un homonyme d’un autre niveau est départagé par le niveau', () => {
+		// « Comparer deux nombres décimaux » : CM1 (niveau 2, publié) et 6e (niveau 3, brouillon)
+		const homonymes = [
+			ligne(lot, 0, { id: 'autre-niveau', level: 9, status: 'published' }),
+			ligne(lot, 0),
+			ligne(lot, 1),
+			ligne(lot, 2)
+		];
+		const r = apparierLot(lot, homonymes, { niveau: false });
+		expect(r.ok).toBe(true);
+		if (!r.ok) return;
+		expect(r.paires[0].ligne.id).toBe('00000000-0000-4000-8000-000000000000');
+		// Le départage est rendu : un ancien lot renuméroté prendrait l'homonyme sans le dire
+		expect(r.paires[0].ecartes?.map((l) => l.id)).toEqual(['autre-niveau']);
+		expect(r.paires[1].ecartes).toBeUndefined();
+	});
+
+	it('niveau hors de la clé : deux homonymes dont aucun n’a le niveau du fichier restent ambigus', () => {
+		const r = apparierLot(
+			lot,
+			[
+				ligne(lot, 0, { id: 'a', level: 8 }),
+				ligne(lot, 0, { id: 'b', level: 9 }),
+				ligne(lot, 1),
+				ligne(lot, 2)
+			],
+			{ niveau: false }
+		);
+		expect(r.ok).toBe(false);
+		if (r.ok) return;
+		expect(r.erreurs).toEqual([
+			'01-construis-le-nombre.json : 2 modèles « Construis le nombre » en base'
+		]);
+	});
+
 	it('un modèle sans sous-domaine se compare à une ligne au sous-domaine null', () => {
 		const sans = [{ ...lot[0], modele: { ...lot[0].modele, subdomain: undefined } }];
 		expect(apparierLot(sans, [ligne(sans, 0)]).ok).toBe(true);

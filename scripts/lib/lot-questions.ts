@@ -36,6 +36,8 @@ export interface Paire<L extends LigneModele> {
 	fichier: string;
 	modele: ModeleFichier;
 	ligne: L;
+	/** Homonymes d'un autre niveau écartés par le départage (niveau hors de la clé) : à signaler */
+	ecartes?: L[];
 }
 
 export type Appariement<L extends LigneModele> =
@@ -109,7 +111,16 @@ export function apparierLot<L extends LigneModele>(
 	const erreurs: string[] = [];
 	const paires: Paire<L>[] = [];
 	for (const { fichier, modele } of lot) {
-		const trouvees = lignes.filter((l) => memeModele(modele, l, niveau));
+		let trouvees = lignes.filter((l) => memeModele(modele, l, niveau));
+		// Niveau hors de la clé : un homonyme d'un autre niveau (même modèle en CM1 et en 6e) est
+		// départagé par le niveau du fichier, s'il en désigne exactement un. Le choix est rendu
+		// (`ecartes`) : un ancien lot renuméroté prendrait ainsi l'homonyme, pas son modèle
+		let ecartes: L[] = [];
+		const memeNiveau = trouvees.filter((l) => l.level === modele.level);
+		if (trouvees.length > 1 && memeNiveau.length === 1) {
+			ecartes = trouvees.filter((l) => l !== memeNiveau[0]);
+			trouvees = memeNiveau;
+		}
 		if (trouvees.length === 0) {
 			const memeTitre = lignes.filter((l) => l.title === modele.title);
 			erreurs.push(
@@ -135,7 +146,7 @@ export function apparierLot<L extends LigneModele>(
 			);
 			continue;
 		}
-		paires.push({ fichier, modele, ligne });
+		paires.push({ fichier, modele, ligne, ...(ecartes.length > 0 ? { ecartes } : {}) });
 	}
 	return erreurs.length > 0 ? { ok: false, erreurs } : { ok: true, paires };
 }
