@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1853._
+_Mis à jour le 2026-10-27, après #1854._
 
-- **État** : PR 1 (#1846), « téléphone » (#1848) et PR 2 plusieurs points (#1853) **mergées**, pas en prod. Droite graduée à placer complète (`placer: A=3 ; B=7`, 6 points au plus, une case par point).
-- **Prochaine action** : (1) **essai sur l'iPhone avec David**, lui RÉEXPLIQUER la démarche : `docs/pratiques/tester-sur-un-autre-appareil.md` § « iPhone, page avec connexion » (Tailscale Serve, à activer par David une fois : lien donné par `tailscale serve` ; serveur `PUBLIC_SUPABASE_URL=https://…ts.net:8443` ; `tailscale serve reset` après) ; (2) petite PR « page d'aide : droites et avertissement rognés » (§ 11) ; (3) aiguilles (§ 6.1), phase 0 d'abord.
-- **En attente de David** : fin de l'essai iPhone (lisibilité, correction dans une vraie question) ; Tailscale Serve activé et vérifié le 2026-10-27 (machine `serveur`) ; règle « toucher un point posé le reprend » à confirmer.
-- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; droite à K points = K cases consécutives (`case:` = la première) ; copie corrigée : une ligne `build` par droite (`answers`) ; `placerAnswer` des deux côtés ; une PR = une session.
-- **Worktree / branche** : aucun (retiré après #1853).
+- **État** : PR 1 (#1846), « téléphone » (#1848), PR 2 plusieurs points (#1853) et glisser au doigt sur iPhone (#1854) **mergées**, pas en prod. Essai iPhone réussi (Tailscale Serve, machine `serveur`).
+- **Prochaine action** : (1) petite PR « page d'aide : droites et avertissement rognés » (§ 11) ; (2) aiguilles (§ 6.1), phase 0 d'abord.
+- **En attente de David** : correction dans une vraie question sur téléphone (ligne de `verifications-manuelles.md`) ; règle « toucher un point posé le reprend » gardée (deux points sur une même graduation : glisser ou ◀ ▶), à confirmer.
+- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; droite à K points = K cases consécutives (`case:` = la première) ; copie corrigée : une ligne `build` par droite (`answers`) ; `placerAnswer` des deux côtés ; iPhone : `touchstart` non passif dans `NumberLinePlacer` ; une PR = une session.
+- **Worktree / branche** : aucun.
 
 ---
 
