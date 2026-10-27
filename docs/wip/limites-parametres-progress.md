@@ -6,10 +6,10 @@ status: choix A (David, 2026-10-27), PR 1 en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, choix A codé._
+_Mis à jour le 2026-10-27, PR #1869 ouverte._
 
 - **État** : choix A codé ; revue Opus et contre-revue faites, valeurs fausses trouvées corrigées ; suites vertes.
-- **Prochaine action** : réponse de David (ci-dessous), puis PR.
+- **Prochaine action** : PR **#1869** ouverte — vérifier la CI (`gh pr checks 1869`), merger si verte, puis nettoyage (worktree, branche) et versement du chantier (journal archivé, C noté en futur chantier).
 - **En attente de David** : rien. **C plus tard** (reprend les cas de départ ci-dessous) ; B non demandé.
 - **Pièges** : une limite FAUSSE est pire qu'un refus ; `\sqrt{kx}` mal sondé (variable `t` par erreur dans la sonde) — à resonder ; garder justes les cas où le signe ne décide pas (`\frac{e^{kx}-1}{x}` en 0 → k).
 - **Worktree / branche** : `../ubumaths-wt-limites-parametres`, `fix/limites-parametres`.
