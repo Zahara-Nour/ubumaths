@@ -180,6 +180,24 @@ describe('exemplesDuModele', () => {
 		}
 	});
 
+	it('décimaux à la française, comme à l’écran : virgule dans les formules et les réponses', () => {
+		for (const { fichier, modele: m } of lireLot('tests/fixtures/lot-questions-decimaux')) {
+			for (const e of exemplesDuModele(m).exemples) {
+				const textes = [
+					e.statement,
+					e.answer,
+					...e.steps,
+					...(e.choices ?? []).map((c) => c.content)
+				];
+				const formules = textes.flatMap((t) => t.match(/\$\$[\s\S]*?\$\$|\$[^$]*\$/g) ?? []);
+				expect(formules.length, fichier).toBeGreaterThan(0);
+				for (const f of [...formules, e.answer])
+					expect(f, `${fichier} v${e.variation}`).not.toMatch(/\d\.\d/);
+				expect(textes.join(' '), fichier).toMatch(/\d\{,\}\d/);
+			}
+		}
+	});
+
 	it('reproductible : deux appels donnent les mêmes exemples', () => {
 		const m = modele('02-rends-la-monnaie.json');
 		expect(exemplesDuModele(m)).toEqual(exemplesDuModele(m));

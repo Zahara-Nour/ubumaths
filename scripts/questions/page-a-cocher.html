@@ -714,7 +714,7 @@
 	}
 	/* Commandes que le rendu texte sait écrire ; au-delà (fractions, \\left, exposants), KaTeX */
 	const TEXTE_SEUL =
-		/\\(placeholder\[\d+\]\{\}|unit\{[^}]*\}|text\{[^}]*\}|rightarrow|leftarrow|uparrow|downarrow|ldots|quad| )/g;
+		/\{,\}|\\(placeholder\[\d+\]\{\}|unit\{[^}]*\}|text\{[^}]*\}|rightarrow|leftarrow|uparrow|downarrow|ldots|quad|,| )/g;
 	const MACROS = {
 		'\\exponentialE': '\\mathrm{e}',
 		'\\imaginaryI': '\\mathrm{i}',
@@ -749,6 +749,8 @@
 		}
 		return esc(t)
 			.replace(/\\placeholder\[\d+\]\{\}/g, '<span class="case">?</span>')
+			.replace(/\{,\}/g, ',')
+			.replace(/\\,/g, '\u202f')
 			.replace(/\\ /g, ' ')
 			.replace(/\\rightarrow/g, '→')
 			.replace(/\\leftarrow/g, '←')
