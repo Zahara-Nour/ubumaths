@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 0 validé._
+_Mis à jour le 2026-10-28, lot 0 écrit (PR à ouvrir)._
 
-- **État** : relevé fait (§ 1-3) ; § 4 validé (§ 4 bis) ; **lot 0 validé tel quel, 5.4 → A** (§ 5.6) ; rien en base ni dans le code.
-- **Prochaine action** : worktree `git worktree add -b feat/questions-cm1-lot0 ../ubumaths-wt-questions-cm1 origin/main` ; `docs/wip/questions/lot-corrections-cm1.py` (contenu de `edc5d7d4`, `322f3479`, instantané md5, gabarit `lot-corrections-ce1.py`) ; migration niveaux / tags / nœuds / statut (gabarit `20261027000100_questions_ce1_rangement_tags.sql`) + test d'intégration rouge puis vert ; `security-auditor` ; PR, CI, merge, `db:migrate`, vérification MCP ; prévenir `questions-6` des 4 modèles reçus.
+- **État** : lot 0 écrit et testé (§ 6) : 2 migrations, tests d'intégration rouges sans elles puis verts ; rien en prod.
+- **Prochaine action** : `security-auditor`, PR, CI, merge, `pnpm db:migrate` depuis le dépôt principal, vérification MCP (§ 6) ; prévenir `questions-6` des 4 modèles reçus ; puis lot 1 (calcul mental).
 - **En attente de David** : rien.
-- **Pièges en cours** : un modèle garde toujours au moins un niveau ; trous → CM2-065 = changement de nœud ; case « choix » en prod (v0.51.0), QCM pas encore migrés ; droite à placer mergée, pas en prod ; niveaux relevés parmi les publiés de la catégorie avant toute écriture.
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : un modèle garde toujours au moins un niveau ; case « choix » en prod (v0.51.0), QCM pas encore migrés ; droite à placer mergée, pas en prod ; niveaux relevés parmi les publiés de la catégorie avant toute écriture ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1` · `feat/questions-cm1-lot0`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -179,3 +179,19 @@ user_favorite_templates). Le nœud de chaque point d'accueil a été lu en base.
 
 « je suis tes recos » : lot 0 validé tel quel (§ 5.1 à 5.3, 5.5) ; § 5.4 → **A**, les 8 modèles sans
 point repassent en brouillon, niveau CM1 gardé, jamais supprimés.
+
+## 6. Lot 0 : écrit (2026-10-28)
+
+- **Relevé** `docs/wip/questions/etat-prod-2026-10-28/` (`releve-prod-cm1.ts`, lecture seule) : 26 modèles,
+  md5 = MCP pour les 26, tous [CM1] publiés, 0 tag ; MCP : 0 donnée d'élève (9 tables). Nœuds des points
+  d'accueil = ceux des modèles, sauf CM2-065 (« Algèbre > Premiers pas algébriques > égalités à trous »).
+- **Contenu** `20261028100000_questions_cm1_contenu.sql` (généré par `lot-corrections-cm1.py`, `grades_apres`) :
+  `edc5d7d4` impairs 1 à 15, `322f3479` fractions du point CM2-039 (4/2 expliqué par les demis, les 6
+  explications gardées identiques à l'octet) ; tous deux [CM2] + tag CM2-037 / CM2-039. `checkTemplate`
+  (`questions-2de/verifier-contenu.ts`) : specs 15/15 et 7/7, tirages 100/100.
+- **Rangement** `20261028100100_questions_cm1_rangement_tags.sql` (généré par `lot-rangement-cm1.py`, repris
+  de la 2de) : 24 modèles, 16 niveaux changés (12 CM2, 4 en 6e), 3 déplacés (CM2-065), 16 tags posés,
+  8 brouillons ; rollback gardé.
+- **Tests** `questions-cm1-contenu` et `questions-cm1-rangement-tags` : rouges les migrations vidées (19
+  échecs + les 2 suites en `beforeAll`), verts avec (33 verts, 15 sautés = options de scission sans objet).
+  `gardeStatut` laissé de côté : le test du helper suppose une origine en brouillon.

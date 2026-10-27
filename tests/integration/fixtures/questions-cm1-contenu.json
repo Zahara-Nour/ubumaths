@@ -1,0 +1,586 @@
+{
+	"modeles": [
+		{
+			"id": "322f3479-0120-4a6d-839a-4e8df194f99e",
+			"noeud": ["Nombres et calculs", "Fractions : sens et écritures", "forme décimale"],
+			"grades": ["CM1"],
+			"tags": [
+				{
+					"grade": "CM2",
+					"code": "CM2-039"
+				}
+			],
+			"tags_avant": [],
+			"avant": {
+				"title": "Déterminer la forme décimale d'une fraction",
+				"description": "Cas à connaître par cœur",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}};d}}"
+							}
+						],
+						"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1/2|1/4|1/10|2/10|3/2|5/2|1/100|2/1000|7/2|9/2"
+							},
+							{
+								"name": "expression1",
+								"expression": "a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Fraction décimale.** Quand le dénominateur est $10$, $100$ ou $1000$, il donne le rang du dernier chiffre du numérateur : les dixièmes pour $10$, les centièmes pour $100$, les millièmes pour $1000$. Si le dénominateur n'est pas $10$, $100$ ou $1000$, on cherche d'abord une fraction égale qui a un de ces dénominateurs.",
+								"{{if:1000*a=500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le chiffre $\\textcolor{{{color:primary.0}}}{5}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:1000*a=250|Le dénominateur $4$ n'est pas $10$, $100$ ou $1000$. Comme $4 \\times \\textcolor{{{color:primary.1}}}{25} = 100$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{25}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{100}$ : le dernier chiffre de $25$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:1000*a=100|Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le chiffre $\\textcolor{{{color:primary.0}}}{1}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:1000*a=200|Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le chiffre $\\textcolor{{{color:primary.0}}}{2}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:1000*a=1500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le dernier chiffre de $15$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|}}{{if:1000*a=2500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le dernier chiffre de $25$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|}}{{if:1000*a=10|Le dénominateur est $\\textcolor{{{color:primary.1}}}{100}$ : le chiffre $\\textcolor{{{color:primary.0}}}{1}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule. Il manque des chiffres entre la virgule et ce rang : on les remplace par des $\\textcolor{{{color:primary.1}}}{0}$.|}}{{if:1000*a=2|Le dénominateur est $\\textcolor{{{color:primary.1}}}{1000}$ : le chiffre $\\textcolor{{{color:primary.0}}}{2}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule. Il manque des chiffres entre la virgule et ce rang : on les remplace par des $\\textcolor{{{color:primary.1}}}{0}$.|}}{{if:1000*a=3500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le dernier chiffre de $35$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|}}{{if:1000*a=4500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le dernier chiffre de $45$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|}}",
+								"{{if:1000*a=500|$$\\begin{align} \\dfrac{1}{2} &= \\dfrac{1 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{5}{10} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=250|$$\\begin{align} \\dfrac{1}{4} &= \\dfrac{1 \\times \\textcolor{{{color:primary.1}}}{25}}{4 \\times \\textcolor{{{color:primary.1}}}{25}} \\\\ &= \\dfrac{25}{100} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=100|$$\\begin{align} \\dfrac{1}{10} &= {{solution}} \\end{align}$$|}}{{if:1000*a=200|$$\\begin{align} \\dfrac{2}{10} &= {{solution}} \\end{align}$$|}}{{if:1000*a=1500|$$\\begin{align} \\dfrac{3}{2} &= \\dfrac{3 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{15}{10} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=2500|$$\\begin{align} \\dfrac{5}{2} &= \\dfrac{5 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{25}{10} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=10|$$\\begin{align} \\dfrac{1}{100} &= {{solution}} \\end{align}$$|}}{{if:1000*a=2|$$\\begin{align} \\dfrac{2}{1000} &= {{solution}} \\end{align}$$|}}{{if:1000*a=3500|$$\\begin{align} \\dfrac{7}{2} &= \\dfrac{7 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{35}{10} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=4500|$$\\begin{align} \\dfrac{9}{2} &= \\dfrac{9 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{45}{10} \\\\ &= {{solution}} \\end{align}$$|}}"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["0.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1/2"
+						},
+						"description": "un demi",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7/2"
+						},
+						"description": "sept demis, virgule",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9/2"
+						},
+						"description": "neuf demis",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0.25"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1/4"
+						},
+						"description": "un quart",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1.2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1/2"
+						},
+						"description": "confusion 1/2 = 1,2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0.4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1/4"
+						},
+						"description": "confusion 1/4 = 0,4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{4}"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "1/4"
+						},
+						"description": "recopie de la fraction",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0.002"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2/1000"
+						},
+						"description": "millièmes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0.02"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2/1000"
+						},
+						"description": "millièmes mal placés",
+						"variationIndex": 0
+					}
+				]
+			},
+			"apres": {
+				"title": "Déterminer la forme décimale d'une fraction",
+				"description": "Cas à connaître par cœur",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}};d}}"
+							}
+						],
+						"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1/10|1/100|1/1000|1/2|1/4|3/4|3/2|4/2|5/2"
+							},
+							{
+								"name": "expression1",
+								"expression": "a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Fraction décimale.** Quand le dénominateur est $10$, $100$ ou $1000$, il donne le rang du dernier chiffre du numérateur : les dixièmes pour $10$, les centièmes pour $100$, les millièmes pour $1000$. Si le dénominateur n'est pas $10$, $100$ ou $1000$, on cherche d'abord une fraction égale qui a un de ces dénominateurs.",
+								"{{if:1000*a=100|Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le chiffre $\\textcolor{{{color:primary.0}}}{1}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:1000*a=10|Le dénominateur est $\\textcolor{{{color:primary.1}}}{100}$ : le chiffre $\\textcolor{{{color:primary.0}}}{1}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule. Il manque des chiffres entre la virgule et ce rang : on les remplace par des $\\textcolor{{{color:primary.1}}}{0}$.|}}{{if:1000*a=1|Le dénominateur est $\\textcolor{{{color:primary.1}}}{1000}$ : le chiffre $\\textcolor{{{color:primary.0}}}{1}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule. Il manque des chiffres entre la virgule et ce rang : on les remplace par des $\\textcolor{{{color:primary.1}}}{0}$.|}}{{if:1000*a=500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le chiffre $\\textcolor{{{color:primary.0}}}{5}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:1000*a=250|Le dénominateur $4$ n'est pas $10$, $100$ ou $1000$. Comme $4 \\times \\textcolor{{{color:primary.1}}}{25} = 100$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{25}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{100}$ : le dernier chiffre de $25$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:1000*a=750|Le dénominateur $4$ n'est pas $10$, $100$ ou $1000$. Comme $4 \\times \\textcolor{{{color:primary.1}}}{25} = 100$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{25}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{100}$ : le dernier chiffre de $75$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:1000*a=1500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le dernier chiffre de $15$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|}}{{if:1000*a=2000|Deux demis font une unité, donc quatre demis font $2$ unités : $\\dfrac{4}{2}$ est le nombre entier $2$, sans virgule.|}}{{if:1000*a=2500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le dernier chiffre de $25$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|}}",
+								"{{if:1000*a=100|$$\\begin{align} \\dfrac{1}{10} &= {{solution}} \\end{align}$$|}}{{if:1000*a=10|$$\\begin{align} \\dfrac{1}{100} &= {{solution}} \\end{align}$$|}}{{if:1000*a=1|$$\\begin{align} \\dfrac{1}{1000} &= {{solution}} \\end{align}$$|}}{{if:1000*a=500|$$\\begin{align} \\dfrac{1}{2} &= \\dfrac{1 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{5}{10} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=250|$$\\begin{align} \\dfrac{1}{4} &= \\dfrac{1 \\times \\textcolor{{{color:primary.1}}}{25}}{4 \\times \\textcolor{{{color:primary.1}}}{25}} \\\\ &= \\dfrac{25}{100} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=750|$$\\begin{align} \\dfrac{3}{4} &= \\dfrac{3 \\times \\textcolor{{{color:primary.1}}}{25}}{4 \\times \\textcolor{{{color:primary.1}}}{25}} \\\\ &= \\dfrac{75}{100} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=1500|$$\\begin{align} \\dfrac{3}{2} &= \\dfrac{3 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{15}{10} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=2000|$$\\begin{align} \\dfrac{4}{2} &= 4 \\div 2 \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=2500|$$\\begin{align} \\dfrac{5}{2} &= \\dfrac{5 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{25}{10} \\\\ &= {{solution}} \\end{align}$$|}}"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["0.1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1/10"
+						},
+						"description": "un dixième",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}01"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1/100"
+						},
+						"description": "un centième, virgule",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0.001"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1/1000"
+						},
+						"description": "un millième",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0.01"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1/1000"
+						},
+						"description": "Erreur : millième au rang des centièmes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1/2"
+						},
+						"description": "un demi",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1.2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1/2"
+						},
+						"description": "Erreur : 1/2 = 1,2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0.25"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1/4"
+						},
+						"description": "un quart",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0.4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1/4"
+						},
+						"description": "Erreur : 1/4 = 0,4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}75"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3/4"
+						},
+						"description": "trois quarts, virgule",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3.4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3/4"
+						},
+						"description": "Erreur : 3/4 = 3,4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3/2"
+						},
+						"description": "trois demis",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "4/2"
+						},
+						"description": "quatre demis = 2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4.2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "4/2"
+						},
+						"description": "Erreur : 4/2 = 4,2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5/2"
+						},
+						"description": "cinq demis",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{4}"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "1/4"
+						},
+						"description": "recopie de la fraction",
+						"variationIndex": 0
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Fractions",
+				"domain": "Apprivoiser",
+				"subdomain": "Forme décimale",
+				"level": 5,
+				"status": "published"
+			},
+			"neufs": [],
+			"grades_apres": ["CM2"]
+		},
+		{
+			"id": "edc5d7d4-98a2-4118-8c7f-35dd510dbcd5",
+			"noeud": ["Nombres et calculs", "Décimaux : calculs", "division"],
+			"grades": ["CM1"],
+			"tags": [
+				{
+					"grade": "CM2",
+					"code": "CM2-037"
+				}
+			],
+			"tags_avant": [],
+			"avant": {
+				"title": "Trouver la moitié",
+				"description": "Nombres impairs de $1$ à $29$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}"
+							}
+						],
+						"statement": "Quelle est la moitié du nombre ${{eval:a;d}}$ ?\n\nLa moitié de ${{eval:a;d}}$ est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "0..14"
+							},
+							{
+								"name": "a",
+								"expression": "eval:a1*2+1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:(a)/2;d"
+							}
+						],
+						"correction": {
+							"steps": [
+								"La moitié de ${{eval:a;d}}$ est ${{solution}}$ car $2 \\times {{solution:0}} = {{eval:a}}$."
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["10{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "10"
+						},
+						"description": "moitié de 21 = 10,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["10.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "10"
+						},
+						"description": "10.5 au point",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{21}{2}"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a1": "10"
+						},
+						"description": "21/2 en fraction",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a1": "10"
+						},
+						"description": "erreur 10",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "0"
+						},
+						"description": "moitié de 1 = 0,5",
+						"variationIndex": 0
+					}
+				]
+			},
+			"apres": {
+				"title": "Trouver la moitié",
+				"description": "Nombres impairs de $1$ à $15$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}"
+							}
+						],
+						"statement": "Quelle est la moitié du nombre ${{eval:a;d}}$ ?\n\nLa moitié de ${{eval:a;d}}$ est $?$.",
+						"variables": [
+							{
+								"name": "a1",
+								"expression": "0..7"
+							},
+							{
+								"name": "a",
+								"expression": "eval:a1*2+1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:(a)/2;d"
+							}
+						],
+						"correction": {
+							"steps": [
+								"La moitié de ${{eval:a;d}}$ est ${{solution}}$ car $2 \\times {{solution:0}} = {{eval:a}}$."
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["5{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "5"
+						},
+						"description": "moitié de 11 = 5,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "5"
+						},
+						"description": "5.5 au point",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{11}{2}"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a1": "5"
+						},
+						"description": "11/2 en fraction",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a1": "5"
+						},
+						"description": "Erreur : la moitié de 10 au lieu de celle de 11",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "0"
+						},
+						"description": "borne : moitié de 1 = 0,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["7{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "borne : moitié de 15 = 7,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a1": "7"
+						},
+						"description": "Erreur : la moitié de 14 au lieu de celle de 15",
+						"variationIndex": 0
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Décimaux",
+				"domain": "Additionner",
+				"subdomain": "Moitié",
+				"level": 1,
+				"status": "published"
+			},
+			"neufs": [],
+			"grades_apres": ["CM2"]
+		}
+	]
+}
