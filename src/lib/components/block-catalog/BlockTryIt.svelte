@@ -14,7 +14,7 @@
 	let text = $state(initial);
 </script>
 
-<div class="grid gap-4 md:grid-cols-2">
+<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 	<div class="flex flex-col gap-2">
 		<label for="essayer-bloc" class="font-medium">Texte du bloc</label>
 		<Textarea
@@ -29,6 +29,9 @@
 		</div>
 	</div>
 	<div class="flex min-h-48 items-center justify-center overflow-x-auto rounded-lg bg-muted/50 p-4">
-		<MarkdownRenderer content={text} showAuthoringErrors />
+		<!-- min-w-0 : sans lui, le rendu garde sa largeur de départ et déborde des deux côtés -->
+		<div class="min-w-0">
+			<MarkdownRenderer content={text} showAuthoringErrors />
+		</div>
 	</div>
 </div>

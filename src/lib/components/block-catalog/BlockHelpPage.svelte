@@ -93,12 +93,15 @@
 				<article class="rounded-lg border border-border p-4">
 					<h3 class="mb-1 text-lg font-semibold">{example.title}</h3>
 					<p class="mb-4 text-muted-foreground">{example.explanation}</p>
-					<div class="grid gap-4 md:grid-cols-2">
+					<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 						<BlockSource source={example.source} />
 						<div
 							class="flex min-h-32 items-center justify-center overflow-x-auto rounded-lg bg-muted/50 p-4"
 						>
-							<MarkdownRenderer content={example.source} showAuthoringErrors />
+							<!-- min-w-0 : sans lui, le rendu garde sa largeur de départ (droite à 600 px) et déborde des deux côtés -->
+							<div class="min-w-0">
+								<MarkdownRenderer content={example.source} showAuthoringErrors />
+							</div>
 						</div>
 					</div>
 				</article>
@@ -114,7 +117,7 @@
 					<article class="rounded-lg border border-border p-4">
 						<h3 class="mb-1 text-lg font-semibold">{mistake.title}</h3>
 						<p class="mb-4 text-muted-foreground">{mistake.explanation}</p>
-						<div class="grid gap-4 md:grid-cols-2">
+						<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 							<pre class="overflow-x-auto rounded-md bg-muted p-3 text-sm">{mistake.source}</pre>
 							<div class="overflow-x-auto rounded-lg bg-muted/50 p-4">
 								<MarkdownRenderer content={mistake.source} showAuthoringErrors />
