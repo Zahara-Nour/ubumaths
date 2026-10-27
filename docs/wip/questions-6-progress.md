@@ -423,3 +423,12 @@ problèmes en euros ($7,5$ aussi) ; 6-122 à diviseur d'un chiffre seulement.
   juste ; 04 deux cases avec unités, rendu correct.
 
 - #1868 mergée le 2026-10-27 (CI verte) ; worktree retiré.
+
+### 10.2 En prod et rangement (2026-10-27)
+
+David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud ni tag (MCP). Identifiants :
+26aceb03 (6-121), 32b7a9bc (6-120), 3c9284c5 (6-123), 3f4bacc6 (6-124), 4b0b03b7 (6-198), 7deff4e0 (6-119),
+87cfa41b (6-122), b586bdf8 (6-114), e3d87166 (6-116, sur la notion « Décimaux : calculs »), f5651c7d (6-117).
+
+- Migration `20261027180000_questions_6_calcul_decimal_rangement_tags` (même gabarit que le lot 2, données seules
+  changées) + test `questions-6-calcul-decimal-rangement-tags` : 9/9 vert, rouge sans la migration (ENOENT).
