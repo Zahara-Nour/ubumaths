@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1847._
+_Mis à jour le 2026-10-27, brouillons du lot 1 créés en prod._
 
-- **État** : lot 1 (calcul mental, 6 modèles : 084, 029, 102, 032, 083, 024) en fichiers, MERGÉ (#1847) ; pas encore en base de prod.
-- **Prochaine action** : **David** lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce1-1 --publier` depuis le dépôt principal (prod, brouillons) → relever les 6 `id` → migration nœud + tag (gabarit `20261026210000_questions_cp_c_rangement_tags.sql`) → page à cocher → publication.
-- **En attente de David** : la commande `create-questions --publier` ci-dessus.
-- **Pièges en cours** : modèle publié → deux migrations ; tag = point du nœud ou de sa notion ; QCM en réécriture (case « choix ») → demander la forme au premier lot qui en a besoin ; `collection` n'a pas `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` avant `create-questions` (`$lib`).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (gardé pour la migration ; brancher la PR de migration depuis `origin/main`).
+- **État** : lot 1 MERGÉ (#1847) ; David a lancé `create-questions --publier` le 2026-10-27, vérifié au MCP : 6 brouillons CE1, sans nœud ni tag — `240bb640-0548-4ff2-ac47-1b182ca3fcc2` (084), `cb08bf78-8c21-4c48-83da-8214dbc2d7a2` (029), `0b490331-eda5-4201-b4be-a77e5ebe2229` (102), `ebfa8511-8282-4247-9027-452ecb734c20` (032), `03675b9b-030e-46f5-9316-abfd55cbc2a2` (083), `b2a4a178-ee4f-431f-aaef-baf1224910c9` (024).
+- **Prochaine action** : migration nœud + tag (copier `20261027000100_questions_ce1_rangement_tags.sql` + `tests/integration/questions-ce1-rangement-tags.test.ts`, timestamp après `20261027100100`). Chemins : 029/032/084/102 → `Nombres et calculs > Entiers : addition et soustraction > calcul astucieux` ; 083 → `… > Entiers : multiplication > produits particuliers` ; 024 → notion `Nombres et calculs > Entiers : multiplication` (sous-notion nulle). Test rouge sans la migration, `security-auditor`, CI, merge, `db:migrate`, vérif ; puis page à cocher, publication.
+- **En attente de David** : rien (question d'accès tranchée : personne, § 6).
+- **Pièges en cours** : tag = point du nœud ou de sa notion ; QCM en réécriture → demander la forme ; `collection` sans `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` ; un port de dev libre (5176, 5180 pris le 2026-10-26).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` · `feat/questions-ce1-lot1-tags` (créée depuis `origin/main`, vide) ; `feat/questions-ce1-lot1` mergée, à supprimer (`git branch -d`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -206,3 +206,4 @@ migration nœud + tag ne change aucune règle.
 - 2026-10-26 : écrit, `create-questions` en simulation 6/6 (40 specs), `question:specs` 2 800 tirages
   verts, essai en base locale (6 brouillons), énoncés et corrigés relus dans l'aperçu admin.
 - 2026-10-26 : #1847 mergée (CI verte, revue : aucune, contenu).
+- 2026-10-27 : 6 brouillons créés en prod par David (identifiants dans « Reprendre ici »).
