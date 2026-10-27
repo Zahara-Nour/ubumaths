@@ -1,0 +1,305 @@
+{
+	"id": "44b32cad-1803-4ff2-a649-4c502610b43c",
+	"title": "Somme de termes consécutifs d'une suite arithmétique",
+	"description": "Nombre de termes × (premier + dernier) / 2",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Sommes",
+	"subdomain": "Suites arithmétiques",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ {{n}} }$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "8..20"
+				},
+				{
+					"name": "l",
+					"expression": "eval:a+n*r"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(n+1)*(a+l)/2"
+				}
+			],
+			"conditions": ["l != 0", "s != 0", "a+l != 0"],
+			"correction": {
+				"steps": [
+					"De $u_0$ à $u_{ {{n}} }$, il y a $\\mathbf{ {{eval:n+1}} }$ termes (et non ${{n}}$).",
+					"Dernier terme : $u_{ {{n}} }=u_0+{{n}}r={{a}}+{{n}}\\times{{eval:r;()}}={{l}}$.",
+					"Chaque terme s'écrit $u_k=u_0+k\\,r$ : $S$ compte ${{eval:n+1}}$ fois $u_0$, plus $r$ fois $1+2+\\cdots+{{n}}$. $$S={{eval:n+1}}\\times{{eval:a;()}}+{{eval:r;()}}\\times(1+2+\\cdots+{{n}})={{eval:n+1}}\\times{{eval:a;()}}+{{eval:r;()}}\\times{{eval:n*(n+1)/2}}={{s}}$$",
+					"Ce calcul se range en une règle, plus rapide :",
+					"$$S=\\text{nombre de termes}\\times\\dfrac{\\text{premier}+\\text{dernier}}{2}$$",
+					"$$S={{eval:n+1}}\\times\\dfrac{ {{a}}{{eval:l;+}} }{2}={{eval:n+1}}\\times\\dfrac{ {{eval:a+l}} }{2}={{s}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nCalcule $S=u_1+u_2+\\cdots+u_{ {{n}} }$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "8..20"
+				},
+				{
+					"name": "f",
+					"expression": "eval:a+r"
+				},
+				{
+					"name": "l",
+					"expression": "eval:a+n*r"
+				},
+				{
+					"name": "s",
+					"expression": "eval:n*(f+l)/2"
+				}
+			],
+			"conditions": ["f != 0", "l != 0", "s != 0", "f+l != 0"],
+			"correction": {
+				"steps": [
+					"La somme commence à $u_1$ : de $u_1$ à $u_{ {{n}} }$, il y a $\\mathbf{ {{n}} }$ termes (et non ${{eval:n+1}}$).",
+					"Premier terme : $u_1=u_0+r={{a}}{{eval:r;+}}={{f}}$. Dernier terme : $u_{ {{n}} }=u_0+{{n}}r={{a}}+{{n}}\\times{{eval:r;()}}={{l}}$.",
+					"Chaque terme s'écrit $u_k=u_0+k\\,r$ : $S$ compte ${{n}}$ fois $u_0$, plus $r$ fois $1+2+\\cdots+{{n}}$. $$S={{n}}\\times{{eval:a;()}}+{{eval:r;()}}\\times(1+2+\\cdots+{{n}})={{n}}\\times{{eval:a;()}}+{{eval:r;()}}\\times{{eval:n*(n+1)/2}}={{s}}$$",
+					"Ce calcul se range en une règle, plus rapide :",
+					"$$S=\\text{nombre de termes}\\times\\dfrac{\\text{premier}+\\text{dernier}}{2}$$",
+					"$$S={{n}}\\times\\dfrac{ {{f}}{{eval:l;+}} }{2}={{n}}\\times\\dfrac{ {{eval:f+l}} }{2}={{s}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["220"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "220"
+			},
+			"description": "u0=5, r=3, jusqu'à u10 : 11×(5+35)/2 = 220",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["288"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-12",
+				"l": "48",
+				"n": "15",
+				"r": "4",
+				"s": "288"
+			},
+			"description": "u0=−12, r=4, jusqu'à u15 : 16×(−12+48)/2 = 288",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-200"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"l": "-47",
+				"n": "9",
+				"r": "-6",
+				"s": "-200"
+			},
+			"description": "u0=7, r=−6, jusqu'à u9 : -200",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "220"
+			},
+			"description": "piège : 10 termes au lieu de 11 → 200",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["440"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "220"
+			},
+			"description": "oubli de la division par 2 → 440",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["236{,}5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "220"
+			},
+			"description": "dernier terme pris égal à u11 = 38 → 236,5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["11\\times20"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "5",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "220"
+			},
+			"description": "calcul non effectué : 11×20",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["215"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"f": "8",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "215"
+			},
+			"description": "u0=5, r=3, de u1 à u10 : 10×(8+35)/2 = 215",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-426"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"f": "-8",
+				"l": "-63",
+				"n": "12",
+				"r": "-5",
+				"s": "-426"
+			},
+			"description": "u0=−3, r=−5, de u1 à u12 : -426",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["236{,}5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"f": "8",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "215"
+			},
+			"description": "piège : 11 termes au lieu de 10 → 236,5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"f": "8",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "215"
+			},
+			"description": "premier terme pris égal à u0 : 10×(5+35)/2 = 200",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["220"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"f": "8",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "215"
+			},
+			"description": "somme de u0 à u10 (= 220) au lieu de u1 à u10",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5\\times43"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "5",
+				"f": "8",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "215"
+			},
+			"description": "calcul non effectué : 5×43",
+			"variationIndex": 1
+		}
+	]
+}

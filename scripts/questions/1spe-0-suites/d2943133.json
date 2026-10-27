@@ -1,0 +1,336 @@
+{
+	"id": "d2943133-ebf7-424d-946a-8fed6cfa76be",
+	"title": "Reconnaître une suite arithmétique à partir de sa forme explicite",
+	"description": "u(n) = an + b, ou non : u(n) = u(0) × qⁿ, n² + c, kⁿ + c",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Reconnaître une suite",
+	"subdomain": "Arithmétique ou géométrique",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"shared": {
+		"choices": [
+			{
+				"content": "Oui, elle est arithmétique."
+			},
+			{
+				"content": "Non, elle n'est pas arithmétique."
+			}
+		],
+		"cleanCoefficients": true
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{eval:a*n+b}}$$\n\nCette suite est-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$u_{n+1}-u_n={{a}}(n+1){{eval:b;+}}-({{eval:a*n+b}})$$ soit $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+					"La différence ne dépend pas de $n$ : la suite est **arithmétique**, de raison $r={{a}}$ et de premier terme $u_0={{b}}$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{b}}-{{a}}n$$\n\nCette suite est-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$u_{n+1}-u_n={{b}}-{{a}}(n+1)-({{b}}-{{a}}n)$$ soit $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{-{{a}}}$.",
+					"La différence ne dépend pas de $n$ : la suite est **arithmétique**, de raison $r=-{{a}}$ et de premier terme $u_0={{b}}$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule les premiers termes : $u_0={{a}}$, $u_1={{eval:a*q}}$ et $u_2={{eval:a*q^2}}$.",
+					"$u_1-u_0={{eval:a*q-a}}$ mais $u_2-u_1={{eval:a*q^2-a*q}}$ : la différence n'est pas toujours la même, la suite n'est **pas arithmétique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "0.5|0.2|0.1|0.9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule les premiers termes : $u_0={{a}}$, $u_1={{eval:a*q;d}}$ et $u_2={{eval:a*q^2;d}}$.",
+					"$u_1-u_0={{eval:a*q-a;d}}$ mais $u_2-u_1={{eval:a*q^2-a*q;d}}$ : la différence n'est pas toujours la même, la suite n'est **pas arithmétique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n=n^2+{{c}}$$\n\nCette suite est-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:c"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:1+c"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:4+c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$u_{n+1}-u_n=(n+1)^2+{{c}}-\\left(n^2+{{c}}\\right)=n^2+2n+1-n^2=2n+1$$",
+					"La différence **dépend de $n$** : la suite n'est **pas arithmétique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{k}}^n+{{c}}$$\n\nCette suite est-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:1+c"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:k+c"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:k^2+c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$u_{n+1}-u_n={{k}}^{n+1}+{{c}}-\\left({{k}}^n+{{c}}\\right)={{k}}^{n+1}-{{k}}^n={{k}}^n\\times\\left({{k}}-1\\right)$$",
+					"La différence **dépend de $n$** : la suite n'est **pas arithmétique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-2"
+			},
+			"description": "v0 : « oui » accepté",
+			"variationIndex": 0,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-2"
+			},
+			"description": "v0 : « non » refusé",
+			"variationIndex": 0,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"description": "v1 : « oui » accepté",
+			"variationIndex": 1,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"description": "v1 : « non » refusé",
+			"variationIndex": 1,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"description": "v2 : « non » accepté",
+			"variationIndex": 2,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"description": "v2 : « oui » refusé",
+			"variationIndex": 2,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"q": "0.5"
+			},
+			"description": "v3 : « non » accepté",
+			"variationIndex": 3,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"q": "0.5"
+			},
+			"description": "v3 : « oui » refusé",
+			"variationIndex": 3,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "5"
+			},
+			"description": "v4 : « non » accepté",
+			"variationIndex": 4,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "5"
+			},
+			"description": "v4 : « oui » refusé",
+			"variationIndex": 4,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "1",
+				"k": "2",
+				"u0": "2",
+				"u1": "3",
+				"u2": "5"
+			},
+			"description": "v5 : « non » accepté",
+			"variationIndex": 5,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1",
+				"k": "2",
+				"u0": "2",
+				"u1": "3",
+				"u2": "5"
+			},
+			"description": "v5 : « oui » refusé",
+			"variationIndex": 5,
+			"selectedChoices": [0]
+		}
+	]
+}

@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1856._
+_Mis à jour le 2026-10-27, après #1864 et la mise à jour en base._
 
-- **État** : lot 1 (6 modèles de calcul mental, #1847) en BROUILLON en prod, rangé et tagué par #1856 (`db:migrate` joué, vérifié au MCP : nœud et point attendus, `updated_at` intact). Identifiants : `240bb640` (084), `cb08bf78` (029), `0b490331` (102), `ebfa8511` (032), `03675b9b` (083), `b2a4a178` (024).
-- **Prochaine action** : David relit la page à cocher https://claude.ai/artifact/YLgCQZNC83WZemRGUMAhg8 (source régénérable : `page-a-cocher.ts --dir scripts/questions/ce1-1`) ; lire `ArtifactData list verdicts` et COMPTER 6 réponses ; « À revoir » → corriger ; puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce1-1` (simulation), David lance `--publier`, relire `published` en base. Ensuite : lot 2.
-- **En attente de David** : la relecture de la page à cocher.
+- **État** : lot 1 (6 modèles de calcul mental, #1847) en BROUILLON en prod, rangé et tagué (#1856). Consigne « Calcule. » pour 084, 029, 102, 032 (#1864) EN BASE (`--mettre-a-jour` lancé par David, vérifié au MCP : nœud et point gardés). Page à cocher republiée (v2), verdict de 084 remis à zéro. Identifiants : `240bb640` (084), `cb08bf78` (029), `0b490331` (102), `ebfa8511` (032), `03675b9b` (083), `b2a4a178` (024).
+- **Prochaine action** : David finit la relecture https://claude.ai/artifact/YLgCQZNC83WZemRGUMAhg8 ; lire `ArtifactData list verdicts`, COMPTER 6 « OK » ; « À revoir » → corriger (§ 7 de couvrir-un-niveau : fichiers, PR, David `--publier --mettre-a-jour` APRÈS le merge) ; puis `publier-lot.ts --dir scripts/questions/ce1-1` (simulation), David `--publier`, relire `published`. Ensuite : lot 2.
+- **En attente de David** : la relecture des 6 fiches.
 - **Pièges en cours** : tag = point du nœud ou de sa notion ; QCM en réécriture → demander la forme ; `collection` sans `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` ; un port de dev libre (5176, 5180 pris le 2026-10-26).
 - **Worktree / branche** : aucun (worktree retiré, branches du lot 1 supprimées) ; le lot 2 partira d'un worktree neuf depuis `origin/main`.
 
@@ -208,3 +208,4 @@ migration nœud + tag ne change aucune règle.
 - 2026-10-26 : #1847 mergée (CI verte, revue : aucune, contenu).
 - 2026-10-27 : 6 brouillons créés en prod par David (identifiants dans « Reprendre ici »).
 - 2026-10-27 : #1856 mergée (migration nœud + tag, test 9/9 rouge sans elle, `security-auditor` sans finding), `db:migrate`, vérifiée en prod ; page à cocher publiée.
+- 2026-10-27 : relecture, 084 « À revoir » (« pourquoi de manière astucieuse ? ») → consigne « Calcule. » pour 084, 029, 102 et 032 (décision de David : « tu changes ») ; fichiers d'avant = prod (simulation : 6/6 identiques), tirages verts ; David lance ensuite `create-questions --publier --mettre-a-jour`.

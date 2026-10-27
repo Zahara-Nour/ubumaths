@@ -43,7 +43,10 @@ function formatExpressionLatex(step: PedagogicalSimplifyStep): string {
 	const afterNode = step.globalAfter ?? step.after;
 	const before = toLatex(beforeNode);
 	const after = toLatex(afterNode);
-	return `\\begin{aligned}\n  \\textcolor{blue}{${before}} & \\\\\n  = ${after}\n\\end{aligned}`;
+	// Une équation ne s'enchaîne pas par « = » (`= ½x = 1`) : la ligne suivante
+	// s'écrit seule, comme dans les étapes de résolution (valeurs-remarquables)
+	const link = afterNode.type === 'relation' ? '' : '= ';
+	return `\\begin{aligned}\n  \\textcolor{blue}{${before}} & \\\\\n  ${link}${after}\n\\end{aligned}`;
 }
 
 // =============================================================================

@@ -6,14 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, relevé fait._
+_Mis à jour le 2026-10-27, décisions du § 5 prises._
 
-- **État** : relevé (§ 1), vérification de l'existant (§ 2) et classement des points sans modèle (§ 3) écrits.
-- **Prochaine action** : réponses de David aux questions du § 5, puis phase 0 du premier lot.
-- **En attente de David** : § 5 (Q1 à Q8).
+- **État** : relevé, existant, classement faits ; Q1-Q7 tranchées (§ 5) ; phase 0 du lot 1 « corrections » écrite (§ 6).
+- **Prochaine action** : validation du § 6, puis worktree `../ubumaths-wt-questions-2de`, PR contenu puis PR rangement.
+- **En attente de David** : § 6 (Q8 reposée : retitrer sans fusionner ; 68db64b0 / f96d3e43 vers la terminale).
 - **Pièges en cours** : QCM en réécriture (case « choix », `figure-et-choix`, pas en prod) ; droite à placer
   (`reponses-a-placer`) mergée mais pas en prod ; géométrie en refonte ; un tag exige le modèle sur le nœud
-  du point ou sa notion.
+  du point ou sa notion ; `--mettre-a-jour` ne touche pas un modèle publié (migration de contenu).
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -183,6 +183,8 @@ les questions · **P** point-compétence, -démonstration ou approfondissement �
 
 1. **Corrections de l'existant** (§ 2).
 2. **Équations et inéquations du premier degré** (265, 266, 279, 429, 430, 280, 431, 432, 267, 281) — A.
+   2 bis. **Lecture graphique** (492, 338, 453, 456, 340, 459, 341, 462, 342, 465, 343, 468, 344, 471) — B `courbe`
+   (Q1, David 2026-10-27).
 3. **Puissances, racines, fractions** (260, 270, 423, 272, 238) — A.
 4. **Vecteurs en coordonnées** (434, 294, 293, 300, 436, 301, 302, 295, 435, 303, 437) — A.
 5. **Droites** (311 à 319 en A, 315, 444 en B).
@@ -196,18 +198,59 @@ les questions · **P** point-compétence, -démonstration ou approfondissement �
 
 ## 5. Questions à David
 
-Posées le 2026-10-27 ; réponses à consigner ici.
+Posées le 2026-10-27. **Décisions de David (2026-10-27) : mes recommandations, toutes validées** — sauf
+Q8, corrigée après coup (voir sa ligne).
 
 - **Q1 — Ordre des lots** : celui du § 4 (corrections d'abord, puis équations, puissances, vecteurs…) ?
+  → **Ordre du § 4, la lecture graphique avancée juste après les équations (2 bis).** Les corrections d'abord : elles touchent des modèles publiés.
 - **Q2 — Points P** (41 : démonstrations, compétences, approfondissements) : sans modèle, ou modèles plus
   tard (démonstration à reconstituer en case choix, approfondissement en niveau élevé) ?
+  → **Aucun modèle pour l'instant** ; ces 41 points sont « sans modèle, voulu ». On y reviendra une fois le reste couvert (case choix en prod).
 - **Q3 — Algorithmique** : « lire un programme » en questions (bloc de code Python + case) ; « écrire,
   programmer » laissés aux exercices Python, ou aussi « compléter la ligne manquante » en case ?
+  → **Lire en questions ; écrire aux exercices Python** ; « compléter la ligne manquante » seulement pour l'affectation et la condition.
 - **Q4 — Tableaux de signes** (268, 426, 330, 446, 337, 449-451) : case choix entre tableaux, cases sous le
   tableau, ou outil neuf « tableau de signes à compléter » (classe C) ?
+  → **Cases sous le tableau** (signe sur chaque intervalle, valeur qui annule). L'outil « tableau de signes à compléter » (2de → Tle) = futur chantier, sans bloquer la 2de.
 - **Q5 — Outils C** : tracer un vecteur (297, 298) et une droite dans un repère (316, 445), dans la suite de
   `reponses-a-placer` (placer en 2D) — à lancer, ou ces 4 points en case choix de figures ?
+  → **Case choix entre figures pour l'instant** ; le geste « placer en 2D » plus tard, après `reponses-a-placer`.
 - **Q6 — « À l'aide d'un outil numérique »** (452, 454, 351) : hors appli, ou case avec calculatrice permise ?
+  → **Hors appli** : 452, 454, 351 restent sans modèle.
 - **Q7 — Existant** : (a) Card(A × B) et la notation A × B dans 2-205 ? (b) 4cc21ccd / c7cdca01 : garder
   2-328 ou retirer le tag ? (c) niveau des modèles tagués 2de + terminale : `['2']` seul ou les deux ?
+  → (a) db8b5dc8 garde 2-205 ; **a26e6e50 quitte la 2de** (dénombrement, TSPE-306). (b) **Tag 2-328 retiré** de 4cc21ccd et c7cdca01. (c) **`['2']` seul** ; vérifier avant d'y toucher que rien ne filtre par niveau là où on attend le tag.
 - **Q8 — Doublons** : fusionner en variations (un modèle archivé) ou seulement retitrer ?
+  → Validée : fusionner les quasi-identiques, retitrer les autres. ⚠️ **Corrigé après coup** : aucune paire n'est un vrai doublon — chaque paire est une **marche de niveaux** ((a+x)² niv. 5 / (a+bx)² niv. 7 ; (a−x)² 6 / (a−bx)² 8 ; |entier| 4 / |fraction, √, décimal| 5 ; augmentation 3 / diminution 4). Fusionner effacerait la progression → je propose de **seulement retitrer** (question reposée, phase 0 du lot 1).
+
+## 6. Lot 1 « corrections » : phase 0 (proposée le 2026-10-27, à valider)
+
+Gabarit : lot 0 du CE1 (`couvrir-un-niveau.md` § 7) — une PR **contenu** (script de lot → migration générée,
+pour les modèles publiés ; `--mettre-a-jour` lancé par David pour les brouillons), une PR **rangement**
+(niveaux, tags, nœuds, à la main). Aucune donnée d'élève sur les modèles touchés (relevé MCP : 0 tentative,
+0 carte, 0 évaluation, 0 journal).
+
+**Contenu**
+
+| Modèle                                    | Statut    | Changement                                                                                                                            |
+| ----------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| 8b59ca4b                                  | publié    | corrigé : retirer « terme d'une suite géométrique de raison … »                                                                       |
+| 8c31675a                                  | brouillon | variation 1 : intervalles accolés → réponse `[a ; d]`                                                                                 |
+| 939153b6                                  | publié    | titre « Résoudre \|x − a\| = b avec la distance » ; corrigé : « les nombres à distance b de a : a − b et a + b »                      |
+| 85f6e96e / 288c2bf0                       | publiés   | titres « Développer (a + x)² » / « Développer (a + bx)² » ; consigne « Développe et réduis : » unifiée                                |
+| 1338da34 / 6909bfde                       | publiés   | « Développer (a − x)² » / « Développer (a − bx)² » ; même consigne                                                                    |
+| 226e5b3b / 6ece66a6 / d03e49c0 / d540f96e | publiés   | « Valeur absolue d'un entier » / « … d'une somme, d'un produit » / « … de √a − b » / « … d'une fraction, d'une racine, d'un décimal » |
+| e12e58cb / d98aa53a                       | publiés   | « Coefficient multiplicateur d'une augmentation » / « … d'une diminution »                                                            |
+
+**Rangement**
+
+- Niveau 1_SPE → 2 : 8b59ca4b (publié), f98164b1, 8c31675a, db8b5dc8, 5062197a, 5b20321f (brouillons).
+- a26e6e50 (brouillon) : niveau T_SPE, tag 2-205 → TSPE-306, nœud de TSPE-306.
+- 4cc21ccd, c7cdca01 (publiés) : tag 2-328 retiré ; nœud et statut gardés.
+- 68db64b0, f96d3e43 (brouillons, courbes de sinus / cosinus) : **proposé** — niveau T_SPE, tag TSPE-599
+  (courbes de sinus et cosinus), au lieu de les réécrire ; deux modèles neufs de 2de (2-491, 2-350) au lot 2 bis.
+
+**Question d'accès** : qui pourra lire quoi qu'il ne pouvait pas lire avant ? **Personne** : aucune policy ne
+change, aucun brouillon n'est publié. En miroir, personne ne perd l'accès à un modèle publié (rien n'est
+archivé). Effets visibles : un prof qui filtre « seconde » voit 8b59ca4b (il ne le voyait qu'en 1re spé) ;
+2-328 n'a plus de modèle.

@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1858._
+_Mis à jour le 2026-10-27, après #1860._
 
-- **État** : #1846, #1848, #1853, #1854 (glisser iPhone) et #1858 (carte de correction trop haute qui défile, avertissement « téléphone » hors des onglets de l'aperçu) **mergées**, pas en prod. Essai iPhone complet réussi (Tailscale Serve, machine `serveur`) ; règle « toucher un point posé le reprend » confirmée par David.
-- **Prochaine action** : (1) petite PR « page d'aide : droites et avertissement rognés » (§ 11) ; (2) aiguilles (§ 6.1), phase 0 d'abord.
+- **État** : #1846, #1848, #1853, #1854 (glisser iPhone) #1858 (carte de correction trop haute qui défile, avertissement « téléphone » hors des onglets de l'aperçu) et #1860 (page d'aide d'un bloc : rendus rognés, § 12) **mergées**, pas en prod. Essai iPhone complet réussi (Tailscale Serve, machine `serveur`) ; règle « toucher un point posé le reprend » confirmée par David.
+- **Prochaine action** : aiguilles, PR en cours (décisions § 14), worktree `ubumaths-wt-reponses-a-placer`.
 - **En attente de David** : rien. Suite possible (revue #1858, à proposer) : sur une carte de correction qui défile, le bouton de retournement part avec le contenu (le passer en `sticky`).
 - **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; droite à K points = K cases consécutives ; `placerAnswer` des deux côtés ; iPhone : `touchstart` non passif dans `NumberLinePlacer` ; cartes retournables : mesurer la fiche (`bind:ref`, `min-h-full shrink-0`), jamais la face ; modèle local « Placer deux nombres (essai) » (base locale seulement) ; une PR = une session.
 - **Worktree / branche** : aucun.
@@ -211,3 +211,94 @@ Branche `feat/reponses-a-placer-2`. Tests rouges d'abord : `number-line-placer-p
   mesurant la fiche (`bind:ref`, `min-h-full shrink-0`), branche `fix/correction-telephone`. Même
   PR : l'avertissement « téléphone » n'est plus montré dans les onglets de l'aperçu qui imitent
   l'élève (`provideAuthoringAdvice`), gardé dans l'éditeur et la page d'aide (choix de David).
+
+## 12. PR « page d'aide : droites et avertissement rognés » (2026-10-27)
+
+Branche `fix/aide-ecriture-colonne`. Deux causes, dans `BlockHelpPage` et `BlockTryIt` (rien dans le
+bloc) : (1) la boîte de rendu est un flex centré, son enfant garde `min-width: auto` → la droite
+mesure son conteneur, qui fait la largeur de départ de la droite (600 px) : elle ne rétrécit
+jamais, centrée, rognée des deux côtés (même à 1100 px, boîte de 469 px) ; enveloppant `min-w-0`.
+(2) grilles sans `grid-cols-1` → colonne `auto` qui ne rétrécit pas à 375 px. Mesuré
+(Playwright, port 5177) : avant, 9 rendus sur 11 rognés à 375 et à 1100 px ; après, aucun ;
+avertissement orange entier aux deux largeurs.
+
+## 13. Phase 0 — aiguilles (2026-10-27)
+
+### Existant
+
+- Bloc ```horloge (#1707) : `heure:` obligatoire (1 à 4 cadrans), `chiffres:`, `graduations:`,
+  `minutes: visibles | cachées`, `cadran: 12 | 24`, `taille:` (4 cm par défaut). Scène commune
+  `utils/horloge-scene.ts` (petite aiguille qui avance avec les minutes). Dessin seul.
+- Points du programme : CP-047 (heures entières ≤ 12), CE1-060 (heures < 24, demies, quarts),
+  CE2-058 (heures et minutes), CM1-093 (heures et minutes), CM2-083 (heures, minutes, **secondes**).
+  CP-047 se joue aujourd'hui en QCM entre cadrans.
+- Patron à reprendre : `placer:` de la droite (`BuildKind`, `build-answer.ts`, une case par cible,
+  étiquettes pour choisir l'objet actif, ◀ ▶, clavier, `role="slider"`, PDF sans réponse).
+
+### Écriture par le prof (proposée)
+
+````text
+Place les aiguilles pour qu'il soit {{h}} h {{m}}.
+```horloge
+placer: {{h}} h {{m}}
+chiffres: tous
+```
+````
+
+`placer:` remplace `heure:` (un seul cadran). Même lecture d'heure que `heure:` (`9 h`, `9 h 25`,
+heures 0 à 23).
+
+### Nominal
+
+1. Le cadran s'affiche avec les deux aiguilles **en attente** sur le 12 (grisées, en pointillés) :
+   rien n'est encore posé, et la position de départ ne dit rien de la réponse.
+2. Sous le cadran : deux étiquettes **« petite aiguille » / « grande aiguille »** (une active, la
+   grande au départ) et ◀ ▶. Toucher le cadran tourne l'aiguille active vers le point touché ;
+   glisser une aiguille la saisit ; ◀ ▶ et flèches la font avancer d'un cran.
+3. Aimant : la grande aiguille s'arrête sur les **minutes** (60 crans) ; la petite aussi sur 60 crans
+   (elle doit pouvoir se mettre « entre le 9 et le 10 »).
+4. Les deux aiguilles **sont indépendantes** (pas de remontoir) : c'est l'apprentissage visé — l'erreur
+   type « petite aiguille sur le 9 à 9 h 45 » doit rester possible.
+5. Jugé : grande aiguille sur la minute exacte ; petite aiguille dans le **bon secteur** — pile sur
+   l'heure si minutes = 0, strictement entre h et h+1 sinon (voir Q3).
+6. Faux : « Tu as placé les aiguilles sur 5 h 45. » (heure lue sur le cadran de l'élève) + le cadran
+   juste à côté. Aiguilles inversées → phrase en plus : « La petite aiguille montre les heures. »
+7. PDF : le cadran **sans aiguilles** ; l'enfant les dessine. Copie corrigée / verso de flash-card :
+   le cadran de l'élève figé, ou le cadran juste.
+8. Nom accessible « Horloge à aiguilles » ; jamais l'heure attendue, ni dite ni dans le DOM.
+
+### Limites
+
+- Heure ≥ 13 (CE1 : « 14 h ») : jugée sur le cadran de 12 (14 h = 2 h) ; `cadran: 24` reste permis.
+- Une aiguille pas posée → « Tu n'as pas placé la petite aiguille. » ; 12 h : il faut toucher les deux
+  aiguilles sur le 12 (elles ne sont pas posées tant qu'elles sont en attente).
+- Téléphone : à 4 cm, une minute ≈ 7 px de cercle → trop fin au doigt ; ◀ ▶ compensent. Cadran à
+  placer plus grand par défaut (6 cm ?).
+
+### Erreurs (messages au prof)
+
+- `placer:` avec `heure:` → refus ; `placer:` avec `minutes: cachées` → refus ; heure illisible → refus
+  (mêmes messages que `heure:`).
+- `légendes:` : une seule permise.
+
+### Questions à David
+
+1. **Aiguilles indépendantes** (reco) ou une seule à tourner, la petite suivant (remontoir) ?
+2. **Choix de l'aiguille** : étiquettes « petite / grande » + toucher (reco, patron des points A B C) ;
+   ou saisir l'aiguille la plus proche du doigt sans étiquettes ?
+3. **Jugement de la petite aiguille** : bon secteur (pile sur h si minutes = 0, entre h et h+1 sinon) (reco) ;
+   ou position exacte au cran près (9 h 25 → 2 crans après le 9) ; ou à ±1 cran ?
+4. **Secondes (CM2-083)** : hors chantier (le bloc n'a pas de trotteuse) (reco), ou trotteuse à ajouter ?
+5. **Départ** : aiguilles en attente sur le 12, grisées (reco), ou pas d'aiguille du tout tant que
+   l'élève n'a pas touché ?
+6. **Taille** : cadran à placer à 6 cm par défaut (reco), ou 4 cm comme les autres ?
+
+## 14. Décisions aiguilles (David, 2026-10-27 : « je valide » les recos)
+
+1. Aiguilles **indépendantes** (pas de remontoir).
+2. Étiquettes **« petite aiguille » / « grande aiguille »** + toucher ; glisser une aiguille posée la reprend.
+3. Petite aiguille jugée sur le **secteur** : pile sur h si minutes = 0, strictement entre h et h+1 sinon.
+   Grande aiguille : la minute exacte.
+4. **Secondes (CM2-083) hors chantier** (pas de trotteuse) — reste noté.
+5. Départ : aiguilles **en attente sur le 12, grisées** ; une aiguille en attente n'est pas posée.
+6. Cadran à placer : **6 cm** par défaut (`taille:` garde la main).

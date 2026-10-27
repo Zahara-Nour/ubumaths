@@ -43,7 +43,8 @@ import { isFunction } from '../guards';
 import type { SchoolLevel } from '../common/step-renderer-base';
 import { getPedagogicalSimplifyRuleDescription } from './descriptions-fr';
 import { commonContentFactorRules } from '../pattern/rule-sets/common-factor';
-import { categorizeRule, selectRulesForIntent } from './intent-rules';
+import { TRIG_VALUE_RULE_NAMES } from '../pattern/rule-sets/trig';
+import { categorizeRule, selectRulesForIntent, TRIG_REDUCTION_RULES } from './intent-rules';
 import { expandIfShorter, simplifyPolynomialFractions, tidyAsSteps } from './reduce-steps';
 import { withImpliedParentheses } from '../tidy';
 import { expand } from './expand';
@@ -236,6 +237,39 @@ type StepFactory = ReturnType<typeof createStepFactory>;
 // =============================================================================
 
 /**
+ * Les étapes d'un passage, les valeurs remarquables réunies en UNE étape
+ * (`sin(π/6) + cos(π/3)` : « On utilise des valeurs remarquables : … et … »,
+ * phase 0 de valeurs-remarquables). Les paires sont dans `bindings`
+ * (`before0`, `after0`, `before1`…), que lit le titre (`descriptions-fr.ts`).
+ */
+function withValuesTogether(
+	ruleSteps: readonly { ruleName: string; before: MathNode; after: MathNode }[],
+	globalBefore: MathNode,
+	globalAfter: MathNode,
+	makeStep: StepFactory
+): PedagogicalSimplifyStep[] {
+	const values = ruleSteps.filter((rs) => TRIG_VALUE_RULE_NAMES.has(rs.ruleName));
+	const steps: PedagogicalSimplifyStep[] = [];
+	for (const rs of ruleSteps) {
+		if (values.length < 2 || !TRIG_VALUE_RULE_NAMES.has(rs.ruleName)) {
+			steps.push(makeStep(rs.ruleName, rs.before, rs.after, globalBefore, globalAfter));
+			continue;
+		}
+		if (rs !== values[0]) continue;
+		const bindings: Record<string, MathNode> = {};
+		values.forEach((value, index) => {
+			bindings[`before${index}`] = value.before;
+			bindings[`after${index}`] = value.after;
+		});
+		steps.push({
+			...makeStep(rs.ruleName, globalBefore, globalAfter, globalBefore, globalAfter),
+			bindings
+		});
+	}
+	return steps;
+}
+
+/**
  * Apply pattern rules to fixpoint, recording one `PedagogicalSimplifyStep`
  * per rule firing. Each iteration calls `applyRulesDeepOnceTracked`, which
  * is a single bottom-up pass that fires the highest-priority matching rule
@@ -275,15 +309,45 @@ function runPatternLoop(
 		// "the tree as it stood after the first rule but before the second"
 		// because the engine collapses them into one iteration. Acceptable
 		// for V1 ; revisit when the renderer needs intermediate snapshots.
-		for (const rs of ruleSteps) {
-			steps.push(makeStep(rs.ruleName, rs.before, rs.after, before, after));
-		}
+		steps.push(...withValuesTogether(ruleSteps, before, after, makeStep));
 
 		if (nodesEqual(after, before)) break;
 		current = after;
 	}
 
 	return { result: current, steps, aborted: false };
+}
+
+// =============================================================================
+// Valeurs remarquables seules (chantier valeurs-remarquables, 2026-10-27)
+// =============================================================================
+
+/**
+ * Les valeurs remarquables (`cos(π/3) = 1/2`), avec leur étape, pour les
+ * calculs qui ne passent pas par la phase A : `.développer` et `.résoudre`
+ * les calculent d'abord (décision de David du 2026-10-27). La parité et la
+ * période ne servent qu'à y arriver : sans valeur atteinte, rien ne change
+ * (`cos(7π/5)` reste, aucune étape).
+ *
+ * @param node - Une expression ou une relation
+ * @param options - Le niveau (trigonométrie au lycée par défaut), `enableTrig`
+ */
+export function generateRemarkableValueSteps(
+	node: MathNode,
+	options: Pick<PedagogicalSimplifyOptions, 'schoolLevel' | 'enableTrig'>
+): PedagogicalSimplifyResult {
+	const unchanged = { result: node, steps: [] };
+	const flags = resolveFlags(options.schoolLevel, { ...options, intent: 'reduire' });
+	if (!flags.enableTrig) return unchanged;
+	const values = runPatternLoop(
+		node,
+		TRIG_REDUCTION_RULES,
+		DEFAULT_MAX_ITERATIONS,
+		undefined,
+		createStepFactory()
+	);
+	const reached = values.steps.some((step) => TRIG_VALUE_RULE_NAMES.has(step.rule));
+	return reached ? { result: values.result, steps: values.steps } : unchanged;
 }
 
 // =============================================================================

@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"statement": "Calcule.\n\n$${{expression1}}$$",
 			"variables": [
 				{
 					"name": "a",
@@ -50,7 +50,7 @@
 			}
 		},
 		{
-			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"statement": "Calcule.\n\n$${{expression1}}$$",
 			"variables": [
 				{
 					"name": "a",

@@ -9,12 +9,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, relevé fait._
+_Mis à jour le 2026-10-27, après #1865._
 
-- **État** : relevé (§ 1), premier regard sur l'existant (§ 2) et classement des 146 points sans modèle (§ 3) écrits.
-- **Prochaine action** : réponses de David aux questions du § 5, puis vérification complète de l'existant (§ 2) ou phase 0 du premier lot, selon Q1.
-- **En attente de David** : § 5 (Q1 à Q7).
-- **Pièges en cours** : 172 brouillons déjà en base (Q1) ; QCM en réécriture (case « choix », `figure-et-choix`, pas en prod) ; droite à placer (`reponses-a-placer`) mergée, pas en prod ; un modèle porte au plus un point **par programme** (ADR 0020), les tags 1SPE + 1TECHNO + 1GEN sont donc permis.
+- **État** : #1865 mergée (outil : export paginé, appariement par id, courbes dessinées ; instantané `scripts/questions/1spe-0-suites/`, 43 brouillons des suites). Corrigés C1, C2, C4 en base (`--mettre-a-jour` lancé par David, 0 différence). Page à cocher : https://claude.ai/artifact/BdFVZ257fi9nmbV7H7aoLy — David a tout validé par message (aucun verdict en base).
+- **Prochaine action** : selon Q11, petite PR qui sort `0495289a.json` du dossier (vers `scripts/questions/1spe-0-suites-attente/`) ; puis `publier-lot.ts --dir scripts/questions/1spe-0-suites` en simulation (42 brouillons), David lance `--publier`, relire `published` en base. Ensuite lot 0 du thème suivant (second degré), même chemin : export → tirages → corrections → page → publication.
+- **En attente de David** : Q11 — ma reco : laisser 0495289a en brouillon (récurrence dépendant de n, hors borne 377 ; à passer en terminale plus tard).
+- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; QCM → case choix en brouillon (D6) ; les 6 modèles tagués d'un point de seconde sont **faits par questions-2de**.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -179,4 +179,66 @@ _(364 compté en D ; total 146.)_
 
 ## 5. Questions à David
 
-_Posées le 2026-10-27 ; réponses consignées ici._
+_Posées le 2026-10-27. Recommandations de Claude validées par David le 2026-10-27 (« je valide »)._
+
+- **D1 — Brouillons d'abord.** Les 172 brouillons passent avant tout lot neuf, un lot par thème : tirages réels
+  contre les bornes, corrections, page à cocher, publication. Premier thème : suites.
+- **D2 — Points « = ».** Un modèle « à savoir » pour les faits à connaître : 264, 391, 392, 290, 404, 310, 412,
+  313, 311, 415, 316, 329, 336, 350 (un lot de texte). Aucun modèle pour les doublons de savoir-faire : 211, 368,
+  371, 373, 220, 389, 417, 328, 421 — notés « couverts par » leur voisin (371 → 224, 373 → 225, 211 → 223,
+  368 → 377, 220 → 231, 389 → 272, 417 → 327, 328 → 331, 421 → 340).
+- **D3 — Tags.** 174e202b, dc4b8d08 → 1SPE-307 ; eae2ff6a → 1SPE-386 ; 318ea542 → 1SPE-283 ; 93f9ecdf sans tag ;
+  f1440b52 : 1SPE-274 → 1SPE-396 ; 8b599a53, fece187e, afd9b3ff : retirer `1_SPE` des niveaux ; les 6 tagués d'un
+  point de seconde : ajouter `2`, garder `1_SPE` — **fait par questions-2de** (accord entre sessions, 2026-10-27 :
+  `grades = ['2', '1_SPE']`, car le cahier de texte filtre `grades` par égalité exacte au niveau de la classe ;
+  contenu de 8b59ca4b et 8c31675a corrigé là-bas aussi). f8ccc8b6 : à lire.
+- **D4 — Points P** hors chantier (5a89b292 couvre déjà le résultat de 308 / 411).
+- **D5 — Outils C.** « Tracer une droite / une tangente » (433, 271) : un chantier commun avec la seconde
+  (2-316, 2-445). « Placer un point sur le cercle » (306) : à verser dans la phase 0 des aiguilles de
+  `reponses-a-placer` (§ 6.1, même geste : un angle sur un cercle).
+- **D6 — QCM** : case choix, en brouillon jusqu'au `deploy:prod` de `figure-et-choix` ; seuls 403, 296, 407 en
+  ont besoin, placés en fin d'ordre.
+- **D7 — Ordre** : brouillons par thème → migration des tags (D3) → dérivation → variations et courbes → suites
+  (modélisation, algorithmes) → probabilités et variables aléatoires → lot « à savoir » (D2) → restes → lots en
+  attente de la case choix ou d'un outil neuf.
+
+## 6. Lot 0-suites : vérification des brouillons
+
+_2026-10-27, versé par #1865. 43 brouillons tagués d'un point des suites (`pnpm question:specs --template <id> --apercu 4`,
+sorties dans le scratchpad de la session)._
+
+**Mécanique** : 43 / 43 specs vertes, 6 100 tirages réussis. La ligne « Schéma : Unrecognized keys created_at,
+updated_at, created_by » vient de l'outil (il valide la ligne de base entière), pas des modèles.
+
+**Faux constat écarté** : les décimaux s'écrivent `0.1`, `1.08` dans la sortie de l'outil, mais l'affichage les
+met à la française (`MathInline` / `MathBlock`, `content-locale.ts`).
+
+**Constats** :
+
+- **C1 — montants** : `$500$ €` au lieu de `$500~\unit{€}$` (notation-unites) : 103cf8d9, 70e682f9, 27d77564,
+  f3100c29.
+- **C2 — formules hors BO dans le corrigé** : 44b32cad (somme arithmétique : « nombre de termes × (premier +
+  dernier) / 2 ») et b72fae4a (somme géométrique : « premier terme × (1 − q^N) / (1 − q) »). Bornes 226 / 227 :
+  la somme se ramène à 1 + 2 + … + n, 1 + q + … + qⁿ ; ces formules ne sont pas écrites au BO. À trancher (Q8).
+- **C3 — récurrence dépendant de n** : 0495289a (`u_{n+1} = 3u_n + 3n`) ; borne 377 : seul uₙ₊₁ = f(uₙ) est écrit.
+  À trancher (Q9).
+- **C4 — corrigé maladroit** : f36ce3ff, tirage `f(x) = 4/(x+1)` avec u₂ = 4 : « 4/5 = 4 × 1/5 = 4/5 » puis
+  « Diviser par une fraction, c'est multiplier par son inverse » alors qu'on ne divise pas par une fraction.
+- Rien d'autre vu sur les tirages lus (un ou deux par modèle ; la page à cocher montrera une instance par
+  variation).
+
+**Outil** : `page-a-cocher.ts` refuse le dossier `scripts/questions/suites-1spe/` (37 fichiers) : fichiers plus
+d'accord avec la base (titres scindés depuis : « Reconnaître une suite arithmétique ou géométrique… » → deux
+modèles) et familles d'un même titre à plusieurs niveaux (« Calculer un terme d'une suite géométrique » × 4). Il
+faut que la page (et `publier-lot.ts`) sache partir **des modèles en base** (liste d'id), pour tous les brouillons
+déjà créés (Q10).
+
+**Décisions (David, 2026-10-27, « je suis tes recos »)** :
+
+- **D8 (C2)** : garder les deux formules, mais ramenées dans le corrigé à 1 + 2 + … + n et 1 + q + … + qⁿ (une
+  ligne de calcul qui fait le lien).
+- **D9 (C3)** : 0495289a garde son point ; la variation `u_{n+1} = 3u_n + 3n` est retirée.
+- **Q11 (C3, après lecture du fichier)** : les **deux** variations de 0495289a dépendent de n (`u_{n+1} = u_n + bn + c`
+  et `u_{n+1} = b·u_n + cn`) : D9 viderait le modèle. À trancher : le garder tel quel, ou le laisser en brouillon.
+- **D10 (outil)** : `page-a-cocher.ts` et `publier-lot.ts` apprennent à partir d'une liste d'id en base (PR
+  d'outil, avant les corrections C1-C4).

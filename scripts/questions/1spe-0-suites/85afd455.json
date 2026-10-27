@@ -1,0 +1,123 @@
+{
+	"id": "85afd455-84a0-4caa-82c0-36840b19a219",
+	"title": "Déterminer la raison d'une suite géométrique",
+	"description": "À partir de deux termes consécutifs",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites géométriques",
+	"subdomain": "Déterminer la raison",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"statement": "Détermine la raison de cette suite géométrique.\n\n$u_{ {{p}} }={{c}}$ et $u_{ {{eval:p+1}} }={{eval:c*(q)}}$\n\nLa raison est $?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..12"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..5;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux termes sont consécutifs : on passe de $u_{ {{p}} }$ à $u_{ {{eval:p+1}} }$ en multipliant par la raison $q$, donc $q=\\dfrac{u_{ {{eval:p+1}} }}{u_{ {{p}} }}$.",
+					"$q=\\dfrac{ {{eval:c*(q)}} }{ {{c}} }={{solution}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "4",
+				"p": "3",
+				"q": "3"
+			},
+			"description": "u_3=4, u_4=12 → 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "-5",
+				"p": "10",
+				"q": "-4"
+			},
+			"description": "u_10=−5, u_11=20 → −4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "4",
+				"p": "3",
+				"q": "3"
+			},
+			"description": "différence (raison arithmétique) 12−4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "4",
+				"p": "3",
+				"q": "3"
+			},
+			"description": "quotient inversé 4/12",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "-5",
+				"p": "10",
+				"q": "-4"
+			},
+			"description": "signe oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{12}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"c": "4",
+				"p": "3",
+				"q": "3"
+			},
+			"description": "quotient non simplifié 12/4",
+			"variationIndex": 0
+		}
+	]
+}

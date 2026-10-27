@@ -4,7 +4,8 @@
  *
  * Utilisé par `scripts/questions/page-a-cocher.ts` et `scripts/questions/publier-lot.ts`
  * (démarche : docs/pratiques/couvrir-un-niveau.md § 8). Un modèle du lot est retrouvé en base par
- * la même clé que `create-questions.ts` : titre, thème, domaine, sous-domaine, niveau.
+ * la même clé que `create-questions.ts` : titre, thème, domaine, sous-domaine, niveau — ou, pour
+ * un instantané de la base (`export-question-templates.ts`), par l'id qu'il porte.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -36,6 +37,8 @@ export interface Paire<L extends LigneModele> {
 	fichier: string;
 	modele: ModeleFichier;
 	ligne: L;
+	/** Homonymes d'un autre niveau écartés par le départage (niveau hors de la clé) : à signaler */
+	ecartes?: L[];
 }
 
 export type Appariement<L extends LigneModele> =
@@ -97,6 +100,12 @@ function ecarts(modele: ModeleFichier, ligne: LigneModele, niveau: boolean): str
 		.join(', ');
 }
 
+/** L'id que porte un fichier exporté de la base, null pour un fichier de lot écrit à la main */
+function idDuFichier(modele: ModeleFichier): string | null {
+	const id: unknown = (modele as { id?: unknown }).id;
+	return typeof id === 'string' && id.length > 0 ? id : null;
+}
+
 /**
  * Chaque modèle du lot avec SA ligne en base : exactement une, au statut demandé s'il est donné.
  * Tout ou rien : la moindre absence, ambiguïté ou erreur de statut fait échouer le lot entier.
@@ -109,7 +118,37 @@ export function apparierLot<L extends LigneModele>(
 	const erreurs: string[] = [];
 	const paires: Paire<L>[] = [];
 	for (const { fichier, modele } of lot) {
-		const trouvees = lignes.filter((l) => memeModele(modele, l, niveau));
+		// Instantané de la base (`export-question-templates.ts`) : le fichier porte son id, qui
+		// désigne sa ligne sans homonyme possible ; la clé doit encore concorder
+		const id = idDuFichier(modele);
+		if (id !== null) {
+			const ligne = lignes.find((l) => l.id === id);
+			if (!ligne) {
+				erreurs.push(`${fichier} : id ${id.slice(0, 8)} absent de la base`);
+			} else if (!memeModele(modele, ligne, true)) {
+				erreurs.push(`${fichier} : ${ecarts(modele, ligne, true)} (${id.slice(0, 8)})`);
+			} else if (statutAttendu && ligne.status !== statutAttendu) {
+				erreurs.push(
+					`${fichier} : « ${modele.title} » (${id.slice(0, 8)}) est « ${ligne.status} », attendu « ${statutAttendu} »`
+				);
+			} else {
+				const deja = paires.find((p) => p.ligne.id === id);
+				if (deja)
+					erreurs.push(`${fichier} : même modèle en base que ${deja.fichier} (${id.slice(0, 8)})`);
+				else paires.push({ fichier, modele, ligne });
+			}
+			continue;
+		}
+		let trouvees = lignes.filter((l) => memeModele(modele, l, niveau));
+		// Niveau hors de la clé : un homonyme d'un autre niveau (même modèle en CM1 et en 6e) est
+		// départagé par le niveau du fichier, s'il en désigne exactement un. Le choix est rendu
+		// (`ecartes`) : un ancien lot renuméroté prendrait ainsi l'homonyme, pas son modèle
+		let ecartes: L[] = [];
+		const memeNiveau = trouvees.filter((l) => l.level === modele.level);
+		if (trouvees.length > 1 && memeNiveau.length === 1) {
+			ecartes = trouvees.filter((l) => l !== memeNiveau[0]);
+			trouvees = memeNiveau;
+		}
 		if (trouvees.length === 0) {
 			const memeTitre = lignes.filter((l) => l.title === modele.title);
 			erreurs.push(
@@ -135,7 +174,7 @@ export function apparierLot<L extends LigneModele>(
 			);
 			continue;
 		}
-		paires.push({ fichier, modele, ligne });
+		paires.push({ fichier, modele, ligne, ...(ecartes.length > 0 ? { ecartes } : {}) });
 	}
 	return erreurs.length > 0 ? { ok: false, erreurs } : { ok: true, paires };
 }

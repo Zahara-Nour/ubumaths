@@ -110,8 +110,8 @@ async function main(): Promise<number> {
 	}
 
 	const bornes = lireBornes();
-	const fiches = appariement.paires.map(({ modele, ligne }) =>
-		ficheDuModele(
+	const fiches = appariement.paires.map(({ modele, ligne, ecartes }) => {
+		const fiche = ficheDuModele(
 			modele,
 			{
 				id: ligne.id,
@@ -126,8 +126,14 @@ async function main(): Promise<number> {
 					.sort()
 			},
 			bornes
-		)
-	);
+		);
+		// Départage par le niveau : l'homonyme écarté pourrait être le vrai modèle (lot renuméroté)
+		for (const autre of ecartes ?? [])
+			fiche.alertes.push(
+				`homonyme ${autre.id.slice(0, 8)} (niveau ${autre.level}) écarté : vérifier que c'est le bon modèle`
+			);
+		return fiche;
+	});
 	writeFileSync(sortie, assemblerPage(readFileSync(GABARIT, 'utf8'), { titre, intro, fiches }));
 
 	for (const f of fiches) {
