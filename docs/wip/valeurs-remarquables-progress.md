@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, phase 0 validée (« je valide »)._
+_Mis à jour le 2026-10-27, `.simplifier` fait (d7071c367), choix `.développer` / `.résoudre` tranchés._
 
-- **État** : phase 0 validée, rien codé.
-- **Prochaine action** : tests rouges (Atelier `runInput`), puis règle `trigRules` dans `réduire` (`intent-rules.ts`).
-- **En attente de David** : `.domaine 1/(x − cos(π/3))` → `ℝ \ {1/2}` ? (laissé ouvert, rien ne change d'ici là).
-- **Pièges** : la ligne affichée est `latex`, pas `output` (texte hérité, `Simplified: x/2` alors que la ligne montre `cos(π/3) x`).
+- **État** : `.simplifier` fait (règle, étapes, degrés, 20 tests). `.développer` et `.résoudre` tranchés (§ 2), pas codés.
+- **Prochaine action** : tests rouges `.développer (x+cos(π/3))²` et `.résoudre cos(π/3)x=1`, puis le code.
+- **En attente de David** : rien.
+- **Pièges** : la ligne affichée est `latex`, pas `output`. Les deux commits de la branche portent une ligne `Claude-Session` : à réécrire avant de pousser (règle CLAUDE.md).
 - **Worktree / branche** : `../ubumaths-wt-valeurs-remarquables`, `fix/valeurs-remarquables`.
 
 ## Contexte
@@ -46,5 +46,11 @@ Table existante : `pattern/rule-sets/trig.ts` (`trigRules` : sin, cos, tan aux m
 - **Q2** : ligne tapée seule (`tidy`) gardée (S4) ; `tidy` ne calcule plus `cos(60°)` en silence.
 - **Q3** : degrés, même règle et même étape (« cos(60°) = 1/2 »).
 - **Q4** : règle active dès que `enableTrig` l'est, pas d'autre réglage de niveau.
+
+## 2. Choix tranchés (David, 2026-10-27, « je valide »)
+
+- **`.développer (x+cos(π/3))²`** → B : les deux termes calculés, avec l'étape « On utilise une valeur remarquable : cos(π/3) = 1/2 », réponse `x² + x + 1/4` (avant : `x² + 2cos(π/3)x + 1/4`, b² calculé en silence, 2ab non). `.développer` réduit déjà (`√2·√3 → √6`) ; S4 tenu par l'étape nommée.
+- **`.résoudre cos(π/3)x = 1`** → A : l'étape de valeur d'abord (`½x = 1`), puis « On divise par 1/2 », `x = 2`. Chaque titre dit ce que montre la ligne.
+- **`.domaine 1/(x − cos(π/3))`** → inchangé dans ce chantier (`ℝ \ {cos(π/3)}`, juste). ⚠️ **On voudra `ℝ \ {1/2}` plus tard** (David) : à verser dans les Points ouverts du README mathAST à la clôture.
 
 ## Historique
