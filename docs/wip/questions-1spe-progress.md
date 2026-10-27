@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, lot 0-second-degré publié (#1875)._
+_Mis à jour le 2026-10-27, lot 0-dérivation corrigé, page à cocher publiée._
 
-- **État** : lots 0-suites (42) et 0-second-degré (14) CLOS, publiés, statuts et contenus relus en base. 0495289a reste en brouillon (D11).
-- **Prochaine action** : lot 0 de la **dérivation** (D7) : relever ses brouillons (MCP : `question_template_points` × `curriculum_points.code`), `export-question-templates.ts --dir scripts/questions/1spe-0-derivation --ids …`, `question:specs --file … --apercu 3` contre les bornes, constats → David, corrections, page à cocher, PR, écritures par David. Puis exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3 (sauf les 6 faits par questions-2de).
-- **En attente de David** : rien.
-- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; QCM d'ancien format publiés tels quels (lot 4 de figure-et-choix) ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance (`!`) ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts (`$lib`).
-- **Worktree / branche** : aucun.
+- **État** : lots 0-suites (42) et 0-second-degré (14) publiés. Lot 0-dérivation (15 brouillons, § 8) : 4 corrigés retouchés (D13), page à cocher https://claude.ai/artifact/LmDNo6NwUSemJ3GLwoucK8, PR ouverte.
+- **Prochaine action** : merger la PR ; David lance la simulation puis `create-questions --dir scripts/questions/1spe-0-derivation --publier --mettre-a-jour` (4 contenus différents attendus) ; relecture de la page ; `publier-lot --publier` par David ; relire statuts et contenus en base. Puis variations et courbes, exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
+- **En attente de David** : écritures en prod (`!`) et relecture de la page.
+- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance (`!`) ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts (`$lib`) ; `question:specs` n'a pas d'option de variation : copier le fichier une variation par fichier dans le scratchpad pour les voir toutes.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `chore/questions-1spe`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -278,3 +278,32 @@ https://claude.ai/artifact/PkSiv8xPDNCrSvM432Zq9n (568c7bee et 9e1d084e : bloc `
 **Relecture (David, 2026-10-27, « je valide tout »)** : les 14 fiches validées par message (aucun verdict en base).
 
 **Publication (2026-10-27)** : `create-questions --publier --mettre-a-jour` puis `publier-lot --publier` lancés par David ; 14 / 14 `published`, les 6 corrections relues en base.
+
+## 8. Lot 0-dérivation : vérification des brouillons
+
+_2026-10-27. 15 brouillons tagués d'un point de la dérivation (260, 261, 265, 270, 272, 274, 394, 395), instantané
+`scripts/questions/1spe-0-derivation/`, `question:specs --apercu 3` puis un aperçu par variation (36), sorties dans
+le scratchpad de la session. Les 3 modèles déjà publiés (74d77343, a86442c1, ff36ebdf) restent hors lot. Les points
+« Variations et courbes » (280-288, 399-403) feront leur propre lot._
+
+**Mécanique** : 15 / 15 verts, 1 900 tirages réussis. **Bornes** : rien au-delà de la liste du BO (xⁿ, √x, 1/x,
+eˣ ; somme, produit, inverse, quotient ; aucune composée, l1s-1) ; taux de variation sur le second degré (260).
+
+**Constats** :
+
+- **C1** : 05387201, équation réduite écrite « y = 9 − 2x » quand f′(a) < 0.
+- **C2** : 1666b8e9, « 1 × 2x », « 1 × 3x² » quand un coefficient vaut ±1 (variations 1 et 2).
+- **C3** : 8997f7c6 (kx√x), « car x/√x = √x. Donc … » seul après le calcul.
+- **C4** : f1440b52 (quotient de deux affines), numérateur non développé avant le résultat.
+- Écartés : décimaux « −1.5 » de l'outil (affichés à la française) ; 15d3aaa0, variation 2 = variation 1 avec a = 2
+  (seule à porter la courbe) ; ed8444bb tagué 261 (270 irait aussi), laissé.
+
+**D13 (David, 2026-10-27, « go » sur les recos)** :
+
+- C1 : `y = {{eval:fpa*x}}{{eval:fa-fpa*a;+}}` (p = 0 donne « y = x », vérifié par un tirage forcé).
+- C2 : `{{if:a==1|…|{{if:a==-1|-…|{{a}}\times…}}}}` pour a (variations 1 et 2) et b (variation 2).
+- C3 : « Comme x/√x = √x : » avant la seconde ligne de calcul.
+- C4 : ligne « En développant le numérateur : … », puis « Les termes en x s'annulent » avant le résultat.
+
+Specs des 4 modèles vertes après correction (86 specs, 550 tirages). Page à cocher :
+https://claude.ai/artifact/LmDNo6NwUSemJ3GLwoucK8 (aucune alerte).
