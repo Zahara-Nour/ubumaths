@@ -695,6 +695,8 @@
 	<div class="bandeau" id="bandeau" hidden></div>
 	<main id="fiches"><p class="vide">Chargement des fiches…</p></main>
 </div>
+<!-- KaTeX en MathML : les formules du lycée, sans feuille de style ni police à charger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
 <script>
 	const MODELES = /*@@MODELES@@*/ [];
 	let verdicts = {};
@@ -710,8 +712,41 @@
 			(c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]
 		);
 	}
+	/* Commandes que le rendu texte sait écrire ; au-delà (fractions, \\left, exposants), KaTeX */
+	const TEXTE_SEUL =
+		/\\(placeholder\[\d+\]\{\}|unit\{[^}]*\}|text\{[^}]*\}|rightarrow|leftarrow|uparrow|downarrow|ldots|quad| )/g;
+	const MACROS = {
+		'\\exponentialE': '\\mathrm{e}',
+		'\\imaginaryI': '\\mathrm{i}',
+		'\\unit': '\\,\\mathrm{#1}'
+	};
+	/* Formule du lycée : KaTeX (MathML), coupée aux cases à remplir, dessinées comme au CP (le MathML
+	   de Chrome ne trace pas \boxed) ; une formule que KaTeX refuse revient au rendu texte */
+	function mathsKatex(t) {
+		if (!window.katex) return null;
+		try {
+			return t
+				.split(/\\placeholder\[\d+\]\{\}/)
+				.map((m) =>
+					m.trim()
+						? katex.renderToString(m, {
+								output: 'mathml',
+								throwOnError: true,
+								macros: { ...MACROS }
+							})
+						: ''
+				)
+				.join('<span class="case">?</span>');
+		} catch {
+			return null;
+		}
+	}
 	/* Les maths du CP sont des nombres et des signes : rendu texte, cases dessinées, signes typographiques */
 	function maths(t) {
+		if (/[\\^_{}]/.test(t.replace(/\^\{\\text\{[^}]*\}\}/g, '').replace(TEXTE_SEUL, ''))) {
+			const rendu = mathsKatex(t);
+			if (rendu) return rendu;
+		}
 		return esc(t)
 			.replace(/\\placeholder\[\d+\]\{\}/g, '<span class="case">?</span>')
 			.replace(/\\ /g, ' ')
@@ -786,7 +821,7 @@
 	function exemple(e) {
 		const reponse = e.choices
 			? `<ul class="choix${e.choices.some((c) => c.content.startsWith('@@HTML@@')) ? ' dessins' : ''}">${e.choices.map((c) => `<li class="${c.bon ? 'bon' : ''}">${c.bon ? '✔ ' : ''}${c.content.startsWith('@@HTML@@') ? c.content.slice(8) : enLigne(c.content)}</li>`).join('')}</ul>`
-			: `<div class="attendu">Attendu, case par case : <b>${esc(e.answer)}</b></div>${e.solution ? `<div class="sol"><div class="attendu">Une construction juste, le moins d'objets (celle que montre la correction) :</div><div class="m-bloc">${e.solution}</div></div>` : ''}`;
+			: `<div class="attendu">Attendu, case par case : <b>${e.answer.split(' | ').map(maths).join(' | ')}</b></div>${e.solution ? `<div class="sol"><div class="attendu">Une construction juste, le moins d'objets (celle que montre la correction) :</div><div class="m-bloc">${e.solution}</div></div>` : ''}`;
 		return `<div class="ex"><div class="var">variation ${e.variation}</div><div class="enonce">${rendu(e.statement)}</div>${reponse}<ol class="corrige">${e.steps.map((s) => `<li>${s.includes('@@HTML@@') ? rendu(s) : etape(s)}</li>`).join('')}</ol></div>`;
 	}
 

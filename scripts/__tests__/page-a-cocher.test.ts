@@ -325,7 +325,9 @@ describe('assemblerPage', () => {
 			intro: '',
 			fiches: [{ ...fiche, titre: '</script><b>' }]
 		});
-		expect(page.match(/<\/script>/g)).toHaveLength(1);
+		// autant de fermetures que dans le gabarit (KaTeX + script de la page) : aucune venue des données
+		expect(page.match(/<\/script>/g)).toHaveLength(gabarit.match(/<\/script>/g)?.length ?? 0);
+		expect(page).not.toContain('</script><b>');
 	});
 
 	it('une donnée qui contient <!-- reste une donnée', () => {
