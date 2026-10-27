@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1884._
+_Mis à jour le 2026-10-28, après #1886 (et #1891 ouverte)._
 
-- **État** : lot 1 CLOS (publié, relu 6/6). Lot 2 (numération, 7 modèles, § 7) écrit dans `scripts/questions/ce1-2/` : simulation 7/7 (63 specs), 4 200 tirages verts, essai en base locale (7 brouillons) relu dans l'aperçu admin ; #1884 mergée.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce1-2 --publier` (prod, brouillons) depuis le dépôt principal ; puis relever les `id`, migration nœud + tag (§ 7), page à cocher, publication.
-- **En attente de David** : la création des 7 brouillons en prod (`create-questions --publier`).
-- **Pièges en cours** : niveaux du lot 2 = places libres relevées (Décomposition 13/14, Ecriture 3, Comparer 6/7, Encadrer 7/8) ; `subdomain` « Ecriture » sans accent ; tag = point du nœud ou de sa notion ; QCM en réécriture → demander la forme ; worktree neuf → `pnpm exec svelte-kit sync`.
-- **Worktree / branche** : aucun (worktree du lot 2 retiré, branche supprimée) ; la migration partira d'un worktree neuf depuis `origin/main`.
+- **État** : lot 2 (numération, 7 modèles) en prod en brouillon, rangé et tagué (#1886, `db:migrate` fait, vérifié en prod) ; page à cocher https://claude.ai/artifact/EkqSwsNAs54bDrNxvmCQE3 relue par David : **7/7 OK**.
+- **Prochaine action** : (1) #1891 (fix `titresDuLot` : titres à antislash entre guillemets PostgREST) : un check « Client Tests (browser, shard 1/2) » rouge au 1er run, sans lien apparent (le diff ne touche que `scripts/`) → lire le log, relancer si flaky, merger au vert ; worktree `ubumaths-wt-questions-ce1` (branche `fix/lot-questions-titres-antislash`). (2) Niveau de c4d4bf70 (« Le nombre qui suit… ») : Ecriture 3 → 10 (3 pris par « Parité », publié ; règle du lot 1 : premier niveau libre) → migration niveau + fichier `ce1-2/03` + `lot-ce1-2.py`, gabarit `20261027160000_questions_ce1_lot1_niveaux.sql`. (3) `publier-lot` en simulation, puis David publie.
+- **En attente de David** : la question d'accès de la migration de niveau (« qui pourra lire quoi, qu'il ne pouvait pas lire avant ? » — reco : personne), posée le 2026-10-28, SANS réponse.
+- **Pièges en cours** : relever les niveaux pris par TOUS les publiés de la catégorie (l'Ecriture 3 a été manqué) ; `subdomain` « Ecriture » sans accent ; worktree neuf → `pnpm exec svelte-kit sync`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `fix/lot-questions-titres-antislash` (#1891).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -250,3 +250,4 @@ Case seule, aucun QCM. Niveaux : places libres des catégories relevées en prod
   dans l'aperçu admin.
 
 - 2026-10-27 : #1884 mergée (CI verte, revue : aucune, contenu).
+- 2026-10-28 : 7 brouillons créés en prod par David ; #1886 (nœud + tag, test rouge 5/9 sans, vert 9/9, `security-auditor` sans finding) mergée, `db:migrate`, vérifiée ; page à cocher : 2 titres « absents » (antislash, bug `titresDuLot`) → #1891 ; relue 7/7 OK ; `publier-lot` refuse c4d4bf70 (Ecriture 3 occupé).
