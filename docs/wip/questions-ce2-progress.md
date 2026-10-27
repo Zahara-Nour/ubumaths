@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, relevé et état des lieux faits._
+_Mis à jour le 2026-10-28, phase 0 du lot 1 validée._
 
-- **État** : relevé prod (§ 1), vérification de l'existant (§ 2) et classement des 84 points sans modèle (§ 3) écrits ; rien codé.
-- **Prochaine action** : réponses de David aux questions du § 4, puis lot 0 (corrections) ou lot 1 selon sa réponse.
-- **En attente de David** : les 7 questions du § 4.
-- **Pièges en cours** : niveaux à relever parmi les publiés de la catégorie AVANT l'écriture (CE1 lot 1) ; case « choix » sur `main` mais pas en prod → demander la forme au premier QCM ; `collection` sans `centaines:`.
-- **Worktree / branche** : aucun ; le premier lot partira d'un worktree neuf `../ubumaths-wt-questions-ce2` depuis `origin/main`.
+- **État** : questions du § 4 et phase 0 du lot 1 (§ 5) validées par David le 2026-10-28 (« ok » à toutes les recos) ; rien codé.
+- **Prochaine action** : lot 1 — script `docs/wip/questions/lot-ce2-1.py` → `scripts/questions/ce2-1/` (5 modèles), simulation, essai en base locale, PR des fichiers. Puis lot 0 (migration : dépublier `427c735c`, `44c46578` ; `03675b9b` + CE2 + tag CE2-077).
+- **En attente de David** : rien.
+- **Pièges en cours** : niveaux relevés le 2026-10-27 (§ 5) à revérifier juste avant `create-questions` ; QCM après la case « choix » en prod ; `collection` sans `centaines:`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot1`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -118,3 +118,36 @@ en a = 2..10, `e6ddf5d7` écrit « ÷ », `a565fa02` en −19 / −29 / −39 se
    2 numération (003, 004, 005, 087, 088, 008, 009) → 3 vocabulaire des opérations (015, 017, 091) → 4 fractions (011, 013, 014, 089) → 5 problèmes → 6 grandeurs (longueurs, masses,
    contenances, durées) → lots à outils existants (`operation`, `monnaie`, `horloge`, `line`,
    statistiques, figures) → lots à QCM.
+
+## 4 bis. Décisions (David, 2026-10-28)
+
+« tes recos ? » puis « ok » : toutes les recommandations du § 4 et du § 5 validées.
+
+1. Plages étroites : modèles **neufs** dans les lots ; les publiés ne bougent pas.
+2. Jumeaux addition `427c735c`, `44c46578` : **dépubliés** (repassés en brouillon, jamais supprimés), comme au CE1.
+3. Les 4 venus du CE1 : **restent en CE2, sans tag**.
+4. Outils neufs : `centaines:` + milliers de `collection`, puis barres à monter, en chantiers à part,
+   **après les lots de texte 1 à 4**.
+5. Points D sans modèle ; 039 et 070 après la case « figure ».
+6. QCM : **après la case « choix » en prod**.
+7. Lots : 1 calcul mental → 2 numération → 3 vocabulaire des opérations → 4 fractions →
+   5 problèmes → 6 grandeurs → lots à outils existants → lots à QCM.
+
+## 5. Lot 1 — calcul mental (phase 0 validée le 2026-10-28)
+
+Niveaux relevés le 2026-10-27 parmi les publiés de chaque catégorie (`Entiers`) : Additionner /
+Tables 1-9, Additionner / A trou 1-13, Multiplier / Décomposition 1, Multiplier / Quadruple et
+quart 1-5, Multiplier / Produits astucieux 1-2.
+
+| #   | Point   | Sous-notion (nœud du point)       | Modèle                    | Variations et plages                                                                         | Catégorie, niveau                  |
+| --- | ------- | --------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------- |
+| 1   | CE2-020 | addition et soustraction > tables | Tables d'addition         | a + b, a et b de 2 à 10, toutes tables mêlées                                                | Additionner / Tables, 10           |
+| 2   | CE2-084 | addition et soustraction > tables | Trouver le terme manquant | V1 a + ? = s ; V2 ? + a = s (a et le terme de 2 à 10)                                        | Additionner / A trou, 14           |
+| 3   | CE2-078 | multiplication > décomposition    | Les décompositions de 60  | V1 k × ? = 60 ; V2 60 = ? × k (1 × 60, 2 × 30, 3 × 20, 4 × 15, 5 × 12, 6 × 10)               | Multiplier / Décomposition, 2      |
+| 4   | CE2-026 | multiplication > calcul astucieux | Multiplier par 4          | 4 × n : V1 n de 11 à 24, V2 de 26 à 99, jamais multiple de 10 ; corrigé « double du double » | Multiplier / Quadruple et quart, 6 |
+| 5   | CE2-093 | multiplication > calcul astucieux | Multiplier par 8          | mêmes plages ; corrigé « double du double du double »                                        | Multiplier / Produits astucieux, 3 |
+
+Une case par question, aucun QCM. CE2-077 : `03675b9b` (CE1) réutilisé, niveau CE2 et tag CE2-077
+ajoutés par migration (lot 0). Question d'accès (nœuds, tags, niveaux, statuts) : **personne** ne
+gagne d'accès, aucune règle ne change ; « Les multiples de 25 » est aussi proposé aux CE2 (David,
+2026-10-28).
