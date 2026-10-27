@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1875 (lot 0-second-degré mergé, pas encore écrit en base)._
+_Mis à jour le 2026-10-27, lot 0-second-degré publié (#1875)._
 
-- **État** : lot 0-suites CLOS (42 publiés). Lot 0-second-degré : 14 brouillons, 6 corrigés (D12), instantané `scripts/questions/1spe-0-second-degre/`, page à cocher https://claude.ai/artifact/PkSiv8xPDNCrSvM432Zq9n.
-- **Prochaine action** : David lance (dépôt principal, `!`) `create-questions --dir scripts/questions/1spe-0-second-degre --publier --mettre-a-jour` puis `publier-lot … --publier` ; relire les statuts. Puis dérivation, exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3 (sauf les 6 faits par questions-2de).
-- **En attente de David** : les deux écritures en prod (classifieur) ; page à cocher validée en entier (message, 2026-10-27).
-- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; QCM d'ancien format publiés tels quels (lot 4 de figure-et-choix) ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur du mode auto ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts (`$lib`).
-- **Worktree / branche** : aucun (retiré après #1875).
+- **État** : lots 0-suites (42) et 0-second-degré (14) CLOS, publiés, statuts et contenus relus en base. 0495289a reste en brouillon (D11).
+- **Prochaine action** : lot 0 de la **dérivation** (D7) : relever ses brouillons (MCP : `question_template_points` × `curriculum_points.code`), `export-question-templates.ts --dir scripts/questions/1spe-0-derivation --ids …`, `question:specs --file … --apercu 3` contre les bornes, constats → David, corrections, page à cocher, PR, écritures par David. Puis exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3 (sauf les 6 faits par questions-2de).
+- **En attente de David** : rien.
+- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; QCM d'ancien format publiés tels quels (lot 4 de figure-et-choix) ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance (`!`) ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts (`$lib`).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -245,7 +245,7 @@ déjà créés (Q10).
 - **D10 (outil)** : `page-a-cocher.ts` et `publier-lot.ts` apprennent à partir d'une liste d'id en base (PR
   d'outil, avant les corrections C1-C4).
 
-## 7. Lot 0-second-degré : vérification des brouillons
+## 7. Lot 0-second-degré : vérification des brouillons (CLOS : 14 publiés le 2026-10-27, #1875)
 
 _2026-10-27. 14 brouillons tagués d'un point du second degré (243, 245, 246, 248, 249, 250, 253, 383, 386),
 `pnpm question:specs --file <f> --apercu 3`, sorties dans le scratchpad de la session._
@@ -276,3 +276,5 @@ https://claude.ai/artifact/PkSiv8xPDNCrSvM432Zq9n (568c7bee et 9e1d084e : bloc `
 à jouer dans l'aperçu).
 
 **Relecture (David, 2026-10-27, « je valide tout »)** : les 14 fiches validées par message (aucun verdict en base).
+
+**Publication (2026-10-27)** : `create-questions --publier --mettre-a-jour` puis `publier-lot --publier` lancés par David ; 14 / 14 `published`, les 6 corrections relues en base.
