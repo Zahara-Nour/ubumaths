@@ -1697,7 +1697,7 @@ Doublons qui restent, chacun pour un autre besoin :
   flottants sur des coefficients décimaux (`domain/preimage.ts`, solveurs de degré 3-4 de
   `solve/`).
 
-## Points ouverts connus (mesurés le 2026-10-10, mis à jour le 2026-10-26)
+## Points ouverts connus (mesurés le 2026-10-10, mis à jour le 2026-10-27)
 
 - Fusion des deux moteurs : `reduire` et `auto` ne passent plus par `normalize` (2026-10-23),
   `developper` non plus (2026-10-25, chantier normalize-usages). Les copies locales de
@@ -1807,6 +1807,17 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
   `null` pour prendre le chemin exact : les évaluer (ou passer par `compile`) ferait de
   `lim_{x→+∞} (x+1)/(πx)` le décimal `0,3183…` au lieu de `1/π`. À reprendre en rendant le choix
   « exact ou numérique » explicite dans le moteur, pas en dépendant d'une lacune de l'évaluateur.
+- Limites, laissés par le chantier limites-ecarts (2026-10-27, journal archivé
+  `docs/archive/wip/limites-ecarts-progress.md`) :
+  - **valeur fausse, antérieure** : `\frac{1}{e^{-1/x}\sin\frac{1}{x}}` en 0⁺ rend +∞ — sur la
+    fenêtre dense de `oscillatesUnboundedNear` (`limits/sign-tracking.ts`), e^{−1/x} vaut 0 en
+    flottant, aucun changement de signe n'est vu ;
+  - refus (pas faux) : u^{−p/q} non entier (`(1-\cos x)^{-1/2}` en 0, +∞ attendu) ; produit
+    f·u^{−n} jamais réécrit en quotient (`x^{-1}\sin x`, `(1-x)^{-1}\ln x`, `x^2(\cos x-1)^{-1}`,
+    alors que `\frac{\ln x}{1-x}` conclut) ; `x^3e^{-x^2+x}`, `x^2e^{-\sqrt{x}}` en +∞,
+    `x^{\frac{4}{2}}` en −∞ ;
+  - approché : `\frac{x^2}{x\sin\frac1x}` en 0⁺ « ≈ 0 » ;
+  - paramètre k pris positif (`e^{kx}` en +∞ → +∞) : chantier `limites-parametres`.
 
 ## Décisions
 

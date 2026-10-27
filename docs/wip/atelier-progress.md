@@ -22,7 +22,7 @@ _Mis à jour le 2026-10-26, après #1839 (limite de uⁿ)._
   développer, intervalle, listes qualitatives, réciproque, réglages, remplacer) ; leurs restes ci-dessous.
 - **Fait (2026-10-26, #1827, pas en prod)** : bouton ⤢ « Agrandir le graphe » dans la barre du graphe (toute la fenêtre, Échap le réduit), icône maison pour « Réinitialiser la vue », graphe qui remplit la largeur de sa vue. Échap quitte aussi le plein écran du NAVIGATEUR (Chrome) : verrou d'Échap proposé, refusé par David. Worktree retiré.
 - **Fait (2026-10-26, #1839, pas en prod)** : limite de uⁿ quand u → ±∞ (V66, ex-« V65 » en doublon) : `.variations (x-3)^2` a son tableau ; [journal](../archive/wip/limite-puissance-progress.md).
-- **Ensuite** (David, 2026-10-26) : écarts voisins V67-V71 des limites, phase 0 VALIDÉE, chantier [limites-ecarts](limites-ecarts-progress.md) (`/reprendre limites-ecarts`).
+- **Fait (2026-10-27, #1844, #1852, #1857, pas en prod)** : écarts voisins V67-V71 des limites ; [journal](../archive/wip/limites-ecarts-progress.md), restes dans les Points ouverts du README mathAST.
 - **Déployé** : v0.47.0 (2026-10-25) livre le retrait de `/spreadsheet`, de `/calc` et le pont Python.
   Table `spreadsheets` supprimée le 2026-10-25 ([journal](../archive/wip/drop-spreadsheets-progress.md)).
 - **Sens inverse Python → atelier LIVRÉ** (#1746, 2026-10-25, sur `main`, pas en prod) : chantier

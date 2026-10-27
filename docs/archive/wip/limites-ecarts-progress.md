@@ -1,20 +1,15 @@
 ---
 title: Écarts voisins des limites (V67-V71)
 date: 2026-10-26
-status: PR 1 (#1844) et PR 2 (#1852) mergées, PR 3 en cours
+status: clos — PR 1 (#1844), PR 2 (#1852), PR 3 (#1857) mergées
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1852._
+_Mis à jour le 2026-10-27, après #1857. Chantier CLOS, journal archivé._
 
-- **État** : PR 1 (#1844) et PR 2 (#1852) mergées ; PR 3 (V70 + V71) codée, revue Opus faite (frères corrigés), tests verts. Rien en prod.
-- **Prochaine action** : PR 3 ouverte, CI, merge ; puis versement (fin de chantier).
-- **Reste** : PR 3 seulement. Revue `code-reviewer` en Opus.
-- **En attente de David** : rien. Paramètre k pris positif (`e^{kx}` en +∞ → +∞) : **chantier à part `limites-parametres`** (décidé par David le 2026-10-27), hors de ce chantier.
-- **Pièges** : une limite FAUSSE est pire qu'un refus ; rejouer la sonde de la phase 0 sur `main` avant de coder ; le repli numérique de `classifyLimitValue` classe 10²⁰ « fini » et eˣ « inconnu » ; une constante flottante proche de 1 (ou de 0) peut être exacte : comparer en exact (`exactConstantRational`) ; refus restants : `x^3e^{-x^2+x}`, `x^2e^{-\sqrt{x}}` en +∞, `x^{\frac{4}{2}}` en −∞.
-
----
+- **État** : V67-V71 corrigés (#1844, #1852, #1857), sur `main`, pas encore en prod. Worktree retiré.
+- **Restes** : dans les Points ouverts de `docs/systeme/mathast/README.md` (« Limites, laissés par limites-ecarts »). Paramètre k pris positif : chantier `limites-parametres`.
 
 ## Phase 0 (validée par David le 2026-10-26)
 
@@ -63,3 +58,4 @@ _Mis à jour le 2026-10-27, après #1852._
   - Voisins : `(e^x-1)^{-1}`, `(\ln x)^{-1}`, `(x^2-1)^{-3}`, `(x\sin x)^{-1}`, `(\sin x)^{-2}` désormais calculés ; deux valeurs FAUSSES de `main` devenues refus : `\sin x(1-\cos x)^{-1}` en 0⁺ (rendait 0, vaut +∞), `\frac{1}{x\cos\frac{1}{x}}` en 0⁺ (rendait −∞). Refus restants : `x^{-1}\sin x` en 0 (vaut 1), `\frac{\sin\frac{1}{x}}{x}` (sans limite).
   - Tests : `puissances-negatives-et-signe.test.ts`, 34 dont 17 rouges sur `main`.
   - Revue Opus (52 sondes, branche contre `main`) : rien de faux introduit, aucune régression. Trois valeurs FAUSSES déjà sur `main`, frères de V71, corrigées : `\frac{1}{x\sin\frac{1}{\sqrt{x}}}`, `\frac{1}{x\sin(\ln x)}`, `\frac{1}{x\tan\frac{1}{x}}` en 0⁺ (−∞) → refus. La garde lit la croissance de |u| entre 10⁻⁶ et 10⁻⁸ (> π) au lieu d'un seuil 10⁶, et couvre `tan` ; sin(10¹⁵x) n'est pas pris (décroît). Non traité (refus ou approché, pas faux) : `\frac{1}{e^{-1/x}\sin\frac{1}{x}}` en 0⁺ (+∞ faux, déjà sur main, e^{−1/x} = 0 en flottant sur la fenêtre), `\frac{x^2}{x\sin\frac1x}` « approché 0 » ; u^{−p/q} non entier et produit f·u^{−n} (`x^{-1}\sin x`, `(1-x)^{-1}\ln x`) refusés — pistes de suite.
+  - Mergée (#1857), CI verte sur 784a463f2. Chantier clos, journal archivé.
