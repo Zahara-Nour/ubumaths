@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, lot 2 écrit (PR des fichiers à merger)._
+_Mis à jour le 2026-10-27, après #1884._
 
-- **État** : lot 1 CLOS (publié, relu 6/6). Lot 2 (numération, 7 modèles, § 7) écrit dans `scripts/questions/ce1-2/` : simulation 7/7 (63 specs), 4 200 tirages verts, essai en base locale (7 brouillons) relu dans l'aperçu admin.
-- **Prochaine action** : merger la PR des fichiers ; David lance `create-questions --dir scripts/questions/ce1-2 --publier` (prod, brouillons) ; puis migration nœud + tag (§ 7), page à cocher, publication.
-- **En attente de David** : la création des brouillons en prod, après le merge.
+- **État** : lot 1 CLOS (publié, relu 6/6). Lot 2 (numération, 7 modèles, § 7) écrit dans `scripts/questions/ce1-2/` : simulation 7/7 (63 specs), 4 200 tirages verts, essai en base locale (7 brouillons) relu dans l'aperçu admin ; #1884 mergée.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce1-2 --publier` (prod, brouillons) depuis le dépôt principal ; puis relever les `id`, migration nœud + tag (§ 7), page à cocher, publication.
+- **En attente de David** : la création des 7 brouillons en prod (`create-questions --publier`).
 - **Pièges en cours** : niveaux du lot 2 = places libres relevées (Décomposition 13/14, Ecriture 3, Comparer 6/7, Encadrer 7/8) ; `subdomain` « Ecriture » sans accent ; tag = point du nœud ou de sa notion ; QCM en réécriture → demander la forme ; worktree neuf → `pnpm exec svelte-kit sync`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `feat/questions-ce1-lot2`.
+- **Worktree / branche** : aucun (worktree du lot 2 retiré, branche supprimée) ; la migration partira d'un worktree neuf depuis `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -248,3 +248,5 @@ Case seule, aucun QCM. Niveaux : places libres des catégories relevées en prod
 * 2026-10-27 : écrit (`lot-ce1-2.py`), `create-questions` en simulation 7/7 (63 specs), `question:specs` 4 200
   tirages verts (accord « 1 centaine » corrigé), essai en base locale (7 brouillons), énoncés et corrigés relus
   dans l'aperçu admin.
+
+- 2026-10-27 : #1884 mergée (CI verte, revue : aucune, contenu).
