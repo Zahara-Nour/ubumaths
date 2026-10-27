@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1849._
+_Mis à jour le 2026-10-27, après #1859._
 
-- **État** : lot 1 « corrections » CLOS. #1845 (contenus) et #1849 (rangement : 37 modèles relevés de niveau, 18 nœuds, 34 tags, 3a7a5711 en brouillon) sont mergées et jouées en prod. Contrôle MCP OK : 38 modèles, 34 tags, `updated_at` préservé (§ 8).
-- **Prochaine action** : lot 2 « Nombres » (§ 4 : 101, 102, 103, 104, 109, 111, 112, 113, 202), avec la skill `couvrir-niveau`, dans un nouveau worktree `../ubumaths-wt-questions-6`.
-- **En attente de David** : rien.
-- **Pièges en cours** : un tag exige le modèle sur le nœud du point ou sa notion ; QCM en réécriture (`figure-et-choix`) ; géométrie en refonte ; `releve-prod.ts` lit `.env` (prod) ; `db:migrate` se lance depuis le dépôt principal (worktree non lié à Supabase).
-- **Worktree / branche** : aucun (retiré après #1849).
+- **État** : lot 2 « Nombres » : 10 modèles écrits (`scripts/questions/6-nombres/`, script `docs/wip/questions/lot-6-nombres.py`), essayés en base locale, PR des fichiers #1859 mergée (§ 9). Rien en prod.
+- **Prochaine action** : après le `--publier` de David, relever les 10 `id` en prod (MCP), puis migration nœud + tag (gabarit `20261026210000_questions_cp_c_rangement_tags.sql` + son test), puis page à cocher, puis publication.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-nombres --publier` depuis le dépôt principal (brouillons en prod ; aucun bloc neuf, pas de `deploy:prod` requis : case choix en prod depuis v0.51.0).
+- **Pièges en cours** : variables `e` et `i` interdites dans les `eval` ; un `?` dans un `{{if}}` ne fait pas de case ; un tag exige le modèle sur le nœud du point ou sa notion ; `db:migrate` depuis le dépôt principal.
+- **Worktree / branche** : aucun (retiré après #1859) ; la migration aura le sien.
 
 ## 1. Relevé (prod, 2026-10-26)
 
