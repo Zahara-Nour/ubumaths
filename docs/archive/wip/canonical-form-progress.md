@@ -2,13 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, PR #1871 ouverte._
+_Mis à jour le 2026-10-27, après #1871 — chantier CLOS, journal archivé._
 
-- **État** : 75 appels remplacés, garde ESLint en place ; `check:incremental` 0 erreur ; suites `mathAST` / `questions` / `geometry-core` vertes (33 749 tests, aucun modifié) ; revue `code-reviewer` sans finding.
-- **Prochaine action** : CI verte → merge #1871 → archiver le journal (fin de chantier = versement, déjà fait dans le README mathAST).
-- **En attente de David** : rien.
-- **Pièges** : le compte juste est **77**, pas 78 (le 78ᵉ était un commentaire de `rational.ts`) ; le grep rate les 3 appels sur plusieurs lignes, la règle AST les voit.
-- **Worktree / branche** : `../ubumaths-wt-canonical-form`, `refactor/canonical-form`.
+- **État** : #1871 mergée ; les 77 appels en ligne passent par `canonicalForm`, garde ESLint `no-restricted-syntax` en place ; délai du job Lint de la CI porté à 30 min (relecture ESLint à froid quand `eslint.config.*` change). Pas encore en prod.
+- **Versé** : `docs/systeme/mathast/README.md`, Points ouverts, « Fusion des deux moteurs ».
+- **Hors chantier** : la fin de la fusion `simplify` / `pedagogical-simplify` (même point ouvert).
 
 ## Contexte
 
@@ -32,3 +30,4 @@ Décision de David du 2026-10-27 (session valeurs-remarquables) : remplacer les 
 
 - 2026-10-27 : chantier ouvert, worktree créé depuis `origin/main` (`449666bd9`).
 - 2026-10-27 : phase 0 validée ; remplacement par script (parenthèses équilibrées), imports rangés, garde rouge vérifiée (77) puis verte.
+- 2026-10-27 : #1871 mergée (job Lint coupé à 20 min par la relecture à froid, délai porté à 30 min, validé par David) ; chantier clos, journal archivé.

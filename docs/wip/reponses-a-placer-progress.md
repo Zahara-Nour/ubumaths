@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1872._
+_Mis à jour le 2026-10-27, après #1872 et les décisions des barres._
 
-- **État** : #1846, #1848, #1853, #1854, #1858, #1860 (droite à placer) et #1872 (horloge à placer, § 13 à 16) **mergées**, pas en prod. Vérification de #1872 notée dans `verifications-manuelles.md` (carte de correction dans une vraie question pas vue à l'écran).
-- **Prochaine action** : barres, phase 0 écrite (§ 17), questions posées à David.
-- **En attente de David** : les 6 questions du § 17 (barres).
+- **État** : droite à placer (#1846→#1860) et horloge à placer (#1872) mergées, pas en prod. Barres : phase 0 (§ 17) validée par David (§ 18), rien codé.
+- **Prochaine action** : PR « barres » — worktree `ubumaths-wt-reponses-a-placer`, branche `feat/reponses-a-placer-barres` ; tests rouges d'abord (parseur `placer:` / `axe:` du bloc ```barres, générateur : une case par barre, `BuildKind` `'barres'`), patron de la droite à plusieurs points (§ 11) et de l'horloge (§ 15).
+- **En attente de David** : rien.
 - **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; horloge : réponse élève `'47 25'` (crans), attendue `'9 h 25'`, case `text`, juge `isPlacedTimeCorrect` (secteur OU vraie place) ; secondes (CM2-083) hors chantier ; page d'aide à froid : attendre l'hydratation ; une PR = une session.
 - **Worktree / branche** : aucun.
 
@@ -394,3 +394,13 @@ grande barre).
 4. **Choix de l'échelle par l'élève** (CM1-CM2) : hors de cette PR (reco) ?
 5. **Données brutes** (`données:`) permises avec `placer:` (reco : l'élève compte puis construit) ?
 6. **Correction** : une phrase par barre fausse + le diagramme juste (reco) ?
+
+## 18. Décisions barres (David, 2026-10-27 : « je te suis » sur les recos)
+
+1. Écriture : **`placer: Natation ; Danse`** (barres nommées, les autres dessinées) et **`placer: toutes`**.
+2. **`axe: 0 à 20, de 2 en 2` obligatoire** avec `placer:` (calculé, il trahirait la plus grande barre).
+3. **Aimant à l'unité**, même sur un axe de 2 en 2 (7 entre 6 et 8 : lire l'échelle).
+4. **Choix de l'échelle par l'élève (CM1-CM2) hors de cette PR** — reste noté.
+5. **`données:` (série brute) permis** avec `placer:` : l'élève compte puis construit.
+6. Correction : **une phrase par barre fausse** (« Ta barre Danse monte à 9. », « Tu n'as pas construit
+   la barre Danse. ») **+ le diagramme juste** à côté ; une case par barre (note partielle).
