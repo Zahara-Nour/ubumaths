@@ -40,7 +40,7 @@
 				"steps": [
 					"On isole $x$ : on {{if:a>0|soustrait ${{a}}$|ajoute ${{eval:-(a)}}$}} aux deux membres. Ajouter ou soustraire un nombre **ne change pas** le sens de l'inégalité.",
 					"$$x{{eval:a;+}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{b}}\\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(b)-(a)}}$$",
-					"Le crochet est **fermé** du côté de ${{eval:(b)-(a)}}$ quand l'inégalité est large ($\\leqslant$, $\\geqslant$), **ouvert** quand elle est stricte ($<$, $>$).",
+					"{{if:s==0|L'inégalité est **stricte** : ${{eval:(b)-(a)}}$ n'est pas solution, le crochet est **ouvert** de son côté.|{{if:s==1|L'inégalité est **large** : ${{eval:(b)-(a)}}$ est solution, le crochet est **fermé** de son côté.|{{if:s==2|L'inégalité est **stricte** : ${{eval:(b)-(a)}}$ n'est pas solution, le crochet est **ouvert** de son côté.|L'inégalité est **large** : ${{eval:(b)-(a)}}$ est solution, le crochet est **fermé** de son côté.}}}}}}",
 					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{eval:(b)-(a)}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{eval:(b)-(a)}}\\right]|{{if:s==2|\\left]{{eval:(b)-(a)}}\\,;+\\infty\\right[|\\left[{{eval:(b)-(a)}}\\,;+\\infty\\right[}}}}}}}$."
 				]
 			}
@@ -79,7 +79,7 @@
 				"steps": [
 					"On isole $x$ : on {{if:a>0|soustrait ${{a}}$|ajoute ${{eval:-(a)}}$}} aux deux membres. Ajouter ou soustraire un nombre **ne change pas** le sens de l'inégalité.",
 					"$${{a}}+x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{b}}\\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:((B)-(A))/10;d}}$$",
-					"Le crochet est **fermé** du côté de ${{eval:((B)-(A))/10;d}}$ quand l'inégalité est large ($\\leqslant$, $\\geqslant$), **ouvert** quand elle est stricte ($<$, $>$).",
+					"{{if:s==0|L'inégalité est **stricte** : ${{eval:((B)-(A))/10;d}}$ n'est pas solution, le crochet est **ouvert** de son côté.|{{if:s==1|L'inégalité est **large** : ${{eval:((B)-(A))/10;d}}$ est solution, le crochet est **fermé** de son côté.|{{if:s==2|L'inégalité est **stricte** : ${{eval:((B)-(A))/10;d}}$ n'est pas solution, le crochet est **ouvert** de son côté.|L'inégalité est **large** : ${{eval:((B)-(A))/10;d}}$ est solution, le crochet est **fermé** de son côté.}}}}}}",
 					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{eval:((B)-(A))/10;d}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{eval:((B)-(A))/10;d}}\\right]|{{if:s==2|\\left]{{eval:((B)-(A))/10;d}}\\,;+\\infty\\right[|\\left[{{eval:((B)-(A))/10;d}}\\,;+\\infty\\right[}}}}}}}$."
 				]
 			}

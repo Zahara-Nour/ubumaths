@@ -44,7 +44,7 @@
 					"On {{if:b>0|soustrait ${{b}}$|ajoute ${{eval:-(b)}}$}} aux deux membres : le sens ne change pas.",
 					"On divise les deux membres par ${{a}}$, un nombre **positif** : le sens de l'inégalité **ne change pas**.",
 					"$${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}0\\iff {{eval:(a)*x}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:-(b)}}\\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:-(b)/(a)}}$$",
-					"Le crochet est **fermé** du côté de ${{eval:-(b)/(a)}}$ quand l'inégalité est large ($\\leqslant$, $\\geqslant$), **ouvert** quand elle est stricte ($<$, $>$).",
+					"{{if:s==0|L'inégalité est **stricte** : ${{eval:-(b)/(a)}}$ n'est pas solution, le crochet est **ouvert** de son côté.|{{if:s==1|L'inégalité est **large** : ${{eval:-(b)/(a)}}$ est solution, le crochet est **fermé** de son côté.|{{if:s==2|L'inégalité est **stricte** : ${{eval:-(b)/(a)}}$ n'est pas solution, le crochet est **ouvert** de son côté.|L'inégalité est **large** : ${{eval:-(b)/(a)}}$ est solution, le crochet est **fermé** de son côté.}}}}}}",
 					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{eval:-(b)/(a)}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{eval:-(b)/(a)}}\\right]|{{if:s==2|\\left]{{eval:-(b)/(a)}}\\,;+\\infty\\right[|\\left[{{eval:-(b)/(a)}}\\,;+\\infty\\right[}}}}}}}$."
 				]
 			}
@@ -79,7 +79,7 @@
 					"On {{if:b>0|soustrait ${{b}}$|ajoute ${{eval:-(b)}}$}} aux deux membres : le sens ne change pas.",
 					"On divise les deux membres par ${{a}}$, un nombre **négatif** : le sens de l'inégalité **change**.",
 					"$${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}0\\iff {{eval:(a)*x}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:-(b)}}\\iff x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{eval:-(b)/(a)}}$$",
-					"Le crochet est **fermé** du côté de ${{eval:-(b)/(a)}}$ quand l'inégalité est large ($\\leqslant$, $\\geqslant$), **ouvert** quand elle est stricte ($<$, $>$).",
+					"{{if:s==0|L'inégalité est **stricte** : ${{eval:-(b)/(a)}}$ n'est pas solution, le crochet est **ouvert** de son côté.|{{if:s==1|L'inégalité est **large** : ${{eval:-(b)/(a)}}$ est solution, le crochet est **fermé** de son côté.|{{if:s==2|L'inégalité est **stricte** : ${{eval:-(b)/(a)}}$ n'est pas solution, le crochet est **ouvert** de son côté.|L'inégalité est **large** : ${{eval:-(b)/(a)}}$ est solution, le crochet est **fermé** de son côté.}}}}}}",
 					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]{{eval:-(b)/(a)}}\\,;+\\infty\\right[|{{if:s==1|\\left[{{eval:-(b)/(a)}}\\,;+\\infty\\right[|{{if:s==2|\\left]-\\infty\\,;{{eval:-(b)/(a)}}\\right[|\\left]-\\infty\\,;{{eval:-(b)/(a)}}\\right]}}}}}}}$."
 				]
 			}

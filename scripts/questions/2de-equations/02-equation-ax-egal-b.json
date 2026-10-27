@@ -97,8 +97,8 @@
 			],
 			"correction": {
 				"steps": [
-					"Diviser par $\\frac{ {{p}} }{ {{q}} }$, c'est multiplier par son inverse $\\frac{ {{q}} }{ {{p}} }$ : on multiplie les deux membres par $\\frac{ {{q}} }{ {{p}} }$.",
-					"$$\\frac{ {{p}} }{ {{q}} }x={{r}}\\iff x={{r}}\\times\\frac{ {{q}} }{ {{p}} }\\iff x={{eval:(r)*(q)/(p)}}$$",
+					"Diviser par $\\frac{ {{p}} }{ {{q}} }$, c'est multiplier par son inverse ${{if:p==1|{{q}}|\\frac{ {{q}} }{ {{p}} }}}$ : on multiplie les deux membres par ${{if:p==1|{{q}}|\\frac{ {{q}} }{ {{p}} }}}$.",
+					"$$\\frac{ {{p}} }{ {{q}} }x={{r}}\\iff x={{r}}\\times{{if:p==1|{{q}}|\\frac{ {{q}} }{ {{p}} }}}\\iff x={{eval:(r)*(q)/(p)}}$$",
 					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:(r)*(q)/(p)}} \\}}$."
 				]
 			}

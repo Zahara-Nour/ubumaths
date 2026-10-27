@@ -53,7 +53,7 @@
 					"On regroupe les termes en $x$ à gauche et les nombres à droite : le sens ne change pas.",
 					"$${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(c)*x+(d)}}\\iff {{eval:((a)-(c))*x}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(d)-(b)}}$$",
 					"On divise par ${{eval:(a)-(c)}}$, un nombre **positif** : le sens **ne change pas**. $x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:((d)-(b))/((a)-(c))}}$.",
-					"Le crochet est **fermé** du côté de ${{eval:((d)-(b))/((a)-(c))}}$ quand l'inégalité est large ($\\leqslant$, $\\geqslant$), **ouvert** quand elle est stricte ($<$, $>$).",
+					"{{if:s==0|L'inégalité est **stricte** : ${{eval:((d)-(b))/((a)-(c))}}$ n'est pas solution, le crochet est **ouvert** de son côté.|{{if:s==1|L'inégalité est **large** : ${{eval:((d)-(b))/((a)-(c))}}$ est solution, le crochet est **fermé** de son côté.|{{if:s==2|L'inégalité est **stricte** : ${{eval:((d)-(b))/((a)-(c))}}$ n'est pas solution, le crochet est **ouvert** de son côté.|L'inégalité est **large** : ${{eval:((d)-(b))/((a)-(c))}}$ est solution, le crochet est **fermé** de son côté.}}}}}}",
 					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{eval:((d)-(b))/((a)-(c))}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{eval:((d)-(b))/((a)-(c))}}\\right]|{{if:s==2|\\left]{{eval:((d)-(b))/((a)-(c))}}\\,;+\\infty\\right[|\\left[{{eval:((d)-(b))/((a)-(c))}}\\,;+\\infty\\right[}}}}}}}$."
 				]
 			}
@@ -97,7 +97,7 @@
 					"On regroupe les termes en $x$ à gauche et les nombres à droite : le sens ne change pas.",
 					"$${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(c)*x+(d)}}\\iff {{eval:((a)-(c))*x}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(d)-(b)}}$$",
 					"On divise par ${{eval:(a)-(c)}}$, un nombre **négatif** : le sens **change**. $x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{eval:((d)-(b))/((a)-(c))}}$.",
-					"Le crochet est **fermé** du côté de ${{eval:((d)-(b))/((a)-(c))}}$ quand l'inégalité est large ($\\leqslant$, $\\geqslant$), **ouvert** quand elle est stricte ($<$, $>$).",
+					"{{if:s==0|L'inégalité est **stricte** : ${{eval:((d)-(b))/((a)-(c))}}$ n'est pas solution, le crochet est **ouvert** de son côté.|{{if:s==1|L'inégalité est **large** : ${{eval:((d)-(b))/((a)-(c))}}$ est solution, le crochet est **fermé** de son côté.|{{if:s==2|L'inégalité est **stricte** : ${{eval:((d)-(b))/((a)-(c))}}$ n'est pas solution, le crochet est **ouvert** de son côté.|L'inégalité est **large** : ${{eval:((d)-(b))/((a)-(c))}}$ est solution, le crochet est **fermé** de son côté.}}}}}}",
 					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]{{eval:((d)-(b))/((a)-(c))}}\\,;+\\infty\\right[|{{if:s==1|\\left[{{eval:((d)-(b))/((a)-(c))}}\\,;+\\infty\\right[|{{if:s==2|\\left]-\\infty\\,;{{eval:((d)-(b))/((a)-(c))}}\\right[|\\left]-\\infty\\,;{{eval:((d)-(b))/((a)-(c))}}\\right]}}}}}}}$."
 				]
 			}

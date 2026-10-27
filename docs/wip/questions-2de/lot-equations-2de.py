@@ -130,12 +130,13 @@ def conclusion_inequation(r, inverse=False):
     return conclusion(selon('s', liste))
 
 
-CROCHET = ('Le crochet est **fermé** du côté de ${{BORNE}}$ quand l\'inégalité est large'
-           ' ($\\leqslant$, $\\geqslant$), **ouvert** quand elle est stricte ($<$, $>$).')
-
-
 def crochet(r):
-    return CROCHET.replace('{{BORNE}}', r)
+    """Crochet de la borne r, selon le sens tiré (`s` pair : stricte)."""
+    stricte = ('L\'inégalité est **stricte** : $' + r + '$ n\'est pas solution, le crochet est'
+               ' **ouvert** de son côté.')
+    large = ('L\'inégalité est **large** : $' + r + '$ est solution, le crochet est **fermé** de'
+             ' son côté.')
+    return selon('s', [stricte, large, stricte, large])
 
 
 MODELES = []
@@ -199,14 +200,16 @@ PRODUIT_FRACTION = variation(
      'On donne la fraction **irréductible**. ' + conclusion(singleton('{{eval:(b)/(a)}}'))],
     ['mod(b,a) != 0'])
 
+INVERSE = '{{if:p==1|{{q}}|\\frac{ {{q}} }{ {{p}} }}}'
+
 PRODUIT_COEF_FRACTION = variation(
     equation('\\frac{ {{p}} }{ {{q}} }x={{r}}'),
     [var('p', '1..5'), var('q', '2..7'), var('r', '1..9;±')],
     singleton('{{eval:(r)*(q)/(p)}}'),
-    ['Diviser par $\\frac{ {{p}} }{ {{q}} }$, c\'est multiplier par son inverse'
-     ' $\\frac{ {{q}} }{ {{p}} }$ : on multiplie les deux membres par $\\frac{ {{q}} }{ {{p}} }$.',
-     '$$\\frac{ {{p}} }{ {{q}} }x={{r}}\\iff x={{r}}\\times\\frac{ {{q}} }{ {{p}} }'
-     '\\iff x={{eval:(r)*(q)/(p)}}$$',
+    ['Diviser par $\\frac{ {{p}} }{ {{q}} }$, c\'est multiplier par son inverse $' + INVERSE
+     + '$ : on multiplie les deux membres par $' + INVERSE + '$.',
+     '$$\\frac{ {{p}} }{ {{q}} }x={{r}}\\iff x={{r}}\\times' + INVERSE
+     + '\\iff x={{eval:(r)*(q)/(p)}}$$',
      conclusion(singleton('{{eval:(r)*(q)/(p)}}'))],
     ['gcd(p,q) == 1', 'p != q'])
 
