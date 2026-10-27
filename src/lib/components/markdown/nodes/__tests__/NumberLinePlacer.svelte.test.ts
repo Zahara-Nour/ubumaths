@@ -437,6 +437,79 @@ describe('Droite à placer — plusieurs points', () => {
 		expect(Math.abs(labels[0] - labels[1])).toBeGreaterThan(10);
 	});
 
+	// Revue de la PR 2
+	it('point actif absent : toucher un point posé pose le point actif dessus', async () => {
+		const { values, answers } = probes(2);
+		const screen = await render(NumberLine, {
+			target: mainElement(),
+			props: { node: node(...LINE_0_20, 'placer: A=3 ; B=7'), answers }
+		});
+		const root = screen.container;
+		tapAt(root, 3);
+		await expect.poll(() => chip(root, 'B').getAttribute('aria-pressed')).toBe('true');
+		tapAt(root, 3);
+		await expect.poll(values).toEqual(['3', '3']);
+	});
+
+	it('remontée avec A et B posés : C est actif', async () => {
+		const screen = await render(NumberLine, {
+			target: mainElement(),
+			props: {
+				node: node(...LINE_0_20, PLACER_3),
+				answers: [
+					{ value: '2', isCorrect: null, disabled: false, onChange: () => {} },
+					{ value: '5', isCorrect: null, disabled: false, onChange: () => {} },
+					{ value: '', isCorrect: null, disabled: false, onChange: () => {} }
+				]
+			}
+		});
+		expect(chip(screen.container, 'C').getAttribute('aria-pressed')).toBe('true');
+	});
+
+	it('aperçu : le prof retire le point actif, le geste continue sur le dernier', async () => {
+		const screen = await render(NumberLine, {
+			target: mainElement(),
+			props: { node: node(...LINE_0_20, PLACER_3) }
+		});
+		const root = screen.container;
+		await userEvent.click(chip(root, 'C'));
+		await screen.rerender({ node: node(...LINE_0_20, 'placer: A=3 ; B=7') });
+		await userEvent.click(button(root, FORWARD));
+		await expect.poll(() => zone(root).getAttribute('aria-valuetext')).toBe('point B sur 0');
+	});
+
+	it('copie corrigée : chaque point lit sa case (B à la graduation de la 2e réponse)', async () => {
+		const screen = await render(BuildAnswer, {
+			target: mainElement(),
+			props: {
+				kind: 'line',
+				source: [...LINE_0_20, 'placer: A=3 ; B=7'].join('\n'),
+				answer: '3 ; 9',
+				status: 'incorrect',
+				answers: [
+					{ answer: '3', status: 'correct' },
+					{ answer: '9', status: 'incorrect' }
+				]
+			}
+		});
+		const student = zone(screen.container);
+		const labelX = (name: string) => {
+			const label = [...student.querySelectorAll('.point-label')].find(
+				(l) => l.textContent?.trim() === name
+			);
+			return Number(label?.parentElement?.getAttribute('x')) + 25;
+		};
+		const circles = [...student.querySelectorAll('circle.nl-point')].map((c) =>
+			Number(c.getAttribute('cx'))
+		);
+		const width = student.querySelector('svg')!.getBoundingClientRect().width;
+		const { MARGIN_LEFT, MARGIN_RIGHT } = NL_LAYOUT;
+		const xOf = (v: number) => MARGIN_LEFT + (v / 20) * (width - MARGIN_LEFT - MARGIN_RIGHT);
+		expect(labelX('A')).toBeCloseTo(xOf(3), 0);
+		expect(labelX('B')).toBeCloseTo(xOf(9), 0);
+		expect(circles).toHaveLength(2);
+	});
+
 	it('correction : une phrase par point faux, la droite juste avec tous les points', async () => {
 		const screen = await render(NumberLine, {
 			target: mainElement(),

@@ -23,6 +23,7 @@
 	@module components/markdown/nodes/NumberLinePlacer
 -->
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import type {
 		NumberLineNode,
 		NumberLinePoint,
@@ -91,8 +92,14 @@
 		targets.map((_, i) => indexOfAnswer(config, answers?.[i]?.value ?? ''))
 	);
 
+	/**
+	 * Point choisi par l'élève : au départ, le premier point non posé (composant
+	 * remonté avec A et B posés : C) ; ramené dans les bornes si le prof retire
+	 * des points dans l'aperçu
+	 */
+	let chosen = $state(untrack(() => Math.max(0, positions.indexOf(null))));
 	/** Rang du point que le geste déplace */
-	let active = $state(0);
+	let active = $derived(Math.min(chosen, Math.max(0, targets.length - 1)));
 	let locked = $derived(answers?.some((a) => a.disabled) ?? false);
 	let dragging = $state(false);
 	/** Le point actif était absent quand le doigt s'est posé : au lever, on passe au suivant */
@@ -168,7 +175,7 @@
 		for (let step = 1; step < targets.length; step++) {
 			const i = (active + step) % targets.length;
 			if (positions[i] === null) {
-				active = i;
+				chosen = i;
 				return;
 			}
 		}
@@ -191,8 +198,13 @@
 		return nearestIndex(config, value);
 	}
 
-	/** Le point posé sous le doigt (le point actif d'abord) ; null si aucun */
+	/**
+	 * Le point posé sous le doigt (le point actif d'abord) ; null si aucun. Point
+	 * actif absent : jamais de reprise, le toucher le pose (même sur une graduation
+	 * déjà occupée, ou voisine d'un point posé)
+	 */
 	function grabbedAt(event: PointerEvent): number | null {
+		if (positions[active] === null) return null;
 		const at = pointerX(event);
 		if (at === null) return null;
 		const start = numVal(config.start);
@@ -212,7 +224,7 @@
 		if (locked) return;
 		const grabbed = grabbedAt(event);
 		if (grabbed !== null) {
-			active = grabbed;
+			chosen = grabbed;
 			placingNew = false;
 		} else {
 			const k = indexAt(event);
@@ -306,7 +318,7 @@
 							aria-label="Point {target.name}"
 							aria-pressed={i === active}
 							disabled={locked}
-							onclick={() => (active = i)}
+							onclick={() => (chosen = i)}
 						>
 							{target.name}
 						</button>
