@@ -6,17 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1866._
+_Mis à jour le 2026-10-27, lot 2 en cours (PR des fichiers)._
 
-- **État** : lot 1 « corrections » CLOS : #1866 mergée, `db:migrate` joué, contrôle MCP conforme (7 md5 « après », 11 modèles rangés comme prévu, statuts inchangés).
-- **Prochaine action** : lot 2 « équations et inéquations du premier degré » (§ 4 : 265, 266, 279, 429, 430, 280, 431, 432, 267, 281), phase 0 d'abord, nouveau worktree `../ubumaths-wt-questions-2de`.
-- **En attente de David** : rien.
-- **Pièges en cours** : QCM en réécriture (case « choix », pas en prod) ; droite à placer pas en prod ; un tag
-  exige le modèle sur le nœud du point ou sa notion ; un point par programme (garde en base) ;
-  `--mettre-a-jour` ne touche pas un modèle publié ; le cahier de texte filtre `grades` au niveau exact ;
-  `releve-prod.ts` plafonne à 1 000 lignes (viser peu de niveaux) ; outil `questions-2de/verifier-contenu.ts`
-  pour jouer specs et tirages sur les lignes générées par un script de lot.
-- **Worktree / branche** : aucun (retiré après #1866).
+- **État** : lot 2 « équations et inéquations » (§ 8, § 9) : 10 modèles écrits, simulation verte, essayés en
+  base locale ; correctif #1877 mergé (√12 = ½ dans une case intervalles) ; PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR des fichiers, puis **David** lance
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-equations --publier` (brouillons en prod) ;
+  relever les 10 `id`, migration nœud + tag (gabarit CP-C), page à cocher.
+- **En attente de David** : le `--publier` ci-dessus, après le merge.
+- **Pièges en cours** : publier le lot seulement **après le `deploy:prod` qui livre #1877** (sinon √12 compte juste
+  en prod) ; QCM en réécriture (case « choix ») ; un tag exige le modèle sur le nœud du point ou sa notion ;
+  le cahier de texte filtre `grades` au niveau exact ; `releve-prod.ts` plafonne à 1 000 lignes ;
+  `questions-2de/verifier-contenu.ts <dossier> --apercu N` pour relire des tirages.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-equations`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -307,3 +309,15 @@ produit nul en base. Phase 0 validée telle que proposée (mes 4 recommandations
   1 · 2-432 a + x ⩾ b (entiers ; décimaux) · 2 · 2-431 ax ⩾ b (a > 0 ; a < 0) · 3 · 2-266 ax + b > 0
   (a > 0 ; a < 0) · 4 · 2-280 ax + b ⩾ cx + d (a − c > 0 ; a − c < 0 ; a = c → ∅ ou ℝ).
 - 2-269 (quotient) hors lot. **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+## 9. Lot 2, PR des fichiers (2026-10-27)
+
+- Script `questions-2de/lot-equations-2de.py` → `scripts/questions/2de-equations/` (10 modèles, 25 variations,
+  83 specs) ; `create-questions` en simulation : tout vert.
+- **Écart trouvé** : la case intervalles jugeait `{−√12 ; √12}` juste. David a choisi le correctif (option 1) :
+  **#1877** mergée (racine simplifiable = ½ en borne, en ensemble fini, en ensemble de complexes ;
+  `code-reviewer` opus : 0 faux positif sur 59 réponses justes sondées). Limites notées dans
+  `convention-equivalence.md` : `\sqrt1` juste, `\mathbb{R}\setminus\{\sqrt{12}\}` non contrôlé.
+- Relecture des tirages : corrigés retouchés (inverse de 1/q écrit q ; crochet expliqué selon le sens tiré).
+- Base locale : 10 brouillons créés ; aperçu admin joué (x² = 9 : `{-3;3}` juste ; −4x ⩽ 19 : faux, corrigé
+  « le sens change », S = [−19/4 ; +∞[).
