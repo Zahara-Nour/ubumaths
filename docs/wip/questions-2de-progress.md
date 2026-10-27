@@ -6,15 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, PR du lot 1 en préparation._
+_Mis à jour le 2026-10-27, après #1866._
 
-- **État** : lot 1 « corrections » écrit (§ 7) : deux migrations (contenu, rangement), tests verts et rouges sans.
-- **Prochaine action** : revues (`security-auditor`, `code-reviewer`), PR, CI, merge, `db:migrate` depuis le dépôt principal, contrôle MCP ; puis lot 2 (équations).
+- **État** : lot 1 « corrections » CLOS : #1866 mergée, `db:migrate` joué, contrôle MCP conforme (7 md5 « après », 11 modèles rangés comme prévu, statuts inchangés).
+- **Prochaine action** : lot 2 « équations et inéquations du premier degré » (§ 4 : 265, 266, 279, 429, 430, 280, 431, 432, 267, 281), phase 0 d'abord, nouveau worktree `../ubumaths-wt-questions-2de`.
 - **En attente de David** : rien.
 - **Pièges en cours** : QCM en réécriture (case « choix », pas en prod) ; droite à placer pas en prod ; un tag
   exige le modèle sur le nœud du point ou sa notion ; un point par programme (garde en base) ;
-  `--mettre-a-jour` ne touche pas un modèle publié ; le cahier de texte filtre `grades` au niveau exact.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-corrections`.
+  `--mettre-a-jour` ne touche pas un modèle publié ; le cahier de texte filtre `grades` au niveau exact ;
+  `releve-prod.ts` plafonne à 1 000 lignes (viser peu de niveaux) ; outil `questions-2de/verifier-contenu.ts`
+  pour jouer specs et tirages sur les lignes générées par un script de lot.
+- **Worktree / branche** : aucun (retiré après #1866).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -284,3 +286,6 @@ Une seule PR, deux migrations (comme la 6e) ; branche `feat/questions-2de-correc
   `updated_at`, comme la 6e). `code-reviewer` (opus) sans finding bloquant ; mineur corrigé : « avec un
   coefficient » faux une fois sur 7 (coefficient tiré = 1) → sous-titre « La lettre multipliée par un
   entier ». DoD : `check:incremental` 0 erreur, cliquet tenu, lint rapide vert.
+- #1866 mergée le 2026-10-27 (Lint relancé une fois : ESLint annulé au délai de 20 min, pas une erreur) ;
+  `db:migrate` joué depuis le dépôt principal ; MCP : 7 md5 = « après », niveaux / nœuds / tags du lot, statuts
+  inchangés, 2-328 sans modèle.
