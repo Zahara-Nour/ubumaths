@@ -56,7 +56,24 @@ tunnel() {
 
 « bind [127.0.0.1]:54321: Address already in use » = un ancien tunnel tourne encore sur le
 MacBook. Sans gravité : il mène au même Supabase, le nouveau port de l'appli marche. Pour
-nettoyer : `exit` dans l'ancien terminal, ou `lsof -nP -iTCP:54321 -sTCP:LISTEN` puis `kill <pid>`.
+nettoyer : `untunnel` (ci-dessous), `exit` dans l'ancien terminal, ou
+`lsof -nP -iTCP:54321 -sTCP:LISTEN` puis `kill <pid>`.
+
+Fermer tous les tunnels vers le Mac mini (à côté de `tunnel`, dans `~/.zshrc`) :
+
+```zsh
+# Ferme tous les tunnels ouverts vers le Mac mini (lancés par `tunnel`)
+untunnel() {
+	local pids
+	pids=$(pgrep -f 'ssh -L.*david@100\.79\.226\.105')
+	if [[ -z $pids ]]; then
+		echo "Aucun tunnel ouvert."
+		return
+	fi
+	echo "Fermeture : $(echo $pids | tr '\n' ' ')"
+	kill ${=pids}
+}
+```
 
 Le navigateur se croit sur `localhost` : cookie accepté,
 Supabase joint par le tunnel 54321. « channel N: open failed: connect failed » = aucun serveur
