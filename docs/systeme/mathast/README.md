@@ -1703,6 +1703,15 @@ Doublons qui restent, chacun pour un autre besoin :
   `developper` non plus (2026-10-25, chantier normalize-usages). Les copies locales de
   `denormalize(normalize())` passent par `canonicalForm` (lot b) ; restent ~75 appels écrits en
   ligne, internes (valeurs exactes, comparaisons), voulus (§ 23 de simplify-carte).
+  **Futur chantier (David, 2026-10-27) : finir la fusion.** `simplify()` sert encore au repli de
+  l'atelier (`atelier/calcul.ts` : sans étape de `pedagogical-simplify`, `.simplifier` montre
+  la sortie de `simplify()`, calculée en silence — `cos(π/3)/x → 1/(2x)` passait par là avant le
+  chantier valeurs-remarquables), à la commande `simplify` du REPL (`simplify.command.ts`) et à
+  Taylor (`taylor/expand.ts`). Les 3 écarts du panel sont tous en faveur d'`auto` (il sait,
+  `simplify()` non) : ils ne bloquent rien. Question à trancher, après un relevé des entrées
+  qui tombent dans le repli : sans étape, l'atelier garde-t-il l'expression telle quelle
+  (« ce qu'on ne sait pas expliquer, on ne le fait pas », ADR 0007) ou montre-t-il le résultat
+  sans étape, comme aujourd'hui ?
 - Laissés par le chantier normalize-usages (2026-10-26), écritures de `developper`, aucune
   valeur fausse : `(x+1)/π → x/π + 1/π` et `(x+1)/√2` en deux écritures (le coefficient ne
   passe devant que pour un dénominateur entier) ; `√8` seul reste écrit (`√8(x+1) → 2√2x +
