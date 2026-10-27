@@ -6,19 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1881._
+_Mis à jour le 2026-10-27, PR #1882 ouverte._
 
-- **État** : lot 2 « équations et inéquations » (§ 8, § 9) : fichiers mergés (#1881), essayés en base
-  locale ; correctif #1877 mergé (√12 = ½ dans une case intervalles), pas encore en prod.
-- **Prochaine action** : **David** lance
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-equations --publier` (brouillons en prod) ;
-  relever les 10 `id`, migration nœud + tag (gabarit CP-C), page à cocher.
-- **En attente de David** : le `--publier` ci-dessus.
+- **État** : lot 2 « équations et inéquations » (§ 8 à § 10) : 10 brouillons en prod ; migration nœud + tag en
+  PR #1882 (test 9/9, rouge sans elle ; `security-auditor` : rien). Correctif #1877 mergé, pas encore en prod.
+- **Prochaine action** : #1882 verte → merge → `db:migrate` depuis le dépôt principal → vérification MCP
+  (10 nœuds, 10 tags) → page à cocher (`page-a-cocher.ts --dir scripts/questions/2de-equations`).
+- **En attente de David** : rien pour l'instant ; ensuite ses verdicts sur la page à cocher.
 - **Pièges en cours** : publier le lot seulement **après le `deploy:prod` qui livre #1877** (sinon √12 compte juste
-  en prod) ; QCM en réécriture (case « choix ») ; un tag exige le modèle sur le nœud du point ou sa notion ;
-  le cahier de texte filtre `grades` au niveau exact ; `releve-prod.ts` plafonne à 1 000 lignes ;
-  `questions-2de/verifier-contenu.ts <dossier> --apercu N` pour relire des tirages.
-- **Worktree / branche** : aucun (retiré après #1881) ; la migration nœud + tag prendra un nouveau worktree.
+  en prod) ; la garde de doc lit `Doc-inchangée:` dans un COMMIT, pas dans la description de PR ; test
+  `scripts/corrections` « cas rare » qui dépasse 5 s en CI de temps en temps (relancer) ; QCM en réécriture.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-equations-rangement`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -322,3 +320,12 @@ produit nul en base. Phase 0 validée telle que proposée (mes 4 recommandations
 - Base locale : 10 brouillons créés ; aperçu admin joué (x² = 9 : `{-3;3}` juste ; −4x ⩽ 19 : faux, corrigé
   « le sens change », S = [−19/4 ; +∞[).
 - #1881 mergée le 2026-10-27 (CI verte du premier coup), worktree retiré.
+
+## 10. Lot 2, migration nœud + tag (2026-10-27)
+
+- David a lancé `create-questions --publier` : 10 brouillons en prod, niveau `2`, sans nœud ni tag (MCP).
+- Nœud = celui du point : 2-430, 2-429 → Algèbre › Équations : premier degré ; 2-265 → … › ax + b = c ;
+  2-279 → … › ax + b = cx + d ; 2-267 → Algèbre › Équations : produit et quotient › produit nul ; 2-281 →
+  … › x² = a ; 2-432, 2-431, 2-280 → Algèbre › Inéquations : premier degré ; 2-266 → … › ax + b < c.
+- Migration `20261027213000_questions_2de_equations_rangement_tags` (gabarit CP-C) + test d'intégration :
+  9/9 vert, 5/9 rouge avec une migration vide ; `security-auditor` : aucun finding. PR #1882.
