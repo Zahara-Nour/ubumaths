@@ -1718,7 +1718,10 @@ Doublons qui restent, chacun pour un autre besoin :
 - Fusion des deux moteurs : `reduire` et `auto` ne passent plus par `normalize` (2026-10-23),
   `developper` non plus (2026-10-25, chantier normalize-usages). Les copies locales de
   `denormalize(normalize())` passent par `canonicalForm` (lot b) ; restent ~75 appels écrits en
-  ligne, internes (valeurs exactes, comparaisons), voulus (§ 23 de simplify-carte).
+  ligne, internes (valeurs exactes, comparaisons), voulus (§ 23 de simplify-carte). **78 le
+  2026-10-27** (3 nouveaux depuis, rien ne l'empêche) : à passer tous par `canonicalForm`, sans
+  rien changer à l'écran, avec une garde qui refuse un nouvel appel en ligne — à faire avec la
+  fin de la fusion ci-dessous.
   **Futur chantier (David, 2026-10-27) : finir la fusion.** `simplify()` sert encore au repli de
   l'atelier (`atelier/calcul.ts` : sans étape de `pedagogical-simplify`, `.simplifier` montre
   la sortie de `simplify()`, calculée en silence — `cos(π/3)/x → 1/(2x)` passait par là avant le
@@ -1728,6 +1731,20 @@ Doublons qui restent, chacun pour un autre besoin :
   qui tombent dans le repli : sans étape, l'atelier garde-t-il l'expression telle quelle
   (« ce qu'on ne sait pas expliquer, on ne le fait pas », ADR 0007) ou montre-t-il le résultat
   sans étape, comme aujourd'hui ?
+- Restes de simplify-carte jamais versés ici (relevés le 2026-10-27 dans
+  `docs/archive/wip/simplify-carte-progress.md`) :
+  - **bascule des modèles existants** vers la correction automatique (correction écrite →
+    `generatedSteps`) : « plus tard » (David, § 67-68, Q38) ;
+  - **`pnpm math` à brancher sur l'atelier** (console Calcul en ligne de commande) : futur
+    chantier (§ 68) ; aujourd'hui les deux divergent ;
+  - **conventions d'échec des évaluateurs** (lot 6, § 100) : des évaluateurs laissent passer NaN,
+    d'autres lèvent une exception qui remonte ; le lot « 6c » (une convention, un test rouge par
+    site) n'a pas été fait ; le signe d'un pôle (`1/(−x)` en 0 : signe du numérateur ou −0 de
+    `compile`) reste non tranché, ancienne règle par défaut ;
+  - **`tidy` dans `evaluate`** (§ 13, option B) : A choisie (une fonction « valeur exacte à
+    afficher »), « B reste possible plus tard » ;
+  - **Q29** (§ 62) : `eˣ·eˣ → e^{2x}` fait ; un `(eˣ)²` tapé devait rester tel quel, ce que `tidy`
+    ne distinguait pas — à vérifier.
 - Laissés par le chantier normalize-usages (2026-10-26), écritures de `developper`, aucune
   valeur fausse : `(x+1)/π → x/π + 1/π` et `(x+1)/√2` en deux écritures (le coefficient ne
   passe devant que pour un dénominateur entier) ; `√8` seul reste écrit (`√8(x+1) → 2√2x +
