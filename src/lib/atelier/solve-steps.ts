@@ -289,6 +289,7 @@ export function solveSteps(
 		// Contre l'équation TAPÉE (degrés en radians), pas celle que les valeurs
 		// remarquables ont réduite : une valeur fausse de la table serait rattrapée
 		const typedSolvable = radiansInTrigonometry(typedRelation);
+		if (typedSolvable.type !== 'relation') return null;
 		if (!conclusionAgrees(typedSolvable, variable, steps[steps.length - 1])) return null;
 
 		const solutions = concludedSolutions(steps[steps.length - 1]);
