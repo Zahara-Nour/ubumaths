@@ -48,7 +48,7 @@
 		placerText
 	} from '$lib/ubumark/utils/number-line-placer';
 	import NumberLine from './NumberLine.svelte';
-	import { readAuthoringErrors } from '../authoring-errors';
+	import { readAuthoringAdvice, readAuthoringErrors } from '../authoring-errors';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
@@ -74,6 +74,8 @@
 
 	const authoring = readAuthoringErrors();
 	let errorsVisible = $derived(showErrors ?? authoring());
+	/** Conseil « téléphone » : pas dans les onglets qui imitent l'élève (aperçu prof) */
+	const advice = readAuthoringAdvice();
 
 	let config = $derived(node.config);
 	let targets = $derived<NumberLineTarget[]>(node.placer ?? []);
@@ -359,7 +361,7 @@
 		</div>
 	{/if}
 
-	{#if errorsVisible && phoneWarning !== null}
+	{#if errorsVisible && advice() && phoneWarning !== null}
 		<ul class="nl-warnings w-full text-xs text-warning">
 			<li>Droite graduée — {phoneWarning}</li>
 		</ul>

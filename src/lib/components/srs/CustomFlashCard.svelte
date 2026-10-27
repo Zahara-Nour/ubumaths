@@ -39,9 +39,10 @@
 	let backHeight = $state(0);
 	let maxViewportHeight = $state(0);
 
-	// Element references
-	let frontElement: HTMLElement | null = null;
-	let backElement: HTMLElement | null = null;
+	// Element references : la fiche de chaque face, pas la face, dont la hauteur est
+	// imposée (même défaut que CorrectionCard : fin coupée au lieu de défiler)
+	let frontElement: HTMLElement | null = $state(null);
+	let backElement: HTMLElement | null = $state(null);
 
 	// Derived
 	const currentHeight = $derived(
@@ -66,10 +67,12 @@
 
 		const observer = new ResizeObserver((entries) => {
 			for (const entry of entries) {
+				// Hauteur bordure et marges internes comprises (la fiche a un padding)
+				const height = (entry.target as HTMLElement).offsetHeight;
 				if (entry.target === frontElement) {
-					frontHeight = entry.contentRect.height;
+					frontHeight = height;
 				} else if (entry.target === backElement) {
-					backHeight = entry.contentRect.height;
+					backHeight = height;
 				}
 			}
 		});
@@ -111,11 +114,10 @@
 		>
 			<!-- FRONT FACE -->
 			<div
-				bind:this={frontElement}
 				class={cn('flip-face flip-front', isScrollable && 'scrollable')}
 				style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};"
 			>
-				<Card.Root class="h-full">
+				<Card.Root bind:ref={frontElement} class="min-h-full shrink-0">
 					<Card.Header>
 						<Card.Title>Question</Card.Title>
 					</Card.Header>
@@ -140,11 +142,10 @@
 
 			<!-- BACK FACE -->
 			<div
-				bind:this={backElement}
 				class={cn('flip-face flip-back', isScrollable && 'scrollable')}
 				style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};"
 			>
-				<Card.Root class="h-full">
+				<Card.Root bind:ref={backElement} class="min-h-full shrink-0">
 					<Card.Header>
 						<Card.Title>Réponse</Card.Title>
 					</Card.Header>

@@ -221,3 +221,25 @@ describe('Q105 — entraînement noté comme l’évaluation', () => {
 		).toBe('half');
 	});
 });
+
+// iPhone (David, 2026-10-27) : la carte plafonnée à 80 % de l'écran se mesurait
+// elle-même ; à la 2e mesure elle ne se voyait plus trop haute et coupait sa fin
+describe('CorrectionCard — carte plus haute que l’écran', () => {
+	it('le recto défile au lieu de couper la fin', async () => {
+		const long = Array.from({ length: 80 }, (_, i) => `Ligne ${i + 1}.`).join('\n\n');
+		const { container } = await show({
+			answerResult: result({
+				...oneBlank,
+				statement: resolvedMarkdown(`${long}\n\n$\\placeholder[0]{}$`)
+			})
+		});
+		const recto = front(container);
+		await expect.poll(() => recto.scrollHeight > recto.clientHeight + 1).toBe(true);
+		await new Promise((r) => setTimeout(r, 300));
+		expect(getComputedStyle(recto).overflowY).toBe('auto');
+		expect(recto.classList.contains('scrollable')).toBe(true);
+		// la fiche garde toute sa hauteur (pas écrasée à celle de la face) : sa fin est atteignable
+		const fiche = recto.firstElementChild as HTMLElement;
+		expect(fiche.scrollHeight).toBeLessThanOrEqual(fiche.clientHeight + 1);
+	});
+});

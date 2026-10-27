@@ -230,6 +230,19 @@ describe('QuestionPreviewTabs — erreurs d’auteur (Q48)', () => {
 		expect(text).not.toContain('Figure indisponible');
 	});
 
+	// Conseil d'auteur, pas une erreur : les onglets imitent l'écran de l'élève (David,
+	// 2026-10-27) ; l'éditeur et la page d'aide le gardent (NumberLine-largeur)
+	it('droite à placer trop serrée : pas d’avertissement « téléphone » dans les onglets', async () => {
+		const serree = ['```line', 'start: 0', 'end: 20', 'step: 1', 'placer: 3', '```'].join('\n');
+		const { container } = await open(qcm(`Place 3.\n\n${serree}`));
+		for (const label of ['Flash-card', 'Entraînement', 'En classe']) {
+			await selectTab(container, label);
+			const panel = activePanel(container);
+			expect(panel.querySelector('[role="slider"]'), label).not.toBeNull();
+			expect(panel.textContent ?? '', label).not.toContain('difficiles à viser du doigt');
+		}
+	});
+
 	it('côté élève (FlashSeries) : toujours « Figure indisponible »', async () => {
 		const { container } = await render(FlashSeries, {
 			target: mainElement(),
