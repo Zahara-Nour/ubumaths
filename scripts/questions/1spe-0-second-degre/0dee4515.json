@@ -1,0 +1,220 @@
+{
+	"id": "0dee4515-8030-441c-bd7c-f1b7418e664b",
+	"title": "Somme des racines",
+	"description": "x₁ + x₂ = −b/a sans calculer les racines",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Racines",
+	"level": 5,
+	"delay": 40,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-b}}"
+				}
+			],
+			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a deux racines $x_1$ et $x_2$. Sans les calculer, détermine leur somme.\n\n$x_1+x_2=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["b^2-4*a*c > 0"],
+			"correction": {
+				"steps": [
+					"Le discriminant vaut $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$ : les deux racines existent.",
+					"Quand un trinôme $ax^2+bx+c$ a deux racines, $x_1+x_2=-\\dfrac{b}{a}$.",
+					"Ici $a=1$ : $x_1+x_2=-b={{eval:-b}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-b/a}}"
+				}
+			],
+			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a deux racines $x_1$ et $x_2$. Sans les calculer, détermine leur somme.\n\n$x_1+x_2=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["b^2-4*a*c > 0"],
+			"correction": {
+				"steps": [
+					"Le discriminant vaut $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$ : les deux racines existent.",
+					"Quand un trinôme $ax^2+bx+c$ a deux racines, $x_1+x_2=-\\dfrac{b}{a}$.",
+					"$$x_1+x_2=-\\dfrac{b}{a}={{if:a<0 && b>0|\\dfrac{ {{b}} }{ {{eval:-a}} }|\\dfrac{ {{eval:-b}} }{ {{a}} }}}{{if:a<0 && b<0|={{eval:-b/a}}|{{if:gcd(b,a)!=1|={{eval:-b/a}}|}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-5",
+				"c": "3"
+			},
+			"description": "x^2-5x+3 : S=5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-5",
+				"c": "3"
+			},
+			"description": "S = b (signe oublié)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-5",
+				"c": "3"
+			},
+			"description": "produit donné pour la somme",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"c": "-7"
+			},
+			"description": "x^2+3x-7 : S=−3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{7}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-7",
+				"c": "3"
+			},
+			"description": "2x^2-7x+3 : S=7/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3{,}5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-7",
+				"c": "3"
+			},
+			"description": "décimal exact 3,5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-7",
+				"c": "3"
+			},
+			"description": "−b sans diviser par a",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{7}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-7",
+				"c": "3"
+			},
+			"description": "S = b/a (signe)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "6",
+				"c": "9"
+			},
+			"description": "-4x^2+6x+9 : S=3/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{6}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"a": "-4",
+				"b": "6",
+				"c": "9"
+			},
+			"description": "fraction non réduite 6/4",
+			"variationIndex": 1
+		}
+	]
+}

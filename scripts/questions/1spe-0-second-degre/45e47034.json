@@ -1,0 +1,340 @@
+{
+	"id": "45e47034-959d-4996-a5d6-ea22fd0ac316",
+	"title": "Développer une forme canonique ou factorisée",
+	"description": "Forme développée réduite ax² + bx + c",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Formes",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ax^2+bx+c}}"
+				}
+			],
+			"statement": "Développe et réduis $P(x)={{eval:a*(x-h)^2}}{{eval:k;+}}$.\n\n$P(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-3..3!0,1"
+				},
+				{
+					"name": "h",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*h^2+k"
+				}
+			],
+			"conditions": ["c != 0"],
+			"correction": {
+				"steps": [
+					"On développe le carré avec $(x-\\alpha)^2=x^2-2\\alpha x+\\alpha^2$, puis on multiplie par ${{a}}$.",
+					"$$P(x)={{a}}(x^2{{eval:-2*h;+}}x{{eval:h^2;+}}){{eval:k;+}}$$\n\n$$P(x)={{eval:ax^2+bx}}{{eval:a*h^2;+}}{{eval:k;+}}$$\n\n$$P(x)={{eval:ax^2+bx+c}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ax^2+bx+c}}"
+				}
+			],
+			"statement": "Développe et réduis $P(x)=(x{{eval:-h;+}})^2{{eval:k;+}}$.\n\n$P(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "h",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:h^2+k"
+				}
+			],
+			"conditions": ["c != 0"],
+			"correction": {
+				"steps": [
+					"On développe le carré avec $(x-\\alpha)^2=x^2-2\\alpha x+\\alpha^2$.",
+					"$$\\begin{align}P(x) &= x^2{{eval:-2*h;+}}x{{eval:h^2;+}}{{eval:k;+}} \\\\ &= {{eval:ax^2+bx+c}}\\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ax^2+bx+c}}"
+				}
+			],
+			"statement": "Développe et réduis $P(x)={{eval:a*(x-r)*(x-s)}}$.\n\n$P(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-3..3!0,1"
+				},
+				{
+					"name": "r",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "s",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["r != s && r != -s"],
+			"correction": {
+				"steps": [
+					"On développe d'abord le produit des deux parenthèses, puis on multiplie par ${{a}}$.",
+					"$$P(x)={{a}}(x^2{{eval:-sx;+}}{{eval:-rx;+}}{{eval:r*s;+}})$$\n\n$$P(x)={{a}}(x^2{{eval:-(r+s)x;+}}{{eval:r*s;+}})$$\n\n$$P(x)={{eval:ax^2+bx+c}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2x^2+4x+5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"c": "5",
+				"h": "-1",
+				"k": "3"
+			},
+			"description": "2(x+1)²+3 = 2x^2+4x+5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5+4x+2x^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"c": "5",
+				"h": "-1",
+				"k": "3"
+			},
+			"description": "termes dans l'ordre croissant des degrés",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2x^2+4x+2+3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"c": "5",
+				"h": "-1",
+				"k": "3"
+			},
+			"description": "non réduit : 2x²+4x+2+3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2x^2+5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"c": "5",
+				"h": "-1",
+				"k": "3"
+			},
+			"description": "(x+1)² développé en x²+1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2x^2+2x+4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"c": "5",
+				"h": "-1",
+				"k": "3"
+			},
+			"description": "a appliqué au premier terme seulement : 2x²+2x+4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2(x+1)^2+3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"c": "5",
+				"h": "-1",
+				"k": "3"
+			},
+			"description": "forme de l'énoncé recopiée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3x^2+12x-13"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "12",
+				"c": "-13",
+				"h": "2",
+				"k": "-1"
+			},
+			"description": "−3(x−2)²−1 = -3x^2+12x-13",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x^2-8x+11"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-8",
+				"c": "11",
+				"h": "4",
+				"k": "-5"
+			},
+			"description": "(x−4)²−5 = x^2-8x+11",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["x^2+11"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-8",
+				"c": "11",
+				"h": "4",
+				"k": "-5"
+			},
+			"description": "double produit oublié : x²+11",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2x^2-4x-6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-4",
+				"c": "-6",
+				"r": "3",
+				"s": "-1"
+			},
+			"description": "2(x−3)(x+1) = 2x^2-4x-6",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["x^2-2x-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-4",
+				"c": "-6",
+				"r": "3",
+				"s": "-1"
+			},
+			"description": "a oublié : x²−2x−3",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2(x^2-2x-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2",
+				"b": "-4",
+				"c": "-6",
+				"r": "3",
+				"s": "-1"
+			},
+			"description": "développement partiel 2(x²−2x−3)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-2x^2-6x+8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "-6",
+				"c": "8",
+				"r": "-4",
+				"s": "1"
+			},
+			"description": "−2(x+4)(x−1) = -2x^2-6x+8",
+			"variationIndex": 2
+		}
+	]
+}
