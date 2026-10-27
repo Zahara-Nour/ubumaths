@@ -4,7 +4,8 @@
  *
  * Utilisé par `scripts/questions/page-a-cocher.ts` et `scripts/questions/publier-lot.ts`
  * (démarche : docs/pratiques/couvrir-un-niveau.md § 8). Un modèle du lot est retrouvé en base par
- * la même clé que `create-questions.ts` : titre, thème, domaine, sous-domaine, niveau.
+ * la même clé que `create-questions.ts` : titre, thème, domaine, sous-domaine, niveau — ou, pour
+ * un instantané de la base (`export-question-templates.ts`), par l'id qu'il porte.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -99,6 +100,12 @@ function ecarts(modele: ModeleFichier, ligne: LigneModele, niveau: boolean): str
 		.join(', ');
 }
 
+/** L'id que porte un fichier exporté de la base, null pour un fichier de lot écrit à la main */
+function idDuFichier(modele: ModeleFichier): string | null {
+	const id: unknown = (modele as { id?: unknown }).id;
+	return typeof id === 'string' && id.length > 0 ? id : null;
+}
+
 /**
  * Chaque modèle du lot avec SA ligne en base : exactement une, au statut demandé s'il est donné.
  * Tout ou rien : la moindre absence, ambiguïté ou erreur de statut fait échouer le lot entier.
@@ -111,6 +118,24 @@ export function apparierLot<L extends LigneModele>(
 	const erreurs: string[] = [];
 	const paires: Paire<L>[] = [];
 	for (const { fichier, modele } of lot) {
+		// Instantané de la base (`export-question-templates.ts`) : le fichier porte son id, qui
+		// désigne sa ligne sans homonyme possible ; la clé doit encore concorder
+		const id = idDuFichier(modele);
+		if (id !== null) {
+			const ligne = lignes.find((l) => l.id === id);
+			if (!ligne) {
+				erreurs.push(`${fichier} : id ${id.slice(0, 8)} absent de la base`);
+			} else if (!memeModele(modele, ligne, true)) {
+				erreurs.push(`${fichier} : ${ecarts(modele, ligne, true)} (${id.slice(0, 8)})`);
+			} else if (statutAttendu && ligne.status !== statutAttendu) {
+				erreurs.push(
+					`${fichier} : « ${modele.title} » (${id.slice(0, 8)}) est « ${ligne.status} », attendu « ${statutAttendu} »`
+				);
+			} else {
+				paires.push({ fichier, modele, ligne });
+			}
+			continue;
+		}
 		let trouvees = lignes.filter((l) => memeModele(modele, l, niveau));
 		// Niveau hors de la clé : un homonyme d'un autre niveau (même modèle en CM1 et en 6e) est
 		// départagé par le niveau du fichier, s'il en désigne exactement un. Le choix est rendu

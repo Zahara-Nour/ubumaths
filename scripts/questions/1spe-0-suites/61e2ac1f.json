@@ -1,0 +1,394 @@
+{
+	"id": "61e2ac1f-c21d-46ce-b5e2-57a72b9680af",
+	"title": "Reconnaître une suite arithmétique à partir de ses premiers termes",
+	"description": "Différences constantes ou non (suites géométriques, ni arithmétiques ni géométriques, différence rompue au 4e terme)",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Reconnaître une suite",
+	"subdomain": "Arithmétique ou géométrique",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {
+		"choices": [
+			{
+				"content": "Oui, elle semble arithmétique."
+			},
+			{
+				"content": "Non, elle ne semble pas arithmétique."
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:a"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:a+(r)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:a+2*(r)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:a+3*(r)"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:a+4*(r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule la différence entre deux termes consécutifs : elle est toujours la même, $u_1-u_0=u_2-u_1=u_3-u_2=u_4-u_3=\\textcolor{{{color:primary.0}}}{{{r}}}$.",
+					"On passe d'un terme au suivant en ajoutant toujours ${{r}}$ : la suite semble **arithmétique**, de raison $r={{r}}$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:a"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:a*(q)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:a*(q)^2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:a*(q)^3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:a*(q)^4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule la différence entre deux termes consécutifs : $u_1-u_0={{eval:t1-(t0)}}$ mais $u_2-u_1={{eval:t2-(t1)}}$.",
+					"La différence n'est pas toujours la même : la suite ne semble **pas arithmétique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:16*m"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:8*m"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:4*m"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:2*m"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:m"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule la différence entre deux termes consécutifs : $u_1-u_0={{eval:t1-(t0)}}$ mais $u_2-u_1={{eval:t2-(t1)}}$.",
+					"La différence n'est pas toujours la même : la suite ne semble **pas arithmétique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:c"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:1+c"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:4+c"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:9+c"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:16+c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les différences ne sont pas constantes : $u_1-u_0=1$, $u_2-u_1=3$, $u_3-u_2=5$…",
+					"La suite ne semble **pas arithmétique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:a"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:a+(r)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:a+2*(r)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:a+3*(r)+(k)"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:a+4*(r)+(k)"
+				}
+			],
+			"conditions": ["a+r != 0", "a+2*r != 0"],
+			"correction": {
+				"steps": [
+					"Les premières différences valent ${{r}}$, mais $u_3-u_2={{eval:t3-(t2)}}$ : la différence n'est pas toujours la même.",
+					"La suite ne semble **pas arithmétique** : il faut regarder **toutes** les différences, pas seulement les premières."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"r": "3",
+				"t0": "-4",
+				"t1": "-1",
+				"t2": "2",
+				"t3": "5",
+				"t4": "8"
+			},
+			"description": "v0 : « oui » accepté",
+			"variationIndex": 0,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-4",
+				"r": "3",
+				"t0": "-4",
+				"t1": "-1",
+				"t2": "2",
+				"t3": "5",
+				"t4": "8"
+			},
+			"description": "v0 : « non » refusé",
+			"variationIndex": 0,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"q": "-2",
+				"t0": "3",
+				"t1": "-6",
+				"t2": "12",
+				"t3": "-24",
+				"t4": "48"
+			},
+			"description": "v1 : « non » accepté",
+			"variationIndex": 1,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"q": "-2",
+				"t0": "3",
+				"t1": "-6",
+				"t2": "12",
+				"t3": "-24",
+				"t4": "48"
+			},
+			"description": "v1 : « oui » refusé",
+			"variationIndex": 1,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "3",
+				"t0": "48",
+				"t1": "24",
+				"t2": "12",
+				"t3": "6",
+				"t4": "3"
+			},
+			"description": "v2 : « non » accepté",
+			"variationIndex": 2,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"t0": "48",
+				"t1": "24",
+				"t2": "12",
+				"t3": "6",
+				"t4": "3"
+			},
+			"description": "v2 : « oui » refusé",
+			"variationIndex": 2,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "2",
+				"t0": "2",
+				"t1": "3",
+				"t2": "6",
+				"t3": "11",
+				"t4": "18"
+			},
+			"description": "v3 : « non » accepté",
+			"variationIndex": 3,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "2",
+				"t0": "2",
+				"t1": "3",
+				"t2": "6",
+				"t3": "11",
+				"t4": "18"
+			},
+			"description": "v3 : « oui » refusé",
+			"variationIndex": 3,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"k": "1",
+				"r": "-2",
+				"t0": "5",
+				"t1": "3",
+				"t2": "1",
+				"t3": "0",
+				"t4": "-2"
+			},
+			"description": "v4 : « non » accepté",
+			"variationIndex": 4,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"k": "1",
+				"r": "-2",
+				"t0": "5",
+				"t1": "3",
+				"t2": "1",
+				"t3": "0",
+				"t4": "-2"
+			},
+			"description": "v4 : « oui » refusé",
+			"variationIndex": 4,
+			"selectedChoices": [0]
+		}
+	]
+}

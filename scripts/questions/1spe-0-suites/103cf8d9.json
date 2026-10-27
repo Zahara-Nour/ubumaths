@@ -1,0 +1,147 @@
+{
+	"id": "103cf8d9-a014-44d0-a4a0-08d94749a60e",
+	"title": "Valeur d'un placement à intérêts simples",
+	"description": "Capital au bout de n années à intérêts simples, valeur exacte",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Modélisation",
+	"subdomain": "Placements",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:C*(1+n*t/100)}}"
+				}
+			],
+			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital initial.\n\nQuel est le capital au bout de ${{n}}$ années ?\n\nLe capital est de $?$ €.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "5..50"
+				},
+				{
+					"name": "C",
+					"expression": "eval:100*k"
+				},
+				{
+					"name": "t",
+					"expression": "1..6"
+				},
+				{
+					"name": "n",
+					"expression": "2..15"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les intérêts annuels sont constants : $\\dfrac{ {{t}} }{100}\\times{{C}}={{eval:C*t/100}}~\\unit{€}$. Le capital $u_n$ au bout de $n$ années est une suite arithmétique de premier terme $u_0={{C}}$ et de raison ${{eval:C*t/100}}$.",
+					"$$u_{ {{n}} }=u_0+{{n}}\\times{{eval:C*t/100}}={{C}}+{{eval:n*C*t/100}}=\\mathbf{ {{eval:C*(1+n*t/100)}} }$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2\\,300"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "2000",
+				"k": "20",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "2 000 € à 3 % simples, 5 ans : 2 300",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\,120"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "800",
+				"k": "8",
+				"n": "10",
+				"t": "4"
+			},
+			"description": "800 € à 4 % simples, 10 ans : 1 120",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2300"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "2000",
+				"k": "20",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "2300 sans espace : accepté (espace exigée dès 5 chiffres)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["300"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "2000",
+				"k": "20",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "intérêts seuls : 300",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2\\,318{,}55"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "2000",
+				"k": "20",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "intérêts composés au lieu de simples : 2 318,55",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2\\,240"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "2000",
+				"k": "20",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "une année de moins : 2 240",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2\\,000+5\\times60"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"C": "2000",
+				"k": "20",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "calcul non effectué : 2 000 + 5 × 60",
+			"variationIndex": 0
+		}
+	]
+}

@@ -103,6 +103,34 @@ describe('dessinerBlocs', () => {
 		expect(r.markdown).toContain('<line ');
 	});
 
+	it('courbe : le SVG de la scène de Courbe.svelte (termes d’une suite, escalier)', () => {
+		const r = dessinerBlocs(
+			'```courbe\nx: -1 ; 9\ny: -1 ; 8\nu(n) = 3+n/2 pour n de 0 à 8   bleu   nom=u_n\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="courbe"`));
+		// Neuf termes, un disque chacun, à la couleur du thème
+		expect(r.markdown.match(/<circle [^>]*fill:var\(--color-fig-bleu\)/g)).toHaveLength(9);
+		const escalier = dessinerBlocs(
+			'```courbe\nx: -1 ; 11\ny: -1 ; 11\nu(0) = 2 ; u(n+1) = 0.5*u(n)+3 pour n de 0 à 2   rouge   escalier termes   nom=C_f\n```'
+		);
+		expect(escalier.markdown).toContain('class="ce"');
+		expect(escalier.markdown).toContain('class="cr"');
+		expect(surUneLigne(escalier.markdown)).toBe(true);
+	});
+
+	it('python : le programme tel quel, échappé, sans alerte', () => {
+		const r = dessinerBlocs('```python\ndef f(n):\n    return n < 3\n```');
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toBe(
+			`${HTML}<pre class="code"><code>def f(n):<br>    return n &lt; 3</code></pre>`
+		);
+	});
+
+	it('courbe en erreur : la page s’arrête', () => {
+		expect(() => dessinerBlocs('```courbe\nx: 5 ; 1\n```')).toThrow(/bloc courbe en erreur/);
+	});
+
 	it('bloc inconnu de la page : sa source, échappée, et signalé', () => {
 		const r = dessinerBlocs('```operation\ncalcul: 44 + 25 <b>\n```');
 		expect(r.nonDessines).toEqual(['operation']);
@@ -197,13 +225,28 @@ describe('ficheDuModele', () => {
 		expect(f.bornes).toEqual([]);
 	});
 
-	it('signale deux points (ADR 0020) et un point absent des bornes', () => {
-		expect(ficheDuModele(m, { ...BASE, codes: ['CP-002', 'CE1-004'] }, BORNES).alertes).toEqual([
-			'2 points (ADR 0020 : un seul)'
+	it('signale deux points d’un même programme (ADR 0020) et un point absent des bornes', () => {
+		expect(ficheDuModele(m, { ...BASE, codes: ['CP-002', 'CP-005'] }, BORNES).alertes).toEqual([
+			'2 points de CP (ADR 0020 : un par programme)',
+			'point CP-005 absent des bornes'
 		]);
 		expect(ficheDuModele(m, { ...BASE, codes: ['CP-999'] }, BORNES).alertes).toEqual([
 			'point CP-999 absent des bornes'
 		]);
+	});
+
+	it('un point par programme est permis : chaque borne dit son point', () => {
+		const bornes = {
+			...BORNES,
+			'CE1-004': { libelle: 'Comparer des nombres.', bornes: [{ borne: 'Jusqu’à 1000.' }] }
+		};
+		const f = ficheDuModele(m, { ...BASE, codes: ['CE1-004', 'CP-002'] }, bornes);
+		expect(f.alertes).toEqual([]);
+		expect(f.libelle).toBe(
+			'CE1-004 : Comparer des nombres. · CP-002 : Lire et écrire les nombres.'
+		);
+		expect(f.bornes).toContain('CP-002 : Nombres jusqu’à 100.');
+		expect(f.bornes).toContain('CE1-004 : Jusqu’à 1000.');
 	});
 
 	it('signale un niveau en base différent du fichier, et montre celui de la base', () => {

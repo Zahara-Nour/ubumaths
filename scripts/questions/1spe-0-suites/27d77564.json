@@ -1,0 +1,252 @@
+{
+	"id": "27d77564-e109-4681-8a64-13a3ee1729cd",
+	"title": "Valeur d'un placement à intérêts composés",
+	"description": "Capital au bout de n années à intérêts composés, arrondi au centime ou à l'euro",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Modélisation",
+	"subdomain": "Placements",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedAnswer": "{{eval:round(C*(1+t/100)^n*100)/100;d}}"
+				}
+			],
+			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de ${{n}}$ années ? Arrondis au centime.\n\nLe capital est d'environ $?$ €.",
+			"variables": [
+				{
+					"name": "C",
+					"expression": "500|1000|1500|2000|2500|3000|4000|5000"
+				},
+				{
+					"name": "t",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "5..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque année, le capital est multiplié par $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$ : le capital $u_n$ au bout de $n$ années est une suite géométrique de premier terme $u_0={{C}}$ et de raison ${{eval:1+t/100;d}}$.",
+					"$$u_{ {{n}} }=u_0\\times{{eval:1+t/100;d}}^{ {{n}} }={{C}}\\times{{eval:1+t/100;d}}^{ {{n}} }\\approx\\mathbf{ {{eval:round(C*(1+t/100)^n*100)/100;d}} }$$",
+					"Arrondi au centime : deux chiffres après la virgule."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 0
+					},
+					"expectedAnswer": "{{eval:round(C*(1+t/100)^n)}}"
+				}
+			],
+			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de ${{n}}$ années ? Arrondis à l'euro.\n\nLe capital est d'environ $?$ €.",
+			"variables": [
+				{
+					"name": "C",
+					"expression": "500|1000|1500|2000|2500|3000|4000|5000"
+				},
+				{
+					"name": "t",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "5..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque année, le capital est multiplié par $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$ : le capital $u_n$ au bout de $n$ années est une suite géométrique de premier terme $u_0={{C}}$ et de raison ${{eval:1+t/100;d}}$.",
+					"$$u_{ {{n}} }=u_0\\times{{eval:1+t/100;d}}^{ {{n}} }={{C}}\\times{{eval:1+t/100;d}}^{ {{n}} }\\approx\\mathbf{ {{eval:round(C*(1+t/100)^n)}} }$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1\\,159{,}27"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "1000",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "1 000 € à 3 % composés, 5 ans : 1 159,27",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\,159.27"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "1000",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "1 159.27 au point",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2\\,929{,}15"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "2500",
+				"n": "8",
+				"t": "2"
+			},
+			"description": "2 500 € à 2 % composés, 8 ans : 2 929,15",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1159{,}27"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "1000",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "1159,27 sans espace : accepté (espace exigée dès 5 chiffres)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\,159{,}274"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
+			},
+			"variables": {
+				"C": "1000",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "trop de décimales : 1 159,274",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\,159{,}28"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "1000",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "arrondi par excès : 1 159,28",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\,150"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "1000",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "intérêts simples au lieu de composés : 1 150",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\,125{,}51"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "1000",
+				"n": "5",
+				"t": "3"
+			},
+			"description": "une année de moins : 1 125,51",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6\\,095"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "5000",
+				"n": "10",
+				"t": "2"
+			},
+			"description": "5 000 € à 2 % composés, 10 ans : 6 095 €",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["658"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "500",
+				"n": "7",
+				"t": "4"
+			},
+			"description": "500 € à 4 % composés, 7 ans : 658 €",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6\\,094{,}97"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
+			},
+			"variables": {
+				"C": "5000",
+				"n": "10",
+				"t": "2"
+			},
+			"description": "au centime au lieu de l'euro : 6 094,97",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6\\,094"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "5000",
+				"n": "10",
+				"t": "2"
+			},
+			"description": "troncature : 6 094",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6\\,000"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "5000",
+				"n": "10",
+				"t": "2"
+			},
+			"description": "intérêts simples : 6 000",
+			"variationIndex": 1
+		}
+	]
+}

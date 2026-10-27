@@ -1,0 +1,200 @@
+{
+	"id": "70e682f9-9f54-495b-8943-69c8597a5c32",
+	"title": "Intérêts simples ou composés : la suite est-elle arithmétique ?",
+	"description": "Reconnaître une suite arithmétique dans un placement (intérêts simples), ou non",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Modélisation",
+	"subdomain": "Placements",
+	"level": 4,
+	"delay": 40,
+	"status": "draft",
+	"shared": {
+		"choices": [
+			{
+				"content": "Oui, elle est arithmétique."
+			},
+			{
+				"content": "Non, elle n'est pas arithmétique."
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital **initial**. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "5..50"
+				},
+				{
+					"name": "C",
+					"expression": "eval:100*k"
+				},
+				{
+					"name": "t",
+					"expression": "1..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque année, on ajoute la même somme : ${{t}}\\,\\%$ de ${{C}}~\\unit{€}$, soit $\\dfrac{ {{t}} }{100}\\times{{C}}={{eval:C*t/100}}~\\unit{€}$.",
+					"Pour tout $n$ : $u_{n+1}=u_n+{{eval:C*t/100}}$. La suite est **arithmétique** de raison ${{eval:C*t/100}}$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts, égaux à ${{t}}\\,\\%$ du capital **de l'année**, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "5..50"
+				},
+				{
+					"name": "C",
+					"expression": "eval:100*k"
+				},
+				{
+					"name": "t",
+					"expression": "1..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque année, les intérêts sont calculés sur le capital **de l'année**, qui augmente : on n'ajoute pas toujours la même somme.",
+					"$u_0={{C}}$, $u_1={{eval:C*(1+t/100);d}}$ et $u_2={{eval:C*(1+t/100)^2;d}}$ : $u_1-u_0={{eval:C*t/100;d}}$ mais $u_2-u_1={{eval:C*(1+t/100)*t/100;d}}$.",
+					"La suite n'est **pas arithmétique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "On place ${{C}}~\\unit{€}$ sur un compte : chaque année, le capital augmente de ${{t}}\\,\\%$, puis la banque prélève ${{f}}~\\unit{€}$ de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "10..50"
+				},
+				{
+					"name": "C",
+					"expression": "eval:100*k"
+				},
+				{
+					"name": "t",
+					"expression": "1..6"
+				},
+				{
+					"name": "f",
+					"expression": "10|15|20|25|30|40|50"
+				},
+				{
+					"name": "a",
+					"expression": "eval:C*(1+t/100)-f"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a*(1+t/100)-f"
+				}
+			],
+			"conditions": ["f != C*t/100"],
+			"correction": {
+				"steps": [
+					"Pour tout $n$ : $u_{n+1}={{eval:1+t/100;d}}\\,u_n-{{f}}$.",
+					"$u_0={{C}}$, $u_1={{a}}$ et $u_2={{eval:b;d}}$.",
+					"$u_1-u_0={{eval:a-C}}$ et $u_2-u_1={{eval:b-a;d}}$ : les écarts ne sont pas constants, la suite n'est **pas arithmétique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "2000",
+				"k": "20",
+				"t": "3"
+			},
+			"description": "v0 : « oui » accepté",
+			"variationIndex": 0,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "2000",
+				"k": "20",
+				"t": "3"
+			},
+			"description": "v0 : « non » refusé",
+			"variationIndex": 0,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "2000",
+				"k": "20",
+				"t": "3"
+			},
+			"description": "v1 : « non » accepté",
+			"variationIndex": 1,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "2000",
+				"k": "20",
+				"t": "3"
+			},
+			"description": "v1 : « oui » refusé",
+			"variationIndex": 1,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"C": "1000",
+				"a": "990",
+				"b": "979.8",
+				"f": "30",
+				"k": "10",
+				"t": "2"
+			},
+			"description": "v2 : « non » accepté",
+			"variationIndex": 2,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"C": "1000",
+				"a": "990",
+				"b": "979.8",
+				"f": "30",
+				"k": "10",
+				"t": "2"
+			},
+			"description": "v2 : « oui » refusé",
+			"variationIndex": 2,
+			"selectedChoices": [0]
+		}
+	]
+}

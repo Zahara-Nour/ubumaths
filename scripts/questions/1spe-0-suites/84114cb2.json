@@ -1,0 +1,336 @@
+{
+	"id": "84114cb2-cb00-4526-a9d3-a03a3a15976b",
+	"title": "Reconnaître une suite géométrique à partir de sa forme explicite",
+	"description": "u(n) = u(0) × qⁿ, ou non : u(n) = an + b, n² + c, kⁿ + c",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Reconnaître une suite",
+	"subdomain": "Arithmétique ou géométrique",
+	"level": 8,
+	"delay": 30,
+	"status": "draft",
+	"shared": {
+		"choices": [
+			{
+				"content": "Oui, elle est géométrique."
+			},
+			{
+				"content": "Non, elle n'est pas géométrique."
+			}
+		],
+		"cleanCoefficients": true
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{eval:a*n+b}}$$\n\nCette suite est-elle géométrique ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule les premiers termes : $u_0={{b}}$, $u_1={{eval:a+b}}$ et $u_2={{eval:2*a+b}}$.",
+					"Si la suite était géométrique de raison $q$, on aurait $u_1=q\\,u_0$ et $u_2=q\\,u_1$, donc $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:(a+b)^2}}$ et $u_0\\times u_2={{eval:b*(2*a+b)}}$ : la suite n'est **pas géométrique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{b}}-{{a}}n$$\n\nCette suite est-elle géométrique ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule les premiers termes : $u_0={{b}}$, $u_1={{eval:b-a}}$ et $u_2={{eval:b-2*a}}$.",
+					"Si la suite était géométrique de raison $q$, on aurait $u_1=q\\,u_0$ et $u_2=q\\,u_1$, donc $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:(b-a)^2}}$ et $u_0\\times u_2={{eval:b*(b-2*a)}}$ : la suite n'est **pas géométrique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle géométrique ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$${u_{n+1}}/{u_n}={ {{a}}*{{q}}^{n+1} }/{ {{a}}*{{q}}^n }$$ soit $\\dfrac{u_{n+1}}{u_n}=\\textcolor{{{color:primary.0}}}{{{q}}}$.",
+					"On passe d'un terme au suivant en multipliant toujours par ${{q}}$ : la suite est **géométrique**, de raison $q={{q}}$ et de premier terme $u_0={{a}}$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle géométrique ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "0.5|0.2|0.1|0.9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$${u_{n+1}}/{u_n}={ {{a}}*{{q}}^{n+1} }/{ {{a}}*{{q}}^n }$$ soit $\\dfrac{u_{n+1}}{u_n}=\\textcolor{{{color:primary.0}}}{{{q}}}$.",
+					"On passe d'un terme au suivant en multipliant toujours par ${{q}}$ : la suite est **géométrique**, de raison $q={{q}}$ et de premier terme $u_0={{a}}$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n=n^2+{{c}}$$\n\nCette suite est-elle géométrique ?",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:c"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:1+c"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:4+c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule les premiers termes : $u_0={{u0}}$, $u_1={{u1}}$ et $u_2={{u2}}$. Comme $\\dfrac{u_1}{u_0}={{eval:(u1)/(u0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$, on ne multiplie pas toujours par le même nombre.",
+					"La suite n'est **pas géométrique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{k}}^n+{{c}}$$\n\nCette suite est-elle géométrique ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:1+c"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:k+c"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:k^2+c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule les premiers termes : $u_0={{u0}}$, $u_1={{u1}}$ et $u_2={{u2}}$. Comme $\\dfrac{u_1}{u_0}={{eval:(u1)/(u0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$, on ne multiplie pas toujours par le même nombre.",
+					"Attention : à cause du « $+{{c}}$ », ce n'est pas la forme $u_0\\times q^n$. La suite n'est **pas géométrique**."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-2"
+			},
+			"description": "v0 : « non » accepté",
+			"variationIndex": 0,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-2"
+			},
+			"description": "v0 : « oui » refusé",
+			"variationIndex": 0,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"description": "v1 : « non » accepté",
+			"variationIndex": 1,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"description": "v1 : « oui » refusé",
+			"variationIndex": 1,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"description": "v2 : « oui » accepté",
+			"variationIndex": 2,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"description": "v2 : « non » refusé",
+			"variationIndex": 2,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"q": "0.5"
+			},
+			"description": "v3 : « oui » accepté",
+			"variationIndex": 3,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"q": "0.5"
+			},
+			"description": "v3 : « non » refusé",
+			"variationIndex": 3,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "5"
+			},
+			"description": "v4 : « non » accepté",
+			"variationIndex": 4,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "5"
+			},
+			"description": "v4 : « oui » refusé",
+			"variationIndex": 4,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "1",
+				"k": "2",
+				"u0": "2",
+				"u1": "3",
+				"u2": "5"
+			},
+			"description": "v5 : « non » accepté",
+			"variationIndex": 5,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1",
+				"k": "2",
+				"u0": "2",
+				"u1": "3",
+				"u2": "5"
+			},
+			"description": "v5 : « oui » refusé",
+			"variationIndex": 5,
+			"selectedChoices": [0]
+		}
+	]
+}

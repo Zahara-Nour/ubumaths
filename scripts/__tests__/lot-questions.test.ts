@@ -82,6 +82,29 @@ describe('apparierLot', () => {
 		expect(r.ok).toBe(true);
 	});
 
+	it('instantané de la base : le fichier porte son id, qui départage les homonymes', () => {
+		// Même titre, même clé, deux niveaux : l'id désigne la ligne, sans homonyme écarté
+		const exporte = [{ ...lot[0], modele: { ...lot[0].modele, id: 'ligne-du-fichier' } }];
+		const homonyme = ligne(lot, 0, { id: 'homonyme', level: lot[0].modele.level + 1 });
+		const r = apparierLot(exporte, [homonyme, ligne(lot, 0, { id: 'ligne-du-fichier' })], {
+			niveau: false
+		});
+		expect(r.ok && r.paires.map((p) => [p.ligne.id, p.ecartes])).toEqual([
+			['ligne-du-fichier', undefined]
+		]);
+	});
+
+	it('instantané de la base : id absent, ou clé qui ne concorde plus, refusé', () => {
+		const exporte = [{ ...lot[0], modele: { ...lot[0].modele, id: 'abcdef12-x' } }];
+		expect(apparierLot(exporte, [ligne(lot, 0)])).toEqual({
+			ok: false,
+			erreurs: ['01-construis-le-nombre.json : id abcdef12 absent de la base']
+		});
+		const r = apparierLot(exporte, [ligne(lot, 0, { id: 'abcdef12-x', domain: 'Ailleurs' })]);
+		expect(r.ok).toBe(false);
+		expect(!r.ok && r.erreurs[0]).toMatch(/domaine « Ailleurs » en base/);
+	});
+
 	it('tout ou rien : un modèle absent fait échouer le lot entier', () => {
 		const r = apparierLot(lot, [ligne(lot, 0), ligne(lot, 2)], { statut: 'draft' });
 		expect(r).toEqual({

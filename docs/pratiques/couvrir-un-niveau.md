@@ -229,17 +229,23 @@ niveau chacune (`idx_question_templates_unique_category`).
    ```
    Une fiche par fichier du lot, **un exemple par variation tiré par le vrai générateur**
    (`generateInstance`, graine fixe : page reproductible). Les blocs `figure`, `monnaie`,
-   `collection` et `horloge` sont dessinés par les scènes de l'appli (à construire : réserve,
-   plan vide, et la construction juste à part) ; un autre bloc (`operation`…) est montré par sa
-   source et signalé. L'id, le statut, le nœud et le point sont **lus en base** (lecture seule,
-   `.env` = prod), avec les bornes du point (`docs/systeme/programmes/bornes/`). Alertes en tête
-   de fiche : sans point, plusieurs points, sans nœud, niveau en base différent du fichier, point
-   absent des bornes, bloc non dessiné. Le niveau n'entre pas dans la clé de la page : les anciens
+   `collection`, `horloge` et `courbe` sont dessinés par les scènes de l'appli (à construire :
+   réserve, plan vide, et la construction juste à part) ; un bloc `python` est montré tel quel ;
+   un autre bloc (`operation`…) est montré par sa source et signalé. L'id, le statut, le nœud et
+   les points sont **lus en base** (lecture seule, `.env` = prod), avec les bornes de chaque
+   point (`docs/systeme/programmes/bornes/`). Alertes en tête de fiche : sans point, deux points
+   d'un même programme (1SPE-224 avec 1TECHNO-037 est permis, ADR 0020), sans nœud, niveau en base
+   différent du fichier, point absent des bornes, bloc non dessiné. Le niveau n'entre pas dans la clé de la page : les anciens
    lots ont été renumérotés en base après coup (CP B1, B3, H) ; un sous-domaine changé après coup
    (CP B2) fait refuser le lot, et le message dit ce qui diffère. Deux modèles de même clé (un
    homonyme d'un autre niveau, « Comparer deux nombres décimaux » en CM1 et en 6e) sont départagés
    par le niveau du fichier, s'il en désigne exactement un ; la fiche le signale (« homonyme …
    écarté »), car un ancien lot renuméroté prendrait ainsi l'homonyme au lieu de son modèle.
+   **Brouillons déjà en base** (lots d'avant ce chantier, dont les fichiers ne concordent plus) :
+   partir d'un instantané, `pnpm tsx scripts/export-question-templates.ts --dir
+scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte son `id`, qui
+   l'apparie à sa ligne sans homonyme (la clé doit encore concorder). Le même dossier sert aux
+   corrections (§ 7, `--mettre-a-jour`) et à la publication.
    Gabarit : `scripts/questions/page-a-cocher.html` (collection `verdicts`, « OK / À revoir » +
    commentaire, filtre « Ce qui reste » par défaut, file d'écriture unique, nouvel essai
    automatique, bandeau tant qu'une réponse attend). Publier la page en artefact avec la capacité
