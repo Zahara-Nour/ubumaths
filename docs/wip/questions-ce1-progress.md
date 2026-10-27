@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1864 et la mise à jour en base._
+_Mis à jour le 2026-10-27, migration des catégories écrite (branche `fix/questions-ce1-lot1-categories`)._
 
-- **État** : lot 1 (6 modèles de calcul mental, #1847) en BROUILLON en prod, rangé et tagué (#1856). Consigne « Calcule. » pour 084, 029, 102, 032 (#1864) EN BASE (`--mettre-a-jour` lancé par David, vérifié au MCP : nœud et point gardés). Page à cocher republiée (v2), verdict de 084 remis à zéro. Identifiants : `240bb640` (084), `cb08bf78` (029), `0b490331` (102), `ebfa8511` (032), `03675b9b` (083), `b2a4a178` (024).
-- **Prochaine action** : David finit la relecture https://claude.ai/artifact/YLgCQZNC83WZemRGUMAhg8 ; lire `ArtifactData list verdicts`, COMPTER 6 « OK » ; « À revoir » → corriger (§ 7 de couvrir-un-niveau : fichiers, PR, David `--publier --mettre-a-jour` APRÈS le merge) ; puis `publier-lot.ts --dir scripts/questions/ce1-1` (simulation), David `--publier`, relire `published`. Ensuite : lot 2.
-- **En attente de David** : la relecture des 6 fiches.
+- **État** : lot 1 (6 modèles de calcul mental) PUBLIÉ en prod (#1847, #1856, #1864, #1870). Catégories : migration `20261027200000_questions_ce1_lot1_categories` (084 → Somme 20, 029 → Somme 21, 102 → Différence 15 ; 032 reste en « Différence astucieuse ») + fichiers ; test 7/7, rouge sans elle ; 0 donnée d'élève. Identifiants : `240bb640` (084), `cb08bf78` (029), `0b490331` (102), `ebfa8511` (032), `03675b9b` (083), `b2a4a178` (024).
+- **Prochaine action** : `security-auditor`, PR, CI, merge, `db:migrate`, vérif MCP (catégories, trigger `O`) ; `create-questions` en simulation (6 « = ») ; archiver la page à cocher. Ensuite : lot 2 (phase 0, niveaux relevés dans la catégorie AVANT l'écriture).
+- **En attente de David** : rien (question d'accès tranchée : personne, 2026-10-27).
 - **Pièges en cours** : tag = point du nœud ou de sa notion ; QCM en réécriture → demander la forme ; `collection` sans `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` ; un port de dev libre (5176, 5180 pris le 2026-10-26).
 - **Worktree / branche** : aucun (worktree retiré, branches du lot 1 supprimées) ; le lot 2 partira d'un worktree neuf depuis `origin/main`.
 
@@ -209,3 +209,8 @@ migration nœud + tag ne change aucune règle.
 - 2026-10-27 : 6 brouillons créés en prod par David (identifiants dans « Reprendre ici »).
 - 2026-10-27 : #1856 mergée (migration nœud + tag, test 9/9 rouge sans elle, `security-auditor` sans finding), `db:migrate`, vérifiée en prod ; page à cocher publiée.
 - 2026-10-27 : relecture, 084 « À revoir » (« pourquoi de manière astucieuse ? ») → consigne « Calcule. » pour 084, 029, 102 et 032 (décision de David : « tu changes ») ; fichiers d'avant = prod (simulation : 6/6 identiques), tirages verts ; David lance ensuite `create-questions --publier --mettre-a-jour`.
+- 2026-10-27 : `--mettre-a-jour` lancé par David (après un premier essai avant le merge, sans effet), vérifié en base ; relecture 6/6 « OK ».
+- 2026-10-27 : `publier-lot` (simulation) refuse 084, 029, 083, 024 : niveaux 7, 8, 1, 3 déjà pris par des publiés de la même catégorie (choisis en phase 0 sans relever la catégorie). Décision de David (« je suis tes recos ») : premier niveau libre (11, 12 ; 10, 11), aucun publié renuméroté ; `create-questions` cherche par le niveau et `--mettre-a-jour` ne le change pas → migration des niveaux + fichiers dans la même PR ; question d'accès : personne.
+- 2026-10-27 : #1870 mergée (CI verte, `security-auditor` sans finding bloquant), `db:migrate`, vérifiée en prod ; `publier-lot` (simulation) : 6/6.
+- 2026-10-27 : lot 1 publié par David, vérifié (6/6 `published`).
+- 2026-10-27 : catégories (David : « go », accès : personne) — 084, 029 → Additionner / Somme (à côté de « Ajouter 10 »), 102 → Soustraire / Différence (à côté de « Soustraire 10 ») ; 032 reste (− 10 + 1 est une astuce) ; migration sur 3 publiés + fichiers.

@@ -2816,7 +2816,10 @@ f, [0 ; +∞[. »), un bord est pris du côté intérieur (`en 0` → `0^+`), un
 infini hors de l'ensemble est refusé ; une composée affine d'une fonction à ensemble est jugée sur {x : u(x) ∈ I}, une composée non affine → `composedMessage`.
 `exp(1)` s'écrit `e`. **Jamais de valeur approchée** : statut `indeterminate`, `unsupported`,
 `approximate`, ou un nombre à plus de 6 décimales → « Je ne sais pas calculer cette limite. »
-(une réponse, pas un refus, comme `.factoriser`). Sans côté tapé, une fonction définie d'un seul
+(une réponse, pas un refus, comme `.factoriser`) ; avec une lettre autre que la variable
+(`unknownLimit`) : « … : elle peut dépendre du signe de k. » (λ écrit λ) — le moteur ne devine
+plus le signe d'un paramètre (`.limite e^(-kx) en x=+∞` rendait +∞, chantier
+limites-parametres) ; une limite où il ne décide pas reste calculée (`(kx+1)/(x+2)` → k). Sans côté tapé, une fonction définie d'un seul
 côté du point (`definedSide` du moteur) l'écrit : `.limite ln(x) en 0` →
 `\lim\limits_{x\to 0^+} \ln(x) = -\infty` (aussi `sqrt(x)` en 0, `sqrt(-x)` en `0^-`, `ln(x-1)`
 en 1 ; `f(x)` garde son nom). `does-not-exist` sans côté TAPÉ par l'élève (un côté imposé par l'ensemble choisi, I4, garde la

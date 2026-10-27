@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après la publication du lot 2 « Nombres »._
+_Mis à jour le 2026-10-27, après #1868._
 
-- **État** : lots 1 (corrections) et 2 (« Nombres », 10 modèles, 6-101 → 6-202) **publiés en prod** ; relus par David (10/10 OK), publiés par David le 2026-10-27, relus en base (`published`, nœud et tag).
-- **Prochaine action** : lot 3 « Calcul décimal » (§ 4 : 114, 198, 116, 117, 119, 121, 123 + problèmes 120, 122, 124) — phase 0 à proposer à David (skill `couvrir-niveau`), dans un nouveau worktree `../ubumaths-wt-questions-6`.
-- **En attente de David** : rien. Pour mémoire (audit #1861, préexistant, non tranché) : la policy `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
-- **Pièges en cours** : variables `e` et `i` interdites dans les `eval` ; un `?` dans un `{{if}}` ne fait pas de case ; un tag exige le modèle sur le nœud du point ou sa notion ; `db:migrate` depuis le dépôt principal ; titres homonymes d'un autre niveau : la page à cocher les signale (#1863).
-- **Worktree / branche** : aucun.
+- **État** : lots 1 et 2 publiés en prod. Lot 3 « Calcul décimal » (§ 10) : 10 modèles mergés (#1868, `scripts/questions/6-calcul-decimal/`), pas encore en base de prod.
+- **Prochaine action** : David lance `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-calcul-decimal --publier` (brouillons) ; je relève les `id` au MCP ; migration nœud + tag (gabarit `20261027150000_questions_6_nombres_rangement_tags`, 6-116 sur la notion « Décimaux : calculs ») ; page à cocher ; publication.
+- **En attente de David** : le `--publier`. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **Pièges en cours** : `e` et `i` interdites dans les `eval` ; prix écrits par `euros()` ; problèmes en euros : `zeros` à `off` ; un tag exige le modèle sur le nœud du point ou sa notion ; `db:migrate` depuis le dépôt principal ; serveur de dev sur `localhost` (pas `127.0.0.1`).
+- **Worktree / branche** : aucun (à recréer pour la migration).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -336,7 +336,7 @@ David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud n
 - Relecture de David : 10/10 « OK » (verdicts comptés). `publier-lot` en simulation : 10 brouillons passent ; David a lancé
   `--publier` ; relu au MCP : 10 `published`, 10 rangés, 10 tags. **Lot 2 clos.**
 
-## 10. Lot 3 « Calcul décimal » : phase 0 (proposée le 2026-10-27, à valider)
+## 10. Lot 3 « Calcul décimal » : phase 0 (validée le 2026-10-27)
 
 Relevé MCP (2026-10-27) : 0 modèle sur les 10 points. Voisins en prod : CM1 (sommes et différences sans retenue,
 CM1-039 / 133), CM2 (÷ 10, 100, 1 000), CE2 (division euclidienne, diviseur ≤ 10, égalité seulement), 6-115 (5) et
@@ -406,3 +406,32 @@ Questions à David :
 2. **Prix** : $7,50$ € accepté comme juste, sans « forme perfectible » (zéro inutile), dans les problèmes en
    euros ? Reco : **oui** ($7,5$ aussi juste).
 3. **6-122** : diviseur à un chiffre seulement, pas d'exemple « $57,40$ € ÷ $35$ » (calculatrice) ? Reco : **oui**.
+
+**Décisions de David (2026-10-27, « je suis tes recos »)** : phase 0 du § 10 validée ; seule 6-123 est posée
+(pas de modèle posé pour 114, 198, 121 dans ce lot) ; $7,50$ € juste sans « forme perfectible » dans les
+problèmes en euros ($7,5$ aussi) ; 6-122 à diviseur d'un chiffre seulement.
+
+### 10.1 Écriture (2026-10-27)
+
+- `docs/wip/questions/lot-6-calcul-decimal.py` → `scripts/questions/6-calcul-decimal/` (10 fichiers, 78 specs, justes et
+  erreurs typiques) ; `create-questions` en simulation : 10 verts ; `question:specs` à 300 tirages par variation :
+  9 000 tirages réussis, aucun avertissement.
+- Retouches après aperçu : prix des corrections à deux décimales (`euros()`, « 2,40 » et non « 2,4 ») ; rectangles
+  non carrés ; « 1 jour » au singulier dans la correction des conversions.
+- Base locale : 10 brouillons créés ; joués dans l'aperçu admin (port 5183) : 09 division posée (1 226 ÷ 4 = 306
+  reste 2) juste, quotient et reste lus ; 06 « 34,20 » juste (zéros inutiles désactivés) ; 05 case choix mélangée,
+  juste ; 04 deux cases avec unités, rendu correct.
+
+- #1868 mergée le 2026-10-27 (CI verte) ; worktree retiré.
+
+### 10.2 En prod et rangement (2026-10-27)
+
+David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud ni tag (MCP). Identifiants :
+26aceb03 (6-121), 32b7a9bc (6-120), 3c9284c5 (6-123), 3f4bacc6 (6-124), 4b0b03b7 (6-198), 7deff4e0 (6-119),
+87cfa41b (6-122), b586bdf8 (6-114), e3d87166 (6-116, sur la notion « Décimaux : calculs »), f5651c7d (6-117).
+
+- Migration `20261027180000_questions_6_calcul_decimal_rangement_tags` (même gabarit que le lot 2, données seules
+  changées) + test `questions-6-calcul-decimal-rangement-tags` : 9/9 vert, rouge sans la migration (ENOENT).
+- `security-auditor` (#1873) : aucun finding bloquant (diff avec le lot 2 = données seules ; 10 brouillons et nœuds
+  des points revérifiés en prod au MCP). Non bloquant hérité du gabarit : trigger `updated_at` désactivé sur toute la
+  table le temps de l'instruction.

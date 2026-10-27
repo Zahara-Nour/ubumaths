@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1865._
+_Mis à jour le 2026-10-27, après #1875 (lot 0-second-degré mergé, pas encore écrit en base)._
 
-- **État** : #1865 mergée (outil : export paginé, appariement par id, courbes dessinées ; instantané `scripts/questions/1spe-0-suites/`, 43 brouillons des suites). Corrigés C1, C2, C4 en base (`--mettre-a-jour` lancé par David, 0 différence). Page à cocher : https://claude.ai/artifact/BdFVZ257fi9nmbV7H7aoLy — David a tout validé par message (aucun verdict en base).
-- **Prochaine action** : selon Q11, petite PR qui sort `0495289a.json` du dossier (vers `scripts/questions/1spe-0-suites-attente/`) ; puis `publier-lot.ts --dir scripts/questions/1spe-0-suites` en simulation (42 brouillons), David lance `--publier`, relire `published` en base. Ensuite lot 0 du thème suivant (second degré), même chemin : export → tirages → corrections → page → publication.
-- **En attente de David** : Q11 — ma reco : laisser 0495289a en brouillon (récurrence dépendant de n, hors borne 377 ; à passer en terminale plus tard).
-- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; QCM → case choix en brouillon (D6) ; les 6 modèles tagués d'un point de seconde sont **faits par questions-2de**.
-- **Worktree / branche** : aucun.
+- **État** : lot 0-suites CLOS (42 publiés). Lot 0-second-degré : 14 brouillons, 6 corrigés (D12), instantané `scripts/questions/1spe-0-second-degre/`, page à cocher https://claude.ai/artifact/PkSiv8xPDNCrSvM432Zq9n.
+- **Prochaine action** : David lance (dépôt principal, `!`) `create-questions --dir scripts/questions/1spe-0-second-degre --publier --mettre-a-jour` puis `publier-lot … --publier` ; relire les statuts. Puis dérivation, exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3 (sauf les 6 faits par questions-2de).
+- **En attente de David** : relecture de la page à cocher du second degré ; les deux écritures en prod (classifieur).
+- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; QCM d'ancien format publiés tels quels (lot 4 de figure-et-choix) ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur du mode auto ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts (`$lib`).
+- **Worktree / branche** : aucun (retiré après #1875).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -189,7 +189,7 @@ _Posées le 2026-10-27. Recommandations de Claude validées par David le 2026-10
   368 → 377, 220 → 231, 389 → 272, 417 → 327, 328 → 331, 421 → 340).
 - **D3 — Tags.** 174e202b, dc4b8d08 → 1SPE-307 ; eae2ff6a → 1SPE-386 ; 318ea542 → 1SPE-283 ; 93f9ecdf sans tag ;
   f1440b52 : 1SPE-274 → 1SPE-396 ; 8b599a53, fece187e, afd9b3ff : retirer `1_SPE` des niveaux ; les 6 tagués d'un
-  point de seconde : ajouter `2`, garder `1_SPE` — **fait par questions-2de** (accord entre sessions, 2026-10-27 :
+  point de seconde : ajouter `2`, garder `1_SPE` — **fait par questions-2de (#1866, en prod, grades relus le 2026-10-27)** (accord entre sessions, 2026-10-27 :
   `grades = ['2', '1_SPE']`, car le cahier de texte filtre `grades` par égalité exacte au niveau de la classe ;
   contenu de 8b59ca4b et 8c31675a corrigé là-bas aussi). f8ccc8b6 : à lire.
 - **D4 — Points P** hors chantier (5a89b292 couvre déjà le résultat de 308 / 411).
@@ -202,7 +202,7 @@ _Posées le 2026-10-27. Recommandations de Claude validées par David le 2026-10
   (modélisation, algorithmes) → probabilités et variables aléatoires → lot « à savoir » (D2) → restes → lots en
   attente de la case choix ou d'un outil neuf.
 
-## 6. Lot 0-suites : vérification des brouillons
+## 6. Lot 0-suites : vérification des brouillons (CLOS : 42 publiés le 2026-10-27, #1865, #1867)
 
 _2026-10-27, versé par #1865. 43 brouillons tagués d'un point des suites (`pnpm question:specs --template <id> --apercu 4`,
 sorties dans le scratchpad de la session)._
@@ -240,5 +240,37 @@ déjà créés (Q10).
 - **D9 (C3)** : 0495289a garde son point ; la variation `u_{n+1} = 3u_n + 3n` est retirée.
 - **Q11 (C3, après lecture du fichier)** : les **deux** variations de 0495289a dépendent de n (`u_{n+1} = u_n + bn + c`
   et `u_{n+1} = b·u_n + cn`) : D9 viderait le modèle. À trancher : le garder tel quel, ou le laisser en brouillon.
+- **D11 (Q11, David, 2026-10-27, « ok »)** : 0495289a reste en brouillon (hors borne 377, à passer en terminale
+  plus tard) ; son fichier est sorti du lot vers `scripts/questions/1spe-0-suites-attente/` (#1867).
 - **D10 (outil)** : `page-a-cocher.ts` et `publier-lot.ts` apprennent à partir d'une liste d'id en base (PR
   d'outil, avant les corrections C1-C4).
+
+## 7. Lot 0-second-degré : vérification des brouillons
+
+_2026-10-27. 14 brouillons tagués d'un point du second degré (243, 245, 246, 248, 249, 250, 253, 383, 386),
+`pnpm question:specs --file <f> --apercu 3`, sorties dans le scratchpad de la session._
+
+**Mécanique** : 14 / 14 verts, 205 specs, 2 700 tirages réussis. Trois QCM d'ancien format (32993a13, 568c7bee,
+80489c90), publiés tels quels comme les 17 des suites (le lot 4 de `figure-et-choix` les migre).
+
+**Constats** :
+
+- **C1** : a9aece33 (forme canonique) corrigeait par α = −b/(2a), β = P(α) ; borne 246 : complétion du carré (la
+  formule α = −b/(2a) n'est pas écrite, borne 247). Coefficients conformes à l1s-2.
+- **C2** : fractions redondantes ou à deux signes moins : 88a4432e (« 9/2 = 9/2 »), 0dee4515 (« −1/−3 »),
+  f6219e5a (« 24/1 », « 1 × 4 » quand a = 1, « 1 × x₂ » quand la racine donnée vaut 1).
+- **C3** : c2e70ba1, phrase « … n'est pas un carré parfait : √Δ = … n'est pas un entier : on le garde … ».
+- **C4** : 9e1d084e pouvait tirer « x² > 0 » (h = 0, k = 0).
+
+**D12 (David, 2026-10-27, « go » sur les recos)** :
+
+- C1 : corrigé par complétion du carré (a = 1 : x² + bx = (x + b/2)² − b²/4 ; a ≠ 1 : a en facteur des deux premiers
+  termes) ; variation 2 : `a != 1` (la variation 1 couvre a = 1), coefficient −1 écrit « − » ; description mise à jour.
+- C2 : la fraction substituée s'écrit avec un dénominateur positif quand les deux termes sont négatifs, et l'égalité
+  finale n'apparaît que si elle simplifie (`gcd`) ; a = 1 et racine 1 : étape directe.
+- C3 : « Δ n'est pas un carré parfait : on garde √Δ = √153 = 3√17 sous forme de radical simplifié. »
+- C4 : `h != 0` sur les variations 7 et 8.
+
+`create-questions` (simulation) : 14 en base, exactement 6 « contenu différent ». Page à cocher :
+https://claude.ai/artifact/PkSiv8xPDNCrSvM432Zq9n (568c7bee et 9e1d084e : bloc `variation` non dessiné par la page,
+à jouer dans l'aperçu).
