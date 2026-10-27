@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25 ; étapes du solveur écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; inconnue divisée multipliée, membre factorisé défait, Q51-Q52, 2026-10-25 ; puissance d'exposant n/2 écrite avec une racine carrée par `tidy`, quotient et produit de puissances de même base dans `.simplifier`, lot 5f-5, 2026-10-25 ; évaluateur flottant unique des limites (`sin²`, `cos⁻¹`, `∛`), lot 6a, 2026-10-25 ; conditions de `tidyWithConditions` écrites aux points irrationnels, `tan`/`arcsin` (tidy-conditions § 5, 2026-10-26) ; limites en −∞ de (−∞)ⁿ, u^{p/q} hors du domaine, inverse d'une somme à conjuguer, V67-V69, 2026-10-26 ; eᵘ d'une forme indéterminée, polynôme × exponentielle, V68, 2026-10-27 ; u^{−n} en un point où u s'annule lu 1/uⁿ, zéro sans signe d'un facteur sin / cos d'argument non borné, V70-V71, 2026-10-27).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25 ; étapes du solveur écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; inconnue divisée multipliée, membre factorisé défait, Q51-Q52, 2026-10-25 ; puissance d'exposant n/2 écrite avec une racine carrée par `tidy`, quotient et produit de puissances de même base dans `.simplifier`, lot 5f-5, 2026-10-25 ; évaluateur flottant unique des limites (`sin²`, `cos⁻¹`, `∛`), lot 6a, 2026-10-25 ; conditions de `tidyWithConditions` écrites aux points irrationnels, `tan`/`arcsin` (tidy-conditions § 5, 2026-10-26) ; limites en −∞ de (−∞)ⁿ, u^{p/q} hors du domaine, inverse d'une somme à conjuguer, V67-V69, 2026-10-26 ; eᵘ d'une forme indéterminée, polynôme × exponentielle, V68, 2026-10-27 ; u^{−n} en un point où u s'annule lu 1/uⁿ, zéro sans signe d'un facteur sin / cos d'argument non borné, V70-V71, 2026-10-27 ; valeurs remarquables de sin, cos, tan dans `reduire`, `auto`, `.développer`, `.résoudre`, 2026-10-27).
 
 ## À quoi ça sert
 
@@ -235,6 +235,22 @@ puissances de e regroupées (`eˣ·e^{−x} = 1`, `(eˣ)³ = e^{3x}`). Aucune id
 domaine : `e^{ln x}` reste, `(√u)² → u` seulement si un `√u` reste écrit dans le résultat
 (`√x(√x+1) → x + √x`). Pas de phase A : une seule étape `expand` dit qu'il s'est passé quelque
 chose. `expandedForm` (même module) calcule les termes des étapes (`expand-steps.ts`).
+**Valeurs remarquables (2026-10-27, chantier valeurs-remarquables, S4 de l'ADR 0032).**
+`reduire` et `auto` calculent sin, cos, tan aux multiples de π/6, π/4, π/3 (et 0), avec une étape
+nommée : « On utilise une valeur remarquable : cos(π/3) = 1/2 », au pluriel quand plusieurs
+valeurs tombent dans le même passage (`withValuesTogether`, `pipeline.ts`). Règles
+`trigRemarkableStepRules` (`pattern/rule-sets/trig.ts`) : la période d'abord (`cos(7π/3)` →
+« cos est 2π-périodique »), puis la valeur ; la parité (`sin(−π/6)`) passe par
+`trigNegativeAngleRules`. Les trois familles forment `TRIG_REDUCTION_RULES` (`intent-rules.ts`),
+actives avec `enableTrig` (lycée par défaut). Un angle en degrés est lu tel quel (`cos(60°)`,
+`cos(−60°)`, `cos(420°)` → 60°) ; hors table (`cos(π/5)`, `cos(20°)`) ou non défini (`tan(π/2)`),
+il reste écrit. `tidy` ne calcule aucune valeur (une ligne tapée seule garde `cos(π/3)`).
+`developper` n'a pas de phase A : `explainExpansion` calcule d'abord les valeurs
+(`generateRemarkableValueSteps`, `pipeline.ts`, qui ne garde rien si aucune valeur n'est
+atteinte), puis développe — `(x + cos(π/3))²` → étape de valeur, puis `x² + x + 1/4` ; l'atelier
+fait de même avant `.résoudre` (`atelier/solve-steps.ts`). Le rendu d'une étape sur une équation
+n'enchaîne pas par « = » (`renderer.ts`).
+
 Le tableau des écarts, pinné par un test : [panel-simplifications.md](panel-simplifications.md).
 Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
 
@@ -1754,10 +1770,23 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
     plafond (antérieur) ; `e^{ln 1 + x}`, `e^{2 ln e}`, `e^{2 ln √2}` gardent leur écriture ;
     `2^{1/3}` et `∛2` ont des formes normales différentes ;
   - Q14 : entre constantes, le rationnel d'abord, donc `√2 − √3 − 1` s'écrit `√2 − 1 − √3`.
+- Laissés par le chantier valeurs-remarquables (2026-10-27) :
+  - **`.domaine 1/(x − cos(π/3))` → `ℝ \ {1/2}` voulu plus tard** (David, 2026-10-27) ;
+    aujourd'hui `ℝ \ {cos(π/3)}`, juste ;
+  - les corrections d'exercices de résolution (`correction-generator.ts`, `pedagogical-solve`)
+    n'ont pas l'étape de valeur : seul `.résoudre` de l'atelier la fait (les corrections de
+    développement l'ont, par `explainExpansion`) ;
+  - `.simplifier cos(0.5π)x` → `0` sans étape (repli du moteur, décimal) ;
+    `cos(\frac{-\pi}{3})` est refusé comme écriture mélangée ;
+  - revue de la PR (aucune valeur fausse) : `sin(−(π/6))` garde sa parenthèse et n'atteint pas
+    la valeur (`extractPiCoefficient`) ; l'étape réunie de `withValuesTogether` montre la ligne
+    entière, une période du même passage y passe sans être nommée
+    (`sin(π/3) + cos(π/6) + tan(7π/3)`) ; `cos(30° + 30°)` devient `cos(60°)` « au propre » sans
+    que la valeur suive ;
+  - `.résoudre cos(π/5)x = 1` titre « On divise par $\cos(\frac{1}{5}π)$ » (écriture du
+    solveur, antérieur).
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
   une valeur fausse :
-  - valeurs remarquables (`cos(π/3) → 1/2`) dans `réduire`, avec étape et selon le niveau (S4) :
-    lot reporté ;
   - `.intégrer` à bornes : une borne décimale dans une exponentielle mêle les registres
     (`∫₀^{0,5} 0,5eˣ = \dfrac{1}{2}e^{0,5} − \dfrac{1}{2}`) ; paramètre au dénominateur laissé en
     fraction (`0,5e^{ax}` de 0 à 1 → `(e^a − 1)/(2a)`) ; `0,5x²` de 0 à a → `\dfrac{1}{6}a³` ;

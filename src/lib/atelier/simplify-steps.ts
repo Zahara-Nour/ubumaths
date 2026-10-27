@@ -18,6 +18,9 @@ import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { generatePedagogicalSimplifySteps } from '$lib/mathAST/pedagogical-simplify/pipeline';
 import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/renderer';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { displayUnitsInLatex } from '$lib/mathAST/units/display';
+import type { MathNode } from '$lib/mathAST/types';
+import { degreeSignWritten } from './degrees';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
 import {
@@ -77,6 +80,11 @@ function collapseRepeats(steps: readonly RenderedStep[]): readonly RenderedStep[
 		const previous = steps[index - 1];
 		return step.rule !== previous.rule || step.expressionLatex !== previous.expressionLatex;
 	});
+}
+
+/** La réponse affichée : une unité écrite pour l'œil, un angle `60°` collé (`degrees.ts`). */
+function shownLatex(node: MathNode): string {
+	return degreeSignWritten(displayUnitsInLatex(toLatex(node)));
 }
 
 /** Les étapes rendues d'un calcul et leur résumé ; `null` s'il n'y en a aucune. */
@@ -139,11 +147,11 @@ export function simplifySteps(expression: string): SimplifiedSteps | null {
 			if (full.steps.length === 0) return null;
 			return {
 				steps: [],
-				answer: toLatex(writtenKeepingDomain(node)),
+				answer: shownLatex(writtenKeepingDomain(node)),
 				...(alternative !== undefined && { alternative })
 			};
 		}
-		const answer = toLatex(kept.result);
+		const answer = shownLatex(kept.result);
 		if (answer.trim() === '') return null;
 		return {
 			steps: shown.steps,

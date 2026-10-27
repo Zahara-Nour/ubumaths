@@ -30,7 +30,7 @@ import type { RenderedStep, SchoolLevel } from '../common/step-renderer-base';
 import { mapNode } from '../transforms';
 import { nodesEqual } from '../normal/hash';
 import { hasDecimalLiteral } from '../tidy/decimal';
-import { generatePedagogicalSimplifySteps } from './pipeline';
+import { generatePedagogicalSimplifySteps, generateRemarkableValueSteps } from './pipeline';
 import { PedagogicalSimplifyRenderer } from './renderer';
 import { orderExpanded } from './expand-order';
 import { writeExpandSteps, type ExpandSteps } from './expand-steps';
@@ -107,7 +107,14 @@ export function explainExpansion(
 	node: MathNode,
 	options: ExplainExpansionOptions
 ): ExplainedExpansion {
-	const start = unwrapGrouping(node);
+	const typed = unwrapGrouping(node);
+	// La valeur d'abord, avec son étape (David, 2026-10-27, chantier
+	// valeurs-remarquables) : `(x + cos(π/3))²` se développe comme `(x + 1/2)²`
+	const values = generateRemarkableValueSteps(typed, {
+		schoolLevel: options.schoolLevel,
+		...(options.pipeline?.enableTrig !== undefined && { enableTrig: options.pipeline.enableTrig })
+	});
+	const start = values.result;
 	const result = generatePedagogicalSimplifySteps(withExplicitMinusOne(start), {
 		...options.pipeline,
 		intent: 'developper',
@@ -125,7 +132,7 @@ export function explainExpansion(
 
 	// L'ordre du manuel (tableau B de la phase 0) : celui de la réponse ET des étapes
 	const ordered = orderExpanded(result.result);
-	const decimal = options.decimal === true || hasDecimalLiteral(start);
+	const decimal = options.decimal === true || hasDecimalLiteral(typed);
 	const format = (image: MathNode) => (decimal ? mapNode(image, decimalFraction) : image);
 	const answer = format(ordered);
 	// Jamais une réponse mal écrite : « je ne sais pas » vaut mieux que `2 x 1`
@@ -133,8 +140,14 @@ export function explainExpansion(
 
 	// Les étapes reçoivent la réponse et sa mise en forme : leur dernière image
 	// s'écrit exactement comme la réponse
-	const raw = writeExpandSteps(start, ordered, { format });
-	if (raw === null) return { kind: 'expanded', answer, steps: null };
+	const written = writeExpandSteps(start, ordered, { format });
+	if (written === null) return { kind: 'expanded', answer, steps: null };
+	const withValues = (steps: ExpandSteps['steps']) =>
+		[...values.steps, ...steps].map((step, index) => ({ ...step, id: index + 1 }));
+	const raw: ExpandSteps =
+		values.steps.length === 0
+			? written
+			: { steps: withValues(written.steps), summary: withValues(written.summary) };
 	const renderer = new PedagogicalSimplifyRenderer();
 	const { schoolLevel } = options;
 	return {
