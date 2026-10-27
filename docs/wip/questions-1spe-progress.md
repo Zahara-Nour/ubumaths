@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1879._
+_Mis à jour le 2026-10-27, après #1879 et #1885 (page à cocher : LaTeX rendu)._
 
 - **État** : lots 0-suites (42) et 0-second-degré (14) publiés. Lot 0-dérivation (15 brouillons, § 8) : 4 corrigés retouchés (D13), instantané mergé (#1879) dans `scripts/questions/1spe-0-derivation/`, rien d'écrit en base.
 - **Prochaine action** : David lance (`!`) `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-0-derivation` (simulation : 15 en base, exactement 4 « contenu différent »), puis `--publier --mettre-a-jour` ; relecture de la page https://claude.ai/artifact/LmDNo6NwUSemJ3GLwoucK8 (compter les `verdicts`) ; `publier-lot --dir … --publier` par David ; relire statuts et contenus en base. Puis variations et courbes, exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
-- **En attente de David** : écritures en prod (`!`) et relecture de la page.
+- **En attente de David** : `create-questions --publier --mettre-a-jour` FAIT (4 contenus relus en base) ; relecture de la page, puis `publier-lot`.
 - **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts ; `question:specs` n'a pas d'option de variation : une copie par variation dans le scratchpad ; CI : job « CI Summary » fantôme, juger au statut du run.
 - **Worktree / branche** : aucun.
 
@@ -307,3 +307,6 @@ eˣ ; somme, produit, inverse, quotient ; aucune composée, l1s-1) ; taux de var
 
 Specs des 4 modèles vertes après correction (86 specs, 550 tirages). Page à cocher :
 https://claude.ai/artifact/LmDNo6NwUSemJ3GLwoucK8 (aucune alerte).
+
+**Outil (#1885)** : la page rendait le LaTeX brut (gabarit pensé pour le CP) ; formules du lycée rendues par
+KaTeX (MathML), page republiée (version 3).
