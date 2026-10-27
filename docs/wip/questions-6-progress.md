@@ -453,3 +453,29 @@ David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud n
 - `page-a-cocher.ts` : 10 fiches, 3 alertes attendues (blocs choix ×2 et operation non dessinés : à jouer dans
   l'aperçu). Publiée avec `db` : https://claude.ai/artifact/Fyf6TTZ3h32RJ4ms7ZSwHQ ; `verdicts` vide ; rendu à 390 px
   vérifié ; ouverte dans Chrome.
+
+### 10.5 Relecture, décisions (2026-10-27)
+
+Verdicts lus (`verdicts`, 7 sur 10) : 5 OK (02, 03, 04, 05, 07), 2 à revoir (01, 08), 3 sans verdict (06, 09, 10).
+
+- 01 (« Calcule astucieusement » mêlé à la technique) et 08 (« de tête ? à la main ? à la calculatrice ? »). BO de 6e
+  (`src/lib/server/programmes/transcriptions/cycle-3/6-nombres.md`) : additions et soustractions « en les posant par
+  écrit ou mentalement, selon les nombres en jeu » (accompagnement) ; calculatrice au-delà des cas simples ; le
+  calcul astucieux vient du CM2 (« Apprendre des procédures de calcul mental »).
+- **Décisions de David** :
+  - problèmes et sens → nombres calculables de tête : 06, 08, 10 ; 04 gardé (3,7 × 2,9 est l'exemple du BO) ;
+  - techniques → consigne « Pose … sur ton brouillon » : 01, 02, 04, 07 ;
+  - « Calcule astucieusement » sort de 01 ; regroupement et compensation = deux gestes, deux modèles ; plus la
+    compensation en soustraction (6-198), voulue par David : 3 modèles neufs.
+
+### 10.6 Retouches de relecture (2026-10-27)
+
+- 01 sans « Calcule astucieusement » ; consignes « Pose … sur ton brouillon » : 01, 02, 04 (v1), 07.
+- 06 de tête : 0,5 / 1,5 / 2,5 / 3,5 kg × prix pair au dixième ; 10 à 40 L × prix du litre ; 0,2 ou 0,5 kg.
+- 08 de tête : moins de 100 dixièmes partagés par un entier d'un chiffre, total jamais rond.
+- 10 de tête : boîtes de 6, 10, 12 (au plus 15) ; cars de 30, 40, 45, 50, 60 places ; au plus 10 semaines, jours, heures.
+- Neufs : 11 « Additionner des décimaux en regroupant » (6-114, Somme astucieuse 3, 2 variations), 12 « Ajouter 0,9 ;
+  1,9 ; 2,9 en compensant » (6-114, Somme astucieuse 4), 13 « Soustraire 0,9 ; 1,9 ; 2,9 en compensant » (6-198,
+  Décimaux / Soustraire / Différence astucieuse 1, sous-domaine neuf).
+- 13 fichiers, 90 specs, 10 800 tirages verts ; simulation : 7 à mettre à jour, 3 à créer.
+- Instantané `questions-6/etat-prod-2026-10-27-relecture/` (7 modèles, md5 des variations = MCP, 7 tags, 0 donnée d'élève).

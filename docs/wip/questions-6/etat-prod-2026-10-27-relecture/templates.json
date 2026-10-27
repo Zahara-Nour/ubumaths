@@ -1,0 +1,1674 @@
+[
+	{
+		"id": "26aceb03-fb1c-4088-9bf3-f4754fc2d1aa",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"subdomain": "Quotient",
+		"level": 8,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:Q/100;d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{x}} \\div {{d}} = ?$$",
+				"variables": [
+					{
+						"name": "d",
+						"expression": "2..9"
+					},
+					{
+						"name": "Q",
+						"expression": "11..999"
+					},
+					{
+						"name": "x",
+						"expression": "eval:d*Q/100;d"
+					}
+				],
+				"conditions": ["mod(Q,10)!=0", "mod(d*Q,100)!=0"],
+				"correction": {
+					"steps": [
+						"**Diviser un décimal par un entier.** On divise comme pour les entiers ; on place la virgule au quotient quand on abaisse le premier chiffre après la virgule. Si la division n'est pas finie, on ajoute des zéros après la virgule et on continue.",
+						"Vérification : ${{d}} \\times \\textcolor{{{color:primary.0}}}{{{solution}}} = {{x}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:n/d;d}}"
+					}
+				],
+				"statement": "Calcule. Le quotient est un nombre décimal.\n\n$${{n}} \\div {{d}} = ?$$",
+				"variables": [
+					{
+						"name": "sd",
+						"expression": "0..3"
+					},
+					{
+						"name": "d",
+						"expression": "{{if:sd==0|2|{{if:sd==1|4|{{if:sd==2|5|8}}}}}}"
+					},
+					{
+						"name": "n",
+						"expression": "3..99"
+					}
+				],
+				"conditions": ["mod(n,d)!=0"],
+				"correction": {
+					"steps": [
+						"**Diviser un décimal par un entier.** On divise comme pour les entiers ; on place la virgule au quotient quand on abaisse le premier chiffre après la virgule. Si la division n'est pas finie, on ajoute des zéros après la virgule et on continue.",
+						"${{n}} = {{d}} \\times {{eval:floor(n/d)}} + {{eval:mod(n,d)}}$ : le reste n'est pas nul, on continue après la virgule (${{n}}.000$).",
+						"$${{n}} \\div {{d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:round(100*n/d)/100;d}}"
+					}
+				],
+				"statement": "Donne la valeur arrondie au centième du quotient.\n\n$${{n}} \\div {{d}} \\approx ?$$",
+				"variables": [
+					{
+						"name": "sd",
+						"expression": "0..2"
+					},
+					{
+						"name": "d",
+						"expression": "{{if:sd==0|3|{{if:sd==1|6|9}}}}"
+					},
+					{
+						"name": "n",
+						"expression": "2..99"
+					},
+					{
+						"name": "h",
+						"expression": "eval:mod(floor(1000*n/d),10)"
+					}
+				],
+				"conditions": ["mod(1000*n,d)!=0"],
+				"correction": {
+					"steps": [
+						"**Diviser un décimal par un entier.** On divise comme pour les entiers ; on place la virgule au quotient quand on abaisse le premier chiffre après la virgule. Si la division n'est pas finie, on ajoute des zéros après la virgule et on continue.",
+						"${{n}} \\div {{d}} = {{eval:floor(1000*n/d)/1000;d}}\\ldots$ La division ne s'arrête jamais : on calcule jusqu'aux millièmes.",
+						"Le chiffre des millièmes est $\\textcolor{{{color:primary.1}}}{{{h}}}$ : {{if:h>=5|on arrondit au-dessus|on garde le chiffre des centièmes}}.",
+						"$${{n}} \\div {{d}} \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Diviser un décimal par un entier",
+		"description": "Quotient d'un décimal par un entier de 2 à 9 (division finie), d'un entier par 2, 4, 5, 8 (quotient décimal), arrondi au centième d'une division qui ne s'arrête pas (10 ÷ 3, 73 ÷ 6)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2,05"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"Q": "205",
+					"d": "3",
+					"x": "6.15"
+				},
+				"description": "6,15 ÷ 3 = 2,05",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2,5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"Q": "205",
+					"d": "3",
+					"x": "6.15"
+				},
+				"description": "Erreur : zéro oublié (2,5)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2,25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "4",
+					"n": "9",
+					"sd": "1"
+				},
+				"description": "9 ÷ 4 = 2,25",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2,1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "4",
+					"n": "9",
+					"sd": "1"
+				},
+				"description": "Erreur : le reste pris pour les décimales (2,1)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3,33"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "3",
+					"h": "3",
+					"n": "10",
+					"sd": "0"
+				},
+				"description": "10 ÷ 3 ≈ 3,33",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["12,17"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "6",
+					"h": "6",
+					"n": "73",
+					"sd": "1"
+				},
+				"description": "73 ÷ 6 ≈ 12,17",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["12,16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "6",
+					"h": "6",
+					"n": "73",
+					"sd": "1"
+				},
+				"description": "Erreur : troncature (12,16)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["12,1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "6",
+					"h": "6",
+					"n": "73",
+					"sd": "1"
+				},
+				"description": "Erreur : le reste pris pour les décimales (12,1)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "c1a01819-c975-42ac-b756-2d427c826be9"
+	},
+	{
+		"id": "32b7a9bc-300c-44a1-af0d-a811ca688eb2",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["6"],
+		"delay": 60,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Problèmes",
+		"subdomain": "Multiplication",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:M*k/100;d}}"
+					}
+				],
+				"statement": "Au marché, les {{if:f==0|pommes coûtent|{{if:f==1|poires coûtent|cerises coûtent}}}} ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Léa en achète ${{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+				"variables": [
+					{
+						"name": "f",
+						"expression": "0..2"
+					},
+					{
+						"name": "k",
+						"expression": "12..59"
+					},
+					{
+						"name": "pk",
+						"expression": "eval:10*k"
+					},
+					{
+						"name": "M",
+						"expression": "11..49"
+					},
+					{
+						"name": "m",
+						"expression": "eval:M/10;d"
+					}
+				],
+				"conditions": ["mod(k,10)!=0", "mod(M,10)!=0"],
+				"correction": {
+					"steps": [
+						"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme.",
+						"$${{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((M*k)/100)}}.{{eval:floor(mod((M*k),100)/10)}}{{eval:mod((M*k),10)}}}$$",
+						"Léa paie $\\textcolor{{{color:primary.0}}}{{{eval:floor((M*k)/100)}}.{{eval:floor(mod((M*k),100)/10)}}{{eval:mod((M*k),10)}}}~\\unit{€}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:L*P/100;d}}"
+					}
+				],
+				"statement": "Le litre d'essence coûte ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$. Malik met ${{L}}$ litres dans sa voiture. Combien paie-t-il ?\n\n$$?~\\text{€}$$",
+				"variables": [
+					{
+						"name": "P",
+						"expression": "160..199"
+					},
+					{
+						"name": "L",
+						"expression": "20..50"
+					}
+				],
+				"conditions": ["mod(P,10)!=0"],
+				"correction": {
+					"steps": [
+						"**Prix à payer** $=$ nombre de litres $\\times$ prix d'un litre.",
+						"$${{L}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((L*P)/100)}}.{{eval:floor(mod((L*P),100)/10)}}{{eval:mod((L*P),10)}}}$$",
+						"Ordre de grandeur : ${{L}} \\times 2 = {{eval:2*L}}$ ; le résultat est un peu moins."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:m*k/100;d}}"
+					}
+				],
+				"statement": "Le fromage coûte ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Inès en achète $0.{{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "12..99"
+					},
+					{
+						"name": "pk",
+						"expression": "eval:10*k"
+					},
+					{
+						"name": "m",
+						"expression": "2..9"
+					}
+				],
+				"conditions": ["mod(k,10)!=0"],
+				"correction": {
+					"steps": [
+						"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme, même quand la masse est plus petite que $1$ kg.",
+						"$$0.{{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((m*k)/100)}}.{{eval:floor(mod((m*k),100)/10)}}{{eval:mod((m*k),10)}}}$$",
+						"Elle achète moins d'un kilogramme : elle paie moins que ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes de produits décimaux",
+		"description": "Prix à payer : masse × prix au kilo (2,4 kg à 3,50 €), litres × prix du litre, masse inférieure à 1 kg (le produit est plus petit)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8,4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"M": "24",
+					"f": "0",
+					"k": "35",
+					"m": "2.4",
+					"pk": "350"
+				},
+				"description": "2,4 kg à 3,50 € : 8,4 €",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8,40"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"M": "24",
+					"f": "0",
+					"k": "35",
+					"m": "2.4",
+					"pk": "350"
+				},
+				"description": "8,40 € accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5,9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"M": "24",
+					"f": "0",
+					"k": "35",
+					"m": "2.4",
+					"pk": "350"
+				},
+				"description": "Erreur : addition (5,9)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["84"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"M": "24",
+					"f": "0",
+					"k": "35",
+					"m": "2.4",
+					"pk": "350"
+				},
+				"description": "Erreur : virgule (84)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["64,75"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"L": "35",
+					"P": "185"
+				},
+				"description": "35 L à 1,85 € : 64,75 €",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["647,5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "35",
+					"P": "185"
+				},
+				"description": "Erreur : virgule (647,5)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "45",
+					"m": "6",
+					"pk": "450"
+				},
+				"description": "0,6 kg à 4,50 € : 2,7 €",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2,70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "45",
+					"m": "6",
+					"pk": "450"
+				},
+				"description": "2,70 € accepté",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["27"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "45",
+					"m": "6",
+					"pk": "450"
+				},
+				"description": "Erreur : 27",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5,1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "45",
+					"m": "6",
+					"pk": "450"
+				},
+				"description": "Erreur : addition (5,1)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "41b6bef6-7831-49e9-a44f-7700a39207e9"
+	},
+	{
+		"id": "3f4bacc6-2ee4-48c7-8ea4-e5ac52af62d4",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 60,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Problèmes",
+		"subdomain": "Division euclidienne",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{q}}"
+					},
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "On range ${{N}}$ œufs dans des boîtes de ${{d}}$. Combien de boîtes pleines obtient-on ? Combien d'œufs reste-t-il ?\n\n$$?~\\text{boîtes pleines et}~?~\\text{œufs restants}$$",
+				"variables": [
+					{
+						"name": "sd",
+						"expression": "0..3"
+					},
+					{
+						"name": "d",
+						"expression": "{{if:sd==0|6|{{if:sd==1|10|{{if:sd==2|12|30}}}}}}"
+					},
+					{
+						"name": "q",
+						"expression": "5..40"
+					},
+					{
+						"name": "r",
+						"expression": "1..{{eval:d-1}}"
+					},
+					{
+						"name": "N",
+						"expression": "eval:d*q+r"
+					}
+				],
+				"conditions": ["N<1000"],
+				"correction": {
+					"steps": [
+						"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+						"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+						"On obtient $\\textcolor{{{color:primary.0}}}{{{q}}}$ boîtes pleines et il reste $\\textcolor{{{color:primary.1}}}{{{r}}}$ œuf{{if:r>1|s|}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q+1}}"
+					}
+				],
+				"statement": "${{E}}$ élèves partent en sortie. Un car a ${{c}}$ places. Combien de cars faut-il, au minimum, pour transporter tous les élèves ?\n\n$$?~\\text{cars}$$",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "30..60"
+					},
+					{
+						"name": "q",
+						"expression": "2..9"
+					},
+					{
+						"name": "r",
+						"expression": "1..{{eval:c-1}}"
+					},
+					{
+						"name": "E",
+						"expression": "eval:c*q+r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+						"$${{E}} = ({{c}} \\times {{q}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+						"${{q}}$ cars pleins ne suffisent pas : il reste ${{r}}$ élève{{if:r>1|s|}}. Il faut un car de plus : $\\textcolor{{{color:primary.0}}}{{{solution}}}$ cars."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{q}}"
+					},
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{N}}~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}} = ?~\\text{{{if:s==0|semaines|{{if:s==1|jours|heures}}}}}~?~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}}$$",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "0..2"
+					},
+					{
+						"name": "d",
+						"expression": "{{if:s==0|7|{{if:s==1|24|60}}}}"
+					},
+					{
+						"name": "q",
+						"expression": "2..40"
+					},
+					{
+						"name": "r",
+						"expression": "1..{{eval:d-1}}"
+					},
+					{
+						"name": "N",
+						"expression": "eval:d*q+r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une {{if:s==0|semaine|{{if:s==1|journée|heure}}}} compte ${{d}}$ {{if:s==0|jours|{{if:s==1|heures|minutes}}}} : on fait la division euclidienne de ${{N}}$ par ${{d}}$.",
+						"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+						"$${{N}}~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}} = \\textcolor{{{color:primary.0}}}{{{q}}}~\\text{{{if:s==0|semaines|{{if:s==1|jours|heures}}}}}~\\textcolor{{{color:primary.1}}}{{{r}}}~\\text{{{if:s==0|jour|{{if:s==1|heure|minute}}}}{{if:r>1|s|}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes de division euclidienne",
+		"description": "Interpréter le quotient et le reste : boîtes pleines et reste, nombre de cars (un de plus pour le reste), jours en semaines et jours, heures en jours, minutes en heures",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["24", "7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"N": "295",
+					"d": "12",
+					"q": "24",
+					"r": "7",
+					"sd": "2"
+				},
+				"description": "295 œufs, boîtes de 12 : 24 et 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7", "24"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"N": "295",
+					"d": "12",
+					"q": "24",
+					"r": "7",
+					"sd": "2"
+				},
+				"description": "Erreur : quotient et reste échangés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["24,58", "7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"N": "295",
+					"d": "12",
+					"q": "24",
+					"r": "7",
+					"sd": "2"
+				},
+				"description": "Erreur : quotient décimal (24,58)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"E": "230",
+					"c": "45",
+					"q": "5",
+					"r": "5"
+				},
+				"description": "230 élèves, 45 places : 6 cars",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"E": "230",
+					"c": "45",
+					"q": "5",
+					"r": "5"
+				},
+				"description": "Erreur : le reste oublié (5)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5,1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"E": "230",
+					"c": "45",
+					"q": "5",
+					"r": "5"
+				},
+				"description": "Erreur : quotient décimal (5,1)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["21", "3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"N": "150",
+					"d": "7",
+					"q": "21",
+					"r": "3",
+					"s": "0"
+				},
+				"description": "150 jours = 21 semaines 3 jours",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["21,4", "0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"N": "150",
+					"d": "7",
+					"q": "21",
+					"r": "3",
+					"s": "0"
+				},
+				"description": "Erreur : 21,4 semaines",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2", "30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"N": "150",
+					"d": "60",
+					"q": "2",
+					"r": "30",
+					"s": "2"
+				},
+				"description": "150 min = 2 h 30 min",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "52e22cd5-41f6-42fc-b5b7-024e84a89e9e"
+	},
+	{
+		"id": "4b0b03b7-3b46-4531-aaca-44ab04b13d1c",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Soustraire",
+		"subdomain": "Différence",
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(10*A-B)/100;d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{x}} - {{y}} = ?$$",
+				"variables": [
+					{
+						"name": "A",
+						"expression": "21..999"
+					},
+					{
+						"name": "B",
+						"expression": "101..999"
+					},
+					{
+						"name": "x",
+						"expression": "eval:A/10;d"
+					},
+					{
+						"name": "y",
+						"expression": "eval:B/100;d"
+					}
+				],
+				"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "10*A>B+100"],
+				"correction": {
+					"steps": [
+						"**Soustraire des décimaux.** On écrit les deux nombres avec autant de chiffres après la virgule (on ajoute des zéros), puis on soustrait rang par rang, de droite à gauche, avec les retenues.",
+						"${{x}} = {{x}}0$ : il a $0$ centième. On ne peut pas ôter ${{eval:mod(B,10)}}$ centièmes de $0$ : on échange $1$ dixième contre $10$ centièmes.",
+						"$${{x}} - {{y}} = {{x}}0 - {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:n-M/10;d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{n}} - {{y}} = ?$$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..50"
+					},
+					{
+						"name": "M",
+						"expression": "11..499"
+					},
+					{
+						"name": "y",
+						"expression": "eval:M/10;d"
+					}
+				],
+				"conditions": ["mod(M,10)!=0", "10*n>M"],
+				"correction": {
+					"steps": [
+						"**Soustraire des décimaux.** On écrit les deux nombres avec autant de chiffres après la virgule (on ajoute des zéros), puis on soustrait rang par rang, de droite à gauche, avec les retenues.",
+						"${{n}} = {{n}}.0$ : il a $0$ dixième. On échange $1$ unité contre $10$ dixièmes : $10 - {{eval:mod(M,10)}} = {{eval:10-mod(M,10)}}$ dixièmes.",
+						"$${{n}} - {{y}} = {{n}}.0 - {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(100*a+c-100*b-10*d-u)/100;d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{x}} - {{y}} = ?$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..30"
+					},
+					{
+						"name": "c",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "{{eval:c+1}}..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:a+c/100;d"
+					},
+					{
+						"name": "y",
+						"expression": "eval:b+d/10+u/100;d"
+					}
+				],
+				"conditions": ["100*a+c>100*b+10*d+u"],
+				"correction": {
+					"steps": [
+						"**Soustraire des décimaux.** On écrit les deux nombres avec autant de chiffres après la virgule (on ajoute des zéros), puis on soustrait rang par rang, de droite à gauche, avec les retenues.",
+						"${{x}}$ a $0$ dixième et ${{c}}$ centième{{if:c>1|s|}} : pour ôter ${{u}}$ centièmes, on échange $1$ unité contre $10$ dixièmes, puis $1$ dixième contre $10$ centièmes.",
+						"$${{x}} - {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Soustraire des nombres décimaux",
+		"description": "Différence de décimaux : premier terme plus court (15,2 − 3,47), entier moins décimal (10 − 3,6), retenue sur deux rangs (8,03 − 2,75)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["11,73"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"A": "152",
+					"B": "347",
+					"x": "15.2",
+					"y": "3.47"
+				},
+				"description": "15,2 − 3,47 = 11,73",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12,27"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "152",
+					"B": "347",
+					"x": "15.2",
+					"y": "3.47"
+				},
+				"description": "Erreur : petit chiffre ôté du grand (12,27)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["11,83"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "152",
+					"B": "347",
+					"x": "15.2",
+					"y": "3.47"
+				},
+				"description": "Erreur : retenue oubliée (11,83)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6,4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"M": "36",
+					"n": "10",
+					"y": "3.6"
+				},
+				"description": "10 − 3,6 = 6,4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7,4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"M": "36",
+					"n": "10",
+					"y": "3.6"
+				},
+				"description": "Erreur : retenue oubliée (7,4)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7,6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"M": "36",
+					"n": "10",
+					"y": "3.6"
+				},
+				"description": "Erreur : 7,6",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5,28"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"c": "3",
+					"d": "7",
+					"u": "5",
+					"x": "8.03",
+					"y": "2.75"
+				},
+				"description": "8,03 − 2,75 = 5,28",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6,72"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"c": "3",
+					"d": "7",
+					"u": "5",
+					"x": "8.03",
+					"y": "2.75"
+				},
+				"description": "Erreur : petit chiffre ôté du grand (6,72)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6,28"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"c": "3",
+					"d": "7",
+					"u": "5",
+					"x": "8.03",
+					"y": "2.75"
+				},
+				"description": "Erreur : retenue des unités oubliée (6,28)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "961e9594-bf2b-47fd-a89e-63ee66c93a23"
+	},
+	{
+		"id": "87cfa41b-cd8c-4b53-9150-78f91dd71702",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["6"],
+		"delay": 60,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Problèmes",
+		"subdomain": "Division",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:P/100;d}}"
+					}
+				],
+				"statement": "${{n}}$ amis partagent {{if:o==0|un gain de|une cagnotte de}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\unit{€}$ en parts égales. Combien chacun reçoit-il ?\n\n$$?~\\text{€}$$",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "0..1"
+					},
+					{
+						"name": "n",
+						"expression": "2..9"
+					},
+					{
+						"name": "j",
+						"expression": "20..400"
+					},
+					{
+						"name": "P",
+						"expression": "eval:5*j"
+					},
+					{
+						"name": "C",
+						"expression": "eval:n*P"
+					}
+				],
+				"conditions": ["mod(C,10)!=0"],
+				"correction": {
+					"steps": [
+						"**Partager en parts égales**, c'est diviser : part $=$ somme $\\div$ nombre de parts.",
+						"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}}$$",
+						"Vérification : ${{n}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:Q/100;d}}"
+					}
+				],
+				"statement": "On coupe un ruban de ${{L}}~\\unit{m}$ en ${{n}}$ morceaux de même longueur. Quelle est la longueur d'un morceau ?\n\n$$?~\\text{m}$$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..9"
+					},
+					{
+						"name": "Q",
+						"expression": "11..150"
+					},
+					{
+						"name": "L",
+						"expression": "eval:n*Q/100;d"
+					}
+				],
+				"conditions": ["mod(n*Q,100)!=0"],
+				"correction": {
+					"steps": [
+						"**Partager en parts égales**, c'est diviser : longueur d'un morceau $=$ longueur du ruban $\\div$ nombre de morceaux.",
+						"$${{L}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+						"Vérification : ${{n}} \\times {{solution}} = {{L}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:P/100;d}}"
+					}
+				],
+				"statement": "${{n}}$ {{if:o==0|cahiers identiques coûtent|stylos identiques coûtent}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\unit{€}$. Combien coûte un {{if:o==0|cahier|stylo}} ?\n\n$$?~\\text{€}$$",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "0..1"
+					},
+					{
+						"name": "n",
+						"expression": "2..9"
+					},
+					{
+						"name": "j",
+						"expression": "10..80"
+					},
+					{
+						"name": "P",
+						"expression": "eval:5*j"
+					},
+					{
+						"name": "C",
+						"expression": "eval:n*P"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Prix d'un objet** $=$ prix total $\\div$ nombre d'objets.",
+						"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}}$$",
+						"Vérification : ${{n}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes de partage décimal",
+		"description": "Diviser une somme, une longueur, un prix total par un entier d'un chiffre (22,35 € entre 3 ; 4,2 m en 6 ; 4 cahiers pour 7,60 €)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7,45"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"C": "2235",
+					"P": "745",
+					"j": "149",
+					"n": "3",
+					"o": "0"
+				},
+				"description": "22,35 € entre 3 : 7,45 €",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["67,05"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"C": "2235",
+					"P": "745",
+					"j": "149",
+					"n": "3",
+					"o": "0"
+				},
+				"description": "Erreur : multiplié (67,05)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7,4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"C": "2235",
+					"P": "745",
+					"j": "149",
+					"n": "3",
+					"o": "0"
+				},
+				"description": "Erreur : 7,4 (centimes oubliés)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"L": "4.2",
+					"Q": "70",
+					"n": "6"
+				},
+				"description": "4,2 m en 6 : 0,7 m",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "4.2",
+					"Q": "70",
+					"n": "6"
+				},
+				"description": "Erreur : 7",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0,07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "4.2",
+					"Q": "70",
+					"n": "6"
+				},
+				"description": "Erreur : 0,07",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1,90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"C": "760",
+					"P": "190",
+					"j": "38",
+					"n": "4",
+					"o": "0"
+				},
+				"description": "7,60 € pour 4 : 1,90 €",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1,9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"C": "760",
+					"P": "190",
+					"j": "38",
+					"n": "4",
+					"o": "0"
+				},
+				"description": "1,9 € accepté",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1,15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"C": "760",
+					"P": "190",
+					"j": "38",
+					"n": "4",
+					"o": "0"
+				},
+				"description": "Erreur : 1,15 (7 ÷ 4 = 1 reste 3, puis 60 ÷ 4)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "c1a01819-c975-42ac-b756-2d427c826be9"
+	},
+	{
+		"id": "b586bdf8-0b7b-452b-9fe5-a7f3d6da456a",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(10*A+B)/100;d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{x}} + {{y}} = ?$$",
+				"variables": [
+					{
+						"name": "A",
+						"expression": "11..999"
+					},
+					{
+						"name": "B",
+						"expression": "101..999"
+					},
+					{
+						"name": "x",
+						"expression": "eval:A/10;d"
+					},
+					{
+						"name": "y",
+						"expression": "eval:B/100;d"
+					}
+				],
+				"conditions": ["mod(A,10)!=0", "mod(B,10)!=0"],
+				"correction": {
+					"steps": [
+						"**Additionner des décimaux.** On additionne les chiffres de même rang : unités avec unités, dixièmes avec dixièmes, centièmes avec centièmes. Pour ne pas se tromper, on écrit les deux nombres avec autant de chiffres après la virgule.",
+						"${{x}} = {{x}}0$ : c'est ${{eval:10*A}}$ centièmes ; ${{y}}$, c'est ${{B}}$ centièmes. En tout : ${{eval:10*A}} + {{B}} = {{eval:10*A+B}}$ centièmes.",
+						"$${{x}} + {{y}} = {{x}}0 + {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:u+w+1+M/10;d}}"
+					}
+				],
+				"statement": "Calcule astucieusement.\n\n$${{p}} + {{b}} + {{q}} = ?$$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..20"
+					},
+					{
+						"name": "D",
+						"expression": "5..95"
+					},
+					{
+						"name": "w",
+						"expression": "0..9"
+					},
+					{
+						"name": "M",
+						"expression": "11..99"
+					},
+					{
+						"name": "p",
+						"expression": "eval:u+D/100;d"
+					},
+					{
+						"name": "q",
+						"expression": "eval:w+(100-D)/100;d"
+					},
+					{
+						"name": "b",
+						"expression": "eval:M/10;d"
+					}
+				],
+				"conditions": ["mod(D,10)!=0", "mod(M,10)!=0"],
+				"correction": {
+					"steps": [
+						"**Regrouper.** Dans une somme, on peut changer l'ordre des termes : on cherche deux nombres dont la somme est un entier.",
+						"$\\textcolor{{{color:primary.0}}}{{{p}}} + \\textcolor{{{color:primary.0}}}{{{q}}} = {{eval:u+w+1}}$ : ${{D}}$ centièmes et ${{eval:100-D}}$ centièmes font $100$ centièmes, soit $1$ unité.",
+						"$${{p}} + {{b}} + {{q}} = {{eval:u+w+1}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:n+Y/100;d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{n}} + {{y}} = ?$$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..99"
+					},
+					{
+						"name": "Y",
+						"expression": "1..999"
+					},
+					{
+						"name": "y",
+						"expression": "eval:Y/100;d"
+					}
+				],
+				"conditions": ["mod(Y,10)!=0"],
+				"correction": {
+					"steps": [
+						"**Additionner des décimaux.** On additionne les chiffres de même rang : unités avec unités, dixièmes avec dixièmes, centièmes avec centièmes. Pour ne pas se tromper, on écrit les deux nombres avec autant de chiffres après la virgule.",
+						"${{n}}$ est un entier : ${{n}} = {{n}}.00$. On ajoute ses unités aux unités de ${{y}}$, les dixièmes et les centièmes ne changent pas.",
+						"$${{n}} + {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Additionner des nombres décimaux",
+		"description": "Somme de deux décimaux de longueurs différentes (12,7 + 3,85), regroupement en un entier (2,75 + 4,6 + 0,25), entier + décimal (7 + 0,35)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["16,55"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"A": "127",
+					"B": "385",
+					"x": "12.7",
+					"y": "3.85"
+				},
+				"description": "12,7 + 3,85 = 16,55",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5,12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "127",
+					"B": "385",
+					"x": "12.7",
+					"y": "3.85"
+				},
+				"description": "Erreur : chiffres alignés à droite (5,12)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["15,55"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "127",
+					"B": "385",
+					"x": "12.7",
+					"y": "3.85"
+				},
+				"description": "Erreur : retenue des dixièmes oubliée (15,55)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7,6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"D": "75",
+					"M": "46",
+					"b": "4.6",
+					"p": "2.75",
+					"q": "0.25",
+					"u": "2",
+					"w": "0"
+				},
+				"description": "2,75 + 4,6 + 0,25 = 7,6",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7,06"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"D": "75",
+					"M": "46",
+					"b": "4.6",
+					"p": "2.75",
+					"q": "0.25",
+					"u": "2",
+					"w": "0"
+				},
+				"description": "Erreur : 4,6 lu 4,06 (7,06)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7,35"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"Y": "35",
+					"n": "7",
+					"y": "0.35"
+				},
+				"description": "7 + 0,35 = 7,35",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0,42"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"Y": "35",
+					"n": "7",
+					"y": "0.35"
+				},
+				"description": "Erreur : 7 ajouté aux centièmes (0,42)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "2444927b-3202-4866-a5cf-25e852b1706a"
+	},
+	{
+		"id": "f5651c7d-363a-48fa-bf62-3cff037076ef",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 60,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 6,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:A*B}}"
+					},
+					{
+						"expectedAnswer": "{{eval:A*B/100;d}}"
+					}
+				],
+				"statement": "Un rectangle mesure ${{x}}~\\unit{dm}$ sur ${{y}}~\\unit{dm}$. En centimètres, il mesure ${{A}}~\\unit{cm}$ sur ${{B}}~\\unit{cm}$.\n\nSon aire en centimètres carrés :\n\n$${{A}} \\times {{B}} = ?~\\text{cm}^2$$\n\nOr $100~\\unit{cm^2} = 1~\\unit{dm^2}$. Son aire en décimètres carrés :\n\n$${{x}} \\times {{y}} = ?~\\text{dm}^2$$",
+				"variables": [
+					{
+						"name": "A",
+						"expression": "11..99"
+					},
+					{
+						"name": "B",
+						"expression": "11..99"
+					},
+					{
+						"name": "x",
+						"expression": "eval:A/10;d"
+					},
+					{
+						"name": "y",
+						"expression": "eval:B/10;d"
+					}
+				],
+				"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "A>B"],
+				"correction": {
+					"steps": [
+						"**Aire d'un rectangle.** Aire $=$ longueur $\\times$ largeur, les deux dans la même unité.",
+						"En centimètres : ${{A}} \\times {{B}} = \\textcolor{{{color:primary.0}}}{{{eval:A*B}}}$ cm².",
+						"$1~\\unit{dm^2} = 100~\\unit{cm^2}$ : on divise par $100$. Donc ${{x}} \\times {{y}} = \\textcolor{{{color:primary.1}}}{{{eval:A*B/100;d}}}$ dm². Chaque facteur a $1$ chiffre après la virgule, le produit en a $2$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100*a*b}}"
+					},
+					{
+						"expectedAnswer": "{{eval:a*b/100;d}}"
+					}
+				],
+				"statement": "Un rectangle mesure $0.{{a}}~\\unit{m}$ sur $0.{{b}}~\\unit{m}$. En centimètres, il mesure ${{eval:10*a}}~\\unit{cm}$ sur ${{eval:10*b}}~\\unit{cm}$.\n\nSon aire en centimètres carrés :\n\n$${{eval:10*a}} \\times {{eval:10*b}} = ?~\\text{cm}^2$$\n\nOr $10~000~\\unit{cm^2} = 1~\\unit{m^2}$. Son aire en mètres carrés :\n\n$$0.{{a}} \\times 0.{{b}} = ?~\\text{m}^2$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["a>b"],
+				"correction": {
+					"steps": [
+						"**Aire d'un rectangle.** Aire $=$ longueur $\\times$ largeur, les deux dans la même unité.",
+						"En centimètres : ${{eval:10*a}} \\times {{eval:10*b}} = \\textcolor{{{color:primary.0}}}{{{eval:100*a*b}}}$ cm².",
+						"$1~\\unit{m^2} = 10~000~\\unit{cm^2}$ : on divise par $10~000$. Donc $0.{{a}} \\times 0.{{b}} = \\textcolor{{{color:primary.1}}}{{{eval:a*b/100;d}}}$ m² : le produit de deux nombres plus petits que $1$ est plus petit que chacun d'eux."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Un produit de décimaux par l'aire",
+		"description": "Sens du produit de deux décimaux par l'aire d'un rectangle et la conversion des unités (3,7 dm × 2,9 dm ; 0,4 m × 0,3 m)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1\\,073", "10,73"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"A": "37",
+					"B": "29",
+					"x": "3.7",
+					"y": "2.9"
+				},
+				"description": "3,7 × 2,9 : 1 073 cm², 10,73 dm²",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,073", "107,3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "37",
+					"B": "29",
+					"x": "3.7",
+					"y": "2.9"
+				},
+				"description": "Erreur : virgule « comme dans l'addition » (107,3)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,200", "0,12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "0,4 × 0,3 : 1 200 cm², 0,12 m²",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1\\,200", "1,2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "Erreur : 0,4 × 0,3 = 1,2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["120", "0,12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "Erreur : 120 cm²",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "41b6bef6-7831-49e9-a44f-7700a39207e9"
+	}
+]

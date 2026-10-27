@@ -1,4 +1,4 @@
-"""Écrit les 10 modèles du lot 3 « Calcul décimal » de la 6e dans scripts/questions/6-calcul-decimal/.
+"""Écrit les 13 modèles du lot 3 « Calcul décimal » de la 6e dans scripts/questions/6-calcul-decimal/.
 
 Phase 0 validée par David le 2026-10-27 (§ 10 du journal `docs/wip/questions-6-progress.md`).
 Bornes : `cycle3.json`, 6e (6-121 : diviseur entier de 1 à 9, division qui peut ne pas s'arrêter ;
@@ -96,7 +96,7 @@ ALIGNER = ('**Additionner des décimaux.** On additionne les chiffres de même r
            ' écrit les deux nombres avec autant de chiffres après la virgule.')
 
 ADDITION_LONGUEURS = variation(
-    'Calcule.\n\n$${{x}} + {{y}} = ?$$',
+    'Calcule. Pose l\'opération sur ton brouillon si besoin.\n\n$${{x}} + {{y}} = ?$$',
     [var('A', '11..999'), var('B', '101..999'), var('x', 'eval:A/10;d'),
      var('y', 'eval:B/100;d')],
     ['{{eval:(10*A+B)/100;d}}'],
@@ -119,7 +119,7 @@ ADDITION_REGROUPER = variation(
     ['mod(D,10)!=0', 'mod(M,10)!=0'])
 
 ADDITION_ENTIER = variation(
-    'Calcule.\n\n$${{n}} + {{y}} = ?$$',
+    'Calcule. Pose l\'opération sur ton brouillon si besoin.\n\n$${{n}} + {{y}} = ?$$',
     [var('n', '2..99'), var('Y', '1..999'), var('y', 'eval:Y/100;d')],
     ['{{eval:n+Y/100;d}}'],
     [ALIGNER,
@@ -133,17 +133,15 @@ SPEC_REG = {'u': 2, 'D': 75, 'w': 0, 'M': 46, 'p': '2.75', 'q': '0.25', 'b': '4.
 SPEC_ENT = {'n': 7, 'Y': 35, 'y': '0.35'}
 MODELES.append(modele(
     '01-additionner-des-decimaux', 'Additionner des nombres décimaux',
-    'Somme de deux décimaux de longueurs différentes (12,7 + 3,85), regroupement en un entier'
-    ' (2,75 + 4,6 + 0,25), entier + décimal (7 + 0,35)',
+    'Somme de deux décimaux de longueurs différentes (12,7 + 3,85), entier + décimal (7 + 0,35) ;'
+    ' calcul posé au brouillon si besoin',
     'Décimaux', 'Additionner', 'Somme', 5,
-    [ADDITION_LONGUEURS, ADDITION_REGROUPER, ADDITION_ENTIER],
+    [ADDITION_LONGUEURS, ADDITION_ENTIER],
     [spec('12,7 + 3,85 = 16,55', 0, SPEC_ADD, '16,55', 'correct'),
      spec('Erreur : chiffres alignés à droite (5,12)', 0, SPEC_ADD, '5,12', 'incorrect'),
      spec('Erreur : retenue des dixièmes oubliée (15,55)', 0, SPEC_ADD, '15,55', 'incorrect'),
-     spec('2,75 + 4,6 + 0,25 = 7,6', 1, SPEC_REG, '7,6', 'correct'),
-     spec('Erreur : 4,6 lu 4,06 (7,06)', 1, SPEC_REG, '7,06', 'incorrect'),
-     spec('7 + 0,35 = 7,35', 2, SPEC_ENT, '7,35', 'correct'),
-     spec('Erreur : 7 ajouté aux centièmes (0,42)', 2, SPEC_ENT, '0,42', 'incorrect')]))
+     spec('7 + 0,35 = 7,35', 1, SPEC_ENT, '7,35', 'correct'),
+     spec('Erreur : 7 ajouté aux centièmes (0,42)', 1, SPEC_ENT, '0,42', 'incorrect')]))
 
 # --- 2. 6-198 : soustraire des décimaux ---------------------------------------------------
 
@@ -152,7 +150,7 @@ SOUSTRAIRE = ('**Soustraire des décimaux.** On écrit les deux nombres avec aut
               ' gauche, avec les retenues.')
 
 SOUSTRACTION_LONGUEURS = variation(
-    'Calcule.\n\n$${{x}} - {{y}} = ?$$',
+    'Calcule. Pose l\'opération sur ton brouillon si besoin.\n\n$${{x}} - {{y}} = ?$$',
     [var('A', '21..999'), var('B', '101..999'), var('x', 'eval:A/10;d'),
      var('y', 'eval:B/100;d')],
     ['{{eval:(10*A-B)/100;d}}'],
@@ -163,7 +161,7 @@ SOUSTRACTION_LONGUEURS = variation(
     ['mod(A,10)!=0', 'mod(B,10)!=0', '10*A>B+100'])
 
 SOUSTRACTION_ENTIER = variation(
-    'Calcule.\n\n$${{n}} - {{y}} = ?$$',
+    'Calcule. Pose l\'opération sur ton brouillon si besoin.\n\n$${{n}} - {{y}} = ?$$',
     [var('n', '2..50'), var('M', '11..499'), var('y', 'eval:M/10;d')],
     ['{{eval:n-M/10;d}}'],
     [SOUSTRAIRE,
@@ -173,7 +171,7 @@ SOUSTRACTION_ENTIER = variation(
     ['mod(M,10)!=0', '10*n>M'])
 
 SOUSTRACTION_DEUX_RANGS = variation(
-    'Calcule.\n\n$${{x}} - {{y}} = ?$$',
+    'Calcule. Pose l\'opération sur ton brouillon si besoin.\n\n$${{x}} - {{y}} = ?$$',
     [var('a', '3..30'), var('c', '1..8'), var('b', '1..{{eval:a-1}}'), var('d', '1..9'),
      var('u', '{{eval:c+1}}..9'), var('x', 'eval:a+c/100;d'), var('y', 'eval:b+d/10+u/100;d')],
     ['{{eval:(100*a+c-100*b-10*d-u)/100;d}}'],
@@ -268,7 +266,8 @@ MODELES.append(modele(
 AIRE_DM = variation(
     'Un rectangle mesure ${{x}}~\\text{dm}$ sur ${{y}}~\\text{dm}$. En centimètres, il mesure'
     ' ${{A}}~\\text{cm}$ sur ${{B}}~\\text{cm}$.\n\n'
-    'Son aire en centimètres carrés :\n\n$${{A}} \\times {{B}} = ?~\\text{cm}^2$$\n\n'
+    'Son aire en centimètres carrés (pose la multiplication sur ton brouillon si besoin) :\n\n'
+    '$${{A}} \\times {{B}} = ?~\\text{cm}^2$$\n\n'
     'Or $100~\\text{cm}^2 = 1~\\text{dm}^2$. Son aire en décimètres carrés :\n\n'
     '$${{x}} \\times {{y}} = ?~\\text{dm}^2$$',
     [var('A', '11..99'), var('B', '11..99'), var('x', 'eval:A/10;d'), var('y', 'eval:B/10;d')],
@@ -371,58 +370,65 @@ MODELES.append(modele(
           'incorrect')]))
 
 # --- 6. 6-120 : problèmes de produits -----------------------------------------------------
+# Nombres calculables de tête (décision de David, 2026-10-27, § 10.5) : l'effort porte sur le
+# choix de l'opération ; le calcul posé du produit est travaillé par 6-118.
 
 PRIX_KILO = variation(
     'Au marché, les {{if:f==0|pommes coûtent|{{if:f==1|poires coûtent|cerises coûtent}}}} $'
     + euros('pk') + EURO + '$ le kilogramme. Léa en achète ${{m}}~\\text{kg}$. Combien'
     ' paie-t-elle ?\n\n$$?' + EURO + '$$',
-    [var('f', '0..2'), var('k', '12..59'), var('pk', 'eval:10*k'), var('M', '11..49'),
-     var('m', 'eval:M/10;d')],
-    ['{{eval:M*k/100;d}}'],
+    [var('f', '0..2'), var('h', '6..29'), var('k', 'eval:2*h'), var('pk', 'eval:10*k'),
+     var('j', '0..3'), var('m', 'eval:j+0.5;d')],
+    ['{{eval:(2*j+1)*k/20;d}}'],
     ['**Prix à payer** $=$ masse $\\times$ prix d\'un kilogramme.',
-     '$${{m}} \\times ' + euros('pk') + ' = ' + col(euros('(M*k)')) + '$$',
-     'Léa paie $' + col(euros('(M*k)')) + EURO + '$.'],
-    ['mod(k,10)!=0', 'mod(M,10)!=0'])
+     'De tête : {{if:j==0|la moitié de $' + euros('pk') + '$|${{j}} \\times ' + euros('pk')
+     + '$, plus la moitié de $' + euros('pk') + '$}}.',
+     '$${{m}} \\times ' + euros('pk') + ' = ' + col(euros('((2*j+1)*k*5)')) + '$$',
+     'Léa paie $' + col(euros('((2*j+1)*k*5)')) + EURO + '$.'],
+    ['mod(k,10)!=0'])
 
 PLEIN = variation(
     'Le litre d\'essence coûte $' + euros('P') + EURO + '$. Malik met ${{L}}$ litres dans sa'
     ' voiture. Combien paie-t-il ?\n\n$$?' + EURO + '$$',
-    [var('P', '160..199'), var('L', '20..50')],
+    [var('P', '160..199'), var('t', '1..4'), var('L', 'eval:10*t')],
     ['{{eval:L*P/100;d}}'],
     ['**Prix à payer** $=$ nombre de litres $\\times$ prix d\'un litre.',
-     '$${{L}} \\times ' + euros('P') + ' = ' + col(euros('(L*P)')) + '$$',
-     'Ordre de grandeur : ${{L}} \\times 2 = {{eval:2*L}}$ ; le résultat est un peu moins.'],
+     'De tête : $10 \\times ' + euros('P') + ' = {{eval:P/10;d}}${{if:t>1|, puis $\\times {{t}}$|}}.',
+     '$${{L}} \\times ' + euros('P') + ' = ' + col(euros('(L*P)')) + '$$'],
     ['mod(P,10)!=0'])
 
 MOINS_D_UN_KILO = variation(
     'Le fromage coûte $' + euros('pk') + EURO + '$ le kilogramme. Inès en achète'
     ' $0.{{m}}~\\text{kg}$. Combien paie-t-elle ?\n\n$$?' + EURO + '$$',
-    [var('k', '12..99'), var('pk', 'eval:10*k'), var('m', '2..9')],
+    [var('h', '6..49'), var('k', 'eval:2*h'), var('pk', 'eval:10*k'), var('sm', '0..1'),
+     var('m', '{{if:sm==0|2|5}}')],
     ['{{eval:m*k/100;d}}'],
     ['**Prix à payer** $=$ masse $\\times$ prix d\'un kilogramme, même quand la masse est plus'
      ' petite que $1$ kg.',
+     '{{if:sm==0|$0.2$ kg, c\'est le cinquième d\'un kilogramme : $' + euros('pk')
+     + ' \\div 5$.|$0.5$ kg, c\'est la moitié d\'un kilogramme : $' + euros('pk') + ' \\div 2$.}}',
      '$$0.{{m}} \\times ' + euros('pk') + ' = ' + col(euros('(m*k)')) + '$$',
      'Elle achète moins d\'un kilogramme : elle paie moins que $' + euros('pk') + EURO + '$.'],
     ['mod(k,10)!=0'])
 
-SPEC_KILO = {'f': 0, 'k': 35, 'pk': 350, 'M': 24, 'm': '2.4'}
-SPEC_PLEIN = {'P': 185, 'L': 35}
-SPEC_FROMAGE = {'k': 45, 'pk': 450, 'm': 6}
+SPEC_KILO = {'f': 0, 'h': 12, 'k': 24, 'pk': 240, 'j': 1, 'm': '1.5'}
+SPEC_PLEIN = {'P': 185, 't': 2, 'L': 20}
+SPEC_FROMAGE = {'h': 24, 'k': 48, 'pk': 480, 'sm': 1, 'm': 5}
 MODELES.append(modele(
     '06-problemes-de-produits-decimaux', 'Problèmes de produits décimaux',
-    'Prix à payer : masse × prix au kilo (2,4 kg à 3,50 €), litres × prix du litre, masse'
-    ' inférieure à 1 kg (le produit est plus petit)',
+    'Prix à payer, calculs de tête : masse × prix au kilo (1,5 kg à 2,40 €), 10, 20, 30 ou 40'
+    ' litres × prix du litre, 0,2 ou 0,5 kg (le produit est plus petit)',
     'Décimaux', 'Problèmes', 'Multiplication', 1, [PRIX_KILO, PLEIN, MOINS_D_UN_KILO],
-    [spec('2,4 kg à 3,50 € : 8,4 €', 0, SPEC_KILO, '8,4', 'correct'),
-     spec('8,40 € accepté', 0, SPEC_KILO, '8,40', 'correct'),
-     spec('Erreur : addition (5,9)', 0, SPEC_KILO, '5,9', 'incorrect'),
-     spec('Erreur : virgule (84)', 0, SPEC_KILO, '84', 'incorrect'),
-     spec('35 L à 1,85 € : 64,75 €', 1, SPEC_PLEIN, '64,75', 'correct'),
-     spec('Erreur : virgule (647,5)', 1, SPEC_PLEIN, '647,5', 'incorrect'),
-     spec('0,6 kg à 4,50 € : 2,7 €', 2, SPEC_FROMAGE, '2,7', 'correct'),
-     spec('2,70 € accepté', 2, SPEC_FROMAGE, '2,70', 'correct'),
-     spec('Erreur : 27', 2, SPEC_FROMAGE, '27', 'incorrect'),
-     spec('Erreur : addition (5,1)', 2, SPEC_FROMAGE, '5,1', 'incorrect')],
+    [spec('1,5 kg à 2,40 € : 3,6 €', 0, SPEC_KILO, '3,6', 'correct'),
+     spec('3,60 € accepté', 0, SPEC_KILO, '3,60', 'correct'),
+     spec('Erreur : addition (3,9)', 0, SPEC_KILO, '3,9', 'incorrect'),
+     spec('Erreur : 1 kg seulement (2,4)', 0, SPEC_KILO, '2,4', 'incorrect'),
+     spec('20 L à 1,85 € : 37 €', 1, SPEC_PLEIN, '37', 'correct'),
+     spec('Erreur : virgule (370)', 1, SPEC_PLEIN, '370', 'incorrect'),
+     spec('0,5 kg à 4,80 € : 2,4 €', 2, SPEC_FROMAGE, '2,4', 'correct'),
+     spec('2,40 € accepté', 2, SPEC_FROMAGE, '2,40', 'correct'),
+     spec('Erreur : 24', 2, SPEC_FROMAGE, '24', 'incorrect'),
+     spec('Erreur : addition (5,3)', 2, SPEC_FROMAGE, '5,3', 'incorrect')],
     delay=60, options=SANS_ZEROS))
 
 # --- 7. 6-121 : diviser un décimal par un entier < 10 -------------------------------------
@@ -432,7 +438,7 @@ DIVISER = ('**Diviser un décimal par un entier.** On divise comme pour les enti
            ' division n\'est pas finie, on ajoute des zéros après la virgule et on continue.')
 
 DIVISION_FINIE = variation(
-    'Calcule.\n\n$${{x}} \\div {{d}} = ?$$',
+    'Calcule. Pose la division sur ton brouillon.\n\n$${{x}} \\div {{d}} = ?$$',
     [var('d', '2..9'), var('Q', '11..999'), var('x', 'eval:d*Q/100;d')],
     ['{{eval:Q/100;d}}'],
     [DIVISER,
@@ -440,7 +446,7 @@ DIVISION_FINIE = variation(
     ['mod(Q,10)!=0', 'mod(d*Q,100)!=0'])
 
 DIVISION_ENTIERS = variation(
-    'Calcule. Le quotient est un nombre décimal.\n\n$${{n}} \\div {{d}} = ?$$',
+    'Calcule. Le quotient est un nombre décimal. Pose la division sur ton brouillon.\n\n$${{n}} \\div {{d}} = ?$$',
     [var('sd', '0..3'), var('d', selon('sd', ['2', '4', '5', '8'])), var('n', '3..99')],
     ['{{eval:n/d;d}}'],
     [DIVISER,
@@ -450,7 +456,8 @@ DIVISION_ENTIERS = variation(
     ['mod(n,d)!=0'])
 
 DIVISION_INFINIE = variation(
-    'Donne la valeur arrondie au centième du quotient.\n\n$${{n}} \\div {{d}} \\approx ?$$',
+    'Donne la valeur arrondie au centième du quotient. Pose la division sur ton brouillon.\n\n'
+    '$${{n}} \\div {{d}} \\approx ?$$',
     [var('sd', '0..2'), var('d', selon('sd', ['3', '6', '9'])), var('n', '2..99'),
      var('h', 'eval:mod(floor(1000*n/d),10)')],
     ['{{eval:round(100*n/d)/100;d}}'],
@@ -482,50 +489,52 @@ MODELES.append(modele(
           {'sd': 1, 'd': 6, 'n': 73, 'h': 6}, '12,1', 'incorrect')]))
 
 # --- 8. 6-122 : problèmes de partage ------------------------------------------------------
+# Nombres calculables de tête (décision de David, 2026-10-27, § 10.5) : dividende de moins de
+# 100 dixièmes, partagé par un entier d'un chiffre (tables) ; la division posée est travaillée par 6-121.
 
 PARTAGE_SOMME = variation(
     '${{n}}$ amis partagent {{if:o==0|un gain de|une cagnotte de}} $' + euros('C') + EURO
     + '$ en parts égales. Combien chacun reçoit-il ?\n\n$$?' + EURO + '$$',
-    [var('o', '0..1'), var('n', '2..9'), var('j', '20..400'), var('P', 'eval:5*j'),
-     var('C', 'eval:n*P')],
-    ['{{eval:P/100;d}}'],
+    [var('o', '0..1'), var('n', '2..9'), var('j', '5..49'), var('C', 'eval:10*n*j')],
+    ['{{eval:j/10;d}}'],
     ['**Partager en parts égales**, c\'est diviser : part $=$ somme $\\div$ nombre de parts.',
-     '$$' + euros('C') + ' \\div {{n}} = ' + col(euros('P')) + '$$',
-     'Vérification : ${{n}} \\times ' + euros('P') + ' = ' + euros('C') + '$.'],
-    ['mod(C,10)!=0'])
+     'De tête : ${{eval:n*j}}$ dixièmes $\\div {{n}} = {{j}}$ dixièmes.',
+     '$$' + euros('C') + ' \\div {{n}} = ' + col(euros('(10*j)')) + '$$'],
+    ['mod(j,10)!=0', 'n*j<=99', 'mod(n*j,10)!=0'])
 
 PARTAGE_RUBAN = variation(
     'On coupe un ruban de ${{L}}~\\text{m}$ en ${{n}}$ morceaux de même longueur. Quelle est la'
     ' longueur d\'un morceau ?\n\n$$?~\\text{m}$$',
-    [var('n', '2..9'), var('Q', '11..150'), var('L', 'eval:n*Q/100;d')],
-    ['{{eval:Q/100;d}}'],
+    [var('n', '2..9'), var('q', '1..15'), var('L', 'eval:n*q/10;d')],
+    ['{{eval:q/10;d}}'],
     ['**Partager en parts égales**, c\'est diviser : longueur d\'un morceau $=$ longueur du ruban'
      ' $\\div$ nombre de morceaux.',
-     '$${{L}} \\div {{n}} = ' + col('{{solution}}') + '$$',
-     'Vérification : ${{n}} \\times {{solution}} = {{L}}$.'],
-    ['mod(n*Q,100)!=0'])
+     'De tête : ${{eval:n*q}}$ dixièmes de mètre $\\div {{n}} = {{q}}$ dixièmes.',
+     '$${{L}} \\div {{n}} = ' + col('{{solution}}') + '$$'],
+    ['mod(n*q,10)!=0', 'n*q<=99', 'mod(q,10)!=0'])
 
 PRIX_UNITAIRE = variation(
     '${{n}}$ {{if:o==0|cahiers identiques coûtent|stylos identiques coûtent}} $' + euros('C')
     + EURO + '$. Combien coûte un {{if:o==0|cahier|stylo}} ?\n\n$$?' + EURO + '$$',
-    [var('o', '0..1'), var('n', '2..9'), var('j', '10..80'), var('P', 'eval:5*j'),
-     var('C', 'eval:n*P')],
-    ['{{eval:P/100;d}}'],
+    [var('o', '0..1'), var('n', '2..9'), var('j', '5..49'), var('C', 'eval:10*n*j')],
+    ['{{eval:j/10;d}}'],
     ['**Prix d\'un objet** $=$ prix total $\\div$ nombre d\'objets.',
-     '$$' + euros('C') + ' \\div {{n}} = ' + col(euros('P')) + '$$',
-     'Vérification : ${{n}} \\times ' + euros('P') + ' = ' + euros('C') + '$.'])
+     'De tête : ${{eval:n*j}}$ dixièmes $\\div {{n}} = {{j}}$ dixièmes.',
+     '$$' + euros('C') + ' \\div {{n}} = ' + col(euros('(10*j)')) + '$$'],
+    ['mod(j,10)!=0', 'n*j<=99', 'mod(n*j,10)!=0'])
 
-SPEC_PART = {'o': 0, 'n': 3, 'j': 149, 'P': 745, 'C': 2235}
-SPEC_RUBAN = {'n': 6, 'Q': 70, 'L': '4.2'}
-SPEC_CAHIER = {'o': 0, 'n': 4, 'j': 38, 'P': 190, 'C': 760}
+SPEC_PART = {'o': 0, 'n': 3, 'j': 25, 'C': 750}
+SPEC_RUBAN = {'n': 6, 'q': 7, 'L': '4.2'}
+SPEC_CAHIER = {'o': 0, 'n': 4, 'j': 19, 'C': 760}
 MODELES.append(modele(
     '08-problemes-de-partage-decimal', 'Problèmes de partage décimal',
-    'Diviser une somme, une longueur, un prix total par un entier d\'un chiffre (22,35 € entre'
-    ' 3 ; 4,2 m en 6 ; 4 cahiers pour 7,60 €)',
+    'Diviser de tête une somme, une longueur, un prix total par un entier d\'un chiffre (7,50 €'
+    ' entre 3 ; 4,2 m en 6 ; 4 cahiers pour 7,60 €)',
     'Décimaux', 'Problèmes', 'Division', 1, [PARTAGE_SOMME, PARTAGE_RUBAN, PRIX_UNITAIRE],
-    [spec('22,35 € entre 3 : 7,45 €', 0, SPEC_PART, '7,45', 'correct'),
-     spec('Erreur : multiplié (67,05)', 0, SPEC_PART, '67,05', 'incorrect'),
-     spec('Erreur : 7,4 (centimes oubliés)', 0, SPEC_PART, '7,4', 'incorrect'),
+    [spec('7,50 € entre 3 : 2,5 €', 0, SPEC_PART, '2,5', 'correct'),
+     spec('2,50 € accepté', 0, SPEC_PART, '2,50', 'correct'),
+     spec('Erreur : multiplié (22,5)', 0, SPEC_PART, '22,5', 'incorrect'),
+     spec('Erreur : 25', 0, SPEC_PART, '25', 'incorrect'),
      spec('4,2 m en 6 : 0,7 m', 1, SPEC_RUBAN, '0,7', 'correct'),
      spec('Erreur : 7', 1, SPEC_RUBAN, '7', 'incorrect'),
      spec('Erreur : 0,07', 1, SPEC_RUBAN, '0,07', 'incorrect'),
@@ -587,25 +596,26 @@ MODELES.append(modele(
     delay=120))
 
 # --- 10. 6-124 : problèmes de division euclidienne ----------------------------------------
+# Nombres calculables de tête (décision de David, 2026-10-27, § 10.5) : diviseurs 6, 10, 12 ;
+# cars de 30, 40, 45, 50 ou 60 places ; au plus 10 semaines, jours ou heures.
 
 BOITES = variation(
     'On range ${{N}}$ œufs dans des boîtes de ${{d}}$. Combien de boîtes pleines'
     ' obtient-on ? Combien d\'œufs reste-t-il ?\n\n'
     '$$?~\\text{boîtes pleines et}~?~\\text{œufs restants}$$',
-    [var('sd', '0..3'), var('d', selon('sd', ['6', '10', '12', '30'])), var('q', '5..40'),
+    [var('sd', '0..2'), var('d', selon('sd', ['6', '10', '12'])), var('q', '3..15'),
      var('r', '1..{{eval:d-1}}'), var('N', 'eval:d*q+r')],
     ['{{q}}', '{{r}}'],
     [EUCLIDE,
      '$${{N}} = ({{d}} \\times ' + col('{{q}}') + ') + ' + col('{{r}}', 1) + '$$',
      'On obtient $' + col('{{q}}') + '$ boîtes pleines et il reste $' + col('{{r}}', 1)
-     + '$ œuf{{if:r>1|s|}}.'],
-    ['N<1000'])
+     + '$ œuf{{if:r>1|s|}}.'])
 
 CARS = variation(
     '${{E}}$ élèves partent en sortie. Un car a ${{c}}$ places. Combien de cars faut-il, au'
     ' minimum, pour transporter tous les élèves ?\n\n$$?~\\text{cars}$$',
-    [var('c', '30..60'), var('q', '2..9'), var('r', '1..{{eval:c-1}}'),
-     var('E', 'eval:c*q+r')],
+    [var('sc', '0..4'), var('c', selon('sc', ['30', '40', '45', '50', '60'])), var('q', '2..9'),
+     var('r', '1..{{eval:c-1}}'), var('E', 'eval:c*q+r')],
     ['{{eval:q+1}}'],
     [EUCLIDE,
      '$${{E}} = ({{c}} \\times {{q}}) + ' + col('{{r}}', 1) + '$$',
@@ -618,7 +628,7 @@ PAR = ['7', '24', '60']
 CONVERSION = variation(
     'Complète.\n\n$${{N}}~\\text{' + selon('s', DUREES) + '} = ?~\\text{' + selon('s', GRANDES)
     + '}~?~\\text{' + selon('s', DUREES) + '}$$',
-    [var('s', '0..2'), var('d', selon('s', PAR)), var('q', '2..40'),
+    [var('s', '0..2'), var('d', selon('s', PAR)), var('q', '2..10'),
      var('r', '1..{{eval:d-1}}'), var('N', 'eval:d*q+r')],
     ['{{q}}', '{{r}}'],
     ['Une ' + selon('s', ['semaine', 'journée', 'heure']) + ' compte ${{d}}$ '
@@ -628,25 +638,105 @@ CONVERSION = variation(
      + selon('s', GRANDES) + '}~' + col('{{r}}', 1) + '~\\text{'
      + selon('s', ['jour', 'heure', 'minute']) + '{{if:r>1|s|}}}$$'])
 
-SPEC_OEUFS = {'sd': 2, 'd': 12, 'q': 24, 'r': 7, 'N': 295}
-SPEC_CARS = {'c': 45, 'q': 5, 'r': 5, 'E': 230}
-SPEC_JOURS = {'s': 0, 'd': 7, 'q': 21, 'r': 3, 'N': 150}
+SPEC_OEUFS = {'sd': 2, 'd': 12, 'q': 8, 'r': 7, 'N': 103}
+SPEC_CARS = {'sc': 2, 'c': 45, 'q': 5, 'r': 5, 'E': 230}
+SPEC_JOURS = {'s': 0, 'd': 7, 'q': 9, 'r': 3, 'N': 66}
 MODELES.append(modele(
     '10-problemes-de-division-euclidienne', 'Problèmes de division euclidienne',
-    'Interpréter le quotient et le reste : boîtes pleines et reste, nombre de cars (un de plus'
-    ' pour le reste), jours en semaines et jours, heures en jours, minutes en heures',
+    'Interpréter le quotient et le reste, calculs de tête : boîtes pleines et reste (boîtes de 6,'
+    ' 10, 12), nombre de cars (un de plus pour le reste), jours en semaines et jours, heures en'
+    ' jours, minutes en heures',
     'Entiers', 'Problèmes', 'Division euclidienne', 1, [BOITES, CARS, CONVERSION],
-    [spec('295 œufs, boîtes de 12 : 24 et 7', 0, SPEC_OEUFS, ['24', '7'], 'correct'),
-     spec('Erreur : quotient et reste échangés', 0, SPEC_OEUFS, ['7', '24'], 'incorrect'),
-     spec('Erreur : quotient décimal (24,58)', 0, SPEC_OEUFS, ['24,58', '7'], 'incorrect'),
+    [spec('103 œufs, boîtes de 12 : 8 et 7', 0, SPEC_OEUFS, ['8', '7'], 'correct'),
+     spec('Erreur : quotient et reste échangés', 0, SPEC_OEUFS, ['7', '8'], 'incorrect'),
+     spec('Erreur : quotient décimal (8,58)', 0, SPEC_OEUFS, ['8,58', '7'], 'incorrect'),
      spec('230 élèves, 45 places : 6 cars', 1, SPEC_CARS, '6', 'correct'),
      spec('Erreur : le reste oublié (5)', 1, SPEC_CARS, '5', 'incorrect'),
      spec('Erreur : quotient décimal (5,1)', 1, SPEC_CARS, '5,1', 'incorrect'),
-     spec('150 jours = 21 semaines 3 jours', 2, SPEC_JOURS, ['21', '3'], 'correct'),
-     spec('Erreur : 21,4 semaines', 2, SPEC_JOURS, ['21,4', '0'], 'incorrect'),
+     spec('66 jours = 9 semaines 3 jours', 2, SPEC_JOURS, ['9', '3'], 'correct'),
+     spec('Erreur : 9,4 semaines', 2, SPEC_JOURS, ['9,4', '0'], 'incorrect'),
      spec('150 min = 2 h 30 min', 2, {'s': 2, 'd': 60, 'q': 2, 'r': 30, 'N': 150},
           ['2', '30'], 'correct')],
     delay=60))
+
+# --- 11. 6-114 : additionner en regroupant -------------------------------------------------
+# Sorti de 01 (décision de David, 2026-10-27, § 10.5) : un geste par modèle.
+
+REGROUPER_QUATRE = variation(
+    'Calcule astucieusement.\n\n$${{p}} + {{b}} + {{q}} + {{g}} = ?$$',
+    [var('u', '1..9'), var('D', '5..95'), var('w', '0..9'), var('s', '1..9'), var('M', '1..9'),
+     var('t', '0..9'), var('p', 'eval:u+D/100;d'), var('q', 'eval:w+(100-D)/100;d'),
+     var('b', 'eval:s+M/10;d'), var('g', 'eval:t+(10-M)/10;d')],
+    ['{{eval:u+w+s+t+2}}'],
+    ['**Regrouper.** Dans une somme, on peut changer l\'ordre des termes : on cherche des'
+     ' paires de nombres dont la somme est un entier.',
+     '$' + col('{{p}}') + ' + ' + col('{{q}}') + ' = {{eval:u+w+1}}$ et $' + col('{{b}}', 1)
+     + ' + ' + col('{{g}}', 1) + ' = {{eval:s+t+1}}$.',
+     '$${{p}} + {{b}} + {{q}} + {{g}} = {{eval:u+w+1}} + {{eval:s+t+1}} = '
+     + col('{{solution}}') + '$$'],
+    ['mod(D,10)!=0'])
+
+SPEC_QUATRE = {'u': 1, 'D': 25, 'w': 0, 's': 3, 'M': 6, 't': 0, 'p': '1.25', 'q': '0.75',
+               'b': '3.6', 'g': '0.4'}
+MODELES.append(modele(
+    '11-additionner-en-regroupant', 'Additionner des décimaux en regroupant',
+    'Calcul astucieux : regrouper les termes dont la somme est un entier (2,75 + 4,6 + 0,25 ;'
+    ' 1,25 + 3,6 + 0,75 + 0,4)',
+    'Décimaux', 'Additionner', 'Somme astucieuse', 3, [ADDITION_REGROUPER, REGROUPER_QUATRE],
+    [spec('2,75 + 4,6 + 0,25 = 7,6', 0, SPEC_REG, '7,6', 'correct'),
+     spec('Erreur : 4,6 lu 4,06 (7,06)', 0, SPEC_REG, '7,06', 'incorrect'),
+     spec('Erreur : 0,25 lu 0,025 (7,375)', 0, SPEC_REG, '7,375', 'incorrect'),
+     spec('1,25 + 3,6 + 0,75 + 0,4 = 6', 1, SPEC_QUATRE, '6', 'correct'),
+     spec('Erreur : 5 (une retenue oubliée)', 1, SPEC_QUATRE, '5', 'incorrect')]))
+
+# --- 12. 6-114 : ajouter 0,9 ; 1,9 ; 2,9 en compensant ------------------------------------
+# Le « + 9, + 19 » du CM2 transposé aux dixièmes (BO CM2, « Apprendre des procédures de calcul mental »).
+
+COMPENSER = '{{eval:k+1}}'
+AJOUTER_COMPENSER = variation(
+    'Calcule astucieusement.\n\n$${{x}} + {{y}} = ?$$',
+    [var('k', '0..2'), var('A', '11..99'), var('x', 'eval:A/10;d'), var('y', 'eval:k+0.9;d')],
+    ['{{eval:(A+10*k+9)/10;d}}'],
+    ['**Compenser.** ${{y}}$, c\'est $' + COMPENSER + ' - 0.1$ : on ajoute $' + COMPENSER
+     + '$, puis on enlève $0.1$.',
+     '$${{x}} + {{y}} = {{x}} + ' + col(COMPENSER) + ' - ' + col('0.1', 1) + ' = '
+     + '{{eval:(A+10*k+10)/10;d}} - 0.1 = ' + col('{{solution}}') + '$$'],
+    ['mod(A,10)!=0'])
+
+SPEC_COMP = {'k': 1, 'A': 34, 'x': '3.4', 'y': '1.9'}
+MODELES.append(modele(
+    '12-ajouter-en-compensant', 'Ajouter 0,9 ; 1,9 ; 2,9 en compensant',
+    'Calcul astucieux : ajouter 0,9, 1,9 ou 2,9 à un décimal en ajoutant 1, 2 ou 3 puis en'
+    ' enlevant 0,1 (3,4 + 1,9 = 3,4 + 2 − 0,1)',
+    'Décimaux', 'Additionner', 'Somme astucieuse', 4, [AJOUTER_COMPENSER],
+    [spec('3,4 + 1,9 = 5,3', 0, SPEC_COMP, '5,3', 'correct'),
+     spec('Erreur : 0,1 ajouté au lieu d\'être enlevé (5,5)', 0, SPEC_COMP, '5,5', 'incorrect'),
+     spec('Erreur : le 1 oublié (4,3)', 0, SPEC_COMP, '4,3', 'incorrect'),
+     spec('6,7 + 2,9 = 9,6', 0, {'k': 2, 'A': 67, 'x': '6.7', 'y': '2.9'}, '9,6', 'correct')]))
+
+# --- 13. 6-198 : soustraire 0,9 ; 1,9 ; 2,9 en compensant ---------------------------------
+# Voulu par David (2026-10-27, § 10.5) : le même geste en soustraction.
+
+SOUSTRAIRE_COMPENSER = variation(
+    'Calcule astucieusement.\n\n$${{x}} - {{y}} = ?$$',
+    [var('k', '0..2'), var('A', '11..99'), var('x', 'eval:A/10;d'), var('y', 'eval:k+0.9;d')],
+    ['{{eval:(A-10*k-9)/10;d}}'],
+    ['**Compenser.** ${{y}}$, c\'est $' + COMPENSER + ' - 0.1$ : on enlève $' + COMPENSER
+     + '$, c\'est $0.1$ de trop, donc on rajoute $0.1$.',
+     '$${{x}} - {{y}} = {{x}} - ' + col(COMPENSER) + ' + ' + col('0.1', 1) + ' = '
+     + '{{eval:(A-10*k-10)/10;d}} + 0.1 = ' + col('{{solution}}') + '$$'],
+    ['mod(A,10)!=0', 'A-10*k-10>=1'])
+
+SPEC_SCOMP = {'k': 1, 'A': 53, 'x': '5.3', 'y': '1.9'}
+MODELES.append(modele(
+    '13-soustraire-en-compensant', 'Soustraire 0,9 ; 1,9 ; 2,9 en compensant',
+    'Calcul astucieux : soustraire 0,9, 1,9 ou 2,9 à un décimal en enlevant 1, 2 ou 3 puis en'
+    ' rajoutant 0,1 (5,3 − 1,9 = 5,3 − 2 + 0,1)',
+    'Décimaux', 'Soustraire', 'Différence astucieuse', 1, [SOUSTRAIRE_COMPENSER],
+    [spec('5,3 − 1,9 = 3,4', 0, SPEC_SCOMP, '3,4', 'correct'),
+     spec('Erreur : 0,1 enlevé au lieu d\'être rajouté (3,2)', 0, SPEC_SCOMP, '3,2', 'incorrect'),
+     spec('Erreur : le 1 oublié (4,4)', 0, SPEC_SCOMP, '4,4', 'incorrect'),
+     spec('9,6 − 2,9 = 6,7', 0, {'k': 2, 'A': 96, 'x': '9.6', 'y': '2.9'}, '6,7', 'correct')]))
 
 # Grandeurs en `\\unit{…}` (notation-unites.md), sauf juste après une case : `?~\\text{€}` garde une
 # case de nombre (l'unité est écrite, l'élève ne la tape pas)

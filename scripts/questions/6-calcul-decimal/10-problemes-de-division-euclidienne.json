@@ -1,6 +1,6 @@
 {
 	"title": "Problèmes de division euclidienne",
-	"description": "Interpréter le quotient et le reste : boîtes pleines et reste, nombre de cars (un de plus pour le reste), jours en semaines et jours, heures en jours, minutes en heures",
+	"description": "Interpréter le quotient et le reste, calculs de tête : boîtes pleines et reste (boîtes de 6, 10, 12), nombre de cars (un de plus pour le reste), jours en semaines et jours, heures en jours, minutes en heures",
 	"grades": ["6"],
 	"theme": "Entiers",
 	"domain": "Problèmes",
@@ -14,15 +14,15 @@
 			"variables": [
 				{
 					"name": "sd",
-					"expression": "0..3"
+					"expression": "0..2"
 				},
 				{
 					"name": "d",
-					"expression": "{{if:sd==0|6|{{if:sd==1|10|{{if:sd==2|12|30}}}}}}"
+					"expression": "{{if:sd==0|6|{{if:sd==1|10|12}}}}"
 				},
 				{
 					"name": "q",
-					"expression": "5..40"
+					"expression": "3..15"
 				},
 				{
 					"name": "r",
@@ -33,7 +33,6 @@
 					"expression": "eval:d*q+r"
 				}
 			],
-			"conditions": ["N<1000"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{q}}"
@@ -54,8 +53,12 @@
 			"statement": "${{E}}$ élèves partent en sortie. Un car a ${{c}}$ places. Combien de cars faut-il, au minimum, pour transporter tous les élèves ?\n\n$$?~\\text{cars}$$",
 			"variables": [
 				{
+					"name": "sc",
+					"expression": "0..4"
+				},
+				{
 					"name": "c",
-					"expression": "30..60"
+					"expression": "{{if:sc==0|30|{{if:sc==1|40|{{if:sc==2|45|{{if:sc==3|50|60}}}}}}}}"
 				},
 				{
 					"name": "q",
@@ -96,7 +99,7 @@
 				},
 				{
 					"name": "q",
-					"expression": "2..40"
+					"expression": "2..10"
 				},
 				{
 					"name": "r",
@@ -126,16 +129,16 @@
 	],
 	"testSpecs": [
 		{
-			"description": "295 œufs, boîtes de 12 : 24 et 7",
+			"description": "103 œufs, boîtes de 12 : 8 et 7",
 			"variationIndex": 0,
 			"variables": {
 				"sd": "2",
 				"d": "12",
-				"q": "24",
+				"q": "8",
 				"r": "7",
-				"N": "295"
+				"N": "103"
 			},
-			"answers": ["24", "7"],
+			"answers": ["8", "7"],
 			"expected": {
 				"status": "correct"
 			}
@@ -146,26 +149,26 @@
 			"variables": {
 				"sd": "2",
 				"d": "12",
-				"q": "24",
+				"q": "8",
 				"r": "7",
-				"N": "295"
+				"N": "103"
 			},
-			"answers": ["7", "24"],
+			"answers": ["7", "8"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "Erreur : quotient décimal (24,58)",
+			"description": "Erreur : quotient décimal (8,58)",
 			"variationIndex": 0,
 			"variables": {
 				"sd": "2",
 				"d": "12",
-				"q": "24",
+				"q": "8",
 				"r": "7",
-				"N": "295"
+				"N": "103"
 			},
-			"answers": ["24,58", "7"],
+			"answers": ["8,58", "7"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -174,6 +177,7 @@
 			"description": "230 élèves, 45 places : 6 cars",
 			"variationIndex": 1,
 			"variables": {
+				"sc": "2",
 				"c": "45",
 				"q": "5",
 				"r": "5",
@@ -188,6 +192,7 @@
 			"description": "Erreur : le reste oublié (5)",
 			"variationIndex": 1,
 			"variables": {
+				"sc": "2",
 				"c": "45",
 				"q": "5",
 				"r": "5",
@@ -202,6 +207,7 @@
 			"description": "Erreur : quotient décimal (5,1)",
 			"variationIndex": 1,
 			"variables": {
+				"sc": "2",
 				"c": "45",
 				"q": "5",
 				"r": "5",
@@ -213,31 +219,31 @@
 			}
 		},
 		{
-			"description": "150 jours = 21 semaines 3 jours",
+			"description": "66 jours = 9 semaines 3 jours",
 			"variationIndex": 2,
 			"variables": {
 				"s": "0",
 				"d": "7",
-				"q": "21",
+				"q": "9",
 				"r": "3",
-				"N": "150"
+				"N": "66"
 			},
-			"answers": ["21", "3"],
+			"answers": ["9", "3"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "Erreur : 21,4 semaines",
+			"description": "Erreur : 9,4 semaines",
 			"variationIndex": 2,
 			"variables": {
 				"s": "0",
 				"d": "7",
-				"q": "21",
+				"q": "9",
 				"r": "3",
-				"N": "150"
+				"N": "66"
 			},
-			"answers": ["21,4", "0"],
+			"answers": ["9,4", "0"],
 			"expected": {
 				"status": "incorrect"
 			}

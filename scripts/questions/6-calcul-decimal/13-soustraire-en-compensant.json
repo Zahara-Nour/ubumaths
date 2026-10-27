@@ -1,0 +1,104 @@
+{
+	"title": "Soustraire 0,9 ; 1,9 ; 2,9 en compensant",
+	"description": "Calcul astucieux : soustraire 0,9, 1,9 ou 2,9 à un décimal en enlevant 1, 2 ou 3 puis en rajoutant 0,1 (5,3 − 1,9 = 5,3 − 2 + 0,1)",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Soustraire",
+	"subdomain": "Différence astucieuse",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule astucieusement.\n\n$${{x}} - {{y}} = ?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "A",
+					"expression": "11..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "y",
+					"expression": "eval:k+0.9;d"
+				}
+			],
+			"conditions": ["mod(A,10)!=0", "A-10*k-10>=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(A-10*k-9)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Compenser.** ${{y}}$, c'est ${{eval:k+1}} - 0.1$ : on enlève ${{eval:k+1}}$, c'est $0.1$ de trop, donc on rajoute $0.1$.",
+					"$${{x}} - {{y}} = {{x}} - \\textcolor{{{color:primary.0}}}{{{eval:k+1}}} + \\textcolor{{{color:primary.1}}}{0.1} = {{eval:(A-10*k-10)/10;d}} + 0.1 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5,3 − 1,9 = 3,4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"A": "53",
+				"x": "5.3",
+				"y": "1.9"
+			},
+			"answers": ["3,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,1 enlevé au lieu d'être rajouté (3,2)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"A": "53",
+				"x": "5.3",
+				"y": "1.9"
+			},
+			"answers": ["3,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le 1 oublié (4,4)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"A": "53",
+				"x": "5.3",
+				"y": "1.9"
+			},
+			"answers": ["4,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9,6 − 2,9 = 6,7",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"A": "96",
+				"x": "9.6",
+				"y": "2.9"
+			},
+			"answers": ["6,7"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

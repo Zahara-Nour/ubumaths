@@ -1,6 +1,6 @@
 {
 	"title": "Additionner des nombres décimaux",
-	"description": "Somme de deux décimaux de longueurs différentes (12,7 + 3,85), regroupement en un entier (2,75 + 4,6 + 0,25), entier + décimal (7 + 0,35)",
+	"description": "Somme de deux décimaux de longueurs différentes (12,7 + 3,85), entier + décimal (7 + 0,35) ; calcul posé au brouillon si besoin",
 	"grades": ["6"],
 	"theme": "Décimaux",
 	"domain": "Additionner",
@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Calcule.\n\n$${{x}} + {{y}} = ?$$",
+			"statement": "Calcule. Pose l'opération sur ton brouillon si besoin.\n\n$${{x}} + {{y}} = ?$$",
 			"variables": [
 				{
 					"name": "A",
@@ -44,53 +44,7 @@
 			}
 		},
 		{
-			"statement": "Calcule astucieusement.\n\n$${{p}} + {{b}} + {{q}} = ?$$",
-			"variables": [
-				{
-					"name": "u",
-					"expression": "1..20"
-				},
-				{
-					"name": "D",
-					"expression": "5..95"
-				},
-				{
-					"name": "w",
-					"expression": "0..9"
-				},
-				{
-					"name": "M",
-					"expression": "11..99"
-				},
-				{
-					"name": "p",
-					"expression": "eval:u+D/100;d"
-				},
-				{
-					"name": "q",
-					"expression": "eval:w+(100-D)/100;d"
-				},
-				{
-					"name": "b",
-					"expression": "eval:M/10;d"
-				}
-			],
-			"conditions": ["mod(D,10)!=0", "mod(M,10)!=0"],
-			"blanks": [
-				{
-					"expectedAnswer": "{{eval:u+w+1+M/10;d}}"
-				}
-			],
-			"correction": {
-				"steps": [
-					"**Regrouper.** Dans une somme, on peut changer l'ordre des termes : on cherche deux nombres dont la somme est un entier.",
-					"$\\textcolor{{{color:primary.0}}}{{{p}}} + \\textcolor{{{color:primary.0}}}{{{q}}} = {{eval:u+w+1}}$ : ${{D}}$ centièmes et ${{eval:100-D}}$ centièmes font $100$ centièmes, soit $1$ unité.",
-					"$${{p}} + {{b}} + {{q}} = {{eval:u+w+1}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
-				]
-			}
-		},
-		{
-			"statement": "Calcule.\n\n$${{n}} + {{y}} = ?$$",
+			"statement": "Calcule. Pose l'opération sur ton brouillon si besoin.\n\n$${{n}} + {{y}} = ?$$",
 			"variables": [
 				{
 					"name": "n",
@@ -164,42 +118,8 @@
 			}
 		},
 		{
-			"description": "2,75 + 4,6 + 0,25 = 7,6",
-			"variationIndex": 1,
-			"variables": {
-				"u": "2",
-				"D": "75",
-				"w": "0",
-				"M": "46",
-				"p": "2.75",
-				"q": "0.25",
-				"b": "4.6"
-			},
-			"answers": ["7,6"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "Erreur : 4,6 lu 4,06 (7,06)",
-			"variationIndex": 1,
-			"variables": {
-				"u": "2",
-				"D": "75",
-				"w": "0",
-				"M": "46",
-				"p": "2.75",
-				"q": "0.25",
-				"b": "4.6"
-			},
-			"answers": ["7,06"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
 			"description": "7 + 0,35 = 7,35",
-			"variationIndex": 2,
+			"variationIndex": 1,
 			"variables": {
 				"n": "7",
 				"Y": "35",
@@ -212,7 +132,7 @@
 		},
 		{
 			"description": "Erreur : 7 ajouté aux centièmes (0,42)",
-			"variationIndex": 2,
+			"variationIndex": 1,
 			"variables": {
 				"n": "7",
 				"Y": "35",

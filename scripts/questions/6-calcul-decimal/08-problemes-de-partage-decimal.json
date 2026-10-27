@@ -1,6 +1,6 @@
 {
 	"title": "Problèmes de partage décimal",
-	"description": "Diviser une somme, une longueur, un prix total par un entier d'un chiffre (22,35 € entre 3 ; 4,2 m en 6 ; 4 cahiers pour 7,60 €)",
+	"description": "Diviser de tête une somme, une longueur, un prix total par un entier d'un chiffre (7,50 € entre 3 ; 4,2 m en 6 ; 4 cahiers pour 7,60 €)",
 	"grades": ["6"],
 	"theme": "Décimaux",
 	"domain": "Problèmes",
@@ -27,28 +27,24 @@
 				},
 				{
 					"name": "j",
-					"expression": "20..400"
-				},
-				{
-					"name": "P",
-					"expression": "eval:5*j"
+					"expression": "5..49"
 				},
 				{
 					"name": "C",
-					"expression": "eval:n*P"
+					"expression": "eval:10*n*j"
 				}
 			],
-			"conditions": ["mod(C,10)!=0"],
+			"conditions": ["mod(j,10)!=0", "n*j<=99", "mod(n*j,10)!=0"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:P/100;d}}"
+					"expectedAnswer": "{{eval:j/10;d}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"**Partager en parts égales**, c'est diviser : part $=$ somme $\\div$ nombre de parts.",
-					"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}}$$",
-					"Vérification : ${{n}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}$."
+					"De tête : ${{eval:n*j}}$ dixièmes $\\div {{n}} = {{j}}$ dixièmes.",
+					"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((10*j)/100)}}.{{eval:floor(mod((10*j),100)/10)}}{{eval:mod((10*j),10)}}}$$"
 				]
 			}
 		},
@@ -60,25 +56,25 @@
 					"expression": "2..9"
 				},
 				{
-					"name": "Q",
-					"expression": "11..150"
+					"name": "q",
+					"expression": "1..15"
 				},
 				{
 					"name": "L",
-					"expression": "eval:n*Q/100;d"
+					"expression": "eval:n*q/10;d"
 				}
 			],
-			"conditions": ["mod(n*Q,100)!=0"],
+			"conditions": ["mod(n*q,10)!=0", "n*q<=99", "mod(q,10)!=0"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:Q/100;d}}"
+					"expectedAnswer": "{{eval:q/10;d}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"**Partager en parts égales**, c'est diviser : longueur d'un morceau $=$ longueur du ruban $\\div$ nombre de morceaux.",
-					"$${{L}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
-					"Vérification : ${{n}} \\times {{solution}} = {{L}}$."
+					"De tête : ${{eval:n*q}}$ dixièmes de mètre $\\div {{n}} = {{q}}$ dixièmes.",
+					"$${{L}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
 				]
 			}
 		},
@@ -95,73 +91,81 @@
 				},
 				{
 					"name": "j",
-					"expression": "10..80"
-				},
-				{
-					"name": "P",
-					"expression": "eval:5*j"
+					"expression": "5..49"
 				},
 				{
 					"name": "C",
-					"expression": "eval:n*P"
+					"expression": "eval:10*n*j"
 				}
 			],
+			"conditions": ["mod(j,10)!=0", "n*j<=99", "mod(n*j,10)!=0"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:P/100;d}}"
+					"expectedAnswer": "{{eval:j/10;d}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"**Prix d'un objet** $=$ prix total $\\div$ nombre d'objets.",
-					"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}}$$",
-					"Vérification : ${{n}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}$."
+					"De tête : ${{eval:n*j}}$ dixièmes $\\div {{n}} = {{j}}$ dixièmes.",
+					"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((10*j)/100)}}.{{eval:floor(mod((10*j),100)/10)}}{{eval:mod((10*j),10)}}}$$"
 				]
 			}
 		}
 	],
 	"testSpecs": [
 		{
-			"description": "22,35 € entre 3 : 7,45 €",
+			"description": "7,50 € entre 3 : 2,5 €",
 			"variationIndex": 0,
 			"variables": {
 				"o": "0",
 				"n": "3",
-				"j": "149",
-				"P": "745",
-				"C": "2235"
+				"j": "25",
+				"C": "750"
 			},
-			"answers": ["7,45"],
+			"answers": ["2,5"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "Erreur : multiplié (67,05)",
+			"description": "2,50 € accepté",
 			"variationIndex": 0,
 			"variables": {
 				"o": "0",
 				"n": "3",
-				"j": "149",
-				"P": "745",
-				"C": "2235"
+				"j": "25",
+				"C": "750"
 			},
-			"answers": ["67,05"],
+			"answers": ["2,50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : multiplié (22,5)",
+			"variationIndex": 0,
+			"variables": {
+				"o": "0",
+				"n": "3",
+				"j": "25",
+				"C": "750"
+			},
+			"answers": ["22,5"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "Erreur : 7,4 (centimes oubliés)",
+			"description": "Erreur : 25",
 			"variationIndex": 0,
 			"variables": {
 				"o": "0",
 				"n": "3",
-				"j": "149",
-				"P": "745",
-				"C": "2235"
+				"j": "25",
+				"C": "750"
 			},
-			"answers": ["7,4"],
+			"answers": ["25"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -171,7 +175,7 @@
 			"variationIndex": 1,
 			"variables": {
 				"n": "6",
-				"Q": "70",
+				"q": "7",
 				"L": "4.2"
 			},
 			"answers": ["0,7"],
@@ -184,7 +188,7 @@
 			"variationIndex": 1,
 			"variables": {
 				"n": "6",
-				"Q": "70",
+				"q": "7",
 				"L": "4.2"
 			},
 			"answers": ["7"],
@@ -197,7 +201,7 @@
 			"variationIndex": 1,
 			"variables": {
 				"n": "6",
-				"Q": "70",
+				"q": "7",
 				"L": "4.2"
 			},
 			"answers": ["0,07"],
@@ -211,8 +215,7 @@
 			"variables": {
 				"o": "0",
 				"n": "4",
-				"j": "38",
-				"P": "190",
+				"j": "19",
 				"C": "760"
 			},
 			"answers": ["1,90"],
@@ -226,8 +229,7 @@
 			"variables": {
 				"o": "0",
 				"n": "4",
-				"j": "38",
-				"P": "190",
+				"j": "19",
 				"C": "760"
 			},
 			"answers": ["1,9"],
@@ -241,8 +243,7 @@
 			"variables": {
 				"o": "0",
 				"n": "4",
-				"j": "38",
-				"P": "190",
+				"j": "19",
 				"C": "760"
 			},
 			"answers": ["1,15"],

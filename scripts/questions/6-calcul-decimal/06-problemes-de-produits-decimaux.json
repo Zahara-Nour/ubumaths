@@ -1,6 +1,6 @@
 {
 	"title": "Problèmes de produits décimaux",
-	"description": "Prix à payer : masse × prix au kilo (2,4 kg à 3,50 €), litres × prix du litre, masse inférieure à 1 kg (le produit est plus petit)",
+	"description": "Prix à payer, calculs de tête : masse × prix au kilo (1,5 kg à 2,40 €), 10, 20, 30 ou 40 litres × prix du litre, 0,2 ou 0,5 kg (le produit est plus petit)",
 	"grades": ["6"],
 	"theme": "Décimaux",
 	"domain": "Problèmes",
@@ -22,33 +22,38 @@
 					"expression": "0..2"
 				},
 				{
+					"name": "h",
+					"expression": "6..29"
+				},
+				{
 					"name": "k",
-					"expression": "12..59"
+					"expression": "eval:2*h"
 				},
 				{
 					"name": "pk",
 					"expression": "eval:10*k"
 				},
 				{
-					"name": "M",
-					"expression": "11..49"
+					"name": "j",
+					"expression": "0..3"
 				},
 				{
 					"name": "m",
-					"expression": "eval:M/10;d"
+					"expression": "eval:j+0.5;d"
 				}
 			],
-			"conditions": ["mod(k,10)!=0", "mod(M,10)!=0"],
+			"conditions": ["mod(k,10)!=0"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:M*k/100;d}}"
+					"expectedAnswer": "{{eval:(2*j+1)*k/20;d}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme.",
-					"$${{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((M*k)/100)}}.{{eval:floor(mod((M*k),100)/10)}}{{eval:mod((M*k),10)}}}$$",
-					"Léa paie $\\textcolor{{{color:primary.0}}}{{{eval:floor((M*k)/100)}}.{{eval:floor(mod((M*k),100)/10)}}{{eval:mod((M*k),10)}}}~\\unit{€}$."
+					"De tête : {{if:j==0|la moitié de ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$|${{j}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$, plus la moitié de ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$}}.",
+					"$${{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(((2*j+1)*k*5)/100)}}.{{eval:floor(mod(((2*j+1)*k*5),100)/10)}}{{eval:mod(((2*j+1)*k*5),10)}}}$$",
+					"Léa paie $\\textcolor{{{color:primary.0}}}{{{eval:floor(((2*j+1)*k*5)/100)}}.{{eval:floor(mod(((2*j+1)*k*5),100)/10)}}{{eval:mod(((2*j+1)*k*5),10)}}}~\\unit{€}$."
 				]
 			}
 		},
@@ -60,8 +65,12 @@
 					"expression": "160..199"
 				},
 				{
+					"name": "t",
+					"expression": "1..4"
+				},
+				{
 					"name": "L",
-					"expression": "20..50"
+					"expression": "eval:10*t"
 				}
 			],
 			"conditions": ["mod(P,10)!=0"],
@@ -73,8 +82,8 @@
 			"correction": {
 				"steps": [
 					"**Prix à payer** $=$ nombre de litres $\\times$ prix d'un litre.",
-					"$${{L}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((L*P)/100)}}.{{eval:floor(mod((L*P),100)/10)}}{{eval:mod((L*P),10)}}}$$",
-					"Ordre de grandeur : ${{L}} \\times 2 = {{eval:2*L}}$ ; le résultat est un peu moins."
+					"De tête : $10 \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:P/10;d}}${{if:t>1|, puis $\\times {{t}}$|}}.",
+					"$${{L}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((L*P)/100)}}.{{eval:floor(mod((L*P),100)/10)}}{{eval:mod((L*P),10)}}}$$"
 				]
 			}
 		},
@@ -82,16 +91,24 @@
 			"statement": "Le fromage coûte ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Inès en achète $0.{{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
 			"variables": [
 				{
+					"name": "h",
+					"expression": "6..49"
+				},
+				{
 					"name": "k",
-					"expression": "12..99"
+					"expression": "eval:2*h"
 				},
 				{
 					"name": "pk",
 					"expression": "eval:10*k"
 				},
 				{
+					"name": "sm",
+					"expression": "0..1"
+				},
+				{
 					"name": "m",
-					"expression": "2..9"
+					"expression": "{{if:sm==0|2|5}}"
 				}
 			],
 			"conditions": ["mod(k,10)!=0"],
@@ -103,6 +120,7 @@
 			"correction": {
 				"steps": [
 					"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme, même quand la masse est plus petite que $1$ kg.",
+					"{{if:sm==0|$0.2$ kg, c'est le cinquième d'un kilogramme : ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} \\div 5$.|$0.5$ kg, c'est la moitié d'un kilogramme : ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} \\div 2$.}}",
 					"$$0.{{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((m*k)/100)}}.{{eval:floor(mod((m*k),100)/10)}}{{eval:mod((m*k),10)}}}$$",
 					"Elle achète moins d'un kilogramme : elle paie moins que ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$."
 				]
@@ -111,137 +129,151 @@
 	],
 	"testSpecs": [
 		{
-			"description": "2,4 kg à 3,50 € : 8,4 €",
+			"description": "1,5 kg à 2,40 € : 3,6 €",
 			"variationIndex": 0,
 			"variables": {
 				"f": "0",
-				"k": "35",
-				"pk": "350",
-				"M": "24",
-				"m": "2.4"
+				"h": "12",
+				"k": "24",
+				"pk": "240",
+				"j": "1",
+				"m": "1.5"
 			},
-			"answers": ["8,4"],
+			"answers": ["3,6"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "8,40 € accepté",
+			"description": "3,60 € accepté",
 			"variationIndex": 0,
 			"variables": {
 				"f": "0",
-				"k": "35",
-				"pk": "350",
-				"M": "24",
-				"m": "2.4"
+				"h": "12",
+				"k": "24",
+				"pk": "240",
+				"j": "1",
+				"m": "1.5"
 			},
-			"answers": ["8,40"],
+			"answers": ["3,60"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "Erreur : addition (5,9)",
+			"description": "Erreur : addition (3,9)",
 			"variationIndex": 0,
 			"variables": {
 				"f": "0",
-				"k": "35",
-				"pk": "350",
-				"M": "24",
-				"m": "2.4"
+				"h": "12",
+				"k": "24",
+				"pk": "240",
+				"j": "1",
+				"m": "1.5"
 			},
-			"answers": ["5,9"],
+			"answers": ["3,9"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "Erreur : virgule (84)",
+			"description": "Erreur : 1 kg seulement (2,4)",
 			"variationIndex": 0,
 			"variables": {
 				"f": "0",
-				"k": "35",
-				"pk": "350",
-				"M": "24",
-				"m": "2.4"
+				"h": "12",
+				"k": "24",
+				"pk": "240",
+				"j": "1",
+				"m": "1.5"
 			},
-			"answers": ["84"],
+			"answers": ["2,4"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "35 L à 1,85 € : 64,75 €",
+			"description": "20 L à 1,85 € : 37 €",
 			"variationIndex": 1,
 			"variables": {
 				"P": "185",
-				"L": "35"
+				"t": "2",
+				"L": "20"
 			},
-			"answers": ["64,75"],
+			"answers": ["37"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "Erreur : virgule (647,5)",
+			"description": "Erreur : virgule (370)",
 			"variationIndex": 1,
 			"variables": {
 				"P": "185",
-				"L": "35"
+				"t": "2",
+				"L": "20"
 			},
-			"answers": ["647,5"],
+			"answers": ["370"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "0,6 kg à 4,50 € : 2,7 €",
+			"description": "0,5 kg à 4,80 € : 2,4 €",
 			"variationIndex": 2,
 			"variables": {
-				"k": "45",
-				"pk": "450",
-				"m": "6"
+				"h": "24",
+				"k": "48",
+				"pk": "480",
+				"sm": "1",
+				"m": "5"
 			},
-			"answers": ["2,7"],
+			"answers": ["2,4"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "2,70 € accepté",
+			"description": "2,40 € accepté",
 			"variationIndex": 2,
 			"variables": {
-				"k": "45",
-				"pk": "450",
-				"m": "6"
+				"h": "24",
+				"k": "48",
+				"pk": "480",
+				"sm": "1",
+				"m": "5"
 			},
-			"answers": ["2,70"],
+			"answers": ["2,40"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "Erreur : 27",
+			"description": "Erreur : 24",
 			"variationIndex": 2,
 			"variables": {
-				"k": "45",
-				"pk": "450",
-				"m": "6"
+				"h": "24",
+				"k": "48",
+				"pk": "480",
+				"sm": "1",
+				"m": "5"
 			},
-			"answers": ["27"],
+			"answers": ["24"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "Erreur : addition (5,1)",
+			"description": "Erreur : addition (5,3)",
 			"variationIndex": 2,
 			"variables": {
-				"k": "45",
-				"pk": "450",
-				"m": "6"
+				"h": "24",
+				"k": "48",
+				"pk": "480",
+				"sm": "1",
+				"m": "5"
 			},
-			"answers": ["5,1"],
+			"answers": ["5,3"],
 			"expected": {
 				"status": "incorrect"
 			}

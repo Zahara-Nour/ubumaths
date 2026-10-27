@@ -1,0 +1,210 @@
+{
+	"title": "Additionner des décimaux en regroupant",
+	"description": "Calcul astucieux : regrouper les termes dont la somme est un entier (2,75 + 4,6 + 0,25 ; 1,25 + 3,6 + 0,75 + 0,4)",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Additionner",
+	"subdomain": "Somme astucieuse",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule astucieusement.\n\n$${{p}} + {{b}} + {{q}} = ?$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..20"
+				},
+				{
+					"name": "D",
+					"expression": "5..95"
+				},
+				{
+					"name": "w",
+					"expression": "0..9"
+				},
+				{
+					"name": "M",
+					"expression": "11..99"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u+D/100;d"
+				},
+				{
+					"name": "q",
+					"expression": "eval:w+(100-D)/100;d"
+				},
+				{
+					"name": "b",
+					"expression": "eval:M/10;d"
+				}
+			],
+			"conditions": ["mod(D,10)!=0", "mod(M,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u+w+1+M/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Regrouper.** Dans une somme, on peut changer l'ordre des termes : on cherche deux nombres dont la somme est un entier.",
+					"$\\textcolor{{{color:primary.0}}}{{{p}}} + \\textcolor{{{color:primary.0}}}{{{q}}} = {{eval:u+w+1}}$ : ${{D}}$ centièmes et ${{eval:100-D}}$ centièmes font $100$ centièmes, soit $1$ unité.",
+					"$${{p}} + {{b}} + {{q}} = {{eval:u+w+1}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule astucieusement.\n\n$${{p}} + {{b}} + {{q}} + {{g}} = ?$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "D",
+					"expression": "5..95"
+				},
+				{
+					"name": "w",
+					"expression": "0..9"
+				},
+				{
+					"name": "s",
+					"expression": "1..9"
+				},
+				{
+					"name": "M",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "0..9"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u+D/100;d"
+				},
+				{
+					"name": "q",
+					"expression": "eval:w+(100-D)/100;d"
+				},
+				{
+					"name": "b",
+					"expression": "eval:s+M/10;d"
+				},
+				{
+					"name": "g",
+					"expression": "eval:t+(10-M)/10;d"
+				}
+			],
+			"conditions": ["mod(D,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u+w+s+t+2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Regrouper.** Dans une somme, on peut changer l'ordre des termes : on cherche des paires de nombres dont la somme est un entier.",
+					"$\\textcolor{{{color:primary.0}}}{{{p}}} + \\textcolor{{{color:primary.0}}}{{{q}}} = {{eval:u+w+1}}$ et $\\textcolor{{{color:primary.1}}}{{{b}}} + \\textcolor{{{color:primary.1}}}{{{g}}} = {{eval:s+t+1}}$.",
+					"$${{p}} + {{b}} + {{q}} + {{g}} = {{eval:u+w+1}} + {{eval:s+t+1}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2,75 + 4,6 + 0,25 = 7,6",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"D": "75",
+				"w": "0",
+				"M": "46",
+				"p": "2.75",
+				"q": "0.25",
+				"b": "4.6"
+			},
+			"answers": ["7,6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4,6 lu 4,06 (7,06)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"D": "75",
+				"w": "0",
+				"M": "46",
+				"p": "2.75",
+				"q": "0.25",
+				"b": "4.6"
+			},
+			"answers": ["7,06"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,25 lu 0,025 (7,375)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"D": "75",
+				"w": "0",
+				"M": "46",
+				"p": "2.75",
+				"q": "0.25",
+				"b": "4.6"
+			},
+			"answers": ["7,375"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1,25 + 3,6 + 0,75 + 0,4 = 6",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1",
+				"D": "25",
+				"w": "0",
+				"s": "3",
+				"M": "6",
+				"t": "0",
+				"p": "1.25",
+				"q": "0.75",
+				"b": "3.6",
+				"g": "0.4"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 (une retenue oubliée)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1",
+				"D": "25",
+				"w": "0",
+				"s": "3",
+				"M": "6",
+				"t": "0",
+				"p": "1.25",
+				"q": "0.75",
+				"b": "3.6",
+				"g": "0.4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
