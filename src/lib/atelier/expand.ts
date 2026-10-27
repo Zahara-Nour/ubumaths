@@ -32,11 +32,13 @@ import {
 } from '$lib/mathAST/pedagogical-simplify/expand-explained';
 import { isMonomial } from '$lib/mathAST/pedagogical-simplify/expand-order';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { flattenSumShallow } from '$lib/mathAST/flatten';
 import { findNodes } from '$lib/mathAST/transforms';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { astOf } from './parse';
+import { degreeSignWritten } from './degrees';
 import { summaryOf } from './steps-summary';
 import { tidyAlternative, type DomainAlternative } from './domain-guard';
 
@@ -240,7 +242,8 @@ export function expandExpression(
 		if (explained.kind === 'unfinished') {
 			return { kind: 'inchangee', message: `Je ne sais pas développer « ${typed} ».` };
 		}
-		const answer = toLatex(explained.answer);
+		// Un angle en degrés sans valeur remarquable reste écrit, signe collé (`cos(20°)`)
+		const answer = degreeSignWritten(displayUnitsInLatex(toLatex(explained.answer)));
 		if (answer.trim() === '') {
 			return { kind: 'inchangee', message: unchangedMessage(node, typed) };
 		}

@@ -42,6 +42,7 @@ import {
 	variableNameOf
 } from '$lib/mathAST/cli/core/variable-argument';
 import { astOf, variablesOf } from './parse';
+import { radiansInTrigonometry } from './angle-radians';
 import { concludedSolutions, conclusionAgrees } from './solve-steps-check';
 import { summaryOf } from './steps-summary';
 import { approximateSolutionsLatex } from '$lib/mathAST/cli/approximation';
@@ -242,8 +243,11 @@ export function solveSteps(
 		// valeurs-remarquables) : `cos(π/3)x = 1` se résout comme `½x = 1`, et
 		// « On divise par 1/2 » dit ce que montre la ligne
 		const remarkable = generateRemarkableValueSteps(typedRelation, { schoolLevel: 'lycee' });
-		if (remarkable.result.type !== 'relation') return null;
-		const relation: RelationNode = remarkable.result;
+		// Un angle en degrés sans valeur remarquable (`cos(20°)`) se résout en
+		// radians, exact (`cos(π/9)`), comme avant : le solveur ne lit pas les unités
+		const solvable = radiansInTrigonometry(remarkable.result);
+		if (solvable.type !== 'relation') return null;
+		const relation: RelationNode = solvable;
 		const valueRenderer = new PedagogicalSimplifyRenderer();
 		const valuesIn = (verbosity: 'detailed' | 'summarized') =>
 			valueRenderer.renderAll(remarkable.steps, { schoolLevel: 'lycee', verbosity });

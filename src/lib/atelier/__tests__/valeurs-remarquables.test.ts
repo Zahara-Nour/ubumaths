@@ -192,3 +192,42 @@ describe('.résoudre — la valeur d’abord, avec son étape', () => {
 		expect(titles.some((t) => t.includes('valeur remarquable'))).toBe(false);
 	});
 });
+
+// Q3 : en degrés, même règle et même étape — l'argument n'est plus converti en
+// radians (et calculé) avant `.développer` et `.résoudre`
+describe('.développer et .résoudre — en degrés', () => {
+	const COS_60 = String.raw`$\cos\left( 60{}^{\circ} \right) = \dfrac{1}{2}$`;
+
+	it.each([
+		['.résoudre cos(60°)x=1', 'x = 2'],
+		['.résoudre cos(-60°)x=1', 'x = 2'],
+		['.développer (x+cos(60°))^2', String.raw`x^2 + x + \dfrac{1}{4}`]
+	])('%s → %s, l’étape dit cos(60°)', (input, expected) => {
+		const { latex, titles } = line(input);
+		expect(latex).toBe(expected);
+		expect(titles[0]).toContain('On utilise une valeur remarquable : $\\cos\\left( ');
+		if (!input.includes('-60'))
+			expect(titles[0]).toBe(`On utilise une valeur remarquable : ${COS_60}`);
+	});
+
+	it('.résoudre x + cos(420°) = 1 : la période, la valeur, puis on soustrait', () => {
+		const { latex, titles } = line('.résoudre x+cos(420°)=1');
+		expect(latex).toBe(String.raw`x = \dfrac{1}{2}`);
+		expect(titles.slice(0, 2)).toEqual([
+			'cos est 2π-périodique',
+			`On utilise une valeur remarquable : ${COS_60}`
+		]);
+	});
+
+	it('hors table : .résoudre en radians exacts, comme avant', () => {
+		const { latex, titles } = line('.résoudre cos(20°)x=1');
+		expect(latex).toBe(String.raw`x = \dfrac{1}{\cos\left( \dfrac{\pi}{9} \right)}`);
+		expect(titles[0]).toBe('Équation du premier degré');
+	});
+
+	it('hors table : .développer garde les degrés, signe collé', () => {
+		expect(line('.développer x(cos(20°)+1)').latex).toBe(
+			String.raw`\cos\left( 20{}^{\circ} \right) x + x`
+		);
+	});
+});

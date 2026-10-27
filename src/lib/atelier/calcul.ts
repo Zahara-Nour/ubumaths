@@ -2002,6 +2002,13 @@ const WRITING_COMMANDS: ReadonlySet<string> = new Set([
 	'normal'
 ]);
 
+/**
+ * Les commandes dont les étapes lisent un angle en degrés et disent sa valeur
+ * remarquable (`cos(60°) = 1/2`, chantier valeurs-remarquables) : l'argument
+ * leur arrive en degrés, pas converti en radians.
+ */
+const DEGREES_READ: ReadonlySet<string> = new Set(['simplify', 'expand', 'solve']);
+
 /** Le résultat de `.évaluer`, un angle pris par un sin, cos, tan calculé en radians. */
 function evaluatedInRadians(result: ReplExecutionResult): ReplExecutionResult {
 	if (!result.success || result.latex === undefined) return result;
@@ -2244,11 +2251,12 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// moteur ne calcule pas `cos((π/3)[rad])` (`.résoudre h(x)=1`, h(x) = cos(60°)·x)
 	// Pas pour une commande d'ÉCRITURE (`.latex`, `.texte`…) : elle montre
 	// l'expression telle quelle, pas sa valeur (revue : `.latex cos(60[°])` → `1 / 2`)
-	// Pas pour `.simplifier` non plus : `réduire` lit les degrés et dit la valeur
-	// remarquable dans une étape (`cos(60°) = 1/2`, chantier valeurs-remarquables) ;
-	// convertir ici la calculait en silence
+	// Pas pour `.simplifier`, `.développer`, `.résoudre` non plus : leurs étapes
+	// lisent les degrés et disent la valeur remarquable (`cos(60°) = 1/2`, chantier
+	// valeurs-remarquables) ; convertir ici la calculait en silence. Le moteur de
+	// `.résoudre` reçoit, lui, l'argument converti (plus bas, `engineArgument`)
 	const inRadians = (text: string | null): string | null =>
-		text === null || WRITING_COMMANDS.has(name) || name === 'simplify'
+		text === null || WRITING_COMMANDS.has(name) || DEGREES_READ.has(name)
 			? text
 			: radiansInText(text, session.atelier.functionNames);
 	const substitute = (text: string): string | null =>
@@ -2453,7 +2461,12 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		finalArgs = { ...finalArgs, interval: formatInterval(studied) };
 	}
 	const commandArgument = finalArgs === null ? argument : writeCommandArguments(finalArgs);
-	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${commandArgument}`;
+	// Le moteur ne calcule pas le cosinus d'une grandeur : il reçoit les radians
+	const engineArgument =
+		name === 'solve'
+			? radiansInText(commandArgument, session.atelier.functionNames)
+			: commandArgument;
+	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${engineArgument}`;
 
 	// `.évaluer sin(x) en x=30°` : le moteur remplace x et rend `sin((π/6)[rad])`,
 	// non calculé ; l'angle y devient un nombre de radians (revue de la PR « 60° »)
