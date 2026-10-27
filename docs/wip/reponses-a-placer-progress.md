@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, PR 2 en cours._
+_Mis à jour le 2026-10-27, après #1853._
 
-- **État** : PR 1 (#1846) et « téléphone » (#1848) mergées, pas en prod. PR 2 (plusieurs points) en cours, décisions § 10.
-- **Prochaine action** : PR 2 ouverte (§ 11) : CI, merge ; puis petite PR « page d'aide : droites rognées à 375 px » ; puis aiguilles (§ 6.1).
+- **État** : PR 1 (#1846), « téléphone » (#1848) et PR 2 plusieurs points (#1853) **mergées**, pas en prod. Droite graduée à placer complète (`placer: A=3 ; B=7`, 6 points au plus, une case par point).
+- **Prochaine action** : petite PR « page d'aide `/aide-ecriture/blocs/droite-graduee` : droites rognées à 375 px » (§ 11, colonne de grille `min-width: auto`) ; puis le geste suivant, les aiguilles (§ 6.1), phase 0 d'abord.
 - **En attente de David** : essai sur un vrai téléphone de la droite à placer (après un `deploy:prod`, ou en local).
-- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; une droite à K points porte K cases consécutives (`case:` = la première, comme ```operation) ; `placerAnswer` des deux côtés.
-- **Worktree / branche** : `../ubumaths-wt-reponses-a-placer`, `feat/reponses-a-placer-2`.
+- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; droite à K points = K cases consécutives (`case:` = la première) ; copie corrigée : une ligne `build` par droite (`answers`) ; `placerAnswer` des deux côtés ; une PR = une session.
+- **Worktree / branche** : aucun (retiré après #1853).
 
 ---
 
