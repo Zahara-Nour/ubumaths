@@ -1,0 +1,235 @@
+{
+	"title": "Grands nombres jusqu'aux milliards",
+	"description": "Écrire en chiffres un nombre donné par classes (milliards, millions, mille, unités ; classes vides comprises) ; liens entre milliard, million et mille",
+	"grades": ["6"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 15,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris ce nombre en chiffres.\n\n$${{G}}~\\text{milliard{{if:G>1|s|}}}{{if:M>0|~{{M}}~\\text{million{{if:M>1|s|}}}|}}{{if:K>0|~{{K}}~\\text{mille}|}}{{if:U>0|~{{U}}|}} = ?$$",
+			"variables": [
+				{
+					"name": "G",
+					"expression": "1..99"
+				},
+				{
+					"name": "sM",
+					"expression": "0..3"
+				},
+				{
+					"name": "M1",
+					"expression": "1..9"
+				},
+				{
+					"name": "M2",
+					"expression": "10..99"
+				},
+				{
+					"name": "M3",
+					"expression": "100..999"
+				},
+				{
+					"name": "M",
+					"expression": "{{if:sM==0|0|{{if:sM==1|{{M1}}|{{if:sM==2|{{M2}}|{{M3}}}}}}}}"
+				},
+				{
+					"name": "sK",
+					"expression": "0..3"
+				},
+				{
+					"name": "K1",
+					"expression": "1..9"
+				},
+				{
+					"name": "K2",
+					"expression": "10..99"
+				},
+				{
+					"name": "K3",
+					"expression": "100..999"
+				},
+				{
+					"name": "K",
+					"expression": "{{if:sK==0|0|{{if:sK==1|{{K1}}|{{if:sK==2|{{K2}}|{{K3}}}}}}}}"
+				},
+				{
+					"name": "sU",
+					"expression": "0..3"
+				},
+				{
+					"name": "U1",
+					"expression": "1..9"
+				},
+				{
+					"name": "U2",
+					"expression": "10..99"
+				},
+				{
+					"name": "U3",
+					"expression": "100..999"
+				},
+				{
+					"name": "U",
+					"expression": "{{if:sU==0|0|{{if:sU==1|{{U1}}|{{if:sU==2|{{U2}}|{{U3}}}}}}}}"
+				}
+			],
+			"conditions": ["min(sM,sK,sU)<3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:G*10^9+M*10^6+K*1000+U}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Classes.** On écrit chaque classe sur trois chiffres (sauf la première) : une classe absente s'écrit $000$, une classe de moins de trois chiffres se complète par des zéros à gauche.",
+					"$$\\begin{array}{c|c|c|c} \\text{milliards} & \\text{millions} & \\text{mille} & \\text{unités} \\\\ \\hline {{G}} & {{eval:floor(M/100)}}{{eval:mod(floor(M/10),10)}}{{eval:mod(M,10)}} & {{eval:floor(K/100)}}{{eval:mod(floor(K/10),10)}}{{eval:mod(K,10)}} & {{eval:floor(U/100)}}{{eval:mod(floor(U/10),10)}}{{eval:mod(U,10)}} \\end{array}$$",
+					"$$\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{k}}~\\text{{{if:w==0|milliards|{{if:w==1|milliards|millions}}}}} = ?~\\text{{{if:w==0|millions|{{if:w==1|mille|mille}}}}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..30"
+				},
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:w==1|1000000|1000}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*f}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:w==0|$1$ milliard $= 1~000$ millions|{{if:w==1|$1$ milliard $= 1~000~000$ mille|$1$ million $= 1~000$ mille}}}}.",
+					"$${{k}} \\times {{f}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 milliards 25 millions 300 mille 12",
+			"variationIndex": 0,
+			"variables": {
+				"G": "4",
+				"sM": "2",
+				"M1": "1",
+				"M2": "25",
+				"M3": "100",
+				"M": "25",
+				"sK": "3",
+				"K1": "1",
+				"K2": "10",
+				"K3": "300",
+				"K": "300",
+				"sU": "2",
+				"U1": "1",
+				"U2": "12",
+				"U3": "100",
+				"U": "12"
+			},
+			"answers": ["4\\,025\\,300\\,012"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : zéro de la classe des millions oublié",
+			"variationIndex": 0,
+			"variables": {
+				"G": "4",
+				"sM": "2",
+				"M1": "1",
+				"M2": "25",
+				"M3": "100",
+				"M": "25",
+				"sK": "3",
+				"K1": "1",
+				"K2": "10",
+				"K3": "300",
+				"K": "300",
+				"sU": "2",
+				"U1": "1",
+				"U2": "12",
+				"U3": "100",
+				"U": "12"
+			},
+			"answers": ["425\\,300\\,012"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sans espaces : forme à améliorer",
+			"variationIndex": 0,
+			"variables": {
+				"G": "4",
+				"sM": "2",
+				"M1": "1",
+				"M2": "25",
+				"M3": "100",
+				"M": "25",
+				"sK": "3",
+				"K1": "1",
+				"K2": "10",
+				"K3": "300",
+				"K": "300",
+				"sU": "2",
+				"U1": "1",
+				"U2": "12",
+				"U3": "100",
+				"U": "12"
+			},
+			"answers": ["4025300012"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "7 milliards = 7 000 millions",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"w": "0",
+				"f": "1000"
+			},
+			"answers": ["7\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 000 000",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"w": "0",
+				"f": "1000"
+			},
+			"answers": ["7\\,000\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

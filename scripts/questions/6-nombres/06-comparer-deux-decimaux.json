@@ -1,0 +1,324 @@
+{
+	"title": "Comparer deux nombres décimaux",
+	"description": "Comparer deux décimaux (pièges : 3,9 et 3,12 ; 2,5 et 2,50 ; 3,4 et 3,04 ; millièmes) ; signe large ⩽",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 3,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$${{if:s==0|{{a}}.{{b}}|{{a}}.{{c}}{{d}}}} \\ldots {{if:s==0|{{a}}.{{c}}{{d}}|{{a}}.{{b}}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "0..20"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|2|0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer deux décimaux.** On compare d'abord les parties entières ; si elles sont égales, on écrit les deux nombres avec autant de chiffres après la virgule, puis on compare les parties décimales.",
+					"Mêmes parties entières. ${{a}}.{{b}} = {{a}}.{{b}}0$ : ${{b}}0$ centièmes contre ${{c}}{{d}}$ centièmes. Le nombre qui a le plus de chiffres n'est pas forcément le plus grand.",
+					"$${{if:s==0|{{a}}.{{b}} \\textcolor{{{color:primary.0}}}{>} {{a}}.{{c}}{{d}}|{{a}}.{{c}}{{d}} \\textcolor{{{color:primary.0}}}{<} {{a}}.{{b}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$${{if:s==0|{{a}}.{{b}}|{{if:z==0|{{a}}.{{b}}0|{{if:z==1|{{a}}.{{b}}00|{{a}}.0{{b}}}}}}}} \\ldots {{if:s==0|{{if:z==0|{{a}}.{{b}}0|{{if:z==1|{{a}}.{{b}}00|{{a}}.0{{b}}}}}}|{{a}}.{{b}}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "0..20"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "z",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:z<2|1|{{if:s==0|2|0}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer deux décimaux.** On compare d'abord les parties entières ; si elles sont égales, on écrit les deux nombres avec autant de chiffres après la virgule, puis on compare les parties décimales.",
+					"{{if:z<2|Un zéro à la fin de la partie décimale ne change pas le nombre : les deux nombres sont égaux.|${{a}}.{{b}}$ a ${{b}}$ dixième{{if:b>1|s|}}, ${{a}}.0{{b}}$ en a $0$ : le zéro juste après la virgule compte.}}",
+					"$${{if:z==0|{{a}}.{{b}} \\textcolor{{{color:primary.0}}}{=} {{a}}.{{b}}0|{{if:z==1|{{a}}.{{b}} \\textcolor{{{color:primary.0}}}{=} {{a}}.{{b}}00|{{if:s==0|{{a}}.{{b}} \\textcolor{{{color:primary.0}}}{>} {{a}}.0{{b}}|{{a}}.0{{b}} \\textcolor{{{color:primary.0}}}{<} {{a}}.{{b}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$${{if:s==0|{{a}}.{{b}}{{c}}{{d}}|{{a}}.{{b}}{{c}}}} \\ldots {{if:s==0|{{a}}.{{b}}{{c}}|{{a}}.{{b}}{{c}}{{d}}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "0..20"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|2|0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer deux décimaux.** On compare d'abord les parties entières ; si elles sont égales, on écrit les deux nombres avec autant de chiffres après la virgule, puis on compare les parties décimales.",
+					"${{a}}.{{b}}{{c}} = {{a}}.{{b}}{{c}}0$ : ${{b}}{{c}}{{d}}$ millièmes contre ${{b}}{{c}}0$ millièmes.",
+					"$${{if:s==0|{{a}}.{{b}}{{c}}{{d}} \\textcolor{{{color:primary.0}}}{>} {{a}}.{{b}}{{c}}|{{a}}.{{b}}{{c}} \\textcolor{{{color:primary.0}}}{<} {{a}}.{{b}}{{c}}{{d}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Vrai ou faux ?\n\n$${{if:q==0|{{a}}.{{b}} \\leqslant {{a}}.{{b}}0|{{if:q==1|{{a}}.{{c}}{{d}} \\leqslant {{a}}.{{b}}|{{a}}.{{b}} \\leqslant {{a}}.{{c}}{{d}}}}}}$$\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "0..20"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:q<2|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le signe $\\leqslant$** se lit « inférieur ou égal à » : il est vrai si le premier nombre est plus petit que le second, **ou** s'ils sont égaux.",
+					"{{if:q==0|${{a}}.{{b}} = {{a}}.{{b}}0$ : les deux nombres sont égaux, donc c'est **vrai**.|{{if:q==1|${{a}}.{{b}} = {{a}}.{{b}}0$ et ${{c}}{{d}} < {{b}}0$ : ${{a}}.{{c}}{{d}} < {{a}}.{{b}}$, donc c'est **vrai**.|${{a}}.{{b}} = {{a}}.{{b}}0$ et ${{b}}0 > {{c}}{{d}}$ : ${{a}}.{{b}} > {{a}}.{{c}}{{d}}$, donc c'est **faux**.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3,9 > 3,12",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"a": "3",
+				"b": "9",
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,9 < 3,12",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"a": "3",
+				"b": "9",
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,12 < 3,9",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"a": "3",
+				"b": "9",
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2,5 = 2,50",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"a": "2",
+				"b": "5",
+				"z": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,5 < 2,50",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"a": "2",
+				"b": "5",
+				"z": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,4 > 3,04",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"a": "3",
+				"b": "4",
+				"z": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,4 = 3,04",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"a": "3",
+				"b": "4",
+				"z": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4,527 > 4,52",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"a": "4",
+				"b": "5",
+				"c": "2",
+				"d": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3,4 ⩽ 3,40 : vrai",
+			"variationIndex": 3,
+			"variables": {
+				"q": "0",
+				"a": "3",
+				"b": "4",
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,4 ⩽ 3,40 faux",
+			"variationIndex": 3,
+			"variables": {
+				"q": "0",
+				"a": "3",
+				"b": "4",
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,4 ⩽ 3,12 : faux",
+			"variationIndex": 3,
+			"variables": {
+				"q": "2",
+				"a": "3",
+				"b": "4",
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -1,0 +1,187 @@
+{
+	"title": "Le chiffre d'un rang",
+	"description": "Donner le chiffre d'un rang d'un grand entier (jusqu'aux centaines de milliards) ou d'un décimal (des centaines aux millièmes)",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 5,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans le nombre ${{n}}$, quel est le chiffre des {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|unités de mille|{{if:r==4|dizaines de mille|{{if:r==5|centaines de mille|{{if:r==6|unités de millions|{{if:r==7|dizaines de millions|{{if:r==8|centaines de millions|{{if:r==9|unités de milliards|{{if:r==10|dizaines de milliards|centaines de milliards}}}}}}}}}}}}}}}}}}}}}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "6..12"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "cm",
+					"expression": "eval:c-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{cm}}"
+				},
+				{
+					"name": "k",
+					"expression": "eval:floor(r/3)"
+				},
+				{
+					"name": "ch",
+					"expression": "eval:mod(floor(n/10^r),10)"
+				}
+			],
+			"conditions": ["mod(floor(n/10^(r+1)),10)!=ch", "mod(floor(n/10^(r-1)),10)!=ch"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ch}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les rangs.** On découpe le nombre en classes de trois chiffres à partir de la droite : classe des unités, des mille, des millions, des milliards. Dans chaque classe, de droite à gauche : unités, dizaines, centaines.",
+					"Le chiffre des {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|unités de mille|{{if:r==4|dizaines de mille|{{if:r==5|centaines de mille|{{if:r==6|unités de millions|{{if:r==7|dizaines de millions|{{if:r==8|centaines de millions|{{if:r==9|unités de milliards|{{if:r==10|dizaines de milliards|centaines de milliards}}}}}}}}}}}}}}}}}}}}}} est dans la classe des {{if:k==0|unités|{{if:k==1|mille|{{if:k==2|millions|milliards}}}}}}. Dans ${{n}}$, c'est $\\textcolor{{{color:primary.0}}}{{{solution}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans le nombre ${{x}}$, quel est le chiffre des {{if:t==0|millièmes|{{if:t==1|centièmes|{{if:t==2|dixièmes|{{if:t==3|unités|{{if:t==4|dizaines|centaines}}}}}}}}}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..999"
+				},
+				{
+					"name": "q",
+					"expression": "1..999"
+				},
+				{
+					"name": "t",
+					"expression": "0..5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:1000*p+q"
+				},
+				{
+					"name": "x",
+					"expression": "eval:N/1000;d"
+				},
+				{
+					"name": "ch",
+					"expression": "eval:mod(floor(N/10^t),10)"
+				}
+			],
+			"conditions": [
+				"mod(q,10)!=0",
+				"p>=10^(t-3)",
+				"mod(floor(N/10^(t+1)),10)!=ch",
+				"mod(floor(N/10^(t-1)),10)!=ch"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ch}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les rangs.** Avant la virgule : unités, dizaines, centaines (de droite à gauche). Après la virgule : dixièmes, centièmes, millièmes (de gauche à droite). Les dixièmes sont juste après la virgule ; les dizaines, juste avant les unités.",
+					"Dans ${{x}}$, le chiffre des {{if:t==0|millièmes|{{if:t==1|centièmes|{{if:t==2|dixièmes|{{if:t==3|unités|{{if:t==4|dizaines|centaines}}}}}}}}}} est $\\textcolor{{{color:primary.0}}}{{{solution}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "45 273 018, dizaines de mille : 4",
+			"variationIndex": 0,
+			"variables": {
+				"c": "8",
+				"n": "45273018",
+				"cm": "7",
+				"r": "4",
+				"k": "1",
+				"ch": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rang voisin (5)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "8",
+				"n": "45273018",
+				"cm": "7",
+				"r": "4",
+				"k": "1",
+				"ch": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "347,258, dixièmes : 2",
+			"variationIndex": 1,
+			"variables": {
+				"p": "347",
+				"q": "258",
+				"t": "2",
+				"N": "347258",
+				"x": "347.258",
+				"ch": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dizaines au lieu de dixièmes (4)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "347",
+				"q": "258",
+				"t": "2",
+				"N": "347258",
+				"x": "347.258",
+				"ch": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "347,258, millièmes : 8",
+			"variationIndex": 1,
+			"variables": {
+				"p": "347",
+				"q": "258",
+				"t": "0",
+				"N": "347258",
+				"x": "347.258",
+				"ch": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

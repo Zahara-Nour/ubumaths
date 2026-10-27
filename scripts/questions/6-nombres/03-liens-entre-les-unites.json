@@ -1,0 +1,301 @@
+{
+	"title": "Liens entre les unités de numération",
+	"description": "Relations entre millier, centaine, dizaine, unité, dixième, centième, millième ; 1/10 = 0,1, 1/100 = 0,01, 1/1 000 = 0,001",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 7,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n$$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = ?~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..6"
+				},
+				{
+					"name": "w",
+					"expression": "0..5"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u-w"
+				}
+			],
+			"conditions": ["p>=1", "p<=4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Unités de numération.** D'un rang au rang juste à sa droite, on multiplie par $10$ : $1$ millier $= 10$ centaines, $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes…",
+					"Du rang des {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}} au rang des {{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}, on descend de ${{p}}$ rang{{if:p>1|s|}} : $1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{k}}~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}} = ?~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..6"
+				},
+				{
+					"name": "w",
+					"expression": "0..5"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u-w"
+				}
+			],
+			"conditions": ["p>=1", "p<=3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*10^p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = {{eval:10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$.",
+					"$${{k}}~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}} = {{k}} \\times {{eval:10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{eval:k*10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}} = ?~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..6"
+				},
+				{
+					"name": "w",
+					"expression": "0..5"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u-w"
+				}
+			],
+			"conditions": ["p>=1", "p<=3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = {{eval:10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$ : on cherche combien de fois ${{eval:10^p}}$ dans ${{eval:k*10^p}}$.",
+					"$${{eval:k*10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris ce nombre sous forme décimale.\n\n$$\\frac{1}{{{eval:10^m}}} = ?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^(-m);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\frac{1}{{{eval:10^m}}}$, c'est un {{if:m==1|dixième|{{if:m==2|centième|millième}}}} : le chiffre $1$ se place au rang des {{if:m==1|dixièmes|{{if:m==2|centièmes|millièmes}}}}.",
+					"$$\\frac{1}{{{eval:10^m}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} = \\frac{?}{{{eval:10^b}}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["b>a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^(b-a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:a==0|$1$ unité|$\\frac{1}{{{eval:10^a}}}$}} $= {{eval:10^(b-a)}}$ fois $\\frac{1}{{{eval:10^b}}}$ : chaque rang vers la droite multiplie par $10$.",
+					"$${{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} = \\frac{\\textcolor{{{color:primary.0}}}{{{solution}}}}{{{eval:10^b}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 centaine = 1 000 dixièmes",
+			"variationIndex": 0,
+			"variables": {
+				"u": "5",
+				"w": "2",
+				"p": "3"
+			},
+			"answers": ["1\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un zéro de moins (100)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "5",
+				"w": "2",
+				"p": "3"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rapport inversé (0,001)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "5",
+				"w": "2",
+				"p": "3"
+			},
+			"answers": ["0,001"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 dixièmes = 400 millièmes",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"u": "2",
+				"w": "0",
+				"p": "2"
+			},
+			"answers": ["400"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 40",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"u": "2",
+				"w": "0",
+				"p": "2"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "300 centièmes = 3 unités",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"u": "3",
+				"w": "1",
+				"p": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30 000",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"u": "3",
+				"w": "1",
+				"p": "2"
+			},
+			"answers": ["30\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/100 = 0,01",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2"
+			},
+			"answers": ["0,01"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,1",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2"
+			},
+			"answers": ["0,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/10 = 10/100",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
