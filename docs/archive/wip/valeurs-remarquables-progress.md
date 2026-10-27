@@ -2,13 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, tout codé, doc à jour, PR à ouvrir._
+_Mis à jour le 2026-10-27, après #1862 — **CHANTIER CLOS**, journal archivé._
 
-- **État** : `.simplifier`, `.développer`, `.résoudre` faits, degrés compris (§ 3). Doc versée (README mathAST, atelier.md, pattern-matching, panel). Suites mathAST + questions + atelier vertes.
-- **Prochaine action** : revue `code-reviewer` (Opus), réécrire les messages des commits sans `Claude-Session`, rebase sur `origin/main`, PR, CI, merge, puis clôture (journal archivé).
-- **En attente de David** : rien.
-- **Pièges** : la ligne affichée est `latex`, pas `output`.
-- **Worktree / branche** : `../ubumaths-wt-valeurs-remarquables`, `fix/valeurs-remarquables`.
+- **État** : livré par #1862 (`.simplifier`, `.développer`, `.résoudre`, degrés compris). Durable versé dans le README mathAST (§ deux moteurs, Points ouverts), `atelier.md`, `pattern-matching.md`, panel. Pas encore en prod.
+- **Restes** : Points ouverts du README mathAST (« Laissés par le chantier valeurs-remarquables »), dont `.domaine` → `ℝ \ {1/2}` voulu plus tard.
+- **Vérification manuelle** : ligne #1862 de `docs/wip/verifications-manuelles.md`.
 
 ## Contexte
 
@@ -62,3 +60,5 @@ Table existante : `pattern/rule-sets/trig.ts` (`trigRules` : sin, cos, tan aux m
 - Restes versés dans les Points ouverts du README mathAST (domaine `ℝ \ {1/2}` voulu plus tard, corrections de résolution sans l'étape, `cos(0.5π)`, `cos(\frac{-\pi}{3})`).
 
 ## Historique
+
+- 2026-10-27 : #1862 mergée, chantier clos, journal archivé.
