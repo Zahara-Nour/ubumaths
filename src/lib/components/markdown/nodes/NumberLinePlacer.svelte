@@ -182,7 +182,7 @@
 	}
 
 	/** Position du doigt sur la droite (le SVG est dessiné à sa largeur réelle, en px) */
-	function pointerX(event: PointerEvent): { x: number; width: number } | null {
+	function pointerX(event: { clientX: number }): { x: number; width: number } | null {
 		const svg = zone?.querySelector('svg');
 		if (!svg) return null;
 		const rect = svg.getBoundingClientRect();
@@ -205,20 +205,42 @@
 	 */
 	function grabbedAt(event: PointerEvent): number | null {
 		if (positions[active] === null) return null;
+		const near = posedNear(event);
+		if (near.some((p) => p.i === active)) return active;
+		near.sort((a, b) => a.distance - b.distance);
+		return near[0]?.i ?? null;
+	}
+
+	/** Les points posés à portée du doigt, avec leur distance (px) */
+	function posedNear(event: { clientX: number }): { i: number; distance: number }[] {
 		const at = pointerX(event);
-		if (at === null) return null;
+		if (at === null) return [];
 		const start = numVal(config.start);
 		const end = numVal(config.end);
-		const near = positions.flatMap((k, i) => {
+		return positions.flatMap((k, i) => {
 			if (k === null) return [];
 			const x = valueToX(graduationValue(config, k), start, end, 'linear', at.width);
 			const distance = Math.abs(x - at.x);
 			return distance <= GRAB_DISTANCE ? [{ i, distance }] : [];
 		});
-		if (near.some((p) => p.i === active)) return active;
-		near.sort((a, b) => a.distance - b.distance);
-		return near[0]?.i ?? null;
 	}
+
+	/**
+	 * iPhone : doigt posé sur un point, la page ne défile pas, sinon Safari attend
+	 * de savoir si le geste défile avant de laisser glisser le point. Écouteur non
+	 * passif (Svelte rend `ontouchstart` passif) ; ailleurs, la page défile.
+	 */
+	function handleTouchStart(event: TouchEvent) {
+		if (locked || event.touches.length !== 1) return;
+		if (posedNear(event.touches[0]).length > 0) event.preventDefault();
+	}
+
+	$effect(() => {
+		const el = zone;
+		if (!el) return;
+		el.addEventListener('touchstart', handleTouchStart, { passive: false });
+		return () => el.removeEventListener('touchstart', handleTouchStart);
+	});
 
 	function handlePointerDown(event: PointerEvent) {
 		if (locked) return;
@@ -366,6 +388,11 @@
 		cursor: pointer;
 		/* Le glisser horizontal est pour le point ; le défilement vertical reste */
 		touch-action: pan-y;
+		/* iPhone : un appui long ouvrirait la loupe et une sélection de texte,
+		   qui coupent le glisser (pointercancel) */
+		-webkit-user-select: none;
+		user-select: none;
+		-webkit-touch-callout: none;
 	}
 
 	.placer-zone:focus-visible {
