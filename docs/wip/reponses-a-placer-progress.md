@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-27, après #1853._
 
 - **État** : PR 1 (#1846), « téléphone » (#1848) et PR 2 plusieurs points (#1853) **mergées**, pas en prod. Droite graduée à placer complète (`placer: A=3 ; B=7`, 6 points au plus, une case par point).
-- **Prochaine action** : petite PR « page d'aide `/aide-ecriture/blocs/droite-graduee` : droites rognées à 375 px » (§ 11, colonne de grille `min-width: auto`) ; puis le geste suivant, les aiguilles (§ 6.1), phase 0 d'abord.
+- **Prochaine action** : (1) **essai sur l'iPhone avec David**, lui RÉEXPLIQUER la démarche : `docs/pratiques/tester-sur-un-autre-appareil.md` § « iPhone, page avec connexion » (Tailscale Serve, à activer par David une fois : lien donné par `tailscale serve` ; serveur `PUBLIC_SUPABASE_URL=https://…ts.net:8443` ; `tailscale serve reset` après) ; (2) petite PR « page d'aide : droites et avertissement rognés » (§ 11) ; (3) aiguilles (§ 6.1), phase 0 d'abord.
 - **En attente de David** : essai sur un vrai téléphone (ligne de `verifications-manuelles.md`) ; MacBook vu OK le 2026-10-27 (tunnel SSH). Tailscale Serve : activation en attente de David.
 - **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; droite à K points = K cases consécutives (`case:` = la première) ; copie corrigée : une ligne `build` par droite (`answers`) ; `placerAnswer` des deux côtés ; une PR = une session.
 - **Worktree / branche** : aucun (retiré après #1853).
