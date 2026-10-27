@@ -4,8 +4,8 @@
 	"grades": ["CE1"],
 	"theme": "Entiers",
 	"domain": "Soustraire",
-	"subdomain": "Différence astucieuse",
-	"level": 8,
+	"subdomain": "Différence",
+	"level": 15,
 	"delay": 20,
 	"status": "draft",
 	"variations": [
