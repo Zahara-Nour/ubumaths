@@ -67,7 +67,9 @@ jobs:
     needs: version
     if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Un changement de eslint.config.* invalide tout le cache ESLint : relecture
+    # à froid ~18 min (#1871), plus ~2 min d'installation.
+    timeout-minutes: 30
 
     steps:
       - name: Checkout code
