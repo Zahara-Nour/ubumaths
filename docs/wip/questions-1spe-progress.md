@@ -12,8 +12,8 @@
 _Mis à jour le 2026-10-27, décisions Q1-Q7 prises._
 
 - **État** : relevé, classement et décisions (§ 5) faits.
-- **Prochaine action** : selon Q8-Q10 : PR outil « page à cocher depuis la base », puis corrections C1-C4, page à cocher des suites.
-- **En attente de David** : Q8, Q9, Q10 (§ 6).
+- **Prochaine action** : PR outil D10 (page à cocher et publication depuis une liste d'id), puis corrections C1-C4 (D8, D9), page à cocher des suites.
+- **En attente de David** : rien.
 - **Pièges en cours** : QCM → case choix en brouillon (D6) ; droite à placer (`reponses-a-placer`) mergée, pas en prod ; un modèle porte au plus un point **par programme** (ADR 0020), les tags 1SPE + 1TECHNO + 1GEN sont permis ; D3 « niveau seconde » : vérifier dans le code ce que commande `grades` avant la migration.
 - **Worktree / branche** : aucun.
 
@@ -230,3 +230,11 @@ d'accord avec la base (titres scindés depuis : « Reconnaître une suite arithm
 modèles) et familles d'un même titre à plusieurs niveaux (« Calculer un terme d'une suite géométrique » × 4). Il
 faut que la page (et `publier-lot.ts`) sache partir **des modèles en base** (liste d'id), pour tous les brouillons
 déjà créés (Q10).
+
+**Décisions (David, 2026-10-27, « je suis tes recos »)** :
+
+- **D8 (C2)** : garder les deux formules, mais ramenées dans le corrigé à 1 + 2 + … + n et 1 + q + … + qⁿ (une
+  ligne de calcul qui fait le lien).
+- **D9 (C3)** : 0495289a garde son point ; la variation `u_{n+1} = 3u_n + 3n` est retirée.
+- **D10 (outil)** : `page-a-cocher.ts` et `publier-lot.ts` apprennent à partir d'une liste d'id en base (PR
+  d'outil, avant les corrections C1-C4).
