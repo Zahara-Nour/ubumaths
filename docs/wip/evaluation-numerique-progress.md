@@ -78,6 +78,10 @@ Un résultat illisible qui n'a **pas** d'écriture scientifique courte EXACTE (`
 
 Conséquence : en mode exact, D2 ne s'applique qu'à un résultat qui s'écrit exactement en notation scientifique (`3 × 10²⁰`, `10⁻⁷`, `2,5 × 10⁻¹²`). À préciser en phase 0 : la longueur de mantisse qui compte encore comme « courte ».
 
+### Les trois candidates d'`exactValueToShow` (mesuré le 2026-10-27)
+
+Valeur d'`evaluate`, forme normale de la saisie (`canonicalForm`), saisie ; chacune passe par `tidy` + `ln(pᵏ) → k ln p` + dénominateur commun, puis départage `better` (moins d'appels de fonction à calculer → moins de puissances d'une somme → moins de radicaux au dénominateur → coût, la plus tardive gagnant jusqu'à +20 %). Sur 9 saisies (`π/12 + cos(π/6)`, `(1+√2)²`, `ln 8`, `√2/2`, `1/(√3−1)`, `2π/3`, `√8+1`, `e^{−1}`, `cos 1 + cos 1`), **les candidates 1 et 2 sont identiques 9 fois sur 9** : l'utilité de la forme normale reste à montrer (peut-être quand `evaluate` échoue — la valeur est alors la saisie). La saisie ne gagne que sur les égalités ou quand elle est moins chère sans rien laisser à calculer.
+
 ### Question ouverte (lettres liées, pour plus tard)
 
 - **(A)** une valeur de l'Atelier est toujours remplacée, même avec une lettre libre (`x + a → x + 3`, `f(x)+a → x² + 3`), puis `tidy` — recommandation, par cohérence avec les commandes ;
