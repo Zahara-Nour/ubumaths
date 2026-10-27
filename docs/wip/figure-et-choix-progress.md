@@ -8,22 +8,22 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, lot 4 en cours (branche `feat/figure-et-choix-migration-qcm`)._
+_Mis à jour le 2026-10-27, après #1855._
 
-- **État** : lots 1 (#1816, #1822), 2 (#1826, figure de travail) et 3 (#1840, CP-058 = figure de travail +
-  case choix Oui / Non, § 2.10) mergés, plus #1833, #1836 et #1842 (restes). Rien en prod. CP-058 pas encore en base.
-  Lot 4 préparé (§ 2.11, phase 0 validée) : script + garde, essai à blanc en prod 178 / 178, sources 110 / 110.
-- **Prochaine action** : PR du lot 4 (revue opus) ; après le `deploy:prod` des lots 1-4 (décidé par David) :
-  David publie CP-058, puis lance `! pnpm tsx scripts/migrer-qcm-en-cases.ts --ecrire`.
-- **En attente de David** : essai du lot 2 (correction, « Ta figure de travail ») sur 5179 (worktree
-  `../ubumaths-wt-figure-et-choix`, FIGÉ) ; essai de CP-058 sur 5180 (`/dev/carte-question`, worktree
-  `../ubumaths-wt-figure-et-choix-cp058`, FIGÉ) ; libellé « Tu peux tracer… » et ordre fixe Oui / Non à confirmer.
-- **Pièges en cours** : migration des QCM seulement après le `deploy:prod` des lots 1-2 ; retrait de la
-  contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; une seule session par worktree.
-  Restes connus : éditeur non réaligné sur un énoncé à `<<expr:…>>` ou à case portée par `{{if:}}`
-  (voulu, #1842).
-- **Worktree / branche** : lot 4 dans `../ubumaths-wt-figure-et-choix-qcm` (`feat/figure-et-choix-migration-qcm`) ;
-  deux worktrees figés par les essais (5179, 5180), à retirer une fois les essais finis.
+- **État** : lots 1 (#1816, #1822), 2 (#1826), 3 (#1840, CP-058) et 4 (#1855, script de migration des QCM +
+  garde, sources `scripts/questions/**` converties) mergés, plus #1833, #1836, #1842. Rien en prod ; base
+  inchangée (essai à blanc en prod : 178 / 178, 85 050 tirages, § 2.11). CP-058 pas encore en base.
+- **Prochaine action** : après le `deploy:prod` des lots 1-4 (décidé par David) : David publie CP-058
+  (`create-questions --dir scripts/questions/cp-figure --publier`), puis lance
+  `! pnpm tsx scripts/migrer-qcm-en-cases.ts --ecrire` ; je vérifie (0 QCM restant) ; puis lot 5 (retrait de
+  `multiple_choice` du code, de `src/lib/migration/`, puis de la contrainte SQL après un 2ᵉ `deploy:prod`).
+- **En attente de David** : essais des lots 2 (5179) et 3 (5180), worktrees FIGÉS ; avis sur les séries PDF
+  (choix d'une case mélangée imprimés dans l'ordre mélangé, avant : ordre de l'auteur).
+- **Pièges en cours** : jusqu'à `--ecrire`, `create-questions` voit « CONTENU DIFFÉRENT » sur les QCM (sources
+  converties, base non) ; `--ecrire` refait la garde et ne touche que les lignes lues, encore QCM (relançable) ;
+  une seule session par worktree.
+- **Worktree / branche** : deux worktrees figés par les essais (5179, 5180), à retirer une fois les essais finis ;
+  celui du lot 4 retiré.
 
 ---
 
