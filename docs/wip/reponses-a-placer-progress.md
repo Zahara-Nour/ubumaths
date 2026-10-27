@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, PR « aiguilles » pas encore ouverte._
+_Mis à jour le 2026-10-27, après #1872._
 
-- **État** : horloge à placer (§ 13 à 16) commitée sur `feat/reponses-a-placer-aiguilles` ; revue Opus traitée ; Q16 validée par David et codée (cran de la vraie place accepté).
-- **Prochaine action** : PR ouverte → CI, merger ; noter la carte de correction (vraie question) dans `verifications-manuelles.md`.
+- **État** : #1846, #1848, #1853, #1854, #1858, #1860 (droite à placer) et #1872 (horloge à placer, § 13 à 16) **mergées**, pas en prod. Vérification de #1872 notée dans `verifications-manuelles.md` (carte de correction dans une vraie question pas vue à l'écran).
+- **Prochaine action** : barres (CP-072…), phase 0 d'abord ; ou, à proposer, le bouton de retournement en `sticky` (revue #1858).
 - **En attente de David** : rien.
-- **Pièges en cours** : réponse élève `'47 25'` (crans petite, grande), attendue `'9 h 25'` (cadran de 12), case `type: 'text'`, juge `isPlacedTimeCorrect` ; page d'aide à froid : attendre l'hydratation avant de cliquer ; une PR = une session.
-- **Worktree / branche** : `../ubumaths-wt-reponses-a-placer` · `feat/reponses-a-placer-aiguilles` · serveur 5177.
+- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; horloge : réponse élève `'47 25'` (crans), attendue `'9 h 25'`, case `text`, juge `isPlacedTimeCorrect` (secteur OU vraie place) ; secondes (CM2-083) hors chantier ; page d'aide à froid : attendre l'hydratation ; une PR = une session.
+- **Worktree / branche** : aucun.
 
 ---
 
