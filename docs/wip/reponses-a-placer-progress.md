@@ -211,3 +211,13 @@ Branche `feat/reponses-a-placer-2`. Tests rouges d'abord : `number-line-placer-p
   mesurant la fiche (`bind:ref`, `min-h-full shrink-0`), branche `fix/correction-telephone`. Même
   PR : l'avertissement « téléphone » n'est plus montré dans les onglets de l'aperçu qui imitent
   l'élève (`provideAuthoringAdvice`), gardé dans l'éditeur et la page d'aide (choix de David).
+
+## 12. PR « page d'aide : droites et avertissement rognés » (2026-10-27)
+
+Branche `fix/aide-ecriture-colonne`. Deux causes, dans `BlockHelpPage` et `BlockTryIt` (rien dans le
+bloc) : (1) la boîte de rendu est un flex centré, son enfant garde `min-width: auto` → la droite
+mesure son conteneur, qui fait la largeur de départ de la droite (600 px) : elle ne rétrécit
+jamais, centrée, rognée des deux côtés (même à 1100 px, boîte de 469 px) ; enveloppant `min-w-0`.
+(2) grilles sans `grid-cols-1` → colonne `auto` qui ne rétrécit pas à 375 px. Mesuré
+(Playwright, port 5177) : avant, 9 rendus sur 11 rognés à 375 et à 1100 px ; après, aucun ;
+avertissement orange entier aux deux largeurs.
