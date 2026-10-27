@@ -208,3 +208,4 @@ migration nœud + tag ne change aucune règle.
 - 2026-10-26 : #1847 mergée (CI verte, revue : aucune, contenu).
 - 2026-10-27 : 6 brouillons créés en prod par David (identifiants dans « Reprendre ici »).
 - 2026-10-27 : #1856 mergée (migration nœud + tag, test 9/9 rouge sans elle, `security-auditor` sans finding), `db:migrate`, vérifiée en prod ; page à cocher publiée.
+- 2026-10-27 : relecture, 084 « À revoir » (« pourquoi de manière astucieuse ? ») → consigne « Calcule. » pour 084, 029, 102 et 032 (décision de David : « tu changes ») ; fichiers d'avant = prod (simulation : 6/6 identiques), tirages verts ; David lance ensuite `create-questions --publier --mettre-a-jour`.
