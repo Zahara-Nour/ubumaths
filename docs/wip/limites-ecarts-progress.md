@@ -1,19 +1,18 @@
 ---
 title: Écarts voisins des limites (V67-V71)
 date: 2026-10-26
-status: PR 1 mergée (#1844), PR 2 (V68) en cours
+status: PR 1 (#1844) et PR 2 (#1852) mergées, PR 3 à faire
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, PR 2 ouverte._
+_Mis à jour le 2026-10-27, après #1852._
 
-- **État** : PR 1 (V67 + V69) mergée, #1844. PR 2 (V68) ouverte sur `fix/limites-ecarts-v68`, en revue. Rien en prod.
-- **Prochaine action** : revue `code-reviewer` (Opus), CI verte → merge ; ensuite PR 3 : V70 + V71.
-- **Reste** : PR 3 V70 + V71 (substitution directe, suivi du signe). Revue `code-reviewer` en Opus sur chaque PR.
-- **En attente de David** : rien.
-- **Pièges** : une limite FAUSSE est pire qu'un refus ; rejouer la sonde de la phase 0 sur `main` avant de coder ; le repli numérique de `classifyLimitValue` classe 10²⁰ « fini » et eˣ « inconnu » (ne pas s'y fier) ; paramètre k pris positif (`e^{kx}` en +∞ → +∞, ancien) ; refus restants : `x^3e^{-x^2+x}`, `x^2e^{-\sqrt{x}}` en +∞, `x^{\frac{4}{2}}` en −∞.
-- **Worktree / branche** : `../ubumaths-wt-limites-ecarts` · `fix/limites-ecarts-v68`.
+- **État** : PR 1 (V67 + V69, #1844) et PR 2 (V68, #1852) mergées ; rien en prod. Pas de worktree en cours.
+- **Prochaine action** : `git worktree add -b fix/limites-ecarts-v70 ../ubumaths-wt-limites-ecarts origin/main`, puis **PR 3 : V70 + V71** (substitution directe 0^{−n}, suivi du signe), tests rouges d'abord.
+- **Reste** : PR 3 seulement. Revue `code-reviewer` en Opus.
+- **En attente de David** : le défaut ancien « paramètre k pris positif » (`e^{kx}` en +∞ → +∞, aussi sur `main`) : dans la PR 3 ou chantier à part ?
+- **Pièges** : une limite FAUSSE est pire qu'un refus ; rejouer la sonde de la phase 0 sur `main` avant de coder ; le repli numérique de `classifyLimitValue` classe 10²⁰ « fini » et eˣ « inconnu » ; une constante flottante proche de 1 (ou de 0) peut être exacte : comparer en exact (`exactConstantRational`) ; refus restants : `x^3e^{-x^2+x}`, `x^2e^{-\sqrt{x}}` en +∞, `x^{\frac{4}{2}}` en −∞.
 
 ---
 
@@ -57,3 +56,4 @@ _Mis à jour le 2026-10-27, PR 2 ouverte._
   - Tests : `exponentielles-croissances-comparees.test.ts`, 15 rouges sur `main` ; `extrema-globaux` : l'exemple « limite inconnue » `x^4e^{-x}` est désormais calculé → remplacé par `x^2e^{-\sqrt{x}}` (assertion explicite qu'elle reste inconnue) + test `x^4e^{-x}` (min global 0, max local 4), rouge sur `main`.
   - Suites : `limits` 1226, mathAST + atelier + grapheur + math 32548, questions + ubumark 9350, verts.
   - Revue Opus (#1852) : une valeur FAUSSE — base égale à 1 écrite avec des racines (`(\sqrt{3}^2-2)^{x}` en +∞ rendait 0, flottant 0,9999999999999996). Corrigé : `exponentialParts` compare la base à 1 en exact (`exactConstantRational`), sinon refuse |a − 1| < 10⁻⁹ ; 4 tests. Récursion bornée par `nestedProducts`, aucun ∞/∞ déclaré à tort (~160 cas sondés). **Hors diff, défaut ancien** : `e^{kx}` en +∞ rend +∞ (k pris positif), sur `main` aussi — à traiter avec le suivi du signe (PR 3 ou chantier à part).
+  - Mergée (#1852), CI verte sur e9acf322b.
