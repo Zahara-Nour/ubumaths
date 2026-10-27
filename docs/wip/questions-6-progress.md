@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1868._
+_Mis à jour le 2026-10-27, après #1876 et la page à cocher du lot 3._
 
-- **État** : lots 1 et 2 publiés en prod. Lot 3 « Calcul décimal » (§ 10) : 10 modèles mergés (#1868, `scripts/questions/6-calcul-decimal/`), pas encore en base de prod.
-- **Prochaine action** : David lance `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-calcul-decimal --publier` (brouillons) ; je relève les `id` au MCP ; migration nœud + tag (gabarit `20261027150000_questions_6_nombres_rangement_tags`, 6-116 sur la notion « Décimaux : calculs ») ; page à cocher ; publication.
-- **En attente de David** : le `--publier`. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
-- **Pièges en cours** : `e` et `i` interdites dans les `eval` ; prix écrits par `euros()` ; problèmes en euros : `zeros` à `off` ; un tag exige le modèle sur le nœud du point ou sa notion ; `db:migrate` depuis le dépôt principal ; serveur de dev sur `localhost` (pas `127.0.0.1`).
-- **Worktree / branche** : aucun (à recréer pour la migration).
+- **État** : lots 1 et 2 publiés. Lot 3 « Calcul décimal » : 10 brouillons en prod, rangés et tagués (#1873, `db:migrate` joué), unités corrigées (#1876, `--mettre-a-jour` lancé par David, relu au MCP). Page à cocher publiée : https://claude.ai/artifact/Fyf6TTZ3h32RJ4ms7ZSwHQ (collection `verdicts`, vide à la publication).
+- **Prochaine action** : lire `verdicts` (ArtifactData list) et **compter** ; « À revoir » → corriger (§ 7) ; tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-calcul-decimal` en simulation, puis David `--publier` ; relire `published` au MCP. Ensuite lot 4 « Fractions » (§ 4).
+- **En attente de David** : la relecture de la page (choix et division posée à jouer dans l'aperçu admin : non dessinés sur la page). Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot (`\unit` oublié au lot 3) ; `--mettre-a-jour` après le merge seulement (il lit `main`) ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval` ; serveur de dev sur `localhost`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -445,3 +445,11 @@ David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud n
   au lieu de `\unit{…}` dans 04, 06, 08. Corrigé par `en_unit()` dans le script (sauf juste après une case,
   `?~\text{€}`, qui garde une case de nombre). Instantané `questions-6/etat-prod-2026-10-27-lot3/` (3 modèles,
   md5 des variations = MCP, 0 donnée d'élève). Specs et 2 400 tirages verts ; rendu vérifié en local.
+- #1876 mergée ; premier `--mettre-a-jour` de David lancé avant le merge (lisait `main` : rien changé, vérifié),
+  relancé après : 3 brouillons à jour (`\unit`), nœuds et tags intacts (MCP). `create-questions` : plus aucun écart.
+
+### 10.4 Page à cocher (2026-10-27)
+
+- `page-a-cocher.ts` : 10 fiches, 3 alertes attendues (blocs choix ×2 et operation non dessinés : à jouer dans
+  l'aperçu). Publiée avec `db` : https://claude.ai/artifact/Fyf6TTZ3h32RJ4ms7ZSwHQ ; `verdicts` vide ; rendu à 390 px
+  vérifié ; ouverte dans Chrome.
