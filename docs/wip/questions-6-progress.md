@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, pendant le lot 3 « Calcul décimal » (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-10-27, après #1868._
 
-- **État** : lots 1 et 2 publiés en prod. Lot 3 (§ 10) : phase 0 validée ; 10 modèles écrits (`scripts/questions/6-calcul-decimal/`, 78 specs, 9 000 tirages verts), joués en base locale.
-- **Prochaine action** : PR des fichiers (revue : aucune, contenu) → CI verte → merge ; puis David lance `create-questions --dir scripts/questions/6-calcul-decimal --publier` ; relever les `id` ; migration nœud + tag (§ 10, table des points) ; page à cocher.
-- **En attente de David** : le `--publier` après le merge. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
-- **Pièges en cours** : `e` et `i` interdites dans les `eval` ; un prix s'écrit avec `euros()` (un `eval` retire le zéro) ; problèmes en euros : `zeros` à `off` ; un tag exige le modèle sur le nœud du point ou sa notion (6-116 sur la notion « Décimaux : calculs ») ; `db:migrate` depuis le dépôt principal ; serveur de dev du worktree sur `localhost` (pas `127.0.0.1`).
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-calcul-decimal`.
+- **État** : lots 1 et 2 publiés en prod. Lot 3 « Calcul décimal » (§ 10) : 10 modèles mergés (#1868, `scripts/questions/6-calcul-decimal/`), pas encore en base de prod.
+- **Prochaine action** : David lance `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-calcul-decimal --publier` (brouillons) ; je relève les `id` au MCP ; migration nœud + tag (gabarit `20261027150000_questions_6_nombres_rangement_tags`, 6-116 sur la notion « Décimaux : calculs ») ; page à cocher ; publication.
+- **En attente de David** : le `--publier`. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **Pièges en cours** : `e` et `i` interdites dans les `eval` ; prix écrits par `euros()` ; problèmes en euros : `zeros` à `off` ; un tag exige le modèle sur le nœud du point ou sa notion ; `db:migrate` depuis le dépôt principal ; serveur de dev sur `localhost` (pas `127.0.0.1`).
+- **Worktree / branche** : aucun (à recréer pour la migration).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -336,7 +336,7 @@ David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud n
 - Relecture de David : 10/10 « OK » (verdicts comptés). `publier-lot` en simulation : 10 brouillons passent ; David a lancé
   `--publier` ; relu au MCP : 10 `published`, 10 rangés, 10 tags. **Lot 2 clos.**
 
-## 10. Lot 3 « Calcul décimal » : phase 0 (proposée le 2026-10-27, à valider)
+## 10. Lot 3 « Calcul décimal » : phase 0 (validée le 2026-10-27)
 
 Relevé MCP (2026-10-27) : 0 modèle sur les 10 points. Voisins en prod : CM1 (sommes et différences sans retenue,
 CM1-039 / 133), CM2 (÷ 10, 100, 1 000), CE2 (division euclidienne, diviseur ≤ 10, égalité seulement), 6-115 (5) et
@@ -421,3 +421,5 @@ problèmes en euros ($7,5$ aussi) ; 6-122 à diviseur d'un chiffre seulement.
 - Base locale : 10 brouillons créés ; joués dans l'aperçu admin (port 5183) : 09 division posée (1 226 ÷ 4 = 306
   reste 2) juste, quotient et reste lus ; 06 « 34,20 » juste (zéros inutiles désactivés) ; 05 case choix mélangée,
   juste ; 04 deux cases avec unités, rendu correct.
+
+- #1868 mergée le 2026-10-27 (CI verte) ; worktree retiré.
