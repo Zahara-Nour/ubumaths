@@ -84,9 +84,11 @@
 	let backHeight = $state(0);
 	let maxViewportHeight = $state(0);
 
-	// Element references for height measurement
-	let frontElement: HTMLElement | null = null;
-	let backElement: HTMLElement | null = null;
+	// Element references for height measurement : la fiche de chaque face, pas la
+	// face, dont la hauteur est imposée (mesurer la face ne voit plus que le plafond
+	// des 80 % et coupe la fin d'une carte trop haute au lieu de la faire défiler)
+	let frontElement: HTMLElement | null = $state(null);
+	let backElement: HTMLElement | null = $state(null);
 
 	// ============================================================================
 	// DERIVED STATE
@@ -230,10 +232,12 @@
 
 		const observer = new ResizeObserver((entries) => {
 			for (const entry of entries) {
+				// Hauteur bordure et marges internes comprises (la fiche a un padding)
+				const height = (entry.target as HTMLElement).offsetHeight;
 				if (entry.target === frontElement) {
-					frontHeight = entry.contentRect.height;
+					frontHeight = height;
 				} else if (entry.target === backElement) {
-					backHeight = entry.contentRect.height;
+					backHeight = height;
 				}
 			}
 		});
@@ -283,12 +287,11 @@
 		>
 			<!-- ===================== FRONT FACE ===================== -->
 			<div
-				bind:this={frontElement}
 				class={cn('flip-face flip-front', isScrollable && 'scrollable')}
 				inert={isFlipped}
 				style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};"
 			>
-				<Card.Root class="h-full">
+				<Card.Root bind:ref={frontElement} class="min-h-full shrink-0">
 					<Card.Header>
 						<div class="flex items-center justify-between gap-2">
 							<Card.Title>
@@ -386,12 +389,11 @@
 
 			<!-- ===================== BACK FACE ===================== -->
 			<div
-				bind:this={backElement}
 				class={cn('flip-face flip-back', isScrollable && 'scrollable')}
 				inert={!isFlipped}
 				style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};"
 			>
-				<Card.Root class="h-full">
+				<Card.Root bind:ref={backElement} class="min-h-full shrink-0">
 					<Card.Header>
 						<Card.Title>Correction</Card.Title>
 					</Card.Header>

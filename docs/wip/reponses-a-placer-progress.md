@@ -204,3 +204,10 @@ Branche `feat/reponses-a-placer-2`. Tests rouges d'abord : `number-line-placer-p
   attendant de savoir si le doigt défile (`touchstart` non passif, `preventDefault` quand le doigt
   est sur un point posé ; ailleurs la page défile). Vu OK par David sur l'iPhone. Reste : le glisser
   qui suit la pose d'un point absent attend encore un peu (relâcher et reprendre).
+- Correction dans une vraie question sur l'iPhone (2026-10-27, aperçu admin, onglet Entraînement) :
+  « Tu as placé B sur 9. » OK, mais la droite juste coupée sous « Correction ». Cause hors du
+  bloc : `CorrectionCard` (et `CustomFlashCard`, même code) se plafonne à 80 % de l'écran en se
+  mesurant elle-même → ne se voit plus trop haute, coupe sa fin au lieu de défiler ; corrigé en
+  mesurant la fiche (`bind:ref`, `min-h-full shrink-0`), branche `fix/correction-telephone`. Même
+  PR : l'avertissement « téléphone » n'est plus montré dans les onglets de l'aperçu qui imitent
+  l'élève (`provideAuthoringAdvice`), gardé dans l'éditeur et la page d'aide (choix de David).
