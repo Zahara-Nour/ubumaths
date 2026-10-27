@@ -353,5 +353,12 @@ la réponse d'un élève. Phase 0 validée.
 - **Essai à blanc en prod (lecture seule)** : 178 / 178 migrables, 31 950 tirages comparés (639 variations
   × 50 graines), contrôle d'import sans refus nouveau. Sources : 110 / 110, 21 300 tirages, 110 fichiers
   réécrits.
+- Revue opus (#1855) : rien qui change la notation ou l'écran aujourd'hui ; corrigé : la garde contrôle le
+  mélange (« fixe ou mélangé » : la graine ne reproduit pas l'ordre), 500 tirages quand la bonne réponse est
+  calculée (branche rare → indice que la case refuse), doublon admis seulement si la bonne réponse est
+  calculée (en dur : faute de frappe, comme l'éditeur), bilan d'écriture qui compte les échecs (exit 1).
+  Essai à blanc refait : 178 / 178, 85 050 tirages. Laissé : rendu des 16 brouillons à choix normalisés
+  (vérification à l'œil) ; séries PDF : les choix d'une case mélangée s'impriment dans l'ordre mélangé (avant :
+  ordre de l'auteur, bonne réponse souvent en a)), signalé à David.
 - Piège : les sources de `scripts/questions/**` sont réécrites dès le merge, la base seulement après
   `--ecrire` ; d'ici là `create-questions` voit « CONTENU DIFFÉRENT » sur ces modèles (sans écrire).

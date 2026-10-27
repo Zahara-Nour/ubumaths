@@ -227,6 +227,34 @@ describe('garde', () => {
 		expect(check.gaps.map((gap) => gap.what.split(' :')[0])).toContain('choix');
 	});
 
+	it('NON si l’ordre fixe devient mélangé', () => {
+		const next = converted(SIGN);
+		next.variations[0].statement = templateMarkdown(
+			String(next.variations[0].statement).replace('melanger: non\n', '')
+		);
+		const check = compareMigration(SIGN, next, 10);
+		expect(check.gaps.map((gap) => gap.what.split(' :')[0])).toContain('mélange');
+	});
+
+	it('NON si des choix mélangés deviennent fixes', () => {
+		const shuffled = { ...SIGN, options: undefined };
+		const next = converted(shuffled);
+		next.variations[0].statement = templateMarkdown(
+			String(next.variations[0].statement).replace('```choix\n', '```choix\nmelanger: non\n')
+		);
+		const check = compareMigration(shuffled, next, 10);
+		expect(check.gaps.map((gap) => gap.what)).toContain('mélange : choix jamais mélangés');
+	});
+
+	it('NON si « plusieurs » change', () => {
+		const next = converted(SIGN);
+		next.variations[0].statement = templateMarkdown(
+			String(next.variations[0].statement).replace('```choix\n', '```choix\nplusieurs: oui\n')
+		);
+		const check = compareMigration(SIGN, next, 3);
+		expect(check.gaps.map((gap) => gap.what.split(' :')[0])).toContain('plusieurs');
+	});
+
 	it('NON si la correction change', () => {
 		const next = converted(SIGN);
 		next.variations[0].correction = { steps: ['Autre chose.'] };

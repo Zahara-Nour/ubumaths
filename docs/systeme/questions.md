@@ -300,8 +300,8 @@ Un bloc ``choix (case « choix », chantier `figure-et-choix`, au premier niveau
    case dans un choix (`?` en formule, `[_]`) est refusée, message situé. La case **est** dans
    `blanks[]` : sa bonne réponse `expectedAnswer` = indice(s) d'**origine** (« 1 », « 0;2 »,
    `{{eval:…}}`), contrôlée comme le QCM (≥ 2 choix ; exactement une bonne sans `plusieurs: oui`,
-   au moins une avec ; hors des choix → échec ; un indice répété compte une fois, pour une bonne
-   réponse calculée comme `0;{{f1}};{{eval:2*f2}}` où un choix faux rend `0` — la réponse d'un élève
+   au moins une avec ; hors des choix → échec ; une bonne réponse **calculée** (avec `{{…}}`) peut
+   répéter un indice, qui compte une fois, comme `0;{{f1}};{{eval:2*f2}}` où un choix faux rend `0` — la réponse d'un élève
    qui répète un indice reste illisible). `type: 'choice'`, `choice: { choices, order,
 multiple }` (choix dans l'ordre d'origine, `order[position]` = indice d'origine) ; mélange tiré
    à son rang (Fisher-Yates sur la source de l'instance) ; le bloc de l'énoncé de l'instance liste

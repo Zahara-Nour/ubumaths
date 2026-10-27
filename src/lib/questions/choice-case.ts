@@ -79,11 +79,12 @@ export function readExpectedChoices(
 	raw: string,
 	count: number,
 	multiple: boolean,
-	settings: { draft?: boolean } = {}
+	settings: { draft?: boolean; computed?: boolean } = {}
 ): { indexes: number[]; errors: string[] } {
 	const value = raw.trim();
-	// Calculée (`0;{{f1}};{{eval:2*f2}}`), elle peut répéter un indice : il compte une fois
-	const indexes = readIndexes(value, { repeats: true });
+	// Calculée (`0;{{f1}};{{eval:2*f2}}`, `computed`), elle peut répéter un indice : il
+	// compte une fois. Écrite en dur, un indice répété reste une faute de frappe.
+	const indexes = readIndexes(value, { repeats: settings.computed === true });
 	if (indexes === null) {
 		return {
 			indexes: [],

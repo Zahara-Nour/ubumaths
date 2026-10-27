@@ -260,7 +260,8 @@ function differs(what: string, before: unknown, after: unknown): string | null {
 /**
  * Garde de la migration : pour chaque variation et chaque graine, l'ancien modèle et
  * le nouveau tirent les mêmes variables, le même énoncé (bloc choix mis à part, `?` de
- * formule → `\ldots`), les mêmes choix, la même bonne réponse et la même correction ;
+ * formule → « … »), les mêmes choix, dans le même ordre (mélangés ou non), la même bonne réponse
+ * et la même correction ;
  * le nouveau n'a qu'une case, la case choix. Le contrôle d'import (specs comprises)
  * ne trouve rien que l'ancien n'avait déjà.
  */
@@ -277,7 +278,17 @@ export function compareMigration(
 			...after,
 			variations: [after.variations[variationIndex]]
 		};
-		for (let seed = 1; seed <= seeds; seed++) {
+		// Bonne réponse calculée : une branche rare peut rendre un indice que la case refuse
+		// (le QCM le lisait par `parseInt`) → dix fois plus de tirages
+		const computed = JSON.stringify(
+			variation.correctChoiceIndex ?? before.shared?.correctChoiceIndex ?? ''
+		).includes('{{');
+		const draws = computed ? seeds * 10 : seeds;
+		// Mélange : la graine ne le reproduit pas (tiré à un autre rang), seul compte « fixe
+		// ou mélangé ». Fixe : l'ordre de l'auteur à chaque tirage ; mélangé : il bouge au moins une fois.
+		const fixed = before.options?.shuffleChoices === false;
+		let moved = false;
+		for (let seed = 1; seed <= draws; seed++) {
 			const gap = (what: string) => gaps.push({ variationIndex, seed, what });
 			const oldResult = generateInstance(oldSingle, seed);
 			const newResult = generateInstance(newSingle, seed);
@@ -345,6 +356,12 @@ export function compareMigration(
 			]) {
 				if (found) gap(found);
 			}
+			const identity = blank.choice.order.every((original, position) => original === position);
+			if (fixed && !identity) gap(`mélange : ordre de l’auteur attendu, ${blank.choice.order}`);
+			moved ||= !identity;
+		}
+		if (!fixed && compared > 0 && !moved) {
+			gaps.push({ variationIndex, seed: draws, what: 'mélange : choix jamais mélangés' });
 		}
 	});
 

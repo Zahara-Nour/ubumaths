@@ -86,7 +86,7 @@ function printVerdicts(verdicts: Verdict[]): void {
 	const migrables = verdicts.filter((v) => v.migrable);
 	const compared = verdicts.reduce((sum, v) => sum + (v.check?.compared ?? 0), 0);
 	console.log(
-		`\n${migrables.length} / ${verdicts.length} migrables ; ${compared} tirages comparés (${SEEDS} graines par variation)`
+		`\n${migrables.length} / ${verdicts.length} migrables ; ${compared} tirages comparés (${SEEDS} graines par variation, dix fois plus si la bonne réponse est calculée)`
 	);
 	for (const verdict of migrables.filter((v) => v.notes.length > 0)) {
 		console.log(`  ℹ ${verdict.title} : ${verdict.notes.join(' ; ')}`);
@@ -155,6 +155,7 @@ async function migrateDatabase(write: boolean): Promise<number> {
 	}
 
 	let updated = 0;
+	let missed = 0;
 	for (const { row, converted } of judged) {
 		if (!converted) continue;
 		const { data, error: updateError } = await supabase
@@ -171,15 +172,25 @@ async function migrateDatabase(write: boolean): Promise<number> {
 			.eq('type', 'multiple_choice')
 			.eq('updated_at', row.updated_at)
 			.select('id');
-		if (updateError) throw new Error(`${row.title} (${row.id}) : ${updateError.message}`);
+		if (updateError) {
+			console.error(`⛔ ${row.title} (${row.id}) : ${updateError.message}`);
+			missed++;
+			continue;
+		}
 		if (!data || data.length !== 1) {
 			console.error(`⛔ ${row.title} (${row.id}) : ligne non mise à jour (modifiée entre-temps ?)`);
+			missed++;
 			continue;
 		}
 		updated++;
 	}
-	console.log(`\n✅ ${updated} modèle(s) migré(s)`);
-	return 0;
+	const skipped = judged.length - judged.filter((entry) => entry.converted).length;
+	console.log(
+		`\n${missed + skipped === 0 ? '✅' : '⚠️ '} ${updated} modèle(s) migré(s), ${missed} non écrit(s), ${skipped} refusé(s) par la garde`
+	);
+	// Relancer est sûr : seules les lignes encore QCM sont visées
+	if (missed + skipped > 0) console.log('Relancer le script reprend les lignes encore QCM.');
+	return missed + skipped === 0 ? 0 : 1;
 }
 
 async function main(): Promise<number> {
