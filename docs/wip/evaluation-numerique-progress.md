@@ -53,6 +53,15 @@ Sonde complète : 37 saisies (`2+3*4`, `1/3+1/6`, `sqrt(8)`, `cos(π/3)`, `3/0`,
 - `0/0` répond « Division par zéro » (forme indéterminée) ; `sqrt(-4)` reste `√(−4)` sans message ;
 - `2<3` → « vrai ».
 
+### Notation scientifique tapée (Q24 de simplify-carte, mesuré le 2026-10-27)
+
+Règle : saisie ENTIÈRE de forme `a × 10ⁿ`, 1 ≤ |a| < 10, n entier ≠ 0 → gardée (`keepScientific`, Atelier seul ; `{{eval}}` calcule). Mesures : `3*10^20` gardé ; `12*10^2 → 1200`, `3*10^20+1`, `2*3*10^20`, `(3*10^20)*(2*10^5)` calculés en entier. Points relevés :
+
+- `3*10^2` gardé `3 × 10²` (exposant petit) ;
+- `2,5*10^(-3)` → `0,0025` : l'exposant négatif entre parenthèses n'est pas reconnu (`atelier.md` l. 1400 cite `1.4286*10^-7` gardé) ;
+- `3×10^20` (croix tapée) → refus « Nombre « 10 » écrit après un facteur… » ;
+- en mode décimal, `300000000000000000000` → `3 × 10²⁰` (règle du bouton ≈, pas Q24).
+
 ### Question ouverte
 
 - **(A)** une valeur de l'Atelier est toujours remplacée, même avec une lettre libre (`x + a → x + 3`, `f(x)+a → x² + 3`), puis `tidy` — recommandation, par cohérence avec les commandes ;
