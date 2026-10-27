@@ -1,0 +1,123 @@
+[
+	{
+		"id": "4cc21ccd-03d9-4e62-b669-f5ca03a1cc9a",
+		"noeudAvant": "Fonctions > Fonctions affines > variations et signe",
+		"noeudApres": "Fonctions > Fonctions affines > variations et signe",
+		"gradesAvant": ["2"],
+		"gradesApres": ["2"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": ["2§2-328"],
+		"tagsApres": []
+	},
+	{
+		"id": "5062197a-5ffa-47bf-805d-8ec39d4445b8",
+		"noeudAvant": "Ensembles > Ensembles de nombres > appartenance et inclusion",
+		"noeudApres": "Ensembles > Ensembles de nombres > appartenance et inclusion",
+		"gradesAvant": ["1_SPE"],
+		"gradesApres": ["2", "1_SPE"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": ["2§2-403"],
+		"tagsApres": ["2§2-403"]
+	},
+	{
+		"id": "5b20321f-e86a-4a13-b478-1cf4f441e920",
+		"noeudAvant": "Ensembles > Ensembles de nombres > appartenance et inclusion",
+		"noeudApres": "Ensembles > Ensembles de nombres > appartenance et inclusion",
+		"gradesAvant": ["1_SPE"],
+		"gradesApres": ["2", "1_SPE"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": ["2§2-204"],
+		"tagsApres": ["2§2-204"]
+	},
+	{
+		"id": "68db64b0-95a8-4173-9bae-1125a1e36ea3",
+		"noeudAvant": "Fonctions > Généralités sur les fonctions > images et antécédents",
+		"noeudApres": "Fonctions > Fonctions trigonométriques",
+		"gradesAvant": ["2"],
+		"gradesApres": ["T_SPE"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": ["2§2-491"],
+		"tagsApres": ["T_SPE§TSPE-599"]
+	},
+	{
+		"id": "8b59ca4b-9a09-49df-a10c-4f3772176d46",
+		"noeudAvant": "Proportionnalité > Évolutions > évolutions successives et réciproque",
+		"noeudApres": "Proportionnalité > Évolutions > évolutions successives et réciproque",
+		"gradesAvant": ["1_SPE"],
+		"gradesApres": ["2", "1_SPE"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": ["2§2-378"],
+		"tagsApres": ["2§2-378"]
+	},
+	{
+		"id": "8c31675a-44af-48df-bb3e-cde85a8d3f35",
+		"noeudAvant": "Ensembles > Ensembles de nombres > intervalles",
+		"noeudApres": "Ensembles > Ensembles de nombres > intervalles",
+		"gradesAvant": ["1_SPE"],
+		"gradesApres": ["2", "1_SPE"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": ["2§2-244"],
+		"tagsApres": ["2§2-244"]
+	},
+	{
+		"id": "a26e6e50-aa5b-42d0-ac68-1e24a646345c",
+		"noeudAvant": "Ensembles > Cardinal et produit cartésien > produit cartésien",
+		"noeudApres": "Dénombrement > Principes de dénombrement > principes additif et multiplicatif",
+		"gradesAvant": ["2"],
+		"gradesApres": ["T_SPE"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": ["2§2-205"],
+		"tagsApres": ["T_SPE§TSPE-306"]
+	},
+	{
+		"id": "c7cdca01-326b-487f-8400-ba25d382de74",
+		"noeudAvant": "Fonctions > Fonctions affines > variations et signe",
+		"noeudApres": "Fonctions > Fonctions affines > variations et signe",
+		"gradesAvant": ["2"],
+		"gradesApres": ["2"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": ["2§2-328"],
+		"tagsApres": []
+	},
+	{
+		"id": "db8b5dc8-2d2d-41ed-9af5-a4f5551c6aaa",
+		"noeudAvant": "Ensembles > Cardinal et produit cartésien > produit cartésien",
+		"noeudApres": "Ensembles > Cardinal et produit cartésien > produit cartésien",
+		"gradesAvant": ["1_SPE"],
+		"gradesApres": ["2", "1_SPE"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": ["2§2-205"],
+		"tagsApres": ["2§2-205"]
+	},
+	{
+		"id": "f96d3e43-ada2-48e5-a6a8-dc2482a4b650",
+		"noeudAvant": "Fonctions > Généralités sur les fonctions > extremums",
+		"noeudApres": "Fonctions > Fonctions trigonométriques",
+		"gradesAvant": ["2"],
+		"gradesApres": ["T_SPE"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": ["2§2-350"],
+		"tagsApres": ["T_SPE§TSPE-599"]
+	},
+	{
+		"id": "f98164b1-031d-4ff9-8d16-8c97ebe485f6",
+		"noeudAvant": "Logique > Raisonnements > contre-exemple",
+		"noeudApres": "Logique > Raisonnements > contre-exemple",
+		"gradesAvant": ["1_SPE"],
+		"gradesApres": ["2", "1_SPE"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": ["2§2-212"],
+		"tagsApres": ["2§2-212"]
+	}
+]

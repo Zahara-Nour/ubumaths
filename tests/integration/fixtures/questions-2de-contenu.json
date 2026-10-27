@@ -1,0 +1,2554 @@
+{
+	"modeles": [
+		{
+			"id": "1338da34-00a6-4500-97fc-fcece9514ae6",
+			"noeud": ["Algèbre", "Calcul littéral", "identités remarquables"],
+			"grades": ["2"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-262"
+				}
+			],
+			"avant": {
+				"title": "Développer $(a-b)^2$",
+				"description": null,
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a^2}}-{{eval:2*a*b}}+{{b}}^2"
+							}
+						],
+						"statement": "Développe et réduis.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "(a-b)^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{a}}}-\\textcolor{{{color:primary.1}}}{{{b}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{a}}}^2 - 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{b}}} + \\textcolor{{{color:primary.1}}}{{{b}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}^2-{{eval:2*a*b}}+{{eval:a^2}}"
+							}
+						],
+						"statement": "Développe et réduis.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "(b-a)^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{b}}} - \\textcolor{{{color:primary.1}}}{{{a}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{b}}}^2 - 2 \\times \\textcolor{{{color:primary.0}}}{{{b}}} \\times \\textcolor{{{color:primary.1}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "1..9"
+						},
+						{
+							"name": "b",
+							"expression": "t|x|y|z"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["49-14z+z^2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "v0 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["z^2-14z+49"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["z^2-14z+49"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "ordre décroissant",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["z^2-49"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "oubli du double produit",
+						"variationIndex": 1
+					}
+				]
+			},
+			"apres": {
+				"title": "Développer $(a-b)^2$",
+				"description": "Une lettre seule : $(3-x)^2$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a^2}}-{{eval:2*a*b}}+{{b}}^2"
+							}
+						],
+						"statement": "Développe et réduis :\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "(a-b)^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{a}}}-\\textcolor{{{color:primary.1}}}{{{b}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{a}}}^2 - 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{b}}} + \\textcolor{{{color:primary.1}}}{{{b}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}^2-{{eval:2*a*b}}+{{eval:a^2}}"
+							}
+						],
+						"statement": "Développe et réduis :\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "(b-a)^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{b}}} - \\textcolor{{{color:primary.1}}}{{{a}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{b}}}^2 - 2 \\times \\textcolor{{{color:primary.0}}}{{{b}}} \\times \\textcolor{{{color:primary.1}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "1..9"
+						},
+						{
+							"name": "b",
+							"expression": "t|x|y|z"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["49-14z+z^2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "v0 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["z^2-14z+49"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["z^2-14z+49"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "ordre décroissant",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["z^2-49"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "oubli du double produit",
+						"variationIndex": 1
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Calcul littéral",
+				"domain": "Transformation",
+				"subdomain": "Identités remarquables",
+				"level": 6,
+				"status": "published"
+			},
+			"neufs": []
+		},
+		{
+			"id": "288c2bf0-2442-4e2d-ad4b-afcc1d23b6b2",
+			"noeud": ["Algèbre", "Calcul littéral", "identités remarquables"],
+			"grades": ["2"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-262"
+				}
+			],
+			"avant": {
+				"title": "Développer $(a+b)^2$",
+				"description": null,
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a^2}}+{{eval:2*a*bc}}+{{eval:(bc)^2}}"
+							}
+						],
+						"statement": "Développe et réduis.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "({{a}}+{{eval:bc}})^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{eval:bc}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{a}}}^2 + 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{eval:bc}}} + (\\textcolor{{{color:primary.1}}}{{{eval:bc}}})^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(bc)^2}}+{{eval:2*a*bc}}+{{eval:a^2}}"
+							}
+						],
+						"statement": "Développe et réduis.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "({{eval:bc}}+{{a}})^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{eval:bc}}}+\\textcolor{{{color:primary.1}}}{{{a}}})^2               &=  (\\textcolor{{{color:primary.0}}}{{{eval:bc}}})^2 + 2 \\times \\textcolor{{{color:primary.0}}}{{{eval:bc}}} \\times \\textcolor{{{color:primary.1}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "1..7"
+						},
+						{
+							"name": "b",
+							"expression": "1..7!a"
+						},
+						{
+							"name": "c",
+							"expression": "t|x|y|z"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["25+70z+49z^2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "v0 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["49z^2+70z+25"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["49z^2+70z+25"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "ordre décroissant",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["25+49z^2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "oubli du double produit",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["25+35z+49z^2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "double produit sans le 2",
+						"variationIndex": 0
+					}
+				]
+			},
+			"apres": {
+				"title": "Développer $(a+b)^2$",
+				"description": "Une lettre avec un coefficient : $(3+5x)^2$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a^2}}+{{eval:2*a*bc}}+{{eval:(bc)^2}}"
+							}
+						],
+						"statement": "Développe et réduis :\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "({{a}}+{{eval:bc}})^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{eval:bc}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{a}}}^2 + 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{eval:bc}}} + (\\textcolor{{{color:primary.1}}}{{{eval:bc}}})^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(bc)^2}}+{{eval:2*a*bc}}+{{eval:a^2}}"
+							}
+						],
+						"statement": "Développe et réduis :\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "({{eval:bc}}+{{a}})^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{eval:bc}}}+\\textcolor{{{color:primary.1}}}{{{a}}})^2               &=  (\\textcolor{{{color:primary.0}}}{{{eval:bc}}})^2 + 2 \\times \\textcolor{{{color:primary.0}}}{{{eval:bc}}} \\times \\textcolor{{{color:primary.1}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "1..7"
+						},
+						{
+							"name": "b",
+							"expression": "1..7!a"
+						},
+						{
+							"name": "c",
+							"expression": "t|x|y|z"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["25+70z+49z^2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "v0 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["49z^2+70z+25"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["49z^2+70z+25"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "ordre décroissant",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["25+49z^2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "oubli du double produit",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["25+35z+49z^2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "double produit sans le 2",
+						"variationIndex": 0
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Calcul littéral",
+				"domain": "Transformation",
+				"subdomain": "Identités remarquables",
+				"level": 7,
+				"status": "published"
+			},
+			"neufs": []
+		},
+		{
+			"id": "6909bfde-1fcb-4372-8205-db5bb54a05f8",
+			"noeud": ["Algèbre", "Calcul littéral", "identités remarquables"],
+			"grades": ["2"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-262"
+				}
+			],
+			"avant": {
+				"title": "Développer $(a-b)^2$",
+				"description": null,
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a^2}}-{{eval:2*a*bc}}+{{eval:(bc)^2}}"
+							}
+						],
+						"statement": "Développe et réduis :\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "({{a}}-{{eval:bc}})^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.1}}}{{{eval:bc}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{a}}}^2 - 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{eval:bc}}} + (\\textcolor{{{color:primary.1}}}{{{eval:bc}}})^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(bc)^2}}-{{eval:2*a*bc}}+{{eval:a^2}}"
+							}
+						],
+						"statement": "Développe et réduis :\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "({{eval:bc}}-{{a}})^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{eval:bc}}} - \\textcolor{{{color:primary.1}}}{{{a}}})^2               &=  (\\textcolor{{{color:primary.0}}}{{{eval:bc}}})^2 - 2 \\times \\textcolor{{{color:primary.0}}}{{{eval:bc}}} \\times \\textcolor{{{color:primary.1}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "1..7"
+						},
+						{
+							"name": "b",
+							"expression": "1..7!a"
+						},
+						{
+							"name": "c",
+							"expression": "t|x|y|z"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["25-70z+49z^2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "v0 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["49z^2-70z+25"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["49z^2-25"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "oubli du double produit",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["49z^2+70z+25"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "signe du double produit",
+						"variationIndex": 1
+					}
+				]
+			},
+			"apres": {
+				"title": "Développer $(a-b)^2$",
+				"description": "Une lettre avec un coefficient : $(3-5x)^2$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a^2}}-{{eval:2*a*bc}}+{{eval:(bc)^2}}"
+							}
+						],
+						"statement": "Développe et réduis :\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "({{a}}-{{eval:bc}})^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.1}}}{{{eval:bc}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{a}}}^2 - 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{eval:bc}}} + (\\textcolor{{{color:primary.1}}}{{{eval:bc}}})^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(bc)^2}}-{{eval:2*a*bc}}+{{eval:a^2}}"
+							}
+						],
+						"statement": "Développe et réduis :\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "({{eval:bc}}-{{a}})^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{eval:bc}}} - \\textcolor{{{color:primary.1}}}{{{a}}})^2               &=  (\\textcolor{{{color:primary.0}}}{{{eval:bc}}})^2 - 2 \\times \\textcolor{{{color:primary.0}}}{{{eval:bc}}} \\times \\textcolor{{{color:primary.1}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "1..7"
+						},
+						{
+							"name": "b",
+							"expression": "1..7!a"
+						},
+						{
+							"name": "c",
+							"expression": "t|x|y|z"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["25-70z+49z^2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "v0 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["49z^2-70z+25"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["49z^2-25"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "oubli du double produit",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["49z^2+70z+25"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "7",
+							"c": "z|z"
+						},
+						"description": "signe du double produit",
+						"variationIndex": 1
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Calcul littéral",
+				"domain": "Transformation",
+				"subdomain": "Identités remarquables",
+				"level": 8,
+				"status": "published"
+			},
+			"neufs": []
+		},
+		{
+			"id": "85f6e96e-f1a9-4ed3-b321-4e070e097c9d",
+			"noeud": ["Algèbre", "Calcul littéral", "identités remarquables"],
+			"grades": ["2"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-262"
+				}
+			],
+			"avant": {
+				"title": "Développer $(a+b)^2$",
+				"description": null,
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a^2}}+{{eval:2*a*b}}+{{b}}^2"
+							}
+						],
+						"statement": "Développe et réduis.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "(a+b)^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{a}}}+\\textcolor{{{color:primary.1}}}{{{b}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{a}}}^2 + 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{b}}} + \\textcolor{{{color:primary.1}}}{{{b}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}^2+{{eval:2*a*b}}+{{eval:a^2}}"
+							}
+						],
+						"statement": "Développe et réduis.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "(b+a)^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{b}}}+\\textcolor{{{color:primary.1}}}{{{a}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{b}}}^2 + 2 \\times \\textcolor{{{color:primary.0}}}{{{b}}} \\times \\textcolor{{{color:primary.1}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "1..9"
+						},
+						{
+							"name": "b",
+							"expression": "t|x|y|z"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["49+14z+z^2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "v0 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["z^2+14z+49"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["49+14z+z^2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "ordre croissant",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["49+z^2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "oubli du double produit",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["49+7z+7z+z^2"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "non réduit",
+						"variationIndex": 0
+					}
+				]
+			},
+			"apres": {
+				"title": "Développer $(a+b)^2$",
+				"description": "Une lettre seule : $(3+x)^2$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a^2}}+{{eval:2*a*b}}+{{b}}^2"
+							}
+						],
+						"statement": "Développe et réduis :\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "(a+b)^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{a}}}+\\textcolor{{{color:primary.1}}}{{{b}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{a}}}^2 + 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{b}}} + \\textcolor{{{color:primary.1}}}{{{b}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}^2+{{eval:2*a*b}}+{{eval:a^2}}"
+							}
+						],
+						"statement": "Développe et réduis :\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "(b+a)^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 (\\textcolor{{{color:primary.0}}}{{{b}}}+\\textcolor{{{color:primary.1}}}{{{a}}})^2               &=  \\textcolor{{{color:primary.0}}}{{{b}}}^2 + 2 \\times \\textcolor{{{color:primary.0}}}{{{b}}} \\times \\textcolor{{{color:primary.1}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "1..9"
+						},
+						{
+							"name": "b",
+							"expression": "t|x|y|z"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["49+14z+z^2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "v0 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["z^2+14z+49"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["49+14z+z^2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "ordre croissant",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["49+z^2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "oubli du double produit",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["49+7z+7z+z^2"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "7",
+							"b": "z|z"
+						},
+						"description": "non réduit",
+						"variationIndex": 0
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Calcul littéral",
+				"domain": "Transformation",
+				"subdomain": "Identités remarquables",
+				"level": 5,
+				"status": "published"
+			},
+			"neufs": []
+		},
+		{
+			"id": "8b59ca4b-9a09-49df-a10c-4f3772176d46",
+			"noeud": ["Proportionnalité", "Évolutions", "évolutions successives et réciproque"],
+			"grades": ["1_SPE"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-378"
+				}
+			],
+			"avant": {
+				"title": "Coefficient multiplicateur d'une évolution répétée",
+				"description": "Même taux appliqué plusieurs années de suite",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:1+t/100;d}}^{ {{n}} }"
+							}
+						],
+						"statement": "Une grandeur augmente de ${{t}}\\,\\%$ par an pendant ${{n}}$ ans. Donne le coefficient multiplicateur global.\n\nLe coefficient multiplicateur global est $?$.",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "1|2|3|4|5|10"
+							},
+							{
+								"name": "n",
+								"expression": "2..10"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, la grandeur est multipliée par $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+								"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1+t/100;d}}$ : le coefficient multiplicateur global est ${{eval:1+t/100;d}}^{ {{n}} }$ (c'est le terme d'une suite géométrique de raison ${{eval:1+t/100;d}}$).",
+								"Attention : ce n'est pas $1+\\dfrac{ {{n}}\\times{{t}} }{100}={{eval:1+n*t/100;d}}$, les taux ne s'additionnent pas."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:1-t/100;d}}^{ {{n}} }"
+							}
+						],
+						"statement": "Une grandeur diminue de ${{t}}\\,\\%$ par an pendant ${{n}}$ ans. Donne le coefficient multiplicateur global.\n\nLe coefficient multiplicateur global est $?$.",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "1|2|3|4|5|10|20"
+							},
+							{
+								"name": "n",
+								"expression": "2..10"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, la grandeur est multipliée par $1-\\dfrac{ {{t}} }{100}={{eval:1-t/100;d}}$.",
+								"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1-t/100;d}}$ : le coefficient multiplicateur global est ${{eval:1-t/100;d}}^{ {{n}} }$ (c'est le terme d'une suite géométrique de raison ${{eval:1-t/100;d}}$).",
+								"Attention : ce n'est pas $1-\\dfrac{ {{n}}\\times{{t}} }{100}={{eval:1-n*t/100;d}}$, les taux ne s'additionnent pas."
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["1{,}03^5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "+3 % pendant 5 ans : 1,03^5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1.03^{5}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "+3 % pendant 5 ans : 1.03^5 saisi au point",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}159\\,274\\,074\\,3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "valeur décimale exacte avec espaces fines : 1,159 274 074 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}1592740743"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "valeur décimale exacte sans espaces : juste mais perfectible",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}331"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "3",
+							"t": "10"
+						},
+						"description": "+10 % pendant 3 ans : décimal exact 1,331",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}159"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "valeur approchée 1,159 refusée (valeur exacte demandée)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}15"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "erreur typique : taux additionnés 1,15",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}03\\times5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "erreur typique : 1,03 × 5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}03^5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "erreur typique : 0,03^5 (taux au lieu du coefficient)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}98^{10}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "−2 % pendant 10 ans : 0,98^10",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}64"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "2",
+							"t": "20"
+						},
+						"description": "−20 % pendant 2 ans : décimal exact 0,64",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}98^{9}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "erreur : mauvais exposant 0,98^9",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}8"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "erreur typique : taux additionnés 0,8",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1{,}02^{10}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "erreur typique : 1,02^10 (hausse au lieu de baisse)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\left(1+0{,}03\\right)^5"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "calcul non effectué (1+0,03)^5 : mauvaise forme (convention « calcul non effectué »)",
+						"variationIndex": 0
+					}
+				]
+			},
+			"apres": {
+				"title": "Coefficient multiplicateur d'une évolution répétée",
+				"description": "Même taux appliqué plusieurs années de suite",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:1+t/100;d}}^{ {{n}} }"
+							}
+						],
+						"statement": "Une grandeur augmente de ${{t}}\\,\\%$ par an pendant ${{n}}$ ans. Donne le coefficient multiplicateur global.\n\nLe coefficient multiplicateur global est $?$.",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "1|2|3|4|5|10"
+							},
+							{
+								"name": "n",
+								"expression": "2..10"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, la grandeur est multipliée par $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+								"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1+t/100;d}}$ : le coefficient multiplicateur global est ${{eval:1+t/100;d}}^{ {{n}} }$.",
+								"Attention : ce n'est pas $1+\\dfrac{ {{n}}\\times{{t}} }{100}={{eval:1+n*t/100;d}}$, les taux ne s'additionnent pas."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"acceptDecimal": true,
+								"expectedAnswer": "{{eval:1-t/100;d}}^{ {{n}} }"
+							}
+						],
+						"statement": "Une grandeur diminue de ${{t}}\\,\\%$ par an pendant ${{n}}$ ans. Donne le coefficient multiplicateur global.\n\nLe coefficient multiplicateur global est $?$.",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "1|2|3|4|5|10|20"
+							},
+							{
+								"name": "n",
+								"expression": "2..10"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, la grandeur est multipliée par $1-\\dfrac{ {{t}} }{100}={{eval:1-t/100;d}}$.",
+								"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1-t/100;d}}$ : le coefficient multiplicateur global est ${{eval:1-t/100;d}}^{ {{n}} }$.",
+								"Attention : ce n'est pas $1-\\dfrac{ {{n}}\\times{{t}} }{100}={{eval:1-n*t/100;d}}$, les taux ne s'additionnent pas."
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["1{,}03^5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "+3 % pendant 5 ans : 1,03^5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1.03^{5}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "+3 % pendant 5 ans : 1.03^5 saisi au point",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}159\\,274\\,074\\,3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "valeur décimale exacte avec espaces fines : 1,159 274 074 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}1592740743"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "valeur décimale exacte sans espaces : juste mais perfectible",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}331"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "3",
+							"t": "10"
+						},
+						"description": "+10 % pendant 3 ans : décimal exact 1,331",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}159"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "valeur approchée 1,159 refusée (valeur exacte demandée)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}15"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "erreur typique : taux additionnés 1,15",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1{,}03\\times5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "erreur typique : 1,03 × 5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}03^5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "erreur typique : 0,03^5 (taux au lieu du coefficient)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}98^{10}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "−2 % pendant 10 ans : 0,98^10",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}64"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"n": "2",
+							"t": "20"
+						},
+						"description": "−20 % pendant 2 ans : décimal exact 0,64",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}98^{9}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "erreur : mauvais exposant 0,98^9",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}8"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "erreur typique : taux additionnés 0,8",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1{,}02^{10}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"n": "10",
+							"t": "2"
+						},
+						"description": "erreur typique : 1,02^10 (hausse au lieu de baisse)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\left(1+0{,}03\\right)^5"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"n": "5",
+							"t": "3"
+						},
+						"description": "calcul non effectué (1+0,03)^5 : mauvaise forme (convention « calcul non effectué »)",
+						"variationIndex": 0
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Proportionnalité",
+				"domain": "Pourcentages",
+				"subdomain": "Variations",
+				"level": 11,
+				"status": "published"
+			},
+			"neufs": []
+		},
+		{
+			"id": "8c31675a-44af-48df-bb3e-cde85a8d3f35",
+			"noeud": ["Ensembles", "Ensembles de nombres", "intervalles"],
+			"grades": ["1_SPE"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-244"
+				}
+			],
+			"avant": {
+				"title": "Réunion, intersection et complémentaire d'intervalles",
+				"description": "Écrire I ∩ J, I ∪ J ou un complémentaire dans ℝ : chevauchement, intervalles disjoints ou accolés, demi-droites",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]{{c}};{{b}}]"
+							},
+							{
+								"expectedAnswer": "[{{a}};{{d}}["
+							}
+						],
+						"statement": "On considère les intervalles $I=[{{a}};{{b}}]$ et $J=]{{c}};{{d}}[$. Écris chaque résultat sous la forme d'un intervalle ou d'une réunion d'intervalles ; l'ensemble vide s'écrit $\\varnothing$.\n\n$I\\cap J=?$\n\n$I\\cup J=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-9..2"
+							},
+							{
+								"name": "g1",
+								"expression": "1..4"
+							},
+							{
+								"name": "c",
+								"expression": "{{eval:a+g1}}"
+							},
+							{
+								"name": "g2",
+								"expression": "1..4"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:c+g2}}"
+							},
+							{
+								"name": "g3",
+								"expression": "1..4"
+							},
+							{
+								"name": "d",
+								"expression": "{{eval:b+g3}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On place les deux intervalles sur une droite graduée : ${{a}}<{{c}}<{{b}}<{{d}}$, ils se chevauchent entre ${{c}}$ et ${{b}}$.",
+								"$I\\cap J$ : les réels qui sont dans $I$ **et** dans $J$, c'est-à-dire tels que $x>{{c}}$ et $x\\leqslant {{b}}$ : $I\\cap J=\\textcolor{{{color:primary.0}}}{]{{c}};{{b}}]}$.",
+								"$I\\cup J$ : les réels qui sont dans $I$ **ou** dans $J$ ; il n'y a pas de « trou » entre les deux : $I\\cup J=\\textcolor{{{color:primary.0}}}{[{{a}};{{d}}[}$ (${{a}}$ est dans $I$, ${{d}}$ n'est ni dans $I$ ni dans $J$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\varnothing"
+							},
+							{
+								"expectedAnswer": "[{{a}};{{b}}[\\cup[{{c}};{{d}}]"
+							}
+						],
+						"statement": "On considère les intervalles $I=[{{a}};{{b}}[$ et $J=[{{c}};{{d}}]$. Écris chaque résultat sous la forme d'un intervalle ou d'une réunion d'intervalles ; l'ensemble vide s'écrit $\\varnothing$.\n\n$I\\cap J=?$\n\n$I\\cup J=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-9..2"
+							},
+							{
+								"name": "g1",
+								"expression": "1..4"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:a+g1}}"
+							},
+							{
+								"name": "t",
+								"expression": "0..1"
+							},
+							{
+								"name": "g2",
+								"expression": "1..3"
+							},
+							{
+								"name": "c",
+								"expression": "{{eval:b+t*g2}}"
+							},
+							{
+								"name": "g3",
+								"expression": "1..4"
+							},
+							{
+								"name": "d",
+								"expression": "{{eval:c+g3}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"{{if:t=1|${{b}}<{{c}}$ : les deux intervalles n'ont aucun point commun, donc $I\\cap J=\\textcolor{{{color:primary.0}}}{\\varnothing}$.}}{{if:t=0|${{b}}$ n'appartient pas à $I$ (crochet ouvert) : les deux intervalles n'ont aucun point commun, donc $I\\cap J=\\textcolor{{{color:primary.0}}}{\\varnothing}$.}}",
+								"{{if:t=1|Entre ${{b}}$ et ${{c}}$, il y a un « trou » : la réunion ne s'écrit pas avec un seul intervalle, $I\\cup J=\\textcolor{{{color:primary.0}}}{[{{a}};{{b}}[\\cup[{{c}};{{d}}]}$.}}{{if:t=0|$J$ commence exactement là où $I$ s'arrête, et ${{b}}\\in J$ : il n'y a pas de trou, $I\\cup J=\\textcolor{{{color:primary.0}}}{[{{a}};{{d}}]}$.}}"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]-\\infty;{{a}}[\\cup[{{b}};+\\infty["
+							},
+							{
+								"expectedAnswer": "]{{c}};+\\infty["
+							}
+						],
+						"statement": "Dans $\\mathbb{R}$, on considère les intervalles $I=[{{a}};{{b}}[$ et $J=]-\\infty;{{c}}]$. Écris chaque résultat sous la forme d'un intervalle ou d'une réunion d'intervalles ; l'ensemble vide s'écrit $\\varnothing$.\n\nComplémentaire de $I$ dans $\\mathbb{R}$ : $\\overline{I}=?$\n\nComplémentaire de $J$ dans $\\mathbb{R}$ : $\\overline{J}=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-9..4"
+							},
+							{
+								"name": "g1",
+								"expression": "1..6"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:a+g1}}"
+							},
+							{
+								"name": "c",
+								"expression": "-9..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\overline{I}$ contient les réels qui ne sont **pas** dans $I$ : ceux qui sont strictement inférieurs à ${{a}}$ (${{a}}$ est dans $I$) et ceux qui sont supérieurs ou égaux à ${{b}}$ (${{b}}$ n'est pas dans $I$) : $\\overline{I}=\\textcolor{{{color:primary.0}}}{]-\\infty;{{a}}[\\cup[{{b}};+\\infty[}$.",
+								"$J$ contient les réels $x\\leqslant {{c}}$ ; son complémentaire contient ceux tels que $x>{{c}}$ : $\\overline{J}=\\textcolor{{{color:primary.0}}}{]{{c}};+\\infty[}$. Les crochets s'inversent : une borne incluse dans $J$ est exclue de $\\overline{J}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]{{a}};{{b}}]"
+							},
+							{
+								"expectedAnswer": "]-\\infty;+\\infty["
+							}
+						],
+						"statement": "On considère les intervalles $I=]-\\infty;{{b}}]$ et $J=]{{a}};+\\infty[$. Écris chaque résultat sous la forme d'un intervalle ou d'une réunion d'intervalles ; l'ensemble vide s'écrit $\\varnothing$.\n\n$I\\cap J=?$\n\n$I\\cup J=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-9..5"
+							},
+							{
+								"name": "g1",
+								"expression": "1..5"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:a+g1}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$I\\cap J$ : les réels tels que $x\\leqslant {{b}}$ **et** $x>{{a}}$ ; comme ${{a}}<{{b}}$, $I\\cap J=\\textcolor{{{color:primary.0}}}{]{{a}};{{b}}]}$.",
+								"$I\\cup J$ : tout réel $x$ vérifie $x\\leqslant {{b}}$ ou $x>{{a}}$ (si $x>{{b}}$, alors $x>{{a}}$). Donc $I\\cup J=\\textcolor{{{color:primary.0}}}{]-\\infty;+\\infty[}=\\mathbb{R}$."
+							]
+						}
+					}
+				],
+				"shared": {
+					"blankDefaults": {
+						"answerKind": "intervalles"
+					}
+				},
+				"test_specs": [
+					{
+						"answers": ["]1;4]", "[-2;6["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"g1": "3",
+							"g2": "3",
+							"g3": "2"
+						},
+						"description": "v0 [−2;4] et ]1;6[ : justes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[-2;6[", "]1;4]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"g1": "3",
+							"g2": "3",
+							"g3": "2"
+						},
+						"description": "v0 : ∩ et ∪ échangés",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[1;4]", "[-2;6["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"g1": "3",
+							"g2": "3",
+							"g3": "2"
+						},
+						"description": "v0 : crochet de 1 mal orienté",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]1;4]", "[-2;6]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"g1": "3",
+							"g2": "3",
+							"g3": "2"
+						},
+						"description": "v0 : réunion fermée en 6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\varnothing", "[-2;1[\\cup[3;6]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"t": "1",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 disjoints : justes",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\varnothing", "[3;6]\\cup[-2;1["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"t": "1",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 disjoints : réunion dans l'autre ordre",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\{\\}", "[-2;1[\\cup[3;6]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"t": "1",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 disjoints : {} pour le vide",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\varnothing", "[-2;6]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"t": "1",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 disjoints : réunion « bouchée » [−2;6]",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\varnothing", "[-2;4]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"t": "0",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 accolés en 1 : justes, [−2;4]",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\{1\\}", "[-2;4]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"t": "0",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 accolés en 1 : {1} pour l'intersection",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["]-\\infty;-1[\\cup[3;+\\infty[", "]2;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-1",
+							"c": "2",
+							"g1": "4"
+						},
+						"description": "v2 : justes",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]-\\infty;-1]\\cup]3;+\\infty[", "[2;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-1",
+							"c": "2",
+							"g1": "4"
+						},
+						"description": "v2 : crochets non inversés",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]-\\infty;-1[\\cup[3;+\\infty[", "]-\\infty;2]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-1",
+							"c": "2",
+							"g1": "4"
+						},
+						"description": "v2 : complémentaire de J pris comme J",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]-1;3]", "]-\\infty;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-1",
+							"g1": "4"
+						},
+						"description": "v3 : justes",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["]-1;3]", "\\mathbb{R}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-1",
+							"g1": "4"
+						},
+						"description": "v3 : ℝ écrit \\mathbb{R}",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["]-\\infty;+\\infty[", "]-1;3]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-1",
+							"g1": "4"
+						},
+						"description": "v3 : ∩ et ∪ échangés",
+						"variationIndex": 3
+					}
+				]
+			},
+			"apres": {
+				"title": "Réunion, intersection et complémentaire d'intervalles",
+				"description": "Écrire I ∩ J, I ∪ J ou un complémentaire dans ℝ : chevauchement, intervalles disjoints ou accolés, demi-droites",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]{{c}};{{b}}]"
+							},
+							{
+								"expectedAnswer": "[{{a}};{{d}}["
+							}
+						],
+						"statement": "On considère les intervalles $I=[{{a}};{{b}}]$ et $J=]{{c}};{{d}}[$. Écris chaque résultat sous la forme d'un intervalle ou d'une réunion d'intervalles ; l'ensemble vide s'écrit $\\varnothing$.\n\n$I\\cap J=?$\n\n$I\\cup J=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-9..2"
+							},
+							{
+								"name": "g1",
+								"expression": "1..4"
+							},
+							{
+								"name": "c",
+								"expression": "{{eval:a+g1}}"
+							},
+							{
+								"name": "g2",
+								"expression": "1..4"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:c+g2}}"
+							},
+							{
+								"name": "g3",
+								"expression": "1..4"
+							},
+							{
+								"name": "d",
+								"expression": "{{eval:b+g3}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On place les deux intervalles sur une droite graduée : ${{a}}<{{c}}<{{b}}<{{d}}$, ils se chevauchent entre ${{c}}$ et ${{b}}$.",
+								"$I\\cap J$ : les réels qui sont dans $I$ **et** dans $J$, c'est-à-dire tels que $x>{{c}}$ et $x\\leqslant {{b}}$ : $I\\cap J=\\textcolor{{{color:primary.0}}}{]{{c}};{{b}}]}$.",
+								"$I\\cup J$ : les réels qui sont dans $I$ **ou** dans $J$ ; il n'y a pas de « trou » entre les deux : $I\\cup J=\\textcolor{{{color:primary.0}}}{[{{a}};{{d}}[}$ (${{a}}$ est dans $I$, ${{d}}$ n'est ni dans $I$ ni dans $J$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\varnothing"
+							},
+							{
+								"expectedAnswer": "{{if:t==0|[{{a}};{{d}}]|[{{a}};{{b}}[\\cup[{{c}};{{d}}]}}"
+							}
+						],
+						"statement": "On considère les intervalles $I=[{{a}};{{b}}[$ et $J=[{{c}};{{d}}]$. Écris chaque résultat sous la forme d'un intervalle ou d'une réunion d'intervalles ; l'ensemble vide s'écrit $\\varnothing$.\n\n$I\\cap J=?$\n\n$I\\cup J=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-9..2"
+							},
+							{
+								"name": "g1",
+								"expression": "1..4"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:a+g1}}"
+							},
+							{
+								"name": "t",
+								"expression": "0..1"
+							},
+							{
+								"name": "g2",
+								"expression": "1..3"
+							},
+							{
+								"name": "c",
+								"expression": "{{eval:b+t*g2}}"
+							},
+							{
+								"name": "g3",
+								"expression": "1..4"
+							},
+							{
+								"name": "d",
+								"expression": "{{eval:c+g3}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"{{if:t=1|${{b}}<{{c}}$ : les deux intervalles n'ont aucun point commun, donc $I\\cap J=\\textcolor{{{color:primary.0}}}{\\varnothing}$.}}{{if:t=0|${{b}}$ n'appartient pas à $I$ (crochet ouvert) : les deux intervalles n'ont aucun point commun, donc $I\\cap J=\\textcolor{{{color:primary.0}}}{\\varnothing}$.}}",
+								"{{if:t=1|Entre ${{b}}$ et ${{c}}$, il y a un « trou » : la réunion ne s'écrit pas avec un seul intervalle, $I\\cup J=\\textcolor{{{color:primary.0}}}{[{{a}};{{b}}[\\cup[{{c}};{{d}}]}$.}}{{if:t=0|$J$ commence exactement là où $I$ s'arrête, et ${{b}}\\in J$ : il n'y a pas de trou, $I\\cup J=\\textcolor{{{color:primary.0}}}{[{{a}};{{d}}]}$.}}"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]-\\infty;{{a}}[\\cup[{{b}};+\\infty["
+							},
+							{
+								"expectedAnswer": "]{{c}};+\\infty["
+							}
+						],
+						"statement": "Dans $\\mathbb{R}$, on considère les intervalles $I=[{{a}};{{b}}[$ et $J=]-\\infty;{{c}}]$. Écris chaque résultat sous la forme d'un intervalle ou d'une réunion d'intervalles ; l'ensemble vide s'écrit $\\varnothing$.\n\nComplémentaire de $I$ dans $\\mathbb{R}$ : $\\overline{I}=?$\n\nComplémentaire de $J$ dans $\\mathbb{R}$ : $\\overline{J}=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-9..4"
+							},
+							{
+								"name": "g1",
+								"expression": "1..6"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:a+g1}}"
+							},
+							{
+								"name": "c",
+								"expression": "-9..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\overline{I}$ contient les réels qui ne sont **pas** dans $I$ : ceux qui sont strictement inférieurs à ${{a}}$ (${{a}}$ est dans $I$) et ceux qui sont supérieurs ou égaux à ${{b}}$ (${{b}}$ n'est pas dans $I$) : $\\overline{I}=\\textcolor{{{color:primary.0}}}{]-\\infty;{{a}}[\\cup[{{b}};+\\infty[}$.",
+								"$J$ contient les réels $x\\leqslant {{c}}$ ; son complémentaire contient ceux tels que $x>{{c}}$ : $\\overline{J}=\\textcolor{{{color:primary.0}}}{]{{c}};+\\infty[}$. Les crochets s'inversent : une borne incluse dans $J$ est exclue de $\\overline{J}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "]{{a}};{{b}}]"
+							},
+							{
+								"expectedAnswer": "]-\\infty;+\\infty["
+							}
+						],
+						"statement": "On considère les intervalles $I=]-\\infty;{{b}}]$ et $J=]{{a}};+\\infty[$. Écris chaque résultat sous la forme d'un intervalle ou d'une réunion d'intervalles ; l'ensemble vide s'écrit $\\varnothing$.\n\n$I\\cap J=?$\n\n$I\\cup J=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-9..5"
+							},
+							{
+								"name": "g1",
+								"expression": "1..5"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:a+g1}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$I\\cap J$ : les réels tels que $x\\leqslant {{b}}$ **et** $x>{{a}}$ ; comme ${{a}}<{{b}}$, $I\\cap J=\\textcolor{{{color:primary.0}}}{]{{a}};{{b}}]}$.",
+								"$I\\cup J$ : tout réel $x$ vérifie $x\\leqslant {{b}}$ ou $x>{{a}}$ (si $x>{{b}}$, alors $x>{{a}}$). Donc $I\\cup J=\\textcolor{{{color:primary.0}}}{]-\\infty;+\\infty[}=\\mathbb{R}$."
+							]
+						}
+					}
+				],
+				"shared": {
+					"blankDefaults": {
+						"answerKind": "intervalles"
+					}
+				},
+				"test_specs": [
+					{
+						"answers": ["]1;4]", "[-2;6["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"g1": "3",
+							"g2": "3",
+							"g3": "2"
+						},
+						"description": "v0 [−2;4] et ]1;6[ : justes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[-2;6[", "]1;4]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"g1": "3",
+							"g2": "3",
+							"g3": "2"
+						},
+						"description": "v0 : ∩ et ∪ échangés",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[1;4]", "[-2;6["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"g1": "3",
+							"g2": "3",
+							"g3": "2"
+						},
+						"description": "v0 : crochet de 1 mal orienté",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]1;4]", "[-2;6]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"g1": "3",
+							"g2": "3",
+							"g3": "2"
+						},
+						"description": "v0 : réunion fermée en 6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\varnothing", "[-2;1[\\cup[3;6]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"t": "1",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 disjoints : justes",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\varnothing", "[3;6]\\cup[-2;1["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"t": "1",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 disjoints : réunion dans l'autre ordre",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\{\\}", "[-2;1[\\cup[3;6]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"t": "1",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 disjoints : {} pour le vide",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\varnothing", "[-2;6]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"t": "1",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 disjoints : réunion « bouchée » [−2;6]",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\varnothing", "[-2;4]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"t": "0",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 accolés en 1 : justes, [−2;4]",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\{1\\}", "[-2;4]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"t": "0",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 accolés en 1 : {1} pour l'intersection",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["]-\\infty;-1[\\cup[3;+\\infty[", "]2;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-1",
+							"c": "2",
+							"g1": "4"
+						},
+						"description": "v2 : justes",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]-\\infty;-1]\\cup]3;+\\infty[", "[2;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-1",
+							"c": "2",
+							"g1": "4"
+						},
+						"description": "v2 : crochets non inversés",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]-\\infty;-1[\\cup[3;+\\infty[", "]-\\infty;2]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-1",
+							"c": "2",
+							"g1": "4"
+						},
+						"description": "v2 : complémentaire de J pris comme J",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]-1;3]", "]-\\infty;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-1",
+							"g1": "4"
+						},
+						"description": "v3 : justes",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["]-1;3]", "\\mathbb{R}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-1",
+							"g1": "4"
+						},
+						"description": "v3 : ℝ écrit \\mathbb{R}",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["]-\\infty;+\\infty[", "]-1;3]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-1",
+							"g1": "4"
+						},
+						"description": "v3 : ∩ et ∪ échangés",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\varnothing", "[-2;1[\\cup[1;4]"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["intervalForm"]
+						},
+						"variables": {
+							"a": "-2",
+							"t": "0",
+							"g1": "3",
+							"g2": "2",
+							"g3": "3"
+						},
+						"description": "v1 accolés en 1 : réunion écrite en deux morceaux",
+						"variationIndex": 1
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Logique",
+				"domain": "Ensembles",
+				"subdomain": "Intervalles",
+				"level": 2,
+				"status": "draft"
+			},
+			"neufs": []
+		},
+		{
+			"id": "939153b6-9aa8-4a59-809e-071a7d3b8b77",
+			"noeud": ["Fonctions", "Fonction valeur absolue", "définition et distance"],
+			"grades": ["2"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-420"
+				}
+			],
+			"avant": {
+				"title": "Résoudre une équation avec une valeur absolue",
+				"description": null,
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a+b}}"
+							},
+							{
+								"expectedAnswer": "{{eval:a-b}}"
+							}
+						],
+						"statement": "Résous cette équation.\n\n$$abs(x{{eval:-(a);+}})={{b}}$$\n\n$x=?$ ou $x=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9"
+							}
+						],
+						"conditions": ["abs(a) != abs(b)"],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \t\t\t\t\t\t\t\t\\left\\lvert x{{eval:-(a);+}} \\right\\rvert={{b}} \t\t\t\t\t\t\t\t& \\quad \\lrArr \\quad \t\t\t\t\t\t\t\t    \\begin{cases} \t\t\t\t\t\t\t\t       x{{eval:-(a);+}}= {{b}} \\\\ \t\t\t\t\t\t\t\t\t   \\text{ou} \\\\ \t\t\t\t\t\t\t\t       x{{eval:-(a);+}}= -{{b}}  \t\t\t\t\t\t\t        \\end{cases} \\\\ \t\t\t\t\t\t\t\t& \\quad \\lrArr \\quad \t\t\t\t\t\t\t\t    \\begin{cases} \t\t\t\t\t\t\t\t       x= {{b}}{{eval:a;+}} \\\\ \t\t\t\t\t\t\t\t\t   \\text{ou} \\\\ \t\t\t\t\t\t\t\t       x= -{{b}}{{eval:a;+}}  \t\t\t\t\t\t\t        \\end{cases} \\\\ \t\t\t\t\t\t\t\t& \\quad \\lrArr \\quad \t\t\t\t\t\t\t\t    \\begin{cases} \t\t\t\t\t\t\t\t       x= {{solution:0}} \\\\ \t\t\t\t\t\t\t\t\t   \\text{ou} \\\\ \t\t\t\t\t\t\t\t       x= {{solution:1}}  \t\t\t\t\t\t\t        \\end{cases} \\\\ \t\t\t\t\t\t\t \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["13", "-5"],
+						"expected": {
+							"status": "correct",
+							"constraintViolations": []
+						},
+						"variables": {
+							"a": "4",
+							"b": "9"
+						},
+						"description": "|x-4|=9 : 13 ou -5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-5", "13"],
+						"expected": {
+							"status": "correct",
+							"constraintViolations": []
+						},
+						"variables": {
+							"a": "4",
+							"b": "9"
+						},
+						"description": "ordre libre",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-13", "5"],
+						"expected": {
+							"status": "incorrect",
+							"constraintViolations": []
+						},
+						"variables": {
+							"a": "4",
+							"b": "9"
+						},
+						"description": "signe de a inversé : -13 ou 5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-5", "-7"],
+						"expected": {
+							"status": "correct",
+							"constraintViolations": []
+						},
+						"variables": {
+							"a": "-6",
+							"b": "1"
+						},
+						"description": "|x+6|=1 : -5 ou -7",
+						"variationIndex": 0
+					}
+				]
+			},
+			"apres": {
+				"title": "Résoudre une équation avec une valeur absolue",
+				"description": "Par la distance : les nombres à distance b de a",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a+b}}"
+							},
+							{
+								"expectedAnswer": "{{eval:a-b}}"
+							}
+						],
+						"statement": "Résous cette équation.\n\n$$abs(x{{eval:-(a);+}})={{b}}$$\n\n$x=?$ ou $x=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9"
+							}
+						],
+						"conditions": ["abs(a) != abs(b)"],
+						"correction": {
+							"steps": [
+								"$\\left\\lvert x{{eval:-(a);+}}\\right\\rvert$ est la distance entre $x$ et ${{a}}$ : on cherche les nombres situés à la distance ${{b}}$ de ${{a}}$.",
+								"Il y en a deux, un de chaque côté de ${{a}}$ : ${{a}}-{{b}}={{eval:a-b}}$ et ${{a}}+{{b}}={{eval:a+b}}$.",
+								"Donc $x=\\textcolor{{{color:primary.0}}}{ {{eval:a+b}} }$ ou $x=\\textcolor{{{color:primary.0}}}{ {{eval:a-b}} }$."
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["13", "-5"],
+						"expected": {
+							"status": "correct",
+							"constraintViolations": []
+						},
+						"variables": {
+							"a": "4",
+							"b": "9"
+						},
+						"description": "|x-4|=9 : 13 ou -5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-5", "13"],
+						"expected": {
+							"status": "correct",
+							"constraintViolations": []
+						},
+						"variables": {
+							"a": "4",
+							"b": "9"
+						},
+						"description": "ordre libre",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-13", "5"],
+						"expected": {
+							"status": "incorrect",
+							"constraintViolations": []
+						},
+						"variables": {
+							"a": "4",
+							"b": "9"
+						},
+						"description": "signe de a inversé : -13 ou 5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-5", "-7"],
+						"expected": {
+							"status": "correct",
+							"constraintViolations": []
+						},
+						"variables": {
+							"a": "-6",
+							"b": "1"
+						},
+						"description": "|x+6|=1 : -5 ou -7",
+						"variationIndex": 0
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Fonctions",
+				"domain": "Valeur absolue",
+				"subdomain": "Equations",
+				"level": 2,
+				"status": "published"
+			},
+			"neufs": []
+		}
+	]
+}
