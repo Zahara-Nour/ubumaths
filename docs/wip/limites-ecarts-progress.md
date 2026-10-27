@@ -11,7 +11,7 @@ _Mis à jour le 2026-10-27, après #1852._
 - **État** : PR 1 (V67 + V69, #1844) et PR 2 (V68, #1852) mergées ; rien en prod. Pas de worktree en cours.
 - **Prochaine action** : `git worktree add -b fix/limites-ecarts-v70 ../ubumaths-wt-limites-ecarts origin/main`, puis **PR 3 : V70 + V71** (substitution directe 0^{−n}, suivi du signe), tests rouges d'abord.
 - **Reste** : PR 3 seulement. Revue `code-reviewer` en Opus.
-- **En attente de David** : le défaut ancien « paramètre k pris positif » (`e^{kx}` en +∞ → +∞, aussi sur `main`) : dans la PR 3 ou chantier à part ?
+- **En attente de David** : rien. Paramètre k pris positif (`e^{kx}` en +∞ → +∞) : **chantier à part `limites-parametres`** (décidé par David le 2026-10-27), hors de ce chantier.
 - **Pièges** : une limite FAUSSE est pire qu'un refus ; rejouer la sonde de la phase 0 sur `main` avant de coder ; le repli numérique de `classifyLimitValue` classe 10²⁰ « fini » et eˣ « inconnu » ; une constante flottante proche de 1 (ou de 0) peut être exacte : comparer en exact (`exactConstantRational`) ; refus restants : `x^3e^{-x^2+x}`, `x^2e^{-\sqrt{x}}` en +∞, `x^{\frac{4}{2}}` en −∞.
 
 ---
