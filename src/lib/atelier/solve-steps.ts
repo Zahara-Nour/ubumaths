@@ -286,7 +286,10 @@ export function solveSteps(
 		// ⚠️ **Garde-fou : la conclusion est vérifiée contre le moteur.** Mesuré
 		// le 2026-10-08 — `(2x-4)=0` concluait `x = 0` (le moteur : x = 2). Une
 		// conclusion que les nombres démentent n'est jamais montrée : repli.
-		if (!conclusionAgrees(relation, variable, steps[steps.length - 1])) return null;
+		// Contre l'équation TAPÉE (degrés en radians), pas celle que les valeurs
+		// remarquables ont réduite : une valeur fausse de la table serait rattrapée
+		const typedSolvable = radiansInTrigonometry(typedRelation);
+		if (!conclusionAgrees(typedSolvable, variable, steps[steps.length - 1])) return null;
 
 		const solutions = concludedSolutions(steps[steps.length - 1]);
 		const summarized = numbered([

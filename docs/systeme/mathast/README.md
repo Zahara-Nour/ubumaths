@@ -1778,6 +1778,11 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
     développement l'ont, par `explainExpansion`) ;
   - `.simplifier cos(0.5π)x` → `0` sans étape (repli du moteur, décimal) ;
     `cos(\frac{-\pi}{3})` est refusé comme écriture mélangée ;
+  - revue de la PR (aucune valeur fausse) : `sin(−(π/6))` garde sa parenthèse et n'atteint pas
+    la valeur (`extractPiCoefficient`) ; l'étape réunie de `withValuesTogether` montre la ligne
+    entière, une période du même passage y passe sans être nommée
+    (`sin(π/3) + cos(π/6) + tan(7π/3)`) ; `cos(30° + 30°)` devient `cos(60°)` « au propre » sans
+    que la valeur suive ;
   - `.résoudre cos(π/5)x = 1` titre « On divise par $\cos(\frac{1}{5}π)$ » (écriture du
     solveur, antérieur).
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne

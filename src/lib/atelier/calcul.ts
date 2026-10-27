@@ -2461,11 +2461,16 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		finalArgs = { ...finalArgs, interval: formatInterval(studied) };
 	}
 	const commandArgument = finalArgs === null ? argument : writeCommandArguments(finalArgs);
-	// Le moteur ne calcule pas le cosinus d'une grandeur : il reçoit les radians
+	// Le moteur ne calcule pas le cosinus d'une grandeur : il reçoit les radians,
+	// partie par partie — jamais sur le texte entier, où `pour x` se collerait à
+	// l'équation (`x^4=1pourx`, revue)
+	const toRadians = (text: string) => radiansInText(text, session.atelier.functionNames);
 	const engineArgument =
-		name === 'solve'
-			? radiansInText(commandArgument, session.atelier.functionNames)
-			: commandArgument;
+		name !== 'solve'
+			? commandArgument
+			: finalArgs === null
+				? toRadians(argument)
+				: writeCommandArguments(substituteArguments(finalArgs, toRadians) ?? finalArgs);
 	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${engineArgument}`;
 
 	// `.évaluer sin(x) en x=30°` : le moteur remplace x et rend `sin((π/6)[rad])`,

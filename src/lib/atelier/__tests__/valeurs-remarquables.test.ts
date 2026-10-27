@@ -231,3 +231,32 @@ describe('.développer et .résoudre — en degrés', () => {
 		);
 	});
 });
+
+// Revue (2026-10-27) : le moteur de `.résoudre` reçoit les radians PARTIE par
+// partie — sur le texte entier, `pour x` se collait à l'équation (`x^4=1pourx`)
+describe('.résoudre — degrés, mots-clés et repli du moteur', () => {
+	it.each([
+		['.résoudre x^4 = cos(0°) pour x', String.raw`S = \left\{ -1 \,;\, 1 \right\}`],
+		['.résoudre x^3 = cos(60°) pour x', String.raw`x = \sqrt[3]{\dfrac{1}{2}}`],
+		['.résoudre cos(60°)t = 1', 't = 2'],
+		[
+			'.résoudre sin(x) = cos(60°) dans [0 ; 2\\pi]',
+			String.raw`S = \left\{ \dfrac{\pi}{6} \,;\, \dfrac{5 \pi}{6} \right\}`
+		],
+		[
+			'.résoudre x^2 = cos(20°) dans [0;5]',
+			String.raw`x = \sqrt{\cos\left( \dfrac{\pi}{9} \right)}`
+		]
+	])('%s → %s', (input, expected) => {
+		expect(line(input).latex).toBe(expected);
+	});
+});
+
+describe('.simplifier — la période seulement pour arriver à une valeur', () => {
+	it.each(['.simplifier tan(5π/2)', '.simplifier cos(11π/5)x'])(
+		'%s : aucune étape de période',
+		(input) => {
+			expect(line(input).titles.some((t) => t.includes('périodique'))).toBe(false);
+		}
+	);
+});

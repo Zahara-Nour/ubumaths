@@ -373,7 +373,15 @@ function canonicalValue(angle: MathNode, table: Record<string, ValueBuilder>) {
 	return table[`${n}:${d}`];
 }
 
-function periodRule(name: string, fn: 'sin' | 'cos' | 'tan'): Rule {
+/**
+ * La période, seulement pour arriver à une valeur de la table : `tan(5π/2)`
+ * ne devient pas `tan(π/2)`, non définie (revue), et `cos(11π/5)` reste.
+ */
+function periodRule(
+	name: string,
+	fn: 'sin' | 'cos' | 'tan',
+	table: Record<string, ValueBuilder>
+): Rule {
 	return createRule(
 		P.func(fn, [P._('angle')]),
 		(bindings) => astFunc(fn, [reducedAngle(bindings.get('angle') as MathNode)!]),
@@ -381,7 +389,9 @@ function periodRule(name: string, fn: 'sin' | 'cos' | 'tan'): Rule {
 			name,
 			condition: (bindings) => {
 				const angle = bindings.get('angle');
-				return angle !== undefined && isMathNodeBinding(angle) && reducedAngle(angle) !== null;
+				if (angle === undefined || !isMathNodeBinding(angle)) return false;
+				const reduced = reducedAngle(angle);
+				return reduced !== null && canonicalValue(reduced, table) !== undefined;
 			}
 		}
 	);
@@ -417,9 +427,9 @@ export const TRIG_VALUE_RULE_NAMES: ReadonlySet<string> = new Set([
  * (`sin-remarkable-value`…), deux étapes. `tan(π/2)` n'a pas de valeur : gardé.
  */
 export const trigRemarkableStepRules: readonly Rule[] = [
-	periodRule('sin-remarkable-period', 'sin'),
-	periodRule('cos-remarkable-period', 'cos'),
-	periodRule('tan-remarkable-period', 'tan'),
+	periodRule('sin-remarkable-period', 'sin', SIN_TABLE),
+	periodRule('cos-remarkable-period', 'cos', COS_TABLE),
+	periodRule('tan-remarkable-period', 'tan', TAN_TABLE),
 	valueRule('sin-remarkable-value', 'sin', SIN_TABLE),
 	valueRule('cos-remarkable-value', 'cos', COS_TABLE),
 	valueRule('tan-remarkable-value', 'tan', TAN_TABLE)
