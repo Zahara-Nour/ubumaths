@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-27, après #1860._
 
 - **État** : #1846, #1848, #1853, #1854 (glisser iPhone) #1858 (carte de correction trop haute qui défile, avertissement « téléphone » hors des onglets de l'aperçu) et #1860 (page d'aide d'un bloc : rendus rognés, § 12) **mergées**, pas en prod. Essai iPhone complet réussi (Tailscale Serve, machine `serveur`) ; règle « toucher un point posé le reprend » confirmée par David.
-- **Prochaine action** : aiguilles, phase 0 écrite (§ 13), questions posées à David.
-- **En attente de David** : les 6 questions du § 13 (aiguilles). Suite possible (revue #1858, à proposer) : sur une carte de correction qui défile, le bouton de retournement part avec le contenu (le passer en `sticky`).
+- **Prochaine action** : aiguilles, PR en cours (décisions § 14), worktree `ubumaths-wt-reponses-a-placer`.
+- **En attente de David** : rien. Suite possible (revue #1858, à proposer) : sur une carte de correction qui défile, le bouton de retournement part avec le contenu (le passer en `sticky`).
 - **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; droite à K points = K cases consécutives ; `placerAnswer` des deux côtés ; iPhone : `touchstart` non passif dans `NumberLinePlacer` ; cartes retournables : mesurer la fiche (`bind:ref`, `min-h-full shrink-0`), jamais la face ; modèle local « Placer deux nombres (essai) » (base locale seulement) ; une PR = une session.
 - **Worktree / branche** : aucun.
 
@@ -292,3 +292,13 @@ heures 0 à 23).
 5. **Départ** : aiguilles en attente sur le 12, grisées (reco), ou pas d'aiguille du tout tant que
    l'élève n'a pas touché ?
 6. **Taille** : cadran à placer à 6 cm par défaut (reco), ou 4 cm comme les autres ?
+
+## 14. Décisions aiguilles (David, 2026-10-27 : « je valide » les recos)
+
+1. Aiguilles **indépendantes** (pas de remontoir).
+2. Étiquettes **« petite aiguille » / « grande aiguille »** + toucher ; glisser une aiguille posée la reprend.
+3. Petite aiguille jugée sur le **secteur** : pile sur h si minutes = 0, strictement entre h et h+1 sinon.
+   Grande aiguille : la minute exacte.
+4. **Secondes (CM2-083) hors chantier** (pas de trotteuse) — reste noté.
+5. Départ : aiguilles **en attente sur le 12, grisées** ; une aiguille en attente n'est pas posée.
+6. Cadran à placer : **6 cm** par défaut (`taille:` garde la main).
