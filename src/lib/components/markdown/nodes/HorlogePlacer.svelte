@@ -272,16 +272,8 @@
 	</div>
 
 	{#if showControls}
-		<div class="flex flex-wrap items-center justify-center gap-2">
-			<button
-				type="button"
-				class="placer-cran flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-background text-lg hover:bg-muted disabled:opacity-40"
-				aria-label="Reculer la {HAND_NAMES[active]} d’une minute"
-				disabled={locked}
-				onclick={() => stepBy(-1)}
-			>
-				<span aria-hidden="true">◀</span>
-			</button>
+		<!-- Étiquettes puis ◀ ▶ : deux rangées, qui tiennent sur un téléphone -->
+		<div class="flex flex-col items-center gap-2">
 			<div class="flex gap-1" role="group" aria-label="Aiguille à tourner">
 				{#each HANDS as kind (kind)}
 					<button
@@ -297,15 +289,26 @@
 					</button>
 				{/each}
 			</div>
-			<button
-				type="button"
-				class="placer-cran flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-background text-lg hover:bg-muted disabled:opacity-40"
-				aria-label="Avancer la {HAND_NAMES[active]} d’une minute"
-				disabled={locked}
-				onclick={() => stepBy(1)}
-			>
-				<span aria-hidden="true">▶</span>
-			</button>
+			<div class="flex gap-3">
+				<button
+					type="button"
+					class="placer-cran flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-background text-lg hover:bg-muted disabled:opacity-40"
+					aria-label="Reculer la {HAND_NAMES[active]} d’une minute"
+					disabled={locked}
+					onclick={() => stepBy(-1)}
+				>
+					<span aria-hidden="true">◀</span>
+				</button>
+				<button
+					type="button"
+					class="placer-cran flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-background text-lg hover:bg-muted disabled:opacity-40"
+					aria-label="Avancer la {HAND_NAMES[active]} d’une minute"
+					disabled={locked}
+					onclick={() => stepBy(1)}
+				>
+					<span aria-hidden="true">▶</span>
+				</button>
+			</div>
 		</div>
 	{/if}
 
@@ -437,8 +440,8 @@
 	/* Aiguille en attente sur le 12 : grisée, en pointillés */
 	.horloge-aiguille-attente {
 		stroke: var(--color-muted-foreground);
-		stroke-dasharray: 4 6;
-		opacity: 0.6;
+		stroke-dasharray: 2 8;
+		opacity: 0.4;
 	}
 
 	.horloge-axe {
