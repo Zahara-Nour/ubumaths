@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, relevé fait._
+_Mis à jour le 2026-10-27, phase 0 du lot 0 écrite._
 
-- **État** : relevé et état des lieux faits (§ 1-3) ; rien d'écrit en base ni dans le code.
-- **Prochaine action** : réponses de David aux questions du § 4, puis phase 0 du lot 0 (corrections) ou du lot 1.
-- **En attente de David** : les 6 questions du § 4.
-- **Pièges en cours** : niveaux relevés parmi les publiés de la catégorie AVANT l'écriture ; case « choix » en prod (v0.51.0) mais QCM pas encore migrés ; droite à placer mergée, pas en prod.
+- **État** : relevé fait (§ 1-3) ; recommandations du § 4 validées (« go », § 4 bis) ; phase 0 du lot 0 écrite (§ 5), rien en base ni dans le code.
+- **Prochaine action** : validation du § 5 par David, puis worktree `../ubumaths-wt-questions-cm1`, `lot-corrections-cm1.py` (contenu de 2 modèles) et migration de niveaux / tags / nœuds.
+- **En attente de David** : § 5, question 5.4 (les 8 modèles sans aucun point).
+- **Pièges en cours** : niveaux relevés parmi les publiés de la catégorie AVANT l'écriture ; case « choix » en prod (v0.51.0) mais QCM pas encore migrés ; droite à placer mergée, pas en prod ; un modèle ne peut pas rester sans niveau (`grades` jamais vide en pratique).
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -100,3 +100,77 @@ Ses verdicts font foi.
    entiers (003, 004, 005, 007, 009, 141, 142, 012, 013) → 3 fractions → 4 décimaux → 5 grandeurs
    (unités et conversions) → 6 problèmes → 7 données (tableaux, barres, courbes) → 8 géométrie
    dessinée → probabilités, proportionnalité → lots à outils neufs.
+
+## 4 bis. Décisions (David, 2026-10-27)
+
+« go » : les six recommandations du § 4 sont validées.
+
+1. Les modèles hors programme changent de niveau en lot 0 (détail et cas sans point : § 5).
+2. Tables (035, 161, 036) : modèles CM1 propres, tables de 0 à 10 mélangées.
+3. Choix : case « choix » partout, jamais l'ancien QCM.
+4. Outils : droite à placer dès son `deploy:prod`, barres, fractions à colorier ; repère plus tard ;
+   107, 108, 167, 168 après `figure-et-choix`.
+5. Points D sans modèle.
+6. Lots : 0 corrections → 1 calcul mental → 2 numération entiers → 3 fractions → 4 décimaux →
+   5 grandeurs → 6 problèmes → 7 données → 8 géométrie dessinée → probabilités, proportionnalité →
+   outils neufs.
+
+## 5. Lot 0 : corrections — phase 0 (à valider)
+
+Relevé du 2026-10-27 : les 26 modèles n'ont que **CM1** pour niveau (le retirer les laisserait sans
+niveau) ; **0 donnée d'élève** (chapter_exercises, chapter_series, chapter_worksheets,
+evaluation_attempt_questions, journal_entry_activities, skill_attempts, srs_cards, test_answers,
+user_favorite_templates). Le nœud de chaque point d'accueil a été lu en base.
+
+### 5.1 Vers le CM2 (13 modèles, niveau CM1 → CM2, tag ajouté)
+
+| Modèle     | Titre (sous-titre)                         | Point                                                     | Nœud                                                                |
+| ---------- | ------------------------------------------ | --------------------------------------------------------- | ------------------------------------------------------------------- |
+| `e38d205a` | Calculer un produit (× 100)                | CM2-042                                                   | inchangé                                                            |
+| `19323604` | Calculer un produit (× 1 000)              | CM2-042                                                   | inchangé                                                            |
+| `32724446` | Encadrer au dixième près                   | CM2-117                                                   | inchangé                                                            |
+| `6379fa20` | Encadrer au centième près (9,926)          | CM2-117 (« au centième, ex. 17,995 »)                     | inchangé                                                            |
+| `4643ed4a` | Multiplier deux multiples de 10            | CM2-046                                                   | inchangé                                                            |
+| `e320755f` | Produit entier × 1/10                      | CM2-021                                                   | inchangé                                                            |
+| `8fa3108c` | Produit entier × fraction                  | CM2-021                                                   | inchangé                                                            |
+| `a0241952` | Somme de décimaux avec retenue (2,9 + 6,9) | CM2-044 (deux décimaux < 10, un chiffre après la virgule) | inchangé                                                            |
+| `ff3ee576` | Somme avec retenues (9,8 + 9,5)            | CM2-044                                                   | inchangé                                                            |
+| `aa788ca7` | ? × 100 = … (décimal)                      | CM2-065 (égalité à trous)                                 | → égalités à trous                                                  |
+| `ac2dae38` | ? × 1 000 = … (décimal)                    | CM2-065                                                   | → égalités à trous                                                  |
+| `a5d5a7a0` | 90 × ? = 8 100                             | CM2-065                                                   | → égalités à trous                                                  |
+| `edc5d7d4` | Moitié des impairs                         | CM2-037                                                   | inchangé — **contenu** : impairs de 1 à **15** (aujourd'hui 1 à 29) |
+
+### 5.2 Vers le CM2 avec réécriture (1 modèle)
+
+- `322f3479` Forme décimale des fractions usuelles → **CM2-039** : liste ramenée à celle du point
+  (1/10, 1/100, 1/1 000, 1/2, 1/4, 3/4, 3/2, 4/2, 5/2) au lieu de 1/2, 1/4, 2/10, 3/2, 5/2, 1/100,
+  2/1000, 7/2, 9/2. Nœud inchangé.
+
+### 5.3 Vers la 6e (4 modèles)
+
+- `6a16303a` (18,9 − 9,8), `7d57fb3b` (9,8 − 2,9) : différence de deux décimaux → **6-198**
+  (aucun point du CM ne soustrait deux décimaux).
+- `0a93ac99`, `08bbf1c6` : additionner par regroupements (8,1 + 9,7 + 1,9) → **6-114**.
+- Nœuds inchangés (déjà ceux des points). À signaler au chantier `questions-6`.
+
+### 5.4 Aucun point du CP à la 6e (8 modèles) — à trancher
+
+`5d4dfd32`, `fe9df9ba` (586 + 413, 439 + 459 en ligne), `08fbcd26` (982 − 594 en ligne),
+`17a3c039` (complément à 10 000), `61baef92`, `09f22a2f` (300 : 5, 810 : 9), `4ee04b22` (« dans
+810, combien de fois 9 ? »), `cda36cc2` (retirer les zéros à gauche).
+
+- A. **Dépublier** (repassés en brouillon, niveau CM1 gardé, jamais supprimés), comme les doublons du
+  CE1. **Reco.**
+- B. Les laisser publiés en CM1 sans tag (état actuel).
+
+### 5.5 Comment
+
+- **Contenu** (`edc5d7d4`, `322f3479`, publiés) : `docs/wip/questions/lot-corrections-cm1.py` →
+  migration de contenu générée (instantané md5 d'abord), comme au CE1.
+- **Niveaux, tags, nœuds, statut** : migration à la main sur le gabarit du CE1
+  (`20261027000100_questions_ce1_rangement_tags.sql`) et son test d'intégration (rouge sans la
+  migration, puis vert) ; rollback qui garde l'état laissé par la migration.
+- **Question d'accès** : personne ne gagne de lecture. Les 18 modèles déplacés restent publiés :
+  ils apparaissent au CM2 ou en 6e au lieu du CM1. En miroir : un prof qui cherche ces modèles au
+  CM1 ne les y trouve plus ; avec A, les 8 du § 5.4 disparaissent du catalogue (aucun élève ne s'en
+  sert).
