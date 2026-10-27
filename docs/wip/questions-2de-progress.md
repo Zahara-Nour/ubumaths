@@ -289,3 +289,21 @@ Une seule PR, deux migrations (comme la 6e) ; branche `feat/questions-2de-correc
 - #1866 mergée le 2026-10-27 (Lint relancé une fois : ESLint annulé au délai de 20 min, pas une erreur) ;
   `db:migrate` joué depuis le dépôt principal ; MCP : 7 md5 = « après », niveaux / nœuds / tags du lot, statuts
   inchangés, 2-328 sans modèle.
+
+## 8. Lot 2 « équations et inéquations du premier degré » : décisions (David, 2026-10-27)
+
+Relevé MCP : aucun modèle sur les 10 points ; le collège (5e, 4e) répond « x = … », aucune inéquation ni
+produit nul en base. Phase 0 validée telle que proposée (mes 4 recommandations).
+
+- **Réponse** : une case `S = ?`, `answerKind: 'intervalles'` (comme 8c31675a, 9e1d084e) : `{3}`, `∅`, `ℝ`,
+  intervalles ; borne non simplifiée = ½ ; « 3 » sans accolades ou « x ⩾ 2 » = faux. Niveau `['2']`,
+  brouillons.
+- **Équations** — Calcul littéral › Equations › « Ensemble des solutions » : 1 · 2-430 a + x = b (entiers ;
+  décimaux) · 2 · 2-429 ax = b (solution entière ; fraction ; a fractionnaire) · 3 · 2-265 ax + b = 0
+  (entière ; fraction) · 4 · 2-279 ax + b = cx + d (entière ; fraction ; a = c → ∅ ou ℝ) · 5 · 2-267 produit
+  nul ((x − p)(x − q) ; (ax + b)(cx + d), fractions) · 6 · 2-281 x² = a (carré parfait ; sans facteur carré ;
+  a = 0 ou a < 0 ; a simplifiable, √12 = ½).
+- **Inéquations** — Calcul littéral › Inéquations › « Premier degré », les quatre sens tirés (l2-3) :
+  1 · 2-432 a + x ⩾ b (entiers ; décimaux) · 2 · 2-431 ax ⩾ b (a > 0 ; a < 0) · 3 · 2-266 ax + b > 0
+  (a > 0 ; a < 0) · 4 · 2-280 ax + b ⩾ cx + d (a − c > 0 ; a − c < 0 ; a = c → ∅ ou ℝ).
+- 2-269 (quotient) hors lot. **Question d'accès** : personne (brouillons neufs, aucune policy).

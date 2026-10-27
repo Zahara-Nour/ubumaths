@@ -1,0 +1,168 @@
+{
+	"title": "Résoudre une inéquation ax + b > 0",
+	"description": "Ensemble des solutions de ax + b > 0 : a positif, puis a négatif (le sens change), les quatre sens",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inéquations",
+	"subdomain": "Premier degré",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;{{eval:-(b)/(a)}}[|{{if:s==1|]-\\infty;{{eval:-(b)/(a)}}]|{{if:s==2|]{{eval:-(b)/(a)}};+\\infty[|[{{eval:-(b)/(a)}};+\\infty[}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On {{if:b>0|soustrait ${{b}}$|ajoute ${{eval:-(b)}}$}} aux deux membres : le sens ne change pas.",
+					"On divise les deux membres par ${{a}}$, un nombre **positif** : le sens de l'inégalité **ne change pas**.",
+					"$${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}0\\iff {{eval:(a)*x}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:-(b)}}\\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:-(b)/(a)}}$$",
+					"Le crochet est **fermé** du côté de ${{eval:-(b)/(a)}}$ quand l'inégalité est large ($\\leqslant$, $\\geqslant$), **ouvert** quand elle est stricte ($<$, $>$).",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{eval:-(b)/(a)}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{eval:-(b)/(a)}}\\right]|{{if:s==2|\\left]{{eval:-(b)/(a)}}\\,;+\\infty\\right[|\\left[{{eval:-(b)/(a)}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-9..-2"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]{{eval:-(b)/(a)}};+\\infty[|{{if:s==1|[{{eval:-(b)/(a)}};+\\infty[|{{if:s==2|]-\\infty;{{eval:-(b)/(a)}}[|]-\\infty;{{eval:-(b)/(a)}}]}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On {{if:b>0|soustrait ${{b}}$|ajoute ${{eval:-(b)}}$}} aux deux membres : le sens ne change pas.",
+					"On divise les deux membres par ${{a}}$, un nombre **négatif** : le sens de l'inégalité **change**.",
+					"$${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}0\\iff {{eval:(a)*x}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:-(b)}}\\iff x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{eval:-(b)/(a)}}$$",
+					"Le crochet est **fermé** du côté de ${{eval:-(b)/(a)}}$ quand l'inégalité est large ($\\leqslant$, $\\geqslant$), **ouvert** quand elle est stricte ($<$, $>$).",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]{{eval:-(b)/(a)}}\\,;+\\infty\\right[|{{if:s==1|\\left[{{eval:-(b)/(a)}}\\,;+\\infty\\right[|{{if:s==2|\\left]-\\infty\\,;{{eval:-(b)/(a)}}\\right[|\\left]-\\infty\\,;{{eval:-(b)/(a)}}\\right]}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x − 7 > 0 : S = ]7/2 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-7",
+				"s": "2"
+			},
+			"answers": ["]\\frac{7}{2};+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : borne −7/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-7",
+				"s": "2"
+			},
+			"answers": ["]-\\frac{7}{2};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : mauvais côté ]−∞ ; 7/2[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-7",
+				"s": "2"
+			},
+			"answers": ["]-\\infty;\\frac{7}{2}["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−3x + 6 ⩽ 0 : S = [2 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"b": "6",
+				"s": "1"
+			},
+			"answers": ["[2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens non changé ]−∞ ; 2]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"b": "6",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : crochet ouvert ]2 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"b": "6",
+				"s": "1"
+			},
+			"answers": ["]2;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,309 @@
+{
+	"title": "Résoudre une inéquation ax + b ⩾ cx + d",
+	"description": "Ensemble des solutions de ax + b ⩾ cx + d : a − c positif, négatif (le sens change), a = c (aucune solution ou tous les réels), les quatre sens",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inéquations",
+	"subdomain": "Premier degré",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(c)*x+(d)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±!a"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["(a)-(c) > 0", "d != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;{{eval:((d)-(b))/((a)-(c))}}[|{{if:s==1|]-\\infty;{{eval:((d)-(b))/((a)-(c))}}]|{{if:s==2|]{{eval:((d)-(b))/((a)-(c))}};+\\infty[|[{{eval:((d)-(b))/((a)-(c))}};+\\infty[}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On regroupe les termes en $x$ à gauche et les nombres à droite : le sens ne change pas.",
+					"$${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(c)*x+(d)}}\\iff {{eval:((a)-(c))*x}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(d)-(b)}}$$",
+					"On divise par ${{eval:(a)-(c)}}$, un nombre **positif** : le sens **ne change pas**. $x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:((d)-(b))/((a)-(c))}}$.",
+					"Le crochet est **fermé** du côté de ${{eval:((d)-(b))/((a)-(c))}}$ quand l'inégalité est large ($\\leqslant$, $\\geqslant$), **ouvert** quand elle est stricte ($<$, $>$).",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{eval:((d)-(b))/((a)-(c))}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{eval:((d)-(b))/((a)-(c))}}\\right]|{{if:s==2|\\left]{{eval:((d)-(b))/((a)-(c))}}\\,;+\\infty\\right[|\\left[{{eval:((d)-(b))/((a)-(c))}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(c)*x+(d)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±!a"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["(a)-(c) < 0", "d != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]{{eval:((d)-(b))/((a)-(c))}};+\\infty[|{{if:s==1|[{{eval:((d)-(b))/((a)-(c))}};+\\infty[|{{if:s==2|]-\\infty;{{eval:((d)-(b))/((a)-(c))}}[|]-\\infty;{{eval:((d)-(b))/((a)-(c))}}]}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On regroupe les termes en $x$ à gauche et les nombres à droite : le sens ne change pas.",
+					"$${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(c)*x+(d)}}\\iff {{eval:((a)-(c))*x}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(d)-(b)}}$$",
+					"On divise par ${{eval:(a)-(c)}}$, un nombre **négatif** : le sens **change**. $x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{eval:((d)-(b))/((a)-(c))}}$.",
+					"Le crochet est **fermé** du côté de ${{eval:((d)-(b))/((a)-(c))}}$ quand l'inégalité est large ($\\leqslant$, $\\geqslant$), **ouvert** quand elle est stricte ($<$, $>$).",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]{{eval:((d)-(b))/((a)-(c))}}\\,;+\\infty\\right[|{{if:s==1|\\left[{{eval:((d)-(b))/((a)-(c))}}\\,;+\\infty\\right[|{{if:s==2|\\left]-\\infty\\,;{{eval:((d)-(b))/((a)-(c))}}\\right[|\\left]-\\infty\\,;{{eval:((d)-(b))/((a)-(c))}}\\right]}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:(a)*x+(b)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(a)*x+(d)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "g",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(b)+(g)*(2*(t)-1)*(1-2*floor((s)/2))"
+				}
+			],
+			"conditions": ["d != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|\\varnothing|\\mathbb{R}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les termes en $x$ sont les mêmes des deux côtés : en retirant ${{eval:(a)*x}}$, il reste ${{b}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{d}}$.",
+					"Cette inégalité ne dépend pas de $x$ : elle est {{if:t==0|**toujours fausse** : aucun réel n'est solution.|**toujours vraie** : tous les réels sont solutions.}}",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:t==0|\\varnothing|\\mathbb{R}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5x − 4 ⩾ 2x + 8 : S = [4 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"b": "-4",
+				"d": "8",
+				"s": "3"
+			},
+			"answers": ["[4;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe en changeant de membre [4/3 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"b": "-4",
+				"d": "8",
+				"s": "3"
+			},
+			"answers": ["[\\frac{4}{3};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : crochet ouvert ]4 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"b": "-4",
+				"d": "8",
+				"s": "3"
+			},
+			"answers": ["]4;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x + 3 < 4x − 6 : S = ]3 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"c": "4",
+				"b": "3",
+				"d": "-6",
+				"s": "0"
+			},
+			"answers": ["]3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens non changé ]−∞ ; 3[",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"c": "4",
+				"b": "3",
+				"d": "-6",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;3["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3x + 2 < 3x − 3 : S = ∅",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"g": "5",
+				"t": "0",
+				"s": "0",
+				"d": "-3"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ au lieu de ∅",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"g": "5",
+				"t": "0",
+				"s": "0",
+				"d": "-3"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3x + 2 ⩾ 3x − 3 : S = ℝ",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"g": "5",
+				"t": "1",
+				"s": "3",
+				"d": "-3"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture ]−∞ ; +∞[",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"g": "5",
+				"t": "1",
+				"s": "3",
+				"d": "-3"
+			},
+			"answers": ["]-\\infty;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅ au lieu de ℝ",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"g": "5",
+				"t": "1",
+				"s": "3",
+				"d": "-3"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
