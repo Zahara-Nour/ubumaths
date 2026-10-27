@@ -1,0 +1,257 @@
+{
+	"title": "Soustraire des nombres décimaux",
+	"description": "Différence de décimaux : premier terme plus court (15,2 − 3,47), entier moins décimal (10 − 3,6), retenue sur deux rangs (8,03 − 2,75)",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Soustraire",
+	"subdomain": "Différence",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{x}} - {{y}} = ?$$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "21..999"
+				},
+				{
+					"name": "B",
+					"expression": "101..999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "y",
+					"expression": "eval:B/100;d"
+				}
+			],
+			"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "10*A>B+100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10*A-B)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Soustraire des décimaux.** On écrit les deux nombres avec autant de chiffres après la virgule (on ajoute des zéros), puis on soustrait rang par rang, de droite à gauche, avec les retenues.",
+					"${{x}} = {{x}}0$ : il a $0$ centième. On ne peut pas ôter ${{eval:mod(B,10)}}$ centièmes de $0$ : on échange $1$ dixième contre $10$ centièmes.",
+					"$${{x}} - {{y}} = {{x}}0 - {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{n}} - {{y}} = ?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..50"
+				},
+				{
+					"name": "M",
+					"expression": "11..499"
+				},
+				{
+					"name": "y",
+					"expression": "eval:M/10;d"
+				}
+			],
+			"conditions": ["mod(M,10)!=0", "10*n>M"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-M/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Soustraire des décimaux.** On écrit les deux nombres avec autant de chiffres après la virgule (on ajoute des zéros), puis on soustrait rang par rang, de droite à gauche, avec les retenues.",
+					"${{n}} = {{n}}.0$ : il a $0$ dixième. On échange $1$ unité contre $10$ dixièmes : $10 - {{eval:mod(M,10)}} = {{eval:10-mod(M,10)}}$ dixièmes.",
+					"$${{n}} - {{y}} = {{n}}.0 - {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{x}} - {{y}} = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..30"
+				},
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:a-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "{{eval:c+1}}..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+c/100;d"
+				},
+				{
+					"name": "y",
+					"expression": "eval:b+d/10+u/100;d"
+				}
+			],
+			"conditions": ["100*a+c>100*b+10*d+u"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*a+c-100*b-10*d-u)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Soustraire des décimaux.** On écrit les deux nombres avec autant de chiffres après la virgule (on ajoute des zéros), puis on soustrait rang par rang, de droite à gauche, avec les retenues.",
+					"${{x}}$ a $0$ dixième et ${{c}}$ centième{{if:c>1|s|}} : pour ôter ${{u}}$ centièmes, on échange $1$ unité contre $10$ dixièmes, puis $1$ dixième contre $10$ centièmes.",
+					"$${{x}} - {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "15,2 − 3,47 = 11,73",
+			"variationIndex": 0,
+			"variables": {
+				"A": "152",
+				"B": "347",
+				"x": "15.2",
+				"y": "3.47"
+			},
+			"answers": ["11,73"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : petit chiffre ôté du grand (12,27)",
+			"variationIndex": 0,
+			"variables": {
+				"A": "152",
+				"B": "347",
+				"x": "15.2",
+				"y": "3.47"
+			},
+			"answers": ["12,27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : retenue oubliée (11,83)",
+			"variationIndex": 0,
+			"variables": {
+				"A": "152",
+				"B": "347",
+				"x": "15.2",
+				"y": "3.47"
+			},
+			"answers": ["11,83"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10 − 3,6 = 6,4",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10",
+				"M": "36",
+				"y": "3.6"
+			},
+			"answers": ["6,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retenue oubliée (7,4)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10",
+				"M": "36",
+				"y": "3.6"
+			},
+			"answers": ["7,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7,6",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10",
+				"M": "36",
+				"y": "3.6"
+			},
+			"answers": ["7,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8,03 − 2,75 = 5,28",
+			"variationIndex": 2,
+			"variables": {
+				"a": "8",
+				"c": "3",
+				"b": "2",
+				"d": "7",
+				"u": "5",
+				"x": "8.03",
+				"y": "2.75"
+			},
+			"answers": ["5,28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : petit chiffre ôté du grand (6,72)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "8",
+				"c": "3",
+				"b": "2",
+				"d": "7",
+				"u": "5",
+				"x": "8.03",
+				"y": "2.75"
+			},
+			"answers": ["6,72"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : retenue des unités oubliée (6,28)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "8",
+				"c": "3",
+				"b": "2",
+				"d": "7",
+				"u": "5",
+				"x": "8.03",
+				"y": "2.75"
+			},
+			"answers": ["6,28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

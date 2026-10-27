@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après la publication du lot 2 « Nombres »._
+_Mis à jour le 2026-10-27, pendant le lot 3 « Calcul décimal » (PR des fichiers à ouvrir)._
 
-- **État** : lots 1 (corrections) et 2 (« Nombres », 10 modèles, 6-101 → 6-202) **publiés en prod** ; relus par David (10/10 OK), publiés par David le 2026-10-27, relus en base (`published`, nœud et tag).
-- **Prochaine action** : lot 3 « Calcul décimal » (§ 4 : 114, 198, 116, 117, 119, 121, 123 + problèmes 120, 122, 124) — phase 0 à proposer à David (skill `couvrir-niveau`), dans un nouveau worktree `../ubumaths-wt-questions-6`.
-- **En attente de David** : rien. Pour mémoire (audit #1861, préexistant, non tranché) : la policy `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
-- **Pièges en cours** : variables `e` et `i` interdites dans les `eval` ; un `?` dans un `{{if}}` ne fait pas de case ; un tag exige le modèle sur le nœud du point ou sa notion ; `db:migrate` depuis le dépôt principal ; titres homonymes d'un autre niveau : la page à cocher les signale (#1863).
-- **Worktree / branche** : aucun.
+- **État** : lots 1 et 2 publiés en prod. Lot 3 (§ 10) : phase 0 validée ; 10 modèles écrits (`scripts/questions/6-calcul-decimal/`, 78 specs, 9 000 tirages verts), joués en base locale.
+- **Prochaine action** : PR des fichiers (revue : aucune, contenu) → CI verte → merge ; puis David lance `create-questions --dir scripts/questions/6-calcul-decimal --publier` ; relever les `id` ; migration nœud + tag (§ 10, table des points) ; page à cocher.
+- **En attente de David** : le `--publier` après le merge. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **Pièges en cours** : `e` et `i` interdites dans les `eval` ; un prix s'écrit avec `euros()` (un `eval` retire le zéro) ; problèmes en euros : `zeros` à `off` ; un tag exige le modèle sur le nœud du point ou sa notion (6-116 sur la notion « Décimaux : calculs ») ; `db:migrate` depuis le dépôt principal ; serveur de dev du worktree sur `localhost` (pas `127.0.0.1`).
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-calcul-decimal`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -406,3 +406,18 @@ Questions à David :
 2. **Prix** : $7,50$ € accepté comme juste, sans « forme perfectible » (zéro inutile), dans les problèmes en
    euros ? Reco : **oui** ($7,5$ aussi juste).
 3. **6-122** : diviseur à un chiffre seulement, pas d'exemple « $57,40$ € ÷ $35$ » (calculatrice) ? Reco : **oui**.
+
+**Décisions de David (2026-10-27, « je suis tes recos »)** : phase 0 du § 10 validée ; seule 6-123 est posée
+(pas de modèle posé pour 114, 198, 121 dans ce lot) ; $7,50$ € juste sans « forme perfectible » dans les
+problèmes en euros ($7,5$ aussi) ; 6-122 à diviseur d'un chiffre seulement.
+
+### 10.1 Écriture (2026-10-27)
+
+- `docs/wip/questions/lot-6-calcul-decimal.py` → `scripts/questions/6-calcul-decimal/` (10 fichiers, 78 specs, justes et
+  erreurs typiques) ; `create-questions` en simulation : 10 verts ; `question:specs` à 300 tirages par variation :
+  9 000 tirages réussis, aucun avertissement.
+- Retouches après aperçu : prix des corrections à deux décimales (`euros()`, « 2,40 » et non « 2,4 ») ; rectangles
+  non carrés ; « 1 jour » au singulier dans la correction des conversions.
+- Base locale : 10 brouillons créés ; joués dans l'aperçu admin (port 5183) : 09 division posée (1 226 ÷ 4 = 306
+  reste 2) juste, quotient et reste lus ; 06 « 34,20 » juste (zéros inutiles désactivés) ; 05 case choix mélangée,
+  juste ; 04 deux cases avec unités, rendu correct.

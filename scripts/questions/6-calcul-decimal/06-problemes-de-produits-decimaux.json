@@ -1,0 +1,250 @@
+{
+	"title": "Problèmes de produits décimaux",
+	"description": "Prix à payer : masse × prix au kilo (2,4 kg à 3,50 €), litres × prix du litre, masse inférieure à 1 kg (le produit est plus petit)",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Problèmes",
+	"subdomain": "Multiplication",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Au marché, les {{if:f==0|pommes coûtent|{{if:f==1|poires coûtent|cerises coûtent}}}} ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\text{€}$ le kilogramme. Léa en achète ${{m}}~\\text{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "12..59"
+				},
+				{
+					"name": "pk",
+					"expression": "eval:10*k"
+				},
+				{
+					"name": "M",
+					"expression": "11..49"
+				},
+				{
+					"name": "m",
+					"expression": "eval:M/10;d"
+				}
+			],
+			"conditions": ["mod(k,10)!=0", "mod(M,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:M*k/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme.",
+					"$${{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((M*k)/100)}}.{{eval:floor(mod((M*k),100)/10)}}{{eval:mod((M*k),10)}}}$$",
+					"Léa paie $\\textcolor{{{color:primary.0}}}{{{eval:floor((M*k)/100)}}.{{eval:floor(mod((M*k),100)/10)}}{{eval:mod((M*k),10)}}}~\\text{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Le litre d'essence coûte ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\text{€}$. Malik met ${{L}}$ litres dans sa voiture. Combien paie-t-il ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "P",
+					"expression": "160..199"
+				},
+				{
+					"name": "L",
+					"expression": "20..50"
+				}
+			],
+			"conditions": ["mod(P,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*P/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Prix à payer** $=$ nombre de litres $\\times$ prix d'un litre.",
+					"$${{L}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((L*P)/100)}}.{{eval:floor(mod((L*P),100)/10)}}{{eval:mod((L*P),10)}}}$$",
+					"Ordre de grandeur : ${{L}} \\times 2 = {{eval:2*L}}$ ; le résultat est un peu moins."
+				]
+			}
+		},
+		{
+			"statement": "Le fromage coûte ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\text{€}$ le kilogramme. Inès en achète $0.{{m}}~\\text{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "12..99"
+				},
+				{
+					"name": "pk",
+					"expression": "eval:10*k"
+				},
+				{
+					"name": "m",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["mod(k,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*k/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme, même quand la masse est plus petite que $1$ kg.",
+					"$$0.{{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((m*k)/100)}}.{{eval:floor(mod((m*k),100)/10)}}{{eval:mod((m*k),10)}}}$$",
+					"Elle achète moins d'un kilogramme : elle paie moins que ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\text{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2,4 kg à 3,50 € : 8,4 €",
+			"variationIndex": 0,
+			"variables": {
+				"f": "0",
+				"k": "35",
+				"pk": "350",
+				"M": "24",
+				"m": "2.4"
+			},
+			"answers": ["8,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "8,40 € accepté",
+			"variationIndex": 0,
+			"variables": {
+				"f": "0",
+				"k": "35",
+				"pk": "350",
+				"M": "24",
+				"m": "2.4"
+			},
+			"answers": ["8,40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : addition (5,9)",
+			"variationIndex": 0,
+			"variables": {
+				"f": "0",
+				"k": "35",
+				"pk": "350",
+				"M": "24",
+				"m": "2.4"
+			},
+			"answers": ["5,9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : virgule (84)",
+			"variationIndex": 0,
+			"variables": {
+				"f": "0",
+				"k": "35",
+				"pk": "350",
+				"M": "24",
+				"m": "2.4"
+			},
+			"answers": ["84"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "35 L à 1,85 € : 64,75 €",
+			"variationIndex": 1,
+			"variables": {
+				"P": "185",
+				"L": "35"
+			},
+			"answers": ["64,75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : virgule (647,5)",
+			"variationIndex": 1,
+			"variables": {
+				"P": "185",
+				"L": "35"
+			},
+			"answers": ["647,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,6 kg à 4,50 € : 2,7 €",
+			"variationIndex": 2,
+			"variables": {
+				"k": "45",
+				"pk": "450",
+				"m": "6"
+			},
+			"answers": ["2,7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2,70 € accepté",
+			"variationIndex": 2,
+			"variables": {
+				"k": "45",
+				"pk": "450",
+				"m": "6"
+			},
+			"answers": ["2,70"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 27",
+			"variationIndex": 2,
+			"variables": {
+				"k": "45",
+				"pk": "450",
+				"m": "6"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : addition (5,1)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "45",
+				"pk": "450",
+				"m": "6"
+			},
+			"answers": ["5,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
