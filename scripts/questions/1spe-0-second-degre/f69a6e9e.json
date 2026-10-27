@@ -1,0 +1,359 @@
+{
+	"id": "f69a6e9e-28cf-46e3-b823-5712a2e028d9",
+	"title": "Calculer les racines avec le discriminant (Δ carré parfait)",
+	"description": "Racines entières ou fractionnaires par la formule",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Discriminant",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"orderIndependent": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(-b-sqrt(b^2-4*a*c))/(2*a)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(-b+sqrt(b^2-4*a*c))/(2*a)}}"
+				}
+			],
+			"statement": "Détermine les racines du polynôme $P(x)={{eval:ax^2+bx+c}}$ à l'aide du discriminant.\n\nLes racines sont $x_1=?$ et $x_2=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "s",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:r*s"
+				}
+			],
+			"conditions": ["r != s && r != -s"],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta>0$, donc le polynôme a deux racines ; de plus $\\sqrt{\\Delta}=\\sqrt{ {{eval:b^2-4*a*c}} }={{eval:sqrt(b^2-4*a*c)}}$.",
+					"$$\\begin{align}x_1 &= \\dfrac{-b-\\sqrt{\\Delta}}{2a} = \\dfrac{ {{eval:-b}}-{{eval:sqrt(b^2-4*a*c)}} }{ {{eval:2*a}} } = {{eval:(-b-sqrt(b^2-4*a*c))/(2*a)}} \\\\ x_2 &= \\dfrac{-b+\\sqrt{\\Delta}}{2a} = \\dfrac{ {{eval:-b}}+{{eval:sqrt(b^2-4*a*c)}} }{ {{eval:2*a}} } = {{eval:(-b+sqrt(b^2-4*a*c))/(2*a)}}\\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(-b-sqrt(b^2-4*a*c))/(2*a)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(-b+sqrt(b^2-4*a*c))/(2*a)}}"
+				}
+			],
+			"statement": "Détermine les racines du polynôme $P(x)={{eval:ax^2+bx+c}}$ à l'aide du discriminant.\n\nLes racines sont $x_1=?$ et $x_2=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "s",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["r != s && r != -s"],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta>0$, donc le polynôme a deux racines ; de plus $\\sqrt{\\Delta}=\\sqrt{ {{eval:b^2-4*a*c}} }={{eval:sqrt(b^2-4*a*c)}}$.",
+					"$$\\begin{align}x_1 &= \\dfrac{-b-\\sqrt{\\Delta}}{2a} = \\dfrac{ {{eval:-b}}-{{eval:sqrt(b^2-4*a*c)}} }{ {{eval:2*a}} } = {{eval:(-b-sqrt(b^2-4*a*c))/(2*a)}} \\\\ x_2 &= \\dfrac{-b+\\sqrt{\\Delta}}{2a} = \\dfrac{ {{eval:-b}}+{{eval:sqrt(b^2-4*a*c)}} }{ {{eval:2*a}} } = {{eval:(-b+sqrt(b^2-4*a*c))/(2*a)}}\\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(-b-sqrt(b^2-4*a*c))/(2*a)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(-b+sqrt(b^2-4*a*c))/(2*a)}}"
+				}
+			],
+			"statement": "Détermine les racines du polynôme $P(x)={{eval:ax^2+bx+c}}$ à l'aide du discriminant.\n\nLes racines sont $x_1=?$ et $x_2=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2|3"
+				},
+				{
+					"name": "q",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a*r+q)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:q*r"
+				}
+			],
+			"conditions": ["mod(q,a) != 0"],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta>0$, donc le polynôme a deux racines ; de plus $\\sqrt{\\Delta}=\\sqrt{ {{eval:b^2-4*a*c}} }={{eval:sqrt(b^2-4*a*c)}}$.",
+					"$$\\begin{align}x_1 &= \\dfrac{-b-\\sqrt{\\Delta}}{2a} = \\dfrac{ {{eval:-b}}-{{eval:sqrt(b^2-4*a*c)}} }{ {{eval:2*a}} } = {{eval:(-b-sqrt(b^2-4*a*c))/(2*a)}} \\\\ x_2 &= \\dfrac{-b+\\sqrt{\\Delta}}{2a} = \\dfrac{ {{eval:-b}}+{{eval:sqrt(b^2-4*a*c)}} }{ {{eval:2*a}} } = {{eval:(-b+sqrt(b^2-4*a*c))/(2*a)}}\\end{align}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-5", "3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-15",
+				"r": "3",
+				"s": "-5"
+			},
+			"description": "x^2+2x-15 : racines -5, 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3", "-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-15",
+				"r": "3",
+				"s": "-5"
+			},
+			"description": "ordre inversé accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5", "-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-15",
+				"r": "3",
+				"s": "-5"
+			},
+			"description": "signes des racines inversés (−b oublié)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-5", "-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-15",
+				"r": "3",
+				"s": "-5"
+			},
+			"description": "une seule racine juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{-2-8}{2}", "\\frac{-2+8}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form", "form"]
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-15",
+				"r": "3",
+				"s": "-5"
+			},
+			"description": "calcul non terminé : (2+8)/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-1", "4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "6",
+				"c": "8",
+				"r": "4",
+				"s": "-1"
+			},
+			"description": "-2x^2+6x+8 : racines -1, 4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-2", "8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "6",
+				"c": "8",
+				"r": "4",
+				"s": "-1"
+			},
+			"description": "division par a au lieu de 2a",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2", "5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-21",
+				"c": "30",
+				"r": "2",
+				"s": "5"
+			},
+			"description": "3x^2-21x+30 : racines 2, 5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{2}{3}", "4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-10",
+				"c": "-8",
+				"q": "-2",
+				"r": "4"
+			},
+			"description": "3x^2-10x-8 : racines -2/3, 4",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{4}{6}", "4"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "-10",
+				"c": "-8",
+				"q": "-2",
+				"r": "4"
+			},
+			"description": "fraction non réduite −4/6",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-0{,}67", "4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-10",
+				"c": "-8",
+				"q": "-2",
+				"r": "4"
+			},
+			"description": "valeur décimale approchée −0,67",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-3", "\\frac{5}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "-15",
+				"q": "5",
+				"r": "-3"
+			},
+			"description": "2x^2+x-15 : racines -3, 5/2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-3", "2{,}5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "-15",
+				"q": "5",
+				"r": "-3"
+			},
+			"description": "5/2 écrit 2,5 (décimal exact)",
+			"variationIndex": 2
+		}
+	]
+}
