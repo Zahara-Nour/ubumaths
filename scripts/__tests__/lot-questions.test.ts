@@ -158,6 +158,9 @@ describe('apparierLot', () => {
 		expect(r.ok).toBe(true);
 		if (!r.ok) return;
 		expect(r.paires[0].ligne.id).toBe('00000000-0000-4000-8000-000000000000');
+		// Le départage est rendu : un ancien lot renuméroté prendrait l'homonyme sans le dire
+		expect(r.paires[0].ecartes?.map((l) => l.id)).toEqual(['autre-niveau']);
+		expect(r.paires[1].ecartes).toBeUndefined();
 	});
 
 	it('niveau hors de la clé : deux homonymes dont aucun n’a le niveau du fichier restent ambigus', () => {
