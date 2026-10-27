@@ -109,7 +109,11 @@ export function apparierLot<L extends LigneModele>(
 	const erreurs: string[] = [];
 	const paires: Paire<L>[] = [];
 	for (const { fichier, modele } of lot) {
-		const trouvees = lignes.filter((l) => memeModele(modele, l, niveau));
+		let trouvees = lignes.filter((l) => memeModele(modele, l, niveau));
+		// Niveau hors de la clé : un homonyme d'un autre niveau (même modèle en CM1 et en 6e) est
+		// départagé par le niveau du fichier, s'il en désigne exactement un
+		const memeNiveau = trouvees.filter((l) => l.level === modele.level);
+		if (trouvees.length > 1 && memeNiveau.length === 1) trouvees = memeNiveau;
 		if (trouvees.length === 0) {
 			const memeTitre = lignes.filter((l) => l.title === modele.title);
 			erreurs.push(

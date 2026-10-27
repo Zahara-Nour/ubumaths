@@ -236,7 +236,9 @@ niveau chacune (`idx_question_templates_unique_category`).
    de fiche : sans point, plusieurs points, sans nœud, niveau en base différent du fichier, point
    absent des bornes, bloc non dessiné. Le niveau n'entre pas dans la clé de la page : les anciens
    lots ont été renumérotés en base après coup (CP B1, B3, H) ; un sous-domaine changé après coup
-   (CP B2) fait refuser le lot, et le message dit ce qui diffère.
+   (CP B2) fait refuser le lot, et le message dit ce qui diffère. Deux modèles de même clé (un
+   homonyme d'un autre niveau, « Comparer deux nombres décimaux » en CM1 et en 6e) sont départagés
+   par le niveau du fichier, s'il en désigne exactement un.
    Gabarit : `scripts/questions/page-a-cocher.html` (collection `verdicts`, « OK / À revoir » +
    commentaire, filtre « Ce qui reste » par défaut, file d'écriture unique, nouvel essai
    automatique, bandeau tant qu'une réponse attend). Publier la page en artefact avec la capacité
