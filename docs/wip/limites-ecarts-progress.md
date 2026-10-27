@@ -1,18 +1,19 @@
 ---
 title: Écarts voisins des limites (V67-V71)
 date: 2026-10-26
-status: PR 1 mergée (#1844), PR 2 à faire
+status: PR 1 mergée (#1844), PR 2 (V68) en cours
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1844._
+_Mis à jour le 2026-10-27, PR 2 ouverte._
 
-- **État** : PR 1 (V67 + V69) mergée, #1844 ; pas encore en prod. Pas de worktree en cours.
-- **Prochaine action** : `git worktree add -b fix/limites-ecarts-v68 ../ubumaths-wt-limites-ecarts origin/main`, puis **PR 2 : V68** (exp, croissances comparées), tests rouges d'abord.
-- **Reste** : PR 2 V68 · PR 3 V70 + V71 (substitution directe, suivi du signe). Revue `code-reviewer` en Opus sur chaque PR.
+- **État** : PR 1 (V67 + V69) mergée, #1844. PR 2 (V68) ouverte sur `fix/limites-ecarts-v68`, en revue. Rien en prod.
+- **Prochaine action** : revue `code-reviewer` (Opus), CI verte → merge ; ensuite PR 3 : V70 + V71.
+- **Reste** : PR 3 V70 + V71 (substitution directe, suivi du signe). Revue `code-reviewer` en Opus sur chaque PR.
 - **En attente de David** : rien.
-- **Pièges** : une limite FAUSSE est pire qu'un refus ; rejouer la sonde de la phase 0 sur `main` avant de coder ; (−∞)ⁿ est désormais exact, donc `classifyWithSign` voit plus de formes +∞ − ∞ « inconnues » (`isPositiveNear` interroge alors le moteur entier) ; non traité : `x^{\frac{4}{2}}` en −∞ « non supportée ».
+- **Pièges** : une limite FAUSSE est pire qu'un refus ; rejouer la sonde de la phase 0 sur `main` avant de coder ; le repli numérique de `classifyLimitValue` classe 10²⁰ « fini » et eˣ « inconnu » (ne pas s'y fier) ; paramètre k pris positif (`e^{kx}` en +∞ → +∞, ancien) ; refus restants : `x^3e^{-x^2+x}`, `x^2e^{-\sqrt{x}}` en +∞, `x^{\frac{4}{2}}` en −∞.
+- **Worktree / branche** : `../ubumaths-wt-limites-ecarts` · `fix/limites-ecarts-v68`.
 
 ---
 
@@ -49,3 +50,10 @@ _Mis à jour le 2026-10-26, après #1844._
   - **Régression trouvée et corrigée** — `\ln(x^2)-\ln(x^2+x)` en −∞ : x² + x devenait « +∞ − ∞ » exact (inconnu) ; `isPositiveNear` interroge le moteur entier quand le signe est inconnu. Corrige aussi `\ln(x^2)-\ln(x^2-x)` en +∞ (sans valeur sur `main`).
   - Tests : `quotients-moins-infini-et-conjugue.test.ts`, 18 rouges sur `main`.
   - Revue Opus (#1844) : rien de faux. Appliqué : `isSqrt` exige `base === undefined` — ∛A − ∛B (et ∛A − b, déjà avant) pris pour un conjugué de racine carrée par `tryRationalization` en un point fini, réécriture fausse (−1/4 au lieu de −1/12) masquée par L'Hôpital. Non traité (refus, pas faux) : `x^{\frac{4}{2}}` en −∞ « non supportée » au lieu de +∞.
+- **2026-10-27** — Sonde rejouée sur `main` : identique au tableau, plus des voisins (`(x-3)e^{-x}`, `(x-3)^2e^{x}` en −∞, `e^{-x^2+3x}`, `(x+1)^2e^{-2x}`). PR 2 (V68), trois causes :
+  - **eᵘ** — la composition classe u en exact, qui ne lève pas +∞ − ∞ → stratégie 2.47 `tryExponentialOfUnboundedLimit` (a^u, `\exp u`, u → ±∞ par le moteur entier).
+  - **Produit 0 × ∞** — réécrit en quotient seulement si un facteur en était un → `productOverExponential` : f·a^u = f/a^{−u} quand a^u → 0.
+  - **∞/∞ non vu** — `x^2-6x+9` exact = +∞ − ∞, puis repli numérique « fini » (10²⁰) → `determinateExactLimit` (indeterminate.ts) demande le terme dominant (`limitByGeneralizedDegree`, cas infini seulement).
+  - Tests : `exponentielles-croissances-comparees.test.ts`, 15 rouges sur `main` ; `extrema-globaux` : l'exemple « limite inconnue » `x^4e^{-x}` est désormais calculé → remplacé par `x^2e^{-\sqrt{x}}` (assertion explicite qu'elle reste inconnue) + test `x^4e^{-x}` (min global 0, max local 4), rouge sur `main`.
+  - Suites : `limits` 1226, mathAST + atelier + grapheur + math 32548, questions + ubumark 9350, verts.
+  - Revue Opus (#1852) : une valeur FAUSSE — base égale à 1 écrite avec des racines (`(\sqrt{3}^2-2)^{x}` en +∞ rendait 0, flottant 0,9999999999999996). Corrigé : `exponentialParts` compare la base à 1 en exact (`exactConstantRational`), sinon refuse |a − 1| < 10⁻⁹ ; 4 tests. Récursion bornée par `nestedProducts`, aucun ∞/∞ déclaré à tort (~160 cas sondés). **Hors diff, défaut ancien** : `e^{kx}` en +∞ rend +∞ (k pris positif), sur `main` aussi — à traiter avec le suivi du signe (PR 3 ou chantier à part).
