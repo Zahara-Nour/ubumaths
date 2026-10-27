@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-27, après #1853._
 
 - **État** : PR 1 (#1846), « téléphone » (#1848) et PR 2 plusieurs points (#1853) **mergées**, pas en prod. Droite graduée à placer complète (`placer: A=3 ; B=7`, 6 points au plus, une case par point).
 - **Prochaine action** : petite PR « page d'aide `/aide-ecriture/blocs/droite-graduee` : droites rognées à 375 px » (§ 11, colonne de grille `min-width: auto`) ; puis le geste suivant, les aiguilles (§ 6.1), phase 0 d'abord.
-- **En attente de David** : essai sur un vrai téléphone de la droite à placer (après un `deploy:prod`, ou en local).
+- **En attente de David** : essai sur un vrai téléphone (ligne de `verifications-manuelles.md`) ; MacBook vu OK le 2026-10-27 (tunnel SSH). Tailscale Serve : activation en attente de David.
 - **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; droite à K points = K cases consécutives (`case:` = la première) ; copie corrigée : une ligne `build` par droite (`answers`) ; `placerAnswer` des deux côtés ; une PR = une session.
 - **Worktree / branche** : aucun (retiré après #1853).
 
@@ -187,3 +187,9 @@ Branche `feat/reponses-a-placer-2`. Tests rouges d'abord : `number-line-placer-p
   3, B et C sur 9, noms côte à côte, étiquettes. **Trouvé, hors PR** : sur cette page à 375 px, TOUTES
   les droites (affichage compris) restent à 600 px, rognées : la colonne de la grille ne rétrécit pas
   (`min-width: auto`). À corriger dans la page d'aide (petite PR à part).
+
+- Essai de David sur le MacBook (tunnel SSH, 2026-10-27) : trois points, A et B sur la même
+  graduation, étiquettes, ◀ ▶ : OK. Vu aussi : l'avertissement orange est rogné à gauche et à
+  droite sur la page d'aide, même sur ordinateur (même défaut de colonne que les droites à 375 px).
+- Méthode de test sur un autre appareil écrite : `docs/pratiques/tester-sur-un-autre-appareil.md`
+  (fonctions `tunnel` / `untunnel` du MacBook, Tailscale Serve pour l'iPhone, pas encore réussi).
