@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1882._
+_Mis à jour le 2026-10-28, après #1887._
 
 - **État** : lot 2 « équations et inéquations » (§ 8 à § 10) : 10 brouillons en prod, rangés et tagués
   (#1882, `db:migrate` joué, vérifié MCP). Page à cocher publiée : https://claude.ai/artifact/T8Emcjbfc7wPj4qnUd5ebk
-  (collection `verdicts`, 0/10 au départ). Correctif #1877 mergé, pas encore en prod.
+  (collection `verdicts`, 3 OK le 2026-10-28 ; LaTeX du gabarit corrigé par #1887, page republiée). Correctif #1877 mergé, pas encore en prod.
 - **Prochaine action** : lire et COMPTER les verdicts (`ArtifactData list verdicts`) ; « À revoir » → corriger
   (§ 7 de la démarche) ; tout OK → `publier-lot.ts --dir scripts/questions/2de-equations` en simulation.
 - **En attente de David** : sa relecture sur la page ; puis le `deploy:prod` qui livre #1877 ; puis
@@ -336,3 +336,6 @@ produit nul en base. Phase 0 validée telle que proposée (mes 4 recommandations
   brouillons. Page à cocher (aucune alerte sur les 10 fiches) :
   https://claude.ai/artifact/T8Emcjbfc7wPj4qnUd5ebk — rendu à 390 px non vérifié (fenêtre Chrome
   non redimensionnable).
+- David : « tu n'as pas mis en forme le latex » → #1887 (gabarit de la page à cocher) : libellé du point,
+  bornes et réponses des specs en KaTeX ; blocs `$$…$$` en mode bloc (`align` refusé en ligne) ; ℝ en
+  Unicode (MathML de Chrome sans `double-struck`). Page republiée, verdicts gardés.
