@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, migration nœud + tag du lot 1 écrite (branche `feat/questions-ce1-lot1-tags`)._
+_Mis à jour le 2026-10-27, après #1856._
 
-- **État** : lot 1 MERGÉ (#1847) ; David a lancé `create-questions --publier` le 2026-10-27, vérifié au MCP : 6 brouillons CE1, sans nœud ni tag — `240bb640-0548-4ff2-ac47-1b182ca3fcc2` (084), `cb08bf78-8c21-4c48-83da-8214dbc2d7a2` (029), `0b490331-eda5-4201-b4be-a77e5ebe2229` (102), `ebfa8511-8282-4247-9027-452ecb734c20` (032), `03675b9b-030e-46f5-9316-abfd55cbc2a2` (083), `b2a4a178-ee4f-431f-aaef-baf1224910c9` (024).
-- **Prochaine action** : migration `20261027130000_questions_ce1_lot1_rangement_tags.sql` (gabarit CP-c) + test `questions-ce1-lot1-rangement-tags.test.ts`, vert (9/9) ; relevé MCP du 2026-10-27 conforme (6 brouillons sans nœud ni tag, points sur les nœuds prévus). Reste : preuve rouge, `security-auditor`, PR, CI, merge, `db:migrate`, vérif ; puis page à cocher, publication.
-- **En attente de David** : rien (question d'accès tranchée : personne, § 6).
+- **État** : lot 1 (6 modèles de calcul mental, #1847) en BROUILLON en prod, rangé et tagué par #1856 (`db:migrate` joué, vérifié au MCP : nœud et point attendus, `updated_at` intact). Identifiants : `240bb640` (084), `cb08bf78` (029), `0b490331` (102), `ebfa8511` (032), `03675b9b` (083), `b2a4a178` (024).
+- **Prochaine action** : David relit la page à cocher https://claude.ai/artifact/YLgCQZNC83WZemRGUMAhg8 (source régénérable : `page-a-cocher.ts --dir scripts/questions/ce1-1`) ; lire `ArtifactData list verdicts` et COMPTER 6 réponses ; « À revoir » → corriger ; puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce1-1` (simulation), David lance `--publier`, relire `published` en base. Ensuite : lot 2.
+- **En attente de David** : la relecture de la page à cocher.
 - **Pièges en cours** : tag = point du nœud ou de sa notion ; QCM en réécriture → demander la forme ; `collection` sans `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` ; un port de dev libre (5176, 5180 pris le 2026-10-26).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` · `feat/questions-ce1-lot1-tags` (créée depuis `origin/main`) ; `feat/questions-ce1-lot1` mergée et supprimée.
+- **Worktree / branche** : aucun (worktree retiré, branches du lot 1 supprimées) ; le lot 2 partira d'un worktree neuf depuis `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -207,3 +207,4 @@ migration nœud + tag ne change aucune règle.
   verts, essai en base locale (6 brouillons), énoncés et corrigés relus dans l'aperçu admin.
 - 2026-10-26 : #1847 mergée (CI verte, revue : aucune, contenu).
 - 2026-10-27 : 6 brouillons créés en prod par David (identifiants dans « Reprendre ici »).
+- 2026-10-27 : #1856 mergée (migration nœud + tag, test 9/9 rouge sans elle, `security-auditor` sans finding), `db:migrate`, vérifiée en prod ; page à cocher publiée.
