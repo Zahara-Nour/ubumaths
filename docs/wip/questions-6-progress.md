@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1861 et #1863._
+_Mis à jour le 2026-10-27, après la publication du lot 2 « Nombres »._
 
-- **État** : lot 2 « Nombres » rangé et tagué en prod (#1861, `db:migrate` fait, relu au MCP : 10 brouillons, nœud et point justes). Page à cocher publiée : https://claude.ai/artifact/TnCEsptg7tLHjnyBAWXbCA (#1863 : homonyme d'un autre niveau départagé et signalé).
-- **Prochaine action** : quand David a relu, compter les verdicts (`ArtifactData list verdicts`, 10 attendus) ; « À revoir » → corriger ; puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-nombres` (simulation), David lance `--publier`, relire `published` en base. Ensuite : lot suivant de la 6e.
-- **En attente de David** : la relecture des 10 fiches (05 et 06 : case choix à jouer dans l'aperçu ; 06 porte l'alerte « homonyme 9c0c47ef écarté » = le modèle de CM1, normal).
-- **Pièges en cours** : variables `e` et `i` interdites dans les `eval` ; un `?` dans un `{{if}}` ne fait pas de case ; un tag exige le modèle sur le nœud du point ou sa notion ; `db:migrate` depuis le dépôt principal.
-- **Worktree / branche** : aucun (retiré après #1863) ; le lot suivant recrée `../ubumaths-wt-questions-6`.
+- **État** : lots 1 (corrections) et 2 (« Nombres », 10 modèles, 6-101 → 6-202) **publiés en prod** ; relus par David (10/10 OK), publiés par David le 2026-10-27, relus en base (`published`, nœud et tag).
+- **Prochaine action** : lot 3 « Calcul décimal » (§ 4 : 114, 198, 116, 117, 119, 121, 123 + problèmes 120, 122, 124) — phase 0 à proposer à David (skill `couvrir-niveau`), dans un nouveau worktree `../ubumaths-wt-questions-6`.
+- **En attente de David** : rien. Pour mémoire (audit #1861, préexistant, non tranché) : la policy `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **Pièges en cours** : variables `e` et `i` interdites dans les `eval` ; un `?` dans un `{{if}}` ne fait pas de case ; un tag exige le modèle sur le nœud du point ou sa notion ; `db:migrate` depuis le dépôt principal ; titres homonymes d'un autre niveau : la page à cocher les signale (#1863).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -333,3 +333,5 @@ David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud n
   un ancien lot renuméroté prendrait sinon l'homonyme en silence).
 - `security-auditor` (#1861), non bloquant, préexistant : `question_template_points_read_authenticated` (`using (true)`)
   laisse un élève connecté voir à quel point un brouillon est rattaché (pas son contenu). Signalé à David, rien décidé.
+- Relecture de David : 10/10 « OK » (verdicts comptés). `publier-lot` en simulation : 10 brouillons passent ; David a lancé
+  `--publier` ; relu au MCP : 10 `published`, 10 rangés, 10 tags. **Lot 2 clos.**
