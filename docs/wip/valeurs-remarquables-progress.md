@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, `.simplifier` fait (d7071c367), choix `.développer` / `.résoudre` tranchés._
+_Mis à jour le 2026-10-27, tout codé, doc à jour, PR à ouvrir._
 
-- **État** : `.simplifier` fait (règle, étapes, degrés, 20 tests). `.développer` et `.résoudre` tranchés (§ 2), pas codés.
-- **Prochaine action** : tests rouges `.développer (x+cos(π/3))²` et `.résoudre cos(π/3)x=1`, puis le code.
+- **État** : `.simplifier`, `.développer`, `.résoudre` faits, degrés compris (§ 3). Doc versée (README mathAST, atelier.md, pattern-matching, panel). Suites mathAST + questions + atelier vertes.
+- **Prochaine action** : revue `code-reviewer` (Opus), réécrire les messages des commits sans `Claude-Session`, rebase sur `origin/main`, PR, CI, merge, puis clôture (journal archivé).
 - **En attente de David** : rien.
-- **Pièges** : la ligne affichée est `latex`, pas `output`. Les deux commits de la branche portent une ligne `Claude-Session` : à réécrire avant de pousser (règle CLAUDE.md).
+- **Pièges** : la ligne affichée est `latex`, pas `output`.
 - **Worktree / branche** : `../ubumaths-wt-valeurs-remarquables`, `fix/valeurs-remarquables`.
 
 ## Contexte
@@ -52,5 +52,13 @@ Table existante : `pattern/rule-sets/trig.ts` (`trigRules` : sin, cos, tan aux m
 - **`.développer (x+cos(π/3))²`** → B : les deux termes calculés, avec l'étape « On utilise une valeur remarquable : cos(π/3) = 1/2 », réponse `x² + x + 1/4` (avant : `x² + 2cos(π/3)x + 1/4`, b² calculé en silence, 2ab non). `.développer` réduit déjà (`√2·√3 → √6`) ; S4 tenu par l'étape nommée.
 - **`.résoudre cos(π/3)x = 1`** → A : l'étape de valeur d'abord (`½x = 1`), puis « On divise par 1/2 », `x = 2`. Chaque titre dit ce que montre la ligne.
 - **`.domaine 1/(x − cos(π/3))`** → inchangé dans ce chantier (`ℝ \ {cos(π/3)}`, juste). ⚠️ **On voudra `ℝ \ {1/2}` plus tard** (David) : à verser dans les Points ouverts du README mathAST à la clôture.
+
+## 3. Implémentation (2026-10-27)
+
+- `generateRemarkableValueSteps` (`pipeline.ts`) : parité, période, valeur (`TRIG_REDUCTION_RULES`), gardées seulement si une valeur est atteinte. Appelée par `explainExpansion` (donc aussi les corrections de développement) et par `solveSteps` de l'atelier.
+- `.résoudre cos(π/3)x = 1` : étape de valeur, puis « On multiplie les deux membres par 2 » (choix du solveur pour `½x = 1`, comme `x/2 = 1`), `x = 2`.
+- Rendu d'une étape sur une équation sans « = » en tête de ligne (`renderer.ts`).
+- Degrés : `DEGREES_READ` (`calcul.ts`) — `.simplifier`, `.développer`, `.résoudre` reçoivent l'argument en degrés ; le moteur de `.résoudre` reçoit les radians ; hors table, `.résoudre` passe en radians exacts après la valeur (`cos(20°)` → `cos(π/9)`, comme avant), `.développer` garde `cos(20°)`.
+- Restes versés dans les Points ouverts du README mathAST (domaine `ℝ \ {1/2}` voulu plus tard, corrections de résolution sans l'étape, `cos(0.5π)`, `cos(\frac{-\pi}{3})`).
 
 ## Historique
