@@ -62,6 +62,12 @@ Règle : saisie ENTIÈRE de forme `a × 10ⁿ`, 1 ≤ |a| < 10, n entier ≠ 0 �
 - `3×10^20` (croix tapée) → refus « Nombre « 10 » écrit après un facteur… » ;
 - en mode décimal, `300000000000000000000` → `3 × 10²⁰` (règle du bouton ≈, pas Q24).
 
+### Décision D1 — la notation scientifique tapée se calcule (David, 2026-10-27)
+
+> « Ce n'est pas logique, on s'attend à ce que l'Atelier calcule cette valeur, sauf si le nombre obtenu est illisible à cause du trop grand nombre de chiffres. »
+
+**Revient sur Q24 de simplify-carte** (notation tapée gardée telle quelle). Désormais : `3*10^2 → 300`, `2,5*10^(-3) → 0,0025` ; la notation scientifique n'est plus une affaire de saisie mais de **lisibilité du résultat**. Restent à trancher : le seuil d'illisibilité, et le cas d'un résultat qui n'a pas d'écriture scientifique courte exacte (`2^100`).
+
 ### Question ouverte
 
 - **(A)** une valeur de l'Atelier est toujours remplacée, même avec une lettre libre (`x + a → x + 3`, `f(x)+a → x² + 3`), puis `tidy` — recommandation, par cohérence avec les commandes ;
