@@ -127,6 +127,26 @@ describe('dessinerBlocs', () => {
 		);
 	});
 
+	it('courbe : coordonnées de Courbe.svelte (cadre 400 × 300, marge 26), nom calligraphique', () => {
+		// x et y de 0 à 10 : le terme (2 ; 8) tombe à 26 + 2/10 × 400 = 106, 26 + 2/10 × 300 = 86
+		const r = dessinerBlocs(
+			'```courbe\nx: 0 ; 10\ny: 0 ; 10\nu(n) = 4*n pour n de 2 à 2   bleu\nf(x) = x   rouge   nom=\\mathcal{C}_f\n```'
+		);
+		expect(r.markdown).toContain(
+			'<circle cx="106" cy="86" r="3" style="fill:var(--color-fig-bleu)"/>'
+		);
+		expect(r.markdown).toContain('viewBox="0 0 452 352"');
+		expect(r.markdown).toContain('𝒞<tspan class="ci" dy="4">f</tspan>');
+	});
+
+	it('courbe : un avertissement du bloc remonte en alerte de fiche', () => {
+		const r = dessinerBlocs(
+			'```courbe\nx: -4 ; 6\ny: -8 ; 12\nf(x) = x\npoints: A(1 ; 2), B(10 ; 0)\n```'
+		);
+		expect(r.avertissements.length).toBeGreaterThan(0);
+		expect(r.avertissements[0]).toMatch(/^bloc courbe : /);
+	});
+
 	it('courbe en erreur : la page s’arrête', () => {
 		expect(() => dessinerBlocs('```courbe\nx: 5 ; 1\n```')).toThrow(/bloc courbe en erreur/);
 	});

@@ -12,6 +12,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { toQuestionTemplate } from '$lib/types/question-template';
+import type { Tables } from '$lib/types/database';
 import { argValue, createScriptClient } from './relecture/common';
 
 /** Ordre des clés du fichier, celui des instantanés déjà versionnés */
@@ -49,7 +50,7 @@ async function main(): Promise<number> {
 	mkdirSync(dossier, { recursive: true });
 
 	// Par pages : PostgREST plafonne une lecture à 1000 lignes, et la table en compte davantage
-	const data = [];
+	const data: Tables<'question_templates'>[] = [];
 	for (let debut = 0; ; debut += PAGE) {
 		const { data: page, error } = await supabase
 			.from('question_templates')

@@ -104,6 +104,8 @@ interface Echelle {
 interface Bloc {
 	html: string;
 	solution?: string;
+	/** Avertissements du bloc (ceux que l'écran montre au prof) : remontés en alerte de fiche */
+	avertissements?: string[];
 }
 
 // Constantes
@@ -383,6 +385,9 @@ function courbe(source: string): Bloc {
 	if (!node.spec)
 		throw new Error('bloc courbe en erreur : ' + node.errors.map((e) => e.message).join(' ; '));
 	const sc = buildCourbeScene(node.spec, { locale: 'fr' });
+	const avertissements = [...node.warnings, ...sc.warnings].map(
+		(w) => `bloc courbe : ${w.message}`
+	);
 	const { width: w, height: h } = sc.pixelSize;
 	const P = COURBE_PAD;
 	const sx = (x: number) =>
@@ -417,11 +422,11 @@ function courbe(source: string): Bloc {
 		// Graduations
 		...sc.ticks.x.map(
 			(t) =>
-				`<line class="ca" x1="${sx(t.value)}" y1="${ax - 3}" x2="${sx(t.value)}" y2="${ax + 3}"/><text class="ct" x="${sx(t.value)}" y="${ax + 13}" text-anchor="middle">${attr(t.label)}</text>`
+				`<line class="ck" x1="${sx(t.value)}" y1="${ax - 3}" x2="${sx(t.value)}" y2="${ax + 3}"/><text class="ct" x="${sx(t.value)}" y="${ax + 13}" text-anchor="middle">${attr(t.label)}</text>`
 		),
 		...sc.ticks.y.map(
 			(t) =>
-				`<line class="ca" x1="${ay - 3}" y1="${sy(t.value)}" x2="${ay + 3}" y2="${sy(t.value)}"/><text class="ct" x="${ay - 5}" y="${sy(t.value) + 3.5}" text-anchor="end">${attr(t.label)}</text>`
+				`<line class="ck" x1="${ay - 3}" y1="${sy(t.value)}" x2="${ay + 3}" y2="${sy(t.value)}"/><text class="ct" x="${ay - 5}" y="${sy(t.value) + 3.5}" text-anchor="end">${attr(t.label)}</text>`
 		),
 		sc.originVisible
 			? `<text class="ct" x="${sx(0) - 5}" y="${sy(0) + 13}" text-anchor="end">O</text>`
@@ -480,7 +485,8 @@ function courbe(source: string): Bloc {
 	const vw = w + 2 * P;
 	const vh = h + 2 * P + bas;
 	return {
-		html: `<svg class="courbe" role="img" aria-label="${attr(sc.ariaLabel)}" viewBox="0 0 ${vw} ${vh}" style="max-width:${vw}px">${parties}</svg>`
+		html: `<svg class="courbe" role="img" aria-label="${attr(sc.ariaLabel)}" viewBox="0 0 ${vw} ${vh}" style="max-width:${vw}px">${parties}</svg>`,
+		avertissements
 	};
 }
 
@@ -503,9 +509,11 @@ export function dessinerBlocs(markdown: string): {
 	markdown: string;
 	solutions: string[];
 	nonDessines: string[];
+	avertissements: string[];
 } {
 	const solutions: string[] = [];
 	const nonDessines: string[] = [];
+	const avertissements: string[] = [];
 	const rendu = markdown.replace(BLOC, (_m, type: string, source: string) => {
 		// Un programme se lit tel quel : rien à dessiner, rien à signaler
 		if (type === 'python')
@@ -518,9 +526,10 @@ export function dessinerBlocs(markdown: string): {
 		}
 		const bloc = dessin(source);
 		if (bloc.solution) solutions.push(bloc.solution);
+		avertissements.push(...(bloc.avertissements ?? []));
 		return HTML + bloc.html;
 	});
-	return { markdown: rendu, solutions, nonDessines };
+	return { markdown: rendu, solutions, nonDessines, avertissements };
 }
 
 /** Case de texte `{{blank:N}}` → la même case que dans une formule, que le gabarit dessine */
@@ -530,11 +539,14 @@ const casesDeTexte = (md: string) => md.replace(/\{\{blank:(\d+)\}\}/g, '$\\plac
 export function exemplesDuModele(modele: ModeleFichier): {
 	exemples: Exemple[];
 	nonDessines: string[];
+	avertissements: string[];
 } {
 	const nonDessines = new Set<string>();
+	const avertissements = new Set<string>();
 	const dessine = (md: string) => {
 		const r = dessinerBlocs(md);
 		r.nonDessines.forEach((t) => nonDessines.add(t));
+		r.avertissements.forEach((a) => avertissements.add(a));
 		return r;
 	};
 	const exemples = modele.variations.map((variation, i) => {
@@ -558,7 +570,7 @@ export function exemplesDuModele(modele: ModeleFichier): {
 			steps: (inst.correction?.steps ?? []).map((s) => dessine(s).markdown)
 		};
 	});
-	return { exemples, nonDessines: [...nonDessines] };
+	return { exemples, nonDessines: [...nonDessines], avertissements: [...avertissements] };
 }
 
 /** Programme d'un code de point : ce qui précède le dernier tiret (`1SPE-224` → `1SPE`) */
@@ -593,8 +605,9 @@ export function ficheDuModele(
 	});
 	// Plusieurs programmes : chaque libellé et chaque borne disent leur point
 	const prefixe = (code: string) => (points.length > 1 ? `${code} : ` : '');
-	const { exemples, nonDessines } = exemplesDuModele(modele);
+	const { exemples, nonDessines, avertissements } = exemplesDuModele(modele);
 	for (const t of nonDessines) alertes.push(`bloc ${t} non dessiné : le jouer dans l'aperçu`);
+	alertes.push(...avertissements);
 	return {
 		id: base.id,
 		code: base.codes.join(', ') || '—',

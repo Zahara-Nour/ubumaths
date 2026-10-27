@@ -132,7 +132,10 @@ export function apparierLot<L extends LigneModele>(
 					`${fichier} : « ${modele.title} » (${id.slice(0, 8)}) est « ${ligne.status} », attendu « ${statutAttendu} »`
 				);
 			} else {
-				paires.push({ fichier, modele, ligne });
+				const deja = paires.find((p) => p.ligne.id === id);
+				if (deja)
+					erreurs.push(`${fichier} : même modèle en base que ${deja.fichier} (${id.slice(0, 8)})`);
+				else paires.push({ fichier, modele, ligne });
 			}
 			continue;
 		}

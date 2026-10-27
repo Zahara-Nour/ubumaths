@@ -94,6 +94,31 @@ describe('apparierLot', () => {
 		]);
 	});
 
+	it('instantané de la base : seul l’id départage deux lignes de même clé complète', () => {
+		const exporte = [{ ...lot[0], modele: { ...lot[0].modele, id: 'la-bonne' } }];
+		const r = apparierLot(exporte, [
+			ligne(lot, 0, { id: 'jumelle' }),
+			ligne(lot, 0, { id: 'la-bonne' })
+		]);
+		expect(r.ok && r.paires.map((p) => p.ligne.id)).toEqual(['la-bonne']);
+	});
+
+	it('instantané de la base : deux fichiers du même id, ou un statut inattendu, refusés', () => {
+		const exporte = { ...lot[0], modele: { ...lot[0].modele, id: 'meme-id' } };
+		const r = apparierLot(
+			[exporte, { ...exporte, fichier: 'copie.json' }],
+			[ligne(lot, 0, { id: 'meme-id' })]
+		);
+		expect(r).toEqual({
+			ok: false,
+			erreurs: ['copie.json : même modèle en base que 01-construis-le-nombre.json (meme-id)']
+		});
+		const publie = apparierLot([exporte], [ligne(lot, 0, { id: 'meme-id', status: 'published' })], {
+			statut: 'draft'
+		});
+		expect(!publie.ok && publie.erreurs[0]).toMatch(/est « published », attendu « draft »/);
+	});
+
 	it('instantané de la base : id absent, ou clé qui ne concorde plus, refusé', () => {
 		const exporte = [{ ...lot[0], modele: { ...lot[0].modele, id: 'abcdef12-x' } }];
 		expect(apparierLot(exporte, [ligne(lot, 0)])).toEqual({
