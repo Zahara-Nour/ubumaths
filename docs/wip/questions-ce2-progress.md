@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, phase 0 du lot 1 validée._
+_Mis à jour le 2026-10-28, après #1889._
 
-- **État** : questions du § 4 et phase 0 du lot 1 (§ 5) validées par David le 2026-10-28 (« ok » à toutes les recos) ; rien codé.
-- **Prochaine action** : lot 1 — script `docs/wip/questions/lot-ce2-1.py` → `scripts/questions/ce2-1/` (5 modèles), simulation, essai en base locale, PR des fichiers. Puis lot 0 (migration : dépublier `427c735c`, `44c46578` ; `03675b9b` + CE2 + tag CE2-077).
-- **En attente de David** : rien.
-- **Pièges en cours** : niveaux relevés le 2026-10-27 (§ 5) à revérifier juste avant `create-questions` ; QCM après la case « choix » en prod ; `collection` sans `centaines:`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, branche `feat/questions-ce2-lot1`.
+- **État** : lot 1 (5 modèles de calcul mental, § 5) écrit, essayé en base locale (32 specs, 450 tirages), fichiers mergés (#1889) dans `scripts/questions/ce2-1/`. Niveaux revérifiés libres en prod le 2026-10-28. Rien en prod.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce2-1 --publier` (dépôt principal) ; je relève les 5 `id`, puis UNE migration (lots 0 et 1) : nœud + tag des 5 brouillons ; `03675b9b` + CE2 + tag CE2-077 ; `427c735c`, `44c46578` repassés en brouillon (0 usage d'élève, relevé du 2026-10-28) ; test d'intégration rouge puis vert, `security-auditor`. Puis page à cocher, publication.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-1 --publier` ; jouer les 5 modèles dans l'aperçu admin (non fait : extension Chrome sans réponse le 2026-10-28).
+- **Pièges en cours** : commitlint refuse un sujet qui commence par une majuscule (« CE2 … ») ; `gh pr checks --watch` rend la main trop tôt → suivre le run ; CI : `corrections.test.ts` (timeout 5 s) et le shard client 1 (`wrapDynamicImport`) peuvent échouer sans rapport → relancer une fois.
+- **Worktree / branche** : aucun (worktree du lot 1 retiré) ; la migration partira d'un worktree neuf `../ubumaths-wt-questions-ce2`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -151,3 +151,11 @@ Une case par question, aucun QCM. CE2-077 : `03675b9b` (CE1) réutilisé, niveau
 ajoutés par migration (lot 0). Question d'accès (nœuds, tags, niveaux, statuts) : **personne** ne
 gagne d'accès, aucune règle ne change ; « Les multiples de 25 » est aussi proposé aux CE2 (David,
 2026-10-28).
+
+### Lot 1 — écriture (2026-10-28)
+
+- Script `docs/wip/questions/lot-ce2-1.py` → `scripts/questions/ce2-1/` (5 JSON). Plages exactes
+  de la phase 0 : n dans `11..19|21..24` puis `26..29|31..39|…|91..99` (ni 25 ni multiple de 10).
+- Simulation `create-questions` (prod, lecture) : 5/5 verts, 32 specs. Base locale : 5 brouillons,
+  `question:specs --apercu` : specs vertes, 450 tirages réussis, corrections relues.
+- PR #1889 mergée (CI verte à la 2ᵉ tentative : deux échecs sans rapport, cf. Pièges).
