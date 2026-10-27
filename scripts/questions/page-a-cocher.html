@@ -722,18 +722,27 @@
 	};
 	/* Formule du lycée : KaTeX (MathML), coupée aux cases à remplir, dessinées comme au CP (le MathML
 	   de Chrome ne trace pas \boxed) ; une formule que KaTeX refuse revient au rendu texte */
-	function mathsKatex(t) {
+	/* Le MathML de Chrome, sans feuille de style, ignore mathvariant="double-struck" (ℝ en R italique) :
+	   lettres ajourées écrites en caractères Unicode */
+	const AJOUREES = { C: 'ℂ', N: 'ℕ', Q: 'ℚ', R: 'ℝ', Z: 'ℤ' };
+	function mathsKatex(t, bloc = false) {
 		if (!window.katex) return null;
 		try {
 			return t
 				.split(/\\placeholder\[\d+\]\{\}/)
 				.map((m) =>
 					m.trim()
-						? katex.renderToString(m, {
-								output: 'mathml',
-								throwOnError: true,
-								macros: { ...MACROS }
-							})
+						? katex
+								.renderToString(m, {
+									output: 'mathml',
+									displayMode: bloc,
+									throwOnError: true,
+									macros: { ...MACROS }
+								})
+								.replace(
+									/<mi mathvariant="double-struck">([CNQRZ])<\/mi>/g,
+									(_, l) => `<mi mathvariant="normal">${AJOUREES[l]}</mi>`
+								)
 						: ''
 				)
 				.join('<span class="case">?</span>');
@@ -742,9 +751,9 @@
 		}
 	}
 	/* Les maths du CP sont des nombres et des signes : rendu texte, cases dessinées, signes typographiques */
-	function maths(t) {
+	function maths(t, bloc = false) {
 		if (/[\\^_{}]/.test(t.replace(/\^\{\\text\{[^}]*\}\}/g, '').replace(TEXTE_SEUL, ''))) {
-			const rendu = mathsKatex(t);
+			const rendu = mathsKatex(t, bloc);
 			if (rendu) return rendu;
 		}
 		return esc(t)
@@ -794,7 +803,7 @@
 		if (par.startsWith('|')) return tableau(par);
 		if (/^[●▲■★○△□ ]+$/.test(par)) return `<div class="formes">${esc(par)}</div>`;
 		if (par.startsWith('@@HTML@@')) return `<div class="bloc">${par.slice(8)}</div>`;
-		if (par.startsWith('$$')) return `<div class="calc">${maths(par.slice(2, -2))}</div>`;
+		if (par.startsWith('$$')) return `<div class="calc">${maths(par.slice(2, -2), true)}</div>`;
 		return `<div>${enLigne(par)}</div>`;
 	}
 	function rendu(t) {
@@ -830,9 +839,9 @@
 		return `<article class="fiche" data-id="${esc(m.id)}" data-etat="${v.etat ?? ''}">
 		<div class="tete"><h2>${esc(m.titre)}</h2><span class="code">${esc(m.code)}</span><span class="niv">niveau ${m.niveau}</span><span class="niv">${esc({ draft: 'brouillon', published: 'publié', archived: 'archivé' }[m.statut] ?? m.statut)}</span><span class="meta">${esc(m.rangement)} · ${esc(m.id)}</span></div>
 		${m.alertes.length ? `<p class="alerte">⚠ ${esc(m.alertes.join(' · '))}</p>` : ''}
-        <p class="point"><b>${esc(m.libelle)}</b> ${m.bornes.length ? `Borne : ${esc(m.bornes.join(' ; '))}` : 'Aucune borne relevée.'}</p>
+        <p class="point"><b>${enLigne(m.libelle)}</b> ${m.bornes.length ? `Borne : ${enLigne(m.bornes.join(' ; '))}` : 'Aucune borne relevée.'}</p>
 		<div class="exemples">${m.exemples.map(exemple).join('')}</div>
-		<details><summary>Plages tirées et specs (${m.specs.length})</summary><ul>${[...m.variables, ...m.conditions.map((c) => 'condition ' + c)].map((x) => `<li><code>${esc(x)}</code></li>`).join('')}</ul><ul>${m.specs.map((s) => `<li>${esc(s)}</li>`).join('')}</ul></details>
+		<details><summary>Plages tirées et specs (${m.specs.length})</summary><ul>${[...m.variables, ...m.conditions.map((c) => 'condition ' + c)].map((x) => `<li><code>${esc(x)}</code></li>`).join('')}</ul><ul>${m.specs.map((s) => `<li>${enLigne(s)}</li>`).join('')}</ul></details>
 		<div class="verdict">
 			<button class="ok" data-v="ok" aria-pressed="${v.etat === 'ok'}">OK</button>
 			<button class="revoir" data-v="revoir" aria-pressed="${v.etat === 'revoir'}">À revoir</button>

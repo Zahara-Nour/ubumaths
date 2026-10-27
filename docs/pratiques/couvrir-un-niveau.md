@@ -233,7 +233,9 @@ niveau chacune (`idx_question_templates_unique_category`).
    réserve, plan vide, et la construction juste à part) ; un bloc `python` est montré tel quel ;
    un autre bloc (`operation`…) est montré par sa source et signalé. Les formules restent en texte quand elles n'ont que des nombres et des signes (CP) ; au-delà
    (fractions, `\left`, exposants), KaTeX les rend en MathML (cdnjs, sans feuille de style), y compris
-   la réponse attendue ; une formule que KaTeX refuse revient au rendu texte. L'id, le statut, le nœud et
+   la réponse attendue, le libellé du point, ses bornes et les réponses des specs ; un bloc `$$…$$` est
+   rendu en mode bloc (`align`), ℝ, ℕ, ℤ, ℚ, ℂ en caractères Unicode (le MathML de Chrome ignore
+   `double-struck`) ; une formule que KaTeX refuse revient au rendu texte. L'id, le statut, le nœud et
    les points sont **lus en base** (lecture seule, `.env` = prod), avec les bornes de chaque
    point (`docs/systeme/programmes/bornes/`). Alertes en tête de fiche : sans point, deux points
    d'un même programme (1SPE-224 avec 1TECHNO-037 est permis, ADR 0020), sans nœud, niveau en base

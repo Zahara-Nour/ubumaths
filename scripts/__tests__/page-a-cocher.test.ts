@@ -238,6 +238,15 @@ describe('ficheDuModele', () => {
 		expect(f.variables[0]).toMatch(/^v1 : /);
 	});
 
+	it('écrit les réponses des specs en formules ($…$), que la page rend en KaTeX', () => {
+		const f = ficheDuModele(m, BASE, BORNES);
+		const spec = m.testSpecs?.[0];
+		expect(spec?.answers?.length).toBeGreaterThan(0);
+		expect(f.specs[0]).toBe(
+			`${spec?.description} : ${spec?.answers?.map((a) => `$${a}$`).join(', ')} → ${spec?.expected.status}`
+		);
+	});
+
 	it('signale un modèle sans point et sans nœud', () => {
 		const f = ficheDuModele(m, { ...BASE, codes: [], rangement: null }, BORNES);
 		expect(f.alertes).toEqual(['sans point', 'sans nœud']);
