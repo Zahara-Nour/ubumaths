@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1879 et #1885 (page à cocher : LaTeX rendu)._
+_Mis à jour le 2026-10-28, après la publication du lot 0-dérivation._
 
-- **État** : lots 0-suites (42) et 0-second-degré (14) publiés. Lot 0-dérivation (15 brouillons, § 8) : 4 corrigés retouchés (D13), instantané mergé (#1879) dans `scripts/questions/1spe-0-derivation/`, rien d'écrit en base.
-- **Prochaine action** : David lance (`!`) `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-0-derivation` (simulation : 15 en base, exactement 4 « contenu différent »), puis `--publier --mettre-a-jour` ; relecture de la page https://claude.ai/artifact/LmDNo6NwUSemJ3GLwoucK8 (compter les `verdicts`) ; `publier-lot --dir … --publier` par David ; relire statuts et contenus en base. Puis variations et courbes, exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
-- **En attente de David** : `create-questions --publier --mettre-a-jour` FAIT (4 contenus relus en base) ; relecture de la page, puis `publier-lot`.
+- **État** : lots 0-suites (42), 0-second-degré (14) et 0-dérivation (15, § 8) publiés.
+- **Prochaine action** : lot « Variations et courbes » (points 280-288, 399-403), puis exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
+- **En attente de David** : rien.
 - **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts ; `question:specs` n'a pas d'option de variation : une copie par variation dans le scratchpad ; CI : job « CI Summary » fantôme, juger au statut du run.
 - **Worktree / branche** : aucun.
 
@@ -279,7 +279,7 @@ https://claude.ai/artifact/PkSiv8xPDNCrSvM432Zq9n (568c7bee et 9e1d084e : bloc `
 
 **Publication (2026-10-27)** : `create-questions --publier --mettre-a-jour` puis `publier-lot --publier` lancés par David ; 14 / 14 `published`, les 6 corrections relues en base.
 
-## 8. Lot 0-dérivation : vérification des brouillons (mergé #1879, publication en attente)
+## 8. Lot 0-dérivation : vérification des brouillons (mergé #1879, publié le 2026-10-28)
 
 _2026-10-27. 15 brouillons tagués d'un point de la dérivation (260, 261, 265, 270, 272, 274, 394, 395), instantané
 `scripts/questions/1spe-0-derivation/`, `question:specs --apercu 3` puis un aperçu par variation (36), sorties dans
@@ -310,3 +310,7 @@ https://claude.ai/artifact/LmDNo6NwUSemJ3GLwoucK8 (aucune alerte).
 
 **Outil (#1885)** : la page rendait le LaTeX brut (gabarit pensé pour le CP) ; formules du lycée rendues par
 KaTeX (MathML), page republiée (version 3).
+
+**Publication (2026-10-28)** : `create-questions --publier --mettre-a-jour` (4 mis à jour, 11 déjà en base) ; page
+relue par David, 15 verdicts « ok » sans commentaire ; `publier-lot --publier` : 15/15 publiés, statuts relus en
+base (MCP). Lot clos.
