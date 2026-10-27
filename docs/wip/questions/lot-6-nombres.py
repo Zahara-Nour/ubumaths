@@ -19,6 +19,7 @@ Décisions et pièges :
 """
 import json
 import os
+import subprocess
 import sys
 
 DOSSIER = sys.argv[1]
@@ -680,4 +681,7 @@ for nom, m in MODELES:
     with open(os.path.join(DOSSIER, nom + '.json'), 'w', encoding='utf-8') as f:
         json.dump(m, f, ensure_ascii=False, indent='\t')
         f.write('\n')
+# Mis en forme comme le pre-commit, pour que le script redonne les fichiers commités
+subprocess.run(['pnpm', 'exec', 'prettier', '--write', DOSSIER], check=True,
+               stdout=subprocess.DEVNULL)
 print(f'{len(MODELES)} modèles écrits dans {DOSSIER}')

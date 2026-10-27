@@ -290,3 +290,13 @@ dénominateur 2, 4, 5… (définition seule) ; 6-202 en case choix `plusieurs: o
 - **6-202 revu (David, 2026-10-27)** : ma phase 0 disait « aucune case n'accepte un nombre entre a et b » — faux :
   règle `range` (`inclusive: false`) + `rulesSuffice`. David choisit la **case libre** (l'élève produit son nombre ;
   3,04, la borne 3,5 et 3,6 jugés faux ; la correction donne un exemple).
+
+### 9.1 Écriture (2026-10-27)
+
+- `docs/wip/questions/lot-6-nombres.py` → `scripts/questions/6-nombres/` (10 fichiers, 75 specs, justes et erreurs
+  typiques) ; `create-questions` en simulation : 10 verts. Le script passe prettier (sinon le pre-commit réécrit les JSON).
+- Pièges rencontrés : variables `e` (Euler) et `i` (imaginaire) refusées dans les `eval` → `p`, `u`, `w` ; un `?` porté
+  par un `{{if}}` n'est pas compté comme case ; `4,0` → `unoptimal_form` avec `['zeros']`, `4025300012` → `['spaces']`.
+- Base locale : 10 brouillons créés ; joués dans l'aperçu admin (port 5182) : 01 juste + correction, 06 case choix
+  « 16,800 … 16,8 » (virgule, zéros gardés) juste, 10 « 2,72 » juste (≠ exemple 2,75), « 2,07 » faux avec « Une réponse
+  possible : 2,75 », 09 deux cases, 03 case dans une fraction : rendus corrects.
