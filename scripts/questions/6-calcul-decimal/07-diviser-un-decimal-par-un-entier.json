@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Calcule.\n\n$${{x}} \\div {{d}} = ?$$",
+			"statement": "Calcule. Pose la division sur ton brouillon.\n\n$${{x}} \\div {{d}} = ?$$",
 			"variables": [
 				{
 					"name": "d",
@@ -39,7 +39,7 @@
 			}
 		},
 		{
-			"statement": "Calcule. Le quotient est un nombre décimal.\n\n$${{n}} \\div {{d}} = ?$$",
+			"statement": "Calcule. Le quotient est un nombre décimal. Pose la division sur ton brouillon.\n\n$${{n}} \\div {{d}} = ?$$",
 			"variables": [
 				{
 					"name": "sd",
@@ -69,7 +69,7 @@
 			}
 		},
 		{
-			"statement": "Donne la valeur arrondie au centième du quotient.\n\n$${{n}} \\div {{d}} \\approx ?$$",
+			"statement": "Donne la valeur arrondie au centième du quotient. Pose la division sur ton brouillon.\n\n$${{n}} \\div {{d}} \\approx ?$$",
 			"variables": [
 				{
 					"name": "sd",

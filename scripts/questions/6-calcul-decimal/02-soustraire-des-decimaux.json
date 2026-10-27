@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Calcule.\n\n$${{x}} - {{y}} = ?$$",
+			"statement": "Calcule. Pose l'opération sur ton brouillon si besoin.\n\n$${{x}} - {{y}} = ?$$",
 			"variables": [
 				{
 					"name": "A",
@@ -44,7 +44,7 @@
 			}
 		},
 		{
-			"statement": "Calcule.\n\n$${{n}} - {{y}} = ?$$",
+			"statement": "Calcule. Pose l'opération sur ton brouillon si besoin.\n\n$${{n}} - {{y}} = ?$$",
 			"variables": [
 				{
 					"name": "n",
@@ -74,7 +74,7 @@
 			}
 		},
 		{
-			"statement": "Calcule.\n\n$${{x}} - {{y}} = ?$$",
+			"statement": "Calcule. Pose l'opération sur ton brouillon si besoin.\n\n$${{x}} - {{y}} = ?$$",
 			"variables": [
 				{
 					"name": "a",

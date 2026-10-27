@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Un rectangle mesure ${{x}}~\\unit{dm}$ sur ${{y}}~\\unit{dm}$. En centimètres, il mesure ${{A}}~\\unit{cm}$ sur ${{B}}~\\unit{cm}$.\n\nSon aire en centimètres carrés :\n\n$${{A}} \\times {{B}} = ?~\\text{cm}^2$$\n\nOr $100~\\unit{cm^2} = 1~\\unit{dm^2}$. Son aire en décimètres carrés :\n\n$${{x}} \\times {{y}} = ?~\\text{dm}^2$$",
+			"statement": "Un rectangle mesure ${{x}}~\\unit{dm}$ sur ${{y}}~\\unit{dm}$. En centimètres, il mesure ${{A}}~\\unit{cm}$ sur ${{B}}~\\unit{cm}$.\n\nSon aire en centimètres carrés (pose la multiplication sur ton brouillon si besoin) :\n\n$${{A}} \\times {{B}} = ?~\\text{cm}^2$$\n\nOr $100~\\unit{cm^2} = 1~\\unit{dm^2}$. Son aire en décimètres carrés :\n\n$${{x}} \\times {{y}} = ?~\\text{dm}^2$$",
 			"variables": [
 				{
 					"name": "A",
