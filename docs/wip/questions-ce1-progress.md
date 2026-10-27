@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, migration des catégories écrite (branche `fix/questions-ce1-lot1-categories`)._
+_Mis à jour le 2026-10-27, après #1874 (migration pas encore jouée)._
 
-- **État** : lot 1 (6 modèles de calcul mental) PUBLIÉ en prod (#1847, #1856, #1864, #1870). Catégories : migration `20261027200000_questions_ce1_lot1_categories` (084 → Somme 20, 029 → Somme 21, 102 → Différence 15 ; 032 reste en « Différence astucieuse ») + fichiers ; test 7/7, rouge sans elle ; 0 donnée d'élève. Identifiants : `240bb640` (084), `cb08bf78` (029), `0b490331` (102), `ebfa8511` (032), `03675b9b` (083), `b2a4a178` (024).
-- **Prochaine action** : `security-auditor`, PR, CI, merge, `db:migrate`, vérif MCP (catégories, trigger `O`) ; `create-questions` en simulation (6 « = ») ; archiver la page à cocher. Ensuite : lot 2 (phase 0, niveaux relevés dans la catégorie AVANT l'écriture).
-- **En attente de David** : rien (question d'accès tranchée : personne, 2026-10-27).
+- **État** : lot 1 (6 modèles de calcul mental) PUBLIÉ en prod (#1847, #1856, #1864, #1870). Catégories : #1874 MERGÉE (084 → Somme 20, 029 → Somme 21, 102 → Différence 15 ; 032 reste ; fichiers déjà à jour sur `main`), mais `db:migrate` BLOQUÉ : `20261027180000_questions_6_calcul_decimal_rangement_tags` (#1873, session `6EME`) n'est pas jouée et précède la dernière jouée → `--include-all` requis. Identifiants : `240bb640` (084), `cb08bf78` (029), `0b490331` (102), `ebfa8511` (032), `03675b9b` (083), `b2a4a178` (024).
+- **Prochaine action** : quand la session `6EME` a joué `db:migrate --include-all` (prévenue le 2026-10-27, décision de David : à elle de le faire), vérifier au MCP : 3 modèles en Somme 20/21 et Différence 15, `updated_at` intact, trigger `O` ; `create-questions` en simulation (6 « = ») ; archiver la page à cocher. Ensuite : lot 2 (phase 0, niveaux relevés dans la catégorie AVANT l'écriture).
+- **En attente de David** : rien (la session `6EME` doit jouer sa migration).
 - **Pièges en cours** : tag = point du nœud ou de sa notion ; QCM en réécriture → demander la forme ; `collection` sans `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` ; un port de dev libre (5176, 5180 pris le 2026-10-26).
 - **Worktree / branche** : aucun (worktree retiré, branches du lot 1 supprimées) ; le lot 2 partira d'un worktree neuf depuis `origin/main`.
 
@@ -214,3 +214,4 @@ migration nœud + tag ne change aucune règle.
 - 2026-10-27 : #1870 mergée (CI verte, `security-auditor` sans finding bloquant), `db:migrate`, vérifiée en prod ; `publier-lot` (simulation) : 6/6.
 - 2026-10-27 : lot 1 publié par David, vérifié (6/6 `published`).
 - 2026-10-27 : catégories (David : « go », accès : personne) — 084, 029 → Additionner / Somme (à côté de « Ajouter 10 »), 102 → Soustraire / Différence (à côté de « Soustraire 10 ») ; 032 reste (− 10 + 1 est une astuce) ; migration sur 3 publiés + fichiers.
+- 2026-10-27 : #1874 mergée (CI verte, `security-auditor` sans finding bloquant) ; `db:migrate` refusé (`DbPushMissingRemoteError` : 20261027180000 de `6EME` non jouée) ; pas de `--include-all` (migration d'une autre session) ; David : option 1, `6EME` la joue, elle est prévenue.
