@@ -381,13 +381,18 @@ function classifyAtFinitePoint(
 	return { type: 'finite', value: lastValue };
 }
 
-/** Au-delà, l'argument d'un sin / cos est tenu pour non borné au point. */
-const UNBOUNDED_ARGUMENT = 1e6;
+/**
+ * L'argument d'un sin / cos / tan est tenu pour non borné au point quand |u|
+ * grandit de plus d'une demi-période entre 10⁻⁶ et 10⁻⁸ du point : 1/x, 1/√x,
+ * ln x. sin(10¹⁵x), grand mais borné, décroît en s'approchant.
+ */
+const UNBOUNDED_GROWTH = Math.PI;
 /** Échantillonnage dense, en progression géométrique, de 10⁻⁵ à 10⁻³ du point. */
 const DENSE_SIGN_POINTS = 400;
 
 /**
- * f contient-elle sin u ou cos u avec |u| → +∞ au point (sin(1/x) en 0) ET
+ * f contient-elle sin u, cos u ou tan u avec |u| → +∞ au point (sin(1/x),
+ * sin(ln x) en 0) ET
  * change-t-elle de signe, d'un côté demandé, sur un échantillonnage dense ?
  * Alors son signe n'est pas établi. x(2 + sin(1/x)) garde le sien : 0⁺.
  */
@@ -402,15 +407,17 @@ function oscillatesUnboundedNear(
 		expr,
 		(node) =>
 			isFunction(node) &&
-			(node.name === 'sin' || node.name === 'cos') &&
+			(node.name === 'sin' || node.name === 'cos' || node.name === 'tan') &&
 			node.args.length === 1 &&
 			containsVariable(node.args[0], varName)
 	).some(
 		(node) =>
 			isFunction(node) &&
 			sides.some((side) => {
-				const value = evaluateNumeric(node.args[0], varName, approachValue + side * 1e-8);
-				return value !== null && Math.abs(value) > UNBOUNDED_ARGUMENT;
+				const near = evaluateNumeric(node.args[0], varName, approachValue + side * 1e-8);
+				const far = evaluateNumeric(node.args[0], varName, approachValue + side * 1e-6);
+				if (near === null || far === null) return false;
+				return Math.abs(near) - Math.abs(far) > UNBOUNDED_GROWTH;
 			})
 	);
 	if (!unboundedArgument) return false;

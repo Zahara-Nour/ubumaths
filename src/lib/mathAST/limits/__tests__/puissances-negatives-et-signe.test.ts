@@ -84,7 +84,11 @@ describe('V71 : signe non établi d’un facteur sin / cos d’argument non born
 		['\\frac{1}{x\\sin\\frac{1}{x}}', '0', 'both'],
 		['\\frac{1}{x\\sin\\frac{1}{x}}', '0', 'right'],
 		['(x\\sin\\frac{1}{x})^{-1}', '0', 'right'],
-		['\\frac{1}{x\\cos\\frac{1}{x}}', '0', 'right']
+		['\\frac{1}{x\\cos\\frac{1}{x}}', '0', 'right'],
+		// revue de la PR 3 : argument lent (1/√x, ln x), tan — −∞ sur main
+		['\\frac{1}{x\\sin\\frac{1}{\\sqrt{x}}}', '0', 'right'],
+		['\\frac{1}{x\\sin(\\ln x)}', '0', 'right'],
+		['\\frac{1}{x\\tan\\frac{1}{x}}', '0', 'right']
 	] as const)(
 		'%s en %s (%s) : refus honnête, pas de ±∞ ni « pas de limite »',
 		(latex, at, direction) => {
@@ -100,7 +104,12 @@ describe('V71 : signe non établi d’un facteur sin / cos d’argument non born
 		['\\frac{1}{x(2+\\sin\\frac{1}{x})}', '0', 'right', '+\\infty'],
 		['\\frac{1}{x^2(2+\\cos\\frac{1}{x})}', '0', 'both', '+\\infty'],
 		['\\frac{\\sin x}{x}', '0', 'both', '1'],
-		['\\frac{1}{\\sin x}', '0', 'right', '+\\infty']
+		['\\frac{1}{\\sin x}', '0', 'right', '+\\infty'],
+		['\\frac{1}{x+x^2\\sin\\frac{1}{x}}', '0', 'right', '+\\infty'],
+		['\\frac{1}{x^3(2+\\sin\\frac{1}{x})}', '0', 'left', '-\\infty'],
+		// argument grand mais borné : pas d'oscillation au point
+		['\\frac{1}{x\\sin(10^{15}x)}', '0', 'right', '+\\infty'],
+		['\\frac{1}{x^2\\sin(10^{7}x)}', '0', 'right', '+\\infty']
 	] as const)('%s en %s (%s) → %s (inchangé)', (latex, at, direction, expected) => {
 		expect(valueOf(latex, at, direction)).toBe(expected);
 	});
