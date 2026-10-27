@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1876 et la page à cocher du lot 3._
+_Mis à jour le 2026-10-27, après #1880 et #1883._
 
-- **État** : lots 1 et 2 publiés. Lot 3 « Calcul décimal » : 10 brouillons en prod, rangés et tagués (#1873, `db:migrate` joué), unités corrigées (#1876, `--mettre-a-jour` lancé par David, relu au MCP). Page à cocher publiée : https://claude.ai/artifact/Fyf6TTZ3h32RJ4ms7ZSwHQ (collection `verdicts`, vide à la publication).
-- **Prochaine action** : lire `verdicts` (ArtifactData list) et **compter** ; « À revoir » → corriger (§ 7) ; tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-calcul-decimal` en simulation, puis David `--publier` ; relire `published` au MCP. Ensuite lot 4 « Fractions » (§ 4).
-- **En attente de David** : la relecture de la page (choix et division posée à jouer dans l'aperçu admin : non dessinés sur la page). Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
-- **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot (`\unit` oublié au lot 3) ; `--mettre-a-jour` après le merge seulement (il lit `main`) ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval` ; serveur de dev sur `localhost`.
+- **État** : lots 1 et 2 publiés. Lot 3 « Calcul décimal » : 13 brouillons en prod, rangés et tagués (#1873, #1883, `db:migrate` joués), retouches de relecture en prod (#1880, `--publier --mettre-a-jour` lancé par David, simulation : 13 « déjà en base »). Page à cocher republiée (même adresse) : https://claude.ai/artifact/Fyf6TTZ3h32RJ4ms7ZSwHQ ; verdicts de 01 et 08 effacés, OK de 02, 03, 04, 05, 07 gardés.
+- **Prochaine action** : lire `verdicts` (ArtifactData list) et **compter** (13 attendus) ; « À revoir » → corriger (§ 7) ; tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-calcul-decimal` en simulation, puis David `--publier` ; relire `published` au MCP. Ensuite lot 4 « Fractions » (§ 4).
+- **En attente de David** : relire 01, 06, 08, 09, 10, 11, 12, 13 (choix et division posée à jouer dans l'aperçu admin) ; revoir 02, 04, 07 s'il le veut (consigne seule changée). Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; `--mettre-a-jour` après le merge seulement (il lit `main`) ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval` ; serveur de dev sur `localhost`.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
@@ -479,3 +479,12 @@ Verdicts lus (`verdicts`, 7 sur 10) : 5 OK (02, 03, 04, 05, 07), 2 à revoir (01
   Décimaux / Soustraire / Différence astucieuse 1, sous-domaine neuf).
 - 13 fichiers, 90 specs, 10 800 tirages verts ; simulation : 7 à mettre à jour, 3 à créer.
 - Instantané `questions-6/etat-prod-2026-10-27-relecture/` (7 modèles, md5 des variations = MCP, 7 tags, 0 donnée d'élève).
+
+### 10.7 Retouches en prod et rangement des 3 neufs (2026-10-27)
+
+- #1880 mergé ; David `--publier --mettre-a-jour` : 7 mis à jour (nœuds et tags intacts), 3 créés : 6adcd053 (11),
+  85c1b573 (12), a2ba4759 (13). Simulation ensuite : 13 « déjà en base ».
+- #1883 : migration `20261027210000_…_rangement_tags_2` (11 et 12 → « Décimaux : calculs > addition », 6-114 ; 13 →
+  « > soustraction », 6-198). Test rouge sans (5/9), vert avec (18/18) ; `security-auditor` sans finding bloquant ;
+  CI verte, `db:migrate` (sans `--include-all`), vérifié au MCP (`updated_at` préservé).
+- Page à cocher republiée ; verdicts « à revoir » de 01 et 08 effacés.
