@@ -428,6 +428,21 @@ describe('Questions CM2, rangement et tags : les branches d’échec de la migra
 		});
 	});
 
+	it('le rollback refuse si un modèle du lot a disparu depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query('delete from public.question_templates where id = $1', [
+				'e58b1357-6fa8-4fce-9518-91d09d9acc49'
+			]);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				new RegExp(
+					`rollback : identifiants partiellement présents : ${N - 1} modèle\\(s\\) sur ${N}`
+				)
+			);
+		});
+	});
+
 	it('base sans les modèles (locale) : le rollback ne touche rien et passe', async () => {
 		await enTransaction(async () => {
 			await expect(pg.query(extractRollback(MIGRATION))).resolves.toBeDefined();
