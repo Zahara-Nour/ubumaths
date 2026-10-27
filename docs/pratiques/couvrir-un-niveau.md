@@ -272,7 +272,10 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
 - Jamais de variable `e` (Euler) ; lettres parlantes, jamais P / E / V.
 - Prénoms écrits dans le texte ; montants en `$n~\unit{€}$`, jamais « : » juste après un montant
   ([notation-unites.md](notation-unites.md)).
-- **Niveaux numérotés dès l'écriture** (pas de migration de niveaux après coup).
+- **Niveaux numérotés dès l'écriture** (pas de migration de niveaux après coup), **après relevé
+  des niveaux publiés de la catégorie** (`theme`, `domain`, `subdomain`) : un niveau pris bloque
+  la publication, et `create-questions` cherche un modèle par son niveau (`--mettre-a-jour` ne le
+  change pas) ; corriger après coup = migration + fichiers (CE1 lot 1, 2026-10-27).
 - Migration qui change l'arbre ou les points : `LATER` + copies figées dans le test.
 - `gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le **run**.
 - Écriture en prod (`create-questions --publier`, publication) : **David** la lance (`!`), je
