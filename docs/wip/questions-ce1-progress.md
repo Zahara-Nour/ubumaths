@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, brouillons du lot 1 créés en prod._
+_Mis à jour le 2026-10-27, migration nœud + tag du lot 1 écrite (branche `feat/questions-ce1-lot1-tags`)._
 
 - **État** : lot 1 MERGÉ (#1847) ; David a lancé `create-questions --publier` le 2026-10-27, vérifié au MCP : 6 brouillons CE1, sans nœud ni tag — `240bb640-0548-4ff2-ac47-1b182ca3fcc2` (084), `cb08bf78-8c21-4c48-83da-8214dbc2d7a2` (029), `0b490331-eda5-4201-b4be-a77e5ebe2229` (102), `ebfa8511-8282-4247-9027-452ecb734c20` (032), `03675b9b-030e-46f5-9316-abfd55cbc2a2` (083), `b2a4a178-ee4f-431f-aaef-baf1224910c9` (024).
-- **Prochaine action** : migration nœud + tag (copier `20261027000100_questions_ce1_rangement_tags.sql` + `tests/integration/questions-ce1-rangement-tags.test.ts`, timestamp après `20261027100100`). Chemins : 029/032/084/102 → `Nombres et calculs > Entiers : addition et soustraction > calcul astucieux` ; 083 → `… > Entiers : multiplication > produits particuliers` ; 024 → notion `Nombres et calculs > Entiers : multiplication` (sous-notion nulle). Test rouge sans la migration, `security-auditor`, CI, merge, `db:migrate`, vérif ; puis page à cocher, publication.
+- **Prochaine action** : migration `20261027130000_questions_ce1_lot1_rangement_tags.sql` (gabarit CP-c) + test `questions-ce1-lot1-rangement-tags.test.ts`, vert (9/9) ; relevé MCP du 2026-10-27 conforme (6 brouillons sans nœud ni tag, points sur les nœuds prévus). Reste : preuve rouge, `security-auditor`, PR, CI, merge, `db:migrate`, vérif ; puis page à cocher, publication.
 - **En attente de David** : rien (question d'accès tranchée : personne, § 6).
 - **Pièges en cours** : tag = point du nœud ou de sa notion ; QCM en réécriture → demander la forme ; `collection` sans `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` ; un port de dev libre (5176, 5180 pris le 2026-10-26).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` · `feat/questions-ce1-lot1-tags` (créée depuis `origin/main`, vide) ; `feat/questions-ce1-lot1` mergée, à supprimer (`git branch -d`).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` · `feat/questions-ce1-lot1-tags` (créée depuis `origin/main`) ; `feat/questions-ce1-lot1` mergée et supprimée.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
