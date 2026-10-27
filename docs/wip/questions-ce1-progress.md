@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, lot 1 CLOS._
+_Mis à jour le 2026-10-27, lot 2 écrit (PR des fichiers à merger)._
 
-- **État** : lot 1 (6 modèles de calcul mental) CLOS : publié, rangé et tagué, relu 6/6 « OK » (page https://claude.ai/artifact/YLgCQZNC83WZemRGUMAhg8), consigne « Calcule. », niveaux et catégories corrigés (#1847, #1856, #1864, #1870, #1874). Vérifié au MCP : 084/029 en Additionner / Somme 20/21, 102 en Soustraire / Différence 15, 032 en Différence astucieuse 3, 083/024 en Multiplier / Produit 10/11 ; `create-questions` (simulation) : 6/6 identiques à la prod.
-- **Prochaine action** : lot 2 — phase 0 (relevé des points du CE1 encore sans modèle, § 1-3 ; pour chaque modèle : point, sous-notion, variations, **catégorie et niveau relevés parmi les publiés de la catégorie AVANT l'écriture**, consigne sans « astucieuse » si rien n'est astucieux), attendre la validation de David.
-- **En attente de David** : rien.
-- **Pièges en cours** : tag = point du nœud ou de sa notion ; QCM en réécriture → demander la forme ; `collection` sans `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` ; un port de dev libre (5176, 5180 pris le 2026-10-26).
-- **Worktree / branche** : aucun (worktree retiré, branches du lot 1 supprimées) ; le lot 2 partira d'un worktree neuf depuis `origin/main`.
+- **État** : lot 1 CLOS (publié, relu 6/6). Lot 2 (numération, 7 modèles, § 7) écrit dans `scripts/questions/ce1-2/` : simulation 7/7 (63 specs), 4 200 tirages verts, essai en base locale (7 brouillons) relu dans l'aperçu admin.
+- **Prochaine action** : merger la PR des fichiers ; David lance `create-questions --dir scripts/questions/ce1-2 --publier` (prod, brouillons) ; puis migration nœud + tag (§ 7), page à cocher, publication.
+- **En attente de David** : la création des brouillons en prod, après le merge.
+- **Pièges en cours** : niveaux du lot 2 = places libres relevées (Décomposition 13/14, Ecriture 3, Comparer 6/7, Encadrer 7/8) ; `subdomain` « Ecriture » sans accent ; tag = point du nœud ou de sa notion ; QCM en réécriture → demander la forme ; worktree neuf → `pnpm exec svelte-kit sync`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `feat/questions-ce1-lot2`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -216,3 +216,35 @@ migration nœud + tag ne change aucune règle.
 - 2026-10-27 : catégories (David : « go », accès : personne) — 084, 029 → Additionner / Somme (à côté de « Ajouter 10 »), 102 → Soustraire / Différence (à côté de « Soustraire 10 ») ; 032 reste (− 10 + 1 est une astuce) ; migration sur 3 publiés + fichiers.
 - 2026-10-27 : #1874 mergée (CI verte, `security-auditor` sans finding bloquant) ; `db:migrate` refusé (`DbPushMissingRemoteError` : 20261027180000 de `6EME` non jouée) ; pas de `--include-all` (migration d'une autre session) ; David : option 1, `6EME` la joue, elle est prévenue.
 - 2026-10-27 : `6EME` a joué `db push --include-all` (accord de David) : 20261027180000 puis 20261027200000 ; vérifié au MCP (catégories, `updated_at`, trigger `O`) ; `create-questions` 6/6 « = ». Lot 1 clos.
+
+## 7. Lot 2 : numération — décisions (David, 2026-10-27)
+
+Relevé MCP du 2026-10-27 : CE1-003, 004, 008, 009, 011-015, 093, 094 sans modèle ; 005 (3, les décompositions)
+et 006, 007, 010 (1 chacun). Le CP a des modèles proches (ranger, encadrer, intercaler, ordinaux) : même forme,
+nombres du CE1. Recommandations suivies (« je te suis ») :
+
+1. **Ordinaux (011-015) en lot 2 bis**, juste après : ce lot reste sous 10 modèles ; la forme des deux QCM du CP
+   (rang en lettres, suites de formes) se tranchera alors.
+2. **CE1-004 sans l'écriture en lettres** (aucune borne au CE1 ; aucun outil n'écrit un nombre en lettres jusqu'à 999) : **reportée, pas abandonnée** — à reprendre si un outil « nombre en lettres » naît (servirait au CE2).
+3. **CE1-009 en forme ouverte** : l'élève écrit un nombre qui respecte la phrase (validation par intervalle,
+   comme « Intercaler » du CP) ; le choix d'un symbole relève de 007, déjà couvert.
+
+| Fichier                          | Point   | Sous-notion   | Catégorie · niveau | Variations                                                                          |
+| -------------------------------- | ------- | ------------- | ------------------ | ----------------------------------------------------------------------------------- |
+| `01-unites-dizaines-centaines`   | CE1-003 | décomposition | Décomposition · 13 | c → d ; d → c ; c → u ; dizaines en tout dans 347 (34)                              |
+| `02-unites-non-canoniques`       | CE1-005 | écritures     | Décomposition · 14 | 63 d et 5 u ; 5 u, 5 c et 13 d (ordre mélangé) ; 2 c, 27 d et 14 u                  |
+| `03-suite-jusqu-a-1000`          | CE1-004 | écritures     | Ecriture · 3       | suit (sans passage) ; suit (…9, …99, 999 → 1 000) ; précède (…0, …00, 1 000)        |
+| `04-ranger-cinq-nombres`         | CE1-008 | ordre         | Comparer · 6       | comme 229, 234, 239, 243, 300 : croissant ; décroissant                             |
+| `05-superieur-inferieur-compris` | CE1-009 | ordre         | Comparer · 7       | supérieur à ; inférieur à ; compris entre a et a + 10 ; supérieur et inférieur      |
+| `06-encadrer-dizaine-centaine`   | CE1-093 | ordre         | Encadrer · 7       | juste avant / après ; dizaines entières ; centaines entières                        |
+| `07-intercaler-jusqu-a-1000`     | CE1-094 | ordre         | Encadrer · 8       | a < ? < b (toute réponse juste) ; suite à trous avec passage de dizaine ou centaine |
+
+Case seule, aucun QCM. Niveaux : places libres des catégories relevées en prod avant l'écriture.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud
+
+- tag ne change aucune règle.
+
+* 2026-10-27 : écrit (`lot-ce1-2.py`), `create-questions` en simulation 7/7 (63 specs), `question:specs` 4 200
+  tirages verts (accord « 1 centaine » corrigé), essai en base locale (7 brouillons), énoncés et corrigés relus
+  dans l'aperçu admin.
