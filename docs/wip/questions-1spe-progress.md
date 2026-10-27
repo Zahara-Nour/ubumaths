@@ -12,8 +12,8 @@
 _Mis à jour le 2026-10-27, décisions Q1-Q7 prises._
 
 - **État** : relevé, classement et décisions (§ 5) faits.
-- **Prochaine action** : lot 0-suites — vérifier par tirages réels les brouillons des suites contre les bornes (§ 6).
-- **En attente de David** : rien.
+- **Prochaine action** : selon Q8-Q10 : PR outil « page à cocher depuis la base », puis corrections C1-C4, page à cocher des suites.
+- **En attente de David** : Q8, Q9, Q10 (§ 6).
 - **Pièges en cours** : QCM → case choix en brouillon (D6) ; droite à placer (`reponses-a-placer`) mergée, pas en prod ; un modèle porte au plus un point **par programme** (ADR 0020), les tags 1SPE + 1TECHNO + 1GEN sont permis ; D3 « niveau seconde » : vérifier dans le code ce que commande `grades` avant la migration.
 - **Worktree / branche** : aucun.
 
@@ -202,4 +202,31 @@ _Posées le 2026-10-27. Recommandations de Claude validées par David le 2026-10
 
 ## 6. Lot 0-suites : vérification des brouillons
 
-_En cours._
+_2026-10-27. 43 brouillons tagués d'un point des suites (`pnpm question:specs --template <id> --apercu 4`,
+sorties dans le scratchpad de la session)._
+
+**Mécanique** : 43 / 43 specs vertes, 6 100 tirages réussis. La ligne « Schéma : Unrecognized keys created_at,
+updated_at, created_by » vient de l'outil (il valide la ligne de base entière), pas des modèles.
+
+**Faux constat écarté** : les décimaux s'écrivent `0.1`, `1.08` dans la sortie de l'outil, mais l'affichage les
+met à la française (`MathInline` / `MathBlock`, `content-locale.ts`).
+
+**Constats** :
+
+- **C1 — montants** : `$500$ €` au lieu de `$500~\unit{€}$` (notation-unites) : 103cf8d9, 70e682f9, 27d77564,
+  f3100c29.
+- **C2 — formules hors BO dans le corrigé** : 44b32cad (somme arithmétique : « nombre de termes × (premier +
+  dernier) / 2 ») et b72fae4a (somme géométrique : « premier terme × (1 − q^N) / (1 − q) »). Bornes 226 / 227 :
+  la somme se ramène à 1 + 2 + … + n, 1 + q + … + qⁿ ; ces formules ne sont pas écrites au BO. À trancher (Q8).
+- **C3 — récurrence dépendant de n** : 0495289a (`u_{n+1} = 3u_n + 3n`) ; borne 377 : seul uₙ₊₁ = f(uₙ) est écrit.
+  À trancher (Q9).
+- **C4 — corrigé maladroit** : f36ce3ff, tirage `f(x) = 4/(x+1)` avec u₂ = 4 : « 4/5 = 4 × 1/5 = 4/5 » puis
+  « Diviser par une fraction, c'est multiplier par son inverse » alors qu'on ne divise pas par une fraction.
+- Rien d'autre vu sur les tirages lus (un ou deux par modèle ; la page à cocher montrera une instance par
+  variation).
+
+**Outil** : `page-a-cocher.ts` refuse le dossier `scripts/questions/suites-1spe/` (37 fichiers) : fichiers plus
+d'accord avec la base (titres scindés depuis : « Reconnaître une suite arithmétique ou géométrique… » → deux
+modèles) et familles d'un même titre à plusieurs niveaux (« Calculer un terme d'une suite géométrique » × 4). Il
+faut que la page (et `publier-lot.ts`) sache partir **des modèles en base** (liste d'id), pour tous les brouillons
+déjà créés (Q10).
