@@ -1,0 +1,75 @@
+[
+	{
+		"id": "edc5d7d4-98a2-4118-8c7f-35dd510dbcd5",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 15,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "Moitié",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [{ "expectedAnswer": "{{b}}" }],
+				"statement": "Quelle est la moitié du nombre ${{eval:a;d}}$ ?\n\nLa moitié de ${{eval:a;d}}$ est $?$.",
+				"variables": [
+					{ "name": "a1", "expression": "0..14" },
+					{ "name": "a", "expression": "eval:a1*2+1" },
+					{ "name": "b", "expression": "eval:(a)/2;d" }
+				],
+				"correction": {
+					"steps": [
+						"La moitié de ${{eval:a;d}}$ est ${{solution}}$ car $2 \\times {{solution:0}} = {{eval:a}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Trouver la moitié",
+		"description": "Nombres impairs de $1$ à $29$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["10{,}5"],
+				"expected": { "status": "correct" },
+				"variables": { "a1": "10" },
+				"description": "moitié de 21 = 10,5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10.5"],
+				"expected": { "status": "correct" },
+				"variables": { "a1": "10" },
+				"description": "10.5 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{21}{2}"],
+				"expected": { "status": "bad_form", "constraintViolations": ["form"] },
+				"variables": { "a1": "10" },
+				"description": "21/2 en fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": { "status": "incorrect" },
+				"variables": { "a1": "10" },
+				"description": "erreur 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}5"],
+				"expected": { "status": "correct" },
+				"variables": { "a1": "0" },
+				"description": "moitié de 1 = 0,5",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "c1a01819-c975-42ac-b756-2d427c826be9"
+	}
+]
