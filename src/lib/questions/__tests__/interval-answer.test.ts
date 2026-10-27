@@ -608,6 +608,16 @@ describe('racine simplifiable', () => {
 		});
 	});
 
+	it('ensemble de complexes : {1 + √12 i ; 1 − √12 i} vaut ½, avec le message', () => {
+		expect(
+			judgeIntervalAnswer('\\{1+\\sqrt{12}i;1-\\sqrt{12}i\\}', '\\{1+2\\sqrt{3}i;1-2\\sqrt{3}i\\}')
+		).toEqual({ status: 'unoptimal_form', feedback: INTERVAL_FEEDBACK.unsimplifiedRadicalSet });
+		expect(
+			judgeIntervalAnswer('\\{1+2\\sqrt{3}i;1-2\\sqrt{3}i\\}', '\\{1+2\\sqrt{3}i;1-2\\sqrt{3}i\\}')
+				.status
+		).toBe('correct');
+	});
+
 	it('une valeur fausse reste fausse (√12 pour 2√2)', () => {
 		expect(
 			judgeIntervalAnswer('\\{-\\sqrt{12};\\sqrt{12}\\}', '\\{-2\\sqrt2;2\\sqrt2\\}').status

@@ -497,7 +497,9 @@ simplifiée. » ; en borne d'intervalle (`]-\infty;\sqrt{8}]`), « Simplifie les
 exemple 2√3 plutôt que √12). ». Même règle que la contrainte `reducedRadicals` des cases ordinaires
 (`reduceRadicalsAST` : √12 → 2√3, √4 → 2, 3√12 → 6√3) ; même réglage `intervalForm`. Mesure : specs
 de toutes les cases intervalles du dépôt inchangées ; en prod, une seule attendue avec une racine
-(9e1d084e, `p ± √r`, r sans facteur carré).
+(9e1d084e, `p ± √r`, r sans facteur carré). Aussi dans un ensemble fini de complexes (`\{1+\sqrt{12}i;…\}`).
+Limites connues : `\sqrt{1}` et `\sqrt{0}` restent justes (la règle part de √4) ; un point exclu
+`\mathbb{R}\setminus\{\sqrt{12}\}` n'est pas contrôlé, comme `\mathbb{R}\setminus\{\frac42\}`.
 
 ### Constante e dans une borne
 

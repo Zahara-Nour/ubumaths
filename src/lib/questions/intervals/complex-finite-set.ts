@@ -9,8 +9,8 @@
  * - ordre libre, éléments appariés par ÉQUIVALENCE de valeur (`areEquivalent` exact :
  *   `\sqrt{2}e^{i\frac{\pi}{4}}` vaut `1+i`, `\imaginaryI` vaut `i`) ;
  * - élément manquant, en trop ou faux : faux ;
- * - fraction simplifiable dans un élément : écriture à reprendre (`intervalForm`, ½ par
- *   défaut), comme pour un ensemble fini de réels.
+ * - fraction ou racine simplifiable dans un élément : écriture à reprendre (`intervalForm`,
+ *   ½ par défaut), comme pour un ensemble fini de réels.
  *
  * Jamais d'intervalle complexe : seul un ensemble fini `{a ; b ; …}` est lu.
  *
@@ -43,7 +43,8 @@ const IMAGINARY_UNIT = /\\imaginaryI|(?<![\\a-zA-Z])i(?![a-zA-Z])/;
 /** Messages figés (français, tutoiement) */
 const FEEDBACK = {
 	notAFiniteSet: 'Écris l’ensemble des solutions entre accolades : {a ; b}.',
-	unsimplified: 'La fraction peut être simplifiée.'
+	unsimplified: 'La fraction peut être simplifiée.',
+	unsimplifiedRadical: 'La racine peut être simplifiée.'
 };
 
 /**
@@ -100,6 +101,13 @@ function hasReducibleFraction(element: string): boolean {
 	);
 }
 
+/** Racine carrée simplifiable dans un élément (`1+\sqrt{12}i`), comme un ensemble de réels */
+function hasReducibleRadical(element: string): boolean {
+	return cosmeticViolations(element, { reducedRadicals: 'warn' }).some(
+		(violation) => violation.id === 'reducedRadicals'
+	);
+}
+
 /**
  * Juge un ensemble fini de complexes.
  *
@@ -126,6 +134,12 @@ export function judgeComplexFiniteSet(
 		return {
 			status: mode === 'strict' ? 'bad_form' : 'unoptimal_form',
 			feedback: FEEDBACK.unsimplified
+		};
+	}
+	if (mode !== 'off' && elements.some(hasReducibleRadical)) {
+		return {
+			status: mode === 'strict' ? 'bad_form' : 'unoptimal_form',
+			feedback: FEEDBACK.unsimplifiedRadical
 		};
 	}
 	return { status: 'correct' };
