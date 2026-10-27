@@ -27,6 +27,7 @@ import {
 	isSuperscript
 } from '../guards';
 import { containsVariable } from '../common/contains-variable';
+import { findNodes } from '../transforms';
 import { number, positiveInfinity, negativeInfinity, zeroPlus, zeroMinus } from '../factory';
 import { evaluateNumeric, literalNumberValue, numericNode } from '../common';
 import {
@@ -350,6 +351,12 @@ function classifyAtFinitePoint(
 			Math.abs(testResults[testResults.length - 1].value) < Math.abs(testResults[0].value) * 0.1);
 
 	if (valuesDecreasingToZero || Math.abs(lastValue) < 1e-6) {
+		// x·sin(1/x) : trois points du même côté de 0 par hasard, alors que le
+		// signe change à chaque zéro de sin — 1/(x sin(1/x)) en 0 rendait −∞
+		// (V71). Le zéro reste sans signe : son inverse ne conclut pas.
+		if (oscillatesUnboundedNear(expr, varName, approachValue, direction)) {
+			return { type: 'zero' };
+		}
 		// Determine sign based on the sign of values near the approach point
 		if (direction === 'right') {
 			const rightValues = testResults.filter((r) => r.epsilon > 0).map((r) => r.value);
@@ -372,6 +379,50 @@ function classifyAtFinitePoint(
 	}
 
 	return { type: 'finite', value: lastValue };
+}
+
+/** Au-delà, l'argument d'un sin / cos est tenu pour non borné au point. */
+const UNBOUNDED_ARGUMENT = 1e6;
+/** Échantillonnage dense, en progression géométrique, de 10⁻⁵ à 10⁻³ du point. */
+const DENSE_SIGN_POINTS = 400;
+
+/**
+ * f contient-elle sin u ou cos u avec |u| → +∞ au point (sin(1/x) en 0) ET
+ * change-t-elle de signe, d'un côté demandé, sur un échantillonnage dense ?
+ * Alors son signe n'est pas établi. x(2 + sin(1/x)) garde le sien : 0⁺.
+ */
+function oscillatesUnboundedNear(
+	expr: MathNode,
+	varName: string,
+	approachValue: number,
+	direction: LimitDirection
+): boolean {
+	const sides = [...(direction === 'left' ? [] : [1]), ...(direction === 'right' ? [] : [-1])];
+	const unboundedArgument = findNodes(
+		expr,
+		(node) =>
+			isFunction(node) &&
+			(node.name === 'sin' || node.name === 'cos') &&
+			node.args.length === 1 &&
+			containsVariable(node.args[0], varName)
+	).some(
+		(node) =>
+			isFunction(node) &&
+			sides.some((side) => {
+				const value = evaluateNumeric(node.args[0], varName, approachValue + side * 1e-8);
+				return value !== null && Math.abs(value) > UNBOUNDED_ARGUMENT;
+			})
+	);
+	if (!unboundedArgument) return false;
+	return sides.some((side) => {
+		const values: number[] = [];
+		for (let i = 0; i < DENSE_SIGN_POINTS; i++) {
+			const offset = 10 ** (-5 + (2 * i) / (DENSE_SIGN_POINTS - 1));
+			const value = evaluateNumeric(expr, varName, approachValue + side * offset);
+			if (value !== null && Number.isFinite(value)) values.push(value);
+		}
+		return values.some((v) => v > 0) && values.some((v) => v < 0);
+	});
 }
 
 /** Pas et nombre de points de la fenêtre : 16 × 0,5 = 8 > 2π. */
