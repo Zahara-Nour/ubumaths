@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1854._
+_Mis à jour le 2026-10-27, après #1858._
 
-- **État** : PR 1 (#1846), « téléphone » (#1848), PR 2 plusieurs points (#1853) et glisser au doigt sur iPhone (#1854) **mergées**, pas en prod. Essai iPhone réussi (Tailscale Serve, machine `serveur`).
+- **État** : #1846, #1848, #1853, #1854 (glisser iPhone) et #1858 (carte de correction trop haute qui défile, avertissement « téléphone » hors des onglets de l'aperçu) **mergées**, pas en prod. Essai iPhone complet réussi (Tailscale Serve, machine `serveur`) ; règle « toucher un point posé le reprend » confirmée par David.
 - **Prochaine action** : (1) petite PR « page d'aide : droites et avertissement rognés » (§ 11) ; (2) aiguilles (§ 6.1), phase 0 d'abord.
-- **En attente de David** : correction dans une vraie question sur téléphone (ligne de `verifications-manuelles.md`) ; règle « toucher un point posé le reprend » gardée (deux points sur une même graduation : glisser ou ◀ ▶), à confirmer.
-- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; droite à K points = K cases consécutives (`case:` = la première) ; copie corrigée : une ligne `build` par droite (`answers`) ; `placerAnswer` des deux côtés ; iPhone : `touchstart` non passif dans `NumberLinePlacer` ; une PR = une session.
+- **En attente de David** : rien. Suite possible (revue #1858, à proposer) : sur une carte de correction qui défile, le bouton de retournement part avec le contenu (le passer en `sticky`).
+- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; droite à K points = K cases consécutives ; `placerAnswer` des deux côtés ; iPhone : `touchstart` non passif dans `NumberLinePlacer` ; cartes retournables : mesurer la fiche (`bind:ref`, `min-h-full shrink-0`), jamais la face ; modèle local « Placer deux nombres (essai) » (base locale seulement) ; une PR = une session.
 - **Worktree / branche** : aucun.
 
 ---
