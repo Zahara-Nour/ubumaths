@@ -1864,7 +1864,14 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
     `x^{\frac{4}{2}}` en −∞ ;
   - approché : `\frac{x^2}{x\sin\frac1x}` en 0⁺ « ≈ 0 » ;
   - paramètre de signe inconnu (`e^{kx}` en +∞ rendait +∞) : refusé depuis le chantier
-    `limites-parametres` (choix A) ; la discussion selon le signe de k (choix C) est pour plus tard.
+    `limites-parametres` (choix A, #1869) ; la discussion selon le signe de k (choix C) est pour
+    plus tard (futur chantier, David, 2026-10-27 ; journal archivé
+    `docs/archive/wip/limites-parametres-progress.md`). Cas de départ de C : la substitution
+    directe suppose encore k ≠ 0 / k > 0 (`\frac{1}{x^2+k}` en 0 → 1/k, `\ln(x+k)` en 0⁺ → ln k,
+    `\frac{x}{kx+x^2}` en 0⁺ → 1/k) ; refus à rattraper, qui valent la même chose pour tout k
+    (`x^2+kx`, `x+kx^2`, `x\ln x+kx` en 0⁺ → 0, `\frac{k^2+1}{x}` en 0⁺ → +∞). Piste : un « zéro
+    de côté inconnu » absorbant dans l'addition (pas le 0 exact, neutre : cause des valeurs
+    fausses de la revue 1) ;
 
 ## Décisions
 

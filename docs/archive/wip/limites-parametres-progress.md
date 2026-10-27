@@ -1,18 +1,15 @@
 ---
 title: Limites à paramètre (k, a, λ…) — signe inconnu lu comme positif
 date: 2026-10-27
-status: choix A (David, 2026-10-27), PR 1 en cours
+status: clos (2026-10-27, #1869 mergée) — C versé aux Points ouverts du README mathAST
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, PR #1869 ouverte._
+_Mis à jour le 2026-10-27, après #1869 : chantier CLOS, journal archivé._
 
-- **État** : choix A codé ; revue Opus et contre-revue faites, valeurs fausses trouvées corrigées ; suites vertes.
-- **Prochaine action** : PR **#1869** ouverte — vérifier la CI (`gh pr checks 1869`), merger si verte, puis nettoyage (worktree, branche) et versement du chantier (journal archivé, C noté en futur chantier).
-- **En attente de David** : rien. **C plus tard** (reprend les cas de départ ci-dessous) ; B non demandé.
-- **Pièges** : une limite FAUSSE est pire qu'un refus ; `\sqrt{kx}` mal sondé (variable `t` par erreur dans la sonde) — à resonder ; garder justes les cas où le signe ne décide pas (`\frac{e^{kx}-1}{x}` en 0 → k).
-- **Worktree / branche** : `../ubumaths-wt-limites-parametres`, `fix/limites-parametres`.
+- **État** : CLOS. Choix A livré par #1869 (mergée le 2026-10-27, pas encore en prod) ; worktree et branche retirés.
+- **Suite** : choix C (discussion selon le signe du paramètre) = futur chantier, cas de départ versés aux Points ouverts de `docs/systeme/mathast/README.md`.
 
 ---
 
