@@ -8,8 +8,8 @@ status: choix A (David, 2026-10-27), PR 1 en cours
 
 _Mis à jour le 2026-10-27, choix A codé._
 
-- **État** : choix A codé ; revue Opus 1 faite (valeurs fausses introduites, corrigées) ; contre-revue du correctif à faire.
-- **Prochaine action** : contre-revue courte, PR ; question à David sur la substitution directe (ci-dessous).
+- **État** : choix A codé ; revue Opus et contre-revue faites, valeurs fausses trouvées corrigées ; suites vertes.
+- **Prochaine action** : réponse de David (ci-dessous), puis PR.
 - **En attente de David** : substitution directe qui suppose k ≠ 0 / k > 0 (`\\frac{1}{x^2+k}` en 0 → 1/k, `\\ln(x+k)` en 0⁺ → ln k) : refuser aussi, ou garder ? **C plus tard** ; B non demandé.
 - **Pièges** : une limite FAUSSE est pire qu'un refus ; `\sqrt{kx}` mal sondé (variable `t` par erreur dans la sonde) — à resonder ; garder justes les cas où le signe ne décide pas (`\frac{e^{kx}-1}{x}` en 0 → k).
 - **Worktree / branche** : `../ubumaths-wt-limites-parametres`, `fix/limites-parametres`.
@@ -67,3 +67,5 @@ Mécanisme existant réutilisable : hypothèses de l'énoncé (ADR 0012, `assump
   - Revue Opus (≈ 125 sondes, branche contre `main`) : **valeurs fausses introduites** — mon « 0 sans signe » était un 0 exact, neutre dans l'addition : 0⁺ − k·0⁺ restait 0⁺, `\frac{1}{x-kx}` en 0⁺ → +∞ (faux pour k > 1), `\ln(x-kx)`, `e^{\frac{1}{x-kx}}`, `\frac{1}{kx+x^2}` en 0⁻… (7 cas, refusés sur `main`). Corrigé : k·0±, k/∞, 0±/k lèvent aussi ; corrige au passage 4 valeurs fausses de `main` (`\frac{1}{kx+x^2}` en 0⁺, `\frac{1}{kx+x}`, `\frac{1}{kx^2+x^3}`, `\ln(kx+x^2)`). Régressions corrigées : polynôme lu P/1 dans `tryDominantTerm` (`x^2+kx` en +∞ → +∞), λ (nœud `greek`) traité comme k, k² coefficient, (x + 2)² au dénominateur. `\frac{k}{x}` en +∞ → 0 par le terme dominant.
   - Non traités : `\frac{k^2+1}{x}` en 0⁺ refusé (k² + 1 > 0 non vu, mineur) ; substitution directe à paramètre (question à David).
   - Suites : 42 027 verts ; tests 40 dans le fichier limits + 4 atelier.
+  - Contre-revue Opus (80 sondes) : **valeur fausse** — degré ÉCRIT ≠ degré réel : `x(x+k)-x^2` en +∞ (= kx) → −∞, `(x+k)^2-x^2`, `x^2-(x-k)^2`… (`0·c > 0` faux → « negative ») ; aussi sur `main` sans paramètre pour des quotients (`\frac{x^3-x^3+x^2}{x}` → −∞). Garde : coefficient dominant nul en haut ou en bas → refus. Régressions acceptées (refus, pas faux) : `x^2+kx`, `x+kx^2`, `x\ln x+kx` en 0⁺ (0 sur `main`, k·0⁺ lève).
+  - Suites : 42 041 verts.

@@ -67,7 +67,17 @@ describe('le signe du paramètre décide : refus, jamais une valeur', () => {
 		['\\frac{1}{kx+x^2}', '0', 'right'],
 		['\\frac{1}{kx+x}', '0', 'right'],
 		['\\frac{1}{kx^2+x^3}', '0', 'right'],
-		['\\ln(kx+x^2)', '0', 'right']
+		['\\ln(kx+x^2)', '0', 'right'],
+		// contre-revue : degré écrit ≠ degré réel, coefficient dominant nul (−∞)
+		['(x+k)^2-x^2', '+∞', 'both'],
+		['x(x+k)-x^2', '+∞', 'both'],
+		['x^2-x^2+kx', '+∞', 'both'],
+		['x^2-x^2+kx', '-∞', 'both'],
+		['(x+1)^2-x^2-kx', '+∞', 'both'],
+		['x^2-(x-k)^2', '+∞', 'both'],
+		['x^3-x^3+kx^2+x', '-∞', 'both'],
+		['\\frac{(x+k)^2-x^2}{x}', '+∞', 'both'],
+		['\\frac{x(x+k)-x^2}{x}', '+∞', 'both']
 	] as const)('%s en %s (%s)', (latex, at, direction) => {
 		const result = limitOf(latex, at, direction);
 		expect(result.value).toBeNull();
@@ -102,6 +112,24 @@ describe('le signe du paramètre ne décide pas : limite calculée (inchangé)',
 		['e^{kx}', '0', 'both', '1']
 	] as const)('%s en %s (%s) → %s', (latex, at, direction, expected) => {
 		expect(valueOf(latex, at, direction)).toBe(expected);
+	});
+});
+
+describe('sans paramètre, coefficient dominant écrit nul : jamais −∞ inventé', () => {
+	it.each([
+		['\\frac{x^3-x^3+x^2}{x}', '+\\infty'],
+		['\\frac{x^2-x^2+x}{2x}', '\\dfrac{1}{2}']
+	] as const)('%s en +∞ : %s ou refus (−∞ sur main)', (latex, expected) => {
+		const value = valueOf(latex, '+∞');
+		expect(value === null || value === expected).toBe(true);
+	});
+
+	it.each([
+		['x^2-x^2+x', '+\\infty'],
+		['(x+1)^2-x^2', '+\\infty'],
+		['(x^2+1)^2-x^4', '+\\infty']
+	] as const)('%s en +∞ → %s (inchangé)', (latex, expected) => {
+		expect(valueOf(latex, '+∞')).toBe(expected);
 	});
 });
 

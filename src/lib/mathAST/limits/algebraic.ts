@@ -363,6 +363,13 @@ export function tryDominantTerm(
 		return { success: true, simplified: exact, technique: 'dominant-term', description };
 	}
 
+	// Degré ÉCRIT, pas réel : x(x + k) − x² a un « coefficient de x² » nul. Lu
+	// tel quel, 0·c > 0 est faux et la limite sortait −∞ (contre-revue, aussi
+	// sur main sans paramètre : (x³ − x³ + x²)/x → −∞)
+	if (numLeading === 0 || denLeading === 0) {
+		return { success: false };
+	}
+
 	let limitValue: MathNode;
 	let description: string;
 
