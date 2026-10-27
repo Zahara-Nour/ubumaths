@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, lot 0-second-degré en relecture (§ 7)._
+_Mis à jour le 2026-10-27, après #1875 (lot 0-second-degré mergé, pas encore écrit en base)._
 
 - **État** : lot 0-suites CLOS (42 publiés). Lot 0-second-degré : 14 brouillons, 6 corrigés (D12), instantané `scripts/questions/1spe-0-second-degre/`, page à cocher https://claude.ai/artifact/PkSiv8xPDNCrSvM432Zq9n.
-- **Prochaine action** : PR du lot → merge → David lance `create-questions --dir scripts/questions/1spe-0-second-degre --publier --mettre-a-jour` puis `publier-lot … --publier` ; relire les statuts. Puis dérivation, exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3 (sauf les 6 faits par questions-2de).
+- **Prochaine action** : David lance (dépôt principal, `!`) `create-questions --dir scripts/questions/1spe-0-second-degre --publier --mettre-a-jour` puis `publier-lot … --publier` ; relire les statuts. Puis dérivation, exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3 (sauf les 6 faits par questions-2de).
 - **En attente de David** : relecture de la page à cocher du second degré ; les deux écritures en prod (classifieur).
 - **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; un instantané porte l'id de chaque modèle ; QCM d'ancien format publiés tels quels (lot 4 de figure-et-choix) ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur du mode auto ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts (`$lib`).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe` · `chore/questions-1spe-second-degre`.
+- **Worktree / branche** : aucun (retiré après #1875).
 
 ## 1. Relevé (prod, 2026-10-27)
 
