@@ -42,6 +42,17 @@ Né le 2026-10-27 dans la session `fusion-moteurs`, en expliquant ce que fait un
 - `a+1` n'a pas de « Comment ? » : une lettre, même liée, coupe les étapes.
 - Aucune décision écrite trouvée sur le cas « certaines lettres liées » ; le lot 5d (D3, simplify-carte) ne parlait que de lettres libres (`2x+3x → 5x`).
 
+### Ligne nue numérique, sans lettre (mesuré le 2026-10-27)
+
+Chemin : refus et réécritures de `computeInput` → `WebReplEngine.createAutoEvaluationResult` (grandeur → `computeQuantity` ; garde des résultats trop longs ; `evaluate` exact PUIS décimal ; écriture par `exactValueToShow`, qui choisit parmi la valeur, la forme normale de la saisie et la saisie, mises au propre par `tidy`) → `renderResult` → « Comment ? » par `calculationSteps` (`pedagogical-arithmetic`). Bouton ≈ / valeur exacte : `approximationFields`.
+
+Sonde complète : 37 saisies (`2+3*4`, `1/3+1/6`, `sqrt(8)`, `cos(π/3)`, `3/0`, `sqrt(-4)`, mode décimal…). Points relevés :
+
+- étapes pour `2+3*4`, `1/3+1/6`, `(2+3)^2`, `sqrt(8)`, `sqrt(12)+sqrt(3)` ; aucune pour `cos(π/3) → 1/2` (fonction hors collège), `(1+√2)² → 3+2√2`, `0,1+0,2` ;
+- en mode décimal, `2+3*4` perd ses étapes ;
+- `0/0` répond « Division par zéro » (forme indéterminée) ; `sqrt(-4)` reste `√(−4)` sans message ;
+- `2<3` → « vrai ».
+
 ### Question ouverte
 
 - **(A)** une valeur de l'Atelier est toujours remplacée, même avec une lettre libre (`x + a → x + 3`, `f(x)+a → x² + 3`), puis `tidy` — recommandation, par cohérence avec les commandes ;
