@@ -15,7 +15,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Au marché, les {{if:f==0|pommes coûtent|{{if:f==1|poires coûtent|cerises coûtent}}}} ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\text{€}$ le kilogramme. Léa en achète ${{m}}~\\text{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+			"statement": "Au marché, les {{if:f==0|pommes coûtent|{{if:f==1|poires coûtent|cerises coûtent}}}} ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Léa en achète ${{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
 			"variables": [
 				{
 					"name": "f",
@@ -48,12 +48,12 @@
 				"steps": [
 					"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme.",
 					"$${{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((M*k)/100)}}.{{eval:floor(mod((M*k),100)/10)}}{{eval:mod((M*k),10)}}}$$",
-					"Léa paie $\\textcolor{{{color:primary.0}}}{{{eval:floor((M*k)/100)}}.{{eval:floor(mod((M*k),100)/10)}}{{eval:mod((M*k),10)}}}~\\text{€}$."
+					"Léa paie $\\textcolor{{{color:primary.0}}}{{{eval:floor((M*k)/100)}}.{{eval:floor(mod((M*k),100)/10)}}{{eval:mod((M*k),10)}}}~\\unit{€}$."
 				]
 			}
 		},
 		{
-			"statement": "Le litre d'essence coûte ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\text{€}$. Malik met ${{L}}$ litres dans sa voiture. Combien paie-t-il ?\n\n$$?~\\text{€}$$",
+			"statement": "Le litre d'essence coûte ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$. Malik met ${{L}}$ litres dans sa voiture. Combien paie-t-il ?\n\n$$?~\\text{€}$$",
 			"variables": [
 				{
 					"name": "P",
@@ -79,7 +79,7 @@
 			}
 		},
 		{
-			"statement": "Le fromage coûte ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\text{€}$ le kilogramme. Inès en achète $0.{{m}}~\\text{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+			"statement": "Le fromage coûte ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Inès en achète $0.{{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
 			"variables": [
 				{
 					"name": "k",
@@ -104,7 +104,7 @@
 				"steps": [
 					"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme, même quand la masse est plus petite que $1$ kg.",
 					"$$0.{{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((m*k)/100)}}.{{eval:floor(mod((m*k),100)/10)}}{{eval:mod((m*k),10)}}}$$",
-					"Elle achète moins d'un kilogramme : elle paie moins que ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\text{€}$."
+					"Elle achète moins d'un kilogramme : elle paie moins que ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$."
 				]
 			}
 		}

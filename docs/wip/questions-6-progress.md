@@ -435,3 +435,13 @@ David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud n
 - `security-auditor` (#1873) : aucun finding bloquant (diff avec le lot 2 = données seules ; 10 brouillons et nœuds
   des points revérifiés en prod au MCP). Non bloquant hérité du gabarit : trigger `updated_at` désactivé sur toute la
   table le temps de l'instruction.
+
+### 10.3 Correction des unités (2026-10-27)
+
+- `db:migrate` de #1873 joué avec `--include-all` (accord de David : une migration de 2de jouée entre-temps ;
+  le push a aussi joué `20261027200000_questions_ce1_lot1_categories`, session CE1, prévenue). Prod relue (MCP) :
+  10 brouillons sur le nœud de leur point, un tag chacun, `updated_at` inchangé.
+- Écart à `notation-unites.md` (§ 9 des pièges, non relu avant d'écrire) : grandeurs écrites `\text{€}`, `\text{cm}`…
+  au lieu de `\unit{…}` dans 04, 06, 08. Corrigé par `en_unit()` dans le script (sauf juste après une case,
+  `?~\text{€}`, qui garde une case de nombre). Instantané `questions-6/etat-prod-2026-10-27-lot3/` (3 modèles,
+  md5 des variations = MCP, 0 donnée d'élève). Specs et 2 400 tirages verts ; rendu vérifié en local.
