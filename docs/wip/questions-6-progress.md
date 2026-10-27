@@ -335,3 +335,74 @@ David a lancé `create-questions --publier` : 10 brouillons, `[6]`, sans nœud n
   laisse un élève connecté voir à quel point un brouillon est rattaché (pas son contenu). Signalé à David, rien décidé.
 - Relecture de David : 10/10 « OK » (verdicts comptés). `publier-lot` en simulation : 10 brouillons passent ; David a lancé
   `--publier` ; relu au MCP : 10 `published`, 10 rangés, 10 tags. **Lot 2 clos.**
+
+## 10. Lot 3 « Calcul décimal » : phase 0 (proposée le 2026-10-27, à valider)
+
+Relevé MCP (2026-10-27) : 0 modèle sur les 10 points. Voisins en prod : CM1 (sommes et différences sans retenue,
+CM1-039 / 133), CM2 (÷ 10, 100, 1 000), CE2 (division euclidienne, diviseur ≤ 10, égalité seulement), 6-115 (5) et
+6-118 (7). Le bloc `operation (posée, cases du quotient et du reste) est en prod ; un modèle posé n'a que des
+cases d'opération, d'où un modèle à part. Case choix (`choix) là où il y a un choix. Un point par modèle ;
+sous-notion = nœud du point (posé par la migration).
+
+| #   | Point | Sous-notion (notion)                        | Modèle                                   | Rangement ancien (thème / domaine / sous-domaine, niveau) |
+| --- | ----- | ------------------------------------------- | ---------------------------------------- | --------------------------------------------------------- |
+| 1   | 114   | addition (Décimaux : calculs)               | Additionner des nombres décimaux         | Décimaux / Additionner / Somme, 5                         |
+| 2   | 198   | soustraction (Décimaux : calculs)           | Soustraire des nombres décimaux          | Décimaux / Soustraire / Différence, 5                     |
+| 3   | 116   | Décimaux : calculs (notion)                 | Multiplier par 0,1, c'est diviser par 10 | Décimaux / Multiplier / Puissances de 10, 10              |
+| 4   | 117   | multiplication (Décimaux : calculs)         | Un produit de décimaux par l'aire        | Décimaux / Multiplier / Produit, 6                        |
+| 5   | 119   | arrondis et ordres de grandeur (numération) | Contrôler par un ordre de grandeur       | Décimaux / Apprivoiser / Arrondir, 3                      |
+| 6   | 120   | multiplication (Décimaux : calculs)         | Problèmes de produits décimaux           | Décimaux / Problèmes / Multiplication, 1 (neuf)           |
+| 7   | 121   | division (Décimaux : calculs)               | Diviser un décimal par un entier         | Décimaux / Diviser / Quotient, 8                          |
+| 8   | 122   | division (Décimaux : calculs)               | Problèmes de partage décimal             | Décimaux / Problèmes / Division, 1 (neuf)                 |
+| 9   | 123   | division euclidienne (Entiers : division)   | Poser une division euclidienne           | Entiers / Diviser / Division euclidienne, 5               |
+| 10  | 124   | division euclidienne (Entiers : division)   | Problèmes de division euclidienne        | Entiers / Problèmes / Division euclidienne, 1 (neuf)      |
+
+Variations et réponses (nombres < 1 000, au plus 3 décimales, sauf mention) :
+
+1. **Additionner** (case, en ligne) — v1 longueurs différentes ($12,7 + 3,85$) ; v2 trois termes dont deux font
+   un entier ($2,75 + 4,6 + 0,25$) ; v3 entier + décimal ($7 + 0,35$). Erreurs : chiffres alignés à droite
+   ($12,7 + 3,85 \to 5,12$), $7 + 0,35 \to 0,42$, retenue des dixièmes oubliée.
+2. **Soustraire** (case, en ligne) — v1 premier terme plus court ($15,2 - 3,47 = 11,73$) ; v2 entier moins
+   décimal ($10 - 3,6 = 6,4$) ; v3 retenue sur deux rangs ($8,03 - 2,75$). Erreurs : petit chiffre ôté du
+   grand ($12,27$), retenue oubliée ($7,4$), chiffres alignés à droite.
+3. **× 0,1 et ÷ 10** — v1 case choix « Multiplier par $0,01$, c'est : diviser par $100$ / multiplier par $100$ /
+   diviser par $10$ / diviser par $1~000$ » ; v2 trou « $37 \times 0,1 = 37 \div ?$ » ; v3 trou
+   « $4,5 \div 100 = 4,5 \times ?$ » ; v4 les deux calculs donnent le même nombre (case : « $52 \times 0,01 = ?$ »,
+   la correction passe par $52 \div 100$). Erreurs : $0,1 \leftrightarrow 10$ inversé, un zéro de trop.
+   (Les trous à facteur décimal « $a \times ? = b$ » sont en 5e, 5-126 : pas repris.)
+4. **Par l'aire** (deux cases) — v1 rectangle de $3,7$ dm sur $2,9$ dm : « en cm : $37 \times 29 = ?$ cm², donc
+   $3,7 \times 2,9 = ?$ » (aire en dm²) ; v2 $0,4$ m sur $0,3$ m : $40 \times 30 = 1~200$ cm² $= 0,12$ m², donc
+   $0,4 \times 0,3 = 0,12$. Facteurs à 1 décimale, de $0,1$ à $9,9$ ; unités cm², dm², m². Erreurs :
+   $0,4 \times 0,3 \to 1,2$, virgule placée « comme dans l'addition » ($10,73 \to 107,3$).
+5. **Ordre de grandeur** (case choix, mélangée) — v1 « Sans poser le calcul, lequel est $48,7 \times 3,1$ ? »
+   ($15,097$ / $150,97$ / $1~509,7$ : mêmes chiffres, virgule déplacée) ; v2 même chose pour une somme
+   ($398,6 + 51,25$) ; v3 « Un ordre de grandeur de $49,8 \times 21$ : $100$ / $1~000$ / $10~000$ ».
+6. **Problèmes de produits** (case, unité écrite après) — v1 prix au kilo ($2,4$ kg à $3,50$ €/kg) ; v2 plein
+   d'essence ($35$ L à $1,85$ €) ; v3 produit plus petit qu'un facteur ($0,6$ kg à $4,50$ €/kg $= 2,70$ €).
+   Erreurs : addition au lieu du produit, virgule mal placée. Voir question 2.
+7. **Diviser un décimal par un entier < 10** (case) — v1 division qui s'arrête ($7,5 \div 3$, $14,4 \div 6$) ;
+   v2 entier par entier, quotient décimal ($9 \div 4 = 2,25$) ; v3 division qui ne s'arrête pas, arrondie au
+   centième ($10 \div 3$, $73 \div 6$, la borne). Erreurs : zéro oublié ou ajouté ($2,05$), reste pris pour
+   les décimales ($9 \div 4 \to 2,1$).
+8. **Problèmes de partage** (case, unité) — v1 partager une somme ($22,50$ € entre $3$) ; v2 couper un ruban
+   ($4,2$ m en $6$ morceaux $= 0,7$ m) ; v3 prix d'un objet ($4$ cahiers pour $7,60$ €). Diviseur à un chiffre
+   (sans calculatrice). Voir questions 2 et 3.
+9. **Poser une division euclidienne** (```operation, cases du quotient et du reste) — v1 diviseur à un chiffre,
+   dividende de 3 ou 4 chiffres ; v2 diviseur à deux chiffres ($295 \div 18$, $536 \div 45$, la borne) ; v3 un
+   $0$ au quotient ($618 \div 3 = 206$). Diviseur de $2$ à $99$.
+10. **Problèmes de division euclidienne** (case ou deux cases) — v1 quotient et reste ($295$ œufs en boîtes de
+    $12$ : boîtes pleines, œufs restants) ; v2 le reste force un de plus ($230$ élèves, cars de $45$ places
+    $\to 6$ cars ; erreur $5$) ; v3 conversion ($150$ jours $= ?$ semaines et $?$ jours). Diviseur < 100.
+
+Question d'accès (migration nœud + tag, après le `--publier` de David) : **personne** ne gagne de lecture —
+10 modèles neufs en brouillon, visibles des seuls admin et auteur, lisibles à la publication seulement.
+
+Questions à David :
+
+1. **Posées** : seule la division euclidienne (6-123) est posée en ```operation. Faut-il aussi un modèle posé
+   pour 114, 198 (addition, soustraction de décimaux) et 121 (décimal ÷ entier, quotient qui s'arrête) ? Reco :
+   **non dans ce lot** (l'addition et la soustraction posées de décimaux relèvent du cours moyen ; 121 garde
+   10 ÷ 3, que le bloc refuse) ; un lot « posées » à part si vous le voulez.
+2. **Prix** : $7,50$ € accepté comme juste, sans « forme perfectible » (zéro inutile), dans les problèmes en
+   euros ? Reco : **oui** ($7,5$ aussi juste).
+3. **6-122** : diviseur à un chiffre seulement, pas d'exemple « $57,40$ € ÷ $35$ » (calculatrice) ? Reco : **oui**.
