@@ -1,0 +1,171 @@
+{
+	"title": "Résoudre une équation ax + b = 0",
+	"description": "Ensemble des solutions de ax + b = 0 : solution entière, solution fractionnaire",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Equations",
+	"subdomain": "Ensemble des solutions",
+	"level": 3,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation ${{eval:(a)*x+(b)}}=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a)*(k)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-(b)/(a)}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole $x$ : on {{if:b>0|soustrait ${{b}}$|ajoute ${{eval:-(b)}}$}} aux deux membres, puis on divise par ${{a}}$, qui n'est pas nul.",
+					"$${{eval:(a)*x+(b)}}=0\\iff {{eval:(a)*x}}={{eval:-(b)}}\\iff x=\\frac{ {{eval:-(b)}} }{ {{a}} }\\iff x={{eval:-(b)/(a)}}$$",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:-(b)/(a)}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation ${{eval:(a)*x+(b)}}=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["mod(b,a) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-(b)/(a)}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole $x$ : on {{if:b>0|soustrait ${{b}}$|ajoute ${{eval:-(b)}}$}} aux deux membres, puis on divise par ${{a}}$, qui n'est pas nul.",
+					"$${{eval:(a)*x+(b)}}=0\\iff {{eval:(a)*x}}={{eval:-(b)}}\\iff x=\\frac{ {{eval:-(b)}} }{ {{a}} }\\iff x={{eval:-(b)/(a)}}$$",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:-(b)/(a)}} \\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3x + 12 = 0 : S = {−4}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "-4",
+				"b": "12"
+			},
+			"answers": ["\\{-4\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié ({4})",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "-4",
+				"b": "12"
+			},
+			"answers": ["\\{4\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −a/b ({−1/4})",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "-4",
+				"b": "12"
+			},
+			"answers": ["\\{-\\frac{1}{4}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4x − 6 = 0 : S = {3/2}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "-6"
+			},
+			"answers": ["\\{\\frac{3}{2}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture décimale {1,5}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "-6"
+			},
+			"answers": ["\\{1{,}5\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Fraction non simplifiée (6/4)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "-6"
+			},
+			"answers": ["\\{\\frac{6}{4}\\}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["intervalForm"]
+			}
+		},
+		{
+			"description": "Erreur : signe ({−3/2})",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "-6"
+			},
+			"answers": ["\\{-\\frac{3}{2}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

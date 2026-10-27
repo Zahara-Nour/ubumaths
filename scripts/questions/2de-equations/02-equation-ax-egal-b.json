@@ -1,0 +1,208 @@
+{
+	"title": "Résoudre une équation ax = b",
+	"description": "Ensemble des solutions de ax = b : solution entière, solution fractionnaire, coefficient fractionnaire (2/3 x = 4)",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Equations",
+	"subdomain": "Ensemble des solutions",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation ${{eval:(a)*x}}={{eval:(a)*(k)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{k}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise les deux membres par ${{a}}$, qui n'est pas nul.",
+					"$${{eval:(a)*x}}={{eval:(a)*(k)}}\\iff x=\\frac{ {{eval:(a)*(k)}} }{ {{a}} }\\iff x={{k}}$$",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{k}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation ${{eval:(a)*x}}={{b}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..20;±"
+				}
+			],
+			"conditions": ["mod(b,a) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:(b)/(a)}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise les deux membres par ${{a}}$, qui n'est pas nul.",
+					"$${{eval:(a)*x}}={{b}}\\iff x=\\frac{ {{b}} }{ {{a}} }\\iff x={{eval:(b)/(a)}}$$",
+					"On donne la fraction **irréductible**. $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:(b)/(a)}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\frac{ {{p}} }{ {{q}} }x={{r}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..7"
+				},
+				{
+					"name": "r",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["gcd(p,q) == 1", "p != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:(r)*(q)/(p)}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diviser par $\\frac{ {{p}} }{ {{q}} }$, c'est multiplier par son inverse ${{if:p==1|{{q}}|\\frac{ {{q}} }{ {{p}} }}}$ : on multiplie les deux membres par ${{if:p==1|{{q}}|\\frac{ {{q}} }{ {{p}} }}}$.",
+					"$$\\frac{ {{p}} }{ {{q}} }x={{r}}\\iff x={{r}}\\times{{if:p==1|{{q}}|\\frac{ {{q}} }{ {{p}} }}}\\iff x={{eval:(r)*(q)/(p)}}$$",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:(r)*(q)/(p)}} \\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−4x = −12 : S = {3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"k": "3"
+			},
+			"answers": ["\\{3\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu ({−3})",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"k": "3"
+			},
+			"answers": ["\\{-3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : soustraction au lieu de division ({−8})",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"k": "3"
+			},
+			"answers": ["\\{-8\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6x = −4 : S = {−2/3}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "-4"
+			},
+			"answers": ["\\{-\\frac{2}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Fraction non simplifiée (−4/6)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "-4"
+			},
+			"answers": ["\\{-\\frac{4}{6}\\}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["intervalForm"]
+			}
+		},
+		{
+			"description": "Erreur : a/b ({−3/2})",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "-4"
+			},
+			"answers": ["\\{-\\frac{3}{2}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2/3 x = 4 : S = {6}",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "4"
+			},
+			"answers": ["\\{6\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : multiplié par 2/3 ({8/3})",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "4"
+			},
+			"answers": ["\\{\\frac{8}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,290 @@
+{
+	"title": "Résoudre une équation ax + b = cx + d",
+	"description": "Ensemble des solutions de ax + b = cx + d : solution entière, fractionnaire ; cas a = c (aucune solution ou tous les réels)",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Equations",
+	"subdomain": "Ensemble des solutions",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation ${{eval:(a)*x+(b)}}={{eval:(c)*x+(d)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±!a"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "eval:((a)-(c))*(k)+(b)"
+				}
+			],
+			"conditions": ["d != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:((d)-(b))/((a)-(c))}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On regroupe les termes en $x$ dans le membre de gauche et les nombres dans celui de droite.",
+					"$$\\begin{align} {{eval:(a)*x+(b)}}={{eval:(c)*x+(d)}} & \\iff \\textcolor{{{color:primary.1}}}{{{eval:(a)*x}}}\\textcolor{{{color:primary.1}}}{{{eval:-(c)*x;+}}}={{d}}\\textcolor{{{color:primary.0}}}{{{eval:-(b);+}}} \\\\ & \\iff {{eval:((a)-(c))*x}}={{eval:(d)-(b)}} \\\\ & \\iff x=\\frac{ {{eval:(d)-(b)}} }{ {{eval:(a)-(c)}} }={{eval:((d)-(b))/((a)-(c))}} \\end{align}$$",
+					"L'équation a une seule solution. $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:((d)-(b))/((a)-(c))}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation ${{eval:(a)*x+(b)}}={{eval:(c)*x+(d)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±!a"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["mod((d)-(b),(a)-(c)) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:((d)-(b))/((a)-(c))}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On regroupe les termes en $x$ dans le membre de gauche et les nombres dans celui de droite.",
+					"$$\\begin{align} {{eval:(a)*x+(b)}}={{eval:(c)*x+(d)}} & \\iff \\textcolor{{{color:primary.1}}}{{{eval:(a)*x}}}\\textcolor{{{color:primary.1}}}{{{eval:-(c)*x;+}}}={{d}}\\textcolor{{{color:primary.0}}}{{{eval:-(b);+}}} \\\\ & \\iff {{eval:((a)-(c))*x}}={{eval:(d)-(b)}} \\\\ & \\iff x=\\frac{ {{eval:(d)-(b)}} }{ {{eval:(a)-(c)}} }={{eval:((d)-(b))/((a)-(c))}} \\end{align}$$",
+					"L'équation a une seule solution. $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:((d)-(b))/((a)-(c))}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation ${{a}}(x{{eval:u;+}}){{eval:v;+}}={{eval:(a)*x+(a)*(u)+(v)+(1-(t))*(g)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "v",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "g",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["(a)*(u)+(v) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|\\varnothing|\\mathbb{R}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On développe le membre de gauche : ${{a}}(x{{eval:u;+}}){{eval:v;+}}={{eval:(a)*x+(a)*(u)+(v)}}$.",
+					"Les termes en $x$ sont les mêmes des deux côtés : en les retirant, il reste ${{eval:(a)*(u)+(v)}}={{eval:(a)*(u)+(v)+(1-(t))*(g)}}$, une égalité {{if:t==0|**toujours fausse** : aucun réel n'est solution.|**toujours vraie** : tous les réels sont solutions.}}",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:t==0|\\varnothing|\\mathbb{R}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5x + 4 = 2x − 5 : S = {−3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"k": "-3",
+				"b": "4",
+				"d": "-5"
+			},
+			"answers": ["\\{-3\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe en changeant de membre ({−1/3})",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"k": "-3",
+				"b": "4",
+				"d": "-5"
+			},
+			"answers": ["\\{-\\frac{1}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"k": "-3",
+				"b": "4",
+				"d": "-5"
+			},
+			"answers": ["\\{3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x + 3 = −2x − 4 : S = {−7/4}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "-2",
+				"b": "3",
+				"d": "-4"
+			},
+			"answers": ["\\{-\\frac{7}{4}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2x − 2x (dénominateur 0 oublié) {−7}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "-2",
+				"b": "3",
+				"d": "-4"
+			},
+			"answers": ["\\{-7\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2(x + 3) − 1 = 2x + 9 : S = ∅",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"u": "3",
+				"v": "-1",
+				"t": "0",
+				"g": "4"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ au lieu de ∅",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"u": "3",
+				"v": "-1",
+				"t": "0",
+				"g": "4"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {0}",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"u": "3",
+				"v": "-1",
+				"t": "0",
+				"g": "4"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2(x + 3) − 1 = 2x + 5 : S = ℝ",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"u": "3",
+				"v": "-1",
+				"t": "1",
+				"g": "4"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅ au lieu de ℝ",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"u": "3",
+				"v": "-1",
+				"t": "1",
+				"g": "4"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

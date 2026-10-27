@@ -1,0 +1,156 @@
+{
+	"title": "Résoudre une équation a + x = b",
+	"description": "Ensemble des solutions de x + a = b (entiers relatifs) et de a + x = b (décimaux)",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Equations",
+	"subdomain": "Ensemble des solutions",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $x{{eval:a;+}}={{b}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20;±"
+				},
+				{
+					"name": "b",
+					"expression": "-20..20"
+				}
+			],
+			"conditions": ["b != a"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:(b)-(a)}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole $x$ : on {{if:a>0|soustrait ${{a}}$|ajoute ${{eval:-(a)}}$}} aux deux membres de l'équation.",
+					"$$x{{eval:a;+}}={{b}}\\iff x={{b}}{{eval:-(a);+}}\\iff x={{eval:(b)-(a)}}$$",
+					"L'équation a une seule solution. $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:(b)-(a)}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation ${{a}}+x={{b}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "1..99;±"
+				},
+				{
+					"name": "B",
+					"expression": "-99..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(A)/10;d"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(B)/10;d"
+				}
+			],
+			"conditions": ["mod(A,10) != 0", "B != A"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:((B)-(A))/10;d}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole $x$ : on {{if:a>0|soustrait ${{a}}$|ajoute ${{eval:-(a)}}$}} aux deux membres de l'équation.",
+					"$${{a}}+x={{b}}\\iff x={{b}}{{eval:-(a);+}}\\iff x={{eval:((B)-(A))/10;d}}$$",
+					"L'équation a une seule solution. $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:((B)-(A))/10;d}} \\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x + 7 = −3 : S = {−10}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "-3"
+			},
+			"answers": ["\\{-10\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "« S = » tapé en tête",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "-3"
+			},
+			"answers": ["S=\\{-10\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a ajouté au lieu d'être soustrait ({4})",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "-3"
+			},
+			"answers": ["\\{4\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la solution sans accolades",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "-3"
+			},
+			"answers": ["-10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2,3 + x = 1,5 : S = {3,8}",
+			"variationIndex": 1,
+			"variables": {
+				"A": "-23",
+				"B": "15",
+				"a": "-2.3",
+				"b": "1.5"
+			},
+			"answers": ["\\{3{,}8\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −0,8 (signe de a gardé)",
+			"variationIndex": 1,
+			"variables": {
+				"A": "-23",
+				"B": "15",
+				"a": "-2.3",
+				"b": "1.5"
+			},
+			"answers": ["\\{-0{,}8\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
