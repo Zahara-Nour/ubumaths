@@ -11,7 +11,8 @@
  *   grande ; `-` pour une aiguille pas posée ; `''` sans aiguille posée).
  * - Réponse attendue : l'heure sur le cadran de 12, `"9 h 25"` (`timeText`).
  * - Lecture (`readHands`) : la grande aiguille donne la minute ; la petite doit
- *   être pile sur l'heure si minutes = 0, strictement entre deux heures sinon.
+ *   être pile sur l'heure si minutes = 0, strictement entre deux heures sinon ;
+ *   le juge accepte aussi le cran de sa vraie place (`trueHourTick`).
  *
  * Calcul pur, sans Svelte.
  *
@@ -116,11 +117,26 @@ function sameTime(a: HorlogeTime, b: HorlogeTime): boolean {
 	return dialHour(a.hours) === dialHour(b.hours) && a.minutes === b.minutes;
 }
 
-/** Les aiguilles de l'élève (`answer`) montrent-elles l'heure attendue (`expected`) ? */
+/** Cran le plus proche de la vraie place de la petite aiguille (9 h 05 : 45,4 → 45) */
+export function trueHourTick(time: HorlogeTime): number {
+	const exact = (time.hours % 12) * TICKS_PER_HOUR + time.minutes / 12;
+	return Math.round(exact) % HAND_TICKS;
+}
+
+/**
+ * Les aiguilles de l'élève (`answer`) montrent-elles l'heure attendue (`expected`) ?
+ * Grande aiguille sur la minute ; petite dans le bon secteur (`readHands`), ou sur
+ * le cran de sa vraie place : à 1-5 et 54-59 minutes, ce cran est celui d'une
+ * heure (9 h 55 : 49,6 → le 10), refusé par le seul secteur (Q16 du chantier)
+ */
 export function isPlacedTimeCorrect(answer: string, expected: string): boolean {
 	const time = timeOfAnswer(expected);
-	const read = readHands(handsOfAnswer(answer));
-	return time !== null && read !== null && sameTime(read, time);
+	if (time === null) return false;
+	const hands = handsOfAnswer(answer);
+	if (hands.minute !== time.minutes) return false;
+	if (hands.hour === trueHourTick(time)) return true;
+	const read = readHands(hands);
+	return read !== null && sameTime(read, time);
 }
 
 /** Les phrases de la correction, pour des aiguilles fausses */

@@ -422,7 +422,8 @@ aiguille » (la grande active au départ), toucher le cadran tourne l'aiguille a
 toucher une aiguille posée la reprend, ◀ ▶ et flèches d'un cran ; `role="slider"`, nom accessible
 sans l'heure attendue. Calcul pur `utils/horloge-placer.ts` : réponse `handsAnswer` (`'47 25'`),
 lecture `readHands` (petite pile sur l'heure si minutes = 0, strictement entre deux heures sinon),
-`isPlacedTimeCorrect`, phrases `handsMistakes` (rien placé, aiguille pas posée, aiguilles inversées,
+`isPlacedTimeCorrect` (accepte aussi le cran de la vraie place de la petite aiguille, `trueHourTick` :
+9 h 05 sur le 9, 9 h 55 sur le 10), phrases `handsMistakes` (rien placé, aiguille pas posée, aiguilles inversées,
 « Tu as placé les aiguilles sur 5 h 45. », petite pile sur l'heure ou entre deux heures à tort).
 Hors question (cours, aperçu) : le même geste, rien de jugé. PDF : le cadran sans aiguilles,
 l'enfant les dessine. Secondes (CM2-083) : hors chantier (pas de trotteuse).

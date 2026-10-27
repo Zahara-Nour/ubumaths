@@ -134,6 +134,15 @@ describe('réponse de l’élève : les deux aiguilles, en crans de minute', () 
 		['2 h', '10 0', true],
 		['12 h 30', '2 30', true],
 		['9 h 25', '- 25', false],
+		// Vraie place de la petite aiguille (Q16) : 9 h 05 → cran 45,4 ≈ 45, 9 h 55 → 49,6 ≈ 50
+		['9 h 05', '45 5', true],
+		['9 h 05', '46 5', true],
+		['9 h 55', '50 55', true],
+		['9 h 55', '49 55', true],
+		['9 h 55', '51 55', false],
+		['12 h 05', '0 5', true],
+		// L'erreur type reste refusée : 9 h 45, vraie place 48,75
+		['9 h 45', '45 45', false],
 		['9 h 25', '', false]
 	])('attendu %s, aiguilles %s : %s', (expected, answer, correct) => {
 		expect(isPlacedTimeCorrect(answer, expected)).toBe(correct);
