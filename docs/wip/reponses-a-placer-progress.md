@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-27, après #1872._
 
 - **État** : #1846, #1848, #1853, #1854, #1858, #1860 (droite à placer) et #1872 (horloge à placer, § 13 à 16) **mergées**, pas en prod. Vérification de #1872 notée dans `verifications-manuelles.md` (carte de correction dans une vraie question pas vue à l'écran).
-- **Prochaine action** : barres (CP-072…), phase 0 d'abord ; ou, à proposer, le bouton de retournement en `sticky` (revue #1858).
-- **En attente de David** : rien.
+- **Prochaine action** : barres, phase 0 écrite (§ 17), questions posées à David.
+- **En attente de David** : les 6 questions du § 17 (barres).
 - **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; horloge : réponse élève `'47 25'` (crans), attendue `'9 h 25'`, case `text`, juge `isPlacedTimeCorrect` (secteur OU vraie place) ; secondes (CM2-083) hors chantier ; page d'aide à froid : attendre l'hydratation ; une PR = une session.
 - **Worktree / branche** : aucun.
 
@@ -335,3 +335,62 @@ d'abord : `horloge-placer.test.ts` (parseur, lecture, juge, phrases, PDF),
   vraie place 48,75) reste refusée.
 - **Q16 validée par David (« je valide »)** : `isPlacedTimeCorrect` accepte aussi `trueHourTick`
   (cran le plus proche de la vraie place) ; tests 9 h 05, 9 h 55, 12 h 05, et 9 h 45 pile sur le 9 refusé.
+
+## 17. Phase 0 — barres (2026-10-27)
+
+### Existant
+
+- Bloc ```barres (genre de `stat-chart`) : lignes `Football = 12` (20 barres au plus), ou série brute
+  `données: 12 ; 15 ; 12` (le bloc compte) ; `titre:`, `axes:`, `valeurs: oui`, `afficher: fréquences`,
+  `couleur:`, `taille:`. Axe vertical gradué tout seul (pas visé ≈ 40 px). Dessin seul.
+- Programme : CP-072 (qualitatif 2 à 5 valeurs, < 40 individus), CE1-088 (< 100, axe gradué de un en
+  un), CE2-082 (qualitatif ou quantitatif discret, échelle adaptée), CM1-135 et CM2-121 (recueillir puis
+  produire, échelle des axes adaptée aux données).
+
+### Écriture par le prof (proposée)
+
+````text
+Construis le diagramme du sport préféré.
+```barres
+axes: Sport ; Effectif
+axe: 0 à 20, de 2 en 2
+Football = 12
+Natation = {{n}}
+Danse = 7
+placer: Natation ; Danse
+```
+````
+
+`placer:` nomme les barres que l'élève construit (`placer: toutes` : toutes) ; les autres sont dessinées.
+`axe:` fixe l'axe vertical (obligatoire avec `placer:` : calculé sur les données, il trahirait la plus
+grande barre).
+
+### Nominal
+
+1. Les barres à construire sont vides (pointillé au pied de leur colonne) ; les autres, dessinées.
+2. Toucher la colonne d'une barre la choisit et monte son haut à la hauteur du doigt ; glisser l'ajuste ;
+   boutons ▲ ▼ (un cran, la barre choisie), flèches du clavier. Aimant : l'unité (12 entre deux
+   graduations de 2 en 2 : permis, c'est lire l'échelle).
+3. Une case par barre à construire (note partielle), réponse = la hauteur (`12`), juge ordinaire.
+4. Faux : « Ta barre Danse monte à 9. » par barre fausse, « Tu n'as pas construit la barre Danse. » ;
+   le diagramme juste à côté.
+5. Avec `données:` (série brute) : l'élève compte puis construit (CP-072, CM1-135 « recueillir »).
+6. PDF : axes gradués, noms des catégories, barres à construire absentes ; l'enfant les dessine.
+7. Nom accessible sans les effectifs attendus.
+
+### Limites et erreurs (messages au prof)
+
+- Refus avec `placer:` : sans `axe:` ; `valeurs: oui` ; `afficher: fréquences` ; pourcentages ; une
+  barre attendue hors de l'axe ou non entière ; un nom de `placer:` absent des données.
+- Effectif 0 attendu : permis (▼ jusqu'à 0, la barre est alors « construite »).
+- Choisir soi-même l'échelle (CM1, CM2 « échelle adaptée ») : hors de cette PR.
+
+### Questions à David
+
+1. **Écriture** : `placer: Natation ; Danse` (barres nommées, les autres dessinées) et `placer: toutes` (reco) ?
+2. **Axe imposé** : `axe: 0 à 20, de 2 en 2` obligatoire avec `placer:` (reco), ou calculé tout seul
+   (il trahit la plus grande barre) ?
+3. **Aimant à l'unité** même quand l'axe va de 2 en 2 (reco), ou sur les seules graduations ?
+4. **Choix de l'échelle par l'élève** (CM1-CM2) : hors de cette PR (reco) ?
+5. **Données brutes** (`données:`) permises avec `placer:` (reco : l'élève compte puis construit) ?
+6. **Correction** : une phrase par barre fausse + le diagramme juste (reco) ?
