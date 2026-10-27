@@ -1337,6 +1337,38 @@ function evaluateLimitExactForm(
 		return evaluateLimit(expandEulerPowers(expression), varName, approachPoint, dir, options);
 	}
 
+	// Stratégie 7.5 : u^{−n}, n entier, en un point fini : u^{−n} = 1/uⁿ, dont
+	// le signe est suivi. La substitution rendait « 1/0 » exact pour
+	// (cos x − 1)^{−1} en 0 (V70). En dernier recours : x^{−1}, x^{−2} en 0
+	// gardent leur analyse à gauche / à droite.
+	const negativePower = isInfinity(approachPoint)
+		? null
+		: tryNegativePowerAsReciprocal(expression, varName, approachPoint, dir, options);
+	if (negativePower !== null) {
+		const { result, rewritten } = negativePower;
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			rewritten,
+			'summarized',
+			approachPoint,
+			'Écriture en quotient : u^{-n} = 1/u^n'
+		);
+		return createResult(
+			result.value,
+			varName,
+			approachPoint,
+			dir,
+			result.status,
+			indeterminateForm,
+			'composition',
+			recorder,
+			opts,
+			result.error,
+			result.noLimitReason
+		);
+	}
+
 	// Seule une valeur approchée a été trouvée : rendue comme telle, jamais 'exact'
 	if (approximateValue !== null) {
 		return createResult(
@@ -2409,6 +2441,37 @@ function tryRewrittenSum(
 }
 
 /**
+ * u^{−n} (n entier ≥ 1) : limite de 1/uⁿ. « Pas de limite » (1/(x − sin x)
+ * en 0) est rendu tel quel ; une valeur approchée ne conclut pas.
+ */
+function tryNegativePowerAsReciprocal(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): { result: LimitResult; rewritten: MathNode } | null {
+	if (!isSuperscript(expr) || !containsVariable(expr.base, varName)) return null;
+	const exponent = exactConstantRational(expr.superscript);
+	if (exponent === null || exponent.d !== 1n || exponent.n >= 0n) return null;
+	if (nestedRewrites >= MAX_NESTED_REWRITES) return null;
+	const rewritten = divide(
+		number('1'),
+		exponent.n === -1n ? expr.base : power(expr.base, number((-exponent.n).toString())),
+		'fraction'
+	);
+	nestedRewrites++;
+	try {
+		const result = evaluateLimit(rewritten, varName, approach, dir, options);
+		const concluded =
+			(result.status === 'exact' || result.status === 'infinite') && result.value !== null;
+		return concluded || result.status === 'does-not-exist' ? { result, rewritten } : null;
+	} finally {
+		nestedRewrites--;
+	}
+}
+
+/**
  * N/(√A − B) ou (√A − B)^{−n} : limite de la réécriture par la quantité
  * conjuguée (`reciprocalByConjugate`), ou null si elle ne conclut pas — une
  * valeur approchée ne conclut pas.
@@ -2893,10 +2956,15 @@ function hasVanishingDenominator(
 ): boolean {
 	const inside = nodesInsideExponents(expr);
 	const denominators: MathNode[] = [];
-	for (const node of findNodes(expr, (n) => isDivision(n) || isFunction(n))) {
+	for (const node of findNodes(expr, (n) => isDivision(n) || isFunction(n) || isSuperscript(n))) {
 		if (inside.has(node) !== (where === 'inside-exponent')) continue;
 		if (isDivision(node)) denominators.push(node.denominator);
-		else if (isFunction(node) && node.name === 'tan' && node.args.length === 1) {
+		// u^{−n} = 1/uⁿ : (cos x − 1)^{−1} en 0 rendait « 1/0 » exact (V70)
+		else if (isSuperscript(node)) {
+			if (containsVariable(node.superscript, varName)) continue;
+			const exponent = computeNumericValue(node.superscript);
+			if (exponent !== null && exponent < 0) denominators.push(node.base);
+		} else if (isFunction(node) && node.name === 'tan' && node.args.length === 1) {
 			denominators.push(func('cos', [node.args[0]]));
 		}
 	}
