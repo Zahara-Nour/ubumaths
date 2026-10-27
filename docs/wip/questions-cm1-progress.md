@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 0 écrit (PR à ouvrir)._
+_Mis à jour le 2026-10-28, après #1893._
 
-- **État** : lot 0 écrit et testé (§ 6) : 2 migrations, tests d'intégration rouges sans elles puis verts ; rien en prod.
-- **Prochaine action** : `security-auditor`, PR, CI, merge, `pnpm db:migrate` depuis le dépôt principal, vérification MCP (§ 6) ; prévenir `questions-6` des 4 modèles reçus ; puis lot 1 (calcul mental).
+- **État** : lot 0 en prod (#1893 mergée, `db:migrate` joué, vérifié au MCP : 14 en [CM2] tagués, 4 en [6] tagués, 8 brouillons [CM1] sans tag, md5 attendus) ; sessions `6EME` et `CM2` prévenues.
+- **Prochaine action** : lot 1, calcul mental (043, 163, 046, 164, 037, 038, et tables 035, 161, 036 en tables mélangées de 0 à 10) : phase 0 (comportements, à valider par David), skill `couvrir-niveau`.
 - **En attente de David** : rien.
 - **Pièges en cours** : un modèle garde toujours au moins un niveau ; case « choix » en prod (v0.51.0), QCM pas encore migrés ; droite à placer mergée, pas en prod ; niveaux relevés parmi les publiés de la catégorie avant toute écriture ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1` · `feat/questions-cm1-lot0`.
+- **Worktree / branche** : aucun (à recréer pour le lot 1).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -195,3 +195,5 @@ point repassent en brouillon, niveau CM1 gardé, jamais supprimés.
 - **Tests** `questions-cm1-contenu` et `questions-cm1-rangement-tags` : rouges les migrations vidées (19
   échecs + les 2 suites en `beforeAll`), verts avec (33 verts, 15 sautés = options de scission sans objet).
   `gardeStatut` laissé de côté : le test du helper suppose une origine en brouillon.
+- **Livré** (#1893, 2026-10-28) : `security-auditor` sans bloquant (commentaire d'accès corrigé : le prof lit
+  encore les brouillons) ; CI verte ; `db:migrate` ; vérification MCP conforme.

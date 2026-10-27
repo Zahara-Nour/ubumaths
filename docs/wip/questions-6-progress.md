@@ -568,3 +568,10 @@ Questions à David :
    (Addition et Soustraction, 12) au lot ? Reco : **oui**.
 3. **Ranger** : trois nombres partout, ou une variation à cinq nombres comme l'exemple du BO ($1$, $\frac{5}{3}$,
    $\frac{7}{6}$, $\frac{99}{100}$, $1 + \frac{1}{3}$) ? Reco : **trois** (cinq cases à retaper, c'est long sur téléphone).
+
+### 11.0 Reçus du CM1 (2026-10-28)
+
+Session `questions-cm1`, lot 0 (#1893, migration jouée en prod) : 4 modèles publiés passés de CM1 à `[6]`, tagués,
+nœud et contenu inchangés (MCP relu) : 6a16303a et 7d57fb3b (« Calculer une différence », Soustraire / Différence
+2 et 4) → 6-198 ; 0a93ac99 et 08bbf1c6 (« Additionner par regroupements », Somme astucieuse 1 et 2, 3 et 4 termes)
+→ 6-114, voisins de 6adcd053 (lot 3, Somme astucieuse 3) sans doublon. À compter dans la couverture de la 6e.
