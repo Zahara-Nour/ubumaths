@@ -25,7 +25,7 @@ import {
 } from './exact-evaluation';
 import { exactConstantNode } from './generalized-degree';
 import { divide } from '../factory';
-import { normalize, denormalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { nodesEqual } from '../pattern/match';
 
 // =============================================================================
@@ -266,7 +266,7 @@ export function applyLhopital(
 /** Forme normale réduite d'un quotient, ou null si inchangée ou impossible. */
 function reduceQuotient(expr: DivisionNode): MathNode | null {
 	try {
-		const reduced = denormalize(normalize(expr));
+		const reduced = canonicalForm(expr);
 		return nodesEqual(reduced, expr) ? null : reduced;
 	} catch {
 		return null;

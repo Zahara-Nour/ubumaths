@@ -1717,11 +1717,11 @@ Doublons qui restent, chacun pour un autre besoin :
 
 - Fusion des deux moteurs : `reduire` et `auto` ne passent plus par `normalize` (2026-10-23),
   `developper` non plus (2026-10-25, chantier normalize-usages). Les copies locales de
-  `denormalize(normalize())` passent par `canonicalForm` (lot b) ; restent ~75 appels écrits en
-  ligne, internes (valeurs exactes, comparaisons), voulus (§ 23 de simplify-carte). **78 le
-  2026-10-27** (3 nouveaux depuis, rien ne l'empêche) : à passer tous par `canonicalForm`, sans
-  rien changer à l'écran, avec une garde qui refuse un nouvel appel en ligne — à faire avec la
-  fin de la fusion ci-dessous.
+  `denormalize(normalize())` passent par `canonicalForm` (lot b), et les 77 appels écrits en
+  ligne qui restaient aussi (chantier canonical-form, 2026-10-27), sans rien changer à l'écran.
+  Une règle ESLint (`no-restricted-syntax`, `eslint.config.js`) refuse tout nouvel appel en
+  ligne ; deux exceptions marquées : la définition de `canonicalForm` et le lambda
+  `canonicalExponent` de `normalize.ts` (import circulaire).
   **Futur chantier (David, 2026-10-27) : finir la fusion.** `simplify()` sert encore au repli de
   l'atelier (`atelier/calcul.ts` : sans étape de `pedagogical-simplify`, `.simplifier` montre
   la sortie de `simplify()`, calculée en silence — `cos(π/3)/x → 1/(2x)` passait par là avant le

@@ -63,7 +63,7 @@ import { cosRule, lnAbsRule, powerRule, sinRule, tanRule } from '../integration/
 import { differentiate } from '../differentiation';
 import { evaluate } from '../eval/evaluate';
 import { isEvalValue } from '../eval/types';
-import { denormalize, normalize } from '../normal';
+import { canonicalForm } from '../normal';
 import {
 	simplifiedAdd,
 	simplifiedDivide,
@@ -1381,7 +1381,7 @@ function integrateByParts(
 	const vDuRaw = simplifiedMultiply(v, du);
 	let vDu = vDuRaw;
 	try {
-		vDu = denormalize(normalize(vDuRaw));
+		vDu = canonicalForm(vDuRaw);
 	} catch {
 		/* keep raw form */
 	}
@@ -1538,7 +1538,7 @@ function integrateCyclicIPP(integrand: MathNode, ctx: DispatchContext): Dispatch
 	const f1Raw = simplifiedMultiply(v0, du0);
 	let f1 = f1Raw;
 	try {
-		f1 = denormalize(normalize(f1Raw));
+		f1 = canonicalForm(f1Raw);
 	} catch {
 		/* keep raw */
 	}
@@ -1575,7 +1575,7 @@ function integrateCyclicIPP(integrand: MathNode, ctx: DispatchContext): Dispatch
 	const hRaw = simplifiedMultiply(v1, du1);
 	let h = hRaw;
 	try {
-		h = denormalize(normalize(hRaw));
+		h = canonicalForm(hRaw);
 	} catch {
 		/* keep raw */
 	}

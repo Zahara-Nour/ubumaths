@@ -2162,6 +2162,7 @@ function normalizeInner(node: MathNode, ctx?: NormalizeContext): NormalForm {
 	// Décision de David (option A, 2026-10-05), détail dans
 	// `rules/euler-identities.ts`. Sans base d'Euler, le nœud passe inchangé.
 	const eulerContext = {
+		// eslint-disable-next-line no-restricted-syntax -- canonical-form.ts importe ce module : canonicalForm ici serait un import circulaire
 		canonicalExponent: (exponent: MathNode) => denormalize(normalize(exponent)),
 		splitRationalLogs: (exponent: MathNode) => splitRationalLogs(exponent, ctx)
 	};

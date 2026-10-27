@@ -3,15 +3,16 @@
  * et ce qu'on en lit : un rationnel exact, les coefficients d'un polynôme.
  *
  * Usage INTERNE des moteurs (solveurs, intégration, limites) : comparer, lire
- * une valeur exacte, lire des coefficients. Jamais une réponse montrée telle
- * quelle à l'élève (ADR 0032, chantier normalize-usages).
+ * une valeur exacte, lire des coefficients. Une valeur sans variable réduite
+ * ainsi peut être montrée (`\\dfrac{2}{6}` → `\\dfrac{1}{3}`) ; une expression
+ * avec variable, jamais (ADR 0032, chantier normalize-usages).
  *
  * @module mathAST/normal/canonical-form
  */
 
 import type { MathNode } from '../types';
 import type { Rational } from './types';
-import { normalize } from './normalize';
+import { normalize, type NormalizeContext } from './normalize';
 import { denormalize } from './denormalize';
 import { extractExactRational, numericNode } from '../common/numeric';
 import { getVariables } from '../eval/substitute';
@@ -19,9 +20,13 @@ import { getPolynomialDegree } from '../analysis/expression-classify';
 import { flattenSumShallow, unflattenSum } from '../flatten';
 import { number, fraction, opposite, power, variable as varNode } from '../factory';
 
-/** La forme canonique de `normalize`, réécrite en arbre. Lève si `normalize` lève. */
-export function canonicalForm(node: MathNode): MathNode {
-	return denormalize(normalize(node));
+/**
+ * La forme canonique de `normalize`, réécrite en arbre. Lève si `normalize` lève.
+ * `ctx` va tel quel à `normalize` (hypothèses de signe, interruption).
+ */
+export function canonicalForm(node: MathNode, ctx?: NormalizeContext): MathNode {
+	// eslint-disable-next-line no-restricted-syntax -- la définition même de canonicalForm
+	return denormalize(normalize(node, ctx));
 }
 
 /** Le rationnel exact que vaut `node`, `null` s'il n'en est pas un (ou si `normalize` lève). */

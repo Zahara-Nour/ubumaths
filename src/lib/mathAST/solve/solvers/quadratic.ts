@@ -28,7 +28,7 @@ import {
 	sqrt as sqrtNode,
 	greaterThanOrEqual
 } from '../../factory';
-import { denormalize, normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../../normal';
+import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../../normal';
 import { canonicalForm, coefficientsByDegree } from '../../normal/canonical-form';
 import { describeCoefficients, describeDiscriminant, describeSolution } from '../descriptions-fr';
 import { computeNumericValue } from '../../eval/numeric-value';
@@ -161,7 +161,7 @@ export const quadraticSolver: EquationSolver = {
 		const bSquared = implicitMultiply(b, b);
 		const fourAC = implicitMultiply(number('4'), implicitMultiply(a, c));
 		const discriminant = subtract(bSquared, fourAC);
-		const discriminantSimplified = denormalize(normalize(discriminant));
+		const discriminantSimplified = canonicalForm(discriminant);
 		const discriminantValue = computeNumericValue(discriminantSimplified);
 
 		// Record discriminant computation
@@ -224,7 +224,7 @@ export const quadraticSolver: EquationSolver = {
 		if (isDiscriminantZero || (discriminantValue !== null && discriminantValue === 0)) {
 			// One double solution: x = -b / (2a)
 			const solution = fraction(negB, twoA);
-			const solutionSimplified = denormalize(normalize(solution));
+			const solutionSimplified = canonicalForm(solution);
 
 			recorder.recordStep(
 				'double-solution',
@@ -266,12 +266,12 @@ export const quadraticSolver: EquationSolver = {
 		// x1 = (-b + sqrt(Delta)) / (2a)
 		const x1Numerator = add(negB, sqrtDiscriminant);
 		const x1 = fraction(x1Numerator, twoA);
-		const x1Simplified = denormalize(normalize(x1));
+		const x1Simplified = canonicalForm(x1);
 
 		// x2 = (-b - sqrt(Delta)) / (2a)
 		const x2Numerator = subtract(negB, sqrtDiscriminant);
 		const x2 = fraction(x2Numerator, twoA);
-		const x2Simplified = denormalize(normalize(x2));
+		const x2Simplified = canonicalForm(x2);
 
 		recorder.recordStep(
 			'quadratic-formula',

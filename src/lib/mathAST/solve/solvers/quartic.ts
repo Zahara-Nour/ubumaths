@@ -26,7 +26,6 @@ import { getPolynomialDegree } from '../classify';
 import { realQuarticRoots } from '../../common/quartic-roots';
 import { number, opposite, equals, variable as varNode, fraction } from '../../factory';
 import { numericNode } from '../../common/numeric';
-import { denormalize, normalize } from '../../normal';
 import { canonicalForm, coefficientsByDegree } from '../../normal/canonical-form';
 import {
 	describeSolution,
@@ -194,7 +193,7 @@ function numericToSymbolic(value: number): MathNode {
  */
 function buildSolution(value: number): Solution {
 	const node = numericToSymbolic(value);
-	const simplified = denormalize(normalize(node));
+	const simplified = canonicalForm(node);
 	return { value: simplified, exact: true, approximate: value };
 }
 

@@ -93,7 +93,6 @@ import {
 	normalize,
 	normalFormsEquivalent,
 	ZERO_NORMAL_FORM,
-	denormalize,
 	canonicalForm,
 	polynomialCoefficients
 } from '../normal';
@@ -526,7 +525,7 @@ function normalizeSumFactors(product: MathNode): MathNode {
 	const normalizeFactor = (factor: MathNode): MathNode => {
 		const content = isDelimiter(factor) ? factor.content : null;
 		if (content && (content.type === 'addition' || content.type === 'subtraction')) {
-			return parentheses(denormalize(normalize(content)));
+			return parentheses(canonicalForm(content));
 		}
 		return normalizeSumFactors(factor);
 	};
@@ -1124,7 +1123,7 @@ function tryExpLogRecursiveDecomposition(
 			};
 		}
 		const lnC = func('ln', [constantNode]);
-		const lnCSimplified = denormalize(normalize(lnC));
+		const lnCSimplified = canonicalForm(lnC);
 		uValues.push({ symbolic: lnCSimplified, numeric: Math.log(constantNumeric) });
 	} else if (funcName === 'ln') {
 		// ln(u) = c → u = e^c
@@ -1134,7 +1133,7 @@ function tryExpLogRecursiveDecomposition(
 		} else if (constantNumeric === 1) {
 			inverseNode = euler();
 		} else {
-			inverseNode = denormalize(normalize(superscript(euler(), constantNode)));
+			inverseNode = canonicalForm(superscript(euler(), constantNode));
 		}
 		uValues.push({ symbolic: inverseNode, numeric: Math.exp(constantNumeric) });
 	} else {
@@ -1145,7 +1144,7 @@ function tryExpLogRecursiveDecomposition(
 		if (constantNumeric === 0) {
 			inverseNode = number('1');
 		} else {
-			inverseNode = denormalize(normalize(superscript(base, constantNode)));
+			inverseNode = canonicalForm(superscript(base, constantNode));
 		}
 		uValues.push({ symbolic: inverseNode, numeric: Math.pow(baseNumeric, constantNumeric) });
 	}
@@ -1354,7 +1353,7 @@ interface RadicalPatternMatch {
  */
 function exactConstant(node: MathNode, expected: number): MathNode | null {
 	try {
-		const reduced = denormalize(normalize(node));
+		const reduced = canonicalForm(node);
 		const value = evaluateNodeToApproximatedNumber(reduced);
 		const tolerance = 1e-9 * Math.max(1, Math.abs(expected));
 		return Math.abs(value - expected) <= tolerance ? reduced : null;
@@ -1544,9 +1543,7 @@ function tryRadicalDecomposition(
 	// Build symbolic u-value: u^(p/q) = c → u = c^(q/p)
 	const inverseExp = q === 1 ? numericNode(p) : divide(numericNode(q), numericNode(p), 'fraction');
 	const uSymbolic =
-		p === 1 && q === 1
-			? constantNode
-			: denormalize(normalize(superscript(constantNode, inverseExp)));
+		p === 1 && q === 1 ? constantNode : canonicalForm(superscript(constantNode, inverseExp));
 
 	recorder.recordStep(
 		'radical-decomposition',
@@ -1636,7 +1633,7 @@ function tryReducedForm(
 	if (reducedFormDepth > 0) return null;
 	let reduced: MathNode;
 	try {
-		reduced = denormalize(normalize(expr));
+		reduced = canonicalForm(expr);
 	} catch {
 		return null;
 	}
@@ -1721,7 +1718,7 @@ function trySquareRootIsolation(
 
 		// a·√u + R = 0 → √u = v = −R/a
 		const signedCoeff = sign === '-' ? opposite(matched.coeffNode) : matched.coeffNode;
-		const v = denormalize(normalize(divide(opposite(rest), signedCoeff, 'fraction')));
+		const v = canonicalForm(divide(opposite(rest), signedCoeff, 'fraction'));
 		const u = matched.argument;
 
 		const recorder = createStepRecorder();
@@ -1960,7 +1957,7 @@ function positiveSquareRoot(
 	const square = variablesAsSegments(canonicalForm(divide(opposite(c), a, 'fraction')), segments);
 	const radical = func('sqrt', [square]);
 	const assumptions = segmentLengthOracle(undefined, [radical]);
-	const root = denormalize(normalize(radical, assumptions && { assumptions }));
+	const root = canonicalForm(radical, assumptions && { assumptions });
 	return { square, root };
 }
 
@@ -2152,7 +2149,7 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		// équation dont les lettres s'éliminent (`x + y = x + y + 1`).
 		const letters = [...getVariables(expr)];
 		const constant = handleConstantEquation(expr, opts);
-		const reduced = getVariables(denormalize(normalize(expr)));
+		const reduced = getVariables(canonicalForm(expr));
 		if (letters.length > 0 && reduced.size > 0 && constant.status !== 'infinite') {
 			return {
 				variable: '',
