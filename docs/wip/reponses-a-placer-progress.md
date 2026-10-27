@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-27, PR « aiguilles » pas encore ouverte._
 
-- **État** : horloge à placer (§ 13 à 15) codée et commitée sur `feat/reponses-a-placer-aiguilles` (2 commits + ce journal), pas poussée ; tests verts, typecheck 0, cliquet tenu ; vu sur la page d'aide (5177).
-- **Prochaine action** : revue `code-reviewer` (Opus) lancée, résultat pas reçu → la relancer si perdue (brief : bugs de correction, fuite de l'heure attendue, oublis de `'horloge'` dans `BuildKind`/`construire`, `hourHand` nullable) ; corriger ; pousser, ouvrir la PR, CI, merger ; noter dans `verifications-manuelles.md` la carte de correction dans une vraie question (pas vue à l'écran).
-- **En attente de David** : rien. Suite possible (revue #1858) : bouton de retournement en `sticky`.
+- **État** : horloge à placer (§ 13 à 15) commitée sur `feat/reponses-a-placer-aiguilles`, pas poussée ; revue Opus reçue : inversion des aiguilles et légende corrigées (commités) ; tests verts.
+- **Prochaine action** : appliquer la réponse de David à Q16 (§ 16), puis pousser, PR, CI, merger ; noter la carte de correction (vraie question) dans `verifications-manuelles.md`.
+- **En attente de David** : Q16 — petite aiguille à 1-5 et 54-59 minutes (voir § 16).
 - **Pièges en cours** : réponse élève `'47 25'` (crans petite, grande), attendue `'9 h 25'` (cadran de 12), case `type: 'text'`, juge `isPlacedTimeCorrect` ; page d'aide à froid : attendre l'hydratation avant de cliquer ; une PR = une session.
 - **Worktree / branche** : `../ubumaths-wt-reponses-a-placer` · `feat/reponses-a-placer-aiguilles` · serveur 5177.
 
@@ -323,3 +323,13 @@ d'abord : `horloge-placer.test.ts` (parseur, lecture, juge, phrases, PDF),
 - Vu en vrai (port 5177, `teacher@local.test`, `/aide-ecriture/blocs/horloge`, Playwright) : pose
   9 h 25, petite aiguille entre le 9 et le 10. Corrigé : à 375 px, ◀ étiquettes ▶ tenaient sur trois
   lignes → étiquettes, puis ◀ ▶ dessous ; aiguilles en attente plus légères (faisaient une tache).
+
+## 16. Revue Opus de la PR aiguilles (2026-10-27)
+
+- Corrigé : inversion type non nommée (grande sur le 9, petite sur le 5 à 9 h 25) ; légende acceptée
+  et imprimée mais absente à l'écran.
+- **Q16 (à David)** : avec 60 crans, la vraie place de la petite aiguille tombe sur le cran de l'heure
+  à 1-5 minutes (9 h 05 : 45,4 → 45, « pile sur le 9 », refusé) et sur l'heure suivante à 54-59 minutes
+  (9 h 55 : 49,6 → 50, refusé) ; le cadran de correction la dessine pourtant là. Reco : accepter aussi le
+  cran le plus proche de la vraie place (`round(5h + m/12)`) ; l'erreur type (pile sur le 9 à 9 h 45,
+  vraie place 48,75) reste refusée.
