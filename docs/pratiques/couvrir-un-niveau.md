@@ -231,7 +231,9 @@ niveau chacune (`idx_question_templates_unique_category`).
    (`generateInstance`, graine fixe : page reproductible). Les blocs `figure`, `monnaie`,
    `collection`, `horloge` et `courbe` sont dessinés par les scènes de l'appli (à construire :
    réserve, plan vide, et la construction juste à part) ; un bloc `python` est montré tel quel ;
-   un autre bloc (`operation`…) est montré par sa source et signalé. L'id, le statut, le nœud et
+   un autre bloc (`operation`…) est montré par sa source et signalé. Les formules restent en texte quand elles n'ont que des nombres et des signes (CP) ; au-delà
+   (fractions, `\left`, exposants), KaTeX les rend en MathML (cdnjs, sans feuille de style), y compris
+   la réponse attendue ; une formule que KaTeX refuse revient au rendu texte. L'id, le statut, le nœud et
    les points sont **lus en base** (lecture seule, `.env` = prod), avec les bornes de chaque
    point (`docs/systeme/programmes/bornes/`). Alertes en tête de fiche : sans point, deux points
    d'un même programme (1SPE-224 avec 1TECHNO-037 est permis, ADR 0020), sans nœud, niveau en base
