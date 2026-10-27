@@ -12,8 +12,8 @@
 _Mis à jour le 2026-10-28, constats du lot 0-variations._
 
 - **État** : lots 0-suites (42), 0-second-degré (14) et 0-dérivation (15) publiés ; lot 0-variations (8 brouillons) relu, constats au § 9.
-- **Prochaine action** : corriger selon la réponse de David (§ 9), PR de l'instantané, page à cocher, publication ; puis exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
-- **En attente de David** : recos C1-C4 du § 9.
+- **Prochaine action** : PR des corrections (§ 9, D14), page à cocher, puis David lance `create-questions --publier --mettre-a-jour` et `publier-lot` ; puis exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
+- **En attente de David** : rien.
 - **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts ; `question:specs` n'a pas d'option de variation : une copie par variation dans le scratchpad ; CI : job « CI Summary » fantôme, juger au statut du run.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `chore/questions-1spe-variations`.
 
@@ -335,3 +335,14 @@ composée hors e^{kx}).
   et 4), « x = −3/2 = −3/2 » (9a04eb9f, variation 3).
 - **C3** : 2b382069, variation 3 (f′(x) = ax² − c, sans terme en x) : racines écrites « (0 − 20)/4 ».
 - **C4** : a86fc757, variation 2 : u(x) = 7 − x, mais « f(6) = (−6 + 7)e⁶ » (ordre inversé).
+
+**D14 (David, 2026-10-28, « go » sur les recos)** :
+
+- C1 : corrigé par la dérivée : f′(x) = 2ax + b, f′(x) = 0 ⟺ x = α, signe de f′ par le coefficient de x, ligne
+  `sign: f'(x)` dans le tableau, β = f(α) calculé (substitution ; fractions au dénominateur 4 quand α = ±b/2) ;
+  description mise à jour.
+- C2 : 9a04eb9f, `{{if:gcd(b,a)!=1|…=|}}` ; 0113c53d, x = α écrit directement quand la fraction est irréductible.
+- C3 : f′(x) = a(x² − q²) = a(x + q)(x − q), sans Δ (a = 1 : sans facteur).
+- C4 : `(a − x₀)` quand a > 0, `(−x₀ + a)` quand a < 0 (ordre de l'énoncé).
+
+Specs des 4 modèles vertes après correction (62 specs, 650 tirages) ; h < 0 et a < 0 vérifiés par tirages forcés.

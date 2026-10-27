@@ -1,7 +1,7 @@
 {
 	"id": "0113c53d-ee4a-4da9-9327-537461ffdc85",
 	"title": "Variations et extremum d'une fonction du second degré",
-	"description": "Sens de variation et extremum depuis ax² + bx + c ; tableau de variations au corrigé",
+	"description": "Sens de variation et extremum depuis ax² + bx + c, par le signe de f′ ; tableau de variations au corrigé",
 	"grades": ["1_SPE"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
@@ -65,9 +65,10 @@
 			],
 			"correction": {
 				"steps": [
-					"$f$ est un polynôme du second degré avec $a={{a}}$ positif : sa parabole est tournée vers le haut, et $f$ change de sens de variation en l'abscisse $\\alpha$ du sommet.",
-					"$$\\alpha=\\dfrac{-b}{2a}=\\dfrac{ {{eval:-b}} }{ {{eval:2*a}} }={{eval:-b/(2*a)}} \\qquad \\beta=f(\\alpha)={{eval:c-b^2/(4*a)}}$$",
-					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, bottom\n```",
+					"$f$ est dérivable sur $\\mathbb{R}$ et $f'(x)={{eval:2ax+b}}$.",
+					"$f'(x)=0 \\iff {{eval:2ax+b}}=0 \\iff x=\\dfrac{ {{eval:-b}} }{ {{eval:2*a}} }={{h}}$. Le coefficient de $x$ dans $f'(x)$ vaut ${{eval:2*a}}>0$ : $f'(x)$ est négatif avant ${{h}}$, positif après.",
+					"```variation\nvariable: x\ndomain: -inf, {{h}}, +inf\n\nsign: f'(x)\n  -inf,{{h}}: -\n  {{h}}: z\n  {{h}},+inf: +\n\nvariation: f(x)\n  {{h}}: {{k}}, bottom\n```",
+					"$f({{h}})={{if:a==1||{{if:a==-1|-|{{a}}\\times}}}}{{h;()}}^2{{b;+}}\\times{{h;()}}{{c;+}}={{k}}$.",
 					"$f$ est **décroissante** sur $\\left]-\\infty\\,;{{eval:-b/(2*a)}}\\right]$ puis **croissante** sur $\\left[{{eval:-b/(2*a)}}\\,;+\\infty\\right[$ ; elle admet un **minimum** égal à ${{eval:c-b^2/(4*a)}}$, atteint en $x={{eval:-b/(2*a)}}$."
 				]
 			}
@@ -122,9 +123,10 @@
 			],
 			"correction": {
 				"steps": [
-					"$f$ est un polynôme du second degré avec $a={{a}}$ négatif : sa parabole est tournée vers le bas, et $f$ change de sens de variation en l'abscisse $\\alpha$ du sommet.",
-					"$$\\alpha=\\dfrac{-b}{2a}=\\dfrac{ {{eval:-b}} }{ {{eval:2*a}} }={{eval:-b/(2*a)}} \\qquad \\beta=f(\\alpha)={{eval:c-b^2/(4*a)}}$$",
-					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, top\n```",
+					"$f$ est dérivable sur $\\mathbb{R}$ et $f'(x)={{eval:2ax+b}}$.",
+					"$f'(x)=0 \\iff {{eval:2ax+b}}=0 \\iff x=\\dfrac{ {{b}} }{ {{eval:-2*a}} }={{h}}$. Le coefficient de $x$ dans $f'(x)$ vaut ${{eval:2*a}}<0$ : $f'(x)$ est positif avant ${{h}}$, négatif après.",
+					"```variation\nvariable: x\ndomain: -inf, {{h}}, +inf\n\nsign: f'(x)\n  -inf,{{h}}: +\n  {{h}}: z\n  {{h}},+inf: -\n\nvariation: f(x)\n  {{h}}: {{k}}, top\n```",
+					"$f({{h}})={{if:a==1||{{if:a==-1|-|{{a}}\\times}}}}{{h;()}}^2{{b;+}}\\times{{h;()}}{{c;+}}={{k}}$.",
 					"$f$ est **croissante** sur $\\left]-\\infty\\,;{{eval:-b/(2*a)}}\\right]$ puis **décroissante** sur $\\left[{{eval:-b/(2*a)}}\\,;+\\infty\\right[$ ; elle admet un **maximum** égal à ${{eval:c-b^2/(4*a)}}$, atteint en $x={{eval:-b/(2*a)}}$."
 				]
 			}
@@ -171,9 +173,10 @@
 			],
 			"correction": {
 				"steps": [
-					"$f$ est un polynôme du second degré avec $a={{a}}$ positif : sa parabole est tournée vers le haut, et $f$ change de sens de variation en l'abscisse $\\alpha$ du sommet.",
-					"$$\\alpha=\\dfrac{-b}{2a}=\\dfrac{ {{eval:-b}} }{ {{eval:2*a}} }={{eval:-b/(2*a)}} \\qquad \\beta=f(\\alpha)={{eval:c-b^2/(4*a)}}$$",
-					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, bottom\n```",
+					"$f$ est dérivable sur $\\mathbb{R}$ et $f'(x)={{eval:2ax+b}}$.",
+					"$f'(x)=0 \\iff {{eval:2ax+b}}=0 \\iff x={{eval:-b/(2*a)}}$. Le coefficient de $x$ dans $f'(x)$ vaut ${{eval:2*a}}>0$ : $f'(x)$ est négatif avant ${{eval:-b/(2*a)}}$, positif après.",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nsign: f'(x)\n  -inf,{{eval:-b/(2*a)}}: -\n  {{eval:-b/(2*a)}}: z\n  {{eval:-b/(2*a)}},+inf: +\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, bottom\n```",
+					"$f\\left({{eval:-b/(2*a)}}\\right)=\\left({{eval:-b/(2*a)}}\\right)^2{{if:b==1|+|{{if:b==-1|-|{{b;+}}\\times}}}}\\left({{eval:-b/(2*a)}}\\right){{c;+}}=\\dfrac{ {{eval:b^2}} }{4}-\\dfrac{ {{eval:2*b^2}} }{4}{{if:c<0|-\\dfrac{ {{eval:-4*c}} }{4}|+\\dfrac{ {{eval:4*c}} }{4}}}={{eval:c-b^2/(4*a)}}$.",
 					"$f$ est **décroissante** sur $\\left]-\\infty\\,;{{eval:-b/(2*a)}}\\right]$ puis **croissante** sur $\\left[{{eval:-b/(2*a)}}\\,;+\\infty\\right[$ ; elle admet un **minimum** égal à ${{eval:c-b^2/(4*a)}}$, atteint en $x={{eval:-b/(2*a)}}$."
 				]
 			}
@@ -220,9 +223,10 @@
 			],
 			"correction": {
 				"steps": [
-					"$f$ est un polynôme du second degré avec $a={{a}}$ négatif : sa parabole est tournée vers le bas, et $f$ change de sens de variation en l'abscisse $\\alpha$ du sommet.",
-					"$$\\alpha=\\dfrac{-b}{2a}=\\dfrac{ {{eval:-b}} }{ {{eval:2*a}} }={{eval:-b/(2*a)}} \\qquad \\beta=f(\\alpha)={{eval:c-b^2/(4*a)}}$$",
-					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, top\n```",
+					"$f$ est dérivable sur $\\mathbb{R}$ et $f'(x)={{eval:2ax+b}}$.",
+					"$f'(x)=0 \\iff {{eval:2ax+b}}=0 \\iff x={{eval:-b/(2*a)}}$. Le coefficient de $x$ dans $f'(x)$ vaut ${{eval:2*a}}<0$ : $f'(x)$ est positif avant ${{eval:-b/(2*a)}}$, négatif après.",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nsign: f'(x)\n  -inf,{{eval:-b/(2*a)}}: +\n  {{eval:-b/(2*a)}}: z\n  {{eval:-b/(2*a)}},+inf: -\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, top\n```",
+					"$f\\left({{eval:-b/(2*a)}}\\right)=-\\left({{eval:-b/(2*a)}}\\right)^2{{if:b==1|+|{{if:b==-1|-|{{b;+}}\\times}}}}\\left({{eval:-b/(2*a)}}\\right){{c;+}}=-\\dfrac{ {{eval:b^2}} }{4}+\\dfrac{ {{eval:2*b^2}} }{4}{{if:c<0|-\\dfrac{ {{eval:-4*c}} }{4}|+\\dfrac{ {{eval:4*c}} }{4}}}={{eval:c-b^2/(4*a)}}$.",
 					"$f$ est **croissante** sur $\\left]-\\infty\\,;{{eval:-b/(2*a)}}\\right]$ puis **décroissante** sur $\\left[{{eval:-b/(2*a)}}\\,;+\\infty\\right[$ ; elle admet un **maximum** égal à ${{eval:c-b^2/(4*a)}}$, atteint en $x={{eval:-b/(2*a)}}$."
 				]
 			}

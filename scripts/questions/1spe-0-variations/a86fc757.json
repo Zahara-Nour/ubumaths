@@ -66,7 +66,7 @@
 					"Avec $u(x)={{eval:-x+a}}$ et $v(x)=e^x$ : $f'(x)=-1\\times e^x+({{eval:-x+a}})e^x=({{eval:-x+a-1}})e^{x}$.",
 					"Comme $e^x>0$, $f'(x)$ a le signe de ${{eval:-x+a-1}}$ : positif avant ${{eval:a-1}}$, négatif après.",
 					"```variation\nvariable: x\ndomain: -inf, {{eval:a-1}}, +inf\n\nsign: f'(x)\n  -inf,{{eval:a-1}}: +\n  {{eval:a-1}}: z\n  {{eval:a-1}},+inf: -\n\nvariation: f(x)\n  {{eval:a-1}}: e^{ {{eval:a-1}} }, top\n```",
-					"$f$ est croissante puis décroissante : elle admet un **maximum** en $x_0=\\textcolor{{{color:primary.0}}}{ {{eval:a-1}} }$, qui vaut $f({{eval:a-1}})=(-{{eval:a-1;()}}{{eval:a;+}})e^{ {{eval:a-1}} }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:a-1}} }}$."
+					"$f$ est croissante puis décroissante : elle admet un **maximum** en $x_0=\\textcolor{{{color:primary.0}}}{ {{eval:a-1}} }$, qui vaut $f({{eval:a-1}})={{if:a>0|({{a}}-{{eval:a-1;()}})|(-{{eval:a-1;()}}{{eval:a;+}})}}e^{ {{eval:a-1}} }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:a-1}} }}$."
 				]
 			}
 		}

@@ -109,7 +109,7 @@
 			"correction": {
 				"steps": [
 					"Pour tout réel $x$, $e^{x}>0$ : $f'(x)$ a le **signe de** ${{eval:a*x+b}}$.",
-					"${{eval:a*x+b}}=0 \\iff x=\\dfrac{ {{eval:-b}} }{ {{a}} }={{eval:-b/a}}$, et ${{eval:a*x+b}}$ est positif à droite de cette valeur (coefficient de $x$ positif).",
+					"${{eval:a*x+b}}=0 \\iff x={{if:gcd(b,a)!=1|\\dfrac{ {{eval:-b}} }{ {{a}} }=|}}{{eval:-b/a}}$, et ${{eval:a*x+b}}$ est positif à droite de cette valeur (coefficient de $x$ positif).",
 					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/a}}, +inf\n\nsign: {{eval:a*x+b}}\n  -inf,{{eval:-b/a}}: -\n  {{eval:-b/a}}: z\n  {{eval:-b/a}},+inf: +\n\nsign: e^{x}\n  -inf,{{eval:-b/a}}: +\n  {{eval:-b/a}},+inf: +\n\nsign: f'(x)\n  -inf,{{eval:-b/a}}: -\n  {{eval:-b/a}}: z\n  {{eval:-b/a}},+inf: +\n\nvariation: f(x)\n  {{eval:-b/a}}: f\\left({{eval:-b/a}}\\right), bottom\n```",
 					"$f'(x)\\ge 0$ pour $x\\ge {{eval:-b/a}}$ : $f$ est croissante sur $\\textcolor{{{color:primary.0}}}{\\left[{{eval:-b/a}}\\,;+\\infty\\right[}$ (et décroissante sur $\\left]-\\infty\\,;{{eval:-b/a}}\\right]$)."
 				]

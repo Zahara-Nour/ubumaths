@@ -142,7 +142,7 @@
 			],
 			"correction": {
 				"steps": [
-					"$f'$ est un trinôme du second degré : $\\Delta={{eval:B^2-4*a*C}}=\\left({{eval:abs(a)*(q-p)}}\\right)^2>0$. Ses racines sont $\\dfrac{ {{eval:-B}}-{{eval:abs(a)*(q-p)}} }{ {{eval:2*a}} }={{p}}$ et $\\dfrac{ {{eval:-B}}+{{eval:abs(a)*(q-p)}} }{ {{eval:2*a}} }={{q}}$.",
+					"$f'$ est un trinôme du second degré sans terme en $x$ : $f'(x)={{if:a==1|x^2-{{eval:q^2}}|{{a}}\\left(x^2-{{eval:q^2}}\\right)}}={{if:a==1||{{a}}}}\\left(x+{{q}}\\right)\\left(x-{{q}}\\right)$. Ses racines sont ${{p}}$ et ${{q}}$.",
 					"Le coefficient de $x^2$ vaut ${{a}}>0$ : $f'(x)$ est **positif à l'extérieur** des racines, négatif entre elles.",
 					"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n\nvariation: f(x)\n  {{p}}: f\\left({{p}}\\right), top\n  {{q}}: f\\left({{q}}\\right), bottom\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;{{p}}\\right]\\cup\\left[{{q}}\\,;+\\infty\\right[}$ : $f$ est croissante sur $\\left]-\\infty\\,;{{p}}\\right]$ et sur $\\left[{{q}}\\,;+\\infty\\right[$, décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$."
