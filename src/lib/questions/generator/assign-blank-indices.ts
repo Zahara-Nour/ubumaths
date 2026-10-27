@@ -30,6 +30,7 @@ import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import { findLinesToPlace, parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
+import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { buildKindName, type BuildKind } from '../types';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
 import {
@@ -323,8 +324,15 @@ const OPERATION_NESTED_MESSAGE =
 /** Marque provisoire de la case d'un bloc à construire */
 const BUILD_CASE_MARK = '\u0000build-case\u0000';
 
+const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
+	collection: 'Un bloc collection à construire',
+	monnaie: 'Un bloc monnaie à construire',
+	line: 'Une droite à placer',
+	horloge: 'Une horloge à placer'
+};
+
 const buildNestedMessage = (kind: BuildKind) =>
-	`${kind === 'line' ? 'Une droite à placer' : `Un bloc ${kind} à construire`} doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
+	`${NESTED_BLOCK_NAMES[kind]} doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
 
 /** Bloc `cases: aucune` : opération résolue, rien à remplir */
 function isSolvedOperation(body: string[]): boolean {
@@ -433,7 +441,8 @@ function markBuildBlocks(statement: string): {
 	const found = [
 		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
 		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
-		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const }))
+		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const })),
+		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
 	const marked = found.filter((b) => !b.nested);
@@ -613,7 +622,8 @@ export function assignBlankIndices(
 							...(build.kind === 'line' && { point })
 						};
 						counter++;
-						blankTypes.push('math');
+						// Horloge : la réponse est une heure (`9 h 25`), jamais lue comme un calcul
+						blankTypes.push(build.kind === 'horloge' ? 'text' : 'math');
 					}
 					i += BUILD_CASE_MARK.length;
 				} else if (text[i] === '[' && text[i + 1] === '_' && text[i + 2] === ']') {

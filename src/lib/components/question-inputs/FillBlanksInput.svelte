@@ -73,6 +73,7 @@
 	import Operation from '$lib/components/markdown/nodes/Operation.svelte';
 	import Collection from '$lib/components/markdown/nodes/Collection.svelte';
 	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
+	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
 	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
 	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
@@ -208,6 +209,7 @@
 		if (node.type === 'operation') return node.caseIndex !== undefined;
 		if (node.type === 'collection') return node.caseIndex !== undefined;
 		if (node.type === 'number-line') return node.caseIndex !== undefined;
+		if (node.type === 'horloge') return node.caseIndex !== undefined;
 		if (node.type === 'monnaie') return node.caseIndex !== undefined;
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
 		if (node.type === 'choice') return node.caseIndex !== undefined;
@@ -448,7 +450,7 @@
 	 * Une case à remplir, dans l'ordre de l'écran : prompt d'un champ MathLive, champ texte,
 	 * ou grille d'un bloc ```operation (ses cases forment UNE réponse ; division
 	 * euclidienne : deux, le quotient puis le reste), ou plan d'une collection ou d'une monnaie à construire,
-	 * ou droite à placer
+	 * ou droite ou horloge à placer
 	 */
 	type Slot =
 		| { field: MathfieldElement; promptId: string }
@@ -882,6 +884,26 @@
 								disabled: flashMode || effectiveDisabled,
 								onChange: (value: string) => handleInputChange(firstCase + k, value)
 							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'horloge' && node.caseIndex !== undefined && node.spec?.placer !== undefined}
+				<!-- Horloge à placer : l'élève pose les deux aiguilles, leurs crans sont la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le cadran à l'heure juste -->
+					<BuildAnswer kind="horloge" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<HorlogePlacer
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
 						/>
 					</div>
 				{/if}

@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27.
 
 ## À quoi ça sert
 
@@ -409,6 +409,23 @@ minutes ; 13 h se dessine comme 1 h. Scène partagée `utils/horloge-scene.ts` ;
 natif (ni paquet ni image). Nom accessible « Horloge à aiguilles », **jamais l'heure** (la réponse).
 Dans un choix de QCM : 3 cm (`--horloge-taille` posé par `MultipleChoiceInput` et les aperçus ;
 série figée : `withChoiceClockSize` ajoute `taille: 3cm`, lettre seule sur sa ligne).
+
+**Horloge à placer** (chantier [reponses-a-placer](../wip/reponses-a-placer-progress.md) § 13, 14 ;
+CP-047, CE1-060, CE2-058, CM1-093) — `src/lib/ubumark/__tests__/horloge/horloge-placer.test.ts`,
+`HorlogePlacer.svelte.test.ts` : `placer: 9 h 25` **à la place de** `heure:` (nœud : `spec.placer`,
+`spec.times` vide — un rendu qui l'ignore ne dessine aucune aiguille — et `caseIndex`, posé par le
+générateur). Refus : avec `heure:`, avec `minutes: cachées`, plusieurs heures (`;`), plus d'une
+légende ; `case:` sans `placer:`. Cadran de 6 cm par défaut (`HORLOGE_SIZE_CM.placer`). Écran
+`HorlogePlacer.svelte` : deux aiguilles **indépendantes** (pas de remontoir), en attente sur le 12
+(grisées, pointillés) tant qu'elles ne sont pas posées ; étiquettes « petite aiguille » / « grande
+aiguille » (la grande active au départ), toucher le cadran tourne l'aiguille active (60 crans),
+toucher une aiguille posée la reprend, ◀ ▶ et flèches d'un cran ; `role="slider"`, nom accessible
+sans l'heure attendue. Calcul pur `utils/horloge-placer.ts` : réponse `handsAnswer` (`'47 25'`),
+lecture `readHands` (petite pile sur l'heure si minutes = 0, strictement entre deux heures sinon),
+`isPlacedTimeCorrect`, phrases `handsMistakes` (rien placé, aiguille pas posée, aiguilles inversées,
+« Tu as placé les aiguilles sur 5 h 45. », petite pile sur l'heure ou entre deux heures à tort).
+Hors question (cours, aperçu) : le même geste, rien de jugé. PDF : le cadran sans aiguilles,
+l'enfant les dessine. Secondes (CM2-083) : hors chantier (pas de trotteuse).
 
 **Opération posée en colonnes** (chantier [operations-posees](../archive/wip/operations-posees-progress.md),
 addition, soustraction, multiplication, division en potence) — `src/lib/ubumark/__tests__/operation/` :

@@ -80,11 +80,12 @@ export interface HorlogeNumber extends HorlogePoint {
 }
 
 export interface HorlogeScene {
-	hourAngle: number;
-	/** null : grande aiguille cachée */
+	/** null : cadran sans aiguilles (horloge à placer) */
+	hourAngle: number | null;
+	/** null : grande aiguille cachée, ou cadran sans aiguilles */
 	minuteAngle: number | null;
-	/** Extrémité de la petite aiguille (elle part du centre) */
-	hourHand: HorlogePoint;
+	/** Extrémité de la petite aiguille (elle part du centre) ; null : cadran sans aiguilles */
+	hourHand: HorlogePoint | null;
 	minuteHand: HorlogePoint | null;
 	ticks: HorlogeTick[];
 	numbers: HorlogeNumber[];
@@ -135,16 +136,21 @@ function buildNumbers(spec: HorlogeSpec): HorlogeNumber[] {
 	return numbers;
 }
 
-/** La scène d'UN cadran du bloc */
-export function buildHorlogeScene(spec: HorlogeSpec, time: HorlogeTime): HorlogeScene {
-	const r = HORLOGE_VIEW.radius;
-	const hourAngle = ((time.hours % 12) + time.minutes / 60) * 30;
-	const minuteAngle = spec.minuteHand ? time.minutes * 6 : null;
+/** Extrémité d'une aiguille dirigée vers `angle` (degrés depuis le 12) */
+export function handTip(hand: 'hour' | 'minute', angle: number): HorlogePoint {
+	const ratio = hand === 'hour' ? RATIO.hourHand : RATIO.minuteHand;
+	return polar(angle, ratio * HORLOGE_VIEW.radius);
+}
+
+/** La scène d'UN cadran du bloc ; `time` null : le cadran sans aiguilles (horloge à placer) */
+export function buildHorlogeScene(spec: HorlogeSpec, time: HorlogeTime | null): HorlogeScene {
+	const hourAngle = time === null ? null : ((time.hours % 12) + time.minutes / 60) * 30;
+	const minuteAngle = time !== null && spec.minuteHand ? time.minutes * 6 : null;
 	return {
 		hourAngle,
 		minuteAngle,
-		hourHand: polar(hourAngle, RATIO.hourHand * r),
-		minuteHand: minuteAngle === null ? null : polar(minuteAngle, RATIO.minuteHand * r),
+		hourHand: hourAngle === null ? null : handTip('hour', hourAngle),
+		minuteHand: minuteAngle === null ? null : handTip('minute', minuteAngle),
 		ticks: buildTicks(spec),
 		numbers: buildNumbers(spec)
 	};
