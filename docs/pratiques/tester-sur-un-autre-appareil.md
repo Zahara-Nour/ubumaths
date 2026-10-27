@@ -39,7 +39,19 @@ Sur le **MacBook** (commande que David tape lui-même) :
 ssh -L <port>:localhost:<port> -L 54321:localhost:54321 david@100.79.226.105
 ```
 
-puis ouvrir `http://localhost:<port>`. Le navigateur se croit sur `localhost` : cookie accepté,
+puis ouvrir `http://localhost:<port>`. Raccourci sur le MacBook (fonction dans `~/.zshrc`) :
+`tunnel` (5175) ou `tunnel 5176` :
+
+```zsh
+# Tunnel vers le serveur de dev du Mac mini (Chiphre) : tunnel [port], 5175 par défaut
+tunnel() {
+	local port=${1:-5175}
+	echo "→ http://localhost:$port"
+	ssh -L "$port:localhost:$port" -L 54321:localhost:54321 david@100.79.226.105
+}
+```
+
+Le navigateur se croit sur `localhost` : cookie accepté,
 Supabase joint par le tunnel 54321. « channel N: open failed: connect failed » = aucun serveur
 sur ce port au Mac mini : relancer le serveur, ou donner le bon port.
 
