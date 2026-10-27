@@ -1,0 +1,213 @@
+# Chantier « questions-2de » — couvrir la seconde en modèles de questions
+
+> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Bornes : `docs/systeme/programmes/bornes/lycee/2de.json` → `["2"].points` (décisions l2-1 à l2-10
+> dans `2de.md`). En base, la seconde est le niveau `2`.
+
+## Reprendre ici
+
+_Mis à jour le 2026-10-27, relevé fait._
+
+- **État** : relevé (§ 1), vérification de l'existant (§ 2) et classement des points sans modèle (§ 3) écrits.
+- **Prochaine action** : réponses de David aux questions du § 5, puis phase 0 du premier lot.
+- **En attente de David** : § 5 (Q1 à Q8).
+- **Pièges en cours** : QCM en réécriture (case « choix », `figure-et-choix`, pas en prod) ; droite à placer
+  (`reponses-a-placer`) mergée mais pas en prod ; géométrie en refonte ; un tag exige le modèle sur le nœud
+  du point ou sa notion.
+- **Worktree / branche** : aucun.
+
+## 1. Relevé (prod, 2026-10-27)
+
+- **292 points** de seconde ; **36** ont au moins un modèle, **256** aucun.
+- **51 modèles** `'2' = any(grades)` : 31 publiés, 20 brouillons ; tous rangés sur un nœud, tous tagués.
+- **6 modèles de 1re spé** (brouillons sauf 8b59ca4b) tagués d'un point de seconde : 5b20321f (2-204),
+  db8b5dc8 (2-205), f98164b1 (2-212), 8c31675a (2-244), 8b59ca4b (2-378), 5062197a (2-403).
+- 5 modèles portent des points de **plusieurs programmes** — conforme à l'ADR 0020 (« un point par
+  programme ») : 1cfc575d (2-399 + TSPE-616 + TCOMP-302), 77d6fedc (2-390 + TCOMP-302), f3e68e4b et 4016b05c
+  (2-396 + TCOMP-302), 9d7c4d98 (2-398 + TCOMP-302). Leur niveau reste `['2']` seul (Q7).
+
+Points couverts (nombre de modèles) : 2-403, 404, 405, 406, 204, 205 (2), 207, 210 (2), 408 (2), 212, 410,
+214, 411, 491, 244, 245 (5), 420, 261 (2), 262 (7), 271 (2), 328 (2), 339, 458, 347, 474, 350, 366 (2),
+367 (2), 377 (2), 378 (2), 379, 390, 488, 396 (2), 398, 399.
+
+## 2. L'existant contre les bornes
+
+Vérifié le 2026-10-27 (lecture seule) : `question:specs` des 57 modèles, 30 tirages par variation, tout
+vert ; deux tirages lus par variation (énoncé, réponse, corrigé). Images des fonctions affines : une seule
+regardée sur 30. Aucune passe antérieure pour le lycée (celle de l'arbre des notions s'arrêtait au collège).
+
+### 2.1 OK
+
+Ensembles 0598a535, 9724dc3d, 5676627b, 0a1ff14f ; « et / ou » 219c9470, 6c3ee9e6, 1e9a534f, 55341e85 ;
+implication 5426cead, bed58c24, e05203b0 ; racines 0d2edda7, 498d6d3e, b1e27739, f57c0a5a ; valeur absolue
+d6a810f4, 62b99aa7 ; calcul littéral 33eb676e, 34e569e7, d1648508 ; affines 09f0c9ec, ae0ad163, 75fe996a ;
+évolutions c4372fd8, 1c443c35, 2562438e, e05bb79b (peut tirer une baisse de 100 %), 36abc642, bbd511cb ;
+probabilités 1cfc575d, 9d7c4d98, 4016b05c, f3e68e4b, 77d6fedc, cf548ea1.
+
+### 2.2 À reprendre
+
+- **Niveau 1_SPE → 2** : 8b59ca4b, f98164b1, 8c31675a, db8b5dc8, 5062197a, 5b20321f (tagués d'un point de 2de).
+- **8b59ca4b** : le corrigé cite « suite géométrique de raison … » (1re).
+- **8c31675a** variation 1 (intervalles accolés) : réponse attendue `[0;1[∪[1;5]`, le corrigé dit `[0;5]`.
+- **939153b6** (2-420, distance) : même titre que 62b99aa7, corrigé purement algébrique au lieu de la distance.
+- **68db64b0, f96d3e43** (lire une image, un extremum) : courbes de sinus / cosinus, abscisses π/2, π — le
+  sinus n'est en 2de que dans le triangle rectangle. Refaire avec des abscisses entières.
+- **4cc21ccd, c7cdca01** (« signe d'une expression » sachant x > 0 / x < 0) tagués 2-328 (signe d'une
+  fonction affine) : ce n'est pas ce point ; aucun point de 2de ne le décrit mieux (Q7).
+- **a26e6e50** (Card(A × B)), **db8b5dc8** (couple dans A × B) : borne 2-205 déduite, « notion rencontrée »,
+  sans notation A × B (Q7).
+
+### 2.3 Doublons
+
+- Développer (a+b)² : 85f6e96e et 288c2bf0 ((a+bx)², (a+x)²) ; (a−b)² : 1338da34 et 6909bfde → une fiche à
+  plusieurs variations chacun.
+- « Calculer la valeur d'une valeur absolue » ×4 : 226e5b3b = d540f96e à fusionner ; 6ece66a6 (expressions)
+  et d03e49c0 (√a − b) à retitrer.
+- « Trouver le coefficient multiplicateur » : d98aa53a (diminution) et e12e58cb (augmentation) → fusion
+  possible.
+
+Détail par modèle : `scratchpad/verif-2de.md` de la session (non versé ; ce paragraphe en est le résumé).
+
+## 3. Points sans modèle, classés
+
+Classes : **A** texte / formule seuls · **B** outil existant · **C** outil neuf · **D** non évaluable dans
+les questions · **P** point-compétence, -démonstration ou approfondissement « en aucun cas obligatoire »
+(BO p.4) : à trancher (Q2).
+
+### 3.1 Vocabulaire ensembliste et logique (13 sans modèle ; 407 rangé en 3.4)
+
+- **A** : 201 (appartenance), 202 (ensemble vide), 203 (symboles), 206 (notation du complémentaire), 208
+  (proposition ?), 209 (variables dans une proposition), 211 (négation), 213 (implication), 409
+  (équivalence), 215 et 412 (« pour tout », « il existe » en mots).
+- **P** : 216 (disjonction des cas), 217 (absurde) — points-compétences.
+
+### 3.2 Algorithmique et programmation (22 sans modèle)
+
+- **A** (programme Python montré en bloc de code, « que vaut `x` à la fin ? », « quel type ? ») : 218, 219,
+  220, 221, 222, 413, 223, 229, 416, 228, 232, 233, 417.
+- **D** dans les questions, couverts par les **exercices Python** (Pyodide) : 224, 414, 415, 225, 226, 227,
+  231, 234, 230 (écrire, programmer). Une case « compléter la ligne manquante » reste possible (Q3).
+
+### 3.3 Automatismes (5 sans modèle)
+
+- **A** : 489 (calcul littéral multiplicatif), 490 (le tout par une partie), 402 (interpréter un quartile).
+- **B** : 492 (antécédents sur une courbe, ` ```courbe `), 401 (périmètre d'un polygone, ` ```figure `).
+
+### 3.4 Nombres réels et arithmétique (27 + 407)
+
+- **A** : 235, 236, 418, 419, 237 (multiples, diviseurs, parité), 238 (fraction irréductible), 243, 407
+  (notation des intervalles), 246 (|x − a| ⩽ r → intervalle), 247, 421, 248, 422, 252 (appartient à un
+  intervalle ?), 253 (encadrement), 254 (arrondi, chiffres significatifs).
+- **B** : 249 (lire une abscisse, ` ```line `) ; 250 (placer un réel : `placer:` de `reponses-a-placer`,
+  **pas encore en prod**) ; 251 (représenter un intervalle : case choix de droites à `segments:`).
+- **P** : 239, 240, 255, 256 (démonstrations) ; 241, 242, 257, 258, 259 (approfondissements).
+
+### 3.5 Algèbre (34 sans modèle)
+
+- **A** : 260, 270 (puissances), 423 (√a² = |a|), 272 (écritures fractionnaires), 263, 424 (inégalités),
+  264, 425, 276, 427, 277, 428 (comparer par différence, par rapport), 265, 266, 279, 429, 430, 280, 431,
+  432 (premier degré), 267 (produit nul), 269 (quotient = k), 281 (x² = a), 273, 274 (exprimer une variable),
+  275 (choisir la forme), 278 (modéliser par une inéquation).
+- **B** : 268, 426 (signe d'un produit, d'un quotient : ` ```variation ` en tableau de signes ; forme de la
+  réponse en Q4).
+- **P** : 282 (démonstration) ; 283, 284, 285, 286 (approfondissements).
+
+### 3.6 Vecteurs et géométrie (32 sans modèle)
+
+- **A** : 433 (vecteur nul), 290 (colinéarité), 292 (base orthonormée), 434, 294 (coordonnées de AB), 293
+  (norme), 295, 435 (déterminant), 296 (milieu, vectoriel), 300, 436 (coordonnées d'une somme, de k·u),
+  301 (distance), 302 (milieu), 303, 437 (alignement, parallélisme).
+- **B** (` ```figure ` en repère, vecteurs dessinés ; réponse en case ou case choix) : 287 (égalité de
+  vecteurs), 288 (représentants), 289 (k·u), 291 (combinaison de deux vecteurs), 299 (lire les coordonnées).
+- **C** : 297 (représenter la somme), 298 (représenter un vecteur) — geste « tracer un vecteur » (Q5).
+- **P** : 493, 494 (compétences) ; 304, 438 (démonstrations) ; 305, 306, 307, 308, 309, 310
+  (approfondissements, dont démonstrations).
+
+### 3.7 Droites du plan (21 sans modèle)
+
+- **A** : 311, 312, 439, 313, 314, 440, 441 (équations, pente), 442, 443, 317, 318, 319.
+- **B** (` ```courbe ` avec une droite tracée) : 315 (pente lue), 444 (vecteur directeur lu).
+- **C** : 316, 445 (tracer une droite : placer deux points dans un repère — le `placer:` est en 1D seulement ;
+  Q5).
+- **P** : 320 (démonstration) ; 321, 322, 323, 324 (approfondissements).
+
+### 3.8 Fonctions : représentation et équations (44 sans modèle)
+
+- **A** : 325, 326 (ensemble de définition), 327, 331, 447 (point sur la courbe ?), 329 (signe des fonctions
+  de référence), 455, 457 (affine), 460 (|x| < k), 461, 463 (x² = k, x² < k), 464, 466 (1/x), 467, 469 (√x),
+  470, 472 (x³), 336, 448 (f(x) = k au choix de la méthode).
+- **B** (` ```courbe `) : 333, 334, 335 (courbes de référence, case choix de courbes), 338, 453 (f = g, f < g
+  graphiquement), 456, 340, 459, 341, 462, 342, 465, 343, 468, 344, 471 (résolutions graphiques).
+- **B** (` ```variation `) : 330, 446 (tableau de signes d'un produit, d'un quotient), 337, 449, 450, 451
+  (résoudre par un tableau de signes) — forme en Q4.
+- **D** : 452, 454 (« à l'aide d'un outil numérique ») — hors appli, ou case avec calculatrice permise (Q6).
+- **P** : 495 (compétence).
+
+### 3.9 Variations et extrémums (21 sans modèle)
+
+- **A** : 348, 357 (variations d'une affine selon m), 475, 476 (signe de |x|, x²), 355 (variations de x²),
+  356 (comparer f(a) et f(b) numériquement).
+- **B** : 345, 473, 346, 349, 352, 354, 477 (` ```courbe ` et ` ```variation `).
+- **D** : 351 (logiciel, calculatrice ou Python pour décrire les variations).
+- **P** : 353 (compétence) ; 358, 359, 360 (démonstrations) ; 361, 362, 363 (approfondissements).
+
+### 3.10 Information chiffrée, statistique descriptive (19 sans modèle)
+
+- **A** : 364, 376 (pourcentage de pourcentage), 365, 368, 478 (évolutions), 375 (effectifs, proportions),
+  369 (linéarité de la moyenne), 370 (écart type, petite série), 371, 479 (ajout ou retrait d'une valeur),
+  380, 481 (moyenne de séries en classes), 381, 382, 483.
+- **B** : 372 (` ```histogramme `), 480, 482 (` ```frequences-cumulees `), 484 (comparer deux représentations).
+
+### 3.11 Croisement de deux variables qualitatives (9 sans modèle)
+
+- **B** (` ```tableau-croise `, à trous pour compléter) : 383, 384, 485, 385, 486, 386, 487.
+- **P** : 387, 388 (approfondissements, fichiers d'individus).
+
+### 3.12 Probabilités (8 sans modèle)
+
+- **A** : 389 (loi des grands nombres, case choix), 395 (traduire en notations), 400 (P_A(B) ou P_B(A) ?).
+- **B** : 391, 397 (` ```probtree `), 393 (arbre à trous `?`), 394 (` ```tableau-croise ` à trous).
+- **B ou D** : 392 (simulation : ` ```simulation ` montre une série ; la programmer relève des exercices Python).
+
+### Bilan
+
+| Classe | Points | Suite                                                   |
+| ------ | -----: | ------------------------------------------------------- |
+| A      |    140 | lots de texte                                           |
+| B      |     59 | lots avec ` ```courbe `, `line`, `variation`, `figure`… |
+| C      |      4 | tracer un vecteur (297, 298), une droite (316, 445)     |
+| D      |     12 | exercices Python, outil numérique                       |
+| P      |     41 | à trancher (Q2)                                         |
+
+## 4. Lots proposés (ordre)
+
+1. **Corrections de l'existant** (§ 2).
+2. **Équations et inéquations du premier degré** (265, 266, 279, 429, 430, 280, 431, 432, 267, 281) — A.
+3. **Puissances, racines, fractions** (260, 270, 423, 272, 238) — A.
+4. **Vecteurs en coordonnées** (434, 294, 293, 300, 436, 301, 302, 295, 435, 303, 437) — A.
+5. **Droites** (311 à 319 en A, 315, 444 en B).
+6. **Fonctions de référence, résolutions** (A puis B `courbe`).
+7. **Signes et variations** (B `variation`, `courbe`).
+8. **Statistiques, évolutions, tableaux croisés, probabilités** (A et B).
+9. **Nombres réels, arithmétique, intervalles** (A, B `line`).
+10. **Ensembles et logique** (A).
+11. **Algorithmique : lire un programme** (A).
+12. Outils C, s'ils sont décidés (Q5).
+
+## 5. Questions à David
+
+Posées le 2026-10-27 ; réponses à consigner ici.
+
+- **Q1 — Ordre des lots** : celui du § 4 (corrections d'abord, puis équations, puissances, vecteurs…) ?
+- **Q2 — Points P** (41 : démonstrations, compétences, approfondissements) : sans modèle, ou modèles plus
+  tard (démonstration à reconstituer en case choix, approfondissement en niveau élevé) ?
+- **Q3 — Algorithmique** : « lire un programme » en questions (bloc de code Python + case) ; « écrire,
+  programmer » laissés aux exercices Python, ou aussi « compléter la ligne manquante » en case ?
+- **Q4 — Tableaux de signes** (268, 426, 330, 446, 337, 449-451) : case choix entre tableaux, cases sous le
+  tableau, ou outil neuf « tableau de signes à compléter » (classe C) ?
+- **Q5 — Outils C** : tracer un vecteur (297, 298) et une droite dans un repère (316, 445), dans la suite de
+  `reponses-a-placer` (placer en 2D) — à lancer, ou ces 4 points en case choix de figures ?
+- **Q6 — « À l'aide d'un outil numérique »** (452, 454, 351) : hors appli, ou case avec calculatrice permise ?
+- **Q7 — Existant** : (a) Card(A × B) et la notation A × B dans 2-205 ? (b) 4cc21ccd / c7cdca01 : garder
+  2-328 ou retirer le tag ? (c) niveau des modèles tagués 2de + terminale : `['2']` seul ou les deux ?
+- **Q8 — Doublons** : fusionner en variations (un modèle archivé) ou seulement retitrer ?
