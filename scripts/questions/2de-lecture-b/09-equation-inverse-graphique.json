@@ -1,0 +1,141 @@
+{
+	"title": "Résoudre graphiquement une équation 1/x = k",
+	"description": "Équation 1/x = k lue sur l'hyperbole de la fonction inverse : k ∈ {±½ ; ±1 ; ±2}, une solution",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction inverse",
+	"subdomain": "Lecture graphique",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction inverse $f : x\\mapsto \\dfrac{1}{x}$.\n\n```courbe\nx: -4 ; 4\ny: -4 ; 4\ngrille: 0.5 ; 0.5\nf(x) = 1/x   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction inverse.\n```\n\nRésous graphiquement l'équation $\\dfrac{1}{x}={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-2|-1|-0.5|0.5|1|2"
+				},
+				{
+					"name": "k",
+					"expression": "eval:1/(r)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{r}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : les solutions sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
+					"```courbe\nx: -4 ; 4\ny: -4 ; 4\ngrille: 0.5 ; 0.5\nf(x) = 1/x   bleu   nom=C_f\ng(x) = 1/({{r}})   rouge   pointillé\npoints: A({{r}} ; 1/({{r}})), A'({{r}} ; 0)\ntaille: moyenne\ndescription: Courbe de la fonction inverse et droite horizontale en pointillé, qui la coupe en A. Les solutions sont marquées sur l'axe des abscisses.\n```",
+					"La droite coupe la courbe en un seul point, d'abscisse ${{r}}$. $S=\\textcolor{{{color:primary.0}}}{\\{ {{r}} \\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/x = 2 : S = {0,5}",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0.5",
+				"k": "2"
+			},
+			"answers": ["\\{0{,}5\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/x = 2 : S = {1/2}",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0.5",
+				"k": "2"
+			},
+			"answers": ["\\{\\frac{1}{2}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : k recopié ({2})",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0.5",
+				"k": "2"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x = 0,5 : S = {2}",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "0.5"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : solution négative ajoutée ({−2 ; 2})",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "0.5"
+			},
+			"answers": ["\\{-2;2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans accolades",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "0.5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x = −1 : S = {−1}",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-1",
+				"k": "-1"
+			},
+			"answers": ["\\{-1\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {1}",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-1",
+				"k": "-1"
+			},
+			"answers": ["\\{1\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

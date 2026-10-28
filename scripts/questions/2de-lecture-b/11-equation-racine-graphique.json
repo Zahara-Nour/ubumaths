@@ -1,0 +1,161 @@
+{
+	"title": "Résoudre graphiquement une équation √x = k",
+	"description": "Équation √x = k lue sur la courbe de la fonction racine carrée : k ∈ {1 ; 2 ; 3}, k = 0, k < 0",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction racine carrée",
+	"subdomain": "Lecture graphique",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction racine carrée $f : x\\mapsto \\sqrt{x}$, définie sur $[0\\,;+\\infty[$.\n\n```courbe\nx: -1 ; 10\ny: -1 ; 4\ngrille: 1 ; 1\nf(x) = sqrt(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée.\n```\n\nRésous graphiquement l'équation $\\sqrt{x}={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(k)^2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{r}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : les solutions sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
+					"```courbe\nx: -1 ; 10\ny: -1 ; 4\ngrille: 1 ; 1\nf(x) = sqrt(x)   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{r}} ; {{k}}), A'({{r}} ; 0)\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée et droite horizontale en pointillé, qui la coupe en A. Les solutions sont marquées sur l'axe des abscisses.\n```",
+					"La droite coupe la courbe en un seul point, d'abscisse ${{r}}$. $S=\\textcolor{{{color:primary.0}}}{\\{ {{r}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction racine carrée $f : x\\mapsto \\sqrt{x}$, définie sur $[0\\,;+\\infty[$.\n\n```courbe\nx: -1 ; 10\ny: -5 ; 4\ngrille: 1 ; 1\nf(x) = sqrt(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée.\n```\n\nRésous graphiquement l'équation $\\sqrt{x}={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "u",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "eval:0-(t)*(u)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|\\{ 0 \\}|\\varnothing}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$.",
+					"```courbe\nx: -1 ; 10\ny: -5 ; 4\ngrille: 1 ; 1\nf(x) = sqrt(x)   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: {{if:t==0|O(0 ; 0)| }}\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée et droite y = {{k}}.\n```",
+					"{{if:t==0|La droite $y=0$ (l'axe des abscisses) touche la courbe en un seul point, l'origine. $S=\\textcolor{{{color:primary.0}}}{\\{ 0 \\}}$.|La droite est sous la courbe et ne la coupe pas : une racine carrée n'est jamais négative. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "√x = 2 : S = {4}",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "4"
+			},
+			"answers": ["\\{4\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : k recopié ({2})",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "4"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {√2}",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "4"
+			},
+			"answers": ["\\{\\sqrt{2}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {−4 ; 4}",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "4"
+			},
+			"answers": ["\\{-4;4\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x = 0 : S = {0}",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"u": "2",
+				"k": "0"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "√x = −3 : S = ∅",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"u": "3",
+				"k": "-3"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {9}",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"u": "3",
+				"k": "-3"
+			},
+			"answers": ["\\{9\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

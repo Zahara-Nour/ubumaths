@@ -1,0 +1,127 @@
+{
+	"title": "Résoudre graphiquement une inéquation x³ < k",
+	"description": "Inéquation x³ < k lue sur la courbe de la fonction cube : k ∈ {−8 ; −1 ; 1 ; 8}, les quatre sens",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction cube",
+	"subdomain": "Lecture graphique",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction cube $f : x\\mapsto x^3$.\n\n```courbe\nx: -3 ; 3\ny: -9 ; 9\ngrille: 1 ; 1\nf(x) = x^3   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction cube.\n```\n\nRésous graphiquement l'inéquation $x^3{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-2|-1|1|2"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(r)^3"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;{{r}}[|{{if:s==1|]-\\infty;{{r}}]|{{if:s==2|]{{r}};+\\infty[|[{{r}};+\\infty[}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ ; elle coupe la courbe en $A$, d'abscisse ${{r}}$. On cherche les abscisses des points de la courbe situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} cette droite ; {{if:s==0|l'abscisse de $A$ est **exclue**|{{if:s==1|l'abscisse de $A$ est **comprise**|{{if:s==2|l'abscisse de $A$ est **exclue**|l'abscisse de $A$ est **comprise**}}}}}}.",
+					"```courbe\nx: -3 ; 3\ny: -9 ; 9\ngrille: 1 ; 1\nf(x) = x^3   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = x^3 sur [-10 ; {{r}}[   vert|{{if:s==1|h(x) = x^3 sur [-10 ; {{r}}]   vert|{{if:s==2|h(x) = x^3 sur ]{{r}} ; 10]   vert|h(x) = x^3 sur [{{r}} ; 10]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur [-10 ; {{r}}[   vert|{{if:s==1|t(x) = 0 sur [-10 ; {{r}}]   vert|{{if:s==2|t(x) = 0 sur ]{{r}} ; 10]   vert|t(x) = 0 sur [{{r}} ; 10]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\npoints: A({{r}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de la fonction cube, droite horizontale en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{r}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{r}}\\right]|{{if:s==2|\\left]{{r}}\\,;+\\infty\\right[|\\left[{{r}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x³ < 8 : S = ]−∞ ; 2[",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "8",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;2["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−2 ; 2[ (comme pour x²)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "8",
+				"s": "0"
+			},
+			"answers": ["]-2;2["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; 8[ (k lu pour la borne)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "8",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;8["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x³ ⩾ −1 : S = [−1 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-1",
+				"k": "-1",
+				"s": "3"
+			},
+			"answers": ["[-1;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochet ouvert",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-1",
+				"k": "-1",
+				"s": "3"
+			},
+			"answers": ["]-1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : [1 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-1",
+				"k": "-1",
+				"s": "3"
+			},
+			"answers": ["[1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
