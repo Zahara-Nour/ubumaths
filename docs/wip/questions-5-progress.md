@@ -5,19 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 2 en brouillon en prod, migration de rangement en PR (#1941)._
+_Mis à jour le 2026-10-28, après #1941 (lot 2 rangé et tagué en prod, page à cocher publiée)._
 
-- **État** : lot 1 « Calcul » publié (8/8). Lot 2 « Relatifs » : fichiers mergés (#1935), 8 brouillons créés en
-  prod par David ; migration `20261029170000_questions_5_lot2_rangement_tags` (#1941) : test rouge sans elle
-  (5/9), vert avec (9/9), `security-auditor` sans finding bloquant.
-- **Prochaine action** : CI verte → merge #1941 → `pnpm db:migrate` depuis le dépôt principal → vérifier nœud +
-  tag en prod ; puis page à cocher du lot 2, verdicts comptés en base, `publier-lot.ts` en simulation.
-- **En attente de David** : rien (la relecture viendra avec la page à cocher).
-- **Pièges en cours** : `db push` refuse une migration plus ancienne que la dernière jouée → `--include-all`, par
-  David ; horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions --mettre-a-jour`
-  ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` (`$lib` introuvable) ; port 5176 pris par
-  une autre session → 5178.
-- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-relatifs`.
+- **État** : lot 1 « Calcul » publié (8/8). Lot 2 « Relatifs » : 8 brouillons en prod, rangés et tagués
+  (`db:migrate` de #1941, vérifié au MCP) ; page à cocher https://claude.ai/artifact/HA76Zw57mgk7o3B73GBN7A
+  (capacité `db`, collection `verdicts`, 0 verdict au départ).
+- **Prochaine action** : lire et **compter** les verdicts en base (`ArtifactData list verdicts`) ; « À revoir » →
+  correction (§ 7 de la doc : instantané, `--mettre-a-jour` par David) ; 8/8 OK → `publier-lot.ts --dir
+scripts/questions/5-relatifs` en simulation, puis `--publier` par David. Ensuite phase 0 du lot 3.
+- **En attente de David** : la relecture du lot 2 sur la page à cocher.
+- **Pièges en cours** : horodatages : `schema_migrations` ET worktrees (lot 2 : `20261029170000`, après
+  `20261029150000` d'un autre worktree) ; le classifieur refuse `create-questions --mettre-a-jour` ; worktree neuf :
+  `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un **message de commit** ; le job
+  d'intégration est un run à part (« Nightly Integration Tests ») : l'attendre avant de merger ; 04 et 05 homonymes
+  (niveaux 1 et 2) : alerte attendue sur la page.
+- **Worktree / branche** : aucun (retiré après #1941).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -209,3 +211,9 @@ Page à cocher, 7 verdicts : 5 OK (02, 03, 04, 05, 06), 2 à revoir. Corrections
 - Migration `20261029170000_questions_5_lot2_rangement_tags` (#1941, gabarit lot 1) : horodatage choisi après les
   migrations des autres worktrees (jusqu'à `20261029150000`) ; test 9/9, rouge sans elle (5/9) ; audit sans
   finding bloquant. La ligne `Doc-inchangée:` va dans un **message de commit** (la garde ne lit pas la PR).
+- #1941 mergé (CI verte, intégration comprise) ; `pnpm db:migrate` depuis le dépôt principal : la migration seule
+  appliquée ; vérifié en prod : 8 brouillons sur le nœud de leur point, un tag chacun (5-014, 5-015, 5-019 ×2,
+  5-021, 5-024 ×2, 5-120).
+- Page à cocher : https://claude.ai/artifact/HA76Zw57mgk7o3B73GBN7A (capacité `db`, collection `verdicts`) ; une
+  alerte attendue (04 / 05 homonymes). Rendu vérifié à 606 px (largeur minimale de la fenêtre), pas de défilement
+  horizontal.
