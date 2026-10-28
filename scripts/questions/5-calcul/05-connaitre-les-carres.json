@@ -1,0 +1,112 @@
+{
+	"title": "Connaître les carrés",
+	"description": "Carrés des entiers de 0 à 12 (5² = 25, 12² = 144)",
+	"grades": ["5"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Carrés",
+	"level": 2,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{a}}^2 = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré.** ${{a}}^2$ se lit « ${{a}}$ au carré » : c'est ${{a}} \\times {{a}}$.",
+					"$${{a}}^2 = {{a}} \\times {{a}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5² = 25",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 × 2 = 10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "12² = 144",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12"
+			},
+			"answers": ["144"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 × 2 = 24",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0² = 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1² = 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1² = 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

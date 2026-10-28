@@ -1,0 +1,301 @@
+{
+	"title": "Multiples et diviseurs",
+	"description": "Dire si un nombre est un multiple d'un autre (84 et 7), si un nombre en divise un autre (9 et 72), trouver un diviseur parmi quatre nombres ; tables jusqu'à 10, nombres ≤ 100",
+	"grades": ["5"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Multiples et diviseurs",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "${{n}}$ est-il un multiple de ${{d}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "ok",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..12"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:d*q+(1-ok)*r"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:1-ok"
+				}
+			],
+			"conditions": ["n<=100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiple.** ${{n}}$ est un multiple de ${{d}}$ si ${{n}}$ est dans la table de ${{d}}$ : ${{n}} = {{d}} \\times \\ldots$",
+					"{{if:ok==1|${{n}} = {{d}} \\times {{q}}$ : la division de ${{n}}$ par ${{d}}$ tombe juste.|${{n}} = {{d}} \\times {{q}} + {{r}}$ : la division de ${{n}}$ par ${{d}}$ ne tombe pas juste, il reste ${{r}}$.}}",
+					"{{if:ok==1|$\\textcolor{{{color:primary.0}}}{\\text{Oui}}$, ${{n}}$ est un multiple de ${{d}}$.|$\\textcolor{{{color:primary.0}}}{\\text{Non}}$, ${{n}}$ n'est pas un multiple de ${{d}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Lequel de ces nombres est un diviseur de ${{N}}$ ?\n\n```choix\n- ${{d}}$\n- ${{x}}$\n- ${{y}}$\n- ${{z}}$\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..12"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q"
+				},
+				{
+					"name": "x",
+					"expression": "2..10"
+				},
+				{
+					"name": "y",
+					"expression": "2..10"
+				},
+				{
+					"name": "z",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["N<=100", "mod(N,x)!=0", "mod(N,y)!=0", "mod(N,z)!=0", "x!=y", "y!=z", "x!=z"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviseur.** Un diviseur de ${{N}}$ est un nombre qui divise ${{N}}$ : la division tombe juste.",
+					"${{N}} = {{d}} \\times {{q}}$ : $\\textcolor{{{color:primary.0}}}{{{d}}}$ est un diviseur de ${{N}}$.",
+					"Les autres ne le sont pas : ${{N}}$ n'est dans la table ni de ${{x}}$, ni de ${{y}}$, ni de ${{z}}$."
+				]
+			}
+		},
+		{
+			"statement": "${{d}}$ divise-t-il ${{n}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "ok",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..12"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:d*q+(1-ok)*r"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:1-ok"
+				}
+			],
+			"conditions": ["n<=100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviseur.** ${{d}}$ divise ${{n}}$ si la division de ${{n}}$ par ${{d}}$ tombe juste : ${{n}}$ est alors un multiple de ${{d}}$.",
+					"{{if:ok==1|${{n}} = {{d}} \\times {{q}}$ : la division de ${{n}}$ par ${{d}}$ tombe juste.|${{n}} = {{d}} \\times {{q}} + {{r}}$ : la division de ${{n}}$ par ${{d}}$ ne tombe pas juste, il reste ${{r}}$.}}",
+					"{{if:ok==1|$\\textcolor{{{color:primary.0}}}{\\text{Oui}}$, ${{d}}$ divise ${{n}}$.|$\\textcolor{{{color:primary.0}}}{\\text{Non}}$, ${{d}}$ ne divise pas ${{n}}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "84 est un multiple de 7 : oui",
+			"variationIndex": 0,
+			"variables": {
+				"ok": "1",
+				"d": "7",
+				"q": "12",
+				"r": "3",
+				"n": "84",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non",
+			"variationIndex": 0,
+			"variables": {
+				"ok": "1",
+				"d": "7",
+				"q": "12",
+				"r": "3",
+				"n": "84",
+				"rep": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "59 n'est pas un multiple de 7 : non",
+			"variationIndex": 0,
+			"variables": {
+				"ok": "0",
+				"d": "7",
+				"q": "8",
+				"r": "3",
+				"n": "59",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui",
+			"variationIndex": 0,
+			"variables": {
+				"ok": "0",
+				"d": "7",
+				"q": "8",
+				"r": "3",
+				"n": "59",
+				"rep": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 divise 48",
+			"variationIndex": 1,
+			"variables": {
+				"d": "6",
+				"q": "8",
+				"N": "48",
+				"x": "5",
+				"y": "7",
+				"z": "9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 (48 confondu avec un multiple de 9)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "6",
+				"q": "8",
+				"N": "48",
+				"x": "5",
+				"y": "7",
+				"z": "9"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 divise 72 : oui",
+			"variationIndex": 2,
+			"variables": {
+				"ok": "1",
+				"d": "9",
+				"q": "8",
+				"r": "2",
+				"n": "72",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non",
+			"variationIndex": 2,
+			"variables": {
+				"ok": "1",
+				"d": "9",
+				"q": "8",
+				"r": "2",
+				"n": "72",
+				"rep": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 ne divise pas 40 : non",
+			"variationIndex": 2,
+			"variables": {
+				"ok": "0",
+				"d": "6",
+				"q": "6",
+				"r": "4",
+				"n": "40",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui",
+			"variationIndex": 2,
+			"variables": {
+				"ok": "0",
+				"d": "6",
+				"q": "6",
+				"r": "4",
+				"n": "40",
+				"rep": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

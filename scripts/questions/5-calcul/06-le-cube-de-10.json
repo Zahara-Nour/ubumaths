@@ -1,0 +1,111 @@
+{
+	"title": "Le cube de 10",
+	"description": "Connaître le cube de 10 : 10³ = 10 × 10 × 10 = 1 000",
+	"grades": ["5"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Cubes",
+	"level": 1,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$10^3 = ?$$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1000"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Cube.** $10^3$ se lit « $10$ au cube » : c'est $10 \\times 10 \\times 10$.",
+					"$$10^3 = 10 \\times 10 \\times 10 = 100 \\times 10 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Il y a $3$ zéros : autant que l'exposant."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$10 \\times 10 \\times 10 = ?$$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1000"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie de gauche à droite : $10 \\times 10 = 100$.",
+					"$$10 \\times 10 \\times 10 = 100 \\times 10 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"C'est le cube de $10$ : $10^3 = 1\\,000$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "10³ = 1 000",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 × 3 = 30",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10³ recopié : forme refusée",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["10^3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : 100",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10 × 10 × 10 = 1 000",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 300",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 100",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
