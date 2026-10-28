@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1909._
+_Mis à jour le 2026-10-28, #1911 ouverte._
 
-- **État** : lot 1 (entiers, 8 modèles) : fichiers mergés (#1909), `scripts/questions/cm2-1/`, script `docs/wip/questions/lot-cm2-1.py`. Simulation 8/8 verte (59 specs), essai en base locale fait. **Pas encore en prod.**
-- **Prochaine action** : après le `--publier` de David, relever les `id` en prod, puis écrire la migration nœud + tag des 8 modèles **et la dépublication de `322f3479`** (gabarit `20261026210000_questions_cp_c_rangement_tags.sql` + test), puis la page à cocher.
-- **En attente de David** : depuis le dépôt principal, `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-1 --publier` (8 brouillons en prod).
-- **Pièges en cours** : d'autres sessions touchent les mêmes modèles → relever la prod juste avant une migration ; horodatages de migration déjà pris ailleurs ; migration plus ancienne que la dernière jouée → `db push --include-all` après `--dry-run`. Ports 5175-5178 souvent pris : 5179 libre le 2026-10-28. Rendu à 390 px de « Ranger » pas vu (fenêtre Chrome pas réductible) : à regarder sur la page à cocher.
-- **Worktree / branche** : aucun (retirés après #1909) ; la migration se fera dans un nouveau worktree `questions-cm2`.
+- **État** : lot 1 : fichiers mergés (#1909), 8 brouillons créés en prod par David (`0372fe18`, `41e8421f`, `8e1f6003`, `d9872d4f`, `d6466135`, `7d258acc`, `2953c9c0`, `69ea8b2a`). Migration `20261028160000_questions_cm2_lot1_rangement_tags.sql` (nœud + tag des 8, `322f3479` en brouillon) : **PR #1911 ouverte, CI en cours**. Test 19 verts, rouge sans la migration (12 rouges) ; `security-auditor` sans finding bloquant ; 0 donnée d'élève sur `322f3479`.
+- **Prochaine action** : CI de #1911 verte → merger → `pnpm db:migrate` depuis le dépôt principal (4 conditions réunies) → vérifier au MCP (8 nœuds + 8 tags, `322f3479` en `draft`, `updated_at` intacts) → retirer le worktree → page à cocher du lot 1.
+- **En attente de David** : rien.
+- **Pièges en cours** : relever la prod juste avant `db:migrate` (d'autres sessions touchent les modèles) ; si `db:migrate` refuse (migrations d'autres sessions jouées), `db push --include-all` après `--dry-run` (seule la nôtre listée). Ports 5175-5178 souvent pris (5179 libre). Rendu à 390 px de « Ranger » pas vu : à regarder sur la page à cocher.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot1-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
