@@ -16,14 +16,12 @@ import { dbTestConfig } from './vitest.base.config';
  * `global-setup` de la suite d'intégration : celui-ci supprime les comptes
  * prof, ce dont ce test n'a aucun besoin.
  *
- * `tsconfigRaw` en CHAÎNE : vite ne lit alors pas `tsconfig.json`, qui étend
- * `.svelte-kit/tsconfig.json` — absent tant que `svelte-kit sync` n'a pas
- * tourné (job CI sans build ni plugin sveltekit).
+ * Vite 8 transforme le TypeScript avec oxc, qui lit `tsconfig.json` — lequel
+ * étend `.svelte-kit/tsconfig.json`, absent tant que `svelte-kit sync` n'a pas
+ * tourné (job CI sans build) : `pnpm test:definer-guard` lance donc
+ * `svelte-kit sync` d'abord. (L'ancien `esbuild.tsconfigRaw` ne sert plus.)
  */
 export default defineConfig({
-	esbuild: {
-		tsconfigRaw: '{"compilerOptions":{"target":"ES2022","useDefineForClassFields":true}}'
-	},
 	test: {
 		...dbTestConfig,
 		name: 'definer-guard',
