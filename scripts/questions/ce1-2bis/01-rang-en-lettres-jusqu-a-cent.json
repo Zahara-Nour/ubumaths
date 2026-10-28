@@ -1,0 +1,112 @@
+{
+	"title": "Le rang en lettres (jusqu'à centième)",
+	"description": "Écrire un rang en lettres : 48e → quarante-huitième (leurres : rangs voisins, le nombre quarante-huit)",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ordinaux",
+	"level": 7,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Comment écrit-on ${{if:k==21|21^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ en lettres ?\n\n```choix\n- {{if:k==21|vingt-et-unième|{{if:k==30|trentième|{{if:k==31|trente-et-unième|{{if:k==41|quarante-et-unième|{{if:k==48|quarante-huitième|{{if:k==52|cinquante-deuxième|{{if:k==60|soixantième|{{if:k==61|soixante-et-unième|{{if:k==67|soixante-septième|{{if:k==70|soixante-dixième|{{if:k==71|soixante-et-onzième|{{if:k==72|soixante-douzième|{{if:k==77|soixante-dix-septième|{{if:k==80|quatre-vingtième|{{if:k==81|quatre-vingt-unième|{{if:k==85|quatre-vingt-cinquième|{{if:k==89|quatre-vingt-neuvième|{{if:k==90|quatre-vingt-dixième|{{if:k==91|quatre-vingt-onzième|{{if:k==97|quatre-vingt-dix-septième|{{if:k==99|quatre-vingt-dix-neuvième|centième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==21|vingtième|{{if:k==30|vingt-neuvième|{{if:k==31|trentième|{{if:k==41|quarantième|{{if:k==48|quarante-septième|{{if:k==52|cinquante-et-unième|{{if:k==60|cinquante-neuvième|{{if:k==61|soixantième|{{if:k==67|soixante-sixième|{{if:k==70|soixante-neuvième|{{if:k==71|soixante-dixième|{{if:k==72|soixante-et-onzième|{{if:k==77|soixante-seizième|{{if:k==80|soixante-dix-neuvième|{{if:k==81|quatre-vingtième|{{if:k==85|quatre-vingt-quatrième|{{if:k==89|quatre-vingt-huitième|{{if:k==90|quatre-vingt-neuvième|{{if:k==91|quatre-vingt-dixième|{{if:k==97|quatre-vingt-seizième|{{if:k==99|quatre-vingt-dix-huitième|quatre-vingt-dix-huitième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==21|vingt-deuxième|{{if:k==30|trente-et-unième|{{if:k==31|trente-deuxième|{{if:k==41|quarante-deuxième|{{if:k==48|quarante-neuvième|{{if:k==52|cinquante-troisième|{{if:k==60|soixante-et-unième|{{if:k==61|soixante-deuxième|{{if:k==67|soixante-huitième|{{if:k==70|soixante-et-onzième|{{if:k==71|soixante-douzième|{{if:k==72|soixante-treizième|{{if:k==77|soixante-dix-huitième|{{if:k==80|quatre-vingt-unième|{{if:k==81|quatre-vingt-deuxième|{{if:k==85|quatre-vingt-sixième|{{if:k==89|quatre-vingt-dixième|{{if:k==90|quatre-vingt-onzième|{{if:k==91|quatre-vingt-douzième|{{if:k==97|quatre-vingt-dix-huitième|{{if:k==99|centième|quatre-vingt-dix-neuvième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==21|vingt-et-un|{{if:k==30|trente|{{if:k==31|trente-et-un|{{if:k==41|quarante-et-un|{{if:k==48|quarante-huit|{{if:k==52|cinquante-deux|{{if:k==60|soixante|{{if:k==61|soixante-et-un|{{if:k==67|soixante-sept|{{if:k==70|soixante-dix|{{if:k==71|soixante-et-onze|{{if:k==72|soixante-douze|{{if:k==77|soixante-dix-sept|{{if:k==80|quatre-vingts|{{if:k==81|quatre-vingt-un|{{if:k==85|quatre-vingt-cinq|{{if:k==89|quatre-vingt-neuf|{{if:k==90|quatre-vingt-dix|{{if:k==91|quatre-vingt-onze|{{if:k==97|quatre-vingt-dix-sept|{{if:k==99|quatre-vingt-dix-neuf|cent}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "21|30|31|41|48|52|60|61|67|70|71|72|77|80|81|85|89|90|91|97|99|100"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{if:k==21|21^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ se lit **{{if:k==21|vingt-et-unième|{{if:k==30|trentième|{{if:k==31|trente-et-unième|{{if:k==41|quarante-et-unième|{{if:k==48|quarante-huitième|{{if:k==52|cinquante-deuxième|{{if:k==60|soixantième|{{if:k==61|soixante-et-unième|{{if:k==67|soixante-septième|{{if:k==70|soixante-dixième|{{if:k==71|soixante-et-onzième|{{if:k==72|soixante-douzième|{{if:k==77|soixante-dix-septième|{{if:k==80|quatre-vingtième|{{if:k==81|quatre-vingt-unième|{{if:k==85|quatre-vingt-cinquième|{{if:k==89|quatre-vingt-neuvième|{{if:k==90|quatre-vingt-dixième|{{if:k==91|quatre-vingt-onzième|{{if:k==97|quatre-vingt-dix-septième|{{if:k==99|quatre-vingt-dix-neuvième|centième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}** : c'est la place numéro ${{k}}$.",
+					"On dit « {{if:k==21|vingt-et-un|{{if:k==30|trente|{{if:k==31|trente-et-un|{{if:k==41|quarante-et-un|{{if:k==48|quarante-huit|{{if:k==52|cinquante-deux|{{if:k==60|soixante|{{if:k==61|soixante-et-un|{{if:k==67|soixante-sept|{{if:k==70|soixante-dix|{{if:k==71|soixante-et-onze|{{if:k==72|soixante-douze|{{if:k==77|soixante-dix-sept|{{if:k==80|quatre-vingts|{{if:k==81|quatre-vingt-un|{{if:k==85|quatre-vingt-cinq|{{if:k==89|quatre-vingt-neuf|{{if:k==90|quatre-vingt-dix|{{if:k==91|quatre-vingt-onze|{{if:k==97|quatre-vingt-dix-sept|{{if:k==99|quatre-vingt-dix-neuf|cent}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} » pour le nombre, « {{if:k==21|vingt-et-unième|{{if:k==30|trentième|{{if:k==31|trente-et-unième|{{if:k==41|quarante-et-unième|{{if:k==48|quarante-huitième|{{if:k==52|cinquante-deuxième|{{if:k==60|soixantième|{{if:k==61|soixante-et-unième|{{if:k==67|soixante-septième|{{if:k==70|soixante-dixième|{{if:k==71|soixante-et-onzième|{{if:k==72|soixante-douzième|{{if:k==77|soixante-dix-septième|{{if:k==80|quatre-vingtième|{{if:k==81|quatre-vingt-unième|{{if:k==85|quatre-vingt-cinquième|{{if:k==89|quatre-vingt-neuvième|{{if:k==90|quatre-vingt-dixième|{{if:k==91|quatre-vingt-onzième|{{if:k==97|quatre-vingt-dix-septième|{{if:k==99|quatre-vingt-dix-neuvième|centième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} » pour la place."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "48e : quarante-huitième",
+			"variationIndex": 0,
+			"variables": {
+				"k": "48"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 48e, quarante-septième",
+			"variationIndex": 0,
+			"variables": {
+				"k": "48"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 48e, quarante-neuvième",
+			"variationIndex": 0,
+			"variables": {
+				"k": "48"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 48e, le nombre « quarante-huit »",
+			"variationIndex": 0,
+			"variables": {
+				"k": "48"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 21e, vingt-et-unième",
+			"variationIndex": 0,
+			"variables": {
+				"k": "21"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 100e, centième",
+			"variationIndex": 0,
+			"variables": {
+				"k": "100"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 100e, le nombre « cent »",
+			"variationIndex": 0,
+			"variables": {
+				"k": "100"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

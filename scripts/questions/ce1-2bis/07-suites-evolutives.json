@@ -1,0 +1,280 @@
+{
+	"title": "Suites qui grandissent : quel élément à telle place ?",
+	"description": "1, 2, 4, 7, 11… ; 1, 2, 4, 8… ; 1, 3, 5, 7… ; △ ✕ △ ✕ ✕ △… (exemples du BO)",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ordinaux",
+	"level": 13,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici le début d'une suite :\n\n$1$, $2$, $4$, $7$, $11$, $16$, …\n\nQuel est le ${{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|15^{\\text{e}}}}}}}}}}}}}}}}}}$ nombre ?\n\nC'est $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "7..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1+k*(k-1)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De $1$ à $2$, on ajoute $1$ ; de $2$ à $4$, on ajoute $2$ ; de $4$ à $7$, on ajoute $3$… On ajoute à chaque fois $1$ de plus.",
+					"On continue jusqu'au ${{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|15^{\\text{e}}}}}}}}}}}}}}}}}}$ nombre : {{if:k==7|$1$, $2$, $4$, $7$, $11$, $16$, **$22$**|{{if:k==8|$1$, $2$, $4$, $7$, $11$, $16$, $22$, **$29$**|{{if:k==9|$1$, $2$, $4$, $7$, $11$, $16$, $22$, $29$, **$37$**|{{if:k==10|$1$, $2$, $4$, $7$, $11$, $16$, $22$, $29$, $37$, **$46$**|{{if:k==11|$1$, $2$, $4$, $7$, $11$, $16$, $22$, $29$, $37$, $46$, **$56$**|{{if:k==12|$1$, $2$, $4$, $7$, $11$, $16$, $22$, $29$, $37$, $46$, $56$, **$67$**|{{if:k==13|$1$, $2$, $4$, $7$, $11$, $16$, $22$, $29$, $37$, $46$, $56$, $67$, **$79$**|{{if:k==14|$1$, $2$, $4$, $7$, $11$, $16$, $22$, $29$, $37$, $46$, $56$, $67$, $79$, **$92$**|$1$, $2$, $4$, $7$, $11$, $16$, $22$, $29$, $37$, $46$, $56$, $67$, $79$, $92$, **$106$**}}}}}}}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite :\n\n$1$, $2$, $4$, $8$, $16$, …\n\nQuel est le ${{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|10^{\\text{e}}}}}}}}}}$ nombre ?\n\nC'est $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "6..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^(k-1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque nombre est le **double** du précédent.",
+					"On continue jusqu'au ${{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|10^{\\text{e}}}}}}}}}}$ nombre : {{if:k==6|$1$, $2$, $4$, $8$, $16$, **$32$**|{{if:k==7|$1$, $2$, $4$, $8$, $16$, $32$, **$64$**|{{if:k==8|$1$, $2$, $4$, $8$, $16$, $32$, $64$, **$128$**|{{if:k==9|$1$, $2$, $4$, $8$, $16$, $32$, $64$, $128$, **$256$**|$1$, $2$, $4$, $8$, $16$, $32$, $64$, $128$, $256$, **$512$**}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite :\n\n$1$, $3$, $5$, $7$, $9$, …\n\nQuel est le ${{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|50^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ nombre ?\n\nC'est $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "10..50"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*k-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute $2$ à chaque fois. Le $1^{\\text{er}}$ est $1$, le $2^{\\text{e}}$ est $3$, le $3^{\\text{e}}$ est $5$ : chaque nombre est le **double de sa place, moins 1**.",
+					"$$2\\times {{k}}-1={{eval:2*k-1}}$$ Le ${{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|50^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ nombre est ${{eval:2*k-1}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite :\n\n△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ …\n\nQuel symbole est à la ${{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|30^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place ?\n\n```choix\n- △\n- ✕\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "11..30"
+				},
+				{
+					"name": "s",
+					"expression": "{{if:k==11|1|{{if:k==12|1|{{if:k==13|1|{{if:k==14|1|{{if:k==15|0|{{if:k==16|1|{{if:k==17|1|{{if:k==18|1|{{if:k==19|1|{{if:k==20|1|{{if:k==21|0|{{if:k==22|1|{{if:k==23|1|{{if:k==24|1|{{if:k==25|1|{{if:k==26|1|{{if:k==27|1|{{if:k==28|0|{{if:k==29|1|1}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Après chaque △, il y a un ✕ de plus : △ ✕, puis △ ✕ ✕, puis △ ✕ ✕ ✕…",
+					"On continue jusqu'à la ${{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|30^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place : {{if:k==11|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ **✕**|{{if:k==12|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ **✕**|{{if:k==13|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ **✕**|{{if:k==14|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ **✕**|{{if:k==15|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ **△**|{{if:k==16|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ **✕**|{{if:k==17|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ **✕**|{{if:k==18|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ **✕**|{{if:k==19|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ **✕**|{{if:k==20|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ **✕**|{{if:k==21|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ **△**|{{if:k==22|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ △ **✕**|{{if:k==23|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ △ ✕ **✕**|{{if:k==24|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ △ ✕ ✕ **✕**|{{if:k==25|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ **✕**|{{if:k==26|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ **✕**|{{if:k==27|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ **✕**|{{if:k==28|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ ✕ **△**|{{if:k==29|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ ✕ △ **✕**|△ ✕ △ ✕ ✕ △ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ △ ✕ ✕ ✕ ✕ ✕ ✕ △ ✕ **✕**}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}.",
+					"À la ${{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|30^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place, il y a {{if:k==11|✕|{{if:k==12|✕|{{if:k==13|✕|{{if:k==14|✕|{{if:k==15|△|{{if:k==16|✕|{{if:k==17|✕|{{if:k==18|✕|{{if:k==19|✕|{{if:k==20|✕|{{if:k==21|△|{{if:k==22|✕|{{if:k==23|✕|{{if:k==24|✕|{{if:k==25|✕|{{if:k==26|✕|{{if:k==27|✕|{{if:k==28|△|{{if:k==29|✕|✕}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 1, 2, 4, 7…, 11e : 56",
+			"variationIndex": 0,
+			"variables": {
+				"k": "11"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 11e, 46 (le 10e)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "11"
+			},
+			"answers": ["46"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : on ajoute toujours 5 (36)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "11"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 15e, 106",
+			"variationIndex": 0,
+			"variables": {
+				"k": "15"
+			},
+			"answers": ["106"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 1, 2, 4, 8…, 9e : 256",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9"
+			},
+			"answers": ["256"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9e, 512 (le 10e)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9"
+			},
+			"answers": ["512"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9e, 18 (2 × 9)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 10e, 512",
+			"variationIndex": 1,
+			"variables": {
+				"k": "10"
+			},
+			"answers": ["512"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 1, 3, 5…, 17e : 33",
+			"variationIndex": 2,
+			"variables": {
+				"k": "17"
+			},
+			"answers": ["33"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 17e, 34 (2 × 17)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "17"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 17e, 35 (le 18e)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "17"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 50e, 99",
+			"variationIndex": 2,
+			"variables": {
+				"k": "50"
+			},
+			"answers": ["99"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : △ ✕ △ ✕✕…, 20e : ✕",
+			"variationIndex": 3,
+			"variables": {
+				"k": "20",
+				"s": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 20e, △",
+			"variationIndex": 3,
+			"variables": {
+				"k": "20",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "21e : △",
+			"variationIndex": 3,
+			"variables": {
+				"k": "21",
+				"s": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 28e : △",
+			"variationIndex": 3,
+			"variables": {
+				"k": "28",
+				"s": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

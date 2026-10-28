@@ -1,0 +1,259 @@
+{
+	"title": "Suites qui se répètent : quel élément à la 89e place ?",
+	"description": "Motifs du BO (A B, △ ▢ ○, △ ✕ ▢ ○, A B G F), place jusqu'à la 100e",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ordinaux",
+	"level": 12,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici le début d'une suite qui se répète :\n\nA B A B …\n\nQuelle lettre est à la ${{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place ?\n\n```choix\n- A\n- B\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "5..100"
+				},
+				{
+					"name": "m",
+					"expression": "eval:2*floor(k/2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(k-1,2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le motif A B a $2$ éléments : il se termine aux places $2$, $4$, $6$… On compte de 2 en 2 jusqu'à ${{m}}$.",
+					"{{if:k==m|La ${{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place termine un motif : c'est le dernier élément, B.|La place ${{m}}$ termine un motif ; on avance encore de ${{eval:k-m}}$ : c'est le $1^{\\text{er}}$ élément du motif, A.}}",
+					"À la ${{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place, il y a {{if:k==5|A|{{if:k==6|B|{{if:k==7|A|{{if:k==8|B|{{if:k==9|A|{{if:k==10|B|{{if:k==11|A|{{if:k==12|B|{{if:k==13|A|{{if:k==14|B|{{if:k==15|A|{{if:k==16|B|{{if:k==17|A|{{if:k==18|B|{{if:k==19|A|{{if:k==20|B|{{if:k==21|A|{{if:k==22|B|{{if:k==23|A|{{if:k==24|B|{{if:k==25|A|{{if:k==26|B|{{if:k==27|A|{{if:k==28|B|{{if:k==29|A|{{if:k==30|B|{{if:k==31|A|{{if:k==32|B|{{if:k==33|A|{{if:k==34|B|{{if:k==35|A|{{if:k==36|B|{{if:k==37|A|{{if:k==38|B|{{if:k==39|A|{{if:k==40|B|{{if:k==41|A|{{if:k==42|B|{{if:k==43|A|{{if:k==44|B|{{if:k==45|A|{{if:k==46|B|{{if:k==47|A|{{if:k==48|B|{{if:k==49|A|{{if:k==50|B|{{if:k==51|A|{{if:k==52|B|{{if:k==53|A|{{if:k==54|B|{{if:k==55|A|{{if:k==56|B|{{if:k==57|A|{{if:k==58|B|{{if:k==59|A|{{if:k==60|B|{{if:k==61|A|{{if:k==62|B|{{if:k==63|A|{{if:k==64|B|{{if:k==65|A|{{if:k==66|B|{{if:k==67|A|{{if:k==68|B|{{if:k==69|A|{{if:k==70|B|{{if:k==71|A|{{if:k==72|B|{{if:k==73|A|{{if:k==74|B|{{if:k==75|A|{{if:k==76|B|{{if:k==77|A|{{if:k==78|B|{{if:k==79|A|{{if:k==80|B|{{if:k==81|A|{{if:k==82|B|{{if:k==83|A|{{if:k==84|B|{{if:k==85|A|{{if:k==86|B|{{if:k==87|A|{{if:k==88|B|{{if:k==89|A|{{if:k==90|B|{{if:k==91|A|{{if:k==92|B|{{if:k==93|A|{{if:k==94|B|{{if:k==95|A|{{if:k==96|B|{{if:k==97|A|{{if:k==98|B|{{if:k==99|A|B}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite qui se répète :\n\n△ ▢ ○ △ ▢ ○ …\n\nQuel symbole est à la ${{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place ?\n\n```choix\n- △\n- ▢\n- ○\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "7..100"
+				},
+				{
+					"name": "m",
+					"expression": "eval:3*floor(k/3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(k-1,3)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le motif △ ▢ ○ a $3$ éléments : il se termine aux places $3$, $6$, $9$… On compte de 3 en 3 jusqu'à ${{m}}$.",
+					"{{if:k==m|La ${{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place termine un motif : c'est le dernier élément, ○.|La place ${{m}}$ termine un motif ; on avance encore de ${{eval:k-m}}$ : {{if:k-m==1|c'est le $1^{\\text{er}}$ élément du motif, △|c'est le $2^{\\text{e}}$ élément du motif, ▢}}.}}",
+					"À la ${{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place, il y a {{if:k==7|△|{{if:k==8|▢|{{if:k==9|○|{{if:k==10|△|{{if:k==11|▢|{{if:k==12|○|{{if:k==13|△|{{if:k==14|▢|{{if:k==15|○|{{if:k==16|△|{{if:k==17|▢|{{if:k==18|○|{{if:k==19|△|{{if:k==20|▢|{{if:k==21|○|{{if:k==22|△|{{if:k==23|▢|{{if:k==24|○|{{if:k==25|△|{{if:k==26|▢|{{if:k==27|○|{{if:k==28|△|{{if:k==29|▢|{{if:k==30|○|{{if:k==31|△|{{if:k==32|▢|{{if:k==33|○|{{if:k==34|△|{{if:k==35|▢|{{if:k==36|○|{{if:k==37|△|{{if:k==38|▢|{{if:k==39|○|{{if:k==40|△|{{if:k==41|▢|{{if:k==42|○|{{if:k==43|△|{{if:k==44|▢|{{if:k==45|○|{{if:k==46|△|{{if:k==47|▢|{{if:k==48|○|{{if:k==49|△|{{if:k==50|▢|{{if:k==51|○|{{if:k==52|△|{{if:k==53|▢|{{if:k==54|○|{{if:k==55|△|{{if:k==56|▢|{{if:k==57|○|{{if:k==58|△|{{if:k==59|▢|{{if:k==60|○|{{if:k==61|△|{{if:k==62|▢|{{if:k==63|○|{{if:k==64|△|{{if:k==65|▢|{{if:k==66|○|{{if:k==67|△|{{if:k==68|▢|{{if:k==69|○|{{if:k==70|△|{{if:k==71|▢|{{if:k==72|○|{{if:k==73|△|{{if:k==74|▢|{{if:k==75|○|{{if:k==76|△|{{if:k==77|▢|{{if:k==78|○|{{if:k==79|△|{{if:k==80|▢|{{if:k==81|○|{{if:k==82|△|{{if:k==83|▢|{{if:k==84|○|{{if:k==85|△|{{if:k==86|▢|{{if:k==87|○|{{if:k==88|△|{{if:k==89|▢|{{if:k==90|○|{{if:k==91|△|{{if:k==92|▢|{{if:k==93|○|{{if:k==94|△|{{if:k==95|▢|{{if:k==96|○|{{if:k==97|△|{{if:k==98|▢|{{if:k==99|○|△}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite qui se répète :\n\n△ ✕ ▢ ○ △ ✕ ▢ ○ …\n\nQuel symbole est à la ${{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place ?\n\n```choix\n- △\n- ✕\n- ▢\n- ○\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "9..100"
+				},
+				{
+					"name": "m",
+					"expression": "eval:4*floor(k/4)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(k-1,4)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le motif △ ✕ ▢ ○ a $4$ éléments : il se termine aux places $4$, $8$, $12$… On compte de 4 en 4 jusqu'à ${{m}}$.",
+					"{{if:k==m|La ${{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place termine un motif : c'est le dernier élément, ○.|La place ${{m}}$ termine un motif ; on avance encore de ${{eval:k-m}}$ : {{if:k-m==1|c'est le $1^{\\text{er}}$ élément du motif, △|{{if:k-m==2|c'est le $2^{\\text{e}}$ élément du motif, ✕|c'est le $3^{\\text{e}}$ élément du motif, ▢}}}}.}}",
+					"À la ${{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place, il y a {{if:k==9|△|{{if:k==10|✕|{{if:k==11|▢|{{if:k==12|○|{{if:k==13|△|{{if:k==14|✕|{{if:k==15|▢|{{if:k==16|○|{{if:k==17|△|{{if:k==18|✕|{{if:k==19|▢|{{if:k==20|○|{{if:k==21|△|{{if:k==22|✕|{{if:k==23|▢|{{if:k==24|○|{{if:k==25|△|{{if:k==26|✕|{{if:k==27|▢|{{if:k==28|○|{{if:k==29|△|{{if:k==30|✕|{{if:k==31|▢|{{if:k==32|○|{{if:k==33|△|{{if:k==34|✕|{{if:k==35|▢|{{if:k==36|○|{{if:k==37|△|{{if:k==38|✕|{{if:k==39|▢|{{if:k==40|○|{{if:k==41|△|{{if:k==42|✕|{{if:k==43|▢|{{if:k==44|○|{{if:k==45|△|{{if:k==46|✕|{{if:k==47|▢|{{if:k==48|○|{{if:k==49|△|{{if:k==50|✕|{{if:k==51|▢|{{if:k==52|○|{{if:k==53|△|{{if:k==54|✕|{{if:k==55|▢|{{if:k==56|○|{{if:k==57|△|{{if:k==58|✕|{{if:k==59|▢|{{if:k==60|○|{{if:k==61|△|{{if:k==62|✕|{{if:k==63|▢|{{if:k==64|○|{{if:k==65|△|{{if:k==66|✕|{{if:k==67|▢|{{if:k==68|○|{{if:k==69|△|{{if:k==70|✕|{{if:k==71|▢|{{if:k==72|○|{{if:k==73|△|{{if:k==74|✕|{{if:k==75|▢|{{if:k==76|○|{{if:k==77|△|{{if:k==78|✕|{{if:k==79|▢|{{if:k==80|○|{{if:k==81|△|{{if:k==82|✕|{{if:k==83|▢|{{if:k==84|○|{{if:k==85|△|{{if:k==86|✕|{{if:k==87|▢|{{if:k==88|○|{{if:k==89|△|{{if:k==90|✕|{{if:k==91|▢|{{if:k==92|○|{{if:k==93|△|{{if:k==94|✕|{{if:k==95|▢|{{if:k==96|○|{{if:k==97|△|{{if:k==98|✕|{{if:k==99|▢|○}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite qui se répète :\n\nA B G F A B G F …\n\nQuelle lettre est à la ${{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place ?\n\n```choix\n- A\n- B\n- G\n- F\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "9..100"
+				},
+				{
+					"name": "m",
+					"expression": "eval:4*floor(k/4)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(k-1,4)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le motif A B G F a $4$ éléments : il se termine aux places $4$, $8$, $12$… On compte de 4 en 4 jusqu'à ${{m}}$.",
+					"{{if:k==m|La ${{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place termine un motif : c'est le dernier élément, F.|La place ${{m}}$ termine un motif ; on avance encore de ${{eval:k-m}}$ : {{if:k-m==1|c'est le $1^{\\text{er}}$ élément du motif, A|{{if:k-m==2|c'est le $2^{\\text{e}}$ élément du motif, B|c'est le $3^{\\text{e}}$ élément du motif, G}}}}.}}",
+					"À la ${{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ place, il y a {{if:k==9|A|{{if:k==10|B|{{if:k==11|G|{{if:k==12|F|{{if:k==13|A|{{if:k==14|B|{{if:k==15|G|{{if:k==16|F|{{if:k==17|A|{{if:k==18|B|{{if:k==19|G|{{if:k==20|F|{{if:k==21|A|{{if:k==22|B|{{if:k==23|G|{{if:k==24|F|{{if:k==25|A|{{if:k==26|B|{{if:k==27|G|{{if:k==28|F|{{if:k==29|A|{{if:k==30|B|{{if:k==31|G|{{if:k==32|F|{{if:k==33|A|{{if:k==34|B|{{if:k==35|G|{{if:k==36|F|{{if:k==37|A|{{if:k==38|B|{{if:k==39|G|{{if:k==40|F|{{if:k==41|A|{{if:k==42|B|{{if:k==43|G|{{if:k==44|F|{{if:k==45|A|{{if:k==46|B|{{if:k==47|G|{{if:k==48|F|{{if:k==49|A|{{if:k==50|B|{{if:k==51|G|{{if:k==52|F|{{if:k==53|A|{{if:k==54|B|{{if:k==55|G|{{if:k==56|F|{{if:k==57|A|{{if:k==58|B|{{if:k==59|G|{{if:k==60|F|{{if:k==61|A|{{if:k==62|B|{{if:k==63|G|{{if:k==64|F|{{if:k==65|A|{{if:k==66|B|{{if:k==67|G|{{if:k==68|F|{{if:k==69|A|{{if:k==70|B|{{if:k==71|G|{{if:k==72|F|{{if:k==73|A|{{if:k==74|B|{{if:k==75|G|{{if:k==76|F|{{if:k==77|A|{{if:k==78|B|{{if:k==79|G|{{if:k==80|F|{{if:k==81|A|{{if:k==82|B|{{if:k==83|G|{{if:k==84|F|{{if:k==85|A|{{if:k==86|B|{{if:k==87|G|{{if:k==88|F|{{if:k==89|A|{{if:k==90|B|{{if:k==91|G|{{if:k==92|F|{{if:k==93|A|{{if:k==94|B|{{if:k==95|G|{{if:k==96|F|{{if:k==97|A|{{if:k==98|B|{{if:k==99|G|F}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : ABAB…, 89e lettre, A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "89",
+				"m": "88"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ABAB…, 89e, B",
+			"variationIndex": 0,
+			"variables": {
+				"k": "89",
+				"m": "88"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : ABAB…, 100e, B",
+			"variationIndex": 0,
+			"variables": {
+				"k": "100",
+				"m": "100"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : △ ▢ ○, 60e, ○",
+			"variationIndex": 1,
+			"variables": {
+				"k": "60",
+				"m": "60"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : △ ▢ ○, 60e, △",
+			"variationIndex": 1,
+			"variables": {
+				"k": "60",
+				"m": "60"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "△ ▢ ○, 59e, ▢",
+			"variationIndex": 1,
+			"variables": {
+				"k": "59",
+				"m": "57"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : △ ✕ ▢ ○, 80e, ○",
+			"variationIndex": 2,
+			"variables": {
+				"k": "80",
+				"m": "80"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "△ ✕ ▢ ○, 82e, ✕",
+			"variationIndex": 2,
+			"variables": {
+				"k": "82",
+				"m": "80"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : △ ✕ ▢ ○, 82e, ▢",
+			"variationIndex": 2,
+			"variables": {
+				"k": "82",
+				"m": "80"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : ABGF, 17e lettre, A",
+			"variationIndex": 3,
+			"variables": {
+				"k": "17",
+				"m": "16"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ABGF, 17e, F",
+			"variationIndex": 3,
+			"variables": {
+				"k": "17",
+				"m": "16"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ABGF, 99e, G",
+			"variationIndex": 3,
+			"variables": {
+				"k": "99",
+				"m": "96"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
