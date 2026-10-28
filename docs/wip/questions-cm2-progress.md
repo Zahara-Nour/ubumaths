@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, PR #1896 ouverte (lot 0 réduit)._
+_Mis à jour le 2026-10-28, après #1896._
 
-- **État** : lot 0 validé par David ; les 12 modèles venus du CM1 ont été passés au CM2 par le chantier `questions-cm1` (#1893, joué en prod) ; #1896 ne garde que les 11 modèles du CM2 (6 → 6e, 2 → 5e, 3 brouillons), CI en cours.
-- **Prochaine action** : CI verte → merge → `db:migrate` depuis le dépôt principal → vérification MCP ; prévenir la session de 6e (6 modèles reçus) ; puis phase 0 du lot 1 (entiers) en refaisant le relevé.
-- **En attente de David** : `322f3479` (forme décimale), réécrit par `questions-cm1` avec les 9 fractions de CM2-039 : doublon exact de `dd7db98e` ; le dépublier (décision du § 5) ou garder les deux ?
-- **Pièges en cours** : sessions CM1 et CM2 sur les mêmes modèles → relever la prod juste avant d'écrire une migration ; horodatages de migration pris par une autre session (#1893 a pris 20261028100000 / 100100) ; `create-questions --mettre-a-jour` ne touche pas un publié.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot0`.
+- **État** : lot 0 CLOS. #1896 mergée, migration `20261028120000` jouée (`--include-all`, seule manquante), vérifiée au MCP : 6 modèles en 6e (6-121, 6-118), 2 en 5e (5-010, 5-119), 3 brouillons, `updated_at` gardé. Les 12 modèles venus du CM1 : #1893 (`questions-cm1`). Sessions CM1 et 6EME prévenues.
+- **Prochaine action** : phase 0 du lot 1 (entiers : 001, 002, 004, 005, 127, 128, 006), en refaisant d'abord le relevé MCP (couverture changée par #1893) et en relevant les niveaux pris dans chaque catégorie.
+- **En attente de David** : `322f3479` (forme décimale, CM2-039), réécrit par `questions-cm1` : doublon exact de `dd7db98e` ; le dépublier, ou garder les deux ?
+- **Pièges en cours** : d'autres sessions touchent les mêmes modèles → relever la prod juste avant une migration ; horodatages de migration déjà pris ailleurs ; migration plus ancienne que la dernière jouée → `db push --include-all` après `--dry-run` (vérifier qu'elle est la seule listée).
+- **Worktree / branche** : aucun (worktree retiré, branche supprimée).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -179,3 +179,4 @@ qu'il lisait ? Ceux du **CM1** : 12 modèles (11 passés au CM2, `322f3479` en b
 - Écrit : migration de contenu (`edc5d7d4`) + migration de rangement (22 modèles), tests verts / rouges sans elles, `security-auditor` sans finding bloquant (présence partielle refusée au rollback, ajouté).
 - Avant le merge, message de la session `questions-cm1` : son lot 0 (#1893, joué en prod) a déjà passé au CM2 les 12 modèles venus du CM1 (dont `edc5d7d4`, même retouche, et `322f3479`, réécrit et tagué CM2-039 au lieu d'être dépublié), et a pris les mêmes horodatages de migration. Vérifié au MCP.
 - #1896 réduite aux 11 modèles du CM2, horodatage `20261028120000`, migration de contenu retirée ; test 19 verts, 10 rouges sans la migration.
+- 2026-10-28 : #1896 mergée (CI verte, 16/16) ; `db:migrate` refusé (`DbPushMissingRemoteError`, 20261028130000 / 130100 déjà jouées par d'autres sessions) → `db push --include-all` après `--dry-run` (seule la nôtre listée) ; vérifié au MCP ; worktree et branche retirés.
