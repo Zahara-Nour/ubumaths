@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1872 et les décisions des barres._
+_Mis à jour le 2026-10-28, après #1908._
 
-- **État** : droite à placer (#1846→#1860) et horloge à placer (#1872) mergées, pas en prod. Barres : phase 0 (§ 17) validée par David (§ 18), rien codé.
-- **Prochaine action** : PR « barres » — worktree `ubumaths-wt-reponses-a-placer`, branche `feat/reponses-a-placer-barres` ; tests rouges d'abord (parseur `placer:` / `axe:` du bloc ```barres, générateur : une case par barre, `BuildKind` `'barres'`), patron de la droite à plusieurs points (§ 11) et de l'horloge (§ 15).
-- **En attente de David** : rien.
-- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; horloge : réponse élève `'47 25'` (crans), attendue `'9 h 25'`, case `text`, juge `isPlacedTimeCorrect` (secteur OU vraie place) ; secondes (CM2-083) hors chantier ; page d'aide à froid : attendre l'hydratation ; une PR = une session.
-- **Worktree / branche** : aucun.
+- **État** : droite à placer (#1846→#1860), horloge à placer (#1872) et diagramme en barres à construire (#1908, § 17-19) mergés, pas en prod.
+- **Prochaine action** : selon Q19 ; sinon le reste du chantier à redécider avec David (choix de l'échelle par l'élève CM1-CM2, hors #1908).
+- **En attente de David** : **Q19** — grand axe (`axe: 0 à 4000, de 100 en 100`) : aimant et ▲ ▼ à l'unité, impossible à viser au doigt. A (reco) : plafonner `axe:` avec `placer:` (au plus 100 ?), l'aimant reste à l'unité ; B : aimanter au pas de l'axe (plus de 7 entre 6 et 8).
+- **Pièges en cours** : `BuildKind` patron commun (`generator/build-answer.ts`, `buildCaseCount` pour plusieurs cases) ; `isPlaceKind` = droite + horloge (une barre se « construit ») ; `placer:` des barres refusé avec `indicateurs:` (fuite sur le PDF) ; page d'aide à froid : attendre l'hydratation ; une PR = une session.
+- **Worktree / branche** : aucun (retirés après #1908).
 
 ---
 
