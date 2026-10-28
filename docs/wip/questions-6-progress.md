@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1914._
+_Mis à jour le 2026-10-28, après #1914 et la publication du lot 4._
 
-- **État** : lots 1 à 3 publiés. Lot 4 « Fractions » : 10 brouillons rangés et tagués ; 01 corrigé sur commentaire de David (#1914, choix entier / décimal / non décimal à plusieurs réponses), pas encore en base. David demande la publication de TOUS les modèles de 6e (§ 11.6) ; `publier-lot` en simulation : 10 passent.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/6-fractions --publier --mettre-a-jour` PUIS `publier-lot.ts --dir scripts/questions/6-fractions --publier` ; relire au MCP (01 nouveau contenu, 10 `published`, seul brouillon 6e restant = 3a7a5711).
-- **En attente de David** : les deux commandes. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
-- **Pièges en cours** : 3a7a5711 = doublon de 059e3fc9 repassé en brouillon exprès (migration `20261027100100`), NE PAS le publier ; relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; `--mettre-a-jour` après le merge seulement ; page à cocher générée depuis un `main` à jour ; `e`/`i` interdites dans les `eval`.
-- **Worktree / branche** : aucun (retiré après #1914).
+- **État** : lots 1 à 4 publiés. 6e en prod : 126 modèles publiés, 1 brouillon (3a7a5711, doublon de 059e3fc9, brouillon voulu). Lot 4 publié sur demande de David sans relecture complète de la page à cocher (seul 01 commenté, corrigé #1914).
+- **Prochaine action** : à décider avec David (points de 6e encore sans modèle ? relecture après coup du lot 4 dans l'aperçu ?).
+- **En attente de David** : la suite du chantier. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **Pièges en cours** : 3a7a5711 = doublon repassé en brouillon exprès (migration `20261027100100`), NE PAS le publier ; relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; `--mettre-a-jour` après le merge seulement ; `e`/`i` interdites dans les `eval`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -653,3 +653,6 @@ David a lancé `create-questions --publier` : 10 créés. Vérifiés par MCP : `
   remis à zéro.
 - David : « je veux que les modèles de 6e soient tous publiés ». MCP : 11 brouillons `[6]` = les 10 du lot 4 +
   3a7a5711 (doublon, brouillon voulu, § 6-7) ; 116 publiés. `publier-lot` en simulation : 10 passent.
+- David a lancé `create-questions --publier --mettre-a-jour` (01 mis à jour, 9 identiques) puis `publier-lot --publier`
+  (10/10). MCP : 01 avec `plusieurs: oui`, sans « non entier », tag gardé ; les 10 `published` sur leur nœud ; 6e = 126
+  publiés + 1 brouillon (3a7a5711).
