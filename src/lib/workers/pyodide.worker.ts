@@ -21,15 +21,18 @@ import type {
 	ValidationIssue,
 	ExerciseValidationConfig
 } from '$lib/shared/python';
+// Valeurs importées module par module, jamais par `$lib/shared/python` : le
+// barrel tire les exécuteurs et le store `pythonDebug.svelte.ts`, dont les
+// runes (`$state`) ne sont pas compilées dans un worker. Rollup les élaguait,
+// Rolldown (Vite 8) les garde → « $state is not defined » au chargement.
 import {
 	PYODIDE_CONFIG,
 	LOADING_STAGES,
-	LoadingStageIndex,
 	CONTEXT_CONFIG,
-	ERROR_MESSAGES,
-	MAX_ATELIER_LISTS,
-	toWorkerMessageSchema
-} from '$lib/shared/python';
+	ERROR_MESSAGES
+} from '$lib/shared/python/config';
+import { LoadingStageIndex } from '$lib/shared/python/types';
+import { MAX_ATELIER_LISTS, toWorkerMessageSchema } from '$lib/shared/python/worker/messages';
 import { MAX_CATEGORIES, MAX_CATEGORY_LENGTH, MAX_LIST_VALUES } from '$lib/atelier/types';
 import {
 	MAX_PYTHON_LIST_LENGTH,
