@@ -1,0 +1,76 @@
+{
+	"title": "Traduire « de » par une multiplication",
+	"description": "Choisir l'écriture qui calcule une fraction d'un entier : 2/5 de 60, c'est 2/5 × 60 (et non 2/5 + 60, 60 − 2/5 ni 60 ÷ 2/5)",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Fraction d'une quantité",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calculer $\\frac{{{p}}}{{{q}}}$ de ${{n}}$, c'est calculer :\n\n```choix\n- $\\frac{{{p}}}{{{q}}} \\times {{n}}$\n- $\\frac{{{p}}}{{{q}}} + {{n}}$\n- ${{n}} - \\frac{{{p}}}{{{q}}}$\n- ${{n}} \\div \\frac{{{p}}}{{{q}}}$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..12"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*k"
+				}
+			],
+			"conditions": ["gcd(p,q)==1", "p!=q", "n<=100", "p>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction d'un nombre.** Pour calculer une fraction d'un nombre entier, on multiplie la fraction par le nombre : « de » se traduit par « $\\times$ ».",
+					"$\\frac{{{p}}}{{{q}}}$ de ${{n}}$ $= \\textcolor{{{color:primary.0}}}{\\frac{{{p}}}{{{q}}} \\times {{n}}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2/5 de 60 : 2/5 × 60",
+			"variationIndex": 0,
+			"variables": {
+				"q": "5",
+				"p": "2",
+				"k": "12",
+				"n": "60"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 60 ÷ 2/5",
+			"variationIndex": 0,
+			"variables": {
+				"q": "5",
+				"p": "2",
+				"k": "12",
+				"n": "60"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

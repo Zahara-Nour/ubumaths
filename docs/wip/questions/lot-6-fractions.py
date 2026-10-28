@@ -16,7 +16,13 @@ Décisions et pièges :
 - variables `e` et `i` interdites dans les `eval` ;
 - montants en `\\unit{€}` (`en_unit`), sauf juste après une case (`?~\\text{€}` : case de nombre).
 
-    python3 docs/wip/questions/lot-6-fractions.py scripts/questions/6-fractions
+Lot 5 « scissions » (phase 0 validée le 2026-10-28, § 12) : 02, 03, 04, 08 perdent des variations,
+reprises telles quelles par 7 modèles neufs (`SCISSIONS`, écrits dans `6-fractions-scissions/`,
+niveaux à la suite de la catégorie). Dossier à part : `create-questions` reconnaît un modèle par
+titre, catégorie et niveau ; le titre de 04 change, les 7 neufs ne doivent pas croiser les 10.
+01 n'est plus écrit : ses retouches des § 11.6-11.7 vivent dans le JSON, la section 1 est périmée.
+
+    python3 docs/wip/questions/lot-6-fractions.py scripts/questions
 """
 import json
 import os
@@ -24,7 +30,9 @@ import re
 import subprocess
 import sys
 
-DOSSIER = sys.argv[1]
+RACINE = sys.argv[1]
+DOSSIER = os.path.join(RACINE, '6-fractions')
+DOSSIER_SCISSIONS = os.path.join(RACINE, '6-fractions-scissions')
 
 
 def spec(desc, vi, variables, answers, status, violations=None):
@@ -119,6 +127,7 @@ PARTS = ['la moitié', 'le tiers', 'le quart', 'le cinquième', 'le sixième', '
 
 EURO = '~\\text{€}'
 MODELES = []
+SCISSIONS = []
 
 # --- 1. 6-130 : entier, décimal ou non décimal ---------------------------------------------
 
@@ -206,23 +215,30 @@ APPLIQUER_FRACTION = variation(
 
 MODELES.append(modele(
     '02-appliquer-une-fraction-a-un-entier', 'Appliquer une fraction à un entier',
-    'Traduire « de » par une multiplication ; calculer une fraction d\'un entier, en simplifiant'
-    ' d\'abord (2/5 de 60 = 2 × 12) ou avec un résultat fractionnaire (5/4 de 3 = 15/4)',
+    'Calculer une fraction d\'un entier, en simplifiant d\'abord (2/5 de 60 = 2 × 12) ou avec un'
+    ' résultat fractionnaire (5/4 de 3 = 15/4)',
     'Fractions', 'Calculer', 'Fraction d\'une quantité', 4,
-    [TRADUIRE, APPLIQUER_ENTIER, APPLIQUER_FRACTION],
-    [spec('2/5 de 60 : 2/5 × 60', 0, {'q': 5, 'p': 2, 'k': 12, 'n': 60}, '0', 'correct'),
-     spec('Erreur : 60 ÷ 2/5', 0, {'q': 5, 'p': 2, 'k': 12, 'n': 60}, '3', 'incorrect'),
-     spec('2/5 de 60 = 24', 1, {'q': 5, 'p': 2, 'k': 12, 'n': 60}, '24', 'correct'),
-     spec('Erreur : rôles inversés (60 ÷ 2 × 5 = 150)', 1, {'q': 5, 'p': 2, 'k': 12, 'n': 60},
+    [APPLIQUER_ENTIER, APPLIQUER_FRACTION],
+    [spec('2/5 de 60 = 24', 0, {'q': 5, 'p': 2, 'k': 12, 'n': 60}, '24', 'correct'),
+     spec('Erreur : rôles inversés (60 ÷ 2 × 5 = 150)', 0, {'q': 5, 'p': 2, 'k': 12, 'n': 60},
           '150', 'incorrect'),
-     spec('Erreur : un cinquième seulement (12)', 1, {'q': 5, 'p': 2, 'k': 12, 'n': 60}, '12',
+     spec('Erreur : un cinquième seulement (12)', 0, {'q': 5, 'p': 2, 'k': 12, 'n': 60}, '12',
           'incorrect'),
-     spec('5/4 de 3 = 15/4', 2, {'q': 4, 'p': 5, 'n': 3}, '\\frac{15}{4}', 'correct'),
-     spec('3,75 : la consigne demande une fraction', 2, {'q': 4, 'p': 5, 'n': 3}, '3,75',
+     spec('5/4 de 3 = 15/4', 1, {'q': 4, 'p': 5, 'n': 3}, '\\frac{15}{4}', 'correct'),
+     spec('3,75 : la consigne demande une fraction', 1, {'q': 4, 'p': 5, 'n': 3}, '3,75',
           'bad_form', ['form']),
-     spec('Erreur : 5/12', 2, {'q': 4, 'p': 5, 'n': 3}, '\\frac{5}{12}', 'incorrect'),
-     spec('Erreur : 15/12 (dénominateur multiplié aussi)', 2, {'q': 4, 'p': 5, 'n': 3},
+     spec('Erreur : 5/12', 1, {'q': 4, 'p': 5, 'n': 3}, '\\frac{5}{12}', 'incorrect'),
+     spec('Erreur : 15/12 (dénominateur multiplié aussi)', 1, {'q': 4, 'p': 5, 'n': 3},
           '\\frac{15}{12}', 'incorrect')]))
+
+SCISSIONS.append(modele(
+    '11-traduire-de-par-une-multiplication', 'Traduire « de » par une multiplication',
+    'Choisir l\'écriture qui calcule une fraction d\'un entier : 2/5 de 60, c\'est 2/5 × 60 (et non'
+    ' 2/5 + 60, 60 − 2/5 ni 60 ÷ 2/5)',
+    'Fractions', 'Calculer', 'Fraction d\'une quantité', 5,
+    [TRADUIRE],
+    [spec('2/5 de 60 : 2/5 × 60', 0, {'q': 5, 'p': 2, 'k': 12, 'n': 60}, '0', 'correct'),
+     spec('Erreur : 60 ÷ 2/5', 0, {'q': 5, 'p': 2, 'k': 12, 'n': 60}, '3', 'incorrect')]))
 
 # --- 3. 6-136 : multiplier une fraction par un entier --------------------------------------
 
@@ -258,35 +274,52 @@ COMMUTER = variation(
      '$$' + fr('{{a}}', '{{b}}') + ' \\times {{n}} = {{n}} \\times ' + col('{{solution}}') + '$$'],
     ['gcd(a,b)==1', 'a!=b'])
 
+# Lot 5, question 2 (§ 12) : dans le modèle « en simplifiant d'abord », la simplification vient en
+# premier, le produit des numérateurs en second (c'était l'inverse dans la v4 de 03)
 PRODUIT_ENTIER = variation(
     'Calcule.\n\n$$' + fr('{{a}}', '{{b}}') + ' \\times {{n}} = ?$$',
     [var('b', '2..9'), var('a', '1..9'), var('k', '2..5'), var('n', 'eval:b*k')],
     ['{{eval:a*k}}'],
-    [PRODUIT,
-     '$$' + fr('{{a}}', '{{b}}') + ' \\times {{n}} = ' + fr('{{a}} \\times {{n}}', '{{b}}') + ' = '
-     + fr('{{eval:a*n}}', '{{b}}') + ' = ' + col('{{solution}}') + '$$',
-     'On pouvait aussi simplifier d\'abord : ${{n}} \\div {{b}} = {{k}}$, puis ${{a}} \\times {{k}}'
-     ' = {{solution}}$.'],
+    ['**Simplifier d\'abord.** ${{n}}$ est un multiple de ${{b}}$ : ${{n}} = {{b}} \\times {{k}}$.'
+     ' On divise ${{n}}$ par ${{b}}$, puis on multiplie par ${{a}}$.',
+     '$$' + fr('{{a}}', '{{b}}') + ' \\times {{n}} = {{a}} \\times ' + fr('{{n}}', '{{b}}')
+     + ' = {{a}} \\times {{k}} = ' + col('{{solution}}') + '$$',
+     'On peut aussi multiplier d\'abord : $' + fr('{{a}}', '{{b}}') + ' \\times {{n}} = '
+     + fr('{{a}} \\times {{n}}', '{{b}}') + ' = ' + fr('{{eval:a*n}}', '{{b}}')
+     + ' = {{solution}}$.'],
     ['gcd(a,b)==1', 'a!=b'])
 
 MODELES.append(modele(
     '03-multiplier-une-fraction-par-un-entier', 'Multiplier une fraction par un entier',
-    'Produit d\'une fraction par un entier dans les deux sens (3/7 × 4, 5 × 2/9), commutativité'
-    ' (3/4 × 7 = 7 × ?), produit entier (5/6 × 12)',
+    'Produit d\'une fraction par un entier dans les deux sens (3/7 × 4, 5 × 2/9)',
     'Fractions', 'Calculer', 'Multiplication', 7,
-    [PRODUIT_DROITE, PRODUIT_GAUCHE, COMMUTER, PRODUIT_ENTIER],
+    [PRODUIT_DROITE, PRODUIT_GAUCHE],
     [spec('3/7 × 4 = 12/7', 0, {'b': 7, 'a': 3, 'n': 4}, '\\frac{12}{7}', 'correct'),
      spec('Erreur : 12/28', 0, {'b': 7, 'a': 3, 'n': 4}, '\\frac{12}{28}', 'incorrect'),
      spec('Erreur : 3/28', 0, {'b': 7, 'a': 3, 'n': 4}, '\\frac{3}{28}', 'incorrect'),
      spec('5 × 2/9 = 10/9', 1, {'b': 9, 'a': 2, 'n': 5}, '\\frac{10}{9}', 'correct'),
-     spec('Erreur : 10/45', 1, {'b': 9, 'a': 2, 'n': 5}, '\\frac{10}{45}', 'incorrect'),
-     spec('3/4 × 7 = 7 × 3/4', 2, {'b': 4, 'a': 3, 'n': 7}, '\\frac{3}{4}', 'correct'),
-     spec('Erreur : 7 × 3/4 complété par 3', 2, {'b': 4, 'a': 3, 'n': 7}, '3', 'incorrect'),
-     spec('5/6 × 12 = 10', 3, {'b': 6, 'a': 5, 'k': 2, 'n': 12}, '10', 'correct'),
-     spec('60/6 non simplifié : ambre', 3, {'b': 6, 'a': 5, 'k': 2, 'n': 12}, '\\frac{60}{6}',
+     spec('Erreur : 10/45', 1, {'b': 9, 'a': 2, 'n': 5}, '\\frac{10}{45}', 'incorrect')]))
+
+SCISSIONS.append(modele(
+    '12-multiplier-une-fraction-par-un-entier-en-simplifiant', 'Multiplier une fraction par un'
+    ' entier en simplifiant d\'abord',
+    'Produit d\'une fraction par un multiple de son dénominateur, en simplifiant d\'abord'
+    ' (5/6 × 12 = 5 × 2 = 10)',
+    'Fractions', 'Calculer', 'Multiplication', 8,
+    [PRODUIT_ENTIER],
+    [spec('5/6 × 12 = 10', 0, {'b': 6, 'a': 5, 'k': 2, 'n': 12}, '10', 'correct'),
+     spec('60/6 non simplifié : ambre', 0, {'b': 6, 'a': 5, 'k': 2, 'n': 12}, '\\frac{60}{6}',
           'unoptimal_form', ['reducedFractions']),
-     spec('Erreur : 60/72', 3, {'b': 6, 'a': 5, 'k': 2, 'n': 12}, '\\frac{60}{72}',
+     spec('Erreur : 60/72', 0, {'b': 6, 'a': 5, 'k': 2, 'n': 12}, '\\frac{60}{72}',
           'incorrect')]))
+
+SCISSIONS.append(modele(
+    '13-echanger-les-facteurs-d-un-produit', 'Échanger les facteurs d\'un produit',
+    'Compléter 3/4 × 7 = 7 × ? : l\'ordre des facteurs ne compte pas dans un produit',
+    'Fractions', 'Calculer', 'Multiplication', 9,
+    [COMMUTER],
+    [spec('3/4 × 7 = 7 × 3/4', 0, {'b': 4, 'a': 3, 'n': 7}, '\\frac{3}{4}', 'correct'),
+     spec('Erreur : 7 × 3/4 complété par 3', 0, {'b': 4, 'a': 3, 'n': 7}, '3', 'incorrect')]))
 
 # --- 4. 6-133 : comparer deux fractions ----------------------------------------------------
 # a/b et c/d tirés ; `s` échange l'ordre d'affichage ; `r` = indice du signe (0 <, 1 =, 2 >)
@@ -365,24 +398,45 @@ SPEC_MUL = {'b': 3, 'm': 2, 'd': 6, 'a': 2, 'c': 4, 's': 0, 'gn': 2, 'gd': 3, 'd
 SPEC_COM = {'k': 0, 'b': 4, 'd': 6, 'L': 12, 'a': 3, 'c': 5, 's': 0, 'gn': 3, 'gd': 4, 'dn': 5,
             'dd': 6, 'r': 0}
 MODELES.append(modele(
-    '04-comparer-deux-fractions', 'Comparer deux fractions',
-    'Comparer deux fractions : même dénominateur, même numérateur (5/7 et 5/9), de part et'
-    ' d\'autre de 1 (7/8 et 10/9) ou de 1/2 (5/12 et 6/11), dénominateur commun (2/3 et 4/6 ;'
-    ' 3/4 et 5/6)',
+    '04-comparer-deux-fractions', 'Comparer deux fractions de même dénominateur ou de même'
+    ' numérateur',
+    'Comparer deux fractions de même dénominateur (3/7 et 5/7) ou de même numérateur (5/7 et 5/9)',
     'Fractions', 'Apprivoiser', 'Comparer', 5,
-    [COMPARER_DENOMINATEUR, COMPARER_NUMERATEUR, COMPARER_A_UN, COMPARER_A_DEMI,
-     COMPARER_MULTIPLE, COMPARER_COMMUN],
+    [COMPARER_DENOMINATEUR, COMPARER_NUMERATEUR],
     [spec('3/7 < 5/7', 0, SPEC_DEN, '0', 'correct'),
+     spec('Erreur : 3/7 > 5/7', 0, SPEC_DEN, '2', 'incorrect'),
      spec('5/7 > 5/9', 1, SPEC_NUM, '2', 'correct'),
-     spec('Erreur : 5/7 < 5/9 (« 9 > 7 »)', 1, SPEC_NUM, '0', 'incorrect'),
-     spec('7/8 < 10/9', 2, SPEC_UN, '0', 'correct'),
-     spec('Erreur : 7/8 > 10/9', 2, SPEC_UN, '2', 'incorrect'),
-     spec('6/11 > 5/12', 3, SPEC_DEMI, '2', 'correct'),
-     spec('Erreur : 6/11 < 5/12 (« 12 > 11 »)', 3, SPEC_DEMI, '0', 'incorrect'),
-     spec('2/3 = 4/6', 4, SPEC_MUL, '1', 'correct'),
-     spec('Erreur : 2/3 < 4/6', 4, SPEC_MUL, '0', 'incorrect'),
-     spec('3/4 < 5/6', 5, SPEC_COM, '0', 'correct'),
-     spec('Erreur : 3/4 > 5/6', 5, SPEC_COM, '2', 'incorrect')]))
+     spec('Erreur : 5/7 < 5/9 (« 9 > 7 »)', 1, SPEC_NUM, '0', 'incorrect')]))
+
+SCISSIONS.append(modele(
+    '14-comparer-deux-fractions-a-1-ou-a-un-demi', 'Comparer deux fractions à 1 ou à 1/2',
+    'Comparer deux fractions de part et d\'autre de 1 (7/8 et 10/9) ou de 1/2 (5/12 et 6/11)',
+    'Fractions', 'Apprivoiser', 'Comparer', 6,
+    [COMPARER_A_UN, COMPARER_A_DEMI],
+    [spec('7/8 < 10/9', 0, SPEC_UN, '0', 'correct'),
+     spec('Erreur : 7/8 > 10/9', 0, SPEC_UN, '2', 'incorrect'),
+     spec('6/11 > 5/12', 1, SPEC_DEMI, '2', 'correct'),
+     spec('Erreur : 6/11 < 5/12 (« 12 > 11 »)', 1, SPEC_DEMI, '0', 'incorrect')]))
+
+SCISSIONS.append(modele(
+    '15-comparer-deux-fractions-de-denominateurs-multiples', 'Comparer deux fractions de'
+    ' dénominateurs multiples',
+    'Comparer deux fractions dont un dénominateur est multiple de l\'autre (2/3 et 4/6 ; 3/4 et'
+    ' 7/8), en les écrivant avec le même dénominateur',
+    'Fractions', 'Apprivoiser', 'Comparer', 7,
+    [COMPARER_MULTIPLE],
+    [spec('2/3 = 4/6', 0, SPEC_MUL, '1', 'correct'),
+     spec('Erreur : 2/3 < 4/6', 0, SPEC_MUL, '0', 'incorrect')]))
+
+SCISSIONS.append(modele(
+    '16-comparer-deux-fractions-avec-un-denominateur-commun', 'Comparer deux fractions avec un'
+    ' dénominateur commun',
+    'Comparer deux fractions en cherchant un dénominateur commun (3/4 et 5/6 sur 12 ; 5/6 et 7/9'
+    ' sur 18)',
+    'Fractions', 'Apprivoiser', 'Comparer', 8,
+    [COMPARER_COMMUN],
+    [spec('3/4 < 5/6', 0, SPEC_COM, '0', 'correct'),
+     spec('Erreur : 3/4 > 5/6', 0, SPEC_COM, '2', 'incorrect')]))
 
 # --- 5. 6-203 : encadrer une fraction par deux entiers consécutifs -------------------------
 
@@ -615,9 +669,9 @@ SPEC_SQ = {'b': 2, 'a': 7, 'd': 5, 'c': 3, 'L': 10, 'N': 29}
 MODELES.append(modele(
     '08-soustraire-des-fractions', 'Soustraire des fractions',
     'Différence de deux fractions : même dénominateur (7/9 − 2/9), dénominateurs multiples'
-    ' (2/3 − 1/6), quelconques dans des cas simples (7/2 − 3/5), entier moins fraction (1 − 3/8)',
+    ' (2/3 − 1/6), quelconques dans des cas simples (7/2 − 3/5)',
     'Fractions', 'Calculer', 'Addition et Soustraction', 11,
-    [SOUSTRAIRE_MEME, SOUSTRAIRE_MULTIPLES, SOUSTRAIRE_QUELCONQUES, SOUSTRAIRE_ENTIER],
+    [SOUSTRAIRE_MEME, SOUSTRAIRE_MULTIPLES, SOUSTRAIRE_QUELCONQUES],
     [spec('7/9 − 2/9 = 5/9', 0, SPEC_SM, '\\frac{5}{9}', 'correct'),
      spec('Erreur : dénominateurs soustraits aussi (5/0)', 0, SPEC_SM, '\\frac{5}{18}',
           'incorrect'),
@@ -629,9 +683,16 @@ MODELES.append(modele(
      spec('Erreur : 2/3 écrit 2/6 sans changer le numérateur (1/6)', 1, SPEC_SMUL, '\\frac{1}{6}',
           'incorrect'),
      spec('7/2 − 3/5 = 29/10', 2, SPEC_SQ, '\\frac{29}{10}', 'correct'),
-     spec('Erreur : 4/3', 2, SPEC_SQ, '\\frac{4}{3}', 'incorrect'),
-     spec('1 − 3/8 = 5/8', 3, {'n': 1, 'd': 8, 'c': 3}, '\\frac{5}{8}', 'correct'),
-     spec('Erreur : 2/8', 3, {'n': 1, 'd': 8, 'c': 3}, '\\frac{2}{8}', 'incorrect')]))
+     spec('Erreur : 4/3', 2, SPEC_SQ, '\\frac{4}{3}', 'incorrect')]))
+
+SCISSIONS.append(modele(
+    '17-soustraire-une-fraction-d-un-entier', 'Soustraire une fraction d\'un entier',
+    'Entier moins fraction (1 − 3/8, 2 − 3/4) : écrire l\'entier comme une fraction de même'
+    ' dénominateur',
+    'Fractions', 'Calculer', 'Addition et Soustraction', 13,
+    [SOUSTRAIRE_ENTIER],
+    [spec('1 − 3/8 = 5/8', 0, {'n': 1, 'd': 8, 'c': 3}, '\\frac{5}{8}', 'correct'),
+     spec('Erreur : 2/8', 0, {'n': 1, 'd': 8, 'c': 3}, '\\frac{2}{8}', 'incorrect')]))
 
 # --- 9. 6-137 : problèmes de fractions -----------------------------------------------------
 
@@ -769,17 +830,20 @@ def en_unit(texte):
     return GRANDEUR_TEXTE.sub(lambda g: '~\\unit{' + g.group(1) + '}', texte)
 
 
-for _, m in MODELES:
+for _, m in MODELES + SCISSIONS:
     for v in m['variations']:
         v['statement'] = en_unit(v['statement'])
         v['correction']['steps'] = [en_unit(x) for x in v['correction']['steps']]
 
-os.makedirs(DOSSIER, exist_ok=True)
-for nom, m in MODELES:
-    with open(os.path.join(DOSSIER, nom + '.json'), 'w', encoding='utf-8') as f:
+# 01 n'est plus écrit (voir l'en-tête)
+ECRITS = [(DOSSIER, n, m) for n, m in MODELES if not n.startswith('01-')]
+ECRITS += [(DOSSIER_SCISSIONS, n, m) for n, m in SCISSIONS]
+for dossier, nom, m in ECRITS:
+    os.makedirs(dossier, exist_ok=True)
+    with open(os.path.join(dossier, nom + '.json'), 'w', encoding='utf-8') as f:
         json.dump(m, f, ensure_ascii=False, indent='\t')
         f.write('\n')
 # Mis en forme comme le pre-commit, pour que le script redonne les fichiers commités
-subprocess.run(['pnpm', 'exec', 'prettier', '--write', DOSSIER], check=True,
+subprocess.run(['pnpm', 'exec', 'prettier', '--write', DOSSIER, DOSSIER_SCISSIONS], check=True,
                stdout=subprocess.DEVNULL)
-print(f'{len(MODELES)} modèles écrits dans {DOSSIER}')
+print(f'{len(ECRITS)} modèles écrits ({len(SCISSIONS)} dans {DOSSIER_SCISSIONS})')
