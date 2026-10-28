@@ -8,17 +8,19 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, ouverture du lot 5 (phase 0 validée, § 2.12)._
+_Mis à jour le 2026-10-28, après #1924 (lot 5b mergé)._
 
-- **État** : lots 1 à 4 EN PROD (v0.52.0) ; 178 / 178 QCM migrés le 2026-10-28, **0 `multiple_choice` en base**
-  ni dans les copies enregistrées (vérifié en prod : évaluations, tests, fiches, défis). Lot 5 en cours.
-- **Prochaine action** : PR 5a (retrait de `multiple_choice` du code) → PR 5b (retrait de l'import TinyMath,
-  `check-template` / `template-insert-row` déplacés) → après `deploy:prod`, migration destructive
-  (contrainte + tables `migration_*`, export JSON d'abord) : s'arrêter et expliquer. Puis lot 6.
-- **En attente de David** : essais à l'écran (QCM migrés, CP-058) ; avis sur les séries PDF (choix d'une case
-  mélangée imprimés dans l'ordre mélangé) ; publication de CP-058 quand il l'a essayé.
-- **Pièges en cours** : 6 des 10 modèles `cp-b2` ont un `level` différent en prod et dans la source
-  (chantier « questions »).
+- **État** : lots 1 à 4 EN PROD. Lot 5b MERGÉ (#1924) : outillage TinyMath retiré, `checkTemplate` /
+  `toTemplateInsertRow` / lecteur du corpus dans `src/lib/questions/review/`. Lot 5a EN COURS sur
+  `refactor/figure-et-choix-lot5` : code sans `multiple_choice` (typecheck 0), corpus / données / sources
+  `1spe-0-*` réécrits en cases choix (90 modèles, garde sans écart) ; reste : tests à porter, revue opus, PR.
+- **Prochaine action** : finir les tests de la 5a (cliquet + suites serveur / client / intégration),
+  `code-reviewer` opus + `security-auditor` (notation, API, évaluations), PR. Puis, après `deploy:prod` :
+  migration destructive (contrainte, tables `migration_*`, colonne `multiple_answers`) : s'arrêter et expliquer.
+- **En attente de David** : essais à l'écran (QCM migrés, CP-058) ; avis sur les séries PDF ; publication de CP-058.
+- **Pièges en cours** : `scripts/questions/1spe-0-*` réécrits sur cette branche (instantanés pris avant la
+  migration) : le chantier `questions-1spe` doit repartir de `main` après le merge. 6 modèles `cp-b2` :
+  `level` prod ≠ source (chantier « questions »).
 - **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `refactor/figure-et-choix-lot5`.
 
 ---
