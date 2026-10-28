@@ -5,7 +5,7 @@
 	Main orchestrator for creating/editing question templates.
 
 	FEATURES:
-	- Type selection (fill-in-blanks, QCM)
+	- Type selection (fill-in-blanks, course card ; un QCM est une case choix)
 	- Dynamic form fields based on question type
 	- Variable editor with syntax helpers
 	- Content field editor for statement/correction
@@ -119,7 +119,6 @@
 	import TestSpecEditor from './questions/TestSpecEditor.svelte';
 	import AnswerAssumptionsEditor from './questions/AnswerAssumptionsEditor.svelte';
 	import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-	import { keepFirstCorrectChoice, keepFirstDeclaredChoice } from '$lib/questions/single-answer';
 	import {
 		assumptionsToRows,
 		duplicateAssumptionMessage,
@@ -151,13 +150,7 @@
 	// Shared configuration state
 	// Infer type from structure when editing existing template
 	let questionType = $state<QuestionType>(
-		initialTemplate
-			? getQuestionType({
-					choices: initialTemplate.variations?.[0]?.choices,
-					shared: initialTemplate.shared,
-					options: initialTemplate.options
-				})
-			: 'fill_in_blanks'
+		initialTemplate ? getQuestionType({ options: initialTemplate.options }) : 'fill_in_blanks'
 	);
 	let grades = $state<GradeLevel[]>(initialTemplate?.grades || []);
 	let delay = $state<number | undefined>(initialTemplate?.delay);
@@ -274,9 +267,6 @@
 		}
 	});
 
-	// Type-specific fields (shared)
-	let multipleAnswers = $state<boolean | undefined>(initialTemplate?.multipleAnswers);
-
 	// Default display options state
 	let displayShuffleTerms = $state(initialTemplate?.defaultDisplayOptions?.shuffleTerms ?? false);
 	let displayShuffleFactors = $state(
@@ -301,7 +291,6 @@
 
 	// Template options state
 	let optOrderIndependent = $state(initialTemplate?.options?.orderIndependent ?? false);
-	let optShuffleChoices = $state(initialTemplate?.options?.shuffleChoices ?? true);
 	// Question de cours (Q110 b) : marqueur d'intention, forcé pour une carte de cours
 	let optCourseQuestion = $state(readCourseQuestionOption(initialTemplate?.options));
 	let optAllowBracketsInFirstNegativeTerm = $state(
@@ -331,7 +320,6 @@
 		// Les specs doivent être jugées avec les hypothèses, comme les élèves
 		const answerAssumptions = rowsToAssumptions(assumptionRows);
 		if (answerAssumptions) opts.answerAssumptions = answerAssumptions;
-		if (!optShuffleChoices) opts.shuffleChoices = false;
 		const constraints: NonNullable<NonNullable<QuestionTemplate['options']>['constraints']> = {};
 		for (const id of CONSTRAINT_IDS) {
 			if (constraintModes[id]) {
@@ -347,17 +335,10 @@
 	// Shared variables (resolved before per-variation variables)
 	let sharedVariables = $state<QuestionVariable[]>(initialTemplate?.shared?.variables || []);
 	let sharedStatement = $state(templateMarkdown(initialTemplate?.shared?.statement || ''));
-	let sharedCorrectChoiceIndex = $state<string | string[]>(
-		initialTemplate?.shared?.correctChoiceIndex || ''
-	);
 	let sharedCorrectionString = $state(correctionToString(initialTemplate?.shared?.correction));
 	// La correction partagée telle que chargée : ce que le formulaire n'édite pas
 	// (`feedback`, `generatedSteps`) est rendu tel quel à l'enregistrement
 	let sharedCorrectionLoaded: QuestionCorrection | undefined = initialTemplate?.shared?.correction;
-	let sharedChoices = $state(initialTemplate?.shared?.choices ?? []);
-	// Choix partagés réels : des choix aux libellés tous vides ne comptent pas,
-	// sinon ils écraseraient à l'enregistrement les choix propres aux variations
-	let hasSharedChoices = $derived(sharedChoices.some((c) => c.content.trim().length > 0));
 	let sharedRequiredFormSelect = $state<string>(
 		initialTemplate?.shared?.requiredForm
 			? typeof initialTemplate.shared.requiredForm === 'string'
@@ -514,16 +495,13 @@
 			...v,
 			variables: v.variables || [],
 			blanks: v.blanks || [],
-			choices: v.choices || [],
 			correction: v.correction,
 			blankDefaults: { precision: { type: 'none' as const }, ...v.blankDefaults }
 		})) || [
 			{
 				statement: templateMarkdown(''),
 				variables: [],
-				correctChoiceIndex: '',
 				blanks: [],
-				choices: [],
 				blankDefaults: { precision: { type: 'none' as const } }
 			}
 		]
@@ -584,7 +562,6 @@
 	// Question type options
 	const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
 		{ value: 'fill_in_blanks', label: 'Texte à trous' },
-		{ value: 'multiple_choice', label: 'QCM' },
 		{ value: 'course_card', label: 'Carte de cours' }
 	];
 
@@ -604,9 +581,7 @@
 			{
 				statement: templateMarkdown(''),
 				variables: [],
-				correctChoiceIndex: '',
 				blanks: [],
-				choices: [],
 				blankDefaults: { precision: { type: 'none' as const } }
 			}
 		];
@@ -648,7 +623,6 @@
 			// statement is now a branded string (TemplateMarkdown), so no deep copy needed
 			statement: templateMarkdown(sourceVariation.statement ?? ''),
 			variables: $state.snapshot(sourceVariation.variables ?? []) as QuestionVariable[],
-			correctChoiceIndex: sourceVariation.correctChoiceIndex,
 			// Les étapes viennent de variationExtras ; le reste de la correction est copié
 			correction: sourceVariation.correction
 				? ($state.snapshot(sourceVariation.correction) as QuestionCorrection)
@@ -656,7 +630,6 @@
 			blanks: sourceVariation.blanks
 				? ($state.snapshot(sourceVariation.blanks) as TemplateBlank[])
 				: [],
-			choices: sourceVariation.choices ? $state.snapshot(sourceVariation.choices) : [],
 			blankDefaults: {
 				precision: { type: 'none' as const },
 				...(sourceVariation.blankDefaults
@@ -672,18 +645,6 @@
 			i === currentVariationIndex ? { ...variationExtras[duplicateSourceIndex] } : extra
 		);
 		showDuplicateDialog = false;
-	}
-
-	// Derive correctChoiceIndex from isCorrect flags on choices
-	function deriveCorrectChoiceIndex(
-		choices: { content: unknown; isCorrect?: boolean }[]
-	): string | string[] | undefined {
-		const indexes = choices
-			.map((c, i) => (c.isCorrect ? String(i) : null))
-			.filter((i): i is string => i !== null);
-		if (indexes.length === 1) return indexes[0];
-		if (indexes.length > 1) return indexes;
-		return undefined;
 	}
 
 	// Build template object
@@ -711,22 +672,6 @@
 			const cleaned: QuestionVariation = {
 				...(variation.statement?.trim() ? { statement: variation.statement } : {}),
 				...(filteredVars && filteredVars.length > 0 ? { variables: filteredVars } : {}),
-				...(questionType === 'multiple_choice'
-					? hasSharedChoices
-						? // Shared choices: preserve per-variation correctChoiceIndex, no per-variation choices
-							variation.correctChoiceIndex &&
-							(!Array.isArray(variation.correctChoiceIndex) ||
-								variation.correctChoiceIndex.length > 0)
-							? { correctChoiceIndex: variation.correctChoiceIndex }
-							: {}
-						: // Per-variation choices: derive correctChoiceIndex from isCorrect flags
-							variation.choices?.length
-							? {
-									correctChoiceIndex: deriveCorrectChoiceIndex(variation.choices),
-									choices: variation.choices
-								}
-							: {}
-					: {}),
 				...(questionType === 'fill_in_blanks' && variation.blanks && variation.blanks.length > 0
 					? { blanks: variation.blanks }
 					: {}),
@@ -786,13 +731,8 @@
 			const filtered = sharedVariables.filter((v) => v.name && v.expression);
 			if (filtered.length > 0) shared.variables = filtered;
 		}
-		if (questionType === 'multiple_choice' && hasSharedChoices) {
-			const sharedDerived = deriveCorrectChoiceIndex(sharedChoices);
-			if (sharedDerived) shared.correctChoiceIndex = sharedDerived;
-		}
 		const sharedCorrectionObj = stringToCorrection(sharedCorrectionString, sharedCorrectionLoaded);
 		if (sharedCorrectionObj) shared.correction = sharedCorrectionObj;
-		if (questionType === 'multiple_choice' && hasSharedChoices) shared.choices = sharedChoices;
 		if (sharedRequiredFormSelect) {
 			if (sharedRequiredFormSelect === 'custom' && sharedRequiredFormPattern.trim()) {
 				shared.requiredForm = customRequiredForm(
@@ -885,7 +825,6 @@
 		// Build options
 		const options: QuestionTemplate['options'] = {};
 		if (optOrderIndependent) options.orderIndependent = true;
-		if (!optShuffleChoices) options.shuffleChoices = false;
 		// Build constraints
 		const constraints: NonNullable<NonNullable<QuestionTemplate['options']>['constraints']> = {};
 		for (const id of CONSTRAINT_IDS) {
@@ -924,11 +863,6 @@
 			testSpecs: questionType !== 'course_card' && testSpecs.length > 0 ? testSpecs : undefined
 		};
 
-		// Add type-specific shared fields
-		if (questionType === 'multiple_choice') {
-			return { ...base, multipleAnswers };
-		}
-
 		return base;
 	}
 
@@ -947,14 +881,9 @@
 		grades = t.grades || [];
 		delay = t.delay;
 		exerciseInstruction = t.exerciseInstruction;
-		multipleAnswers = t.multipleAnswers;
 
 		// Type
-		questionType = getQuestionType({
-			choices: t.variations?.[0]?.choices,
-			shared: t.shared,
-			options: t.options
-		});
+		questionType = getQuestionType({ options: t.options });
 
 		// Display options
 		displayShuffleTerms = t.defaultDisplayOptions?.shuffleTerms ?? false;
@@ -968,7 +897,6 @@
 
 		// Validation options
 		optOrderIndependent = t.options?.orderIndependent ?? false;
-		optShuffleChoices = t.options?.shuffleChoices ?? true;
 		optCourseQuestion = readCourseQuestionOption(t.options);
 		optAllowBracketsInFirstNegativeTerm =
 			t.options?.constraints?.allowBracketsInFirstNegativeTerm ?? false;
@@ -981,10 +909,8 @@
 		// Shared fields
 		sharedVariables = t.shared?.variables || [];
 		sharedStatement = templateMarkdown(t.shared?.statement || '');
-		sharedCorrectChoiceIndex = t.shared?.correctChoiceIndex || '';
 		sharedCorrectionString = correctionToString(t.shared?.correction);
 		sharedCorrectionLoaded = t.shared?.correction;
-		sharedChoices = t.shared?.choices ?? [];
 		sharedRequiredFormSelect = t.shared?.requiredForm
 			? typeof t.shared.requiredForm === 'string'
 				? t.shared.requiredForm
@@ -1032,16 +958,13 @@
 			statement: v.statement || templateMarkdown(''),
 			variables: v.variables || [],
 			blanks: v.blanks || [],
-			choices: v.choices || [],
 			correction: v.correction,
 			blankDefaults: { precision: { type: 'none' as const }, ...v.blankDefaults }
 		})) || [
 			{
 				statement: templateMarkdown(''),
 				variables: [],
-				correctChoiceIndex: '',
 				blanks: [],
-				choices: [],
 				blankDefaults: { precision: { type: 'none' as const } }
 			}
 		];
@@ -1114,20 +1037,6 @@
 		else v.statement = value;
 	}
 
-	// « Plusieurs réponses » coupé dans un éditeur (case ou « Vrai / Faux ») : le
-	// réglage vaut pour tout le modèle → chaque variation et le partagé ne gardent
-	// que leur première bonne réponse
-	function handleSingleAnswer() {
-		variations = variations.map((variation) => ({
-			...variation,
-			...(variation.choices ? { choices: keepFirstCorrectChoice(variation.choices) } : {}),
-			...(variation.correctChoiceIndex !== undefined
-				? { correctChoiceIndex: keepFirstDeclaredChoice(variation.correctChoiceIndex) }
-				: {})
-		}));
-		sharedChoices = keepFirstCorrectChoice(sharedChoices);
-	}
-
 	// Handle save
 
 	// Save as draft (no category validation)
@@ -1149,7 +1058,7 @@
 			return;
 		}
 		const templateData = buildTemplate();
-		// QCM (V1) : plusieurs bonnes réponses sans « plusieurs réponses » → refusé,
+		// Case choix (V1) : plusieurs bonnes réponses sans `plusieurs: oui` → refusé,
 		// même en brouillon (le serveur refuserait aussi)
 		// Toast même en silencieux : sinon la modification (ex. un test supprimé)
 		// n'est pas enregistrée et rien ne le dit
@@ -1240,13 +1149,10 @@
 			genericFunctionsText,
 			cleanCoefficients,
 			capitalPairsChoice,
-			multipleAnswers,
 			variations: variations.map((v) => ({
 				statement: v.statement,
 				variables: v.variables?.length,
-				blanks: v.blanks?.length,
-				choices: v.choices?.length,
-				correctChoiceIndex: v.correctChoiceIndex
+				blanks: v.blanks?.length
 			})),
 			sharedVariables: sharedVariables.length,
 			variationExtras,
@@ -1292,14 +1198,11 @@
 		if (!(v.statement ?? '').trim() && !sharedStatement.trim())
 			errors.push(`Variation ${index + 1} : énoncé manquant`);
 		const hasAnswer =
-			(v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim())) ||
-			(v.choices && v.choices.length > 0) ||
-			(typeof v.correctChoiceIndex === 'string' && v.correctChoiceIndex.trim().length > 0) ||
-			(Array.isArray(v.correctChoiceIndex) && v.correctChoiceIndex.length > 0);
+			v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim());
 		if (!hasAnswer) errors.push(`Variation ${index + 1} : réponse manquante`);
 		return errors;
 	}
-	// QCM (V1) : exactement une bonne réponse, au moins une avec « plusieurs réponses »
+	// Case choix (V1) : exactement une bonne réponse, au moins une avec `plusieurs: oui`
 	let answerCountErrors = $derived(choiceAnswerCountErrors(previewTemplate));
 	let variationErrors = $derived([
 		...variations.flatMap((v, i) => getVariationErrors(v, i)),
@@ -1323,10 +1226,9 @@
 			variations.every(
 				(v) =>
 					((v.statement ?? '').trim().length > 0 || sharedStatement.trim().length > 0) &&
-					((v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim())) ||
-						(v.choices && v.choices.length > 0) ||
-						(typeof v.correctChoiceIndex === 'string' && v.correctChoiceIndex.trim().length > 0) ||
-						(Array.isArray(v.correctChoiceIndex) && v.correctChoiceIndex.length > 0))
+					v.blanks &&
+					v.blanks.length > 0 &&
+					v.blanks.some((b) => b.expectedAnswer?.trim())
 			) &&
 			grades.length > 0 &&
 			theme.trim().length > 0 &&
@@ -1442,9 +1344,7 @@
 			shared={sharedStatement || sharedVariables.length > 0
 				? {
 						statement: sharedStatement || undefined,
-						variables: sharedVariables.length > 0 ? sharedVariables : undefined,
-						choices:
-							questionType === 'multiple_choice' && hasSharedChoices ? sharedChoices : undefined
+						variables: sharedVariables.length > 0 ? sharedVariables : undefined
 					}
 				: undefined}
 			options={currentOptions}
@@ -1729,24 +1629,16 @@
 		<ValidationOptionsEditor
 			bind:open={optionsSectionOpen}
 			bind:orderIndependent={optOrderIndependent}
-			bind:shuffleChoices={optShuffleChoices}
 			bind:allowBracketsInFirstNegativeTerm={optAllowBracketsInFirstNegativeTerm}
 			bind:spacesFromFourDigits={optSpacesFromFourDigits}
 			bind:constraintModes
-			{questionType}
 		/>
 
 		<!-- Champs partagés (shared defaults for all variations) -->
 		<SharedFieldsEditor
 			bind:open={sharedFieldsOpen}
-			{questionType}
-			bind:multipleAnswers
-			bind:shuffleChoices={optShuffleChoices}
-			onSingleAnswer={handleSingleAnswer}
 			bind:sharedStatement
 			bind:sharedVariables
-			bind:sharedCorrectChoiceIndex
-			bind:sharedChoices
 			bind:sharedCorrectionString
 			bind:sharedRequiredFormSelect
 			bind:sharedRequiredFormPattern
@@ -1952,18 +1844,13 @@
 												<Card.Content>
 													<AnswerEditor
 														{questionType}
-														bind:answer={variation.correctChoiceIndex}
 														bind:blanks={variation.blanks}
-														bind:choices={variation.choices}
-														bind:multipleAnswers
-														bind:shuffleChoices={optShuffleChoices}
 														bind:statement={
 															() => effectiveStatement(variation),
 															(v) => setEffectiveStatement(variation, v)
 														}
 														statementShared={!variation.statement?.trim() &&
 															sharedStatement.trim().length > 0}
-														onSingleAnswer={handleSingleAnswer}
 													/>
 												</Card.Content>
 											</Collapsible.Content>

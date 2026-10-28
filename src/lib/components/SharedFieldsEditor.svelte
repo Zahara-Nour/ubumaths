@@ -2,21 +2,20 @@
 	Shared Fields Editor
 	====================
 
-	Card with 8 collapsible sub-sections for shared variation defaults:
+	Card with 7 collapsible sub-sections for shared variation defaults:
 	1. Shared statement
 	2. Shared variables
-	3. Shared answer
-	4. Shared correction
-	5. Required form
-	6. Blank defaults (precision, form, unit)
-	7. Validation rules (JSON)
-	8. Answer formats (JSON)
+	3. Shared correction
+	4. Required form
+	5. Blank defaults (precision, form, unit)
+	6. Validation rules (JSON)
+	7. Answer formats (JSON)
 
 	All value props are $bindable().
 -->
 
 <script lang="ts">
-	import type { QuestionType, QuestionVariable, PrecisionType } from '$lib/questions/types';
+	import type { QuestionVariable, PrecisionType } from '$lib/questions/types';
 	import type { TemplateMarkdown } from '$lib/ubumark';
 	import * as Card from '$lib/components/ui/card';
 	import * as Collapsible from '$lib/components/ui/collapsible';
@@ -24,7 +23,6 @@
 	import { Label } from '$lib/components/ui/label';
 	import VariableEditor from './VariableEditor.svelte';
 	import { MarkdownEditor } from '$lib/components/markdown';
-	import AnswerEditor from './AnswerEditor.svelte';
 	import MySelect from './MySelect.svelte';
 	import MyCheckbox from './MyCheckbox.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
@@ -34,14 +32,8 @@
 
 	interface Props {
 		open: boolean;
-		questionType: QuestionType;
-		multipleAnswers: boolean | undefined;
-		/** Mélange des choix : le préréglage « Vrai / Faux » le coupe (Q106) */
-		shuffleChoices: boolean;
 		sharedStatement: TemplateMarkdown;
 		sharedVariables: QuestionVariable[];
-		sharedCorrectChoiceIndex: string | string[];
-		sharedChoices: { content: TemplateMarkdown; isCorrect?: boolean }[];
 		sharedCorrectionString: string;
 		sharedRequiredFormSelect: string;
 		sharedRequiredFormPattern: string;
@@ -69,20 +61,12 @@
 		sharedValidationRulesJson: string;
 		sharedAnswerFormatsJson: string;
 		sharedVariableHelpOpen: boolean;
-		/** « Plusieurs réponses » coupé dans l'éditeur partagé : normaliser le modèle */
-		onSingleAnswer?: () => void;
 	}
 
 	let {
 		open = $bindable(),
-		questionType,
-		onSingleAnswer,
-		multipleAnswers = $bindable(),
-		shuffleChoices = $bindable(),
 		sharedStatement = $bindable(),
 		sharedVariables = $bindable(),
-		sharedCorrectChoiceIndex = $bindable(),
-		sharedChoices = $bindable(),
 		sharedCorrectionString = $bindable(),
 		sharedRequiredFormSelect = $bindable(),
 		sharedRequiredFormPattern = $bindable(),
@@ -137,7 +121,6 @@
 	// Local collapsible states
 	let statementOpen = $state(false);
 	let variablesOpen = $state(true);
-	let solutionOpen = $state(false);
 	let correctionOpen = $state(false);
 	let requiredFormOpen = $state(false);
 	let blankDefaultsOpen = $state(false);
@@ -213,30 +196,7 @@
 						</Collapsible.Content>
 					</Collapsible.Root>
 
-					<!-- 3. Réponse partagée -->
-					<Collapsible.Root bind:open={solutionOpen}>
-						<Collapsible.Trigger
-							class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
-						>
-							<span class="text-sm font-medium">Réponse partagée</span>
-							<ChevronDown
-								class="h-4 w-4 transition-transform duration-200 {solutionOpen ? 'rotate-180' : ''}"
-							/>
-						</Collapsible.Trigger>
-						<Collapsible.Content class="pt-2">
-							<AnswerEditor
-								{questionType}
-								bind:answer={sharedCorrectChoiceIndex}
-								bind:choices={sharedChoices}
-								bind:multipleAnswers
-								bind:shuffleChoices
-								{onSingleAnswer}
-								seedEmpty={false}
-							/>
-						</Collapsible.Content>
-					</Collapsible.Root>
-
-					<!-- 4. Correction partagée -->
+					<!-- 3. Correction partagée -->
 					<Collapsible.Root bind:open={correctionOpen}>
 						<Collapsible.Trigger
 							class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
@@ -259,7 +219,7 @@
 						</Collapsible.Content>
 					</Collapsible.Root>
 
-					<!-- 5. Forme requise -->
+					<!-- 4. Forme requise -->
 					<Collapsible.Root bind:open={requiredFormOpen}>
 						<Collapsible.Trigger
 							class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
@@ -292,7 +252,7 @@
 						</Collapsible.Content>
 					</Collapsible.Root>
 
-					<!-- 6. Paramètres des trous (blankDefaults) -->
+					<!-- 5. Paramètres des trous (blankDefaults) -->
 					<Collapsible.Root bind:open={blankDefaultsOpen}>
 						<Collapsible.Trigger
 							class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
@@ -454,7 +414,7 @@
 						</Collapsible.Content>
 					</Collapsible.Root>
 
-					<!-- 7. Règles de validation -->
+					<!-- 6. Règles de validation -->
 					<Collapsible.Root bind:open={validationOpen}>
 						<Collapsible.Trigger
 							class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"
@@ -482,7 +442,7 @@
 						</Collapsible.Content>
 					</Collapsible.Root>
 
-					<!-- 8. Formats de réponse -->
+					<!-- 7. Formats de réponse -->
 					<Collapsible.Root bind:open={formatsOpen}>
 						<Collapsible.Trigger
 							class="flex w-full items-center justify-between rounded-md border-b p-2 transition-colors hover:bg-muted/50"

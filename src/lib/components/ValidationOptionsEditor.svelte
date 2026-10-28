@@ -4,14 +4,12 @@
 
 	Card with collapsible sections for answer validation configuration:
 	- General validation (order-independent matching)
-	- QCM options (conditional on question type)
 	- Constraints
 
 	All value props are $bindable().
 -->
 
 <script lang="ts">
-	import type { QuestionType } from '$lib/questions/types';
 	import {
 		CONSTRAINT_IDS,
 		CONSTRAINT_LABELS,
@@ -27,22 +25,18 @@
 	interface Props {
 		open: boolean;
 		orderIndependent: boolean;
-		shuffleChoices: boolean;
 		allowBracketsInFirstNegativeTerm: boolean;
 		/** Espaces de groupement exigées dès 4 chiffres (règle de l'école) au lieu de 5 */
 		spacesFromFourDigits: boolean;
 		constraintModes: Record<string, string>;
-		questionType: QuestionType;
 	}
 
 	let {
 		open = $bindable(),
 		orderIndependent = $bindable(),
-		shuffleChoices = $bindable(),
 		allowBracketsInFirstNegativeTerm = $bindable(),
 		spacesFromFourDigits = $bindable(),
-		constraintModes = $bindable(),
-		questionType
+		constraintModes = $bindable()
 	}: Props = $props();
 
 	// Local collapsible states
@@ -69,14 +63,6 @@
 							label="Matching des trous indépendant de l'ordre"
 						/>
 					</div>
-
-					<!-- QCM options -->
-					{#if questionType === 'multiple_choice'}
-						<div class="space-y-3">
-							<h4 class="text-sm font-medium">Options QCM</h4>
-							<MyCheckbox bind:checked={shuffleChoices} label="Mélanger les choix" />
-						</div>
-					{/if}
 
 					<!-- Constraints -->
 					<Collapsible.Root bind:open={constraintsOpen}>
