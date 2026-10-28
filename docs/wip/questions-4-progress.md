@@ -10,9 +10,9 @@ _Mis à jour le 2026-10-28, après #1931 (lot 1 en fichiers, mergé)._
 - **État** : lot 1 (relatifs et rationnels, § 9) écrit (`docs/wip/questions/lot-4-1.py` → `scripts/questions/4-lot-1/`,
   7 modèles, 66 specs) ; essai en base **locale** fait le 2026-10-28 : les 7 rendus, juste / faux / correction OK
   dans l'aperçu admin. Fichiers mergés (#1931).
-- **Prochaine action** : § 6 de `couvrir-un-niveau.md` : **David** lance
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-1 --publier` (prod, brouillons), je relève les `id`,
-  puis migration nœud + tag.
+- **Prochaine action** : migration nœud + tag (§ 6 de `couvrir-un-niveau.md`, gabarit
+  `20261026210000_questions_cp_c_rangement_tags.sql`) sur un nouveau worktree. Brouillons en prod (2026-10-28) :
+  01 `92be516e` · 02 `25c02016` · 03 `70c52ae9` · 04 `a635df43` · 05 `62eae788` · 06 `a270c7aa` · 07 `05818fa0`.
 - **En attente de David** : rien.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005, « le plus possible ») partiront en 3e avec un lot de la 3e ;
   `db:migrate` peut exiger `--include-all` (migrations d'autres sessions non jouées) : réservé à David ; la ligne
