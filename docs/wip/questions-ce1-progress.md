@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 2 bis écrit (PR des fichiers ouverte)._
+_Mis à jour le 2026-10-28, après #1907._
 
-- **État** : lot 2 bis (ordinaux, 7 modèles, § 8) écrit en case « choix » / case nombre ; simulation 7/7 (79 specs), 3 000 tirages verts, 7 brouillons en base locale, joués dans l'aperçu admin (5179). PR des fichiers ouverte.
-- **Prochaine action** : merge de la PR ; puis **David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce1-2bis --publier` (brouillons en prod) ; puis migration nœud + tag (sous-notion « ordinaux et rangs », points CE1-011 à 015), page à cocher, publication. Puis lot 3 fractions (§ 4 bis, point 6).
-- **En attente de David** : la création des brouillons en prod après le merge.
-- **Pièges en cours** : jamais de variable `i` (unité imaginaire : chaîne `{{if:i==…}}` toujours sur sa dernière branche ; specs vertes quand même, elles passent les variables) → liste `21|30|…` ; △ s'affiche plus petit que ✕ ▢ ○ (police) ; niveaux « Ordinaux » 7 à 13 (1 à 6 = CP).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `feat/questions-ce1-lot2bis`.
+- **État** : lot 2 bis (ordinaux, 7 modèles, § 8) en fichiers, #1907 mergée ; 7 brouillons en base locale seulement.
+- **Prochaine action** : **David** crée les brouillons en prod (`pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce1-2bis --publier`) ; puis relever les `id`, migration nœud + tag (sous-notion « ordinaux et rangs », CE1-011 à 015), page à cocher, publication. Puis lot 3 fractions (§ 4 bis, point 6).
+- **En attente de David** : la création des brouillons en prod.
+- **Pièges en cours** : jamais de variable `i` (unité imaginaire : `{{if:i==…}}` toujours sur sa dernière branche ; specs vertes quand même) → liste `21|30|…` ; △ plus petit que ✕ ▢ ○ (police) ; niveaux « Ordinaux » 7 à 13 (1 à 6 = CP) ; ports 5176-5178 pris par d'autres sessions.
+- **Worktree / branche** : aucun (worktree retiré après #1907).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
