@@ -14,6 +14,7 @@ import { error, fail } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { POINT_BOUNDS } from '$lib/server/point-bounds';
 import {
 	deleteReview,
 	loadReviewOverview,
@@ -92,6 +93,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	return {
 		tree,
 		totals: countTemplates(overview.templates),
+		pointBoundsCount: POINT_BOUNDS.size,
 		filters,
 		nodeKey,
 		nodeFound: nodeKey === null || node !== null,

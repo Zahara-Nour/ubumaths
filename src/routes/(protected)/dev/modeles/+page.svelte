@@ -23,6 +23,7 @@
 	import TemplateReviewSheet from '$lib/components/dev/TemplateReviewSheet.svelte';
 
 	// Constantes
+	const MAX_UNFOLD = 20;
 	const VERDICT_ITEMS = [
 		{ value: 'tous', label: 'Tous les verdicts' },
 		{ value: 'a_revoir', label: '🔶 À revoir' },
@@ -60,14 +61,15 @@
 	}
 
 	function setFilter(key: string, value: string | null) {
-		goto(`${resolve('/(protected)/dev/modeles')}?${queryWith({ [key]: value }).slice(1)}`, {
+		goto(`${resolve('/(protected)/dev/modeles')}${queryWith({ [key]: value })}`, {
 			keepFocus: true,
 			noScroll: true
 		});
 	}
 
 	function setAllSheets(open: boolean) {
-		openSheets = Object.fromEntries(data.sheets.map((s) => [s.row.id, open]));
+		// Chaque fiche ouverte tire ses aperçus dans le navigateur : on n'en déplie que les premières
+		openSheets = Object.fromEntries(data.sheets.map((s, i) => [s.row.id, open && i < MAX_UNFOLD]));
 	}
 </script>
 
@@ -160,6 +162,12 @@
 					notion plus fine ou poser un filtre pour voir les autres.
 				</p>
 			{/if}
+			{#if data.pointBoundsCount === 0}
+				<p class="rounded bg-destructive/10 p-2 text-sm text-destructive">
+					Aucune borne de point chargée : les fichiers de docs/systeme/programmes/bornes/ ont-ils
+					bougé ?
+				</p>
+			{/if}
 			{#if data.sheetsError}
 				<p class="rounded bg-destructive/10 p-2 text-sm text-destructive">{data.sheetsError}</p>
 			{/if}
@@ -167,7 +175,9 @@
 			{#if data.sheets.length > 0}
 				<div class="flex gap-2">
 					<Button variant="outline" size="sm" onclick={() => setAllSheets(true)}
-						>Tout déplier</Button
+						>{data.sheets.length > MAX_UNFOLD
+							? `Déplier les ${MAX_UNFOLD} premières`
+							: 'Tout déplier'}</Button
 					>
 					<Button variant="outline" size="sm" onclick={() => setAllSheets(false)}
 						>Tout replier</Button

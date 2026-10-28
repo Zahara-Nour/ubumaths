@@ -74,18 +74,19 @@ async function main(): Promise<number> {
 		tous.push(...(data ?? []).map((m) => m.id));
 		if (!data || data.length < 1000) break;
 	}
-	const absents: string[] = [];
-	const ambigus: string[] = [];
+	// Ensembles : un même id présent dans plusieurs pages n'est signalé qu'une fois
+	const absents = new Set<string>();
+	const ambigus = new Set<string>();
 	// Le plus récent par modèle (id résolu)
 	const parModele = new Map<string, (typeof lu.data)[number]>();
 	for (const v of lu.data) {
 		const trouves = tous.filter((id) => id.startsWith(v.templateId));
 		if (trouves.length === 0) {
-			absents.push(`${v.templateId} (${v.source})`);
+			absents.add(`${v.templateId} (${v.source})`);
 			continue;
 		}
 		if (trouves.length > 1) {
-			ambigus.push(`${v.templateId} (${v.source}) : ${trouves.length} modèles`);
+			ambigus.add(`${v.templateId} (${v.source}) : ${trouves.length} modèles`);
 			continue;
 		}
 		const id = trouves[0];
@@ -126,9 +127,9 @@ async function main(): Promise<number> {
 		`  ${aEcrire.length} à écrire (${aEcrire.length - aRevoir} validés, ${aRevoir} à revoir)`
 	);
 	console.log(`  ${gardes.length} déjà en base, plus récents : gardés`);
-	console.log(`  ${absents.length} verdicts sur un modèle absent de la base : écartés`);
+	console.log(`  ${absents.size} verdicts sur un modèle absent de la base : écartés`);
 	for (const a of absents) console.log(`    ⚠ ${a}`);
-	console.log(`  ${ambigus.length} ids abrégés ambigus : écartés`);
+	console.log(`  ${ambigus.size} ids abrégés ambigus : écartés`);
 	for (const a of ambigus) console.log(`    ⚠ ${a}`);
 
 	if (!ecrire) {

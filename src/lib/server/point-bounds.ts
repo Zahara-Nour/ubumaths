@@ -5,7 +5,8 @@
  * La source est `docs/systeme/programmes/bornes/*.json` (cycles 2 à 4) et `…/bornes/lycee/*.json`
  * (décidé le 2026-10-28, chantier revue-modeles : les fichiers restent dans la doc, qui fait foi).
  * Vite les intègre au build : rien n'est lu sur le disque en prod. Les fichiers `questions*.json`
- * (relevés des modèles, pas des points) sont écartés.
+ * (relevés des modèles, pas des points) sont écartés. Aucun test ne lit `docs/` : si les fichiers
+ * bougent, la table est vide et `/dev/modeles` le dit.
  */
 
 // Types
@@ -19,7 +20,11 @@ export interface PointBounds {
 // Constantes
 
 const FILES = import.meta.glob<unknown>(
-	['/docs/systeme/programmes/bornes/*.json', '/docs/systeme/programmes/bornes/lycee/*.json'],
+	[
+		'/docs/systeme/programmes/bornes/*.json',
+		'/docs/systeme/programmes/bornes/lycee/*.json',
+		'!/docs/systeme/programmes/bornes/**/questions*.json'
+	],
 	{ eager: true, import: 'default' }
 );
 

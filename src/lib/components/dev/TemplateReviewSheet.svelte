@@ -63,8 +63,12 @@
 	const sharedConditions = $derived(template.shared?.conditions ?? []);
 
 	// Brouillon du verdict : modifiable, il repart de la base à chaque relecture de la fiche
-	let draftVerdict = $derived<Verdict | null>(review?.verdict ?? null);
-	let draftComment = $derived(review?.comment ?? '');
+	// Dérivé de valeurs simples : relire la page (verdict d'une AUTRE fiche) recrée l'objet `review`
+	// sans changer ces valeurs, et ne doit pas effacer ce qui est en cours de saisie ici
+	const savedVerdict = $derived<Verdict | null>(review?.verdict ?? null);
+	const savedComment = $derived(review?.comment ?? '');
+	let draftVerdict = $derived<Verdict | null>(savedVerdict);
+	let draftComment = $derived(savedComment);
 	let saving = $state(false);
 
 	// Functions
