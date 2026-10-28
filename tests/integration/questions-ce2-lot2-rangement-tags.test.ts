@@ -2,7 +2,7 @@
  * Chantier « questions-ce2 », lot 2 (numération) : nœud et tag des 9 brouillons neufs (Supabase local requis)
  * ===============================================================================================
  *
- * Migration `20261028233100_questions_ce2_lot2_rangement_tags` : les 9 brouillons créés le
+ * Migration `20261029003200_questions_ce2_lot2_rangement_tags` : les 9 brouillons créés le
  * 2026-10-28 (scripts/questions/ce2-2/) vont chacun sur le nœud de leur point, sous « Nombres et
  * calculs > Entiers : numération », et reçoivent ce point, un seul (ADR 0020).
  * Journal docs/wip/questions-ce2-progress.md, lot 2.
@@ -38,7 +38,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261028233100_questions_ce2_lot2_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261029003200_questions_ce2_lot2_rangement_tags.sql';
 const LONGUEURS = 'Grandeurs et mesures > Longueurs';
 const NUMERATION = 'Nombres et calculs > Entiers : numération';
 /** Le lot : identifiants créés en prod le 2026-10-28, nœuds et points attendus. */
