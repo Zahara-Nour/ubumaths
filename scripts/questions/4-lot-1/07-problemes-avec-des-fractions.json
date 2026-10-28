@@ -1,0 +1,239 @@
+{
+	"title": "Problèmes avec des fractions",
+	"description": "Résoudre un problème avec des fractions : 1/3 puis 1/4 du reste ; combien de verres de 1/8 L dans 3/4 L ; les 2/5 d'une ficelle mesurent 12 m",
+	"grades": ["4"],
+	"theme": "Fractions",
+	"domain": "Problèmes",
+	"subdomain": "Parts et restes",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Léa dépense $\\frac{1}{{{p}}}$ de son argent de poche, puis $\\frac{1}{{{q}}}$ de ce qui lui reste.\n\nQuelle fraction de son argent de poche a-t-elle dépensée en tout ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:mod(abs(q+p-1),p*q)==0|{{eval:(q+p-1)/(p*q)}}|{{if:((q+p-1)/gcd(abs(q+p-1),p*q))<0|-|}}\\frac{{{eval:abs((q+p-1)/gcd(abs(q+p-1),p*q))}}}{{{eval:(p*q)/gcd(abs(q+p-1),p*q)}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Après la première dépense, il lui reste $1 - \\frac{1}{{{p}}} = \\frac{{{eval:p-1}}}{{{p}}}$ de son argent.",
+					"Elle dépense ensuite $\\frac{1}{{{q}}}$ **de ce reste** : $\\frac{1}{{{q}}} \\times \\frac{{{eval:p-1}}}{{{p}}} = \\frac{{{eval:p-1}}}{{{eval:p*q}}}$.",
+					"$$\\frac{1}{{{p}}} + \\frac{{{eval:p-1}}}{{{eval:p*q}}} = \\frac{{{q}}}{{{eval:p*q}}} + \\frac{{{eval:p-1}}}{{{eval:p*q}}} = {{if:gcd(abs(q+p-1),p*q)>1|{{if:(q+p-1)<0|-|}}\\frac{{{eval:abs(q+p-1)}}}{{{eval:p*q}}} = |}}\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une bouteille contient $\\frac{{{a}}}{{{b}}}~\\unit{L}$ de jus de fruits. On remplit des verres de $\\frac{1}{{{c}}}~\\unit{L}$.\n\nCombien de verres peut-on remplir ?\n\nOn peut remplir $?$ verres.",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "c",
+					"expression": "eval:b*m"
+				}
+			],
+			"conditions": ["gcd(a,b)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche combien de fois $\\frac{1}{{{c}}}~\\unit{L}$ entre dans $\\frac{{{a}}}{{{b}}}~\\unit{L}$ : c'est une division.",
+					"Diviser par $\\frac{1}{{{c}}}$, c'est multiplier par son inverse ${{c}}$ :",
+					"$$\\frac{{{a}}}{{{b}}} \\div \\frac{1}{{{c}}} = \\frac{{{a}}}{{{b}}} \\times {{c}} = \\frac{{{eval:a*c}}}{{{b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Les $\\frac{{{a}}}{{{b}}}$ d'une ficelle mesurent ${{n}}~\\unit{m}$.\n\nQuelle est la longueur de la ficelle ?\n\nLa ficelle mesure $?~\\text{m}$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "3..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "n",
+					"expression": "eval:a*k"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "a<b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $L$ est la longueur de la ficelle : $\\frac{{{a}}}{{{b}}} \\times L = {{n}}$, donc $L = {{n}} \\div \\frac{{{a}}}{{{b}}}$.",
+					"Diviser par $\\frac{{{a}}}{{{b}}}$, c'est multiplier par son inverse $\\frac{{{b}}}{{{a}}}$ :",
+					"$${{n}} \\times \\frac{{{b}}}{{{a}}} = {{n}} \\div {{a}} \\times {{b}} = {{k}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/3 puis 1/4 du reste : 1/2",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "6/12 non simplifié : ambre",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["\\frac{6}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : 1/3 + 1/4 = 7/12 (le reste oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["\\frac{7}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/2 puis 1/3 du reste : 2/3",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ce qui reste, 1/3",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/4 L en verres de 1/8 L : 6",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "3",
+				"m": "2",
+				"c": "8"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 × 1/8 = 3/32",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "3",
+				"m": "2",
+				"c": "8"
+			},
+			"answers": ["\\frac{3}{32}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2/5 de la ficelle = 12 m : 30 m",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"k": "6",
+				"n": "12"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2/5 × 12",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"k": "6",
+				"n": "12"
+			},
+			"answers": ["\\frac{24}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 12 ÷ 2 = 6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"k": "6",
+				"n": "12"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
