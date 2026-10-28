@@ -6,19 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après la publication du lot 2 bis A._
+_Mis à jour le 2026-10-28, après #1945._
 
-- **État** : lot 2 bis A **publié en prod** (8/8, relecture 8/8 OK, § 15). Sonde des blocs `courbe`
-  devenue `scripts/questions/sonde-courbes.ts` (commit `ea5f2295c` sur `feat/questions-2de-lecture-b`,
-  pas encore poussé ; étape ajoutée à `couvrir-un-niveau.md` § 5).
-- **Prochaine action** : lot B (2-342, 2-465, 2-343, 2-468, 2-344, 2-471 : inverse, racine carrée, cube),
-  phase 0 validée au § 11 (pas de variation ∅ pour 1/x = 0) ; corrigés avec les solutions sur l'axe dès le
-  départ (convention § 14) ; sonde à 0 problème avant la page à cocher.
-- **En attente de David** : rien.
+- **État** : lot 2 bis B (6 modèles : 1/x, √x, x³) mergé (#1945), pas encore en prod ; 6 brouillons en base
+  locale, 1/x joué dans l'aperçu (§ 16).
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/2de-lecture-b --publier` ;
+  puis migration nœud + tag (gabarit `20261028183000_…lecture_a…`), page à cocher, publication.
+- **En parallèle** : correctif `fix/intervalles-accolades` (nombres sans accolades → message « entre
+  accolades », § 17) : phase 0 posée, **en attente de David** (avec ou sans « x = 2 »).
 - **Pièges en cours** : horodatage de migration pris par une autre session ; test « cas rare » lent en CI ;
-  étiquettes C_f / C_g serrées près d'une intersection.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-b` (depuis
-  origin/main ; branches du lot A supprimées).
+  étiquettes C_f / C_g serrées près d'une intersection ; port 5176 pris par `questions-4` (serveur sur 5177).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-b` (mergée).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -444,3 +442,14 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
 - √x : k < 0 et sens > ou ⩾ → `[0 ; +∞[` (erreur typique ℝ en spec) ; borne hors fenêtre = 20 (fenêtre
   jusqu'à 10).
 - Sonde : 2 400 tirages, 4 800 blocs, 0 problème. Base locale : 6 brouillons créés.
+- #1945 mergée le 2026-10-28 (CI verte du premier coup). Aperçu local : 1/x = 2, `{0,5}` juste (MathLive envoie
+  `\lbrace0,5\rbrace`), corrigé « 0,5 » ; 1/x > 2, `]0 ; 0,5[` juste, partie verte et axe vus.
+
+## 17. Message pour un ensemble écrit sans accolades (2026-10-28)
+
+- David a répondu « 1 » à 1/x = 2 : faux (voulu), mais message « Réponse illisible : écris un intervalle
+  comme ]2 ; 5] », qui égare. Accord de David pour un correctif à part, après le lot B (revue
+  `code-reviewer` Opus : correction des réponses).
+- Phase 0 proposée : attendu = ensemble fini de nombres, réponse = nombres sans accolades → faux, message
+  « Un ensemble de solutions s'écrit entre accolades : {1}. » (ses valeurs) ; attendu intervalle, ∅ ou ℝ →
+  message inchangé ; « x = 2 » hors champ sauf avis contraire. **En attente de la validation.**
