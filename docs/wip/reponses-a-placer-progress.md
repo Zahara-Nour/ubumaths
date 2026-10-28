@@ -404,3 +404,10 @@ grande barre).
 5. **`données:` (série brute) permis** avec `placer:` : l'élève compte puis construit.
 6. Correction : **une phrase par barre fausse** (« Ta barre Danse monte à 9. », « Tu n'as pas construit
    la barre Danse. ») **+ le diagramme juste** à côté ; une case par barre (note partielle).
+
+## 19. PR « barres » — diagramme en barres à construire (2026-10-28)
+
+Branche `feat/reponses-a-placer-barres`, worktree `ubumaths-wt-reponses-a-placer`. Tests rouges
+d'abord : `stat-chart/barres-placer.test.ts` (parseur `axe:` / `placer:` / `case:`, repérage, scène sans
+les effectifs attendus, calcul pur), `generation-barres-placer.test.ts` (une case par barre, réponse =
+l'effectif, copie corrigée : un diagramme, une réponse par barre).
