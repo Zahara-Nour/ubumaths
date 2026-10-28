@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1914 et la publication du lot 4._
+_Mis à jour le 2026-10-28, PR « non décimal » de 01 ouverte (§ 11.7)._
 
-- **État** : lots 1 à 4 publiés. 6e en prod : 126 modèles publiés, 1 brouillon (3a7a5711, doublon de 059e3fc9, brouillon voulu). Lot 4 publié sur demande de David sans relecture complète de la page à cocher (seul 01 commenté, corrigé #1914).
-- **Prochaine action** : relecture APRÈS COUP du lot 4 par David sur la page à cocher regénérée (https://claude.ai/artifact/UjdMqaWsaKhLN1dMC1aHro, version 2 depuis `main` d0f91659b, 01 nouveau, 0 verdict) ; compter les verdicts (`ArtifactData list verdicts`, 10 attendus) ; « À revoir » → modèle PUBLIÉ : `--mettre-a-jour` ne le touche plus, passer par la démarche § 7 (migration de contenu générée + test `decrireLotModifier`, comme e3d87166 au § 11.4).
+- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Branche `fix/questions-6-non-decimal` : 01 sans dénominateur 7, reste qui revient nommé, « Pose la division » ; migration de contenu `20261028200000_questions_6_non_decimal_contenu` + test (rouge sans, vert avec).
+- **Prochaine action** : CI verte → merge → `db:migrate` depuis `main` (contenu seul, additive, rollback écrit) → MCP : contenu de 5077e030 = source, tag 6-130 gardé ; regénérer la page à cocher (même adresse) ; puis relecture après coup du lot 4 par David (https://claude.ai/artifact/UjdMqaWsaKhLN1dMC1aHro, 10 verdicts attendus ; « À revoir » → § 7, comme ici).
 - **En attente de David** : sa relecture. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
-- **Pièges en cours** : 3a7a5711 = doublon repassé en brouillon exprès (migration `20261027100100`), NE PAS le publier ; relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; `--mettre-a-jour` après le merge seulement ; `e`/`i` interdites dans les `eval`.
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : 3a7a5711 = doublon repassé en brouillon exprès, NE PAS le publier ; relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; `--mettre-a-jour` ne touche pas un modèle publié ; `e`/`i` interdites dans les `eval`.
+- **Worktree / branche** : `../ubumaths-wt-questions-6` · `fix/questions-6-non-decimal`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -658,3 +658,16 @@ David a lancé `create-questions --publier` : 10 créés. Vérifiés par MCP : `
   publiés + 1 brouillon (3a7a5711).
 - Page à cocher regénérée depuis `main` (d0f91659b) et republiée à la même adresse (version 2) : 01 nouveau, 10 fiches
   `published`, 0 verdict ; rendu vu dans Chrome. David relit après coup ; corrections éventuelles = modèles publiés (§ 7).
+
+### 11.7 01 : un non décimal que l'élève de 6e peut voir (2026-10-28)
+
+- Question de David : un élève de 6e peut-il voir qu'un nombre n'est pas décimal ? « Exemples de mise en œuvre 6e »
+  (`docs/ref/programmes/Accompagnement/cycle 3/`) : seulement par la division posée qui ne s'arrête pas (10 ÷ 3,
+  73 ÷ 6), sur « quelques fractions » ; aucun critère général. Le reste revient en 1 à 3 chiffres pour 3, 6, 9, 11,
+  12, au 6e seulement pour 7. Décision (« je te suis ») : 7 retiré ; correction qui nomme le reste qui revient
+  (`p` = 10 pour 6, 100 pour 12, 1 sinon ; `r = mod(a*p,b)`, vérifié à la main sur 5 tirages) ; « Pose la division
+  sur ton brouillon. » dans les trois énoncés (phrase du lot 3) ; description mise à jour.
+- `checkTemplate` : 8/8 specs, 150/150 tirages. 01 publié → § 7 : relevé `etat-prod-2026-10-28-non-decimal/`
+  (md5 `b30c91ee…` = prod au MCP), 0 donnée d'élève (tentatives, cartes, journal, évaluations).
+- `20261028200000_questions_6_non_decimal_contenu` (générée par `lot-contenu-6-non-decimal.py`, qui exige retouche =
+  source) ; test `questions-6-non-decimal-contenu` rouge sans (ENOENT), 11 verts avec. Revue : aucune (contenu).
