@@ -16,7 +16,7 @@
 					"expectedAnswer": "0"
 				}
 			],
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{x}$\n- $f(x)=e^{-x}$\n- $f(x)=-e^{x}$\n- $f(x)=e^{x}+1$\n```",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nLa fonction $f$ s'écrit avec une exponentielle. Que semble être l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{x}$\n- $f(x)=e^{-x}$\n- $f(x)=-e^{x}$\n- $f(x)=e^{x}+1$\n```",
 			"correction": {
 				"steps": [
 					"Sur la figure : la courbe passe par le point $A(0\\,;1)$, elle **monte** (la fonction est croissante) et elle se rapproche de l'axe des abscisses quand $x$ tend vers $-\\infty$.",
@@ -32,7 +32,7 @@
 					"expectedAnswer": "0"
 				}
 			],
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(-x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{-x}$\n- $f(x)=e^{x}$\n- $f(x)=-e^{-x}$\n- $f(x)=e^{-x}+1$\n```",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(-x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nLa fonction $f$ s'écrit avec une exponentielle. Que semble être l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{-x}$\n- $f(x)=e^{x}$\n- $f(x)=-e^{-x}$\n- $f(x)=e^{-x}+1$\n```",
 			"correction": {
 				"steps": [
 					"Sur la figure : la courbe passe par le point $A(0\\,;1)$, elle **descend** (la fonction est décroissante) et elle se rapproche de l'axe des abscisses quand $x$ tend vers $+\\infty$.",
@@ -48,7 +48,7 @@
 					"expectedAnswer": "0"
 				}
 			],
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(2*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{2x}$\n- $f(x)=e^{-2x}$\n- $f(x)=-e^{2x}$\n- $f(x)=e^{2x}+1$\n```",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(2*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nLa fonction $f$ s'écrit avec une exponentielle. Que semble être l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{2x}$\n- $f(x)=e^{-2x}$\n- $f(x)=-e^{2x}$\n- $f(x)=e^{2x}+1$\n```",
 			"correction": {
 				"steps": [
 					"Sur la figure : la courbe passe par le point $A(0\\,;1)$, elle **monte** (la fonction est croissante) et elle se rapproche de l'axe des abscisses quand $x$ tend vers $-\\infty$.",
@@ -64,7 +64,7 @@
 					"expectedAnswer": "0"
 				}
 			],
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = -exp(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=-e^{x}$\n- $f(x)=e^{x}$\n- $f(x)=-e^{-x}$\n- $f(x)=e^{-x}$\n```",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = -exp(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nLa fonction $f$ s'écrit avec une exponentielle. Que semble être l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=-e^{x}$\n- $f(x)=e^{x}$\n- $f(x)=-e^{-x}$\n- $f(x)=e^{-x}$\n```",
 			"correction": {
 				"steps": [
 					"Sur la figure : la courbe est **sous l'axe des abscisses**, elle passe par le point $A(0\\,;-1)$, elle **descend** (la fonction est décroissante) et se rapproche de l'axe des abscisses quand $x$ tend vers $-\\infty$.",
@@ -80,7 +80,7 @@
 					"expectedAnswer": "0"
 				}
 			],
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{x}{{eval:b;+}}$\n- $f(x)=e^{x}{{eval:-b;+}}$\n- $f(x)=e^{x{{eval:b;+}}}$\n- $f(x)=-e^{x}{{eval:b;+}}$\n```",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nLa fonction $f$ s'écrit avec une exponentielle. Que semble être l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{x}{{eval:b;+}}$\n- $f(x)=e^{x}{{eval:-b;+}}$\n- $f(x)=e^{x{{eval:b;+}}}$\n- $f(x)=-e^{x}{{eval:b;+}}$\n```",
 			"variables": [
 				{
 					"name": "b",
@@ -102,7 +102,7 @@
 					"expectedAnswer": "0"
 				}
 			],
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x-{{c}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{x-{{c}}}$\n- $f(x)=e^{x+{{c}}}$\n- $f(x)=e^{x}-{{c}}$\n- $f(x)=e^{-x-{{c}}}$\n```",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x-{{c}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nLa fonction $f$ s'écrit avec une exponentielle. Que semble être l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{x-{{c}}}$\n- $f(x)=e^{x+{{c}}}$\n- $f(x)=e^{x}-{{c}}$\n- $f(x)=e^{-x-{{c}}}$\n```",
 			"variables": [
 				{
 					"name": "c",

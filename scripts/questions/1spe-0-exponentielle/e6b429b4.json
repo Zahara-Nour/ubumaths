@@ -67,43 +67,6 @@
 					"$A=e^{ {{eval:a*x}}+({{eval:c*x+d}}) }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:(a+c)*x+d}} } }$."
 				]
 			}
-		},
-		{
-			"blanks": [
-				{
-					"expectedAnswer": "e^{ {{eval:(a+c)*x+b+d}} }"
-				}
-			],
-			"statement": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ {{eval:a*x+b}} }\\times e^{ {{eval:c*x+d}} }$\n\n$A=?$",
-			"variables": [
-				{
-					"name": "x",
-					"expression": "x|x"
-				},
-				{
-					"name": "a",
-					"expression": "1..5;±"
-				},
-				{
-					"name": "b",
-					"expression": "1..6;±"
-				},
-				{
-					"name": "c",
-					"expression": "1..5;±"
-				},
-				{
-					"name": "d",
-					"expression": "1..6;±"
-				}
-			],
-			"conditions": ["a+c != 0", "b+d != 0"],
-			"correction": {
-				"steps": [
-					"On utilise $e^a\\times e^b=e^{a+b}$ : pour un produit, on **additionne** les exposants.",
-					"$A=e^{ {{eval:a*x+b}}+({{eval:c*x+d}}) }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:(a+c)*x+b+d}} } }$."
-				]
-			}
 		}
 	],
 	"testSpecs": [
@@ -235,63 +198,6 @@
 			},
 			"description": "produit recopié",
 			"variationIndex": 1
-		},
-		{
-			"answers": ["e^{-2x+3}"],
-			"expected": {
-				"status": "correct"
-			},
-			"variables": {
-				"a": "3",
-				"b": "-1",
-				"c": "-5",
-				"d": "4"
-			},
-			"description": "e^{3x-1}×e^{-5x+4} = e^{-2x+3}",
-			"variationIndex": 2
-		},
-		{
-			"answers": ["e^{3-2x}"],
-			"expected": {
-				"status": "correct"
-			},
-			"variables": {
-				"a": "3",
-				"b": "-1",
-				"c": "-5",
-				"d": "4"
-			},
-			"description": "forme e^{3-2x}",
-			"variationIndex": 2
-		},
-		{
-			"answers": ["e^{-2x-5}"],
-			"expected": {
-				"status": "incorrect"
-			},
-			"variables": {
-				"a": "3",
-				"b": "-1",
-				"c": "-5",
-				"d": "4"
-			},
-			"description": "erreur de signe : e^{-2x-5}",
-			"variationIndex": 2
-		},
-		{
-			"answers": ["e^{3x-1-5x+4}"],
-			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
-			},
-			"variables": {
-				"a": "3",
-				"b": "-1",
-				"c": "-5",
-				"d": "4"
-			},
-			"description": "exposant non réduit",
-			"variationIndex": 2
 		},
 		{
 			"answers": ["\\exp(-3)"],
