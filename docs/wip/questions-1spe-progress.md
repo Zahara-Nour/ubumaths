@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1916._
+_Mis à jour le 2026-10-28, après #1916 et la relecture de la page._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) publiés ; lot 0-exponentielle (17, § 10) mergé (#1916), page à cocher https://claude.ai/artifact/RiArUDRvFuvd1ZFg8FfZWr en relecture (6/17 verdicts, 245b4eb1 déjà corrigé en case choix).
-- **Prochaine action** : lire les verdicts restants, corriger s'il le faut ; puis David lance `create-questions --dir scripts/questions/1spe-0-exponentielle --publier --mettre-a-jour` et `publier-lot --dir … --publier` ; ensuite trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
-- **En attente de David** : fin de la relecture de la page.
-- **Pièges en cours** : instantané à **rafraîchir avant `--mettre-a-jour`** si une autre session a touché les modèles (QCM migrés en case choix le 2026-10-28 après l'export : comparer à un export frais, champ par champ) ; `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot` refusés par le classifieur → David ; worktree neuf → `pnpm exec svelte-kit sync` ; `question:specs` sans option de variation : une copie par variation ; la page à cocher ne dessine ni `variation` ni `choix` ; index vide vérifié avant tout commit sur `main` ; CI : job navigateur instable (`wrapDynamicImport`) → relancer le job.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (branche mergée, à retirer à la clôture du lot).
+- **État** : lots 0-suites, 0-second-degré, 0-dérivation, 0-variations publiés ; lot 0-exponentielle (17, § 10) mergé (#1916), page https://claude.ai/artifact/RiArUDRvFuvd1ZFg8FfZWr relue : 16/17 verdicts, 245b4eb1 déjà corrigé.
+- **Prochaine action** : appliquer les 3 corrections proposées (§ 10, « Relecture ») dans une nouvelle PR (worktree `../ubumaths-wt-questions-1spe`, nouvelle branche depuis `origin/main`), refaire un export frais et comparer champ par champ, puis David lance `create-questions --dir scripts/questions/1spe-0-exponentielle --publier --mettre-a-jour` et `publier-lot --dir … --publier`. Ensuite trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
+- **En attente de David** : go sur les 3 corrections (ca8f40c2 surtout) ; verdict de e572933c (absent de la page).
+- **Pièges en cours** : instantané à rafraîchir avant `--mettre-a-jour` (QCM migrés en case choix par une autre session après l'export) ; la page numérote les variations à partir de 1 ; `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation` ni `choix` ; index vide vérifié avant tout commit sur `main` ; CI : job navigateur instable (`wrapDynamicImport`) → relancer le job.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (branche #1916 mergée, à retirer à la clôture du lot).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -394,3 +394,12 @@ prod à 08 h 35 UTC (lot 4 de `figure-et-choix`), après l'instantané : ré-exp
 
 **Relecture (David, page à cocher)** : 245b4eb1 variation 2, « il faut un QCM, pas une case où il faut entrer le mot
 décroissante » → case choix (croissante / décroissante / constante, `melanger: non`), 3 specs.
+
+**Relecture (David, page à cocher, 2026-10-28)** : 13 « ok », e572933c sans verdict, 3 « à revoir » ; propositions en
+attente de go :
+
+- f40e8a4a : consigne « La fonction $f$ s'écrit avec une exponentielle. Que semble être l'expression de $f(x)$ ? » (6
+  variations).
+- e6b429b4 : variation 3 (e^{ax+b} × e^{cx+d}) « peu d'intérêt » → retirée avec ses specs.
+- ca8f40c2 : « le lien, c'est que le quotient de 2 nombres distants de 1 est constant » → variation 1 réécrite : f(x) = e^{ax},
+  calculer f(x+1)/f(x) = e^a pour tout réel x ; conclusion : (e^{an}) géométrique de raison e^a. Variation 2 inchangée.
