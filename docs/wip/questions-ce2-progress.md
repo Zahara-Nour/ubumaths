@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, PR #1903 en cours._
+_Mis à jour le 2026-10-28, après #1903._
 
-- **État** : lot 1 en prod en BROUILLON, rangé et tagué (#1894, #1897). Relecture de la page à cocher : 2 OK (tables, terme manquant), 3 « À revoir » corrigés dans #1903 (× 4 et × 8 : un double par étape ; 60 : 1 × 60 retirée). Instantané prod : `docs/wip/questions-ce2/etat-prod-2026-10-28/`.
-- **Prochaine action** : merge de #1903 → David lance `create-questions --dir scripts/questions/ce2-1 --publier --mettre-a-jour` → vérifier en prod → remettre à zéro les 3 verdicts et republier la page https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4 → David relit → 5/5 OK → `publier-lot.ts` (simulation), puis David `--publier`. Puis lot 2 (numération) : phase 0.
-- **En attente de David** : la commande `--mettre-a-jour` après le merge ; la relecture des 3 fiches corrigées.
-- **Pièges en cours** : `question:specs --template` signale « NON importable » (clés `created_at`… de la ligne en base) : faux, vérifier avec `--file` ; horodatage de migration = max de la PROD + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint refuse un sujet en majuscule ; `gh pr checks --watch` rend la main trop tôt.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `fix/questions-ce2-lot1-corriges`.
+- **État** : lot 1 en prod en BROUILLON, rangé et tagué. Les 3 « À revoir » sont corrigés (#1903) et passés en prod par `--mettre-a-jour` (vérifié : brouillons, contenu = fichiers). Les 3 verdicts sont remis à zéro et la page est republiée ; il reste 2 OK sur 5.
+- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`, https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4) ; 5/5 OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce2-1` (simulation), puis David `--publier`. Puis lot 2 (numération) : phase 0.
+- **En attente de David** : relecture des 3 fiches corrigées (60, × 4, × 8).
+- **Pièges en cours** : `question:specs --template` dit « NON importable » à tort (clés de la ligne en base) : vérifier avec `--file` ; client tests `wrapDynamicImport` intermittent → relancer le job ; horodatage de migration = max de la PROD + 1 min ; commitlint refuse un sujet en majuscule.
+- **Worktree / branche** : aucun (retirés après #1903).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
