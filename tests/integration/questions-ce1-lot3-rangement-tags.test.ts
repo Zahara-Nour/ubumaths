@@ -1,0 +1,232 @@
+/**
+ * Chantier « questions-ce1 », lot 3 : nœud et tag de 9 modèles neufs (Supabase local requis)
+ * ======================================================================================
+ *
+ * Migration `20261028170000_questions_ce1_lot2bis_rangement_tags` : les 9 brouillons « fractions »
+ * créés le 2026-10-28 par scripts/create-questions.ts (sans nœud ni tag) vont sur le nœud de leur
+ * point (sous-notions « définition », « ordre », « addition et soustraction ») et reçoivent ce point, un seul (ADR 0020).
+ * Décision de David (journal docs/wip/questions-ce1-progress.md § 9).
+ *
+ * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
+ * minimales portant les VRAIS identifiants, au CE1, sans nœud ni tag — puis rejoue la migration
+ * **depuis son fichier**, dans une transaction annulée à la fin. Les triggers de garde des tags
+ * restent actifs : chaque tag posé a passé la règle du nœud.
+ *
+ * @vitest-environment node
+ */
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { readFileSync } from 'node:fs';
+import type { Client } from 'pg';
+import { getPostgresClient } from '../helpers/database/postgres-client';
+import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
+import { TestData } from '../helpers/database/test-data-factory';
+import { extractRollback } from '../helpers/database/migration-rollback';
+import { readNodePaths } from '../helpers/database/classification-paths';
+import { insertProdCopies } from '../helpers/database/prod-copies';
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+interface Etat {
+	noeuds: Map<string, string>;
+	dates: Map<string, string>;
+	tags: string[];
+}
+
+// ============================================================================
+// CONSTANTES
+// ============================================================================
+
+const MIGRATION = 'supabase/migrations/20261029010000_questions_ce1_lot3_rangement_tags.sql';
+const LONGUEURS = 'Grandeurs et mesures > Longueurs';
+const DEFINITION = 'Nombres et calculs > Fractions : sens et écritures > définition';
+const ORDRE = 'Nombres et calculs > Fractions : sens et écritures > ordre';
+const CALCULS = 'Nombres et calculs > Fractions : calculs > addition et soustraction';
+/** Le lot : identifiant créé en prod le 2026-10-28, nœud et points attendus. */
+const LOT: { id: string; noeud: string; code: string }[] = [
+	{ id: 'a8685870-00a4-4534-a479-99b4793e9405', noeud: DEFINITION, code: 'CE1-016' },
+	{ id: '837cd6bc-a660-4b4d-9b97-06a983b3f73d', noeud: DEFINITION, code: 'CE1-016' },
+	{ id: 'b165ea1c-f0ee-4434-87c0-3531e44286fb', noeud: DEFINITION, code: 'CE1-017' },
+	{ id: '0c675062-76c3-4929-8545-c4d1bc6e0e35', noeud: DEFINITION, code: 'CE1-017' },
+	{ id: '77c1dec0-81e0-46b3-9340-b2d9aa3e513f', noeud: DEFINITION, code: 'CE1-018' },
+	{ id: 'af373581-11de-4246-b50d-21cb18f9e7c4', noeud: ORDRE, code: 'CE1-019' },
+	{ id: '643d294c-8228-4bef-8986-1eee2c252a72', noeud: ORDRE, code: 'CE1-020' },
+	{ id: '00ac9765-28de-4fb0-b108-f46c70efb82b', noeud: CALCULS, code: 'CE1-021' },
+	{ id: '29e7e3c6-4f48-4ef7-8914-ce712636f7a2', noeud: CALCULS, code: 'CE1-099' }
+];
+const ids = LOT.map((m) => m.id);
+/** Date de modification fabriquée : elle ne doit pas bouger (ranger et taguer ne modifient pas le contenu). */
+const AVANT = '2026-01-02T03:04:05.000Z';
+
+// ============================================================================
+// FONCTIONS
+// ============================================================================
+
+/** Pose l'état de la prod : les copies des modèles, au CE1, sans nœud ni tag. */
+async function poserEtatProd(pg: Client, auteur: string): Promise<void> {
+	await insertProdCopies(pg, {
+		templateIds: ids,
+		exerciseIds: [],
+		authorId: auteur,
+		timestamp: AVANT
+	});
+	await pg.query(
+		'alter table public.question_templates disable trigger update_question_templates_updated_at'
+	);
+	await pg.query(
+		`update public.question_templates set grades = array['CE1'] where id = any($1::uuid[])`,
+		[ids]
+	);
+	await pg.query(
+		'alter table public.question_templates enable trigger update_question_templates_updated_at'
+	);
+}
+
+async function lireEtat(pg: Client): Promise<Etat> {
+	const chemins = new Map<string, string>();
+	for (const [id, node] of await readNodePaths(pg)) chemins.set(id, node.path);
+	const q = await pg.query<{ id: string; node: string | null; updated_at: Date }>(
+		'select id, classification_node_id as node, updated_at from public.question_templates where id = any($1::uuid[])',
+		[ids]
+	);
+	const t = await pg.query<{ template_id: string; grade: string; code: string }>(
+		`select q.template_id, p.grade, p.code from public.question_template_points q
+		   join public.curriculum_points p on p.id = q.point_id where q.template_id = any($1::uuid[])`,
+		[ids]
+	);
+	return {
+		noeuds: new Map(q.rows.map((r) => [r.id, chemins.get(r.node ?? '') ?? '∅'])),
+		dates: new Map(q.rows.map((r) => [r.id, r.updated_at.toISOString()])),
+		tags: t.rows.map((r) => `${r.template_id}§${r.grade}§${r.code}`).sort()
+	};
+}
+
+// ============================================================================
+// SUITE
+// ============================================================================
+
+describe('Questions CE1, lot 3 : nœud et tag des modèles neufs (migration de données)', () => {
+	let pg: Client;
+	let apres: Etat;
+	let annule: Etat;
+
+	beforeAll(async () => {
+		await cleanupAllTestData();
+		const prof = await TestData.profile().withRole('teacher').create();
+		pg = await getPostgresClient();
+
+		await pg.query('begin');
+		await poserEtatProd(pg, prof.id);
+		await pg.query(readFileSync(MIGRATION, 'utf-8'));
+		apres = await lireEtat(pg);
+		await pg.query(extractRollback(MIGRATION));
+		annule = await lireEtat(pg);
+	}, 60_000);
+
+	afterAll(async () => {
+		await pg.query('rollback');
+		await cleanupAllTestData();
+	});
+
+	it('chaque modèle est EXACTEMENT sur le nœud de son point', () => {
+		expect(LOT.map((m) => apres.noeuds.get(m.id))).toEqual(LOT.map((m) => m.noeud));
+	});
+
+	it('chaque modèle porte EXACTEMENT son point, rien de plus', () => {
+		expect(apres.tags).toEqual(LOT.map((m) => `${m.id}§CE1§${m.code}`).sort());
+	});
+
+	it('`updated_at` des modèles est préservé', () => {
+		expect([...apres.dates.values()]).toEqual(ids.map(() => AVANT));
+	});
+
+	it('le rollback écrit dans la migration rend l’état d’avant (sans nœud ni tag)', () => {
+		expect(annule.tags).toEqual([]);
+		expect(LOT.map((m) => annule.noeuds.get(m.id))).toEqual(LOT.map(() => '∅'));
+		expect([...annule.dates.values()]).toEqual(ids.map(() => AVANT));
+	});
+});
+
+describe('Questions CE1, lot 3 : les branches d’échec de la migration', () => {
+	let pg: Client;
+	let auteur: string;
+
+	beforeAll(async () => {
+		await cleanupAllTestData();
+		auteur = (await TestData.profile().withRole('teacher').create()).id;
+		pg = await getPostgresClient();
+	});
+
+	afterAll(async () => {
+		await pg.query('rollback').catch(() => undefined);
+		await cleanupAllTestData();
+	});
+
+	async function enTransaction(corps: () => Promise<void>): Promise<void> {
+		await pg.query('begin');
+		try {
+			await corps();
+		} finally {
+			await pg.query('rollback');
+		}
+	}
+
+	it('base sans les modèles (locale) : la migration ne touche rien et passe', async () => {
+		await enTransaction(async () => {
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).resolves.toBeDefined();
+		});
+	});
+
+	it('TOUT ou RIEN : un modèle manquant fait échouer la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query('delete from public.question_templates where id = $1', [ids[0]]);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/identifiants partiellement présents : 8 modèle\(s\) sur 9/
+			);
+		});
+	});
+
+	it('un modèle rangé à la main depuis le relevé fait échouer la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			const parChemin = new Map<string, string>();
+			for (const [id, node] of await readNodePaths(pg)) parChemin.set(node.path, id);
+			await pg.query(
+				'update public.question_templates set classification_node_id = $2 where id = $1',
+				[ids[0], parChemin.get(LONGUEURS)]
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/modèles déjà rangés depuis le relevé : 1/
+			);
+		});
+	});
+
+	// La garde « déjà tagué » ne peut pas être atteinte seule : la base refuse un tag sur un modèle
+	// sans nœud, et un modèle rangé entre-temps est arrêté par la garde « déjà rangé » (test ci-dessus).
+	it('un tag posé à la main suppose un rangement : la base refuse un tag sans nœud', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await expect(
+				pg.query(
+					`insert into public.question_template_points (template_id, point_id)
+					 select $1, id from public.curriculum_points where grade = 'CE1' and code = 'CE1-016' and archived_at is null`,
+					[LOT[0].id]
+				)
+			).rejects.toThrow(/n'est rangé dans aucun nœud de l'arbre/);
+		});
+	});
+
+	it('un point du lot archivé fait échouer la migration (résolution stricte)', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(
+				`update public.curriculum_points set archived_at = now() where grade = 'CE1' and code = 'CE1-019' and archived_at is null`
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/chemins ou points introuvables : 0 nœud\(s\), 1 point\(s\)/
+			);
+		});
+	});
+});
