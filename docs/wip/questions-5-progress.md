@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, relevé et état des lieux._
+_Mis à jour le 2026-10-28, lot 0 (niveaux) en PR._
 
-- **État** : relevé prod fait (§ 1), existant croisé avec la passe « arbre des notions » (§ 2), 117 points sans modèle classés (§ 3). Aucun lot écrit.
-- **Prochaine action** : réponses de David aux questions du § 4, puis phase 0 du lot 1.
-- **En attente de David** : Q1 à Q6 (§ 4).
-- **Pièges en cours** : droite à placer et barres à construire mergés mais **pas en prod** (modèles qui s'en servent : brouillons jusqu'au `deploy:prod`) ; relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot ; `e`/`i` interdites dans les `eval`.
-- **Worktree / branche** : aucun.
+- **État** : questions du § 4 tranchées (§ 5). Lot 0 (8 modèles changent de niveau, 7 tags) : migration `20261028193700_questions_5_niveaux` + test d'intégration (19 verts, rouge vérifié sans la migration).
+- **Prochaine action** : `security-auditor`, PR, CI verte, merge, `db:migrate` depuis le dépôt principal, vérification en prod ; puis phase 0 du lot 1 (A, calcul).
+- **En attente de David** : rien.
+- **Pièges en cours** : droite à placer et barres à construire mergés mais **pas en prod** (modèles qui s'en servent : brouillons jusqu'au `deploy:prod`) ; relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot ; `e`/`i` interdites dans les `eval` ; horodatages de migration pris par les sessions CE1 / CM1 / CM2 le même jour : vérifier avant d'en choisir un.
+- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot0-niveaux`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -102,3 +102,29 @@ en prod ; la figure à compléter ne sait tracer que `droite` / `segment` et vé
 5. **Points D** : hors appli, ou outil à inventer ?
 6. **Traduire en une expression** (005, 116, 117, 034, 124) : la réponse attendue est une écriture, pas sa valeur
    (« 3 × 2 + 1 » et pas « 7 ») ; je vérifierai que le juge exige la forme avant d'écrire le lot.
+
+## 5. Décisions de David (2026-10-28)
+
+« Je te suis » sur les propositions du § 4, puis réponses aux questions restées sans proposition :
+
+1. Les 20 sans point : simplifier une fraction → 4e + 4-005 ; égalités de fractions → 6e + 6-132 ;
+   554496dd → 4e **sans tag** (aucun point de 4e ne porte la substitution avec relatifs). Conventions
+   d'écriture et réductions de produits (077c01e0, 33b1b496, 6fbf1ab2, 7410800b, 08a3f943, 8af22815) :
+   David a demandé ma reco → **restent en 5e sans point** (aucun point de 4e / 3e, prérequis de 5-039 et
+   5-034, rien ne change pour les élèves). Les 4 trous (a73f55ba, c0c8920a, 3af94d7d, 7d12a172) restent
+   sans tag (décisions du 2026-10-17 / 20). Question d'accès : élèves de 5e perdent les 8 modèles,
+   4e en gagne 5, 6e en gagne 3.
+2. f92d63a6 : **déjà corrigé** (`reducedFractions: off`, specs « 15/12 » et « 45/36 » acceptées) ; rien à faire.
+3. Ordre : lots A, puis B (modèles « placer » / « barres à construire » en brouillon jusqu'au `deploy:prod`),
+   puis outil C1 « placer dans un repère ».
+4. Ranger des relatifs (5-122) : **étiquettes à ranger** (outil neuf, chantier à part ; sert aussi CP, 6-110).
+5. Points D : **hors appli**.
+6. Traduire en une expression : vérifier que le juge exige l'écriture avant d'écrire le lot.
+
+## 6. Lot 0 : niveaux (2026-10-28)
+
+- Relevé : `questions-5/etat-prod-2026-10-28/` (`releve-prod.ts`, lecture seule) ; nœuds déjà ceux des
+  points (aucun déplacement). Données d'élèves : 0 partout (SRS, tentatives, évaluations, journal, tests,
+  chapitres, favoris).
+- `questions-5/lot-niveaux-5.py` (copie de `lot-rangement-6.py`) écrit la migration et la fixture
+  `tests/integration/fixtures/questions-5-niveaux.json` ; test `tests/integration/questions-5-niveaux.test.ts`.

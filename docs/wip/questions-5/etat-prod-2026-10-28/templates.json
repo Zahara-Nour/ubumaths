@@ -1,0 +1,1427 @@
+[
+	{
+		"id": "4f4a5c94-b162-4250-bc7c-255f9951c365",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Simplification",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{b}}}{{{c}}}"
+					}
+				],
+				"statement": "Simplifie cette fraction.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7|11"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a),cd(b)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b}}/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:a*b}}}{{{eval:a*c}}} &= \\dfrac{{{eval:a*b}} \\textcolor{{{color:primary.0}}}{\\div {{a}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{a}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Simplifier une fraction",
+		"description": "Simplification par $2$, $3$, $5$, $7$ ou $11$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{9}{8}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "11",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "99/88 → 9/8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "2"
+				},
+				"description": "2/4 → 1/2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{99}{88}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "11",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "non simplifiée : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1.125"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "11",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "décimal refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{8}{9}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "11",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "inverse faux",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "3e2f28ab-8ab7-469a-bb82-bfb19b4ed4f3"
+	},
+	{
+		"id": "554496dd-506a-4110-8132-81fb9c494378",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Calcul littéral",
+		"domain": "Calculs",
+		"subdomain": "Par substitution",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:r*q+s}}"
+					}
+				],
+				"statement": "Calcule avec ${{p}}={{q}}$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "2..5"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:rp}}{{eval:s;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{r}} \\textcolor{{{color:primary.0}}}{{{p}}} {{eval:s;+}} &= {{r}} \\times \\textcolor{{{color:primary.0}}}{{{q}}} {{eval:s;+}} \\\\ &= {{eval:r*q}} {{eval:s;+}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:r*q+s}}"
+					}
+				],
+				"statement": "Calcule avec ${{p}}={{q}}$\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "-5..-2"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{eval:rp}}{{eval:s;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{r}} \\textcolor{{{color:primary.0}}}{{{p}}} {{eval:s;+}} &= {{r}} \\times \\textcolor{{{color:primary.0}}}{\\left( {{q}} \\right)} {{eval:s;+}} \\\\ &= {{eval:r*q}} {{eval:s;+}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:s+r*q}}"
+					}
+				],
+				"statement": "Calcule avec ${{p}}={{q}}$\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "2..5"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{s}}{{eval:rp;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{s}} {{eval:r;+}} \\textcolor{{{color:primary.0}}}{{{p}}} &= {{s}} {{eval:r;+}} \\times \\textcolor{{{color:primary.0}}}{{{q}}} \\\\ &= {{s}} {{eval:r*q;+}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:s+r*q}}"
+					}
+				],
+				"statement": "Calcule avec ${{p}}={{q}}$\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "-5..-2"
+					},
+					{
+						"name": "expression4",
+						"expression": "{{s}}{{eval:rp;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{s}} {{eval:r;+}} \\textcolor{{{color:primary.0}}}{{{p}}} &= {{s}} {{eval:r;+}} \\times \\textcolor{{{color:primary.0}}}{\\left( {{q}} \\right)} \\\\ &= {{s}} {{eval:r*q;+}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:s*u+r*q}}"
+					}
+				],
+				"statement": "Calcule avec ${{p}}={{q}}$ et ${{t}}={{u}}$\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "2..5"
+					},
+					{
+						"name": "expression5",
+						"expression": "{{eval:st}}{{eval:rp;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{s}} \\textcolor{{{color:primary.1}}}{{{t}}} {{eval:r;+}} \\textcolor{{{color:primary.0}}}{{{p}}} &= {{s}} \\times \\textcolor{{{color:primary.1}}}{{{u}}} {{eval:r;+}} \\times \\textcolor{{{color:primary.0}}}{{{q}}} \\\\ &= {{eval:s*u}} {{eval:r*q;+}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer en substituant les variables",
+		"description": "Entiers relatifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c"
+				},
+				{
+					"name": "r",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "s",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "t",
+					"expression": "a|b|c!p"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-22"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "4",
+					"r": "-4",
+					"s": "-6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"description": "bonne réponse -22",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-4c-6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "4",
+					"r": "-4",
+					"s": "-6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"description": "expression recopiée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "4",
+					"r": "-4",
+					"s": "-6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"description": "signe de s oublié",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "-3",
+					"r": "-4",
+					"s": "-6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"description": "bonne réponse 6 (c = -3)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "-3",
+					"r": "-4",
+					"s": "-6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"description": "-4 × 3 au lieu de -4 × (-3)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-22"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "4",
+					"r": "-4",
+					"s": "-6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"description": "bonne réponse -22",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-40"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "4",
+					"r": "-4",
+					"s": "-6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"description": "priorités ignorées (-6-4)×4",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "-3",
+					"r": "-4",
+					"s": "-6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"description": "bonne réponse 6 (c = -3)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["-18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "-3",
+					"r": "-4",
+					"s": "-6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"description": "signe du produit faux",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["-58"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "4",
+					"r": "-4",
+					"s": "-6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"description": "bonne réponse -58",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["-6b-4c"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "4",
+					"r": "-4",
+					"s": "-6",
+					"t": "b|b",
+					"u": "7"
+				},
+				"description": "expression recopiée",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": "2c5a0016-5e1d-47da-b482-298ef55fe954"
+	},
+	{
+		"id": "635bbc32-6263-45c3-8c5e-4412afb69250",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Egalité de fractions",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète avec le  nombre manquant.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{a}}/{{eval:a*c}}=?/{{eval:b*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{{{a}}}{{{eval:a*c}}} = \\dfrac{{{solution:0}}}{{{eval:b*c}}}$ car ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{a}}$ et ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}} $"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète avec le  nombre manquant.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*c}}/{{a}}={{eval:b*c}}/?"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$ \\dfrac{{{eval:a*c}}}{{{a}}}  = \\dfrac{{{eval:b*c}}}{{{solution:0}}}$ car ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{a}}$ et ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}} $"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète avec le  nombre manquant.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "?/{{eval:b*c}}={{a}}/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{{{solution:0}}}{{{eval:b*c}}}  = \\dfrac{{{a}}}{{{eval:a*c}}}$ car ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{a}}$ et ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}} $"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète avec le  nombre manquant.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "{{eval:b*c}}/?={{eval:a*c}}/{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$ \\dfrac{{{eval:b*c}}}{{{solution:0}}}  = \\dfrac{{{eval:a*c}}}{{{a}}}$ car ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{a}}$ et ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}} $"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Compléter une égalité de fractions",
+		"description": "En utilisant le coefficient de proportionnalité (2)",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!m(a),d(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "4/12 = ?/15 → 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "erreur additive",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "12/4 = 15/? → 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "?/15 = 4/12 → 5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "15/? = 12/4 → 5",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "bornes : 81/? = 18/2 → 9",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": "25eb2be0-3947-4ac6-9518-b8f988383c1f"
+	},
+	{
+		"id": "90dca27a-fc58-4821-9648-9cdc406b263f",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Simplification",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{eval:b/gcd(a,b)}}}{{{eval:a/gcd(a,b)}}}"
+					}
+				],
+				"statement": "Simplifie le plus possible.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!m(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:b*c}}/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:b*c}}}{{{eval:a*c}}} &= \\dfrac{{{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{eval:c*gcd(a,b)}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div  {{eval:c*gcd(a,b)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Simplifier une fraction",
+		"description": "La simplification peut se faire en plusieurs étapes",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"description": "36/54 → 2/3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{4}{6}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"description": "simplification partielle",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{9}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "1",
+					"c": "2"
+				},
+				"description": "borne : 2/18 → 1/9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{7}{8}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "9"
+				},
+				"description": "63/72 → 7/8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{2}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"description": "inverse faux",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "3e2f28ab-8ab7-469a-bb82-bfb19b4ed4f3"
+	},
+	{
+		"id": "acbd2280-4fc8-4842-8474-8693975e6019",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Simplification",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{eval:a*c/gcd(a*c,b*d)}}}{{{eval:b*d/gcd(a*c,b*d)}}}"
+					}
+				],
+				"statement": "Simplifie le plus possible cette fraction.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "10|100|1000"
+					},
+					{
+						"name": "b",
+						"expression": "10|100|1000"
+					},
+					{
+						"name": "c",
+						"expression": "1..9!cd(b)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9!cd(a),cd(c)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*c}}/{{eval:b*d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:a*c}}}{{{eval:b*d}}} &= \\dfrac{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{eval:min(a,b)}}}}{{{eval:b*d}} \\textcolor{{{color:primary.0}}}{\\div {{eval:min(a,b)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Simplifier une fraction",
+		"description": "Simplifier par $10$, $100$ ou $1000$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{900}{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1000",
+					"b": "10",
+					"c": "9",
+					"d": "7"
+				},
+				"description": "9000/70 → 900/7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "10",
+					"c": "1",
+					"d": "3"
+				},
+				"description": "borne : 10/30 → 1/3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{700}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "1000",
+					"c": "3",
+					"d": "7"
+				},
+				"description": "30/7000 → 3/700",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{90}{70}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "10",
+					"b": "10",
+					"c": "9",
+					"d": "7"
+				},
+				"description": "90/70 non simplifiée : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1.29"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "10",
+					"b": "10",
+					"c": "9",
+					"d": "7"
+				},
+				"description": "décimal approché refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{7}{9}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "10",
+					"b": "10",
+					"c": "9",
+					"d": "7"
+				},
+				"description": "fraction inversée",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "3e2f28ab-8ab7-469a-bb82-bfb19b4ed4f3"
+	},
+	{
+		"id": "c6fe3cbf-5591-4080-ab9d-63ce00b5cdfa",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Egalité de fractions",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète avec le  nombre manquant.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:b*c}}/{{eval:a*c}}=?/{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{{{eval:b*c}}}{{{eval:a*c}}} = \\dfrac{{{solution:0}}}{{{a}}}$ car ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{a}}$ et ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}} $"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète avec le  nombre manquant.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:b*c}}/{{eval:a*c}}={{b}}/?"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{{{eval:b*c}}}{{{eval:a*c}}} = \\dfrac{{{b}}}{{{solution:0}}}$ car ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{b}}$ et ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}} $"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète avec le  nombre manquant.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "?/{{a}}={{eval:b*c}}/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{{{solution:0}}}{{{a}}}  = \\dfrac{{{eval:b*c}}}{{{eval:a*c}}}$ car ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{a}}$ et ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}} $"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète avec le  nombre manquant.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "{{b}}/?={{eval:b*c}}/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{{{b}}}{{{solution:0}}}  = \\dfrac{{{eval:b*c}}}{{{eval:a*c}}}$ car ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{b}}$ et ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}} $"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Compléter une égalité de fractions",
+		"description": "Diviser numérateur et dénominateur par le même nombre",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!m(a),d(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "15/12 = ?/4 → 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{5}{4}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "fraction au lieu du nombre",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "15/12 = 5/? → 4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "?/4 = 15/12 → 5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "5/? = 15/12 → 4",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "2"
+				},
+				"description": "bornes : 18/4 = 9/? → 2",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["36"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "multiplie au lieu de diviser",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": "25eb2be0-3947-4ac6-9518-b8f988383c1f"
+	},
+	{
+		"id": "d14fe0cf-cbbf-4349-a32d-4fd30de05c7f",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Simplification",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{b}}}{{{c}}}"
+					}
+				],
+				"statement": "Simplifie cette fraction par $2$ ; $3$ ou $5$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|3|5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a),cd(b)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b}}/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:a*b}}}{{{eval:a*c}}} &= \\dfrac{{{eval:a*b}} \\textcolor{{{color:primary.0}}}{\\div {{a}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{a}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Simplifier une fraction",
+		"description": "Simplifier par $2$, $3$ ou $5$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{1}{9}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "1",
+					"c": "9"
+				},
+				"description": "5/45 → 1/9 (b=1)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{7}{4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "7",
+					"c": "4"
+				},
+				"description": "21/12 → 7/4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{21}{12}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "7",
+					"c": "4"
+				},
+				"description": "non simplifiée : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{4}{7}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "7",
+					"c": "4"
+				},
+				"description": "inverse faux",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "3e2f28ab-8ab7-469a-bb82-bfb19b4ed4f3"
+	},
+	{
+		"id": "d568cedb-6368-40f7-a149-6b7fbebd850d",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Egalité de fractions",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*c}}"
+					}
+				],
+				"statement": "Complète avec le  nombre manquant.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{a}}/{{eval:a*c}}={{b}}/?"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{{{a}}}{{{eval:a*c}}} = \\dfrac{{{b}}}{{{solution:0}}}$ car ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:a*c}}$ et ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}} $"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*c}}"
+					}
+				],
+				"statement": "Complète avec le  nombre manquant.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*c}}/{{a}}=?/{{b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$ \\dfrac{{{eval:a*c}}}{{{a}}}  = \\dfrac{{{solution:0}}}{{{b}}}$ car ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:a*c}}$ et ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}} $"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*c}}"
+					}
+				],
+				"statement": "Complète avec le  nombre manquant.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{b}}/?={{a}}/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{{{b}}}{{{solution:0}}}  = \\dfrac{{{a}}}{{{eval:a*c}}}$ car ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:a*c}}$ et ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}} $"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*c}}"
+					}
+				],
+				"statement": "Complète avec le  nombre manquant.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "?/{{b}}={{eval:a*c}}/{{a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$ \\dfrac{{{solution:0}}}{{{b}}} = \\dfrac{{{eval:a*c}}}{{{a}}}$ car ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:a*c}}$ et ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}} $"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Compléter une égalité de fractions",
+		"description": "En utilisant le coefficient de proportionnalité",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!m(a),d(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "4/12 = 5/? → 15",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["13"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "erreur additive (5+8)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "12/4 = ?/5 → 15",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "5/? = 4/12 → 15",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "?/5 = 12/4 → 15",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "bornes : ?/9 = 18/2 → 81",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": "25eb2be0-3947-4ac6-9518-b8f988383c1f"
+	}
+]
