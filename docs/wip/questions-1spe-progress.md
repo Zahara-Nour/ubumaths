@@ -9,12 +9,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1890._
+_Mis à jour le 2026-10-28, après la publication du lot 0-variations._
 
-- **État** : lots 0-suites (42), 0-second-degré (14) et 0-dérivation (15) publiés ; lot 0-variations (8 brouillons, § 9) corrigé et mergé (#1890), page à cocher en ligne : https://claude.ai/artifact/8StybG87C7kCZKdxyni5hX.
-- **Prochaine action** : lire les verdicts de la page (`ArtifactData list verdicts`, compter les 8) ; puis exponentielle, trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
-- **En attente de David** : relecture faite (« je valide tout ») ; lancer `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-0-variations --publier --mettre-a-jour` (4 mis à jour), puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-0-variations --publier`.
-- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts ; `question:specs` n'a pas d'option de variation : une copie par variation dans le scratchpad ; la page à cocher ne dessine pas le bloc `variation` (le jouer dans l'aperçu) ; CI : job « CI Summary » fantôme, juger au statut du run.
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15) et 0-variations (8, § 9) publiés.
+- **Prochaine action** : lot 0-exponentielle (brouillons du thème), puis trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
+- **En attente de David** : rien.
+- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts ; `question:specs` n'a pas d'option de variation : une copie par variation dans le scratchpad ; la page à cocher ne dessine pas le bloc `variation` (le jouer dans l'aperçu) ; dépôt principal partagé : index vide vérifié avant tout commit (CM2 emporté le 2026-10-28) ; CI : job « CI Summary » fantôme, juger au statut du run.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -315,7 +315,7 @@ KaTeX (MathML), page republiée (version 3).
 relue par David, 15 verdicts « ok » sans commentaire ; `publier-lot --publier` : 15/15 publiés, statuts relus en
 base (MCP). Lot clos.
 
-## 9. Lot 0-variations : vérification des brouillons
+## 9. Lot 0-variations : vérification des brouillons (CLOS : 8 publiés le 2026-10-28, #1890)
 
 _2026-10-28. 8 brouillons tagués d'un point « Variations et courbes » (281, 283, 287, 401), instantané
 `scripts/questions/1spe-0-variations/`, `question:specs --apercu 3` puis un aperçu par variation (29), sorties dans
@@ -351,3 +351,6 @@ PR #1890 mergée (CI verte). Page à cocher : https://claude.ai/artifact/8StybG8
 `variation` non dessiné, à jouer dans l'aperçu).
 
 **Relecture (David, 2026-10-28, « je valide tout pour les variations »)** : les 8 fiches validées par message (aucun verdict en base).
+
+**Publication (2026-10-28)** : `create-questions --publier --mettre-a-jour` (4 mis à jour, 4 déjà en base) puis
+`publier-lot --publier` lancés par David ; 8 / 8 `published`, les 4 corrections relues en base (MCP). Lot clos.
