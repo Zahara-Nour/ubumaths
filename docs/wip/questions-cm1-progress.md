@@ -8,7 +8,7 @@
 _Mis à jour le 2026-10-28, migration du lot 1 en PR._
 
 - **État** : lot 0 en prod (#1893). Lot 1 (calcul mental, 9 brouillons en prod, § 7 quater) : migration nœud + tag `20261028180000_questions_cm1_lot1_rangement_tags` en PR (§ 7 quinquies), test rouge puis vert (9/9).
-- **Prochaine action** : `security-auditor`, CI verte, merge, `db:migrate` depuis le dépôt principal, vérifier au MCP, page à cocher, publication par David.
+- **Prochaine action** : (`security-auditor` sans finding bloquant) CI verte, merge, `db:migrate` depuis le dépôt principal, vérifier au MCP, page à cocher, publication par David.
 - **En attente de David** : rien (phase 0 validée, § 7 bis).
 - **Pièges en cours** : horodatage 18:00 pris APRÈS ceux des PR CM2 (16:00) et CE1 (17:00) pas encore jouées ; un modèle garde toujours au moins un niveau ; niveaux relevés parmi les publiés de la catégorie avant toute écriture ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx` ; niveaux réservés par la session CM2 (lot 1) dans Entiers / Apprivoiser : Décomposition 15-17, Ecriture 16, Comparer 8-9, Encadrer 9-10 → notre lot 2 prend les suivants, relus en base ; chaque push sur la PR annule le run CI en cours ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
 - **Worktree / branche** : `ubumaths-wt-questions-cm1-lot1-rangement` · `feat/questions-cm1-lot1-rangement`.
@@ -259,3 +259,6 @@ nœud ni tag », TOUT ou RIEN. Horodatage 18:00 et non « max prod + 1 min » (1
 (16:00) et CE1 (17:00) ne sont pas encore jouées. Test
 `tests/integration/questions-cm1-lot1-rangement-tags.test.ts` : rouge contre une migration vide
 (3 échecs + suite principale arrêtée au rollback absent), puis 9/9 vert.
+
+`security-auditor` (2026-10-28) : aucun finding bloquant (identité avec le gabarit, ids et chemins
+remesurés en prod, gardes, trigger, rollback symétrique, horodatage libre). PR #1913.
