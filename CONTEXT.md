@@ -123,8 +123,8 @@ en avance). → [ADR 0005](docs/adr/0005-publication-par-element-acces-herite-de
 | **Relecture**            | Revue des 633 questions TinyMath importées, lot par lot.                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `data/relecture/`                                                                                      |
 
 Les types de question (déduits de la structure par `getQuestionType`) : `fill_in_blanks`,
-`multiple_choice`, `course_card`. Les types TinyMath (`numerical_exact`…) n'existent plus que dans le
-code de migration.
+`course_card` (`multiple_choice` retiré le 2026-10-28 : le QCM est une case choix, ADR 0033). Les
+types TinyMath (`numerical_exact`…) n'existent plus.
 
 ## Les usages des questions
 

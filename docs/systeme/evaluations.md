@@ -187,7 +187,8 @@ dupliquer (`duplicateSeries`). Même verrou sur le `series_id` d'un contrôle co
    d'écrit, la tentative reste ouverte (garde : `evaluation-notee-serveur.test.ts`).
    Correction par le serveur (`gradeWithinBudget` → `gradeQuestion`) : 1, ½ ou 0 par question, note
    sur 20 au demi-point (`gradeOutOf20`). Budget total 5 s ; au-delà, les questions restantes valent 0.
-   Tout verdict envoyé par le navigateur est ignoré (le schéma Zod le retire).
+   Tout verdict envoyé par le navigateur est ignoré (le schéma Zod le retire), comme les positions
+   cochées d'un ancien QCM (`choices`, retiré le 2026-10-28 : le QCM est une case choix, ADR 0033).
 4. Écritures par le client **service_role** (la base refuse à un compte connecté d'écrire une séance
    de contrôle, policies restrictives `test_sessions_insert_not_evaluation` et
    `test_answers_insert_not_evaluation`) : réponses d'abord, puis clôture `completed_at` conditionnelle
