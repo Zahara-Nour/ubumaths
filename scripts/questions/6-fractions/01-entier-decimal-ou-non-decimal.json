@@ -33,7 +33,7 @@
 			"correction": {
 				"steps": [
 					"**Fraction et division.** $\\frac{{{a}}}{{{b}}}$ est le quotient de ${{a}}$ par ${{b}}$ : c'est le résultat de la division ${{a}} \\div {{b}}$.",
-					"${{a}} \\div {{b}} = {{q}}$ : la division tombe juste, $\\frac{{{a}}}{{{b}}} = {{q}}$ est \\textcolor{{{color:primary.0}}}{un nombre entier}."
+					"${{a}} \\div {{b}} = {{q}}$ : la division tombe juste, $\\frac{{{a}}}{{{b}}} = {{q}}$ est **un nombre entier**."
 				]
 			}
 		},
@@ -58,7 +58,7 @@
 			"correction": {
 				"steps": [
 					"**Fraction et division.** $\\frac{{{a}}}{{{b}}}$ est le quotient de ${{a}}$ par ${{b}}$ : c'est le résultat de la division ${{a}} \\div {{b}}$.",
-					"${{a}} \\div {{b}} = {{eval:a/b;d}}$ : la division s'arrête, avec des chiffres après la virgule. $\\frac{{{a}}}{{{b}}}$ est \\textcolor{{{color:primary.0}}}{un nombre décimal non entier}."
+					"${{a}} \\div {{b}} = {{eval:a/b;d}}$ : la division s'arrête, avec des chiffres après la virgule. $\\frac{{{a}}}{{{b}}}$ est **un nombre décimal non entier**."
 				]
 			}
 		},
@@ -84,7 +84,7 @@
 				"steps": [
 					"**Fraction et division.** $\\frac{{{a}}}{{{b}}}$ est le quotient de ${{a}}$ par ${{b}}$ : c'est le résultat de la division ${{a}} \\div {{b}}$.",
 					"${{a}} \\div {{b}} = {{eval:floor(10000*a/b)/10000;d}}\\ldots$ : la division ne s'arrête jamais, les mêmes restes reviennent sans fin.",
-					"$\\frac{{{a}}}{{{b}}}$ ne peut pas s'écrire avec un nombre fini de chiffres après la virgule : c'est \\textcolor{{{color:primary.0}}}{un nombre non décimal}."
+					"$\\frac{{{a}}}{{{b}}}$ ne peut pas s'écrire avec un nombre fini de chiffres après la virgule : c'est **un nombre non décimal**."
 				]
 			}
 		}

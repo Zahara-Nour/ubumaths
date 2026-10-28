@@ -132,13 +132,13 @@ NATURE_ENTIER = variation(
     NATURE, [var('b', '2..9'), var('q', '2..9'), var('a', 'eval:b*q')], ['0'],
     [QUOTIENT,
      '${{a}} \\div {{b}} = {{q}}$ : la division tombe juste, $' + fr('{{a}}', '{{b}}') + ' = {{q}}$'
-     ' est ' + col('un nombre entier') + '.'])
+     ' est ' + '**un nombre entier**' + '.'])
 
 NATURE_DECIMAL = variation(
     NATURE, [var('b', '2|4|5|8|10|20|25'), var('a', '1..99')], ['1'],
     [QUOTIENT,
      '${{a}} \\div {{b}} = {{eval:a/b;d}}$ : la division s\'arrête, avec des chiffres après la'
-     ' virgule. $' + fr('{{a}}', '{{b}}') + '$ est ' + col('un nombre décimal non entier') + '.'],
+     ' virgule. $' + fr('{{a}}', '{{b}}') + '$ est ' + '**un nombre décimal non entier**' + '.'],
     ['mod(a,b)!=0', 'a<10*b'])
 
 NATURE_NON_DECIMAL = variation(
@@ -147,7 +147,7 @@ NATURE_NON_DECIMAL = variation(
      '${{a}} \\div {{b}} = {{eval:floor(10000*a/b)/10000;d}}\\ldots$ : la division ne s\'arrête'
      ' jamais, les mêmes restes reviennent sans fin.',
      '$' + fr('{{a}}', '{{b}}') + '$ ne peut pas s\'écrire avec un nombre fini de chiffres après la'
-     ' virgule : c\'est ' + col('un nombre non décimal') + '.'],
+     ' virgule : c\'est ' + '**un nombre non décimal**' + '.'],
     ['gcd(a,b)==1', 'a<5*b'])
 
 MODELES.append(modele(

@@ -215,8 +215,8 @@ LIEN_CHOIX = variation(
     [var('k', '1..3')],
     ['{{eval:k-1}}'],
     [LIEN,
-     'Multiplier par $' + selon('k', FACTEURS, 1) + '$, c\'est ' + col('diviser par $'
-     + selon('k', DIVISEURS, 1) + '$') + ' : chaque chiffre recule de ${{k}}$ rang{{if:k>1|s|}}'
+     'Multiplier par $' + selon('k', FACTEURS, 1) + '$, c\'est **diviser par $'
+     + selon('k', DIVISEURS, 1) + '$** : chaque chiffre recule de ${{k}}$ rang{{if:k>1|s|}}'
      ' vers la droite.'])
 
 LIEN_DIVISEUR = variation(
