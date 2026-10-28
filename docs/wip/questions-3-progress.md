@@ -5,17 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, PR #1930 ouverte (migration de rangement du lot 1)._
+_Mis à jour le 2026-10-28, après #1930 (rangement du lot 1 joué en prod)._
 
-- **État** : 5 brouillons du lot 1 créés en prod par David (§ 8.7) ; migration
-  `20261029003100_questions_3_lot1_rangement_tags` écrite, test 23 verts (rouge sans elle), `security-auditor` sans
-  bloquant. CI de #1930 : Client Tests shard 1/2 en échec (PR sans code client, log pas encore lu).
-- **Prochaine action** : lire le log du shard ; si sans rapport, relancer ; CI verte → merge → `db:migrate` depuis le
-  dépôt principal → vérification MCP (nœuds, niveaux [3], tags) → page à cocher → publication (David).
-- **En attente de David** : rien avant le merge.
-- **Pièges en cours** : vérifier que 20261029003100 reste après la dernière migration de prod ET d'`origin/main` ;
-  verrou `index.lock` périmé rencontré dans le worktree (aucun git en cours → retiré).
-- **Worktree / branche** : `../ubumaths-wt-questions-3-lot-1-rangement` · `feat/questions-3-lot-1-rangement`.
+- **État** : lot 1 en prod en brouillon, rangé (migration `20261029003100` jouée, vérifiée au MCP : 5 sur leur
+  nœud, tags 3-003/007/008/009/010 ; 90dca27a et acbd2280 en [3], tag 3-001, publiés). Page à cocher publiée :
+  https://claude.ai/artifact/RzBxX9RLjAtvkNnTWssq4X (collection `verdicts`, 0/5 au départ).
+- **Prochaine action** : David relit ; `ArtifactData list verdicts`, compter les 5 verdicts ; « À revoir » →
+  corriger (§ 7 de `couvrir-un-niveau.md`) ; tout OK → `publier-lot.ts --dir scripts/questions/3-lot-1` en
+  simulation, puis David `--publier`. Ensuite : phase 0 du lot 2 (§ 4).
+- **En attente de David** : la relecture de la page à cocher. 77ab770d (facteurs premiers) : bloc choix non
+  dessiné sur la page, à jouer dans l'aperçu admin.
+- **Pièges en cours** : `db:migrate` refusé par le classifieur du mode auto → David le lance avec `!` ;
+  test `forfait-palotin` qui dépasse 5 s en CI (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
+- **Worktree / branche** : aucun (worktree de #1930 retiré).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -263,3 +265,9 @@ modèles publiés de plus, ceux de 4e les perdent. Aucune règle ne change.
   fraction d'une quantité »), tags 3-003, 3-007, 3-008, 3-009, 3-010 ; 90dca27a et acbd2280 : [4] → [3],
   4-005 → 3-001, nœud gardé. Le gabarit du lot 0 accepte désormais un nœud d'avant vide (brouillon neuf).
 - Test `questions-3-lot1-rangement-tags` : 21 verts, 10 rouges sans la migration (migration vidée, rollback gardé).
+
+### 8.8 Lot 1 : rangement joué, page à cocher (2026-10-28)
+
+- #1930 mergée (CI : run annulé puis `forfait-palotin` en délai dépassé, sans rapport, relancé vert) ;
+  `db:migrate` lancé par David ; MCP : les 7 modèles conformes à l'en-tête de la migration.
+- Page à cocher : https://claude.ai/artifact/RzBxX9RLjAtvkNnTWssq4X (alerte : 77ab770d, bloc choix non dessiné).
