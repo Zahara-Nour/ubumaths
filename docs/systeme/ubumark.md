@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28.
 
 ## À quoi ça sert
 
@@ -369,6 +369,25 @@ Danse = 7            ```                                     ```
   (`src/lib/ubumark/__tests__/stat-chart/simulation-block.test.ts`) ; ou une loi nommée,
   `X ~ G(0,2)`, `U(1 ; 6)`, `U([0 ; 10])`, `E(0,5)`, `N(10 ; 4)` (σ² en 2ᵉ paramètre ; histogramme
   sur μ ± 3σ) — `src/lib/ubumark/__tests__/stat-chart/simulation-laws.test.ts`.
+- ` ```barres ` à construire (chantier [reponses-a-placer](../wip/reponses-a-placer-progress.md)
+  § 17, 18 ; CP-072, CE1-088, CE2-082) — `src/lib/ubumark/__tests__/stat-chart/barres-placer.test.ts`,
+  `BarresPlacer.svelte.test.ts` : `axe: 0 à 20, de 2 en 2` (nœud : `spec.axis`, `{ max, step }` ; part
+  de 0, haut multiple du pas, au plus 40 graduations ; une barre plus haute refusée ; sans `de N en N` :
+  de 1 en 1), `placer: Natation ; Danse` ou `placer: toutes` (`spec.toPlace`, rangs dans `data`, dans
+  l'ordre des données ; nom sans tenir compte de la casse) et `caseIndex` (`case: N`, posé par le
+  générateur). Refus de `placer:` : sans `axe:` (calculé, il trahirait la plus grande barre), avec
+  `valeurs: oui`, des pourcentages, deux séries, un nom absent ou nommé deux fois ; `case:` sans
+  `placer:`. `données:` permis (l'élève compte puis construit). Repérage dans un énoncé :
+  `findBarsToPlace`, `hasBarsToPlace`. Scène : les barres à construire marquées `toPlace` (leur
+  `value` reste l'effectif attendu, que seule la correction dessine), description accessible
+  « Danse à construire » au lieu de l'effectif. Écran `BarresPlacer.svelte` (`StatChart` le prend
+  quand `spec.toPlace`) : barre pas construite = pointillés au pied de sa colonne ; toucher la colonne
+  d'une barre à construire la choisit et monte son haut au doigt, glisser l'ajuste (ailleurs la page
+  défile) ; aimant à l'unité (`barValueAt`), étiquettes, ▲ ▼, flèches, Début, Fin ; `role="slider"`,
+  nom accessible sans l'effectif attendu. Faux : une phrase par barre (`barMistake` : « Ta barre Danse
+  monte à 9. », « Tu n’as pas construit la barre Danse. ») et le diagramme juste. Calcul pur
+  `utils/barres-placer.ts`. PDF : barres à construire absentes, l'enfant les dessine. Choix de
+  l'échelle par l'élève (CM1-CM2) : hors chantier.
 
 **QR code** (lot 2 des QR codes, [qr-codes](qr-codes.md)) — `src/lib/ubumark/__tests__/qr/` :
 
