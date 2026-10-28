@@ -347,6 +347,20 @@ describe('Questions 3e, lot 1 : les branches d’échec de la migration', () => 
 		});
 	});
 
+	it('un tag ajouté sur un modèle publié depuis le relevé fait échouer la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(
+				`insert into public.question_template_points (template_id, point_id)
+				 select $1, id from public.curriculum_points where grade = '3' and code = '3-001' and archived_at is null`,
+				[id('acbd2280')]
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/tags différents du relevé : \+acbd2280 3-001/
+			);
+		});
+	});
+
 	it('le rollback refuse si un point posé ne peut plus être résolu (point archivé)', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
@@ -370,6 +384,23 @@ describe('Questions 3e, lot 1 : les branches d’échec de la migration', () => 
 			);
 			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
 				/rollback : 6 modèle\(s\) sur 7 ont encore le nœud, les niveaux et le statut de la migration/
+			);
+		});
+	});
+
+	it('le rollback refuse si un modèle a été déplacé depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query('delete from public.question_template_points where template_id = $1', [
+				id('90dca27a')
+			]);
+			await pg.query(
+				'update public.question_templates set classification_node_id = null where id = $1',
+				[id('90dca27a')]
+			);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : 6 modèle\(s\) sur 7 ont encore/
 			);
 		});
 	});
