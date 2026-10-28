@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.54.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.53.0...v0.54.0) (2026-10-28)
+
+### ✨ Features
+
+- **questions:** cm2 lot 0, changements de niveau CM1 → CM2 et CM2 → 6e / 5e ([7aa8675](https://github.com/Zahara-Nour/ubumaths/commit/7aa867583ecd144d9ff883c6c503bb800f26631f))
+- **questions:** lot 4 « Fractions » de la 6e, 10 modèles en brouillon ([803f598](https://github.com/Zahara-Nour/ubumaths/commit/803f598559ecdeca7a4be177dd8a28abda3cf2f6))
+
+### 🐛 Bug Fixes
+
+- **ci:** garde SECURITY DEFINER, svelte-kit sync avant le test sous Vite 8 ([789b044](https://github.com/Zahara-Nour/ubumaths/commit/789b0447ad6bb6d02b5aa74bc8b2fcda34af4cb3))
+- **python:** le worker Pyodide n'importe plus le barrel qui tire les runes ([ed0e602](https://github.com/Zahara-Nour/ubumaths/commit/ed0e6024e01fb0b177393b81850673b37e400a13))
+- **questions:** cm2 lot 0 réduit aux 11 modèles du CM2 (le CM1 a fait les siens, [#1893](https://github.com/Zahara-Nour/ubumaths/issues/1893)) ([c78de02](https://github.com/Zahara-Nour/ubumaths/commit/c78de02bc530109853dbcdf72babb35fdd227eb8))
+- **questions:** cm2 lot 0, le rollback du rangement refuse une présence partielle ([423fa17](https://github.com/Zahara-Nour/ubumaths/commit/423fa170703d3a38120497b07386506ef2783382))
+- **questions:** couleur hors formule affichée brute (6e, lots 3 et 4) ([fa753ec](https://github.com/Zahara-Nour/ubumaths/commit/fa753ec93bc54c63821d828c253772b90c90bfa3))
+
+### 📚 Documentation
+
+- **python:** le worker importe ses valeurs module par module, pas par le barrel ([5e30ca0](https://github.com/Zahara-Nour/ubumaths/commit/5e30ca0090fc28982a16a05e3d7fbd694048cb71))
+- **wip:** build-memoire, mesure de la mémoire du build (Rollup vs Rolldown) ([e6b5906](https://github.com/Zahara-Nour/ubumaths/commit/e6b59068a75da90526d30704f7e1b02dc385477c))
+- **wip:** build-memoire, mesure de la mémoire du build (Rollup vs Rolldown) ([7054ed0](https://github.com/Zahara-Nour/ubumaths/commit/7054ed026a21fd77b8bcd38d7017762ca9f4b713))
+- **wip:** build-memoire, reprendre ici après [#1899](https://github.com/Zahara-Nour/ubumaths/issues/1899) ([e0dbd75](https://github.com/Zahara-Nour/ubumaths/commit/e0dbd75ded055717c281c1d70a10d003ce76c55e))
+- **wip:** build-memoire, vérifications de la montée en Vite 8 ([3d86c15](https://github.com/Zahara-Nour/ubumaths/commit/3d86c151e265cc34778d5dd3722c4bcb1bbdc812))
+- **wip:** kit3, étude du passage à SvelteKit 3 ([da8851c](https://github.com/Zahara-Nour/ubumaths/commit/da8851c8ecc8dca9f10589e8c881be1f346eed01))
+- **wip:** questions-6, 6 modèles reçus du CM2 ([#1896](https://github.com/Zahara-Nour/ubumaths/issues/1896)) ([83535fa](https://github.com/Zahara-Nour/ubumaths/commit/83535fae75bd25af4d8475f0410f61c98ca2a843))
+- **wip:** questions-6, lot 4 écrit ([#1898](https://github.com/Zahara-Nour/ubumaths/issues/1898)) ([7402d46](https://github.com/Zahara-Nour/ubumaths/commit/7402d46dc1f614fb72644db0c0e94b94fb180523))
+- **wip:** questions-6, lot 4 mergé ([#1898](https://github.com/Zahara-Nour/ubumaths/issues/1898)) ([72d44e7](https://github.com/Zahara-Nour/ubumaths/commit/72d44e787b703bc48669d6e9750fd1f65c807d27))
+- **wip:** questions-6, phase 0 du lot 4 validée ([23b25be](https://github.com/Zahara-Nour/ubumaths/commit/23b25be3c0ed4b2a402d2c67ce0ecd433fe37626))
+- **wip:** questions-ce1, lot 2 publié (7/7) et clos ([e5b6889](https://github.com/Zahara-Nour/ubumaths/commit/e5b6889369e2ebeed5191b2de71df2d1c811f507))
+- **wip:** questions-cm2, lot 0 clos ([#1896](https://github.com/Zahara-Nour/ubumaths/issues/1896) mergée, migration jouée) ([65b2a56](https://github.com/Zahara-Nour/ubumaths/commit/65b2a565886cdcfaa130915722b812a535da4f0b))
+- **wip:** questions-cm2, lot 0 réduit après [#1893](https://github.com/Zahara-Nour/ubumaths/issues/1893) ([#1896](https://github.com/Zahara-Nour/ubumaths/issues/1896) ouverte) ([e9f441d](https://github.com/Zahara-Nour/ubumaths/commit/e9f441d97f5531ba56129530daa0fef07357e569))
+
 ## [0.53.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.52.0...v0.53.0) (2026-10-28)
 
 ### ✨ Features
