@@ -31,8 +31,10 @@ import { replaceChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
 import { isWorkFigureBlank } from './graded-part';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { findLinesToPlace, parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
+import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
+import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { buildCaseCount } from './generator/build-answer';
 import {
 	validateAnswerDetailed,
 	type DetailedVerdict,
@@ -258,7 +260,7 @@ interface BuildCaseBlock {
 	startIndex: number;
 	endIndex: number;
 	first: number;
-	/** Nombre de cases du bloc (points d'une droite à placer, sinon 1) */
+	/** Nombre de cases du bloc (points d'une droite à placer, barres à construire, sinon 1) */
 	cases: number;
 }
 
@@ -270,7 +272,8 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
 		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
 		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const })),
-		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const }))
+		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const })),
+		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {
@@ -279,8 +282,7 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		if (!caseLine) continue;
 		const first = Number(caseLine[1]);
 		const source = block.body.filter((line) => !CASE_LINE.test(line.trim())).join('\n');
-		const cases =
-			block.kind === 'line' ? (parseNumberLineContent(source).node?.placer?.length ?? 1) : 1;
+		const cases = buildCaseCount(block.kind, source);
 		const found: BuildCaseBlock = {
 			kind: block.kind,
 			source,
@@ -606,8 +608,9 @@ function buildLines(
 }
 
 /**
- * Droite à placer à plusieurs points : une seule droite, la réponse de chaque point ;
- * juste quand tous les points le sont, « rien placé » quand aucun ne l'est
+ * Droite à placer à plusieurs points (diagramme à plusieurs barres) : une seule
+ * figure, la réponse de chaque point (barre) ; juste quand tous le sont, « rien
+ * placé » (« rien posé ») quand aucun ne l'est
  */
 function placeLines(
 	first: BlankView,
@@ -631,7 +634,10 @@ function placeLines(
 		status: answered ? (allAccepted ? 'correct' : 'incorrect') : 'solution',
 		...(answered && { answers })
 	};
-	if (withAnswer && !answered) return [line, { kind: 'empty', text: EMPTY_PLACE_TEXT }];
+	if (withAnswer && !answered) {
+		const text = isPlaceKind(build.kind) ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
+		return [line, { kind: 'empty', text }];
+	}
 	return [line];
 }
 
@@ -783,10 +789,11 @@ function buildAnswers(
 	const builds = outside.flatMap((v) => {
 		if (!v.build) return [];
 		if (v.build.cases === 1) return buildLines(v, v.build, verdict !== undefined);
-		// Droite à plusieurs points : UNE droite, à la place de sa première case
+		// Droite à plusieurs points, diagramme à plusieurs barres : UNE figure, à la
+		// place de sa première case
 		if (v.index !== v.build.first) return [];
 		const points = outside.filter(
-			(other) => other.build?.first === v.build!.first && other.build.kind === 'line'
+			(other) => other.build?.first === v.build!.first && other.build.kind === v.build!.kind
 		);
 		return placeLines(v, v.build, points, verdict !== undefined);
 	});

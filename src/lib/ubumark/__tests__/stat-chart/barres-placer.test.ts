@@ -140,9 +140,9 @@ describe('placer: — les barres que l’élève construit', () => {
 		]);
 	});
 
-	it('effectif attendu non entier : refusé', () => {
+	it('effectif attendu non entier : déjà refusé à sa ligne', () => {
 		expect(messagesOf('A = 2,5', 'B = 3', 'axe: 0 à 5', 'placer: A')).toEqual([
-			'Ligne 4 : placer : la barre A vaut 2,5, l’élève ne construit qu’un entier'
+			'Ligne 1 : un effectif est un nombre entier (reçu 2,5) ; pour une fréquence, écrire un pourcentage (35 %)'
 		]);
 	});
 
