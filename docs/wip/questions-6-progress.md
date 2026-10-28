@@ -599,3 +599,11 @@ quelconques dans des cas simples, $\frac{5}{4} + \frac{2}{3}$) ; « Ranger » à
   migration de contenu (gabarit CE1 lot 0, § 7 de la démarche), à joindre à la migration de rangement du lot 4.
   Hors 6e, le même motif apparaît dans des modèles de terminale (`fonctions-terminale` A-06, C-06 ;
   `trigo-terminale` A-01) : non vérifié, à signaler.
+
+### 11.2 Reçus du CM2 (2026-10-28)
+
+Session `questions-cm2`, lot 0 (#1896, migration `20261028120000` jouée en prod) : 6 modèles publiés passés en `[6]`,
+tagués, nœuds, catégories et niveaux inchangés : 7f0fbff0 (1,2 ÷ 6) → 6-121 ; 3c40e59b (2 × 0,06), 814a46a9 (5,9 × 2) →
+6-118 ; 4b543657, 918598f5, 9826af8b (produits astucieux à trois facteurs) → 6-118. À compter dans la couverture ;
+relevé à refaire avant d'écrire dans Décimaux / Multiplier (Produit, Produits astucieux) ou Décimaux / Diviser /
+Quotient. Aucun dans les catégories « Fractions » du lot 4.
