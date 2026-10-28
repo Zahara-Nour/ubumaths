@@ -1,0 +1,189 @@
+[
+	{
+		"id": "15368b02-73cc-4f0d-b978-fa0d0848eb03",
+		"noeudAvant": "Nombres et calculs > Puissances : sens et écritures > définition",
+		"noeudApres": "Nombres et calculs > Puissances : sens et écritures > définition",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-004"]
+	},
+	{
+		"id": "17f3dfcd-01e4-460f-9b94-40be348c2ed7",
+		"noeudAvant": "Nombres et calculs > Puissances : calculs > puissance de puissance",
+		"noeudApres": "Nombres et calculs > Puissances : calculs > puissance de puissance",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": []
+	},
+	{
+		"id": "1db08bdc-e262-464c-9a51-b77b281e0510",
+		"noeudAvant": "Nombres et calculs > Puissances : calculs > quotient de puissances",
+		"noeudApres": "Nombres et calculs > Puissances : calculs > quotient de puissances",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-052"]
+	},
+	{
+		"id": "2bdb3db6-8ef7-43af-aa7a-2332e34d2a01",
+		"noeudAvant": "Fonctions > Fonctions affines > équations",
+		"noeudApres": "Algèbre > Équations : premier degré > ax + b = c",
+		"gradesAvant": ["3"],
+		"gradesApres": ["4"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-024"]
+	},
+	{
+		"id": "336451af-1329-4e38-adf3-01a857455c1d",
+		"noeudAvant": "Fonctions > Fonctions affines > coefficient directeur et ordonnée à l'origine",
+		"noeudApres": "Géométrie > Géométrie repérée > intersection de deux droites",
+		"gradesAvant": ["3"],
+		"gradesApres": ["2"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["2§2-318"]
+	},
+	{
+		"id": "54107079-218f-48dd-8df4-3cb4d1f5a801",
+		"noeudAvant": "Algèbre > Calcul littéral > développement",
+		"noeudApres": "Algèbre > Calcul littéral > développement",
+		"gradesAvant": ["3"],
+		"gradesApres": ["4"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-022"]
+	},
+	{
+		"id": "5b627bb7-201f-4482-91e7-58b98604a4f9",
+		"noeudAvant": "Nombres et calculs > Puissances : calculs > produit de puissances",
+		"noeudApres": "Nombres et calculs > Puissances : calculs > produit de puissances",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-005"]
+	},
+	{
+		"id": "65110463-afc0-4dfd-91b3-977fd7402de7",
+		"noeudAvant": "Nombres et calculs > Fractions : calculs > inverse",
+		"noeudApres": "Nombres et calculs > Puissances : sens et écritures > définition",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-004"]
+	},
+	{
+		"id": "743c0809-885f-4536-bad4-267cffbb1ae7",
+		"noeudAvant": "Nombres et calculs > Puissances : calculs > quotient de puissances",
+		"noeudApres": "Nombres et calculs > Puissances : calculs > quotient de puissances",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-052"]
+	},
+	{
+		"id": "7c0ee046-124a-4f90-a84a-9a41042804f7",
+		"noeudAvant": "Fonctions > Fonctions affines > variations et signe",
+		"noeudApres": "Fonctions > Fonctions affines > variations et signe",
+		"gradesAvant": ["3"],
+		"gradesApres": ["2"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["2§2-348"]
+	},
+	{
+		"id": "8ac99be4-a6be-4c89-90c8-c7d8974313f4",
+		"noeudAvant": "Nombres et calculs > Puissances : calculs",
+		"noeudApres": "Nombres et calculs > Puissances : calculs > quotient de puissances",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-052"]
+	},
+	{
+		"id": "953574d4-e345-4a5d-9435-7faecc3ff7ac",
+		"noeudAvant": "Nombres et calculs > Puissances : sens et écritures > notation scientifique",
+		"noeudApres": "Nombres et calculs > Puissances : sens et écritures > notation scientifique",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-006"]
+	},
+	{
+		"id": "9f380957-48db-4b31-9f28-61fc4bfb5420",
+		"noeudAvant": "Nombres et calculs > Puissances : sens et écritures > notation scientifique",
+		"noeudApres": "Nombres et calculs > Puissances : sens et écritures > notation scientifique",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-006"]
+	},
+	{
+		"id": "ac5d0413-2eee-4bed-998b-d540701667a0",
+		"noeudAvant": "Algèbre > Calcul littéral > réduction",
+		"noeudApres": "Algèbre > Calcul littéral > réduction",
+		"gradesAvant": ["3"],
+		"gradesApres": ["5"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-039"]
+	},
+	{
+		"id": "bb9cff7b-f2c7-40ce-af3c-249970ad0a9e",
+		"noeudAvant": "Nombres et calculs > Puissances : calculs > produit de puissances",
+		"noeudApres": "Nombres et calculs > Puissances : calculs > produit de puissances",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-005"]
+	},
+	{
+		"id": "bba95c2d-033b-4648-944d-102a3c2c386d",
+		"noeudAvant": "Fonctions > Fonctions affines > variations et signe",
+		"noeudApres": "Fonctions > Fonctions affines > variations et signe",
+		"gradesAvant": ["3"],
+		"gradesApres": ["2"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["2§2-328"]
+	},
+	{
+		"id": "c9d6c5db-e067-4056-9db9-4130485cb16a",
+		"noeudAvant": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"noeudApres": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-001"]
+	}
+]
