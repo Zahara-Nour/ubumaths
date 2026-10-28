@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1927 (relecture du lot 1 corrigée en prod)._
+_Mis à jour le 2026-10-28, après #1927 (relecture du lot 1 terminée : 8/8 OK)._
 
-- **État** : lot 0 en prod (#1917). Lot 1 « Calcul » : 8 brouillons en prod, rangés et tagués. Relecture de David : 5 OK, 2 à revoir (01, 07) → corrigés (#1925, `--mettre-a-jour` lancé par David), 08 neuf créé et rangé (#1927, `20261028233000`, vérifié) ; verdicts de 01 et 07 remis à zéro.
-- **Prochaine action** : relecture de 01, 07 et 08 sur la page à cocher (version 2) https://claude.ai/artifact/6PS8PZmgzaniDhkr8sThzh ; compter les verdicts (`ArtifactData list verdicts`, **8** attendus) ; tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/5-calcul` en simulation, puis David avec `--publier`. Ensuite phase 0 du lot 2 (relatifs : 5-120, 5-014, 5-019, 5-015, 5-024, 5-021).
-- **En attente de David** : relecture de 01, 07, 08.
+- **État** : lot 0 en prod (#1917). Lot 1 « Calcul » : 8 brouillons en prod, rangés et tagués ; relecture finie, **8 verdicts OK** comptés en base (01, 07 corrigés, 08 neuf compris). `publier-lot.ts` en simulation : 8 brouillons passent le contrôle.
+- **Prochaine action** : David lance `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/5-calcul --publier` ; vérifier `published` en base (MCP), consigner au § 9. Ensuite phase 0 du lot 2 (relatifs : 5-120, 5-014, 5-019, 5-015, 5-024, 5-021), attendre la validation.
+- **En attente de David** : la commande `--publier` du lot 1.
 - **Pièges en cours** : `db push` refuse une migration plus ancienne que la dernière jouée (sessions parallèles) → `--include-all`, lancé par David ; horodatages : vérifier `schema_migrations` ET les worktrees avant d'en choisir un ; le classifieur refuse `create-questions --mettre-a-jour` même en simulation (simulation simple + `question:specs --file`) ; CI : `wrapDynamicImport` (tests navigateur) et délai de `scripts/corrections` = accidents du runner, une relance suffit ; 01 et 08 homonymes (même titre, niveaux 1 et 2) : alerte attendue sur la page.
 - **Worktree / branche** : aucun.
 
@@ -170,3 +170,5 @@ Page à cocher, 7 verdicts : 5 OK (02, 03, 04, 05, 06), 2 à revoir. Corrections
 - #1925 (fichiers), David : `create-questions --publier --mettre-a-jour` (01, 07 mis à jour ; 08 créé) ;
   #1927 migration `20261028233000_questions_5_lot1_08_rangement_tags` (test 8/8, rouge sans elle, audit sans
   finding), jouée par moi (seule en attente), vérifiée. Verdicts de 01 et 07 supprimés ; page republiée (v2).
+- Seconde relecture (page v2) : 01, 07, 08 OK → **8/8 verdicts OK** comptés en base. `publier-lot.ts` en
+  simulation : 8 brouillons passent le contrôle ; publication à lancer par David (`--publier`).
