@@ -5,15 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après le relevé (aucune PR)._
+_Mis à jour le 2026-10-28, phase 0 du lot 0 proposée._
 
-- **État** : relevé et état des lieux faits (§ 1 à 4) ; rien d'écrit en base ni en code.
-- **Prochaine action** : réponses de David aux questions du § 5, puis phase 0 du lot 0 (corrections) ou du
-  premier lot de texte, selon son ordre.
-- **En attente de David** : questions 1 à 6 du § 5.
-- **Pièges en cours** : QCM = **case choix** désormais (0 `multiple_choice` en base depuis le 2026-10-28,
-  `figure-et-choix`) ; relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot ; relever les niveaux
-  publiés de chaque catégorie (§ 5) avant de numéroter.
+- **État** : relevé, classement (§ 1 à 4) et réponses de David (§ 5) faits ; phase 0 du lot 0 écrite (§ 6),
+  **pas encore validée**. Rien d'écrit en base ni en code.
+- **Prochaine action** : validation du § 6, puis lot 0 (une migration niveaux + nœuds + tags de 6 modèles, test
+  d'intégration, `security-auditor`), puis phase 0 du lot 1 (relatifs et rationnels).
+- **En attente de David** : les questions du § 6.4.
+- **Pièges en cours** : la session 3e déplace 11 modèles de 4e vers la 3e (note en bas) : ne pas les toucher ;
+  90dca27a et acbd2280 sont passés en 4e (#1917, 5e) alors que la 3e les veut en 3e (§ 6.4) ; QCM = case choix ;
+  relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot ; niveaux publiés par catégorie (§ 1).
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
@@ -138,7 +139,7 @@ pour afficher un programme ; les transformations (`translation`, `vecteur`) exis
 8. **Pensée informatique** (A) : 065, 066, 067.
 9. Outils C, chacun en chantier à part, dans l'ordre que choisit David.
 
-## 5. Questions à David (posées le 2026-10-28)
+## 5. Questions à David (posées le 2026-10-28) — tranchées : voir § 5 bis
 
 1. **c9d6c5db** : appliquer enfin la passe (« Simplifie », toute fraction simplifiée acceptée, tag 4-005) ?
 2. **Les 21 HORS_PROGRAMME** : appliquer la règle de la 6e (niveau du point qui les décrit : 3e, 5e ; les
@@ -156,3 +157,65 @@ Le lot 0 de la 3e (journal `questions-3-progress.md` § 6.2) passe en **3e seule
 acbd2280 (5e), c9d6c5db, 15368b02, 65110463, bb9cff7b, 5b627bb7, 1db08bdc, 743c0809, 8ac99be4,
 953574d4, 9f380957, 17f3dfcd ; il passe en 4e 54107079 (4-022) et 2bdb3db6 (4-024). Ne pas les
 traiter ici. **2d8e7948** (« Puissances de 10 », exposants négatifs à retirer) reste à la 4e.
+
+## 5 bis. Décisions de David (2026-10-28, « je valide » mes recos)
+
+1. c9d6c5db : appliquer la passe (« Simplifie », tag 4-005). **Dépassé** depuis (§ 6.1) : la session 3e le
+   prend en 3e avec 3-001, et 4-005 a déjà 4 modèles.
+2. Les 21 HORS_PROGRAMME : règle de la 6e (niveau du point qui les décrit), destinations vérifiées contre les
+   bornes ; la 4e fait le déplacement de ce qui n'est pas déjà pris par une autre session.
+3. Ordre des lots : 0 corrections, 1 relatifs et rationnels, 2 proportionnalité et pourcentages, 3 statistiques,
+   4 probabilités, 5 puissances et calcul littéral, 6 programmes de calcul et fonctions, 7 géométrie (après les
+   lots 5-6 de `figure-et-choix`), 8 pensée informatique.
+4. Solides (027, 028) : un seul bloc « solides » avec les assemblages de cubes de la 6e (ADR) ; palier 1
+   affichage en perspective (027), palier 2 patrons et vues (028).
+5. Schéma de fraction (074) : le schéma en barres de la 6e, sans carré unité.
+6. Pensée informatique (065-067) : pseudo-code en français proche de Scratch, bloc de code sans langage ; pas de
+   Python.
+
+## 6. Lot 0 (corrections) : phase 0 (proposée le 2026-10-28)
+
+### 6.1 Ce que les autres sessions ont déjà pris
+
+- **5e (#1917, migrée)** : 4f4a5c94, 90dca27a, acbd2280, d14fe0cf (simplifier une fraction) → 4e, tag 4-005 ;
+  554496dd (substitution, relatifs) → 4e sans tag. **4-005 est couvert** (4 modèles).
+- **3e (lot 0 validé, pas encore écrit)** : c9d6c5db (→ 3-001), 15368b02, 65110463, bb9cff7b, 5b627bb7,
+  1db08bdc, 743c0809, 8ac99be4, 953574d4, 9f380957, 17f3dfcd → 3e ; 54107079 (4-022) et 2bdb3db6 (4-024) → 4e.
+  Ses destinations sont les miennes (§ 2.2). c9d6c5db en 3e est cohérent : « le plus possible » = 3e.
+- 2d8e7948 (note de la 3e) : déjà corrigé en prod (a de 0 à 5, MCP).
+
+### 6.2 Ce qui reste à la 4e : 6 modèles, une migration (niveaux, nœuds, tags), aucun contenu
+
+Vérifiés contre les bornes du niveau cible (variables relevées en prod, export du 2026-10-28) :
+
+| Modèle   | Ce qu'il fait                              | Niveau | Point | Nœud                                                                        |
+| -------- | ------------------------------------------ | ------ | ----- | --------------------------------------------------------------------------- |
+| 2de1b93d | factoriser a×b + a×c, entiers 2 à 9        | 5e     | 5-008 | Calcul littéral > factorisation → Entiers : multiplication > distributivité |
+| 294c4316 | facteur commun de a×b + a×c, entiers 2 à 9 | 5e     | 5-008 | idem                                                                        |
+| 419887ff | b/x = c/a ; b/x = a (2 à 9)                | 2de    | 2-464 | Équations : premier degré > ax = b → Fonction inverse > 1/x = k, 1/x < k    |
+| b0ef6947 | ab/x = b, relatifs                         | 2de    | 2-464 | idem                                                                        |
+| a1ae1558 | (aᵇ)ᶜ, exposants 2 à 9                     | 2de    | 2-260 | gardé (point sur la notion « Puissances : calculs »)                        |
+| 2158a2fc | (10ᵃ)ᵇ, exposants 2 à 9                    | 2de    | 2-260 | gardé                                                                       |
+
+- 5-008 : « exemples numériques, décimaux positifs » ; 2-464 : « forme a/x = b admise (automatisme) » ;
+  2-260 : « règles de calcul sur les puissances entières relatives » (la puissance d'une puissance n'est citée ni
+  en 4e ni en 3e).
+- **Restent en 4e sans point** : 07a51f8f (x/9 = 9/7 : aucun point au collège), 86b80159, e8de8b81, 23b29a15
+  (opérations à trou, décision du 2026-10-17), 8919c37b ((b√a)² : passe = hors programme), 5d515eb1 (décision
+  du chantier 6e), 554496dd (décision de la 5e).
+- **Usages en prod** des 17 modèles concernés (MCP) : 0 carte de révision, 0 essai, 0 réponse, 0 question
+  d'évaluation, 0 journal, 0 série, 0 exercice, 0 fiche.
+
+### 6.3 Question d'accès
+
+Les élèves de 4e ne voient plus ces 6 modèles publiés ; ceux de 5e en gagnent 2, ceux de 2de 4. Les tags restent
+lisibles par tout connecté, comme aujourd'hui. Aucune règle ne change.
+
+### 6.4 Questions à David
+
+1. Valider le § 6.2 (6 modèles, une migration) ?
+2. **17f3dfcd** (puissance d'une puissance, exposants relatifs) : la 3e le prend en 3e sans point, alors que
+   2-260 le décrit. Le laisser à la 3e, ou l'envoyer en 2de avec a1ae1558 et 2158a2fc (je préviens la 3e) ?
+3. **Conflit 3e / 5e** : 90dca27a et acbd2280 (« Simplifie le plus possible ») sont passés en 4e + 4-005 (#1917)
+   alors que le lot 0 de la 3e les envoie en 3e + 3-001 ; la garde de sa migration (niveau `5` attendu) va
+   refuser. À la 3e de trancher, mais « le plus possible » = forme irréductible = 3e : je la préviens ?
