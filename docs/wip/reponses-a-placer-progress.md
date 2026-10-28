@@ -525,3 +525,67 @@ PDF), `generation-ranger.test.ts`, `RangerPlacer.svelte.test.ts`, `rich-text/ran
 - **Décisions Q23 (David, 2026-10-28 : les deux recos)** : au moins 3 étiquettes dans une question
   (`RANGER_MIN_LABELS_IN_QUESTION`, 2 permises hors question) ; étiquettes identiques au tirage →
   nouveau tirage, comme une condition (`rangerLabelsCollide`). Tests rouges d'abord.
+
+## 24. Phase 0 — échelle choisie par l'élève (2026-10-28)
+
+### Existant
+
+- Barres à construire (§ 17-20) : `axe: 0 à 20, de 2 en 2` **obligatoire** avec `placer:`, au plus 100
+  (`STAT_CHART_LIMITS.placeAxisMax`), aimant et ▲ ▼ à l'unité. L'axe est donné : l'élève lit l'échelle,
+  il ne la choisit pas.
+- Programme : l'« échelle adaptée aux données » est au **CE2** (CE2-082 : « Pour l'axe vertical du
+  diagramme en barres, l'élève utilise une échelle adaptée aux données »), pas au CM1 (§ 18.4 disait
+  CM1-CM2 : CM1-135 et CM2-121 disent seulement « produire un diagramme en barres »). Le geste sert donc
+  CE2 → CM2.
+
+### Écriture par le prof (proposée)
+
+````text
+Construis le diagramme des villes : choisis d'abord combien vaut une graduation.
+```barres
+axes: Ville ; Élèves
+axe: à choisir
+Alphaville = 42
+Bêtaville = 35
+Gammaville = {{g}}
+placer: toutes
+```
+````
+
+`axe: à choisir` : l'axe a **10 graduations** sans nombres ; l'élève choisit ce que vaut une graduation
+parmi **1, 2, 5, 10** (axe jusqu'à 10, 20, 50 ou 100 : le plafond de 100 du § 20 tient).
+
+### Nominal
+
+1. Au-dessus du diagramme : « Une graduation vaut : 1 · 2 · 5 · 10 » (boutons). Tant que rien n'est
+   choisi, l'axe est muet et les barres ne se construisent pas (« Choisis d'abord l'échelle. »).
+2. Choisir : l'axe se numérote (0, 5, 10, … 50) ; les barres se construisent comme aujourd'hui (doigt,
+   ▲ ▼, clavier, aimant à l'unité).
+3. Changer d'échelle après coup : les barres **gardent leur valeur** (42 reste 42) ; une barre qui ne
+   rentre plus est effacée (« pas construite »).
+4. Cases : **une case « échelle »** (réponse = le pas choisi) **+ une case par barre** (comme § 18.6),
+   note partielle.
+5. Échelle juste = **la plus petite des quatre où toutes les barres rentrent** (42 → 5, axe à 50).
+   Faux : « Avec 10 par graduation, ton diagramme rentre, mais avec 5 il serait plus grand et plus
+   lisible. » / « Avec 2 par graduation, la barre Alphaville (42) ne rentre pas. »
+6. Les barres sont jugées sur leur **valeur**, quelle que soit l'échelle : une échelle trop grande ne
+   fait pas perdre les barres justes.
+7. PDF : axe à 10 graduations sans nombres, l'enfant écrit l'échelle et dessine les barres.
+
+### Limites et erreurs (messages au prof)
+
+- Refus : `axe: à choisir` sans `placer:` ; données dont la plus grande dépasse 100 (aucune échelle ne
+  rentre) ; et tous les refus actuels de `placer:` (valeurs, indicateurs, pourcentages, deux séries).
+- Plus grande donnée ≤ 10 : l'échelle juste est 1 (permis, c'est la réponse « adaptée »).
+
+### Questions à David
+
+1. **Écriture** : `axe: à choisir` (reco), à côté de `axe: 0 à 20, de 2 en 2` ?
+2. **Choix offerts** : 1, 2, 5, 10 par graduation, sur **10 graduations fixes** (reco) ; ou le prof
+   choisit la liste / le nombre de graduations (`axe: à choisir parmi 2 ; 5 ; 10`) ?
+3. **Juge** : juste = **la plus petite échelle où tout rentre** (reco : unique, jugeable) ; ou toute
+   échelle où tout rentre et dont la plus grande barre dépasse la moitié de l'axe (plus tolérant) ?
+4. **Cases** : une case échelle + une par barre, barres jugées sur leur valeur (reco) ; ou une seule
+   note (échelle fausse = tout faux) ?
+5. **Changer d'échelle** : les barres gardent leur valeur, celles qui ne rentrent plus s'effacent
+   (reco) ; ou tout s'efface ?
