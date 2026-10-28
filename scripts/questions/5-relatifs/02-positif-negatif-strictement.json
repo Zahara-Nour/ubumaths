@@ -1,0 +1,171 @@
+{
+	"title": "Positif, négatif, strictement ?",
+	"description": "Dire si un nombre est positif, strictement positif, négatif, strictement négatif : −3,5 est négatif et strictement négatif ; 0 est positif et négatif",
+	"grades": ["5"],
+	"theme": "Relatifs",
+	"domain": "Apprivoiser",
+	"subdomain": "La définition d'un nombre négatif",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le nombre $-{{x}}$ est :\n\n```choix\nplusieurs: oui\nmelanger: non\n- positif\n- strictement positif\n- négatif\n- strictement négatif\n```",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "1..150"
+				},
+				{
+					"name": "x",
+					"expression": "eval:X/10;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2;3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Vocabulaire.** Un nombre **positif** est supérieur ou égal à $0$ ; **strictement** positif, il est supérieur à $0$ (et différent de $0$). De même pour **négatif** et **strictement négatif**.",
+					"$-{{x}}$ est inférieur à $0$ et différent de $0$ : il est $\\textcolor{{{color:primary.0}}}{\\text{négatif}}$ et $\\textcolor{{{color:primary.0}}}{\\text{strictement négatif}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le nombre ${{x}}$ est :\n\n```choix\nplusieurs: oui\nmelanger: non\n- positif\n- strictement positif\n- négatif\n- strictement négatif\n```",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "1..150"
+				},
+				{
+					"name": "x",
+					"expression": "eval:X/10;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Vocabulaire.** Un nombre **positif** est supérieur ou égal à $0$ ; **strictement** positif, il est supérieur à $0$ (et différent de $0$). De même pour **négatif** et **strictement négatif**.",
+					"${{x}}$ est supérieur à $0$ et différent de $0$ : il est $\\textcolor{{{color:primary.0}}}{\\text{positif}}$ et $\\textcolor{{{color:primary.0}}}{\\text{strictement positif}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le nombre $0$ est :\n\n```choix\nplusieurs: oui\nmelanger: non\n- positif\n- strictement positif\n- négatif\n- strictement négatif\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Vocabulaire.** Un nombre **positif** est supérieur ou égal à $0$ ; **strictement** positif, il est supérieur à $0$ (et différent de $0$). De même pour **négatif** et **strictement négatif**.",
+					"$0$ est supérieur ou égal à $0$, et inférieur ou égal à $0$ : il est à la fois $\\textcolor{{{color:primary.0}}}{\\text{positif}}$ et $\\textcolor{{{color:primary.0}}}{\\text{négatif}}$.",
+					"Il n'est ni strictement positif, ni strictement négatif."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−3,5 : négatif et strictement négatif",
+			"variationIndex": 0,
+			"variables": {
+				"X": "35",
+				"x": "3.5"
+			},
+			"answers": ["2;3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "« strictement négatif » seul (½)",
+			"variationIndex": 0,
+			"variables": {
+				"X": "35",
+				"x": "3.5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Erreur : positif coché",
+			"variationIndex": 0,
+			"variables": {
+				"X": "35",
+				"x": "3.5"
+			},
+			"answers": ["0;2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 : positif et strictement positif",
+			"variationIndex": 1,
+			"variables": {
+				"X": "70",
+				"x": "7"
+			},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : négatif",
+			"variationIndex": 1,
+			"variables": {
+				"X": "70",
+				"x": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0 : positif et négatif",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "« positif » seul (½)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Erreur : strictement positif",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

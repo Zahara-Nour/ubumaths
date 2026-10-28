@@ -1,0 +1,152 @@
+{
+	"title": "Additionner plusieurs nombres relatifs",
+	"description": "Additionner trois ou quatre entiers relatifs en regroupant les positifs, les négatifs et les opposés : (−7) + 4 + (−2) ; (−7) + 4 + 7 + (−2)",
+	"grades": ["5"],
+	"theme": "Relatifs",
+	"domain": "Additionner et soustraire",
+	"subdomain": "Sommes de plusieurs nombres",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$(-{{a}}) + {{b}} + (-{{c}}) = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-a+b-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Plusieurs termes.** On peut additionner dans l'ordre que l'on veut : on regroupe les nombres positifs, puis les nombres négatifs, puis on conclut.",
+					"Les nombres négatifs : $(-{{a}}) + (-{{c}}) = \\textcolor{{{color:primary.1}}}{-{{eval:a+c}}}$.",
+					"$$(-{{a}}) + {{b}} + (-{{c}}) = \\textcolor{{{color:primary.1}}}{-{{eval:a+c}}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$(-{{a}}) + {{b}} + {{a}} + (-{{c}}) = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Opposés.** La somme de deux nombres opposés est nulle : on commence par les regrouper.",
+					"$\\textcolor{{{color:primary.1}}}{(-{{a}})}$ et $\\textcolor{{{color:primary.1}}}{{{a}}}$ sont opposés : leur somme est $0$.",
+					"$$(-{{a}}) + {{b}} + {{a}} + (-{{c}}) = {{b}} + (-{{c}}) = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"conditions": ["b!=c", "a!=b", "a!=c"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(−7) + 4 + (−2) = −5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tout ajouté sans les signes (13)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−7) + 4 + 7 + (−2) = 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −2 (les opposés oubliés, puis 4 retiré)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 16 (signes ignorés)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
