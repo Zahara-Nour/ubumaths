@@ -2,7 +2,7 @@
  * Chantier « questions-ce1 », lot 3 : nœud et tag de 9 modèles neufs (Supabase local requis)
  * ======================================================================================
  *
- * Migration `20261028170000_questions_ce1_lot2bis_rangement_tags` : les 9 brouillons « fractions »
+ * Migration `20261029010000_questions_ce1_lot3_rangement_tags` : les 9 brouillons « fractions »
  * créés le 2026-10-28 par scripts/create-questions.ts (sans nœud ni tag) vont sur le nœud de leur
  * point (sous-notions « définition », « ordre », « addition et soustraction ») et reçoivent ce point, un seul (ADR 0020).
  * Décision de David (journal docs/wip/questions-ce1-progress.md § 9).
