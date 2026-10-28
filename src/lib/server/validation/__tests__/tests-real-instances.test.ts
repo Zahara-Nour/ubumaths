@@ -116,7 +116,7 @@ function buildPayload(
 function realSessionPayload() {
 	const instances = [
 		realInstance(REAL_TEMPLATES.singleBlank),
-		realInstance(REAL_TEMPLATES.multipleChoice),
+		realInstance(REAL_TEMPLATES.choiceCase),
 		realInstance(REAL_TEMPLATES.multiBlank),
 		realInstance(REAL_TEMPLATES.unit)
 	];
@@ -150,7 +150,7 @@ describe('validateSaveTest — vraies instances du générateur', () => {
 		if (!v.success) return;
 		expect(v.data.result.answers.map((a) => a.instance.templateId)).toEqual([
 			REAL_TEMPLATES.singleBlank.id,
-			REAL_TEMPLATES.multipleChoice.id,
+			REAL_TEMPLATES.choiceCase.id,
 			REAL_TEMPLATES.multiBlank.id,
 			REAL_TEMPLATES.unit.id
 		]);
@@ -172,10 +172,7 @@ describe('validateSaveTest — vraies instances du générateur', () => {
 	});
 
 	it('accepte un QCM sans choix sélectionné (value absente)', () => {
-		const payload = buildPayload(
-			[realInstance(REAL_TEMPLATES.multipleChoice)],
-			[{ isCorrect: false }]
-		);
+		const payload = buildPayload([realInstance(REAL_TEMPLATES.choiceCase)], [{ isCorrect: false }]);
 		const v = validateSaveTest(payload);
 		expect(v.success ? 'ok' : v.error.issues).toBe('ok');
 	});

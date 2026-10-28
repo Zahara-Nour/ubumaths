@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1913._
+_Mis à jour le 2026-10-28, après #1942._
 
-- **État** : lot 0 en prod (#1893). Lot 1 (calcul mental, 9 brouillons) : nœud + tag joués en prod (#1913, `db:migrate`, vérifié au MCP, § 7 quinquies) ; page à cocher publiée : https://claude.ai/artifact/EXp2MvBstG6CaJP1UTnFKn (collection `verdicts`).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 9), corriger les « À revoir », puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm1-1` (simulation) et David avec `--publier` ; relire `published` en base. Ensuite lot 2.
-- **En attente de David** : relecture des 9 fiches sur la page à cocher.
-- **Pièges en cours** : la page signale 3 homonymes du CE2 écartés (0c9071d1, e7763a96, 32c0d191) : normal, les bons ids sont pris ; `Doc-inchangée:` va dans un message de COMMIT, pas dans le corps de la PR ; un modèle garde toujours au moins un niveau ; niveaux relevés parmi les publiés de la catégorie avant toute écriture ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx` ; niveaux réservés par la session CM2 (lot 1) dans Entiers / Apprivoiser : Décomposition 15-17, Ecriture 16, Comparer 8-9, Encadrer 9-10 → notre lot 2 prend les suivants, relus en base ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
-- **Worktree / branche** : aucun (retiré après #1913).
+- **État** : lot 0 en prod (#1893). Lot 1 (calcul mental, 9 brouillons) : nœud + tag en prod (#1913). Relecture (page https://claude.ai/artifact/EXp2MvBstG6CaJP1UTnFKn, collection `verdicts`) : 4 OK (035, 161, 043, 163) ; 3 « À revoir » corrigés dans #1942 (×8 : n = 21..39 sans 30, une variation ; ×5 : variation 3 retirée ; page : case dans une fraction rendue), verdicts remis à zéro, page republiée ; 036 et 038 sans verdict.
+- **Prochaine action** : David lance `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-1 --publier --mettre-a-jour` (le classifieur me refuse même la simulation) ; relire en base 9db49362 (1 variation) et 57cc0fca (2 variations). Puis verdicts 9/9 → `publier-lot.ts` (simulation), David `--publier`, relire `published`. Ensuite lot 2.
+- **En attente de David** : le `--mettre-a-jour` ci-dessus ; verdicts de 037, 046, 164 (rejugés), 036 et 038.
+- **Pièges en cours** : la page signale 3 homonymes du CE2 écartés (0c9071d1, e7763a96, 32c0d191) : normal, les bons ids sont pris ; la page montre les FICHIERS, la prod garde l'ancien contenu tant que `--mettre-a-jour` n'est pas joué ; `Doc-inchangée:` va dans un message de COMMIT ; un modèle garde toujours au moins un niveau ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx` ; niveaux réservés par la session CM2 (lot 1) dans Entiers / Apprivoiser : Décomposition 15-17, Ecriture 16, Comparer 8-9, Encadrer 9-10 → notre lot 2 prend les suivants, relus en base ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
+- **Worktree / branche** : aucun (retiré après #1942).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 

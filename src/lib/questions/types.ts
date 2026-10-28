@@ -69,19 +69,18 @@ export type GradeLevel = GradeCode;
 /**
  * Question type.
  *
- * - `fill_in_blanks`: question has blanks[] (or is any non-choice question)
- * - `multiple_choice`: question has choices[]
+ * - `fill_in_blanks`: question à cases (un QCM est une question réduite à une
+ *   case choix, bloc ```choix — ADR 0033)
  * - `course_card`: carte de cours (recto = énoncé, verso = correction), sans
- *   case ni choix. Jamais inférée : marqueur explicite `options.courseCard`.
+ *   case. Jamais inférée : marqueur explicite `options.courseCard`.
  *
  * Use `getQuestionType()` to derive from a template or instance.
  */
-export type QuestionType = 'fill_in_blanks' | 'multiple_choice' | 'course_card';
+export type QuestionType = 'fill_in_blanks' | 'course_card';
 
 /** Libellés français des types (badges, filtres, sélecteurs). */
 export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
 	fill_in_blanks: 'À trous',
-	multiple_choice: 'QCM',
 	course_card: 'Carte de cours'
 };
 
@@ -121,27 +120,12 @@ export function isCourseQuestion(q: { options?: unknown }): boolean {
 }
 
 /**
- * Infer the question type: explicit course-card marker first, then the
- * presence of `choices`.
+ * Type d'une question : carte de cours (marqueur explicite), sinon à cases.
  *
- * Works on templates (via resolved variation or shared), instances,
- * or any object with optional `choices` / `options` fields.
+ * Works on templates, instances, or any object with optional `options`.
  */
-export function getQuestionType(q: {
-	choices?: unknown[] | undefined;
-	// `shared` vient d'une colonne jsonb, donc de forme libre : la fonction la
-	// sonde elle-même plutôt que d'obliger l'appelant à l'affirmer.
-	shared?: unknown;
-	// `options` aussi (colonne jsonb) : porte le marqueur `courseCard`.
-	options?: unknown;
-}): QuestionType {
-	if (isCourseCard(q)) return 'course_card';
-	const sharedChoices =
-		typeof q.shared === 'object' && q.shared !== null && 'choices' in q.shared
-			? (q.shared as { choices?: unknown }).choices
-			: undefined;
-	const choices = q.choices ?? sharedChoices;
-	return Array.isArray(choices) && choices.length > 0 ? 'multiple_choice' : 'fill_in_blanks';
+export function getQuestionType(q: { options?: unknown }): QuestionType {
+	return isCourseCard(q) ? 'course_card' : 'fill_in_blanks';
 }
 
 // ============================================================================
@@ -214,29 +198,6 @@ export type QuestionVariable = SharedVariable;
 // QUESTION VARIATIONS
 // ============================================================================
 
-/**
- * A single variation of a question template
- *
- * Templates can have multiple variations, and one is randomly selected
- * during instance generation. Each variation contains its own statement,
- * variables, correctChoiceIndex (for QCM), and correction.
- *
- * @example Multiple choice question with 2 variations
- * {
- *   variations: [
- *     {
- *       statement: [{ type: 'text', content: 'Is 4 even?' }],
- *       correctChoiceIndex: '0',
- *       choices: [{ content: 'Yes', isCorrect: true }, { content: 'No', isCorrect: false }]
- *     },
- *     {
- *       statement: [{ type: 'text', content: 'Is 7 odd?' }],
- *       correctChoiceIndex: '0',
- *       choices: [{ content: 'Yes', isCorrect: true }, { content: 'No', isCorrect: false }]
- *     }
- *   ]
- * }
- */
 /** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
 export type AnswerKind =
 	'intervalles' | 'equation' | 'vecteur' | 'matrice' | 'primitive' | 'solution-ed';
@@ -423,13 +384,6 @@ export interface QuestionVariation {
 	/** Variables in declaration order (resolved sequentially) */
 	variables?: QuestionVariable[];
 
-	/**
-	 * Index (or expression evaluating to index) of the correct choice for QCM.
-	 * Optional for fill_in_blanks (blanks[] is the source of truth).
-	 * Required for multiple_choice.
-	 */
-	correctChoiceIndex?: string | string[];
-
 	/** Detailed correction/explanation with full structure (optional) */
 	correction?: QuestionCorrection;
 
@@ -452,24 +406,6 @@ export interface QuestionVariation {
 	 * @example { "expression1": "10^?" }
 	 */
 	answerFormats?: Record<string, string>;
-
-	// ---- Multiple Choice Fields ----
-
-	/** Choices for multiple choice */
-	choices?: {
-		/** Choice content as markdown template */
-		content: TemplateMarkdown;
-
-		/**
-		 * Whether this choice is correct (optional in template).
-		 *
-		 * For dynamic QCM where the correct answer depends on generated variables,
-		 * isCorrect is NOT set in the template. Instead, the solution contains
-		 * the index (or expression evaluating to the index) of the correct choice,
-		 * and isCorrect is calculated at runtime.
-		 */
-		isCorrect?: boolean;
-	}[];
 
 	/**
 	 * Generation conditions (guards). After variable generation, all conditions
@@ -511,23 +447,8 @@ export interface SharedVariationDefaults {
 	/** Shared variable definitions (resolved before per-variation variables) */
 	variables?: QuestionVariable[];
 
-	/** Shared correct choice index — optional for fill_in_blanks */
-	correctChoiceIndex?: string | string[];
-
 	/** Shared correction with full structure (feedback + steps) */
 	correction?: QuestionCorrection;
-
-	/** Shared choices for choice/qcm types */
-	choices?: {
-		/** Choice content as markdown template */
-		content: TemplateMarkdown;
-
-		/**
-		 * Whether this choice is correct (optional in template).
-		 * See QuestionVariation.choices for details on dynamic QCM.
-		 */
-		isCorrect?: boolean;
-	}[];
 
 	/**
 	 * Shared generation conditions (guards). After variable generation, all conditions
@@ -661,9 +582,6 @@ export interface QuestionTemplate {
 		/** Constraint validation options for form checking */
 		constraints?: ConstraintOptions;
 
-		/** Whether to shuffle choices for multiple_choice questions (default: true) */
-		shuffleChoices?: boolean;
-
 		/** When true, multi-answer blanks are matched order-independently:
 		 *  each student answer is matched against any unused blank
 		 *  (instead of positional matching). */
@@ -712,11 +630,6 @@ export interface QuestionTemplate {
 	/** Deterministic test specifications for regression testing */
 	testSpecs?: TestSpec[];
 
-	// ---- Type-specific Configuration (shared across all variations) ----
-
-	/** Whether multiple answers are allowed (for multiple_choice) */
-	multipleAnswers?: boolean;
-
 	// ---- Audit Fields ----
 
 	created_at?: string;
@@ -733,14 +646,12 @@ export interface QuestionTemplate {
  * Fields mapped:
  * - exercise_instruction → exerciseInstruction
  * - default_display_options → defaultDisplayOptions
- * - multiple_answers → multipleAnswers
  */
 export function mapDbTemplateToForm(dbTemplate: Record<string, unknown>): QuestionTemplate {
 	return {
 		...dbTemplate,
 		exerciseInstruction: dbTemplate.exercise_instruction as string | undefined,
 		defaultDisplayOptions: dbTemplate.default_display_options as DisplayOptions | undefined,
-		multipleAnswers: dbTemplate.multiple_answers as boolean | undefined,
 		testSpecs: (dbTemplate.test_specs as TestSpec[] | null) ?? undefined
 	} as QuestionTemplate;
 }
@@ -768,14 +679,15 @@ export type ResolvedVariable = SharedResolvedVariable;
 /**
  * Genre d'un bloc qui porte sa case et dont la réponse est sa valeur : à construire
  * (```collection, ```monnaie, `construire:`) ou à placer (```line, ```horloge,
- * ```barres, `placer:`)
+ * ```barres, `placer:`), ou des étiquettes à ranger (```ranger)
  */
-export type BuildKind = 'collection' | 'monnaie' | 'line' | 'horloge' | 'barres';
+export type BuildKind = 'collection' | 'monnaie' | 'line' | 'horloge' | 'barres' | 'ranger';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
 	if (kind === 'line') return 'droite graduée';
 	if (kind === 'barres') return 'diagramme en barres';
+	if (kind === 'ranger') return 'étiquettes à ranger';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 
@@ -812,7 +724,9 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * (```horloge, `placer:`) : réponse = l'heure sur le cadran de 12 (`9 h 25`),
 	 * l'élève pose les deux aiguilles, juge à part (`isPlacedTimeCorrect`). Diagramme
 	 * en barres à construire (```barres, `placer:`) : une case par barre, réponse =
-	 * son effectif, l'élève monte la barre.
+	 * son effectif, l'élève monte la barre. Étiquettes à ranger (```ranger) : une
+	 * case par place, réponse = la position AFFICHÉE de l'étiquette qui y va (`2`),
+	 * l'élève y pose une étiquette, juge à part (l'étiquette, jamais sa valeur).
 	 */
 	construire?: BuildKind;
 	/**
@@ -922,12 +836,6 @@ export interface QuestionInstance {
 	/** Resolved variables with final values */
 	resolvedVariables?: ResolvedVariable[];
 
-	/**
-	 * Resolved correct choice index — optional for fill_in_blanks (blanks[] is the source of truth).
-	 * Present for multiple_choice.
-	 */
-	correctChoiceIndex?: string | string[];
-
 	// ---- Metadata (copied from template) ----
 
 	/** Template title (copied from template) */
@@ -999,21 +907,6 @@ export interface QuestionInstance {
 		 */
 		value?: string;
 	}[];
-
-	// ---- Multiple Choice (resolved) ----
-
-	choices?: {
-		content: ResolvedMarkdown; // Resolved markdown for each choice
-		isCorrect: boolean;
-	}[];
-
-	/** Shuffled choices (for display, preserves original index) */
-	shuffledChoices?: {
-		content: ResolvedMarkdown; // Resolved markdown for each choice
-		originalIndex: number; // Index before shuffle
-	}[];
-
-	multipleAnswers?: boolean;
 
 	/**
 	 * Custom validation rules (copied from variation)
@@ -1285,7 +1178,6 @@ export interface TestSpec {
 	variationIndex?: number;
 	variables: Record<string, string>;
 	answers?: string[];
-	selectedChoices?: number[];
 	expected: TestSpecExpected;
 }
 

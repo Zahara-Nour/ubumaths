@@ -5,21 +5,9 @@
 	"template": {
 		"title": "Utiliser un critère de divisibilité",
 		"description": "Par $3$",
-		"shared": {
-			"statement": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $3$ ?",
-			"choices": [
-				{
-					"content": "Oui"
-				},
-				{
-					"content": "Non"
-				}
-			]
-		},
 		"variations": [
 			{
-				"statement": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $3$ ?",
-				"correctChoiceIndex": ["0"],
+				"statement": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $3$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -47,11 +35,15 @@
 						"${{a}}{{b}}{{f}}$ est divisible par $3$ car la somme de ses chiffres est divisible par $3$ :",
 						"${{a}}+{{b}}+{{f}}={{eval:a+b+f}}$ est divisible par $3$."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $3$ ?",
-				"correctChoiceIndex": ["1"],
+				"statement": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $3$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -79,13 +71,17 @@
 						"${{a}}{{b}}{{f}}$ n'est pas divisible par $3$ car la somme de ses chiffres n'est pas divisible par $3$ :",
 						"${{a}}+{{b}}+{{f}}={{eval:a+b+f}}$ n'est pas divisible par $3$."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			}
 		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["CM2"],
+		"grades": [
+			"CM2"
+		],
 		"theme": "Entiers",
 		"domain": "Diviser",
 		"subdomain": "Divisibilité",
@@ -101,10 +97,12 @@
 					"b": "9",
 					"c": "6"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "798 : Non refusé",
@@ -114,10 +112,12 @@
 					"b": "9",
 					"c": "6"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "799 : Non",
@@ -127,10 +127,12 @@
 					"b": "9",
 					"c": "5"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			}
 		]
 	}

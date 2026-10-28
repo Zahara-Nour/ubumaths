@@ -260,114 +260,6 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 	});
 });
 
-describe('generateInstance - Multiple Choice Questions', () => {
-	it('should generate multiple choice instance with shuffled choices', () => {
-		const template: QuestionTemplate = {
-			id: 'test-7',
-
-			title: 'Test Question',
-			status: 'draft' as const,
-			variations: [
-				{
-					statement: templateMarkdown('What is {{a}} + {{b}}?'),
-					variables: [
-						{ name: 'a', expression: '{{random:1..10}}' },
-						{ name: 'b', expression: '{{random:1..10}}' },
-						{ name: 'correct', expression: '{{eval:a + b}}' },
-						{ name: 'wrong1', expression: '{{eval:a + b + 1}}' },
-						{ name: 'wrong2', expression: '{{eval:a + b - 1}}' }
-					],
-					correctChoiceIndex: '0',
-					choices: [
-						{ content: templateMarkdown('{{correct}}'), isCorrect: true },
-						{ content: templateMarkdown('{{wrong1}}'), isCorrect: false },
-						{ content: templateMarkdown('{{wrong2}}'), isCorrect: false },
-						{ content: templateMarkdown('{{eval:a * b}}'), isCorrect: false }
-					]
-				}
-			],
-			multipleAnswers: false,
-			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
-			level: 1,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		};
-
-		const result = generateInstance(template, 12345);
-
-		expect(result.success).toBe(true);
-		if (!result.success) return;
-
-		expect(getQuestionType(result.instance)).toBe('multiple_choice');
-		expect(result.instance.shuffledChoices).toHaveLength(4);
-		expect(result.instance.multipleAnswers).toBe(false);
-
-		// Verify correct answer is tracked (don't check specific value, just that it exists)
-		const _correctAnswer = getVarValue(result.instance.resolvedVariables, 'correct');
-		const shuffledCorrectIndex = parseInt(result.instance.correctChoiceIndex as string);
-		expect(shuffledCorrectIndex).toBeGreaterThanOrEqual(0);
-		expect(shuffledCorrectIndex).toBeLessThan(4);
-
-		// Verify the answer index points to a valid choice
-		expect(result.instance.shuffledChoices![shuffledCorrectIndex]).toBeDefined();
-		expect(result.instance.shuffledChoices![shuffledCorrectIndex].content).toBeDefined();
-	});
-
-	it('should generate multiple choice with multiple correct answers', () => {
-		const template: QuestionTemplate = {
-			id: 'test-8',
-
-			title: 'Test Question',
-			status: 'draft' as const,
-			variations: [
-				{
-					statement: templateMarkdown('Select all prime numbers:'),
-					variables: [],
-					correctChoiceIndex: ['0', '2'],
-					choices: [
-						{ content: templateMarkdown('2'), isCorrect: true },
-						{ content: templateMarkdown('4'), isCorrect: false },
-						{ content: templateMarkdown('7'), isCorrect: true },
-						{ content: templateMarkdown('9'), isCorrect: false }
-					]
-				}
-			],
-			multipleAnswers: true,
-			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Nombres premiers',
-			level: 2,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		};
-
-		const result = generateInstance(template, 54321);
-
-		expect(result.success).toBe(true);
-		if (!result.success) return;
-
-		expect(result.instance.multipleAnswers).toBe(true);
-		expect(Array.isArray(result.instance.correctChoiceIndex)).toBe(true);
-
-		const answerIndices = result.instance.correctChoiceIndex as string[];
-		const correctChoices = answerIndices.map(
-			(i) => result.instance.shuffledChoices![parseInt(i)].content
-		);
-
-		// Verify we have 2 correct answers (don't check which specific ones due to shuffling)
-		expect(correctChoices).toHaveLength(2);
-		// Verify they are from the original correct choices
-		const allChoices = ['2', '4', '7', '9'];
-		correctChoices.forEach((choice) => {
-			expect(allChoices).toContain(choice);
-		});
-	});
-});
-
 describe('generateInstance - Complex Variable Resolution', () => {
 	it('should generate fraction addition instance', () => {
 		const template: QuestionTemplate = {
@@ -1277,66 +1169,6 @@ describe('generateInstance - Shared Fields', () => {
 		expect(result.instance.correction?.feedback?.incorrect).toBe('Try again. 5 + 3 = 8');
 	});
 
-	it('should use shared.choices for consistent QCM structure across variations', () => {
-		const template: QuestionTemplate = {
-			id: 'test-shared-8',
-
-			title: 'Test Question',
-			status: 'draft' as const,
-			shared: {
-				choices: [
-					{ content: templateMarkdown('{{correct}}'), isCorrect: true },
-					{ content: templateMarkdown('{{wrong1}}'), isCorrect: false },
-					{ content: templateMarkdown('{{wrong2}}'), isCorrect: false },
-					{ content: templateMarkdown('{{eval:a * b}}'), isCorrect: false }
-				]
-			},
-			variations: [
-				{
-					statement: templateMarkdown('What is {{a}} + {{b}}?'),
-					variables: [
-						{ name: 'a', expression: '5' },
-						{ name: 'b', expression: '3' },
-						{ name: 'correct', expression: '{{eval:a + b}}' },
-						{ name: 'wrong1', expression: '{{eval:a + b + 1}}' },
-						{ name: 'wrong2', expression: '{{eval:a + b - 1}}' }
-					],
-					correctChoiceIndex: '0',
-					choices: [
-						{ content: templateMarkdown('{{correct}}'), isCorrect: true },
-						{ content: templateMarkdown('{{wrong1}}'), isCorrect: false },
-						{ content: templateMarkdown('{{wrong2}}'), isCorrect: false },
-						{ content: templateMarkdown('{{eval:a * b}}'), isCorrect: false }
-					]
-				}
-			],
-			multipleAnswers: false,
-			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
-			level: 1,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		};
-
-		const result = generateInstance(template, 54321);
-
-		expect(result.success).toBe(true);
-		if (!result.success) return;
-
-		expect(getQuestionType(result.instance)).toBe('multiple_choice');
-		expect(result.instance.statement).toBe('What is 5 + 3?');
-		expect(result.instance.shuffledChoices).toHaveLength(4);
-
-		// Verify all choice contents are resolved
-		const allChoices = result.instance.shuffledChoices!.map((c) => c.content);
-		expect(allChoices).toContain('8'); // correct
-		expect(allChoices).toContain('9'); // wrong1
-		expect(allChoices).toContain('7'); // wrong2
-		expect(allChoices).toContain('15'); // a * b
-	});
-
 	it('should resolve random expressions in shared variables used by all variations', () => {
 		const template: QuestionTemplate = {
 			id: 'test-shared-9',
@@ -1527,10 +1359,8 @@ describe('generateInstance - Shared Fields', () => {
 });
 
 describe('generateInstance - Bug: bare text choice "pair"', () => {
-	const sharedChoices = [
-		{ content: templateMarkdown('pair'), isCorrect: false },
-		{ content: templateMarkdown('impair'), isCorrect: false }
-	];
+	// Repris du QCM (ADR 0033) : un choix en texte nu n'est jamais lu comme une formule
+	const PARITY = '```choix\nmelanger: non\n- pair\n- impair\n```';
 
 	it('should not fail when choice content is bare text like "pair"', () => {
 		const template: QuestionTemplate = {
@@ -1541,34 +1371,24 @@ describe('generateInstance - Bug: bare text choice "pair"', () => {
 					{ name: 'a', expression: '0..49' },
 					{ name: 'b', expression: 'eval:2*a' },
 					{ name: 'c', expression: 'eval:2*a+1' }
-				],
-				choices: sharedChoices
+				]
 			},
 			variations: [
 				{
-					statement: templateMarkdown('Quelle est la parité de ce nombre ?\n\n${{expression1}}$'),
-					correctChoiceIndex: ['0'],
-					variables: [{ name: 'expression1', expression: 'b' }],
-					choices: [{ ...sharedChoices[0], isCorrect: true }, sharedChoices[1]],
-					correction: {
-						steps: [
-							templateMarkdown('{{expression1}} est pair car il se termine par 0, 2, 4, 6, ou 8.')
-						]
-					}
+					statement: templateMarkdown(
+						`Quelle est la parité de ce nombre ?\n\n\${{expr1}}$\n\n${PARITY}`
+					),
+					variables: [{ name: 'expr1', expression: 'b' }],
+					blanks: [{ expectedAnswer: '0' }]
 				},
 				{
-					statement: templateMarkdown('Quelle est la parité de ce nombre ?\n\n${{expression2}}$'),
-					correctChoiceIndex: ['1'],
-					variables: [{ name: 'expression2', expression: 'c' }],
-					choices: [sharedChoices[0], { ...sharedChoices[1], isCorrect: true }],
-					correction: {
-						steps: [
-							templateMarkdown('{{expression2}} est impair car il se termine par 1, 3, 5, 7, ou 9.')
-						]
-					}
+					statement: templateMarkdown(
+						`Quelle est la parité de ce nombre ?\n\n\${{expr2}}$\n\n${PARITY}`
+					),
+					variables: [{ name: 'expr2', expression: 'c' }],
+					blanks: [{ expectedAnswer: '1' }]
 				}
 			],
-			options: { shuffleChoices: false },
 			grades: ['CE1'] as QuestionTemplate['grades'],
 			theme: 'Nombres',
 			domain: 'Arithmétique',
@@ -1578,38 +1398,36 @@ describe('generateInstance - Bug: bare text choice "pair"', () => {
 		};
 
 		const result = generateInstance(template, 42);
-		console.log('Result:', JSON.stringify(result, null, 2));
 		expect(result.success).toBe(true);
+		if (!result.success) return;
+		expect(result.instance.blanks?.[0].choice?.choices).toEqual(['pair', 'impair']);
 	});
 
-	it('should resolve correction {{expression}} and {{solution}} (previously crashed)', () => {
+	it('should resolve correction variables and {{solution}} (previously crashed)', () => {
 		const template: QuestionTemplate = {
 			id: 'test-pair-bug-2',
 			title: "Parité d'un nombre entier",
 			shared: {
 				variables: [
 					{ name: 'a', expression: '0..49' },
-					{ name: 'b', expression: 'eval:2*a' },
-					{ name: 'c', expression: 'eval:2*a+1' }
-				],
-				choices: sharedChoices
+					{ name: 'b', expression: 'eval:2*a' }
+				]
 			},
 			variations: [
 				{
-					statement: templateMarkdown('Quelle est la parité de ce nombre ?\n\n${{expression1}}$'),
-					correctChoiceIndex: ['0'],
-					variables: [{ name: 'expression1', expression: 'b' }],
-					choices: [{ ...sharedChoices[0], isCorrect: true }, sharedChoices[1]],
+					statement: templateMarkdown(
+						`Quelle est la parité de ce nombre ?\n\n\${{expr1}}$\n\n${PARITY}`
+					),
+					// `expressionN` porterait une case dans une question à cases : `expr1` (lot 4)
+					variables: [{ name: 'expr1', expression: 'b' }],
+					blanks: [{ expectedAnswer: '0' }],
 					correction: {
 						steps: [
-							templateMarkdown(
-								'{{expression}} est {{solution}} car il se termine par 0, 2, 4, 6, ou 8.'
-							)
+							templateMarkdown('{{expr1}} est {{solution}} car il se termine par 0, 2, 4, 6, ou 8.')
 						]
 					}
 				}
 			],
-			options: { shuffleChoices: false },
 			grades: ['CE1'] as QuestionTemplate['grades'],
 			theme: 'Nombres',
 			domain: 'Arithmétique',
@@ -1619,17 +1437,14 @@ describe('generateInstance - Bug: bare text choice "pair"', () => {
 		};
 
 		const result = generateInstance(template, 42);
-		// Bug fix: {{expression}} resolves to expression1 (fallback), {{solution}} to correct choice text
 		expect(result.success).toBe(true);
 		if (!result.success) return;
 
-		const step = result.instance.correction?.steps?.[0];
-		expect(step).toBeDefined();
-		// {{expression}} should resolve to the value of expression1 (= b = 2*a)
-		// {{solution}} should resolve to the correct choice text ("pair")
-		expect(String(step)).toContain('pair');
-		expect(String(step)).not.toContain('{{expression}}');
-		expect(String(step)).not.toContain('{{solution}}');
+		const step = String(result.instance.correction?.steps?.[0]);
+		// {{solution}} d'une case choix : le texte du bon choix
+		expect(step).toContain('est pair car');
+		expect(step).not.toContain('{{expr1}}');
+		expect(step).not.toContain('{{solution}}');
 	});
 });
 
@@ -1674,19 +1489,17 @@ describe('generateInstance - Correction placeholder integration', () => {
 		expect(String(feedback)).not.toContain('{{solution}}');
 	});
 
-	it('18. QCM: {{solution}} resolves to correct choice text', () => {
+	it('18. case choix: {{solution}} resolves to correct choice text', () => {
 		const template: QuestionTemplate = {
 			id: 'test-corr-18',
-			title: 'Test correction QCM',
+			title: 'Test correction case choix',
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: templateMarkdown('2 est un nombre'),
-					correctChoiceIndex: '0',
-					choices: [
-						{ content: templateMarkdown('pair'), isCorrect: true },
-						{ content: templateMarkdown('impair'), isCorrect: false }
-					],
+					statement: templateMarkdown(
+						'2 est un nombre\n\n```choix\nmelanger: non\n- pair\n- impair\n```'
+					),
+					blanks: [{ expectedAnswer: '0' }],
 					correction: {
 						feedback: {
 							incorrect: templateMarkdown('La réponse est {{solution}}.')
@@ -1694,7 +1507,6 @@ describe('generateInstance - Correction placeholder integration', () => {
 					}
 				}
 			],
-			options: { shuffleChoices: false },
 			grades: ['CE1'],
 			theme: 'Nombres',
 			domain: 'Parité',
@@ -1706,8 +1518,7 @@ describe('generateInstance - Correction placeholder integration', () => {
 		if (!result.success) return;
 
 		const feedback = result.instance.correction?.feedback?.incorrect;
-		expect(feedback).toBeDefined();
-		expect(String(feedback)).toContain('pair');
+		expect(String(feedback)).toBe('La réponse est pair.');
 	});
 
 	it('19. multi-blanks: {{solution_0}} and {{solution_1}} resolve', () => {

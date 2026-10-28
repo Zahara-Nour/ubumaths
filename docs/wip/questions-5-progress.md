@@ -5,13 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1927 (relecture du lot 1 terminée : 8/8 OK)._
+_Mis à jour le 2026-10-28, après #1941 (lot 2 rangé et tagué en prod, page à cocher publiée)._
 
-- **État** : lot 0 en prod (#1917). Lot 1 « Calcul » : 8 brouillons en prod, rangés et tagués ; relecture finie, **8 verdicts OK** comptés en base (01, 07 corrigés, 08 neuf compris). `publier-lot.ts` en simulation : 8 brouillons passent le contrôle.
-- **Prochaine action** : David lance `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/5-calcul --publier` ; vérifier `published` en base (MCP), consigner au § 9. Ensuite phase 0 du lot 2 (relatifs : 5-120, 5-014, 5-019, 5-015, 5-024, 5-021), attendre la validation.
-- **En attente de David** : la commande `--publier` du lot 1.
-- **Pièges en cours** : `db push` refuse une migration plus ancienne que la dernière jouée (sessions parallèles) → `--include-all`, lancé par David ; horodatages : vérifier `schema_migrations` ET les worktrees avant d'en choisir un ; le classifieur refuse `create-questions --mettre-a-jour` même en simulation (simulation simple + `question:specs --file`) ; CI : `wrapDynamicImport` (tests navigateur) et délai de `scripts/corrections` = accidents du runner, une relance suffit ; 01 et 08 homonymes (même titre, niveaux 1 et 2) : alerte attendue sur la page.
-- **Worktree / branche** : aucun.
+- **État** : lot 1 « Calcul » publié (8/8). Lot 2 « Relatifs » : 8 brouillons en prod, rangés et tagués
+  (`db:migrate` de #1941, vérifié au MCP) ; page à cocher https://claude.ai/artifact/HA76Zw57mgk7o3B73GBN7A
+  (capacité `db`, collection `verdicts`, 0 verdict au départ).
+- **Prochaine action** : lire et **compter** les verdicts en base (`ArtifactData list verdicts`) ; « À revoir » →
+  correction (§ 7 de la doc : instantané, `--mettre-a-jour` par David) ; 8/8 OK → `publier-lot.ts --dir
+scripts/questions/5-relatifs` en simulation, puis `--publier` par David. Ensuite phase 0 du lot 3.
+- **En attente de David** : la relecture du lot 2 sur la page à cocher.
+- **Pièges en cours** : horodatages : `schema_migrations` ET worktrees (lot 2 : `20261029170000`, après
+  `20261029150000` d'un autre worktree) ; le classifieur refuse `create-questions --mettre-a-jour` ; worktree neuf :
+  `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un **message de commit** ; le job
+  d'intégration est un run à part (« Nightly Integration Tests ») : l'attendre avant de merger ; 04 et 05 homonymes
+  (niveaux 1 et 2) : alerte attendue sur la page.
+- **Worktree / branche** : aucun (retiré après #1941).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -172,3 +180,40 @@ Page à cocher, 7 verdicts : 5 OK (02, 03, 04, 05, 06), 2 à revoir. Corrections
   finding), jouée par moi (seule en attente), vérifiée. Verdicts de 01 et 07 supprimés ; page republiée (v2).
 - Seconde relecture (page v2) : 01, 07, 08 OK → **8/8 verdicts OK** comptés en base. `publier-lot.ts` en
   simulation : 8 brouillons passent le contrôle ; publication à lancer par David (`--publier`).
+
+- **Publication** (2026-10-28) : David a lancé `publier-lot.ts --publier` ; 8/8 `published`, vérifié au MCP
+  (8e571049, 2f1657b0, 8df8ba2b, faf57d3b, be35cd63, 7b08589b, 9d9b2301, 5007877e). **Lot 1 clos.**
+
+## 10. Lot 2 « Relatifs » : décisions (David, 2026-10-28, « je te suis »)
+
+| #   | Point | Modèle                                       | Réponse                        | Catégorie (Relatifs ›), niveau                             |
+| --- | ----- | -------------------------------------------- | ------------------------------ | ---------------------------------------------------------- |
+| 01  | 5-120 | Donner la valeur absolue d'un nombre         | case                           | Apprivoiser › Valeur absolue, 1                            |
+| 02  | 5-014 | Positif, négatif, strictement ?              | choix à plusieurs réponses (½) | Apprivoiser › La définition d'un nombre négatif, 4         |
+| 03  | 5-015 | Traduire une situation par un nombre relatif | case                           | Apprivoiser › Grandeurs négatives, 1                       |
+| 04  | 5-019 | Additionner plusieurs nombres relatifs       | case                           | Additionner et soustraire › Sommes de plusieurs nombres, 1 |
+| 05  | 5-019 | idem, décimaux                               | case                           | idem, 2                                                    |
+| 06  | 5-024 | Variation de température ou d'altitude       | case, unité après la case      | Additionner et soustraire › Problèmes, 1                   |
+| 07  | 5-024 | Calculer un écart                            | case, unité après la case      | idem, 2                                                    |
+| 08  | 5-021 | Les parenthèses sont-elles indispensables ?  | choix Oui / Non                | Additionner et soustraire › Sommes algébriques, 5          |
+
+- Décimaux séparés des entiers au niveau 2 (leçon du lot 1), sauf la valeur absolue (même idée) ; 5-120 dit
+  « (sa distance à zéro) » ; 5-021 : on vérifie « indispensable ou non », pas la justification.
+- Niveaux relevés en prod avant d'écrire : « La définition d'un nombre négatif » a 1 à 3, « Sommes
+  algébriques » 1 à 4 → 02 au niveau 4, 08 au niveau 5 ; les autres catégories sont neuves.
+- Accès : brouillons (admin seul) jusqu'à la publication ; la migration de rangement n'ouvre rien.
+- Script `docs/wip/questions/lot-5-relatifs.py`, fichiers `scripts/questions/5-relatifs/` ; simulation prod :
+  8 à créer, 62 specs vertes. Base locale : 8 créés, joués dans l'aperçu (rendu des unités °C / m après la case,
+  choix à plusieurs réponses, Oui / Non, correction à `{{if:…}}` imbriqués ; « −29 » refusé pour |−29|).
+  Corrigé en route : sous-marin tiré en dizaines (44 tirages sur 200 en échec), 08 avec a ≠ b (« −(9 + 9) »).
+- #1935 mergé ; David : `create-questions --publier` → 0b491d0e (07), 3b9d3ec2 (01), 469f1c9d (06), 7f9d7df5 (08),
+  b92b4b51 (04), c52836ad (03), d5d1f676 (05), fc8fb430 (02), brouillons [5] sans nœud ni tag (vérifié MCP).
+- Migration `20261029170000_questions_5_lot2_rangement_tags` (#1941, gabarit lot 1) : horodatage choisi après les
+  migrations des autres worktrees (jusqu'à `20261029150000`) ; test 9/9, rouge sans elle (5/9) ; audit sans
+  finding bloquant. La ligne `Doc-inchangée:` va dans un **message de commit** (la garde ne lit pas la PR).
+- #1941 mergé (CI verte, intégration comprise) ; `pnpm db:migrate` depuis le dépôt principal : la migration seule
+  appliquée ; vérifié en prod : 8 brouillons sur le nœud de leur point, un tag chacun (5-014, 5-015, 5-019 ×2,
+  5-021, 5-024 ×2, 5-120).
+- Page à cocher : https://claude.ai/artifact/HA76Zw57mgk7o3B73GBN7A (capacité `db`, collection `verdicts`) ; une
+  alerte attendue (04 / 05 homonymes). Rendu vérifié à 606 px (largeur minimale de la fenêtre), pas de défilement
+  horizontal.

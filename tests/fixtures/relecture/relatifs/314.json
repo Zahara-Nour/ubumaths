@@ -5,53 +5,28 @@
 	"template": {
 		"title": "Comparer deux nombres relatifs.",
 		"description": "Valeurs entières - qcm",
-		"shared": {
-			"statement": "Quel est le plus petit de ces 2 nombres ?",
-			"variables": [
-				{
-					"name": "a",
-					"expression": "1..19"
-				},
-				{
-					"name": "b",
-					"expression": "{{eval:a+1}}..20"
-				}
-			]
-		},
 		"variations": [
 			{
-				"statement": "Quel est le plus petit de ces 2 nombres ?",
-				"correctChoiceIndex": ["1"],
-				"choices": [
+				"statement": "Quel est le plus petit de ces 2 nombres ?\n\n```choix\n- $${{a}}$$\n- $$-{{b}}$$\n```",
+				"blanks": [
 					{
-						"content": "$${{a}}$$"
-					},
-					{
-						"content": "$$-{{b}}$$"
+						"expectedAnswer": "1"
 					}
 				]
 			},
 			{
-				"statement": "Quel est le plus petit de ces 2 nombres ?",
-				"correctChoiceIndex": ["1"],
-				"choices": [
+				"statement": "Quel est le plus petit de ces 2 nombres ?\n\n```choix\n- $$-{{a}}$$\n- $$-{{b}}$$\n```",
+				"blanks": [
 					{
-						"content": "$$-{{a}}$$"
-					},
-					{
-						"content": "$$-{{b}}$$"
+						"expectedAnswer": "1"
 					}
 				]
 			},
 			{
-				"statement": "Quel est le plus petit de ces 2 nombres ?",
-				"correctChoiceIndex": ["0"],
-				"choices": [
+				"statement": "Quel est le plus petit de ces 2 nombres ?\n\n```choix\n- $$-{{b}}$$\n- $$-{{a}}$$\n```",
+				"blanks": [
 					{
-						"content": "$$-{{b}}$$"
-					},
-					{
-						"content": "$$-{{a}}$$"
+						"expectedAnswer": "0"
 					}
 				]
 			}
@@ -63,6 +38,18 @@
 		"level": 1,
 		"status": "draft",
 		"delay": 20,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..19"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+1}}..20"
+				}
+			]
+		},
 		"testSpecs": [
 			{
 				"description": "positif contre négatif : le négatif est le plus petit",
@@ -71,10 +58,10 @@
 					"a": "3",
 					"b": "8"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": ["1"]
 			},
 			{
 				"description": "piège : le positif choisi",
@@ -83,10 +70,10 @@
 					"a": "3",
 					"b": "8"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": ["0"]
 			},
 			{
 				"description": "deux négatifs : -b < -a",
@@ -95,10 +82,10 @@
 					"a": "3",
 					"b": "8"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": ["1"]
 			},
 			{
 				"description": "piège : -a choisi (plus petite distance à zéro)",
@@ -107,10 +94,10 @@
 					"a": "3",
 					"b": "8"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": ["0"]
 			},
 			{
 				"description": "borne haute a=19, b=20",
@@ -119,10 +106,10 @@
 					"a": "19",
 					"b": "20"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": ["1"]
 			},
 			{
 				"description": "ordre inversé : -b en premier",
@@ -131,10 +118,10 @@
 					"a": "3",
 					"b": "8"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": ["0"]
 			},
 			{
 				"description": "borne basse a=1, b=2",
@@ -143,10 +130,10 @@
 					"a": "1",
 					"b": "2"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": ["0"]
 			},
 			{
 				"description": "piège : -a choisi",
@@ -155,10 +142,10 @@
 					"a": "1",
 					"b": "2"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": ["1"]
 			}
 		]
 	}

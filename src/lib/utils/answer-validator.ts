@@ -52,7 +52,7 @@ import {
 } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
 import { readingOf, type FormulaReading } from '$lib/questions/formula-reading';
-import { choiceLetter, statusFromChoices, toDisplayedChoicePosition } from '$lib/questions/choices';
+import { statusFromChoices } from '$lib/questions/choices';
 import {
 	getRequiredFormFeedback,
 	REQUIRED_FORM_FEEDBACK,
@@ -444,14 +444,13 @@ function isFuzzyTextMatch(userAnswer: string, expected: string): boolean {
  * @returns Validation result with correctness and feedback
  */
 export function validateAnswer(
-	userAnswer: string | string[] | number | number[],
+	userAnswer: string | string[],
 	instance: QuestionInstance,
 	userAnswerLatex?: string | string[]
 ): ValidationResult {
 	const questionType = getQuestionType(instance);
 
 	// ---- COURSE_CARD : aucune réponse à valider (auto-évaluation de l'élève) ----
-	// Sans cette garde, la carte tomberait dans la branche QCM ci-dessous.
 	if (questionType === 'course_card') {
 		return {
 			isCorrect: false,
@@ -460,50 +459,23 @@ export function validateAnswer(
 	}
 
 	try {
-		// ---- FILL_IN_BLANKS: per-blank pipeline (return early) ----
+		// ---- FILL_IN_BLANKS: per-blank pipeline ----
 		// Global validationRules and requiredForm are NOT used here;
 		// each blank carries its own validation config.
-		if (questionType === 'fill_in_blanks') {
-			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
-			const latex = userAnswerLatex
-				? Array.isArray(userAnswerLatex)
-					? userAnswerLatex
-					: [userAnswerLatex]
-				: undefined;
+		const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
+		const latex = userAnswerLatex
+			? Array.isArray(userAnswerLatex)
+				? userAnswerLatex
+				: [userAnswerLatex]
+			: undefined;
 
-			if (!instance.blanks || instance.blanks.length === 0) {
-				return answers.length === 0
-					? { isCorrect: true }
-					: { isCorrect: false, message: 'Pas de blanks[] définis' };
-			}
-
-			return validateBlanks(answers, instance, latex);
+		if (!instance.blanks || instance.blanks.length === 0) {
+			return answers.length === 0
+				? { isCorrect: true }
+				: { isCorrect: false, message: 'Pas de blanks[] définis' };
 		}
 
-		// ---- MULTIPLE_CHOICE ----
-		const { correctChoiceIndex } = instance;
-
-		// Check custom validation rules first (testAnswers-style)
-		if (instance.validationRules && instance.validationRules.length > 0) {
-			const userAnswerStr = Array.isArray(userAnswer) ? String(userAnswer[0]) : String(userAnswer);
-			const ruleResult = evaluateValidationRules(instance.validationRules, userAnswerStr, instance);
-
-			if (ruleResult) return { isCorrect: false, feedback: ruleResult.feedback };
-			return { isCorrect: true };
-		}
-
-		// `userAnswer` : indices d'ORIGINE (cf. `toOriginalChoiceIndexes`). La lettre du
-		// message, elle, désigne la position AFFICHÉE : c'est celle que l'élève voit.
-		const result: ValidationResult = validateChoice(
-			userAnswer as number | number[],
-			correctChoiceIndex as string | string[],
-			instance.multipleAnswers,
-			(originalIndex) => choiceLetter(toDisplayedChoicePosition(instance, originalIndex))
-		);
-
-		// Un QCM ne juge pas d'écriture : l'élève coche, il n'écrit rien (aucun
-		// appelant ne passe de LaTeX pour un choix ; simplify-carte § 30)
-		return result;
+		return validateBlanks(answers, instance, latex);
 	} catch (error) {
 		return {
 			isCorrect: false,
@@ -835,6 +807,8 @@ function validateBlankValue(
 ): boolean {
 	// Horloge à placer : la même lecture des aiguilles que la correction
 	if (blank.construire === 'horloge') return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer);
+	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
+	if (blank.construire === 'ranger') return userAnswer.trim() === blank.expectedAnswer;
 
 	// Ensemble en notation intervalle : jugé sur l'ensemble (ni règles ni expression)
 	if (blank.answerKind === 'intervalles') {
@@ -1245,7 +1219,7 @@ function constructionBlankResult(
 }
 
 /**
- * Case « choix » (bloc ```choix) : même barème que le QCM (`statusFromChoices`),
+ * Case « choix » (bloc ```choix) : barème `statusFromChoices` (1 / ½ / 0, celui de l'ancien QCM),
  * réponse en indices d'ORIGINE (« 0;2 »). Bons choix seulement, pas tous : ½
  * (`unoptimal_form`, case acceptée ; la question n'est pas juste pour autant,
  * cf. `aggregateOrderedBlanks`). Réponse illisible : fausse.
@@ -1259,7 +1233,7 @@ function choiceBlankResult(
 		.map((index) => displayedChoiceLetter(blank, index))
 		.sort()
 		.join(', ');
-	// Mêmes messages que le QCM (`validateChoice`) : lettres AFFICHÉES
+	// Lettres AFFICHÉES : celles que l'élève voit
 	const wrong = {
 		isCorrect: false,
 		feedback: blank.choice.multiple
@@ -1309,6 +1283,13 @@ function validateSingleBlank(
 	// Horloge à placer : les deux aiguilles de l'élève, petite aiguille jugée sur son secteur
 	if (blank.construire === 'horloge') {
 		return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
+	if (blank.construire === 'ranger') {
+		return userAnswer.trim() === blank.expectedAnswer
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };
 	}
@@ -2418,8 +2399,6 @@ export interface StudentAnswer {
 	values?: string[];
 	/** LaTeX tapé (MathLive), une entrée par case ; sert à juger la forme */
 	latex?: string[];
-	/** QCM : choix cochés, en indices d'ORIGINE (`choices[]`) */
-	choiceIndexes?: number[];
 }
 
 export interface BlankVerdict {
@@ -2436,24 +2415,11 @@ export interface BlankVerdict {
 	ungraded?: true;
 }
 
-/** Issue d'un choix de QCM : bon coché, faux coché, bon oublié, faux laissé */
-export type ChoiceOutcome = 'checked-correct' | 'checked-wrong' | 'missed' | 'unchecked';
-
-export interface ChoiceVerdict {
-	/** Indice d'origine (`choices[]`) */
-	originalIndex: number;
-	isCorrect: boolean;
-	checked: boolean;
-	outcome: ChoiceOutcome;
-}
-
 export interface DetailedVerdict {
 	/** Statut global : celui de `validateAnswer` (`status`, sinon juste / faux) */
 	status: ValidationStatus;
-	/** Une entrée par case (`orderIndependent` : par rang de saisie) ; `[]` pour un QCM */
+	/** Une entrée par case (`orderIndependent` : par rang de saisie) */
 	blanks: BlankVerdict[];
-	/** QCM seulement : une entrée par choix, dans l'ordre d'origine */
-	choices?: ChoiceVerdict[];
 	/** Message global de `validateAnswer`, s'il y en a un */
 	feedback?: string;
 }
@@ -2463,64 +2429,10 @@ function statusOfResult(result: ValidationResult): ValidationStatus {
 	return result.status ?? (result.isCorrect ? 'correct' : 'incorrect');
 }
 
-/** Indices d'origine des bons choix */
-function correctChoices(instance: QuestionInstance): Set<number> {
-	if (instance.choices && instance.choices.length > 0) {
-		return new Set(instance.choices.flatMap((c, i) => (c.isCorrect ? [i] : [])));
-	}
-	const raw = instance.correctChoiceIndex;
-	const list = Array.isArray(raw) ? raw : raw !== undefined ? [raw] : [];
-	return new Set(list.map(Number).filter((n) => Number.isInteger(n)));
-}
-
-/**
- * Bons choix d'un QCM à règles (`validationRules`) : ce sont les règles qui
- * jugent, choix par choix (même évaluation que `validateAnswer` sur un choix).
- */
-function choicesAcceptedByRules(instance: QuestionInstance, count: number): Set<number> {
-	const accepted = new Set<number>();
-	for (let i = 0; i < count; i++) {
-		if (validateAnswer(i, instance).isCorrect) accepted.add(i);
-	}
-	return accepted;
-}
-
-function detailChoices(instance: QuestionInstance, answer: StudentAnswer): DetailedVerdict {
-	const checked = answer.choiceIndexes ?? [];
-	const result = validateAnswer(
-		instance.multipleAnswers ? checked : (checked[0] ?? []),
-		instance,
-		answer.latex
-	);
-	const byRules = (instance.validationRules?.length ?? 0) > 0;
-	const declared = correctChoices(instance);
-	const count = Math.max(instance.choices?.length ?? 0, ...[...declared].map((i) => i + 1));
-	const good = byRules ? choicesAcceptedByRules(instance, count) : declared;
-	const chosen = new Set(checked);
-	const choices = Array.from({ length: count }, (_, i): ChoiceVerdict => {
-		const isCorrect = good.has(i);
-		const isChecked = chosen.has(i);
-		const outcome: ChoiceOutcome = isChecked
-			? isCorrect
-				? 'checked-correct'
-				: 'checked-wrong'
-			: isCorrect
-				? 'missed'
-				: 'unchecked';
-		return { originalIndex: i, isCorrect, checked: isChecked, outcome };
-	});
-	return {
-		status: statusOfResult(result),
-		blanks: [],
-		choices,
-		...(result.feedback && { feedback: result.feedback })
-	};
-}
-
 /**
  * Verdict d'une réponse avec le statut et les remarques de CHAQUE case (R11) :
  * même chaîne que `validateAnswer` (statut global identique), sans rien changer
- * à la notation. QCM : issue de chaque choix. Ne lève jamais.
+ * à la notation. Ne lève jamais.
  */
 export function validateAnswerDetailed(
 	instance: QuestionInstance,
@@ -2529,7 +2441,6 @@ export function validateAnswerDetailed(
 	try {
 		const type = getQuestionType(instance);
 		if (type === 'course_card') return { status: 'incorrect', blanks: [] };
-		if (type === 'multiple_choice') return detailChoices(instance, answer);
 
 		const blanks = instance.blanks ?? [];
 		const values = answer.values ?? blanks.map((b) => b.prefilled ?? '');
@@ -2561,49 +2472,4 @@ export function validateAnswerDetailed(
 			}))
 		};
 	}
-}
-
-// ============================================================================
-// MULTIPLE CHOICE VALIDATION
-// ============================================================================
-
-/**
- * Valide un QCM : même statut que la note du serveur (`statusFromChoices`, V4).
- * - toutes les bonnes, aucune mauvaise → correct ;
- * - une partie des bonnes, aucune mauvaise → unoptimal_form (½), « Il manque
- *   des réponses. », `isCorrect` faux (SRS : à revoir, Q40) ;
- * - une mauvaise cochée → incorrect ; rien coché → empty.
- *
- * @param userAnswer - Choix cochés (indices d'origine)
- * @param correctAnswer - Bons choix (indices d'origine) de l'instance
- * @param multipleAnswers - Plusieurs réponses attendues
- * @param letterOf - Lettre d'un indice d'origine dans le message (défaut : sans mélange)
- */
-export function validateChoice(
-	userAnswer: number | number[],
-	correctAnswer: string | string[],
-	multipleAnswers?: boolean,
-	letterOf: (originalIndex: number) => string = choiceLetter
-): ValidationResult {
-	// Indice illisible (aucun choix coché en réponse unique) : il ne désigne rien
-	const userIndexes = (Array.isArray(userAnswer) ? userAnswer : [userAnswer]).filter((index) =>
-		Number.isInteger(index)
-	);
-	const correctIndexes = (Array.isArray(correctAnswer) ? correctAnswer : [correctAnswer]).map(
-		Number
-	);
-
-	const status = statusFromChoices(userIndexes, correctIndexes);
-	if (status === 'correct') return { isCorrect: true, status, message: 'Correct !' };
-	if (status === 'unoptimal_form') {
-		return { isCorrect: false, status, message: 'Incomplet', feedback: MISSING_CHOICES_FEEDBACK };
-	}
-	return {
-		isCorrect: false,
-		status,
-		message: 'Incorrect',
-		feedback: multipleAnswers
-			? `Les choix corrects sont: ${correctIndexes.map(letterOf).sort().join(', ')}`
-			: `Le choix correct est: ${letterOf(correctIndexes[0])}`
-	};
 }

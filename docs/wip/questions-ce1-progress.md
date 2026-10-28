@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 2 bis publié._
+_Mis à jour le 2026-10-28, après la relecture du lot 3._
 
-- **État** : lot 2 bis (ordinaux, 7 modèles, CE1-011 à 015) **publié en prod** (relecture 7/7 OK, `publier-lot` 7/7, statut vérifié en base). Lots 0, 1, 2, 2 bis clos. Aucun worktree.
-- **Prochaine action** : lot 3 fractions (§ 4 bis, point 6) : nouveau worktree `ubumaths-wt-questions-ce1`, branche `feat/questions-ce1-lot3`, phase 0 (modèles proposés, niveaux, catégorie) à faire valider par David.
-- **En attente de David** : rien.
-- **Pièges en cours** : jamais de variable `i` (unité imaginaire) → liste `21|30|…` ; △ plus petit que ✕ ▢ ○ (police) ; niveaux « Ordinaux » 7 à 13 (1 à 6 = CP) ; ports 5176-5178 pris ; commitlint : sujet sans majuscule initiale (« CE1 » en tête refusé), corps ≤ 100 caractères par ligne.
-- **Worktree / branche** : aucun (worktree du lot 2 bis retiré).
+- **État** : lot 3 (fractions, 9 modèles) en brouillon en prod, rangé et tagué (#1939). Relecture (verdicts comptés en base) : 7 OK ; **03** À revoir (« pourquoi un calcul dans la variation 2 ? ») ; **09** commentaire sans verdict (« la variation 3 n'a pas sa place dans ce modèle »).
+- **Prochaine action** : selon les réponses de David, corriger `docs/wip/questions/lot-ce1-3.py` (branche neuve dans le worktree), PR, `create-questions --mettre-a-jour` par David, remettre les deux verdicts à zéro, relecture, puis `publier-lot`.
+- **En attente de David** : (1) 03 : retirer la variation 2 (« un huitième plus un huitième… », doublon de 08 variation 3) ? — reco : oui. (2) 09 variation 3 (Lucie, complément) : A. retirée et gardée pour le lot 4 problèmes (reco) ; B. modèle à part (CE1-099, niveau 15).
+- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 (« 1 demi », « le 1/4 ») ; `reducedFractions: off` (simplification = CE2) ; worktree neuf : `svelte-kit sync` avant `tsx` (`$lib`) ; ports 5176-5178 pris (5179 pour ce lot) ; commitlint : sujet sans majuscule initiale.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `feat/questions-ce1-lot3-rangement` mergée : en partir d'une neuve sur `origin/main`). Page à cocher : https://claude.ai/artifact/PZb69g4xfAJUS8cm5q5JsS.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -289,3 +289,41 @@ convertie (178 QCM, `migrer-qcm-en-cases --ecrire` pas lancé). Recommandations 
   (7/7 sur « ordinaux et rangs », points justes) ; page à cocher publiée (3 alertes : case choix non dessinée).
 * 2026-10-28 : relecture 7/7 OK ; `publier-lot` (simulation 7/7) puis `--publier` par David : 7/7 publiés,
   vérifié en base ; worktree retiré.
+
+## 9. Lot 3 : fractions — décisions (David, 2026-10-28)
+
+Relevé MCP du 2026-10-28 : aucun modèle sur les 11 points de fractions du CE1 ; thème « Fractions » du CM1 à la
+3e ; « Apprivoiser · Comparer » prend 1 à 5, « Calculer · Addition et Soustraction » 1 à 12. Recommandations
+suivies (« je valide ») :
+
+1. **Texte seul.** 096 et 098 (quelle part de la figure est coloriée ?) passent au lot « outils existants », après
+   vérification que le bloc `figure` dessine les partages du BO (bandes, carrés, disques en secteurs, hexagones) ;
+   à défaut des disques, bandes et carrés d'abord. 095 et 097 attendent l'outil « fractions à colorier ».
+2. **Nouvelle catégorie « Fractions · Apprivoiser · Ecriture »** (niveaux 1 à 5), comme « Ecriture » des entiers et
+   des décimaux.
+3. **Simplification = CE2** : `reducedFractions` coupé ; 4/8 juste sans ambre, 1/2 aussi (même valeur) ; une somme
+   qui fait 1 accepte « 1 » et « 5/5 ».
+4. 05 sans « écrire la fraction de numérateur 2 et de dénominateur 5 » (doublon de 03) ; 06 et 07 avec une égalité
+   de temps en temps (tirages indépendants), comme « Comparer » des entiers.
+
+| Fichier                            | Point   | Catégorie · niveau            | Variations                                                                   |
+| ---------------------------------- | ------- | ----------------------------- | ---------------------------------------------------------------------------- |
+| `01-ecrire-une-fraction-unitaire`  | CE1-016 | Ecriture · 1                  | un quart → 1/4 (demi … dixième)                                              |
+| `02-lire-une-fraction-unitaire`    | CE1-016 | Ecriture · 2                  | 1/4 → un quart (choix ; leurres « un quatre », autre part, « un quatrième ») |
+| `03-ecrire-une-fraction`           | CE1-017 | Ecriture · 3                  | trois huitièmes → 3/8 ; un huitième plus un huitième plus un huitième        |
+| `04-lire-une-fraction`             | CE1-017 | Ecriture · 4                  | 3/8 → trois huitièmes (choix ; « huit tiers », « trois huit », voisin)       |
+| `05-numerateur-et-denominateur`    | CE1-018 | Ecriture · 5                  | numérateur ; dénominateur ; bande en d parts dont n coloriées                |
+| `06-comparer-meme-denominateur`    | CE1-019 | Comparer · 6                  | 2/5 … 3/5 (choix < = >)                                                      |
+| `07-comparer-numerateur-un`        | CE1-020 | Comparer · 7                  | 1/5 … 1/3 (choix < = >)                                                      |
+| `08-additionner-meme-denominateur` | CE1-021 | Addition et Soustraction · 13 | a/d + b/d ; somme = 1 ; 1/d + 1/d + 1/d                                      |
+| `09-soustraire-meme-denominateur`  | CE1-099 | Addition et Soustraction · 14 | a/d − b/d ; 1 − a/d ; Lucie (3/10 en bleu, le reste en rouge)                |
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+- 2026-10-28 : écrit (`lot-ce1-3.py`), `create-questions` en simulation 9/9 (77 specs), `question:specs` 3 200
+  tirages verts ; relecture des tirages : accords au singulier corrigés (« $1$ demis », « les 1/4 »), specs vertes
+  avant comme après ; 9 brouillons en base locale ; aperçu admin : choix juste (02), 3/8 juste et 3/24 faux (08).
+  Vu en passant (pas du lot) : dans la carte de correction, le cadre vert de la réponse attendue coupe le bas d'une
+  fraction.
+- 2026-10-28 : #1936 mergée ; 9 brouillons créés en prod par David ; #1939 (nœud + tag, test rouge 5/9 sans, vert 9/9, `security-auditor` sans finding bloquant) mergée, `db:migrate` joué, vérifié (9/9 sur leur nœud, un point chacun) ; page à cocher publiée, aucune alerte.

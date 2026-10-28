@@ -29,13 +29,22 @@ const blanks = {
 		{ expectedAnswer: 'dix', type: 'text' }
 	]
 } as QuestionInstance;
-const qcm = {
-	...base,
-	choices: [
-		{ content: 'a' as ResolvedMarkdown, isCorrect: true },
-		{ content: 'b' as ResolvedMarkdown, isCorrect: false }
-	]
-} as QuestionInstance;
+/** Case choix : bonne(s) réponse(s) en indices d'origine (« 0;2 ») */
+const choiceCase = (expectedAnswer: string, count: number) =>
+	({
+		...base,
+		blanks: [
+			{
+				expectedAnswer,
+				type: 'choice',
+				choice: {
+					choices: Array.from({ length: count }, (_, i) => `c${i}`),
+					order: Array.from({ length: count }, (_, i) => i),
+					multiple: expectedAnswer.includes(';')
+				}
+			}
+		]
+	}) as QuestionInstance;
 const data = (value: AnswerData['value']): AnswerData => ({
 	value,
 	isCorrect: false,
@@ -58,10 +67,13 @@ describe('studentAnswerFromAnswerData', () => {
 		expect(studentAnswerFromAnswerData(blanks, data(''))).toEqual(empty);
 	});
 
-	it('QCM : indice d’origine seul ou liste ; rien coché → []', () => {
-		expect(studentAnswerFromAnswerData(qcm, data(1))).toEqual({ choiceIndexes: [1] });
-		expect(studentAnswerFromAnswerData(qcm, data([0, 1]))).toEqual({ choiceIndexes: [0, 1] });
-		expect(studentAnswerFromAnswerData(qcm, data(''))).toEqual({ choiceIndexes: [] });
+	it('case choix : sa valeur (indices « 0;1 ») sans LaTeX ; rien coché → case vide', () => {
+		const qcm = choiceCase('0', 2);
+		expect(studentAnswerFromAnswerData(qcm, data(['0;1']))).toEqual({
+			values: ['0;1'],
+			latex: ['']
+		});
+		expect(studentAnswerFromAnswerData(qcm, data(''))).toEqual({ values: [''], latex: [''] });
 	});
 });
 
@@ -91,28 +103,11 @@ describe('Q105 — barème de l’évaluation en entraînement (gradeQuestion)',
 		expect(trainingStatus(two, answer(['7', '9']))).toBe('incorrect');
 	});
 
-	it('QCM multiple (indices d’ORIGINE) : bons cochés mais incomplet → ½, même sans mélange', () => {
-		const multi = {
-			...base,
-			choices: [
-				{ content: 'a' as ResolvedMarkdown, isCorrect: true },
-				{ content: 'b' as ResolvedMarkdown, isCorrect: false },
-				{ content: 'c' as ResolvedMarkdown, isCorrect: true }
-			],
-			correctChoiceIndex: ['0', '2'],
-			multipleAnswers: true
-		} as QuestionInstance;
-		expect(trainingStatus(multi, { choiceIndexes: [2] })).toBe('unoptimal_form');
-		expect(trainingStatus(multi, { choiceIndexes: [0, 2] })).toBe('correct');
-		const shuffled = {
-			...multi,
-			shuffledChoices: [2, 0, 1].map((originalIndex) => ({
-				content: 'x' as ResolvedMarkdown,
-				originalIndex
-			}))
-		} as QuestionInstance;
-		expect(trainingStatus(shuffled, { choiceIndexes: [0, 1] })).toBe('incorrect');
-		expect(trainingStatus(shuffled, { choiceIndexes: [0] })).toBe('unoptimal_form');
+	it('case choix multiple (indices d’ORIGINE) : bons cochés mais incomplet → ½', () => {
+		const multi = choiceCase('0;2', 3);
+		expect(trainingStatus(multi, { values: ['2'] })).toBe('unoptimal_form');
+		expect(trainingStatus(multi, { values: ['0;2'] })).toBe('correct');
+		expect(trainingStatus(multi, { values: ['0;1'] })).toBe('incorrect');
 	});
 });
 

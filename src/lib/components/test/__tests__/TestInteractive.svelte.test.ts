@@ -15,31 +15,29 @@ import { resolvedMarkdown } from '$lib/ubumark';
 const RESTART = 'Recommencer avec de nouvelles questions';
 const VISITOR_NOTE = 'Connecte-toi pour que tes réponses comptent dans tes révisions.';
 
-/** QCM « statement » : deux choix, le bon est « 4 » (index 1, ordre conservé) */
-function qcm(statement: string): QuestionInstance {
+/** Case choix « statement » : deux choix, le bon est « 4 » (index 1, ordre conservé) */
+function choiceQuestion(statement: string): QuestionInstance {
 	return {
 		templateId: `tpl-${statement}`,
-		statement: resolvedMarkdown(statement),
+		statement: resolvedMarkdown(`${statement}\n\n\`\`\`choix\ncase: 0\n- 3\n- 4\n\`\`\``),
 		grades: ['6'],
 		theme: 'Entiers',
 		domain: 'Calcul',
 		level: 1,
 		generatedAt: new Date().toISOString(),
-		choices: [
-			{ content: resolvedMarkdown('3'), isCorrect: false },
-			{ content: resolvedMarkdown('4'), isCorrect: true }
+		blanks: [
+			{
+				expectedAnswer: '1',
+				type: 'choice',
+				choice: { choices: ['3', '4'], order: [0, 1], multiple: false }
+			}
 		],
-		shuffledChoices: [
-			{ content: resolvedMarkdown('3'), originalIndex: 0 },
-			{ content: resolvedMarkdown('4'), originalIndex: 1 }
-		],
-		correctChoiceIndex: '1',
 		correction: { steps: [resolvedMarkdown(`Correction de ${statement}`)] }
 	} as QuestionInstance;
 }
 
 function item(statement: string, delaySeconds: number): ClassroomItem {
-	return { instance: qcm(statement), delaySeconds, categoryKey: 'x' };
+	return { instance: choiceQuestion(statement), delaySeconds, categoryKey: 'x' };
 }
 
 async function open(
@@ -180,7 +178,7 @@ describe('TestInteractive — Entraînement', () => {
 		expect(onComplete).toHaveBeenCalledTimes(1);
 		const [answer] = onComplete.mock.calls[0][0].answers;
 		expect(answer.isCorrect).toBe(true);
-		expect(answer.userAnswer?.value).toBe(1);
+		expect(answer.userAnswer?.value).toEqual(['1']);
 		expect(answer.userAnswer?.attempts).toBe(1);
 	});
 
@@ -192,7 +190,7 @@ describe('TestInteractive — Entraînement', () => {
 
 		const [answer] = onComplete.mock.calls[0][0].answers;
 		expect(answer.isCorrect).toBe(false);
-		expect(answer.userAnswer?.value).toBe(0);
+		expect(answer.userAnswer?.value).toEqual(['0']);
 		expect(answer.userAnswer?.attempts).toBe(1);
 	});
 

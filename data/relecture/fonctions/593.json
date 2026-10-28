@@ -6,6 +6,108 @@
 	"template": {
 		"title": "Signe d'une expression",
 		"description": "Signe d'une expression simple avec $x$ négatif",
+		"variations": [
+			{
+				"statement": "Si $x$ est **négatif**, quel est le signe de cette expression :\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n- On ne peut pas savoir.\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expr1",
+						"expression": "eval:ax"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Si $x$ est **négatif**, quand je le multiplie par ${{a}}$ qui est positif, j'obtiens une expression négative."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Si $x$ est **négatif**, quel est le signe de cette expression :\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n- On ne peut pas savoir.\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expr2",
+						"expression": "eval:(b)x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Si $x$ est **négatif**, quand je le multiplie par ${{b}}$ qui est négatif, j'obtiens une expression positive."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Si $x$ est **négatif**, quel est le signe de cette expression :\n\n$${{expr3}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n- On ne peut pas savoir.\n```",
+				"variables": [
+					{
+						"name": "expr3",
+						"expression": "x+a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Si $x$ est **négatif**, quand je lui ajoute ${{a}}$, le résultat peut être positif ou négatif, suivant la valeur de $x$.",
+						"Si $x \\ge -{{a}}$, ${{expr3}}$ est positif.",
+						"Si $x \\le -{{a}}$, ${{expr3}}$ est négatif.",
+						"{{solution:html}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
+			},
+			{
+				"statement": "Si $x$ est **négatif**, quel est le signe de cette expression :\n\n$${{expr4}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n- On ne peut pas savoir.\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expr4",
+						"expression": "eval:x+b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Si $x$ est **négatif**, quand je lui soustrais le nombre ${{eval:-(b)}}$, j'obtiens une expression négative."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			}
+		],
+		"grades": [
+			"2"
+		],
+		"theme": "Fonctions",
+		"domain": "Valeur absolue",
+		"subdomain": "Apprivoiser",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
 		"shared": {
 			"variables": [
 				{
@@ -16,106 +118,8 @@
 					"name": "b",
 					"expression": "-3..-1"
 				}
-			],
-			"choices": [
-				{
-					"content": "positif"
-				},
-				{
-					"content": "négatif"
-				},
-				{
-					"content": "On ne peut pas savoir."
-				}
 			]
 		},
-		"variations": [
-			{
-				"statement": "Si $x$ est **négatif**, quel est le signe de cette expression :\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["1"],
-				"variables": [
-					{
-						"name": "x",
-						"expression": "x|x"
-					},
-					{
-						"name": "expression1",
-						"expression": "eval:ax"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Si $x$ est **négatif**, quand je le multiplie par ${{a}}$ qui est positif, j'obtiens une expression négative."
-					]
-				}
-			},
-			{
-				"statement": "Si $x$ est **négatif**, quel est le signe de cette expression :\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["0"],
-				"variables": [
-					{
-						"name": "x",
-						"expression": "x|x"
-					},
-					{
-						"name": "expression2",
-						"expression": "eval:(b)x"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Si $x$ est **négatif**, quand je le multiplie par ${{b}}$ qui est négatif, j'obtiens une expression positive."
-					]
-				}
-			},
-			{
-				"statement": "Si $x$ est **négatif**, quel est le signe de cette expression :\n\n$${{expression3}}$$",
-				"correctChoiceIndex": ["2"],
-				"variables": [
-					{
-						"name": "expression3",
-						"expression": "x+a"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Si $x$ est **négatif**, quand je lui ajoute ${{a}}$, le résultat peut être positif ou négatif, suivant la valeur de $x$.",
-						"Si $x \\ge -{{a}}$, ${{expression3}}$ est positif.",
-						"Si $x \\le -{{a}}$, ${{expression3}}$ est négatif.",
-						"{{solution:html}}"
-					]
-				}
-			},
-			{
-				"statement": "Si $x$ est **négatif**, quel est le signe de cette expression :\n\n$${{expression4}}$$",
-				"correctChoiceIndex": ["1"],
-				"variables": [
-					{
-						"name": "x",
-						"expression": "x|x"
-					},
-					{
-						"name": "expression4",
-						"expression": "eval:x+b"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Si $x$ est **négatif**, quand je lui soustrais le nombre ${{eval:-(b)}}$, j'obtiens une expression négative."
-					]
-				}
-			}
-		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["2"],
-		"theme": "Fonctions",
-		"domain": "Valeur absolue",
-		"subdomain": "Apprivoiser",
-		"level": 3,
-		"status": "draft",
-		"delay": 20,
 		"testSpecs": [
 			{
 				"description": "ax, x négatif : négatif",
@@ -124,11 +128,13 @@
 					"a": "3",
 					"b": "-2"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "ax : positif refusé",
@@ -137,11 +143,13 @@
 					"a": "3",
 					"b": "-2"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "bx : positif",
@@ -150,11 +158,13 @@
 					"a": "3",
 					"b": "-2"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "x+a : on ne peut pas savoir",
@@ -163,11 +173,13 @@
 					"a": "2",
 					"b": "-2"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "x+a : positif refusé",
@@ -176,11 +188,13 @@
 					"a": "2",
 					"b": "-2"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "x+b : négatif",
@@ -189,11 +203,13 @@
 					"a": "2",
 					"b": "-2"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "x+b : on ne peut pas savoir refusé",
@@ -202,11 +218,13 @@
 					"a": "2",
 					"b": "-2"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"2"
+				]
 			}
 		]
 	}

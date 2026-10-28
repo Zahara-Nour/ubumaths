@@ -47,9 +47,7 @@ function resolveVariationWithShared(
 
 	return {
 		statement: variation.statement || shared.statement || templateMarkdown(''),
-		correctChoiceIndex: variation.correctChoiceIndex ?? shared.correctChoiceIndex,
 		correction: variation.correction ?? shared.correction,
-		choices: variation.choices ?? shared.choices,
 		validationRules: variation.validationRules ?? shared.validationRules,
 		requiredForm: variation.requiredForm ?? shared.requiredForm,
 		variables: mergedVariables,

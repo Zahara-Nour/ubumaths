@@ -516,7 +516,7 @@ export async function startEvaluationAttempt(
 /** Réponse enregistrée : au format `AnswerData` que lisent les corrections */
 /**
  * Réponse enregistrée : au format `AnswerData` que lisent les corrections
- * (QCM : indices d'ORIGINE, comme partout). En plus, de quoi reconstruire la
+ * (case choix : indices d'ORIGINE, comme partout). En plus, de quoi reconstruire la
  * copie à l'identique (409) : message et nature du ½ point.
  */
 function storedUserAnswer(
@@ -526,7 +526,7 @@ function storedUserAnswer(
 ): (AnswerData & { feedback?: string; partial: boolean }) | null {
 	if (!question.answer) return null;
 	return {
-		value: question.answer.choiceIndexes ?? question.answer.values ?? [],
+		value: question.answer.values ?? [],
 		isCorrect: question.isCorrect,
 		timeSpent: timeSpent ?? 0,
 		attempts: 1,
@@ -642,13 +642,7 @@ export async function submitEvaluationAttempt(
 		return {
 			position,
 			instance,
-			// QCM : indices d'ORIGINE calculés par le barème (ce que lit CorrectionCard)
-			answer: answer
-				? {
-						...(answer.values && { values: answer.values }),
-						...(verdict.choiceIndexes && { choiceIndexes: verdict.choiceIndexes })
-					}
-				: null,
+			answer: answer ? { ...(answer.values && { values: answer.values }) } : null,
 			status: verdict.status,
 			points: verdict.points,
 			isCorrect: verdict.isCorrect,
@@ -760,9 +754,6 @@ export async function submitEvaluationAttempt(
 function correctedAnswerOf(userAnswer: unknown): CorrectedAnswer | null {
 	if (!userAnswer || typeof userAnswer !== 'object' || !('value' in userAnswer)) return null;
 	const value = (userAnswer as { value: unknown }).value;
-	if (Array.isArray(value) && value.every((v) => typeof v === 'number')) {
-		return { choiceIndexes: value as number[] };
-	}
 	if (Array.isArray(value)) return { values: value.map(String) };
 	return null;
 }

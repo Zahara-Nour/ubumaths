@@ -1,0 +1,239 @@
+{
+	"title": "Nommer un enchaînement d'opérations",
+	"description": "Lire un calcul avec le vocabulaire somme, différence, produit, quotient : (3 + 5) × 2 est « le produit de la somme de 3 et 5 par 2 »",
+	"grades": ["4"],
+	"theme": "Entiers",
+	"domain": "Priorités opératoires",
+	"subdomain": "Vocabulaire",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Comment se lit le calcul $({{a}} + {{b}}) \\times {{c}}$ ?\n\n```choix\n- le produit de la somme de {{a}} et {{b}} par {{c}}\n- la somme de {{a}} et du produit de {{b}} par {{c}}\n- le produit de {{a}} par la somme de {{b}} et {{c}}\n- la somme du produit de {{a}} par {{b}} et de {{c}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b", "b!=c", "a!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Lire un calcul.** On nomme d'abord la **dernière** opération effectuée (somme, différence, produit, quotient), puis ce sur quoi elle porte.",
+					"On calcule d'abord $\\textcolor{{{color:primary.1}}}{{{a}} + {{b}}}$, puis on effectue une multiplication.",
+					"$({{a}} + {{b}}) \\times {{c}}$ est $\\textcolor{{{color:primary.0}}}{\\text{le produit de la somme de {{a}} et {{b}} par {{c}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Comment se lit le calcul ${{a}} + {{b}} \\times {{c}}$ ?\n\n```choix\n- la somme de {{a}} et du produit de {{b}} par {{c}}\n- le produit de la somme de {{a}} et {{b}} par {{c}}\n- la somme du produit de {{a}} par {{b}} et de {{c}}\n- le produit de {{a}} par la somme de {{b}} et {{c}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b", "b!=c", "a!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Lire un calcul.** On nomme d'abord la **dernière** opération effectuée (somme, différence, produit, quotient), puis ce sur quoi elle porte.",
+					"On calcule d'abord $\\textcolor{{{color:primary.1}}}{{{b}} \\times {{c}}}$, puis on effectue une addition.",
+					"${{a}} + {{b}} \\times {{c}}$ est $\\textcolor{{{color:primary.0}}}{\\text{la somme de {{a}} et du produit de {{b}} par {{c}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Comment se lit le calcul $({{a}} - {{b}}) \\div {{c}}$ ?\n\n```choix\n- le quotient de la différence de {{a}} et {{b}} par {{c}}\n- la différence de {{a}} et du quotient de {{b}} par {{c}}\n- le quotient de {{a}} par la différence de {{b}} et {{c}}\n- la différence du quotient de {{a}} par {{b}} et de {{c}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..30"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b", "b!=c", "a!=c", "a>b", "mod(a-b,c)==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Lire un calcul.** On nomme d'abord la **dernière** opération effectuée (somme, différence, produit, quotient), puis ce sur quoi elle porte.",
+					"On calcule d'abord $\\textcolor{{{color:primary.1}}}{{{a}} - {{b}}}$, puis on effectue une division.",
+					"$({{a}} - {{b}}) \\div {{c}}$ est $\\textcolor{{{color:primary.0}}}{\\text{le quotient de la différence de {{a}} et {{b}} par {{c}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Comment se lit le calcul ${{a}} \\times ({{b}} - {{c}})$ ?\n\n```choix\n- le produit de {{a}} par la différence de {{b}} et {{c}}\n- la différence du produit de {{a}} par {{b}} et de {{c}}\n- le produit de la différence de {{a}} et {{b}} par {{c}}\n- la différence de {{a}} et du produit de {{b}} par {{c}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b", "b!=c", "a!=c", "b>c"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Lire un calcul.** On nomme d'abord la **dernière** opération effectuée (somme, différence, produit, quotient), puis ce sur quoi elle porte.",
+					"On calcule d'abord $\\textcolor{{{color:primary.1}}}{{{b}} - {{c}}}$, puis on effectue une multiplication.",
+					"${{a}} \\times ({{b}} - {{c}})$ est $\\textcolor{{{color:primary.0}}}{\\text{le produit de {{a}} par la différence de {{b}} et {{c}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(3 + 5) × 2 : produit de la somme",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme de 3 et du produit (lu de gauche à droite)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 + 5 × 2 : somme de 3 et du produit",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le produit de la somme",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(17 − 5) ÷ 4 : quotient de la différence",
+			"variationIndex": 2,
+			"variables": {
+				"a": "17",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la différence de 17 et du quotient",
+			"variationIndex": 2,
+			"variables": {
+				"a": "17",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 × (5 − 2) : produit de 3 par la différence",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la différence du produit",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

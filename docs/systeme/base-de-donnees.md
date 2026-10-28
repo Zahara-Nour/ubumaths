@@ -178,6 +178,10 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
 - `question_templates` : le modèle de question (énoncé paramétré, `variations`, cases, correction).
   `question_template_points` le tague aux points du programme (**RESTRICT** côté point : pivot de
   l'acquisition).
+- `question_template_reviews` (depuis `20261029150000`) : le verdict de relecture d'un modèle
+  (`valide` / `a_revoir` + commentaire), un par modèle, posé depuis `/dev/modeles`. **Admin seul** en
+  lecture comme en écriture (`is_admin()`), anon refusé (42501) ; auteur et date posés par un trigger
+  (sauf en service_role, pour la reprise des verdicts des artefacts) ; CASCADE avec le modèle.
 - `series` : composition de questions (catégories, nombre, durée), verrouillée dès qu'un élève a
   commencé.
 - `exercises` (+ `exercise_curriculum_points`, `exercise_classifications`) ; `exercise_assignments`

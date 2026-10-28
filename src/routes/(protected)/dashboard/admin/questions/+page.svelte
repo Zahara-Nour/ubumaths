@@ -132,7 +132,6 @@
 	const questionTypes: { value: string; label: string }[] = [
 		{ value: 'all', label: 'Tous les types' },
 		{ value: 'fill_in_blanks', label: 'À trous' },
-		{ value: 'multiple_choice', label: 'QCM' },
 		{ value: 'course_card', label: 'Carte de cours' }
 	];
 

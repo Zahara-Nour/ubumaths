@@ -1,0 +1,148 @@
+{
+	"title": "Donner la valeur absolue d'un nombre",
+	"description": "Donner la valeur absolue (la distance à zéro) d'un nombre relatif : celle de −7 est 7, celle de 12 est 12, celle de −4,5 est 4,5",
+	"grades": ["5"],
+	"theme": "Relatifs",
+	"domain": "Apprivoiser",
+	"subdomain": "Valeur absolue",
+	"level": 1,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle est la valeur absolue de $-{{a}}$ (sa distance à zéro) ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..50"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Valeur absolue.** La valeur absolue d'un nombre est sa **distance à zéro** sur la droite graduée : c'est le nombre sans son signe.",
+					"$-{{a}}$ est à ${{a}}$ unités de zéro : sa valeur absolue est $\\textcolor{{{color:primary.0}}}{{{a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la valeur absolue de ${{a}}$ (sa distance à zéro) ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..50"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Valeur absolue.** La valeur absolue d'un nombre est sa **distance à zéro** sur la droite graduée : c'est le nombre sans son signe.",
+					"${{a}}$ est positif : il est déjà à ${{a}}$ unités de zéro. Sa valeur absolue est $\\textcolor{{{color:primary.0}}}{{{a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la valeur absolue de $-{{x}}$ (sa distance à zéro) ?\n\n$?$",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "11..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:X/10;d"
+				}
+			],
+			"conditions": ["mod(X,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Valeur absolue.** La valeur absolue d'un nombre est sa **distance à zéro** sur la droite graduée : c'est le nombre sans son signe.",
+					"$-{{x}}$ est à ${{x}}$ unités de zéro : sa valeur absolue est $\\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Valeur absolue de −7 : 7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −7 (le nombre recopié)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["-7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Valeur absolue de 12 : 12",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −12 (l'opposé)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12"
+			},
+			"answers": ["-12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Valeur absolue de −4,5 : 4,5",
+			"variationIndex": 2,
+			"variables": {
+				"X": "45",
+				"x": "4.5"
+			},
+			"answers": ["4,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −4,5",
+			"variationIndex": 2,
+			"variables": {
+				"X": "45",
+				"x": "4.5"
+			},
+			"answers": ["-4,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

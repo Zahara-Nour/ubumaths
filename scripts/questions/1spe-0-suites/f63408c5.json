@@ -9,23 +9,9 @@
 	"level": 2,
 	"delay": 30,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "Oui, elle est arithmétique."
-			},
-			{
-				"content": "Non, elle n'est pas arithmétique."
-			}
-		],
-		"cleanCoefficients": true
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}=u_n{{eval:r;+}}$$\n\nCette suite est-elle arithmétique ?",
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}=u_n{{eval:r;+}}$$\n\nCette suite est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -42,10 +28,14 @@
 					"La suite est **arithmétique**, de raison $r={{r}}$ et de premier terme $u_0={{a}}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}={{q}}u_n$$\n\nCette suite est-elle arithmétique ?",
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}={{q}}u_n$$\n\nCette suite est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -63,10 +53,14 @@
 					"$u_1-u_0={{eval:q*a-a}}$ mais $u_2-u_1={{eval:q^2*a-q*a}}$ : la suite n'est **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}=\\dfrac{u_n}{ {{k}} }$$\n\nCette suite est-elle arithmétique ?",
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}=\\dfrac{u_n}{ {{k}} }$$\n\nCette suite est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -84,10 +78,14 @@
 					"$u_1-u_0={{eval:a/k-a}}$ mais $u_2-u_1={{eval:a/k^2-a/k}}$ : la suite n'est **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}={{p}}u_n{{eval:b;+}}$$\n\nCette suite est-elle arithmétique ?",
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}={{p}}u_n{{eval:b;+}}$$\n\nCette suite est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -118,10 +116,14 @@
 					"$u_1-u_0={{eval:u1-(a)}}$ mais $u_2-u_1={{eval:u2-(u1)}}$ : la suite n'est **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}=u_n+{{eval:k*n}}$$\n\nCette suite est-elle arithmétique ?",
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}=u_n+{{eval:k*n}}$$\n\nCette suite est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -151,9 +153,16 @@
 					"$u_1-u_0={{eval:u1-(a)}}$ mais $u_2-u_1={{eval:u2-(u1)}}$ : la suite n'est **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"testSpecs": [
 		{
 			"expected": {
@@ -165,7 +174,7 @@
 			},
 			"description": "v0 : « oui » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -177,7 +186,7 @@
 			},
 			"description": "v0 : « non » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -189,7 +198,7 @@
 			},
 			"description": "v1 : « non » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -201,7 +210,7 @@
 			},
 			"description": "v1 : « oui » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -213,7 +222,7 @@
 			},
 			"description": "v2 : « non » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -225,7 +234,7 @@
 			},
 			"description": "v2 : « oui » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -240,7 +249,7 @@
 			},
 			"description": "v3 : « non » accepté",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -255,7 +264,7 @@
 			},
 			"description": "v3 : « oui » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -269,7 +278,7 @@
 			},
 			"description": "v4 : « non » accepté",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -283,7 +292,7 @@
 			},
 			"description": "v4 : « oui » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
 	]
 }

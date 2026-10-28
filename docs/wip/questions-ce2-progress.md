@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1920._
+_Mis à jour le 2026-10-28, après #1937 et `db:migrate`._
 
-- **État** : lot 1 en prod en BROUILLON, rangé et tagué, 2 OK sur 5 (3 fiches corrigées à relire). Lot 2 (numération, 9 modèles, espaces dès 4 chiffres) mergé (#1920), pas encore en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce2-2 --publier` ; relever les `id` ; migration nœud + tag du lot 2 (gabarit `20261028130100_questions_ce2_lot1_rangement_tags.sql`), page à cocher. Lot 1 : compter les verdicts (https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4) ; 5/5 OK → `publier-lot --dir scripts/questions/ce2-1` (simulation), puis David `--publier`.
-- **En attente de David** : relecture des 3 fiches du lot 1 (60, × 4, × 8) ; `--publier` du lot 2 ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
-- **Pièges en cours** : `question:specs --template` dit « NON importable » à tort : vérifier avec `--file` ; client tests `wrapDynamicImport` intermittent → relancer le job ; horodatage de migration = max de la PROD + 1 min ; commitlint refuse un sujet en majuscule (« CE2 ») ; worktree neuf → `pnpm exec svelte-kit sync` avant `create-questions`.
-- **Worktree / branche** : aucun (retirés après #1920).
+- **État** : lot 1 en prod en BROUILLON, rangé et tagué, 2 OK sur 5 (60, × 4, × 8 sans verdict). Lot 2 en prod en BROUILLON, rangé et tagué (migration `20261029003200` jouée, vérifiée au MCP : 9 nœuds, 1 point chacun, `updated_at` intact) ; page à cocher publiée, 0 verdict.
+- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`) — lot 1 : https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4 ; lot 2 : https://claude.ai/artifact/KLQGsdQYbft3hoQt5yHnCL. Lot tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce2-<n>` (simulation), puis David `--publier`. « À revoir » → corriger (couvrir-un-niveau § 7), remettre le verdict à zéro. Puis lot 3.
+- **En attente de David** : relecture du lot 1 (60, × 4, × 8) et du lot 2 (9 fiches) ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
+- **Pièges en cours** : horodatage = max de la PROD + 1 min, re-vérifier juste avant `db:migrate` (la prod avance vite : #1932 → renommage #1937) ; CI : `corrections.test.ts` « cas rare » > 5 s et client `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule ; page à cocher APRÈS `db:migrate`.
+- **Worktree / branche** : aucun (retirés après #1937).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -211,3 +211,17 @@ CM2) : règle de l'école en numération, `4500` sans espace = « forme à amél
 - Base locale : 9 brouillons ; aperçu admin : « Ranger » (4 justes + `4500` → ½ point, « Les chiffres sont mal
   espacés »), « Lire en lettres » (mille-un, réponse fausse → faux, corrigé `1 001`).
 - 2026-10-28 : #1920 mergée (CI verte, revue : aucune, contenu) ; worktree retiré.
+
+### Lot 2 — en prod (2026-10-28)
+
+- `create-questions --publier` (David) : 9 brouillons — `5258350a` (milliers, centaines, dizaines), `78d3ff5b`
+  (lots de 100), `b4dd4008` (unités non canoniques), `692d237e` (suit / précède), `3dd3b738` (lettres → chiffres),
+  `8c5c7d70` (ranger cinq), `d6753aef` (supérieur, inférieur, compris), `41dd05bc` (encadrer), `f8fd9552` (intercaler).
+- Relevé MCP : 9 brouillons [CE2], sans nœud ni tag ; points sous « Nombres et calculs > Entiers : numération »
+  (003 décomposition ; 004, 005 écritures ; 008, 009, 087, 088 ordre). Dernière migration en prod : `20261028233000` ; renommée `20261029003200` après #1932 (deux migrations d'autres sessions jouées entre-temps, `db push` refusait sans `--include-all`).
+- Migration `20261029003200_questions_ce2_lot2_rangement_tags.sql` (gabarit `20261028233000_questions_5_lot1_08`,
+  tout ou rien sur 9) ; test `tests/integration/questions-ce2-lot2-rangement-tags.test.ts` : 9 verts ; corps de la
+  migration retiré → 5 rouges (nœud, tag, tout ou rien, déjà rangé, point archivé).
+- 2026-10-28 : #1932 mergée, `db push` refusé (`20261028234500` et `20261029003100` d'autres sessions jouées entre-temps) ;
+  renommage #1937 mergé ; `db:migrate` (seule la mienne au `--dry-run`) ; vérifié au MCP. Page à cocher :
+  https://claude.ai/artifact/KLQGsdQYbft3hoQt5yHnCL (9 fiches, aucune alerte). Worktree retiré.

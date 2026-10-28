@@ -1,0 +1,1438 @@
+[
+	{
+		"id": "35f82aad-c94f-4d8a-84d6-12faeebf1c7f",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 90,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Problèmes",
+		"subdomain": "Notation scientifique",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Complète.\n\n$$1~{{if:k==-9|\\unit{nm}|}}{{if:k==-6|\\unit{μm}|}}{{if:k==-3|\\unit{mm}|}}{{if:k==3|\\unit{kW}|}}{{if:k==6|\\unit{MW}|}}{{if:k==9|\\unit{GW}|}} = 10^{?}~{{if:k<0|\\unit{m}|\\unit{W}}}$$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "-9|-6|-3|3|6|9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Préfixes.** nano $= 10^{-9}$, micro $= 10^{-6}$, milli $= 10^{-3}$, kilo $= 10^{3}$, méga $= 10^{6}$, giga $= 10^{9}$.",
+						"Le préfixe {{if:k==-9|nano|}}{{if:k==-6|micro|}}{{if:k==-3|milli|}}{{if:k==3|kilo|}}{{if:k==6|méga|}}{{if:k==9|giga|}} vaut $10^{\\textcolor{{{color:primary.0}}}{{{k}}}}$ : $1~{{if:k==-9|\\unit{nm}|}}{{if:k==-6|\\unit{μm}|}}{{if:k==-3|\\unit{mm}|}}{{if:k==3|\\unit{kW}|}}{{if:k==6|\\unit{MW}|}}{{if:k==9|\\unit{GW}|}} = \\textcolor{{{color:primary.0}}}{10^{{{k}}}}~{{if:k<0|\\unit{m}|\\unit{W}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:X/10;d}}"
+					},
+					{
+						"expectedAnswer": "{{eval:j+k}}"
+					}
+				],
+				"statement": "Écris cette grandeur en {{if:k<0|mètres|watts}}, en notation scientifique.\n\n$${{eval:X*10^(j-1);d}}~{{if:k==-9|\\unit{nm}|}}{{if:k==-6|\\unit{μm}|}}{{if:k==-3|\\unit{mm}|}}{{if:k==3|\\unit{kW}|}}{{if:k==6|\\unit{MW}|}}{{if:k==9|\\unit{GW}|}} = ? \\times 10^{?}~{{if:k<0|\\unit{m}|\\unit{W}}}$$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "-9|-6|-3|3|6|9"
+					},
+					{
+						"name": "X",
+						"expression": "11..99!m(10)"
+					},
+					{
+						"name": "j",
+						"expression": "0..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Préfixes.** nano $= 10^{-9}$, micro $= 10^{-6}$, milli $= 10^{-3}$, kilo $= 10^{3}$, méga $= 10^{6}$, giga $= 10^{9}$. **Notation scientifique.** Un nombre s'écrit $a \\times 10^n$ avec $1 \\leq a < 10$ et $n$ entier relatif.",
+						"On écrit d'abord le nombre en notation scientifique : ${{eval:X*10^(j-1);d}} = \\textcolor{{{color:primary.0}}}{{{eval:X/10;d}}} \\times 10^{{{eval:j}}}$.",
+						"$${{eval:X*10^(j-1);d}}~{{if:k==-9|\\unit{nm}|}}{{if:k==-6|\\unit{μm}|}}{{if:k==-3|\\unit{mm}|}}{{if:k==3|\\unit{kW}|}}{{if:k==6|\\unit{MW}|}}{{if:k==9|\\unit{GW}|}} = {{eval:X/10;d}} \\times 10^{{{eval:j}}} \\times 10^{{{k}}}~{{if:k<0|\\unit{m}|\\unit{W}}} = \\textcolor{{{color:primary.0}}}{{{eval:X/10;d}}} \\times 10^{\\textcolor{{{color:primary.0}}}{{{eval:j+k}}}}~{{if:k<0|\\unit{m}|\\unit{W}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:3*c/10;d}}"
+					},
+					{
+						"expectedAnswer": "{{eval:9+p}}"
+					}
+				],
+				"statement": "En une seconde, la lumière parcourt $3 \\times 10^{8}~\\unit{m}$. Quelle distance parcourt-elle en ${{eval:c*10^p}}~\\unit{s}$ ?\n\nDonne le résultat en notation scientifique.\n\n$$? \\times 10^{?}~\\unit{m}$$",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "4..9"
+					},
+					{
+						"name": "p",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Notation scientifique.** Un nombre s'écrit $a \\times 10^n$ avec $1 \\leq a < 10$ et $n$ entier relatif.",
+						"Distance = vitesse × durée : $3 \\times 10^{8} \\times {{eval:c*10^p}} = 3 \\times {{c}} \\times 10^{8} \\times 10^{{{p}}} = {{eval:3*c}} \\times 10^{{{eval:8+p}}}$.",
+						"${{eval:3*c}}$ n'est pas entre $1$ et $10$ : ${{eval:3*c}} = {{eval:3*c/10;d}} \\times 10$.",
+						"$${{eval:3*c}} \\times 10^{{{eval:8+p}}} = \\textcolor{{{color:primary.0}}}{{{eval:3*c/10;d}}} \\times 10^{\\textcolor{{{color:primary.0}}}{{{eval:9+p}}}}~\\unit{m}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10000/a}}"
+					}
+				],
+				"statement": "Une bactérie mesure ${{a}}~\\unit{μm}$. Combien de bactéries faut-il aligner, bout à bout, pour faire $1~\\unit{cm}$ ?\n\n$?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1|2|4|5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Même unité.** $1~\\unit{cm} = 10^{-2}~\\unit{m}$ et $1~\\unit{μm} = 10^{-6}~\\unit{m}$ : $1~\\unit{cm} = 10^{-2} \\div 10^{-6}~\\unit{μm} = 10^{4}~\\unit{μm} = 10\\,000~\\unit{μm}$.",
+						"$$10\\,000 \\div {{a}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes et notation scientifique",
+		"description": "Utiliser les préfixes (nano à giga) et la notation scientifique : 1 μm = 10⁻⁶ m ; 350 nm = 3,5 × 10⁻⁷ m ; distance parcourue par la lumière ; bactéries bout à bout",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "-6"
+				},
+				"description": "1 μm = 10⁻⁶ m",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "-6"
+				},
+				"description": "Erreur : 1 μm = 10⁻³ m (milli)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "9"
+				},
+				"description": "1 GW = 10⁹ W",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3,5", "-7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"X": "35",
+					"j": "2",
+					"k": "-9"
+				},
+				"description": "350 nm = 3,5 × 10⁻⁷ m",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["35", "-8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"X": "35",
+					"j": "2",
+					"k": "-9"
+				},
+				"description": "Erreur : mantisse 35 (35 × 10⁻⁸)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3,5", "-9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"X": "35",
+					"j": "2",
+					"k": "-9"
+				},
+				"description": "Erreur : exposant du préfixe seul (3,5 × 10⁻⁹)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1,5", "11"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "5",
+					"p": "2"
+				},
+				"description": "3 × 10⁸ × 500 = 1,5 × 10¹¹ m",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["15", "10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "5",
+					"p": "2"
+				},
+				"description": "Erreur : 15 × 10¹⁰ non converti",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1,5", "17"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "5",
+					"p": "2"
+				},
+				"description": "Erreur : exposants multipliés (1,5 × 10¹⁷)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2"
+				},
+				"description": "10 000 ÷ 2 = 5 000",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["500"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2"
+				},
+				"description": "Erreur : 1 cm = 1 000 μm (500)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "3806ee3d-efc7-4f7d-ba23-966101aff103",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"multiple_answers": null,
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "x² = a",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\{ -{{n}} ; {{n}} \\}"
+					}
+				],
+				"statement": "Résous l'équation $x^2={{eval:n*n}}$.\n\nL'ensemble des solutions est $S=?$.",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "1..12"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+						"${{eval:n*n}}>0$ et $\\sqrt{{{eval:n*n}}}={{n}}$ : $x^2={{eval:n*n}}\\iff x={{n}} \\text{ ou } x=-{{n}}$.",
+						"$S=\\textcolor{{{color:primary.0}}}{\\{ -{{n}} ; {{n}} \\}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\{ -\\sqrt{ {{a}} } ; \\sqrt{ {{a}} } \\}"
+					}
+				],
+				"statement": "Résous l'équation $x^2={{a}}$.\n\nL'ensemble des solutions est $S=?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..23"
+					}
+				],
+				"conditions": ["mod(a,4) != 0", "mod(a,9) != 0"],
+				"correction": {
+					"steps": [
+						"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+						"${{a}}>0$ : $x^2={{a}}\\iff x=\\sqrt{ {{a}} } \\text{ ou } x=-\\sqrt{ {{a}} }$.",
+						"$S=\\textcolor{{{color:primary.0}}}{\\{ -\\sqrt{ {{a}} } ; \\sqrt{ {{a}} } \\}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:t==0|\\{ 0 \\}|\\varnothing}}"
+					}
+				],
+				"statement": "Résous l'équation $x^2={{eval:-(t)*(n)}}$.\n\nL'ensemble des solutions est $S=?$.",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "0..1"
+					},
+					{
+						"name": "n",
+						"expression": "1..20"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+						"{{if:t==0|$x^2=0\\iff x=0$ : une seule solution.|${{eval:-(n)}}<0$ et un carré n'est jamais négatif : aucune solution.}}",
+						"$S=\\textcolor{{{color:primary.0}}}{{{if:t==0|\\{ 0 \\}|\\varnothing}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Résoudre x² = a",
+		"description": "Résoudre x² = a : deux solutions −√a et √a si a > 0 (x² = 49, x² = 7), une si a = 0, aucune si a < 0 ; ensemble des solutions écrit",
+		"shared": {
+			"blankDefaults": {
+				"answerKind": "intervalles"
+			}
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\{-7;7\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "7"
+				},
+				"description": "x² = 49 : S = {−7 ; 7}",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\{7;-7\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "7"
+				},
+				"description": "x² = 49 : ordre inversé {7 ; −7}",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\{7\\}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "7"
+				},
+				"description": "Erreur : la solution positive seule",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\{-\\sqrt{7};\\sqrt{7}\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "x² = 7 : S = {−√7 ; √7}",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\{\\sqrt{7}\\}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "Erreur : √7 seul",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\{\\frac{7}{2}\\}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "Erreur : 7/2 (division par 2)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\{0\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "5",
+					"t": "0"
+				},
+				"description": "x² = 0 : S = {0}",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\varnothing"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "5",
+					"t": "1"
+				},
+				"description": "x² = −5 : S = ∅",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\{-\\sqrt{5};\\sqrt{5}\\}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "5",
+					"t": "1"
+				},
+				"description": "Erreur : x² = −5, S = {−√5 ; √5}",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "70449b92-5917-4aa1-97db-2ae9774ce8e7",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"multiple_answers": null,
+		"theme": "Racines carrées",
+		"domain": "Problèmes",
+		"subdomain": "Aire et côté",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Un carré a une aire de ${{eval:n*n}}~\\unit{cm^2}$. Quelle est la longueur de son côté ?\n\nCôté : $?$ cm",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..15"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Côté et aire.** L'aire d'un carré de côté $c$ est $c^2$ : le côté est le nombre positif dont le carré vaut l'aire, $c = \\sqrt{\\text{aire}}$.",
+						"$$c = \\sqrt{{{eval:n*n}}} = \\textcolor{{{color:primary.0}}}{{{n}}}~\\unit{cm} \\quad \\text{car } {{n}}^2 = {{eval:n*n}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\sqrt{ {{a}} }"
+					}
+				],
+				"statement": "Un carré a une aire de ${{a}}~\\unit{cm^2}$. Quelle est la longueur de son côté (valeur exacte) ?\n\nCôté : $?$ cm",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "10..99"
+					}
+				],
+				"conditions": ["mod(a,4) != 0", "mod(a,9) != 0", "mod(a,25) != 0", "mod(a,49) != 0"],
+				"correction": {
+					"steps": [
+						"**Côté et aire.** L'aire d'un carré de côté $c$ est $c^2$ : le côté est le nombre positif dont le carré vaut l'aire, $c = \\sqrt{\\text{aire}}$.",
+						"${{a}}$ n'est pas un carré parfait : la valeur exacte du côté s'écrit avec une racine.",
+						"$$c = \\textcolor{{{color:primary.0}}}{\\sqrt{ {{a}} }}~\\unit{cm}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"precision": {
+							"type": "decimal",
+							"digits": 1
+						},
+						"expectedAnswer": "{{eval:round(10*sqrt(a))/10;d}}"
+					}
+				],
+				"statement": "Un carré a une aire de ${{a}}~\\unit{cm^2}$. Quelle est la longueur de son côté, arrondie au millimètre ?\n\nCôté : $?$ cm",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "10..99"
+					}
+				],
+				"conditions": ["floor(sqrt(a))^2 != a"],
+				"correction": {
+					"steps": [
+						"**Côté et aire.** L'aire d'un carré de côté $c$ est $c^2$ : le côté est le nombre positif dont le carré vaut l'aire, $c = \\sqrt{\\text{aire}}$.",
+						"$c = \\sqrt{ {{a}} }~\\unit{cm}$. À la calculatrice, $\\sqrt{ {{a}} } \\approx {{eval:floor(1000*sqrt(a))/1000;d}}$.",
+						"Au millimètre, c'est-à-dire au dixième de centimètre : $$c \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}~\\unit{cm}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:m*k}}"
+					}
+				],
+				"statement": "Un rectangle mesure ${{eval:m*k*k}}~\\unit{cm}$ sur ${{m}}~\\unit{cm}$. Un carré a la même aire que ce rectangle.\n\nQuelle est la longueur du côté du carré ?\n\nCôté : $?$ cm",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "2..6"
+					},
+					{
+						"name": "k",
+						"expression": "2..4"
+					}
+				],
+				"conditions": ["m*k*k<=50"],
+				"correction": {
+					"steps": [
+						"**Aire du rectangle.** ${{eval:m*k*k}} \\times {{m}} = {{eval:m*k*m*k}}~\\unit{cm^2}$ : c'est aussi l'aire du carré.",
+						"**Côté et aire.** L'aire d'un carré de côté $c$ est $c^2$ : le côté est le nombre positif dont le carré vaut l'aire, $c = \\sqrt{\\text{aire}}$.",
+						"$$c = \\sqrt{{{eval:m*k*m*k}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\unit{cm}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes avec la racine carrée",
+		"description": "Trouver le côté d'un carré connaissant son aire : 49 cm² → 7 cm ; 21 cm² → √21 cm ; 20 cm² → ≈ 4,5 cm ; carré de même aire qu'un rectangle 18 cm × 2 cm",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "7"
+				},
+				"description": "Aire 49 : côté 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["24,5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "7"
+				},
+				"description": "Erreur : aire ÷ 2 (24,5)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12,25"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "7"
+				},
+				"description": "Erreur : aire ÷ 4, comme un périmètre (12,25)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\sqrt{21}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "21"
+				},
+				"description": "Aire 21 : côté √21",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["10,5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "21"
+				},
+				"description": "Erreur : aire ÷ 2 (10,5)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4,6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "21"
+				},
+				"description": "Erreur : valeur approchée 4,6 (valeur exacte demandée)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4,5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20"
+				},
+				"description": "Aire 20 : ≈ 4,5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4,4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "20"
+				},
+				"description": "Erreur : 4,4 (troncature)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"m": "2"
+				},
+				"description": "Rectangle 18 × 2 : côté 6",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3",
+					"m": "2"
+				},
+				"description": "Erreur : demi-périmètre (20)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["36"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3",
+					"m": "2"
+				},
+				"description": "Erreur : l'aire (36)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "77ab770d-f591-4ad9-89e9-a03f6b413591",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Nombres premiers",
+		"subdomain": "Décomposition",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					},
+					{
+						"expectedAnswer": "{{b}}"
+					},
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Décompose ce nombre en produit de facteurs premiers.\n\n$${{eval:2^a*3^b*5^c}} = 2^{?} \\times 3^{?} \\times 5^{?}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "1..2"
+					}
+				],
+				"conditions": ["2^a*3^b*5^c<=1000"],
+				"correction": {
+					"steps": [
+						"**Facteurs premiers.** On divise par $2$ tant que c'est possible, puis par $3$, par $5$, $7$… : à la fin, il ne reste que des nombres premiers.",
+						"On divise ${{a}}$ fois par $2$ : ${{eval:2^a*3^b*5^c}} = 2^{{{a}}} \\times {{eval:3^b*5^c}}$ ; puis ${{b}}$ fois par $3$ : ${{eval:3^b*5^c}} = 3^{{{b}}} \\times {{eval:5^c}}$ ; il reste ${{eval:5^c}} = 5^{{{c}}}$.",
+						"$${{eval:2^a*3^b*5^c}} = \\textcolor{{{color:primary.0}}}{2^{{{a}}} \\times 3^{{{b}}} \\times 5^{{{c}}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					},
+					{
+						"expectedAnswer": "{{b}}"
+					},
+					{
+						"expectedAnswer": "{{p}}"
+					}
+				],
+				"statement": "Décompose ce nombre en produit de facteurs premiers.\n\n$${{eval:2^a*3^b*p}} = 2^{?} \\times 3^{?} \\times ?$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "p",
+						"expression": "7|11|13|17|19|23|29|31|37"
+					}
+				],
+				"conditions": ["2^a*3^b*p<=3000"],
+				"correction": {
+					"steps": [
+						"**Facteurs premiers.** On divise par $2$ tant que c'est possible, puis par $3$, par $5$, $7$… : à la fin, il ne reste que des nombres premiers.",
+						"On divise ${{a}}$ fois par $2$ : ${{eval:2^a*3^b*p}} = 2^{{{a}}} \\times {{eval:3^b*p}}$ ; puis ${{b}}$ fois par $3$ : ${{eval:3^b*p}} = 3^{{{b}}} \\times {{p}}$.",
+						"${{p}}$ n'est divisible par aucun nombre premier plus petit que lui : il est premier.",
+						"$${{eval:2^a*3^b*p}} = \\textcolor{{{color:primary.0}}}{2^{{{a}}} \\times 3^{{{b}}} \\times {{p}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quelle est la décomposition de ${{eval:2^a*3*q}}$ en produit de facteurs premiers ?\n\n```choix\n- $2^{{{a}}} \\times 3 \\times {{q}}$\n- $2^{{{a}}} \\times {{eval:3*q}}$\n- ${{eval:2^a}} \\times {{eval:3*q}}$\n- $2 \\times {{eval:2^a*3*q/2}}$\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..3"
+					},
+					{
+						"name": "q",
+						"expression": "5|7"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Facteurs premiers.** On divise par $2$ tant que c'est possible, puis par $3$, par $5$, $7$… : à la fin, il ne reste que des nombres premiers.",
+						"${{eval:3*q}} = 3 \\times {{q}}$ et ${{eval:2^a}} = 2^{{{a}}}$ ne sont pas premiers ; $2$, $3$ et ${{q}}$ le sont.",
+						"$${{eval:2^a*3*q}} = \\textcolor{{{color:primary.0}}}{2^{{{a}}} \\times 3 \\times {{q}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Décomposer en facteurs premiers",
+		"description": "Décomposer un entier en produit de facteurs premiers : 60 = 2² × 3 × 5 ; 306 = 2 × 3² × 17 ; reconnaître la décomposition parmi 4 × 15, 2 × 30, 2² × 15",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2", "1", "1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "1"
+				},
+				"description": "60 = 2² × 3 × 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3", "1", "1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "1"
+				},
+				"description": "Erreur : 2³ (60 ÷ 2 ÷ 2 ÷ 2 tenté)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1", "2", "17"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"p": "17"
+				},
+				"description": "306 = 2 × 3² × 17",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1", "1", "51"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"p": "17"
+				},
+				"description": "Erreur : 51 au lieu de 17 (3 oublié)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"q": "5"
+				},
+				"description": "60 : 2² × 3 × 5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"q": "5"
+				},
+				"description": "Erreur : 2² × 15",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"q": "5"
+				},
+				"description": "Erreur : 4 × 15",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "90dca27a-fc58-4821-9648-9cdc406b263f",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Simplification",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{eval:b/gcd(a,b)}}}{{{eval:a/gcd(a,b)}}}"
+					}
+				],
+				"statement": "Simplifie le plus possible.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!m(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:b*c}}/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:b*c}}}{{{eval:a*c}}} &= \\dfrac{{{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{eval:c*gcd(a,b)}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div  {{eval:c*gcd(a,b)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Simplifier une fraction",
+		"description": "La simplification peut se faire en plusieurs étapes",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"description": "36/54 → 2/3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{4}{6}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"description": "simplification partielle",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{9}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "1",
+					"c": "2"
+				},
+				"description": "borne : 2/18 → 1/9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{7}{8}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "9"
+				},
+				"description": "63/72 → 7/8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{2}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"description": "inverse faux",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "3e2f28ab-8ab7-469a-bb82-bfb19b4ed4f3"
+	},
+	{
+		"id": "93998734-cf93-4db1-b437-ef073f8611de",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 120,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Problèmes",
+		"subdomain": "Parts et restes",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{eval:(b*d*g-a*d*g-b*g-b*d)/gcd(b*d*g-a*d*g-b*g-b*d,b*d*g)}}}{{{eval:b*d*g/gcd(b*d*g-a*d*g-b*g-b*d,b*d*g)}}}"
+					}
+				],
+				"statement": "Dans un collège, $\\dfrac{{{a}}}{{{b}}}$ des élèves sont en sixième, $\\dfrac{1}{{{d}}}$ en cinquième et $\\dfrac{1}{{{g}}}$ en quatrième. Les autres sont en troisième.\n\nQuelle fraction des élèves est en troisième ?\n\n$?$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "3..5"
+					},
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "d",
+						"expression": "3..6"
+					},
+					{
+						"name": "g",
+						"expression": "4..8"
+					}
+				],
+				"conditions": ["gcd(a,b)==1", "b<d", "d<g", "b*d*g-a*d*g-b*g-b*d>0"],
+				"correction": {
+					"steps": [
+						"**Les élèves de troisième, c'est ce qui reste.** Tous les élèves représentent $1$ : on retire de $1$ la somme des trois fractions.",
+						"Somme des trois fractions, au dénominateur commun ${{eval:b*d*g}}$ : $\\dfrac{{{a}}}{{{b}}} + \\dfrac{1}{{{d}}} + \\dfrac{1}{{{g}}} = \\dfrac{{{eval:a*d*g+b*g+b*d}}}{{{eval:b*d*g}}}$.",
+						"$$1 - \\dfrac{{{eval:a*d*g+b*g+b*d}}}{{{eval:b*d*g}}} = \\dfrac{{{eval:b*d*g-a*d*g-b*g-b*d}}}{{{eval:b*d*g}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k*b*d}}"
+					}
+				],
+				"statement": "Inès dépense $\\dfrac{{{a}}}{{{b}}}$ de son argent de poche, puis $\\dfrac{{{c}}}{{{d}}}$ de ce qui lui reste. Il lui reste alors ${{eval:k*(b-a)*(d-c)}}~\\unit{€}$.\n\nCombien d'argent avait-elle au départ ?\n\n$?~\\unit{€}$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "2..5"
+					},
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "d",
+						"expression": "2..5"
+					},
+					{
+						"name": "c",
+						"expression": "1..4"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					}
+				],
+				"conditions": ["a<b", "c<d", "gcd(a,b)==1", "gcd(c,d)==1", "k*b*d<=200"],
+				"correction": {
+					"steps": [
+						"**Fraction qui reste.** Après la première dépense, il reste $1 - \\dfrac{{{a}}}{{{b}}} = \\dfrac{{{eval:b-a}}}{{{b}}}$ de l'argent. Elle dépense ensuite $\\dfrac{{{c}}}{{{d}}}$ **de ce reste** : il en reste $\\dfrac{{{eval:d-c}}}{{{d}}}$.",
+						"Il reste donc $\\dfrac{{{eval:d-c}}}{{{d}}} \\times \\dfrac{{{eval:b-a}}}{{{b}}} = \\dfrac{{{eval:(d-c)*(b-a)}}}{{{eval:b*d}}}$ de l'argent du départ, soit ${{eval:k*(b-a)*(d-c)}}~\\unit{€}$.",
+						"$${{eval:k*(b-a)*(d-c)}} \\div \\dfrac{{{eval:(d-c)*(b-a)}}}{{{eval:b*d}}} = {{eval:k*(b-a)*(d-c)}} \\times \\dfrac{{{eval:b*d}}}{{{eval:(d-c)*(b-a)}}} = \\textcolor{{{color:primary.0}}}{{{solution}}~\\unit{€}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k*b*d}}"
+					}
+				],
+				"statement": "Un réservoir est rempli aux $\\dfrac{{{a}}}{{{b}}}$. On y verse ${{eval:k*(c*b-a*d)}}~\\unit{L}$ : il est alors rempli aux $\\dfrac{{{c}}}{{{d}}}$.\n\nQuelle est la capacité du réservoir ?\n\n$?~\\unit{L}$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "d",
+						"expression": "2..6"
+					},
+					{
+						"name": "c",
+						"expression": "1..5"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					}
+				],
+				"conditions": ["a<b", "c<d", "gcd(a,b)==1", "gcd(c,d)==1", "c*b>a*d", "b!=d", "k*b*d<=180"],
+				"correction": {
+					"steps": [
+						"**Fraction versée.** Le réservoir passe de $\\dfrac{{{a}}}{{{b}}}$ à $\\dfrac{{{c}}}{{{d}}}$ : on a versé $\\dfrac{{{c}}}{{{d}}} - \\dfrac{{{a}}}{{{b}}} = \\dfrac{{{eval:c*b-a*d}}}{{{eval:b*d}}}$ de sa capacité.",
+						"Ces $\\dfrac{{{eval:c*b-a*d}}}{{{eval:b*d}}}$ de la capacité font ${{eval:k*(c*b-a*d)}}~\\unit{L}$.",
+						"$${{eval:k*(c*b-a*d)}} \\div \\dfrac{{{eval:c*b-a*d}}}{{{eval:b*d}}} = {{eval:k*(c*b-a*d)}} \\times \\dfrac{{{eval:b*d}}}{{{eval:c*b-a*d}}} = \\textcolor{{{color:primary.0}}}{{{solution}}~\\unit{L}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes avec des fractions",
+		"description": "Résoudre un problème à plusieurs étapes avec des fractions : la part qui reste (1 − somme), une fraction du reste, un réservoir qui passe de 1/3 à 3/4",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{1}{4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "3",
+					"d": "4",
+					"g": "6"
+				},
+				"description": "1 − (1/3 + 1/4 + 1/6) = 1/4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "3",
+					"d": "4",
+					"g": "6"
+				},
+				"description": "Erreur : la somme 3/4 au lieu du reste",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{10}{13}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "3",
+					"d": "4",
+					"g": "6"
+				},
+				"description": "Erreur : numérateurs et dénominateurs ajoutés (1 − 3/13)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "3",
+					"c": "1",
+					"d": "4",
+					"k": "2"
+				},
+				"description": "Départ 24 € (il reste 2/3 × 3/4 = 1/2, soit 12 €)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["28,8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "3",
+					"c": "1",
+					"d": "4",
+					"k": "2"
+				},
+				"description": "Erreur : 1/4 de la somme de départ (1 − 1/3 − 1/4 = 5/12 → 28,8)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "3",
+					"c": "1",
+					"d": "4",
+					"k": "2"
+				},
+				"description": "Erreur : le reste lui-même (12)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "3",
+					"c": "3",
+					"d": "4",
+					"k": "2"
+				},
+				"description": "Capacité 24 L (3/4 − 1/3 = 5/12, soit 10 L)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{40}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "3",
+					"c": "3",
+					"d": "4",
+					"k": "2"
+				},
+				"description": "Erreur : 10 ÷ 3/4",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{25}{6}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "3",
+					"c": "3",
+					"d": "4",
+					"k": "2"
+				},
+				"description": "Erreur : 10 × 5/12",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "acbd2280-4fc8-4842-8474-8693975e6019",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Simplification",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{eval:a*c/gcd(a*c,b*d)}}}{{{eval:b*d/gcd(a*c,b*d)}}}"
+					}
+				],
+				"statement": "Simplifie le plus possible cette fraction.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "10|100|1000"
+					},
+					{
+						"name": "b",
+						"expression": "10|100|1000"
+					},
+					{
+						"name": "c",
+						"expression": "1..9!cd(b)"
+					},
+					{
+						"name": "d",
+						"expression": "2..9!cd(a),cd(c)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*c}}/{{eval:b*d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:a*c}}}{{{eval:b*d}}} &= \\dfrac{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{eval:min(a,b)}}}}{{{eval:b*d}} \\textcolor{{{color:primary.0}}}{\\div {{eval:min(a,b)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Simplifier une fraction",
+		"description": "Simplifier par $10$, $100$ ou $1000$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{900}{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1000",
+					"b": "10",
+					"c": "9",
+					"d": "7"
+				},
+				"description": "9000/70 → 900/7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "10",
+					"c": "1",
+					"d": "3"
+				},
+				"description": "borne : 10/30 → 1/3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{700}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "1000",
+					"c": "3",
+					"d": "7"
+				},
+				"description": "30/7000 → 3/700",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{90}{70}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "10",
+					"b": "10",
+					"c": "9",
+					"d": "7"
+				},
+				"description": "90/70 non simplifiée : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1.29"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "10",
+					"b": "10",
+					"c": "9",
+					"d": "7"
+				},
+				"description": "décimal approché refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{7}{9}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "10",
+					"b": "10",
+					"c": "9",
+					"d": "7"
+				},
+				"description": "fraction inversée",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "3e2f28ab-8ab7-469a-bb82-bfb19b4ed4f3"
+	}
+]

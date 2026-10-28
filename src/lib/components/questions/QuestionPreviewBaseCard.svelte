@@ -31,12 +31,6 @@
 -->
 
 <script lang="ts">
-	import {
-		choiceLetter,
-		correctOriginalChoiceIndexes,
-		isDisplayedChoiceCorrect,
-		toDisplayedChoicePosition
-	} from '$lib/questions/choices';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import { getQuestionType, QUESTION_TYPE_LABELS } from '$lib/questions/types';
 	import { Badge } from '$lib/components/ui/badge';
@@ -44,7 +38,6 @@
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { monnaieChoiceSize } from '$lib/ubumark/utils/monnaie-choix';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
@@ -54,7 +47,6 @@
 		BookOpen,
 		Hash,
 		CheckCircle,
-		List,
 		Info,
 		FileText
 	} from '@lucide/svelte';
@@ -78,7 +70,6 @@
 		showVariables?: boolean; // Show variables section (default: true)
 		showAnswer?: boolean; // Show answer section (default: true)
 		showCorrection?: boolean; // Show correction if present (default: true)
-		showChoices?: boolean; // Show choices if QCM (default: true)
 		showTechnicalInfo?: boolean; // Show technical info (default: true)
 
 		// Sections collapsed state
@@ -105,7 +96,6 @@
 		showVariables = true,
 		showAnswer = true,
 		showCorrection = true,
-		showChoices = true,
 		showTechnicalInfo = true,
 		metadataCollapsed = false,
 		variablesCollapsed = true,
@@ -173,21 +163,8 @@
 	);
 	const variableCount = $derived(instance.resolvedVariables?.length || 0);
 
-	// Choices (QCM)
-	const hasChoices = $derived(
-		getQuestionType(instance) === 'multiple_choice' &&
-			instance.shuffledChoices &&
-			instance.shuffledChoices.length > 0 &&
-			showChoices
-	);
-
-	// Réponse attendue d'un QCM : lettres des bons choix à leur position AFFICHÉE
-	// (les choix sont mélangés ; l'indice d'origine ne désigne rien à l'écran)
-	const answerArray = $derived(
-		correctOriginalChoiceIndexes(instance)
-			.map((index) => choiceLetter(toDisplayedChoicePosition(instance, index)))
-			.sort()
-	);
+	// Réponse attendue : celle de chaque case (case choix : indices d'origine « 0;2 »)
+	const answerArray = $derived((instance.blanks ?? []).map((blank) => blank.expectedAnswer));
 
 	// ============================================================================
 	// EVENT HANDLERS
@@ -402,7 +379,7 @@
 		{/if}
 
 		<!-- ========== ANSWER SECTION ========== -->
-		{#if showAnswer}
+		{#if showAnswer && answerArray.length > 0}
 			<div class="space-y-2">
 				<div class="flex items-center gap-2">
 					<CheckCircle class="h-4 w-4 text-green-600" />
@@ -421,46 +398,6 @@
 					{:else}
 						<MarkdownRenderer content={`$$${String(answerArray[0])}$$`} />
 					{/if}
-				</div>
-			</div>
-		{/if}
-
-		<!-- ========== CHOICES SECTION (QCM) ========== -->
-		{#if hasChoices}
-			{@const monnaieSize = monnaieChoiceSize(
-				(instance.shuffledChoices || []).map((c) => c.content)
-			)}
-			<div class="space-y-2">
-				<div class="flex items-center gap-2">
-					<List class="h-4 w-4 text-muted-foreground" />
-					<span class="text-sm font-semibold">Choix (mélangés)</span>
-				</div>
-				<div class="space-y-2">
-					{#each instance.shuffledChoices || [] as choice, i (i)}
-						{@const isCorrect = isDisplayedChoiceCorrect(instance, i)}
-						<div
-							class={cn(
-								'flex items-center gap-3 rounded border p-3',
-								isCorrect
-									? 'border-green-500 bg-green-50 dark:bg-green-950/20'
-									: 'border-border bg-card'
-							)}
-						>
-							<Badge variant={isCorrect ? 'default' : 'outline'}>
-								{String.fromCharCode(65 + i)}
-							</Badge>
-							<!-- Horloge ou collection d'un choix : 3 cm ; monnaie : 10 cm, tous les choix à la même échelle, comme chez l'élève -->
-							<div
-								class="@container flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]"
-								style:--monnaie-taille={monnaieSize}
-							>
-								<MarkdownRenderer content={choice.content} {genericFunctions} />
-							</div>
-							{#if isCorrect}
-								<CheckCircle class="h-5 w-5 flex-shrink-0 text-green-600" />
-							{/if}
-						</div>
-					{/each}
 				</div>
 			</div>
 		{/if}

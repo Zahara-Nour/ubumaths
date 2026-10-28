@@ -9,23 +9,9 @@
 	"level": 8,
 	"delay": 30,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "Oui, elle est géométrique."
-			},
-			{
-				"content": "Non, elle n'est pas géométrique."
-			}
-		],
-		"cleanCoefficients": true
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{eval:a*n+b}}$$\n\nCette suite est-elle géométrique ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{eval:a*n+b}}$$\n\nCette suite est-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle est géométrique.\n- Non, elle n'est pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -46,10 +32,14 @@
 					"Si la suite était géométrique de raison $q$, on aurait $u_1=q\\,u_0$ et $u_2=q\\,u_1$, donc $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:(a+b)^2}}$ et $u_0\\times u_2={{eval:b*(2*a+b)}}$ : la suite n'est **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{b}}-{{a}}n$$\n\nCette suite est-elle géométrique ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{b}}-{{a}}n$$\n\nCette suite est-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle est géométrique.\n- Non, elle n'est pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -70,10 +60,14 @@
 					"Si la suite était géométrique de raison $q$, on aurait $u_1=q\\,u_0$ et $u_2=q\\,u_1$, donc $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:(b-a)^2}}$ et $u_0\\times u_2={{eval:b*(b-2*a)}}$ : la suite n'est **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle géométrique ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle est géométrique.\n- Non, elle n'est pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -90,10 +84,14 @@
 					"On passe d'un terme au suivant en multipliant toujours par ${{q}}$ : la suite est **géométrique**, de raison $q={{q}}$ et de premier terme $u_0={{a}}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle géométrique ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle est géométrique.\n- Non, elle n'est pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -110,10 +108,14 @@
 					"On passe d'un terme au suivant en multipliant toujours par ${{q}}$ : la suite est **géométrique**, de raison $q={{q}}$ et de premier terme $u_0={{a}}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n=n^2+{{c}}$$\n\nCette suite est-elle géométrique ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n=n^2+{{c}}$$\n\nCette suite est-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle est géométrique.\n- Non, elle n'est pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -138,10 +140,14 @@
 					"La suite n'est **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{k}}^n+{{c}}$$\n\nCette suite est-elle géométrique ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{k}}^n+{{c}}$$\n\nCette suite est-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle est géométrique.\n- Non, elle n'est pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -174,9 +180,16 @@
 					"Attention : à cause du « $+{{c}}$ », ce n'est pas la forme $u_0\\times q^n$. La suite n'est **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"testSpecs": [
 		{
 			"expected": {
@@ -188,7 +201,7 @@
 			},
 			"description": "v0 : « non » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -200,7 +213,7 @@
 			},
 			"description": "v0 : « oui » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -212,7 +225,7 @@
 			},
 			"description": "v1 : « non » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -224,7 +237,7 @@
 			},
 			"description": "v1 : « oui » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -236,7 +249,7 @@
 			},
 			"description": "v2 : « oui » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -248,7 +261,7 @@
 			},
 			"description": "v2 : « non » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -260,7 +273,7 @@
 			},
 			"description": "v3 : « oui » accepté",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -272,7 +285,7 @@
 			},
 			"description": "v3 : « non » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -286,7 +299,7 @@
 			},
 			"description": "v4 : « non » accepté",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -300,7 +313,7 @@
 			},
 			"description": "v4 : « oui » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -315,7 +328,7 @@
 			},
 			"description": "v5 : « non » accepté",
 			"variationIndex": 5,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -330,7 +343,7 @@
 			},
 			"description": "v5 : « oui » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
 	]
 }

@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; bloc ranger le 2026-10-28.
 
 ## À quoi ça sert
 
@@ -34,8 +34,9 @@ articles. C'est du Markdown augmenté de :
 Une même source donne **deux sorties** : l'écran (composants Svelte) et le PDF (Typst, compilé dans
 le navigateur — [ADR 0004](../adr/0004-pdf-typst-et-jspdf.md)).
 
-Hors périmètre : les **QCM** (choix, mélange) ne sont pas de la notation ubumark — ils vivent dans
-`src/lib/questions/` (le texte de chaque choix, lui, est rendu en ubumark).
+Le QCM est une **case choix** (bloc ` ```choix `, `parser/choix-parser.ts`) : sa lecture est de
+l'ubumark, sa notation (bonne réponse, mélange) vit dans `src/lib/questions/` (`choice-case.ts`).
+Le type `multiple_choice` (choix hors de l'énoncé) n'existe plus ([ADR 0033](../adr/0033-le-qcm-est-une-case.md)).
 
 ## Carte du code
 
@@ -183,21 +184,22 @@ Un bloc spécial est une fence dont le langage est un mot réservé. Ouverture *
 oui, ` ```linear ` non : bloc de code ordinaire). Ils sont reconnus au premier niveau **et**
 en retrait sous un item de liste.
 
-| Fence                                                                                                                     | Nœud (`type`)               | Parseur (`src/lib/ubumark/parser/`) | Rendu écran              | Générateur PDF                   |
-| ------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------------------- | ------------------------ | -------------------------------- |
-| `variation`                                                                                                               | `variation-table`           | `variation-table-parser.ts`         | `VariationTable.svelte`  | `variation-table-typst.ts`       |
-| `probtree`                                                                                                                | `probability-tree`          | `probability-tree-parser.ts`        | `ProbabilityTree.svelte` | `probability-tree-typst.ts`      |
-| `trig`                                                                                                                    | `trig-circle`               | `trig-circle-parser.ts`             | `TrigCircle.svelte`      | `trig-circle-typst.ts`           |
-| `line`                                                                                                                    | `number-line`               | `number-line-parser.ts`             | `NumberLine.svelte`      | `number-line-typst.ts`           |
-| `courbe`                                                                                                                  | `courbe`                    | `courbe-parser.ts`                  | `Courbe.svelte`          | `courbe-typst.ts`                |
-| `figure`, `figure-a-completer`, `figure-de-travail`                                                                       | `figure`                    | `figure-parser.ts`                  | `FigureBlock.svelte`     | `figure-typst.ts` (via registre) |
-| `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`              | `StatChart.svelte`       | `stat-chart-typst.ts`            |
-| `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                      | `QrBlock.svelte`         | `qr-typst.ts`                    |
-| `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                 | `Horloge.svelte`         | `horloge-typst.ts`               |
-| `operation`                                                                                                               | `operation`                 | `operation-parser.ts`               | `Operation.svelte`       | `operation-typst.ts`             |
-| `collection`                                                                                                              | `collection`                | `collection-parser.ts`              | `Collection.svelte`      | `collection-typst.ts`            |
-| `monnaie`                                                                                                                 | `monnaie`                   | `monnaie-parser.ts`                 | `Monnaie.svelte`         | `monnaie-typst.ts`               |
-| `choix` (clôture ```` si un choix contient un bloc)                                                                       | `choice`                    | `choix-parser.ts`                   | `ChoiceBlock.svelte`     | `typst-generator.ts` (« A) … »)  |
+| Fence                                                                                                                     | Nœud (`type`)               | Parseur (`src/lib/ubumark/parser/`) | Rendu écran              | Générateur PDF                               |
+| ------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------------------- | ------------------------ | -------------------------------------------- |
+| `variation`                                                                                                               | `variation-table`           | `variation-table-parser.ts`         | `VariationTable.svelte`  | `variation-table-typst.ts`                   |
+| `probtree`                                                                                                                | `probability-tree`          | `probability-tree-parser.ts`        | `ProbabilityTree.svelte` | `probability-tree-typst.ts`                  |
+| `trig`                                                                                                                    | `trig-circle`               | `trig-circle-parser.ts`             | `TrigCircle.svelte`      | `trig-circle-typst.ts`                       |
+| `line`                                                                                                                    | `number-line`               | `number-line-parser.ts`             | `NumberLine.svelte`      | `number-line-typst.ts`                       |
+| `courbe`                                                                                                                  | `courbe`                    | `courbe-parser.ts`                  | `Courbe.svelte`          | `courbe-typst.ts`                            |
+| `figure`, `figure-a-completer`, `figure-de-travail`                                                                       | `figure`                    | `figure-parser.ts`                  | `FigureBlock.svelte`     | `figure-typst.ts` (via registre)             |
+| `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`              | `StatChart.svelte`       | `stat-chart-typst.ts`                        |
+| `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                      | `QrBlock.svelte`         | `qr-typst.ts`                                |
+| `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                 | `Horloge.svelte`         | `horloge-typst.ts`                           |
+| `operation`                                                                                                               | `operation`                 | `operation-parser.ts`               | `Operation.svelte`       | `operation-typst.ts`                         |
+| `collection`                                                                                                              | `collection`                | `collection-parser.ts`              | `Collection.svelte`      | `collection-typst.ts`                        |
+| `monnaie`                                                                                                                 | `monnaie`                   | `monnaie-parser.ts`                 | `Monnaie.svelte`         | `monnaie-typst.ts`                           |
+| `choix` (clôture ```` si un choix contient un bloc)                                                                       | `choice`                    | `choix-parser.ts`                   | `ChoiceBlock.svelte`     | `typst-generator.ts` (« A) … »)              |
+| `ranger`                                                                                                                  | `ranger`                    | `ranger-parser.ts`                  | `RangerPlacer.svelte`    | `typst-generator.ts` (`generateRangerTypst`) |
 
 Bloc ```choix (case « choix » d'une question, [questions.md](questions.md)) : réglages en tête
 (`plusieurs:`, `melanger:`, `case:` posée par le générateur), un choix par ligne `- …`, suite en
@@ -207,6 +209,21 @@ son texte (`source`) : l'éditeur riche le rend en bloc de code `choix`, et l'ex
 plus longue que toute clôture intérieure (```` si un choix contient un bloc). Réécriture d'un bloc
 de modèle : `serializeTemplateChoiceBlock` ; `rewritable: false` quand une ligne ou un réglage est
 illisible (la réécriture le perdrait).
+
+Bloc ``ranger (étiquettes à ranger, [questions.md](questions.md)) — `__tests__/ranger/ranger-parser.test.ts`,
+`RangerPlacer.svelte.test.ts` : `signe: <` (défaut) ou `>`, `case:` posée par le générateur, une
+étiquette par ligne `- …` (ubumark sur une ligne, formules non extraites, `blockLineRanges`) ; 2 à 8,
+deux à deux différentes ; erreurs en phrases (`errors: string[]`). Clôture `` obligatoire (sinon
+jusqu'à la fin du texte, comme ```choix). Ordre vu par l'élève : `displayedLabels` — dans une question
+le bloc est déjà mélangé ; hors question (cours, aide, PDF d'un cours) mélange fixe (graine tirée du
+texte des étiquettes : un motif par bloc), même rendu au serveur, au navigateur et sur papier. Écran `RangerPlacer.svelte` : les
+étiquettes en haut (une posée garde sa place, vide), les places en dessous séparées du signe ; glisser
+(`touch-action: none` sur les étiquettes) ou toucher l'étiquette puis la place ; place prise :
+échange, venue d'en haut l'autre remonte ; toucher une étiquette posée la renvoie en haut ; clavier
+Tab, Entrée, flèches, Échap ; noms « Étiquette 2 sur 3 », « Place 1 sur 3, vide », jamais l'ordre
+juste. Corrigé : places fausses marquées, rangement juste dessous (`expected`). PDF : étiquettes
+encadrées puis places en pointillés (grilles centrées en hauteur, signe en mode math). Éditeur riche :
+bloc de code `ranger`.
 
 La liste des genres statistiques est `STAT_CHART_KINDS` (`src/lib/ubumark/types/stat-chart.ts`).
 
@@ -428,7 +445,7 @@ chiffres: quarts
 intérieure 13 à 24), `taille:` (2 à 8 cm ; 4 cm par défaut). La petite aiguille avance avec les
 minutes ; 13 h se dessine comme 1 h. Scène partagée `utils/horloge-scene.ts` ; au PDF, Typst
 natif (ni paquet ni image). Nom accessible « Horloge à aiguilles », **jamais l'heure** (la réponse).
-Dans un choix de QCM : 3 cm (`--horloge-taille` posé par `MultipleChoiceInput` et les aperçus ;
+Dans un choix d'une case choix : 3 cm (`--horloge-taille` posé par `MultipleChoiceInput` et `ChoiceList` ;
 série figée : `withChoiceClockSize` ajoute `taille: 3cm`, lettre seule sur sa ligne).
 
 **Horloge à placer** (chantier [reponses-a-placer](../wip/reponses-a-placer-progress.md) § 13, 14 ;
@@ -560,7 +577,7 @@ jetons ; défaut `barres`), `unités en: vrac | rangées` (rangées de 5 + 5 ; d
 `légendes:` (une par collection, 40 caractères ; A, B, C d'office s'il y en a plusieurs), `taille:`
 (2 à 12 cm, largeur d'une collection **pleine largeur** : une plus étroite garde la même échelle,
 objets de même taille d'une collection à l'autre ; 8 cm à l'écran comme au PDF, 3 cm dans un choix
-de QCM). `centaines:` est réservée (« pas encore disponible »). Groupes de dix en haut, objets
+d'une case choix). `centaines:` est réservée (« pas encore disponible »). Groupes de dix en haut, objets
 isolés dessous ; groupement partiel (3 dizaines et 15 unités) accepté. Le vrac est tiré d'une graine
 faite du contenu du bloc et du rang de la collection : même bloc → même dessin, à l'écran comme au
 PDF ; deux objets restent à 1,5 objet l'un de l'autre au moins. Chaque objet de la scène
@@ -570,8 +587,8 @@ décalage et toucher viennent de `utils/scene-commune.ts`, partagé avec la monn
 **toucher pour marquer** : un objet touché est barré (aide de comptage, non jugée, rien
 d'enregistré, effacée à la collection suivante ; « Effacer les marques ») — classe `SceneMarks`
 de `nodes/scene-marks.svelte.ts`, commune aux deux blocs. Nom accessible
-« Collection d'objets », **jamais le nombre**. PDF en Typst natif, noir sur blanc. Dans un choix de
-QCM : `--collection-taille: 3cm` (comme l'horloge) ; série figée : `withChoiceCollectionSize`.
+« Collection d'objets », **jamais le nombre**. PDF en Typst natif, noir sur blanc. Dans un choix d'une
+case choix : `--collection-taille: 3cm` (comme l'horloge) ; série figée : `withChoiceCollectionSize`.
 
 **Collection à construire** (chantier [construire](../wip/construire-progress.md), CP-002) —
 `src/lib/ubumark/__tests__/collection/collection-construire.test.ts`,
@@ -617,8 +634,8 @@ plus la valeur est grande, plus la coupure est grande ; valeur écrite au centre
 dans deux coins d'un billet ; la pièce de 2 € a un anneau. Billets en haut, pièces dessous ; scène
 `utils/monnaie-scene.ts` (hasard, vrac et toucher de `scene-commune.ts`, graine = ce qui se dessine),
 marquage au doigt `SceneMarks`. Dessin en `overflow: visible`, comme la collection : sinon Chrome rogne au pixel le bord droit du cadre. Nom accessible « Pièces et billets » : les valeurs sont écrites
-(l'enfant les lit), **jamais le total**. PDF en Typst natif, gris cernés de noir ; une légende a une colonne d'au moins 3 cm (si la rangée la tient), centrée, non justifiée. Dans un choix de
-QCM : **10 cm**, pas 3 (à 3 cm les valeurs ne se lisent plus ; à 6 cm, un petit porte-monnaie restait illisible, décision du 2026-10-26) ; **tous les choix d'un QCM à la même échelle** : si la colonne est plus étroite que le plus large, ils sont réduits ensemble (`monnaieChoiceSize`, `utils/monnaie-choix.ts` : `--monnaie-taille: min(10cm, 100cqw / r)`, la colonne du choix en `container-type: inline-size`) ; un bloc à `taille:` donnée par l'auteur garde sa taille et n'entre pas dans ce calcul (l'auteur décide) ; au corrigé, l'étiquette d'un choix dessiné (« bonne réponse »… ; horloge et collection comprises) passe sous le dessin, pour lui laisser la même largeur ; série
+(l'enfant les lit), **jamais le total**. PDF en Typst natif, gris cernés de noir ; une légende a une colonne d'au moins 3 cm (si la rangée la tient), centrée, non justifiée. Dans un choix d'une
+case choix : **10 cm**, pas 3 (à 3 cm les valeurs ne se lisent plus ; à 6 cm, un petit porte-monnaie restait illisible, décision du 2026-10-26) ; **tous les choix d'une case choix à la même échelle** : si la colonne est plus étroite que le plus large, ils sont réduits ensemble (`monnaieChoiceSize`, `utils/monnaie-choix.ts` : `--monnaie-taille: min(10cm, 100cqw / r)`, la colonne du choix en `container-type: inline-size`) ; un bloc à `taille:` donnée par l'auteur garde sa taille et n'entre pas dans ce calcul (l'auteur décide) ; au corrigé, l'étiquette d'un choix dessiné (« bonne réponse »… ; horloge et collection comprises) passe sous le dessin, pour lui laisser la même largeur ; série
 figée : `withChoiceMonnaieSize` (10 cm ; au PDF, la page les tient).
 
 **Monnaie à construire** (chantier [construire](../wip/construire-progress.md) § 6, CP-044, CP-071,

@@ -259,17 +259,6 @@ describe('bloc ```operation : validation du modèle', () => {
 });
 
 describe('bloc ```operation : revue #1726', () => {
-	it('QCM avec un bloc : aucune case créée, génération inchangée', () => {
-		const t = template({
-			statement: `$3 + ? = 5$\n\n${op('calcul: 45 + 37')}`,
-			choices: [{ content: templateMarkdown('2') }, { content: templateMarkdown('3') }],
-			correctChoiceIndex: ['0']
-		} as never);
-		const instance = generate(t);
-		expect(instance.blanks ?? []).toEqual([]);
-		expect(String(instance.statement)).not.toContain('case:');
-	});
-
 	it('carte de cours avec un bloc : aucune case', () => {
 		const t = {
 			...template({ statement: op('calcul: 45 + 37'), correction: { steps: ['82'] } } as never),

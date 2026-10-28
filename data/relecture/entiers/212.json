@@ -6,27 +6,9 @@
 	"template": {
 		"title": "Utiliser un critère de divisibilité",
 		"description": "Par $5$",
-		"shared": {
-			"statement": "Le nombre ${{eval:a}}$ est-il divisible par $5$ ?",
-			"correctChoiceIndex": ["{{if:mod(a,5)=0|0|1}}"],
-			"correction": {
-				"steps": [
-					"{{if:mod({{a}}, 5)=0|{{solution:html}}, ${{eval:a}}$ est divisible par $5$ car il se termine par $0$ ou $5$.|{{solution:html}}, ${{eval:a}}$ n'est **pas** divisible par $5$ car il ne se termine pas par $0$ ou $5$.}}"
-				]
-			},
-			"choices": [
-				{
-					"content": "Oui"
-				},
-				{
-					"content": "Non"
-				}
-			]
-		},
 		"variations": [
 			{
-				"statement": "Le nombre ${{eval:a}}$ est-il divisible par $5$ ?",
-				"correctChoiceIndex": ["{{if:mod(a,5)=0|0|1}}"],
+				"statement": "Le nombre ${{eval:a}}$ est-il divisible par $5$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "a1",
@@ -36,11 +18,15 @@
 						"name": "a",
 						"expression": "eval:5*a1"
 					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:mod(a,5)=0|0|1}}"
+					}
 				]
 			},
 			{
-				"statement": "Le nombre ${{eval:a}}$ est-il divisible par $5$ ?",
-				"correctChoiceIndex": ["{{if:mod(a,5)=0|0|1}}"],
+				"statement": "Le nombre ${{eval:a}}$ est-il divisible par $5$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "a1",
@@ -54,19 +40,30 @@
 						"name": "a",
 						"expression": "eval:5*a1+a2"
 					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:mod(a,5)=0|0|1}}"
+					}
 				]
 			}
 		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"theme": "Entiers",
 		"domain": "Diviser",
 		"subdomain": "Divisibilité",
 		"level": 4,
 		"status": "draft",
 		"delay": 10,
+		"shared": {
+			"correction": {
+				"steps": [
+					"{{if:mod({{a}}, 5)=0|{{solution:html}}, ${{eval:a}}$ est divisible par $5$ car il se termine par $0$ ou $5$.|{{solution:html}}, ${{eval:a}}$ n'est **pas** divisible par $5$ car il ne se termine pas par $0$ ou $5$.}}"
+				]
+			}
+		},
 		"testSpecs": [
 			{
 				"description": "2810 : Oui",
@@ -74,10 +71,12 @@
 				"variables": {
 					"a1": "562"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "2810 : Non refusé",
@@ -85,10 +84,12 @@
 				"variables": {
 					"a1": "562"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "281244 : Non",
@@ -97,10 +98,12 @@
 					"a1": "56248",
 					"a2": "4"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			}
 		]
 	}

@@ -47,25 +47,6 @@ describe('generateInstanceWithFixedVariables', () => {
 		expect(result.instance.blanks?.[0]?.expectedAnswer).toBe('10');
 	});
 
-	it('should generate a QCM instance with fixed variables', () => {
-		const template = makeTemplate({
-			statement: templateMarkdown('$2 \\times 3$ vaut ?'),
-			correctChoiceIndex: '1',
-			choices: [
-				{ content: templateMarkdown('5'), isCorrect: false },
-				{ content: templateMarkdown('6'), isCorrect: true },
-				{ content: templateMarkdown('7'), isCorrect: false }
-			]
-		});
-
-		const result = generateInstanceWithFixedVariables(template, {});
-		expect(result.success).toBe(true);
-		if (!result.success) return;
-
-		expect(result.instance.choices).toBeDefined();
-		expect(result.instance.choices![1].isCorrect).toBe(true);
-	});
-
 	it('should return error for out-of-range variation index', () => {
 		const template = makeTemplate({
 			statement: templateMarkdown('Test'),

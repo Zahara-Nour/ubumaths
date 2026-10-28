@@ -9,22 +9,9 @@
 	"level": 5,
 	"delay": 40,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "Oui, elle est géométrique."
-			},
-			{
-				"content": "Non, elle n'est pas géométrique."
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital **initial**. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle géométrique ?",
+			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital **initial**. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle est géométrique.\n- Non, elle n'est pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -46,10 +33,14 @@
 					"La suite n'est **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts, égaux à ${{t}}\\,\\%$ du capital **de l'année**, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle géométrique ?",
+			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts, égaux à ${{t}}\\,\\%$ du capital **de l'année**, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle est géométrique.\n- Non, elle n'est pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -70,10 +61,14 @@
 					"On multiplie toujours par le même nombre : la suite est **géométrique** de raison ${{eval:1+t/100;d}}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On place ${{C}}~\\unit{€}$ sur un compte : chaque année, le capital augmente de ${{t}}\\,\\%$, puis la banque prélève ${{f}}~\\unit{€}$ de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle géométrique ?",
+			"statement": "On place ${{C}}~\\unit{€}$ sur un compte : chaque année, le capital augmente de ${{t}}\\,\\%$, puis la banque prélève ${{f}}~\\unit{€}$ de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle est géométrique.\n- Non, elle n'est pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -108,7 +103,11 @@
 					"Si elle était géométrique, on aurait $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}$, c'est-à-dire $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:a^2}}$ et $u_0\\times u_2={{eval:C*b}}$, donc $u_1^2\\neq u_0\\times u_2$ : la suite n'est **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -123,7 +122,7 @@
 			},
 			"description": "v0 : « non » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -136,7 +135,7 @@
 			},
 			"description": "v0 : « oui » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -149,7 +148,7 @@
 			},
 			"description": "v1 : « oui » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -162,7 +161,7 @@
 			},
 			"description": "v1 : « non » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -178,7 +177,7 @@
 			},
 			"description": "v2 : « non » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -194,7 +193,7 @@
 			},
 			"description": "v2 : « oui » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
 	]
 }

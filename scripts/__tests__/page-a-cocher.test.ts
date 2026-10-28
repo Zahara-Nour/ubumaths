@@ -216,7 +216,7 @@ describe('exemplesDuModele', () => {
 		expect(e.statement).not.toContain('{{blank');
 	});
 
-	it('QCM : les choix et le bon, aucune réponse de case', () => {
+	it('case choix : les choix et le bon, aucune réponse de case', () => {
 		const { exemples } = exemplesDuModele(modele('03-qui-a-le-plus.json'));
 		for (const e of exemples) {
 			expect(e.choices?.filter((c) => c.bon)).toHaveLength(1);

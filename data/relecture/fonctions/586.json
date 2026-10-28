@@ -5,20 +5,9 @@
 	"editNotes": "Correction : « {{expression}} » affichait f(x)={7/9}x+… en texte brut → « La fonction $f$ ». Dollar orphelin ($-{{c}}$$) de la variation 8 retiré (coquille d'origine). Espace avant « ? ».",
 	"template": {
 		"title": "Déterminer le sens de variation d'une fonction affine",
-		"shared": {
-			"choices": [
-				{
-					"content": "croissante"
-				},
-				{
-					"content": "décroissante"
-				}
-			]
-		},
 		"variations": [
 			{
-				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -37,17 +26,23 @@
 						"expression": "b*(c)"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "f(x)={{a}}x{{eval:d;+}}"
 					}
 				],
 				"correction": {
-					"steps": ["La fonction $f$ est {{solution:html}} car ${{a}}$ est positif."]
-				}
+					"steps": [
+						"La fonction $f$ est {{solution:html}} car ${{a}}$ est positif."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -66,17 +61,23 @@
 						"expression": "b*(c)"
 					},
 					{
-						"name": "expression2",
+						"name": "expr2",
 						"expression": "f(x)=-{{a}}x{{eval:d;+}}"
 					}
 				],
 				"correction": {
-					"steps": ["La fonction $f$ est {{solution:html}} car $-{{a}}$ est négatif."]
-				}
+					"steps": [
+						"La fonction $f$ est {{solution:html}} car $-{{a}}$ est négatif."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expression3}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr3}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -95,17 +96,23 @@
 						"expression": "b*(c)"
 					},
 					{
-						"name": "expression3",
+						"name": "expr3",
 						"expression": "f(x)={{eval:d}}+{{a}}x"
 					}
 				],
 				"correction": {
-					"steps": ["La fonction $f$ est {{solution:html}} car ${{a}}$ est positif."]
-				}
+					"steps": [
+						"La fonction $f$ est {{solution:html}} car ${{a}}$ est positif."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expression4}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr4}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -124,17 +131,23 @@
 						"expression": "b*(c)"
 					},
 					{
-						"name": "expression4",
+						"name": "expr4",
 						"expression": "f(x)={{eval:d}}-{{a}}x"
 					}
 				],
 				"correction": {
-					"steps": ["La fonction $f$ est {{solution:html}} car $-{{a}}$ est négatif."]
-				}
+					"steps": [
+						"La fonction $f$ est {{solution:html}} car $-{{a}}$ est négatif."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expression5}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr5}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -165,17 +178,23 @@
 						"expression": "g*d/f"
 					},
 					{
-						"name": "expression5",
+						"name": "expr5",
 						"expression": "f(x)={{{c}}}x{{eval:h;+}}"
 					}
 				],
 				"correction": {
-					"steps": ["La fonction $f$ est {{solution:html}} car ${{c}}$ est positif."]
-				}
+					"steps": [
+						"La fonction $f$ est {{solution:html}} car ${{c}}$ est positif."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expression6}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr6}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -206,17 +225,23 @@
 						"expression": "g*d/f"
 					},
 					{
-						"name": "expression6",
+						"name": "expr6",
 						"expression": "f(x)={-{{c}}}x{{eval:h;+}}"
 					}
 				],
 				"correction": {
-					"steps": ["La fonction $f$ est {{solution:html}} car $-{{c}}$ est négatif."]
-				}
+					"steps": [
+						"La fonction $f$ est {{solution:html}} car $-{{c}}$ est négatif."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expression7}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr7}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -247,17 +272,23 @@
 						"expression": "g*d/f"
 					},
 					{
-						"name": "expression7",
+						"name": "expr7",
 						"expression": "f(x)={{eval:h}}+{{{c}}}x"
 					}
 				],
 				"correction": {
-					"steps": ["La fonction $f$ est {{solution:html}} car ${{c}}$ est positif."]
-				}
+					"steps": [
+						"La fonction $f$ est {{solution:html}} car ${{c}}$ est positif."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expression8}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr8}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -288,19 +319,25 @@
 						"expression": "g*d/f"
 					},
 					{
-						"name": "expression8",
+						"name": "expr8",
 						"expression": "f(x)={{eval:h}}-{{{c}}}x"
 					}
 				],
 				"correction": {
-					"steps": ["La fonction $f$ est {{solution:html}} car $-{{c}}$ est négatif."]
-				}
+					"steps": [
+						"La fonction $f$ est {{solution:html}} car $-{{c}}$ est négatif."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			}
 		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["3"],
+		"grades": [
+			"3"
+		],
 		"theme": "Fonctions",
 		"domain": "Fonctions affines",
 		"subdomain": "Variations-Signe",
@@ -316,10 +353,12 @@
 					"b": "9",
 					"c": "1"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v1",
@@ -329,10 +368,12 @@
 					"b": "9",
 					"c": "1"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v2",
@@ -342,10 +383,12 @@
 					"b": "9",
 					"c": "1"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v3",
@@ -355,10 +398,12 @@
 					"b": "9",
 					"c": "1"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v4",
@@ -370,10 +415,12 @@
 					"f": "7",
 					"g": "1"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v5",
@@ -385,10 +432,12 @@
 					"f": "7",
 					"g": "1"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v6",
@@ -400,10 +449,12 @@
 					"f": "7",
 					"g": "1"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v7",
@@ -415,10 +466,12 @@
 					"f": "7",
 					"g": "1"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v1 croissante refusé",
@@ -428,10 +481,12 @@
 					"b": "9",
 					"c": "1"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}

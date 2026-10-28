@@ -9,34 +9,9 @@
 	"level": 1,
 	"delay": 20,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "$a>0$ et $\\Delta>0$"
-			},
-			{
-				"content": "$a>0$ et $\\Delta=0$"
-			},
-			{
-				"content": "$a>0$ et $\\Delta<0$"
-			},
-			{
-				"content": "$a<0$ et $\\Delta>0$"
-			},
-			{
-				"content": "$a<0$ et $\\Delta=0$"
-			},
-			{
-				"content": "$a<0$ et $\\Delta<0$"
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -{{k}}*{{d}}^2/2-2 ; {{k}}*{{d}}^2/2+4\nf(x) = {{k}}/2*((x-{{al}})^2-{{d}}^2)   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -{{k}}*{{d}}^2/2-2 ; {{k}}*{{d}}^2/2+4\nf(x) = {{k}}/2*((x-{{al}})^2-{{d}}^2)   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```\n\n```choix\nmelanger: non\n- $a>0$ et $\\Delta>0$\n- $a>0$ et $\\Delta=0$\n- $a>0$ et $\\Delta<0$\n- $a<0$ et $\\Delta>0$\n- $a<0$ et $\\Delta=0$\n- $a<0$ et $\\Delta<0$\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -60,10 +35,14 @@
 					"Conclusion : $a>0$ et $\\Delta>0$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -3 ; 8\nf(x) = {{k}}/2*(x-{{al}})^2   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -3 ; 8\nf(x) = {{k}}/2*(x-{{al}})^2   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```\n\n```choix\nmelanger: non\n- $a>0$ et $\\Delta>0$\n- $a>0$ et $\\Delta=0$\n- $a>0$ et $\\Delta<0$\n- $a<0$ et $\\Delta>0$\n- $a<0$ et $\\Delta=0$\n- $a<0$ et $\\Delta<0$\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -82,10 +61,14 @@
 					"Conclusion : $a>0$ et $\\Delta=0$."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -3 ; {{h}}+6\nf(x) = ({{k}}/2*(x-{{al}})^2+{{h}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -3 ; {{h}}+6\nf(x) = ({{k}}/2*(x-{{al}})^2+{{h}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```\n\n```choix\nmelanger: non\n- $a>0$ et $\\Delta>0$\n- $a>0$ et $\\Delta=0$\n- $a>0$ et $\\Delta<0$\n- $a<0$ et $\\Delta>0$\n- $a<0$ et $\\Delta=0$\n- $a<0$ et $\\Delta<0$\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -108,10 +91,14 @@
 					"Conclusion : $a>0$ et $\\Delta<0$."
 				]
 			},
-			"correctChoiceIndex": ["2"]
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		},
 		{
-			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -{{k}}*{{d}}^2/2-4 ; {{k}}*{{d}}^2/2+2\nf(x) = -{{k}}/2*((x-{{al}})^2-{{d}}^2)   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -{{k}}*{{d}}^2/2-4 ; {{k}}*{{d}}^2/2+2\nf(x) = -{{k}}/2*((x-{{al}})^2-{{d}}^2)   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```\n\n```choix\nmelanger: non\n- $a>0$ et $\\Delta>0$\n- $a>0$ et $\\Delta=0$\n- $a>0$ et $\\Delta<0$\n- $a<0$ et $\\Delta>0$\n- $a<0$ et $\\Delta=0$\n- $a<0$ et $\\Delta<0$\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -135,10 +122,14 @@
 					"Conclusion : $a<0$ et $\\Delta>0$."
 				]
 			},
-			"correctChoiceIndex": ["3"]
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			]
 		},
 		{
-			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -8 ; 3\nf(x) = -{{k}}/2*(x-{{al}})^2   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -8 ; 3\nf(x) = -{{k}}/2*(x-{{al}})^2   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```\n\n```choix\nmelanger: non\n- $a>0$ et $\\Delta>0$\n- $a>0$ et $\\Delta=0$\n- $a>0$ et $\\Delta<0$\n- $a<0$ et $\\Delta>0$\n- $a<0$ et $\\Delta=0$\n- $a<0$ et $\\Delta<0$\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -157,10 +148,14 @@
 					"Conclusion : $a<0$ et $\\Delta=0$."
 				]
 			},
-			"correctChoiceIndex": ["4"]
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			]
 		},
 		{
-			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -{{h}}-6 ; 3\nf(x) = -({{k}}/2*(x-{{al}})^2+{{h}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -{{h}}-6 ; 3\nf(x) = -({{k}}/2*(x-{{al}})^2+{{h}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```\n\n```choix\nmelanger: non\n- $a>0$ et $\\Delta>0$\n- $a>0$ et $\\Delta=0$\n- $a>0$ et $\\Delta<0$\n- $a<0$ et $\\Delta>0$\n- $a<0$ et $\\Delta=0$\n- $a<0$ et $\\Delta<0$\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -183,7 +178,11 @@
 					"Conclusion : $a<0$ et $\\Delta<0$."
 				]
 			},
-			"correctChoiceIndex": ["5"]
+			"blanks": [
+				{
+					"expectedAnswer": "5"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -198,7 +197,7 @@
 			},
 			"description": "variation 0 (a>0 et Δ>0) : « a>0 et Δ>0 » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -211,7 +210,7 @@
 			},
 			"description": "variation 0 (a>0 et Δ>0) : « a>0 et Δ=0 » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -224,7 +223,7 @@
 			},
 			"description": "variation 0 (a>0 et Δ>0) : « a>0 et Δ<0 » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -237,7 +236,7 @@
 			},
 			"description": "variation 0 (a>0 et Δ>0) : « a<0 et Δ>0 » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [3]
+			"answers": ["3"]
 		},
 		{
 			"expected": {
@@ -250,7 +249,7 @@
 			},
 			"description": "variation 0 (a>0 et Δ>0) : « a<0 et Δ=0 » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [4]
+			"answers": ["4"]
 		},
 		{
 			"expected": {
@@ -263,7 +262,7 @@
 			},
 			"description": "variation 0 (a>0 et Δ>0) : « a<0 et Δ<0 » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [5]
+			"answers": ["5"]
 		},
 		{
 			"expected": {
@@ -275,7 +274,7 @@
 			},
 			"description": "variation 1 (a>0 et Δ=0) : « a>0 et Δ>0 » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -287,7 +286,7 @@
 			},
 			"description": "variation 1 (a>0 et Δ=0) : « a>0 et Δ=0 » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -299,7 +298,7 @@
 			},
 			"description": "variation 1 (a>0 et Δ=0) : « a>0 et Δ<0 » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -311,7 +310,7 @@
 			},
 			"description": "variation 1 (a>0 et Δ=0) : « a<0 et Δ>0 » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [3]
+			"answers": ["3"]
 		},
 		{
 			"expected": {
@@ -323,7 +322,7 @@
 			},
 			"description": "variation 1 (a>0 et Δ=0) : « a<0 et Δ=0 » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [4]
+			"answers": ["4"]
 		},
 		{
 			"expected": {
@@ -335,7 +334,7 @@
 			},
 			"description": "variation 1 (a>0 et Δ=0) : « a<0 et Δ<0 » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [5]
+			"answers": ["5"]
 		},
 		{
 			"expected": {
@@ -348,7 +347,7 @@
 			},
 			"description": "variation 2 (a>0 et Δ<0) : « a>0 et Δ>0 » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -361,7 +360,7 @@
 			},
 			"description": "variation 2 (a>0 et Δ<0) : « a>0 et Δ=0 » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -374,7 +373,7 @@
 			},
 			"description": "variation 2 (a>0 et Δ<0) : « a>0 et Δ<0 » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -387,7 +386,7 @@
 			},
 			"description": "variation 2 (a>0 et Δ<0) : « a<0 et Δ>0 » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [3]
+			"answers": ["3"]
 		},
 		{
 			"expected": {
@@ -400,7 +399,7 @@
 			},
 			"description": "variation 2 (a>0 et Δ<0) : « a<0 et Δ=0 » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [4]
+			"answers": ["4"]
 		},
 		{
 			"expected": {
@@ -413,7 +412,7 @@
 			},
 			"description": "variation 2 (a>0 et Δ<0) : « a<0 et Δ<0 » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [5]
+			"answers": ["5"]
 		},
 		{
 			"expected": {
@@ -426,7 +425,7 @@
 			},
 			"description": "variation 3 (a<0 et Δ>0) : « a>0 et Δ>0 » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -439,7 +438,7 @@
 			},
 			"description": "variation 3 (a<0 et Δ>0) : « a>0 et Δ=0 » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -452,7 +451,7 @@
 			},
 			"description": "variation 3 (a<0 et Δ>0) : « a>0 et Δ<0 » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -465,7 +464,7 @@
 			},
 			"description": "variation 3 (a<0 et Δ>0) : « a<0 et Δ>0 » accepté",
 			"variationIndex": 3,
-			"selectedChoices": [3]
+			"answers": ["3"]
 		},
 		{
 			"expected": {
@@ -478,7 +477,7 @@
 			},
 			"description": "variation 3 (a<0 et Δ>0) : « a<0 et Δ=0 » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [4]
+			"answers": ["4"]
 		},
 		{
 			"expected": {
@@ -491,7 +490,7 @@
 			},
 			"description": "variation 3 (a<0 et Δ>0) : « a<0 et Δ<0 » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [5]
+			"answers": ["5"]
 		},
 		{
 			"expected": {
@@ -503,7 +502,7 @@
 			},
 			"description": "variation 4 (a<0 et Δ=0) : « a>0 et Δ>0 » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -515,7 +514,7 @@
 			},
 			"description": "variation 4 (a<0 et Δ=0) : « a>0 et Δ=0 » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -527,7 +526,7 @@
 			},
 			"description": "variation 4 (a<0 et Δ=0) : « a>0 et Δ<0 » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -539,7 +538,7 @@
 			},
 			"description": "variation 4 (a<0 et Δ=0) : « a<0 et Δ>0 » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [3]
+			"answers": ["3"]
 		},
 		{
 			"expected": {
@@ -551,7 +550,7 @@
 			},
 			"description": "variation 4 (a<0 et Δ=0) : « a<0 et Δ=0 » accepté",
 			"variationIndex": 4,
-			"selectedChoices": [4]
+			"answers": ["4"]
 		},
 		{
 			"expected": {
@@ -563,7 +562,7 @@
 			},
 			"description": "variation 4 (a<0 et Δ=0) : « a<0 et Δ<0 » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [5]
+			"answers": ["5"]
 		},
 		{
 			"expected": {
@@ -576,7 +575,7 @@
 			},
 			"description": "variation 5 (a<0 et Δ<0) : « a>0 et Δ>0 » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -589,7 +588,7 @@
 			},
 			"description": "variation 5 (a<0 et Δ<0) : « a>0 et Δ=0 » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -602,7 +601,7 @@
 			},
 			"description": "variation 5 (a<0 et Δ<0) : « a>0 et Δ<0 » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -615,7 +614,7 @@
 			},
 			"description": "variation 5 (a<0 et Δ<0) : « a<0 et Δ>0 » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [3]
+			"answers": ["3"]
 		},
 		{
 			"expected": {
@@ -628,7 +627,7 @@
 			},
 			"description": "variation 5 (a<0 et Δ<0) : « a<0 et Δ=0 » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [4]
+			"answers": ["4"]
 		},
 		{
 			"expected": {
@@ -641,7 +640,7 @@
 			},
 			"description": "variation 5 (a<0 et Δ<0) : « a<0 et Δ<0 » accepté",
 			"variationIndex": 5,
-			"selectedChoices": [5]
+			"answers": ["5"]
 		}
 	]
 }

@@ -1,0 +1,309 @@
+{
+	"title": "Les parenthèses sont-elles indispensables ?",
+	"description": "Dire si les parenthèses sont indispensables au sens d'une écriture : oui dans 3 + (−2), −(−2), −(2 + 3), −(2 − 3) ; non dans (−2) + 5 et (−2)",
+	"grades": ["5"],
+	"theme": "Relatifs",
+	"domain": "Additionner et soustraire",
+	"subdomain": "Sommes algébriques",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans l'écriture ${{a}} + (-{{b}})$, les parenthèses sont-elles indispensables ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Parenthèses.** Elles sont indispensables quand, sans elles, l'écriture n'est plus correcte (deux signes qui se suivent) ou ne veut plus dire la même chose.",
+					"$\\textcolor{{{color:primary.0}}}{\\text{Oui}}$ : sans elles, on écrirait $+$ et $-$ côte à côte (${{a}} + -{{b}}$), ce qui n'est pas correct."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'écriture $(-{{a}}) + {{b}}$, les parenthèses sont-elles indispensables ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Parenthèses.** Elles sont indispensables quand, sans elles, l'écriture n'est plus correcte (deux signes qui se suivent) ou ne veut plus dire la même chose.",
+					"$\\textcolor{{{color:primary.0}}}{\\text{Non}}$ : le signe $-$ est en tête, on peut écrire $-{{a}} + {{b}}$ ; cela veut dire la même chose."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'écriture $-(-{{a}})$, les parenthèses sont-elles indispensables ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Parenthèses.** Elles sont indispensables quand, sans elles, l'écriture n'est plus correcte (deux signes qui se suivent) ou ne veut plus dire la même chose.",
+					"$\\textcolor{{{color:primary.0}}}{\\text{Oui}}$ : sans elles, deux signes $-$ se suivraient. $-(-{{a}})$ est l'opposé de $-{{a}}$, c'est-à-dire ${{a}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'écriture $-({{a}} + {{b}})$, les parenthèses sont-elles indispensables ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Parenthèses.** Elles sont indispensables quand, sans elles, l'écriture n'est plus correcte (deux signes qui se suivent) ou ne veut plus dire la même chose.",
+					"$\\textcolor{{{color:primary.0}}}{\\text{Oui}}$ : $-({{a}} + {{b}}) = -{{eval:a+b}}$, alors que $-{{a}} + {{b}} = {{eval:-a+b}}$. Sans parenthèses, le sens change."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'écriture $-({{a}} - {{b}})$, les parenthèses sont-elles indispensables ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Parenthèses.** Elles sont indispensables quand, sans elles, l'écriture n'est plus correcte (deux signes qui se suivent) ou ne veut plus dire la même chose.",
+					"$\\textcolor{{{color:primary.0}}}{\\text{Oui}}$ : $-({{a}} - {{b}}) = {{eval:-(a-b)}}$, alors que $-{{a}} - {{b}} = {{eval:-a-b}}$. Sans parenthèses, le sens change."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'écriture $(-{{a}})$, les parenthèses sont-elles indispensables ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Parenthèses.** Elles sont indispensables quand, sans elles, l'écriture n'est plus correcte (deux signes qui se suivent) ou ne veut plus dire la même chose.",
+					"$\\textcolor{{{color:primary.0}}}{\\text{Non}}$ : $(-{{a}})$ et $-{{a}}$ désignent le même nombre."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 + (−2) : oui",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−2) + 5 : non",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−(−2) : oui",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−(2 + 3) : oui",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−(2 − 3) : oui",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−2) : non",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

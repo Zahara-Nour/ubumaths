@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après la phase 0 des étiquettes à ranger (§ 21)._
+_Mis à jour le 2026-10-28, après #1943._
 
-- **État** : droite, horloge, barres (#1908) et plafond de l'axe (#1915) mergés, pas en prod. Étiquettes à ranger choisies avant l'échelle (David) ; phase 0 écrite (§ 21), questions posées, pas de réponse. Secondes de l'horloge : hors chantier.
-- **Prochaine action** : réponses de David aux 5 questions du § 21, puis worktree `ubumaths-wt-reponses-a-placer` depuis `origin/main`, tests rouges, bloc ```ranger.
-- **En attente de David** : § 21, questions 1-5 (écriture ```ranger, note par place, geste, mélange, qui réécrit les 5 modèles « ranger »).
-- **Pièges en cours** : `BuildKind` patron commun (`generator/build-answer.ts`, `buildCaseCount`) ; `isPlaceKind` = droite + horloge ; patron le plus proche des étiquettes = case choix (ADR 0033, `choix-parser.ts`, `questions/choice-case.ts`) ; questions-6 attend 06 et 07 ; une PR = une session.
+- **État** : droite, horloge, barres (#1908), plafond de l'axe (#1915) et étiquettes à ranger (#1943) mergés, pas en prod. Secondes de l'horloge : hors chantier.
+- **Prochaine action** : l'échelle (choix de l'échelle par l'élève, CM1-CM2, § 18.4) — phase 0 à écrire ; ou autre geste au choix de David.
+- **En attente de David** : quel geste ensuite ; vérification manuelle #1943 (`verifications-manuelles.md`).
+- **Pièges en cours** : les 5 modèles « ranger » sont à réécrire en ```ranger par questions-6 (06, 07) et la session « questions » (CP, CE1, CM2), au moins 3 étiquettes ; compte prof local supprimé par une suite d'intégration interrompue → `pnpm db:dev-accounts`.
 - **Worktree / branche** : aucun.
 
 ---
@@ -493,3 +493,35 @@ Le prof écrit les étiquettes **dans le bon ordre** ; le tirage les mélange. `
 4. **Mélange** jamais déjà rangé, ni à l'envers (reco) ?
 5. **Les 5 modèles existants** : cette PR livre l'outil et la page d'aide ; 06 et 07 réécrits par la session
    questions-6 (qui les attend), CP, CE1 et CM2 par la session « questions » (reco) — ou tout ici ?
+
+## 22. Décisions étiquettes à ranger (David, 2026-10-28 : les 5 recos)
+
+1. Écriture : bloc ```ranger, étiquettes dans le bon ordre (ubumark), `signe: <` (défaut) ou `signe: >`.
+2. Note : une case par place, note partielle.
+3. Geste : glisser **et** toucher-toucher ; place prise → échange ; clavier.
+4. Mélange : jamais déjà rangé, ni à l'envers ; graine de l'instance.
+5. Cette PR livre l'outil et la page d'aide ; 06 et 07 réécrits par questions-6, CP, CE1, CM2 par la session
+   « questions ».
+
+## 23. PR « ranger » — étiquettes à ranger (2026-10-28)
+
+Branche `feat/reponses-a-placer`. Tests rouges d'abord : `ranger/ranger-parser.test.ts` (parseur, mélange,
+PDF), `generation-ranger.test.ts`, `RangerPlacer.svelte.test.ts`, `rich-text/ranger-bloc.test.ts`.
+
+- Écart technique à la phase 0 (§ 21.3) : la réponse d'une place est la position **affichée** de
+  l'étiquette (`'2'`), pas son indice d'origine. Le bloc de l'instance est réécrit mélangé : rien ne
+  trahit l'ordre, la version publique n'a rien à reconvertir (contrairement au choix). Même
+  comportement pour l'élève : jugé sur l'étiquette.
+- 2 étiquettes : l'envers est le seul désordre, donc permis (« ni à l'envers » vaut dès 3).
+- Hors question (aide, cours) : mélange fixe, graine tirée du texte des étiquettes (revue : un motif par bloc).
+- Vu en vrai (port 5178, `teacher@local.test`, `/aide-ecriture/blocs/ranger`, Playwright, 1100 px souris
+  et 375 px doigt par CDP) : glisser pose, toucher-toucher échange, pas de débordement. Le compte prof
+  local manquait (suite d'intégration interrompue) : `pnpm db:dev-accounts`.
+- PDF compilé avec le compilateur de la prod (`scripts/fiches/compile-prod.mjs`).
+- Revue Opus : corrigés l'étiquette lue sur sa place (lecteur d'écran), le signe dit en clair, le
+  mélange hors question propre à chaque bloc, un test de la version publique. **Q23 (à David)** : à 2
+  étiquettes, l'affichage est toujours l'inverse de la réponse (devinable) ; deux étiquettes identiques
+  au tirage font disparaître la question d'une évaluation.
+- **Décisions Q23 (David, 2026-10-28 : les deux recos)** : au moins 3 étiquettes dans une question
+  (`RANGER_MIN_LABELS_IN_QUESTION`, 2 permises hors question) ; étiquettes identiques au tirage →
+  nouveau tirage, comme une condition (`rangerLabelsCollide`). Tests rouges d'abord.

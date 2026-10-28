@@ -34,6 +34,7 @@ import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { buildCaseCount } from './generator/build-answer';
 import {
 	validateAnswerDetailed,
@@ -70,7 +71,7 @@ export interface ExpectedChoice {
 	status: ExpectedStatus;
 }
 
-/** Case « choix » (bloc ```choix) : ses choix, statuts du QCM, ordre AFFICHÉ */
+/** Case « choix » (bloc ```choix) : ses choix et leurs statuts, ordre AFFICHÉ */
 export interface ExpectedChoiceCase {
 	/** Case de la question (`case: N` du bloc) */
 	index: number;
@@ -100,9 +101,6 @@ export type ExpectedLine =
 	  }
 	/** R3 : « Ta réponse : » — l'énoncé rempli par les cases de l'élève */
 	| { kind: 'your-answer'; markdown: string; fills: ExpectedFill[] }
-	/** R5 */
-	/** `multiple` : QCM à plusieurs réponses (case ☐ / ☑), sinon réponse unique (rond ○ / ●) */
-	| { kind: 'choices'; multiple: boolean; choices: ExpectedChoice[] }
 	/** R2 : remarque de forme, rattachée à sa case */
 	| { kind: 'remark'; index: number | null; text: string }
 	/** R8/R10 : réponse attendue seule (case graphique, ou introuvable dans l'énoncé) */
@@ -154,6 +152,11 @@ export type ExpectedLine =
 			 * chaque point ; `answer` et `status` disent alors la droite entière
 			 */
 			answers?: { answer: string; status: ExpectedStatus }[];
+			/**
+			 * Étiquettes à ranger : la bonne réponse de chaque place (position affichée) ;
+			 * le bloc de l'énoncé ne dit pas l'ordre juste
+			 */
+			expected?: string[];
 	  };
 
 export interface ExpectedResult {
@@ -273,7 +276,8 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
 		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const })),
 		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const })),
-		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const }))
+		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const })),
+		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {
@@ -306,7 +310,7 @@ export function withoutBuildCases(statement: string): string {
 		.join('\n');
 }
 
-/** L'énoncé sans ses blocs ```choix (la ligne `choices` de chaque case les montre) */
+/** L'énoncé sans ses blocs ```choix (leurs choix sont montrés à part) */
 export function withoutChoiceCases(statement: string): string {
 	return replaceChoiceBlocks(statement, () => '');
 }
@@ -632,7 +636,8 @@ function placeLines(
 		source: build.source,
 		answer: answered ? answers.map((a) => a.answer).join(' ; ') : null,
 		status: answered ? (allAccepted ? 'correct' : 'incorrect') : 'solution',
-		...(answered && { answers })
+		...(answered && { answers }),
+		...(build.kind === 'ranger' && { expected: points.map((p) => p.expected) })
 	};
 	if (withAnswer && !answered) {
 		const text = isPlaceKind(build.kind) ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
@@ -654,50 +659,6 @@ function expectedOnlyLine(view: BlankView, withAnswer: boolean): ExpectedLine {
 			studentStatus: toExpectedStatus(view.status ?? 'empty')
 		})
 	};
-}
-
-function choiceLines(
-	instance: QuestionInstance,
-	verdict: DetailedVerdict | undefined
-): ExpectedLine[] {
-	const choices = instance.choices ?? [];
-	const order =
-		instance.shuffledChoices && instance.shuffledChoices.length === choices.length
-			? instance.shuffledChoices.map((c) => c.originalIndex)
-			: choices.map((_, i) => i);
-	const nothingChecked = verdict !== undefined && !verdict.choices?.some((c) => c.checked);
-	const lines: ExpectedLine[] = [
-		{
-			kind: 'choices',
-			multiple: instance.multipleAnswers === true,
-			choices: order.flatMap((originalIndex) => {
-				const choice = choices[originalIndex];
-				if (!choice) return [];
-				const detail = verdict?.choices?.find((c) => c.originalIndex === originalIndex);
-				const checked = detail?.checked ?? false;
-				// QCM à règles : ce sont elles qui disent quels choix sont bons
-				const isCorrect = detail?.isCorrect ?? choice.isCorrect;
-				let status: ExpectedStatus = isCorrect ? 'solution' : 'neutral';
-				if (detail && !nothingChecked) {
-					if (detail.outcome === 'checked-correct') status = 'correct';
-					else if (detail.outcome === 'checked-wrong') status = 'incorrect';
-					// Bon choix oublié : ambre en QCM à plusieurs réponses (R5), encadré sinon
-					else if (detail.outcome === 'missed' && instance.multipleAnswers) status = 'unoptimal';
-				}
-				return [
-					{
-						originalIndex,
-						content: String(choice.content),
-						checked,
-						isCorrect,
-						status
-					}
-				];
-			})
-		}
-	];
-	if (nothingChecked) lines.push({ kind: 'empty', text: EMPTY_ANSWER_TEXT });
-	return lines;
 }
 
 /**
@@ -765,8 +726,6 @@ function buildAnswers(
 	if (type === 'course_card') return { status: null, lines: [] };
 	const verdict = given ?? (answer ? validateAnswerDetailed(instance, answer) : undefined);
 	const status = verdict?.status ?? null;
-
-	if (type === 'multiple_choice') return { status, lines: choiceLines(instance, verdict) };
 
 	const statement = typeof instance.statement === 'string' ? instance.statement : '';
 	// Case « figure » : hors de l'énoncé rempli, sa figure est dans sa ligne. Case

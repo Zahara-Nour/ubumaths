@@ -5,9 +5,9 @@
  * Une série est un exercice ORDINAIRE d'une fiche : une liste numérotée
  * d'instances de modèles de questions, chacune tirée avec une graine fixe
  * (même copie pour toute la classe). L'énoncé montre les cases en pointillés,
- * un QCM la liste de ses choix (une case choix aussi, à la place de son bloc) ;
- * le corrigé met les réponses à la place des cases (ou la bonne réponse du QCM),
- * puis la correction du modèle. Une carte
+ * une case choix la liste de ses choix à la place de son bloc ; le corrigé met
+ * les réponses à la place des cases (sous la liste, la bonne réponse d'une case
+ * choix), puis la correction du modèle. Une carte
  * de cours donne son recto à l'énoncé et son verso au corrigé.
  *
  * Formules maison (`~…~`, `~~…~~`) : converties en LaTeX AU MOMENT DE FIGER, avec les
@@ -216,27 +216,11 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 	const enonce = enonceChoix
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	let corrige = corrigeChoix
+	const corrige = corrigeChoix
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 
-	const choix = (instance.choices ?? []).map((c) => ({
-		...c,
-		content: choixImprime(enLatex(c.content))
-	}));
-	if (choix.length > 0) {
-		const bons = new Set(choix.flatMap((c, i) => (c.isCorrect ? [i] : [])));
-		const { liste, reponse } = listeDeChoix(
-			choix.map((c) => c.content),
-			bons
-		);
-		return {
-			statement: `${enonce}\n\n${liste}`,
-			solution: [`${corrige}\n\n${liste}`, reponse, ...etapes].join('\n\n')
-		};
-	}
-	corrige = [corrige, ...etapes].join('\n\n');
-	return { statement: enonce, solution: corrige };
+	return { statement: enonce, solution: [corrige, ...etapes].join('\n\n') };
 }
 
 /**

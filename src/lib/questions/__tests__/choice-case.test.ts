@@ -9,7 +9,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
-import { gradeQuestion, isKnownForSrs, statusFromChoices } from '../grading';
+import { gradeQuestion, isKnownForSrs } from '../grading';
+import { statusFromChoices } from '../choices';
 import {
 	choiceAnswerSchema,
 	formatChoiceAnswer,
@@ -224,6 +225,60 @@ describe('évaluation : ce que reçoit le navigateur, ce que convertit le serveu
 			expect(toOriginalChoiceValues(SINGLE, [value]), value).toEqual({
 				error: 'Réponse à une case choix illisible'
 			});
+		}
+	});
+});
+
+/** Toutes les parties d'un ensemble d'indices */
+function subsets(count: number): number[][] {
+	const all: number[][] = [];
+	for (let mask = 0; mask < 1 << count; mask++) {
+		all.push(Array.from({ length: count }, (_, i) => i).filter((i) => mask & (1 << i)));
+	}
+	return all;
+}
+
+// Repris des tests du QCM (lot 5, ADR 0033) : bug de production du 2026-10-01, la
+// position AFFICHÉE prise pour l'indice d'ORIGINE (bon choix refusé 34 fois sur 40)
+describe('mélange réel : position affichée ↔ indice d’origine, navigateur = serveur', () => {
+	const CAPITALE = template(
+		'Capitale de la France ?\n\n```choix\n- Paris\n- Marseille\n- Lyon\n- Nice\n```',
+		['0']
+	);
+	const draws = Array.from({ length: 40 }, (_, i) => generate(CAPITALE, i + 1));
+
+	it('le décor mélange vraiment : la plupart des graines déplacent le bon choix', () => {
+		const moved = draws.filter((inst) => inst.blanks?.[0].choice?.order[0] !== 0);
+		expect(moved.length).toBeGreaterThan(20);
+	});
+
+	it('évaluation : la position cochée, ramenée par le serveur, juge juste le bon choix seul (40 graines)', () => {
+		for (const inst of draws) {
+			const order = inst.blanks?.[0].choice?.order ?? [];
+			order.forEach((originalIndex, position) => {
+				const converted = toOriginalChoiceValues(inst, [String(position)]);
+				if (!('values' in converted)) throw new Error(converted.error);
+				const expected = originalIndex === 0 ? 'correct' : 'incorrect';
+				expect(gradeQuestion(inst, converted).status).toBe(expected);
+				expect(validateAnswer(converted.values, inst).isCorrect).toBe(originalIndex === 0);
+			});
+		}
+	});
+
+	it('plusieurs réponses : pour chaque graine et chaque réponse, statut navigateur = statut serveur', () => {
+		const multi = template('Choisis.\n\n```choix\nplusieurs: oui\n- A\n- B\n- C\n- D\n```', [
+			'0;2'
+		]);
+		for (const seed of [1, 2, 3, 4, 5, 11, 42]) {
+			const inst = generate(multi, seed);
+			for (const checked of subsets(4)) {
+				const values = [formatChoiceAnswer(checked)];
+				const server = gradeQuestion(inst, { values });
+				const browser = validateAnswer(values, inst);
+				expect(browser.status ?? (browser.isCorrect ? 'correct' : 'incorrect')).toBe(server.status);
+				expect(browser.isCorrect).toBe(server.isCorrect);
+				expect(server.status).toBe(statusFromChoices(checked, [0, 2]));
+			}
 		}
 	});
 });

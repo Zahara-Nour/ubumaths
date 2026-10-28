@@ -5,6 +5,70 @@
 	"editNotes": "v1 : la 1re variable « expression2 » (doublon, génération impossible) renommée expression1 et l'énoncé affiche les deux expressions comme v0. v0 : « asqrt(b) » affichait la lettre a (« a√4 ») → {{a}}sqrt({{b}}). « Ces 2 » → « Ces deux ». Toujours vrai en v0 (a√b = √(a²b)), toujours faux en v1 (b±1 ≠ b, b+c=1 exclu). Décision de David (2026-09-28) : b tiré parmi 2, 3, 5, 6, 7 (sans facteur carré : plus de √4, où la question se réduisait à « 10 = 10 ? ») ; en v1, b±1 aussi sans facteur carré (conditions b+c ≠ 1, 4, 8 : paires 2↔3, 5↔6, 6↔7) ; une correction par variation avec sa conclusion (égales / pas égales), tabulations et saut de ligne final retirés. Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28).",
 	"template": {
 		"title": "Vérifier l'égalité de deux expressions comportant des racines carrées",
+		"variations": [
+			{
+				"statement": "Ces deux expressions sont-elles égales ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "sqrt({{eval:a*a*b}})"
+					},
+					{
+						"name": "expr2",
+						"expression": "{{a}}sqrt({{b}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\sqrt{{{eval:a*a*b}}} &= \\sqrt{{{eval:a*a}} \\times {{b}}} \\\\ &= \\sqrt{{{eval:a*a}}} \\times \\sqrt{{{b}}} \\\\ &= {{a}}\\sqrt{{{b}}} \\end{align}$$",
+						"Donc les deux expressions sont égales : $\\sqrt{{{eval:a*a*b}}} = {{a}}\\sqrt{{{b}}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Ces deux expressions sont-elles égales ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "sqrt({{eval:a*a*b}})"
+					},
+					{
+						"name": "expr2",
+						"expression": "{{a}}sqrt({{eval:b+(c)}})"
+					}
+				],
+				"conditions": [
+					"b+(c) != 1",
+					"b+(c) != 4",
+					"b+(c) != 8"
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\sqrt{{{eval:a*a*b}}} &= \\sqrt{{{eval:a*a}} \\times {{b}}} \\\\ &= \\sqrt{{{eval:a*a}}} \\times \\sqrt{{{b}}} \\\\ &= {{a}}\\sqrt{{{b}}} \\end{align}$$",
+						"Or ${{a}}\\sqrt{{{b}}} \\neq {{a}}\\sqrt{{{eval:b+(c)}}}$ car ${{b}} \\neq {{eval:b+(c)}}$ : les deux expressions ne sont pas égales."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			}
+		],
+		"grades": [
+			"2"
+		],
+		"theme": "Racines carrées",
+		"domain": "Manipuler",
+		"subdomain": "Egalité",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
 		"shared": {
 			"variables": [
 				{
@@ -19,69 +83,8 @@
 					"name": "c",
 					"expression": "1..1;±"
 				}
-			],
-			"choices": [
-				{
-					"content": "Oui"
-				},
-				{
-					"content": "Non"
-				}
 			]
 		},
-		"variations": [
-			{
-				"statement": "Ces deux expressions sont-elles égales ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["0"],
-				"variables": [
-					{
-						"name": "expression1",
-						"expression": "sqrt({{eval:a*a*b}})"
-					},
-					{
-						"name": "expression2",
-						"expression": "{{a}}sqrt({{b}})"
-					}
-				],
-				"correction": {
-					"steps": [
-						"$$\\begin{align} \\sqrt{{{eval:a*a*b}}} &= \\sqrt{{{eval:a*a}} \\times {{b}}} \\\\ &= \\sqrt{{{eval:a*a}}} \\times \\sqrt{{{b}}} \\\\ &= {{a}}\\sqrt{{{b}}} \\end{align}$$",
-						"Donc les deux expressions sont égales : $\\sqrt{{{eval:a*a*b}}} = {{a}}\\sqrt{{{b}}}$."
-					]
-				}
-			},
-			{
-				"statement": "Ces deux expressions sont-elles égales ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["1"],
-				"variables": [
-					{
-						"name": "expression1",
-						"expression": "sqrt({{eval:a*a*b}})"
-					},
-					{
-						"name": "expression2",
-						"expression": "{{a}}sqrt({{eval:b+(c)}})"
-					}
-				],
-				"conditions": ["b+(c) != 1", "b+(c) != 4", "b+(c) != 8"],
-				"correction": {
-					"steps": [
-						"$$\\begin{align} \\sqrt{{{eval:a*a*b}}} &= \\sqrt{{{eval:a*a}} \\times {{b}}} \\\\ &= \\sqrt{{{eval:a*a}}} \\times \\sqrt{{{b}}} \\\\ &= {{a}}\\sqrt{{{b}}} \\end{align}$$",
-						"Or ${{a}}\\sqrt{{{b}}} \\neq {{a}}\\sqrt{{{eval:b+(c)}}}$ car ${{b}} \\neq {{eval:b+(c)}}$ : les deux expressions ne sont pas égales."
-					]
-				}
-			}
-		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["2"],
-		"theme": "Racines carrées",
-		"domain": "Manipuler",
-		"subdomain": "Egalité",
-		"level": 1,
-		"status": "draft",
-		"delay": 20,
 		"testSpecs": [
 			{
 				"description": "√(a²b) = a√b : Oui",
@@ -91,10 +94,12 @@
 					"b": "2",
 					"c": "1"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v0 : Non est faux",
@@ -104,10 +109,12 @@
 					"b": "2",
 					"c": "1"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "√(a²b) ≠ a√(b+1) : Non",
@@ -117,10 +124,12 @@
 					"b": "2",
 					"c": "1"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "borne a=5, b=7 : Oui",
@@ -130,10 +139,12 @@
 					"b": "7",
 					"c": "1"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v1 b=6, c=+1 (√7) : Non",
@@ -143,10 +154,12 @@
 					"b": "6",
 					"c": "1"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v1 b=6, c=+1 : Oui est faux",
@@ -156,10 +169,12 @@
 					"b": "6",
 					"c": "1"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}

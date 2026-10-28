@@ -9,23 +9,9 @@
 	"level": 3,
 	"delay": 30,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "Oui, elle est arithmétique."
-			},
-			{
-				"content": "Non, elle n'est pas arithmétique."
-			}
-		],
-		"cleanCoefficients": true
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{eval:a*n+b}}$$\n\nCette suite est-elle arithmétique ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{eval:a*n+b}}$$\n\nCette suite est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -46,10 +32,14 @@
 					"La différence ne dépend pas de $n$ : la suite est **arithmétique**, de raison $r={{a}}$ et de premier terme $u_0={{b}}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{b}}-{{a}}n$$\n\nCette suite est-elle arithmétique ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{b}}-{{a}}n$$\n\nCette suite est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -70,10 +60,14 @@
 					"La différence ne dépend pas de $n$ : la suite est **arithmétique**, de raison $r=-{{a}}$ et de premier terme $u_0={{b}}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle arithmétique ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -90,10 +84,14 @@
 					"$u_1-u_0={{eval:a*q-a}}$ mais $u_2-u_1={{eval:a*q^2-a*q}}$ : la différence n'est pas toujours la même, la suite n'est **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle arithmétique ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -110,10 +108,14 @@
 					"$u_1-u_0={{eval:a*q-a;d}}$ mais $u_2-u_1={{eval:a*q^2-a*q;d}}$ : la différence n'est pas toujours la même, la suite n'est **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n=n^2+{{c}}$$\n\nCette suite est-elle arithmétique ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n=n^2+{{c}}$$\n\nCette suite est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -138,10 +140,14 @@
 					"La différence **dépend de $n$** : la suite n'est **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{k}}^n+{{c}}$$\n\nCette suite est-elle arithmétique ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{k}}^n+{{c}}$$\n\nCette suite est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -174,9 +180,16 @@
 					"La différence **dépend de $n$** : la suite n'est **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"testSpecs": [
 		{
 			"expected": {
@@ -188,7 +201,7 @@
 			},
 			"description": "v0 : « oui » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -200,7 +213,7 @@
 			},
 			"description": "v0 : « non » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -212,7 +225,7 @@
 			},
 			"description": "v1 : « oui » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -224,7 +237,7 @@
 			},
 			"description": "v1 : « non » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -236,7 +249,7 @@
 			},
 			"description": "v2 : « non » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -248,7 +261,7 @@
 			},
 			"description": "v2 : « oui » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -260,7 +273,7 @@
 			},
 			"description": "v3 : « non » accepté",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -272,7 +285,7 @@
 			},
 			"description": "v3 : « oui » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -286,7 +299,7 @@
 			},
 			"description": "v4 : « non » accepté",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -300,7 +313,7 @@
 			},
 			"description": "v4 : « oui » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -315,7 +328,7 @@
 			},
 			"description": "v5 : « non » accepté",
 			"variationIndex": 5,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -330,7 +343,7 @@
 			},
 			"description": "v5 : « oui » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
 	]
 }

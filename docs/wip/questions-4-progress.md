@@ -5,17 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1923 (en prod, vérifiée)._
+_Mis à jour le 2026-10-28, après #1931 (lot 1 en fichiers, mergé)._
 
-- **État** : lot 0 en prod (#1923, joué par David avec `db push --include-all`), vérifié au MCP. 4e : 71 modèles
-  publiés, 7 sans point (voulu, § 6.2) ; 18 points couverts, 64 sans modèle.
-- **Prochaine action** : lot 1 (relatifs et rationnels), phase 0 proposée au § 9 : 7 modèles (082, 004, 006, 009,
-  010, 013, 014) ; après validation, worktree `ubumaths-wt-questions-4`, script de lot, JSON.
-- **En attente de David** : les 3 questions du § 9.4.
+- **État** : lot 1 (relatifs et rationnels, § 9) écrit (`docs/wip/questions/lot-4-1.py` → `scripts/questions/4-lot-1/`,
+  7 modèles, 66 specs) ; essai en base **locale** fait le 2026-10-28 : les 7 rendus, juste / faux / correction OK
+  dans l'aperçu admin. Fichiers mergés (#1931).
+- **Prochaine action** : migration nœud + tag (§ 6 de `couvrir-un-niveau.md`, gabarit
+  `20261026210000_questions_cp_c_rangement_tags.sql`) sur un nouveau worktree. Brouillons en prod (2026-10-28) :
+  01 `92be516e` · 02 `25c02016` · 03 `70c52ae9` · 04 `a635df43` · 05 `62eae788` · 06 `a270c7aa` · 07 `05818fa0`.
+- **En attente de David** : rien.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005, « le plus possible ») partiront en 3e avec un lot de la 3e ;
   `db:migrate` peut exiger `--include-all` (migrations d'autres sessions non jouées) : réservé à David ; la ligne
   `Doc-inchangée:` va dans un message de commit ; QCM = case choix ; relire § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : aucun (retiré après #1931) ; nouveau worktree pour la migration nœud + tag.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -291,3 +293,21 @@ Modèles neufs en brouillon, puis migration nœud + tag : **personne** ne lit ri
 2. 4-004 en **Entiers / Priorités opératoires / Vocabulaire, niveau 3**, à la suite des brouillons 5e (« Nommer un
    calcul ») plutôt qu'en Entiers / Vocabulaire / Traduire (où est 4-073) ?
 3. 4-013 : ouvrir la catégorie **Fractions / Calculer / Enchaînements** (aucun modèle n'y est) ?
+
+**Décisions de David (2026-10-28, « je valide » mes recos)** : les 7 modèles du § 9.2, avec deux retouches :
+4-006 en **une** variation « entier / décimal non entier / ni l'un ni l'autre » où le cas est tiré (indice du
+bon choix par une variable : pas de motif d'une variation à l'autre), plus « −0,3 = ?/10 » ; 4-082 avec **un**
+chiffre après la virgule (0,1 à 99,9, comme −7,5 + 7,5). 4-004 en Entiers / Priorités opératoires / Vocabulaire,
+niveau 3 ; 4-013 ouvre Fractions / Calculer / Enchaînements.
+
+## 10. Lot 1 : écrit (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-1`)
+
+- Script `docs/wip/questions/lot-4-1.py` (repris de `lot-5-calcul.py`) → `scripts/questions/4-lot-1/` : 7 modèles,
+  niveaux du § 9.2 ; `create-questions` (simulation) : 7 « à créer », 0 en base ; `question:specs` : 66 specs vertes,
+  tirages 50 par variation réussis.
+- Corrigé en écrivant : 4-010, réponse 0,25 pour 1/4 refusée (`bad_form`) → `acceptDecimal` sur la case (1/3
+  arrondi à 0,33 reste faux, spec) ; fractions négatives écrites −5/6 et non \frac{-5}{6} (`signee`) ; 4-004 :
+  trois nombres distincts (sinon « la différence de 3 et 3 », diviseur nul) ; 4-009 problème : numérateurs ≥ 2
+  (« les 1/3 des élèves » évité).
+- 4-006 : le cas est tiré par `k`, numérateur et dénominateur pris par indicatrices arithmétiques de `k`
+  (`question:specs` lent sur ce modèle, ~1 min : normal, trois jeux de variables gardés).

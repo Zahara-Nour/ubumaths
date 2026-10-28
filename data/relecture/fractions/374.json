@@ -6,27 +6,9 @@
 	"template": {
 		"title": "Comparer deux fractions",
 		"description": "Fractions de même dénominateur",
-		"shared": {
-			"statement": "Quelle est la plus petite de ces $2$ fractions ?",
-			"correctChoiceIndex": ["{{if:d<f|0|1}}"],
-			"correction": {
-				"steps": [
-					"$\\dfrac{{{eval:min(b,c)}}}{{{a}}}$ est plus petite que $\\dfrac{{{eval:max(b,c)}}}{{{a}}}$ car les deux fractions ont **même dénominateur** et ${{eval:min(b,c)}}<{{eval:max(b,c)}}$."
-				]
-			},
-			"choices": [
-				{
-					"content": "$$\\dfrac{{{b}}}{{{a}}}$$"
-				},
-				{
-					"content": "$$\\dfrac{{{c}}}{{{a}}}$$"
-				}
-			]
-		},
 		"variations": [
 			{
-				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
-				"correctChoiceIndex": ["{{if:d<f|0|1}}"],
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?\n\n```choix\n- $$\\dfrac{{{b}}}{{{a}}}$$\n- $$\\dfrac{{{c}}}{{{a}}}$$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -48,11 +30,15 @@
 						"name": "f",
 						"expression": "c/a"
 					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:d<f|0|1}}"
+					}
 				]
 			},
 			{
-				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
-				"correctChoiceIndex": ["{{if:d<f|0|1}}"],
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?\n\n```choix\n- $$\\dfrac{{{b}}}{{{a}}}$$\n- $$\\dfrac{{{c}}}{{{a}}}$$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -74,16 +60,30 @@
 						"name": "f",
 						"expression": "c/a"
 					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:d<f|0|1}}"
+					}
 				]
 			}
 		],
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"theme": "Fractions",
 		"domain": "Apprivoiser",
 		"subdomain": "Comparer",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,
+		"shared": {
+			"correction": {
+				"steps": [
+					"$\\dfrac{{{eval:min(b,c)}}}{{{a}}}$ est plus petite que $\\dfrac{{{eval:max(b,c)}}}{{{a}}}$ car les deux fractions ont **même dénominateur** et ${{eval:min(b,c)}}<{{eval:max(b,c)}}$."
+				]
+			}
+		},
 		"testSpecs": [
 			{
 				"description": "3/19 < 5/19 : bon choix 1",
@@ -93,10 +93,12 @@
 					"b": "5",
 					"c": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "3/19 < 5/19 : mauvais choix",
@@ -106,10 +108,12 @@
 					"b": "5",
 					"c": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "bornes : 1/8 < 7/8",
@@ -119,10 +123,12 @@
 					"b": "1",
 					"c": "7"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "10/7 < 20/7 : bon choix 1",
@@ -132,10 +138,12 @@
 					"b": "20",
 					"c": "10"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "3/2 < 5/2 : bon choix 0",
@@ -145,10 +153,12 @@
 					"b": "3",
 					"c": "5"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "3/2 < 5/2 : mauvais choix",
@@ -158,10 +168,12 @@
 					"b": "3",
 					"c": "5"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			}
 		]
 	}

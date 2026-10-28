@@ -5,20 +5,9 @@
 	"editNotes": "Expressions concaténées `{{eval:ax^3}}{{eval:b;+}}x^2…` : un coefficient nul produisait « -3x^20x+2 » / « -5x^20x0 » (énoncé faux) → une seule évaluation `eval:ax^3+bx^2+cx+d` (termes nuls retirés) ; corrections : `{{expression}}` brut → formule LaTeX, « 3ème » → « troisième », « fraction entre… » → « quotient d'un polynôme du second degré par une expression affine », `{{solution:html}},` → « Oui : » / « Non : ». Décision de David (2026-09-27) : v5 ne tire plus de quotient simplifiable (condition : x = −d n'annule pas le numérateur) ; nouvelles variations : v6 (x²+2x+1)/(x+1) → se ramène à x+1, degré 1 : Non ; v7 (x³+2x²+x)/x → se ramène à x²+2x+1 pour x ≠ 0 : Oui. Corrections avec la simplification.",
 	"template": {
 		"title": "Reconnaître un polynôme du second degré",
-		"shared": {
-			"choices": [
-				{
-					"content": "Oui"
-				},
-				{
-					"content": "Non"
-				}
-			]
-		},
 		"variations": [
 			{
-				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "x",
@@ -41,19 +30,23 @@
 						"expression": "-5..5"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "eval:ax^3+bx^2+cx+d"
 					}
 				],
 				"correction": {
 					"steps": [
-						"Non : dans l'expression ${{expression1}}$, le terme ${{eval:ax^3}}$ fait que c'est un polynôme du troisième degré, et non du second degré."
+						"Non : dans l'expression ${{expr1}}$, le terme ${{eval:ax^3}}$ fait que c'est un polynôme du troisième degré, et non du second degré."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "x",
@@ -72,19 +65,23 @@
 						"expression": "-5..5"
 					},
 					{
-						"name": "expression2",
+						"name": "expr2",
 						"expression": "eval:ax^2+bx+c"
 					}
 				],
 				"correction": {
 					"steps": [
-						"Oui : l'expression ${{expression2}}$ est bien de la forme $ax^2+bx+c$ avec $a={{a}}$, $b={{b}}$ et $c={{c}}$."
+						"Oui : l'expression ${{expr2}}$ est bien de la forme $ax^2+bx+c$ avec $a={{a}}$, $b={{b}}$ et $c={{c}}$."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression3}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expr3}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "x",
@@ -107,19 +104,23 @@
 						"expression": "1..5;±"
 					},
 					{
-						"name": "expression3",
+						"name": "expr3",
 						"expression": "eval:ax^2+bx+dsqrt(x)+c"
 					}
 				],
 				"correction": {
 					"steps": [
-						"Non : dans l'expression ${{expression3}}$, le terme ${{eval:dsqrt(x)}}$ fait que ce n'est pas un polynôme."
+						"Non : dans l'expression ${{expr3}}$, le terme ${{eval:dsqrt(x)}}$ fait que ce n'est pas un polynôme."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression4}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expr4}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -134,7 +135,7 @@
 						"expression": "1..5;±!b"
 					},
 					{
-						"name": "expression4",
+						"name": "expr4",
 						"expression": "{{a}}(x{{eval:b;+}})(x{{eval:c;+}})"
 					}
 				],
@@ -142,11 +143,15 @@
 					"steps": [
 						"Oui : si on développe l'expression ${{a}}(x{{eval:b;+}})(x{{eval:c;+}})$, on trouve bien une expression de la forme $ax^2+bx+c$."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression5}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expr5}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -161,7 +166,7 @@
 						"expression": "1..5;±"
 					},
 					{
-						"name": "expression5",
+						"name": "expr5",
 						"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
 					}
 				],
@@ -169,11 +174,15 @@
 					"steps": [
 						"Oui : si on développe l'expression ${{a}}(x{{eval:b;+}})^2{{eval:c;+}}$, on trouve bien une expression de la forme $ax^2+bx+c$."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression6}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expr6}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "x",
@@ -196,7 +205,7 @@
 						"expression": "1..5;±"
 					},
 					{
-						"name": "expression6",
+						"name": "expr6",
 						"expression": "{{{eval:ax^2+bx+c}}}/{x{{eval:d;+}}}"
 					}
 				],
@@ -205,11 +214,17 @@
 						"Non : l'expression $\\dfrac{{{eval:ax^2+bx+c}}}{x{{eval:d;+}}}$ est le quotient d'un polynôme du second degré par une expression affine : ce n'est pas un polynôme."
 					]
 				},
-				"conditions": ["a*d*d-b*d+c!=0"]
+				"conditions": [
+					"a*d*d-b*d+c!=0"
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression7}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expr7}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "x",
@@ -224,7 +239,7 @@
 						"expression": "1..5;±"
 					},
 					{
-						"name": "expression7",
+						"name": "expr7",
 						"expression": "{{{eval:x^2+(p+q)*x+p*q}}}/{x{{eval:p;+}}}"
 					}
 				],
@@ -232,11 +247,15 @@
 					"steps": [
 						"Non : pour $x \\neq {{eval:-p}}$, $\\dfrac{{{eval:x^2+(p+q)*x+p*q}}}{x{{eval:p;+}}} = \\dfrac{\\left(x{{eval:p;+}}\\right)\\left(x{{eval:q;+}}\\right)}{x{{eval:p;+}}} = x{{eval:q;+}}$ : l'expression se ramène à un polynôme de degré 1, pas du second degré."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression8}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expr8}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "x",
@@ -251,7 +270,7 @@
 						"expression": "1..5;±"
 					},
 					{
-						"name": "expression8",
+						"name": "expr8",
 						"expression": "{{{eval:x^3+(p+q)*x^2+p*q*x}}}/{x}"
 					}
 				],
@@ -259,13 +278,17 @@
 					"steps": [
 						"Oui : pour $x \\neq 0$, $\\dfrac{{{eval:x^3+(p+q)*x^2+p*q*x}}}{x} = {{eval:x^2+(p+q)*x+p*q}}$ : l'expression se ramène à un polynôme du second degré."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			}
 		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["1_SPE"],
+		"grades": [
+			"1_SPE"
+		],
 		"theme": "Fonctions",
 		"domain": "Polynôme du second degré",
 		"subdomain": "Apprivoiser",
@@ -282,11 +305,13 @@
 					"c": "1",
 					"d": "-3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "degré 3 : Oui refusé",
@@ -297,11 +322,13 @@
 					"c": "1",
 					"d": "-3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "ax²+bx+c : Oui",
@@ -311,11 +338,13 @@
 					"b": "0",
 					"c": "0"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "avec √x : Non",
@@ -326,11 +355,13 @@
 					"c": "0",
 					"d": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "avec √x : Oui refusé",
@@ -341,11 +372,13 @@
 					"c": "0",
 					"d": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "forme factorisée : Oui",
@@ -355,11 +388,13 @@
 					"b": "5",
 					"c": "-4"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "forme factorisée : Non refusé",
@@ -369,11 +404,13 @@
 					"b": "5",
 					"c": "-4"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "forme canonique : Oui",
@@ -383,11 +420,13 @@
 					"b": "-5",
 					"c": "1"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "quotient : Non",
@@ -398,11 +437,13 @@
 					"c": "0",
 					"d": "2"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "quotient : Oui refusé",
@@ -413,11 +454,13 @@
 					"c": "0",
 					"d": "2"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "quotient simplifiable en degré 1 : Non",
@@ -426,11 +469,13 @@
 					"p": "1",
 					"q": "1"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "quotient simplifiable en degré 1 : Oui refusé",
@@ -439,11 +484,13 @@
 					"p": "-2",
 					"q": "-3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "quotient simplifiable en degré 2 : Oui",
@@ -452,11 +499,13 @@
 					"p": "1",
 					"q": "1"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "quotient simplifiable en degré 2 : Non refusé",
@@ -465,11 +514,13 @@
 					"p": "-2",
 					"q": "-3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			}
 		]
 	}

@@ -33,7 +33,6 @@
 	import { isWorkFigureBlank } from '$lib/questions/graded-part';
 	import type { AnswerData } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
-	import { toOriginalChoiceIndexes } from '$lib/questions/choices';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
@@ -48,7 +47,6 @@
 	// Input components
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 	import { toFrenchDecimal } from '$lib/utils/french-math';
-	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
 	import CourseCardView from './CourseCardView.svelte';
 	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
 
@@ -84,7 +82,7 @@
 	// ============================================================================
 
 	// Answer state
-	let userAnswer = $state<string | string[] | number | number[]>('');
+	let userAnswer = $state<string | string[]>('');
 	let isSubmitted = $state(false);
 	let isSubmitting = $state(false);
 
@@ -93,7 +91,6 @@
 	let attempts = $state(0);
 
 	// Type-specific state
-	let selectedChoices = $state<number[]>([]);
 	let fillBlankValues = $state<string[]>([]);
 	let fillBlankValuesLatex = $state<string[]>([]);
 
@@ -144,10 +141,6 @@
 				b.prefilled && b.type === 'math' ? toFrenchDecimal(b.prefilled, prefilledGrouping()) : ''
 			);
 		}
-
-		if (getQuestionType(instance) === 'multiple_choice' && instance.shuffledChoices) {
-			selectedChoices = [];
-		}
 	});
 
 	// ============================================================================
@@ -165,9 +158,6 @@
 					(v, index) => isWorkFigureBlank(instance.blanks?.[index]) || v.trim().length > 0
 				);
 
-			case 'multiple_choice':
-				return selectedChoices.length > 0;
-
 			default:
 				return false;
 		}
@@ -184,21 +174,8 @@
 	/**
 	 * Prepare answer value based on question type
 	 */
-	function prepareAnswerValue(): string | string[] | number | number[] {
-		switch (getQuestionType(instance)) {
-			case 'fill_in_blanks':
-				return fillBlankValues;
-
-			case 'multiple_choice': {
-				// Positions cliquées (ordre affiché, mélangé) → indices d'origine : ceux que
-				// compare `validateAnswer` et ceux qui sont enregistrés.
-				const originalIndexes = toOriginalChoiceIndexes(instance, selectedChoices);
-				return instance.multipleAnswers ? originalIndexes : originalIndexes[0];
-			}
-
-			default:
-				return userAnswer;
-		}
+	function prepareAnswerValue(): string | string[] {
+		return getQuestionType(instance) === 'fill_in_blanks' ? fillBlankValues : userAnswer;
 	}
 
 	// ============================================================================
@@ -215,9 +192,6 @@
 				return fillBlankValues.some(
 					(value, index) => !instance.blanks?.[index]?.prefilled && value.trim().length > 0
 				);
-
-			case 'multiple_choice':
-				return selectedChoices.length > 0;
 
 			default:
 				return false;
@@ -364,15 +338,6 @@
 								{unitKeys}
 								{genericFunctions}
 								grades={instance.grades}
-							/>
-						{:else if getQuestionType(instance) === 'multiple_choice'}
-							<MultipleChoiceInput
-								choices={instance.shuffledChoices || []}
-								bind:selectedIndexes={selectedChoices}
-								multipleAnswers={instance.multipleAnswers}
-								disabled={isInputDisabled}
-								showValidation={false}
-								{genericFunctions}
 							/>
 						{/if}
 

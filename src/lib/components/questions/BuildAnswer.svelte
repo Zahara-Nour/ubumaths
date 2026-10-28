@@ -13,7 +13,9 @@
 	(```horloge, `placer:`) : le cadran verrouillé avec les aiguilles de l'élève,
 	ou le cadran à l'heure juste. Diagramme en barres à construire (```barres,
 	`placer:`) : le diagramme verrouillé avec les barres de l'élève (`answers`, une
-	par barre), ou le diagramme juste.
+	par barre), ou le diagramme juste. Étiquettes à ranger (```ranger) : les places
+	verrouillées avec les étiquettes de l'élève (`answers`, une par place) et, faux,
+	le rangement juste (`expected`) ; ou le rangement juste seul.
 
 	@module components/questions/BuildAnswer
 -->
@@ -28,6 +30,8 @@
 	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
 	import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
 	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
+	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
+	import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 	import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 	import { HORLOGE_SIZE_CM } from '$lib/ubumark/types/horloge';
@@ -54,9 +58,11 @@
 		 * statut de chaque point (barre), prime sur `answer`
 		 */
 		answers?: { answer: string; status: ExpectedStatus }[];
+		/** Étiquettes à ranger : la bonne réponse de chaque place (le bloc ne la dit pas) */
+		expected?: readonly string[];
 	}
 
-	let { kind, source, answer, status, answers }: Props = $props();
+	let { kind, source, answer, status, answers, expected }: Props = $props();
 
 	const accepted = (s: ExpectedStatus) => s === 'correct' || s === 'unoptimal';
 	const lockedCase = (value: string, s: ExpectedStatus) => ({
@@ -76,6 +82,7 @@
 	let line = $derived(kind === 'line' ? parseNumberLineContent(source).node : null);
 	let horloge = $derived(kind === 'horloge' ? parseHorlogeContent(source) : null);
 	let barres = $derived(kind === 'barres' ? parseStatChartContent('barres', source) : null);
+	let ranger = $derived(kind === 'ranger' ? parseRangerContent(source) : null);
 </script>
 
 {#if collection?.spec?.build !== undefined}
@@ -110,6 +117,23 @@
 	{:else}
 		<!-- Le diagramme juste, sans `placer:` : toutes les barres dessinées -->
 		<StatChart node={{ ...barres, spec: { ...barres.spec, toPlace: null } }} />
+	{/if}
+{:else if ranger && ranger.errors.length === 0}
+	{@const node = { ...ranger, caseIndex: 0 }}
+	{#if lineCases}
+		<RangerPlacer {node} answers={lineCases} {expected} showControls={false} />
+	{:else if expected}
+		<!-- Le rangement juste : chaque place a sa bonne étiquette -->
+		<RangerPlacer
+			{node}
+			answers={expected.map((value) => ({
+				value,
+				isCorrect: null,
+				disabled: true,
+				onChange: () => {}
+			}))}
+			showControls={false}
+		/>
 	{/if}
 {:else if horloge?.spec?.placer !== undefined}
 	{@const spec = horloge.spec}

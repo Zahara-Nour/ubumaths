@@ -8,23 +8,25 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, ouverture du lot 5 (phase 0 validée, § 2.12)._
+_Mis à jour le 2026-10-28, après #1938 (lot 5a mergé)._
 
-- **État** : lots 1 à 4 EN PROD (v0.52.0) ; 178 / 178 QCM migrés le 2026-10-28, **0 `multiple_choice` en base**
-  ni dans les copies enregistrées (vérifié en prod : évaluations, tests, fiches, défis). Lot 5 en cours.
-- **Prochaine action** : PR 5a (retrait de `multiple_choice` du code) → PR 5b (retrait de l'import TinyMath,
-  `check-template` / `template-insert-row` déplacés) → après `deploy:prod`, migration destructive
-  (contrainte + tables `migration_*`, export JSON d'abord) : s'arrêter et expliquer. Puis lot 6.
-- **En attente de David** : essais à l'écran (QCM migrés, CP-058) ; avis sur les séries PDF (choix d'une case
-  mélangée imprimés dans l'ordre mélangé) ; publication de CP-058 quand il l'a essayé.
-- **Pièges en cours** : 6 des 10 modèles `cp-b2` ont un `level` différent en prod et dans la source
-  (chantier « questions »).
-- **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `refactor/figure-et-choix-lot5`.
+- **État** : lots 1 à 4 EN PROD ; 5b (#1924) et 5a (#1938) MERGÉS, pas encore en prod : le type
+  `multiple_choice` n'existe plus dans le code (revues opus + sécurité sans bloquant, § 2.13). Worktree retiré.
+- **Prochaine action** : rien avant le `deploy:prod` (décision de David). Après : migration destructive
+  (contrainte `question_templates_type_check`, tables `migration_tracking` / `migration_edits` exportées en JSON
+  dans `data/` avant, colonne `multiple_answers`, `options - 'shuffleChoices'` sur 3 brouillons) :
+  s'arrêter et expliquer à David ce qui sera perdu. Ensuite lot 6.
+- **En attente de David** : essais à l'écran (QCM migrés, CP-058) ; avis sur les séries PDF ; publication de CP-058.
+- **Pièges en cours** : `questions-1spe` repart de `main` (sources `1spe-0-*`, `logique-1spe/B-02`, `B-04`
+  réécrites). Entre `deploy:prod` et la migration, les 3 brouillons à `shuffleChoices` ne se dupliquent plus
+  (400). 6 modèles `cp-b2` : `level` prod ≠ source. Test `corrections.test.ts` (R-PASS) instable en CI (5 s).
+- **Worktree / branche** : aucun (nouvelle branche pour la migration d'après deploy).
 
 ---
 
 ## Historique
 
+- 2026-10-28 — **#1938 mergée** (lot 5a) : QCM retiré du code, tests portés, revues sans bloquant.
 - 2026-10-26 — **#1842 mergée** (restes, phase 0 suivie) : `withBlockCases` réaligne un modèle à
   variables quand l'énoncé brut compte comme le résolu (pas de variable dans un ```operation, mêmes
   cases avec chaque `{{…}}` = `1`) — forme de CP-058 couverte ; `<<expr:…>>` jamais (format de réponse
@@ -378,3 +380,18 @@ Constat : aucune instance de QCM dans les copies enregistrées en prod (`evaluat
 - **Après `deploy:prod`** : une migration retire la valeur de `question_templates_type_check` et supprime
   `migration_tracking` (633 lignes) et `migration_edits` (632), export JSON commité dans `data/` avant ;
   destructif → arrêt et explication.
+
+### 2.13 Lot 5a : fin des tests et revues (2026-10-28)
+
+- Restes retirés : badge et filtre « QCM » de l'admin, enum OpenAPI, « Choix non mélangés » de la fiche.
+- 8 fichiers de tests client encore au format QCM portés (`CorrectionCard`, `FlashCard-resultat-attendu`,
+  `QuestionCard-allegee`, `-mots-cliquables`, `-pending`, `QuestionPreviewTabs`, `fonctions-declarees`,
+  `TestInteractive`). Piège : la suite client complète s'arrête en silence (navigateur fermé, `wrapDynamicImport`)
+  et n'exécute que 169 à 262 fichiers sur 400 → la lancer par `--shard=i/4` et vérifier « 100 (100) ».
+- `security-auditor` : aucun bloquant. `code-reviewer` opus : prêt pour PR. Suites données :
+  - 3 brouillons en prod (`6c3ee9e6`, `55341e85`, `f98164b1`, logique 1re spé) ont `options.shuffleChoices:
+false` sans bloc ```choix : sources nettoyées ici ; en base, à retirer dans la migration d'après deploy.
+  - Champ QCM reçu à `null` : admis (éditeur ouvert avant) mais n'est plus écrit (`.transform(() => undefined)`).
+- Laissés (mineurs) : `shared.choices: null` refusé là où la variation l'admet ; `answerValueSchema` des tests
+  accepte encore `number` ; aperçu `/dev/apercu-question` montre `$$0;2$$` pour une case choix ;
+  `multiple_answers` reste dans les types de réponse (colonne encore là).

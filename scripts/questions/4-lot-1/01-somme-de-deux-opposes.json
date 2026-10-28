@@ -1,0 +1,196 @@
+{
+	"title": "Somme de deux opposés",
+	"description": "Savoir que la somme de deux nombres opposés est nulle : −7,5 + 7,5 = 0 ; −7,5 + ? = 0 ; −7,5 + 9 + 7,5",
+	"grades": ["4"],
+	"theme": "Relatifs",
+	"domain": "Additionner et soustraire",
+	"subdomain": "Sommes",
+	"level": 8,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$-{{x}} + {{x}} = ?$$",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "1..999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:X/10;d"
+				}
+			],
+			"conditions": ["mod(X,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nombres opposés.** Deux nombres opposés ont la même distance à zéro et des signes contraires : leur somme est égale à $0$.",
+					"$\\textcolor{{{color:primary.1}}}{-{{x}}}$ et $\\textcolor{{{color:primary.1}}}{{{x}}}$ sont opposés.",
+					"$$-{{x}} + {{x}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$$-{{x}} + ? = 0$$",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "1..999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:X/10;d"
+				}
+			],
+			"conditions": ["mod(X,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nombres opposés.** Deux nombres opposés ont la même distance à zéro et des signes contraires : leur somme est égale à $0$.",
+					"Le nombre qui, ajouté à $-{{x}}$, donne $0$ est l'opposé de $-{{x}}$ : $\\textcolor{{{color:primary.0}}}{{{x}}}$.",
+					"$$-{{x}} + \\textcolor{{{color:primary.0}}}{{{x}}} = 0$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$-{{x}} + {{b}} + {{x}} = ?$$",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "1..999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:X/10;d"
+				},
+				{
+					"name": "b",
+					"expression": "2..20"
+				}
+			],
+			"conditions": ["mod(X,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nombres opposés.** Deux nombres opposés ont la même distance à zéro et des signes contraires : leur somme est égale à $0$.",
+					"On regroupe les opposés : $\\textcolor{{{color:primary.1}}}{-{{x}}}$ et $\\textcolor{{{color:primary.1}}}{{{x}}}$.",
+					"$$-{{x}} + {{b}} + {{x}} = \\textcolor{{{color:primary.1}}}{(-{{x}} + {{x}})} + {{b}} = \\textcolor{{{color:primary.1}}}{0} + {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−7,5 + 7,5 = 0",
+			"variationIndex": 0,
+			"variables": {
+				"X": "75",
+				"x": "7.5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −15 (les deux nombres négatifs)",
+			"variationIndex": 0,
+			"variables": {
+				"X": "75",
+				"x": "7.5"
+			},
+			"answers": ["-15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 15",
+			"variationIndex": 0,
+			"variables": {
+				"X": "75",
+				"x": "7.5"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−7,5 + 7,5 = 0",
+			"variationIndex": 1,
+			"variables": {
+				"X": "75",
+				"x": "7.5"
+			},
+			"answers": ["7,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −7,5",
+			"variationIndex": 1,
+			"variables": {
+				"X": "75",
+				"x": "7.5"
+			},
+			"answers": ["-7,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−7,5 + 9 + 7,5 = 9",
+			"variationIndex": 2,
+			"variables": {
+				"X": "75",
+				"x": "7.5",
+				"b": "9"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 − 15 = −6",
+			"variationIndex": 2,
+			"variables": {
+				"X": "75",
+				"x": "7.5",
+				"b": "9"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9 + 15 = 24",
+			"variationIndex": 2,
+			"variables": {
+				"X": "75",
+				"x": "7.5",
+				"b": "9"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

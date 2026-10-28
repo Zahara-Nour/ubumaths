@@ -6,7 +6,7 @@
  *    chaque case devient « …… » ; corrigé = même liste, réponses à la place des cases,
  *    puis la correction du modèle ;
  *  - même graine → même texte ;
- *  - QCM → liste des choix, bonne réponse au corrigé ; carte de cours → recto / verso ;
+ *  - case choix → liste des choix, bonne réponse au corrigé ; carte de cours → recto / verso ;
  *  - erreur (modèle absent, génération en échec, marqueur non résolu) → exception, rien d'écrit.
  */
 import { describe, it, expect } from 'vitest';
@@ -14,6 +14,7 @@ import type { QuestionTemplate } from '$lib/questions/types';
 import { buildSerie, BLANK_TEXT } from '../serie-automatismes';
 import { correctionForPrint } from '$lib/questions/correction-detail';
 import { parseMarkdown, type ListNode } from '$lib/ubumark';
+import { serializeTemplateChoiceBlock } from '$lib/ubumark/parser/choix-parser';
 import {
 	expressionToRawLatex,
 	genericFunctionsConfig
@@ -46,21 +47,21 @@ const coefficient = {
 	]
 } as unknown as QuestionTemplate;
 
+/** Bloc choix non mélangé, à la fin de l'énoncé (le premier choix est le bon) */
+const choix = (...choices: string[]) =>
+	serializeTemplateChoiceBlock({ multiple: false, shuffle: false, choices });
+
 const parite = {
 	...base,
 	id: 'parite',
 	variations: [
 		{
-			statement: 'Quelle est la parité de ce nombre ?\n$${{n}}$$',
+			statement: `Quelle est la parité de ce nombre ?\n$\${{n}}$$\n\n${choix('pair', 'impair')}`,
 			variables: [
 				{ name: 'k', expression: '1..9' },
 				{ name: 'n', expression: 'eval:2k' }
 			],
-			choices: [
-				{ content: 'pair', isCorrect: true },
-				{ content: 'impair', isCorrect: false }
-			],
-			correctChoiceIndex: '0'
+			blanks: [{ expectedAnswer: '0' }]
 		}
 	]
 } as unknown as QuestionTemplate;
@@ -89,53 +90,50 @@ const carte = {
 	]
 } as unknown as QuestionTemplate;
 
-/** QCM d'horloges (chantier horloge, décisions 5 et 6) : chaque choix est un bloc */
+/** Case choix d'horloges (chantier horloge, décisions 5 et 6) : chaque choix est un bloc */
 const horloges = {
 	...base,
 	id: 'horloges',
 	variations: [
 		{
-			statement: 'Quelle horloge indique {{h}} heures ?',
+			statement: `Quelle horloge indique {{h}} heures ?\n\n${choix(
+				'```horloge\nheure: {{h}} h\n```',
+				'```horloge\nheure: 9 h\ntaille: 5cm\n```'
+			)}`,
 			variables: [{ name: 'h', expression: '3' }],
-			choices: [
-				{ content: '```horloge\nheure: {{h}} h\n```', isCorrect: true },
-				{ content: '```horloge\nheure: 9 h\ntaille: 5cm\n```', isCorrect: false }
-			],
-			correctChoiceIndex: '0'
+			blanks: [{ expectedAnswer: '0' }]
 		}
 	]
 } as unknown as QuestionTemplate;
 
-/** QCM de collections (chantier collection, décision 9) : chaque choix est un bloc */
+/** Case choix de collections (chantier collection, décision 9) : chaque choix est un bloc */
 const collections = {
 	...base,
 	id: 'collections',
 	variations: [
 		{
-			statement: 'Quel dessin montre {{n}} ?',
+			statement: `Quel dessin montre {{n}} ?\n\n${choix(
+				'```collection\ndizaines: 4\nunités: 2\n```',
+				'```collection\ndizaines: 2\nunités: 4\ntaille: 5cm\n```'
+			)}`,
 			variables: [{ name: 'n', expression: '42' }],
-			choices: [
-				{ content: '```collection\ndizaines: 4\nunités: 2\n```', isCorrect: true },
-				{ content: '```collection\ndizaines: 2\nunités: 4\ntaille: 5cm\n```', isCorrect: false }
-			],
-			correctChoiceIndex: '0'
+			blanks: [{ expectedAnswer: '0' }]
 		}
 	]
 } as unknown as QuestionTemplate;
 
-/** QCM de porte-monnaie (CP-044) : chaque choix est un bloc ```monnaie */
+/** Case choix de porte-monnaie (CP-044) : chaque choix est un bloc ```monnaie */
 const porteMonnaies = {
 	...base,
 	id: 'porte-monnaies',
 	variations: [
 		{
-			statement: 'Quel porte-monnaie contient exactement 48 € ?',
+			statement: `Quel porte-monnaie contient exactement 48 € ?\n\n${choix(
+				'```monnaie\nbillets: 20 20 5\npièces: 2 1\n```',
+				'```monnaie\nbillets: 20 20 5\npièces: 2\ntaille: 5cm\n```'
+			)}`,
 			variables: [],
-			choices: [
-				{ content: '```monnaie\nbillets: 20 20 5\npièces: 2 1\n```', isCorrect: true },
-				{ content: '```monnaie\nbillets: 20 20 5\npièces: 2\ntaille: 5cm\n```', isCorrect: false }
-			],
-			correctChoiceIndex: '0'
+			blanks: [{ expectedAnswer: '0' }]
 		}
 	]
 } as unknown as QuestionTemplate;
@@ -180,14 +178,14 @@ describe('buildSerie — cas nominaux', () => {
 		expect(c.statement).not.toBe(a.statement);
 	});
 
-	it('QCM : choix a) b) à l’énoncé, bonne réponse au corrigé', () => {
+	it('case choix : choix a) b) à l’énoncé, bonne réponse au corrigé', () => {
 		const serie = buildSerie(modeles, [{ templateId: 'parite', seed: 3 }]);
 		expect(serie.statement).toContain('**a)** pair');
 		expect(serie.statement).toContain('**b)** impair');
 		expect(serie.solution).toContain('Réponse : **a)** pair');
 	});
 
-	it('QCM : les choix ne sont PAS une sous-liste (renumérotée « 1) 2) » dans le PDF)', () => {
+	it('case choix : les choix ne sont PAS une sous-liste (renumérotée « 1) 2) » dans le PDF)', () => {
 		// La numérotation d'une liste dépend de sa profondeur (a, puis 1, puis i) : des choix
 		// en sous-liste sortaient « 1) 2) » alors que le corrigé dit « Réponse : a) »
 		const serie = buildSerie(modeles, [{ templateId: 'parite', seed: 3 }]);
@@ -198,7 +196,7 @@ describe('buildSerie — cas nominaux', () => {
 		}
 	});
 
-	it('QCM d’horloges : chaque choix reste un bloc, 3 cm sauf taille donnée', () => {
+	it('case choix d’horloges : chaque choix reste un bloc, 3 cm sauf taille donnée', () => {
 		const serie = buildSerie(modeles, [{ templateId: 'horloges', seed: 1 }]);
 		const horlogesDe = (texte: string) => {
 			const found: { spec: { times: unknown; sizeCm: number | null } | null }[] = [];
@@ -220,7 +218,7 @@ describe('buildSerie — cas nominaux', () => {
 		expect(serie.solution).not.toMatch(/\*\*[ab]\)\*\* ```/);
 	});
 
-	it('QCM de collections : chaque choix reste un bloc, 3 cm sauf taille donnée', () => {
+	it('case choix de collections : chaque choix reste un bloc, 3 cm sauf taille donnée', () => {
 		const serie = buildSerie(modeles, [{ templateId: 'collections', seed: 1 }]);
 		const found: { spec: { sizeCm: number | null } | null }[] = [];
 		const visit = (node: unknown): void => {
@@ -235,7 +233,7 @@ describe('buildSerie — cas nominaux', () => {
 		expect(serie.solution).toMatch(/Réponse : \*\*[ab]\)\*\*\s*$/m);
 	});
 
-	it('QCM de porte-monnaie : chaque choix reste un bloc, 10 cm sauf taille donnée', () => {
+	it('case choix de porte-monnaie : chaque choix reste un bloc, 10 cm sauf taille donnée', () => {
 		const serie = buildSerie(modeles, [{ templateId: 'porte-monnaies', seed: 1 }]);
 		const found: { spec: { sizeCm: number | null } | null }[] = [];
 		const visit = (node: unknown): void => {

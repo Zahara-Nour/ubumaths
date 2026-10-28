@@ -9,25 +9,9 @@
 	"level": 2,
 	"delay": 30,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "croissante"
-			},
-			{
-				"content": "décroissante"
-			},
-			{
-				"content": "ni croissante, ni décroissante"
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n={{eval:a*n+b}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n={{eval:a*n+b}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -49,10 +33,14 @@
 					"La suite est **croissante**."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=-{{c}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=-{{c}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -66,10 +54,14 @@
 					"La suite est **décroissante**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=-n^2-{{c}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=-n^2-{{c}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -83,10 +75,14 @@
 					"Pour tout $n$, $u_{n+1}<u_n$ : la suite est **décroissante**. Que la différence dépende de $n$ n'empêche pas de conclure : seul son signe compte."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=(n-{{k}})^2+{{c}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=(n-{{k}})^2+{{c}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -104,10 +100,14 @@
 					"Pour tout $n$, $u_{n+1}>u_n$ : la suite est **croissante**."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=\\dfrac{ {{k}} }{n+1}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=\\dfrac{ {{k}} }{n+1}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -121,10 +121,14 @@
 					"Pour tout $n$, $u_{n+1}>u_n$ : la suite est **croissante**."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=n-{{k}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=n-{{k}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -143,10 +147,14 @@
 					"Le signe de la différence **change** : la suite n'est **ni croissante, ni décroissante**."
 				]
 			},
-			"correctChoiceIndex": ["2"]
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		},
 		{
-			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n={{k}}-2n$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n={{k}}-2n$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -165,7 +173,11 @@
 					"Le signe de la différence **change** : la suite n'est **ni croissante, ni décroissante**."
 				]
 			},
-			"correctChoiceIndex": ["2"]
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -179,7 +191,7 @@
 			},
 			"description": "variation 0 (2n + 3) : « croissante » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -191,7 +203,7 @@
 			},
 			"description": "variation 0 (2n + 3) : « décroissante » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -203,7 +215,7 @@
 			},
 			"description": "variation 0 (2n + 3) : « ni croissante, ni décroissante » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -214,7 +226,7 @@
 			},
 			"description": "variation 1 (−5) : « croissante » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -225,7 +237,7 @@
 			},
 			"description": "variation 1 (−5) : « décroissante » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -236,7 +248,7 @@
 			},
 			"description": "variation 1 (−5) : « ni croissante, ni décroissante » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -247,7 +259,7 @@
 			},
 			"description": "variation 2 (−n² − 1) : « croissante » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -258,7 +270,7 @@
 			},
 			"description": "variation 2 (−n² − 1) : « décroissante » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -269,7 +281,7 @@
 			},
 			"description": "variation 2 (−n² − 1) : « ni croissante, ni décroissante » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -281,7 +293,7 @@
 			},
 			"description": "variation 3 ((n − 3)² + 1) : « croissante » accepté",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -293,7 +305,7 @@
 			},
 			"description": "variation 3 ((n − 3)² + 1) : « décroissante » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -305,7 +317,7 @@
 			},
 			"description": "variation 3 ((n − 3)² + 1) : « ni croissante, ni décroissante » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -316,7 +328,7 @@
 			},
 			"description": "variation 4 (3/(n + 1)) : « croissante » accepté",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -327,7 +339,7 @@
 			},
 			"description": "variation 4 (3/(n + 1)) : « décroissante » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -338,7 +350,7 @@
 			},
 			"description": "variation 4 (3/(n + 1)) : « ni croissante, ni décroissante » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -350,7 +362,7 @@
 			},
 			"description": "variation 5 (n − 4) : « croissante » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -362,7 +374,7 @@
 			},
 			"description": "variation 5 (n − 4) : « décroissante » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -374,7 +386,7 @@
 			},
 			"description": "variation 5 (n − 4) : « ni croissante, ni décroissante » accepté",
 			"variationIndex": 5,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -386,7 +398,7 @@
 			},
 			"description": "variation 6 (5 − 2n) : « croissante » refusé",
 			"variationIndex": 6,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -398,7 +410,7 @@
 			},
 			"description": "variation 6 (5 − 2n) : « décroissante » refusé",
 			"variationIndex": 6,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -410,7 +422,7 @@
 			},
 			"description": "variation 6 (5 − 2n) : « ni croissante, ni décroissante » accepté",
 			"variationIndex": 6,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		}
 	]
 }

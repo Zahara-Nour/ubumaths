@@ -6,6 +6,353 @@
 	"template": {
 		"title": "Déterminer la limite d'une suite",
 		"description": "En utilisant les règles de calcul sur les limites",
+		"variations": [
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^+}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^+}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^-}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^-}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{{{a}}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-{{a}}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{{{a}}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-{{a}}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times 0$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times 0$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty+{{a}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty+{{a}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^+}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^+}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^-}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^-}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			}
+		],
+		"grades": [
+			"T_SPE"
+		],
+		"theme": "Suites",
+		"domain": "Limites",
+		"subdomain": "Determiner une limite",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
 		"shared": {
 			"variables": [
 				{
@@ -16,202 +363,8 @@
 					"name": "b",
 					"expression": "2..9"
 				}
-			],
-			"choices": [
-				{
-					"content": "$$+\\infty$$"
-				},
-				{
-					"content": "$$-\\infty$$"
-				},
-				{
-					"content": "$$0$$"
-				},
-				{
-					"content": "Forme indéterminée"
-				}
 			]
 		},
-		"variations": [
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{+\\infty}$$",
-				"correctChoiceIndex": ["3"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-\\infty}$$",
-				"correctChoiceIndex": ["3"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-\\infty}$$",
-				"correctChoiceIndex": ["3"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{+\\infty}$$",
-				"correctChoiceIndex": ["3"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{+\\infty}$$",
-				"correctChoiceIndex": ["2"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{-\\infty}$$",
-				"correctChoiceIndex": ["2"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^+}$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^+}$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^-}$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^-}$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{+\\infty}$$",
-				"correctChoiceIndex": ["2"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{+\\infty}$$",
-				"correctChoiceIndex": ["2"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{-\\infty}$$",
-				"correctChoiceIndex": ["2"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{-\\infty}$$",
-				"correctChoiceIndex": ["2"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{{{a}}}$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-{{a}}}$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{{{a}}}$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-{{a}}}$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times 0$$",
-				"correctChoiceIndex": ["3"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times 0$$",
-				"correctChoiceIndex": ["3"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(+\\infty)$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(-\\infty)$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(-\\infty)$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(+\\infty)$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(+\\infty)$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(+\\infty)$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(-\\infty)$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(-\\infty)$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(+\\infty)$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(-\\infty)$$",
-				"correctChoiceIndex": ["3"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(-\\infty)$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(+\\infty)$$",
-				"correctChoiceIndex": ["3"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(+\\infty)$$",
-				"correctChoiceIndex": ["3"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(-\\infty)$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(-\\infty)$$",
-				"correctChoiceIndex": ["3"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(+\\infty)$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty+{{a}}$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty+{{a}}$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^+}$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^+}$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^-}$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^-}$$",
-				"correctChoiceIndex": ["0"]
-			}
-		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["T_SPE"],
-		"theme": "Suites",
-		"domain": "Limites",
-		"subdomain": "Determiner une limite",
-		"level": 2,
-		"status": "draft",
-		"delay": 30,
 		"testSpecs": [
 			{
 				"description": "v0 \\dfrac{+\\infty}{+\\infty} → forme indéterminée",
@@ -219,10 +372,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			},
 			{
 				"description": "v1 \\dfrac{+\\infty}{-\\infty} → forme indéterminée",
@@ -230,10 +385,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			},
 			{
 				"description": "v2 \\dfrac{-\\infty}{-\\infty} → forme indéterminée",
@@ -241,10 +398,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			},
 			{
 				"description": "v3 \\dfrac{-\\infty}{+\\infty} → forme indéterminée",
@@ -252,10 +411,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			},
 			{
 				"description": "v4 \\dfrac{0}{+\\infty} → 0",
@@ -263,10 +424,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "v5 \\dfrac{0}{-\\infty} → 0",
@@ -274,10 +437,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "v6 \\dfrac{+\\infty}{0^+} → +∞",
@@ -285,10 +450,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v7 \\dfrac{-\\infty}{0^+} → −∞",
@@ -296,10 +463,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v8 \\dfrac{+\\infty}{0^-} → −∞",
@@ -307,10 +476,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v9 \\dfrac{-\\infty}{0^-} → +∞",
@@ -318,10 +489,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v10 \\dfrac{{{a}}}{+\\infty} → 0",
@@ -329,10 +502,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "v11 \\dfrac{-{{a}}}{+\\infty} → 0",
@@ -340,10 +515,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "v12 \\dfrac{{{a}}}{-\\infty} → 0",
@@ -351,10 +528,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "v13 \\dfrac{-{{a}}}{-\\infty} → 0",
@@ -362,10 +541,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "v14 \\dfrac{+\\infty}{{{a}}} → +∞",
@@ -373,10 +554,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v15 \\dfrac{+\\infty}{-{{a}}} → −∞",
@@ -384,10 +567,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v16 \\dfrac{-\\infty}{{{a}}} → −∞",
@@ -395,10 +580,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v17 \\dfrac{-\\infty}{-{{a}}} → +∞",
@@ -406,10 +593,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v18 (+\\infty)\\times 0 → forme indéterminée",
@@ -417,10 +606,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			},
 			{
 				"description": "v19 (-\\infty)\\times 0 → forme indéterminée",
@@ -428,10 +619,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			},
 			{
 				"description": "v20 (+\\infty)\\times(+\\infty) → +∞",
@@ -439,10 +632,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v21 (+\\infty)\\times(-\\infty) → −∞",
@@ -450,10 +645,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v22 (-\\infty)\\times(-\\infty) → +∞",
@@ -461,10 +658,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v23 (-\\infty)\\times(+\\infty) → −∞",
@@ -472,10 +671,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v24 {{a}}\\times(+\\infty) → +∞",
@@ -483,10 +684,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v25 -{{a}}\\times(+\\infty) → −∞",
@@ -494,10 +697,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v26 {{a}}\\times(-\\infty) → −∞",
@@ -505,10 +710,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v27 -{{a}}\\times(-\\infty) → +∞",
@@ -516,10 +723,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v28 (+\\infty)+(+\\infty) → +∞",
@@ -527,10 +736,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v29 (+\\infty)+(-\\infty) → forme indéterminée",
@@ -538,10 +749,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			},
 			{
 				"description": "v30 (-\\infty)+(-\\infty) → −∞",
@@ -549,10 +762,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v31 (-\\infty)+(+\\infty) → forme indéterminée",
@@ -560,10 +775,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			},
 			{
 				"description": "v32 (+\\infty)-(+\\infty) → forme indéterminée",
@@ -571,10 +788,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			},
 			{
 				"description": "v33 (+\\infty)-(-\\infty) → +∞",
@@ -582,10 +801,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v34 (-\\infty)-(-\\infty) → forme indéterminée",
@@ -593,10 +814,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			},
 			{
 				"description": "v35 (-\\infty)-(+\\infty) → −∞",
@@ -604,10 +827,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v36 +\\infty+{{a}} → +∞",
@@ -615,10 +840,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v37 -\\infty+{{a}} → −∞",
@@ -626,10 +853,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v38 \\dfrac{{{a}}}{0^+} → +∞",
@@ -637,10 +866,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v39 \\dfrac{-{{a}}}{0^+} → −∞",
@@ -648,10 +879,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v40 \\dfrac{{{a}}}{0^-} → −∞",
@@ -659,10 +892,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v41 \\dfrac{-{{a}}}{0^-} → +∞",
@@ -670,10 +905,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v0 erreur : ∞/∞ ≠ +∞ (FI)",
@@ -681,10 +918,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v1 erreur : ∞/(-∞) : FI, pas -∞",
@@ -692,10 +931,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v18 erreur : ∞×0 : FI, pas 0",
@@ -703,10 +944,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "v29 erreur : ∞-∞ : FI, pas 0",
@@ -714,10 +957,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "v32 erreur : +∞-(+∞) : FI, pas 0",
@@ -725,10 +970,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "v33 erreur : +∞-(-∞) = +∞, pas FI",
@@ -736,10 +983,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			},
 			{
 				"description": "v9 erreur : -∞/0- : règle des signes",
@@ -747,10 +996,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v41 erreur : -a/0- : règle des signes",
@@ -758,10 +1009,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v4 erreur : 0/∞ = 0, pas FI",
@@ -769,10 +1022,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			},
 			{
 				"description": "v38 erreur : a/0+ = +∞, pas FI",
@@ -780,10 +1035,12 @@
 				"variables": {
 					"a": "3"
 				},
-				"selectedChoices": [3],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"3"
+				]
 			}
 		]
 	}

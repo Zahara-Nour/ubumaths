@@ -8,7 +8,10 @@ couvre:
   - src/lib/mathAST/cosmetic-transforms.ts
   - 'src/lib/questions/review/**'
   - 'src/lib/types/{question-display,question-template}.ts'
-  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail}.ts'
+  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail,template-review,point-bounds}.ts'
+  - 'src/routes/(protected)/dev/modeles/**'
+  - 'src/lib/components/dev/**'
+  - scripts/questions/reprise-verdicts.ts
   - src/lib/server/exercise-search-indexed.ts
   - src/lib/server/validation/questions.ts
   - 'src/lib/components/questions/**'
@@ -28,7 +31,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28 ; texte d'aide des cases à écrire le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28 ; étiquettes à ranger (``ranger) le 2026-10-28 ; texte d'aide des cases à écrire le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -39,7 +42,7 @@ classe, flash-cards, entraînement, course aux nombres, évaluation), les paquet
 **fiches**.
 
 Termes ([CONTEXT.md](../../CONTEXT.md), sections « Les questions » et « Les usages des questions ») :
-modèle de question, variation, instance, case, QCM, question de cours, carte de cours, résultat
+modèle de question, variation, instance, case, case choix, QCM, question de cours, carte de cours, résultat
 attendu, correction concise / détaillée, détail, motif de forme, série, série figée, relecture,
 évaluation, tentative. ⚠️ « Publier » a trois sens (même fichier) : ici, c'est
 `question_templates.status`.
@@ -73,7 +76,7 @@ le SRS ([srs.md](srs.md)).
 | `construction/`                                                  | Case « figure » (bloc ```figure-a-completer) : `answer.ts` (`parseConstructionAnswer`, réponse bornée), `judge.ts` (`judgeConstruction`, positions, tout-ou-rien), `polygon.ts` (`judgePolygon`, carré / rectangle sur quadrillage), `drawing.ts` (tracé de l'écran, `snapToGrid`, `solutionLines`), registre des positions `positions.ts` (`constructionPositions`) et son inscription `positions-setup.ts` (geometry-core). |
 | Sécurité de la réponse                                           | `answer-complexity.ts` (`isAnswerTooComplex`, garde Q58), `student-answer-safety.ts` (réponse rendue chez le prof).                                                                                                                                                                                                                                                                                                           |
 | Correction                                                       | `expected-result.ts` (`buildExpectedResult`, `fillMarkdown`), `expected-result-markdown.ts`, `correction-card-verdict.ts`, `correction-detail.ts` (`splitCorrectionDetail`, `detailedCorrection`, `correctionForPrint` pour les fiches PDF, ADR 0017), `correction-placeholders.ts`, `grade-level-to-school-level.ts` (`gradeLevelToSchoolLevel`).                                                                            |
-| QCM                                                              | `choices.ts` (positions affichées ↔ indices d'origine), `single-answer.ts` (`keepFirstCorrectChoice`).                                                                                                                                                                                                                                                                                                                        |
+| Case choix                                                       | `choice-case.ts` (réponse « 0;2 », positions affichées → indices d'origine), `choices.ts` (`statusFromChoices`, `choiceLetter`).                                                                                                                                                                                                                                                                                              |
 | Cours                                                            | `course-card.ts` (`excludeCourseCards`), `course-question.ts`.                                                                                                                                                                                                                                                                                                                                                                |
 | Séries et évaluations                                            | `series-items.ts` (`drawSeriesQuestions`, `buildSeriesItems`), `grading.ts` (`gradeQuestion`, `gradeOutOf20`), `public-question.ts` (`toPublicQuestion`, `toDisplayInstance`), `submission.ts`.                                                                                                                                                                                                                               |
 | Catalogue, éditeur, publication                                  | `category-*.ts`, `cart-preview.ts`, `form-options.ts`, `template-put-body.ts`, `bulk-status.ts`, `test-spec-runner.ts` (`runAllTestSpecs`), `constants.ts` (bucket des images), `template-fact-sheet.ts` (fiche du modèle : types, réglages en mots, chemin dans l'arbre).                                                                                                                                                    |
@@ -123,14 +126,14 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
 
 - Saisie : `src/lib/components/question-inputs/FillBlanksInput.svelte` (cases MathLive, claviers),
   `MultipleChoiceInput.svelte`, `src/lib/components/markdown/nodes/BlankInput.svelte` (case de texte `[_]`).
-- Choix de QCM en bloc : un choix peut être un ` ```horloge ` (« Quelle horloge indique 3 h ? ») ou
+- Choix en bloc (case choix) : un choix peut être un ` ```horloge ` (« Quelle horloge indique 3 h ? ») ou
   une ` ```collection ` (« Quel dessin montre 42 ? ») ou une ` ```monnaie ` (« Quel porte-monnaie
   contient 48 € ? ») ;
-  `MultipleChoiceInput` et les aperçus (`QuestionPreview`, `QuestionPreviewBaseCard`) posent
+  `MultipleChoiceInput` (saisie de la case choix) et `ChoiceList` (copie corrigée, bloc seul) posent
   `--horloge-taille: 3cm`, `--collection-taille: 3cm` et `--monnaie-taille` sur le contenu du choix (sauf `taille:` de
   l'auteur) ; la monnaie vaut 10 cm, réduits ensemble pour tous les choix si la colonne est trop étroite
   (`monnaieChoiceSize`, détail dans [ubumark.md](ubumark.md)). La
-  correction (`ExpectedResultView`) rend un tel choix par `MarkdownRenderer` : `InlineMarkdown`
+  correction (`ChoiceList`) rend un tel choix par `MarkdownRenderer` : `InlineMarkdown`
   n'en garderait que le texte brut.
 - Affichage et correction : `src/lib/components/questions/` — `QuestionCard.svelte` et
   `FlashCard.svelte` (appellent `validateAnswer`), `CorrectionCard.svelte`, `CorrectionView.svelte`,
@@ -141,8 +144,7 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   `exercises/VariationEditor.svelte`. Ses sous-composants, à la racine de `src/lib/components/`
   (vérifié le 2026-10-13) : `QuestionCategoryFields` (thème / domaine / sous-domaine, options
   filtrées par `$lib/questions/category-options`, chaque liste est un `CategorySelector` sur
-  `MySelect` avec « Ajouter… »), `VariableEditor`, `AnswerEditor` (cases ou choix de QCM selon le
-  type ; une case choix a sa carte `ChoiceCaseEditor`, voir « Case choix dans l'éditeur »), `PrecisionEditor` (`none`, `decimal`, `significant`, `magnitude`, `tolerance`) — ces
+  `MySelect` avec « Ajouter… »), `VariableEditor`, `AnswerEditor` (cases ; une case choix a sa carte `ChoiceCaseEditor`, voir « Case choix dans l'éditeur »), `PrecisionEditor` (`none`, `decimal`, `significant`, `magnitude`, `tolerance`) — ces
   trois-là servent aussi à `SharedFieldsEditor` —, `DisplayOptionsEditor`,
   `ValidationOptionsEditor`, `CourseQuestionToggle` (`options.courseQuestion`, cochée et
   désactivée pour une carte de cours), `QuestionPreview` (instance générée, graine affichée, autre
@@ -159,6 +161,22 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   qui réutilise `loadNodesWithAncestors` et `loadTemplateProgrammeTags`. Sur l'aperçu, une lecture
   en échec affiche « Fiche illisible : … » et laisse l'aperçu utilisable, jamais « aucun » ;
   l'éditeur reste en 500.
+- Revue des modèles (`/dev/modeles`, admin seul, chantier revue-modeles) : TOUS les modèles en base,
+  rangés programme > branche > notion > sous-notion (`buildReviewTree`, `$lib/questions/template-review`).
+  Le programme est le `grade` des points tagués (un modèle de deux programmes apparaît dans les deux ;
+  sans point → « Hors programme » ; sans nœud → « Non rangé »). Chaque étage compte ✅ validé · 🔶 à
+  revoir · ⚪ sans verdict ; filtres dans l'adresse (`verdict`, `statut`, `alertes`, `noeud`). Les fiches
+  (`components/dev/TemplateReviewSheet.svelte`) ne se chargent que pour le nœud choisi, ou pour tout ce
+  que les filtres retiennent, 80 au plus (`MAX_SHEETS`). Une fiche : statut, niveau, rangement, point
+  et ses bornes (`docs/systeme/programmes/bornes/*.json`, intégrés au build par `$lib/server/point-bounds`),
+  plages et conditions, specs, un aperçu par variation tiré dans le navigateur par `generateInstance`
+  sur le modèle réduit à cette variation (`VariationPreview`, graine 7 + i, « ↻ » en tire une autre,
+  rendu par `QuestionPreviewTabs`), et le verdict « validé / à revoir » + commentaire (actions
+  `saveReview` / `deleteReview`, table `question_template_reviews`, admin seul, un verdict par modèle).
+  Alertes : sans point, sans nœud, deux points d'un programme, point absent des bornes ou archivé,
+  **modifié depuis le verdict** (`updated_at` du modèle postérieur au verdict — les migrations de
+  rangement le font bouger aussi). Reprise des verdicts des anciennes pages à cocher :
+  `scripts/questions/reprise-verdicts.ts` (simulation par défaut, `--ecrire`).
 - Automaths : `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus l'ajout au panier),
   `CartFloatingButton` (vers `/automaths/panier`), `CartQuestionCard` (tuile d'une catégorie du
   panier : durée par pas de 5 s entre 5 et 300 s, nombre de questions).
@@ -192,12 +210,16 @@ lisibles par les élèves et par anon (Automaths) — réponses attendues compri
 ### 1. Le modèle
 
 Un `QuestionTemplate` porte des **catégories** (`theme`, `domain`, `subdomain`, `level` ≥ 1),
-des `grades`, un `status` (`draft` | `published`), des `options` (contraintes, `shuffleChoices`,
+des `grades`, un `status` (`draft` | `published`), des `options` (contraintes,
 `orderIndependent`, `courseCard`, `courseQuestion`, `answerAssumptions`), des `testSpecs`, un
 `shared` (valeurs par défaut) et au moins une **variation**.
 
 Le **type** n'est pas déclaré : `getQuestionType` le déduit — `options.courseCard` → `course_card`
-(ADR 0009), des `choices` (variation ou `shared`) → `multiple_choice`, sinon `fill_in_blanks`.
+(ADR 0009), sinon `fill_in_blanks`. Le type `multiple_choice` n'existe plus : un QCM est une
+question réduite à une **case choix** ([ADR 0033](../adr/0033-le-qcm-est-une-case.md), lot 5 du
+2026-10-28). Les champs du QCM de modèle (`choices`, `correctChoiceIndex`, `multipleAnswers`,
+`options.shuffleChoices`, `testSpecs[].selectedChoices`) sont **refusés** à l'enregistrement
+(400, « le QCM est une case… », `retiredQcmFieldSchema` ; `null` admis), jamais retirés en silence.
 
 **Case choix dans l'éditeur** (`choice-case-editor.ts`, `ChoiceCaseEditor.svelte`, PR 1b du chantier
 `figure-et-choix`). L'énoncé effectif de la variation (le sien, sinon le partagé) fait foi :
@@ -238,7 +260,7 @@ les fait différer). Une expression (`<<expr:…>>`) n'est jamais réalignée : 
 
 - `variables` : **fusionnées** — celles de `shared` d'abord, une variable de la variation de même
   nom remplace celle de `shared` (`mergeVariables`).
-- Tout le reste (`statement`, `choices`, `correction`, `conditions`, `validationRules`,
+- Tout le reste (`statement`, `correction`, `conditions`, `validationRules`,
   `requiredForm`, `blankDefaults`, `answerFormats`) : la variation **remplace en bloc** la valeur
   de `shared` (`??`), sans fusion champ par champ.
 - `blanks` : par variation seulement.
@@ -265,7 +287,7 @@ N, reste N + 1, seul N écrit ; `operationBlanks` les liste toutes deux). Sa ré
 (`operationExpectedAnswer` ; division : `divisionExpectedAnswers`, forme la plus simple), jamais du modèle : `blanks[]` peut l'omettre
 (case insérée à son rang ; un modèle sans autre case n'a pas besoin de `blanks`), ou lui donner
 une entrée de réglages avec `expectedAnswer` vide — une réponse écrite est refusée. Un bloc en
-erreur fait échouer la génération (message situé). Une ligne `case:` écrite par l'auteur aussi. Dans un QCM ou une carte de cours, le bloc ne porte aucune case. La case est `type: 'math'`,
+erreur fait échouer la génération (message situé). Une ligne `case:` écrite par l'auteur aussi. Dans une carte de cours, le bloc ne porte aucune case. La case est `type: 'math'`,
 `operation: true`, jugée comme une case ordinaire. Un bloc ``construction (au premier niveau,
    sinon échec) compte aussi pour **une** case, `case: N` posé en tête du bloc ; son contenu est mis à
    l'abri (un `?` ou un `[_]` du bloc ne crée pas de case). `blanks[]` peut l'omettre ; une réponse
@@ -301,6 +323,20 @@ aucun point ou barre pas construite).
 Horloge à placer : case `type: 'text'` (une heure n'est pas un calcul), réponse de l'élève = les crans
 des deux aiguilles (`'47 25'`, `-` pour une aiguille pas posée), juge à part (`isPlacedTimeCorrect`,
 `utils/horloge-placer.ts`, dans `validateSingleBlank` et `validateBlankValue`).
+Étiquettes à ranger (```ranger, chantier `reponses-a-placer` § 21, 22 ; `ranger-parser.ts`,
+`findRangersToPlace`) : le prof écrit les étiquettes dans le **bon** ordre ; une case par place
+(`buildCaseCount` = nombre d'étiquettes, `point` = rang de la place), `type: 'text'`,
+`construire: 'ranger'` (« étiquettes à ranger »). Au tirage, `rangerOrder` (`utils/ranger.ts`) mélange
+les étiquettes sur la source de l'instance, jamais dans l'ordre écrit ni à l'envers (dès 3 ; à 2,
+l'envers est le seul désordre) ; le bloc de l'énoncé de l'instance est réécrit dans l'ordre **affiché**
+(`replaceRangerBlocks`, `serializeRangerBlock`) — l'ordre écrit trahirait la réponse, la version
+publique n'a donc rien à cacher ni à reconvertir. Réponse attendue d'une place = la position
+**affichée** de l'étiquette écrite à ce rang (`'2'`) ; l'élève répond la position de l'étiquette posée ;
+juge à part : égalité stricte (l'étiquette, jamais sa valeur : `1 + 3/4` n'est pas `7/4`). Refus :
+moins de 3 (`RANGER_MIN_LABELS_IN_QUESTION` : à 2, l'affichage serait toujours l'inverse, la réponse se
+devinerait) ou plus de 8 étiquettes, vide, `signe:` autre que `<` / `>`. Deux étiquettes identiques après
+tirage : condition implicite, le tirage des variables est refait (`rangerLabelsCollide`, résolution à part
+sur une source jetable) ; toujours identiques après 100 essais → échec, message au prof.
 Un bloc ``choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
    compte pour **une** case, `case: N` posé en tête du bloc (`choix-parser.ts`, lu dans
    `assignBlankIndices`) : réglages en tête (`plusieurs: oui`, `melanger: non` ; défauts : une
@@ -308,7 +344,7 @@ Un bloc ``choix (case « choix », chantier `figure-et-choix`, au premier niveau
    si un choix contient un bloc). Les choix sont résolus avec l'énoncé (variables, `{{if}}`). Une
    case dans un choix (`?` en formule, `[_]`) est refusée, message situé. La case **est** dans
    `blanks[]` : sa bonne réponse `expectedAnswer` = indice(s) d'**origine** (« 1 », « 0;2 »,
-   `{{eval:…}}`), contrôlée comme le QCM (≥ 2 choix ; exactement une bonne sans `plusieurs: oui`,
+   `{{eval:…}}`), contrôlée (≥ 2 choix ; exactement une bonne sans `plusieurs: oui`,
    au moins une avec ; hors des choix → échec ; une bonne réponse **calculée** (avec `{{…}}`) peut
    répéter un indice, qui compte une fois, comme `0;{{f1}};{{eval:2*f2}}` où un choix faux rend `0` — la réponse d'un élève
    qui répète un indice reste illisible). `type: 'choice'`, `choice: { choices, order,
@@ -316,12 +352,11 @@ multiple }` (choix dans l'ordre d'origine, `order[position]` = indice d'origine)
    à son rang (Fisher-Yates sur la source de l'instance) ; le bloc de l'énoncé de l'instance liste
    les choix dans l'ordre **affiché**, `melanger:` retiré. `orderIndependent` → échec. Contrôle
    statique à l'enregistrement : `choiceAnswerCountErrors` (« Variation 1, case 2 (bloc choix) : … »),
-   bonne réponse dynamique vérifiée au tirage seulement. Un bloc choix dans un QCM est refusé.
+   bonne réponse dynamique vérifiée au tirage seulement.
 6. Chaque case reçoit ses réglages fusionnés : **case ▸ `blankDefaults`** pour `precision`,
    `unit`, `answerKind`, `rulesSuffice`, `acceptDecimal`… ; `requiredForm` : case ▸
    `blankDefaults` ▸ `requiredForm` de la variation ; `validationRules` : case ▸ variation.
-7. QCM : choix mélangés (`shuffledChoices`), sauf `options.shuffleChoices === false` (Vrai/Faux).
-8. Correction résolue, puis **mode B** : `generateCorrection` pré-rend les étapes si
+7. Correction résolue, puis **mode B** : `generateCorrection` pré-rend les étapes si
    `correction.generatedSteps` est déclaré (voir § 7).
 
 **Sens de deux majuscules collées** (`AB` : longueur du segment ou produit A × B) : résolu **une
@@ -369,6 +404,7 @@ Natures de réponse :
 | Monnaie à construire        | bloc ```monnaie (`construire: N`)            | case ordinaire : la somme posée, coupures libres dans la réserve (`monnaie-construire.ts`)                                                                                          |
 | Droite à placer             | bloc ```line (`placer: N`)                   | case ordinaire : la graduation du point de l'élève (`number-line-placer.ts`), exacte, sans tolérance ; une case par point                                                           |
 | Barres à construire         | bloc ```barres (`placer: Danse`, `axe:`)     | case ordinaire : la hauteur posée (`barres-placer.ts`), aimant à l'unité ; une case par barre                                                                                       |
+| Étiquettes à ranger         | bloc ```ranger (`- …`, `signe: <`)           | égalité stricte : la position affichée de l'étiquette posée ; une case par place                                                                                                    |
 | Horloge à placer            | bloc ```horloge (`placer: 9 h 25`)           | `isPlacedTimeCorrect` (`horloge-placer.ts`) : grande aiguille sur la minute ; petite pile sur l'heure à minutes = 0, entre deux heures sinon, ou sur le cran de sa vraie place      |
 | Texte                       | `[_]` hors formule                           | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                                                                                                   |
 | Grandeur                    | `unit: { expected, required? }`              | `validateQuantityAnswer` (conversion, unité imposée)                                                                                                                                |
@@ -377,8 +413,7 @@ Natures de réponse :
 | Vecteur dans une case       | `answerKind: 'vecteur'`                      | `vector-answer.ts` ; `vectorMode` `exact` ou `colineaire`                                                                                                                           |
 | Matrice dans une case       | `answerKind: 'matrice'`                      | `matrix-answer.ts` (dimensions, puis chaque coefficient)                                                                                                                            |
 | Primitive / solution d'ED   | `answerKind: 'primitive'` / `'solution-ed'`  | `calculus/` (dérivation / substitution) ; `solutionMode`                                                                                                                            |
-| QCM                         | `choices` (+ `multipleAnswers`)              | `validateChoice` ; indices d'**origine** (voir invariants)                                                                                                                          |
-| Case choix                  | bloc ```choix (`plusieurs:`, `melanger:`)    | `statusFromChoices`, comme le QCM ; réponse = indices d'origine cochés, triés, séparés par `;` (`choice-case.ts`)                                                                   |
+| Case choix                  | bloc ```choix (`plusieurs:`, `melanger:`)    | `statusFromChoices` (1 / ½ / 0) ; réponse = indices d'origine cochés, triés, séparés par `;` (`choice-case.ts`)                                                                     |
 | Carte de cours              | `options.courseCard`                         | rien : auto-évaluation (`validateAnswer` rend un message)                                                                                                                           |
 
 Après « Valider », la `FlashCard` colore chaque case au recto avec le verdict par case du
@@ -458,7 +493,7 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    (« Il manque des réponses. »). Réponse illisible, hors bornes ou répétée → fausse. Une case choix
    cochée en partie rend la question **non juste** (`isCorrect` faux) et, au barème, un ½ **partiel**
    (`gradeBlanks`, à revoir pour le SRS) : une question réduite à une case choix est notée
-   exactement comme le QCM ; mêlée à d'autres cases, le barème des cases (`statusFromBlankStatuses`).
+   exactement comme l'ancien QCM ; mêlée à d'autres cases, le barème des cases (`statusFromBlankStatuses`).
    Évaluation notée : la version publique (`PublicBlank.choice`) ne donne que les choix dans l'ordre
    affiché ; le navigateur envoie des positions affichées, que le serveur ramène aux indices
    d'origine avant de corriger et d'enregistrer (`toOriginalChoiceValues`, dans
@@ -509,9 +544,8 @@ même configuration, `readingOf(instance)` (`formula-reading.ts`) : fonctions d�
 reçoivent pas (aucune réponse attendue à majuscules collées en base).
 
 Plusieurs cases : positionnelles par défaut ; `options.orderIndependent` → appariement maximal
-réponses ↔ cases (pas glouton). QCM : `validateChoice` seul — aucune forme jugée, l'élève coche
-sans rien écrire (le jugement d'écriture des QCM, jamais atteint, est retiré le 2026-10-22). `validateAnswerDetailed` rend le verdict par case / par choix
-qu'utilise la correction.
+réponses ↔ cases (pas glouton). `validateAnswerDetailed` rend le verdict par case qu'utilise la
+correction.
 
 Où la validation tourne : **dans le navigateur** partout (ADR 0001 : le serveur reçoit un verdict),
 **sauf les évaluations notées**, corrigées par le serveur avec la même fonction (ADR 0015), sous un
@@ -522,7 +556,7 @@ budget de temps (`gradeWithinBudget`, 5 s par envoi) ; barème `gradeQuestion` /
 
 `buildExpectedResult` décrit, en données sans couleur, ce que l'élève voit d'abord : `3 + 5 ≠ 9`
 puis `= 8` encadré, l'énoncé rempli par les solutions, « Ta réponse : » case par case, les choix
-d'un QCM (bon / coché à tort / oublié), les remarques de forme. Spécification R1–R10 :
+d'une case choix (bon / coché à tort / oublié, à leur place dans l'énoncé), les remarques de forme. Spécification R1–R10 :
 [resultat-attendu-progress](../archive/wip/resultat-attendu-progress.md). Pur et sans exception
 (R10). Rendu par `ExpectedResultView.svelte` ; la réponse de l'élève passe par
 `student-answer-safety.ts` dès qu'elle s'affiche chez un autre (copie lue par le prof).
@@ -543,7 +577,10 @@ placé. » ; plusieurs points : UNE ligne `build` pour la droite, à la place de
 `answers` (réponse et statut de chaque point), juste quand tous le sont, « rien placé » quand aucun ne
 l'est ; diagramme en barres à construire, ``barres `placer:`, de même : UN diagramme, `answers` par
 barre, « Tu n'as rien posé. » quand aucune n'est construite ; `BarresPlacer` verrouillé avec les barres
-de l'élève, ou `StatChart` avec toutes les barres justes) : une ligne `build` (genre, texte
+de l'élève, ou `StatChart` avec toutes les barres justes ; étiquettes à ranger, ``ranger, de même : UNE
+ligne `build`, `answers` par place, et `expected` (la bonne position de chaque place, que le bloc ne dit
+pas) ; `RangerPlacer` verrouillé avec les places de l'élève, fausses marquées, et le rangement juste
+dessous) : une ligne `build` (genre, texte
 du bloc sans `case:`, valeur posée), sur le même patron que la figure. `BuildAnswer.svelte` dessine le
 plan **verrouillé, sans réserve** : la construction de l'élève (cadre vert si juste ; faux : « Tu as
 posé 32 €. » ou « Ta collection vaut 32. » et une construction juste à côté), ou la construction juste
@@ -560,9 +597,9 @@ commune). À l'écran, après « Valider », ses traits restent gris (`FigureACo
 Garde : `expected-result-figure-de-travail.test.ts`.
 
 Case « choix » : le bloc reste **à sa place** dans l'énoncé rempli ; la ligne `filled-statement`
-porte `choiceCases` (par case : ses choix, statuts du QCM, ordre affiché). À l'écran,
+porte `choiceCases` (par case : ses choix, leurs statuts, ordre affiché). À l'écran,
 `ExpectedResultView` les pose par `ChoiceCasesScope` (contexte `choice-case-results`) et le bloc
-(`ChoiceBlock` → `ChoiceList`, rendu partagé avec le QCM corrigé) les affiche. « Ta réponse » est
+(`ChoiceBlock` → `ChoiceList`) les affiche. « Ta réponse » est
 écrite sans les blocs choix (`withoutChoiceCases`), et omise s'il ne reste aucune autre case :
 les choix ne sont jamais montrés deux fois. `CorrectionCard` pose aussi les bons choix de la
 réponse attendue seule (vue concise). Correction : `{{solution}}` d'une case choix = le texte de
@@ -635,7 +672,8 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
 
 - Enregistrement (`POST` / `PUT /api/questions/templates`, admin ; lecture prof et admin) : Zod
   (`createQuestionTemplateSchema` / `updateQuestionTemplateSchema`) + collisions d'hypothèses ;
-  en brouillon, un QCM sans « plusieurs réponses » ne peut pas avoir deux bonnes réponses.
+  en brouillon, une case choix sans `plusieurs: oui` ne peut pas avoir deux bonnes réponses ;
+  les champs du QCM retiré → 400.
 - **Un seul contrôle de publication** : `templatePublicationErrors`
   (`src/lib/server/template-publication.ts`) = `checkTemplate` (structure, schéma strict, specs
   vertes, une spec `correct` par variation, 50 tirages par variation) + dépendances circulaires.
@@ -675,9 +713,10 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
    équivalente (CONTEXT.md).
 5. **Le hasard ne se recalcule jamais** depuis la graine : un tirage dépend de tout ce qui précède
    (une source consommée en ordre). Ajouter un tirage avant un autre change les instances déjà vues.
-6. **Indices d'origine vs positions affichées** (QCM) : `correctChoiceIndex` et `validateAnswer`
-   parlent en ordre d'origine ; l'élève voit l'ordre mélangé. Toute traduction passe par
-   `choices.ts` (la lettre du message est la position affichée).
+6. **Indices d'origine vs positions affichées** (case choix) : `expectedAnswer`, la réponse
+   enregistrée et `validateAnswer` parlent en ordre d'origine ; l'élève voit l'ordre mélangé
+   (`choice.order`). En évaluation, le serveur ramène les positions affichées
+   (`toOriginalChoiceValues`) ; la lettre d'un message est la position affichée.
 7. **Une réponse hostile ne coûte rien** : garde d'écriture avant parse (`answer-complexity.ts`,
    limites ≥ 3 × le maximum du corpus), puis budget de temps par copie côté serveur. Statut
    `incorrect`, jamais `empty` (une case vide minoritaire vaut ½).
@@ -687,8 +726,7 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
 9. **Carte de cours** : jamais dans une évaluation notée (`excludeCourseCards`), pas de spec ;
    `checkTemplate` vérifie seulement un recto et un verso non vides. Une carte de cours est
    toujours une question de cours.
-10. **Plusieurs bonnes réponses** : `multipleAnswers` est un réglage du modèle ; coupé, chaque
-    liste de choix ne garde que sa première bonne réponse (`keepFirstCorrectChoice`).
+10. **Plusieurs bonnes réponses** : réglage de la case choix (`plusieurs: oui`), jamais du modèle.
 11. **`cleanCoefficients`** nettoie `1x-1y+0=0` en `x-y=0` partout (énoncé, attendu, choix,
     étapes) sans jamais toucher une fonction ni un facteur non premier d'un produit. La
     formule nettoyée est réécrite en notation maison (`readableCustom`) : `toCustom` y écrit la

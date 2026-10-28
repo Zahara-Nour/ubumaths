@@ -5,18 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1928 (fichiers du lot 1 mergés)._
+_Mis à jour le 2026-10-28, après #1930 (rangement du lot 1 joué en prod)._
 
-- **État** : lot 1 (5 modèles, § 8) écrit dans `scripts/questions/3-lot-1/` (`lot-3-1.py`) ; simulation verte
-  (specs, tirages), essai en base locale, affichage vérifié dans l'aperçu admin.
-- **Prochaine action** : **David** lance
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-1 --publier` (brouillons en prod) ; relever
-  les `id` ; migration nœud + tag des 5 modèles + rangement de 90dca27a / acbd2280 (§ 8.2).
-- **En attente de David** : le `--publier` en prod (#1928 mergée).
-- **Pièges en cours** : horodatages de migration pris par d'autres sessions (vérifier `schema_migrations` en prod
-  ET `origin/main`) ; `db:migrate` bloqué si une migration plus ancienne n'est pas jouée (`--include-all` =
-  David) ; x² = a : `shared.blankDefaults.answerKind = 'intervalles'` obligatoire ; § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : aucun (lot 1 fichiers retiré) ; la migration aura le sien.
+- **État** : lot 1 en prod en brouillon, rangé (migration `20261029003100` jouée, vérifiée au MCP : 5 sur leur
+  nœud, tags 3-003/007/008/009/010 ; 90dca27a et acbd2280 en [3], tag 3-001, publiés). Page à cocher publiée :
+  https://claude.ai/artifact/RzBxX9RLjAtvkNnTWssq4X (collection `verdicts`, 0/5 au départ).
+- **Prochaine action** : David relit ; `ArtifactData list verdicts`, compter les 5 verdicts ; « À revoir » →
+  corriger (§ 7 de `couvrir-un-niveau.md`) ; tout OK → `publier-lot.ts --dir scripts/questions/3-lot-1` en
+  simulation, puis David `--publier`. Ensuite : phase 0 du lot 2 (§ 4).
+- **En attente de David** : la relecture de la page à cocher. 77ab770d (facteurs premiers) : bloc choix non
+  dessiné sur la page, à jouer dans l'aperçu admin.
+- **Pièges en cours** : `db:migrate` refusé par le classifieur du mode auto → David le lance avec `!` ;
+  test `forfait-palotin` qui dépasse 5 s en CI (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
+- **Worktree / branche** : aucun (worktree de #1930 retiré).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -253,3 +254,20 @@ modèles publiés de plus, ceux de 4e les perdent. Aucune règle ne change.
 - Base locale : 5 brouillons créés ; aperçu admin : énoncés (préfixes, μ, cases en exposant, fractions, case
   choix) affichés juste ; case choix jouée, « Juste ». La saisie MathLive n'a pas pu être pilotée par le
   navigateur : le jugement des cases repose sur les specs.
+
+### 8.7 Lot 1 : en prod, rangement (2026-10-28)
+
+- Brouillons créés en prod par David (`create-questions --publier`) : 93998734 (Problèmes avec des fractions),
+  35f82aad (Problèmes et notation scientifique), 3806ee3d (Résoudre x² = a), 70449b92 (Problèmes avec la racine
+  carrée), 77ab770d (Décomposer en facteurs premiers) ; vérifiés au MCP : brouillons [3], sans nœud ni tag.
+- Migration `20261029003100_questions_3_lot1_rangement_tags` (générée par `lot-rangement-3-1.py`, relevé
+  `etat-prod-2026-10-28-3e-lot1/`) : les 5 sur le nœud de leur point (93998734 sur « Fractions : calculs >
+  fraction d'une quantité »), tags 3-003, 3-007, 3-008, 3-009, 3-010 ; 90dca27a et acbd2280 : [4] → [3],
+  4-005 → 3-001, nœud gardé. Le gabarit du lot 0 accepte désormais un nœud d'avant vide (brouillon neuf).
+- Test `questions-3-lot1-rangement-tags` : 21 verts, 10 rouges sans la migration (migration vidée, rollback gardé).
+
+### 8.8 Lot 1 : rangement joué, page à cocher (2026-10-28)
+
+- #1930 mergée (CI : run annulé puis `forfait-palotin` en délai dépassé, sans rapport, relancé vert) ;
+  `db:migrate` lancé par David ; MCP : les 7 modèles conformes à l'en-tête de la migration.
+- Page à cocher : https://claude.ai/artifact/RzBxX9RLjAtvkNnTWssq4X (alerte : 77ab770d, bloc choix non dessiné).

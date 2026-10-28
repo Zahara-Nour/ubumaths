@@ -10,7 +10,7 @@
  * - Consigne d'une comparaison R1 (Q104) : l'énoncé sans la formule à case.
  */
 
-import { getQuestionType, type QuestionInstance, type ValidationStatus } from './types';
+import type { QuestionInstance, ValidationStatus } from './types';
 import { gradeQuestion } from './grading';
 import type { StudentAnswer } from '$lib/utils/answer-validator';
 import type { AnswerData } from '$lib/types/question-display';
@@ -31,10 +31,6 @@ export function studentAnswerFromAnswerData(
 	data: AnswerData | undefined
 ): StudentAnswer {
 	const value = data?.value;
-	if (getQuestionType(instance) === 'multiple_choice') {
-		const list = value === undefined || value === '' ? [] : [value].flat();
-		return { choiceIndexes: list.map(Number).filter((n) => Number.isInteger(n)) };
-	}
 	const blanks = instance.blanks ?? [];
 	const raw = Array.isArray(value) ? value.map(String) : [];
 	const values = blanks.map((_, index) => raw[index] ?? '');
@@ -53,29 +49,14 @@ export function globalVerdictOf(status: ValidationStatus): GlobalVerdict {
 
 /**
  * Statut global d'entraînement par le barème de l'évaluation (Q105) : ½ pour une
- * forme non optimale ET pour une réponse partielle (cases en partie vides, QCM
- * incomplet). `gradeQuestion` lit les positions AFFICHÉES d'un QCM : les indices
- * d'origine y sont ramenés (ordre d'origine si la question n'est pas mélangée).
+ * forme non optimale ET pour une réponse partielle (cases en partie vides, case
+ * choix incomplète).
  */
 export function trainingStatus(
 	instance: QuestionInstance,
 	answer: StudentAnswer
 ): ValidationStatus {
-	if (getQuestionType(instance) !== 'multiple_choice') {
-		return gradeQuestion(instance, { values: answer.values ?? [] }).status;
-	}
-	const shuffled =
-		// Même condition que buildExpectedResult : badge et statuts par choix lisent le même ordre
-		instance.shuffledChoices && instance.shuffledChoices.length === (instance.choices ?? []).length
-			? instance.shuffledChoices
-			: (instance.choices ?? []).map((choice, originalIndex) => ({
-					content: choice.content,
-					originalIndex
-				}));
-	const choices = (answer.choiceIndexes ?? [])
-		.map((index) => shuffled.findIndex((c) => c.originalIndex === index))
-		.filter((position) => position >= 0);
-	return gradeQuestion({ ...instance, shuffledChoices: shuffled }, { choices }).status;
+	return gradeQuestion(instance, { values: answer.values ?? [] }).status;
 }
 
 /** Formule de l'énoncé qui porte la case (marqueur ou convention « expression ») */

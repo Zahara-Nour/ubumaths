@@ -6,14 +6,9 @@
 	"template": {
 		"title": "Comparer deux fractions",
 		"description": "Fractions de dénominateurs multiples l'un de l'autre",
-		"shared": {
-			"statement": "Quelle est la plus petite de ces $2$ fractions ?",
-			"correctChoiceIndex": ["{{if:f<g|0|1}}"]
-		},
 		"variations": [
 			{
-				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
-				"correctChoiceIndex": ["{{if:f<g|0|1}}"],
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?\n\n```choix\n- $$\\dfrac{{{b}}}{{{c}}}$$\n- $$\\dfrac{{{eval:d}}}{{{eval:c*a}}}$$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -46,18 +41,14 @@
 						"Les deux fractions ont maintenant le même dénominateur : on compare les numérateurs. $\\dfrac{{{eval:min(a*b,d)}}}{{{eval:a*c}}}<\\dfrac{{{eval:max(a*b,d)}}}{{{eval:a*c}}}$."
 					]
 				},
-				"choices": [
+				"blanks": [
 					{
-						"content": "$$\\dfrac{{{b}}}{{{c}}}$$"
-					},
-					{
-						"content": "$$\\dfrac{{{eval:d}}}{{{eval:c*a}}}$$"
+						"expectedAnswer": "{{if:f<g|0|1}}"
 					}
 				]
 			},
 			{
-				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
-				"correctChoiceIndex": ["{{if:f<g|0|1}}"],
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?\n\n```choix\n- $$\\dfrac{{{c}}}{{{b}}}$$\n- $$\\dfrac{{{eval:d}}}{{{eval:b*a}}}$$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -90,17 +81,16 @@
 						"Les deux fractions ont maintenant le même dénominateur : on compare les numérateurs. $\\dfrac{{{eval:min(a*c,d)}}}{{{eval:a*b}}}<\\dfrac{{{eval:max(a*c,d)}}}{{{eval:a*b}}}$."
 					]
 				},
-				"choices": [
+				"blanks": [
 					{
-						"content": "$$\\dfrac{{{c}}}{{{b}}}$$"
-					},
-					{
-						"content": "$$\\dfrac{{{eval:d}}}{{{eval:b*a}}}$$"
+						"expectedAnswer": "{{if:f<g|0|1}}"
 					}
 				]
 			}
 		],
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"theme": "Fractions",
 		"domain": "Apprivoiser",
 		"subdomain": "Comparer",
@@ -117,10 +107,12 @@
 					"c": "9",
 					"d": "72"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "mauvais choix",
@@ -131,10 +123,12 @@
 					"c": "9",
 					"d": "72"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "9/8 vs 60/56 : 60/56",
@@ -145,10 +139,12 @@
 					"c": "9",
 					"d": "60"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "3/5 vs 25/45 : 25/45",
@@ -159,10 +155,12 @@
 					"c": "5",
 					"d": "25"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "mauvais choix",
@@ -173,10 +171,12 @@
 					"c": "5",
 					"d": "25"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "3/5 vs 28/45 : 3/5",
@@ -187,10 +187,12 @@
 					"c": "5",
 					"d": "28"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}

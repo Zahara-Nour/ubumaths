@@ -1,0 +1,222 @@
+{
+	"title": "Traduire une situation par un nombre relatif",
+	"description": "Repérer par un nombre relatif une température (4 degrés au-dessous de zéro : −4 °C), une altitude, une date avant J.-C., un étage en sous-sol",
+	"grades": ["5"],
+	"theme": "Relatifs",
+	"domain": "Apprivoiser",
+	"subdomain": "Grandeurs négatives",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le thermomètre indique ${{a}}$ degrés au-dessous de zéro.\n\nQuelle température indique-t-il ?\n\n$?~\\unit{°C}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nombres relatifs.** On repère par un nombre **négatif** ce qui est en dessous (ou avant) le repère $0$ ; par un nombre **positif** ce qui est au-dessus (ou après).",
+					"Au-dessous de zéro, la température est négative : $\\textcolor{{{color:primary.0}}}{-{{a}}~\\unit{°C}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:s==0|Un plongeur se trouve à ${{a}}$ mètres sous le niveau de la mer.|Un randonneur se trouve à ${{a}}$ mètres au-dessus du niveau de la mer.}}\n\nQuelle est son altitude ?\n\n$?~\\unit{m}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "2..900"
+				},
+				{
+					"name": "alt",
+					"expression": "eval:(2*s-1)*a"
+				}
+			],
+			"conditions": ["s==1 || a<=60"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{alt}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Altitude.** Le niveau de la mer est l'altitude $0$ : en dessous, l'altitude est négative ; au-dessus, elle est positive.",
+					"{{if:s==0|Sous le niveau de la mer|Au-dessus du niveau de la mer}} : l'altitude est $\\textcolor{{{color:primary.0}}}{{{alt}}~\\unit{m}}$."
+				]
+			}
+		},
+		{
+			"statement": "Sur une frise chronologique, l'an $1$ est repéré par le nombre $1$, et les années avant Jésus-Christ par des nombres négatifs.\n\nQuel nombre repère l'an ${{a}}$ avant J.-C. ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..800"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nombres relatifs.** On repère par un nombre **négatif** ce qui est en dessous (ou avant) le repère $0$ ; par un nombre **positif** ce qui est au-dessus (ou après).",
+					"Avant J.-C., l'année est repérée par un nombre négatif : $\\textcolor{{{color:primary.0}}}{-{{a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un immeuble, le rez-de-chaussée est l'étage $0$. L'ascenseur s'arrête au {{if:a==1|premier|{{if:a==2|deuxième|troisième}}}} sous-sol.\n\nQuel est le numéro de cet étage ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nombres relatifs.** On repère par un nombre **négatif** ce qui est en dessous (ou avant) le repère $0$ ; par un nombre **positif** ce qui est au-dessus (ou après).",
+					"Les sous-sols sont sous le rez-de-chaussée : leurs numéros sont négatifs. Le numéro est $\\textcolor{{{color:primary.0}}}{-{{a}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 degrés au-dessous de zéro : −4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (signe oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plongeur à 15 m sous la mer : −15",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"a": "15",
+				"alt": "-15"
+			},
+			"answers": ["-15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 15",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"a": "15",
+				"alt": "-15"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Randonneur à 450 m : 450",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"a": "450",
+				"alt": "450"
+			},
+			"answers": ["450"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −450",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"a": "450",
+				"alt": "450"
+			},
+			"answers": ["-450"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "An 52 avant J.-C. : −52",
+			"variationIndex": 2,
+			"variables": {
+				"a": "52"
+			},
+			"answers": ["-52"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 52",
+			"variationIndex": 2,
+			"variables": {
+				"a": "52"
+			},
+			"answers": ["52"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2e sous-sol : −2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
