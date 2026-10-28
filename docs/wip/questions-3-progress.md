@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 0 en PR #1921._
+_Mis à jour le 2026-10-28, après #1921 (mergée, pas encore jouée en prod)._
 
-- **État** : lot 0 écrit (§ 7), PR #1921 ouverte ; CI et `security-auditor` en cours.
-- **Prochaine action** : CI verte + auditeur sans bloquant → merge, `db:migrate` depuis le dépôt principal, vérification MCP ; puis phase 0 du lot 1 (puissances et nombres : 3-007, 3-008, 3-009, 3-010, 3-003).
-- **En attente de David** : rien (sortie de 90dca27a / acbd2280 du lot à lui signaler, § 7).
-- **Pièges en cours** : d'autres sessions (4e, 5e, 2de) rangent les mêmes modèles du collège : relire `supabase/migrations/` d'`origin/main` avant chaque relevé ; QCM = case « choix » seulement ; relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot.
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, `feat/questions-3-lot0`.
+- **État** : lot 0 mergé (#1921) ; migrations `20261028213000_questions_3_contenu` et `20261028213100_questions_3_rangement_tags` **pas encore jouées** : `db:migrate` refuse tant que `20261028183000_questions_2de_lecture_a_rangement_tags` (session 2de, plus ancienne) ne l'est pas.
+- **Prochaine action** : après le `db push --include-all` de David, vérifier en prod (MCP) : 17 modèles aux niveaux, nœuds et tags du § 6.2, 290dcf6f à 4 variations ; prévenir les sessions 4e (17f3dfcd, qu'elle passe ensuite en 2de) et 2de (sa migration jouée) ; puis phase 0 du lot 1.
+- **En attente de David** : `pnpm exec supabase db push --include-all` (joue la 2de + les 2 de la 3e).
+- **Pièges en cours** : horodatages de migration pris par d'autres sessions (20261028200000 l'était : renuméroté, § 7) — vérifier `schema_migrations` en prod avant la PR ; d'autres sessions rangent les mêmes modèles : relire les migrations d'`origin/main` avant chaque relevé ; 90dca27a / acbd2280 → 3e + 3-001 à reprendre dans un lot suivant (validé par David via la session 4e, gardes sur [4] + 4-005).
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, `feat/questions-3-lot0` (mergée, à retirer après vérification).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -184,3 +184,9 @@ Restent en 3e sans tag : 77b82211, cf4468c3. a1ae1558 (exposants positifs) reste
   17 modèles, 17 niveaux changés, 4 déplacés (65110463, 8ac99be4, 2bdb3db6, 336451af), 16 tags posés.
 - **Tests** `questions-3-contenu`, `questions-3-rangement-tags` : rouges les migrations vidées (17 échecs),
   verts avec (31 verts, 17 sautés = options du helper sans objet), relancés après le commit.
+- **Revue** : `security-auditor` — 1 bloquant : `20261028200000` déjà joué en prod (6e) ; renuméroté en
+  `20261028213000` / `20261028213100` (ff8aa8005), preuves rouge et verte refaites ; SQL sans finding.
+- **Livré** : #1921 mergée (CI verte sur ff8aa8005). `db:migrate` bloqué par la migration 2de non jouée (voir
+  « Reprendre ici »).
+- **Coordination 4e** (message de la session 4e, validé par David) : 17f3dfcd ira ensuite en 2de (2-260) par
+  le lot 0 de la 4e, après nos migrations ; 90dca27a et acbd2280 → 3e + 3-001 dans un lot suivant de la 3e.
