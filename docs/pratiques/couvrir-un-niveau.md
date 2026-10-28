@@ -4,6 +4,7 @@ couvre:
   - scripts/questions/page-a-cocher.ts
   - scripts/questions/page-a-cocher.html
   - scripts/questions/publier-lot.ts
+  - scripts/questions/sonde-courbes.ts
   - scripts/lib/page-a-cocher.ts
   - scripts/lib/lot-questions.ts
 ---
@@ -184,6 +185,10 @@ Dans un worktree (`git worktree add -b feat/questions-<lot> ../ubumaths-wt-quest
    l'élève en `incorrect`.
 3. `pnpm tsx scripts/create-questions.ts --dir scripts/questions/<niveau>-<lot>` (simulation :
    `checkTemplate` sur chaque fichier, specs comprises) → tout vert.
+   Lot qui dessine des courbes : `pnpm tsx scripts/questions/sonde-courbes.ts --dir …` tire
+   chaque modèle 300 fois et passe chaque bloc ```courbe (énoncé et corrigé) au parseur →
+   **0 problème** avant la page à cocher ; `--montre <fichier.json> <graine>` affiche la variation
+   fautive.
 4. Base **locale** : `set -a; . ./.env.local; set +a` puis `create-questions … --publier`
    (sans cela, le script vise `.env` = la PROD). Jouer chaque modèle dans l'aperçu admin
    (`/dashboard/admin/questions/<id>/preview`, `admin@local.test`), une réponse juste, une fausse,
