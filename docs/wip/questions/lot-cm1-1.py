@@ -387,7 +387,7 @@ MODELES = {
     '09-dixieme-et-centieme': modele(
         'Écrire $\\dfrac{1}{10}$ et $\\dfrac{1}{100}$ en écriture décimale',
         '1/10 = 0,1 et 1/100 = 0,01, dans les deux sens',
-        'Fractions', 'Apprivoiser', 'Forme décimale', 13, DIXIEME_CENTIEME, SPECS_DIXIEME),
+        'Fractions', 'Apprivoiser', 'Forme décimale', 14, DIXIEME_CENTIEME, SPECS_DIXIEME),
 }
 
 for nom, m in MODELES.items():

@@ -216,7 +216,7 @@ Forme décimale 1-12. À relire juste avant `create-questions` (sessions CE2 et 
 | 6   | CM1-164 | multiplication > calcul astucieux    | Multiplier par 8                          | 8 × n : V1 n de 26 à 99, V2 n de 101 à 199 ; jamais multiple de 10, ni 25, 125 ; corrigé « le double, puis le double, puis encore le double », une étape par ligne (comme le CE2 corrigé)          | Entiers / Multiplier / Produits astucieux, 4      |
 | 7   | CM1-046 | multiplication > calcul astucieux    | Multiplier par 5                          | 5 × n : V1 n pair de 12 à 98, V2 n impair de 11 à 99, V3 n de 101 à 199 ; jamais multiple de 10 ni de 25 (exclusion du livret : 5 × 20, 5 × 100, 5 × 25) ; corrigé « × 10 puis la moitié »         | Entiers / Multiplier / Produits astucieux, 5      |
 | 8   | CM1-037 | fractions > égalité de fractions     | Relations entre fractions usuelles        | case = un entier, toujours : V1 égalités 1/2 = ?/4, 1 = ?/2, 1 = ?/4, 1 = ?/10, 1 = ?/100, 1/10 = ?/100 ; V2 calculs 1/2 + 1/2 = ?, 1/4 + 1/4 = ?/2, 1 − 1/4 = ?/4, 1 − 1/2 = ?/2, 1/2 + 1/4 = ?/4 | Fractions / Apprivoiser / Egalité de fractions, 5 |
-| 9   | CM1-038 | fractions > forme décimale           | 1/10 et 1/100 en écriture décimale        | V1 1/10 = ? et 1/100 = ? (réponse décimale) ; V2 0,1 = 1/? et 0,01 = 1/? (case = le dénominateur)                                                                                                  | Fractions / Apprivoiser / Forme décimale, 13      |
+| 9   | CM1-038 | fractions > forme décimale           | 1/10 et 1/100 en écriture décimale        | V1 1/10 = ? et 1/100 = ? (réponse décimale) ; V2 0,1 = 1/? et 0,01 = 1/? (case = le dénominateur)                                                                                                  | Fractions / Apprivoiser / Forme décimale, 14      |
 
 Une case par question, aucun QCM. Tables : modèles CM1 propres (décision du 2026-10-27), plages 2
 à 10 comme au CE2 (0 et 1 sont dans le point mais n'apprennent rien). Erreurs typiques en specs :
@@ -237,5 +237,6 @@ toujours un entier (« 1/4 + 1/4 = ?/2 »), jamais de simplification à faire.
   les tables et les fractions, 30 s pour les quatre procédures (nombres à 3 chiffres).
 - Simulation `create-questions` (prod, lecture) : 9/9 verts, 92 specs. `question:specs` : specs
   vertes, 6 000 tirages réussis, corrigés relus (corrigé du × 5 : moitié remise en formule).
+- Niveau du 038 passé de 13 à 14 : le 13 a été pris en prod entre-temps (6e, `5077e030`).
 - Base locale : 9 brouillons ; « Relations entre fractions » joué dans l'aperçu admin (case au
   numérateur, réponse fausse → correction 1/2 = 2/4).
