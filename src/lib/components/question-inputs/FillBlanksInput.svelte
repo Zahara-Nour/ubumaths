@@ -75,6 +75,7 @@
 	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
 	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
 	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
+	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
 	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
 	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
@@ -215,6 +216,7 @@
 		if (node.type === 'monnaie') return node.caseIndex !== undefined;
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
 		if (node.type === 'choice') return node.caseIndex !== undefined;
+		if (node.type === 'ranger') return node.caseIndex !== undefined;
 		return false;
 	}
 
@@ -501,7 +503,9 @@
 		if ('build' in slot) {
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
-				.querySelector<HTMLElement>('.construire-ajouter:not(:disabled), [role="slider"]')
+				.querySelector<HTMLElement>(
+					'.construire-ajouter:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled)'
+				)
 				?.focus();
 			return;
 		}
@@ -902,6 +906,35 @@
 						<BarresPlacer
 							{node}
 							answers={node.spec.toPlace.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'ranger' && node.caseIndex !== undefined && node.errors.length === 0}
+				<!-- Étiquettes à ranger : l'élève pose une étiquette par place, une case par place
+				     (N, N + 1…), la position affichée de l'étiquette posée est la réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.labels.length}
+				{@const expected = node.labels.map((_, k) => blanks[firstCase + k]?.expectedAnswer ?? '')}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : les étiquettes rangées -->
+					<BuildAnswer
+						kind="ranger"
+						source={node.source}
+						answer={null}
+						status="solution"
+						{expected}
+					/>
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<RangerPlacer
+							{node}
+							expected={flashMode ? undefined : expected}
+							answers={node.labels.map((_, k) => ({
 								value: inputStates[firstCase + k]?.value ?? '',
 								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
 								disabled: flashMode || effectiveDisabled,

@@ -9,7 +9,8 @@
  * @module ubumark/utils/ranger
  */
 
-import { shuffled, type RandomSource } from '$lib/utils/random';
+import { createRandomSource, shuffled, type RandomSource } from '$lib/utils/random';
+import type { RangerSpec } from '../types/ranger';
 
 // Constantes
 export const RANGER_MIN_LABELS = 2;
@@ -33,4 +34,23 @@ export function rangerOrder(count: number, random: RandomSource): number[] {
 		const order = shuffled(written, random);
 		if (!isIdentity(order) && !isReverse(order)) return order;
 	}
+}
+
+/**
+ * Étiquettes dans l'ordre où l'élève les voit. Dans une question (`case:` posée),
+ * le bloc est déjà mélangé : tel quel. Hors question (cours, page d'aide, PDF d'un
+ * cours), le bloc est dans l'ordre écrit, qui est la réponse : mélange fixe (même
+ * rendu au serveur et au navigateur, à l'écran et sur papier).
+ */
+export function displayedLabels(spec: Pick<RangerSpec, 'caseIndex' | 'labels'>): string[] {
+	if (spec.caseIndex !== undefined) return [...spec.labels];
+	const order = rangerOrder(spec.labels.length, createRandomSource(spec.labels.length));
+	return order.map((index) => spec.labels[index]);
+}
+
+/** Position affichée lue dans la réponse d'une place (`2`) ; `null` : place vide ou illisible */
+export function placedOfAnswer(value: string, count: number): number | null {
+	if (!/^\d{1,2}$/.test(value.trim())) return null;
+	const position = Number(value.trim());
+	return position < count ? position : null;
 }

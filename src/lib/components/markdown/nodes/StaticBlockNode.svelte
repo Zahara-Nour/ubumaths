@@ -34,6 +34,7 @@
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
 	import ChoiceBlock from './ChoiceBlock.svelte';
+	import RangerPlacer from './RangerPlacer.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -98,4 +99,6 @@
 	<Monnaie {node} />
 {:else if node.type === 'choice'}
 	<ChoiceBlock {node} />
+{:else if node.type === 'ranger'}
+	<RangerPlacer {node} />
 {/if}
