@@ -13,7 +13,7 @@
 	},
 	"scripts": {
 		"dev": "vite dev",
-		"build": "bash scripts/gros-process.sh 'Un pnpm build' bash scripts/vite-build.sh",
+		"build": "bash scripts/gros-process.sh 'Un pnpm build' vite build",
 		"analyze": "ANALYZE=1 pnpm build",
 		"preview": "vite preview",
 		"prepare": "husky",
