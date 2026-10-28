@@ -8,7 +8,10 @@ couvre:
   - src/lib/mathAST/cosmetic-transforms.ts
   - 'src/lib/questions/review/**'
   - 'src/lib/types/{question-display,question-template}.ts'
-  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail}.ts'
+  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail,template-review,point-bounds}.ts'
+  - 'src/routes/(protected)/dev/modeles/**'
+  - 'src/lib/components/dev/**'
+  - scripts/questions/reprise-verdicts.ts
   - src/lib/server/exercise-search-indexed.ts
   - src/lib/server/validation/questions.ts
   - 'src/lib/components/questions/**'
@@ -158,6 +161,22 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   qui réutilise `loadNodesWithAncestors` et `loadTemplateProgrammeTags`. Sur l'aperçu, une lecture
   en échec affiche « Fiche illisible : … » et laisse l'aperçu utilisable, jamais « aucun » ;
   l'éditeur reste en 500.
+- Revue des modèles (`/dev/modeles`, admin seul, chantier revue-modeles) : TOUS les modèles en base,
+  rangés programme > branche > notion > sous-notion (`buildReviewTree`, `$lib/questions/template-review`).
+  Le programme est le `grade` des points tagués (un modèle de deux programmes apparaît dans les deux ;
+  sans point → « Hors programme » ; sans nœud → « Non rangé »). Chaque étage compte ✅ validé · 🔶 à
+  revoir · ⚪ sans verdict ; filtres dans l'adresse (`verdict`, `statut`, `alertes`, `noeud`). Les fiches
+  (`components/dev/TemplateReviewSheet.svelte`) ne se chargent que pour le nœud choisi, ou pour tout ce
+  que les filtres retiennent, 80 au plus (`MAX_SHEETS`). Une fiche : statut, niveau, rangement, point
+  et ses bornes (`docs/systeme/programmes/bornes/*.json`, intégrés au build par `$lib/server/point-bounds`),
+  plages et conditions, specs, un aperçu par variation tiré dans le navigateur par `generateInstance`
+  sur le modèle réduit à cette variation (`VariationPreview`, graine 7 + i, « ↻ » en tire une autre,
+  rendu par `QuestionPreviewTabs`), et le verdict « validé / à revoir » + commentaire (actions
+  `saveReview` / `deleteReview`, table `question_template_reviews`, admin seul, un verdict par modèle).
+  Alertes : sans point, sans nœud, deux points d'un programme, point absent des bornes ou archivé,
+  **modifié depuis le verdict** (`updated_at` du modèle postérieur au verdict — les migrations de
+  rangement le font bouger aussi). Reprise des verdicts des anciennes pages à cocher :
+  `scripts/questions/reprise-verdicts.ts` (simulation par défaut, `--ecrire`).
 - Automaths : `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus l'ajout au panier),
   `CartFloatingButton` (vers `/automaths/panier`), `CartQuestionCard` (tuile d'une catégorie du
   panier : durée par pas de 5 s entre 5 et 300 s, nombre de questions).
