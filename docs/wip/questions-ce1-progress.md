@@ -7,11 +7,11 @@
 
 _Mis à jour le 2026-10-28, après #1910._
 
-- **État** : lot 2 bis (ordinaux, 7 modèles, § 8) : fichiers mergés (#1907) ; 7 brouillons créés en prod par David (8e9c0137, 50d9118b, 14dfdd8c, 8471f4b3, 2dec5c08, ef446e9b, e54c58f0) ; migration nœud + tag `20261028170000_questions_ce1_lot2bis_rangement_tags` **#1910 mergée** (CI verte) : test rouge sans (5 échecs) / vert avec (9/9), `security-auditor` sans finding bloquant, accès : personne (phase 0). **Pas encore jouée en prod** : `db:migrate` refusé par le classifieur du mode auto.
-- **Prochaine action** : David lance `! pnpm db:migrate` depuis le dépôt principal (4 conditions réunies) ; puis vérifier en prod (nœud « ordinaux et rangs », 7 tags) ; puis page à cocher, `publier-lot` en simulation, `--publier` par David. Puis lot 3 fractions (§ 4 bis, point 6).
-- **En attente de David** : `! pnpm db:migrate` (dépôt principal, `main` à jour).
+- **État** : lot 2 bis (ordinaux, 7 modèles, § 8) : 7 brouillons en prod (8e9c0137, 50d9118b, 14dfdd8c, 8471f4b3, 2dec5c08, ef446e9b, e54c58f0), rangés sur « ordinaux et rangs » et tagués CE1-011 à 015 (#1910 mergée, migration jouée en prod, vérifiée). Page à cocher publiée : https://claude.ai/artifact/5eAt1dERBTfPzLSBTU1r6f (3 modèles à case choix : à jouer dans l'aperçu).
+- **Prochaine action** : lire et compter les verdicts (collection `verdicts`) ; corriger les « À revoir » ; puis `publier-lot --dir scripts/questions/ce1-2bis` en simulation, `--publier` par David. Puis lot 3 fractions (§ 4 bis, point 6).
+- **En attente de David** : la relecture des 7 modèles sur la page à cocher.
 - **Pièges en cours** : jamais de variable `i` (unité imaginaire) → liste `21|30|…` ; △ plus petit que ✕ ▢ ○ (police) ; niveaux « Ordinaux » 7 à 13 (1 à 6 = CP) ; ports 5176-5178 pris ; commitlint : sujet sans majuscule initiale (« CE1 » en tête refusé), corps ≤ 100 caractères par ligne.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` · `feat/questions-ce1-lot2bis-rangement` (mergée, à retirer après la vérification en prod).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` · `feat/questions-ce1-lot2bis-rangement` (mergée, à retirer).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -285,3 +285,5 @@ convertie (178 QCM, `migrer-qcm-en-cases --ecrire` pas lancé). Recommandations 
   7 brouillons en base locale, case choix jouée dans l'aperçu admin (juste, coché à tort).
 * 2026-10-28 : #1910 mergée (CI verte, `security-auditor` sans finding bloquant) ; `db:migrate` refusé par le
   classifieur du mode auto → lancé par David avec `!`.
+* 2026-10-28 : migration de #1910 déjà jouée en prod (le `db:migrate` de David : « up to date »), vérifiée
+  (7/7 sur « ordinaux et rangs », points justes) ; page à cocher publiée (3 alertes : case choix non dessinée).
