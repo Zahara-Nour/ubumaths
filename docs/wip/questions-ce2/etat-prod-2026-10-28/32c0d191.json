@@ -1,0 +1,130 @@
+{
+	"id": "32c0d191-649a-4133-9eda-b94b6e40e450",
+	"title": "Multiplier par $8$",
+	"description": "Le double du double du double : 8 × 12, puis 8 × 27",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Produits astucieux",
+	"level": 3,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:8*n}}"
+				}
+			],
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "11..19|21..24"
+				},
+				{
+					"name": "expression1",
+					"expression": "8*{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $8$, c'est prendre le double du double du double.",
+					"$$\\begin{align} 8\\times {{n}} &= 2\\times 2\\times \\bold{\\textcolor{{{color:primary.0}}}{2\\times {{n}}}} \\\\ &= 2\\times \\bold{\\textcolor{{{color:primary.0}}}{2\\times {{eval:2*n}}}} \\\\ &= 2\\times {{eval:4*n}} \\\\ &= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:8*n}}"
+				}
+			],
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "26..29|31..39|41..49|51..59|61..69|71..79|81..89|91..99"
+				},
+				{
+					"name": "expression1",
+					"expression": "8*{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $8$, c'est prendre le double du double du double.",
+					"$$\\begin{align} 8\\times {{n}} &= 2\\times 2\\times \\bold{\\textcolor{{{color:primary.0}}}{2\\times {{n}}}} \\\\ &= 2\\times \\bold{\\textcolor{{{color:primary.0}}}{2\\times {{eval:2*n}}}} \\\\ &= 2\\times {{eval:4*n}} \\\\ &= {{solution}} \\end{align}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["96"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "12"
+			},
+			"description": "8 × 12 = 96",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "12"
+			},
+			"description": "Erreur : double du double seulement (48)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["216"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "27"
+			},
+			"description": "8 × 27 = 216",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["108"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "27"
+			},
+			"description": "Erreur : un double oublié (108)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["54"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "27"
+			},
+			"description": "Erreur : un seul double (54)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["792"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "99"
+			},
+			"description": "borne : 8 × 99 = 792",
+			"variationIndex": 1
+		}
+	]
+}

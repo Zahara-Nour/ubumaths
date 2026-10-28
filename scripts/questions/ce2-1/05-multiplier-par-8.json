@@ -28,8 +28,11 @@
 			],
 			"correction": {
 				"steps": [
-					"Multiplier par $8$, c'est prendre le double du double du double.",
-					"$$\\begin{align} 8\\times {{n}} &= 2\\times 2\\times \\bold{\\textcolor{{{color:primary.0}}}{2\\times {{n}}}} \\\\ &= 2\\times \\bold{\\textcolor{{{color:primary.0}}}{2\\times {{eval:2*n}}}} \\\\ &= 2\\times {{eval:4*n}} \\\\ &= {{solution}} \\end{align}$$"
+					"Multiplier par $8$, c'est prendre le double, puis le double, puis encore le double.",
+					"**Étape 1.** Le double de ${{n}}$ : $2\\times {{n}}=\\textcolor{{{color:primary.0}}}{{{eval:2*n}}}$.",
+					"**Étape 2.** Le double de ${{eval:2*n}}$ : $2\\times {{eval:2*n}}=\\textcolor{{{color:primary.1}}}{{{eval:4*n}}}$.",
+					"**Étape 3.** Le double de ${{eval:4*n}}$ : $2\\times {{eval:4*n}}=\\textcolor{{{color:primary.2}}}{{{solution}}}$.",
+					"Donc $8\\times {{n}}={{solution}}$."
 				]
 			}
 		},
@@ -52,8 +55,11 @@
 			],
 			"correction": {
 				"steps": [
-					"Multiplier par $8$, c'est prendre le double du double du double.",
-					"$$\\begin{align} 8\\times {{n}} &= 2\\times 2\\times \\bold{\\textcolor{{{color:primary.0}}}{2\\times {{n}}}} \\\\ &= 2\\times \\bold{\\textcolor{{{color:primary.0}}}{2\\times {{eval:2*n}}}} \\\\ &= 2\\times {{eval:4*n}} \\\\ &= {{solution}} \\end{align}$$"
+					"Multiplier par $8$, c'est prendre le double, puis le double, puis encore le double.",
+					"**Étape 1.** Le double de ${{n}}$ : $2\\times {{n}}=\\textcolor{{{color:primary.0}}}{{{eval:2*n}}}$.",
+					"**Étape 2.** Le double de ${{eval:2*n}}$ : $2\\times {{eval:2*n}}=\\textcolor{{{color:primary.1}}}{{{eval:4*n}}}$.",
+					"**Étape 3.** Le double de ${{eval:4*n}}$ : $2\\times {{eval:4*n}}=\\textcolor{{{color:primary.2}}}{{{solution}}}$.",
+					"Donc $8\\times {{n}}={{solution}}$."
 				]
 			}
 		}

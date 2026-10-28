@@ -2,7 +2,7 @@
 
 Phase 0 validée par David le 2026-10-28 (« ok » aux recos, § 4 bis et § 5 du journal
 `docs/wip/questions-ce2-progress.md`). Plages : bornes `cycle2.json`, CE2 (tables d'addition
-A, B de 0 à 10 ; décompositions multiplicatives de 60 : 1 × 60 à 6 × 10 ; n × 4 et n × 8 avec
+A, B de 0 à 10 ; décompositions multiplicatives de 60 : 2 × 30 à 6 × 10, sans 1 × 60 ; n × 4 et n × 8 avec
 n < 100). Un point par modèle ; case seule, aucun QCM. CE2-077 (multiples de 25) réutilise le
 modèle du CE1 `03675b9b` : rien à écrire ici.
 
@@ -88,10 +88,11 @@ SPECS_TERME = [
 
 # --- 3. CE2-078 : décompositions multiplicatives de 60 ---------------------------------------
 
-DIVISEURS = [var('k', '1|2|3|4|5|6|10|12|15|20|30|60')]
+# Ni 1 ni 60 : 1 × 60 se lit sans calcul, elle n'apprend rien (David, 2026-10-28)
+DIVISEURS = [var('k', '2|3|4|5|6|10|12|15|20|30')]
 ETAPES_60 = [
-    'Les décompositions de $60$ à connaître : $1\\times 60$, $2\\times 30$, $3\\times 20$,'
-    ' $4\\times 15$, $5\\times 12$, $6\\times 10$.',
+    'Les décompositions de $60$ à connaître : $2\\times 30$, $3\\times 20$, $4\\times 15$,'
+    ' $5\\times 12$, $6\\times 10$.',
     '$${{k}}\\times {{eval:60/k}}=60$$',
 ]
 
@@ -105,7 +106,7 @@ SPECS_60 = [
     spec('Erreur : 4 × ? = 60 → 14', 0, {'k': '4'}, '14', 'incorrect'),
     spec('Erreur : 4 × ? = 60 → 56 (on a soustrait)', 0, {'k': '4'}, '56', 'incorrect'),
     spec('12 × ? = 60 : 5', 0, {'k': '12'}, '5', 'correct'),
-    spec('borne : 1 × ? = 60 : 60', 0, {'k': '1'}, '60', 'correct'),
+    spec('borne : 2 × ? = 60 : 30', 0, {'k': '2'}, '30', 'correct'),
     spec('60 = ? × 3 : 20', 1, {'k': '3'}, '20', 'correct'),
     spec('Erreur : 60 = ? × 3 → 30', 1, {'k': '3'}, '30', 'incorrect'),
 ]
@@ -113,12 +114,19 @@ SPECS_60 = [
 # --- 4. CE2-026 : multiplier par 4 -------------------------------------------------------------
 
 
+def double(etape, nombre, resultat, couleur):
+    # Une étape par ligne : un élève de CE2 n'écrit pas encore une suite d'égalités (David, 2026-10-28)
+    return (f'**Étape {etape}.** Le double de ${nombre}$ : $2\\times {nombre}='
+            f'\\textcolor{{{{{{color:primary.{couleur}}}}}}}{{{resultat}}}$.')
+
+
 def fois_4(nombres):
     return variation(
         ASTUCE, [var('n', nombres)], '4*{{n}}', '{{eval:4*n}}',
-        ['Multiplier par $4$, c\'est prendre le double du double.',
-         '$$\\begin{align} 4\\times {{n}} &= 2\\times \\bold{\\textcolor{{{color:primary.0}}}'
-         '{2\\times {{n}}}} \\\\ &= 2\\times {{eval:2*n}} \\\\ &= {{solution}} \\end{align}$$'])
+        ['Multiplier par $4$, c\'est prendre le double, puis encore le double.',
+         double(1, '{{n}}', '{{eval:2*n}}', 0),
+         double(2, '{{eval:2*n}}', '{{solution}}', 1),
+         'Donc $4\\times {{n}}={{solution}}$.'])
 
 
 SPECS_4 = [
@@ -138,11 +146,11 @@ SPECS_4 = [
 def fois_8(nombres):
     return variation(
         ASTUCE, [var('n', nombres)], '8*{{n}}', '{{eval:8*n}}',
-        ['Multiplier par $8$, c\'est prendre le double du double du double.',
-         '$$\\begin{align} 8\\times {{n}} &= 2\\times 2\\times \\bold{\\textcolor'
-         '{{{color:primary.0}}}{2\\times {{n}}}} \\\\ &= 2\\times \\bold{\\textcolor'
-         '{{{color:primary.0}}}{2\\times {{eval:2*n}}}} \\\\ &= 2\\times {{eval:4*n}} \\\\ '
-         '&= {{solution}} \\end{align}$$'])
+        ['Multiplier par $8$, c\'est prendre le double, puis le double, puis encore le double.',
+         double(1, '{{n}}', '{{eval:2*n}}', 0),
+         double(2, '{{eval:2*n}}', '{{eval:4*n}}', 1),
+         double(3, '{{eval:4*n}}', '{{solution}}', 2),
+         'Donc $8\\times {{n}}={{solution}}$.'])
 
 
 SPECS_8 = [
@@ -162,7 +170,7 @@ MODELES = {
         'Trouver le terme manquant', 'Tables d\'addition dans l\'autre sens : 7 + ? = 15',
         'Additionner', 'A trou', 14, TERME_MANQUANT, SPECS_TERME),
     '03-decompositions-de-60': modele(
-        'Les décompositions de $60$', '1 × 60, 2 × 30, 3 × 20, 4 × 15, 5 × 12, 6 × 10',
+        'Les décompositions de $60$', '2 × 30, 3 × 20, 4 × 15, 5 × 12, 6 × 10',
         'Multiplier', 'Décomposition', 2, DECOMPOSITIONS_60, SPECS_60),
     '04-multiplier-par-4': modele(
         'Multiplier par $4$', 'Le double du double : 4 × 13, puis 4 × 37',
