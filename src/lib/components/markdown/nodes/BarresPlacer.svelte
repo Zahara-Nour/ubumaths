@@ -526,6 +526,8 @@
 
 	.placer-zone {
 		border-color: transparent;
+		/* Plus étroit que le dessin (300 px au moins) : défiler, comme StatChart, plutôt que rogner */
+		overflow-x: auto;
 	}
 
 	.placer-juste {
