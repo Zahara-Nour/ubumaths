@@ -15,7 +15,8 @@
  *   division euclidienne : DEUX cases, N (quotient) et N + 1 (reste), seul N est posé
  * - Bloc ```collection ou ```monnaie à construire (`construire: N`) → UNE case, `case: N`
  *   posé dans le bloc ; droite à placer (```line, `placer: A=3 ; B=7`) → une case par point,
- *   N, N + 1…, seul N est posé
+ *   N, N + 1…, seul N est posé ; diagramme en barres à construire (```barres, `placer:`) →
+ *   une case par barre, de même
  * - Bloc ```figure-a-completer → UNE case (la figure de l'élève), `case: N` posé dans le bloc ;
  *   son contenu est mis à l'abri : ni `?` ni `[_]` n'y crée de case
  * - Bloc ```figure-de-travail → de même UNE case, jamais notée (l'élève trace pour vérifier)
@@ -29,8 +30,10 @@ import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
 import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { findLinesToPlace, parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
+import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
+import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { buildCaseCount } from './build-answer';
 import { buildKindName, type BuildKind } from '../types';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
 import {
@@ -328,7 +331,8 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	collection: 'Un bloc collection à construire',
 	monnaie: 'Un bloc monnaie à construire',
 	line: 'Une droite à placer',
-	horloge: 'Une horloge à placer'
+	horloge: 'Une horloge à placer',
+	barres: 'Un diagramme en barres à construire'
 };
 
 const buildNestedMessage = (kind: BuildKind) =>
@@ -411,20 +415,18 @@ interface BuildBlock {
 	kind: BuildKind;
 	source: string;
 	closed: boolean;
-	/** Nombre de cases : une par point d'une droite à placer, sinon une */
+	/** Nombre de cases : une par point d'une droite à placer, par barre à construire, sinon une */
 	cases: number;
 }
 
-/** Case d'un bloc à construire ou d'une droite à placer (`point` : rang du point) */
+/**
+ * Case d'un bloc à construire ou d'une droite à placer (`point` : rang du point ;
+ * diagramme en barres : rang de la barre à construire)
+ */
 export interface BuildBlank {
 	kind: BuildKind;
 	source: string;
 	point?: number;
-}
-
-/** Nombre de points d'une droite à placer ; une droite illisible compte une case (refusée au générateur) */
-function targetCount(source: string): number {
-	return Math.max(1, parseNumberLineContent(source).node?.placer?.length ?? 1);
 }
 
 /**
@@ -442,7 +444,8 @@ function markBuildBlocks(statement: string): {
 		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
 		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
 		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const })),
-		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const }))
+		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const })),
+		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
 	const marked = found.filter((b) => !b.nested);
@@ -454,7 +457,7 @@ function markBuildBlocks(statement: string): {
 		statement: out.join('\n'),
 		blocks: marked.map((b) => {
 			const source = b.body.join('\n');
-			const cases = b.kind === 'line' ? targetCount(source) : 1;
+			const cases = buildCaseCount(b.kind, source);
 			return { kind: b.kind, source, closed: b.closed, cases };
 		}),
 		errors
@@ -619,7 +622,7 @@ export function assignBlankIndices(
 						buildBlanks[counter] = {
 							kind: build.kind,
 							source: build.source,
-							...(build.kind === 'line' && { point })
+							...((build.kind === 'line' || build.kind === 'barres') && { point })
 						};
 						counter++;
 						// Horloge : la réponse est une heure (`9 h 25`), jamais lue comme un calcul

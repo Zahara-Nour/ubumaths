@@ -147,6 +147,8 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 	}
 
 	for (const bar of scene.bars) {
+		// Barre à construire (`placer:`) : sur la fiche, l'enfant la dessine
+		if (bar.toPlace) continue;
 		lines.push('  // barre');
 		lines.push(
 			bar.series === 1 && second !== null

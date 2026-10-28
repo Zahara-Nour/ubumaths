@@ -52,6 +52,7 @@ import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
 import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
 import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
+import { hasBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { buildAnswerOf } from './build-answer';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
@@ -94,6 +95,7 @@ import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/r
 function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'line') return 'la graduation de la droite graduée (placer:)';
 	if (kind === 'horloge') return 'l’heure de l’horloge (placer:)';
+	if (kind === 'barres') return 'l’effectif de la barre (placer:)';
 	return `la valeur du bloc ${kind} (construire:)`;
 }
 
@@ -500,7 +502,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasCollectionToBuild(String(resolvedStatement)) ||
 				hasMonnaieToBuild(String(resolvedStatement)) ||
 				hasLineToPlace(String(resolvedStatement)) ||
-				hasHorlogeToPlace(String(resolvedStatement))) &&
+				hasHorlogeToPlace(String(resolvedStatement)) ||
+				hasBarsToPlace(String(resolvedStatement))) &&
 			getQuestionType({
 				choices: resolvedVariation.choices,
 				shared: template.shared,
@@ -665,7 +668,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 
 			// Cases des blocs ```collection et ```monnaie à construire, des droites et
-			// horloges à placer : réponse = la valeur du bloc
+			// horloges à placer, des barres à construire : réponse = la valeur du bloc
 			const buildAnswers = new Map<number, { kind: BuildKind; answer: string }>();
 			for (const [key, { kind, source, point }] of Object.entries(blankResult.buildBlanks ?? {})) {
 				const index = Number(key);
@@ -701,6 +704,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							return child.spec?.placer !== undefined && child.caseIndex !== undefined
 								? [child.caseIndex]
 								: [];
+						}
+						if (child.type === 'stat-chart') {
+							const first = child.caseIndex;
+							const toPlace = child.spec?.toPlace;
+							if (!toPlace || first === undefined) return [];
+							return toPlace.map((_, k) => first + k);
 						}
 						return (child.type === 'collection' || child.type === 'monnaie') &&
 							child.spec !== null &&

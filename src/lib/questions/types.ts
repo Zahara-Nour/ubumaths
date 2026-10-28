@@ -767,17 +767,22 @@ export type ResolvedVariable = SharedResolvedVariable;
  */
 /**
  * Genre d'un bloc qui porte sa case et dont la réponse est sa valeur : à construire
- * (```collection, ```monnaie, `construire:`) ou à placer (```line, ```horloge, `placer:`)
+ * (```collection, ```monnaie, `construire:`) ou à placer (```line, ```horloge,
+ * ```barres, `placer:`)
  */
-export type BuildKind = 'collection' | 'monnaie' | 'line' | 'horloge';
+export type BuildKind = 'collection' | 'monnaie' | 'line' | 'horloge' | 'barres';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
 	if (kind === 'line') return 'droite graduée';
+	if (kind === 'barres') return 'diagramme en barres';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 
-/** Le bloc se joue en plaçant (`placer:`) plutôt qu'en construisant (`construire:`) */
+/**
+ * Le bloc se joue en plaçant un objet (point, aiguilles) plutôt qu'en construisant ;
+ * un diagramme en barres (`placer:`) se construit
+ */
 export function isPlaceKind(kind: BuildKind): kind is 'line' | 'horloge' {
 	return kind === 'line' || kind === 'horloge';
 }
@@ -805,7 +810,9 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * cubes, ou pièces et billets. Droite à placer (```line, `placer:`) : réponse =
 	 * la graduation (`placerAnswer`), l'élève y pose son point. Horloge à placer
 	 * (```horloge, `placer:`) : réponse = l'heure sur le cadran de 12 (`9 h 25`),
-	 * l'élève pose les deux aiguilles, juge à part (`isPlacedTimeCorrect`).
+	 * l'élève pose les deux aiguilles, juge à part (`isPlacedTimeCorrect`). Diagramme
+	 * en barres à construire (```barres, `placer:`) : une case par barre, réponse =
+	 * son effectif, l'élève monte la barre.
 	 */
 	construire?: BuildKind;
 	/**

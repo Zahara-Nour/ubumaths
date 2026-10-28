@@ -27,6 +27,7 @@ import type {
 	SimulationData,
 	SimulatedNamedLaw,
 	StatChartIndicator,
+	StatChartAxis,
 	StatChartSpec,
 	StatChartUnit,
 	QueryInterval
@@ -185,6 +186,11 @@ export interface SceneBar {
 	series?: 0 | 1;
 	/** Loi binomiale avec `intervalle:` : false hors de I (gris) ; absente sinon */
 	highlighted?: boolean;
+	/**
+	 * Barre à construire par l'élève (`placer:`) : `value` est l'effectif attendu,
+	 * que seule la correction dessine ; absente sinon
+	 */
+	toPlace?: true;
 	value: number;
 	/** Valeur écrite au-dessus de la barre (`valeurs: oui`) */
 	valueLabel: string;
@@ -663,7 +669,10 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 	const values = seriesList.flatMap((s) => spec.data.map((_, i) => shown(s, i)));
 	const maxValue = Math.max(...values) || 1;
 
-	const { yMax, ticks } = valueAxis(maxValue, height, unit, locale);
+	const { yMax, ticks } = spec.axis
+		? writtenAxis(spec.axis, locale)
+		: valueAxis(maxValue, height, unit, locale);
+	const toPlace = new Set(spec.toPlace ?? []);
 
 	const margin = (1 - BAR_WIDTH) / 2;
 	const barWidth = BAR_WIDTH / seriesList.length;
@@ -674,6 +683,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 			return {
 				label: shownLabel(d.label, locale),
 				...(two !== null && { series: s }),
+				...(toPlace.has(i) && { toPlace: true as const }),
 				value,
 				valueLabel: formatValue(value, unit, locale),
 				left,
@@ -687,9 +697,10 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 	const longest = Math.max(...spec.data.map((d) => d.label.length));
 	const rotateLabels = count > FLAT_LABELS_MAX || longest * STAT_CHART_CHAR_PX > bandPx;
 
+	// Barre à construire : son effectif n'est jamais dit avant la correction
 	const listed = spec.data.map((d, i) =>
 		two === null
-			? `${shownLabel(d.label, locale)} ${formatValue(d.value, spec.unit, locale)}`
+			? `${shownLabel(d.label, locale)} ${toPlace.has(i) ? STAT_TEXT[locale].toBuild : formatValue(d.value, spec.unit, locale)}`
 			: `${shownLabel(d.label, locale)} — ${two.names[0]} ${formatValue(shown(0, i), unit, locale)}, ${two.names[1]} ${formatValue(shown(1, i), unit, locale)}`
 	);
 
@@ -755,6 +766,18 @@ function valueAxis(
 		label: formatTick(i * step, locale)
 	}));
 	return { yMax: tickCount * step, ticks };
+}
+
+/** Axe vertical écrit par le prof (`axe: 0 à 20, de 2 en 2`) */
+function writtenAxis(
+	axis: StatChartAxis,
+	locale: ContentLocale
+): { yMax: number; ticks: SceneTick[] } {
+	const ticks = Array.from({ length: axis.max / axis.step + 1 }, (_, i) => ({
+		value: i * axis.step,
+		label: formatTick(i * axis.step, locale)
+	}));
+	return { yMax: axis.max, ticks };
 }
 
 /** Indicateurs d'une série à effectifs dont les catégories sont des nombres (Q28). */

@@ -74,6 +74,7 @@
 	import Collection from '$lib/components/markdown/nodes/Collection.svelte';
 	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
 	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
+	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
 	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
 	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
@@ -210,6 +211,7 @@
 		if (node.type === 'collection') return node.caseIndex !== undefined;
 		if (node.type === 'number-line') return node.caseIndex !== undefined;
 		if (node.type === 'horloge') return node.caseIndex !== undefined;
+		if (node.type === 'stat-chart') return node.caseIndex !== undefined;
 		if (node.type === 'monnaie') return node.caseIndex !== undefined;
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
 		if (node.type === 'choice') return node.caseIndex !== undefined;
@@ -450,7 +452,7 @@
 	 * Une case à remplir, dans l'ordre de l'écran : prompt d'un champ MathLive, champ texte,
 	 * ou grille d'un bloc ```operation (ses cases forment UNE réponse ; division
 	 * euclidienne : deux, le quotient puis le reste), ou plan d'une collection ou d'une monnaie à construire,
-	 * ou droite ou horloge à placer
+	 * ou droite ou horloge à placer, ou diagramme en barres à construire
 	 */
 	type Slot =
 		| { field: MathfieldElement; promptId: string }
@@ -879,6 +881,27 @@
 						<NumberLine
 							{node}
 							answers={node.placer.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'stat-chart' && node.caseIndex !== undefined && node.spec?.toPlace}
+				<!-- Diagramme en barres à construire : l'élève monte ses barres, une case par
+				     barre (N, N + 1…), la hauteur de chacune est sa réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.spec.toPlace.length}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le diagramme juste -->
+					<BuildAnswer kind="barres" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<BarresPlacer
+							{node}
+							answers={node.spec.toPlace.map((_, k) => ({
 								value: inputStates[firstCase + k]?.value ?? '',
 								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
 								disabled: flashMode || effectiveDisabled,

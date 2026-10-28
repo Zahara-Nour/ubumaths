@@ -11,7 +11,7 @@ couvre:
 
 # Statistiques et probabilités (`src/lib/statistics/`)
 
-> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23. Usage dans l'atelier : [atelier.md](atelier.md)
+> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23 ; barres à construire le 2026-10-28. Usage dans l'atelier : [atelier.md](atelier.md)
 > (§ « Liens avec `mathAST` et `statistics` ») ; syntaxe des blocs statistiques :
 > [ubumark.md](ubumark.md) (genres de `stat-chart`). Cette doc ne décrit que le **calcul**.
 
@@ -216,7 +216,9 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   `src/lib/ubumark/utils/comparison-scene.ts`, `src/lib/ubumark/types/stat-chart.ts`.
   Détails : [ubumark.md](ubumark.md).
 - **Questions** : aucun import direct (`git grep` sur `src/lib/questions`, `src/lib/exercises`).
-  Une question qui affiche un bloc statistique passe par ubumark.
+  Une question qui affiche un bloc statistique passe par ubumark ; un diagramme en barres à
+  construire (`placer:`, `axe:`) aussi : le générateur lit ses barres par `parseStatChartContent`
+  (`generator/build-answer.ts`), l'effectif attendu est celui que le parseur a compté.
 
 ## Invariants
 
