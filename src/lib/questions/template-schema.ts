@@ -117,7 +117,15 @@ export const validationRuleSchema = z.discriminatedUnion('type', [
 	validationRuleCustom
 ]);
 
-export const correctChoiceIndexSchema = z.union([z.string(), z.array(z.string())]);
+/**
+ * Champ du QCM de modèle retiré (ADR 0033, lot 5) : le QCM est une case.
+ * Reçu, il est refusé avec ce message — jamais retiré en silence (un schéma
+ * non strict retirerait la clé sans rien dire).
+ */
+export const QCM_RETIRED_MESSAGE =
+	'le QCM est une case : écrire une case choix (bloc ```choix dans l’énoncé)';
+
+export const retiredQcmFieldSchema = z.undefined({ error: QCM_RETIRED_MESSAGE }).optional();
 
 // === Test Specs ===
 
@@ -141,7 +149,7 @@ export const testSpecSchema = z.object({
 	variationIndex: z.number().int().nonnegative().optional(),
 	variables: z.record(z.string(), z.string()),
 	answers: z.array(z.string()).optional(),
-	selectedChoices: z.array(z.number().int().nonnegative()).optional(),
+	selectedChoices: retiredQcmFieldSchema,
 	expected: testSpecExpectedSchema
 });
 
@@ -298,11 +306,6 @@ export const variableSchema = z.object({
 	displayOptions: displayOptionsSchema.optional()
 });
 
-export const choiceSchema = z.object({
-	content: z.string(),
-	isCorrect: z.boolean().optional()
-});
-
 /** Longueur maximale d'un champ de case « primitive » / « solution-ed » */
 const CALCULUS_TEXT_MAX = 500;
 
@@ -368,7 +371,7 @@ export const constraintsSchema = z.object({
 export const optionsSchema = z.object({
 	orderIndependent: z.boolean().optional(),
 	constraints: constraintsSchema.optional(),
-	shuffleChoices: z.boolean().optional(),
+	shuffleChoices: retiredQcmFieldSchema,
 	// Carte de cours (#617) : recto = énoncé, verso = correction
 	courseCard: z.boolean().optional(),
 	// Question de cours (Q110 b) : marqueur d'intention, cf. `isCourseQuestion`
@@ -572,8 +575,6 @@ const variableStrictZ = z
 	})
 	.strict();
 
-const choiceStrictZ = choiceSchema.strict();
-
 const blankDefaultsStrictZ = z
 	.object({
 		precision: precisionStrictZ.optional(),
@@ -618,7 +619,6 @@ const optionsStrictZ = z
 	.object({
 		orderIndependent: z.boolean().optional(),
 		constraints: constraintsStrictZ.optional(),
-		shuffleChoices: z.boolean().optional(),
 		courseCard: z.boolean().optional(),
 		courseQuestion: z.boolean().optional(),
 		answerAssumptions: answerAssumptionsSchema.optional()
@@ -629,9 +629,7 @@ const sharedStrictZ = z
 	.object({
 		statement: z.string().optional(),
 		variables: z.array(variableStrictZ).optional(),
-		correctChoiceIndex: correctChoiceIndexSchema.optional(),
 		correction: correctionStrictZ.optional().nullable(),
-		choices: z.array(choiceStrictZ).optional(),
 		validationRules: z.array(validationRuleStrictZ).optional(),
 		requiredForm: requiredFormStrictZ.optional(),
 		blankDefaults: blankDefaultsStrictZ.optional(),
@@ -650,12 +648,10 @@ const variationStrictZ = z
 	.object({
 		statement: z.string().optional(),
 		variables: z.array(variableStrictZ).optional(),
-		correctChoiceIndex: correctChoiceIndexSchema.optional(),
 		correction: correctionStrictZ.optional().nullable(),
 		blanks: z.array(blankStrictZ).optional(),
 		blankDefaults: blankDefaultsStrictZ.optional(),
 		answerFormats: z.record(z.string(), z.string()).optional(),
-		choices: z.array(choiceStrictZ).optional(),
 		validationRules: z.array(validationRuleStrictZ).optional(),
 		requiredForm: requiredFormStrictZ.optional(),
 		conditions: z.array(z.string()).optional()
@@ -687,7 +683,6 @@ export const questionTemplateSchema = z
 		level: z.number(),
 		status: z.enum(['draft', 'published']),
 		delay: z.number().optional().nullable(),
-		multipleAnswers: z.boolean().optional().nullable(),
 		testSpecs: z.array(testSpecSchema).optional().nullable()
 	})
 	.strict()
