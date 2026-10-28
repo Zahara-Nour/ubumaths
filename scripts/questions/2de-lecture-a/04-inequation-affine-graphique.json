@@ -1,0 +1,184 @@
+{
+	"title": "Résoudre graphiquement une inéquation f(x) < k (affine)",
+	"description": "Inéquation f(x) < k lue sur la droite d'une fonction affine : croissante, décroissante, les quatre sens",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonctions affines",
+	"subdomain": "Lecture graphique",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nRésous graphiquement l'inéquation $f(x){{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1|2"
+				},
+				{
+					"name": "z",
+					"expression": "-2..2"
+				},
+				{
+					"name": "p",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(m)*(z)+(p)"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;{{z}}[|{{if:s==1|]-\\infty;{{z}}]|{{if:s==2|]{{z}};+\\infty[|[{{z}};+\\infty[}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ ; elle coupe $\\mathcal{D}$ au point $A$ d'abscisse ${{z}}$. On cherche les abscisses des points de $\\mathcal{D}$ situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} cette droite.",
+					"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = ({{m}})*x+({{p}}) sur [-10 ; {{z}}[   vert|{{if:s==1|h(x) = ({{m}})*x+({{p}}) sur [-10 ; {{z}}]   vert|{{if:s==2|h(x) = ({{m}})*x+({{p}}) sur ]{{z}} ; 10]   vert|h(x) = ({{m}})*x+({{p}}) sur [{{z}} ; 10]   vert}}}}}}\npoints: A({{z}} ; {{k}})\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f. Droite y = {{k}} en pointillé, partie cherchée en vert.\n```",
+					"La fonction $f$ est croissante : la partie cherchée est à {{if:s==0|gauche|{{if:s==1|gauche|{{if:s==2|droite|droite}}}}}} de $A$, {{if:s==0|borne exclue|{{if:s==1|borne comprise|{{if:s==2|borne exclue|borne comprise}}}}}}. $S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{z}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{z}}\\right]|{{if:s==2|\\left]{{z}}\\,;+\\infty\\right[|\\left[{{z}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nRésous graphiquement l'inéquation $f(x){{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "-1|-2"
+				},
+				{
+					"name": "z",
+					"expression": "-2..2"
+				},
+				{
+					"name": "p",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(m)*(z)+(p)"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]{{z}};+\\infty[|{{if:s==1|[{{z}};+\\infty[|{{if:s==2|]-\\infty;{{z}}[|]-\\infty;{{z}}]}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ ; elle coupe $\\mathcal{D}$ au point $A$ d'abscisse ${{z}}$. On cherche les abscisses des points de $\\mathcal{D}$ situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} cette droite.",
+					"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = ({{m}})*x+({{p}}) sur ]{{z}} ; 10]   vert|{{if:s==1|h(x) = ({{m}})*x+({{p}}) sur [{{z}} ; 10]   vert|{{if:s==2|h(x) = ({{m}})*x+({{p}}) sur [-10 ; {{z}}[   vert|h(x) = ({{m}})*x+({{p}}) sur [-10 ; {{z}}]   vert}}}}}}\npoints: A({{z}} ; {{k}})\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f. Droite y = {{k}} en pointillé, partie cherchée en vert.\n```",
+					"La fonction $f$ est décroissante : la partie cherchée est à {{if:s==0|droite|{{if:s==1|droite|{{if:s==2|gauche|gauche}}}}}} de $A$, {{if:s==0|borne exclue|{{if:s==1|borne comprise|{{if:s==2|borne exclue|borne comprise}}}}}}. $S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]{{z}}\\,;+\\infty\\right[|{{if:s==1|\\left[{{z}}\\,;+\\infty\\right[|{{if:s==2|\\left]-\\infty\\,;{{z}}\\right[|\\left]-\\infty\\,;{{z}}\\right]}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f croissante, f(x) < 1 : S = ]−∞ ; 1[",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"z": "1",
+				"p": "-1",
+				"k": "1",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;1["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : mauvais côté",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"z": "1",
+				"p": "-1",
+				"k": "1",
+				"s": "0"
+			},
+			"answers": ["]1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : crochet fermé",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"z": "1",
+				"p": "-1",
+				"k": "1",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;1]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f décroissante, f(x) ⩽ 3 : S = [−2 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-1",
+				"z": "-2",
+				"p": "1",
+				"k": "3",
+				"s": "1"
+			},
+			"answers": ["[-2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : côté de la croissante",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-1",
+				"z": "-2",
+				"p": "1",
+				"k": "3",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;-2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k lu pour la borne",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-1",
+				"z": "-2",
+				"p": "1",
+				"k": "3",
+				"s": "1"
+			},
+			"answers": ["[3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

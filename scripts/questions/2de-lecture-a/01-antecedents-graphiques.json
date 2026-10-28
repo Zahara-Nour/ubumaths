@@ -1,0 +1,316 @@
+{
+	"title": "Déterminer graphiquement des antécédents",
+	"description": "Antécédents de k lus sur une courbe : deux, trois, un seul (sommet) ou aucun",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Lecture graphique",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:(p)-1}}\\,;{{eval:(q)+1}}\\right]$.\n\n```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(q)+2)}}\ny: {{eval:floor(min(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))-1}} ; {{eval:ceil(max(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))+1}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe en forme de parabole d'une fonction f.\n```\n\nDétermine graphiquement les antécédents de ${{k}}$ par $f$, c'est-à-dire les solutions de l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(p)+(d)"
+				},
+				{
+					"name": "c",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{p}} ; {{q}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : les antécédents de ${{k}}$ sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
+					"```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(q)+2)}}\ny: {{eval:floor(min(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))-1}} ; {{eval:ceil(max(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))+1}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{p}} ; {{k}}), B({{q}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de f et droite horizontale y = {{k}}, qui la coupe en deux points A et B.\n```",
+					"La droite coupe $\\mathcal{C}_f$ en $A({{p}}\\,;{{k}})$ et $B({{q}}\\,;{{k}})$ : ${{k}}$ a deux antécédents. $S=\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{q}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:(p)-0.5;d}}\\,;{{eval:(r)+0.5;d}}\\right]$.\n\n```courbe\nx: {{eval:(p)-1}} ; {{eval:(r)+1}}\ny: {{eval:min(-1,(k)-4)}} ; {{eval:max(1,(k)+4)}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{q}}))*(x-({{r}})) sur [{{eval:(p)-0.5}} ; {{eval:(r)+0.5}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f qui monte et descend plusieurs fois.\n```\n\nDétermine graphiquement les antécédents de ${{k}}$ par $f$, c'est-à-dire les solutions de l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-3..-1"
+				},
+				{
+					"name": "g",
+					"expression": "1|2"
+				},
+				{
+					"name": "h",
+					"expression": "1|2"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(p)+(g)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(q)+(h)"
+				},
+				{
+					"name": "c",
+					"expression": "0.5|-0.5"
+				},
+				{
+					"name": "k",
+					"expression": "-2..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{p}} ; {{q}} ; {{r}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : les antécédents de ${{k}}$ sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
+					"```courbe\nx: {{eval:(p)-1}} ; {{eval:(r)+1}}\ny: {{eval:min(-1,(k)-4)}} ; {{eval:max(1,(k)+4)}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{q}}))*(x-({{r}})) sur [{{eval:(p)-0.5}} ; {{eval:(r)+0.5}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{p}} ; {{k}}), B({{q}} ; {{k}}), C({{r}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de f et droite horizontale y = {{k}}, qui la coupe en trois points A, B et C.\n```",
+					"La droite coupe $\\mathcal{C}_f$ en trois points : ${{k}}$ a trois antécédents. $S=\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{q}} ; {{r}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:(a)-3}}\\,;{{eval:(a)+3}}\\right]$.\n\n```courbe\nx: {{eval:min(-1,(a)-4)}} ; {{eval:max(1,(a)+4)}}\ny: {{eval:min(0,(m),(m)+9*(c),(k))-1}} ; {{eval:max(0,(m),(m)+9*(c),(k))+1}}\ngrille: 1 ; 1\nf(x) = {{m}}+({{c}})*(x-({{a}}))^2 sur [{{eval:(a)-3}} ; {{eval:(a)+3}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole d'une fonction f, de sommet ({{a}} ; {{m}}).\n```\n\nDétermine graphiquement les antécédents de ${{k}}$ par $f$, c'est-à-dire les solutions de l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2..2"
+				},
+				{
+					"name": "m",
+					"expression": "-2..2"
+				},
+				{
+					"name": "c",
+					"expression": "1|-1"
+				},
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "u",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(m)-(t)*(c)*(u)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|\\{ {{a}} \\}|\\varnothing}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : les antécédents de ${{k}}$ sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
+					"```courbe\nx: {{eval:min(-1,(a)-4)}} ; {{eval:max(1,(a)+4)}}\ny: {{eval:min(0,(m),(m)+9*(c),(k))-1}} ; {{eval:max(0,(m),(m)+9*(c),(k))+1}}\ngrille: 1 ; 1\nf(x) = {{m}}+({{c}})*(x-({{a}}))^2 sur [{{eval:(a)-3}} ; {{eval:(a)+3}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\ntaille: moyenne\ndescription: Courbe de f et droite horizontale y = {{k}}.\n```",
+					"{{if:t==0|La droite touche $\\mathcal{C}_f$ en un seul point, le sommet $({{a}}\\,;{{m}})$ : ${{k}}$ a un seul antécédent. $S=\\textcolor{{{color:primary.0}}}{\\{ {{a}} \\}}$.|La droite est {{if:c>0|sous|au-dessus de}} la courbe et ne la coupe pas : ${{k}}$ n'a aucun antécédent. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Antécédents de 2 : S = {−3 ; 1}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "-3",
+				"d": "4",
+				"q": "1",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["\\{-3;1\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Dans l'autre ordre",
+			"variationIndex": 0,
+			"variables": {
+				"p": "-3",
+				"d": "4",
+				"q": "1",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["\\{1;-3\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul antécédent ({1})",
+			"variationIndex": 0,
+			"variables": {
+				"p": "-3",
+				"d": "4",
+				"q": "1",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["\\{1\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k recopié ({2})",
+			"variationIndex": 0,
+			"variables": {
+				"p": "-3",
+				"d": "4",
+				"q": "1",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans accolades",
+			"variationIndex": 0,
+			"variables": {
+				"p": "-3",
+				"d": "4",
+				"q": "1",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["-3;1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Trois antécédents de 1 : S = {−2 ; −1 ; 1}",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2",
+				"g": "1",
+				"h": "2",
+				"q": "-1",
+				"r": "1",
+				"c": "0.5",
+				"k": "1"
+			},
+			"answers": ["\\{-2;-1;1\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux sur trois",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2",
+				"g": "1",
+				"h": "2",
+				"q": "-1",
+				"r": "1",
+				"c": "0.5",
+				"k": "1"
+			},
+			"answers": ["\\{-2;1\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sommet : S = {1}",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"m": "-1",
+				"c": "1",
+				"t": "0",
+				"u": "2",
+				"k": "-1"
+			},
+			"answers": ["\\{1\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'ordonnée du sommet ({−1})",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"m": "-1",
+				"c": "1",
+				"t": "0",
+				"u": "2",
+				"k": "-1"
+			},
+			"answers": ["\\{-1\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Aucun antécédent : S = ∅",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"m": "-1",
+				"c": "1",
+				"t": "1",
+				"u": "2",
+				"k": "-3"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {0} pour « aucun »",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"m": "-1",
+				"c": "1",
+				"t": "1",
+				"u": "2",
+				"k": "-3"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

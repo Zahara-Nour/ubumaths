@@ -1,0 +1,161 @@
+{
+	"title": "Résoudre graphiquement une équation x² = k",
+	"description": "Équation x² = k lue sur la parabole de la fonction carré : k carré parfait, k = 0, k < 0",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction carré",
+	"subdomain": "Lecture graphique",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction carré $f : x\\mapsto x^2$.\n\n```courbe\nx: -4 ; 4\ny: -2 ; 10\ngrille: 1 ; 1\nf(x) = x^2   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction carré.\n```\n\nRésous graphiquement l'équation $x^2={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|4|9"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sqrt(k)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ -{{r}} ; {{r}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : les solutions sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
+					"```courbe\nx: -4 ; 4\ny: -2 ; 10\ngrille: 1 ; 1\nf(x) = x^2   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{eval:-(r)}} ; {{k}}), B({{r}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de la fonction carré et droite y = {{k}}, qui la coupe en A et B.\n```",
+					"La droite coupe la courbe en deux points, d'abscisses $-{{r}}$ et ${{r}}$. $S=\\textcolor{{{color:primary.0}}}{\\{ -{{r}} ; {{r}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction carré $f : x\\mapsto x^2$.\n\n```courbe\nx: -4 ; 4\ny: -5 ; 10\ngrille: 1 ; 1\nf(x) = x^2   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction carré.\n```\n\nRésous graphiquement l'équation $x^2={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "u",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "eval:0-(t)*(u)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|\\{ 0 \\}|\\varnothing}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$.",
+					"```courbe\nx: -4 ; 4\ny: -5 ; 10\ngrille: 1 ; 1\nf(x) = x^2   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\ntaille: moyenne\ndescription: Courbe de la fonction carré et droite y = {{k}}.\n```",
+					"{{if:t==0|La droite $y=0$ (l'axe des abscisses) touche la courbe en un seul point, l'origine. $S=\\textcolor{{{color:primary.0}}}{\\{ 0 \\}}$.|La droite est sous la courbe et ne la coupe pas : un carré n'est jamais négatif. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² = 4 : S = {−2 ; 2}",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "2"
+			},
+			"answers": ["\\{-2;2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : solution négative oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "2"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : image de 4 lue ({16})",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "2"
+			},
+			"answers": ["\\{16\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k recopié ({−4 ; 4})",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "2"
+			},
+			"answers": ["\\{-4;4\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² = 0 : S = {0}",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"u": "3",
+				"k": "0"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x² = −3 : S = ∅",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"u": "3",
+				"k": "-3"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {−3 ; 3}",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"u": "3",
+				"k": "-3"
+			},
+			"answers": ["\\{-3;3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

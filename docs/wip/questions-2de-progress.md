@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 2 publié._
+_Mis à jour le 2026-10-28, lot 2 bis A écrit (PR des fichiers)._
 
-- **État** : lots 1 (corrections) et 2 (équations et inéquations, 10 modèles) **publiés** ; lot 2 vérifié en
-  prod (MCP : 10 `published`, 10 rangés, 10 tags).
-- **Prochaine action** : lot 2 bis « lecture graphique » (§ 4 : 492, 338, 453, 456, 340, 459, 341, 462, 342,
-  465, 343, 468, 344, 471 ; outil `courbe`) — relevé des points et du bloc `courbe`, puis phase 0 à David.
-- **En attente de David** : son go pour le lot 2 bis.
-- **Pièges en cours** : la garde de doc lit `Doc-inchangée:` dans un COMMIT, pas dans la description de PR ;
-  test `scripts/corrections` « cas rare » qui dépasse 5 s en CI de temps en temps (relancer) ; QCM en réécriture.
-- **Worktree / branche** : aucun.
+- **État** : lots 1 et 2 publiés ; lot 2 bis A « lecture graphique » (8 modèles : généralités, affine, |x|,
+  carré) écrit, simulation verte, 8 brouillons en base locale, aperçu joué ; PR des fichiers ouverte.
+- **Prochaine action** : merger la PR A, puis David lance `create-questions --publier` (dossier
+  `scripts/questions/2de-lecture-a`) ; ensuite migration nœud + tag du lot A ; puis lot B (inverse, √x, x³).
+- **En attente de David** : le `--publier` du lot A après le merge.
+- **Pièges en cours** : la garde de doc lit `Doc-inchangée:` dans un COMMIT ; test « cas rare » lent en CI
+  (relancer) ; QCM en réécriture ; étiquettes C_f / C_g parfois serrées près d'une intersection (moteur du
+  bloc).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-a`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -377,3 +378,16 @@ les quatre sens (l2-3) ; 2-338/453 graphiquement seulement.
 - **Découpage** : deux PR de 8 et 6 modèles (A : généralités, affine, |x|, carré ; B : inverse, racine,
   cube), chacune avec sa migration nœud + tag.
 - **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Décisions de David (2026-10-28)** : phase 0 validée avec mes trois recommandations — réponse en ensemble
+pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune solution » pour 1/x = 0
+(lecture d'asymptote, à la limite du programme) : le cas ∅ reste pour x², |x|, √x.
+
+## 12. Lot 2 bis A, PR des fichiers (2026-10-28)
+
+- Script `questions-2de/lot-lecture-a-2de.py` → `scripts/questions/2de-lecture-a/` (8 modèles, 14 variations,
+  57 specs) ; `create-questions` en simulation : tout vert.
+- Sonde des blocs ` ```courbe ` tirés (3 200 tirages, énoncé et corrigé) : deux défauts corrigés avant la
+  PR (nom `h` répété dans le corrigé « entre les points » ; fenêtre en fraction d²/4 → `floor` / `ceil`).
+- Base locale : 8 brouillons ; aperçu joué (f(x) < g(x) : `]−4 ; −1[` juste, corrigé avec la partie verte et
+  les disques vides en A et B ; affine décroissante dessinée).

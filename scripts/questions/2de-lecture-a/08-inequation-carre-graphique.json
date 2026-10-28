@@ -1,0 +1,163 @@
+{
+	"title": "Résoudre graphiquement une inéquation x² < k",
+	"description": "Inéquation x² < k lue sur la parabole de la fonction carré : k > 0 (entre −√k et √k, ou en dehors, les quatre sens), k < 0 (∅ ou ℝ)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction carré",
+	"subdomain": "Lecture graphique",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction carré $f : x\\mapsto x^2$.\n\n```courbe\nx: -4 ; 4\ny: -2 ; 10\ngrille: 1 ; 1\nf(x) = x^2   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction carré.\n```\n\nRésous graphiquement l'inéquation $x^2{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|4|9"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sqrt(k)"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-{{r}};{{r}}[|{{if:s==1|[-{{r}};{{r}}]|{{if:s==2|]-\\infty;-{{r}}[\\cup]{{r}};+\\infty[|]-\\infty;-{{r}}]\\cup[{{r}};+\\infty[}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ ; elle coupe la courbe en $A$ et $B$, d'abscisses $-{{r}}$ et ${{r}}$. On cherche les abscisses des points de la courbe situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} cette droite ; {{if:s==0|les abscisses des points d'intersection sont **exclues**|{{if:s==1|les abscisses des points d'intersection sont **comprises**|{{if:s==2|les abscisses des points d'intersection sont **exclues**|les abscisses des points d'intersection sont **comprises**}}}}}}.",
+					"```courbe\nx: -4 ; 4\ny: -2 ; 10\ngrille: 1 ; 1\nf(x) = x^2   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = x^2 sur ]-{{r}} ; {{r}}[   vert|{{if:s==1|h(x) = x^2 sur [-{{r}} ; {{r}}]   vert|{{if:s==2|h(x) = x^2 sur [-10 ; -{{r}}[   vert|h(x) = x^2 sur [-10 ; -{{r}}]   vert}}}}}}\n{{if:s==0|j(x) = x^2 sur ]-{{r}} ; {{r}}[   vert|{{if:s==1|j(x) = x^2 sur [-{{r}} ; {{r}}]   vert|{{if:s==2|j(x) = x^2 sur ]{{r}} ; 10]   vert|j(x) = x^2 sur [{{r}} ; 10]   vert}}}}}}\npoints: A({{eval:-(r)}} ; {{k}}), B({{r}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de la fonction carré, droite y = {{k}} en pointillé, partie cherchée en vert.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-{{r}}\\,;{{r}}\\right[|{{if:s==1|\\left[-{{r}}\\,;{{r}}\\right]|{{if:s==2|\\left]-\\infty\\,;-{{r}}\\right[\\cup\\left]{{r}}\\,;+\\infty\\right[|\\left]-\\infty\\,;-{{r}}\\right]\\cup\\left[{{r}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction carré $f : x\\mapsto x^2$.\n\n```courbe\nx: -4 ; 4\ny: -5 ; 10\ngrille: 1 ; 1\nf(x) = x^2   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction carré.\n```\n\nRésous graphiquement l'inéquation $x^2{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "-4..-1"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|\\varnothing|{{if:s==1|\\varnothing|{{if:s==2|\\mathbb{R}|\\mathbb{R}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : elle est entièrement **sous** la courbe, car un carré n'est jamais négatif.",
+					"```courbe\nx: -4 ; 4\ny: -5 ; 10\ngrille: 1 ; 1\nf(x) = x^2   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\ntaille: moyenne\ndescription: Courbe de la fonction carré et droite y = {{k}}, sous la courbe.\n```",
+					"{{if:s==0|Aucun point de la courbe n'est sous la droite. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==1|Aucun point de la courbe n'est sous la droite. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==2|Tous les points de la courbe sont au-dessus de la droite. $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$.|Tous les points de la courbe sont au-dessus de la droite. $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$.}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² ⩽ 9 : S = [−3 ; 3]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "3",
+				"s": "1"
+			},
+			"answers": ["[-3;3]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; 3] (solution négative oubliée)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "3",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;3]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : crochets ouverts",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "3",
+				"s": "1"
+			},
+			"answers": ["]-3;3["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² > 1 : S = ]−∞ ; −1[ ∪ ]1 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "1",
+				"s": "2"
+			},
+			"answers": ["]-\\infty;-1[\\cup]1;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]1 ; +∞[ seulement",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "1",
+				"s": "2"
+			},
+			"answers": ["]1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² < −2 : S = ∅",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"s": "0"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"s": "0"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
