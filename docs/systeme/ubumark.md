@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; bloc ranger le 2026-10-28.
 
 ## À quoi ça sert
 
@@ -184,21 +184,22 @@ Un bloc spécial est une fence dont le langage est un mot réservé. Ouverture *
 oui, ` ```linear ` non : bloc de code ordinaire). Ils sont reconnus au premier niveau **et**
 en retrait sous un item de liste.
 
-| Fence                                                                                                                     | Nœud (`type`)               | Parseur (`src/lib/ubumark/parser/`) | Rendu écran              | Générateur PDF                   |
-| ------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------------------- | ------------------------ | -------------------------------- |
-| `variation`                                                                                                               | `variation-table`           | `variation-table-parser.ts`         | `VariationTable.svelte`  | `variation-table-typst.ts`       |
-| `probtree`                                                                                                                | `probability-tree`          | `probability-tree-parser.ts`        | `ProbabilityTree.svelte` | `probability-tree-typst.ts`      |
-| `trig`                                                                                                                    | `trig-circle`               | `trig-circle-parser.ts`             | `TrigCircle.svelte`      | `trig-circle-typst.ts`           |
-| `line`                                                                                                                    | `number-line`               | `number-line-parser.ts`             | `NumberLine.svelte`      | `number-line-typst.ts`           |
-| `courbe`                                                                                                                  | `courbe`                    | `courbe-parser.ts`                  | `Courbe.svelte`          | `courbe-typst.ts`                |
-| `figure`, `figure-a-completer`, `figure-de-travail`                                                                       | `figure`                    | `figure-parser.ts`                  | `FigureBlock.svelte`     | `figure-typst.ts` (via registre) |
-| `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`              | `StatChart.svelte`       | `stat-chart-typst.ts`            |
-| `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                      | `QrBlock.svelte`         | `qr-typst.ts`                    |
-| `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                 | `Horloge.svelte`         | `horloge-typst.ts`               |
-| `operation`                                                                                                               | `operation`                 | `operation-parser.ts`               | `Operation.svelte`       | `operation-typst.ts`             |
-| `collection`                                                                                                              | `collection`                | `collection-parser.ts`              | `Collection.svelte`      | `collection-typst.ts`            |
-| `monnaie`                                                                                                                 | `monnaie`                   | `monnaie-parser.ts`                 | `Monnaie.svelte`         | `monnaie-typst.ts`               |
-| `choix` (clôture ```` si un choix contient un bloc)                                                                       | `choice`                    | `choix-parser.ts`                   | `ChoiceBlock.svelte`     | `typst-generator.ts` (« A) … »)  |
+| Fence                                                                                                                     | Nœud (`type`)               | Parseur (`src/lib/ubumark/parser/`) | Rendu écran              | Générateur PDF                               |
+| ------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------------------- | ------------------------ | -------------------------------------------- |
+| `variation`                                                                                                               | `variation-table`           | `variation-table-parser.ts`         | `VariationTable.svelte`  | `variation-table-typst.ts`                   |
+| `probtree`                                                                                                                | `probability-tree`          | `probability-tree-parser.ts`        | `ProbabilityTree.svelte` | `probability-tree-typst.ts`                  |
+| `trig`                                                                                                                    | `trig-circle`               | `trig-circle-parser.ts`             | `TrigCircle.svelte`      | `trig-circle-typst.ts`                       |
+| `line`                                                                                                                    | `number-line`               | `number-line-parser.ts`             | `NumberLine.svelte`      | `number-line-typst.ts`                       |
+| `courbe`                                                                                                                  | `courbe`                    | `courbe-parser.ts`                  | `Courbe.svelte`          | `courbe-typst.ts`                            |
+| `figure`, `figure-a-completer`, `figure-de-travail`                                                                       | `figure`                    | `figure-parser.ts`                  | `FigureBlock.svelte`     | `figure-typst.ts` (via registre)             |
+| `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`              | `StatChart.svelte`       | `stat-chart-typst.ts`                        |
+| `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                      | `QrBlock.svelte`         | `qr-typst.ts`                                |
+| `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                 | `Horloge.svelte`         | `horloge-typst.ts`                           |
+| `operation`                                                                                                               | `operation`                 | `operation-parser.ts`               | `Operation.svelte`       | `operation-typst.ts`                         |
+| `collection`                                                                                                              | `collection`                | `collection-parser.ts`              | `Collection.svelte`      | `collection-typst.ts`                        |
+| `monnaie`                                                                                                                 | `monnaie`                   | `monnaie-parser.ts`                 | `Monnaie.svelte`         | `monnaie-typst.ts`                           |
+| `choix` (clôture ```` si un choix contient un bloc)                                                                       | `choice`                    | `choix-parser.ts`                   | `ChoiceBlock.svelte`     | `typst-generator.ts` (« A) … »)              |
+| `ranger`                                                                                                                  | `ranger`                    | `ranger-parser.ts`                  | `RangerPlacer.svelte`    | `typst-generator.ts` (`generateRangerTypst`) |
 
 Bloc ```choix (case « choix » d'une question, [questions.md](questions.md)) : réglages en tête
 (`plusieurs:`, `melanger:`, `case:` posée par le générateur), un choix par ligne `- …`, suite en
@@ -208,6 +209,21 @@ son texte (`source`) : l'éditeur riche le rend en bloc de code `choix`, et l'ex
 plus longue que toute clôture intérieure (```` si un choix contient un bloc). Réécriture d'un bloc
 de modèle : `serializeTemplateChoiceBlock` ; `rewritable: false` quand une ligne ou un réglage est
 illisible (la réécriture le perdrait).
+
+Bloc ``ranger (étiquettes à ranger, [questions.md](questions.md)) — `__tests__/ranger/ranger-parser.test.ts`,
+`RangerPlacer.svelte.test.ts` : `signe: <` (défaut) ou `>`, `case:` posée par le générateur, une
+étiquette par ligne `- …` (ubumark sur une ligne, formules non extraites, `blockLineRanges`) ; 2 à 8,
+deux à deux différentes ; erreurs en phrases (`errors: string[]`). Clôture `` obligatoire (sinon
+jusqu'à la fin du texte, comme ```choix). Ordre vu par l'élève : `displayedLabels` — dans une question
+le bloc est déjà mélangé ; hors question (cours, aide, PDF d'un cours) mélange fixe (graine = nombre
+d'étiquettes), même rendu au serveur, au navigateur et sur papier. Écran `RangerPlacer.svelte` : les
+étiquettes en haut (une posée garde sa place, vide), les places en dessous séparées du signe ; glisser
+(`touch-action: none` sur les étiquettes) ou toucher l'étiquette puis la place ; place prise :
+échange, venue d'en haut l'autre remonte ; toucher une étiquette posée la renvoie en haut ; clavier
+Tab, Entrée, flèches, Échap ; noms « Étiquette 2 sur 3 », « Place 1 sur 3, vide », jamais l'ordre
+juste. Corrigé : places fausses marquées, rangement juste dessous (`expected`). PDF : étiquettes
+encadrées puis places en pointillés (grilles centrées en hauteur, signe en mode math). Éditeur riche :
+bloc de code `ranger`.
 
 La liste des genres statistiques est `STAT_CHART_KINDS` (`src/lib/ubumark/types/stat-chart.ts`).
 

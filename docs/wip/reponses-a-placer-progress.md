@@ -502,3 +502,19 @@ Le prof écrit les étiquettes **dans le bon ordre** ; le tirage les mélange. `
 4. Mélange : jamais déjà rangé, ni à l'envers ; graine de l'instance.
 5. Cette PR livre l'outil et la page d'aide ; 06 et 07 réécrits par questions-6, CP, CE1, CM2 par la session
    « questions ».
+
+## 23. PR « ranger » — étiquettes à ranger (2026-10-28)
+
+Branche `feat/reponses-a-placer`. Tests rouges d'abord : `ranger/ranger-parser.test.ts` (parseur, mélange,
+PDF), `generation-ranger.test.ts`, `RangerPlacer.svelte.test.ts`, `rich-text/ranger-bloc.test.ts`.
+
+- Écart technique à la phase 0 (§ 21.3) : la réponse d'une place est la position **affichée** de
+  l'étiquette (`'2'`), pas son indice d'origine. Le bloc de l'instance est réécrit mélangé : rien ne
+  trahit l'ordre, la version publique n'a rien à reconvertir (contrairement au choix). Même
+  comportement pour l'élève : jugé sur l'étiquette.
+- 2 étiquettes : l'envers est le seul désordre, donc permis (« ni à l'envers » vaut dès 3).
+- Hors question (aide, cours) : mélange fixe, graine = nombre d'étiquettes.
+- Vu en vrai (port 5178, `teacher@local.test`, `/aide-ecriture/blocs/ranger`, Playwright, 1100 px souris
+  et 375 px doigt par CDP) : glisser pose, toucher-toucher échange, pas de débordement. Le compte prof
+  local manquait (suite d'intégration interrompue) : `pnpm db:dev-accounts`.
+- PDF compilé avec le compilateur de la prod (`scripts/fiches/compile-prod.mjs`).
