@@ -191,3 +191,42 @@ Restent en 3e sans tag : 77b82211, cf4468c3. a1ae1558 (exposants positifs) reste
   (`updated_at` du 2026-10-28 08:35 sur 336451af, 7c0ee046, bba95c2d = migration des QCM en cases, pas ce lot).
 - **Coordination 4e** (message de la session 4e, validé par David) : 17f3dfcd ira ensuite en 2de (2-260) par
   le lot 0 de la 4e, après nos migrations ; 90dca27a et acbd2280 → 3e + 3-001 dans un lot suivant de la 3e.
+
+## 8. Lot 1 (puissances et nombres) : phase 0 proposée (2026-10-28)
+
+Relevé MCP du jour : 3-003, 3-007, 3-008, 3-009, 3-010 sans modèle ; 3-001 couvert par c9d6c5db seul ;
+4-005 = 4f4a5c94, d14fe0cf, 90dca27a, acbd2280. Niveaux relevés par catégorie (tous statuts) ; la 4e prévoit
+« Fractions / Problèmes / Parts et restes, 2 » (son lot 1, pas écrit) : la 3e prend le 3.
+
+### 8.1 Modèles neufs (5, un par point)
+
+| Point | Modèle (catégorie, niveau) · sous-notion                                                                                                        | Variations                                                                                                                                                                                                                                  | Réponse                                                 |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| 3-003 | Problèmes avec des fractions (Fractions / Problèmes / Parts et restes, 3) · Fractions : calculs > fraction d'une quantité                       | 1) quatre groupes a/b, c/d, f/g : fraction du dernier (complément à 1, dénominateurs ≤ 12) ; 2) a/b dépensé, puis c/d du reste, il reste N € : somme de départ ? ; 3) réservoir aux a/b, + N L, il est aux c/d : capacité ?                 | case                                                    |
+| 3-007 | Problèmes et notation scientifique (Puissances / Problèmes / Notation scientifique, 1) · Puissances : sens et écritures > notation scientifique | 1) préfixe → puissance : 1 µm = 10^? m (nano à giga) ; 2) a nm, a µm, a Go… → notation scientifique dans l'unité de base ; 3) produit : la lumière (3 × 10⁸ m/s) en t s ; 4) quotient : combien de bactéries de a µm bout à bout sur 1 cm ? | cases mantisse + exposant (comme 953574d4) ; case en 4  |
+| 3-008 | Résoudre x² = a (Calcul littéral / Equations / x² = a, 1) · Équations : produit et quotient > x² = a                                            | 1) x² = n², n de 1 à 12 ; 2) x² = a, a sans facteur carré (2 à 23) : {−√a ; √a}, sans simplification ; 3) x² = 0 ou x² = −n (une ou aucune solution)                                                                                        | case S = ? (comme ac9579d6, 2de, sans sa variation k√m) |
+| 3-009 | Problèmes avec la racine carrée (Racines carrées / Problèmes / Aire et côté, 1) · Racines carrées : calculs > techniques de calcul              | 1) carré d'aire n² cm² : côté ; 2) carré d'aire a cm² (non carré) : côté exact √a ; 3) idem, arrondi au mm ; 4) carré de même aire qu'un rectangle a × b (a × b carré parfait : 9 × 4, 8 × 2, 18 × 2…)                                      | case                                                    |
+| 3-010 | Décomposer en facteurs premiers (Entiers / Nombres premiers / Décomposition, 1) · Nombres premiers > décomposition en facteurs premiers         | 1) 2^a × 3^b × 5^c (≤ 1 000) : cases des exposants ; 2) 2^a × 3^b × p, p premier de 7 à 37 (306, 124, 2 220 du BO) : cases des exposants et de p ; 3) case choix : la décomposition parmi 2² × 3 × 5 / 4 × 15 / 2 × 30 / 2² × 15            | cases · case choix                                      |
+
+`testSpecs` d'erreurs typiques : 3-003 → c/d de la somme de départ au lieu du reste ; 3-007 → mantisse ≥ 10 ou
+exposant du préfixe faux ; 3-008 → {√a} seul, √(−n) ; 3-009 → a/2, a/4 (périmètre) ; 3-010 → 4 × 15.
+
+**Le juge ne sait pas exiger « facteurs premiers »** (mesuré) : avec `product`, 4 × 15 passe ; avec un motif
+`2^2 * 3 * 5`, 5 × 3 × 2² et 2 × 2 × 3 × 5 sont refusés. D'où des cases d'exposants et une case choix, sans
+réponse libre.
+
+### 8.2 Rangement de 90dca27a et acbd2280
+
+4e → 3e seule, tag 4-005 → 3-001, nœud et niveaux gardés (Fractions / Apprivoiser / Simplification, 4 et 1).
+Garde : seulement si `grades = {4}` et tag 4-005 encore posé. 4-005 garde 4f4a5c94 et d14fe0cf.
+
+### 8.3 Question d'accès
+
+Modèles neufs en brouillon : personne ne lit rien de neuf. Rangement : les élèves et le prof de 3e voient 2
+modèles publiés de plus, ceux de 4e les perdent. Aucune règle ne change.
+
+### 8.4 Questions à David
+
+1. Valider les 5 modèles (§ 8.1) : points, variations, catégories, niveaux ?
+2. 3-010 : cases + case choix suffisent, ou un petit chantier « forme facteurs premiers » dans le juge (réponse
+   libre 2² × 3 × 5 en tout ordre), avant ou après le lot ?
