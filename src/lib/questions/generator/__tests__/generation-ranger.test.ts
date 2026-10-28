@@ -18,6 +18,7 @@ import { templateMarkdown } from '$lib/ubumark';
 import { parseMarkdown } from '$lib/ubumark';
 import { validateAnswer } from '$lib/utils/answer-validator';
 import { buildExpectedResult } from '../../expected-result';
+import { toPublicQuestion } from '../../public-question';
 import type { RangerNode } from '$lib/ubumark/types/ranger';
 
 function template(
@@ -210,5 +211,19 @@ describe('étiquettes à ranger : les cases et leurs réponses', () => {
 			],
 			expected: right
 		});
+	});
+
+	it('version publique (évaluation notée) : ni réponse, ni ordre écrit ; même graine, même énoncé', () => {
+		const t = template({ statement: `Range.\n\n${ranger(...SEVENTHS)}` });
+		const instance = generate(t);
+		const shown = shownBlock(instance).labels;
+		const sent = toPublicQuestion(instance, { position: 0, delaySeconds: 30 });
+		const json = JSON.stringify(sent);
+		expect(json).not.toContain('expectedAnswer');
+		expect(json).not.toContain('construire');
+		expect(sent.statement.match(/```ranger/g)).toHaveLength(1);
+		const published = parseMarkdown(sent.statement).children.find((c) => c.type === 'ranger');
+		expect(published && published.type === 'ranger' && published.labels).toEqual(shown);
+		expect(String(generate(t).statement)).toBe(String(instance.statement));
 	});
 });

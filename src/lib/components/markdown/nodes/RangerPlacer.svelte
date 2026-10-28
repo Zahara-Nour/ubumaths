@@ -231,7 +231,8 @@
 	>
 		{#each filled as position, k (k)}
 			{#if k > 0}
-				<span class="ranger-signe text-lg" aria-label={signSpoken}>{signText}</span>
+				<span class="ranger-signe text-lg" aria-hidden="true">{signText}</span>
+				<span class="sr-only">{signSpoken}</span>
 			{/if}
 			{#if live}
 				<button
@@ -243,12 +244,15 @@
 					data-ranger-place={k}
 					data-ranger-focus={k === 0 ? '' : undefined}
 					aria-label={placeName(k, position)}
+					aria-describedby={position === null ? undefined : `${uid}-place-${k}`}
 					disabled={locked}
 					onclick={() => onPlaceClick(k)}
 					onkeydown={onKeydown}
 					onpointerdown={(event) => position !== null && onPointerDown(event, position)}
 				>
-					{#if position !== null}{@render label(position)}{/if}
+					{#if position !== null}
+						<span id="{uid}-place-{k}">{@render label(position)}</span>
+					{/if}
 				</button>
 			{:else}
 				<span

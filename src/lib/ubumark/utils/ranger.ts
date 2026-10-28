@@ -36,15 +36,23 @@ export function rangerOrder(count: number, random: RandomSource): number[] {
 	}
 }
 
+/** Graine tirée du texte des étiquettes : stable partout, différente d'un bloc à l'autre */
+function textSeed(labels: readonly string[]): number {
+	let hash = 0;
+	for (const char of labels.join('\n')) hash = (Math.imul(hash, 31) + char.charCodeAt(0)) | 0;
+	return hash;
+}
+
 /**
  * Étiquettes dans l'ordre où l'élève les voit. Dans une question (`case:` posée),
  * le bloc est déjà mélangé : tel quel. Hors question (cours, page d'aide, PDF d'un
- * cours), le bloc est dans l'ordre écrit, qui est la réponse : mélange fixe (même
- * rendu au serveur et au navigateur, à l'écran et sur papier).
+ * cours), le bloc est dans l'ordre écrit, qui est la réponse : mélange fixe, tiré du
+ * texte des étiquettes (même rendu au serveur et au navigateur, à l'écran et sur
+ * papier ; d'un bloc à l'autre, pas le même motif).
  */
 export function displayedLabels(spec: Pick<RangerSpec, 'caseIndex' | 'labels'>): string[] {
 	if (spec.caseIndex !== undefined) return [...spec.labels];
-	const order = rangerOrder(spec.labels.length, createRandomSource(spec.labels.length));
+	const order = rangerOrder(spec.labels.length, createRandomSource(textSeed(spec.labels)));
 	return order.map((index) => spec.labels[index]);
 }
 
