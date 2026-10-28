@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, Q19 codée (§ 20), PR pas encore ouverte._
+_Mis à jour le 2026-10-28, après #1915._
 
-- **État** : droite, horloge, barres à construire (#1908) mergées, pas en prod. Q19 tranchée (A) : `placer:` refusé si `axe:` dépasse 100 (`STAT_CHART_LIMITS.placeAxisMax`), test rouge puis vert, aide + `ubumark.md` à jour, `check:incremental` 0, garde de doc verte ; commité et poussé sur `fix/barres-axe-plafond`.
-- **Prochaine action** : ouvrir la PR de `fix/barres-axe-plafond`, suivre la CI, merger ; puis mettre ce bloc à jour, retirer le worktree. Ensuite : reste du chantier à redécider avec David (choix de l'échelle par l'élève, CM1-CM2).
-- **En attente de David** : rien.
-- **Pièges en cours** : `BuildKind` patron commun (`generator/build-answer.ts`, `buildCaseCount`) ; `isPlaceKind` = droite + horloge ; `placer:` des barres refusé avec `indicateurs:` ; une PR = une session.
-- **Worktree / branche** : `ubumaths-wt-reponses-a-placer`, `fix/barres-axe-plafond`.
+- **État** : droite, horloge, barres à construire (#1908) et plafond de l'axe à 100 avec `placer:` (Q19, #1915) mergés, pas en prod. Worktree retiré.
+- **Prochaine action** : reste du chantier à redécider avec David (choix de l'échelle par l'élève, CM1-CM2).
+- **En attente de David** : la suite du chantier (ci-dessus).
+- **Pièges en cours** : `BuildKind` patron commun (`generator/build-answer.ts`, `buildCaseCount`) ; `isPlaceKind` = droite + horloge ; `placer:` des barres refusé avec `indicateurs:` et avec un axe au-delà de 100 ; une PR = une session.
+- **Worktree / branche** : aucun (nouveau worktree à créer depuis `origin/main` pour la suite).
 
 ---
 
