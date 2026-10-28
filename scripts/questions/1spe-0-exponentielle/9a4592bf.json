@@ -1,0 +1,262 @@
+{
+	"id": "9a4592bf-5e79-4a4a-bb1a-698a715a4a34",
+	"title": "Équations particulières avec l'exponentielle",
+	"description": "(x − k)eˣ = 0 (eˣ ne s'annule pas), e^u = k ⩽ 0 (aucune solution)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Équations et inéquations",
+	"level": 3,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $({{eval:x-k}})e^{x}=0$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit est nul si et seulement si l'un de ses facteurs est nul.",
+					"Or $e^x>0$ pour tout réel $x$ : $e^x$ ne s'annule **jamais**.",
+					"Donc ${{eval:x-k}}=0$, soit $x=\\textcolor{{{color:primary.0}}}{{{k}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:-b/a}}"
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $({{eval:a*x+b}})e^{x}=0$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit est nul si et seulement si l'un de ses facteurs est nul ; or $e^x>0$ ne s'annule jamais.",
+					"Donc ${{eval:a*x+b}}=0$, soit $x=\\dfrac{ {{eval:-b}} }{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:-b/a}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "intervalles",
+					"expectedAnswer": "\\varnothing"
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{ {{eval:a*x+b}} }={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "-9..0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $X$, $e^X>0$ : une exponentielle ne peut pas valoir ${{k}}$, qui n'est pas strictement positif.",
+					"L'équation n'a aucune solution : $S=\\textcolor{{{color:primary.0}}}{\\varnothing }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "(x-3)eˣ=0 : x = 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "erreur de signe : x = -3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "eˣ = 0 cru possible : x = 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "(2x-3)eˣ=0 : x = 3/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "erreur de signe : x = -3/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "eˣ = 0 cru possible : x = 0",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1{,}5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "décimal exact 1,5 accepté",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1{,}4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "décimal faux 1,4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "-2"
+			},
+			"description": "e^{2x+1}=-2 : ensemble vide ∅",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\emptyset"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "-2"
+			},
+			"description": "ensemble vide écrit \\emptyset",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\{\\}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "-2"
+			},
+			"description": "ensemble vide écrit {}",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "-2"
+			},
+			"description": "ℝ au lieu de ∅",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\left\\{-\\frac{3}{2}\\right\\}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "-2"
+			},
+			"description": "« solution » -3/2 (2x+1 = -2)",
+			"variationIndex": 2
+		}
+	]
+}

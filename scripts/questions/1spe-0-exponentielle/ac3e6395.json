@@ -1,0 +1,79 @@
+{
+	"id": "ac3e6395-2d00-4ef5-a23e-50819afd7e50",
+	"title": "Valeur de e⁰",
+	"description": "QCM : e⁰ = 1",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Propriétés algébriques",
+	"level": 6,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"choices": [
+				{
+					"content": "$0$"
+				},
+				{
+					"content": "$1$"
+				},
+				{
+					"content": "$e$"
+				},
+				{
+					"content": "Ce nombre n'existe pas."
+				}
+			],
+			"statement": "Que vaut $e^0$ ?",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Par définition, la fonction exponentielle vaut $1$ en $0$ : $\\textcolor{{{color:primary.0}}}{e^0=1 }$."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 0 : choix 0 refusé",
+			"variationIndex": 0,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 0 : choix 1 accepté",
+			"variationIndex": 0,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 0 : choix 2 refusé",
+			"variationIndex": 0,
+			"selectedChoices": [2]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 0 : choix 3 refusé",
+			"variationIndex": 0,
+			"selectedChoices": [3]
+		}
+	]
+}

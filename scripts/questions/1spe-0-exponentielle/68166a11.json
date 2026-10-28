@@ -1,0 +1,138 @@
+{
+	"id": "68166a11-b481-44cc-b881-07252a6fb98f",
+	"title": "Signe de l'exponentielle",
+	"description": "Vrai ou faux : eˣ > 0 pour tout réel x (pièges : eᵃ négatif pour a < 0, eˣ ⩾ 1)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Propriétés algébriques",
+	"level": 1,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"choices": [
+				{
+					"content": "Vrai"
+				},
+				{
+					"content": "Faux"
+				}
+			],
+			"statement": "Vrai ou faux ? Pour tout réel $x$, $e^x>0$.",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"La fonction exponentielle est **strictement positive** sur $\\mathbb{R}$ : pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{e^x>0 }$. C'est **vrai**."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"choices": [
+				{
+					"content": "Vrai"
+				},
+				{
+					"content": "Faux"
+				}
+			],
+			"statement": "Vrai ou faux ? Le nombre $e^{ {{a}} }$ est négatif.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..-1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'exposant ${{a}}$ est négatif, mais une exponentielle est **toujours strictement positive** : $\\textcolor{{{color:primary.0}}}{e^{ {{a}} }>0 }$.",
+					"C'est **faux** : $e^{ {{a}} }=\\dfrac{1}{e^{ {{eval:-a}} }}$ est un nombre compris entre $0$ et $1$."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"choices": [
+				{
+					"content": "Vrai"
+				},
+				{
+					"content": "Faux"
+				}
+			],
+			"statement": "Vrai ou faux ? Pour tout réel $x$, $e^x\\geqslant1$.",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$e^x\\geqslant1$ seulement pour $x\\geqslant0$. Par exemple $e^{-1}=\\dfrac{1}{e}\\approx0{,}37<1$.",
+					"C'est **faux** : on sait seulement que $\\textcolor{{{color:primary.0}}}{e^x>0 }$ pour tout réel $x$."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 1 : choix 0 accepté",
+			"variationIndex": 0,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 1 : choix 1 refusé",
+			"variationIndex": 0,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3"
+			},
+			"description": "variation 2 : choix 0 refusé",
+			"variationIndex": 1,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3"
+			},
+			"description": "variation 2 : choix 1 accepté",
+			"variationIndex": 1,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 3 : choix 0 refusé",
+			"variationIndex": 2,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 3 : choix 1 accepté",
+			"variationIndex": 2,
+			"selectedChoices": [1]
+		}
+	]
+}

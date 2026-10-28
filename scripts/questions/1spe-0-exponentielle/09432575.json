@@ -1,0 +1,79 @@
+{
+	"id": "09432575-000f-41be-b50a-99b9e938d136",
+	"title": "Valeur approchée du nombre e",
+	"description": "QCM : e = e¹ ≈ 2,718",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Propriétés algébriques",
+	"level": 7,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"choices": [
+				{
+					"content": "$2{,}718$"
+				},
+				{
+					"content": "$3{,}142$"
+				},
+				{
+					"content": "$2{,}178$"
+				},
+				{
+					"content": "$1{,}414$"
+				}
+			],
+			"statement": "Quelle est la valeur approchée de $e=e^1$ au millième près ?",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$\\textcolor{{{color:primary.0}}}{e\\approx2{,}718 }$. Attention : $3{,}142$ est une valeur approchée de $\\pi$, et $1{,}414$ de $\\sqrt2$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 4 : choix 0 accepté",
+			"variationIndex": 0,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 4 : choix 1 refusé",
+			"variationIndex": 0,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 4 : choix 2 refusé",
+			"variationIndex": 0,
+			"selectedChoices": [2]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 4 : choix 3 refusé",
+			"variationIndex": 0,
+			"selectedChoices": [3]
+		}
+	]
+}
