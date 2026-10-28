@@ -150,6 +150,22 @@ describe('placer: — les barres que l’élève construit', () => {
 		]);
 	});
 
+	it('axe au-delà de 100 : refusé (l’unité ne se viserait plus au doigt)', () => {
+		expect(messagesOf('A = 1200', 'B = 2500', 'axe: 0 à 4000, de 100 en 100', 'placer: A')).toEqual(
+			['Ligne 4 : placer : axe jusqu’à 100 au plus (au-delà, l’élève ne viserait plus l’unité)']
+		);
+		expect(specOf('A = 60', 'B = 99', 'axe: 0 à 100, de 10 en 10', 'placer: B').toPlace).toEqual([
+			1
+		]);
+	});
+
+	it('axe au-delà de 100 sans placer: : permis', () => {
+		expect(specOf('A = 1200', 'axe: 0 à 4000, de 100 en 100').axis).toEqual({
+			max: 4000,
+			step: 100
+		});
+	});
+
 	it('pourcentages : refusés', () => {
 		expect(messagesOf('A = 40 %', 'B = 60 %', 'axe: 0 à 100, de 10 en 10', 'placer: A')).toEqual([
 			'Ligne 4 : placer : des effectifs, pas des pourcentages'

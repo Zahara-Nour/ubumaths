@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1908._
+_Mis à jour le 2026-10-28, Q19 codée (§ 20), PR pas encore ouverte._
 
-- **État** : droite à placer (#1846→#1860), horloge à placer (#1872) et diagramme en barres à construire (#1908, § 17-19) mergés, pas en prod.
-- **Prochaine action** : selon Q19 ; sinon le reste du chantier à redécider avec David (choix de l'échelle par l'élève CM1-CM2, hors #1908).
-- **En attente de David** : **Q19** — grand axe (`axe: 0 à 4000, de 100 en 100`) : aimant et ▲ ▼ à l'unité, impossible à viser au doigt. A (reco) : plafonner `axe:` avec `placer:` (au plus 100 ?), l'aimant reste à l'unité ; B : aimanter au pas de l'axe (plus de 7 entre 6 et 8).
-- **Pièges en cours** : `BuildKind` patron commun (`generator/build-answer.ts`, `buildCaseCount` pour plusieurs cases) ; `isPlaceKind` = droite + horloge (une barre se « construit ») ; `placer:` des barres refusé avec `indicateurs:` (fuite sur le PDF) ; page d'aide à froid : attendre l'hydratation ; une PR = une session.
-- **Worktree / branche** : aucun (retirés après #1908).
+- **État** : droite, horloge, barres à construire (#1908) mergées, pas en prod. Q19 tranchée (A) : `placer:` refusé si `axe:` dépasse 100 (`STAT_CHART_LIMITS.placeAxisMax`), test rouge puis vert, aide + `ubumark.md` à jour, `check:incremental` 0, garde de doc verte ; commité et poussé sur `fix/barres-axe-plafond`.
+- **Prochaine action** : ouvrir la PR de `fix/barres-axe-plafond`, suivre la CI, merger ; puis mettre ce bloc à jour, retirer le worktree. Ensuite : reste du chantier à redécider avec David (choix de l'échelle par l'élève, CM1-CM2).
+- **En attente de David** : rien.
+- **Pièges en cours** : `BuildKind` patron commun (`generator/build-answer.ts`, `buildCaseCount`) ; `isPlaceKind` = droite + horloge ; `placer:` des barres refusé avec `indicateurs:` ; une PR = une session.
+- **Worktree / branche** : `ubumaths-wt-reponses-a-placer`, `fix/barres-axe-plafond`.
 
 ---
 
@@ -431,3 +431,8 @@ l'effectif, copie corrigée : un diagramme, une réponse par barre).
   (`axe: 0 à 4000, de 100 en 100`) : aimant et ▲ ▼ à l'unité = impossible à viser au doigt. Reco :
   aimant et ▲ ▼ au pas de l'axe quand le pas dépasse 1… mais CE1-088 veut 7 entre 6 et 8 (§ 18.3) ;
   autre reco : plafonner `axe:` avec `placer:` (au plus 100 ?).
+
+## 20. Décision Q19 (David, 2026-10-28 : « je suis ta reco »)
+
+A : avec `placer:`, `axe:` va au plus jusqu'à 100 (CE1-088 : moins de 100 individus) ; l'aimant et ▲ ▼
+restent à l'unité. PR `fix/barres-axe-plafond`, test rouge d'abord.
