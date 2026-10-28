@@ -15,7 +15,7 @@ import { MAX_SERIES_QUESTIONS } from '$lib/validation/series';
 // Constantes (partagées avec le schéma Zod de l'envoi)
 /** Réponses d'une copie : borne des séries enregistrées */
 export const MAX_ATTEMPT_ANSWERS = MAX_SERIES_QUESTIONS;
-/** Cases d'une question, choix d'un QCM */
+/** Cases d'une question */
 export const MAX_ANSWER_PARTS = 50;
 /** Une case, en LaTeX */
 export const MAX_ANSWER_LENGTH = 2_000;
@@ -36,22 +36,6 @@ function toAnswer(position: number, answer: TestAnswerResult | undefined): Submi
 	if (!data || data.value === '') return { position };
 	const timeSpent = Math.min(MAX_ANSWER_SECONDS, Math.max(0, Math.round(data.timeSpent ?? 0)));
 	const value = data.value;
-
-	if (
-		typeof value === 'number' ||
-		(Array.isArray(value) && value.every((v) => typeof v === 'number'))
-	) {
-		// Sans doublon : le schéma de l'envoi refuserait toute la copie (V5)
-		const choices = [
-			...new Set(
-				(Array.isArray(value) ? (value as number[]) : [value]).filter(
-					(c) => Number.isInteger(c) && c >= 0 && c < MAX_ANSWER_PARTS
-				)
-			)
-		].slice(0, MAX_ANSWER_PARTS);
-		return { position, choices, timeSpent };
-	}
-
 	const values = (Array.isArray(value) ? value : [value])
 		.slice(0, MAX_ANSWER_PARTS)
 		.map((v) => String(v).slice(0, MAX_ANSWER_LENGTH));

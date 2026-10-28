@@ -98,11 +98,7 @@ function buildTemplateUpdate(
 ): TemplateUpdate {
 	const update: TemplateUpdate = {};
 	if (TYPE_SOURCE_KEYS.some((key) => isProvided(data, key))) {
-		update.type = getQuestionType({
-			choices: merged.variations?.[0]?.choices,
-			shared: merged.shared,
-			options: merged.options
-		});
+		update.type = getQuestionType({ options: merged.options });
 	}
 	if (isProvided(data, 'title') && data.title !== undefined) update.title = data.title;
 	if (isProvided(data, 'description')) update.description = data.description || null;
@@ -122,7 +118,6 @@ function buildTemplateUpdate(
 	if (isProvided(data, 'level') && data.level !== undefined) update.level = data.level;
 	if (isProvided(data, 'status') && data.status !== undefined) update.status = data.status;
 	if (isProvided(data, 'delay')) update.delay = data.delay || null;
-	if (isProvided(data, 'multipleAnswers')) update.multiple_answers = data.multipleAnswers ?? null;
 	if (isProvided(data, 'testSpecs')) update.test_specs = toJson(data.testSpecs ?? null);
 	return update;
 }
@@ -198,7 +193,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			}
 		}
 
-		// QCM (V1) : jamais plusieurs bonnes réponses sans « plusieurs réponses », même
+		// Case choix (V1) : jamais plusieurs bonnes réponses sans `plusieurs: oui`, même
 		// en brouillon ; « aucune » n'est refusée qu'à la publication (validateTemplate)
 		if (merged.status !== 'published') {
 			const countErrors = choiceAnswerCountErrors(merged, { draft: true });

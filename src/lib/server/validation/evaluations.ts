@@ -203,8 +203,8 @@ export const classIdsFieldSchema = z
 const answerPartSchema = z.string().max(MAX_ANSWER_LENGTH, 'Réponse trop longue');
 
 /**
- * Réponse à UNE question : cases (valeurs, le LaTeX tapé) ou positions cochées d'un
- * QCM. Aucun verdict n'est lu : tout champ `isCorrect`, `points`, `score`… est
+ * Réponse à UNE question : une valeur par case (le LaTeX tapé ; case choix : indices
+ * d'origine « 0;2 »). Aucun verdict n'est lu : tout champ `isCorrect`, `points`, `score`… est
  * retiré par Zod (objet non strict) et le serveur corrige lui-même.
  */
 const submittedAnswerSchema = z.object({
@@ -214,18 +214,6 @@ const submittedAnswerSchema = z.object({
 		.min(0)
 		.max(MAX_ATTEMPT_ANSWERS - 1),
 	values: z.array(answerPartSchema).max(MAX_ANSWER_PARTS).optional(),
-	choices: z
-		.array(
-			z
-				.number()
-				.int()
-				.min(0)
-				.max(MAX_ANSWER_PARTS - 1)
-		)
-		.max(MAX_ANSWER_PARTS)
-		// QCM à plusieurs réponses (V5) : chaque choix coché une seule fois
-		.refine((choices) => new Set(choices).size === choices.length, 'Un choix est coché deux fois')
-		.optional(),
 	timeSpent: z.number().int().min(0).max(MAX_SECONDS).optional()
 });
 

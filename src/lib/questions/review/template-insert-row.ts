@@ -19,11 +19,7 @@ export function toTemplateInsertRow(
 	createdBy: string
 ): TablesInsert<'question_templates'> {
 	return {
-		type: getQuestionType({
-			choices: template.variations?.[0]?.choices,
-			shared: template.shared,
-			options: template.options
-		}),
+		type: getQuestionType({ options: template.options }),
 		title: template.title,
 		description: template.description || null,
 		shared: toJson(template.shared ?? null),
@@ -39,7 +35,6 @@ export function toTemplateInsertRow(
 		// Jamais publié par l'import, quoi que dise le brouillon (cas de #28)
 		status: 'draft',
 		delay: template.delay || null,
-		multiple_answers: template.multipleAnswers ?? null,
 		test_specs: toJson(template.testSpecs ?? null),
 		created_by: createdBy
 	};

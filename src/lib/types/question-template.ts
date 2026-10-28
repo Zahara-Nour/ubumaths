@@ -81,7 +81,6 @@ export function toQuestionTemplate(row: QuestionTemplateRow): QuestionTemplate {
 		options: asOptional<QuestionTemplate['options']>(row.options),
 		defaultDisplayOptions: asOptional<DisplayOptions>(row.default_display_options),
 		testSpecs: asOptional<TestSpec[]>(row.test_specs),
-		multipleAnswers: row.multiple_answers ?? undefined,
 		exerciseInstruction: row.exercise_instruction ?? undefined,
 		created_at: row.created_at ?? undefined,
 		updated_at: row.updated_at ?? undefined,

@@ -28,7 +28,6 @@
 	import FigureAnswer from './FigureAnswer.svelte';
 	import BuildAnswer from './BuildAnswer.svelte';
 	import ChoiceCasesScope from './ChoiceCasesScope.svelte';
-	import ChoiceList from '$lib/components/markdown/nodes/ChoiceList.svelte';
 	import type {
 		ExpectedFill,
 		ExpectedResult,
@@ -137,8 +136,6 @@
 				<MarkdownRenderer content={filledMarkdown(line.markdown, line.fills)} />
 				<p class="text-xs text-muted-foreground" data-fill-statuses>{fillStatuses(line.fills)}</p>
 			</div>
-		{:else if line.kind === 'choices'}
-			<ChoiceList corrected multiple={line.multiple} items={line.choices} />
 		{:else if line.kind === 'remark'}
 			<p class="remark" data-kind="remark">
 				<Info class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />

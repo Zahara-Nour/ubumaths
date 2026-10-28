@@ -15,7 +15,7 @@ export { generateInstance, generateMultipleInstances } from './generator/instanc
 
 export { resolveVariables, resolveVariableExpression } from './generator/variable-resolver';
 
-export { resolveExpression, resolveSolution } from './generator/content-resolver';
+export { resolveExpression } from './generator/content-resolver';
 
 export { shuffleChoices, type ShuffledChoice } from './generator/choice-shuffler';
 

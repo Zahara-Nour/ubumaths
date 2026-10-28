@@ -104,17 +104,6 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 			}
 			// answers are LaTeX (same value for text and LaTeX, like the real MathField flow)
 			validationResult = validateAnswer(spec.answers, instance, spec.answers);
-		} else if (questionType === 'multiple_choice') {
-			if (!spec.selectedChoices || spec.selectedChoices.length === 0) {
-				return makeError('Test spec for multiple choice must provide selectedChoices[]');
-			}
-
-			// selectedChoices are original indices (not shuffled display indices)
-			// validateAnswer expects original indices directly
-			validationResult = validateAnswer(
-				spec.selectedChoices.length === 1 ? spec.selectedChoices[0] : spec.selectedChoices,
-				instance
-			);
 		} else {
 			return makeError(`Type de question sans réponse à tester : ${questionType}`);
 		}

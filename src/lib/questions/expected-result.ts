@@ -70,7 +70,7 @@ export interface ExpectedChoice {
 	status: ExpectedStatus;
 }
 
-/** Case « choix » (bloc ```choix) : ses choix, statuts du QCM, ordre AFFICHÉ */
+/** Case « choix » (bloc ```choix) : ses choix et leurs statuts, ordre AFFICHÉ */
 export interface ExpectedChoiceCase {
 	/** Case de la question (`case: N` du bloc) */
 	index: number;
@@ -100,9 +100,6 @@ export type ExpectedLine =
 	  }
 	/** R3 : « Ta réponse : » — l'énoncé rempli par les cases de l'élève */
 	| { kind: 'your-answer'; markdown: string; fills: ExpectedFill[] }
-	/** R5 */
-	/** `multiple` : QCM à plusieurs réponses (case ☐ / ☑), sinon réponse unique (rond ○ / ●) */
-	| { kind: 'choices'; multiple: boolean; choices: ExpectedChoice[] }
 	/** R2 : remarque de forme, rattachée à sa case */
 	| { kind: 'remark'; index: number | null; text: string }
 	/** R8/R10 : réponse attendue seule (case graphique, ou introuvable dans l'énoncé) */
@@ -656,50 +653,6 @@ function expectedOnlyLine(view: BlankView, withAnswer: boolean): ExpectedLine {
 	};
 }
 
-function choiceLines(
-	instance: QuestionInstance,
-	verdict: DetailedVerdict | undefined
-): ExpectedLine[] {
-	const choices = instance.choices ?? [];
-	const order =
-		instance.shuffledChoices && instance.shuffledChoices.length === choices.length
-			? instance.shuffledChoices.map((c) => c.originalIndex)
-			: choices.map((_, i) => i);
-	const nothingChecked = verdict !== undefined && !verdict.choices?.some((c) => c.checked);
-	const lines: ExpectedLine[] = [
-		{
-			kind: 'choices',
-			multiple: instance.multipleAnswers === true,
-			choices: order.flatMap((originalIndex) => {
-				const choice = choices[originalIndex];
-				if (!choice) return [];
-				const detail = verdict?.choices?.find((c) => c.originalIndex === originalIndex);
-				const checked = detail?.checked ?? false;
-				// QCM à règles : ce sont elles qui disent quels choix sont bons
-				const isCorrect = detail?.isCorrect ?? choice.isCorrect;
-				let status: ExpectedStatus = isCorrect ? 'solution' : 'neutral';
-				if (detail && !nothingChecked) {
-					if (detail.outcome === 'checked-correct') status = 'correct';
-					else if (detail.outcome === 'checked-wrong') status = 'incorrect';
-					// Bon choix oublié : ambre en QCM à plusieurs réponses (R5), encadré sinon
-					else if (detail.outcome === 'missed' && instance.multipleAnswers) status = 'unoptimal';
-				}
-				return [
-					{
-						originalIndex,
-						content: String(choice.content),
-						checked,
-						isCorrect,
-						status
-					}
-				];
-			})
-		}
-	];
-	if (nothingChecked) lines.push({ kind: 'empty', text: EMPTY_ANSWER_TEXT });
-	return lines;
-}
-
 /**
  * Case « choix » : ses choix avec les statuts du QCM, ordre AFFICHÉ, réponse de
  * l'élève lue dans la case (indices d'origine). Rien coché : bons choix encadrés.
@@ -765,8 +718,6 @@ function buildAnswers(
 	if (type === 'course_card') return { status: null, lines: [] };
 	const verdict = given ?? (answer ? validateAnswerDetailed(instance, answer) : undefined);
 	const status = verdict?.status ?? null;
-
-	if (type === 'multiple_choice') return { status, lines: choiceLines(instance, verdict) };
 
 	const statement = typeof instance.statement === 'string' ? instance.statement : '';
 	// Case « figure » : hors de l'énoncé rempli, sa figure est dans sa ligne. Case
