@@ -411,3 +411,17 @@ Branche `feat/reponses-a-placer-barres`, worktree `ubumaths-wt-reponses-a-placer
 d'abord : `stat-chart/barres-placer.test.ts` (parseur `axe:` / `placer:` / `case:`, repérage, scène sans
 les effectifs attendus, calcul pur), `generation-barres-placer.test.ts` (une case par barre, réponse =
 l'effectif, copie corrigée : un diagramme, une réponse par barre).
+
+- Parseur : `axe:` (`spec.axis`, `{ max, step }`, depuis 0, au plus 40 graduations, barre trop haute
+  refusée), `placer:` (`spec.toPlace`, rangs dans `data`), `case:` (`caseIndex`). Refus de `placer:` :
+  sans `axe:`, `valeurs: oui`, pourcentages, deux séries, nom absent ou en double. Effectif décimal :
+  déjà refusé à sa ligne (vérification prévue = code mort, retirée). `findBarsToPlace`, `hasBarsToPlace`.
+- Scène : `writtenAxis`, barres `toPlace` (description « Danse à construire »). PDF : barres à construire
+  absentes. Calcul pur `utils/barres-placer.ts` (`barValueAt` aimant à l'unité, `barMistake`).
+- Générateur : `BuildKind` `'barres'`, `buildCaseCount` commun (droite, barres) au générateur et à la
+  copie corrigée ; case `math`, réponse = l'effectif. `isPlaceKind` reste droite + horloge : une barre se
+  construit (« Tu n'as rien posé. »).
+- Écran : `BarresPlacer.svelte` (pris par `StatChart` hors question), `FillBlanksInput`, `BuildAnswer`.
+- Vu en vrai (port 5177, `teacher@local.test`, `/aide-ecriture/blocs/statistiques`, Playwright, 1100 et
+  375 px) : Danse montée à 7 au doigt. Corrigé : à 375 px le dessin était rogné → la zone défile, comme
+  `StatChart` (tous les diagrammes de cette page font 300 px et défilent à 375).
