@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1893._
+_Mis à jour le 2026-10-28, après #1904._
 
-- **État** : lot 0 en prod (#1893). Lot 1 (calcul mental, 9 modèles) : PR des fichiers #1904 ouverte ; 9 BROUILLONS en prod (ids au § 7 quater), sans nœud ni tag.
-- **Prochaine action** : merger #1904 si CI verte (statut du RUN) ; puis migration nœud + tag des 9 ids (gabarit `20261026210000_questions_cp_c_rangement_tags.sql`, horodatage = max prod + 1 min, test rouge puis vert, `security-auditor`), `db:migrate`, page à cocher.
+- **État** : lot 0 en prod (#1893). Lot 1 (calcul mental, 9 modèles) : fichiers mergés (#1904) ; 9 BROUILLONS en prod (ids au § 7 quater), sans nœud ni tag.
+- **Prochaine action** : migration nœud + tag des 9 ids du lot 1 (nouveau worktree `feat/questions-cm1-lot1-rangement` ; gabarit `20261026210000_questions_cp_c_rangement_tags.sql`, horodatage = max prod + 1 min vérifié par `migration list`, test rouge puis vert, `security-auditor`), `db:migrate`, page à cocher, publication.
 - **En attente de David** : rien (phase 0 validée, § 7 bis).
-- **Pièges en cours** : un modèle garde toujours au moins un niveau ; case « choix » en prod (v0.51.0), QCM pas encore migrés ; droite à placer mergée, pas en prod ; niveaux relevés parmi les publiés de la catégorie avant toute écriture ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx`. ; niveaux réservés par la session CM2 (lot 1) dans Entiers / Apprivoiser : Décomposition 15-17, Ecriture 16, Comparer 8-9, Encadrer 9-10 → notre lot 2 prend les suivants, relus en base.
-- **Worktree / branche** : `ubumaths-wt-questions-cm1` · `feat/questions-cm1-lot1`.
+- **Pièges en cours** : un modèle garde toujours au moins un niveau ; case « choix » en prod (v0.51.0), QCM pas encore migrés ; droite à placer mergée, pas en prod ; niveaux relevés parmi les publiés de la catégorie avant toute écriture ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx`. ; niveaux réservés par la session CM2 (lot 1) dans Entiers / Apprivoiser : Décomposition 15-17, Ecriture 16, Comparer 8-9, Encadrer 9-10 → notre lot 2 prend les suivants, relus en base. ; chaque push sur la PR annule le run CI en cours ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
+- **Worktree / branche** : aucun (retiré après #1904).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
