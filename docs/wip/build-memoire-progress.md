@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, PR du retrait de la rustine ouverte._
+_Mis à jour le 2026-10-28, après #1900 et #1902._
 
-- **État** : Vite 8 en prod (v0.54.0, build Vercel 2 min 47 s au lieu de ~5 min). Rustine #1892 retirée sur la branche : `pnpm build` = `vite build` avec le heap par défaut de Node (§ 6).
-- **Prochaine action** : merger la PR ; au `deploy:prod` suivant (décidé par David), lire le succès du build Vercel ; puis versement du chantier (durable → `docs/systeme/`, journal archivé).
-- **En attente de David** : rien.
-- **Pièges en cours** : `test:client` complet plante sur le Mac sous Vite 7 comme sous Vite 8 (la CI fait foi) ; mesurer dans Docker (`--memory=8g --cpus=2`), jamais sur le Mac.
-- **Worktree / branche** : `ubumaths-wt-build-memoire` · `chore/build-memoire-heap`.
+- **État** : ⚠️ **prod v0.54.0 sans couleurs** (Lightning CSS de Vite 8 récrivait `light-dark()`) ; correctif #1902 mergé, pas encore en prod. Rustine #1892 retirée (#1900, § 6).
+- **Prochaine action** : `deploy:prod` (David) dès la CI de `main` verte ; vérifier les couleurs sur chiph.re (clair et sombre) et le succès du build Vercel sans rustine ; puis versement du chantier (§ 7 compris).
+- **En attente de David** : le `deploy:prod` de #1902.
+- **Pièges en cours** : SvelteKit impose `cssMinify: true` (= Lightning CSS sous Vite 8) : `build.cssMinify` ne sert à rien, régler `css.lightningcss`. `test:client` complet plante sur le Mac (la CI fait foi) ; mesurer dans Docker, jamais sur le Mac.
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -83,3 +83,10 @@ Mesure dans `docker run --memory=8g --memory-swap=8g --cpus=2 node:22-bookworm` 
 | défaut de Node, 2ᵉ passage | 0      | 36 s  | 4,93 Go          |
 
 Le heap vivant ne dépasse plus ~0,25 Go (§ 2) : le plafond ne joue plus. Marge ~3 Go sur les 8 Go de Vercel (~1 Go avec la rustine sous Vite 7). `scripts/vite-build.sh` supprimé, `pnpm build` = `gros-process.sh … vite build` partout (Mac, CI, Vercel). `pnpm build` sur le Mac : 30 s, sortie 0.
+
+## 7. Couleurs perdues en v0.54.0 (#1902, 2026-10-28)
+
+- Symptôme en prod : couleurs d'accent disparues (titre, boutons shadcn, onglet actif) ; `--color-primary` valait `var(--lightningcss-light,#fc8f1b)var(--lightningcss-dark,#ffc400)`.
+- Cause : SvelteKit impose `build.cssMinify: true` ; sous Vite 8 c'est Lightning CSS (esbuild sous Vite 7). Il abaisse `light-dark()` en variables qu'il ne pose qu'à côté d'un `color-scheme` du CSS ; le nôtre vient de mode-watcher (attribut `style` de `<html>`). `build.cssMinify: 'esbuild'` est écrasé par SvelteKit : essayé, sans effet.
+- Correctif : `css.lightningcss.exclude: Features.LightDark` (Tailwind fait de même), `lightningcss` en devDependency ; garde CI « light-dark() intact » après le build. Preuve : 16 CSS touchés → 0 ; `vite preview` clair et sombre conforme.
+- Leçon : la comparaison des 245 pages de #1899 regardait statut, erreurs JS et console, **pas le rendu** : un CSS invalide ne fait aucune erreur.
