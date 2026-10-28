@@ -1,4 +1,4 @@
-"""Lot 0 (corrections) de la 3e, rangement : migration 20261028200100_questions_3_rangement_tags + fixture du test.
+"""Lot 0 (corrections) de la 3e, rangement : migration 20261028213100_questions_3_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-10-28-3e/` (releve-prod-3.ts) et applique les décisions de David du
 2026-10-28 (journal `docs/wip/questions-3-progress.md` § 6.2) sur les 17 modèles du lot dont le
@@ -27,7 +27,7 @@ from pathlib import Path
 ICI = Path(__file__).parent
 RACINE = ICI.parents[2]
 ETAT = ICI / 'etat-prod-2026-10-28-3e'
-MIGRATION = RACINE / 'supabase/migrations/20261028200100_questions_3_rangement_tags.sql'
+MIGRATION = RACINE / 'supabase/migrations/20261028213100_questions_3_rangement_tags.sql'
 FIXTURE = RACINE / 'tests/integration/fixtures/questions-3-rangement.json'
 
 modeles = {t['id'][:8]: t for t in json.loads((ETAT / 'templates.json').read_text())}
@@ -168,7 +168,7 @@ w(f"""-- =======================================================================
 --     son point (« Géométrie > Géométrie repérée > intersection de deux droites »).
 -- Bilan : {N_NIVEAUX} niveaux changés, {N_DEPLACES} déplacements (R2 : le point vit ailleurs ; sans quoi
 -- question_template_points_check_rules refuse le tag), {N_POSES} tags posés. Aucun statut ne change. Le
--- contenu ne change pas ici (290dcf6f, réécrit, est dans 20261028200000_questions_3_contenu et ne
+-- contenu ne change pas ici (290dcf6f, réécrit, est dans 20261028213000_questions_3_contenu et ne
 -- figure pas dans celle-ci) : `updated_at` est PRÉSERVÉ.
 -- 90dca27a et acbd2280 (phase 0 : 3-001) n'y sont pas : passés en 4e, tag 4-005, par
 -- 20261028193700_questions_5_niveaux (session 5e, déjà jouée).

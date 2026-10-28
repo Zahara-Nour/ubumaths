@@ -4,7 +4,7 @@
 --   - 290dcf6f (Augmentation, 3-068) : la variation à 200 % est retirée (« cas simples » du point) ;
 --     restent 10, 20, 50 et 100 %. Tag 3-068 gardé ; nœud et niveau (3e) inchangés.
 -- Les 19 autres modèles du lot (niveaux, tags, nœuds) sont dans la migration suivante
--- (20261028200100_questions_3_rangement_tags).
+-- (20261028213100_questions_3_rangement_tags).
 -- ============================================================================
 -- Phase 0 validée par David le 2026-10-28 (journal docs/wip/questions-3-progress.md § 6.2).
 -- Fichier GÉNÉRÉ par docs/wip/questions/lot-corrections-3.py — ne pas éditer à la main.

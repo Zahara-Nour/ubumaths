@@ -1,6 +1,6 @@
 """Génère la migration de CONTENU du chantier « questions-3 », lot 0 (corrections) : 1 modèle
 réécrit, sans modèle neuf ni changement de niveau. Les 19 autres modèles du lot (niveaux, tags,
-nœuds, sans contenu) sont dans la migration suivante, `20261028200100_questions_3_rangement_tags.sql`.
+nœuds, sans contenu) sont dans la migration suivante, `20261028213100_questions_3_rangement_tags.sql`.
 
 Phase 0 validée par David (2026-10-28, § 6.2 C du journal `docs/wip/questions-3-progress.md`) :
 
@@ -66,7 +66,7 @@ ENTETE = """-- =================================================================
 --   - 290dcf6f (Augmentation, 3-068) : la variation à 200 % est retirée (« cas simples » du point) ;
 --     restent 10, 20, 50 et 100 %. Tag 3-068 gardé ; nœud et niveau (3e) inchangés.
 -- Les 19 autres modèles du lot (niveaux, tags, nœuds) sont dans la migration suivante
--- (20261028200100_questions_3_rangement_tags).
+-- (20261028213100_questions_3_rangement_tags).
 -- ============================================================================
 -- Phase 0 validée par David le 2026-10-28 (journal docs/wip/questions-3-progress.md § 6.2).
 -- Fichier GÉNÉRÉ par docs/wip/questions/lot-corrections-3.py — ne pas éditer à la main.
@@ -91,5 +91,5 @@ ENTETE = """-- =================================================================
 if __name__ == '__main__':
     releve = [RELEVE[c] for c in CONTENU]
     generer(LOT, releve=releve, etat=ETAT, niveaux_pris={},
-            migration='supabase/migrations/20261028200000_questions_3_contenu.sql',
+            migration='supabase/migrations/20261028213000_questions_3_contenu.sql',
             fixture='tests/integration/fixtures/questions-3-contenu.json', prefixe='q3c', entete=ENTETE)

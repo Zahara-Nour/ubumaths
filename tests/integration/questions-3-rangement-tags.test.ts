@@ -2,7 +2,7 @@
  * Chantier « questions-3 », lot 0 (corrections) : niveaux, nœuds et tags (Supabase local requis)
  * ==============================================================================================
  *
- * Migration `20261028200100_questions_3_rangement_tags` : 10 modèles de 4e passent en 3e avec le tag
+ * Migration `20261028213100_questions_3_rangement_tags` : 10 modèles de 4e passent en 3e avec le tag
  * de leur point de 3e (65110463 et 8ac99be4 sur le nœud de leur point), 17f3dfcd passe en 3e sans
  * tag ; 6 modèles de 3e passent en 4e (4-022, 4-024), en 5e (5-039) ou en 2de (2-348, 2-328, 2-318),
  * 2bdb3db6 et 336451af sur le nœud de leur point. Aucun statut ne change. Décisions de David du
@@ -55,7 +55,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261028200100_questions_3_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261028213100_questions_3_rangement_tags.sql';
 /** Le lot, tel que relevé en prod le 2026-10-28 (tags en « programme§code »). */
 const LOT: Modele[] = JSON.parse(
 	readFileSync('tests/integration/fixtures/questions-3-rangement.json', 'utf-8')

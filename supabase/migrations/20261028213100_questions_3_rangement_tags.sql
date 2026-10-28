@@ -13,7 +13,7 @@
 --     son point (« Géométrie > Géométrie repérée > intersection de deux droites »).
 -- Bilan : 17 niveaux changés, 4 déplacements (R2 : le point vit ailleurs ; sans quoi
 -- question_template_points_check_rules refuse le tag), 16 tags posés. Aucun statut ne change. Le
--- contenu ne change pas ici (290dcf6f, réécrit, est dans 20261028200000_questions_3_contenu et ne
+-- contenu ne change pas ici (290dcf6f, réécrit, est dans 20261028213000_questions_3_contenu et ne
 -- figure pas dans celle-ci) : `updated_at` est PRÉSERVÉ.
 -- 90dca27a et acbd2280 (phase 0 : 3-001) n'y sont pas : passés en 4e, tag 4-005, par
 -- 20261028193700_questions_5_niveaux (session 5e, déjà jouée).
