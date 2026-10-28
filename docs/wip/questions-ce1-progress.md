@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1891 (et PR du niveau de c4d4bf70 ouverte)._
+_Mis à jour le 2026-10-28, après #1895._
 
-- **État** : lot 2 (numération, 7 modèles) en prod en brouillon, rangé et tagué (#1886, `db:migrate` fait, vérifié en prod) ; page à cocher https://claude.ai/artifact/EkqSwsNAs54bDrNxvmCQE3 relue par David : **7/7 OK**.
-- **Prochaine action** : (1) PR `fix/questions-ce1-lot2-niveau` (c4d4bf70 « Le nombre qui suit… », Ecriture 3 → 10 ; relevé MCP du 2026-10-28 : seule collision du lot 2, 10 libre) : CI verte → merge → `db:migrate` depuis la branche mergée (accès tranché, test vérifié rouge sans la migration, rollback écrit ; `security-auditor` lancé) → vérifier en prod. (2) `publier-lot` en simulation sur `ce1-2`, puis David publie.
-- **En attente de David** : rien. Question d'accès de la migration de niveau tranchée par David le 2026-10-28 : **personne** ne gagne ni ne perd d'accès.
+- **État** : lot 2 (numération, 7 modèles) en prod en brouillon, rangé, tagué, relu 7/7. Niveau de c4d4bf70 corrigé (Ecriture 3 → 10, #1895, `db:migrate` fait, vérifié en prod, `updated_at` préservé). `publier-lot --dir scripts/questions/ce1-2` en simulation : **7 brouillons passent le contrôle**.
+- **Prochaine action** : David publie : `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce1-2 --publier` ; puis vérifier les 7 statuts en prod (MCP) et clore le lot 2 ; ensuite lot 3 du CE1.
+- **En attente de David** : la publication du lot 2 (écriture en prod, lancée par David).
 - **Pièges en cours** : relever les niveaux pris par TOUS les publiés de la catégorie (l'Ecriture 3 a été manqué) ; `subdomain` « Ecriture » sans accent ; worktree neuf → `pnpm exec svelte-kit sync`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `fix/questions-ce1-lot2-niveau`. #1891 mergée (titres à antislash), CI rouge au 1er run = timeouts et erreur d'infra vitest, verte à la relance.
+- **Worktree / branche** : aucun (worktree retiré, branche supprimée après #1895).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
