@@ -8,8 +8,8 @@
 _Mis à jour le 2026-10-28, après #1914 et la publication du lot 4._
 
 - **État** : lots 1 à 4 publiés. 6e en prod : 126 modèles publiés, 1 brouillon (3a7a5711, doublon de 059e3fc9, brouillon voulu). Lot 4 publié sur demande de David sans relecture complète de la page à cocher (seul 01 commenté, corrigé #1914).
-- **Prochaine action** : à décider avec David (points de 6e encore sans modèle ? relecture après coup du lot 4 dans l'aperçu ?).
-- **En attente de David** : la suite du chantier. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **Prochaine action** : relecture APRÈS COUP du lot 4 par David sur la page à cocher regénérée (https://claude.ai/artifact/UjdMqaWsaKhLN1dMC1aHro, version 2 depuis `main` d0f91659b, 01 nouveau, 0 verdict) ; compter les verdicts (`ArtifactData list verdicts`, 10 attendus) ; « À revoir » → modèle PUBLIÉ : `--mettre-a-jour` ne le touche plus, passer par la démarche § 7 (migration de contenu générée + test `decrireLotModifier`, comme e3d87166 au § 11.4).
+- **En attente de David** : sa relecture. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
 - **Pièges en cours** : 3a7a5711 = doublon repassé en brouillon exprès (migration `20261027100100`), NE PAS le publier ; relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; `--mettre-a-jour` après le merge seulement ; `e`/`i` interdites dans les `eval`.
 - **Worktree / branche** : aucun.
 
@@ -656,3 +656,5 @@ David a lancé `create-questions --publier` : 10 créés. Vérifiés par MCP : `
 - David a lancé `create-questions --publier --mettre-a-jour` (01 mis à jour, 9 identiques) puis `publier-lot --publier`
   (10/10). MCP : 01 avec `plusieurs: oui`, sans « non entier », tag gardé ; les 10 `published` sur leur nœud ; 6e = 126
   publiés + 1 brouillon (3a7a5711).
+- Page à cocher regénérée depuis `main` (d0f91659b) et republiée à la même adresse (version 2) : 01 nouveau, 10 fiches
+  `published`, 0 verdict ; rendu vu dans Chrome. David relit après coup ; corrections éventuelles = modèles publiés (§ 7).
