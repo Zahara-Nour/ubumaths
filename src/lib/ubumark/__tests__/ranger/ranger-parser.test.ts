@@ -18,6 +18,7 @@ import {
 } from '$lib/ubumark/parser/ranger-parser';
 import { rangerOrder } from '$lib/ubumark/utils/ranger';
 import { parseMarkdown } from '$lib/ubumark';
+import { generateTypst } from '$lib/ubumark/generators/typst-generator';
 import { createRandomSource } from '$lib/utils/random';
 
 const block = (...body: string[]) => ['```ranger', ...body, '```'].join('\n');
@@ -167,5 +168,22 @@ describe('mélange des étiquettes', () => {
 
 	it('même graine, même mélange', () => {
 		expect(rangerOrder(5, createRandomSource(7))).toEqual(rangerOrder(5, createRandomSource(7)));
+	});
+});
+
+describe('PDF (Typst)', () => {
+	it('les étiquettes dans l’ordre affiché, puis une place vide par étiquette, séparées du signe', () => {
+		const typst = generateTypst(parseMarkdown(block('case: 0', 'signe: >', '- 4', '- 9', '- 1')));
+		const labels = [...typst.matchAll(/ranger-etiquette\[(.*?)\]/g)].map((m) => m[1].trim());
+		expect(labels).toEqual(['4', '9', '1']);
+		expect(typst.match(/ranger-place[,)]/g)).toHaveLength(3);
+		expect(typst.match(/\$>\$/g)).toHaveLength(2);
+	});
+
+	it('hors question : le même mélange fixe qu’à l’écran', () => {
+		const typst = generateTypst(parseMarkdown(block('- 1', '- 2', '- 3')));
+		const labels = [...typst.matchAll(/ranger-etiquette\[(.*?)\]/g)].map((m) => m[1].trim());
+		expect(labels).not.toEqual(['1', '2', '3']);
+		expect([...labels].sort()).toEqual(['1', '2', '3']);
 	});
 });
