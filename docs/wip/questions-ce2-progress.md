@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1889._
+_Mis à jour le 2026-10-28, après #1897._
 
-- **État** : lot 1 (5 modèles de calcul mental, § 5) écrit, essayé en base locale (32 specs, 450 tirages), fichiers mergés (#1889) dans `scripts/questions/ce2-1/`. Niveaux revérifiés libres en prod le 2026-10-28. Rien en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce2-1 --publier` (dépôt principal) ; je relève les 5 `id`, puis UNE migration (lots 0 et 1) : nœud + tag des 5 brouillons ; `03675b9b` + CE2 + tag CE2-077 ; `427c735c`, `44c46578` repassés en brouillon (0 usage d'élève, relevé du 2026-10-28) ; test d'intégration rouge puis vert, `security-auditor`. Puis page à cocher, publication.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-1 --publier` ; jouer les 5 modèles dans l'aperçu admin (non fait : extension Chrome sans réponse le 2026-10-28).
-- **Pièges en cours** : commitlint refuse un sujet qui commence par une majuscule (« CE2 … ») ; `gh pr checks --watch` rend la main trop tôt → suivre le run ; CI : `corrections.test.ts` (timeout 5 s) et le shard client 1 (`wrapDynamicImport`) peuvent échouer sans rapport → relancer une fois.
-- **Worktree / branche** : aucun (worktree du lot 1 retiré) ; la migration partira d'un worktree neuf `../ubumaths-wt-questions-ce2`.
+- **État** : lot 1 en prod en BROUILLON, rangé et tagué (migration `20261028130100`, #1894 + renommage #1897, `db:migrate` fait, vérifié au MCP : 5 nœuds + 5 tags, `updated_at` intact). Lot 0 fait par la même migration : `03675b9b` en CE1 + CE2 (tags CE1-083, CE2-077), `427c735c` et `44c46578` en brouillon.
+- **Prochaine action** : compter les verdicts de la page à cocher https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4 (`ArtifactData list verdicts`) ; 5/5 OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce2-1` (simulation), puis David avec `--publier`. Puis lot 2 (numération) : phase 0.
+- **En attente de David** : relecture de la page à cocher (5 fiches) ; jouer les modèles dans l'aperçu admin si possible.
+- **Pièges en cours** : horodatage de migration = max de la PROD + 1 min, vérifié par `migration list` juste avant `db:migrate` (#1897 : 20261028130000 joué entre-temps par une autre session) ; `Doc-inchangée:` dans un MESSAGE DE COMMIT (≤ 100 car. par ligne), pas dans la PR ; commitlint refuse un sujet en majuscule ; `gh pr checks --watch` rend la main trop tôt ; un 2ᵉ point du même niveau sur un modèle est refusé par trigger.
+- **Worktree / branche** : aucun (retirés après #1897).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -159,3 +159,13 @@ gagne d'accès, aucune règle ne change ; « Les multiples de 25 » est aussi pr
 - Simulation `create-questions` (prod, lecture) : 5/5 verts, 32 specs. Base locale : 5 brouillons,
   `question:specs --apercu` : specs vertes, 450 tirages réussis, corrections relues.
 - PR #1889 mergée (CI verte à la 2ᵉ tentative : deux échecs sans rapport, cf. Pièges).
+
+### Lots 0 et 1 — en prod (2026-10-28)
+
+- Brouillons créés par David (`create-questions --publier`) : `0c9071d1` (tables), `e7763a96`
+  (terme manquant), `2cdbac43` (60), `df4f2372` (× 4), `32c0d191` (× 8).
+- Migration nœud + tag + lot 0 (#1894), test d'intégration 19 verts, rouge sans la migration ;
+  `security-auditor` : aucun bloquant (commentaire d'accès précisé : le prof lit encore les
+  brouillons ; test du nœud archivé ajouté). Renommée `20261028130100` (#1897), jouée en prod.
+- Page à cocher publiée : https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4 (capacité `db`,
+  collection `verdicts` vide au départ). Rendu à 390 px non vérifié (extension Chrome muette).
