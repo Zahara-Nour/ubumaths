@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 0 (niveaux) en PR #1917._
+_Mis à jour le 2026-10-28, après #1917 (lot 0 en prod)._
 
-- **État** : questions du § 4 tranchées (§ 5). Lot 0 (8 modèles changent de niveau, 7 tags) : migration `20261028193700_questions_5_niveaux` + test d'intégration (19 verts, rouge vérifié sans la migration).
-- **Prochaine action** : (`security-auditor` : aucun bloquant) CI verte de #1917, merge, `db:migrate` depuis le dépôt principal, vérification en prod ; puis phase 0 du lot 1 (A, calcul).
-- **En attente de David** : rien.
-- **Pièges en cours** : droite à placer et barres à construire mergés mais **pas en prod** (modèles qui s'en servent : brouillons jusqu'au `deploy:prod`) ; relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot ; `e`/`i` interdites dans les `eval` ; horodatages de migration pris par les sessions CE1 / CM1 / CM2 le même jour : vérifier avant d'en choisir un.
-- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot0-niveaux`.
+- **État** : lot 0 mergé (#1917) et migré en prod (`20261028193700`, vérifié : 8 modèles aux niveaux [4] / [6], 7 tags, `updated_at` intact). Lot 1 « Calcul » (7 modèles, phase 0 validée le 2026-10-28, § 7) en PR #1919, simulation prod verte, essayé en base locale.
+- **Prochaine action** : CI verte de #1919 → merge → **David** lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-calcul --publier` (brouillons) → relever les `id` → migration nœud + tag (gabarit `20261026210000_questions_cp_c_rangement_tags.sql`) → page à cocher → publication. Puis phase 0 du lot 2 (relatifs : 5-120, 5-014, 5-019, 5-015, 5-024, 5-021).
+- **En attente de David** : le `--publier` du lot 1 après le merge de #1919.
+- **Pièges en cours** : droite à placer et barres à construire mergés mais **pas en prod** ; relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot ; `e`/`i` interdites dans les `eval` ; horodatages de migration pris par les sessions CE1 / CM1 / CM2 le même jour : vérifier avant d'en choisir un ; worktree neuf : `svelte-kit sync` avant `create-questions` ; `question:specs --template` dit « NON importable » (colonnes `created_at`…), sans incidence.
+- **Worktree / branche** : `../ubumaths-wt-questions-5-lot1`, `feat/questions-5-lot1-calcul`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -128,3 +128,18 @@ en prod ; la figure à compléter ne sait tracer que `droite` / `segment` et vé
   chapitres, favoris).
 - `questions-5/lot-niveaux-5.py` (copie de `lot-rangement-6.py`) écrit la migration et la fixture
   `tests/integration/fixtures/questions-5-niveaux.json` ; test `tests/integration/questions-5-niveaux.test.ts`.
+
+## 7. Lot 1 « Calcul » : décisions (David, 2026-10-28, « je valide »)
+
+| #   | Point | Modèle                                                                  | Réponse               | Catégorie, niveau                                   |
+| --- | ----- | ----------------------------------------------------------------------- | --------------------- | --------------------------------------------------- |
+| 01  | 5-004 | Enchaîner des opérations (v1-v2 entiers, v3-v4 décimaux à une décimale) | case                  | Décimaux › Priorités opératoires › Enchaînements, 1 |
+| 02  | 5-006 | Nommer un calcul                                                        | choix somme / produit | Entiers › Priorités opératoires › Vocabulaire, 1    |
+| 03  | 5-118 | Termes et facteurs                                                      | choix parmi 4         | Entiers › Priorités opératoires › Vocabulaire, 2    |
+| 04  | 5-009 | Multiples et diviseurs                                                  | choix                 | Entiers › Diviser › Multiples et diviseurs, 1       |
+| 05  | 5-029 | Connaître les carrés (0 à 12)                                           | case                  | Entiers › Multiplier › Carrés, 2                    |
+| 06  | 5-030 | Le cube de 10                                                           | case                  | Entiers › Multiplier › Cubes, 1                     |
+| 07  | 5-032 | Calculer avec des carrés et des cubes                                   | case                  | Puissances › Calculer › Avec carrés et cubes, 1     |
+
+Accès : brouillons (admin seul) jusqu'à la publication. Script `docs/wip/questions/lot-5-calcul.py`,
+fichiers `scripts/questions/5-calcul/` ; simulation prod : 7 à créer, 59 specs vertes.
