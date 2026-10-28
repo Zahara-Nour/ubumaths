@@ -19,6 +19,7 @@ import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
 import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { hasBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { hasRangerToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { WORK_FIGURE_ALONE_MESSAGE } from '$lib/ubumark/parser/construction-parser';
 
 /**
@@ -177,7 +178,7 @@ function validateVariation(
 			// Un bloc ```operation à remplir porte sa propre case (sa réponse vient du calcul),
 			// un bloc ```figure-a-completer aussi (la figure de l'élève), un bloc ```collection
 			// ou ```monnaie à construire aussi (sa réponse est sa valeur), une droite ou une horloge
-			// à placer aussi, un diagramme en barres à construire aussi
+			// à placer aussi, un diagramme en barres à construire aussi, des étiquettes à ranger aussi
 			if (
 				(!variation.blanks || variation.blanks.length === 0) &&
 				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
@@ -186,6 +187,7 @@ function validateVariation(
 				!hasLineToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasHorlogeToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasBarsToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasRangerToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!/^\s*>?\s*```figure-a-completer\s*$/m.test(
 					String(variation.statement ?? shared?.statement ?? '')
 				)

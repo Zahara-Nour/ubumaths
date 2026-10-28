@@ -141,6 +141,9 @@ function nodeLines(node: ASTNode): number {
 		case 'choice':
 			// Bloc ```choix : une ligne par choix
 			return node.choices.length;
+		case 'ranger':
+			// Bloc ```ranger : la ligne des étiquettes, puis celle des places
+			return 2;
 		default:
 			// Nœud en ligne isolé : une ligne de texte
 			return inlineLines([node]);

@@ -34,6 +34,7 @@ import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { buildCaseCount } from './generator/build-answer';
 import {
 	validateAnswerDetailed,
@@ -151,6 +152,11 @@ export type ExpectedLine =
 			 * chaque point ; `answer` et `status` disent alors la droite entière
 			 */
 			answers?: { answer: string; status: ExpectedStatus }[];
+			/**
+			 * Étiquettes à ranger : la bonne réponse de chaque place (position affichée) ;
+			 * le bloc de l'énoncé ne dit pas l'ordre juste
+			 */
+			expected?: string[];
 	  };
 
 export interface ExpectedResult {
@@ -270,7 +276,8 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
 		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const })),
 		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const })),
-		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const }))
+		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const })),
+		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {
@@ -629,7 +636,8 @@ function placeLines(
 		source: build.source,
 		answer: answered ? answers.map((a) => a.answer).join(' ; ') : null,
 		status: answered ? (allAccepted ? 'correct' : 'incorrect') : 'solution',
-		...(answered && { answers })
+		...(answered && { answers }),
+		...(build.kind === 'ranger' && { expected: points.map((p) => p.expected) })
 	};
 	if (withAnswer && !answered) {
 		const text = isPlaceKind(build.kind) ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
