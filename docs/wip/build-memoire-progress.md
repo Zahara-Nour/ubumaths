@@ -6,12 +6,12 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après la mesure (rien de commité hors ce journal)._
+_Mis à jour le 2026-10-28, PR « Vite 8 » en préparation._
 
-- **État** : mesure faite (§ 2). Cause : Rollup garde le graphe de chaque module, vivant jusqu'à la fin du build (4,8 Go de heap). Vite 8 (Rolldown), essayé dans le conteneur seulement : pic 4,82 Go au lieu de 7,67, build ~45 s au lieu de ~3 min 50.
-- **Prochaine action** : selon David — PR « passer à Vite 8 » (`vite` 8 + `@sveltejs/vite-plugin-svelte` 7 ; Kit 2.70 les accepte déjà), avec vérification complète du site construit.
-- **En attente de David** : go ou non pour la montée en Vite 8 (§ 3).
-- **Pièges en cours** : mesurer dans Docker (`--memory=8g --cpus=2`), jamais sur le Mac (RSS sous-estimé) ; scripts de mesure hors dépôt (§ 1).
+- **État** : go de David pour Vite 8 (§ 3 A). Sur la branche : `vite` 8.3.5 + `@sveltejs/vite-plugin-svelte` 7.3.1 (pas encore commité). `check:incremental` 0 erreur, `test:server` vert (63 150), `pnpm build` OK (garde Safari : nœud racine 49,7 Ko).
+- **Prochaine action** : comparer le site construit Vite 7 / Vite 8 (§ 4 : 245 pages, Chromium + WebKit, anonyme + admin, base locale), `test:client`, puis commit + PR.
+- **En attente de David** : rien.
+- **Pièges en cours** : mesurer dans Docker (`--memory=8g --cpus=2`), jamais sur le Mac ; previews sur 5186 (Vite 8) et 5177 (témoin Vite 7, worktree `ubumaths-wt-build-memoire-temoin`, détaché, à retirer) ; 5176 est pris par une autre session.
 - **Worktree / branche** : `ubumaths-wt-build-memoire`, `chore/build-memoire`.
 
 ---
