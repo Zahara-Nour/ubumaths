@@ -513,8 +513,12 @@ PDF), `generation-ranger.test.ts`, `RangerPlacer.svelte.test.ts`, `rich-text/ran
   trahit l'ordre, la version publique n'a rien à reconvertir (contrairement au choix). Même
   comportement pour l'élève : jugé sur l'étiquette.
 - 2 étiquettes : l'envers est le seul désordre, donc permis (« ni à l'envers » vaut dès 3).
-- Hors question (aide, cours) : mélange fixe, graine = nombre d'étiquettes.
+- Hors question (aide, cours) : mélange fixe, graine tirée du texte des étiquettes (revue : un motif par bloc).
 - Vu en vrai (port 5178, `teacher@local.test`, `/aide-ecriture/blocs/ranger`, Playwright, 1100 px souris
   et 375 px doigt par CDP) : glisser pose, toucher-toucher échange, pas de débordement. Le compte prof
   local manquait (suite d'intégration interrompue) : `pnpm db:dev-accounts`.
 - PDF compilé avec le compilateur de la prod (`scripts/fiches/compile-prod.mjs`).
+- Revue Opus : corrigés l'étiquette lue sur sa place (lecteur d'écran), le signe dit en clair, le
+  mélange hors question propre à chaque bloc, un test de la version publique. **Q23 (à David)** : à 2
+  étiquettes, l'affichage est toujours l'inverse de la réponse (devinable) ; deux étiquettes identiques
+  au tirage font disparaître la question d'une évaluation.

@@ -215,8 +215,8 @@ Bloc ``ranger (étiquettes à ranger, [questions.md](questions.md)) — `__tests
 étiquette par ligne `- …` (ubumark sur une ligne, formules non extraites, `blockLineRanges`) ; 2 à 8,
 deux à deux différentes ; erreurs en phrases (`errors: string[]`). Clôture `` obligatoire (sinon
 jusqu'à la fin du texte, comme ```choix). Ordre vu par l'élève : `displayedLabels` — dans une question
-le bloc est déjà mélangé ; hors question (cours, aide, PDF d'un cours) mélange fixe (graine = nombre
-d'étiquettes), même rendu au serveur, au navigateur et sur papier. Écran `RangerPlacer.svelte` : les
+le bloc est déjà mélangé ; hors question (cours, aide, PDF d'un cours) mélange fixe (graine tirée du
+texte des étiquettes : un motif par bloc), même rendu au serveur, au navigateur et sur papier. Écran `RangerPlacer.svelte` : les
 étiquettes en haut (une posée garde sa place, vide), les places en dessous séparées du signe ; glisser
 (`touch-action: none` sur les étiquettes) ou toucher l'étiquette puis la place ; place prise :
 échange, venue d'en haut l'autre remonte ; toucher une étiquette posée la renvoie en haut ; clavier
