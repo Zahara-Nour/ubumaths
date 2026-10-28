@@ -945,6 +945,10 @@ function checkBarsToPlace(
 		if (options.showValues) {
 			return fail(line, 'placer : impossible avec valeurs: oui (l’effectif attendu serait écrit)');
 		}
+		// Effectif total, moyenne… : la barre manquante se déduirait (revue de la PR barres)
+		if (options.indicators.length > 0) {
+			return fail(line, 'placer : impossible avec indicateurs: (l’effectif attendu se déduirait)');
+		}
 		if (twoSeries) return fail(line, 'placer : une seule série');
 		if (unit === 'pourcentages') return fail(line, 'placer : des effectifs, pas des pourcentages');
 		const lower = (text: string) => text.toLocaleLowerCase('fr');
@@ -952,7 +956,16 @@ function checkBarsToPlace(
 		else {
 			const ranks: number[] = [];
 			for (const name of options.placer) {
-				const rank = data.findIndex((d) => lower(d.label) === lower(name));
+				// Le nom exact d'abord : `Lundi` et `lundi` peuvent être deux catégories
+				const exact = data.findIndex((d) => d.label === name);
+				const loose = data.flatMap((d, i) => (lower(d.label) === lower(name) ? [i] : []));
+				if (exact === -1 && loose.length > 1) {
+					return fail(
+						line,
+						`placer : « ${name} » désigne plusieurs catégories (écrire le nom exact)`
+					);
+				}
+				const rank = exact !== -1 ? exact : (loose[0] ?? -1);
 				if (rank === -1) {
 					return fail(line, `placer : « ${name} » n’est pas une catégorie du diagramme`);
 				}

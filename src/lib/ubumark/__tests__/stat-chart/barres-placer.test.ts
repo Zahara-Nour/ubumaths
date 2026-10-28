@@ -135,6 +135,21 @@ describe('placer: — les barres que l’élève construit', () => {
 		expect(messagesOf(...SPORTS, ...extra)).toEqual([message]);
 	});
 
+	it('indicateurs: refusés (l’effectif total ou la moyenne donneraient la barre)', () => {
+		expect(
+			messagesOf('0 = 1', '1 = 2', '2 = 3', 'indicateurs: effectif', 'axe: 0 à 5', 'placer: 2')
+		).toEqual([
+			'Ligne 6 : placer : impossible avec indicateurs: (l’effectif attendu se déduirait)'
+		]);
+	});
+
+	it('casse : le nom exact d’abord, ambigu sinon', () => {
+		expect(specOf('Lundi = 1', 'lundi = 2', 'axe: 0 à 5', 'placer: lundi').toPlace).toEqual([1]);
+		expect(messagesOf('Lundi = 1', 'lundi = 2', 'axe: 0 à 5', 'placer: LUNDI')).toEqual([
+			'Ligne 4 : placer : « LUNDI » désigne plusieurs catégories (écrire le nom exact)'
+		]);
+	});
+
 	it('pourcentages : refusés', () => {
 		expect(messagesOf('A = 40 %', 'B = 60 %', 'axe: 0 à 100, de 10 en 10', 'placer: A')).toEqual([
 			'Ligne 4 : placer : des effectifs, pas des pourcentages'

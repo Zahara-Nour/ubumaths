@@ -425,3 +425,9 @@ l'effectif, copie corrigée : un diagramme, une réponse par barre).
 - Vu en vrai (port 5177, `teacher@local.test`, `/aide-ecriture/blocs/statistiques`, Playwright, 1100 et
   375 px) : Danse montée à 7 au doigt. Corrigé : à 375 px le dessin était rogné → la zone défile, comme
   `StatChart` (tous les diagrammes de cette page font 300 px et défilent à 375).
+- Revue (Opus) : rien de bloquant sur la correction ni la numérotation. Corrigés, tests rouges d'abord :
+  `indicateurs:` + `placer:` refusé (l'effectif total imprimé sur le PDF donnait la barre) ; `placer:`
+  cherche le nom exact d'abord (`Lundi` / `lundi`), ambigu sinon. **Q19 (à David)** : grand axe
+  (`axe: 0 à 4000, de 100 en 100`) : aimant et ▲ ▼ à l'unité = impossible à viser au doigt. Reco :
+  aimant et ▲ ▼ au pas de l'axe quand le pas dépasse 1… mais CE1-088 veut 7 entre 6 et 8 (§ 18.3) ;
+  autre reco : plafonner `axe:` avec `placer:` (au plus 100 ?).
