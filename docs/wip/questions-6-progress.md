@@ -8,8 +8,8 @@
 _Mis à jour le 2026-10-28, après #1933._
 
 - **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Lot 5 : 7 brouillons en prod, rangés et tagués (#1933, migration jouée), page à cocher publiée (§ 12.3).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 7) ; « À revoir » → corriger ; puis David lance `publier-lot --dir scripts/questions/6-fractions-scissions --publier` ; ENFIN migration de contenu des 4 publiés (§ 7), APRÈS la publication des 7.
-- **En attente de David** : relecture de la page https://claude.ai/artifact/5YTMb65CgUX9DtRUfAZEEo. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **Prochaine action** : David lance `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-fractions-scissions --publier` (simulation verte, 7/7) ; je relis `published` au MCP ; ENFIN migration de contenu des 4 publiés (§ 7).
+- **En attente de David** : la publication ci-dessus (relecture faite, 7/7 OK). Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
 - **Pièges en cours** : ⚠️ jamais `--publier` sur `6-fractions/` avant la migration de contenu (04 change de titre). 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`) : ne pas les refaire. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
 - **Worktree / branche** : `../ubumaths-wt-questions-6`, aucune branche ouverte (la prochaine : migration de contenu).
 
@@ -809,3 +809,5 @@ migration de contenu après la publication des 7).
   tag juste chacun, `updated_at` = `created_at`, trigger `updated_at` à `O`.
 - Page à cocher générée depuis `main` (d7f986a1c), publiée : https://claude.ai/artifact/5YTMb65CgUX9DtRUfAZEEo
   (`db`, 0 verdict) ; case choix non dessinée (11, 14, 15, 16) : la jouer dans l'aperçu admin.
+- David a relu : 7/7 « OK », aucun commentaire (base de la page lue, 7 verdicts comptés). `publier-lot` en simulation :
+  7 brouillons passent le contrôle.
