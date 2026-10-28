@@ -399,4 +399,4 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
   7efd2e76 (2-453), 9c4f6b4f (2-341), a55ad3b4 (2-456), b807cc6c (2-340), cbf00ce7 (2-459) ; relevé MCP :
   brouillons, niveau 2de, sans nœud ni tag ; les 8 points sans aucun tag.
 - Migration `20261028170000_questions_2de_lecture_a_rangement_tags.sql` (gabarit du lot 2) et son test
-  d'intégration : rouge sans la migration, 9/9 vert avec.
+  d’intégration : rouge sans la migration, 9/9 vert avec ; `security-auditor` : aucun finding bloquant.
