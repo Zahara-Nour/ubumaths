@@ -245,8 +245,8 @@ modèles publiés de plus, ceux de 4e les perdent. Aucune règle ne change.
 
 ### 8.6 Lot 1 : écrit (2026-10-28)
 
-- `docs/wip/questions/lot-3-1.py` → `scripts/questions/3-lot-1/` (5 JSON) ; `question:specs` : 46 specs vertes,
-  750 tirages ; `create-questions` en simulation : vert.
+- `docs/wip/questions/lot-3-1.py` → `scripts/questions/3-lot-1/` (5 JSON) ; `question:specs` : 47 specs vertes,
+  850 tirages ; `create-questions` en simulation : vert.
 - Écarts à la phase 0 : 3-009 v2 (valeur exacte) tire des aires **sans facteur carré** (√20 rendait
   `unoptimal_form`, la simplification des racines est en 2de) ; 3-008 porte `shared.blankDefaults.answerKind:
 'intervalles'` comme ac9579d6 (sans lui, {−7 ; 7} est jugé faux).
