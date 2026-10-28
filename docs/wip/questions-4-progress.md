@@ -5,18 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 0 écrit (PR à ouvrir)._
+_Mis à jour le 2026-10-28, après #1923 (mergée, pas encore jouée en prod)._
 
-- **État** : lot 0 écrit (§ 7) : migration `20261028223000_questions_4_niveaux` (7 modèles, 4 déplacés, 7 tags),
-  test d'intégration 20 verts, rouge vérifié sans la migration.
-- **Prochaine action** : PR, `security-auditor`, CI verte, merge ; `db:migrate` **seulement après** le merge et
-  le `db:migrate` de #1921 (3e), qui passe 17f3dfcd en [3] (la 3e me prévient) ; vérification MCP ; puis
+- **État** : lot 0 mergé (#1923, `20261028223000_questions_4_niveaux`) ; **pas encore en prod**. #1921 (3e) mergée
+  aussi, pas encore jouée : 17f3dfcd encore en [4].
+- **Prochaine action** : `db:migrate` (le premier lancé, par la 3e ou par moi, pousse 213000, 213100 puis 223000
+  dans l'ordre) ; vérifier au MCP les 7 modèles (niveaux, nœuds, un tag chacun) ; retirer le worktree ; puis
   phase 0 du lot 1 (relatifs et rationnels : 082, 004, 006, 009, 010, 013, 014).
-- **En attente de David** : rien.
-- **Pièges en cours** : ma migration attend 17f3dfcd en [3] : jouée avant #1921, elle refuse (garde) ; 4-005 est
-  couvert (4f4a5c94, d14fe0cf ; 90dca27a et acbd2280 partiront en 3e avec un lot de la 3e) ; QCM = case choix ;
-  relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot.
-- **Worktree / branche** : `../ubumaths-wt-questions-4`, `feat/questions-4-lot0-niveaux`.
+- **En attente de David** : rien. **En attente de la 3e** : son `db:migrate` (prévenue par message).
+- **Pièges en cours** : jouée seule avant #1921, ma migration refuse sans rien écrire mais bloque `db push` ;
+  4-005 couvert par 4f4a5c94 et d14fe0cf ; QCM = case choix ; relire § 9 de `couvrir-un-niveau.md`.
+- **Worktree / branche** : `../ubumaths-wt-questions-4` (à retirer après la vérification en prod).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
