@@ -31,7 +31,6 @@
 		type DetailedVerdict,
 		type StudentAnswer
 	} from '$lib/utils/answer-validator';
-	import { isDisplayedChoiceCorrect, toOriginalChoiceIndexes } from '$lib/questions/choices';
 	import { buildExpectedResult, showsInstructionOnly } from '$lib/questions/expected-result';
 	import {
 		globalVerdictOf,
@@ -57,7 +56,6 @@
 	// Input components
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 	import { toFrenchDecimal } from '$lib/utils/french-math';
-	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
 	import CourseCardBack from './CourseCardBack.svelte';
 	import CorrectionView from './CorrectionView.svelte';
 	import ExpectedResultView from './ExpectedResultView.svelte';
@@ -115,7 +113,7 @@
 	// ============================================================================
 
 	// Answer state
-	let userAnswer = $state<string | string[] | number | number[]>('');
+	let userAnswer = $state<string | string[]>('');
 	let isSubmitted = $state(false);
 	let isSubmitting = $state(false);
 	let isCorrect = $state(false);
@@ -132,7 +130,6 @@
 	let isFlipped = $state(startFlipped);
 
 	// Type-specific state
-	let selectedChoices = $state<number[]>([]);
 	let fillBlankValues = $state<string[]>([]);
 	let fillBlankValuesLatex = $state<string[]>([]);
 	let blankValidationResults = $state<(boolean | null)[]>([]);
@@ -165,15 +162,6 @@
 		const minDigits = digitGroupingOf(instance);
 		return minDigits === undefined ? {} : { minDigits };
 	};
-
-	// Choix dans l'ordre affiché, chacun marqué juste ou faux À SA POSITION AFFICHÉE
-	// (sans `isCorrect`, le choix coché était toujours barré après validation)
-	const displayedChoices = $derived(
-		(instance.shuffledChoices ?? []).map((choice, position) => ({
-			...choice,
-			isCorrect: isDisplayedChoiceCorrect(instance, position)
-		}))
-	);
 
 	// Carte de cours (#617) : recto = énoncé, verso = correction, pas de réponse
 	const isCourseCard = $derived(getQuestionType(instance) === 'course_card');
@@ -243,10 +231,6 @@
 			blankUnoptimalResults = [];
 			blankFeedback = [];
 		}
-
-		if (getQuestionType(instance) === 'multiple_choice' && instance.shuffledChoices) {
-			selectedChoices = [];
-		}
 	});
 
 	// ============================================================================
@@ -265,8 +249,6 @@
 						blank.construction.work ||
 						(fillBlankValues[index] ?? '').trim() !== ''
 				);
-			case 'multiple_choice':
-				return selectedChoices.length > 0;
 			default:
 				return false;
 		}
@@ -277,19 +259,8 @@
 		return Math.round((Date.now() - startTime) / 1000);
 	}
 
-	function prepareAnswerValue(): string | string[] | number | number[] {
-		switch (getQuestionType(instance)) {
-			case 'fill_in_blanks':
-				return fillBlankValues;
-			case 'multiple_choice': {
-				// Positions cliquées (ordre affiché, mélangé) → indices d'origine : ceux que
-				// compare `validateAnswer` et ceux qui sont enregistrés.
-				const originalIndexes = toOriginalChoiceIndexes(instance, selectedChoices);
-				return instance.multipleAnswers ? originalIndexes : originalIndexes[0];
-			}
-			default:
-				return userAnswer;
-		}
+	function prepareAnswerValue(): string | string[] {
+		return getQuestionType(instance) === 'fill_in_blanks' ? fillBlankValues : userAnswer;
 	}
 
 	// ============================================================================
@@ -335,10 +306,7 @@
 		// Réponse telle que le validateur l'a lue, pour le résultat attendu du verso
 		submitted = {
 			instance,
-			answer:
-				getQuestionType(instance) === 'multiple_choice'
-					? { choiceIndexes: toOriginalChoiceIndexes(instance, selectedChoices) }
-					: { values: [...fillBlankValues], latex: [...fillBlankValuesLatex] }
+			answer: { values: [...fillBlankValues], latex: [...fillBlankValuesLatex] }
 		};
 		isCorrect = validationResult.isCorrect;
 		validationFeedback = validationResult.feedback || '';
@@ -462,23 +430,6 @@
 							</div>
 						</div>
 
-						<!-- Multiple choice: always show choices (disabled when non-interactive) -->
-						{#if getQuestionType(instance) === 'multiple_choice'}
-							<div class="answer-section">
-								{#if interactive}
-									<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
-								{/if}
-								<MultipleChoiceInput
-									choices={displayedChoices}
-									bind:selectedIndexes={selectedChoices}
-									multipleAnswers={instance.multipleAnswers}
-									disabled={!interactive || isInputDisabled}
-									showValidation={isSubmitted}
-									{genericFunctions}
-								/>
-							</div>
-						{/if}
-
 						<!-- Interactive controls (une carte de cours n'a rien à valider) -->
 						{#if interactive && !isCourseCard}
 							<div class="answer-section">
@@ -598,9 +549,8 @@
 										<ExpectedResultView result={expected} class={expectedSizeClasses[size]} />
 									{:else}
 										<!--
-										getQuestionType() ne connaît que deux types : sans `choices`, une
-										question est classée `fill_in_blanks`. Si elle n'a pas non plus de
-										`blanks`, il n'y a aucune réponse structurée à afficher — sans ce
+										Hors carte de cours, une question est classée `fill_in_blanks`.
+										Sans `blanks`, il n'y a aucune réponse structurée à afficher — sans ce
 										repli, la zone de réponse se rendait vide et muette.
 									-->
 										<p class="text-sm text-muted-foreground">

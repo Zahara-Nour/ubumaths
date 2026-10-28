@@ -6,7 +6,7 @@
 
 	FEATURES:
 	- Generate instance from template on demand
-	- Show generated statement, answer, choices
+	- Show generated statement
 	- Display validation errors
 	- Regenerate button with different seed
 	- MathLive rendering for LaTeX
@@ -16,11 +16,6 @@
 -->
 
 <script lang="ts">
-	import {
-		choiceLetter,
-		isDisplayedChoiceCorrect,
-		toDisplayedChoicePosition
-	} from '$lib/questions/choices';
 	import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
 	import { getQuestionType, QUESTION_TYPE_LABELS } from '$lib/questions/types';
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
@@ -32,7 +27,6 @@
 	import { onMount } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { monnaieChoiceSize } from '$lib/ubumark/utils/monnaie-choix';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import AnswerAssumptionsNotice from '$lib/components/questions/AnswerAssumptionsNotice.svelte';
@@ -339,64 +333,6 @@
 								<div class="flex items-start gap-2 rounded border bg-muted/50 p-2 text-sm">
 									<code class="flex-shrink-0 font-semibold">{name}:</code>
 									<code class="break-all">{formatVariableValue(value)}</code>
-								</div>
-							{/each}
-						</div>
-					</div>
-				{/if}
-
-				<!-- Answer -->
-				<div class="space-y-2">
-					<Badge variant="outline">Réponse</Badge>
-					<div class="rounded border bg-green-50 p-3 dark:bg-green-950/20">
-						{#if Array.isArray(instance.correctChoiceIndex)}
-							<ul class="space-y-1">
-								{#each instance.correctChoiceIndex as ans, i (i)}
-									<li class="flex items-center gap-2">
-										<Badge class="bg-green-600">{i + 1}</Badge>
-										<code class="font-mono"
-											>{choiceLetter(toDisplayedChoicePosition(instance, Number(ans)))}</code
-										>
-									</li>
-								{/each}
-							</ul>
-						{:else if instance.correctChoiceIndex !== undefined}
-							<!-- Lettre AFFICHÉE du bon choix (les choix sont mélangés) -->
-							<code class="font-mono text-lg"
-								>{choiceLetter(
-									toDisplayedChoicePosition(instance, Number(instance.correctChoiceIndex))
-								)}</code
-							>
-						{/if}
-					</div>
-				</div>
-
-				<!-- Choices (for QCM) -->
-				{#if instance.shuffledChoices && instance.shuffledChoices.length > 0}
-					{@const monnaieSize = monnaieChoiceSize(instance.shuffledChoices.map((c) => c.content))}
-					<div class="space-y-2">
-						<Badge variant="outline">Choix (mélangés)</Badge>
-						<div class="space-y-2">
-							{#each instance.shuffledChoices as choice, i (i)}
-								{@const isCorrect = isDisplayedChoiceCorrect(instance, i)}
-								<div
-									class="flex items-center gap-3 rounded border p-3 {isCorrect
-										? 'border-green-500 bg-green-50 dark:bg-green-950/20'
-										: 'bg-card'}"
-								>
-									<Badge variant={isCorrect ? 'default' : 'outline'}>
-										{String.fromCharCode(65 + i)}
-									</Badge>
-									<!-- Horloge ou collection d'un choix : 3 cm ; monnaie : 10 cm, tous les choix à la même échelle, comme chez l'élève -->
-									<div
-										class="@container flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]"
-										style:--monnaie-taille={monnaieSize}
-									>
-										<MarkdownRenderer content={choice.content} {genericFunctions} />
-									</div>
-									{#if isCorrect}
-										<Check class="h-5 w-5 text-green-600" />
-									{/if}
 								</div>
 							{/each}
 						</div>
