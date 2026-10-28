@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, PR du rangement du lot 4 en cours._
+_Mis à jour le 2026-10-28, après #1905 et son `db:migrate`._
 
-- **État** : lots 1 à 3 publiés. Lot 4 « Fractions » : 10 brouillons en prod ; migrations `20261028140000` (contenu de e3d87166) et `20261028140100` (rangement, tags, 3 modèles de 5e → 6e) sur `feat/questions-6`, tests verts (§ 11.4).
-- **Prochaine action** : revue `security-auditor`, PR, CI, merge, `db:migrate` (sans `--include-all`), vérification MCP ; puis page à cocher du lot 4 (depuis `main` à jour, vue dans Chrome).
-- **En attente de David** : rien. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **État** : lots 1 à 3 publiés. Lot 4 « Fractions » : 10 brouillons rangés et tagués en prod, 3 modèles de 5e passés en 6e (6-131), e3d87166 corrigé (§ 11.4-11.5). Page à cocher publiée : https://claude.ai/artifact/UjdMqaWsaKhLN1dMC1aHro (0 verdict).
+- **Prochaine action** : relecture de David ; compter les verdicts (`ArtifactData list verdicts`, 10 attendus) ; « À revoir » → correction (§ 7 de la démarche) ; puis `publier-lot.ts --dir scripts/questions/6-fractions` en simulation, `--publier` par David, relu au MCP.
+- **En attente de David** : relecture du lot 4 (case choix de 01, 02, 04 à jouer dans l'aperçu). Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
 - **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; nombres calculables de tête dans les problèmes ; un geste de calcul = un modèle ; `--mettre-a-jour` après le merge seulement ; page à cocher générée depuis un `main` à jour, rendu vu dans Chrome AVANT de l'annoncer ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval`.
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6`.
+- **Worktree / branche** : aucun (retiré après #1905).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -635,3 +635,12 @@ David a lancé `create-questions --publier` : 10 créés. Vérifiés par MCP : `
   sur le nœud de leur point + tag ; les 3 de 5e passent `[6]` + 6-131, nœud inchangé.
 - Tests `questions-6-fractions-contenu` et `questions-6-fractions-rangement-tags` : rouges sans les migrations (ENOENT),
   24 verts avec. Aide `lot-2bis-migration.ts` : le cas « TOUT ou RIEN » est sauté pour un lot d'un seul modèle.
+
+### 11.5 En prod et page à cocher (2026-10-28)
+
+- #1905 mergée (CI verte) ; `security-auditor` sans finding bloquant (rollback du rangement gardé à sa demande, testé).
+  `db:migrate` (sans `--include-all`) : les 2 migrations jouées ; MCP : 10 brouillons sur le nœud de leur point, tag
+  juste, `updated_at` inchangé ; 0be55013, 9293eb9a, 8ffdbdb1 `[6]` + 6-131, `updated_at` inchangé ; e3d87166 sans
+  `\textcolor` brut. Worktree et branche retirés.
+- Page à cocher générée depuis `main` (9789a1ed6), publiée : https://claude.ai/artifact/UjdMqaWsaKhLN1dMC1aHro ;
+  homonymes écartés (04, 08) conformes aux ids du § 11.3 ; case choix non dessinée (01, 02, 04) ; rendu vu dans Chrome.
