@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1939._
+_Mis à jour le 2026-10-28, après la relecture du lot 3._
 
-- **État** : lot 3 (fractions, 9 modèles, CE1-016 à 021 et 099) : 9 brouillons en prod, rangés et tagués (#1939, `db:migrate` joué, vérifié 9/9) ; page à cocher publiée (https://claude.ai/artifact/PZb69g4xfAJUS8cm5q5JsS, 0 alerte, 0 verdict).
-- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`) ; 9/9 OK → `publier-lot --dir scripts/questions/ce1-3` en simulation, puis `--publier` par David ; retirer le worktree.
-- **En attente de David** : la relecture de la page à cocher.
+- **État** : lot 3 (fractions, 9 modèles) en brouillon en prod, rangé et tagué (#1939). Relecture (verdicts comptés en base) : 7 OK ; **03** À revoir (« pourquoi un calcul dans la variation 2 ? ») ; **09** commentaire sans verdict (« la variation 3 n'a pas sa place dans ce modèle »).
+- **Prochaine action** : selon les réponses de David, corriger `docs/wip/questions/lot-ce1-3.py` (branche neuve dans le worktree), PR, `create-questions --mettre-a-jour` par David, remettre les deux verdicts à zéro, relecture, puis `publier-lot`.
+- **En attente de David** : (1) 03 : retirer la variation 2 (« un huitième plus un huitième… », doublon de 08 variation 3) ? — reco : oui. (2) 09 variation 3 (Lucie, complément) : A. retirée et gardée pour le lot 4 problèmes (reco) ; B. modèle à part (CE1-099, niveau 15).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 (« 1 demi », « le 1/4 ») ; `reducedFractions: off` (simplification = CE2) ; worktree neuf : `svelte-kit sync` avant `tsx` (`$lib`) ; ports 5176-5178 pris (5179 pour ce lot) ; commitlint : sujet sans majuscule initiale.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `feat/questions-ce1-lot3`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `feat/questions-ce1-lot3-rangement` mergée : en partir d'une neuve sur `origin/main`). Page à cocher : https://claude.ai/artifact/PZb69g4xfAJUS8cm5q5JsS.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
