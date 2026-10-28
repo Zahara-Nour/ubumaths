@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, ouverture du chantier (rien codé)._
+_Mis à jour le 2026-10-28, avant le redémarrage du Mac mini (rien codé)._
 
-- **État** : rien codé ; constats mesurés (ci-dessous) ; **D1-D3 validées** (notation scientifique : se calcule, illisible hors de [10⁻⁶ ; 10⁹[, exact = la ligne reste exacte) ; phase 0 en cours de discussion, cadre actuel : ligne nue numérique.
-- **Prochaine action** : recueillir les points de David (« tout ce qui suit va toucher ce chantier »), puis rédiger la phase 0 (comportements nominal / limite / erreur) ; **attendre sa validation avant de coder**.
-- **En attente de David** : la suite de ses points sur la ligne numérique ; plus tard, question A/B (lettres liées) et des étapes pour un calcul à lettres liées ?
-- **Pièges** : ne pas confondre avec `fusion-moteurs` (ni `simplify` ni `pedagogical-simplify` en jeu) ; refaire la mesure avant de coder ; le moteur de l'Atelier EST `WebReplEngine` (`mathAST/cli/web/`), le REPL de terminal n'est qu'un outil de développeur.
+- **État** : phase 0 en discussion, cadre = ligne nue numérique. Mesurés et notés ci-dessous : chemin d'une ligne, sonde de 37 saisies, notation scientifique, les trois candidates d'`exactValueToShow`. **D1-D3 validées** (notation scientifique calculée ; illisible hors de [10⁻⁶ ; 10⁹[ ; mode exact = ligne exacte, `2^100` en entier, ≈ au bouton).
+- **Prochaine action** : demander à David son point suivant sur la ligne numérique (il venait d'avoir l'explication des trois candidates) ; candidats déjà relevés : `2+3*4` sans étapes en mode décimal, `0/0` « Division par zéro », `sqrt(-4)` sans message, `3×10^20` (croix) refusé, pas d'étapes pour `cos(π/3)` ni `(1+√2)²`, forme normale peut-être inutile, `exactValueToShow` appelée deux fois. Puis rédiger la phase 0 ; **attendre sa validation avant de coder**.
+- **En attente de David** : son point suivant ; longueur de mantisse « courte » (D3) ; plus tard question A/B (lettres liées).
+- **Pièges** : sondes = tests jetables sous `__tests__/zz-*.test.ts`, sortie écrite dans un fichier (la console est avalée), retirés après ; `exactValueToShow` sert 14 fichiers (énoncés, variations, grapheur…) : toute modification déborde l'Atelier ; touche aussi `fusion-moteurs` (normalize + `computeCost`).
 - **Worktree / branche** : `../ubumaths-wt-evaluation-numerique`, `feat/evaluation-numerique`.
 
 ## Contexte
