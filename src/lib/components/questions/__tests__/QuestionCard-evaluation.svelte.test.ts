@@ -1,13 +1,13 @@
 /**
- * Évaluation notée : cliquer le bon choix AFFICHÉ d'un QCM mélangé rapporte 1 point
- * ================================================================================
+ * Évaluation notée : cocher le bon choix AFFICHÉ d'une case choix mélangée rapporte 1 point
+ * ======================================================================================
  *
- * Le navigateur n'a que la version publique (`toDisplayInstance` : position
- * affichée = indice) ; le serveur ramène les positions affichées aux indices
- * d'origine avec l'instance complète. Toute conversion faite côté client doit
- * donc rester neutre, sinon la note serait fausse (double conversion).
- * Chaîne complète : vraie instance mélangée → carte (collectOnly) → copie
- * envoyée → barème du serveur.
+ * Le navigateur n'a que la version publique (`toDisplayInstance` : ordre affiché =
+ * ordre d'origine) ; le serveur ramène les positions affichées aux indices d'origine
+ * avec l'instance complète (`toOriginalChoiceValues`). Toute conversion faite côté
+ * client doit donc rester neutre, sinon la note serait fausse (double conversion).
+ * Chaîne complète : vraie instance mélangée → carte (collectOnly) → copie envoyée →
+ * conversion et barème du serveur. Repris du QCM (ADR 0033, lot 5).
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -17,6 +17,7 @@ import { toDisplayInstance, toPublicQuestion } from '$lib/questions/public-quest
 import { toSubmission } from '$lib/questions/submission';
 import { gradeQuestion } from '$lib/questions/grading';
 import { choiceLetter } from '$lib/questions/choices';
+import { toOriginalChoiceValues } from '$lib/questions/choice-case';
 import EvaluationResults from '$lib/components/test/EvaluationResults.svelte';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 import type { AnswerData } from '$lib/types/question-display';
@@ -32,14 +33,10 @@ const TEMPLATE = {
 	status: 'published',
 	variations: [
 		{
-			statement: templateMarkdown('Quel nombre est pair ?'),
-			correctChoiceIndex: ['0'],
-			choices: [
-				{ content: '$$4$$' },
-				{ content: '$$3$$' },
-				{ content: '$$5$$' },
-				{ content: '$$7$$' }
-			]
+			statement: templateMarkdown(
+				'Quel nombre est pair ?\n\n```choix\n- $$4$$\n- $$3$$\n- $$5$$\n- $$7$$\n```'
+			),
+			blanks: [{ expectedAnswer: '0' }]
 		}
 	]
 } as unknown as QuestionTemplate;
@@ -48,17 +45,27 @@ const TEMPLATE = {
 function shuffledInstance(): QuestionInstance {
 	for (let seed = 1; seed < 1000; seed++) {
 		const result = generateInstance(TEMPLATE, seed);
-		if (result.success && result.instance.shuffledChoices?.[0].originalIndex !== 0) {
+		if (result.success && result.instance.blanks?.[0].choice?.order[0] !== 0) {
 			return result.instance;
 		}
 	}
 	throw new Error('aucune graine au mélange non trivial');
 }
 
-describe('QCM mélangé en évaluation', () => {
+/** Ordre affiché de la case choix : position → indice d'origine */
+const orderOf = (instance: QuestionInstance) => instance.blanks?.[0].choice?.order ?? [];
+
+/** Ce que fait le serveur à l'envoi : positions affichées → indices d'origine, puis barème */
+function serverGrade(full: QuestionInstance, values: string[]) {
+	const converted = toOriginalChoiceValues(full, values);
+	if (!('values' in converted)) throw new Error(converted.error);
+	return { verdict: gradeQuestion(full, converted), values: converted.values };
+}
+
+describe('case choix mélangée en évaluation', () => {
 	it('le bon choix affiché → 1 point ; un autre → 0', async () => {
 		const full = shuffledInstance();
-		const correctPosition = full.shuffledChoices!.findIndex((c) => c.originalIndex === 0);
+		const correctPosition = orderOf(full).indexOf(0);
 		expect(correctPosition).toBeGreaterThan(0);
 
 		for (const [position, expected] of [
@@ -93,7 +100,7 @@ describe('QCM mélangé en évaluation', () => {
 					}
 				]
 			);
-			expect(gradeQuestion(full, submission.answers[0]).points).toBe(expected);
+			expect(serverGrade(full, submission.answers[0].values ?? []).verdict.points).toBe(expected);
 			await unmount();
 		}
 	});
@@ -101,13 +108,12 @@ describe('QCM mélangé en évaluation', () => {
 	it('la copie affiche la lettre et le contenu COCHÉS à l’écran (indices d’origine renvoyés)', async () => {
 		const full = shuffledInstance();
 		// Un mauvais choix affiché ailleurs qu'à sa place d'origine
-		const position = full.shuffledChoices!.findIndex(
-			(c, p) => c.originalIndex !== 0 && c.originalIndex !== p
-		);
+		const order = orderOf(full);
+		const position = order.findIndex((index, p) => index !== 0 && index !== p);
 		expect(position).toBeGreaterThanOrEqual(0);
-		const clicked = full.shuffledChoices![position];
+		const clicked = full.blanks?.[0].choice?.choices[order[position]] ?? '';
 
-		const verdict = gradeQuestion(full, { choices: [position] });
+		const { verdict, values } = serverGrade(full, [String(position)]);
 		const main = document.body.appendChild(document.createElement('main'));
 		const { container } = await render(EvaluationResults, {
 			target: main,
@@ -124,7 +130,7 @@ describe('QCM mélangé en évaluation', () => {
 						{
 							position: 0,
 							instance: full,
-							answer: { choiceIndexes: verdict.choiceIndexes },
+							answer: { values },
 							status: verdict.status,
 							points: verdict.points,
 							isCorrect: verdict.isCorrect,
@@ -139,6 +145,6 @@ describe('QCM mélangé en évaluation', () => {
 		expect(chosen?.getAttribute('data-status')).toBe('incorrect');
 		const text = chosen?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
 		expect(text.startsWith(choiceLetter(position))).toBe(true);
-		expect(text).toContain(clicked.content.replace(/\$/g, ''));
+		expect(text).toContain(clicked.replace(/\$/g, ''));
 	});
 });

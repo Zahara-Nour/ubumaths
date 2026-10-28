@@ -48,16 +48,13 @@ function blanksInstance(
 const qcm: QuestionInstance = {
 	templateId: 'qcm',
 	statement: 'Choisis' as ResolvedMarkdown,
-	choices: [true, false, true].map((isCorrect, i) => ({
-		content: `c${i}` as ResolvedMarkdown,
-		isCorrect
-	})),
-	shuffledChoices: [2, 0, 1].map((originalIndex) => ({
-		content: `c${originalIndex}` as ResolvedMarkdown,
-		originalIndex
-	})),
-	correctChoiceIndex: ['0', '2'],
-	multipleAnswers: true,
+	blanks: [
+		{
+			expectedAnswer: '0;2',
+			type: 'choice',
+			choice: { choices: ['c0', 'c1', 'c2'], order: [2, 0, 1], multiple: true }
+		}
+	],
 	grades: ['6'],
 	theme: 'T',
 	domain: 'D',
@@ -152,7 +149,7 @@ describe('budget de temps (réponses hostiles) : détail INDISPONIBLE (Q173)', (
 			{ instance: two, answer: { values: ['7', '9'] }, status: 'incorrect' as const },
 			// ½ point (une case vide) : l'ancien repli affichait « forme à améliorer » sur la juste
 			{ instance: two, answer: { values: ['7', ''] }, status: 'unoptimal_form' as const },
-			{ instance: qcm, answer: { choiceIndexes: [0] }, status: 'unoptimal_form' as const }
+			{ instance: qcm, answer: { values: ['0'] }, status: 'unoptimal_form' as const }
 		];
 		const details = detailsWithinBudget(items, { budgetMs: 15, clock: () => now, validate });
 		expect(validate).toHaveBeenCalledTimes(2);

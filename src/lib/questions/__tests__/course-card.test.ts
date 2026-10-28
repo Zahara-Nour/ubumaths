@@ -159,7 +159,6 @@ describe('validation d’une carte', () => {
 		const { instance } = result;
 		expect(getQuestionType(instance)).toBe('course_card');
 		expect(instance.blanks).toBeUndefined();
-		expect(instance.choices).toBeUndefined();
 		// La forme LaTeX exacte appartient au moteur ; la variable est résolue
 		expect(courseCardFront(instance)).toMatch(/^Que fait-on en premier/);
 		expect(courseCardFront(instance)).not.toContain('{{');

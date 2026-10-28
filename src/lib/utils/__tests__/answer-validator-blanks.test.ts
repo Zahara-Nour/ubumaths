@@ -434,12 +434,6 @@ describe('Per-blank validation — validateAnswer signature', () => {
 		expect(result.isCorrect).toBe(true);
 	});
 
-	it('E18b. polymorphic signature still works with number', () => {
-		const instance = createInstance([mathBlank('5')]);
-		const result = validateAnswer(5, instance);
-		expect(result.isCorrect).toBe(true);
-	});
-
 	it('E20. requiredForm is per-blank, not global', () => {
 		// Instance with global requiredForm but different per-blank
 		const instance = createInstance([mathBlank('6', { requiredForm: 'sum' })]);

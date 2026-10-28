@@ -145,7 +145,6 @@ describe('Fill-in-blanks: simple math blanks', () => {
 		if (!result.success) return;
 
 		expect(getQuestionType(result.instance)).toBe('fill_in_blanks');
-		expect(result.instance.correctChoiceIndex).toBeUndefined();
 	});
 });
 
@@ -696,7 +695,6 @@ describe('Fill-in-blanks: real-world examples', () => {
 		expect(result.instance.blanks![0].expectedAnswer).toBe('357');
 		expect(result.instance.blanks![0].type).toBe('math');
 		expect(result.instance.blanks![0].expectedAnswerLatex).toBeDefined();
-		expect(result.instance.correctChoiceIndex).toBeUndefined();
 	});
 
 	// Pattern from globalIndex 51: fill-in with ? in statement (not expression convention)
