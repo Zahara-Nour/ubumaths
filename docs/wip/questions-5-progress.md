@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1922 (lot 1 rangé en prod, page à cocher publiée)._
+_Mis à jour le 2026-10-28, après #1927 (relecture du lot 1 corrigée en prod)._
 
-- **État** : lot 0 en prod (#1917). Lot 1 « Calcul » : fichiers #1919, 7 brouillons créés par David, rangés et tagués (#1922, `20261028214500`, jouée par une autre session avec `db push --include-all`, vérifiée : 7 brouillons, nœud du point, un tag chacun).
-- **Prochaine action** : relecture de David sur la page à cocher https://claude.ai/artifact/6PS8PZmgzaniDhkr8sThzh (7 fiches, 0 verdict) ; compter les verdicts (`ArtifactData list verdicts`, 7 attendus) ; tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/5-calcul` en simulation, puis David avec `--publier`. Ensuite phase 0 du lot 2 (relatifs : 5-120, 5-014, 5-019, 5-015, 5-024, 5-021).
-- **En attente de David** : sa relecture du lot 1.
-- **Pièges en cours** : `db push` refuse une migration plus ancienne que la dernière jouée (sessions parallèles) → `--include-all`, lancé par David ; horodatages pris par les autres sessions : vérifier `schema_migrations` et les worktrees avant d'en choisir un ; 3 modèles à choix non dessinés sur la page (« jouer dans l'aperçu ») ; worktree neuf : `svelte-kit sync` avant `create-questions` ; droite à placer et barres à construire pas en prod.
+- **État** : lot 0 en prod (#1917). Lot 1 « Calcul » : 8 brouillons en prod, rangés et tagués. Relecture de David : 5 OK, 2 à revoir (01, 07) → corrigés (#1925, `--mettre-a-jour` lancé par David), 08 neuf créé et rangé (#1927, `20261028233000`, vérifié) ; verdicts de 01 et 07 remis à zéro.
+- **Prochaine action** : relecture de 01, 07 et 08 sur la page à cocher (version 2) https://claude.ai/artifact/6PS8PZmgzaniDhkr8sThzh ; compter les verdicts (`ArtifactData list verdicts`, **8** attendus) ; tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/5-calcul` en simulation, puis David avec `--publier`. Ensuite phase 0 du lot 2 (relatifs : 5-120, 5-014, 5-019, 5-015, 5-024, 5-021).
+- **En attente de David** : relecture de 01, 07, 08.
+- **Pièges en cours** : `db push` refuse une migration plus ancienne que la dernière jouée (sessions parallèles) → `--include-all`, lancé par David ; horodatages : vérifier `schema_migrations` ET les worktrees avant d'en choisir un ; le classifieur refuse `create-questions --mettre-a-jour` même en simulation (simulation simple + `question:specs --file`) ; CI : `wrapDynamicImport` (tests navigateur) et délai de `scripts/corrections` = accidents du runner, une relance suffit ; 01 et 08 homonymes (même titre, niveaux 1 et 2) : alerte attendue sur la page.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -157,3 +157,16 @@ Le lot 0 de la 3e (PR #1921) passe **ac5d0413** (« Réduire une somme », qa + 
   elle, `security-auditor` sans finding ; jouée en prod par une autre session (`db push --include-all` avec les
   migrations 2de et 3e en attente) ; vérifiée : nœud du point (notion pour 5-004 et 5-032), un tag chacun.
 - Page à cocher : https://claude.ai/artifact/6PS8PZmgzaniDhkr8sThzh (capacité `db`, collection `verdicts`).
+
+## 9. Lot 1 : relecture de David (2026-10-28)
+
+Page à cocher, 7 verdicts : 5 OK (02, 03, 04, 05, 06), 2 à revoir. Corrections validées par David (« je valide ») :
+
+- **01** (8e571049) : « pourquoi augmenter la difficulté avec des décimaux ? L'important est de vérifier les
+  priorités » → variations à entiers seulement ; les deux variations décimales passent dans un modèle neuf
+  **08** (5007877e, « Enchaîner des opérations », niveau 2, 5-004).
+- **07** (9d9b2301) : « la variation 4 risque d'être compliquée de tête » → v4 b ≤ 4, c ≤ 5 (≤ 120) ; v1 aussi
+  resserrée (a, b ≤ 5, ≤ 125). v2 était déjà bornée (a × b ≤ 12).
+- #1925 (fichiers), David : `create-questions --publier --mettre-a-jour` (01, 07 mis à jour ; 08 créé) ;
+  #1927 migration `20261028233000_questions_5_lot1_08_rangement_tags` (test 8/8, rouge sans elle, audit sans
+  finding), jouée par moi (seule en attente), vérifiée. Verdicts de 01 et 07 supprimés ; page republiée (v2).
