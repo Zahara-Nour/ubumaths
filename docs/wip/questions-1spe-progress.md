@@ -354,3 +354,43 @@ PR #1890 mergée (CI verte). Page à cocher : https://claude.ai/artifact/8StybG8
 
 **Publication (2026-10-28)** : `create-questions --publier --mettre-a-jour` (4 mis à jour, 4 déjà en base) puis
 `publier-lot --publier` lancés par David ; 8 / 8 `published`, les 4 corrections relues en base (MCP). Lot clos.
+
+## 10. Lot 0-exponentielle : vérification des brouillons
+
+_2026-10-28. 17 brouillons tagués d'un point de l'exponentielle (289, 291, 292, 293, 294, 295, 297, 405, 406), instantané
+`scripts/questions/1spe-0-exponentielle/`, `question:specs --apercu 3` puis un aperçu par variation (46), sorties dans le
+scratchpad de la session. Aucun modèle publié sur ces points._
+
+**Mécanique** : 17 / 17 verts, 225 specs, 2 600 tirages réussis. Quatre QCM d'ancien format (09432575, ac3e6395, 68166a11,
+f40e8a4a), publiés tels quels comme ceux des lots précédents.
+
+**Bornes** : rien au-delà du BO. Pas de logarithme : les équations sont du type eᵘ = eᵛ, e^{ax+b} = 1, ou sans solution
+(eᵘ = k ⩽ 0). Propriétés : produit, quotient, inverse, puissance entière (l1s-5). Dérivée de e^{ax+b} ramenée à e^{ax} × e^b
+(227f2c9c), donc dans la liste du BO (l1s-1).
+
+**Constats** :
+
+- **C1** : fraction de la solution à deux signes moins ou écrite deux fois : « x = −1/−4 = 1/4 », « x = −9/2 = −9/2 »
+  (9a4592bf variation 2, e572933c, 6fe11613 variation 2, 7179a3b5 variations 1 et 2).
+- **C2** : e¹ au lieu de e : énoncés « e⁻⁷ × e¹ », « e¹/e⁶ » (e6b429b4 variation 1, 6137a555 variations 1 et 3), corrigé
+  « e¹ est une constante » (227f2c9c variations 1 et 2).
+- Écartés : décimaux « 0.2 », « ≈ 27.07 » de l'outil (affichés à la française) ; f40e8a4a tagué 406, alors que ses variations
+  e^{−x} et e^{2x} relèvent aussi de 407 (un modèle, un point : laissé) ; « e⁻³ + (−4) » (e6b429b4), lisible.
+
+**D15 (David, 2026-10-28, « go » sur les recos)** :
+
+- C1 : `x = {{if:gcd(N,D)!=1|N/D =|}}` résultat, la fraction écrite avec un dénominateur positif ; irréductible → résultat
+  direct (9a4592bf, e572933c, 6fe11613, 7179a3b5).
+- C2 : `{{if:V==1|e|e^{ {{V}} }}}` partout où l'exposant tiré peut valoir 1, énoncés et corrigés : 227f2c9c, 6137a555,
+  e6b429b4, et aussi 6a5e58da, 6fe11613, a4272b10, f40e8a4a (même défaut, trouvé au relevé des exposants). bd45ed7f
+  variation 3 : `p != 1` plutôt que « (e)⁻³ », qui ne demande plus rien.
+
+Specs des 17 modèles vertes après correction (225 specs, 2 600 tirages) ; 25 tirages forcés relus (dénominateur négatif,
+fraction simplifiable ou non, exposant 1).
+
+**Instantané rafraîchi (2026-10-28)** : les 4 QCM (09432575, ac3e6395, 68166a11, f40e8a4a) ont été migrés en case choix en
+prod à 08 h 35 UTC (lot 4 de `figure-et-choix`), après l'instantané : ré-exportés, C2 refait sur f40e8a4a. Sans cela,
+`--mettre-a-jour` aurait remis l'ancien format. Écart à la base relu champ par champ : seules les corrections voulues.
+
+**Relecture (David, page à cocher)** : 245b4eb1 variation 2, « il faut un QCM, pas une case où il faut entrer le mot
+décroissante » → case choix (croissante / décroissante / constante, `melanger: non`), 3 specs.
