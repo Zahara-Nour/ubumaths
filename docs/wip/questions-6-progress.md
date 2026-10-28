@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, migration rangement + tags du lot 5 écrite (§ 12.2)._
+_Mis à jour le 2026-10-28, après #1933._
 
-- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Lot 5 (scissions, § 12) : #1929 mergée, 7 brouillons en prod (§ 12.2). Migration rangement + tags des 7 écrite sur `feat/questions-6-rangement-scissions`, test 13/13.
-- **Prochaine action** : PR de la migration → CI verte + `security-auditor` → merge → `db:migrate` ; page à cocher ; publication des 7 (`publier-lot`) ; ENFIN migration de contenu des 4 publiés (§ 7).
-- **En attente de David** : rien jusqu'à la page à cocher. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Lot 5 : 7 brouillons en prod, rangés et tagués (#1933, migration jouée), page à cocher publiée (§ 12.3).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 7) ; « À revoir » → corriger ; puis David lance `publier-lot --dir scripts/questions/6-fractions-scissions --publier` ; ENFIN migration de contenu des 4 publiés (§ 7), APRÈS la publication des 7.
+- **En attente de David** : relecture de la page https://claude.ai/artifact/5YTMb65CgUX9DtRUfAZEEo. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
 - **Pièges en cours** : ⚠️ jamais `--publier` sur `6-fractions/` avant la migration de contenu (04 change de titre). 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`) : ne pas les refaire. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-rangement-scissions` (neuve, depuis `origin/main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, aucune branche ouverte (la prochaine : migration de contenu).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -801,3 +801,11 @@ migration de contenu après la publication des 7).
 - `security-auditor` : aucun finding bloquant. Suivis : garde du rollback resserrée modèle par modèle (nœud du
   point + ce seul tag ; test ajouté, rouge avec l'ancienne garde, 14/14) ; commentaire `db push` corrigé ; à relire
   au MCP après `db:migrate` : `tgenabled = 'O'` pour `update_question_templates_updated_at`.
+
+### 12.3 En prod et page à cocher (2026-10-28)
+
+- #1933 mergée (CI verte, 14/14). `db push --include-all` (seule migration manquante : la nôtre ; `20261029003100`
+  d'une autre session déjà jouée, d'où `--include-all`) : jouée. MCP : 7 brouillons sur le nœud de leur point, un
+  tag juste chacun, `updated_at` = `created_at`, trigger `updated_at` à `O`.
+- Page à cocher générée depuis `main` (d7f986a1c), publiée : https://claude.ai/artifact/5YTMb65CgUX9DtRUfAZEEo
+  (`db`, 0 verdict) ; case choix non dessinée (11, 14, 15, 16) : la jouer dans l'aperçu admin.
