@@ -432,3 +432,15 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
   8/8 `published`, revérifié par MCP.
 - Sonde : `tmp-sonde-courbes.ts` + `tmp-montre.ts` fusionnés en `scripts/questions/sonde-courbes.ts`
   (`--dir … [--tirages N]`, `--montre <fichier> [graine]`) ; essayée sur le lot A : 0 problème.
+
+## 16. Lot 2 bis B, PR des fichiers (2026-10-28)
+
+- Script `questions-2de/lot-lecture-b-2de.py` → `scripts/questions/2de-lecture-b/` (6 modèles, 9 variations,
+  46 specs) ; `create-questions` en simulation : tout vert.
+- 1/x : grille 0,5, on tire la solution `r`, k = 1/r ; k sort en `\dfrac{1}{2}`, illisible pour le bloc
+  ` ```courbe ` → dans le bloc, `1/(r)` (droite et point A), description sans la valeur de k. 0 jamais
+  solution (crochet ouvert, rappel dans le corrigé) ; la courbe repassée en vert n'a pas de disque en 0,
+  l'axe en a un ouvert.
+- √x : k < 0 et sens > ou ⩾ → `[0 ; +∞[` (erreur typique ℝ en spec) ; borne hors fenêtre = 20 (fenêtre
+  jusqu'à 10).
+- Sonde : 2 400 tirages, 4 800 blocs, 0 problème. Base locale : 6 brouillons créés.

@@ -1,0 +1,117 @@
+{
+	"title": "Résoudre graphiquement une équation x³ = k",
+	"description": "Équation x³ = k lue sur la courbe de la fonction cube : k ∈ {−8 ; −1 ; 1 ; 8}, une solution",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction cube",
+	"subdomain": "Lecture graphique",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction cube $f : x\\mapsto x^3$.\n\n```courbe\nx: -3 ; 3\ny: -9 ; 9\ngrille: 1 ; 1\nf(x) = x^3   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction cube.\n```\n\nRésous graphiquement l'équation $x^3={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-2|-1|1|2"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(r)^3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{r}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : les solutions sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
+					"```courbe\nx: -3 ; 3\ny: -9 ; 9\ngrille: 1 ; 1\nf(x) = x^3   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{r}} ; {{k}}), A'({{r}} ; 0)\ntaille: moyenne\ndescription: Courbe de la fonction cube et droite horizontale en pointillé, qui la coupe en A. Les solutions sont marquées sur l'axe des abscisses.\n```",
+					"La droite coupe la courbe en un seul point, d'abscisse ${{r}}$. Contrairement à la fonction carré, il n'y a qu'une solution. $S=\\textcolor{{{color:primary.0}}}{\\{ {{r}} \\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x³ = 8 : S = {2}",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "8"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {−2 ; 2} (comme pour x²)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "8"
+			},
+			"answers": ["\\{-2;2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k recopié ({8})",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "8"
+			},
+			"answers": ["\\{8\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x³ = −1 : S = {−1}",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-1",
+				"k": "-1"
+			},
+			"answers": ["\\{-1\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅ (un cube serait positif)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-1",
+				"k": "-1"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {1}",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-1",
+				"k": "-1"
+			},
+			"answers": ["\\{1\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
