@@ -585,6 +585,7 @@ Les Palotins viennent de **deux pièces** : Giron, Pile et Cotice sont ceux d'_U
 **Apparence des Palotins** 🟡 (décision de David, 2026-10-28) : les SVG de l'appli (`static/images/buddies/`, 7 expressions) restent tels quels ; pour le lore (cartes, Shtam, scènes), chaque Palotin est redessiné en pied au trait Steinlen, en gardant le visage, le couvre-chef, la couleur d'identité et la pièce héraldique de son SVG (captures de référence : `docs/Chiphres/illustrations/personnages/palotins-appli/`).
 
 - **Giron** : ado trapu et sportif, penché en avant, prêt à foncer, poing levé ; visage rond, joues roses, nez rond, grand sourire confiant ; bonnet pointu mi-orange mi-encre à pompon blanc, tunique orange `#E0612F` à col blanc, écusson gironné or et encre, ceinture brune, culotte encre, bottes courtes brunes. Prompt d'illustration : Section XI, « Illustrations ».
+- **Pile** : grand et mince, silhouette en triangle pointe en bas comme sa pièce héraldique (larges épaules, jambes fines, petits pieds pointus) ; visage allongé au menton pointu, nez en triangle, moustache en guidon, regard rêveur de côté, demi-sourire énigmatique ; pose nonchalante de prestidigitateur, une carte levée entre deux doigts, un éventail de cartes qui coule de l'autre main (cartes blanches à étoile d'or, sans chiffres) ; haut-de-forme encre à bandeau marqué d'un triangle bleu pointe en bas, habit à queue bleu `#2F62B0`, plastron en V doré à col blanc, pantalon encre. ⚠️ Caractère à trancher : « fourbe, opportuniste » ici, « rêveur philosophe » dans `docs/systeme/buddy-palotins.md` ; l'image mêle les deux (rêveur un peu roublard). Prompt d'illustration : Section XI, « Illustrations ».
 
 ### Personnages mineurs et figurants
 
@@ -2199,6 +2200,24 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image, plus Giron's own bright orange (#E0612F) for the cap and the tunic: navy ink for the outlines, the cap and the breeches, marigold yellow and navy ink for the shield, dark chocolate brown for the belt and the boots, white for the pompom and the collar, a soft pink for the cheeks.
 
 Composition: Giron standing, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — Pile (Palotin) 🟡
+
+Validé par David le 2026-10-28 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png`, l'image de référence de Père Ubu, la capture `palotins-appli/pile.png` et le Giron Steinlen, pour l'âge et l'échelle). Le bleu `#2F62B0`, hors nuancier, est sa couleur d'identité. Garder « no numbers » pour les cartes.
+
+```text
+Draw Pile, one of the Palotins (Père Ubu's henchmen from Alfred Jarry's play "Ubu Roi"), as a full-body character portrait in exactly the same drawing style as the attached Père Ubu image, keeping the face, hat, colors and coat of arms of the attached Pile image, and the same age and scale as the attached Giron.
+
+Character: a tall, slim young Palotin with an inverted-triangle silhouette, like his heraldic charge: broad shoulders tapering down to thin legs and small pointed feet; very different from stocky Giron. A long face with a pointed chin, a triangular nose, a curled handlebar moustache, dreamy eyes looking to the side, an enigmatic half-smile. Relaxed, nonchalant pose: one card raised between two fingers, his other hand letting a fan of cards flow. He is a dreamy, slightly sly card-trick philosopher: calm, mysterious, funny, never scary, for students aged 11 to 17.
+
+Clothing: a navy ink top hat with a band marked by a royal blue downward-pointing triangle; a royal blue tailcoat; a marigold yellow V-shaped shirt front with a white collar; navy ink trousers and small pointed shoes. The playing cards are white with a single marigold yellow star, no numbers.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image, plus Pile's own royal blue (#2F62B0) for the tailcoat and the hat triangle: navy ink for the outlines, the hat, the moustache and the trousers, marigold yellow for the shirt front and the stars, white for the collar and the cards, a soft pink for the cheeks.
+
+Composition: Pile standing, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no numbers, no signature.
 ```
 
 ---
