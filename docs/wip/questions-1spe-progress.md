@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après la publication du lot 0-variations._
+_Mis à jour le 2026-10-28, après #1916._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15) et 0-variations (8, § 9) publiés.
-- **Prochaine action** : lot 0-exponentielle (brouillons du thème), puis trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique ; ensuite la migration des tags D3.
-- **En attente de David** : rien.
-- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot`, même en simulation, refusés par le classifieur → David les lance ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts ; `question:specs` n'a pas d'option de variation : une copie par variation dans le scratchpad ; la page à cocher ne dessine pas le bloc `variation` (le jouer dans l'aperçu) ; dépôt principal partagé : index vide vérifié avant tout commit (CM2 emporté le 2026-10-28) ; CI : job « CI Summary » fantôme, juger au statut du run.
-- **Worktree / branche** : aucun.
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) publiés ; lot 0-exponentielle (17, § 10) mergé (#1916), page à cocher https://claude.ai/artifact/RiArUDRvFuvd1ZFg8FfZWr en relecture (6/17 verdicts, 245b4eb1 déjà corrigé en case choix).
+- **Prochaine action** : lire les verdicts restants, corriger s'il le faut ; puis David lance `create-questions --dir scripts/questions/1spe-0-exponentielle --publier --mettre-a-jour` et `publier-lot --dir … --publier` ; ensuite trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
+- **En attente de David** : fin de la relecture de la page.
+- **Pièges en cours** : instantané à **rafraîchir avant `--mettre-a-jour`** si une autre session a touché les modèles (QCM migrés en case choix le 2026-10-28 après l'export : comparer à un export frais, champ par champ) ; `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot` refusés par le classifieur → David ; worktree neuf → `pnpm exec svelte-kit sync` ; `question:specs` sans option de variation : une copie par variation ; la page à cocher ne dessine ni `variation` ni `choix` ; index vide vérifié avant tout commit sur `main` ; CI : job navigateur instable (`wrapDynamicImport`) → relancer le job.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (branche mergée, à retirer à la clôture du lot).
 
 ## 1. Relevé (prod, 2026-10-27)
 
