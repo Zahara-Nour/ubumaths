@@ -5,13 +5,14 @@
 _Mis à jour le 2026-10-28, après le prompt de Mousched-Gogh (pas de PR : chantier 100 % doc pour l'instant)._
 
 - **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu, du Capitaine Bordure, de Bougrelas, de Conscience, du Czar Alexis, de Monsieur Prudhomme, du Flegmatique (Tristan Bernard), du Professeur Achras, du Docteur Faustroll, de Bosse-de-Nage et du Cheval à Phynances validés (casting et quatre gouverneurs complets) ; Palotins redessinés au trait Steinlen pour le lore (SVG de l'appli inchangés) : Giron, Pile, Cotice, Merdranpo (sans SVG, brun merdre, casserole, bas dépareillés) et Mousched-Gogh (sans SVG, artiste, glace du Czar, mouche sur le nez) validés et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
-- **Prochaine action** : **Quatrezoneilles**, dernier Palotin : caractère et rôle à définir d'abord (proposition faite le 2026-10-28, pas encore validée), puis son prompt, validé par David. Ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` quand David les fournit.
+- **Prochaine action** : **Quatrezoneilles**, dernier Palotin : caractère et rôle validés le 2026-10-28 ; prompt proposé, pas encore validé. Ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` quand David les fournit.
 - **En attente de David** : les quinze images de référence · caractère de Pile : « fourbe » (Compendium) ou « rêveur philosophe » (`buddy-palotins.md`) ? · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
 - **Pièges en cours** : Ubu sans chapeau pointu ni longue robe blanche (aucune ressemblance avec une cagoule) ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée (Nano Banana refuse : personnage inventé à la place). Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 
 ## Décisions de David
 
+- 2026-10-28 — **Quatrezoneilles** : valet de pied 1890 cérémonieux et obséquieux, qui entend tout ; rôle : « relis bien l'énoncé ! » (le mot sauté, la donnée oubliée) ; échos et rumeurs du Shtam ; quatre oreilles = ses deux oreilles + deux cornets acoustiques en laiton sur un serre-tête ; couleur d'identité or phynance `#F3C025`.
 - 2026-10-28 — **Mousched-Gogh** : l'artiste de la bande (« Gogh » évoque le peintre, jamais cité ni dessiné), exalté et distrait, voit des formes partout ; rôle : pousse l'élève à faire une figure, un schéma, un tableau ; illustrateur du Shtam ; couleur d'identité glace du Czar `#66AACC`.
 - 2026-10-28 — **Palotins** : version Steinlen en plus pour le lore ; les SVG de l'appli restent tels quels ; captures de référence dans `docs/Chiphres/illustrations/personnages/palotins-appli/`.
 
