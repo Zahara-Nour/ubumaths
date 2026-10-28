@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 5 écrit (§ 12.1)._
+_Mis à jour le 2026-10-28, après #1929._
 
-- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Lot 5 (scissions, § 12) validé et écrit sur `feat/questions-6-scissions` : 7 neufs dans `6-fractions-scissions/`, 02/03/04/08 retouchés.
-- **Prochaine action** : PR #1929 ouverte (CI lancée, non vue verte : redémarrage du Mac) → `gh pr checks 1929`, merger si verte ; puis David lance `create-questions --dir scripts/questions/6-fractions-scissions --publier` ; migration rangement + tags des 7 ; page à cocher ; publication des 7 ; ENFIN migration de contenu des 4 publiés (§ 7).
-- **En attente de David** : rien avant le merge de la PR. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Lot 5 (scissions, § 12) mergé (#1929) : 7 neufs dans `scripts/questions/6-fractions-scissions/`, 02/03/04/08 retouchés (pas encore en base).
+- **Prochaine action** : David lance `! pnpm create-questions --dir scripts/questions/6-fractions-scissions --publier` (classifieur : c'est à lui) ; je vérifie ; puis migration rangement + tags des 7 ; page à cocher ; publication des 7 ; ENFIN migration de contenu des 4 publiés (§ 7).
+- **En attente de David** : la commande `create-questions` ci-dessus. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
 - **Pièges en cours** : ⚠️ jamais `--publier` sur `6-fractions/` avant la migration de contenu (04 change de titre). 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`) : ne pas les refaire. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-scissions`.
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-rangement-scissions` (neuve, depuis `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-26)
 
