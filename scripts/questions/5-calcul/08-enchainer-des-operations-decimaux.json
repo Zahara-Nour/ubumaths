@@ -1,0 +1,149 @@
+{
+	"title": "Enchaîner des opérations",
+	"description": "Calculer en respectant les priorités, avec des décimaux : 5,5 + 6 × 2,4 ; 12 − (5,3 + 3,8)",
+	"grades": ["5"],
+	"theme": "Décimaux",
+	"domain": "Priorités opératoires",
+	"subdomain": "Enchaînements",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{x}} + {{c}} \\times {{y}} = ?$$",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "11..99"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "Y",
+					"expression": "11..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:X/10;d"
+				},
+				{
+					"name": "y",
+					"expression": "eval:Y/10;d"
+				}
+			],
+			"conditions": ["mod(X,10)!=0", "mod(Y,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(X+c*Y)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Priorité.** La multiplication se calcule **avant** l'addition et la soustraction.",
+					"$${{x}} + \\textcolor{{{color:primary.1}}}{{{c}} \\times {{y}}} = {{x}} + \\textcolor{{{color:primary.1}}}{{{eval:c*Y/10;d}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{a}} - ({{y}} + {{z}}) = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..30"
+				},
+				{
+					"name": "Y",
+					"expression": "11..99"
+				},
+				{
+					"name": "Z",
+					"expression": "11..99"
+				},
+				{
+					"name": "y",
+					"expression": "eval:Y/10;d"
+				},
+				{
+					"name": "z",
+					"expression": "eval:Z/10;d"
+				}
+			],
+			"conditions": ["mod(Y,10)!=0", "mod(Z,10)!=0", "10*a>Y+Z"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10*a-Y-Z)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Priorité.** On calcule d'abord **entre les parenthèses**.",
+					"$${{a}} - \\textcolor{{{color:primary.1}}}{({{y}} + {{z}})} = {{a}} - \\textcolor{{{color:primary.1}}}{{{eval:(Y+Z)/10;d}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5,5 + 6 × 2,4 = 19,9",
+			"variationIndex": 0,
+			"variables": {
+				"X": "55",
+				"c": "6",
+				"Y": "24",
+				"x": "5.5",
+				"y": "2.4"
+			},
+			"answers": ["19,9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : de gauche à droite (11,5 × 2,4 = 27,6)",
+			"variationIndex": 0,
+			"variables": {
+				"X": "55",
+				"c": "6",
+				"Y": "24",
+				"x": "5.5",
+				"y": "2.4"
+			},
+			"answers": ["27,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "12 − (5,3 + 3,8) = 2,9",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"Y": "53",
+				"Z": "38",
+				"y": "5.3",
+				"z": "3.8"
+			},
+			"answers": ["2,9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parenthèses ignorées (12 − 5,3 + 3,8 = 10,5)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"Y": "53",
+				"Z": "38",
+				"y": "5.3",
+				"z": "3.8"
+			},
+			"answers": ["10,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
