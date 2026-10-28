@@ -8,24 +8,25 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 5a prêt, PR à ouvrir._
+_Mis à jour le 2026-10-28, après #1938 (lot 5a mergé)._
 
-- **État** : lots 1 à 4 EN PROD, 5b MERGÉ (#1924). Lot 5a fini sur `refactor/figure-et-choix-lot5` : code sans
-  `multiple_choice`, tests portés, suites serveur / client vertes, intégration verte hors 2 seeds (base locale
-  sans la migration `20261026170000`), revues opus + sécurité sans bloquant (§ 2.13). PR à ouvrir puis merger.
-- **Prochaine action** : PR, CI, merge. Puis, après `deploy:prod` : migration destructive (contrainte,
-  tables `migration_*`, colonne `multiple_answers`, ET `options - 'shuffleChoices'` sur 3 brouillons) :
-  s'arrêter et expliquer à David.
+- **État** : lots 1 à 4 EN PROD ; 5b (#1924) et 5a (#1938) MERGÉS, pas encore en prod : le type
+  `multiple_choice` n'existe plus dans le code (revues opus + sécurité sans bloquant, § 2.13). Worktree retiré.
+- **Prochaine action** : rien avant le `deploy:prod` (décision de David). Après : migration destructive
+  (contrainte `question_templates_type_check`, tables `migration_tracking` / `migration_edits` exportées en JSON
+  dans `data/` avant, colonne `multiple_answers`, `options - 'shuffleChoices'` sur 3 brouillons) :
+  s'arrêter et expliquer à David ce qui sera perdu. Ensuite lot 6.
 - **En attente de David** : essais à l'écran (QCM migrés, CP-058) ; avis sur les séries PDF ; publication de CP-058.
-- **Pièges en cours** : `scripts/questions/1spe-0-*` et `logique-1spe/B-02`, `B-04` réécrits sur cette branche :
-  le chantier `questions-1spe` doit repartir de `main` après le merge. Entre `deploy:prod` et la migration,
-  les 3 brouillons à `shuffleChoices` ne se dupliquent plus (400). 6 modèles `cp-b2` : `level` prod ≠ source.
-- **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `refactor/figure-et-choix-lot5`.
+- **Pièges en cours** : `questions-1spe` repart de `main` (sources `1spe-0-*`, `logique-1spe/B-02`, `B-04`
+  réécrites). Entre `deploy:prod` et la migration, les 3 brouillons à `shuffleChoices` ne se dupliquent plus
+  (400). 6 modèles `cp-b2` : `level` prod ≠ source. Test `corrections.test.ts` (R-PASS) instable en CI (5 s).
+- **Worktree / branche** : aucun (nouvelle branche pour la migration d'après deploy).
 
 ---
 
 ## Historique
 
+- 2026-10-28 — **#1938 mergée** (lot 5a) : QCM retiré du code, tests portés, revues sans bloquant.
 - 2026-10-26 — **#1842 mergée** (restes, phase 0 suivie) : `withBlockCases` réaligne un modèle à
   variables quand l'énoncé brut compte comme le résolu (pas de variable dans un ```operation, mêmes
   cases avec chaque `{{…}}` = `1`) — forme de CP-058 couverte ; `<<expr:…>>` jamais (format de réponse
