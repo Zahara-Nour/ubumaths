@@ -1,0 +1,286 @@
+{
+	"title": "Problèmes de fractions",
+	"description": "Problèmes : ce qui reste d'un gâteau (un quart et un sixième), fraction d'un effectif (3/4 de 28 élèves), argent restant après une dépense, deux parts d'un même mur (2/5 + 3/10)",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Problèmes",
+	"subdomain": "Parts et restes",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Mia a découpé son gâteau d'anniversaire en parts de différentes tailles. Leïla choisit une part égale {{if:m==2|à la moitié|{{if:m==3|au tiers|{{if:m==4|au quart|{{if:m==5|au cinquième|{{if:m==6|au sixième|{{if:m==7|au septième|{{if:m==8|au huitième|{{if:m==9|au neuvième|{{if:m==10|au dixième|{{if:m==11|au onzième|au douzième}}}}}}}}}}}}}}}}}}}} du gâteau et Léo choisit une part égale {{if:n==2|à la moitié|{{if:n==3|au tiers|{{if:n==4|au quart|{{if:n==5|au cinquième|{{if:n==6|au sixième|{{if:n==7|au septième|{{if:n==8|au huitième|{{if:n==9|au neuvième|{{if:n==10|au dixième|{{if:n==11|au onzième|au douzième}}}}}}}}}}}}}}}}}}}} du gâteau.\n\nQuelle fraction du gâteau reste-t-il pour les autres invités ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..6"
+				},
+				{
+					"name": "n",
+					"expression": "{{eval:m+1}}..12"
+				},
+				{
+					"name": "L",
+					"expression": "eval:m*n/gcd(m,n)"
+				},
+				{
+					"name": "R",
+					"expression": "eval:L-L/m-L/n"
+				}
+			],
+			"conditions": ["L<=12", "mod(R,L)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:(R)/gcd(R,L)}}}{{{eval:(L)/gcd(R,L)}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Leïla prend $\\frac{1}{{{m}}}$ du gâteau et Léo $\\frac{1}{{{n}}}$. On écrit ces fractions avec le dénominateur ${{L}}$ : $\\frac{1}{{{m}}} = \\frac{{{eval:L/m}}}{{{L}}}$ et $\\frac{1}{{{n}}} = \\frac{{{eval:L/n}}}{{{L}}}$.",
+					"Le gâteau entier, c'est $\\frac{{{L}}}{{{L}}}$. Il reste :",
+					"$$\\frac{{{L}}}{{{L}}} - \\frac{{{eval:L/m}}}{{{L}}} - \\frac{{{eval:L/n}}}{{{L}}} = {{if:gcd(R,L)>1|\\frac{{{R}}}{{{L}}} = |}}\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Dans un collège, une classe compte ${{N}}$ élèves. Les $\\frac{{{p}}}{{{q}}}$ des élèves de la classe sont demi-pensionnaires.\n\nCombien d'élèves de cette classe sont demi-pensionnaires ?\n\nIl y a $?$ élèves demi-pensionnaires.",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3..5"
+				},
+				{
+					"name": "p",
+					"expression": "2..{{eval:q-1}}"
+				},
+				{
+					"name": "k",
+					"expression": "4..16"
+				},
+				{
+					"name": "N",
+					"expression": "eval:q*k"
+				}
+			],
+			"conditions": ["gcd(p,q)==1", "p>=2", "N>=20", "N<=32"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les $\\frac{{{p}}}{{{q}}}$ de ${{N}}$ : on multiplie la fraction par le nombre.",
+					"$$\\frac{{{p}}}{{{q}}} \\times {{N}} = {{p}} \\times \\frac{{{N}}}{{{q}}} = {{p}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Inès a ${{S}}~\\unit{€}$. Elle dépense {{if:p==1|{{if:q==2|la moitié|{{if:q==3|le tiers|{{if:q==4|le quart|{{if:q==5|le cinquième|{{if:q==6|le sixième|{{if:q==7|le septième|{{if:q==8|le huitième|{{if:q==9|le neuvième|{{if:q==10|le dixième|{{if:q==11|le onzième|le douzième}}}}}}}}}}}}}}}}}}}}|les $\\frac{{{p}}}{{{q}}}$}} de son argent.\n\nCombien d'argent lui reste-t-il ?\n\nIl lui reste $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..5"
+				},
+				{
+					"name": "p",
+					"expression": "1..{{eval:q-1}}"
+				},
+				{
+					"name": "k",
+					"expression": "2..12"
+				},
+				{
+					"name": "S",
+					"expression": "eval:q*k"
+				}
+			],
+			"conditions": ["gcd(p,q)==1", "S>=10", "S<=60"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:S-p*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Elle dépense $\\frac{{{p}}}{{{q}}}$ de ${{S}}~\\unit{€}$ : $\\frac{{{p}}}{{{q}}} \\times {{S}} = {{if:p==1|{{S}} \\div {{q}}|{{p}} \\times {{k}}}} = {{eval:p*k}}$, soit ${{eval:p*k}}~\\unit{€}$.",
+					"$${{S}} - {{eval:p*k}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Hugo peint un mur. Il en peint les $\\frac{{{a}}}{{{b}}}$ en rouge et les $\\frac{{{c}}}{{{d}}}$ en bleu.\n\nQuelle fraction du mur est peinte ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b*m"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:a*m+c"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "N<d"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:(N)/gcd(N,d)}}}{{{eval:(d)/gcd(N,d)}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux fractions avec le dénominateur ${{d}}$ : $\\frac{{{a}}}{{{b}}} = \\frac{{{eval:a*m}}}{{{d}}}$.",
+					"$$\\frac{{{eval:a*m}}}{{{d}}} + \\frac{{{c}}}{{{d}}} = {{if:gcd(N,d)>1|\\frac{{{N}}}{{{d}}} = |}}\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "quart + sixième : reste 7/12",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"n": "6",
+				"L": "12",
+				"R": "7"
+			},
+			"answers": ["\\frac{7}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la fraction prise (5/12)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"n": "6",
+				"L": "12",
+				"R": "7"
+			},
+			"answers": ["\\frac{5}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/4 + 1/6 = 2/10, reste 8/10",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"n": "6",
+				"L": "12",
+				"R": "7"
+			},
+			"answers": ["\\frac{8}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/4 de 28 = 21",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"p": "3",
+				"k": "7",
+				"N": "28"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un quart seulement (7)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"p": "3",
+				"k": "7",
+				"N": "28"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "24 €, le tiers dépensé : reste 16",
+			"variationIndex": 2,
+			"variables": {
+				"q": "3",
+				"p": "1",
+				"k": "8",
+				"S": "24"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la dépense (8)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "3",
+				"p": "1",
+				"k": "8",
+				"S": "24"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2/5 + 3/10 = 7/10",
+			"variationIndex": 3,
+			"variables": {
+				"b": "5",
+				"m": "2",
+				"d": "10",
+				"a": "2",
+				"c": "3",
+				"N": "7"
+			},
+			"answers": ["\\frac{7}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5/15",
+			"variationIndex": 3,
+			"variables": {
+				"b": "5",
+				"m": "2",
+				"d": "10",
+				"a": "2",
+				"c": "3",
+				"N": "7"
+			},
+			"answers": ["\\frac{5}{15}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

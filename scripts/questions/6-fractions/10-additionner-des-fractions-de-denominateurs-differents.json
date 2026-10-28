@@ -1,0 +1,203 @@
+{
+	"title": "Additionner des fractions de dénominateurs différents",
+	"description": "Somme de deux fractions : dénominateurs multiples (2/3 + 1/6), quelconques dans des cas simples (5/4 + 2/3)",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Addition et Soustraction",
+	"level": 12,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule. Donne le résultat sous forme d'une fraction simplifiée.\n\n$$\\frac{{{a}}}{{{b}}} + \\frac{{{c}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:2*b-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b*m"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:2*d-1}}"
+				},
+				{
+					"name": "L",
+					"expression": "eval:b*d/gcd(b,d)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:a*L/b+c*L/d"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "mod(N,L)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:mod(N,L)==0|{{eval:(N)/(L)}}|\\frac{{{eval:(N)/gcd(N,L)}}}{{{eval:(L)/gcd(N,L)}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Additionner des fractions.** On écrit les deux fractions avec le même dénominateur, puis on additionne les numérateurs ; le dénominateur ne change pas.",
+					"Dénominateur commun ${{L}}$ : $\\frac{{{a}}}{{{b}}} = \\frac{{{eval:a*L/b}}}{{{L}}}$ et $\\frac{{{c}}}{{{d}}} = \\frac{{{eval:c*L/d}}}{{{L}}}$.",
+					"$$\\frac{{{a}}}{{{b}}} + \\frac{{{c}}}{{{d}}} = \\frac{{{eval:a*L/b}}}{{{L}}} + \\frac{{{eval:c*L/d}}}{{{L}}} = {{if:gcd(N,L)>1|\\frac{{{N}}}{{{L}}} = |}}\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule. Donne le résultat sous forme d'une fraction simplifiée.\n\n$$\\frac{{{a}}}{{{b}}} + \\frac{{{c}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:2*b-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:2*d-1}}"
+				},
+				{
+					"name": "L",
+					"expression": "eval:b*d/gcd(b,d)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:a*L/b+c*L/d"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "gcd(b,d)==1", "mod(N,L)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:mod(N,L)==0|{{eval:(N)/(L)}}|\\frac{{{eval:(N)/gcd(N,L)}}}{{{eval:(L)/gcd(N,L)}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Additionner des fractions.** On écrit les deux fractions avec le même dénominateur, puis on additionne les numérateurs ; le dénominateur ne change pas.",
+					"Dénominateur commun ${{L}}$ : $\\frac{{{a}}}{{{b}}} = \\frac{{{eval:a*L/b}}}{{{L}}}$ et $\\frac{{{c}}}{{{d}}} = \\frac{{{eval:c*L/d}}}{{{L}}}$.",
+					"$$\\frac{{{a}}}{{{b}}} + \\frac{{{c}}}{{{d}}} = \\frac{{{eval:a*L/b}}}{{{L}}} + \\frac{{{eval:c*L/d}}}{{{L}}} = {{if:gcd(N,L)>1|\\frac{{{N}}}{{{L}}} = |}}\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2/3 + 1/6 = 5/6",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"a": "2",
+				"d": "6",
+				"c": "1",
+				"L": "6",
+				"N": "5"
+			},
+			"answers": ["\\frac{5}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "10/12 non simplifié : ambre",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"a": "2",
+				"d": "6",
+				"c": "1",
+				"L": "6",
+				"N": "5"
+			},
+			"answers": ["\\frac{10}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : numérateurs et dénominateurs additionnés (3/9)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"a": "2",
+				"d": "6",
+				"c": "1",
+				"L": "6",
+				"N": "5"
+			},
+			"answers": ["\\frac{3}{9}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5/4 + 2/3 = 23/12",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "5",
+				"d": "3",
+				"c": "2",
+				"L": "12",
+				"N": "23"
+			},
+			"answers": ["\\frac{23}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/7",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "5",
+				"d": "3",
+				"c": "2",
+				"L": "12",
+				"N": "23"
+			},
+			"answers": ["\\frac{7}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7/12",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "5",
+				"d": "3",
+				"c": "2",
+				"L": "12",
+				"N": "23"
+			},
+			"answers": ["\\frac{7}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
