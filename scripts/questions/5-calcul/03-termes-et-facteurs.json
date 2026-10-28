@@ -1,0 +1,239 @@
+{
+	"title": "Termes et facteurs",
+	"description": "Reconnaître les termes d'une somme et les facteurs d'un produit : le 2e terme de 7 + 3 × 5 est 3 × 5 ; le 1er facteur de (4 + 2) × 9 est 4 + 2",
+	"grades": ["5"],
+	"theme": "Entiers",
+	"domain": "Priorités opératoires",
+	"subdomain": "Vocabulaire",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel est le deuxième terme de la somme ${{a}} + {{b}} \\times {{c}}$ ?\n\n```choix\n- ${{b}} \\times {{c}}$\n- ${{b}}$\n- ${{c}}$\n- ${{a}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b", "b!=c", "a!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Termes.** Les **termes** d'une somme sont les nombres (ou les calculs) que l'on additionne.",
+					"${{a}} + {{b}} \\times {{c}}$ est une somme : on calcule ${{b}} \\times {{c}}$, puis on l'ajoute à ${{a}}$. Ses deux termes sont ${{a}}$ et ${{b}} \\times {{c}}$.",
+					"La réponse est $\\textcolor{{{color:primary.0}}}{{{b}} \\times {{c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le premier terme de la somme ${{a}} \\times {{b}} + {{c}}$ ?\n\n```choix\n- ${{a}} \\times {{b}}$\n- ${{a}}$\n- ${{b}}$\n- ${{c}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b", "b!=c", "a!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Termes.** Les **termes** d'une somme sont les nombres (ou les calculs) que l'on additionne.",
+					"${{a}} \\times {{b}} + {{c}}$ est une somme : on calcule ${{a}} \\times {{b}}$, puis on ajoute ${{c}}$. Ses deux termes sont ${{a}} \\times {{b}}$ et ${{c}}$.",
+					"La réponse est $\\textcolor{{{color:primary.0}}}{{{a}} \\times {{b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le premier facteur du produit $({{a}} + {{b}}) \\times {{c}}$ ?\n\n```choix\n- ${{a}} + {{b}}$\n- ${{a}}$\n- ${{b}}$\n- ${{c}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b", "b!=c", "a!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Facteurs.** Les **facteurs** d'un produit sont les nombres (ou les calculs) que l'on multiplie.",
+					"$({{a}} + {{b}}) \\times {{c}}$ est un produit : on calcule ${{a}} + {{b}}$, puis on multiplie par ${{c}}$. Ses deux facteurs sont $({{a}} + {{b}})$ et ${{c}}$.",
+					"La réponse est $\\textcolor{{{color:primary.0}}}{{{a}} + {{b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le deuxième facteur du produit ${{c}} \\times ({{a}} + {{b}})$ ?\n\n```choix\n- ${{a}} + {{b}}$\n- ${{a}}$\n- ${{b}}$\n- ${{c}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b", "b!=c", "a!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Facteurs.** Les **facteurs** d'un produit sont les nombres (ou les calculs) que l'on multiplie.",
+					"${{c}} \\times ({{a}} + {{b}})$ est un produit : on calcule ${{a}} + {{b}}$, puis on multiplie ${{c}}$ par le résultat. Ses deux facteurs sont ${{c}}$ et $({{a}} + {{b}})$.",
+					"La réponse est $\\textcolor{{{color:primary.0}}}{{{a}} + {{b}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2e terme de 7 + 3 × 5 : 3 × 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 (le 2e nombre écrit)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1er terme de 7 × 3 + 5 : 7 × 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 (le 1er nombre écrit)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1er facteur de (7 + 3) × 5 : 7 + 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 (le 1er nombre écrit)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2e facteur de 5 × (7 + 3) : 7 + 3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "7",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7",
+			"variationIndex": 3,
+			"variables": {
+				"a": "7",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

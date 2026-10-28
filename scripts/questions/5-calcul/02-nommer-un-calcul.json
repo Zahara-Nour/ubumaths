@@ -1,0 +1,235 @@
+{
+	"title": "Nommer un calcul",
+	"description": "Dire si un calcul est une somme ou un produit, d'après sa dernière opération (3 + 4 × 5 est une somme ; (3 + 4) × 5 est un produit)",
+	"grades": ["5"],
+	"theme": "Entiers",
+	"domain": "Priorités opératoires",
+	"subdomain": "Vocabulaire",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le calcul ${{a}} + {{b}} \\times {{c}}$ est :\n\n```choix\nmelanger: non\n- une somme\n- un produit\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Somme ou produit ?** On regarde la **dernière opération** à effectuer : une addition donne une somme, une multiplication donne un produit.",
+					"On calcule d'abord $\\textcolor{{{color:primary.1}}}{{{b}} \\times {{c}}}$ : ${{a}} + {{b}} \\times {{c}} = {{a}} + \\textcolor{{{color:primary.1}}}{{{eval:b*c}}}$.",
+					"La dernière opération est une addition : c'est $\\textcolor{{{color:primary.0}}}{\\text{une somme}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le calcul ${{a}} \\times ({{b}} + {{c}})$ est :\n\n```choix\nmelanger: non\n- une somme\n- un produit\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Somme ou produit ?** On regarde la **dernière opération** à effectuer : une addition donne une somme, une multiplication donne un produit.",
+					"On calcule d'abord $\\textcolor{{{color:primary.1}}}{{{b}} + {{c}}}$ : ${{a}} \\times ({{b}} + {{c}}) = {{a}} \\times \\textcolor{{{color:primary.1}}}{{{eval:b+c}}}$.",
+					"La dernière opération est une multiplication : c'est $\\textcolor{{{color:primary.0}}}{\\text{un produit}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le calcul $({{a}} + {{b}}) \\times {{c}}$ est :\n\n```choix\nmelanger: non\n- une somme\n- un produit\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Somme ou produit ?** On regarde la **dernière opération** à effectuer : une addition donne une somme, une multiplication donne un produit.",
+					"On calcule d'abord $\\textcolor{{{color:primary.1}}}{{{a}} + {{b}}}$ : $({{a}} + {{b}}) \\times {{c}} = \\textcolor{{{color:primary.1}}}{{{eval:a+b}}} \\times {{c}}$.",
+					"La dernière opération est une multiplication : c'est $\\textcolor{{{color:primary.0}}}{\\text{un produit}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le calcul ${{a}} \\times {{b}} + {{c}}$ est :\n\n```choix\nmelanger: non\n- une somme\n- un produit\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Somme ou produit ?** On regarde la **dernière opération** à effectuer : une addition donne une somme, une multiplication donne un produit.",
+					"On calcule d'abord $\\textcolor{{{color:primary.1}}}{{{a}} \\times {{b}}}$ : ${{a}} \\times {{b}} + {{c}} = \\textcolor{{{color:primary.1}}}{{{eval:a*b}}} + {{c}}$.",
+					"La dernière opération est une addition : c'est $\\textcolor{{{color:primary.0}}}{\\text{une somme}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 + 4 × 5 : une somme",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « un produit » parce qu'il y a ×",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 × (4 + 5) : un produit",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « une somme » parce qu'il y a +",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(3 + 4) × 5 : un produit",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « une somme » (on voit + en premier)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 × 4 + 5 : une somme",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « un produit » (on voit × en premier)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
