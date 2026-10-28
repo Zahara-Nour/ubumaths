@@ -7,9 +7,9 @@
 
 _Mis à jour le 2026-10-28, lot 5 écrit (§ 12.1)._
 
-- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Lot 5 (scissions, § 12) validé et écrit sur `feat/questions-6-scissions` : 7 neufs dans `6-fractions-scissions/`, 02/03/04/08 retouchés.
-- **Prochaine action** : PR #1929 ouverte (CI lancée, non vue verte : redémarrage du Mac) → `gh pr checks 1929`, merger si verte ; puis David lance `create-questions --dir scripts/questions/6-fractions-scissions --publier` ; migration rangement + tags des 7 ; page à cocher ; publication des 7 ; ENFIN migration de contenu des 4 publiés (§ 7).
-- **En attente de David** : rien avant le merge de la PR. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Lot 5 (scissions, § 12) : #1929 mergée, 7 brouillons en prod (§ 12.2). Migration rangement + tags des 7 écrite sur `feat/questions-6-rangement-scissions`, test 13/13.
+- **Prochaine action** : PR de la migration → CI verte + `security-auditor` → merge → `db:migrate` ; page à cocher ; publication des 7 (`publier-lot`) ; ENFIN migration de contenu des 4 publiés (§ 7).
+- **En attente de David** : rien jusqu'à la page à cocher. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
 - **Pièges en cours** : ⚠️ jamais `--publier` sur `6-fractions/` avant la migration de contenu (04 change de titre). 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`) : ne pas les refaire. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
 - **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-scissions`.
 
@@ -789,3 +789,12 @@ migration de contenu après la publication des 7).
 - Base locale : 7 brouillons créés (`.env.local`, base LOCAL vérifiée). **Aperçu admin non joué** : l'extension Chrome
   s'est déconnectée ; variations identiques à celles jouées au § 11.1, corrigé de 12 relu dans l'aperçu de
   `question:specs`. À voir sur la page à cocher.
+
+### 12.2 Brouillons en prod, rangement et tags (2026-10-28)
+
+- #1929 mergée. David : `create-questions --dir scripts/questions/6-fractions-scissions --publier` → 7 brouillons
+  (ece43e92, 5af91ef2, 53045ec4, 6818662d, 228b1620, 259a0b26, 2ff6e717), vérifiés au MCP : `[6]`, `draft`, sans nœud
+  ni tag ; les 4 d'origine sur leurs nœuds et points (6-131, 6-136, 6-133, 6-205).
+- Migration `20261028234500_questions_6_scissions_rangement_tags` (nœud + point de l'origine, `updated_at`
+  préservé, rollback en commentaire) ; test `questions-6-scissions-rangement-tags` : rouge contre une migration vide
+  (9 échecs), 13/13 vert avec elle.
