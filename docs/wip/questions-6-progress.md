@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1898._
+_Mis à jour le 2026-10-28, après #1898 et le `--publier` du lot 4._
 
-- **État** : lots 1 à 3 publiés. Lot 4 « Fractions » : fichiers mergés (#1898, 10 modèles, `scripts/questions/6-fractions`), rien en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-fractions --publier` (brouillons en prod) ; relever les `id` (MCP) ; puis migration rangement + tags des 10, 3 modèles de 5e passés en 6e et tagués 6-131 (0be55013, 9293eb9a, 8ffdbdb1), contenu de e3d87166 (publié, `\textcolor` brut, § 11.1) ; page à cocher.
-- **En attente de David** : le `--publier` du lot 4. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **État** : lots 1 à 3 publiés. Lot 4 « Fractions » : 10 brouillons en prod (ids § 11.3, vérifiés MCP : draft, grades 6, 0 tag).
+- **Prochaine action** : worktree `questions-6` + migration rangement + tags des 10, 3 modèles de 5e passés en 6e et tagués 6-131 (0be55013, 9293eb9a, 8ffdbdb1), contenu de e3d87166 (publié, `\textcolor` brut, § 11.1) ; page à cocher.
+- **En attente de David** : rien. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
 - **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; nombres calculables de tête dans les problèmes (relecture du lot 3) ; un geste de calcul = un modèle ; `--mettre-a-jour` après le merge seulement (il lit `main`) ; page à cocher générée depuis un `main` à jour, rendu vu dans Chrome AVANT de l'annoncer ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval`.
 - **Worktree / branche** : aucun (à recréer pour la migration).
 
@@ -607,3 +607,20 @@ tagués, nœuds, catégories et niveaux inchangés : 7f0fbff0 (1,2 ÷ 6) → 6-1
 6-118 ; 4b543657, 918598f5, 9826af8b (produits astucieux à trois facteurs) → 6-118. À compter dans la couverture ;
 relevé à refaire avant d'écrire dans Décimaux / Multiplier (Produit, Produits astucieux) ou Décimaux / Diviser /
 Quotient. Aucun dans les catégories « Fractions » du lot 4.
+
+### 11.3 Brouillons en prod (2026-10-28)
+
+David a lancé `create-questions --publier` : 10 créés. Vérifiés par MCP : `draft`, grades `[6]`, branche/notion/niveau conformes à la phase 0, aucun tag.
+
+| #   | Modèle                                                | id                                   | Point |
+| --- | ----------------------------------------------------- | ------------------------------------ | ----- |
+| 1   | Entier, décimal ou non décimal ?                      | 5077e030-ab90-4660-91a7-25cb48281445 | 6-130 |
+| 2   | Appliquer une fraction à un entier                    | c9c3a8a3-575a-4d8d-b278-cc22d348f274 | 6-131 |
+| 3   | Multiplier une fraction par un entier                 | 378aa770-4d92-4c21-aa2f-05d8f9cc4fb4 | 6-136 |
+| 4   | Comparer deux fractions                               | afebbb91-4d08-46f0-8640-77fe4e6f4e62 | 6-133 |
+| 5   | Encadrer une fraction par deux entiers                | 7ff1ac44-8099-472a-b688-a331f91be9c5 | 6-203 |
+| 6   | Ranger des fractions                                  | 83c835bb-5534-4b1a-afc2-2d3430622f9e | 6-134 |
+| 7   | Ranger des nombres mixtes                             | c360d588-3e4f-4ea5-8d27-1f671fe47bcd | 6-204 |
+| 8   | Soustraire des fractions                              | ddf5d292-d792-41d9-9136-2018e73cff9d | 6-205 |
+| 9   | Problèmes de fractions                                | 5cd25c2b-1def-492c-a81f-998255ea4f1d | 6-137 |
+| 10  | Additionner des fractions de dénominateurs différents | c99be374-4d52-4a9c-bcd4-03b71f45f717 | 6-135 |
