@@ -1,6 +1,6 @@
 {
 	"title": "Soustraire des fractions",
-	"description": "Différence de deux fractions : même dénominateur (7/9 − 2/9), dénominateurs multiples (2/3 − 1/6), quelconques dans des cas simples (7/2 − 3/5), entier moins fraction (1 − 3/8)",
+	"description": "Différence de deux fractions : même dénominateur (7/9 − 2/9), dénominateurs multiples (2/3 − 1/6), quelconques dans des cas simples (7/2 − 3/5)",
 	"grades": ["6"],
 	"theme": "Fractions",
 	"domain": "Calculer",
@@ -123,36 +123,6 @@
 					"**Soustraire des fractions.** On écrit les deux fractions avec le même dénominateur, puis on soustrait les numérateurs ; le dénominateur ne change pas.",
 					"Dénominateur commun ${{L}}$ : $\\frac{{{a}}}{{{b}}} = \\frac{{{eval:a*L/b}}}{{{L}}}$ et $\\frac{{{c}}}{{{d}}} = \\frac{{{eval:c*L/d}}}{{{L}}}$.",
 					"$${{if:a*d>c*b|\\frac{{{a}}}{{{b}}} - \\frac{{{c}}}{{{d}}}|\\frac{{{c}}}{{{d}}} - \\frac{{{a}}}{{{b}}}}} = {{if:a*d>c*b|\\frac{{{eval:a*L/b}}}{{{L}}} - \\frac{{{eval:c*L/d}}}{{{L}}}|\\frac{{{eval:c*L/d}}}{{{L}}} - \\frac{{{eval:a*L/b}}}{{{L}}}}} = {{if:gcd(N,L)>1|\\frac{{{N}}}{{{L}}} = |}}\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
-				]
-			}
-		},
-		{
-			"statement": "Calcule. Donne le résultat sous forme d'une fraction.\n\n$${{n}} - \\frac{{{c}}}{{{d}}} = ?$$",
-			"variables": [
-				{
-					"name": "n",
-					"expression": "1..3"
-				},
-				{
-					"name": "d",
-					"expression": "2..9"
-				},
-				{
-					"name": "c",
-					"expression": "1..{{eval:d-1}}"
-				}
-			],
-			"conditions": ["gcd(c,d)==1"],
-			"blanks": [
-				{
-					"expectedAnswer": "\\frac{{{eval:n*d-c}}}{{{d}}}"
-				}
-			],
-			"correction": {
-				"steps": [
-					"**Soustraire des fractions.** On écrit les deux fractions avec le même dénominateur, puis on soustrait les numérateurs ; le dénominateur ne change pas.",
-					"${{n}} = \\frac{{{eval:n*d}}}{{{d}}}$ : {{if:n==1|une unité, c'est|${{n}}$ unités, c'est}} ${{eval:n*d}}$ fois $\\frac{1}{{{d}}}$.",
-					"$${{n}} - \\frac{{{c}}}{{{d}}} = \\frac{{{eval:n*d}}}{{{d}}} - \\frac{{{c}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
 				]
 			}
 		}
@@ -281,32 +251,6 @@
 				"N": "29"
 			},
 			"answers": ["\\frac{4}{3}"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "1 − 3/8 = 5/8",
-			"variationIndex": 3,
-			"variables": {
-				"n": "1",
-				"d": "8",
-				"c": "3"
-			},
-			"answers": ["\\frac{5}{8}"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "Erreur : 2/8",
-			"variationIndex": 3,
-			"variables": {
-				"n": "1",
-				"d": "8",
-				"c": "3"
-			},
-			"answers": ["\\frac{2}{8}"],
 			"expected": {
 				"status": "incorrect"
 			}

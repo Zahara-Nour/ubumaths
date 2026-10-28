@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, phase 0 du lot 5 écrite (§ 12)._
+_Mis à jour le 2026-10-28, lot 5 écrit (§ 12.1)._
 
-- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Relecture du lot 4 comptée (10/10). Lot 5 décidé : scinder 02, 03, 04, 08 → 7 modèles neufs, 4 publiés retouchés (§ 11.8).
-- **Prochaine action** : phase 0 du lot 5 écrite (§ 12) ; à sa validation, écrire les 7 neufs et les 4 retouches (script de lot), puis § 5-7.
-- **En attente de David** : validation du § 12 (3 questions : niveaux à la suite, correction de B, modèles à une variation) et question d'accès. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
-- **Pièges en cours** : 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`) : ne pas les refaire. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
-- **Worktree / branche** : aucun.
+- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Lot 5 (scissions, § 12) validé et écrit sur `feat/questions-6-scissions` : 7 neufs dans `6-fractions-scissions/`, 02/03/04/08 retouchés.
+- **Prochaine action** : PR du contenu (CI, merge) ; puis David lance `create-questions --dir scripts/questions/6-fractions-scissions --publier` ; migration rangement + tags des 7 ; page à cocher ; publication des 7 ; ENFIN migration de contenu des 4 publiés (§ 7).
+- **En attente de David** : rien avant le merge de la PR. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **Pièges en cours** : ⚠️ jamais `--publier` sur `6-fractions/` avant la migration de contenu (04 change de titre). 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`) : ne pas les refaire. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-scissions`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -767,3 +767,25 @@ Questions à David :
    ($12 \div 6 = 2$, $5 \times 2 = 10$), l'autre chemin en second ? Reco : **oui** ; énoncé inchangé (« Calcule. »).
 3. **Modèles à une seule variation** (A, B, C, E, F, G) : les garder ainsi (découpage validé), ou leur ajouter une
    variation ? Reco : **les garder ainsi** ; les tirages varient déjà les nombres.
+
+**Décisions de David (2026-10-28, « je valide »)** : phase 0 du § 12 validée, les trois recos (niveaux à la suite,
+correction de B inversée, modèles à une variation gardés) et la question d'accès (personne ne gagne de lecture ;
+migration de contenu après la publication des 7).
+
+### 12.1 Écriture (2026-10-28)
+
+- Worktree `../ubumaths-wt-questions-6`, branche `feat/questions-6-scissions`.
+- `docs/wip/questions/lot-6-fractions.py scripts/questions` : 02, 03, 04, 08 retouchés dans `6-fractions/` ; 7 neufs
+  (11 à 17) dans **`6-fractions-scissions/`**, dossier à part : `create-questions` reconnaît un modèle par titre,
+  catégorie et niveau, et 04 change de titre (simulation sur `6-fractions/` : 04 « à créer »). ⚠️ **Ne jamais lancer
+  `--publier` sur `6-fractions/`** avant la migration de contenu (02, 03, 08 : « CONTENU DIFFÉRENT », sans effet ;
+  04 : création refusée par l'index unique de catégorie, au mieux).
+- 01 n'est plus écrit par le script : ses retouches des § 11.6-11.7 ont été faites dans le JSON (le script redonnait
+  l'ancien 01) ; les 9 autres sortaient identiques avant retouche (`jq -S`).
+- Vérifié : chaque variation déplacée est identique à l'originale (`jq -S`), sauf le corrigé de 12 (simplifier
+  d'abord, puis « On peut aussi multiplier d'abord »). Spec ajoutée à 04 (v1, signe inversé).
+- `create-questions` en simulation : 7 neufs « à créer » (2, 3, 2, 4, 2, 2, 2 specs) ; `question:specs` à 300 tirages par
+  variation : 11 fichiers, 4 800 tirages réussis, specs vertes.
+- Base locale : 7 brouillons créés (`.env.local`, base LOCAL vérifiée). **Aperçu admin non joué** : l'extension Chrome
+  s'est déconnectée ; variations identiques à celles jouées au § 11.1, corrigé de 12 relu dans l'aperçu de
+  `question:specs`. À voir sur la page à cocher.

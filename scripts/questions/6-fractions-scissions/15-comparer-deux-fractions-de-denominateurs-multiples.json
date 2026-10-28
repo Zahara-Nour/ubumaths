@@ -1,0 +1,119 @@
+{
+	"title": "Comparer deux fractions de dénominateurs multiples",
+	"description": "Comparer deux fractions dont un dénominateur est multiple de l'autre (2/3 et 4/6 ; 3/4 et 7/8), en les écrivant avec le même dénominateur",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 7,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b*m"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:2*b-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:2*d-1}}"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:(1-s)*a+s*c"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:(1-s)*b+s*d"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:(1-s)*c+s*a"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:(1-s)*d+s*b"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*dd-dn*gd)+1"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "mod(a,b)!=0", "mod(c,d)!=0", "abs(c-a*m)<=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur.** ${{d}} = {{b}} \\times {{m}}$ : on écrit $\\frac{{{a}}}{{{b}}}$ avec le dénominateur ${{d}}$, en multipliant numérateur et dénominateur par ${{m}}$.",
+					"$\\frac{{{a}}}{{{b}}} = \\frac{{{a}} \\times {{m}}}{{{b}} \\times {{m}}} = \\frac{{{eval:a*m}}}{{{d}}}$ : on compare ${{eval:a*m}}$ et ${{c}}$.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2/3 = 4/6",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"d": "6",
+				"a": "2",
+				"c": "4",
+				"s": "0",
+				"gn": "2",
+				"gd": "3",
+				"dn": "4",
+				"dd": "6",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2/3 < 4/6",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"d": "6",
+				"a": "2",
+				"c": "4",
+				"s": "0",
+				"gn": "2",
+				"gd": "3",
+				"dn": "4",
+				"dd": "6",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
