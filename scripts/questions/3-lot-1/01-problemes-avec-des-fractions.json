@@ -1,0 +1,257 @@
+{
+	"title": "Problèmes avec des fractions",
+	"description": "Résoudre un problème à plusieurs étapes avec des fractions : la part qui reste (1 − somme), une fraction du reste, un réservoir qui passe de 1/3 à 3/4",
+	"grades": ["3"],
+	"theme": "Fractions",
+	"domain": "Problèmes",
+	"subdomain": "Parts et restes",
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans un collège, $\\dfrac{{{a}}}{{{b}}}$ des élèves sont en sixième, $\\dfrac{1}{{{d}}}$ en cinquième et $\\dfrac{1}{{{g}}}$ en quatrième. Les autres sont en troisième.\n\nQuelle fraction des élèves est en troisième ?\n\n$?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..2"
+				},
+				{
+					"name": "d",
+					"expression": "3..6"
+				},
+				{
+					"name": "g",
+					"expression": "4..8"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "b<d", "d<g", "b*d*g-a*d*g-b*g-b*d>0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{{{eval:(b*d*g-a*d*g-b*g-b*d)/gcd(b*d*g-a*d*g-b*g-b*d,b*d*g)}}}{{{eval:b*d*g/gcd(b*d*g-a*d*g-b*g-b*d,b*d*g)}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les élèves de troisième, c'est ce qui reste.** Tous les élèves représentent $1$ : on retire de $1$ la somme des trois fractions.",
+					"Somme des trois fractions, au dénominateur commun ${{eval:b*d*g}}$ : $\\dfrac{{{a}}}{{{b}}} + \\dfrac{1}{{{d}}} + \\dfrac{1}{{{g}}} = \\dfrac{{{eval:a*d*g+b*g+b*d}}}{{{eval:b*d*g}}}$.",
+					"$$1 - \\dfrac{{{eval:a*d*g+b*g+b*d}}}{{{eval:b*d*g}}} = \\dfrac{{{eval:b*d*g-a*d*g-b*g-b*d}}}{{{eval:b*d*g}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Inès dépense $\\dfrac{{{a}}}{{{b}}}$ de son argent de poche, puis $\\dfrac{{{c}}}{{{d}}}$ de ce qui lui reste. Il lui reste alors ${{eval:k*(b-a)*(d-c)}}~\\unit{€}$.\n\nCombien d'argent avait-elle au départ ?\n\n$?~\\unit{€}$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"conditions": ["a<b", "c<d", "gcd(a,b)==1", "gcd(c,d)==1", "k*b*d<=200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*b*d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction qui reste.** Après la première dépense, il reste $1 - \\dfrac{{{a}}}{{{b}}} = \\dfrac{{{eval:b-a}}}{{{b}}}$ de l'argent. Elle dépense ensuite $\\dfrac{{{c}}}{{{d}}}$ **de ce reste** : il en reste $\\dfrac{{{eval:d-c}}}{{{d}}}$.",
+					"Il reste donc $\\dfrac{{{eval:d-c}}}{{{d}}} \\times \\dfrac{{{eval:b-a}}}{{{b}}} = \\dfrac{{{eval:(d-c)*(b-a)}}}{{{eval:b*d}}}$ de l'argent du départ, soit ${{eval:k*(b-a)*(d-c)}}~\\unit{€}$.",
+					"$${{eval:k*(b-a)*(d-c)}} \\div \\dfrac{{{eval:(d-c)*(b-a)}}}{{{eval:b*d}}} = {{eval:k*(b-a)*(d-c)}} \\times \\dfrac{{{eval:b*d}}}{{{eval:(d-c)*(b-a)}}} = \\textcolor{{{color:primary.0}}}{{{solution}}~\\unit{€}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Un réservoir est rempli aux $\\dfrac{{{a}}}{{{b}}}$. On y verse ${{eval:k*(c*b-a*d)}}~\\unit{L}$ : il est alors rempli aux $\\dfrac{{{c}}}{{{d}}}$.\n\nQuelle est la capacité du réservoir ?\n\n$?~\\unit{L}$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"conditions": ["a<b", "c<d", "gcd(a,b)==1", "gcd(c,d)==1", "c*b>a*d", "b!=d", "k*b*d<=180"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*b*d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction versée.** Le réservoir passe de $\\dfrac{{{a}}}{{{b}}}$ à $\\dfrac{{{c}}}{{{d}}}$ : on a versé $\\dfrac{{{c}}}{{{d}}} - \\dfrac{{{a}}}{{{b}}} = \\dfrac{{{eval:c*b-a*d}}}{{{eval:b*d}}}$ de sa capacité.",
+					"Ces $\\dfrac{{{eval:c*b-a*d}}}{{{eval:b*d}}}$ de la capacité font ${{eval:k*(c*b-a*d)}}~\\unit{L}$.",
+					"$${{eval:k*(c*b-a*d)}} \\div \\dfrac{{{eval:c*b-a*d}}}{{{eval:b*d}}} = {{eval:k*(c*b-a*d)}} \\times \\dfrac{{{eval:b*d}}}{{{eval:c*b-a*d}}} = \\textcolor{{{color:primary.0}}}{{{solution}}~\\unit{L}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 − (1/3 + 1/4 + 1/6) = 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"a": "1",
+				"d": "4",
+				"g": "6"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme 3/4 au lieu du reste",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"a": "1",
+				"d": "4",
+				"g": "6"
+			},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : numérateurs et dénominateurs ajoutés (1 − 3/13)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"a": "1",
+				"d": "4",
+				"g": "6"
+			},
+			"answers": ["\\frac{10}{13}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Départ 24 € (il reste 2/3 × 3/4 = 1/2, soit 12 €)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"a": "1",
+				"d": "4",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/4 de la somme de départ (1 − 1/3 − 1/4 = 5/12 → 28,8)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"a": "1",
+				"d": "4",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["28,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le reste lui-même (12)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"a": "1",
+				"d": "4",
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Capacité 24 L (3/4 − 1/3 = 5/12, soit 10 L)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "3",
+				"a": "1",
+				"d": "4",
+				"c": "3",
+				"k": "2"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 ÷ 3/4",
+			"variationIndex": 2,
+			"variables": {
+				"b": "3",
+				"a": "1",
+				"d": "4",
+				"c": "3",
+				"k": "2"
+			},
+			"answers": ["\\frac{40}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10 × 5/12",
+			"variationIndex": 2,
+			"variables": {
+				"b": "3",
+				"a": "1",
+				"d": "4",
+				"c": "3",
+				"k": "2"
+			},
+			"answers": ["\\frac{25}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

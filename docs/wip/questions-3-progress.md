@@ -5,13 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1921 (en prod)._
+_Mis à jour le 2026-10-28, lot 1 écrit (PR des fichiers à merger)._
 
-- **État** : lot 0 en prod (db push de David : 5 migrations, dont `20261028213000` / `213100`), vérifié au MCP : 17 modèles aux niveaux, nœuds et tags du § 6.2, 290dcf6f à 4 variations, 17f3dfcd ensuite passé en 2de (2-260) par la 4e. Points de 3e couverts : 12 → 16 (3-001, 3-004, 3-005, 3-006).
-- **Prochaine action** : phase 0 du lot 1 (puissances et nombres : 3-003, 3-007, 3-008, 3-009, 3-010), en y ajoutant 90dca27a / acbd2280 → 3e + 3-001 (gardes sur [4] + 4-005 ; les élèves de 4e les perdent).
-- **En attente de David** : rien.
-- **Pièges en cours** : horodatages de migration pris par d'autres sessions — vérifier `schema_migrations` en prod ET `origin/main` avant la PR ; `db:migrate` bloqué si une migration plus ancienne d'une autre session n'est pas jouée (`--include-all` = David) ; d'autres sessions rangent les mêmes modèles : relire les migrations d'`origin/main` avant chaque relevé ; QCM = case « choix » ; § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : aucun (lot 0 retiré).
+- **État** : lot 1 (5 modèles, § 8) écrit dans `scripts/questions/3-lot-1/` (`lot-3-1.py`) ; simulation verte
+  (specs, tirages), essai en base locale, affichage vérifié dans l'aperçu admin.
+- **Prochaine action** : merger la PR des fichiers ; puis **David** lance
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-1 --publier` (brouillons en prod) ; relever
+  les `id` ; migration nœud + tag des 5 modèles + rangement de 90dca27a / acbd2280 (§ 8.2).
+- **En attente de David** : le `--publier` en prod, après le merge.
+- **Pièges en cours** : horodatages de migration pris par d'autres sessions (vérifier `schema_migrations` en prod
+  ET `origin/main`) ; `db:migrate` bloqué si une migration plus ancienne n'est pas jouée (`--include-all` =
+  David) ; x² = a : `shared.blankDefaults.answerKind = 'intervalles'` obligatoire ; § 9 de `couvrir-un-niveau.md`.
+- **Worktree / branche** : `../ubumaths-wt-questions-3-lot-1` · `feat/questions-3-lot-1`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -230,3 +235,21 @@ modèles publiés de plus, ceux de 4e les perdent. Aucune règle ne change.
 1. Valider les 5 modèles (§ 8.1) : points, variations, catégories, niveaux ?
 2. 3-010 : cases + case choix suffisent, ou un petit chantier « forme facteurs premiers » dans le juge (réponse
    libre 2² × 3 × 5 en tout ordre), avant ou après le lot ?
+
+### 8.5 Décisions (David, 2026-10-28, « je te suis »)
+
+- Les 5 modèles du § 8.1 validés, avec deux réglages : 3-007 v4 (bactéries) en nombre entier ; 3-009 v3
+  (arrondi au mm) aires de 10 à 99 cm².
+- 3-010 : cases + case choix ; la forme « facteurs premiers » dans le juge = **futur chantier** (sert aussi
+  à 629c231b, Terminale expertes, qui accepte aujourd'hui 360 tel quel).
+
+### 8.6 Lot 1 : écrit (2026-10-28)
+
+- `docs/wip/questions/lot-3-1.py` → `scripts/questions/3-lot-1/` (5 JSON) ; `question:specs` : 46 specs vertes,
+  750 tirages ; `create-questions` en simulation : vert.
+- Écarts à la phase 0 : 3-009 v2 (valeur exacte) tire des aires **sans facteur carré** (√20 rendait
+  `unoptimal_form`, la simplification des racines est en 2de) ; 3-008 porte `shared.blankDefaults.answerKind:
+'intervalles'` comme ac9579d6 (sans lui, {−7 ; 7} est jugé faux).
+- Base locale : 5 brouillons créés ; aperçu admin : énoncés (préfixes, μ, cases en exposant, fractions, case
+  choix) affichés juste ; case choix jouée, « Juste ». La saisie MathLive n'a pas pu être pilotée par le
+  navigateur : le jugement des cases repose sur les specs.

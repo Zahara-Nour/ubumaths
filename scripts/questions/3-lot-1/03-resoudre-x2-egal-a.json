@@ -1,0 +1,190 @@
+{
+	"title": "Résoudre x² = a",
+	"description": "Résoudre x² = a : deux solutions −√a et √a si a > 0 (x² = 49, x² = 7), une si a = 0, aucune si a < 0 ; ensemble des solutions écrit",
+	"grades": ["3"],
+	"theme": "Calcul littéral",
+	"domain": "Equations",
+	"subdomain": "x² = a",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous l'équation $x^2={{eval:n*n}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ -{{n}} ; {{n}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+					"${{eval:n*n}}>0$ et $\\sqrt{{{eval:n*n}}}={{n}}$ : $x^2={{eval:n*n}}\\iff x={{n}} \\text{ ou } x=-{{n}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ -{{n}} ; {{n}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous l'équation $x^2={{a}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..23"
+				}
+			],
+			"conditions": ["mod(a,4) != 0", "mod(a,9) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ -\\sqrt{ {{a}} } ; \\sqrt{ {{a}} } \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+					"${{a}}>0$ : $x^2={{a}}\\iff x=\\sqrt{ {{a}} } \\text{ ou } x=-\\sqrt{ {{a}} }$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ -\\sqrt{ {{a}} } ; \\sqrt{ {{a}} } \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous l'équation $x^2={{eval:-(t)*(n)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "1..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|\\{ 0 \\}|\\varnothing}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+					"{{if:t==0|$x^2=0\\iff x=0$ : une seule solution.|${{eval:-(n)}}<0$ et un carré n'est jamais négatif : aucune solution.}}",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:t==0|\\{ 0 \\}|\\varnothing}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² = 49 : S = {−7 ; 7}",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["\\{-7;7\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x² = 49 : ordre inversé {7 ; −7}",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["\\{7;-7\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la solution positive seule",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["\\{7\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² = 7 : S = {−√7 ; √7}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["\\{-\\sqrt{7};\\sqrt{7}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √7 seul",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["\\{\\sqrt{7}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7/2 (division par 2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["\\{\\frac{7}{2}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² = 0 : S = {0}",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"n": "5"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x² = −5 : S = ∅",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1",
+				"n": "5"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x² = −5, S = {−√5 ; √5}",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1",
+				"n": "5"
+			},
+			"answers": ["\\{-\\sqrt{5};\\sqrt{5}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

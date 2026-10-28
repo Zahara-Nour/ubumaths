@@ -1,0 +1,246 @@
+{
+	"title": "Problèmes et notation scientifique",
+	"description": "Utiliser les préfixes (nano à giga) et la notation scientifique : 1 μm = 10⁻⁶ m ; 350 nm = 3,5 × 10⁻⁷ m ; distance parcourue par la lumière ; bactéries bout à bout",
+	"grades": ["3"],
+	"theme": "Puissances",
+	"domain": "Problèmes",
+	"subdomain": "Notation scientifique",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n$$1~{{if:k==-9|\\unit{nm}|}}{{if:k==-6|\\unit{μm}|}}{{if:k==-3|\\unit{mm}|}}{{if:k==3|\\unit{kW}|}}{{if:k==6|\\unit{MW}|}}{{if:k==9|\\unit{GW}|}} = 10^{?}~{{if:k<0|\\unit{m}|\\unit{W}}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "-9|-6|-3|3|6|9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Préfixes.** nano $= 10^{-9}$, micro $= 10^{-6}$, milli $= 10^{-3}$, kilo $= 10^{3}$, méga $= 10^{6}$, giga $= 10^{9}$.",
+					"Le préfixe {{if:k==-9|nano|}}{{if:k==-6|micro|}}{{if:k==-3|milli|}}{{if:k==3|kilo|}}{{if:k==6|méga|}}{{if:k==9|giga|}} vaut $10^{\\textcolor{{{color:primary.0}}}{{{k}}}}$ : $1~{{if:k==-9|\\unit{nm}|}}{{if:k==-6|\\unit{μm}|}}{{if:k==-3|\\unit{mm}|}}{{if:k==3|\\unit{kW}|}}{{if:k==6|\\unit{MW}|}}{{if:k==9|\\unit{GW}|}} = \\textcolor{{{color:primary.0}}}{10^{{{k}}}}~{{if:k<0|\\unit{m}|\\unit{W}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris cette grandeur en {{if:k<0|mètres|watts}}, en notation scientifique.\n\n$${{eval:X*10^(j-1);d}}~{{if:k==-9|\\unit{nm}|}}{{if:k==-6|\\unit{μm}|}}{{if:k==-3|\\unit{mm}|}}{{if:k==3|\\unit{kW}|}}{{if:k==6|\\unit{MW}|}}{{if:k==9|\\unit{GW}|}} = ? \\times 10^{?}~{{if:k<0|\\unit{m}|\\unit{W}}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "-9|-6|-3|3|6|9"
+				},
+				{
+					"name": "X",
+					"expression": "11..99!m(10)"
+				},
+				{
+					"name": "j",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:X/10;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:j+k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Préfixes.** nano $= 10^{-9}$, micro $= 10^{-6}$, milli $= 10^{-3}$, kilo $= 10^{3}$, méga $= 10^{6}$, giga $= 10^{9}$. **Notation scientifique.** Un nombre s'écrit $a \\times 10^n$ avec $1 \\leq a < 10$ et $n$ entier relatif.",
+					"On écrit d'abord le nombre en notation scientifique : ${{eval:X*10^(j-1);d}} = \\textcolor{{{color:primary.0}}}{{{eval:X/10;d}}} \\times 10^{{{eval:j}}}$.",
+					"$${{eval:X*10^(j-1);d}}~{{if:k==-9|\\unit{nm}|}}{{if:k==-6|\\unit{μm}|}}{{if:k==-3|\\unit{mm}|}}{{if:k==3|\\unit{kW}|}}{{if:k==6|\\unit{MW}|}}{{if:k==9|\\unit{GW}|}} = {{eval:X/10;d}} \\times 10^{{{eval:j}}} \\times 10^{{{k}}}~{{if:k<0|\\unit{m}|\\unit{W}}} = \\textcolor{{{color:primary.0}}}{{{eval:X/10;d}}} \\times 10^{\\textcolor{{{color:primary.0}}}{{{eval:j+k}}}}~{{if:k<0|\\unit{m}|\\unit{W}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "En une seconde, la lumière parcourt $3 \\times 10^{8}~\\unit{m}$. Quelle distance parcourt-elle en ${{eval:c*10^p}}~\\unit{s}$ ?\n\nDonne le résultat en notation scientifique.\n\n$$? \\times 10^{?}~\\unit{m}$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..9"
+				},
+				{
+					"name": "p",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*c/10;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:9+p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Notation scientifique.** Un nombre s'écrit $a \\times 10^n$ avec $1 \\leq a < 10$ et $n$ entier relatif.",
+					"Distance = vitesse × durée : $3 \\times 10^{8} \\times {{eval:c*10^p}} = 3 \\times {{c}} \\times 10^{8} \\times 10^{{{p}}} = {{eval:3*c}} \\times 10^{{{eval:8+p}}}$.",
+					"${{eval:3*c}}$ n'est pas entre $1$ et $10$ : ${{eval:3*c}} = {{eval:3*c/10;d}} \\times 10$.",
+					"$${{eval:3*c}} \\times 10^{{{eval:8+p}}} = \\textcolor{{{color:primary.0}}}{{{eval:3*c/10;d}}} \\times 10^{\\textcolor{{{color:primary.0}}}{{{eval:9+p}}}}~\\unit{m}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une bactérie mesure ${{a}}~\\unit{μm}$. Combien de bactéries faut-il aligner, bout à bout, pour faire $1~\\unit{cm}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|2|4|5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10000/a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même unité.** $1~\\unit{cm} = 10^{-2}~\\unit{m}$ et $1~\\unit{μm} = 10^{-6}~\\unit{m}$ : $1~\\unit{cm} = 10^{-2} \\div 10^{-6}~\\unit{μm} = 10^{4}~\\unit{μm} = 10\\,000~\\unit{μm}$.",
+					"$$10\\,000 \\div {{a}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 μm = 10⁻⁶ m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-6"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 μm = 10⁻³ m (milli)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-6"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 GW = 10⁹ W",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "350 nm = 3,5 × 10⁻⁷ m",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-9",
+				"X": "35",
+				"j": "2"
+			},
+			"answers": ["3,5", "-7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : mantisse 35 (35 × 10⁻⁸)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-9",
+				"X": "35",
+				"j": "2"
+			},
+			"answers": ["35", "-8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exposant du préfixe seul (3,5 × 10⁻⁹)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-9",
+				"X": "35",
+				"j": "2"
+			},
+			"answers": ["3,5", "-9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 × 10⁸ × 500 = 1,5 × 10¹¹ m",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5",
+				"p": "2"
+			},
+			"answers": ["1,5", "11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 15 × 10¹⁰ non converti",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5",
+				"p": "2"
+			},
+			"answers": ["15", "10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exposants multipliés (1,5 × 10¹⁷)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5",
+				"p": "2"
+			},
+			"answers": ["1,5", "17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10 000 ÷ 2 = 5 000",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["5000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 cm = 1 000 μm (500)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
