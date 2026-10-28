@@ -8,7 +8,7 @@
 _Mis à jour le 2026-10-28, lot 0 écrit (PR à ouvrir)._
 
 - **État** : lot 0 écrit (§ 7) : migration `20261028223000_questions_4_niveaux` (7 modèles, 4 déplacés, 7 tags),
-  test d'intégration 19 verts, rouge vérifié sans la migration.
+  test d'intégration 20 verts, rouge vérifié sans la migration.
 - **Prochaine action** : PR, `security-auditor`, CI verte, merge ; `db:migrate` **seulement après** le merge et
   le `db:migrate` de #1921 (3e), qui passe 17f3dfcd en [3] (la 3e me prévient) ; vérification MCP ; puis
   phase 0 du lot 1 (relatifs et rationnels : 082, 004, 006, 009, 010, 013, 014).
@@ -232,6 +232,9 @@ lisibles par tout connecté, comme aujourd'hui. Aucune règle ne change.
 - `questions-4/lot-niveaux-4.py` (repris de `lot-niveaux-5.py`) → `20261028223000_questions_4_niveaux.sql` +
   fixture `tests/integration/fixtures/questions-4-niveaux.json` (niveaux d'avant par modèle : [3] pour 17f3dfcd).
   Horodatage après ceux de la 3e (`20261028213000` / `213100`, renumérotés).
-- Test `questions-4-niveaux.test.ts` : 19 verts ; migration vidée → 11 rouges. Le tag « posé depuis la
+- Test `questions-4-niveaux.test.ts` : 20 verts (dont « 17f3dfcd encore en [4] » refusé) ; migration vidée → 11 rouges. Le tag « posé depuis la
   migration » du test de rollback est CM2-047 (même nœud, autre programme : le trigger refuse deux points d'un
   même programme).
+- `security-auditor` (#1923) : aucun bloquant. Corrigés : numéro du lot 0 de la 3e (`20261028213100`, pas
+  `200100`), test explicite « 17f3dfcd encore en [4] → refus ». Rappel opérationnel : `db:migrate` après celui
+  de #1921, sinon `db push` échoue sans rien écrire mais bloque les migrations suivantes.

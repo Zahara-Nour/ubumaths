@@ -7,7 +7,7 @@ des notions » : HORS_PROGRAMME) prennent le niveau du point qui les décrit, `g
   - a/x = b (419887ff, b0ef6947) → [2], tag 2-464, déplacés sur le nœud du point ;
   - puissance d'une puissance (a1ae1558, 2158a2fc, 17f3dfcd) → [2], tag 2-260, nœud gardé (le point
     est sur sa notion).
-17f3dfcd est relevé en [4], mais le lot 0 de la 3e (#1921, 20261028200100) le passe d'abord en [3] :
+17f3dfcd est relevé en [4], mais le lot 0 de la 3e (#1921, 20261028213100) le passe d'abord en [3] :
 son état d'avant est donc [3] (même nœud, aucun tag), et cette migration se joue APRÈS celle de la 3e.
 
 Vérifie avant d'écrire : modèles relevés publiés en [4], sans tag, nœuds actifs à trois niveaux,
@@ -128,7 +128,7 @@ w(f"""-- =======================================================================
 --     « Fonctions > Fonction inverse > 1/x = k, 1/x < k » ;
 --   - puissance d'une puissance (a1ae1558, 2158a2fc, 17f3dfcd) → [2], tag 2-260, nœud gardé.
 -- {N_TAGS_APRES} tags posés, {N_DEPLACES} déplacements. Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
--- 17f3dfcd est attendu en [3] : le lot 0 de la 3e (20261028200100) l'y passe AVANT cette migration.
+-- 17f3dfcd est attendu en [3] : le lot 0 de la 3e (20261028213100) l'y passe AVANT cette migration.
 -- ============================================================================
 -- Décisions de David le 2026-10-28 (journal docs/wip/questions-4-progress.md § 6). Fichier GÉNÉRÉ
 -- par docs/wip/questions-4/lot-niveaux-4.py (relevé de la prod du 2026-10-28) — ne pas éditer à

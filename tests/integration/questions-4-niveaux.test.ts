@@ -300,6 +300,18 @@ describe('Questions 4e, lot 0 : les branches d’échec de la migration', () => 
 		});
 	});
 
+	it('17f3dfcd encore en [4] (lot 0 de la 3e pas joué) fait échouer la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(`update public.question_templates set grades = array['4'] where id = $1`, [
+				PUISSANCE
+			]);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/niveaux changés depuis le relevé : 1/
+			);
+		});
+	});
+
 	it('un statut changé depuis le relevé fait échouer la migration', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);

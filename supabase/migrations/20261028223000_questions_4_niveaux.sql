@@ -9,7 +9,7 @@
 --     « Fonctions > Fonction inverse > 1/x = k, 1/x < k » ;
 --   - puissance d'une puissance (a1ae1558, 2158a2fc, 17f3dfcd) → [2], tag 2-260, nœud gardé.
 -- 7 tags posés, 4 déplacements. Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
--- 17f3dfcd est attendu en [3] : le lot 0 de la 3e (20261028200100) l'y passe AVANT cette migration.
+-- 17f3dfcd est attendu en [3] : le lot 0 de la 3e (20261028213100) l'y passe AVANT cette migration.
 -- ============================================================================
 -- Décisions de David le 2026-10-28 (journal docs/wip/questions-4-progress.md § 6). Fichier GÉNÉRÉ
 -- par docs/wip/questions-4/lot-niveaux-4.py (relevé de la prod du 2026-10-28) — ne pas éditer à
