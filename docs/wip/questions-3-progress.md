@@ -5,18 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1928 (fichiers du lot 1 mergés)._
+_Mis à jour le 2026-10-28, PR #1930 ouverte (migration de rangement du lot 1)._
 
-- **État** : lot 1 (5 modèles, § 8) écrit dans `scripts/questions/3-lot-1/` (`lot-3-1.py`) ; simulation verte
-  (specs, tirages), essai en base locale, affichage vérifié dans l'aperçu admin.
-- **Prochaine action** : **David** lance
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-1 --publier` (brouillons en prod) ; relever
-  les `id` ; migration nœud + tag des 5 modèles + rangement de 90dca27a / acbd2280 (§ 8.2).
-- **En attente de David** : le `--publier` en prod (#1928 mergée).
-- **Pièges en cours** : horodatages de migration pris par d'autres sessions (vérifier `schema_migrations` en prod
-  ET `origin/main`) ; `db:migrate` bloqué si une migration plus ancienne n'est pas jouée (`--include-all` =
-  David) ; x² = a : `shared.blankDefaults.answerKind = 'intervalles'` obligatoire ; § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : aucun (lot 1 fichiers retiré) ; la migration aura le sien.
+- **État** : 5 brouillons du lot 1 créés en prod par David (§ 8.7) ; migration
+  `20261029003100_questions_3_lot1_rangement_tags` écrite, test 23 verts (rouge sans elle), `security-auditor` sans
+  bloquant. CI de #1930 : Client Tests shard 1/2 en échec (PR sans code client, log pas encore lu).
+- **Prochaine action** : lire le log du shard ; si sans rapport, relancer ; CI verte → merge → `db:migrate` depuis le
+  dépôt principal → vérification MCP (nœuds, niveaux [3], tags) → page à cocher → publication (David).
+- **En attente de David** : rien avant le merge.
+- **Pièges en cours** : vérifier que 20261029003100 reste après la dernière migration de prod ET d'`origin/main` ;
+  verrou `index.lock` périmé rencontré dans le worktree (aucun git en cours → retiré).
+- **Worktree / branche** : `../ubumaths-wt-questions-3-lot-1-rangement` · `feat/questions-3-lot-1-rangement`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -253,3 +252,14 @@ modèles publiés de plus, ceux de 4e les perdent. Aucune règle ne change.
 - Base locale : 5 brouillons créés ; aperçu admin : énoncés (préfixes, μ, cases en exposant, fractions, case
   choix) affichés juste ; case choix jouée, « Juste ». La saisie MathLive n'a pas pu être pilotée par le
   navigateur : le jugement des cases repose sur les specs.
+
+### 8.7 Lot 1 : en prod, rangement (2026-10-28)
+
+- Brouillons créés en prod par David (`create-questions --publier`) : 93998734 (Problèmes avec des fractions),
+  35f82aad (Problèmes et notation scientifique), 3806ee3d (Résoudre x² = a), 70449b92 (Problèmes avec la racine
+  carrée), 77ab770d (Décomposer en facteurs premiers) ; vérifiés au MCP : brouillons [3], sans nœud ni tag.
+- Migration `20261029003100_questions_3_lot1_rangement_tags` (générée par `lot-rangement-3-1.py`, relevé
+  `etat-prod-2026-10-28-3e-lot1/`) : les 5 sur le nœud de leur point (93998734 sur « Fractions : calculs >
+  fraction d'une quantité »), tags 3-003, 3-007, 3-008, 3-009, 3-010 ; 90dca27a et acbd2280 : [4] → [3],
+  4-005 → 3-001, nœud gardé. Le gabarit du lot 0 accepte désormais un nœud d'avant vide (brouillon neuf).
+- Test `questions-3-lot1-rangement-tags` : 21 verts, 10 rouges sans la migration (migration vidée, rollback gardé).
