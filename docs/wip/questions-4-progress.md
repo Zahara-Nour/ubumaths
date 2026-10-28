@@ -5,17 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, phase 0 du lot 0 proposée._
+_Mis à jour le 2026-10-28, lot 0 écrit (PR à ouvrir)._
 
-- **État** : relevé, classement (§ 1 à 4) et réponses de David (§ 5) faits ; phase 0 du lot 0 écrite (§ 6),
-  **pas encore validée**. Rien d'écrit en base ni en code.
-- **Prochaine action** : validation du § 6, puis lot 0 (une migration niveaux + nœuds + tags de 6 modèles, test
-  d'intégration, `security-auditor`), puis phase 0 du lot 1 (relatifs et rationnels).
-- **En attente de David** : les questions du § 6.4.
-- **Pièges en cours** : la session 3e déplace 11 modèles de 4e vers la 3e (note en bas) : ne pas les toucher ;
-  90dca27a et acbd2280 sont passés en 4e (#1917, 5e) alors que la 3e les veut en 3e (§ 6.4) ; QCM = case choix ;
-  relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot ; niveaux publiés par catégorie (§ 1).
-- **Worktree / branche** : aucun.
+- **État** : lot 0 écrit (§ 7) : migration `20261028223000_questions_4_niveaux` (7 modèles, 4 déplacés, 7 tags),
+  test d'intégration 20 verts, rouge vérifié sans la migration.
+- **Prochaine action** : PR, `security-auditor`, CI verte, merge ; `db:migrate` **seulement après** le merge et
+  le `db:migrate` de #1921 (3e), qui passe 17f3dfcd en [3] (la 3e me prévient) ; vérification MCP ; puis
+  phase 0 du lot 1 (relatifs et rationnels : 082, 004, 006, 009, 010, 013, 014).
+- **En attente de David** : rien.
+- **Pièges en cours** : ma migration attend 17f3dfcd en [3] : jouée avant #1921, elle refuse (garde) ; 4-005 est
+  couvert (4f4a5c94, d14fe0cf ; 90dca27a et acbd2280 partiront en 3e avec un lot de la 3e) ; QCM = case choix ;
+  relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot.
+- **Worktree / branche** : `../ubumaths-wt-questions-4`, `feat/questions-4-lot0-niveaux`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -219,3 +220,23 @@ lisibles par tout connecté, comme aujourd'hui. Aucune règle ne change.
 3. **Conflit 3e / 5e** : 90dca27a et acbd2280 (« Simplifie le plus possible ») sont passés en 4e + 4-005 (#1917)
    alors que le lot 0 de la 3e les envoie en 3e + 3-001 ; la garde de sa migration (niveau `5` attendu) va
    refuser. À la 3e de trancher, mais « le plus possible » = forme irréductible = 3e : je la préviens ?
+
+**Décisions de David (2026-10-28, « je valide » mes recos)** : § 6.2 validé ; 17f3dfcd part aussi en 2de
+(2-260), pris par la 4e après le lot 0 de la 3e (#1921, qui le passe en [3] sans tag) ; la 3e prévenue
+(message de session) et d'accord ; 90dca27a et acbd2280 → 3e + 3-001 dans un lot suivant de la 3e.
+
+## 7. Lot 0 : écrit (2026-10-28)
+
+- Relevé `questions-4/releve-prod.ts` (lecture seule, `.env`) → `questions-4/etat-prod-2026-10-28/` (7 modèles,
+  0 tag) ; usages (MCP) : 0 partout, favoris et chapitres compris.
+- `questions-4/lot-niveaux-4.py` (repris de `lot-niveaux-5.py`) → `20261028223000_questions_4_niveaux.sql` +
+  fixture `tests/integration/fixtures/questions-4-niveaux.json` (niveaux d'avant par modèle : [3] pour 17f3dfcd).
+  Horodatage après ceux de la 3e (`20261028213000` / `213100`, renumérotés).
+- Test `questions-4-niveaux.test.ts` : 20 verts (dont « 17f3dfcd encore en [4] » refusé) ; migration vidée → 11 rouges. Le tag « posé depuis la
+  migration » du test de rollback est CM2-047 (même nœud, autre programme : le trigger refuse deux points d'un
+  même programme).
+- `security-auditor` (#1923) : aucun bloquant. Corrigés : numéro du lot 0 de la 3e (`20261028213100`, pas
+  `200100`), test explicite « 17f3dfcd encore en [4] → refus ». Rappel opérationnel : `db:migrate` après celui
+  de #1921, sinon `db push` échoue sans rien écrire mais bloque les migrations suivantes.
+- CI de #1923 : tout vert sauf la garde « doc à jour » (`docs/systeme/base-de-donnees.md` couvre les
+  migrations) ; la ligne `Doc-inchangée:` doit être dans un MESSAGE DE COMMIT, pas dans la description de la PR.
