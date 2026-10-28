@@ -16,7 +16,7 @@ export const statChartEntry: BlockCatalogEntry = {
 	fences: [...STAT_CHART_KINDS],
 	nodeType: 'stat-chart',
 	summary:
-		'Diagrammes en barres, circulaires, histogrammes, tableaux, lois de probabilité, simulations et nuages de points.',
+		'Diagrammes en barres, circulaires, histogrammes, tableaux, lois de probabilité, simulations et nuages de points ; dans une question, un diagramme en barres que l’élève construit.',
 	intro:
 		'Neuf blocs dessinent des données : on écrit les effectifs (ou la série brute), le graphique se construit tout seul. Une ligne de donnée s’écrit « catégorie = effectif », une classe s’écrit [a ; b[. Les réglages se mettent sous la forme « clé: valeur », dans n’importe quel ordre. Un bloc mal écrit reste dans le texte avec ses messages situés : « Ligne N » compte à partir de la première ligne sous ```.',
 	settingGroups: [
@@ -95,6 +95,25 @@ export const statChartEntry: BlockCatalogEntry = {
 					values: 'affichée | triée | seule',
 					defaultValue: 'aucune',
 					description: 'Avec « données: » : montrer la série écrite, triée, ou rien d’autre.'
+				},
+				{
+					key: 'axe',
+					values: '0 à 20, de 2 en 2 (ou 0 à 15 : de 1 en 1)',
+					defaultValue: 'calculé sur les données',
+					description:
+						'Axe vertical fixé : il part de 0, son haut est un multiple du pas, au plus 40 graduations. Une barre plus haute que l’axe est refusée.'
+				}
+			]
+		},
+		{
+			title: '```barres dans une question : construire les barres',
+			settings: [
+				{
+					key: 'placer',
+					values: 'les barres à construire : Natation ; Danse, ou toutes',
+					defaultValue: 'aucune',
+					description:
+						'L’élève monte ces barres (toucher la colonne, glisser, boutons ▲ ▼), d’unité en unité, même sur un axe gradué de 2 en 2 ; les autres sont dessinées. Une case par barre (note partielle) ; jamais d’effectif attendu écrit à l’écran. Exige axe: (calculé, il trahirait la plus grande barre) ; refusé avec valeurs: oui, des pourcentages ou deux séries. Avec données:, l’élève compte puis construit (série: affichée montre la série). Sur le PDF, les barres à construire sont absentes : l’enfant les dessine.'
 				}
 			]
 		},
@@ -405,6 +424,20 @@ export const statChartEntry: BlockCatalogEntry = {
 			explanation: 'Le bloc compte les valeurs lui-même et calcule les indicateurs.'
 		},
 		{
+			title: 'Construire des barres (question)',
+			source: fence(
+				'barres',
+				'axes: Sport ; Effectif',
+				'axe: 0 à 20, de 2 en 2',
+				'Football = 12',
+				'Natation = 8',
+				'Danse = 7',
+				'placer: Natation ; Danse'
+			),
+			explanation:
+				'Dans une question, l’élève monte les barres Natation et Danse : une case chacune. La consigne (« Construis le diagramme du sport préféré : Natation 8, Danse 7. ») va dans l’énoncé, au-dessus.'
+		},
+		{
 			title: 'Diagramme circulaire',
 			source: fence(
 				'circulaire',
@@ -523,6 +556,14 @@ export const statChartEntry: BlockCatalogEntry = {
 			source: fence('loi', 'X = 1 ; 2 ; 3', 'P = 1/2 ; 1/3 ; 1/3'),
 			message: 'Ligne 2 : La somme des probabilités fait 7/6, pas 1.',
 			explanation: 'La somme des probabilités doit être exactement 1 (ici 7/6).'
+		},
+		{
+			title: 'Barres à construire sans axe',
+			source: fence('barres', 'Football = 12', 'Danse = 7', 'placer: Danse'),
+			message:
+				'Ligne 3 : placer : écrire aussi l’axe vertical (axe: 0 à 20, de 2 en 2) : calculé, il trahirait la plus grande barre',
+			explanation:
+				'Un axe calculé sur les données s’arrêterait juste au-dessus de la plus grande barre : il donnerait la réponse.'
 		}
 	],
 	tryIt: fence(
