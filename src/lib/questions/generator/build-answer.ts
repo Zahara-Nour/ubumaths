@@ -20,6 +20,7 @@ import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
+import { RANGER_MIN_LABELS_IN_QUESTION } from '$lib/ubumark/utils/ranger';
 import { timeText } from '$lib/ubumark/utils/horloge-placer';
 import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-placer';
 import { numVal } from '$lib/ubumark/utils/number-line-render';
@@ -75,6 +76,14 @@ export function buildAnswerOf(
 		const node = parseRangerContent(source);
 		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
 		if (node.errors.length > 0) return { errors: node.errors };
+		// À 2, le seul désordre est l'inverse : l'élève devinerait sans calculer
+		if (node.labels.length < RANGER_MIN_LABELS_IN_QUESTION) {
+			return {
+				errors: [
+					`au moins ${RANGER_MIN_LABELS_IN_QUESTION} étiquettes à ranger dans une question (à 2, l’affichage serait toujours l’inverse : la réponse se devine)`
+				]
+			};
+		}
 		return { answer: String(point) };
 	}
 	if (kind === 'horloge') {

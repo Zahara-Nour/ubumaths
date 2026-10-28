@@ -157,11 +157,14 @@ describe('étiquettes à ranger : les cases et leurs réponses', () => {
 		);
 		expect(result.success).toBe(false);
 		if (result.success) return;
-		expect(result.errors.join(' ')).toMatch(/Case 1 \(étiquettes à ranger\).*identiques/);
+		expect(result.errors.join(' ')).toMatch(/Étiquettes à ranger : deux étiquettes identiques/);
 	});
 
 	it('case: écrite à la main : refusée', () => {
-		const result = generateInstance(template({ statement: ranger('case: 0', '- 1', '- 2') }), 42);
+		const result = generateInstance(
+			template({ statement: ranger('case: 0', '- 1', '- 2', '- 3') }),
+			42
+		);
 		expect(result.success).toBe(false);
 		if (result.success) return;
 		expect(result.errors.join(' ')).toMatch(/case: est posée automatiquement/);
@@ -170,8 +173,8 @@ describe('étiquettes à ranger : les cases et leurs réponses', () => {
 	it('une réponse écrite pour le bloc : refusée', () => {
 		const result = generateInstance(
 			template({
-				statement: ranger('- 1', '- 2'),
-				blanks: [{ expectedAnswer: '0' }, { expectedAnswer: '1' }]
+				statement: ranger('- 1', '- 2', '- 3'),
+				blanks: [{ expectedAnswer: '0' }, { expectedAnswer: '1' }, { expectedAnswer: '2' }]
 			}),
 			42
 		);
@@ -225,5 +228,26 @@ describe('étiquettes à ranger : les cases et leurs réponses', () => {
 		const published = parseMarkdown(sent.statement).children.find((c) => c.type === 'ranger');
 		expect(published && published.type === 'ranger' && published.labels).toEqual(shown);
 		expect(String(generate(t).statement)).toBe(String(instance.statement));
+	});
+
+	it('2 étiquettes dans une question : refusé (l’affichage serait toujours l’inverse)', () => {
+		const result = generateInstance(template({ statement: ranger('- 1', '- 2') }), 42);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/au moins 3 étiquettes/);
+	});
+
+	it('étiquettes identiques au tirage : nouveau tirage, comme une condition', () => {
+		const t = template({
+			statement: ranger('- {{a}}', '- {{b}}', '- 100'),
+			variables: [
+				{ name: 'a', expression: '{{random:1..3}}' },
+				{ name: 'b', expression: '{{random:1..3}}' }
+			]
+		});
+		for (let seed = 0; seed < 40; seed++) {
+			const labels = shownBlock(generate(t, seed)).labels;
+			expect(new Set(labels).size).toBe(3);
+		}
 	});
 });

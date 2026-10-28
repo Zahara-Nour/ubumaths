@@ -522,3 +522,6 @@ PDF), `generation-ranger.test.ts`, `RangerPlacer.svelte.test.ts`, `rich-text/ran
   mélange hors question propre à chaque bloc, un test de la version publique. **Q23 (à David)** : à 2
   étiquettes, l'affichage est toujours l'inverse de la réponse (devinable) ; deux étiquettes identiques
   au tirage font disparaître la question d'une évaluation.
+- **Décisions Q23 (David, 2026-10-28 : les deux recos)** : au moins 3 étiquettes dans une question
+  (`RANGER_MIN_LABELS_IN_QUESTION`, 2 permises hors question) ; étiquettes identiques au tirage →
+  nouveau tirage, comme une condition (`rangerLabelsCollide`). Tests rouges d'abord.

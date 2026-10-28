@@ -314,7 +314,10 @@ l'envers est le seul désordre) ; le bloc de l'énoncé de l'instance est rééc
 publique n'a donc rien à cacher ni à reconvertir. Réponse attendue d'une place = la position
 **affichée** de l'étiquette écrite à ce rang (`'2'`) ; l'élève répond la position de l'étiquette posée ;
 juge à part : égalité stricte (l'étiquette, jamais sa valeur : `1 + 3/4` n'est pas `7/4`). Refus :
-moins de 2 ou plus de 8 étiquettes, deux identiques après tirage, vide, `signe:` autre que `<` / `>`.
+moins de 3 (`RANGER_MIN_LABELS_IN_QUESTION` : à 2, l'affichage serait toujours l'inverse, la réponse se
+devinerait) ou plus de 8 étiquettes, vide, `signe:` autre que `<` / `>`. Deux étiquettes identiques après
+tirage : condition implicite, le tirage des variables est refait (`rangerLabelsCollide`, résolution à part
+sur une source jetable) ; toujours identiques après 100 essais → échec, message au prof.
 Un bloc ``choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
    compte pour **une** case, `case: N` posé en tête du bloc (`choix-parser.ts`, lu dans
    `assignBlankIndices`) : réglages en tête (`plusieurs: oui`, `melanger: non` ; défauts : une

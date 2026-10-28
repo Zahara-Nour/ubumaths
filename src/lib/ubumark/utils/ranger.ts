@@ -15,6 +15,8 @@ import type { RangerSpec } from '../types/ranger';
 // Constantes
 export const RANGER_MIN_LABELS = 2;
 export const RANGER_MAX_LABELS = 8;
+/** Dans une question : à 2, l'affichage (l'inverse) donnerait la réponse */
+export const RANGER_MIN_LABELS_IN_QUESTION = 3;
 
 // Functions
 const isIdentity = (order: readonly number[]) => order.every((value, k) => value === k);

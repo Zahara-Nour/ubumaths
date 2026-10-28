@@ -52,6 +52,7 @@ import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { hasBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import {
+	findRangersToPlace,
 	hasRangerToPlace,
 	parseRangerContent,
 	replaceRangerBlocks,
@@ -96,6 +97,38 @@ import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/r
 // ============================================================================
 // SHARED DEFAULTS MERGING
 // ============================================================================
+
+/**
+ * Deux étiquettes d'un même bloc ```ranger ont-elles le même texte avec ce tirage ?
+ * Les étiquettes sont résolues à part, sur une source de hasard jetable : le tirage
+ * de l'instance n'est pas touché (le générateur refuse encore le doublon s'il en reste).
+ */
+function rangerLabelsCollide(
+	statement: TemplateMarkdown | undefined,
+	variables: ResolvedVariable[],
+	genericFunctions: Parameters<typeof resolveMarkdownContent>[3],
+	cleanCoefficients: boolean,
+	capitalPairs: Parameters<typeof resolveMarkdownContent>[5]
+): boolean {
+	const text = String(statement ?? '');
+	if (!text.includes('```ranger')) return false;
+	return findRangersToPlace(text).some((block) => {
+		const { labels } = parseRangerContent(block.body.join('\n'));
+		const resolved = labels.map((label) =>
+			String(
+				resolveMarkdownContent(
+					templateMarkdown(label),
+					variables,
+					createRandomSource(0),
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				)
+			).trim()
+		);
+		return new Set(resolved).size < resolved.length;
+	});
+}
 
 /** Ce qui donne la réponse d'un bloc qui porte sa case, pour les messages au prof */
 function blockAnswerName(kind: BuildKind): string {
@@ -407,6 +440,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let resolvedVariables: ResolvedVariable[] | undefined;
 		let lastVariableError: string | undefined;
 		let conditionFailures = 0;
+		let rangerCollisions = 0;
 		for (let attempt = 0; attempt <= MAX_CONDITION_RETRIES; attempt++) {
 			// Nouvel essai : la source continue, les tirages sont donc neufs
 			let candidate: ResolvedVariable[];
@@ -421,10 +455,31 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				continue;
 			}
 			conditionFailures++;
-			if (evaluateConditions(conditions, candidate)) {
-				resolvedVariables = candidate;
-				break;
+			// Étiquettes à ranger : deux étiquettes au même texte après tirage, condition implicite
+			if (!evaluateConditions(conditions, candidate)) continue;
+			if (
+				rangerLabelsCollide(
+					resolvedVariation.statement,
+					candidate,
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				)
+			) {
+				rangerCollisions++;
+				continue;
 			}
+			resolvedVariables = candidate;
+			break;
+		}
+
+		if (resolvedVariables === undefined && rangerCollisions > 0) {
+			return {
+				success: false,
+				errors: [
+					`Étiquettes à ranger : deux étiquettes identiques à chacun des ${rangerCollisions} tirages (laquelle irait où ?) ; écrire une condition qui les rend différentes`
+				]
+			};
 		}
 
 		if (resolvedVariables === undefined) {

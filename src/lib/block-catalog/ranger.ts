@@ -22,10 +22,11 @@ export const rangerEntry: BlockCatalogEntry = {
 			settings: [
 				{
 					key: '- …',
-					values: '2 à 8 lignes, une étiquette par ligne (texte, formule $…$, variable)',
+					values:
+						'2 à 8 lignes, une étiquette par ligne (texte, formule $…$, variable) ; au moins 3 dans une question',
 					defaultValue: null,
 					description:
-						'Dans le bon ordre. Deux étiquettes au même texte sont refusées (laquelle irait où ?).'
+						'Dans le bon ordre. Deux étiquettes au même texte sont refusées (laquelle irait où ?) ; avec des variables, un tirage qui les rend identiques est refait. À 2 étiquettes, l’élève verrait toujours l’inverse de la réponse : refusé dans une question.'
 				},
 				{
 					key: 'signe',
