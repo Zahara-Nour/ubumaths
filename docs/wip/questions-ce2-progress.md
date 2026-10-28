@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1932 (mergée, migration PAS encore jouée)._
+_Mis à jour le 2026-10-28, après #1937 et `db:migrate`._
 
-- **État** : lot 1 en prod en BROUILLON, rangé et tagué, 2 OK sur 5 (60, × 4, × 8 sans verdict). Lot 2 : 9 brouillons en prod, sans nœud ni tag ; migration mergée (#1932) mais `db push` refusée (deux migrations d'autres sessions jouées entre-temps) → renommée `20261029003200` sur `fix/questions-ce2-lot2-horodatage` (commit local, PAS encore poussée).
-- **Prochaine action** : `pnpm test:integration tests/integration/questions-ce2-lot2-rangement-tags.test.ts` (9 verts attendus ; verrou tenu par `figure-et-choix` au moment du `/clear`) → push, PR, CI, merge → `pnpm exec supabase db push --dry-run` (seule la mienne) → `db:migrate` depuis le dépôt principal → vérifier en prod (MCP) → page à cocher du lot 2 (`page-a-cocher.ts --dir scripts/questions/ce2-2`). Lot 1 : 5/5 OK (https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4) → `publier-lot --dir scripts/questions/ce2-1` (simulation), puis David `--publier`.
-- **En attente de David** : relecture des 3 fiches du lot 1 (60, × 4, × 8) ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
-- **Pièges en cours** : test serveur `corrections.test.ts` « cas rare » dépasse 5 s en CI (vert au 3e essai sur #1932) ; horodatage = max de la PROD + 1 min, et la prod avance vite (re-vérifier juste avant `db:migrate`) ; commitlint refuse un sujet en majuscule ; page à cocher APRÈS `db:migrate`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `fix/questions-ce2-lot2-horodatage`.
+- **État** : lot 1 en prod en BROUILLON, rangé et tagué, 2 OK sur 5 (60, × 4, × 8 sans verdict). Lot 2 en prod en BROUILLON, rangé et tagué (migration `20261029003200` jouée, vérifiée au MCP : 9 nœuds, 1 point chacun, `updated_at` intact) ; page à cocher publiée, 0 verdict.
+- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`) — lot 1 : https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4 ; lot 2 : https://claude.ai/artifact/KLQGsdQYbft3hoQt5yHnCL. Lot tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce2-<n>` (simulation), puis David `--publier`. « À revoir » → corriger (couvrir-un-niveau § 7), remettre le verdict à zéro. Puis lot 3.
+- **En attente de David** : relecture du lot 1 (60, × 4, × 8) et du lot 2 (9 fiches) ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
+- **Pièges en cours** : horodatage = max de la PROD + 1 min, re-vérifier juste avant `db:migrate` (la prod avance vite : #1932 → renommage #1937) ; CI : `corrections.test.ts` « cas rare » > 5 s et client `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule ; page à cocher APRÈS `db:migrate`.
+- **Worktree / branche** : aucun (retirés après #1937).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -222,3 +222,6 @@ CM2) : règle de l'école en numération, `4500` sans espace = « forme à amél
 - Migration `20261029003200_questions_ce2_lot2_rangement_tags.sql` (gabarit `20261028233000_questions_5_lot1_08`,
   tout ou rien sur 9) ; test `tests/integration/questions-ce2-lot2-rangement-tags.test.ts` : 9 verts ; corps de la
   migration retiré → 5 rouges (nœud, tag, tout ou rien, déjà rangé, point archivé).
+- 2026-10-28 : #1932 mergée, `db push` refusé (`20261028234500` et `20261029003100` d'autres sessions jouées entre-temps) ;
+  renommage #1937 mergé ; `db:migrate` (seule la mienne au `--dry-run`) ; vérifié au MCP. Page à cocher :
+  https://claude.ai/artifact/KLQGsdQYbft3hoQt5yHnCL (9 fiches, aucune alerte). Worktree retiré.
