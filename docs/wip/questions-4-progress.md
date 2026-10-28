@@ -238,3 +238,5 @@ lisibles par tout connecté, comme aujourd'hui. Aucune règle ne change.
 - `security-auditor` (#1923) : aucun bloquant. Corrigés : numéro du lot 0 de la 3e (`20261028213100`, pas
   `200100`), test explicite « 17f3dfcd encore en [4] → refus ». Rappel opérationnel : `db:migrate` après celui
   de #1921, sinon `db push` échoue sans rien écrire mais bloque les migrations suivantes.
+- CI de #1923 : tout vert sauf la garde « doc à jour » (`docs/systeme/base-de-donnees.md` couvre les
+  migrations) ; la ligne `Doc-inchangée:` doit être dans un MESSAGE DE COMMIT, pas dans la description de la PR.
