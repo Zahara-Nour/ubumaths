@@ -1,0 +1,285 @@
+{
+	"title": "Intercaler un nombre (jusqu'à $10\\,000$)",
+	"description": "2 393 < … < 2 396 ; suite à trous avec passage de la dizaine, de la centaine, du millier",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 12,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète avec un nombre.\n\n$${{a}}<?<{{b}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1000..9990"
+				},
+				{
+					"name": "k",
+					"expression": "2..10"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{a}}",
+							"max": "{{b}}",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre cherché est plus grand que ${{a}}$ et plus petit que ${{b}}$.",
+					"{{if:k==2|Il n'y en a qu'un : ${{eval:a+1}}$.|Ce sont les nombres de ${{eval:a+1}}$ à ${{eval:b-1}}$ : n'importe lequel convient.}}"
+				]
+			}
+		},
+		{
+			"statement": "Complète la suite des nombres.\n\n$${{s}} \\quad ; \\quad {{eval:s+1}} \\quad ; \\quad ? \\quad ; \\quad ? \\quad ; \\quad {{eval:s+4}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "d",
+					"expression": "0..9"
+				},
+				{
+					"name": "u",
+					"expression": "7..8"
+				},
+				{
+					"name": "s",
+					"expression": "eval:1000*a+100*b+10*d+u"
+				}
+			],
+			"conditions": ["1000*a + 100*b + 10*d + u <= 9996"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s+2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:s+3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans la suite des nombres, on avance de $1$ à chaque fois.",
+					"{{if:d==9|{{if:b==9|On passe au millier suivant.|On passe à la centaine suivante.}}|On passe à la dizaine suivante.}}",
+					"$${{s}} \\quad ; \\quad {{eval:s+1}} \\quad ; \\quad {{eval:s+2}} \\quad ; \\quad {{eval:s+3}} \\quad ; \\quad {{eval:s+4}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète la suite des nombres.\n\n$${{s}} \\quad ; \\quad {{eval:s+1}} \\quad ; \\quad ? \\quad ; \\quad ? \\quad ; \\quad {{eval:s+4}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "u",
+					"expression": "7..8"
+				},
+				{
+					"name": "s",
+					"expression": "eval:1000*a+990+u"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s+2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:s+3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans la suite des nombres, on avance de $1$ à chaque fois.",
+					"Après ${{eval:1000*a+999}}$, on passe au millier suivant : ${{eval:1000*a+1000}}$.",
+					"$${{s}} \\quad ; \\quad {{eval:s+1}} \\quad ; \\quad {{eval:s+2}} \\quad ; \\quad {{eval:s+3}} \\quad ; \\quad {{eval:s+4}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 393 < 2 394 < 2 396",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2393",
+				"k": "3",
+				"b": "2396"
+			},
+			"answers": ["2\\,394"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 393 < 2 395 < 2 396",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2393",
+				"k": "3",
+				"b": "2396"
+			},
+			"answers": ["2\\,395"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : borne 2 396",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2393",
+				"k": "3",
+				"b": "2396"
+			},
+			"answers": ["2\\,396"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : borne 2 393",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2393",
+				"k": "3",
+				"b": "2396"
+			},
+			"answers": ["2\\,393"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dizaine : 2 387 ; 2 388 ; 2 389 ; 2 390 ; 2 391",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"d": "8",
+				"u": "7",
+				"s": "2387"
+			},
+			"answers": ["2\\,389", "2\\,390"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 389 ; 23 810",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"d": "8",
+				"u": "7",
+				"s": "2387"
+			},
+			"answers": ["2\\,389", "23\\,810"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "centaine : 4 598 ; 4 599 ; 4 600 ; 4 601 ; 4 602",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"d": "9",
+				"u": "8",
+				"s": "4598"
+			},
+			"answers": ["4\\,600", "4\\,601"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 45 100",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"d": "9",
+				"u": "8",
+				"s": "4598"
+			},
+			"answers": ["45\\,100", "45\\,101"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "millier : 2 997 ; 2 998 ; 2 999 ; 3 000 ; 3 001",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"u": "7",
+				"s": "2997"
+			},
+			"answers": ["2\\,999", "3\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 999 ; 2 1000",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"u": "7",
+				"s": "2997"
+			},
+			"answers": ["2\\,999", "21\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 999 ; 2 900",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"u": "7",
+				"s": "2997"
+			},
+			"answers": ["2\\,999", "2\\,900"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

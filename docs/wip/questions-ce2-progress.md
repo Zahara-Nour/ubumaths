@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1903._
+_Mis à jour le 2026-10-28, lot 2 écrit (PR des fichiers ouverte)._
 
-- **État** : lot 1 en prod en BROUILLON, rangé et tagué. Les 3 « À revoir » sont corrigés (#1903) et passés en prod par `--mettre-a-jour` (vérifié : brouillons, contenu = fichiers). Les 3 verdicts sont remis à zéro et la page est republiée ; il reste 2 OK sur 5.
-- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`, https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4) ; 5/5 OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce2-1` (simulation), puis David `--publier`. Puis lot 2 (numération) : phase 0.
-- **En attente de David** : relecture des 3 fiches corrigées (60, × 4, × 8).
-- **Pièges en cours** : `question:specs --template` dit « NON importable » à tort (clés de la ligne en base) : vérifier avec `--file` ; client tests `wrapDynamicImport` intermittent → relancer le job ; horodatage de migration = max de la PROD + 1 min ; commitlint refuse un sujet en majuscule.
-- **Worktree / branche** : aucun (retirés après #1903).
+- **État** : lot 1 en prod en BROUILLON, rangé et tagué, 2 OK sur 5 (3 fiches corrigées à relire). Lot 2 (numération, 9 modèles) écrit sur `content/questions-ce2-lot2` : specs vertes, essai en base locale, PR des fichiers.
+- **Prochaine action** : CI verte → merge ; David lance `create-questions --dir scripts/questions/ce2-2 --publier` ; relever les `id` ; migration nœud + tag du lot 2. En parallèle, lot 1 : compter les verdicts (https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4) ; 5/5 OK → `publier-lot --dir scripts/questions/ce2-1` (simulation), puis David `--publier`.
+- **En attente de David** : relecture des 3 fiches corrigées du lot 1 (60, × 4, × 8) ; `--publier` du lot 2 après le merge.
+- **Pièges en cours** : `question:specs --template` dit « NON importable » à tort : vérifier avec `--file` ; client tests `wrapDynamicImport` intermittent → relancer le job ; horodatage de migration = max de la PROD + 1 min ; commitlint refuse un sujet en majuscule ; worktree neuf → `pnpm exec svelte-kit sync` avant `create-questions` ($lib introuvable).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `content/questions-ce2-lot2`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -175,3 +175,38 @@ gagne d'accès, aucune règle ne change ; « Les multiples de 25 » est aussi pr
 Page à cocher : 2 OK, 3 « À revoir ». × 4 et × 8 : « bien séparer les 2 étapes » → un double par
 ligne, puis « Donc … ». Décompositions de 60 : « quel est l'intérêt de 1 × 60 ? » → 1 et 60
 retirés des tirages (validé par David). Corrigés dans #1903.
+
+## 6. Lot 2 — numération (phase 0 validée le 2026-10-28)
+
+Relevé MCP du 2026-10-28 : 003, 004, 005, 008, 009, 087, 088 sans modèle ; nœuds « Nombres et calculs >
+Entiers : numération > » décomposition (003), écritures (004, 005), ordre (008, 009, 087, 088). Forme du lot 2
+du CE1, nombres ≤ 10 000. Recommandations suivies (« tes recos ? » puis « je valide ») :
+
+1. Nombres en lettres : **orthographe rectifiée** (traits d'union partout), comme au CP ; seulement lettres →
+   chiffres (case) ; chiffres → lettres attend la case « choix » (lot à QCM).
+2. **Lots de 100 dans un modèle à part** (arrondi au lot supérieur), sur CE2-003 ; le lot passe à 9 modèles.
+3. **Question d'accès** : personne ne lit rien de plus (brouillons neufs ; la migration nœud + tag ne change
+   aucune règle).
+4. Partie « matériel » de 005 : avec l'outil `collection` (centaines, milliers), décidé au § 4 bis.
+
+| Fichier                                | Point   | Sous-notion   | Catégorie · niveau | Variations                                                                                 |
+| -------------------------------------- | ------- | ------------- | ------------------ | ------------------------------------------------------------------------------------------ |
+| `01-milliers-centaines-dizaines`       | CE2-003 | décomposition | Décomposition · 18 | m milliers → c ; c → milliers ; milliers → d ; centaines en tout dans 4 357                |
+| `02-lots-de-100`                       | CE2-003 | décomposition | Décomposition · 20 | 1 235 filtres par lots de 100 (13) ; crayons par boîtes de 10                              |
+| `03-unites-non-canoniques`             | CE2-005 | écritures     | Décomposition · 19 | 3 d, 46 c et 5 u ; 17 u, 8 d, 32 c et 2 milliers ; (4 × 1 000) + … ; 4 635 = ? + ? + ? + ? |
+| `04-suite-jusqu-a-10000`               | CE2-004 | écritures     | Ecriture · 17      | suit (sans passage, …9, …99 / …999 et 9 999) ; précède (…0, …00, …000, 10 000)             |
+| `05-lire-un-nombre-en-lettres`         | CE2-004 | écritures     | Ecriture · 18      | 22 nombres qui piègent (zéros intérieurs, 70-99, mille, cents)                             |
+| `06-ranger-cinq-nombres`               | CE2-008 | ordre         | Comparer · 10      | comme 5 229, 6 234, 6 239, 6 243, 6 300 : croissant ; décroissant                          |
+| `07-superieur-inferieur-compris`       | CE2-009 | ordre         | Comparer · 11      | supérieur ; inférieur ; compris entre a et a + 10 ; supérieur et inférieur                 |
+| `08-encadrer-dizaine-centaine-millier` | CE2-087 | ordre         | Encadrer · 11      | juste avant / après ; dizaines ; centaines ; milliers entiers                              |
+| `09-intercaler-jusqu-a-10000`          | CE2-088 | ordre         | Encadrer · 12      | a < ? < b ; bande à trous (dizaine, centaine) ; passage du millier                         |
+
+Case seule, aucun QCM. **Espaces dès 4 chiffres** (`options.constraints.spacesFromFourDigits`, comme le lot 1 du
+CM2) : règle de l'école en numération, `4500` sans espace = « forme à améliorer » (½ point), affichage `4 500`.
+
+### Lot 2 — écriture (2026-10-28)
+
+- Script `docs/wip/questions/lot-ce2-2.py` → `scripts/questions/ce2-2/` (9 JSON).
+- `question:specs --file` : 90 specs vertes, 1 450 tirages réussis ; `create-questions` (prod, lecture) : 9/9 « à créer ».
+- Base locale : 9 brouillons ; aperçu admin : « Ranger » (4 justes + `4500` → ½ point, « Les chiffres sont mal
+  espacés »), « Lire en lettres » (mille-un, réponse fausse → faux, corrigé `1 001`).

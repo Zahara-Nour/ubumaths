@@ -1,0 +1,140 @@
+{
+	"title": "Écrire en chiffres un nombre écrit en lettres (jusqu'à $10\\,000$)",
+	"description": "deux-mille-trois-cent-sept → 2 307 ; zéros intérieurs, 70 à 99, « mille » invariable",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 18,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris ce nombre en chiffres.\n\n{{if:n==2307|deux-mille-trois-cent-sept|{{if:n==4050|quatre-mille-cinquante|{{if:n==1999|mille-neuf-cent-quatre-vingt-dix-neuf|{{if:n==7080|sept-mille-quatre-vingts|{{if:n==3071|trois-mille-soixante-et-onze|{{if:n==6094|six-mille-quatre-vingt-quatorze|{{if:n==9015|neuf-mille-quinze|{{if:n==1200|mille-deux-cents|{{if:n==5600|cinq-mille-six-cents|{{if:n==2081|deux-mille-quatre-vingt-un|{{if:n==8770|huit-mille-sept-cent-soixante-dix|{{if:n==4999|quatre-mille-neuf-cent-quatre-vingt-dix-neuf|{{if:n==1001|mille-un|{{if:n==3460|trois-mille-quatre-cent-soixante|{{if:n==7203|sept-mille-deux-cent-trois|{{if:n==9090|neuf-mille-quatre-vingt-dix|{{if:n==6312|six-mille-trois-cent-douze|{{if:n==2500|deux-mille-cinq-cents|{{if:n==8016|huit-mille-seize|{{if:n==5170|cinq-mille-cent-soixante-dix|{{if:n==3008|trois-mille-huit|mille-sept-cent-quatre-vingts}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n\nEn chiffres : $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2307|4050|1999|7080|3071|6094|9015|1200|5600|2081|8770|4999|1001|3460|7203|9090|6312|2500|8016|5170|3008|1780"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit le nombre morceau par morceau : d'abord les milliers, puis les centaines, puis le reste.",
+					"Un rang qui n'est pas dit s'écrit avec un $0$.",
+					"En chiffres : ${{n}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "deux-mille-trois-cent-sept = 2 307",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2307"
+			},
+			"answers": ["2\\,307"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 000 300 7 (morceaux accolés)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2307"
+			},
+			"answers": ["20\\,003\\,007"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : zéro oublié (237)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2307"
+			},
+			"answers": ["237"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "quatre-mille-cinquante = 4 050",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4050"
+			},
+			"answers": ["4\\,050"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 500",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4050"
+			},
+			"answers": ["4\\,500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "trois-mille-soixante-et-onze = 3 071",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3071"
+			},
+			"answers": ["3\\,071"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : soixante-et-onze écrit 6011 (36 011)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3071"
+			},
+			"answers": ["36\\,011"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "six-mille-quatre-vingt-quatorze = 6 094",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6094"
+			},
+			"answers": ["6\\,094"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : quatre-vingt-quatorze lu 814 (6 814)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6094"
+			},
+			"answers": ["6\\,814"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

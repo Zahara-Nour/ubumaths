@@ -1,0 +1,301 @@
+{
+	"title": "Unités non canoniques et décompositions (jusqu'à $10\\,000$)",
+	"description": "3 d, 46 c et 5 u ; 17 u, 8 d, 32 c et 2 milliers ; (4 × 1 000) + … ; 4 635 = 4 000 + 600 + 30 + 5",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 19,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "${{d}}$ {{if:d<=1|dizaine|dizaines}}, ${{c}}$ centaines et ${{u}}$ {{if:u<=1|unité|unités}}, c'est le nombre $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "11..59"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*c+10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On range dans l'ordre : ${{c}}$ centaines, c'est ${{eval:100*c}}$.",
+					"${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$.",
+					"${{u}}$ {{if:u<=1|unité|unités}}, c'est ${{u}}$.",
+					"$${{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "${{u}}$ unités, ${{d}}$ {{if:d<=1|dizaine|dizaines}}, ${{c}}$ centaines et ${{m}}$ {{if:m<=1|millier|milliers}}, c'est le nombre $?$.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "10..39"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "10..19"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*m+100*c+10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On range dans l'ordre : ${{m}}$ {{if:m<=1|millier|milliers}}, c'est ${{eval:1000*m}}$.",
+					"${{c}}$ centaines, c'est ${{eval:100*c}}$.",
+					"${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$.",
+					"${{u}}$ unités, c'est ${{u}}$.",
+					"$${{eval:1000*m}}+{{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$$({{m}}\\times 1\\,000)+({{c}}\\times 100)+({{d}}\\times 10)+{{u}}=?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*m+100*c+10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{m}}\\times 1\\,000={{eval:1000*m}}$ ; ${{c}}\\times 100={{eval:100*c}}$ ; ${{d}}\\times 10={{eval:10*d}}$.",
+					"$${{eval:1000*m}}+{{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Décompose le nombre.\n\n$${{n}}=?+?+?+?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:1000*m+100*c+10*d+u"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*m}}"
+				},
+				{
+					"expectedAnswer": "{{eval:100*c}}"
+				},
+				{
+					"expectedAnswer": "{{eval:10*d}}"
+				},
+				{
+					"expectedAnswer": "{{u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{m}}$ {{if:m<=1|millier|milliers}}, ${{c}}$ {{if:c<=1|centaine|centaines}}, ${{d}}$ {{if:d<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}.",
+					"$${{n}}={{eval:1000*m}}+{{eval:100*c}}+{{eval:10*d}}+{{u}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 d, 46 c et 5 u = 4 635",
+			"variationIndex": 0,
+			"variables": {
+				"c": "46",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["4\\,635"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres recopiés (3465)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "46",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["3\\,465"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 46 c lues 46 (465)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "46",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["465"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "17 u, 8 d, 32 c et 2 milliers = 5 297",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"c": "32",
+				"d": "8",
+				"u": "17"
+			},
+			"answers": ["5\\,297"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retenue des unités oubliée (5 287)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"c": "32",
+				"d": "8",
+				"u": "17"
+			},
+			"answers": ["5\\,287"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : centaines non converties (2 397)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"c": "32",
+				"d": "8",
+				"u": "17"
+			},
+			"answers": ["2\\,397"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(4 × 1 000) + (6 × 100) + (3 × 10) + 5 = 4 635",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["4\\,635"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme des chiffres (18)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 635 = 4 000 + 600 + 30 + 5",
+			"variationIndex": 3,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5",
+				"n": "4635"
+			},
+			"answers": ["4\\,000", "600", "30", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres seuls (4 + 6 + 3 + 5)",
+			"variationIndex": 3,
+			"variables": {
+				"m": "4",
+				"c": "6",
+				"d": "3",
+				"u": "5",
+				"n": "4635"
+			},
+			"answers": ["4", "6", "3", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

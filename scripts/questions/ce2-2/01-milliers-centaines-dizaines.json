@@ -1,0 +1,242 @@
+{
+	"title": "Milliers, centaines et dizaines",
+	"description": "1 millier = 10 centaines = 100 dizaines ; nombre de centaines dans 4 357",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 18,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "${{m}}$ milliers, c'est $?$ centaines.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1$ millier, c'est $10$ centaines.",
+					"${{m}}$ milliers, c'est ${{m}}$ fois $10$ centaines.",
+					"${{m}}$ milliers, c'est ${{solution}}$ centaines."
+				]
+			}
+		},
+		{
+			"statement": "${{eval:10*m}}$ centaines, c'est $?$ milliers.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$10$ centaines, c'est $1$ millier.",
+					"Dans ${{eval:10*m}}$ centaines, il y a ${{m}}$ paquets de $10$ centaines.",
+					"${{eval:10*m}}$ centaines, c'est ${{solution}}$ milliers."
+				]
+			}
+		},
+		{
+			"statement": "${{m}}$ milliers, c'est $?$ dizaines.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1$ millier, c'est $100$ dizaines.",
+					"${{m}}$ milliers, c'est ${{m}}$ fois $100$ dizaines.",
+					"${{m}}$ milliers, c'est ${{solution}}$ dizaines."
+				]
+			}
+		},
+		{
+			"statement": "Combien y a-t-il de centaines en tout dans ${{n}}$ ?\n\nIl y a $?$ centaines.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "d",
+					"expression": "0..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:1000*a+100*b+10*d+u"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{a}}$ {{if:a<=1|millier|milliers}}, ${{b}}$ {{if:b<=1|centaine|centaines}}, ${{d}}$ {{if:d<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}.",
+					"${{a}}$ {{if:a<=1|millier|milliers}}, c'est ${{eval:10*a}}$ centaines.",
+					"Avec les ${{b}}$ autres : ${{eval:10*a}}+{{b}}={{solution}}$ centaines."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 milliers = 40 centaines",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 milliers = 400 centaines",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4"
+			},
+			"answers": ["400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 milliers = 4 centaines",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "60 centaines = 6 milliers",
+			"variationIndex": 1,
+			"variables": {
+				"m": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 60 centaines = 600 milliers",
+			"variationIndex": 1,
+			"variables": {
+				"m": "6"
+			},
+			"answers": ["600"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 milliers = 300 dizaines",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 milliers = 30 dizaines",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 357 : 43 centaines",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"d": "5",
+				"u": "7",
+				"n": "4357"
+			},
+			"answers": ["43"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffre des centaines (3)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"d": "5",
+				"u": "7",
+				"n": "4357"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 9 052 : 90 centaines",
+			"variationIndex": 3,
+			"variables": {
+				"a": "9",
+				"b": "0",
+				"d": "5",
+				"u": "2",
+				"n": "9052"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
