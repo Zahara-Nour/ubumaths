@@ -197,22 +197,22 @@ describe('assignations', () => {
 });
 
 describe('submitAttemptSchema (C10)', () => {
-	it('accepte cases, choix et temps par question', () => {
+	it('accepte cases (case choix comprise) et temps par question', () => {
 		const result = submitAttemptSchema.safeParse({
 			answers: [
 				{ position: 0, values: ['7', ''], timeSpent: 12 },
-				{ position: 1, choices: [0, 2] }
+				{ position: 1, values: ['0;2'] }
 			]
 		});
 		expect(result.success).toBe(true);
 	});
 
-	it('QCM à plusieurs réponses (V5) : plusieurs choix cochés, dans le désordre', () => {
+	it('positions cochées d’un ancien QCM (`choices`) : jamais lues (QCM retiré, ADR 0033)', () => {
 		const result = submitAttemptSchema.safeParse({
 			answers: [{ position: 0, choices: [3, 0, 2] }]
 		});
 		expect(result.success).toBe(true);
-		if (result.success) expect(result.data.answers[0].choices).toEqual([3, 0, 2]);
+		if (result.success) expect(result.data.answers[0]).not.toHaveProperty('choices');
 	});
 
 	it('retire tout verdict envoyé par le navigateur', () => {
@@ -249,13 +249,6 @@ describe('submitAttemptSchema (C10)', () => {
 		['deux réponses à la même question', { answers: [{ position: 0 }, { position: 0 }] }],
 		['case trop longue', { answers: [{ position: 0, values: ['x'.repeat(2001)] }] }],
 		['trop de cases', { answers: [{ position: 0, values: Array(51).fill('1') }] }],
-		['indice de QCM hors bornes', { answers: [{ position: 0, choices: [50] }] }],
-		['indice de QCM non entier', { answers: [{ position: 0, choices: [0.5] }] }],
-		['même choix coché deux fois (V5)', { answers: [{ position: 0, choices: [1, 1] }] }],
-		[
-			'trop de choix cochés',
-			{ answers: [{ position: 0, choices: Array.from({ length: 51 }, (_, i) => i) }] }
-		],
 		['temps négatif', { answers: [{ position: 0, timeSpent: -1 }] }],
 		['temps fabriqué', { answers: [{ position: 0, timeSpent: 86_401 }] }],
 		['trop de réponses', { answers: Array.from({ length: 501 }, (_, i) => ({ position: i })) }]

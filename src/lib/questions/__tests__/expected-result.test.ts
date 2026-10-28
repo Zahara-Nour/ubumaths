@@ -4,7 +4,7 @@
  *
  * `buildExpectedResult` décrit, en DONNÉES (pas en HTML), ce que l'élève voit
  * au premier niveau de correction : comparaison `3 + 5 ≠ 9` / `= 8`, énoncé
- * rempli, « Ta réponse », QCM, remarques. Les statuts sont sémantiques : la
+ * rempli, « Ta réponse », remarques (case choix : expected-result-choice.test.ts). Les statuts sont sémantiques : la
  * couleur appartient à l'affichage (écran ou PDF).
  */
 
@@ -253,69 +253,6 @@ describe('R4 — relation autre que `=`', () => {
 	});
 });
 
-describe('R5 — QCM', () => {
-	const choices = [
-		{ content: 'a' as ResolvedMarkdown, isCorrect: true },
-		{ content: 'b' as ResolvedMarkdown, isCorrect: false },
-		{ content: 'c' as ResolvedMarkdown, isCorrect: true }
-	];
-	const multi = {
-		templateId: 'qcm',
-		statement: 'Coche' as ResolvedMarkdown,
-		grades: ['6'],
-		theme: 'x',
-		domain: 'y',
-		level: 1,
-		generatedAt: '',
-		choices,
-		correctChoiceIndex: ['0', '2'],
-		multipleAnswers: true,
-		// Ordre affiché : c, a, b
-		shuffledChoices: [
-			{ content: 'c' as ResolvedMarkdown, originalIndex: 2 },
-			{ content: 'a' as ResolvedMarkdown, originalIndex: 0 },
-			{ content: 'b' as ResolvedMarkdown, originalIndex: 1 }
-		]
-	} as QuestionInstance;
-
-	it('bon coché vert, faux coché rouge, bon oublié ambre (multi), dans l’ordre affiché', () => {
-		const r = buildExpectedResult(multi, { choiceIndexes: [0, 1] });
-		expect(r.lines).toEqual([
-			{
-				kind: 'choices',
-				multiple: true,
-				choices: [
-					{ originalIndex: 2, content: 'c', checked: false, isCorrect: true, status: 'unoptimal' },
-					{ originalIndex: 0, content: 'a', checked: true, isCorrect: true, status: 'correct' },
-					{ originalIndex: 1, content: 'b', checked: true, isCorrect: false, status: 'incorrect' }
-				]
-			}
-		]);
-	});
-
-	it('simple : bon choix non coché encadré (solution)', () => {
-		const single = {
-			...multi,
-			multipleAnswers: false,
-			correctChoiceIndex: '0',
-			choices: [choices[0], choices[1]],
-			shuffledChoices: undefined
-		} as QuestionInstance;
-		const r = buildExpectedResult(single, { choiceIndexes: [1] });
-		expect(line(r, 'choices').choices.map((c) => c.status)).toEqual(['solution', 'incorrect']);
-	});
-
-	it('rien coché : bons choix encadrés + « Tu n’as rien répondu. »', () => {
-		const r = buildExpectedResult(multi, { choiceIndexes: [] });
-		expect(kinds(r)).toEqual(['choices', 'empty']);
-		expect(line(r, 'choices').choices.map((c) => c.status)).toEqual([
-			'solution',
-			'solution',
-			'neutral'
-		]);
-	});
-});
-
 describe('R6 — réponse de l’élève en LaTeX, intacte', () => {
 	it('unité `km.h^{-1}` : LaTeX MathLive conservé tel quel', () => {
 		const inst = generate(REAL_TEMPLATES.unit, 2);
@@ -441,14 +378,6 @@ describe('R9 — sans réponse d’élève', () => {
 		const r = buildExpectedResult(inst);
 		const filled = line(r, 'filled-statement');
 		expect(witness(filled.markdown, filled.fills)).toBe('$[5|solution] + 5 = 10$');
-	});
-
-	it('QCM : bons choix « solution », les autres neutres', () => {
-		const inst = generate(REAL_TEMPLATES.choiceCase, 1);
-		const r = buildExpectedResult(inst);
-		const statuses = line(r, 'choices').choices.map((c) => c.status);
-		expect(statuses.filter((s) => s === 'solution')).toHaveLength(1);
-		expect(statuses.filter((s) => s === 'neutral')).toHaveLength(1);
 	});
 });
 
@@ -603,32 +532,5 @@ describe('Revue PR #643 — mineurs', () => {
 		const r9 = buildExpectedResult(inst);
 		// R9 d'un calcul R1 : la solution, avec le même membre gauche affiché
 		expect(line(r9, 'solution').lhs).toBe('1{}000 + 1');
-	});
-
-	it('QCM à règles : l’issue des choix suit les règles (statut et choix cohérents)', () => {
-		const inst = {
-			templateId: 'qcm-regles',
-			statement: 'Choisis un nombre pair' as ResolvedMarkdown,
-			grades: ['6'],
-			theme: 'x',
-			domain: 'y',
-			level: 1,
-			generatedAt: '',
-			// Les données des choix disent l'inverse des règles : les règles décident
-			choices: [
-				{ content: '3' as ResolvedMarkdown, isCorrect: true },
-				{ content: '4' as ResolvedMarkdown, isCorrect: false }
-			],
-			correctChoiceIndex: '0',
-			validationRules: [{ type: 'custom', expression: 'answer == 1' }]
-		} as QuestionInstance;
-		const r = buildExpectedResult(inst, { choiceIndexes: [1] });
-		expect(r.status).toBe('correct');
-		const choices = line(r, 'choices').choices;
-		expect(choices.find((c) => c.originalIndex === 1)).toMatchObject({
-			checked: true,
-			isCorrect: true,
-			status: 'correct'
-		});
 	});
 });

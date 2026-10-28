@@ -155,7 +155,6 @@ describe('toTemplateInsertRow', () => {
 				'level',
 				'status',
 				'delay',
-				'multiple_answers',
 				'test_specs',
 				'created_by'
 			].sort()

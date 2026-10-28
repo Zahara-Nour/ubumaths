@@ -67,7 +67,7 @@ describe('validateTemplate - Valid Templates', () => {
 		expect(errors).toEqual([]);
 	});
 
-	it('should validate fill_in_blanks template (inferred from no choices)', () => {
+	it('should validate fill_in_blanks template', () => {
 		const template: QuestionTemplate = {
 			id: 'test-fill',
 			title: 'Test fill_in_blanks',
@@ -83,38 +83,6 @@ describe('validateTemplate - Valid Templates', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		};
-
-		const errors = validateTemplate(template);
-		expect(errors).toEqual([]);
-	});
-
-	it('should validate multiple_choice template (inferred from choices)', () => {
-		const template: QuestionTemplate = {
-			id: 'test-mc',
-			title: 'Test multiple_choice',
-			status: 'published',
-			variations: [
-				{
-					statement: templateMarkdown('Question'),
-					variables: [],
-					correctChoiceIndex: '0',
-					choices: [
-						{ content: templateMarkdown('A'), isCorrect: true },
-						{ content: templateMarkdown('B'), isCorrect: false },
-						{ content: templateMarkdown('C'), isCorrect: false },
-						{ content: templateMarkdown('D'), isCorrect: false }
-					]
-				}
-			],
-			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1,
-			multipleAnswers: false,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
@@ -163,8 +131,8 @@ describe('validateTemplate - Valid Templates', () => {
 });
 
 describe('validateTemplate - Required Fields', () => {
-	it('should infer type from choices (type no longer a field)', () => {
-		// Template without choices → fill_in_blanks (valid)
+	it('should infer type from structure (type no longer a field)', () => {
+		// Template sans marqueur de carte de cours → fill_in_blanks (valid)
 		const template = {
 			id: 'test',
 			title: 'Test Template',
@@ -255,37 +223,7 @@ describe('validateTemplate - Required Fields', () => {
 		expect(errors.some((e) => e.includes('statement'))).toBe(true);
 	});
 
-	it('should fail on missing solution for multiple_choice variation', () => {
-		const template = {
-			id: 'test',
-			title: 'Test Template',
-			status: 'published' as const,
-			variations: [
-				{
-					statement: templateMarkdown('Question'),
-					variables: [],
-					choices: [
-						{ text: 'A', isCorrect: true },
-						{ text: 'B', isCorrect: false }
-					]
-					// solution missing — required for multiple_choice
-				}
-			],
-			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		} as unknown as QuestionTemplate;
-
-		const errors = validateTemplate(template);
-
-		expect(errors.some((e) => e.includes('correctChoiceIndex'))).toBe(true);
-	});
-
-	it('should accept fill_in_blanks with blanks (no correctChoiceIndex needed)', () => {
+	it('should accept fill_in_blanks with blanks', () => {
 		const template = {
 			id: 'test',
 			title: 'Test Template',
@@ -662,63 +600,6 @@ describe('validateTemplate - Type-Specific Validation', () => {
 		const errors = validateTemplate(template);
 
 		expect(errors.some((e) => e.includes('blanks'))).toBe(true);
-	});
-
-	it('should fail multiple_choice with less than 2 choices in variation', () => {
-		const template = {
-			id: 'test',
-			title: 'Test Template',
-			status: 'published' as const,
-			variations: [
-				{
-					statement: templateMarkdown('Question'),
-					variables: [],
-					correctChoiceIndex: '0',
-					// Only 1 choice — multiple_choice requires at least 2
-					choices: [{ content: templateMarkdown('Only one'), isCorrect: true }]
-				}
-			],
-			multipleAnswers: false,
-			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		} as unknown as QuestionTemplate;
-
-		const errors = validateTemplate(template);
-
-		expect(errors.some((e) => e.includes('choices') || e.includes('2'))).toBe(true);
-	});
-
-	it('should fail multiple_choice with less than 2 choices', () => {
-		const template: QuestionTemplate = {
-			id: 'test',
-			title: 'Test Template',
-			status: 'published',
-			variations: [
-				{
-					statement: templateMarkdown('Question'),
-					variables: [],
-					correctChoiceIndex: '0',
-					choices: [{ content: templateMarkdown('Only one'), isCorrect: true }]
-				}
-			],
-			multipleAnswers: false,
-			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		};
-
-		const errors = validateTemplate(template);
-
-		expect(errors.some((e) => e.includes('at least 2') || e.includes('2 choices'))).toBe(true);
 	});
 });
 

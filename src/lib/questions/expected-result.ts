@@ -303,7 +303,7 @@ export function withoutBuildCases(statement: string): string {
 		.join('\n');
 }
 
-/** L'énoncé sans ses blocs ```choix (la ligne `choices` de chaque case les montre) */
+/** L'énoncé sans ses blocs ```choix (leurs choix sont montrés à part) */
 export function withoutChoiceCases(statement: string): string {
 	return replaceChoiceBlocks(statement, () => '');
 }

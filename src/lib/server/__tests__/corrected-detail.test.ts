@@ -92,25 +92,6 @@ describe('verdict détaillé recalculé = statut global enregistré (non-régres
 		expect(statusFromBlankStatuses(detail.blanks.map((b) => b.status))).toBe(graded.status);
 	});
 
-	it('QCM (indices d’ORIGINE enregistrés) : issue de chaque choix', () => {
-		// Coché c0 seulement : c2 oublié → ½
-		const graded = gradeQuestion(qcm, { choices: [1] });
-		expect(graded.status).toBe('unoptimal_form');
-		const detail = available(
-			detailOfCorrected({
-				instance: qcm,
-				answer: { choiceIndexes: graded.choiceIndexes },
-				status: graded.status
-			})
-		);
-		expect(detail.status).toBe('unoptimal_form');
-		expect(detail.choices?.map((c) => c.outcome)).toEqual([
-			'checked-correct',
-			'unchecked',
-			'missed'
-		]);
-	});
-
 	it('sans réponse : chaque case vide, statut enregistré', () => {
 		const detail = available(detailOfCorrected({ instance: two, answer: null, status: 'empty' }));
 		expect(detail.status).toBe('empty');

@@ -89,11 +89,6 @@ describe('type course_card', () => {
 		expect(getQuestionType({ options: null })).toBe('fill_in_blanks');
 	});
 
-	it('laisse inchangée l’inférence QCM', () => {
-		expect(getQuestionType({ choices: [{}, {}] })).toBe('multiple_choice');
-		expect(getQuestionType({ shared: { choices: [{}] } })).toBe('multiple_choice');
-	});
-
 	it('isCourseCard ne répond vrai qu’au booléen true', () => {
 		expect(isCourseCard({ options: { courseCard: true } })).toBe(true);
 		expect(isCourseCard({ options: { courseCard: 'true' } })).toBe(false);

@@ -155,73 +155,44 @@ describe('runTestSpec with constraint violations', () => {
 	});
 });
 
-describe('runTestSpec with QCM', () => {
-	it('should validate correct choice selection', () => {
-		const template: QuestionTemplate = {
-			id: 'test-qcm',
-			title: 'QCM Test',
-			status: 'draft',
-			variations: [
-				{
-					statement: templateMarkdown('$2 + 3 = $ ?'),
-					correctChoiceIndex: '1',
-					choices: [
-						{ content: templateMarkdown('4'), isCorrect: false },
-						{ content: templateMarkdown('5'), isCorrect: true },
-						{ content: templateMarkdown('6'), isCorrect: false }
-					]
-				}
-			],
-			options: { shuffleChoices: false },
-			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1
-		};
+describe('runTestSpec with a case choix', () => {
+	const template: QuestionTemplate = {
+		id: 'test-choix',
+		title: 'Case choix',
+		status: 'draft',
+		variations: [
+			{
+				statement: templateMarkdown('$2 + 3 = $ ?\n\n```choix\nmelanger: non\n- 4\n- 5\n- 6\n```'),
+				blanks: [{ expectedAnswer: '1' }]
+			}
+		],
+		grades: ['6'],
+		theme: 'Test',
+		domain: 'Test',
+		level: 1
+	};
 
+	it('bon choix (indice d’origine dans answers) → correct', () => {
 		const spec: TestSpec = {
 			description: 'correct choice',
 			variables: {},
-			selectedChoices: [1],
+			answers: ['1'],
 			expected: { status: 'correct' }
 		};
-
 		const result = runTestSpec(template, spec);
 		expect(result.error).toBeUndefined();
 		expect(result.actual.status).toBe('correct');
 		expect(result.passed).toBe(true);
 	});
 
-	it('should return error when selectedChoices missing for QCM', () => {
-		const template: QuestionTemplate = {
-			id: 'test-qcm-err',
-			title: 'QCM Error',
-			status: 'draft',
-			variations: [
-				{
-					statement: templateMarkdown('$2 + 3 = ?$'),
-					choices: [
-						{ content: templateMarkdown('5'), isCorrect: true },
-						{ content: templateMarkdown('6'), isCorrect: false }
-					]
-				}
-			],
-			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1
-		};
-
+	it('mauvais choix → incorrect', () => {
 		const spec: TestSpec = {
-			description: 'missing choices',
+			description: 'wrong choice',
 			variables: {},
-			answers: ['5'], // Wrong field for QCM
-			expected: { status: 'correct' }
+			answers: ['0'],
+			expected: { status: 'incorrect' }
 		};
-
-		const result = runTestSpec(template, spec);
-		expect(result.passed).toBe(false);
-		expect(result.error).toBeDefined();
+		expect(runTestSpec(template, spec).passed).toBe(true);
 	});
 });
 

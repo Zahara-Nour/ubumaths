@@ -330,18 +330,16 @@ describe('generateInstance avec cleanCoefficients', () => {
 		}
 	});
 
-	it('correction, feedback et choix de QCM nettoyés', () => {
+	it('correction, feedback et choix d’une case choix nettoyés', () => {
 		const t: QuestionTemplate = {
 			...template('$y={{a}}x+{{c}}$', '1', LINE_VARIABLES, { cleanCoefficients: true }),
 			variations: [
 				{
-					statement: templateMarkdown('$y={{a}}x+{{c}}$ ?'),
+					statement: templateMarkdown(
+						'$y={{a}}x+{{c}}$ ?\n\n```choix\nmelanger: non\n- ${{a}}x+{{c}}$\n- $2x$\n```'
+					),
 					variables: LINE_VARIABLES,
-					correctChoiceIndex: '0',
-					choices: [
-						{ content: templateMarkdown('${{a}}x+{{c}}$'), isCorrect: true },
-						{ content: templateMarkdown('$2x$'), isCorrect: false }
-					],
+					blanks: [{ expectedAnswer: '0' }],
 					correction: {
 						steps: [templateMarkdown('On a $y={{b}}x+{{c}}$.')],
 						feedback: { incorrect: templateMarkdown('Revoir $y={{a}}x$.') }
@@ -351,7 +349,7 @@ describe('generateInstance avec cleanCoefficients', () => {
 		};
 		const instance = generate(t);
 		expect(String(instance.statement)).toContain('$y = x$');
-		expect(instance.choices?.map((c) => String(c.content))).toContain('$x$');
+		expect(instance.blanks?.[0].choice?.choices).toContain('$x$');
 		expect(String(instance.correction?.steps?.[0])).toContain('$y = -x$');
 		expect(String(instance.correction?.feedback?.incorrect)).toContain('$y = x$');
 	});

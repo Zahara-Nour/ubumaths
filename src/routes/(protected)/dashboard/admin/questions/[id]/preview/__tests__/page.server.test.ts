@@ -153,19 +153,19 @@ describe('aperçu d’un modèle — fiche du modèle', () => {
 		expect(sheet.points).toEqual({ state: 'unranked' });
 	});
 
-	it('brouillon, QCM (choix dans la variation), question de cours', async () => {
+	it('brouillon, case choix, question de cours', async () => {
 		const sheet = sheetOf(
 			await loadWith({
 				template: {
 					...TEMPLATE,
 					status: 'draft',
-					variations: [{ choices: [{ text: 'a' }, { text: 'b' }] }],
+					variations: [{ statement: '```choix\n- a\n- b\n```', blanks: [{ expectedAnswer: '0' }] }],
 					options: { courseQuestion: true }
 				}
 			})
 		);
 		expect(sheet.statusLabel).toBe('Brouillon');
-		expect(sheet.typeLabel).toBe('QCM');
+		expect(sheet.typeLabel).toBe('À trous');
 		expect(sheet.courseQuestion).toBe(true);
 		expect(sheet.settings).toEqual([]);
 	});
