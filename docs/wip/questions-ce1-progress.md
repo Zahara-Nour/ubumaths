@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1895._
+_Mis à jour le 2026-10-28, après publication du lot 2._
 
-- **État** : lot 2 (numération, 7 modèles) en prod en brouillon, rangé, tagué, relu 7/7. Niveau de c4d4bf70 corrigé (Ecriture 3 → 10, #1895, `db:migrate` fait, vérifié en prod, `updated_at` préservé). `publier-lot --dir scripts/questions/ce1-2` en simulation : **7 brouillons passent le contrôle**.
-- **Prochaine action** : David publie : `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce1-2 --publier` ; puis vérifier les 7 statuts en prod (MCP) et clore le lot 2 ; ensuite lot 3 du CE1.
-- **En attente de David** : la publication du lot 2 (écriture en prod, lancée par David).
+- **État** : lot 2 (numération, 7 modèles) CLOS : **publié** par David le 2026-10-28 (`publier-lot --publier`, 7/7), statuts et niveaux vérifiés en prod (MCP). Lots 0, 1, 2 clos.
+- **Prochaine action** : lot 2 bis, ordinaux (CE1-011 à 015, § 7 point 1) : relevé de l'existant, phase 0 avec David — dont la forme des deux QCM du CP (rang en lettres, suites de formes). Puis lot 3 fractions (§ 4 bis, point 6).
+- **En attente de David** : rien avant la phase 0 du lot 2 bis.
 - **Pièges en cours** : relever les niveaux pris par TOUS les publiés de la catégorie (l'Ecriture 3 a été manqué) ; `subdomain` « Ecriture » sans accent ; worktree neuf → `pnpm exec svelte-kit sync`.
 - **Worktree / branche** : aucun (worktree retiré, branche supprimée après #1895).
 
