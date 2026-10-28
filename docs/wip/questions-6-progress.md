@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, découpage du lot 5 tranché (§ 11.8)._
+_Mis à jour le 2026-10-28, phase 0 du lot 5 écrite (§ 12)._
 
 - **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Relecture du lot 4 comptée (10/10). Lot 5 décidé : scinder 02, 03, 04, 08 → 7 modèles neufs, 4 publiés retouchés (§ 11.8).
-- **Prochaine action** : écrire la PHASE 0 du lot 5 et attendre la validation de David : comportements (nominal / limite / erreur) de chaque modèle neuf, titres, ce que garde chaque modèle publié (titre de 04 à resserrer), specs réparties, niveaux numérotés APRÈS relevé MCP des niveaux publiés de chaque catégorie, 0 donnée d'élève à vérifier sur les 4 publiés. Puis § 5 (brouillons) et § 7 (migration de contenu qui retire les variantes déplacées).
-- **En attente de David** : rien (sa validation de la phase 0, une fois écrite). Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **Prochaine action** : phase 0 du lot 5 écrite (§ 12) ; à sa validation, écrire les 7 neufs et les 4 retouches (script de lot), puis § 5-7.
+- **En attente de David** : validation du § 12 (3 questions : niveaux à la suite, correction de B, modèles à une variation) et question d'accès. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
 - **Pièges en cours** : 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`) : ne pas les refaire. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
 - **Worktree / branche** : aucun.
 
@@ -693,3 +693,77 @@ David a lancé `create-questions --publier` : 10 créés. Vérifiés par MCP : `
   garde v1-v3 | neuf « entier moins fraction » (v4). Catégories : 02 Fractions/Calculer/Fraction d'une quantité
   (niv 4) ; 03 …/Calculer/Multiplication (niv 7) ; 04 …/Apprivoiser/Comparer (niv 5) ; 08 …/Calculer/Addition et
   Soustraction (niv 11). Specs par variante : 02 [2, 3, 4] ; 03 [3, 2, 2, 3] ; 04 [1, 2, 2, 2, 2, 2] ; 08 [2, 4, 2, 2].
+
+## 12. Lot 5 « Scissions des fractions » : phase 0 (proposée le 2026-10-28, à valider)
+
+Découpage du § 11.8. Relevé MCP (2026-10-28) : les 4 modèles à scinder sont `published`, `[6]`,
+`updated_at` 08:51:10, **0 donnée d'élève** (tentatives, cartes, journal, évaluations, tests, chapitres,
+statistiques, favoris). md5 des `variations` : c9c3a8a3 `a1300d4e…`, 378aa770 `8a29d86a…`, afebbb91 `ce71ab16…`,
+ddf5d292 `1d2874a5…` (instantané `etat-prod-<date>/` à faire au § 7, md5 à recomparer).
+
+Règles communes : chaque neuf **reprend telle quelle** sa variation (énoncé, tirages, correction), en `[6]`, même
+catégorie, même point et même nœud que son modèle d'origine ; ses specs sont celles de la variation, renumérotées.
+Chaque modèle publié perd la variation déplacée, le reste de son contenu ne change pas. Niveaux : **à la suite**
+des niveaux publiés de la catégorie (relevé ci-dessous), aucun niveau publié ne bouge.
+
+| Modèle                                                                                             | Garde / reçoit | Point | Catégorie (niveau)                                   | Specs |
+| -------------------------------------------------------------------------------------------------- | -------------- | ----- | ---------------------------------------------------- | ----- |
+| 02 « Appliquer une fraction à un entier » (publié)                                                 | v2, v3         | 131   | Fractions / Calculer / Fraction d'une quantité (4)   | 7     |
+| A « Traduire « de » par une multiplication » (neuf)                                                | v1 de 02       | 131   | idem (**5**)                                         | 2     |
+| 03 « Multiplier une fraction par un entier » (publié)                                              | v1, v2         | 136   | Fractions / Calculer / Multiplication (7)            | 5     |
+| B « Multiplier une fraction par un entier en simplifiant d'abord » (neuf)                          | v4 de 03       | 136   | idem (**8**)                                         | 3     |
+| C « Échanger les facteurs d'un produit » (neuf)                                                    | v3 de 03       | 136   | idem (**9**)                                         | 2     |
+| 04 « Comparer deux fractions de même dénominateur ou de même numérateur » (publié, titre resserré) | v1, v2         | 133   | Fractions / Apprivoiser / Comparer (5)               | 3 + 1 |
+| D « Comparer deux fractions à 1 ou à 1/2 » (neuf)                                                  | v3, v4 de 04   | 133   | idem (**6**)                                         | 4     |
+| E « Comparer deux fractions de dénominateurs multiples » (neuf)                                    | v5 de 04       | 133   | idem (**7**)                                         | 2     |
+| F « Comparer deux fractions avec un dénominateur commun » (neuf)                                   | v6 de 04       | 133   | idem (**8**)                                         | 2     |
+| 08 « Soustraire des fractions » (publié)                                                           | v1, v2, v3     | 205   | Fractions / Calculer / Addition et Soustraction (11) | 8     |
+| G « Soustraire une fraction d'un entier » (neuf)                                                   | v4 de 08       | 205   | idem (**13**)                                        | 2     |
+
+Niveaux publiés relevés : Fraction d'une quantité 1-4 ; Multiplication 1-7 ; Comparer 1-5 ; Addition et
+Soustraction 1-12. Total 6e après le lot : 126 + 7 = 133 publiés (+ 3a7a5711 en brouillon).
+
+Comportements (nominal / limite / erreur) :
+
+- **A** — case choix (4 écritures, mélangées) : « $\frac{2}{5}$ de $60$ » → $\frac{2}{5} \times 60$ ; limite : q de 2 à
+  9, n ≤ 100, p ≥ 2 et p ≠ q ; erreur : $60 \div \frac{2}{5}$ refusé.
+- **02** — v2 « $\frac{2}{5}$ de $60$ » → $24$ ; v3 « $\frac{5}{4}$ de $3$ » → $\frac{15}{4}$, $3{,}75$ en forme refusée
+  (la consigne demande une fraction) ; erreurs : 150 (rôles inversés), 12 (un cinquième seulement), $\frac{5}{12}$,
+  $\frac{15}{12}$. Description : sans « Traduire « de » ».
+- **03** — v1 $\frac{3}{7} \times 4$ → $\frac{12}{7}$, v2 $5 \times \frac{2}{9}$ → $\frac{10}{9}$ ; erreurs $\frac{12}{28}$,
+  $\frac{3}{28}$, $\frac{10}{45}$. Description : sans commutativité ni produit entier.
+- **B** — $\frac{5}{6} \times 12$ → $10$ (n = k × b, k de 2 à 5) ; limite : $\frac{60}{6}$ juste, en ambre ; erreur :
+  $\frac{60}{72}$. Voir question 2 (ordre de la correction).
+- **C** — « $\frac{3}{4} \times 7 = 7 \times ?$ » → $\frac{3}{4}$ ; erreur : 3.
+- **04** — v1 même dénominateur ($\frac{3}{7}$ et $\frac{5}{7}$), v2 même numérateur ($\frac{5}{7} > \frac{5}{9}$) ;
+  erreur « 9 > 7 donc $\frac{5}{9} > \frac{5}{7}$ » ; **spec ajoutée** : erreur de signe en v1 (v1 n'avait qu'un juste).
+- **D** — v3 de part et d'autre de 1 ($\frac{7}{8} < \frac{10}{9}$), v4 de part et d'autre de $\frac{1}{2}$
+  ($\frac{6}{11} > \frac{5}{12}$) ; erreurs : signe inversé, « 12 > 11 ».
+- **E** — $\frac{2}{3}$ et $\frac{4}{6}$ (= possible), un dénominateur multiple de l'autre (×2 ou ×3) ; erreur : $<$ au lieu de $=$.
+- **F** — couples de dénominateurs (4, 6), (6, 8), (6, 9), (4, 10) ; $\frac{3}{4} < \frac{5}{6}$ ; erreur : signe inversé.
+- **08** — v1 même dénominateur, v2 multiples, v3 quelconques (≤ 6) ; ambre si non simplifié ; erreurs du lot 4
+  inchangées. Description : sans « entier moins fraction ».
+- **G** — $1 - \frac{3}{8}$ → $\frac{5}{8}$, n de 1 à 3, d de 2 à 9 ; erreur : $\frac{2}{8}$.
+
+Déroulé : script de lot (`lot-6-fractions.py`) qui écrit les 7 neufs (11 à 17) et les 4 retouchés dans
+`scripts/questions/6-fractions/` ; `checkTemplate` + `question:specs` ; base locale, aperçu admin ; PR contenu.
+Puis David : `create-questions --publier` (7 brouillons) ; migration rangement + tags des 7 (§ 6) ; migration de
+contenu des 4 publiés (§ 7 : relevé, md5, titre de 04, descriptions, variations retirées, specs) ; page à cocher ;
+publication des 7 par `publier-lot`.
+
+Question d'accès (à trancher avant le SQL) : **personne ne gagne de lecture**. Les 7 neufs sont des brouillons
+(admin et auteur seuls) jusqu'à leur publication ; les 4 publiés restent publiés, seul leur contenu rétrécit. En
+miroir, personne ne perd l'accès à un modèle : les variations retirées restent lisibles dans les neufs, une fois
+publiés (entre la migration de contenu et la publication des 7, un élève de 6e ne les voit nulle part : faire
+la migration de contenu **après** la publication des 7).
+
+Questions à David :
+
+1. **Niveaux à la suite** : A (« de » = ×) arrive au niveau 5, après le calcul (4), alors qu'il le précède ; de même
+   C (commutativité, 9) après B (8). Reco : **à la suite**, sans toucher les niveaux publiés (renuméroter un publié
+   = une ligne de plus dans la migration et un piège d'index unique, pour un ordre que l'élève ne voit pas).
+2. **B « en simplifiant d'abord »** : la correction actuelle (v4 de 03) calcule $\frac{60}{6} = 10$, puis dit « on
+   pouvait aussi simplifier d'abord ». Dans un modèle qui porte ce nom, **inverser** : simplifier d'abord
+   ($12 \div 6 = 2$, $5 \times 2 = 10$), l'autre chemin en second ? Reco : **oui** ; énoncé inchangé (« Calcule. »).
+3. **Modèles à une seule variation** (A, B, C, E, F, G) : les garder ainsi (découpage validé), ou leur ajouter une
+   variation ? Reco : **les garder ainsi** ; les tirages varient déjà les nombres.
