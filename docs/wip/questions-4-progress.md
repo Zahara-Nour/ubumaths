@@ -9,9 +9,9 @@ _Mis à jour le 2026-10-28, après #1923 (en prod, vérifiée)._
 
 - **État** : lot 0 en prod (#1923, joué par David avec `db push --include-all`), vérifié au MCP. 4e : 71 modèles
   publiés, 7 sans point (voulu, § 6.2) ; 18 points couverts, 64 sans modèle.
-- **Prochaine action** : phase 0 du lot 1, relatifs et rationnels (082, 004, 006, 009, 010, 013, 014 ; 005 déjà
-  couvert) : relever d'abord les niveaux publiés des catégories visées.
-- **En attente de David** : rien.
+- **Prochaine action** : lot 1 (relatifs et rationnels), phase 0 proposée au § 9 : 7 modèles (082, 004, 006, 009,
+  010, 013, 014) ; après validation, worktree `ubumaths-wt-questions-4`, script de lot, JSON.
+- **En attente de David** : les 3 questions du § 9.4.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005, « le plus possible ») partiront en 3e avec un lot de la 3e ;
   `db:migrate` peut exiger `--include-all` (migrations d'autres sessions non jouées) : réservé à David ; la ligne
   `Doc-inchangée:` va dans un message de commit ; QCM = case choix ; relire § 9 de `couvrir-un-niveau.md`.
@@ -247,3 +247,47 @@ lisibles par tout connecté, comme aujourd'hui. Aucune règle ne change.
   5e 214500, 4e 223000, dans l'ordre.
 - MCP : les 7 modèles aux niveaux, nœuds et tags attendus, `updated_at` inchangé ; 17f3dfcd en [2] + 2-260.
 - Worktree retiré, branche supprimée.
+
+## 9. Lot 1 (relatifs et rationnels) : phase 0 (proposée le 2026-10-28)
+
+### 9.1 Relevé (MCP, 2026-10-28)
+
+- **4-005 couvert** (acbd2280, d14fe0cf, 4f4a5c94, 90dca27a) : hors lot.
+- Voisins à ne pas doubler : b896b6ce (5e, 5-018, « (−a) + a » sur entiers) ; 4115768c (4e, 4-011 : inverse de
+  a, de 1/a, de a/b) ; 2f1657b0 (5e, brouillon, 5-006 : « somme ou produit ? ») ; 78feafed (4e, 4-073 : phrase →
+  expression, le sens inverse de 4-004) ; 5cd25c2b (6e, 6-137 : problèmes de fractions).
+- Catégories et niveaux pris (publiés ; brouillons entre crochets) : Relatifs / Additionner et soustraire /
+  Sommes 1-7 · Entiers / Priorités opératoires / Vocabulaire [1, 2] (5e) · Fractions / Apprivoiser / Définition
+  1-2 · Fractions / Calculer / Fraction d'une quantité 1-4 · Fractions / Calculer / Inverse 1-2 · Fractions /
+  Problèmes / Parts et restes 1 · « Fractions / Calculer / Enchaînements » n'existe pas.
+- Une fraction juste non simplifiée est acceptée en ambre (`reducedFractions: warn`) : conforme à 4-005.
+
+### 9.2 Modèles proposés (7, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                  | Variations                                                                                                                                                                                    | Réponse           |
+| ----- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| 082   | Somme de deux opposés (Relatifs / Additionner et soustraire / Sommes, 8)    | 1) −a + a, a décimal à 1 ou 2 chiffres après la virgule (0,1 à 99,9) ; 2) −a + ? = 0 ; 3) −a + b + a, b entier (repérer les opposés)                                                          | case              |
+| 004   | Nommer un enchaînement (Entiers / Priorités opératoires / Vocabulaire, 3)   | expression → phrase, case choix à 4 phrases : 1) (a + b) × c ; 2) a + b × c ; 3) (a − b) ÷ c ; 4) a × (b − c). Entiers 2 à 9                                                                  | case choix        |
+| 006   | Nombre rationnel (Fractions / Apprivoiser / Définition, 3)                  | 1-3) « −12/4 est : un entier / un décimal non entier / ni l'un ni l'autre » (une variation par cas, signes variés) ; 4) « −0,3 = ?/10 » (écrire un décimal relatif comme quotient d'entiers)  | case choix · case |
+| 009   | Fraction d'une fraction (Fractions / Calculer / Fraction d'une quantité, 5) | 1) les a/b de c/d (dénominateurs ≤ 10) ; 2) idem, simplification possible (3/4 de 8/9) ; 3) problème : les 2/3 des 3/5 des élèves                                                             | case              |
+| 010   | Inverse : définition (Fractions / Calculer / Inverse, 3)                    | 1) a × ? = 1 (a de 2 à 12) ; 2) inverse d'un décimal (0,5 ; 0,25 ; 0,2 ; 0,1 ; 2,5 ; 1,25) ; 3) « l'inverse de a est : −a / 1/a / 0,a / a » (piège inverse / opposé)                          | case · case choix |
+| 013   | Enchaînements avec des fractions (Fractions / Calculer / Enchaînements, 1)  | 1) a/d + b/d × c ; 2) a/b − c/b × d/e (exemple du BO : 7/4 − 3/4 × 9/8) ; 3) (a/b + c/b) × d/e ; 4) idem avec une fraction négative. Dénominateurs ≤ 10                                       | case              |
+| 014   | Problèmes avec des fractions (Fractions / Problèmes / Parts et restes, 2)   | 1) 1/3 puis 1/4 du reste : quelle fraction dépensée ? 2) bouteille de 3/4 L, verres de 1/8 L : combien de verres ? (division) ; 3) les 2/5 d'une ficelle mesurent 12 m : longueur ? (inverse) | case              |
+
+- `testSpecs` d'erreurs typiques : 082 → 2a ou −2a ; 004 → la phrase de la première opération ; 009 → a/b + c/d
+  ou a/d × c/b ; 010 → l'opposé ; 013 → calcul de gauche à droite ; 014 → 1/3 + 1/4 sans « du reste ».
+- 013 et 014 : rationnels relatifs seulement en 013-4 (borne 4e : « rationnels relatifs ») ; 014 en positifs
+  (contexte concret).
+
+### 9.3 Question d'accès
+
+Modèles neufs en brouillon, puis migration nœud + tag : **personne** ne lit rien qu'il ne lisait pas avant
+(brouillons invisibles aux élèves ; tags lisibles par tout connecté, comme les autres). À la publication, les
+élèves de 4e voient 7 modèles de plus, comme tout modèle publié.
+
+### 9.4 Questions à David
+
+1. Valider les 7 modèles (§ 9.2) : points, variations, niveaux ?
+2. 4-004 en **Entiers / Priorités opératoires / Vocabulaire, niveau 3**, à la suite des brouillons 5e (« Nommer un
+   calcul ») plutôt qu'en Entiers / Vocabulaire / Traduire (où est 4-073) ?
+3. 4-013 : ouvrir la catégorie **Fractions / Calculer / Enchaînements** (aucun modèle n'y est) ?
