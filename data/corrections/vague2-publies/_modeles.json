@@ -400,7 +400,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 10,
 		"multiple_answers": null,
@@ -421,11 +421,11 @@
 					"c": "9",
 					"d": "6"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "79 < 96 : bon choix 0",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -437,11 +437,11 @@
 					"c": "9",
 					"d": "6"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "79 < 96 : mauvais choix",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -453,11 +453,11 @@
 					"c": "9",
 					"d": "9"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "borne : 0 < 99",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -469,11 +469,11 @@
 					"c": "1",
 					"d": "5"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "15 < 91 : bon choix 1",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			}
 		]
 	},
@@ -534,7 +534,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 10,
 		"multiple_answers": null,
@@ -557,11 +557,11 @@
 					"f": "2",
 					"g": "8"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "628 < 799 : bon choix 1",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -575,11 +575,11 @@
 					"f": "2",
 					"g": "8"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "628 < 799 : mauvais choix",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -593,11 +593,11 @@
 					"f": "3",
 					"g": "4"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "205 < 434",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			}
 		]
 	},
@@ -666,7 +666,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 10,
 		"multiple_answers": null,
@@ -691,11 +691,11 @@
 					"h1": "3",
 					"j1": "1"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "6281 < 7993 : bon choix 1",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -711,11 +711,11 @@
 					"h1": "3",
 					"j1": "1"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "mauvais choix",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -731,11 +731,11 @@
 					"h1": "6",
 					"j1": "2"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "2056 < 4342",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			}
 		]
 	},
@@ -792,7 +792,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -814,11 +814,11 @@
 					"d": "4498",
 					"f": "7123"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "184498 < 187123",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -831,11 +831,11 @@
 					"d": "4498",
 					"f": "7123"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "mauvais choix",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -848,11 +848,11 @@
 					"d": "2748",
 					"f": "5372"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "a=0 : 2748 < 5372",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			}
 		]
 	},

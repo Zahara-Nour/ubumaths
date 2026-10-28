@@ -3316,7 +3316,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -3332,231 +3332,231 @@
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v0",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v12",
-				"variationIndex": 12,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 12
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v16",
-				"variationIndex": 16,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 16
 			},
 			{
 				"expected": {
 					"status": "incorrect"
 				},
 				"variables": {},
+				"answers": [
+					"1"
+				],
 				"description": "tableau inversé",
-				"variationIndex": 12,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 12
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v1",
-				"variationIndex": 1,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 1
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v2",
-				"variationIndex": 2,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 2
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v3",
-				"variationIndex": 3,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 3
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v4",
-				"variationIndex": 4,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 4
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v5",
-				"variationIndex": 5,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 5
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v6",
-				"variationIndex": 6,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 6
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v7",
-				"variationIndex": 7,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 7
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v8",
-				"variationIndex": 8,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 8
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v9",
-				"variationIndex": 9,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 9
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v10",
-				"variationIndex": 10,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 10
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v11",
-				"variationIndex": 11,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 11
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v13",
-				"variationIndex": 13,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 13
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v14",
-				"variationIndex": 14,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 14
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v15",
-				"variationIndex": 15,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 15
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v17",
-				"variationIndex": 17,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 17
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v18",
-				"variationIndex": 18,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 18
 			},
 			{
 				"expected": {
 					"status": "correct"
 				},
 				"variables": {},
+				"answers": [
+					"0"
+				],
 				"description": "v19",
-				"variationIndex": 19,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 19
 			}
 		]
 	},
@@ -3604,7 +3604,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 10,
 		"multiple_answers": null,
@@ -3623,11 +3623,11 @@
 					"a": "-5",
 					"b": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "a = coef directeur",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -3637,11 +3637,11 @@
 					"a": "-5",
 					"b": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "b = ordonnée à l'origine",
-				"variationIndex": 1,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 1
 			},
 			{
 				"expected": {
@@ -3651,11 +3651,11 @@
 					"a": "-5",
 					"b": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v2 a",
-				"variationIndex": 2,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 2
 			},
 			{
 				"expected": {
@@ -3665,11 +3665,11 @@
 					"a": "-5",
 					"b": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v3 b",
-				"variationIndex": 3,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 3
 			},
 			{
 				"expected": {
@@ -3679,11 +3679,11 @@
 					"a": "-5",
 					"b": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "confusion",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			}
 		],
 		"shared": {
@@ -4047,7 +4047,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 30,
 		"multiple_answers": null,
@@ -4065,11 +4065,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v0 \\dfrac{+\\infty}{+\\infty} → forme indéterminée",
-				"variationIndex": 0,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -4078,11 +4078,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v1 \\dfrac{+\\infty}{-\\infty} → forme indéterminée",
-				"variationIndex": 1,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 1
 			},
 			{
 				"expected": {
@@ -4091,11 +4091,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v2 \\dfrac{-\\infty}{-\\infty} → forme indéterminée",
-				"variationIndex": 2,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 2
 			},
 			{
 				"expected": {
@@ -4104,11 +4104,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v3 \\dfrac{-\\infty}{+\\infty} → forme indéterminée",
-				"variationIndex": 3,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 3
 			},
 			{
 				"expected": {
@@ -4117,11 +4117,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"2"
+				],
 				"description": "v4 \\dfrac{0}{+\\infty} → 0",
-				"variationIndex": 4,
-				"selectedChoices": [
-					2
-				]
+				"variationIndex": 4
 			},
 			{
 				"expected": {
@@ -4130,11 +4130,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"2"
+				],
 				"description": "v5 \\dfrac{0}{-\\infty} → 0",
-				"variationIndex": 5,
-				"selectedChoices": [
-					2
-				]
+				"variationIndex": 5
 			},
 			{
 				"expected": {
@@ -4143,11 +4143,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v6 \\dfrac{+\\infty}{0^+} → +∞",
-				"variationIndex": 6,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 6
 			},
 			{
 				"expected": {
@@ -4156,11 +4156,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v7 \\dfrac{-\\infty}{0^+} → −∞",
-				"variationIndex": 7,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 7
 			},
 			{
 				"expected": {
@@ -4169,11 +4169,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v8 \\dfrac{+\\infty}{0^-} → −∞",
-				"variationIndex": 8,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 8
 			},
 			{
 				"expected": {
@@ -4182,11 +4182,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v9 \\dfrac{-\\infty}{0^-} → +∞",
-				"variationIndex": 9,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 9
 			},
 			{
 				"expected": {
@@ -4195,11 +4195,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"2"
+				],
 				"description": "v10 \\dfrac{{{a}}}{+\\infty} → 0",
-				"variationIndex": 10,
-				"selectedChoices": [
-					2
-				]
+				"variationIndex": 10
 			},
 			{
 				"expected": {
@@ -4208,11 +4208,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"2"
+				],
 				"description": "v11 \\dfrac{-{{a}}}{+\\infty} → 0",
-				"variationIndex": 11,
-				"selectedChoices": [
-					2
-				]
+				"variationIndex": 11
 			},
 			{
 				"expected": {
@@ -4221,11 +4221,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"2"
+				],
 				"description": "v12 \\dfrac{{{a}}}{-\\infty} → 0",
-				"variationIndex": 12,
-				"selectedChoices": [
-					2
-				]
+				"variationIndex": 12
 			},
 			{
 				"expected": {
@@ -4234,11 +4234,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"2"
+				],
 				"description": "v13 \\dfrac{-{{a}}}{-\\infty} → 0",
-				"variationIndex": 13,
-				"selectedChoices": [
-					2
-				]
+				"variationIndex": 13
 			},
 			{
 				"expected": {
@@ -4247,11 +4247,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v14 \\dfrac{+\\infty}{{{a}}} → +∞",
-				"variationIndex": 14,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 14
 			},
 			{
 				"expected": {
@@ -4260,11 +4260,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v15 \\dfrac{+\\infty}{-{{a}}} → −∞",
-				"variationIndex": 15,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 15
 			},
 			{
 				"expected": {
@@ -4273,11 +4273,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v16 \\dfrac{-\\infty}{{{a}}} → −∞",
-				"variationIndex": 16,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 16
 			},
 			{
 				"expected": {
@@ -4286,11 +4286,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v17 \\dfrac{-\\infty}{-{{a}}} → +∞",
-				"variationIndex": 17,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 17
 			},
 			{
 				"expected": {
@@ -4299,11 +4299,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v18 (+\\infty)\\times 0 → forme indéterminée",
-				"variationIndex": 18,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 18
 			},
 			{
 				"expected": {
@@ -4312,11 +4312,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v19 (-\\infty)\\times 0 → forme indéterminée",
-				"variationIndex": 19,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 19
 			},
 			{
 				"expected": {
@@ -4325,11 +4325,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v20 (+\\infty)\\times(+\\infty) → +∞",
-				"variationIndex": 20,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 20
 			},
 			{
 				"expected": {
@@ -4338,11 +4338,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v21 (+\\infty)\\times(-\\infty) → −∞",
-				"variationIndex": 21,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 21
 			},
 			{
 				"expected": {
@@ -4351,11 +4351,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v22 (-\\infty)\\times(-\\infty) → +∞",
-				"variationIndex": 22,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 22
 			},
 			{
 				"expected": {
@@ -4364,11 +4364,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v23 (-\\infty)\\times(+\\infty) → −∞",
-				"variationIndex": 23,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 23
 			},
 			{
 				"expected": {
@@ -4377,11 +4377,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v24 {{a}}\\times(+\\infty) → +∞",
-				"variationIndex": 24,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 24
 			},
 			{
 				"expected": {
@@ -4390,11 +4390,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v25 -{{a}}\\times(+\\infty) → −∞",
-				"variationIndex": 25,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 25
 			},
 			{
 				"expected": {
@@ -4403,11 +4403,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v26 {{a}}\\times(-\\infty) → −∞",
-				"variationIndex": 26,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 26
 			},
 			{
 				"expected": {
@@ -4416,11 +4416,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v27 -{{a}}\\times(-\\infty) → +∞",
-				"variationIndex": 27,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 27
 			},
 			{
 				"expected": {
@@ -4429,11 +4429,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v28 (+\\infty)+(+\\infty) → +∞",
-				"variationIndex": 28,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 28
 			},
 			{
 				"expected": {
@@ -4442,11 +4442,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v29 (+\\infty)+(-\\infty) → forme indéterminée",
-				"variationIndex": 29,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 29
 			},
 			{
 				"expected": {
@@ -4455,11 +4455,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v30 (-\\infty)+(-\\infty) → −∞",
-				"variationIndex": 30,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 30
 			},
 			{
 				"expected": {
@@ -4468,11 +4468,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v31 (-\\infty)+(+\\infty) → forme indéterminée",
-				"variationIndex": 31,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 31
 			},
 			{
 				"expected": {
@@ -4481,11 +4481,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v32 (+\\infty)-(+\\infty) → forme indéterminée",
-				"variationIndex": 32,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 32
 			},
 			{
 				"expected": {
@@ -4494,11 +4494,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v33 (+\\infty)-(-\\infty) → +∞",
-				"variationIndex": 33,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 33
 			},
 			{
 				"expected": {
@@ -4507,11 +4507,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v34 (-\\infty)-(-\\infty) → forme indéterminée",
-				"variationIndex": 34,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 34
 			},
 			{
 				"expected": {
@@ -4520,11 +4520,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v35 (-\\infty)-(+\\infty) → −∞",
-				"variationIndex": 35,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 35
 			},
 			{
 				"expected": {
@@ -4533,11 +4533,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v36 +\\infty+{{a}} → +∞",
-				"variationIndex": 36,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 36
 			},
 			{
 				"expected": {
@@ -4546,11 +4546,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v37 -\\infty+{{a}} → −∞",
-				"variationIndex": 37,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 37
 			},
 			{
 				"expected": {
@@ -4559,11 +4559,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v38 \\dfrac{{{a}}}{0^+} → +∞",
-				"variationIndex": 38,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 38
 			},
 			{
 				"expected": {
@@ -4572,11 +4572,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v39 \\dfrac{-{{a}}}{0^+} → −∞",
-				"variationIndex": 39,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 39
 			},
 			{
 				"expected": {
@@ -4585,11 +4585,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v40 \\dfrac{{{a}}}{0^-} → −∞",
-				"variationIndex": 40,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 40
 			},
 			{
 				"expected": {
@@ -4598,11 +4598,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v41 \\dfrac{-{{a}}}{0^-} → +∞",
-				"variationIndex": 41,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 41
 			},
 			{
 				"expected": {
@@ -4611,11 +4611,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v0 erreur : ∞/∞ ≠ +∞ (FI)",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -4624,11 +4624,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v1 erreur : ∞/(-∞) : FI, pas -∞",
-				"variationIndex": 1,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 1
 			},
 			{
 				"expected": {
@@ -4637,11 +4637,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"2"
+				],
 				"description": "v18 erreur : ∞×0 : FI, pas 0",
-				"variationIndex": 18,
-				"selectedChoices": [
-					2
-				]
+				"variationIndex": 18
 			},
 			{
 				"expected": {
@@ -4650,11 +4650,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"2"
+				],
 				"description": "v29 erreur : ∞-∞ : FI, pas 0",
-				"variationIndex": 29,
-				"selectedChoices": [
-					2
-				]
+				"variationIndex": 29
 			},
 			{
 				"expected": {
@@ -4663,11 +4663,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"2"
+				],
 				"description": "v32 erreur : +∞-(+∞) : FI, pas 0",
-				"variationIndex": 32,
-				"selectedChoices": [
-					2
-				]
+				"variationIndex": 32
 			},
 			{
 				"expected": {
@@ -4676,11 +4676,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v33 erreur : +∞-(-∞) = +∞, pas FI",
-				"variationIndex": 33,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 33
 			},
 			{
 				"expected": {
@@ -4689,11 +4689,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v9 erreur : -∞/0- : règle des signes",
-				"variationIndex": 9,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 9
 			},
 			{
 				"expected": {
@@ -4702,11 +4702,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v41 erreur : -a/0- : règle des signes",
-				"variationIndex": 41,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 41
 			},
 			{
 				"expected": {
@@ -4715,11 +4715,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v4 erreur : 0/∞ = 0, pas FI",
-				"variationIndex": 4,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 4
 			},
 			{
 				"expected": {
@@ -4728,11 +4728,11 @@
 				"variables": {
 					"a": "3"
 				},
+				"answers": [
+					"3"
+				],
 				"description": "v38 erreur : a/0+ = +∞, pas FI",
-				"variationIndex": 38,
-				"selectedChoices": [
-					3
-				]
+				"variationIndex": 38
 			}
 		],
 		"shared": {

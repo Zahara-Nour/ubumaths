@@ -1596,7 +1596,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -1615,11 +1615,11 @@
 					"a": "79",
 					"b": "96"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v0",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -1629,11 +1629,11 @@
 					"a": "79",
 					"b": "96"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v1",
-				"variationIndex": 1,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 1
 			},
 			{
 				"expected": {
@@ -1643,11 +1643,11 @@
 					"a": "79",
 					"b": "96"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v2",
-				"variationIndex": 2,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 2
 			},
 			{
 				"expected": {
@@ -1657,11 +1657,11 @@
 					"a": "79",
 					"b": "96"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v3",
-				"variationIndex": 3,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 3
 			},
 			{
 				"expected": {
@@ -1671,11 +1671,11 @@
 					"a": "79",
 					"b": "96"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v4",
-				"variationIndex": 4,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 4
 			},
 			{
 				"expected": {
@@ -1685,11 +1685,11 @@
 					"a": "79",
 					"b": "96"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v5",
-				"variationIndex": 5,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 5
 			},
 			{
 				"expected": {
@@ -1699,11 +1699,11 @@
 					"a": "79",
 					"b": "96"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v6",
-				"variationIndex": 6,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 6
 			},
 			{
 				"expected": {
@@ -1713,11 +1713,11 @@
 					"a": "79",
 					"b": "96"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v7",
-				"variationIndex": 7,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 7
 			},
 			{
 				"expected": {
@@ -1727,11 +1727,11 @@
 					"a": "79",
 					"b": "96"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v0 erreur de signe",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -1741,11 +1741,11 @@
 					"a": "30",
 					"b": "99"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "v3 bornes",
-				"variationIndex": 3,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 3
 			},
 			{
 				"expected": {
@@ -1755,11 +1755,11 @@
 					"a": "99",
 					"b": "30"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "v6 bornes",
-				"variationIndex": 6,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 6
 			}
 		],
 		"shared": {
@@ -1815,7 +1815,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -1834,11 +1834,11 @@
 					"a": "49",
 					"b": "-65"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "49×(-65) négatif",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -1848,11 +1848,11 @@
 					"a": "49",
 					"b": "-65"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "49×(-65) : positif faux",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -1862,11 +1862,11 @@
 					"a": "-71",
 					"b": "-90"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "(-71)×(-90) positif",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -1876,11 +1876,11 @@
 					"a": "-71",
 					"b": "-90"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "(-71)×(-90) : négatif faux",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -1890,11 +1890,11 @@
 					"a": "-30",
 					"b": "99"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "bornes -30×99",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -1904,11 +1904,11 @@
 					"a": "-99",
 					"b": "-30"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "bornes -99×-30",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			}
 		]
 	},
@@ -1953,7 +1953,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -1973,11 +1973,11 @@
 					"b": "92",
 					"c": "97"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "tous positifs",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -1988,11 +1988,11 @@
 					"b": "-92",
 					"c": "97"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "un négatif",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2003,11 +2003,11 @@
 					"b": "-78",
 					"c": "-72"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "deux négatifs",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2018,11 +2018,11 @@
 					"b": "-78",
 					"c": "-72"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "deux négatifs : négatif faux",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2033,11 +2033,11 @@
 					"b": "-99",
 					"c": "-30"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "trois négatifs (bornes)",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			}
 		]
 	},
@@ -2086,7 +2086,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -2107,11 +2107,11 @@
 					"c": "97",
 					"d": "49"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "tous positifs",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2123,11 +2123,11 @@
 					"c": "97",
 					"d": "49"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "un négatif",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2139,11 +2139,11 @@
 					"c": "-72",
 					"d": "30"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "deux négatifs",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2155,11 +2155,11 @@
 					"c": "34",
 					"d": "-34"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "trois négatifs",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2171,11 +2171,11 @@
 					"c": "34",
 					"d": "-34"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "trois négatifs : positif faux",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2187,11 +2187,11 @@
 					"c": "-30",
 					"d": "-99"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "quatre négatifs (bornes)",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			}
 		]
 	},
@@ -2232,7 +2232,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -2251,11 +2251,11 @@
 					"a": "49",
 					"b": "-65"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "49:(-65) négatif",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2265,11 +2265,11 @@
 					"a": "49",
 					"b": "-65"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "49:(-65) : positif faux",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2279,11 +2279,11 @@
 					"a": "-71",
 					"b": "-90"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "(-71):(-90) positif",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2293,11 +2293,11 @@
 					"a": "-97",
 					"b": "78"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "(-97):78 négatif",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2307,11 +2307,11 @@
 					"a": "-30",
 					"b": "-99"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "bornes -30:(-99)",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			}
 		]
 	},
@@ -2369,7 +2369,7 @@
 				]
 			}
 		],
-		"type": "multiple_choice",
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -2388,11 +2388,11 @@
 					"a": "49",
 					"b": "-65"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "49:?=(-65) → négatif",
-				"variationIndex": 0,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2402,11 +2402,11 @@
 					"a": "49",
 					"b": "-65"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "49:?=(-65) : positif faux",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2416,11 +2416,11 @@
 					"a": "-71",
 					"b": "-90"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "(-71):?=(-90) → positif",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			},
 			{
 				"expected": {
@@ -2430,11 +2430,11 @@
 					"a": "49",
 					"b": "-65"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "?:49=(-65) → négatif",
-				"variationIndex": 1,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 1
 			},
 			{
 				"expected": {
@@ -2444,11 +2444,11 @@
 					"a": "-71",
 					"b": "-90"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "?:(-71)=(-90) → positif",
-				"variationIndex": 1,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 1
 			},
 			{
 				"expected": {
@@ -2458,11 +2458,11 @@
 					"a": "-71",
 					"b": "-90"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "?:(-71)=(-90) : négatif faux",
-				"variationIndex": 1,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 1
 			},
 			{
 				"expected": {
@@ -2472,11 +2472,11 @@
 					"a": "-30",
 					"b": "99"
 				},
+				"answers": [
+					"1"
+				],
 				"description": "bornes ?:(-30)=99",
-				"variationIndex": 1,
-				"selectedChoices": [
-					1
-				]
+				"variationIndex": 1
 			},
 			{
 				"expected": {
@@ -2486,11 +2486,11 @@
 					"a": "-99",
 					"b": "-30"
 				},
+				"answers": [
+					"0"
+				],
 				"description": "bornes (-99):?=(-30)",
-				"variationIndex": 0,
-				"selectedChoices": [
-					0
-				]
+				"variationIndex": 0
 			}
 		]
 	}
