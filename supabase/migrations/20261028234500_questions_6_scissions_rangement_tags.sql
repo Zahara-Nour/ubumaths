@@ -53,12 +53,24 @@
 -- declare v_presents integer; v_intacts integer; v_tags integer;
 -- begin
 -- 	perform 1 from public.question_templates where id in ('228b1620-640c-4570-9c8f-2f3e960aca7d', '259a0b26-9b36-4662-b1fb-13ffd0748ab6', '2ff6e717-b714-4fca-88e4-bc866736686e', '53045ec4-7d7d-4e66-8f5d-5829c52431e4', '5af91ef2-4aa4-4268-8ea6-501447b01082', '6818662d-446f-4307-8bab-235f0247545c', 'ece43e92-c87e-4ea5-b1d1-28045635996f') order by id for update;
--- 	-- Intact : en 6e, rangé, toujours en brouillon
--- 	select count(*), count(*) filter (where q.grades = array['6'] and q.classification_node_id is not null
--- 	                                     and q.status = 'draft')
+-- 	-- Intact, modèle par modèle : en 6e, en brouillon, sur le nœud de SON point, et ce point pour seul tag
+-- 	select count(*), count(*) filter (where q.grades = array['6'] and q.status = 'draft'
+-- 	                                     and q.classification_node_id = p.node_id
+-- 	                                     and (select count(*) from public.question_template_points t where t.template_id = q.id) = 1
+-- 	                                     and exists (select 1 from public.question_template_points t
+-- 	                                                  where t.template_id = q.id and t.point_id = p.id))
 -- 	  into v_presents, v_intacts
--- 	  from public.question_templates q
--- 	 where q.id in ('228b1620-640c-4570-9c8f-2f3e960aca7d', '259a0b26-9b36-4662-b1fb-13ffd0748ab6', '2ff6e717-b714-4fca-88e4-bc866736686e', '53045ec4-7d7d-4e66-8f5d-5829c52431e4', '5af91ef2-4aa4-4268-8ea6-501447b01082', '6818662d-446f-4307-8bab-235f0247545c', 'ece43e92-c87e-4ea5-b1d1-28045635996f');
+-- 	  from (values
+-- 	        ('ece43e92-c87e-4ea5-b1d1-28045635996f'::uuid, '6-131'),
+-- 	        ('5af91ef2-4aa4-4268-8ea6-501447b01082'::uuid, '6-136'),
+-- 	        ('53045ec4-7d7d-4e66-8f5d-5829c52431e4'::uuid, '6-136'),
+-- 	        ('6818662d-446f-4307-8bab-235f0247545c'::uuid, '6-133'),
+-- 	        ('228b1620-640c-4570-9c8f-2f3e960aca7d'::uuid, '6-133'),
+-- 	        ('259a0b26-9b36-4662-b1fb-13ffd0748ab6'::uuid, '6-133'),
+-- 	        ('2ff6e717-b714-4fca-88e4-bc866736686e'::uuid, '6-205')
+-- 	       ) as r(id, code)
+-- 	  join public.question_templates q on q.id = r.id
+-- 	  left join public.curriculum_points p on p.grade = '6' and p.code = r.code and p.archived_at is null;
 -- 	select count(*) into v_tags from public.question_template_points
 -- 	 where template_id in ('228b1620-640c-4570-9c8f-2f3e960aca7d', '259a0b26-9b36-4662-b1fb-13ffd0748ab6', '2ff6e717-b714-4fca-88e4-bc866736686e', '53045ec4-7d7d-4e66-8f5d-5829c52431e4', '5af91ef2-4aa4-4268-8ea6-501447b01082', '6818662d-446f-4307-8bab-235f0247545c', 'ece43e92-c87e-4ea5-b1d1-28045635996f');
 -- 	if v_intacts <> v_presents or v_tags <> v_presents then
@@ -89,8 +101,9 @@
 -- ROLLBACK:END
 -- ============================================================================
 
--- Pas de `lock table` : `supabase db push` n'ouvre pas de bloc de transaction, et LOCK TABLE y
--- est refusé (25P01). Les verrous sont pris après l'étape 1, ligne par ligne.
+-- Pas de `lock table` : `supabase db push` envoie le fichier sans `begin` explicite, et LOCK TABLE
+-- y est refusé (25P01). Les verrous sont pris après l'étape 1, ligne par ligne. Après `db:migrate`,
+-- relire que le trigger update_question_templates_updated_at est réactivé (`tgenabled = 'O'`).
 set local lock_timeout = '5s';
 
 -- ---- 1. Le lot, en table temporaire ------------------------------------------------

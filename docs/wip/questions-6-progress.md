@@ -798,3 +798,6 @@ migration de contenu après la publication des 7).
 - Migration `20261028234500_questions_6_scissions_rangement_tags` (nœud + point de l'origine, `updated_at`
   préservé, rollback en commentaire) ; test `questions-6-scissions-rangement-tags` : rouge contre une migration vide
   (9 échecs), 13/13 vert avec elle.
+- `security-auditor` : aucun finding bloquant. Suivis : garde du rollback resserrée modèle par modèle (nœud du
+  point + ce seul tag ; test ajouté, rouge avec l'ancienne garde, 14/14) ; commentaire `db push` corrigé ; à relire
+  au MCP après `db:migrate` : `tgenabled = 'O'` pour `update_question_templates_updated_at`.

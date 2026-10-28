@@ -281,6 +281,27 @@ describe('Questions 6e, lot 5 « Scissions des fractions » : les branches d’�
 		});
 	});
 
+	it('le rollback refuse si un tag a changé de modèle depuis la migration (total inchangé)', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			// 7 tags au total, mais le premier modèle n'a plus le sien et le deuxième en porte deux
+			await pg.query('alter table public.question_template_points disable trigger user');
+			await pg.query('delete from public.question_template_points where template_id = $1', [
+				ids[0]
+			]);
+			await pg.query(
+				`insert into public.question_template_points (template_id, point_id)
+				 select $1, id from public.curriculum_points where grade = '6' and code = '6-133' and archived_at is null`,
+				[ids[1]]
+			);
+			await pg.query('alter table public.question_template_points enable trigger user');
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : état changé depuis la migration \(5 intact\(s\) sur 7, 7 tag\(s\)\)/
+			);
+		});
+	});
+
 	it('un point du lot archivé fait échouer la migration (résolution stricte)', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
