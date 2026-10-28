@@ -45,7 +45,7 @@
 				"steps": [
 					"La fonction exponentielle est strictement croissante : $e^u=e^v\\iff u=v$.",
 					"$e^{ {{eval:a*x+b}} }=e^{ {{eval:c*x+d}} }\\iff {{eval:a*x+b}}={{eval:c*x+d}}\\iff {{eval:(a-c)*x}}={{eval:d-b}}$.",
-					"$x=\\dfrac{ {{eval:d-b}} }{ {{eval:a-c}} }=\\textcolor{{{color:primary.0}}}{{{eval:(d-b)/(a-c)}} }$."
+					"$x={{if:gcd(d-b,a-c)!=1|{{if:a-c<0|\\dfrac{ {{eval:-(d-b)}} }{ {{eval:-(a-c)}} }|\\dfrac{ {{eval:d-b}} }{ {{eval:a-c}} }}}=|}}\\textcolor{{{color:primary.0}}}{{{eval:(d-b)/(a-c)}} }$."
 				]
 			}
 		},
@@ -84,7 +84,7 @@
 				"steps": [
 					"D'abord $\\dfrac{1}{e^{ {{eval:c*x+d}} }}=e^{ {{eval:-c*x-d}} }$.",
 					"Puis $e^u=e^v\\iff u=v$ : ${{eval:a*x+b}}={{eval:-c*x-d}}\\iff {{eval:(a+c)*x}}={{eval:-b-d}}$.",
-					"$x=\\dfrac{ {{eval:-b-d}} }{ {{eval:a+c}} }=\\textcolor{{{color:primary.0}}}{{{eval:-(b+d)/(a+c)}} }$."
+					"$x={{if:gcd(-b-d,a+c)!=1|{{if:a+c<0|\\dfrac{ {{eval:-(-b-d)}} }{ {{eval:-(a+c)}} }|\\dfrac{ {{eval:-b-d}} }{ {{eval:a+c}} }}}=|}}\\textcolor{{{color:primary.0}}}{{{eval:-(b+d)/(a+c)}} }$."
 				]
 			}
 		}

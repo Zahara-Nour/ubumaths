@@ -376,3 +376,14 @@ f40e8a4a), publiés tels quels comme ceux des lots précédents.
   « e¹ est une constante » (227f2c9c variations 1 et 2).
 - Écartés : décimaux « 0.2 », « ≈ 27.07 » de l'outil (affichés à la française) ; f40e8a4a tagué 406, alors que ses variations
   e^{−x} et e^{2x} relèvent aussi de 407 (un modèle, un point : laissé) ; « e⁻³ + (−4) » (e6b429b4), lisible.
+
+**D15 (David, 2026-10-28, « go » sur les recos)** :
+
+- C1 : `x = {{if:gcd(N,D)!=1|N/D =|}}` résultat, la fraction écrite avec un dénominateur positif ; irréductible → résultat
+  direct (9a4592bf, e572933c, 6fe11613, 7179a3b5).
+- C2 : `{{if:V==1|e|e^{ {{V}} }}}` partout où l'exposant tiré peut valoir 1, énoncés et corrigés : 227f2c9c, 6137a555,
+  e6b429b4, et aussi 6a5e58da, 6fe11613, a4272b10, f40e8a4a (même défaut, trouvé au relevé des exposants). bd45ed7f
+  variation 3 : `p != 1` plutôt que « (e)⁻³ », qui ne demande plus rien.
+
+Specs des 17 modèles vertes après correction (225 specs, 2 600 tirages) ; 25 tirages forcés relus (dénominateur négatif,
+fraction simplifiable ou non, exposant 1).

@@ -35,7 +35,7 @@
 			"correction": {
 				"steps": [
 					"On écrit $1=e^0$ : $e^{ {{eval:a*x+b}} }=e^0\\iff {{eval:a*x+b}}=0$.",
-					"${{eval:a*x}}={{eval:-b}}$, donc $x=\\dfrac{ {{eval:-b}} }{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:-b/a}} }$."
+					"${{eval:a*x}}={{eval:-b}}$, donc $x={{if:gcd(-b,a)!=1|{{if:a<0|\\dfrac{ {{eval:-(-b)}} }{ {{eval:-(a)}} }|\\dfrac{ {{eval:-b}} }{ {{eval:a}} }}}=|}}\\textcolor{{{color:primary.0}}}{{{eval:-b/a}} }$."
 				]
 			}
 		}

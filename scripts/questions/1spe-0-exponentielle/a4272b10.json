@@ -62,7 +62,7 @@
 					"expectedAnswer": "e^{ {{eval:(n*a-c)*x+n*b-d}} }"
 				}
 			],
-			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\dfrac{\\left(e^{ {{eval:a*x+b}} }\\right)^{ {{n}} }}{e^{ {{eval:c*x}} }\\times e^{ {{d}} }}$\n\n$A=?$",
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\dfrac{\\left(e^{ {{eval:a*x+b}} }\\right)^{ {{n}} }}{e^{ {{eval:c*x}} }\\times {{if:d==1|e|e^{ {{d}} }}}}$\n\n$A=?$",
 			"variables": [
 				{
 					"name": "x",
@@ -93,7 +93,7 @@
 			"correction": {
 				"steps": [
 					"Numérateur (puissance) : $\\left(e^{ {{eval:a*x+b}} }\\right)^{ {{n}} }=e^{ {{eval:n*a*x+n*b}} }$.",
-					"Dénominateur (produit) : $e^{ {{eval:c*x}} }\\times e^{ {{d}} }=e^{ {{eval:c*x+d}} }$.",
+					"Dénominateur (produit) : $e^{ {{eval:c*x}} }\\times {{if:d==1|e|e^{ {{d}} }}}=e^{ {{eval:c*x+d}} }$.",
 					"Quotient : $A=e^{ {{eval:n*a*x+n*b}}-({{eval:c*x+d}}) }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:(n*a-c)*x+n*b-d}} } }$."
 				]
 			}

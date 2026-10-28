@@ -17,7 +17,7 @@
 					"expectedAnswer": "{{eval:(c-b)/a}}"
 				}
 			],
-			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{ {{eval:a*x+b}} }=e^{ {{c}} }$.\n\n$x=?$",
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{ {{eval:a*x+b}} }={{if:c==1|e|e^{ {{c}} }}}$.\n\n$x=?$",
 			"variables": [
 				{
 					"name": "x",
@@ -40,8 +40,8 @@
 			"correction": {
 				"steps": [
 					"La fonction exponentielle est strictement croissante : $e^u=e^v\\iff u=v$.",
-					"$e^{ {{eval:a*x+b}} }=e^{ {{c}} }\\iff {{eval:a*x+b}}={{c}}\\iff {{eval:a*x}}={{eval:c-b}}$.",
-					"On divise par ${{a}}$ : $x=\\dfrac{ {{eval:c-b}} }{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:(c-b)/a}} }$."
+					"$e^{ {{eval:a*x+b}} }={{if:c==1|e|e^{ {{c}} }}}\\iff {{eval:a*x+b}}={{c}}\\iff {{eval:a*x}}={{eval:c-b}}$.",
+					"On divise par ${{a}}$ : $x={{if:gcd(c-b,a)!=1|{{if:a<0|\\dfrac{ {{eval:-(c-b)}} }{ {{eval:-(a)}} }|\\dfrac{ {{eval:c-b}} }{ {{eval:a}} }}}=|}}\\textcolor{{{color:primary.0}}}{{{eval:(c-b)/a}} }$."
 				]
 			}
 		},
@@ -52,7 +52,7 @@
 					"expectedAnswer": "{{eval:(c-b)/a}}"
 				}
 			],
-			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{ {{eval:a*x+b}} }=e^{ {{c}} }$.\n\n$x=?$",
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{ {{eval:a*x+b}} }={{if:c==1|e|e^{ {{c}} }}}$.\n\n$x=?$",
 			"variables": [
 				{
 					"name": "x",
@@ -75,8 +75,8 @@
 			"correction": {
 				"steps": [
 					"La fonction exponentielle est strictement croissante : $e^u=e^v\\iff u=v$.",
-					"$e^{ {{eval:a*x+b}} }=e^{ {{c}} }\\iff {{eval:a*x+b}}={{c}}\\iff {{eval:a*x}}={{eval:c-b}}$.",
-					"On divise par ${{a}}$ : $x=\\dfrac{ {{eval:c-b}} }{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:(c-b)/a}} }$."
+					"$e^{ {{eval:a*x+b}} }={{if:c==1|e|e^{ {{c}} }}}\\iff {{eval:a*x+b}}={{c}}\\iff {{eval:a*x}}={{eval:c-b}}$.",
+					"On divise par ${{a}}$ : $x={{if:gcd(c-b,a)!=1|{{if:a<0|\\dfrac{ {{eval:-(c-b)}} }{ {{eval:-(a)}} }|\\dfrac{ {{eval:c-b}} }{ {{eval:a}} }}}=|}}\\textcolor{{{color:primary.0}}}{{{eval:(c-b)/a}} }$."
 				]
 			}
 		}

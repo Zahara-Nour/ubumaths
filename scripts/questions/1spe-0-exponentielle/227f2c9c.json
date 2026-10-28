@@ -33,9 +33,9 @@
 			],
 			"correction": {
 				"steps": [
-					"On écrit $f(x)=e^{ {{eval:a*x}} }\\times e^{ {{b}} }$, car $e^{u+v}=e^u\\times e^v$ ; $e^{ {{b}} }$ est une constante.",
+					"On écrit $f(x)=e^{ {{eval:a*x}} }\\times {{if:b==1|e|e^{ {{b}} }}}$, car $e^{u+v}=e^u\\times e^v$ ; ${{if:b==1|e|e^{ {{b}} }}}$ est une constante.",
 					"La dérivée de $x\\mapsto e^{ax}$ est $x\\mapsto a\\,e^{ax}$ : le coefficient de $x$ **passe devant** l'exponentielle.",
-					"Donc $f'(x)=\\textcolor{{{color:primary.0}}}{ {{a}} }e^{ {{eval:a*x}} }\\times e^{ {{b}} }=\\textcolor{{{color:primary.0}}}{ {{a}} }e^{ {{eval:a*x+b}} }$."
+					"Donc $f'(x)=\\textcolor{{{color:primary.0}}}{ {{a}} }e^{ {{eval:a*x}} }\\times {{if:b==1|e|e^{ {{b}} }}}=\\textcolor{{{color:primary.0}}}{ {{a}} }e^{ {{eval:a*x+b}} }$."
 				]
 			}
 		},
@@ -58,9 +58,9 @@
 			],
 			"correction": {
 				"steps": [
-					"On écrit $f(x)=e^{-x}\\times e^{ {{b}} }$, car $e^{u+v}=e^u\\times e^v$ ; $e^{ {{b}} }$ est une constante.",
+					"On écrit $f(x)=e^{-x}\\times {{if:b==1|e|e^{ {{b}} }}}$, car $e^{u+v}=e^u\\times e^v$ ; ${{if:b==1|e|e^{ {{b}} }}}$ est une constante.",
 					"La dérivée de $x\\mapsto e^{ax}$ est $x\\mapsto a\\,e^{ax}$ : le coefficient de $x$ **passe devant** l'exponentielle.",
-					"Ici $a=\\textcolor{{{color:primary.0}}}{-1}$, donc $f'(x)=-e^{-x}\\times e^{ {{b}} }=-e^{ {{eval:-x+b}} }$."
+					"Ici $a=\\textcolor{{{color:primary.0}}}{-1}$, donc $f'(x)=-e^{-x}\\times {{if:b==1|e|e^{ {{b}} }}}=-e^{ {{eval:-x+b}} }$."
 				]
 			}
 		},

@@ -16,7 +16,7 @@
 					"expectedAnswer": "e^{ {{eval:p+q}} }"
 				}
 			],
-			"statement": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ {{p}} }\\times e^{ {{q}} }$\n\n$A=?$",
+			"statement": "Simplifie $A$ en réduisant l'exposant.\n\n$A={{if:p==1|e|e^{ {{p}} }}}\\times {{if:q==1|e|e^{ {{q}} }}}$\n\n$A=?$",
 			"variables": [
 				{
 					"name": "p",

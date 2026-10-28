@@ -16,7 +16,7 @@
 					"expectedAnswer": "e^{ {{eval:p-q}} }"
 				}
 			],
-			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\dfrac{e^{ {{p}} }}{e^{ {{q}} }}$\n\n$A=?$",
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\dfrac{{{if:p==1|e|e^{ {{p}} }}}}{{{if:q==1|e|e^{ {{q}} }}}}$\n\n$A=?$",
 			"variables": [
 				{
 					"name": "p",
@@ -79,7 +79,7 @@
 					"expectedAnswer": "e^{ {{eval:-c*x+p-d}} }"
 				}
 			],
-			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\dfrac{e^{ {{p}} }}{e^{ {{eval:c*x+d}} }}$\n\n$A=?$",
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\dfrac{{{if:p==1|e|e^{ {{p}} }}}}{e^{ {{eval:c*x+d}} }}$\n\n$A=?$",
 			"variables": [
 				{
 					"name": "x",

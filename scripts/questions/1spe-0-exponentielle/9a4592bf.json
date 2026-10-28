@@ -61,7 +61,7 @@
 			"correction": {
 				"steps": [
 					"Un produit est nul si et seulement si l'un de ses facteurs est nul ; or $e^x>0$ ne s'annule jamais.",
-					"Donc ${{eval:a*x+b}}=0$, soit $x=\\dfrac{ {{eval:-b}} }{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:-b/a}} }$."
+					"Donc ${{eval:a*x+b}}=0$, soit $x={{if:gcd(-b,a)!=1|{{if:a<0|\\dfrac{ {{eval:-(-b)}} }{ {{eval:-(a)}} }|\\dfrac{ {{eval:-b}} }{ {{eval:a}} }}}=|}}\\textcolor{{{color:primary.0}}}{{{eval:-b/a}} }$."
 				]
 			}
 		},

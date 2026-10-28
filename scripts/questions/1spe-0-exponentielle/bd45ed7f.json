@@ -92,7 +92,8 @@
 					"On utilise $\\left(e^a\\right)^n=e^{na}$ : on **multiplie** les exposants.",
 					"$A=e^{ {{p}}\\times{{eval:q;()}} }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:p*q}} } }$."
 				]
-			}
+			},
+			"conditions": ["p != 1"]
 		}
 	],
 	"testSpecs": [
