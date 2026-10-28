@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 2 bis A écrit (PR des fichiers)._
+_Mis à jour le 2026-10-28, après #1906 (PR de migration du lot 2 bis A ouverte)._
 
-- **État** : lots 1 et 2 publiés ; lot 2 bis A « lecture graphique » (8 modèles : généralités, affine, |x|,
-  carré) écrit, simulation verte, 8 brouillons en base locale, aperçu joué ; PR des fichiers ouverte.
-- **Prochaine action** : merger la PR A, puis David lance `create-questions --publier` (dossier
-  `scripts/questions/2de-lecture-a`) ; ensuite migration nœud + tag du lot A ; puis lot B (inverse, √x, x³).
-- **En attente de David** : le `--publier` du lot A après le merge.
-- **Pièges en cours** : la garde de doc lit `Doc-inchangée:` dans un COMMIT ; test « cas rare » lent en CI
-  (relancer) ; QCM en réécriture ; étiquettes C_f / C_g parfois serrées près d'une intersection (moteur du
-  bloc).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-a`.
+- **État** : lots 1 et 2 publiés ; lot 2 bis A « lecture graphique » (8 modèles) mergé (#1906), créé en prod
+  en brouillon par David le 2026-10-28 ; migration nœud + tag écrite (test rouge sans elle, 9/9 vert avec).
+- **Prochaine action** : merger la PR de migration, `db:migrate` depuis le dépôt principal, vérifier en prod ;
+  page à cocher du lot A ; puis lot B (inverse, √x, x³ : 2-342, 465, 343, 468, 344, 471).
+- **En attente de David** : sort de la sonde `scripts/tmp-sonde-courbes.ts` + `tmp-montre.ts` (non suivis
+  dans le worktree : en faire un vrai script, ou les effacer).
+- **Pièges en cours** : test « cas rare » lent en CI (relancer) ; étiquettes C_f / C_g parfois serrées près
+  d'une intersection (moteur du bloc).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-a-tags`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -391,3 +391,12 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
   PR (nom `h` répété dans le corrigé « entre les points » ; fenêtre en fraction d²/4 → `floor` / `ceil`).
 - Base locale : 8 brouillons ; aperçu joué (f(x) < g(x) : `]−4 ; −1[` juste, corrigé avec la partie verte et
   les disques vides en A et B ; affine décroissante dessinée).
+- #1906 mergée le 2026-10-28 (CI : test « cas rare » relancé, puis verte).
+
+## 13. Lot 2 bis A, migration nœud + tag (2026-10-28)
+
+- Brouillons créés en prod par David le 2026-10-28 : 08c059b8 (2-462), 17809937 (2-492), 406fd9a8 (2-338),
+  7efd2e76 (2-453), 9c4f6b4f (2-341), a55ad3b4 (2-456), b807cc6c (2-340), cbf00ce7 (2-459) ; relevé MCP :
+  brouillons, niveau 2de, sans nœud ni tag ; les 8 points sans aucun tag.
+- Migration `20261028183000_questions_2de_lecture_a_rangement_tags.sql` (gabarit du lot 2) et son test
+  d’intégration : rouge sans la migration, 9/9 vert avec ; `security-auditor` : aucun finding bloquant.
