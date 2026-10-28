@@ -5,13 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1927 (relecture du lot 1 terminée : 8/8 OK)._
+_Mis à jour le 2026-10-28, lot 1 publié, lot 2 en PR (#1935)._
 
-- **État** : lot 0 en prod (#1917). Lot 1 « Calcul » : 8 brouillons en prod, rangés et tagués ; relecture finie, **8 verdicts OK** comptés en base (01, 07 corrigés, 08 neuf compris). `publier-lot.ts` en simulation : 8 brouillons passent le contrôle.
-- **Prochaine action** : David lance `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/5-calcul --publier` ; vérifier `published` en base (MCP), consigner au § 9. Ensuite phase 0 du lot 2 (relatifs : 5-120, 5-014, 5-019, 5-015, 5-024, 5-021), attendre la validation.
-- **En attente de David** : la commande `--publier` du lot 1.
-- **Pièges en cours** : `db push` refuse une migration plus ancienne que la dernière jouée (sessions parallèles) → `--include-all`, lancé par David ; horodatages : vérifier `schema_migrations` ET les worktrees avant d'en choisir un ; le classifieur refuse `create-questions --mettre-a-jour` même en simulation (simulation simple + `question:specs --file`) ; CI : `wrapDynamicImport` (tests navigateur) et délai de `scripts/corrections` = accidents du runner, une relance suffit ; 01 et 08 homonymes (même titre, niveaux 1 et 2) : alerte attendue sur la page.
-- **Worktree / branche** : aucun.
+- **État** : lot 1 « Calcul » **publié** (8/8, relu en base le 2026-10-28). Lot 2 « Relatifs » : phase 0 validée
+  (§ 10), 8 modèles écrits (`5-relatifs/`), simulation prod verte (62 specs), joués en base locale ; PR #1935.
+- **Prochaine action** : merge de #1935 (CI verte) ; puis David lance
+  `create-questions --dir scripts/questions/5-relatifs --publier`, relever les `id`, migration nœud + tag.
+- **En attente de David** : le `create-questions --publier` du lot 2, après le merge.
+- **Pièges en cours** : `db push` refuse une migration plus ancienne que la dernière jouée → `--include-all`, par
+  David ; horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions --mettre-a-jour`
+  ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` (`$lib` introuvable) ; port 5176 pris par
+  une autre session → 5178.
+- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-relatifs`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -172,3 +177,29 @@ Page à cocher, 7 verdicts : 5 OK (02, 03, 04, 05, 06), 2 à revoir. Corrections
   finding), jouée par moi (seule en attente), vérifiée. Verdicts de 01 et 07 supprimés ; page republiée (v2).
 - Seconde relecture (page v2) : 01, 07, 08 OK → **8/8 verdicts OK** comptés en base. `publier-lot.ts` en
   simulation : 8 brouillons passent le contrôle ; publication à lancer par David (`--publier`).
+
+- **Publication** (2026-10-28) : David a lancé `publier-lot.ts --publier` ; 8/8 `published`, vérifié au MCP
+  (8e571049, 2f1657b0, 8df8ba2b, faf57d3b, be35cd63, 7b08589b, 9d9b2301, 5007877e). **Lot 1 clos.**
+
+## 10. Lot 2 « Relatifs » : décisions (David, 2026-10-28, « je te suis »)
+
+| #   | Point | Modèle                                       | Réponse                        | Catégorie (Relatifs ›), niveau                             |
+| --- | ----- | -------------------------------------------- | ------------------------------ | ---------------------------------------------------------- |
+| 01  | 5-120 | Donner la valeur absolue d'un nombre         | case                           | Apprivoiser › Valeur absolue, 1                            |
+| 02  | 5-014 | Positif, négatif, strictement ?              | choix à plusieurs réponses (½) | Apprivoiser › La définition d'un nombre négatif, 4         |
+| 03  | 5-015 | Traduire une situation par un nombre relatif | case                           | Apprivoiser › Grandeurs négatives, 1                       |
+| 04  | 5-019 | Additionner plusieurs nombres relatifs       | case                           | Additionner et soustraire › Sommes de plusieurs nombres, 1 |
+| 05  | 5-019 | idem, décimaux                               | case                           | idem, 2                                                    |
+| 06  | 5-024 | Variation de température ou d'altitude       | case, unité après la case      | Additionner et soustraire › Problèmes, 1                   |
+| 07  | 5-024 | Calculer un écart                            | case, unité après la case      | idem, 2                                                    |
+| 08  | 5-021 | Les parenthèses sont-elles indispensables ?  | choix Oui / Non                | Additionner et soustraire › Sommes algébriques, 5          |
+
+- Décimaux séparés des entiers au niveau 2 (leçon du lot 1), sauf la valeur absolue (même idée) ; 5-120 dit
+  « (sa distance à zéro) » ; 5-021 : on vérifie « indispensable ou non », pas la justification.
+- Niveaux relevés en prod avant d'écrire : « La définition d'un nombre négatif » a 1 à 3, « Sommes
+  algébriques » 1 à 4 → 02 au niveau 4, 08 au niveau 5 ; les autres catégories sont neuves.
+- Accès : brouillons (admin seul) jusqu'à la publication ; la migration de rangement n'ouvre rien.
+- Script `docs/wip/questions/lot-5-relatifs.py`, fichiers `scripts/questions/5-relatifs/` ; simulation prod :
+  8 à créer, 62 specs vertes. Base locale : 8 créés, joués dans l'aperçu (rendu des unités °C / m après la case,
+  choix à plusieurs réponses, Oui / Non, correction à `{{if:…}}` imbriqués ; « −29 » refusé pour |−29|).
+  Corrigé en route : sous-marin tiré en dizaines (44 tirages sur 200 en échec), 08 avec a ≠ b (« −(9 + 9) »).

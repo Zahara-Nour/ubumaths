@@ -1,0 +1,189 @@
+{
+	"title": "Calculer un écart",
+	"description": "Calculer l'écart entre deux températures : −3 °C et 4 °C (7 °C) ; −9 °C et −2 °C (7 °C) ; avec des décimaux (−2,5 °C et 6,3 °C)",
+	"grades": ["5"],
+	"theme": "Relatifs",
+	"domain": "Additionner et soustraire",
+	"subdomain": "Problèmes",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La nuit, il a fait $-{{a}}~\\unit{°C}$ ; l'après-midi, ${{b}}~\\unit{°C}$.\n\nQuel est l'écart entre ces deux températures ?\n\n$?~\\unit{°C}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..15"
+				},
+				{
+					"name": "b",
+					"expression": "2..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Écart.** L'écart entre deux températures est la plus grande moins la plus petite : on calcule une différence.",
+					"$$\\textcolor{{{color:primary.1}}}{{{b}}} - (\\textcolor{{{color:primary.1}}}{-{{a}}}) = {{b}} + {{a}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"L'écart est de $\\textcolor{{{color:primary.0}}}{{{solution}}~\\unit{°C}}$."
+				]
+			}
+		},
+		{
+			"statement": "Lundi, il a fait $-{{a}}~\\unit{°C}$ ; mardi, $-{{b}}~\\unit{°C}$.\n\nQuel est l'écart entre ces deux températures ?\n\n$?~\\unit{°C}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..20"
+				},
+				{
+					"name": "b",
+					"expression": "1..19"
+				}
+			],
+			"conditions": ["b<a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Écart.** L'écart entre deux températures est la plus grande moins la plus petite : on calcule une différence.",
+					"$-{{b}}$ est plus grand que $-{{a}}$ (plus près de zéro).",
+					"$$\\textcolor{{{color:primary.1}}}{-{{b}}} - (\\textcolor{{{color:primary.1}}}{-{{a}}}) = -{{b}} + {{a}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"L'écart est de $\\textcolor{{{color:primary.0}}}{{{solution}}~\\unit{°C}}$."
+				]
+			}
+		},
+		{
+			"statement": "La nuit, il a fait $-{{x}}~\\unit{°C}$ ; l'après-midi, ${{y}}~\\unit{°C}$.\n\nQuel est l'écart entre ces deux températures ?\n\n$?~\\unit{°C}$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "11..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "B",
+					"expression": "11..199"
+				},
+				{
+					"name": "y",
+					"expression": "eval:B/10;d"
+				}
+			],
+			"conditions": ["mod(A,10)!=0", "mod(B,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(A+B)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Écart.** L'écart entre deux températures est la plus grande moins la plus petite : on calcule une différence.",
+					"$$\\textcolor{{{color:primary.1}}}{{{y}}} - (\\textcolor{{{color:primary.1}}}{-{{x}}}) = {{y}} + {{x}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"L'écart est de $\\textcolor{{{color:primary.0}}}{{{solution}}~\\unit{°C}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−3 °C et 4 °C : 7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 (4 − 3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−9 °C et −2 °C : 7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "9",
+				"b": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 11 (9 + 2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "9",
+				"b": "2"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "9",
+				"b": "2"
+			},
+			"answers": ["-7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2,5 °C et 6,3 °C : 8,8",
+			"variationIndex": 2,
+			"variables": {
+				"A": "25",
+				"x": "2.5",
+				"B": "63",
+				"y": "6.3"
+			},
+			"answers": ["8,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,8 (6,3 − 2,5)",
+			"variationIndex": 2,
+			"variables": {
+				"A": "25",
+				"x": "2.5",
+				"B": "63",
+				"y": "6.3"
+			},
+			"answers": ["3,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

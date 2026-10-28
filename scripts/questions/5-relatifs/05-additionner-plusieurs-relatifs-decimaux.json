@@ -1,0 +1,163 @@
+{
+	"title": "Additionner plusieurs nombres relatifs",
+	"description": "Additionner trois ou quatre décimaux relatifs (une décimale) en regroupant les positifs, les négatifs et les opposés : (−3,5) + 1,2 + (−2,4) ; (−3,5) + 1,2 + 3,5 + (−2,4)",
+	"grades": ["5"],
+	"theme": "Relatifs",
+	"domain": "Additionner et soustraire",
+	"subdomain": "Sommes de plusieurs nombres",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$(-{{x}}) + {{y}} + (-{{z}}) = ?$$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "11..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "B",
+					"expression": "11..99"
+				},
+				{
+					"name": "y",
+					"expression": "eval:B/10;d"
+				},
+				{
+					"name": "C",
+					"expression": "11..99"
+				},
+				{
+					"name": "z",
+					"expression": "eval:C/10;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(-A+B-C)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Plusieurs termes.** On peut additionner dans l'ordre que l'on veut : on regroupe les nombres positifs, puis les nombres négatifs, puis on conclut.",
+					"Les nombres négatifs : $(-{{x}}) + (-{{z}}) = \\textcolor{{{color:primary.1}}}{-{{eval:(A+C)/10;d}}}$.",
+					"$$(-{{x}}) + {{y}} + (-{{z}}) = \\textcolor{{{color:primary.1}}}{-{{eval:(A+C)/10;d}}} + {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(C,10)!=0"]
+		},
+		{
+			"statement": "Calcule.\n\n$$(-{{x}}) + {{y}} + {{x}} + (-{{z}}) = ?$$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "11..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "B",
+					"expression": "11..99"
+				},
+				{
+					"name": "y",
+					"expression": "eval:B/10;d"
+				},
+				{
+					"name": "C",
+					"expression": "11..99"
+				},
+				{
+					"name": "z",
+					"expression": "eval:C/10;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(B-C)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Opposés.** La somme de deux nombres opposés est nulle : on commence par les regrouper.",
+					"$\\textcolor{{{color:primary.1}}}{(-{{x}})}$ et $\\textcolor{{{color:primary.1}}}{{{x}}}$ sont opposés : leur somme est $0$.",
+					"$$(-{{x}}) + {{y}} + {{x}} + (-{{z}}) = {{y}} + (-{{z}}) = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(C,10)!=0", "B!=C", "A!=B", "A!=C"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(−3,5) + 1,2 + (−2,4) = −4,7",
+			"variationIndex": 0,
+			"variables": {
+				"A": "35",
+				"x": "3.5",
+				"B": "12",
+				"y": "1.2",
+				"C": "24",
+				"z": "2.4"
+			},
+			"answers": ["-4,7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (4,7)",
+			"variationIndex": 0,
+			"variables": {
+				"A": "35",
+				"x": "3.5",
+				"B": "12",
+				"y": "1.2",
+				"C": "24",
+				"z": "2.4"
+			},
+			"answers": ["4,7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−3,5) + 1,2 + 3,5 + (−2,4) = −1,2",
+			"variationIndex": 1,
+			"variables": {
+				"A": "35",
+				"x": "3.5",
+				"B": "12",
+				"y": "1.2",
+				"C": "24",
+				"z": "2.4"
+			},
+			"answers": ["-1,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,2 (−2,4 oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"A": "35",
+				"x": "3.5",
+				"B": "12",
+				"y": "1.2",
+				"C": "24",
+				"z": "2.4"
+			},
+			"answers": ["1,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
