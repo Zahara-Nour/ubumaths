@@ -9,10 +9,10 @@
 _Mis à jour le 2026-10-28, après #1896._
 
 - **État** : lot 0 CLOS. #1896 mergée, migration `20261028120000` jouée (`--include-all`, seule manquante), vérifiée au MCP : 6 modèles en 6e (6-121, 6-118), 2 en 5e (5-010, 5-119), 3 brouillons, `updated_at` gardé. Les 12 modèles venus du CM1 : #1893 (`questions-cm1`). Sessions CM1 et 6EME prévenues.
-- **Prochaine action** : phase 0 du lot 1 (entiers : 001, 002, 004, 005, 127, 128, 006), en refaisant d'abord le relevé MCP (couverture changée par #1893) et en relevant les niveaux pris dans chaque catégorie.
-- **En attente de David** : `322f3479` (forme décimale, CM2-039), réécrit par `questions-cm1` : doublon exact de `dd7db98e` ; le dépublier, ou garder les deux ?
+- **Prochaine action** : lot 1 (entiers, 8 modèles, phase 0 validée § 6) : script `lot-cm2-1.py` dans le worktree, simulation, essai local, PR des fichiers.
+- **En attente de David** : rien.
 - **Pièges en cours** : d'autres sessions touchent les mêmes modèles → relever la prod juste avant une migration ; horodatages de migration déjà pris ailleurs ; migration plus ancienne que la dernière jouée → `db push --include-all` après `--dry-run` (vérifier qu'elle est la seule listée).
-- **Worktree / branche** : aucun (worktree retiré, branche supprimée).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot1`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -180,3 +180,42 @@ qu'il lisait ? Ceux du **CM1** : 12 modèles (11 passés au CM2, `322f3479` en b
 - Avant le merge, message de la session `questions-cm1` : son lot 0 (#1893, joué en prod) a déjà passé au CM2 les 12 modèles venus du CM1 (dont `edc5d7d4`, même retouche, et `322f3479`, réécrit et tagué CM2-039 au lieu d'être dépublié), et a pris les mêmes horodatages de migration. Vérifié au MCP.
 - #1896 réduite aux 11 modèles du CM2, horodatage `20261028120000`, migration de contenu retirée ; test 19 verts, 10 rouges sans la migration.
 - 2026-10-28 : #1896 mergée (CI verte, 16/16) ; `db:migrate` refusé (`DbPushMissingRemoteError`, 20261028130000 / 130100 déjà jouées par d'autres sessions) → `db push --include-all` après `--dry-run` (seule la nôtre listée) ; vérifié au MCP ; worktree et branche retirés.
+
+## 6. Lot 1 — entiers : phase 0 (validée par David le 2026-10-28)
+
+Relevé MCP du 2026-10-28 : les 7 points n'ont toujours aucun modèle (#1893 n'en a pas tagué).
+Bornes `cycle3.json`, CM2 : entiers d'au plus neuf chiffres (≤ 999 999 999), neuf rangs, ranger
+jusqu'à cinq nombres, unités de numération jusqu'aux centaines de millions. Case seule ou case
+« choix » (bloc ` ```choix `, **en prod depuis v0.54**) ; règle de l'école « espaces dès 4
+chiffres » (comme le lot « nombres » de 6e). Tous `Entiers / Apprivoiser`.
+
+Niveaux relevés parmi tous les modèles de la catégorie (publiés et brouillons) : Ecriture 1-15,
+Décomposition 1-14, Comparer 1-7, Encadrer 4-8 → on prend la suite.
+
+| #   | Point   | Sous-notion   | Modèle                                       | Variations, plages                                                                                                                                                                                                                                         | Catégorie, niveau |
+| --- | ------- | ------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| 1   | CM2-001 | décomposition | Unités de numération                         | V1 « 7 millions, c'est ? milliers » (unités de mille à centaines de millions, l'une dans l'autre) ; V2 l'inverse (« 4 000 dizaines de mille, c'est ? millions ») ; V3 « 35 centaines de mille, c'est ? » en millions et centaines de mille (non canonique) | Décomposition, 15 |
+| 2   | CM2-001 | décomposition | Le nombre de milliers, de dizaines de mille… | V1 « Quel est le nombre de milliers dans 12 342 320 ? » (dizaines à millions, 7 à 9 chiffres) ; V2 problème « 12 342 320 pailles, des cartons de 10 000 : combien de cartons pleins ? » (cartons de 100 à 1 000 000)                                       | Décomposition, 16 |
+| 3   | CM2-004 | décomposition | La valeur d'un chiffre                       | V1 chiffre d'un rang (« chiffre des dizaines de mille de 845 273 018 ? ») ; V2 valeur du chiffre coloré (« 7 dans 4 712 305 vaut ? » → 700 000) ; V3 case « choix » : le rang du chiffre coloré (unités de mille, dizaines de mille…)                      | Décomposition, 17 |
+| 4   | CM2-002 | écritures     | Le nombre qui suit, le nombre qui précède    | V1 suit, sans passage ; V2 suit, avec passage (… 999 → … 000, jusqu'à 999 999 → 1 000 000) ; V3 précède, avec passage (… 000 → … 999) ; nombres de 6 à 9 chiffres                                                                                          | Ecriture, 16      |
+| 5   | CM2-005 | ordre         | Comparer deux grands nombres                 | Case « choix » `<`, `=`, `>` ; V1 même nombre de chiffres, deux chiffres échangés (3 405 270 … 3 450 207) ; V2 nombres de chiffres différents, le plus long commence par un petit chiffre (987 654 … 1 023 456) ; 6 à 9 chiffres                           | Comparer, 8       |
+| 6   | CM2-006 | ordre         | Ranger cinq grands nombres                   | V1 croissant, V2 décroissant ; comme au CE1 : quatre nombres du même million dont deux aux chiffres échangés, plus un nombre d'un chiffre de moins ; 7 à 9 chiffres                                                                                        | Comparer, 9       |
+| 7   | CM2-127 | ordre         | Encadrer un grand nombre                     | Deux cases « ? < 3 405 270 < ? » ; entre deux milliers, deux dizaines de mille, deux centaines de mille ou deux millions qui se suivent (rang tiré) ; 7 à 9 chiffres                                                                                       | Encadrer, 9       |
+| 8   | CM2-128 | ordre         | Intercaler un grand nombre                   | Une case « 3 405 270 < ? < 3 450 207 », toute réponse strictement entre est juste ; V1 écart large ; V2 écart de 2 (une seule réponse) ; V3 à un passage (999 998 < ? < 1 000 000)                                                                         | Encadrer, 10      |
+
+Corrigés : classes de trois chiffres, rang par rang (comme 6-101). Erreurs typiques en
+`testSpecs` : rang voisin, chiffre au lieu du nombre de, zéros oubliés au passage, « plus de
+chiffres donc plus petit » inversé, borne recopiée à l'intercalation.
+
+**Question d'accès** : modèles neufs en **brouillon**, puis migration nœud + tag sur ces
+brouillons → **personne** ne lit rien de plus (un brouillon n'est visible que de l'admin / du prof).
+
+**Point d'attention** : la session `questions-cm1` prévoit son lot 2 « numération entiers » (003,
+004, 005, 007…) dans les mêmes catégories → je la préviens des niveaux pris ici avant d'écrire.
+
+### 6.1 Lot 1 : décisions (David, 2026-10-28)
+
+Recommandations suivies (« tes recos ? » puis « go ») : le tableau tel quel, CM2-001 en deux
+modèles ; `322f3479` **dépublié** (doublon exact de `dd7db98e`, CM2-039), dans la migration de
+rangement du lot 1. Session `questions-cm1` prévenue : son lot 2 prend Décomposition 18+, Ecriture
+17+, Comparer 10+, Encadrer 11+.
