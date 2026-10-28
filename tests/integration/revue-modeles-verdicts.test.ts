@@ -201,6 +201,18 @@ describe('Verdicts de relecture des modèles : admin seul', () => {
 		expect(ePose?.code).toBe('42501');
 	});
 
+	it('hors appli (reprise des verdicts des artefacts) : la date fournie est gardée', async () => {
+		const id = await insertTemplate('reprise');
+		const pg = await getPostgresClient();
+		await pg.query(
+			`insert into public.${TABLE} (template_id, verdict, reviewed_at) values ($1, 'valide', '2026-10-20T10:00:00Z')`,
+			[id]
+		);
+		const row = await readReview(id);
+		expect(new Date(row.reviewed_at).toISOString()).toBe('2026-10-20T10:00:00.000Z');
+		expect(row.reviewed_by).toBeNull();
+	});
+
 	it('le verdict disparaît avec son modèle', async () => {
 		const id = await insertTemplate('cascade');
 		await insertReviewAsOwner(id);
