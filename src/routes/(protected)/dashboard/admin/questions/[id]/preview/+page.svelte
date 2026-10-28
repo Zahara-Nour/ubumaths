@@ -15,11 +15,6 @@
 -->
 
 <script lang="ts">
-	import {
-		choiceLetter,
-		correctOriginalChoiceIndexes,
-		toDisplayedChoicePosition
-	} from '$lib/questions/choices';
 	import { page } from '$app/state';
 	import type { PageData } from './$types';
 	import TemplateFactSheet from '$lib/components/questions/TemplateFactSheet.svelte';
@@ -68,7 +63,7 @@
 	// Page de PROF : un bloc mal écrit affiche son message détaillé, pas « Figure indisponible »
 	provideAuthoringErrors(() => true);
 
-	// Réponses attendues, lisibles : une ligne par trou, ou le(s) choix correct(s) d'un QCM
+	// Réponses attendues, lisibles : une ligne par trou (case choix : indices d'origine)
 	let expectedAnswers = $derived.by(() => {
 		if (!instance) return [];
 		if (instance.blanks && instance.blanks.length > 0) {
@@ -76,14 +71,6 @@
 				label: `Trou ${index + 1}`,
 				value: blank.expectedAnswer
 			}));
-		}
-		if (instance.correctChoiceIndex !== undefined) {
-			// Lettres AFFICHÉES : les choix sont mélangés, l'indice d'origine ne désigne rien à l'écran
-			const current = instance;
-			const letters = correctOriginalChoiceIndexes(current)
-				.map((index) => choiceLetter(toDisplayedChoicePosition(current, index)))
-				.sort();
-			return [{ label: 'Choix correct', value: letters.join(', ') }];
 		}
 		return [];
 	});

@@ -50,12 +50,8 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		return errors;
 	}
 
-	// Infer question type from first variation (or shared) for type-specific checks
-	const firstVariation = template.variations[0];
-	const inferredType = getQuestionType({
-		choices: firstVariation.choices ?? template.shared?.choices,
-		options: template.options
-	});
+	// Type for type-specific checks (carte de cours : marqueur explicite)
+	const inferredType = getQuestionType({ options: template.options });
 
 	// Validate each variation (pass shared defaults for merged field checks)
 	template.variations.forEach((variation, index) => {
@@ -63,7 +59,7 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		errors.push(...variationErrors);
 	});
 
-	// QCM : exactement une bonne réponse, au moins une avec « plusieurs réponses » (V1)
+	// Case choix : exactement une bonne réponse, au moins une avec `plusieurs: oui` (V1)
 	errors.push(...choiceAnswerCountErrors(template));
 
 	// Hypothèses de l'énoncé : jamais sur une variable tirée (ADR 0012)
@@ -99,7 +95,7 @@ export function validateTemplate(template: QuestionTemplate): string[] {
  * @param variation - Variation to validate
  * @param questionType - Question type from template
  * @param index - Variation index (for error messages)
- * @param shared - Shared defaults (for merged field checks like choices)
+ * @param shared - Shared defaults (for merged field checks like statement)
  * @returns Array of error messages
  */
 function validateVariation(
@@ -128,18 +124,6 @@ function validateVariation(
 	for (const blankIndex of findRulesSufficeBlanksWithoutRules(variation, shared)) {
 		errors.push(
 			`${prefix} blank ${blankIndex + 1} has rulesSuffice but no validationRules (every answer would be accepted)`
-		);
-	}
-
-	// Validate correctChoiceIndex (required for multiple_choice, optional for fill_in_blanks)
-	// Can come from shared defaults
-	if (
-		questionType === 'multiple_choice' &&
-		!variation.correctChoiceIndex &&
-		!shared?.correctChoiceIndex
-	) {
-		errors.push(
-			`${prefix} Missing required field: correctChoiceIndex (required for multiple_choice)`
 		);
 	}
 
@@ -218,12 +202,9 @@ function validateVariation(
 			break;
 
 		case 'course_card': {
-			// Carte de cours : ni case ni choix ; le verso (correction) est obligatoire
+			// Carte de cours : aucune case ; le verso (correction) est obligatoire
 			if ((variation.blanks?.length ?? 0) > 0) {
 				errors.push(`${prefix} course_card cannot have blanks[]`);
-			}
-			if ((variation.choices ?? shared?.choices ?? []).length > 0) {
-				errors.push(`${prefix} course_card cannot have choices[]`);
 			}
 			const correction = variation.correction ?? shared?.correction;
 			if (!hasCourseCardBackSource(correction)) {
@@ -231,17 +212,6 @@ function validateVariation(
 					`${prefix} course_card requires a correction (verso): non-empty steps or generatedSteps`
 				);
 			}
-			break;
-		}
-
-		case 'multiple_choice': {
-			// Use merged choices (variation overrides shared)
-			const effectiveChoices = variation.choices ?? shared?.choices;
-			if (!effectiveChoices || effectiveChoices.length < 2) {
-				errors.push(`${prefix} multiple_choice requires at least 2 choices`);
-			}
-
-			// Nombre de bonnes réponses : `choiceAnswerCountErrors` (V1), sur tout le modèle
 			break;
 		}
 	}

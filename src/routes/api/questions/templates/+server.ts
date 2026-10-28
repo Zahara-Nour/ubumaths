@@ -153,7 +153,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// qu'elle fournissait les colonnes obligatoires.
 		const templateData = validation.data;
 
-		// QCM (V1) : jamais plusieurs bonnes réponses sans « plusieurs réponses », même
+		// Case choix (V1) : jamais plusieurs bonnes réponses sans `plusieurs: oui`, même
 		// en brouillon ; « aucune » n'est refusée qu'à la publication (templatePublicationErrors)
 		if (templateData.status !== 'published') {
 			const countErrors = choiceAnswerCountErrors(templateData as QuestionTemplate, {
@@ -193,11 +193,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const { data: template, error: insertError } = await locals.supabase
 			.from('question_templates')
 			.insert({
-				type: getQuestionType({
-					choices: templateData.variations?.[0]?.choices,
-					shared: templateData.shared,
-					options: templateData.options
-				}),
+				type: getQuestionType({ options: templateData.options }),
 				title: templateData.title,
 				description: templateData.description || null,
 				shared: toJson(templateData.shared ?? null),
@@ -219,7 +215,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				level: templateData.level,
 				status: templateData.status || 'published',
 				delay: templateData.delay || null,
-				multiple_answers: templateData.multipleAnswers ?? null,
 				test_specs: toJson(templateData.testSpecs ?? null),
 				created_by: user.id
 			})

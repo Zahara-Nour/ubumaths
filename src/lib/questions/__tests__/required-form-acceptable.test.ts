@@ -231,7 +231,7 @@ describe('correcteur : un refus n’affiche jamais le message « juste »', () =
 	});
 });
 
-describe('générateur : QCM, variables tirées dans les motifs', () => {
+describe('générateur : variables tirées dans les motifs', () => {
 	it('{{a}} remplacé dans la forme exigée de la variation', () => {
 		const template = {
 			id: 't',
@@ -239,10 +239,9 @@ describe('générateur : QCM, variables tirées dans les motifs', () => {
 			status: 'draft',
 			variations: [
 				{
-					statement: 'Factorise',
+					statement: 'Factorise $z^2-14z+49=?$',
 					variables: [{ name: 'a', expression: '7' }],
-					choices: [{ content: '$(z-7)^2$' }, { content: '$z^2$' }],
-					correctChoiceIndex: '0',
+					blanks: [{ expectedAnswer: '(z-7)^2' }],
 					requiredForm: { pattern: '(u-{{a}})^2', acceptable: 'u*{{a}}' }
 				}
 			],

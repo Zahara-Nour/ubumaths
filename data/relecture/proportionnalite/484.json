@@ -6,6 +6,45 @@
 	"template": {
 		"title": "Reconnaître si un tableau est un tableau de proportionnalité",
 		"description": "En regardant les lignes",
+		"variations": [
+			{
+				"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}           {{a}}        &   {{b}} \\\\           {{eval:a*c}}  &  {{eval:b*c}}         \\end{array}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $\\begin{array}{c|c}               {{a}}        &   {{b}} \\\\               {{eval:a*c}}  &  {{eval:b*c}}             \\end{array}$ est un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:b*c}} $",
+						"On a multiplié par le même nombre entre les 2 lignes."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}         {{a}}  &  {{b}}  \\\\         {{eval:a*c}}  &   {{eval:b*(c+1)}}       \\end{array}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $\\begin{array}{c|c}               {{a}}  &  {{b}}  \\\\         {{eval:a*c}}  &   {{eval:b*(c+1)}}             \\end{array}$ n'est pas un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.1}}}{\\times {{eval:c+1}}}={{eval:b*(c+1)}}$.",
+						"On n'a **pas** multiplié par le même nombre entre les 2 lignes."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			}
+		],
+		"grades": [
+			"6"
+		],
+		"theme": "Proportionnalité",
+		"domain": "Tableaux de proportionnalité",
+		"subdomain": "Reconnaître",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
 		"shared": {
 			"variables": [
 				{
@@ -20,48 +59,8 @@
 					"name": "c",
 					"expression": "2..9"
 				}
-			],
-			"choices": [
-				{
-					"content": "Oui"
-				},
-				{
-					"content": "Non"
-				}
 			]
 		},
-		"variations": [
-			{
-				"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}           {{a}}        &   {{b}} \\\\           {{eval:a*c}}  &  {{eval:b*c}}         \\end{array}$$",
-				"correctChoiceIndex": ["0"],
-				"correction": {
-					"steps": [
-						"{{solution:html}}, $\\begin{array}{c|c}               {{a}}        &   {{b}} \\\\               {{eval:a*c}}  &  {{eval:b*c}}             \\end{array}$ est un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:b*c}} $",
-						"On a multiplié par le même nombre entre les 2 lignes."
-					]
-				}
-			},
-			{
-				"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}         {{a}}  &  {{b}}  \\\\         {{eval:a*c}}  &   {{eval:b*(c+1)}}       \\end{array}$$",
-				"correctChoiceIndex": ["1"],
-				"correction": {
-					"steps": [
-						"{{solution:html}}, $\\begin{array}{c|c}               {{a}}  &  {{b}}  \\\\         {{eval:a*c}}  &   {{eval:b*(c+1)}}             \\end{array}$ n'est pas un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.1}}}{\\times {{eval:c+1}}}={{eval:b*(c+1)}}$.",
-						"On n'a **pas** multiplié par le même nombre entre les 2 lignes."
-					]
-				}
-			}
-		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["6"],
-		"theme": "Proportionnalité",
-		"domain": "Tableaux de proportionnalité",
-		"subdomain": "Reconnaître",
-		"level": 2,
-		"status": "draft",
-		"delay": 20,
 		"testSpecs": [
 			{
 				"description": "Oui (proportionnel)",
@@ -74,7 +73,9 @@
 				"expected": {
 					"status": "correct"
 				},
-				"selectedChoices": [0]
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "Non sur tableau proportionnel",
@@ -87,7 +88,9 @@
 				"expected": {
 					"status": "incorrect"
 				},
-				"selectedChoices": [1]
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "Non (non proportionnel)",
@@ -100,7 +103,9 @@
 				"expected": {
 					"status": "correct"
 				},
-				"selectedChoices": [1]
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "Oui sur tableau non proportionnel",
@@ -113,7 +118,9 @@
 				"expected": {
 					"status": "incorrect"
 				},
-				"selectedChoices": [0]
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}

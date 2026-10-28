@@ -8,7 +8,7 @@
  * 2. Circular dependency detection
  * 3. Variable resolution
  * 4. Content resolution
- * 5. Choice shuffling (for QCM)
+ * 5. Choice shuffling (cases choix, bloc ```choix)
  *
  * @module questions/generator/instance-generator
  */
@@ -38,8 +38,6 @@ import { validateTemplate } from '../validators/template-validator';
 import { resolveVariables } from './variable-resolver';
 import {
 	resolveMarkdownContent,
-	resolveSolution,
-	resolveConditionalChoice,
 	resolveExpression,
 	insertExpressionMarkers,
 	resolveAnswerFormat,
@@ -147,14 +145,8 @@ function resolveVariationWithShared(
 		// Fall back to empty TemplateMarkdown if neither has value (edge case)
 		statement: variation.statement || shared.statement || templateMarkdown(''),
 
-		// correctChoiceIndex: allow explicit empty array/string (use ??)
-		correctChoiceIndex: variation.correctChoiceIndex ?? shared.correctChoiceIndex,
-
 		// correction: full structure (use ??)
 		correction: variation.correction ?? shared.correction,
-
-		// choices: per-variation overrides entirely (use ??)
-		choices: variation.choices ?? shared.choices,
 
 		// validationRules: per-variation overrides entirely (use ??)
 		validationRules: variation.validationRules ?? shared.validationRules,
@@ -340,7 +332,6 @@ function namesAssignedIn(figureSource: string): Set<string> {
  *     { name: 'a', expression: '{#:1-10}' },
  *     { name: 'b', expression: '{#:1-10}' }
  *   ],
- *   correctChoiceIndex: '{eval:{@:a}+{@:b}}',
  *   grades: ['6'],
  *   delay: 30
  * };
@@ -348,7 +339,6 @@ function namesAssignedIn(figureSource: string): Set<string> {
  * const result = generateInstance(template, 42);
  * if (result.success) {
  *   console.log(result.instance.statement[0].content);  // "Calculate $$7 + 3$$"
- *   console.log(result.instance.correctChoiceIndex);     // "10"
  * }
  * ```
  */
@@ -464,37 +454,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			capitalPairs
 		);
 
-		// Resolve correctChoiceIndex from explicit value or derive from isCorrect on choices
-		let resolvedCorrectChoiceIndex: string | string[] | undefined;
-		if (resolvedVariation.correctChoiceIndex) {
-			// `{{if:condition|A|B}}` (ternaire TinyMath) : choisi selon les variables tirées
-			const rawIndex = resolvedVariation.correctChoiceIndex;
-			const withConditions = Array.isArray(rawIndex)
-				? rawIndex.map((value) => resolveConditionalChoice(value, resolvedVariables))
-				: resolveConditionalChoice(rawIndex, resolvedVariables);
-			resolvedCorrectChoiceIndex = resolveSolution(withConditions, resolvedVariables, random);
-		} else if (resolvedVariation.choices) {
-			// Derive from isCorrect flags on choices
-			const correctIndexes = resolvedVariation.choices
-				.map((choice, i) => (choice.isCorrect ? String(i) : null))
-				.filter((i): i is string => i !== null);
-			if (correctIndexes.length === 1) {
-				resolvedCorrectChoiceIndex = correctIndexes[0];
-			} else if (correctIndexes.length > 1) {
-				resolvedCorrectChoiceIndex = correctIndexes;
-			}
-		}
-
 		// 7. Resolve type-specific fields from resolved variation (inferred from structure)
-		let resolvedChoices;
-		let shuffledChoices;
 		let resolvedBlanks: InstanceBlank[] | undefined;
 		let expressionsArray: QuestionInstance['expressions'] = undefined;
 		let finalStatement: ResolvedMarkdown = resolvedStatement;
 
 		// Un bloc ```operation à remplir, ```figure-a-completer ou ```collection à construire
 		// porte sa case, même sans `blanks` dans le modèle — dans une question à trous
-		// seulement (un QCM, une carte de cours n'ont pas de case)
+		// seulement (une carte de cours n'a pas de case)
 		const hasOperationBlock =
 			(/^\s*>?\s*```(?:operation|figure-a-completer|figure-de-travail)\s*$/m.test(
 				String(resolvedStatement)
@@ -504,11 +471,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasLineToPlace(String(resolvedStatement)) ||
 				hasHorlogeToPlace(String(resolvedStatement)) ||
 				hasBarsToPlace(String(resolvedStatement))) &&
-			getQuestionType({
-				choices: resolvedVariation.choices,
-				shared: template.shared,
-				options: template.options
-			}) === 'fill_in_blanks';
+			getQuestionType({ options: template.options }) === 'fill_in_blanks';
 		if (resolvedVariation.blanks || hasOperationBlock) {
 			// 7a. Fill-in-blanks pipeline
 			const templateBlanks = resolvedVariation.blanks ?? [];
@@ -1028,64 +991,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 		}
 
-		if (resolvedVariation.choices) {
-			// 7b. Multiple choice — resolve choice content if it has variable references.
-			// Bare text like "pair" must NOT go through resolveMarkdownContent because
-			// normalizeExpression treats identifiers as variable references.
-
-			// Build set of correct indexes from resolvedCorrectChoiceIndex
-			const correctIndexSet = new Set<number>();
-			if (resolvedCorrectChoiceIndex) {
-				const indexes = Array.isArray(resolvedCorrectChoiceIndex)
-					? resolvedCorrectChoiceIndex
-					: [resolvedCorrectChoiceIndex];
-				for (const idx of indexes) {
-					const n = parseInt(idx, 10);
-					if (!isNaN(n)) correctIndexSet.add(n);
-				}
-			}
-
-			resolvedChoices = resolvedVariation.choices.map((choice, i) => {
-				const content = choice.content;
-				const resolvedContent: ResolvedMarkdown = content.includes('{{')
-					? resolveMarkdownContent(
-							content,
-							resolvedVariables,
-							random,
-							genericFunctions,
-							cleanCoefficients,
-							capitalPairs
-						)
-					: resolvedMarkdown(content);
-				// Use choice.isCorrect if set, otherwise derive from correctChoiceIndex
-				const isCorrect =
-					correctIndexSet.size > 0 ? correctIndexSet.has(i) : (choice.isCorrect ?? false);
-				return {
-					content: resolvedContent,
-					isCorrect
-				};
-			});
-
-			// Mélange, sauf `options.shuffleChoices === false` (Vrai / Faux, Oui / Non… :
-			// l'ordre écrit par l'auteur fait foi, Q106). Pas mélangé = identité.
-			shuffledChoices =
-				template.options?.shuffleChoices === false
-					? resolvedChoices.map((choice, index) => ({
-							content: choice.content,
-							originalIndex: index
-						}))
-					: shuffleChoices(resolvedChoices, random);
-		}
-
-		// 7c. Resolve correction with pseudo-variables (AFTER blanks and choices)
+		// 7c. Resolve correction with pseudo-variables (AFTER blanks)
 		let resolvedCorrection: ResolvedCorrection | undefined;
 		if (resolvedVariation.correction) {
-			const correctionContext = buildCorrectionContext(
-				resolvedBlanks,
-				resolvedChoices, // Pre-shuffle: indices match correctChoiceIndex
-				resolvedCorrectChoiceIndex,
-				resolvedVariables
-			);
+			const correctionContext = buildCorrectionContext(resolvedBlanks, resolvedVariables);
 
 			const { feedback, steps, generatedSteps } = resolvedVariation.correction;
 			resolvedCorrection = {};
@@ -1154,7 +1063,6 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			templateId: template.id,
 			statement: finalStatement,
 			resolvedVariables,
-			correctChoiceIndex: resolvedCorrectChoiceIndex,
 			exerciseInstruction: template.exerciseInstruction,
 			options: template.options,
 			...(genericFunctionNames && { genericFunctions: genericFunctionNames }),
@@ -1168,9 +1076,6 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			correction: resolvedCorrection,
 			blanks: resolvedBlanks,
 			expressions: expressionsArray,
-			choices: resolvedChoices,
-			shuffledChoices,
-			multipleAnswers: template.multipleAnswers,
 			requiredForm: resolveRequiredForm(resolvedVariation.requiredForm, resolvedVariables, random),
 			generatedAt: new Date().toISOString(),
 			seed,

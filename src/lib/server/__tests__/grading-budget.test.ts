@@ -35,17 +35,22 @@ function blanksInstance(blanks: InstanceBlank[]): QuestionInstance {
 	};
 }
 
+/** Question réduite à une case choix (plusieurs réponses), non mélangée */
 function choicesInstance(correct: boolean[]): QuestionInstance {
 	return {
 		templateId: 'budget-qcm',
 		statement: 'Choisis' as ResolvedMarkdown,
-		choices: correct.map((isCorrect, i) => ({ content: `c${i}` as ResolvedMarkdown, isCorrect })),
-		shuffledChoices: correct.map((_, i) => ({
-			content: `c${i}` as ResolvedMarkdown,
-			originalIndex: i
-		})),
-		correctChoiceIndex: correct.flatMap((c, i) => (c ? [String(i)] : [])),
-		multipleAnswers: true,
+		blanks: [
+			{
+				expectedAnswer: correct.flatMap((c, i) => (c ? [String(i)] : [])).join(';'),
+				type: 'choice',
+				choice: {
+					choices: correct.map((_, i) => `c${i}`),
+					order: correct.map((_, i) => i),
+					multiple: true
+				}
+			}
+		],
 		grades: ['6'],
 		theme: 'Test',
 		domain: 'Test',
@@ -56,13 +61,13 @@ function choicesInstance(correct: boolean[]): QuestionInstance {
 
 const math = (expectedAnswer: string): InstanceBlank => ({ expectedAnswer, type: 'math' });
 
-/** Copie normale : juste, fausse, QCM juste, QCM incomplet, vide, cases en partie vides */
+/** Copie normale : juste, fausse, case choix juste, case choix incomplète, vide, cases en partie vides */
 function normalCopy(): GradingItem[] {
 	return [
 		{ instance: blanksInstance([math('12')]), answer: { values: ['12'] } },
 		{ instance: blanksInstance([math('12')]), answer: { values: ['13'] } },
-		{ instance: choicesInstance([true, false, false]), answer: { choices: [0] } },
-		{ instance: choicesInstance([true, true, false]), answer: { choices: [1] } },
+		{ instance: choicesInstance([true, false, false]), answer: { values: ['0'] } },
+		{ instance: choicesInstance([true, true, false]), answer: { values: ['1'] } },
 		{ instance: blanksInstance([math('7')]), answer: null },
 		{
 			instance: blanksInstance([math('2'), math('3'), math('4')]),
@@ -150,9 +155,9 @@ describe('Q59 : budget de temps total de la correction d’un envoi', () => {
 		expect(skipped).toBe(2);
 	});
 
-	it('(2) un QCM restant vaut aussi 0 ; une question sans réponse reste « vide »', () => {
+	it('(2) une case choix restante vaut aussi 0 ; une question sans réponse reste « vide »', () => {
 		const items: GradingItem[] = [
-			{ instance: choicesInstance([true, false]), answer: { choices: [0] } },
+			{ instance: choicesInstance([true, false]), answer: { values: ['0'] } },
 			{ instance: blanksInstance([math('1')]), answer: null }
 		];
 		const { verdicts, skipped } = gradeWithinBudget(items, { budgetMs: 0 });

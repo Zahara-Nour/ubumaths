@@ -7,8 +7,7 @@
 		"description": "Jusqu'au million",
 		"variations": [
 			{
-				"statement": "Quel est le plus petit de ces 2 nombres ?",
-				"correctChoiceIndex": ["{{if:g<h|0|1}}"],
+				"statement": "Quel est le plus petit de ces 2 nombres ?\n\n```choix\n- $${{eval:g}}$$\n- $${{eval:h}}$$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -39,18 +38,19 @@
 						"expression": "eval:f+c*10^b"
 					}
 				],
-				"choices": [
-					{
-						"content": "$${{eval:g}}$$"
-					},
-					{
-						"content": "$${{eval:h}}$$"
-					}
+				"conditions": [
+					"g!=h"
 				],
-				"conditions": ["g!=h"]
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:g<h|0|1}}"
+					}
+				]
 			}
 		],
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"theme": "Entiers",
 		"domain": "Apprivoiser",
 		"subdomain": "Comparer",
@@ -68,10 +68,12 @@
 					"d": "4498",
 					"f": "7123"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "mauvais choix",
@@ -83,10 +85,12 @@
 					"d": "4498",
 					"f": "7123"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "a=0 : 2748 < 5372",
@@ -98,10 +102,12 @@
 					"d": "2748",
 					"f": "5372"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			}
 		]
 	},

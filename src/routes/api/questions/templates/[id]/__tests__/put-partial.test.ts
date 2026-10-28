@@ -9,18 +9,12 @@
 import { describe, it, expect } from 'vitest';
 import { callPut, fakeDb, FIXTURE, ID, templateRow, type Row } from './fake-templates-db';
 
-const QCM_VARIATIONS = [
-	{
-		statement: 'Quel est le double de $4$ ?',
-		choices: [
-			{ content: '$8$', isCorrect: true },
-			{ content: '$6$', isCorrect: false }
-		]
-	}
-];
-
-function qcmRow(): Row {
-	return { ...templateRow(), type: 'multiple_choice', variations: structuredClone(QCM_VARIATIONS) };
+/**
+ * Ligne dont le type enregistré n'est PAS celui que recalculerait la route
+ * (`course_card` sans le marqueur) : un type réécrit à tort se verrait.
+ */
+function staleTypeRow(): Row {
+	return { ...templateRow(), type: 'course_card' };
 }
 
 async function statusOf(promise: Promise<Response>): Promise<number | undefined> {
@@ -40,23 +34,14 @@ describe('PUT partiel : les champs absents sont conservés', () => {
 		expect(db.question_templates[0]).toEqual({ ...before, title: 'Le double' });
 	});
 
-	it('{description} sur un QCM → le type reste multiple_choice (non réécrit)', async () => {
+	it('{description} → le type enregistré n’est pas réécrit', async () => {
 		const db = fakeDb();
-		db.question_templates = [qcmRow()];
+		db.question_templates = [staleTypeRow()];
 		const response = await callPut(db, { description: 'Autre description' });
 
 		expect(response.status).toBe(200);
 		expect(db.updates).toEqual([{ description: 'Autre description' }]);
-		expect(db.question_templates[0].type).toBe('multiple_choice');
-	});
-
-	it('{variations} avec des choix → type recalculé en multiple_choice', async () => {
-		const db = fakeDb();
-		const response = await callPut(db, { variations: QCM_VARIATIONS });
-
-		expect(response.status).toBe(200);
-		expect(db.updates).toHaveLength(1);
-		expect(db.updates[0]).toEqual({ variations: QCM_VARIATIONS, type: 'multiple_choice' });
+		expect(db.question_templates[0].type).toBe('course_card');
 	});
 
 	it('{title, status: draft} → seuls title et status écrits (rien remis à null)', async () => {
@@ -68,13 +53,13 @@ describe('PUT partiel : les champs absents sont conservés', () => {
 		expect(db.question_templates[0].description).toBe(FIXTURE.description);
 	});
 
-	it('{description, status: draft} sur un QCM → type non réécrit', async () => {
+	it('{description, status: draft} → type non réécrit', async () => {
 		const db = fakeDb();
-		db.question_templates = [qcmRow()];
+		db.question_templates = [staleTypeRow()];
 		const response = await callPut(db, { description: 'Autre', status: 'draft' });
 
 		expect(response.status).toBe(200);
-		expect(db.question_templates[0].type).toBe('multiple_choice');
+		expect(db.question_templates[0].type).toBe('course_card');
 	});
 
 	it('clé présente à null → la colonne est vidée', async () => {
@@ -175,7 +160,6 @@ describe("PUT complet (éditeur) : objet d'écriture inchangé", () => {
 			level: FIXTURE.level,
 			status: 'draft',
 			delay: FIXTURE.delay,
-			multipleAnswers: null,
 			testSpecs: FIXTURE.testSpecs
 		};
 		const response = await callPut(db, payload);
@@ -199,7 +183,6 @@ describe("PUT complet (éditeur) : objet d'écriture inchangé", () => {
 				level: FIXTURE.level,
 				status: 'draft',
 				delay: FIXTURE.delay,
-				multiple_answers: null,
 				test_specs: FIXTURE.testSpecs
 			}
 		]);

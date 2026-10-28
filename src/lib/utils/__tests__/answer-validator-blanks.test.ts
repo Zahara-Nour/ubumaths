@@ -434,35 +434,6 @@ describe('Per-blank validation — validateAnswer signature', () => {
 		expect(result.isCorrect).toBe(true);
 	});
 
-	it('E18b. polymorphic signature still works with number', () => {
-		const instance = createInstance([mathBlank('5')]);
-		const result = validateAnswer(5, instance);
-		expect(result.isCorrect).toBe(true);
-	});
-
-	it('E19. branches via choices (multiple_choice still works)', () => {
-		const instance: QuestionInstance = {
-			templateId: 'test-mc',
-			statement: 'Choose' as ResolvedMarkdown,
-			choices: [
-				{ content: 'A' as ResolvedMarkdown, isCorrect: true },
-				{ content: 'B' as ResolvedMarkdown, isCorrect: false }
-			],
-			// NOTE (tests stale 2026-06-12): `solution` was renamed to
-			// `correctChoiceIndex` (commits 89726bf2e / 6114e256e removed the legacy
-			// `solution` fallback). Updated field name only — behaviour unchanged.
-			correctChoiceIndex: '0',
-			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1,
-			generatedAt: new Date().toISOString()
-		};
-
-		const result = validateAnswer(0, instance);
-		expect(result.isCorrect).toBe(true);
-	});
-
 	it('E20. requiredForm is per-blank, not global', () => {
 		// Instance with global requiredForm but different per-blank
 		const instance = createInstance([mathBlank('6', { requiredForm: 'sum' })]);

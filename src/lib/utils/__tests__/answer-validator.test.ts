@@ -706,7 +706,7 @@ describe('validateAnswer - Edge Cases', () => {
 		expect(result.constraintViolations).toBeUndefined();
 	});
 
-	it('should handle numerical answer type conversion', () => {
+	it('should judge the form on the LaTeX, not on the value', () => {
 		const instance = createNumericalInstance('5', {
 			constraints: {
 				brackets: 'strict',
@@ -717,8 +717,7 @@ describe('validateAnswer - Edge Cases', () => {
 			}
 		});
 
-		// Pass number instead of string
-		const result = validateAnswer(5, instance, '(5)');
+		const result = validateAnswer('5', instance, '(5)');
 
 		expect(result.status).toBe('bad_form');
 	});

@@ -10,7 +10,8 @@
  */
 
 import { generateInstance } from '../../src/lib/questions/generator/instance-generator';
-import { prepareStatement } from '../../src/lib/questions/expected-result';
+import { prepareStatement, withoutChoiceCases } from '../../src/lib/questions/expected-result';
+import { correctChoiceIndexesOf, isChoiceBlank } from '../../src/lib/questions/choice-case';
 import { parseFigureContent } from '../../src/lib/ubumark/parser/figure-parser';
 import { buildFigureScene } from '../../src/lib/ubumark/utils/figure-scene';
 import { figureToSvg, type FigureShape } from '../../src/lib/ubumark/utils/figure-svg';
@@ -575,14 +576,25 @@ export function exemplesDuModele(modele: ModeleFichier): {
 			throw new Error(`« ${modele.title} » v${i + 1} : ${r.errors.join(' ; ')}`);
 		}
 		const inst = r.instance;
-		const enonce = dessine(casesDeTexte(prepareStatement(inst.statement, inst)));
+		// Case choix : ses choix listés à part (ordre affiché, bon marqué), bloc retiré de l'énoncé
+		const blanks = inst.blanks ?? [];
+		const choiceBlank = blanks.find(isChoiceBlank);
+		const statement = choiceBlank ? withoutChoiceCases(String(inst.statement)) : inst.statement;
+		const enonce = dessine(casesDeTexte(prepareStatement(statement, inst)));
+		const bons = choiceBlank ? correctChoiceIndexesOf(choiceBlank) : [];
 		return {
 			variation: i + 1,
 			statement: enonce.markdown,
-			choices: inst.choices
-				? inst.choices.map((c) => ({ content: dessine(c.content).markdown, bon: c.isCorrect }))
+			choices: choiceBlank
+				? choiceBlank.choice.order.map((index) => ({
+						content: dessine(choiceBlank.choice.choices[index]).markdown,
+						bon: bons.includes(index)
+					}))
 				: null,
-			answer: (inst.blanks ?? []).map((b) => toFrenchDecimal(b.expectedAnswer)).join(' | '),
+			answer: blanks
+				.filter((b) => !isChoiceBlank(b))
+				.map((b) => toFrenchDecimal(b.expectedAnswer))
+				.join(' | '),
 			solution: enonce.solutions.join(''),
 			steps: (inst.correction?.steps ?? []).map((s) => dessine(s).markdown)
 		};

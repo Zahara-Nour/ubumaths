@@ -37,14 +37,6 @@ describe('rewriteBarePi : calculs réécrits', () => {
 		]);
 	});
 
-	it('bon choix d’un QCM : la condition du {{if:…}} de correctChoiceIndex', () => {
-		const { value, occurrences } = rewriteBarePi({
-			correctChoiceIndex: ['{{if:cos(pi/6)>0.5|0|1}}', '2']
-		});
-		expect(value.correctChoiceIndex).toEqual(['{{if:cos(\\pi/6)>0.5|0|1}}', '2']);
-		expect(occurrences.map((o) => o.path)).toEqual(['correctChoiceIndex[0]']);
-	});
-
 	it('expression de variable sans eval: : seuls ses {{eval:…}}', () => {
 		const { value } = rewriteBarePi({
 			variables: [{ name: 'a', expression: '{{eval:pi/6}}' }]

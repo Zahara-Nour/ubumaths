@@ -9,26 +9,9 @@
 	"level": 1,
 	"delay": 20,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "croissante"
-			},
-			{
-				"content": "décroissante"
-			},
-			{
-				"content": "constante"
-			}
-		],
-		"cleanCoefficients": true
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -45,10 +28,14 @@
 					"Ici $r=\\textcolor{{{color:primary.0}}}{{{r}}}>0$ : la suite est **croissante** (le signe de $u_0$ ne compte pas)."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -65,10 +52,14 @@
 					"Ici $r=\\textcolor{{{color:primary.0}}}{{{r}}}<0$ : la suite est **décroissante** (le signe de $u_0$ ne compte pas)."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r=0$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r=0$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -81,10 +72,14 @@
 					"Ici $r=\\textcolor{{{color:primary.0}}}{0}$ : tous les termes valent ${{a}}$, la suite est **constante**."
 				]
 			},
-			"correctChoiceIndex": ["2"]
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$, $u_{n+1}=u_n-{{r}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$, $u_{n+1}=u_n-{{r}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -101,10 +96,14 @@
 					"Comme $r<0$, la suite est **décroissante**, même si ses premiers termes sont positifs."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{b}}-{{a}}n$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{b}}-{{a}}n$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -121,10 +120,14 @@
 					"Comme $r<0$, la suite est **décroissante**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{eval:a*n+b}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{eval:a*n+b}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -145,9 +148,16 @@
 					"Comme $r>0$, la suite est **croissante**, même si ses premiers termes sont négatifs."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"testSpecs": [
 		{
 			"expected": {
@@ -159,7 +169,7 @@
 			},
 			"description": "variation 0 (r > 0, u0 < 0) : « croissante » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -171,7 +181,7 @@
 			},
 			"description": "variation 0 (r > 0, u0 < 0) : « décroissante » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -183,7 +193,7 @@
 			},
 			"description": "variation 0 (r > 0, u0 < 0) : « constante » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -195,7 +205,7 @@
 			},
 			"description": "variation 1 (r < 0, u0 > 0) : « croissante » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -207,7 +217,7 @@
 			},
 			"description": "variation 1 (r < 0, u0 > 0) : « décroissante » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -219,7 +229,7 @@
 			},
 			"description": "variation 1 (r < 0, u0 > 0) : « constante » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -230,7 +240,7 @@
 			},
 			"description": "variation 2 (r = 0) : « croissante » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -241,7 +251,7 @@
 			},
 			"description": "variation 2 (r = 0) : « décroissante » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -252,7 +262,7 @@
 			},
 			"description": "variation 2 (r = 0) : « constante » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -264,7 +274,7 @@
 			},
 			"description": "variation 3 (u(n+1) = u(n) − r) : « croissante » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -276,7 +286,7 @@
 			},
 			"description": "variation 3 (u(n+1) = u(n) − r) : « décroissante » accepté",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -288,7 +298,7 @@
 			},
 			"description": "variation 3 (u(n+1) = u(n) − r) : « constante » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -300,7 +310,7 @@
 			},
 			"description": "variation 4 (u(n) = b − an) : « croissante » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -312,7 +322,7 @@
 			},
 			"description": "variation 4 (u(n) = b − an) : « décroissante » accepté",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -324,7 +334,7 @@
 			},
 			"description": "variation 4 (u(n) = b − an) : « constante » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -336,7 +346,7 @@
 			},
 			"description": "variation 5 (u(n) = an + b, b < 0) : « croissante » accepté",
 			"variationIndex": 5,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -348,7 +358,7 @@
 			},
 			"description": "variation 5 (u(n) = an + b, b < 0) : « décroissante » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -360,7 +370,7 @@
 			},
 			"description": "variation 5 (u(n) = an + b, b < 0) : « constante » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		}
 	]
 }

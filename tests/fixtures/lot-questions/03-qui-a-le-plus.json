@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Qui a le plus d'argent ?\n\n```monnaie\npièces: {{a}}×2 {{b}}×1 ; {{c}}×2 {{f}}×1\nlégendes: Léa ; Tom\n```",
+			"statement": "Qui a le plus d'argent ?\n\n```monnaie\npièces: {{a}}×2 {{b}}×1 ; {{c}}×2 {{f}}×1\nlégendes: Léa ; Tom\n```\n\n```choix\nmelanger: non\n- Léa\n- Tom\n- Ils ont autant d'argent.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -42,27 +42,20 @@
 				}
 			],
 			"conditions": ["a + b >= 2", "c + f >= 2", "abs(la - to) <= 2"],
-			"choices": [
-				{
-					"content": "Léa"
-				},
-				{
-					"content": "Tom"
-				},
-				{
-					"content": "Ils ont autant d'argent."
-				}
-			],
-			"correctChoiceIndex": ["{{g}}"],
 			"correction": {
 				"steps": [
 					"Léa a ${{la}}~\\unit{€}$. Tom a ${{to}}~\\unit{€}$.",
 					"{{if:g==0|Léa a le plus d'argent.|{{if:g==1|Tom a le plus d'argent.|Ils ont autant d'argent.}}}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			]
 		},
 		{
-			"statement": "Qui a le plus d'argent ?\n\n```monnaie\nbillets: {{if:s==1||1×{{k}}}} ; {{if:s==1|1×{{k}}|}}\npièces: {{if:s==1|{{n}}×1|}} ; {{if:s==1||{{n}}×1}}\nlégendes: Léa ; Tom\n```",
+			"statement": "Qui a le plus d'argent ?\n\n```monnaie\nbillets: {{if:s==1||1×{{k}}}} ; {{if:s==1|1×{{k}}|}}\npièces: {{if:s==1|{{n}}×1|}} ; {{if:s==1||{{n}}×1}}\nlégendes: Léa ; Tom\n```\n\n```choix\nmelanger: non\n- Léa\n- Tom\n- Ils ont autant d'argent.\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -94,28 +87,21 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "Léa"
-				},
-				{
-					"content": "Tom"
-				},
-				{
-					"content": "Ils ont autant d'argent."
-				}
-			],
-			"correctChoiceIndex": ["{{g}}"],
 			"correction": {
 				"steps": [
 					"Léa a ${{la}}~\\unit{€}$. Tom a ${{to}}~\\unit{€}$.",
 					"{{if:g==0|Léa a le plus d'argent.|{{if:g==1|Tom a le plus d'argent.|Ils ont autant d'argent.}}}}",
 					"Ce n'est pas celui qui a le plus de pièces et de billets qui a le plus d'argent : on compte ce qui est écrit dessus."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			]
 		},
 		{
-			"statement": "Qui a le plus d'argent ?\n\n```monnaie\nbillets: {{c}}×5 ; 1×{{w}}\npièces: {{d}}×2 ; {{u}}×1\nlégendes: Léa ; Tom\n```",
+			"statement": "Qui a le plus d'argent ?\n\n```monnaie\nbillets: {{c}}×5 ; 1×{{w}}\npièces: {{d}}×2 ; {{u}}×1\nlégendes: Léa ; Tom\n```\n\n```choix\nmelanger: non\n- Léa\n- Tom\n- Ils ont autant d'argent.\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -147,28 +133,21 @@
 				}
 			],
 			"conditions": ["c + d >= 3", "abs(la - to) <= 6"],
-			"choices": [
-				{
-					"content": "Léa"
-				},
-				{
-					"content": "Tom"
-				},
-				{
-					"content": "Ils ont autant d'argent."
-				}
-			],
-			"correctChoiceIndex": ["{{g}}"],
 			"correction": {
 				"steps": [
 					"Léa a ${{la}}~\\unit{€}$. Tom a ${{to}}~\\unit{€}$.",
 					"{{if:g==0|Léa a le plus d'argent.|{{if:g==1|Tom a le plus d'argent.|Ils ont autant d'argent.}}}}",
 					"Ce n'est pas celui qui a le plus de pièces et de billets qui a le plus d'argent : on compte ce qui est écrit dessus."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			]
 		},
 		{
-			"statement": "Qui a le plus d'argent ?\n\n```monnaie\nbillets: {{p}}×10 ; {{r}}×20 {{q}}×5\npièces: {{x}}×2 ; {{y}}×1\nlégendes: Léa ; Tom\n```",
+			"statement": "Qui a le plus d'argent ?\n\n```monnaie\nbillets: {{p}}×10 ; {{r}}×20 {{q}}×5\npièces: {{x}}×2 ; {{y}}×1\nlégendes: Léa ; Tom\n```\n\n```choix\nmelanger: non\n- Léa\n- Tom\n- Ils ont autant d'argent.\n```",
 			"variables": [
 				{
 					"name": "p",
@@ -204,24 +183,17 @@
 				}
 			],
 			"conditions": ["abs(la - to) <= 6"],
-			"choices": [
-				{
-					"content": "Léa"
-				},
-				{
-					"content": "Tom"
-				},
-				{
-					"content": "Ils ont autant d'argent."
-				}
-			],
-			"correctChoiceIndex": ["{{g}}"],
 			"correction": {
 				"steps": [
 					"Léa a ${{la}}~\\unit{€}$. Tom a ${{to}}~\\unit{€}$.",
 					"{{if:g==0|Léa a le plus d'argent.|{{if:g==1|Tom a le plus d'argent.|Ils ont autant d'argent.}}}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -240,7 +212,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : Tom, même nombre de pièces",
@@ -257,7 +229,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Piège : 10 pièces de 1 € contre un billet de 10 € → autant",
@@ -274,7 +246,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "Erreur du piège : Léa, parce qu'elle a plus d'objets",
@@ -291,7 +263,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Tom a 6 pièces de 1 €, Léa un billet de 5 € : Tom",
@@ -308,7 +280,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Léa 5 + 5 + 2 + 2 = 14 (4 objets), Tom 20 (1 objet) : Tom",
@@ -325,7 +297,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Léa 10 + 10 + 2 = 22, Tom 20 + 1 = 21 : Léa",
@@ -343,10 +315,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
-	],
-	"options": {
-		"shuffleChoices": false
-	}
+	]
 }

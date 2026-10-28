@@ -211,23 +211,6 @@
 			},
 			grades: ['4', '3']
 		},
-		multiple_choice: {
-			templateId: 'debug-qcm-1',
-			statement: 'Résolvez: $$2x + 5 = 13$$' as QuestionInstance['statement'],
-			solution: '0',
-			shuffledChoices: [
-				{ content: '$$x = 4$$' as QuestionInstance['statement'], originalIndex: 0 },
-				{ content: '$$x = 9$$' as QuestionInstance['statement'], originalIndex: 1 },
-				{ content: '$$x = 6.5$$' as QuestionInstance['statement'], originalIndex: 2 }
-			],
-			multipleAnswers: false,
-			correction: {
-				steps: [
-					'On résout: $$2x + 5 = 13 \\Rightarrow 2x = 13 - 5 \\Rightarrow 2x = 8 \\Rightarrow x = 4$$.' as QuestionInstance['statement']
-				]
-			},
-			grades: ['3', '2']
-		},
 		// Reprises de la démo `/demo/question-display-demo`
 		fraction_sum: {
 			templateId: 'demo-numerical',
@@ -250,21 +233,20 @@
 		},
 		qcm_pi: {
 			templateId: 'demo-qcm',
-			statement: resolvedMarkdown('Quelle est la valeur de $\\pi$ arrondie au centième ?'),
-			correctChoiceIndex: '1',
-			choices: [
-				{ content: resolvedMarkdown('$$3{,}00$$'), isCorrect: false },
-				{ content: resolvedMarkdown('$$3{,}14$$'), isCorrect: true },
-				{ content: resolvedMarkdown('$$3{,}41$$'), isCorrect: false },
-				{ content: resolvedMarkdown('$$2{,}71$$'), isCorrect: false }
+			statement: resolvedMarkdown(
+				'Quelle est la valeur de $\\pi$ arrondie au centième ?\n\n```choix\ncase: 0\n- $$3{,}00$$\n- $$3{,}14$$\n- $$3{,}41$$\n- $$2{,}71$$\n```'
+			),
+			blanks: [
+				{
+					expectedAnswer: '1',
+					type: 'choice',
+					choice: {
+						choices: ['$$3{,}00$$', '$$3{,}14$$', '$$3{,}41$$', '$$2{,}71$$'],
+						order: [0, 1, 2, 3],
+						multiple: false
+					}
+				}
 			],
-			shuffledChoices: [
-				{ content: resolvedMarkdown('$$3{,}00$$'), originalIndex: 0 },
-				{ content: resolvedMarkdown('$$3{,}14$$'), originalIndex: 1 },
-				{ content: resolvedMarkdown('$$3{,}41$$'), originalIndex: 2 },
-				{ content: resolvedMarkdown('$$2{,}71$$'), originalIndex: 3 }
-			],
-			multipleAnswers: false,
 			grades: ['6'],
 			theme: 'Géométrie',
 			domain: 'Constantes',
@@ -303,9 +285,8 @@
 		{ value: 'numerical_decimal', label: 'Numérique (décimale)' },
 		{ value: 'algebraic_transform', label: 'Transformation algébrique' },
 		{ value: 'fill_in_blanks', label: 'Texte à trous' },
-		{ value: 'multiple_choice', label: 'QCM' },
 		{ value: 'fraction_sum', label: 'Somme de fractions, à trou' },
-		{ value: 'qcm_pi', label: 'QCM : valeur de π' },
+		{ value: 'qcm_pi', label: 'Case choix : valeur de π' },
 		{ value: 'pythagore_blanks', label: 'Pythagore, deux trous' },
 		{ value: 'figure_a_completer', label: 'Figure à compléter (CP-059)' },
 		{ value: 'figure_carre', label: 'Terminer un carré (CP-060)' },

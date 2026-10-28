@@ -40,13 +40,14 @@ vi.mock('$lib/dictionary/fetch-dictionary', async () => {
 const ASSIGNMENT = '44444444-4444-4444-8444-444444444444';
 const ATTEMPT = '99999999-9999-4999-8999-999999999999';
 
+/** Question réduite à une case choix, version publique (choix dans l'ordre affiché) */
 function qcm(position: number, statement: string): PublicQuestion {
 	return {
 		position,
 		delaySeconds: 60,
-		type: 'multiple_choice',
-		statement,
-		choices: [{ content: '$$3$$' }, { content: '$$4$$' }]
+		type: 'fill_in_blanks',
+		statement: `${statement}\n\n\`\`\`choix\ncase: 0\n- $$3$$\n- $$4$$\n\`\`\``,
+		blanks: [{ type: 'choice', choice: { choices: ['$$3$$', '$$4$$'], multiple: false } }]
 	};
 }
 
@@ -78,14 +79,13 @@ const SUBMIT_RESPONSE = {
 		position,
 		instance: {
 			templateId: 't',
-			statement: `Question ${position}`,
-			choices: [
-				{ content: '$$3$$', isCorrect: position === 1 },
-				{ content: '$$4$$', isCorrect: position === 0 }
-			],
-			shuffledChoices: [
-				{ content: '$$3$$', originalIndex: 0 },
-				{ content: '$$4$$', originalIndex: 1 }
+			statement: `Question ${position}\n\n\`\`\`choix\ncase: 0\n- $$3$$\n- $$4$$\n\`\`\``,
+			blanks: [
+				{
+					expectedAnswer: position === 0 ? '1' : '0',
+					type: 'choice',
+					choice: { choices: ['$$3$$', '$$4$$'], order: [0, 1], multiple: false }
+				}
 			],
 			grades: ['6'],
 			theme: 'T',
@@ -93,8 +93,8 @@ const SUBMIT_RESPONSE = {
 			level: 1,
 			generatedAt: ''
 		},
-		// QCM : indices d'origine (ordre non mélangé ici)
-		answer: { choiceIndexes: [1] },
+		// Case choix : indices d'origine (ordre non mélangé ici)
+		answer: { values: ['1'] },
 		status: position === 0 ? 'correct' : 'incorrect',
 		points: position === 0 ? 1 : 0,
 		isCorrect: position === 0,
@@ -187,10 +187,10 @@ describe('Évaluation notée — page élève', () => {
 		expect(submitUrl).toContain(`/attempts/${ATTEMPT}/submit`);
 		const body = JSON.parse(String(init.body));
 		expect(
-			body.answers.map((a: { position: number; choices: number[] }) => [a.position, a.choices])
+			body.answers.map((a: { position: number; values: string[] }) => [a.position, a.values])
 		).toEqual([
-			[0, [1]],
-			[1, [1]]
+			[0, ['1']],
+			[1, ['1']]
 		]);
 		expect(JSON.stringify(body)).not.toMatch(/isCorrect|points|score|grade/);
 

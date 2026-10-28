@@ -355,19 +355,6 @@ describe('validation du modèle (enregistrement)', () => {
 	it('bonne réponse dynamique : vérifiée au tirage seulement', () => {
 		expect(choiceAnswerCountErrors(CINQ('{{eval:1+1}}'))).toEqual([]);
 	});
-
-	it('un bloc choix dans un QCM (choices) : refusé', () => {
-		const qcm = template({
-			statement: '```choix\n- a\n- b\n```',
-			choices: [
-				{ content: templateMarkdown('x'), isCorrect: true },
-				{ content: templateMarkdown('y'), isCorrect: false }
-			]
-		});
-		expect(choiceAnswerCountErrors(qcm)).toEqual([
-			'Variation 1 : un bloc choix ne se combine pas avec les choix d’un QCM'
-		]);
-	});
 });
 
 describe('invariants : les questions existantes ne bougent pas', () => {
@@ -380,21 +367,6 @@ describe('invariants : les questions existantes ne bougent pas', () => {
 		domain: 'D',
 		level: 1
 	};
-	const qcm = {
-		...base,
-		type: 'multiple_choice',
-		variations: [
-			{
-				statement: 'Combien font {{a}}+{{b}} ?',
-				variables: [
-					{ name: 'a', expression: '1..9' },
-					{ name: 'b', expression: '1..9' }
-				],
-				correctChoiceIndex: '0',
-				choices: ['$x$', 'A', 'B', 'C', 'D'].map((content, i) => ({ content, isCorrect: i === 0 }))
-			}
-		]
-	} as unknown as QuestionTemplate;
 	const fib = {
 		...base,
 		type: 'fill_in_blanks',
@@ -411,13 +383,6 @@ describe('invariants : les questions existantes ne bougent pas', () => {
 	} as unknown as QuestionTemplate;
 
 	// Relevé avec le code d'avant la case choix (2026-10-26)
-	const QCM_ORDERS: Record<number, number[]> = {
-		1: [2, 1, 0, 3, 4],
-		2: [4, 0, 1, 3, 2],
-		3: [2, 4, 1, 3, 0],
-		7: [4, 0, 1, 2, 3],
-		42: [2, 4, 1, 0, 3]
-	};
 	const FIB_ANSWERS: Record<number, string[]> = {
 		1: ['28', '99'],
 		2: ['32', '54'],
@@ -425,13 +390,6 @@ describe('invariants : les questions existantes ne bougent pas', () => {
 		7: ['53', '70'],
 		42: ['66', '67']
 	};
-
-	it('QCM : même mélange pour une même graine', () => {
-		for (const [seed, order] of Object.entries(QCM_ORDERS)) {
-			const instance = generate(qcm, Number(seed));
-			expect(instance.shuffledChoices?.map((c) => c.originalIndex)).toEqual(order);
-		}
-	});
 
 	it('question à cases sans bloc choix : mêmes tirages', () => {
 		for (const [seed, answers] of Object.entries(FIB_ANSWERS)) {

@@ -33,9 +33,10 @@ function instanceOf(
 		status: 'published',
 		variations: [
 			{
-				statement: templateMarkdown(statement),
-				correctChoiceIndex: ['0'],
-				choices: choices.map((content) => ({ content }))
+				statement: templateMarkdown(
+					`${statement}\n\n\`\`\`choix\n${choices.map((choice) => `- ${choice}`).join('\n')}\n\`\`\``
+				),
+				blanks: [{ expectedAnswer: '0' }]
 			}
 		]
 	} as unknown as QuestionTemplate;
@@ -73,8 +74,8 @@ describe('mots cliquables dans une question', () => {
 		expect(lexiconButtons(evaluation.container)).toEqual([]);
 	});
 
-	// Un choix de QCM est un bouton : un clic sur un mot enverrait la réponse
-	it('aucun mot cliquable dans les réponses d’un QCM', async () => {
+	// Un choix de case choix est un bouton : un clic sur un mot enverrait la réponse
+	it('aucun mot cliquable dans les réponses d’une case choix', async () => {
 		const { container } = await render(QuestionCard, {
 			interactive: true,
 			instance: instanceOf(

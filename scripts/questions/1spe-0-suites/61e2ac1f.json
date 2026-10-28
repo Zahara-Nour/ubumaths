@@ -9,22 +9,9 @@
 	"level": 1,
 	"delay": 30,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "Oui, elle semble arithmétique."
-			},
-			{
-				"content": "Non, elle ne semble pas arithmétique."
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle semble arithmétique.\n- Non, elle ne semble pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -61,10 +48,14 @@
 					"On passe d'un terme au suivant en ajoutant toujours ${{r}}$ : la suite semble **arithmétique**, de raison $r={{r}}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle semble arithmétique.\n- Non, elle ne semble pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -101,10 +92,14 @@
 					"La différence n'est pas toujours la même : la suite ne semble **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle semble arithmétique.\n- Non, elle ne semble pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -137,10 +132,14 @@
 					"La différence n'est pas toujours la même : la suite ne semble **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle semble arithmétique.\n- Non, elle ne semble pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -173,10 +172,14 @@
 					"La suite ne semble **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle semble arithmétique.\n- Non, elle ne semble pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -218,7 +221,11 @@
 					"La suite ne semble **pas arithmétique** : il faut regarder **toutes** les différences, pas seulement les premières."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -237,7 +244,7 @@
 			},
 			"description": "v0 : « oui » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -254,7 +261,7 @@
 			},
 			"description": "v0 : « non » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -271,7 +278,7 @@
 			},
 			"description": "v1 : « non » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -288,7 +295,7 @@
 			},
 			"description": "v1 : « oui » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -304,7 +311,7 @@
 			},
 			"description": "v2 : « non » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -320,7 +327,7 @@
 			},
 			"description": "v2 : « oui » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -336,7 +343,7 @@
 			},
 			"description": "v3 : « non » accepté",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -352,7 +359,7 @@
 			},
 			"description": "v3 : « oui » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -370,7 +377,7 @@
 			},
 			"description": "v4 : « non » accepté",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -388,7 +395,7 @@
 			},
 			"description": "v4 : « oui » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
 	]
 }

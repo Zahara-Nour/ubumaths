@@ -8,8 +8,7 @@
 		"description": "$3$ facteurs",
 		"variations": [
 			{
-				"statement": "Quel est le signe de ce produit ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["{{eval:(1-a*b*c/abs(a*b*c))/2}}"],
+				"statement": "Quel est le signe de ce produit ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -24,27 +23,23 @@
 						"expression": "30..99;±"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "(a)*(b)*(c)",
 						"displayOptions": {
 							"removeUnnecessaryBrackets": true
 						}
 					}
 				],
-				"choices": [
+				"blanks": [
 					{
-						"content": "positif"
-					},
-					{
-						"content": "négatif"
+						"expectedAnswer": "{{eval:(1-a*b*c/abs(a*b*c))/2}}"
 					}
 				]
 			}
 		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"theme": "Relatifs",
 		"domain": "Multiplier et Diviser",
 		"subdomain": "Produit",
@@ -60,10 +55,12 @@
 					"b": "92",
 					"c": "97"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "un négatif",
@@ -73,10 +70,12 @@
 					"b": "-92",
 					"c": "97"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "deux négatifs",
@@ -86,10 +85,12 @@
 					"b": "-78",
 					"c": "-72"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "deux négatifs : négatif faux",
@@ -99,10 +100,12 @@
 					"b": "-78",
 					"c": "-72"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "trois négatifs (bornes)",
@@ -112,10 +115,12 @@
 					"b": "-99",
 					"c": "-30"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			}
 		]
 	}

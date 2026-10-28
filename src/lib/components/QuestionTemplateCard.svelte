@@ -45,8 +45,6 @@
 		switch (type) {
 			case 'fill_in_blanks':
 				return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-			case 'multiple_choice':
-				return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
 			case 'course_card':
 				return 'bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200';
 			default:

@@ -415,15 +415,7 @@ All request bodies and query parameters are validated using Zod schemas. Invalid
 									properties: {
 										type: {
 											type: 'string',
-											enum: [
-												'multiple_choice',
-												'numerical',
-												'algebraic',
-												'fill_blanks',
-												'ordering',
-												'matrix',
-												'true_false'
-											]
+											enum: ['fill_in_blanks', 'course_card']
 										},
 										title: {
 											type: 'string',

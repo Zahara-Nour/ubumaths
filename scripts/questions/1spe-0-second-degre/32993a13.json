@@ -9,25 +9,9 @@
 	"level": 2,
 	"delay": 20,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "aucune racine"
-			},
-			{
-				"content": "une seule racine"
-			},
-			{
-				"content": "deux racines distinctes"
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Le discriminant d'un polynôme du second degré vaut $\\Delta={{d}}$. Combien de racines ce polynôme a-t-il ?",
+			"statement": "Le discriminant d'un polynôme du second degré vaut $\\Delta={{d}}$. Combien de racines ce polynôme a-t-il ?\n\n```choix\nmelanger: non\n- aucune racine\n- une seule racine\n- deux racines distinctes\n```",
 			"variables": [
 				{
 					"name": "d",
@@ -40,10 +24,14 @@
 					"Comme $\\Delta>0$, le polynôme a **deux racines distinctes**."
 				]
 			},
-			"correctChoiceIndex": ["2"]
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		},
 		{
-			"statement": "Le discriminant d'un polynôme du second degré vaut $\\Delta={{d}}$. Combien de racines ce polynôme a-t-il ?",
+			"statement": "Le discriminant d'un polynôme du second degré vaut $\\Delta={{d}}$. Combien de racines ce polynôme a-t-il ?\n\n```choix\nmelanger: non\n- aucune racine\n- une seule racine\n- deux racines distinctes\n```",
 			"variables": [
 				{
 					"name": "d",
@@ -56,17 +44,25 @@
 					"Comme $\\Delta<0$, le polynôme n'a **aucune racine** réelle."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Le discriminant d'un polynôme du second degré vaut $\\Delta=0$. Combien de racines ce polynôme a-t-il ?",
+			"statement": "Le discriminant d'un polynôme du second degré vaut $\\Delta=0$. Combien de racines ce polynôme a-t-il ?\n\n```choix\nmelanger: non\n- aucune racine\n- une seule racine\n- deux racines distinctes\n```",
 			"correction": {
 				"steps": ["Comme $\\Delta=0$, le polynôme a **une seule racine** (racine double)."]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Combien de racines le polynôme $P(x)={{eval:ax^2+bx+c}}$ a-t-il ?",
+			"statement": "Combien de racines le polynôme $P(x)={{eval:ax^2+bx+c}}$ a-t-il ?\n\n```choix\nmelanger: non\n- aucune racine\n- une seule racine\n- deux racines distinctes\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -93,10 +89,14 @@
 					"Comme $\\Delta>0$, le polynôme a **deux racines distinctes**."
 				]
 			},
-			"correctChoiceIndex": ["2"]
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		},
 		{
-			"statement": "Combien de racines le polynôme $P(x)={{eval:ax^2+bx+c}}$ a-t-il ?",
+			"statement": "Combien de racines le polynôme $P(x)={{eval:ax^2+bx+c}}$ a-t-il ?\n\n```choix\nmelanger: non\n- aucune racine\n- une seule racine\n- deux racines distinctes\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -123,10 +123,14 @@
 					"Comme $\\Delta<0$, le polynôme n'a **aucune racine** réelle."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Combien de racines le polynôme $P(x)={{eval:ax^2+bx+c}}$ a-t-il ?",
+			"statement": "Combien de racines le polynôme $P(x)={{eval:ax^2+bx+c}}$ a-t-il ?\n\n```choix\nmelanger: non\n- aucune racine\n- une seule racine\n- deux racines distinctes\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -156,7 +160,11 @@
 					"Comme $\\Delta=0$, le polynôme a **une seule racine** (racine double)."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -169,7 +177,7 @@
 			},
 			"description": "Δ=17 → deux racines",
 			"variationIndex": 0,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -180,7 +188,7 @@
 			},
 			"description": "Δ=17 → « une seule » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -191,7 +199,7 @@
 			},
 			"description": "Δ=−8 → aucune racine",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -202,7 +210,7 @@
 			},
 			"description": "Δ=−8 → « deux racines » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -211,7 +219,7 @@
 			"variables": {},
 			"description": "Δ=0 → une seule racine",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -220,7 +228,7 @@
 			"variables": {},
 			"description": "Δ=0 → « aucune » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -233,7 +241,7 @@
 			},
 			"description": "2x^2-3x-5 : Δ=49 → deux",
 			"variationIndex": 3,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -246,7 +254,7 @@
 			},
 			"description": "2x^2-3x-5 : « aucune » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -259,7 +267,7 @@
 			},
 			"description": "3x^2+x+7 : Δ=−83 → aucune",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -272,7 +280,7 @@
 			},
 			"description": "3x^2+x+7 : « deux » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -286,7 +294,7 @@
 			},
 			"description": "-2x^2+12x-18 : Δ=0 → une seule",
 			"variationIndex": 5,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -300,7 +308,7 @@
 			},
 			"description": "-2x^2+12x-18 : « deux » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		}
 	]
 }

@@ -21,11 +21,7 @@ import {
 	type DetailedVerdict,
 	type StudentAnswer
 } from '$lib/utils/answer-validator';
-import {
-	getQuestionType,
-	type QuestionInstance,
-	type ValidationStatus
-} from '$lib/questions/types';
+import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
 import { statusFromBlankStatuses } from '$lib/questions/grading';
 // Case « figure » : le juge lit les positions des points dans ce registre (cf. questions/construction/positions)
 import '$lib/questions/construction/positions-setup';
@@ -66,9 +62,6 @@ function studentAnswerOf(
 	instance: QuestionInstance,
 	answer: CorrectedAnswer | null
 ): StudentAnswer {
-	if (getQuestionType(instance) === 'multiple_choice') {
-		return { choiceIndexes: answer?.choiceIndexes ?? [] };
-	}
 	const values = answer?.values ?? (instance.blanks ?? []).map(() => '');
 	return { values, latex: values };
 }
@@ -89,13 +82,11 @@ export function detailOfCorrected(
 ): CorrectedDetail {
 	try {
 		const detail = validate(item.instance, studentAnswerOf(item.instance, item.answer));
-		const isChoice = getQuestionType(item.instance) === 'multiple_choice';
-		const recomputed = isChoice
-			? detail.status
-			: // Figures de travail : jamais notées, hors du statut
-				statusFromBlankStatuses(detail.blanks.filter((b) => !b.ungraded).map((b) => b.status));
-		// QCM : `validateAnswerDetailed` ne connaît pas le ½ du barème, seuls les cases comptent
-		if (!isChoice && recomputed !== item.status) {
+		// Figures de travail : jamais notées, hors du statut
+		const recomputed = statusFromBlankStatuses(
+			detail.blanks.filter((b) => !b.ungraded).map((b) => b.status)
+		);
+		if (recomputed !== item.status) {
 			logger.warn('[corrected-detail] Statut recalculé différent du statut enregistré', {
 				recomputed,
 				stored: item.status

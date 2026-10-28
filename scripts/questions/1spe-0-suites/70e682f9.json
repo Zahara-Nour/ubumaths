@@ -9,22 +9,9 @@
 	"level": 4,
 	"delay": 40,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "Oui, elle est arithmétique."
-			},
-			{
-				"content": "Non, elle n'est pas arithmétique."
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital **initial**. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?",
+			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital **initial**. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -45,10 +32,14 @@
 					"Pour tout $n$ : $u_{n+1}=u_n+{{eval:C*t/100}}$. La suite est **arithmétique** de raison ${{eval:C*t/100}}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts, égaux à ${{t}}\\,\\%$ du capital **de l'année**, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?",
+			"statement": "On place ${{C}}~\\unit{€}$ à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts, égaux à ${{t}}\\,\\%$ du capital **de l'année**, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -70,10 +61,14 @@
 					"La suite n'est **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "On place ${{C}}~\\unit{€}$ sur un compte : chaque année, le capital augmente de ${{t}}\\,\\%$, puis la banque prélève ${{f}}~\\unit{€}$ de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?",
+			"statement": "On place ${{C}}~\\unit{€}$ sur un compte : chaque année, le capital augmente de ${{t}}\\,\\%$, puis la banque prélève ${{f}}~\\unit{€}$ de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -108,7 +103,11 @@
 					"$u_1-u_0={{eval:a-C}}$ et $u_2-u_1={{eval:b-a;d}}$ : les écarts ne sont pas constants, la suite n'est **pas arithmétique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -123,7 +122,7 @@
 			},
 			"description": "v0 : « oui » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -136,7 +135,7 @@
 			},
 			"description": "v0 : « non » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -149,7 +148,7 @@
 			},
 			"description": "v1 : « non » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -162,7 +161,7 @@
 			},
 			"description": "v1 : « oui » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -178,7 +177,7 @@
 			},
 			"description": "v2 : « non » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -194,7 +193,7 @@
 			},
 			"description": "v2 : « oui » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
 	]
 }

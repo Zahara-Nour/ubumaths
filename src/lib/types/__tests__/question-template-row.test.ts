@@ -70,13 +70,11 @@ describe('toQuestionTemplate', () => {
 		const modele = toQuestionTemplate(
 			row({
 				exercise_instruction: 'Calculer',
-				multiple_answers: true,
 				default_display_options: { shuffleTerms: true }
 			})
 		);
 
 		expect(modele.exerciseInstruction).toBe('Calculer');
-		expect(modele.multipleAnswers).toBe(true);
 		expect(modele.defaultDisplayOptions).toEqual({ shuffleTerms: true });
 	});
 });

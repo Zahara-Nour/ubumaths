@@ -102,21 +102,23 @@ describe('TestCourse — fin de la course', () => {
  * répondue ».
  */
 describe('TestCourse — évaluation, réponses non validées', () => {
+	/** Questions réduites à une case choix, comme les livre `toDisplayInstance` */
 	function qcmSession(): TestSession {
-		const choices = [
-			{ content: resolvedMarkdown('$$3$$'), isCorrect: false },
-			{ content: resolvedMarkdown('$$4$$'), isCorrect: false }
-		];
 		const instance = (statement: string): QuestionInstance => ({
 			templateId: '',
-			statement: resolvedMarkdown(statement),
+			statement: resolvedMarkdown(`${statement}\n\n\`\`\`choix\ncase: 0\n- $$3$$\n- $$4$$\n\`\`\``),
 			grades: [],
 			theme: '',
 			domain: '',
 			level: 0,
 			generatedAt: '',
-			choices,
-			shuffledChoices: choices.map((c, i) => ({ content: c.content, originalIndex: i }))
+			blanks: [
+				{
+					expectedAnswer: '',
+					type: 'choice',
+					choice: { choices: ['$$3$$', '$$4$$'], order: [0, 1], multiple: false }
+				}
+			]
 		});
 		return { ...session(), instances: [instance('Q1 ?'), instance('Q2 ?')] };
 	}
@@ -149,8 +151,8 @@ describe('TestCourse — évaluation, réponses non validées', () => {
 		expect(confirmSpy).not.toHaveBeenCalled();
 		await vi.waitFor(() => expect(onComplete).toHaveBeenCalledTimes(1));
 		const result = onComplete.mock.calls[0][0];
-		expect(result.answers[0].userAnswer?.value).toBe(1);
-		expect(result.answers[1].userAnswer?.value).toBe(0);
+		expect(result.answers[0].userAnswer?.value).toEqual(['1']);
+		expect(result.answers[1].userAnswer?.value).toEqual(['0']);
 		confirmSpy.mockRestore();
 	});
 

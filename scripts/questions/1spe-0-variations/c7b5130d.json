@@ -9,26 +9,9 @@
 	"level": 1,
 	"delay": 30,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "croissante"
-			},
-			{
-				"content": "décroissante"
-			},
-			{
-				"content": "constante"
-			}
-		],
-		"cleanCoefficients": true
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -49,10 +32,14 @@
 					"Ici $f'(x)$ est **strictement positif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$ sur $\\mathbb{R}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -73,10 +60,14 @@
 					"Ici $f'(x)$ est **strictement négatif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$ sur $\\mathbb{R}$."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -97,10 +88,14 @@
 					"Ici $f'(x)$ est **strictement négatif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$ sur $\\mathbb{R}$."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "x",
@@ -121,10 +116,14 @@
 					"Ici $f'(x)$ est **strictement positif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$ sur $\\mathbb{R}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{k}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{k}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -141,9 +140,16 @@
 					"$f$ est $\\textcolor{{{color:primary.0}}}{\\text{constante}}$ (et $f'(x)=0$)."
 				]
 			},
-			"correctChoiceIndex": ["2"]
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"testSpecs": [
 		{
 			"expected": {
@@ -155,7 +161,7 @@
 			},
 			"description": "c>0, k>0 : croissante",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -167,7 +173,7 @@
 			},
 			"description": "c>0, k>0 : décroissante refusé",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -179,7 +185,7 @@
 			},
 			"description": "c>0, k>0 : constante refusé",
 			"variationIndex": 0,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -191,7 +197,7 @@
 			},
 			"description": "c>0, k<0 : décroissante",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -203,7 +209,7 @@
 			},
 			"description": "c>0, k<0 : croissante (signe de k ignoré) refusé",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -215,7 +221,7 @@
 			},
 			"description": "c>0, k<0 : constante refusé",
 			"variationIndex": 1,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -227,7 +233,7 @@
 			},
 			"description": "c<0, k>0 : décroissante",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -239,7 +245,7 @@
 			},
 			"description": "c<0, k>0 : croissante (signe de c ignoré) refusé",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -251,7 +257,7 @@
 			},
 			"description": "c<0, k>0 : constante refusé",
 			"variationIndex": 2,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -263,7 +269,7 @@
 			},
 			"description": "c<0, k<0 : croissante",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -275,7 +281,7 @@
 			},
 			"description": "c<0, k<0 : décroissante (un seul signe vu) refusé",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -287,7 +293,7 @@
 			},
 			"description": "c<0, k<0 : constante refusé",
 			"variationIndex": 3,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -299,7 +305,7 @@
 			},
 			"description": "c·eᵏ sans x : constante",
 			"variationIndex": 4,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -311,7 +317,7 @@
 			},
 			"description": "c·eᵏ sans x : croissante refusé",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -323,7 +329,7 @@
 			},
 			"description": "c·eᵏ sans x : décroissante refusé",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -335,7 +341,7 @@
 			},
 			"description": "c=1, k=2 (eˣ sans coefficient) : croissante",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -347,7 +353,7 @@
 			},
 			"description": "c=1, k=−3 : décroissante",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -359,7 +365,7 @@
 			},
 			"description": "c=−1, k=2 : décroissante",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -371,7 +377,7 @@
 			},
 			"description": "c=−1, k=−1 : croissante",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -383,7 +389,7 @@
 			},
 			"description": "c=−1, k=−1 : décroissante refusé",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -395,7 +401,7 @@
 			},
 			"description": "constante, c=−1 : constante",
 			"variationIndex": 4,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		}
 	]
 }

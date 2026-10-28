@@ -11,7 +11,7 @@ import { describe, it, expect } from 'vitest';
 import { checkTemplate, formatCheckReport } from '../check-template';
 import type { QuestionTemplate } from '$lib/questions/types';
 
-/** QCM minimal : la formule à vérifier est dans l'énoncé */
+/** Case choix minimale : la formule à vérifier est dans l'énoncé */
 function qcm(
 	formule: string,
 	variables: { name: string; expression: string }[] = [{ name: 'a', expression: '-9..-1' }],
@@ -27,13 +27,9 @@ function qcm(
 		status: 'draft',
 		variations: [
 			{
-				statement: `Que vaut ${formule} ?`,
+				statement: `Que vaut ${formule} ?\n\n\`\`\`choix\n- oui\n- non\n\`\`\``,
 				variables,
-				choices: [
-					{ content: 'oui', isCorrect: true },
-					{ content: 'non', isCorrect: false }
-				],
-				correctChoiceIndex: '0',
+				blanks: [{ expectedAnswer: '0' }],
 				...extra
 			}
 		]

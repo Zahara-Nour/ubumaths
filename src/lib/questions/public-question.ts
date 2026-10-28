@@ -5,7 +5,7 @@
  * Pendant une évaluation, le serveur tire et corrige ; le navigateur ne reçoit
  * que ce qu'il faut pour afficher la question et y répondre. Construite en
  * LISTE BLANCHE, champ par champ : ni réponse attendue, ni correction, ni bon
- * choix d'un QCM, ni graine, ni variables tirées, ni règle de validation.
+ * choix d'une case choix, ni graine, ni variables tirées, ni règle de validation.
  *
  * Pas d'identifiant de modèle non plus : avec lui, un élève retrouverait la
  * formule de la correction (les modèles publiés sont lisibles) et pourrait
@@ -21,13 +21,7 @@
 import type { ResolvedMarkdown } from '$lib/ubumark';
 import { unitKeysFor } from '$lib/questions/units/keyboard-units';
 import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import {
-	getQuestionType,
-	type ConstraintMode,
-	type GradeLevel,
-	type InstanceBlank,
-	type QuestionInstance
-} from './types';
+import type { ConstraintMode, GradeLevel, InstanceBlank, QuestionInstance } from './types';
 import { isWorkFigureBlank } from './graded-part';
 
 // Types
@@ -55,14 +49,11 @@ export interface PublicQuestion {
 	position: number;
 	/** Durée de la question (Entraînement) */
 	delaySeconds: number;
-	type: 'fill_in_blanks' | 'multiple_choice';
+	type: 'fill_in_blanks';
 	statement: string;
 	exerciseInstruction?: string;
 	blanks?: PublicBlank[];
 	expressions?: { name: string; latex: string; displayLatex?: string; answerFormat?: string }[];
-	/** Choix dans l'ordre AFFICHÉ ; la réponse envoie ces positions */
-	choices?: { content: string }[];
-	multipleAnswers?: boolean;
 	/** Réglage des espaces (clavier : espace fine insérée ou non) */
 	spaces?: ConstraintMode;
 	/** Fonctions déclarées par le modèle (`P`, `C`) : notation de l'énoncé, aucune réponse */
@@ -102,12 +93,10 @@ export function toPublicQuestion(
 	instance: QuestionInstance,
 	meta: { position: number; delaySeconds: number }
 ): PublicQuestion {
-	const type =
-		getQuestionType(instance) === 'multiple_choice' ? 'multiple_choice' : 'fill_in_blanks';
 	const question: PublicQuestion = {
 		position: meta.position,
 		delaySeconds: meta.delaySeconds,
-		type,
+		type: 'fill_in_blanks',
 		statement: instance.statement
 	};
 	if (instance.exerciseInstruction) question.exerciseInstruction = instance.exerciseInstruction;
@@ -116,14 +105,6 @@ export function toPublicQuestion(
 	if (instance.genericFunctions?.length) question.genericFunctions = [...instance.genericFunctions];
 	if (instance.capitalPairs) question.capitalPairs = instance.capitalPairs;
 	if (instance.grades?.length) question.grades = [...instance.grades];
-
-	if (type === 'multiple_choice') {
-		question.choices = (instance.shuffledChoices ?? []).map((choice) => ({
-			content: choice.content
-		}));
-		if (instance.multipleAnswers) question.multipleAnswers = true;
-		return question;
-	}
 
 	question.blanks = (instance.blanks ?? []).map(publicBlank);
 	if (instance.expressions?.length) {
@@ -156,24 +137,6 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 		...(question.genericFunctions?.length && { genericFunctions: question.genericFunctions }),
 		...(question.capitalPairs && { capitalPairs: question.capitalPairs })
 	};
-
-	if (question.type === 'multiple_choice') {
-		const choices = question.choices ?? [];
-		instance.choices = choices.map((choice) => ({
-			content: choice.content as ResolvedMarkdown,
-			isCorrect: false
-		}));
-		// Position affichée = indice : l'envoi transmet les positions cochées. Toute
-		// conversion « position affichée → indice d'origine » faite par la carte
-		// (QuestionCard) est donc NEUTRE ici ; seul le serveur, qui a l'instance
-		// complète, convertit (test : QuestionCard-evaluation.svelte.test.ts)
-		instance.shuffledChoices = choices.map((choice, index) => ({
-			content: choice.content as ResolvedMarkdown,
-			originalIndex: index
-		}));
-		if (question.multipleAnswers) instance.multipleAnswers = true;
-		return instance;
-	}
 
 	instance.blanks = (question.blanks ?? []).map((blank) => ({
 		expectedAnswer: '',

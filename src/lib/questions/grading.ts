@@ -4,7 +4,7 @@
  *
  * Repris de TinyMath (`assessItem`, décision Q35 de David, 2026-09-30) :
  * - une question vaut 1 (juste), ½ (forme non optimale, cases vides ≤ moitié,
- *   QCM incomplet sans erreur) ou 0 (une case fausse ou mal écrite, trop de
+ *   case choix cochée en partie sans erreur) ou 0 (une case fausse ou mal écrite, trop de
  *   cases vides, un mauvais choix coché) ;
  * - la note est ramenée sur 20, au demi-point le plus proche (un quart arrondit
  *   au-dessus).
@@ -13,13 +13,9 @@
  * sont notées ; ailleurs, `validateAnswer` reste le seul verdict (ADR 0001).
  */
 
-import { getQuestionType, type QuestionInstance, type ValidationStatus } from './types';
-import { validateAnswer, validateBlanksDetailed } from '$lib/utils/answer-validator';
+import type { QuestionInstance, ValidationStatus } from './types';
+import { validateBlanksDetailed } from '$lib/utils/answer-validator';
 import { gradedPart } from './graded-part';
-import { statusFromChoices } from './choices';
-
-// Le barème d'un QCM vit dans `choices` : la validation du navigateur l'emploie aussi (V4)
-export { statusFromChoices };
 
 // Types
 export type QuestionPoints = 0 | 0.5 | 1;
@@ -33,8 +29,6 @@ export interface SubmittedAnswer {
 	 * contournerait la forme exigée (audit de sécurité, chantier 5).
 	 */
 	values?: string[];
-	/** QCM : positions COCHÉES dans l'ordre affiché (`shuffledChoices`) */
-	choices?: number[];
 }
 
 export interface QuestionVerdict {
@@ -43,13 +37,11 @@ export interface QuestionVerdict {
 	/** Juste au sens de la note : tous les points (cf. `test_answers.is_correct`) */
 	isCorrect: boolean;
 	/**
-	 * ½ point PARTIEL : cases en partie vides (le reste juste), QCM ou case choix
-	 * cochés en partie sans erreur. À distinguer d'une forme non optimale (même ½ point)
+	 * ½ point PARTIEL : cases en partie vides (le reste juste), case choix cochée
+	 * en partie sans erreur. À distinguer d'une forme non optimale (même ½ point)
 	 * pour le SRS (Q40, choix a de David).
 	 */
 	partial: boolean;
-	/** QCM : choix cochés en indices d'ORIGINE (ce qu'enregistrent et lisent les copies) */
-	choiceIndexes?: number[];
 	/** Message pour l'élève (forme, unité, case vide…), s'il y en a un */
 	feedback?: string;
 	/** Message propre à chaque case */
@@ -60,7 +52,7 @@ export interface QuestionVerdict {
 /**
  * « Su » pour le SRS (Q40, choix a de David, 2026-10-01) : juste, ou forme non
  * optimale (½ point) comme en entraînement libre. Un ½ PARTIEL (cases en partie
- * vides, QCM incomplet) vaut « À revoir ».
+ * vides, case choix incomplète) vaut « À revoir ».
  */
 export function isKnownForSrs(verdict: { status: ValidationStatus; partial: boolean }): boolean {
 	return verdict.status === 'correct' || (verdict.status === 'unoptimal_form' && !verdict.partial);
@@ -105,51 +97,6 @@ export function gradeOutOf20(pointsEarned: number, totalQuestions: number): numb
 	return Math.min(20, Math.max(0, grade));
 }
 
-/** Indices d'origine des bons choix d'une instance de QCM */
-function correctChoiceIndexes(instance: QuestionInstance): number[] {
-	if (instance.choices && instance.choices.length > 0) {
-		return instance.choices.flatMap((choice, index) => (choice.isCorrect ? [index] : []));
-	}
-	const raw = instance.correctChoiceIndex;
-	const list = Array.isArray(raw) ? raw : raw !== undefined ? [raw] : [];
-	return list.map(Number).filter((n) => Number.isInteger(n));
-}
-
-function gradeChoices(instance: QuestionInstance, answer: SubmittedAnswer): QuestionVerdict {
-	const shuffled = instance.shuffledChoices ?? [];
-	const positions = answer.choices ?? [];
-	// Position inconnue : elle ne désigne aucun choix, donc un mauvais choix
-	const outOfRange = positions.some((p) => !Number.isInteger(p) || p < 0 || p >= shuffled.length);
-	const selected = outOfRange ? [-1] : positions.map((p) => shuffled[p].originalIndex);
-
-	// Règles de validation propres au QCM (rare) : le verdict de validateAnswer, tout ou rien
-	if (instance.validationRules && instance.validationRules.length > 0 && !outOfRange) {
-		if (selected.length === 0) {
-			return { status: 'empty', points: 0, isCorrect: false, partial: false, choiceIndexes: [] };
-		}
-		const result = validateAnswer(instance.multipleAnswers ? selected : selected[0], instance);
-		const status: ValidationStatus = result.isCorrect ? 'correct' : 'incorrect';
-		return {
-			status,
-			points: pointsOfStatus(status),
-			isCorrect: result.isCorrect,
-			partial: false,
-			choiceIndexes: selected
-		};
-	}
-
-	const status = statusFromChoices(selected, correctChoiceIndexes(instance));
-	const points = pointsOfStatus(status);
-	return {
-		status,
-		points,
-		isCorrect: points === 1,
-		// Un QCM n'a pas de « forme » : son ½ vient toujours d'un choix manquant
-		partial: status === 'unoptimal_form',
-		...(!outOfRange && { choiceIndexes: selected })
-	};
-}
-
 function gradeBlanks(fullInstance: QuestionInstance, answer: SubmittedAnswer): QuestionVerdict {
 	const allValues = answer.values ?? (fullInstance.blanks ?? []).map(() => '');
 	// Nombre de cases différent : réponse fabriquée ou périmée, jamais une exception
@@ -169,8 +116,8 @@ function gradeBlanks(fullInstance: QuestionInstance, answer: SubmittedAnswer): Q
 			? 'incorrect'
 			: statusFromBlankStatuses(statuses);
 	const points = pointsOfStatus(status);
-	// ½ dû à des cases vides (le reste juste) ou à une case choix cochée en partie
-	// (comme le QCM), pas à la forme
+	// ½ dû à des cases vides (le reste juste) ou à une case choix cochée en partie,
+	// pas à la forme
 	const partialChoice = blanks.some((b, i) => b.choice && statuses[i] === 'unoptimal_form');
 	const partial = status === 'unoptimal_form' && (statuses.includes('empty') || partialChoice);
 	return {
@@ -192,9 +139,7 @@ export function gradeQuestion(
 	answer: SubmittedAnswer
 ): QuestionVerdict {
 	try {
-		return getQuestionType(instance) === 'multiple_choice'
-			? gradeChoices(instance, answer)
-			: gradeBlanks(instance, answer);
+		return gradeBlanks(instance, answer);
 	} catch {
 		return { status: 'incorrect', points: 0, isCorrect: false, partial: false };
 	}

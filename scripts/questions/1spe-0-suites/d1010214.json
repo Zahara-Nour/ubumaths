@@ -9,22 +9,9 @@
 	"level": 7,
 	"delay": 45,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "Oui, elle semble géométrique."
-			},
-			{
-				"content": "Non, elle ne semble pas géométrique."
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-2}} ; {{eval:b+8*r+2}}\ngrille: 1 ; 2\nu(n) = {{b}}+{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-2}} ; {{eval:b+8*r+2}}\ngrille: 1 ; 2\nu(n) = {{b}}+{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -66,10 +53,14 @@
 					"La suite ne semble **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-8*r-2}} ; {{eval:b+2}}\ngrille: 1 ; 2\nu(n) = {{b}}-{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-8*r-2}} ; {{eval:b+2}}\ngrille: 1 ; 2\nu(n) = {{b}}-{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -111,10 +102,14 @@
 					"La suite ne semble **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:32*a+4}}\ngrille: 1 ; {{eval:2*a}}\nu(n) = {{a}}*2^n pour n de 0 à 5   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:32*a+4}}\ngrille: 1 ; {{eval:2*a}}\nu(n) = {{a}}*2^n pour n de 0 à 5   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -152,10 +147,14 @@
 					"La suite semble **géométrique**, de raison $q=2$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:a+4}}\ngrille: 1 ; {{eval:a/16}}\nu(n) = {{a}}*0.5^n pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:a+4}}\ngrille: 1 ; {{eval:a/16}}\nu(n) = {{a}}*0.5^n pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -193,10 +192,14 @@
 					"La suite semble **géométrique**, de raison $q=\\dfrac{1}{2}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:d+28}}\ngrille: 1 ; 2\nu(n) = (n-{{c}})^2+{{d}} pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:d+28}}\ngrille: 1 ; 2\nu(n) = (n-{{c}})^2+{{d}} pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -237,10 +240,14 @@
 					"La suite ne semble **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:36+c+4}}\ngrille: 1 ; 2\nu(n) = n^2+{{c}} pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:36+c+4}}\ngrille: 1 ; 2\nu(n) = n^2+{{c}} pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -277,7 +284,11 @@
 					"Attention : des points qui montent de plus en plus vite ne suffisent pas pour dire « géométrique ». La suite ne semble **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -297,7 +308,7 @@
 			},
 			"description": "v0 : « non » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -315,7 +326,7 @@
 			},
 			"description": "v0 : « oui » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -333,7 +344,7 @@
 			},
 			"description": "v1 : « non » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -351,7 +362,7 @@
 			},
 			"description": "v1 : « oui » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -368,7 +379,7 @@
 			},
 			"description": "v2 : « oui » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -385,7 +396,7 @@
 			},
 			"description": "v2 : « non » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -402,7 +413,7 @@
 			},
 			"description": "v3 : « oui » accepté",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -419,7 +430,7 @@
 			},
 			"description": "v3 : « non » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -437,7 +448,7 @@
 			},
 			"description": "v4 : « non » accepté",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -455,7 +466,7 @@
 			},
 			"description": "v4 : « oui » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -472,7 +483,7 @@
 			},
 			"description": "v5 : « non » accepté",
 			"variationIndex": 5,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -489,7 +500,7 @@
 			},
 			"description": "v5 : « oui » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
 	]
 }
