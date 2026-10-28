@@ -5,15 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 2 « Relatifs » écrit (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-10-28, lot 1 publié, lot 2 en PR (#1935)._
 
-- **État** : lot 1 « Calcul » : 8 brouillons relus (8/8 OK), `publier-lot.ts` vert en simulation. Lot 2
-  « Relatifs » : phase 0 validée (§ 10), 8 modèles écrits (`5-relatifs/`), simulation prod verte (62 specs),
-  joués en base locale.
-- **Prochaine action** : PR des fichiers du lot 2, CI, merge ; puis David lance
+- **État** : lot 1 « Calcul » **publié** (8/8, relu en base le 2026-10-28). Lot 2 « Relatifs » : phase 0 validée
+  (§ 10), 8 modèles écrits (`5-relatifs/`), simulation prod verte (62 specs), joués en base locale ; PR #1935.
+- **Prochaine action** : merge de #1935 (CI verte) ; puis David lance
   `create-questions --dir scripts/questions/5-relatifs --publier`, relever les `id`, migration nœud + tag.
-- **En attente de David** : `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/5-calcul --publier`
-  (lot 1), puis vérifier `published` (MCP) et le consigner au § 9.
+- **En attente de David** : le `create-questions --publier` du lot 2, après le merge.
 - **Pièges en cours** : `db push` refuse une migration plus ancienne que la dernière jouée → `--include-all`, par
   David ; horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions --mettre-a-jour`
   ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` (`$lib` introuvable) ; port 5176 pris par
@@ -179,6 +177,9 @@ Page à cocher, 7 verdicts : 5 OK (02, 03, 04, 05, 06), 2 à revoir. Corrections
   finding), jouée par moi (seule en attente), vérifiée. Verdicts de 01 et 07 supprimés ; page republiée (v2).
 - Seconde relecture (page v2) : 01, 07, 08 OK → **8/8 verdicts OK** comptés en base. `publier-lot.ts` en
   simulation : 8 brouillons passent le contrôle ; publication à lancer par David (`--publier`).
+
+- **Publication** (2026-10-28) : David a lancé `publier-lot.ts --publier` ; 8/8 `published`, vérifié au MCP
+  (8e571049, 2f1657b0, 8df8ba2b, faf57d3b, be35cd63, 7b08589b, 9d9b2301, 5007877e). **Lot 1 clos.**
 
 ## 10. Lot 2 « Relatifs » : décisions (David, 2026-10-28, « je te suis »)
 
