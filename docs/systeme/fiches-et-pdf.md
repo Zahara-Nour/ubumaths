@@ -629,6 +629,8 @@ cadres de réponse (`answer-frames.ts`) → [qr-codes.md](qr-codes.md). Une **ho
 (` ```horloge `), une **opération posée** (` ```operation `, `table` Typst native, cases de
 retenue non dessinées : l'élève écrit sur papier libre), une **collection** (` ```collection `)
 et des **pièces et billets** (` ```monnaie `) sont aussi du Typst natif et comptent chacune pour une figure dans ces cadres → [ubumark.md](ubumark.md).
+Des **étiquettes à ranger** (` ```ranger `) : étiquettes encadrées puis places en pointillés, Typst
+natif, deux lignes dans les cadres de réponse.
 
 **Version anglaise** ([journal](../archive/wip/worksheet-english-progress.md)) : la langue est
 `worksheets.config.language` (`fr` par défaut), lue par `worksheetLocale`. Elle pilote **tout** le

@@ -807,6 +807,8 @@ function validateBlankValue(
 ): boolean {
 	// Horloge à placer : la même lecture des aiguilles que la correction
 	if (blank.construire === 'horloge') return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer);
+	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
+	if (blank.construire === 'ranger') return userAnswer.trim() === blank.expectedAnswer;
 
 	// Ensemble en notation intervalle : jugé sur l'ensemble (ni règles ni expression)
 	if (blank.answerKind === 'intervalles') {
@@ -1281,6 +1283,13 @@ function validateSingleBlank(
 	// Horloge à placer : les deux aiguilles de l'élève, petite aiguille jugée sur son secteur
 	if (blank.construire === 'horloge') {
 		return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
+	if (blank.construire === 'ranger') {
+		return userAnswer.trim() === blank.expectedAnswer
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };
 	}

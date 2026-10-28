@@ -14,6 +14,7 @@ import { numberLineEntry } from './number-line';
 import { operationEntry } from './operation';
 import { probtreeEntry } from './probtree';
 import { qrEntry } from './qr';
+import { rangerEntry } from './ranger';
 import { statChartEntry } from './stat-chart';
 import { trigEntry } from './trig';
 import { variationEntry } from './variation';
@@ -32,6 +33,7 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	statChartEntry,
 	qrEntry,
 	horlogeEntry,
+	rangerEntry,
 	operationEntry,
 	trigEntry
 ];

@@ -181,6 +181,7 @@
 					answer={line.answer}
 					status={line.status}
 					answers={line.answers}
+					expected={line.expected}
 				/>
 				{#if line.answer !== null}
 					<p class="flex justify-center">{@render statusTag(line.status)}</p>

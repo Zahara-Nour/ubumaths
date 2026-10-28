@@ -51,6 +51,15 @@ import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
 import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { hasBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import {
+	findRangersToPlace,
+	hasRangerToPlace,
+	parseRangerContent,
+	replaceRangerBlocks,
+	serializeRangerBlock
+} from '$lib/ubumark/parser/ranger-parser';
+import { rangerOrder } from '$lib/ubumark/utils/ranger';
+import type { RangerSign } from '$lib/ubumark/types/ranger';
 import { buildAnswerOf } from './build-answer';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
@@ -89,11 +98,44 @@ import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/r
 // SHARED DEFAULTS MERGING
 // ============================================================================
 
+/**
+ * Deux étiquettes d'un même bloc ```ranger ont-elles le même texte avec ce tirage ?
+ * Les étiquettes sont résolues à part, sur une source de hasard jetable : le tirage
+ * de l'instance n'est pas touché (le générateur refuse encore le doublon s'il en reste).
+ */
+function rangerLabelsCollide(
+	statement: TemplateMarkdown | undefined,
+	variables: ResolvedVariable[],
+	genericFunctions: Parameters<typeof resolveMarkdownContent>[3],
+	cleanCoefficients: boolean,
+	capitalPairs: Parameters<typeof resolveMarkdownContent>[5]
+): boolean {
+	const text = String(statement ?? '');
+	if (!text.includes('```ranger')) return false;
+	return findRangersToPlace(text).some((block) => {
+		const { labels } = parseRangerContent(block.body.join('\n'));
+		const resolved = labels.map((label) =>
+			String(
+				resolveMarkdownContent(
+					templateMarkdown(label),
+					variables,
+					createRandomSource(0),
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				)
+			).trim()
+		);
+		return new Set(resolved).size < resolved.length;
+	});
+}
+
 /** Ce qui donne la réponse d'un bloc qui porte sa case, pour les messages au prof */
 function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'line') return 'la graduation de la droite graduée (placer:)';
 	if (kind === 'horloge') return 'l’heure de l’horloge (placer:)';
 	if (kind === 'barres') return 'l’effectif de la barre (placer:)';
+	if (kind === 'ranger') return 'l’étiquette à sa place (bloc ranger)';
 	return `la valeur du bloc ${kind} (construire:)`;
 }
 
@@ -398,6 +440,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let resolvedVariables: ResolvedVariable[] | undefined;
 		let lastVariableError: string | undefined;
 		let conditionFailures = 0;
+		let rangerCollisions = 0;
 		for (let attempt = 0; attempt <= MAX_CONDITION_RETRIES; attempt++) {
 			// Nouvel essai : la source continue, les tirages sont donc neufs
 			let candidate: ResolvedVariable[];
@@ -412,10 +455,31 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				continue;
 			}
 			conditionFailures++;
-			if (evaluateConditions(conditions, candidate)) {
-				resolvedVariables = candidate;
-				break;
+			// Étiquettes à ranger : deux étiquettes au même texte après tirage, condition implicite
+			if (!evaluateConditions(conditions, candidate)) continue;
+			if (
+				rangerLabelsCollide(
+					resolvedVariation.statement,
+					candidate,
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				)
+			) {
+				rangerCollisions++;
+				continue;
 			}
+			resolvedVariables = candidate;
+			break;
+		}
+
+		if (resolvedVariables === undefined && rangerCollisions > 0) {
+			return {
+				success: false,
+				errors: [
+					`Étiquettes à ranger : deux étiquettes identiques à chacun des ${rangerCollisions} tirages (laquelle irait où ?) ; écrire une condition qui les rend différentes`
+				]
+			};
 		}
 
 		if (resolvedVariables === undefined) {
@@ -470,7 +534,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasMonnaieToBuild(String(resolvedStatement)) ||
 				hasLineToPlace(String(resolvedStatement)) ||
 				hasHorlogeToPlace(String(resolvedStatement)) ||
-				hasBarsToPlace(String(resolvedStatement))) &&
+				hasBarsToPlace(String(resolvedStatement)) ||
+				hasRangerToPlace(String(resolvedStatement))) &&
 			getQuestionType({ options: template.options }) === 'fill_in_blanks';
 		if (resolvedVariation.blanks || hasOperationBlock) {
 			// 7a. Fill-in-blanks pipeline
@@ -633,6 +698,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			// Cases des blocs ```collection et ```monnaie à construire, des droites et
 			// horloges à placer, des barres à construire : réponse = la valeur du bloc
 			const buildAnswers = new Map<number, { kind: BuildKind; answer: string }>();
+			// Étiquettes à ranger : ordre AFFICHÉ de chaque bloc, par case de sa première place
+			const rangerOrders = new Map<
+				number,
+				{ order: number[]; labels: string[]; sign: RangerSign }
+			>();
 			for (const [key, { kind, source, point }] of Object.entries(blankResult.buildBlanks ?? {})) {
 				const index = Number(key);
 				const read = buildAnswerOf(kind, source, point);
@@ -648,6 +718,22 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						success: false,
 						errors: [`Case ${index + 1} (${buildKindName(kind)}) : ${errors.join(' ; ')}`]
 					};
+				}
+				if (kind === 'ranger') {
+					// Mélange du bloc à sa première place, sur la source de hasard de l'instance ;
+					// réponse = la position affichée de l'étiquette écrite à ce rang
+					const first = index - (point ?? 0);
+					let shown = rangerOrders.get(first);
+					if (!shown) {
+						const { labels, sign } = parseRangerContent(source);
+						shown = { order: rangerOrder(labels.length, random), labels, sign };
+						rangerOrders.set(first, shown);
+					}
+					buildAnswers.set(index, {
+						kind,
+						answer: String(shown.order.indexOf(Number(read.answer)))
+					});
+					continue;
 				}
 				buildAnswers.set(index, { kind, answer: read.answer });
 			}
@@ -667,6 +753,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							return child.spec?.placer !== undefined && child.caseIndex !== undefined
 								? [child.caseIndex]
 								: [];
+						}
+						if (child.type === 'ranger') {
+							const first = child.caseIndex;
+							if (first === undefined) return [];
+							return child.labels.map((_, k) => first + k);
 						}
 						if (child.type === 'stat-chart') {
 							const first = child.caseIndex;
@@ -962,6 +1053,23 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							caseIndex: block.caseIndex,
 							multiple: choice.multiple,
 							choices: choice.order.map((index) => choice.choices[index])
+						});
+					})
+				);
+			}
+
+			// Blocs ```ranger de l'énoncé : étiquettes dans l'ordre AFFICHÉ (l'ordre écrit
+			// est la réponse)
+			if (rangerOrders.size > 0) {
+				finalStatement = resolvedMarkdown(
+					replaceRangerBlocks(String(finalStatement), (block) => {
+						const shown =
+							block.caseIndex === undefined ? undefined : rangerOrders.get(block.caseIndex);
+						if (!shown || block.caseIndex === undefined) return '';
+						return serializeRangerBlock({
+							caseIndex: block.caseIndex,
+							sign: shown.sign,
+							labels: shown.order.map((index) => shown.labels[index])
 						});
 					})
 				);

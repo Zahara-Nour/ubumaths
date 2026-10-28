@@ -24,7 +24,8 @@ export type CatalogNodeType =
 	| 'stat-chart'
 	| 'qr'
 	| 'horloge'
-	| 'operation';
+	| 'operation'
+	| 'ranger';
 
 /** Une ligne du tableau des réglages */
 export interface BlockSetting {

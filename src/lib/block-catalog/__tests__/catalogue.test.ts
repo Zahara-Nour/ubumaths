@@ -10,8 +10,12 @@ import { BLOCK_CATALOG } from '..';
 function parseSingleBlock(source: string): { type: string; messages: string[] } {
 	const children = parseMarkdown(source).children;
 	expect(children).toHaveLength(1);
-	const node = children[0] as { type: string; errors?: { message: string }[] };
-	return { type: node.type, messages: (node.errors ?? []).map((e) => e.message) };
+	// Messages situés (`{ message }`), ou phrases (```ranger)
+	const node = children[0] as { type: string; errors?: ({ message: string } | string)[] };
+	return {
+		type: node.type,
+		messages: (node.errors ?? []).map((e) => (typeof e === 'string' ? e : e.message))
+	};
 }
 
 describe('catalogue des blocs', () => {
