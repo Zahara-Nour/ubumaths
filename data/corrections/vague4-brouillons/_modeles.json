@@ -6,7 +6,9 @@
 		"domain": "Transformation",
 		"level": 3,
 		"status": "draft",
-		"grades": ["3"],
+		"grades": [
+			"3"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -78,7 +80,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["4c+9b-5"],
+				"answers": [
+					"4c+9b-5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -93,7 +97,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["9b+4c-5"],
+				"answers": [
+					"9b+4c-5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -108,10 +114,15 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["4c+(9b-5)"],
+				"answers": [
+					"4c+(9b-5)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["brackets", "form"]
+					"constraintViolations": [
+						"brackets",
+						"form"
+					]
 				},
 				"variables": {
 					"k": "c|c",
@@ -124,7 +135,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["4c+9b+5"],
+				"answers": [
+					"4c+9b+5"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -139,7 +152,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["3x-2y-5"],
+				"answers": [
+					"3x-2y-5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -154,7 +169,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["3x-2y+5"],
+				"answers": [
+					"3x-2y+5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -169,7 +186,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-2y+3x+5"],
+				"answers": [
+					"-2y+3x+5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -184,10 +203,14 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["3x-(2y-5)"],
+				"answers": [
+					"3x-(2y-5)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"k": "x|x",
@@ -200,7 +223,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["3x-2y-5"],
+				"answers": [
+					"3x-2y-5"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -215,7 +240,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["3x+2y+5"],
+				"answers": [
+					"3x+2y+5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -230,7 +257,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["3x+2y-5"],
+				"answers": [
+					"3x+2y-5"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -253,7 +282,9 @@
 		"domain": "Transformation",
 		"level": 1,
 		"status": "draft",
-		"grades": ["3"],
+		"grades": [
+			"3"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -337,7 +368,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["49-z^2"],
+				"answers": [
+					"49-z^2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -349,7 +382,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["49-z^2"],
+				"answers": [
+					"49-z^2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -361,7 +396,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["z^2-49"],
+				"answers": [
+					"z^2-49"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -373,7 +410,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["z^2-49"],
+				"answers": [
+					"z^2-49"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -385,7 +424,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["-z^2+49"],
+				"answers": [
+					"-z^2+49"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -397,10 +438,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(7+z)(7-z)"],
+				"answers": [
+					"(7+z)(7-z)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "7",
@@ -410,10 +455,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["49-7z+7z-z^2"],
+				"answers": [
+					"49-7z+7z-z^2"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "7",
@@ -423,7 +472,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["49+z^2"],
+				"answers": [
+					"49+z^2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -443,7 +494,9 @@
 		"domain": "Transformation",
 		"level": 3,
 		"status": "draft",
-		"grades": ["3"],
+		"grades": [
+			"3"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -503,7 +556,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["(7+z)(7-z)"],
+				"answers": [
+					"(7+z)(7-z)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -516,7 +571,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(z+7)(z-7)"],
+				"answers": [
+					"(z+7)(z-7)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -529,7 +586,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["(7-z)(7+z)"],
+				"answers": [
+					"(7-z)(7+z)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -542,7 +601,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(7-z)^2"],
+				"answers": [
+					"(7-z)^2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -555,10 +616,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["49-z^2"],
+				"answers": [
+					"49-z^2"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "7",
@@ -577,7 +642,9 @@
 		"domain": "Transformation",
 		"level": 4,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -629,7 +696,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["y^2"],
+				"answers": [
+					"y^2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -640,10 +709,15 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["y*y"],
+				"answers": [
+					"y*y"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y"
@@ -652,7 +726,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["y^3"],
+				"answers": [
+					"y^3"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -663,10 +739,15 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["y*y*y"],
+				"answers": [
+					"y*y*y"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y"
@@ -683,7 +764,9 @@
 		"domain": "Apprivoiser",
 		"level": 1,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -791,7 +874,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["6^{2}"],
+				"answers": [
+					"6^{2}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -802,7 +887,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["6^{3}"],
+				"answers": [
+					"6^{3}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -813,7 +900,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["6^{4}"],
+				"answers": [
+					"6^{4}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -824,7 +913,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["6^{5}"],
+				"answers": [
+					"6^{5}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -835,7 +926,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["6^{6}"],
+				"answers": [
+					"6^{6}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -846,7 +939,9 @@
 				"variationIndex": 4
 			},
 			{
-				"answers": ["6^{7}"],
+				"answers": [
+					"6^{7}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -857,7 +952,9 @@
 				"variationIndex": 5
 			},
 			{
-				"answers": ["c^4"],
+				"answers": [
+					"c^4"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -868,10 +965,14 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["36"],
+				"answers": [
+					"36"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "6"
@@ -880,7 +981,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2^6"],
+				"answers": [
+					"2^6"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -891,10 +994,15 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["c\\times c^3"],
+				"answers": [
+					"c\\times c^3"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"a": "c|c"
@@ -911,7 +1019,9 @@
 		"domain": "Apprivoiser",
 		"level": 2,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1023,7 +1133,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["5\\times5"],
+				"answers": [
+					"5\\times5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1034,7 +1146,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5\\times5\\times5"],
+				"answers": [
+					"5\\times5\\times5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1045,7 +1159,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["5\\times5\\times5\\times5"],
+				"answers": [
+					"5\\times5\\times5\\times5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1056,7 +1172,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["5\\times5\\times5\\times5\\times5"],
+				"answers": [
+					"5\\times5\\times5\\times5\\times5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1067,7 +1185,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["5\\times5\\times5\\times5\\times5\\times5"],
+				"answers": [
+					"5\\times5\\times5\\times5\\times5\\times5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1078,7 +1198,9 @@
 				"variationIndex": 4
 			},
 			{
-				"answers": ["5\\times5\\times5\\times5\\times5\\times5\\times5"],
+				"answers": [
+					"5\\times5\\times5\\times5\\times5\\times5\\times5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1089,7 +1211,9 @@
 				"variationIndex": 5
 			},
 			{
-				"answers": ["x\\times x\\times x"],
+				"answers": [
+					"x\\times x\\times x"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1100,10 +1224,14 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["125"],
+				"answers": [
+					"125"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "5"
@@ -1112,10 +1240,14 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["5^3"],
+				"answers": [
+					"5^3"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "5"
@@ -1124,10 +1256,14 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["5\\times25"],
+				"answers": [
+					"5\\times25"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "5"
@@ -1144,7 +1280,9 @@
 		"domain": "Transformation",
 		"level": 1,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1204,7 +1342,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["3y"],
+				"answers": [
+					"3y"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1216,10 +1356,15 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["3*y"],
+				"answers": [
+					"3*y"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -1229,7 +1374,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["3y"],
+				"answers": [
+					"3y"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1241,10 +1388,15 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["y*3"],
+				"answers": [
+					"y*3"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -1262,7 +1414,9 @@
 		"domain": "Transformation",
 		"level": 2,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1390,7 +1544,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["a(y+a)"],
+				"answers": [
+					"a(y+a)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1405,10 +1561,15 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["a*(y+a)"],
+				"answers": [
+					"a*(y+a)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -1421,7 +1582,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["a(y+6)"],
+				"answers": [
+					"a(y+6)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1436,10 +1599,15 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["a*(y+6)"],
+				"answers": [
+					"a*(y+6)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -1452,7 +1620,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["7(y+a)"],
+				"answers": [
+					"7(y+a)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1467,10 +1637,15 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["7*(y+a)"],
+				"answers": [
+					"7*(y+a)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -1483,7 +1658,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["7(y+6)"],
+				"answers": [
+					"7(y+6)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1498,10 +1675,15 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["7*(y+6)"],
+				"answers": [
+					"7*(y+6)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -1514,7 +1696,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["7(y+a)"],
+				"answers": [
+					"7(y+a)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1529,10 +1713,15 @@
 				"variationIndex": 4
 			},
 			{
-				"answers": ["(y+a)*7"],
+				"answers": [
+					"(y+a)*7"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -1545,7 +1734,9 @@
 				"variationIndex": 4
 			},
 			{
-				"answers": ["7(y+6)"],
+				"answers": [
+					"7(y+6)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1560,10 +1751,15 @@
 				"variationIndex": 5
 			},
 			{
-				"answers": ["(y+6)*7"],
+				"answers": [
+					"(y+6)*7"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -1584,7 +1780,9 @@
 		"domain": "Transformation",
 		"level": 3,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1641,7 +1839,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["y"],
+				"answers": [
+					"y"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1652,10 +1852,15 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["1y"],
+				"answers": [
+					"1y"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["factorOne", "form"]
+					"constraintViolations": [
+						"factorOne",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y"
@@ -1664,7 +1869,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1675,10 +1882,15 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["0y"],
+				"answers": [
+					"0y"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["factorZero", "form"]
+					"constraintViolations": [
+						"factorZero",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y"
@@ -1695,7 +1907,9 @@
 		"domain": "Valeur absolue",
 		"level": 4,
 		"status": "draft",
-		"grades": ["2"],
+		"grades": [
+			"2"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1730,7 +1944,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["6"],
+				"answers": [
+					"6"
+				],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
@@ -1742,7 +1958,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-6"],
+				"answers": [
+					"-6"
+				],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
@@ -1754,7 +1972,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
@@ -1766,7 +1986,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["4"],
+				"answers": [
+					"4"
+				],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
@@ -1786,7 +2008,9 @@
 		"domain": "Valeur absolue",
 		"level": 5,
 		"status": "draft",
-		"grades": ["2"],
+		"grades": [
+			"2"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1902,12 +2126,16 @@
 					"expression": "digits:1.1"
 				}
 			],
-			"conditions": ["mod(d*10, 10)!=0"]
+			"conditions": [
+				"mod(d*10, 10)!=0"
+			]
 		},
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["\\frac{7}{9}"],
+				"answers": [
+					"\\frac{7}{9}"
+				],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
@@ -1922,7 +2150,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{7}{9}"],
+				"answers": [
+					"\\frac{7}{9}"
+				],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
@@ -1937,7 +2167,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-\\frac{7}{9}"],
+				"answers": [
+					"-\\frac{7}{9}"
+				],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
@@ -1952,7 +2184,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["\\sqrt{5}"],
+				"answers": [
+					"\\sqrt{5}"
+				],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
@@ -1967,7 +2201,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["\\sqrt{5}"],
+				"answers": [
+					"\\sqrt{5}"
+				],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
@@ -1982,7 +2218,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["-\\sqrt{5}"],
+				"answers": [
+					"-\\sqrt{5}"
+				],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
@@ -1997,7 +2235,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["4{,}6"],
+				"answers": [
+					"4{,}6"
+				],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
@@ -2012,7 +2252,9 @@
 				"variationIndex": 4
 			},
 			{
-				"answers": ["4{,}6"],
+				"answers": [
+					"4{,}6"
+				],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
@@ -2027,7 +2269,9 @@
 				"variationIndex": 5
 			},
 			{
-				"answers": ["-4{,}6"],
+				"answers": [
+					"-4{,}6"
+				],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
@@ -2050,7 +2294,9 @@
 		"domain": "Calculer",
 		"level": 2,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2120,7 +2366,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["\\frac{1}{7}"],
+				"answers": [
+					"\\frac{1}{7}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2132,7 +2380,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-7"],
+				"answers": [
+					"-7"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2144,10 +2394,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["7^{-1}"],
+				"answers": [
+					"7^{-1}"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "7",
@@ -2157,7 +2411,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{1}{19}"],
+				"answers": [
+					"\\frac{1}{19}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2169,7 +2425,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["7"],
+				"answers": [
+					"7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2181,10 +2439,14 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["\\frac{7}{1}"],
+				"answers": [
+					"\\frac{7}{1}"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["reducedFractions"]
+					"constraintViolations": [
+						"reducedFractions"
+					]
 				},
 				"variables": {
 					"a": "7",
@@ -2194,7 +2456,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["\\frac{3}{7}"],
+				"answers": [
+					"\\frac{3}{7}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2206,7 +2470,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["\\frac{7}{3}"],
+				"answers": [
+					"\\frac{7}{3}"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2218,7 +2484,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["\\frac{18}{19}"],
+				"answers": [
+					"\\frac{18}{19}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2238,7 +2506,9 @@
 		"domain": "Apprivoiser",
 		"level": 3,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2281,7 +2551,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["\\frac{1}{6^3}"],
+				"answers": [
+					"\\frac{1}{6^3}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2293,7 +2565,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{1}{b^4}"],
+				"answers": [
+					"\\frac{1}{b^4}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2305,10 +2579,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{1}{216}"],
+				"answers": [
+					"\\frac{1}{216}"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "6",
@@ -2318,7 +2596,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-6^3"],
+				"answers": [
+					"-6^3"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2330,7 +2610,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{1}{6^{-3}}"],
+				"answers": [
+					"\\frac{1}{6^{-3}}"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2350,7 +2632,9 @@
 		"domain": "Apprivoiser",
 		"level": 2,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2389,7 +2673,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["900\\,000"],
+				"answers": [
+					"900\\,000"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2401,7 +2687,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2413,10 +2701,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["900000"],
+				"answers": [
+					"900000"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["spaces"]
+					"constraintViolations": [
+						"spaces"
+					]
 				},
 				"variables": {
 					"a": "5",
@@ -2426,7 +2718,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["9\\,000\\,000"],
+				"answers": [
+					"9\\,000\\,000"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2438,7 +2732,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["20"],
+				"answers": [
+					"20"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2458,7 +2754,9 @@
 		"domain": "Apprivoiser",
 		"level": 3,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2501,7 +2799,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["9\\times10^4"],
+				"answers": [
+					"9\\times10^4"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2513,7 +2813,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2\\times10^{2}"],
+				"answers": [
+					"2\\times10^{2}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2525,10 +2827,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["90\\,000"],
+				"answers": [
+					"90\\,000"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "4",
@@ -2538,10 +2844,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["90\\times10^3"],
+				"answers": [
+					"90\\times10^3"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "4",
@@ -2551,7 +2861,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["9\\times10^5"],
+				"answers": [
+					"9\\times10^5"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2571,7 +2883,9 @@
 		"domain": "Apprivoiser",
 		"level": 1,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2624,7 +2938,10 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["8{,}735", "-3"],
+				"answers": [
+					"8{,}735",
+					"-3"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2638,7 +2955,10 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2{,}89", "4"],
+				"answers": [
+					"2{,}89",
+					"4"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2652,7 +2972,10 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["28{,}9", "3"],
+				"answers": [
+					"28{,}9",
+					"3"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2666,7 +2989,10 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["8{,}735", "3"],
+				"answers": [
+					"8{,}735",
+					"3"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2680,7 +3006,10 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0{,}8735", "-2"],
+				"answers": [
+					"0{,}8735",
+					"-2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2702,371 +3031,292 @@
 		"domain": "Fonctions affines",
 		"level": 3,
 		"status": "draft",
-		"grades": ["3"],
+		"grades": [
+			"3"
+		],
 		"variations": [
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-0-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-0-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression1}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr1}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-0-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-0-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "f(x)=-6x+7"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-1-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-1-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression2}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr2}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-1-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-1-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression2",
+						"name": "expr2",
 						"expression": "f(x)=-9x-1"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-2-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-2-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression3}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr3}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-2-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-2-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression3",
+						"name": "expr3",
 						"expression": "f(x)=-5x+9"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-3-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-3-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression4}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr4}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-3-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-3-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression4",
+						"name": "expr4",
 						"expression": "f(x)=3x+3"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-4-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-4-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression5}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr5}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-4-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-4-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression5",
+						"name": "expr5",
 						"expression": "f(x)=7x-8"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-5-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-5-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression6}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr6}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-5-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-5-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression6",
+						"name": "expr6",
 						"expression": "f(x)=-2x-4"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-6-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-6-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression7}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr7}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-6-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-6-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression7",
+						"name": "expr7",
 						"expression": "f(x)=6x+8"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-7-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-7-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression8}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr8}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-7-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-7-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression8",
+						"name": "expr8",
 						"expression": "f(x)=4x+9"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-8-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-8-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression9}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr9}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-8-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-8-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression9",
+						"name": "expr9",
 						"expression": "f(x)=-7x+2"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-9-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-9-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression10}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr10}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-9-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-9-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression10",
+						"name": "expr10",
 						"expression": "f(x)=2x+5"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-10-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-10-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression11}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr11}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-10-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-10-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression11",
+						"name": "expr11",
 						"expression": "f(x)=8x-1"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-11-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-11-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression12}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr12}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-11-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-11-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression12",
+						"name": "expr12",
 						"expression": "f(x)=-4x"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-12-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-12-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression13}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr13}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-12-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-12-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression13",
+						"name": "expr13",
 						"expression": "f(x)=-5x-1"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-13-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-13-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression14}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr14}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-13-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-13-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression14",
+						"name": "expr14",
 						"expression": "f(x)=-x+7"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-14-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-14-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression15}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr15}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-14-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-14-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression15",
+						"name": "expr15",
 						"expression": "f(x)=x-8"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-15-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-15-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression16}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr16}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-15-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-15-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression16",
+						"name": "expr16",
 						"expression": "f(x)=-7x+6"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-16-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-16-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression17}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr17}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-16-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-16-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression17",
+						"name": "expr17",
 						"expression": "f(x)=x"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-17-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-17-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression18}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr18}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-17-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-17-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression18",
+						"name": "expr18",
 						"expression": "f(x)=-3x+4"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-18-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-18-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression19}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr19}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-18-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-18-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression19",
+						"name": "expr19",
 						"expression": "f(x)=-5x-5"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-19-600.png)"
-					},
-					{
-						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-19-600.png)"
-					}
-				],
-				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression20}}$$",
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr20}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-19-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-19-600.png)\n```",
 				"variables": [
 					{
-						"name": "expression20",
+						"name": "expr20",
 						"expression": "f(x)=5x-7"
 					}
 				],
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			}
 		],
 		"type": "multiple_choice",
-		"options": null,
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -3075,9 +3325,6 @@
 		"subdomain": "Variations-Signe",
 		"exercise_instruction": null,
 		"description": null,
-		"shared": {
-			"correctChoiceIndex": ["0"]
-		},
 		"default_display_options": null,
 		"test_specs": [
 			{
@@ -3087,7 +3334,9 @@
 				"variables": {},
 				"description": "v0",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3096,7 +3345,9 @@
 				"variables": {},
 				"description": "v12",
 				"variationIndex": 12,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3105,7 +3356,9 @@
 				"variables": {},
 				"description": "v16",
 				"variationIndex": 16,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3114,7 +3367,9 @@
 				"variables": {},
 				"description": "tableau inversé",
 				"variationIndex": 12,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3123,7 +3378,9 @@
 				"variables": {},
 				"description": "v1",
 				"variationIndex": 1,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3132,7 +3389,9 @@
 				"variables": {},
 				"description": "v2",
 				"variationIndex": 2,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3141,7 +3400,9 @@
 				"variables": {},
 				"description": "v3",
 				"variationIndex": 3,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3150,7 +3411,9 @@
 				"variables": {},
 				"description": "v4",
 				"variationIndex": 4,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3159,7 +3422,9 @@
 				"variables": {},
 				"description": "v5",
 				"variationIndex": 5,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3168,7 +3433,9 @@
 				"variables": {},
 				"description": "v6",
 				"variationIndex": 6,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3177,7 +3444,9 @@
 				"variables": {},
 				"description": "v7",
 				"variationIndex": 7,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3186,7 +3455,9 @@
 				"variables": {},
 				"description": "v8",
 				"variationIndex": 8,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3195,7 +3466,9 @@
 				"variables": {},
 				"description": "v9",
 				"variationIndex": 9,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3204,7 +3477,9 @@
 				"variables": {},
 				"description": "v10",
 				"variationIndex": 10,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3213,7 +3488,9 @@
 				"variables": {},
 				"description": "v11",
 				"variationIndex": 11,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3222,7 +3499,9 @@
 				"variables": {},
 				"description": "v13",
 				"variationIndex": 13,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3231,7 +3510,9 @@
 				"variables": {},
 				"description": "v14",
 				"variationIndex": 14,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3240,7 +3521,9 @@
 				"variables": {},
 				"description": "v15",
 				"variationIndex": 15,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3249,7 +3532,9 @@
 				"variables": {},
 				"description": "v17",
 				"variationIndex": 17,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3258,7 +3543,9 @@
 				"variables": {},
 				"description": "v18",
 				"variationIndex": 18,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3267,7 +3554,9 @@
 				"variables": {},
 				"description": "v19",
 				"variationIndex": 19,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			}
 		]
 	},
@@ -3278,29 +3567,44 @@
 		"domain": "Fonctions affines",
 		"level": 3,
 		"status": "draft",
-		"grades": ["3"],
+		"grades": [
+			"3"
+		],
 		"variations": [
 			{
-				"statement": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{a}}$ ?",
-				"correctChoiceIndex": ["0"]
+				"statement": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{a}}$ ?\n\n```choix\nmelanger: non\n- le coefficient directeur\n- l'ordonnée à l'origine\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{b}}$ ?",
-				"correctChoiceIndex": ["1"]
+				"statement": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{b}}$ ?\n\n```choix\nmelanger: non\n- le coefficient directeur\n- l'ordonnée à l'origine\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{a}}$ ?",
-				"correctChoiceIndex": ["0"]
+				"statement": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{a}}$ ?\n\n```choix\nmelanger: non\n- le coefficient directeur\n- l'ordonnée à l'origine\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{b}}$ ?",
-				"correctChoiceIndex": ["1"]
+				"statement": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{b}}$ ?\n\n```choix\nmelanger: non\n- le coefficient directeur\n- l'ordonnée à l'origine\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			}
 		],
 		"type": "multiple_choice",
-		"options": {
-			"shuffleChoices": false
-		},
 		"precision": null,
 		"delay": 10,
 		"multiple_answers": null,
@@ -3309,26 +3613,6 @@
 		"subdomain": "Apprivoiser",
 		"exercise_instruction": null,
 		"description": null,
-		"shared": {
-			"choices": [
-				{
-					"content": "le coefficient directeur"
-				},
-				{
-					"content": "l'ordonnée à l'origine"
-				}
-			],
-			"variables": [
-				{
-					"name": "a",
-					"expression": "2..9;±"
-				},
-				{
-					"name": "b",
-					"expression": "1..9!a,{{eval:-(a)}}"
-				}
-			]
-		},
 		"default_display_options": null,
 		"test_specs": [
 			{
@@ -3341,7 +3625,9 @@
 				},
 				"description": "a = coef directeur",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3353,7 +3639,9 @@
 				},
 				"description": "b = ordonnée à l'origine",
 				"variationIndex": 1,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3365,7 +3653,9 @@
 				},
 				"description": "v2 a",
 				"variationIndex": 2,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3377,7 +3667,9 @@
 				},
 				"description": "v3 b",
 				"variationIndex": 3,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3389,9 +3681,23 @@
 				},
 				"description": "confusion",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			}
-		]
+		],
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!a,{{eval:-(a)}}"
+				}
+			]
+		}
 	},
 	{
 		"id": "07bce646-6a88-4b7c-aaf6-fe07ffa63ed6",
@@ -3400,181 +3706,348 @@
 		"domain": "Limites",
 		"level": 2,
 		"status": "draft",
-		"grades": ["T_SPE"],
+		"grades": [
+			"T_SPE"
+		],
 		"variations": [
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{+\\infty}$$",
-				"correctChoiceIndex": ["3"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-\\infty}$$",
-				"correctChoiceIndex": ["3"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-\\infty}$$",
-				"correctChoiceIndex": ["3"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{+\\infty}$$",
-				"correctChoiceIndex": ["3"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{+\\infty}$$",
-				"correctChoiceIndex": ["2"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{-\\infty}$$",
-				"correctChoiceIndex": ["2"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^+}$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^+}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^+}$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^+}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^-}$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^-}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^-}$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^-}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{+\\infty}$$",
-				"correctChoiceIndex": ["2"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{+\\infty}$$",
-				"correctChoiceIndex": ["2"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{-\\infty}$$",
-				"correctChoiceIndex": ["2"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{-\\infty}$$",
-				"correctChoiceIndex": ["2"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{{{a}}}$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{{{a}}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-{{a}}}$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-{{a}}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{{{a}}}$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{{{a}}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-{{a}}}$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-{{a}}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times 0$$",
-				"correctChoiceIndex": ["3"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times 0$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times 0$$",
-				"correctChoiceIndex": ["3"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times 0$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(+\\infty)$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(-\\infty)$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(-\\infty)$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(+\\infty)$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(+\\infty)$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(+\\infty)$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(-\\infty)$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(-\\infty)$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(+\\infty)$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(-\\infty)$$",
-				"correctChoiceIndex": ["3"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(-\\infty)$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(+\\infty)$$",
-				"correctChoiceIndex": ["3"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(+\\infty)$$",
-				"correctChoiceIndex": ["3"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(-\\infty)$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(-\\infty)$$",
-				"correctChoiceIndex": ["3"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(+\\infty)$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty+{{a}}$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty+{{a}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty+{{a}}$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty+{{a}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^+}$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^+}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^+}$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^+}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^-}$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^-}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^-}$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^-}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			}
 		],
 		"type": "multiple_choice",
-		"options": {
-			"shuffleChoices": false
-		},
 		"precision": null,
 		"delay": 30,
 		"multiple_answers": null,
@@ -3583,32 +4056,6 @@
 		"subdomain": "Determiner une limite",
 		"exercise_instruction": null,
 		"description": "En utilisant les règles de calcul sur les limites",
-		"shared": {
-			"choices": [
-				{
-					"content": "$$+\\infty$$"
-				},
-				{
-					"content": "$$-\\infty$$"
-				},
-				{
-					"content": "$$0$$"
-				},
-				{
-					"content": "Forme indéterminée"
-				}
-			],
-			"variables": [
-				{
-					"name": "a",
-					"expression": "1..9"
-				},
-				{
-					"name": "b",
-					"expression": "2..9"
-				}
-			]
-		},
 		"default_display_options": null,
 		"test_specs": [
 			{
@@ -3620,7 +4067,9 @@
 				},
 				"description": "v0 \\dfrac{+\\infty}{+\\infty} → forme indéterminée",
 				"variationIndex": 0,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			},
 			{
 				"expected": {
@@ -3631,7 +4080,9 @@
 				},
 				"description": "v1 \\dfrac{+\\infty}{-\\infty} → forme indéterminée",
 				"variationIndex": 1,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			},
 			{
 				"expected": {
@@ -3642,7 +4093,9 @@
 				},
 				"description": "v2 \\dfrac{-\\infty}{-\\infty} → forme indéterminée",
 				"variationIndex": 2,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			},
 			{
 				"expected": {
@@ -3653,7 +4106,9 @@
 				},
 				"description": "v3 \\dfrac{-\\infty}{+\\infty} → forme indéterminée",
 				"variationIndex": 3,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			},
 			{
 				"expected": {
@@ -3664,7 +4119,9 @@
 				},
 				"description": "v4 \\dfrac{0}{+\\infty} → 0",
 				"variationIndex": 4,
-				"selectedChoices": [2]
+				"selectedChoices": [
+					2
+				]
 			},
 			{
 				"expected": {
@@ -3675,7 +4132,9 @@
 				},
 				"description": "v5 \\dfrac{0}{-\\infty} → 0",
 				"variationIndex": 5,
-				"selectedChoices": [2]
+				"selectedChoices": [
+					2
+				]
 			},
 			{
 				"expected": {
@@ -3686,7 +4145,9 @@
 				},
 				"description": "v6 \\dfrac{+\\infty}{0^+} → +∞",
 				"variationIndex": 6,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3697,7 +4158,9 @@
 				},
 				"description": "v7 \\dfrac{-\\infty}{0^+} → −∞",
 				"variationIndex": 7,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3708,7 +4171,9 @@
 				},
 				"description": "v8 \\dfrac{+\\infty}{0^-} → −∞",
 				"variationIndex": 8,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3719,7 +4184,9 @@
 				},
 				"description": "v9 \\dfrac{-\\infty}{0^-} → +∞",
 				"variationIndex": 9,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3730,7 +4197,9 @@
 				},
 				"description": "v10 \\dfrac{{{a}}}{+\\infty} → 0",
 				"variationIndex": 10,
-				"selectedChoices": [2]
+				"selectedChoices": [
+					2
+				]
 			},
 			{
 				"expected": {
@@ -3741,7 +4210,9 @@
 				},
 				"description": "v11 \\dfrac{-{{a}}}{+\\infty} → 0",
 				"variationIndex": 11,
-				"selectedChoices": [2]
+				"selectedChoices": [
+					2
+				]
 			},
 			{
 				"expected": {
@@ -3752,7 +4223,9 @@
 				},
 				"description": "v12 \\dfrac{{{a}}}{-\\infty} → 0",
 				"variationIndex": 12,
-				"selectedChoices": [2]
+				"selectedChoices": [
+					2
+				]
 			},
 			{
 				"expected": {
@@ -3763,7 +4236,9 @@
 				},
 				"description": "v13 \\dfrac{-{{a}}}{-\\infty} → 0",
 				"variationIndex": 13,
-				"selectedChoices": [2]
+				"selectedChoices": [
+					2
+				]
 			},
 			{
 				"expected": {
@@ -3774,7 +4249,9 @@
 				},
 				"description": "v14 \\dfrac{+\\infty}{{{a}}} → +∞",
 				"variationIndex": 14,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3785,7 +4262,9 @@
 				},
 				"description": "v15 \\dfrac{+\\infty}{-{{a}}} → −∞",
 				"variationIndex": 15,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3796,7 +4275,9 @@
 				},
 				"description": "v16 \\dfrac{-\\infty}{{{a}}} → −∞",
 				"variationIndex": 16,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3807,7 +4288,9 @@
 				},
 				"description": "v17 \\dfrac{-\\infty}{-{{a}}} → +∞",
 				"variationIndex": 17,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3818,7 +4301,9 @@
 				},
 				"description": "v18 (+\\infty)\\times 0 → forme indéterminée",
 				"variationIndex": 18,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			},
 			{
 				"expected": {
@@ -3829,7 +4314,9 @@
 				},
 				"description": "v19 (-\\infty)\\times 0 → forme indéterminée",
 				"variationIndex": 19,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			},
 			{
 				"expected": {
@@ -3840,7 +4327,9 @@
 				},
 				"description": "v20 (+\\infty)\\times(+\\infty) → +∞",
 				"variationIndex": 20,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3851,7 +4340,9 @@
 				},
 				"description": "v21 (+\\infty)\\times(-\\infty) → −∞",
 				"variationIndex": 21,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3862,7 +4353,9 @@
 				},
 				"description": "v22 (-\\infty)\\times(-\\infty) → +∞",
 				"variationIndex": 22,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3873,7 +4366,9 @@
 				},
 				"description": "v23 (-\\infty)\\times(+\\infty) → −∞",
 				"variationIndex": 23,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3884,7 +4379,9 @@
 				},
 				"description": "v24 {{a}}\\times(+\\infty) → +∞",
 				"variationIndex": 24,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3895,7 +4392,9 @@
 				},
 				"description": "v25 -{{a}}\\times(+\\infty) → −∞",
 				"variationIndex": 25,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3906,7 +4405,9 @@
 				},
 				"description": "v26 {{a}}\\times(-\\infty) → −∞",
 				"variationIndex": 26,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3917,7 +4418,9 @@
 				},
 				"description": "v27 -{{a}}\\times(-\\infty) → +∞",
 				"variationIndex": 27,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3928,7 +4431,9 @@
 				},
 				"description": "v28 (+\\infty)+(+\\infty) → +∞",
 				"variationIndex": 28,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3939,7 +4444,9 @@
 				},
 				"description": "v29 (+\\infty)+(-\\infty) → forme indéterminée",
 				"variationIndex": 29,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			},
 			{
 				"expected": {
@@ -3950,7 +4457,9 @@
 				},
 				"description": "v30 (-\\infty)+(-\\infty) → −∞",
 				"variationIndex": 30,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3961,7 +4470,9 @@
 				},
 				"description": "v31 (-\\infty)+(+\\infty) → forme indéterminée",
 				"variationIndex": 31,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			},
 			{
 				"expected": {
@@ -3972,7 +4483,9 @@
 				},
 				"description": "v32 (+\\infty)-(+\\infty) → forme indéterminée",
 				"variationIndex": 32,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			},
 			{
 				"expected": {
@@ -3983,7 +4496,9 @@
 				},
 				"description": "v33 (+\\infty)-(-\\infty) → +∞",
 				"variationIndex": 33,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3994,7 +4509,9 @@
 				},
 				"description": "v34 (-\\infty)-(-\\infty) → forme indéterminée",
 				"variationIndex": 34,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			},
 			{
 				"expected": {
@@ -4005,7 +4522,9 @@
 				},
 				"description": "v35 (-\\infty)-(+\\infty) → −∞",
 				"variationIndex": 35,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -4016,7 +4535,9 @@
 				},
 				"description": "v36 +\\infty+{{a}} → +∞",
 				"variationIndex": 36,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -4027,7 +4548,9 @@
 				},
 				"description": "v37 -\\infty+{{a}} → −∞",
 				"variationIndex": 37,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -4038,7 +4561,9 @@
 				},
 				"description": "v38 \\dfrac{{{a}}}{0^+} → +∞",
 				"variationIndex": 38,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -4049,7 +4574,9 @@
 				},
 				"description": "v39 \\dfrac{-{{a}}}{0^+} → −∞",
 				"variationIndex": 39,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -4060,7 +4587,9 @@
 				},
 				"description": "v40 \\dfrac{{{a}}}{0^-} → −∞",
 				"variationIndex": 40,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -4071,7 +4600,9 @@
 				},
 				"description": "v41 \\dfrac{-{{a}}}{0^-} → +∞",
 				"variationIndex": 41,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -4082,7 +4613,9 @@
 				},
 				"description": "v0 erreur : ∞/∞ ≠ +∞ (FI)",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -4093,7 +4626,9 @@
 				},
 				"description": "v1 erreur : ∞/(-∞) : FI, pas -∞",
 				"variationIndex": 1,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -4104,7 +4639,9 @@
 				},
 				"description": "v18 erreur : ∞×0 : FI, pas 0",
 				"variationIndex": 18,
-				"selectedChoices": [2]
+				"selectedChoices": [
+					2
+				]
 			},
 			{
 				"expected": {
@@ -4115,7 +4652,9 @@
 				},
 				"description": "v29 erreur : ∞-∞ : FI, pas 0",
 				"variationIndex": 29,
-				"selectedChoices": [2]
+				"selectedChoices": [
+					2
+				]
 			},
 			{
 				"expected": {
@@ -4126,7 +4665,9 @@
 				},
 				"description": "v32 erreur : +∞-(+∞) : FI, pas 0",
 				"variationIndex": 32,
-				"selectedChoices": [2]
+				"selectedChoices": [
+					2
+				]
 			},
 			{
 				"expected": {
@@ -4137,7 +4678,9 @@
 				},
 				"description": "v33 erreur : +∞-(-∞) = +∞, pas FI",
 				"variationIndex": 33,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			},
 			{
 				"expected": {
@@ -4148,7 +4691,9 @@
 				},
 				"description": "v9 erreur : -∞/0- : règle des signes",
 				"variationIndex": 9,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -4159,7 +4704,9 @@
 				},
 				"description": "v41 erreur : -a/0- : règle des signes",
 				"variationIndex": 41,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -4170,7 +4717,9 @@
 				},
 				"description": "v4 erreur : 0/∞ = 0, pas FI",
 				"variationIndex": 4,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			},
 			{
 				"expected": {
@@ -4181,8 +4730,22 @@
 				},
 				"description": "v38 erreur : a/0+ = +∞, pas FI",
 				"variationIndex": 38,
-				"selectedChoices": [3]
+				"selectedChoices": [
+					3
+				]
 			}
-		]
+		],
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		}
 	}
 ]

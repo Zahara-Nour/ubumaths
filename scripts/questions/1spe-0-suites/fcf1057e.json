@@ -9,22 +9,9 @@
 	"level": 5,
 	"delay": 30,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "Oui, elle semble géométrique."
-			},
-			{
-				"content": "Non, elle ne semble pas géométrique."
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -62,10 +49,14 @@
 					"Le quotient n'est pas toujours le même : la suite ne semble **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -102,10 +93,14 @@
 					"On passe d'un terme au suivant en multipliant toujours par ${{q}}$ : la suite semble **géométrique**, de raison $q={{q}}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -138,10 +133,14 @@
 					"Diviser par $2$, c'est multiplier par $\\dfrac{1}{2}$ : la suite semble **géométrique**, de raison $q=\\dfrac{1}{2}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -174,10 +173,14 @@
 					"Le quotient n'est pas toujours le même : la suite ne semble **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?",
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -219,7 +222,11 @@
 					"Le quotient n'est pas toujours le même : la suite ne semble **pas géométrique**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -238,7 +245,7 @@
 			},
 			"description": "v0 : « non » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -255,7 +262,7 @@
 			},
 			"description": "v0 : « oui » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -272,7 +279,7 @@
 			},
 			"description": "v1 : « oui » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -289,7 +296,7 @@
 			},
 			"description": "v1 : « non » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -305,7 +312,7 @@
 			},
 			"description": "v2 : « oui » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -321,7 +328,7 @@
 			},
 			"description": "v2 : « non » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -337,7 +344,7 @@
 			},
 			"description": "v3 : « non » accepté",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -353,7 +360,7 @@
 			},
 			"description": "v3 : « oui » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -371,7 +378,7 @@
 			},
 			"description": "v4 : « non » accepté",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -389,7 +396,7 @@
 			},
 			"description": "v4 : « oui » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
 	]
 }

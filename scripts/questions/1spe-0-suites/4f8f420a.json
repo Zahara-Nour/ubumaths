@@ -9,26 +9,9 @@
 	"level": 1,
 	"delay": 40,
 	"status": "draft",
-	"options": {
-		"shuffleChoices": true
-	},
 	"variations": [
 		{
-			"choices": [
-				{
-					"content": "$u_n={{eval:a+r*n}}$"
-				},
-				{
-					"content": "$u_n={{eval:a-r*n}}$"
-				},
-				{
-					"content": "$u_n={{eval:a+r+r*n}}$"
-				},
-				{
-					"content": "$u_n={{a}}\\times{{eval:r;()}}^n$"
-				}
-			],
-			"statement": "Le nuage de points ci-dessous représente les premiers termes d'une suite $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -10 ; 14\ngrille: 1 ; 2\nu(n) = {{a}}+({{r}})*n pour n de 0 à 5   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nQuelle formule définit cette suite ?",
+			"statement": "Le nuage de points ci-dessous représente les premiers termes d'une suite $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -10 ; 14\ngrille: 1 ; 2\nu(n) = {{a}}+({{r}})*n pour n de 0 à 5   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nQuelle formule définit cette suite ?\n\n```choix\n- $u_n={{eval:a+r*n}}$\n- $u_n={{eval:a-r*n}}$\n- $u_n={{eval:a+r+r*n}}$\n- $u_n={{a}}\\times{{eval:r;()}}^n$\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -52,24 +35,14 @@
 					"Conclusion : $u_n=u_0+nr$, soit $u_n={{eval:a+r*n}}$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"choices": [
-				{
-					"content": "$u_n={{a}}\\times 2^n$"
-				},
-				{
-					"content": "$u_n={{a}}\\times(-2)^n$"
-				},
-				{
-					"content": "$u_n={{eval:2*a}}\\times 2^n$"
-				},
-				{
-					"content": "$u_n={{eval:a+a*n}}$"
-				}
-			],
-			"statement": "Le nuage de points ci-dessous représente les premiers termes d'une suite $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -2 ; {{a}}*16+3\nu(n) = {{a}}*2^n pour n de 0 à 4   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nQuelle formule définit cette suite ?",
+			"statement": "Le nuage de points ci-dessous représente les premiers termes d'une suite $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -2 ; {{a}}*16+3\nu(n) = {{a}}*2^n pour n de 0 à 4   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nQuelle formule définit cette suite ?\n\n```choix\n- $u_n={{a}}\\times 2^n$\n- $u_n={{a}}\\times(-2)^n$\n- $u_n={{eval:2*a}}\\times 2^n$\n- $u_n={{eval:a+a*n}}$\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -88,24 +61,14 @@
 					"Conclusion : $u_n=u_0\\times q^n$, soit $u_n={{a}}\\times 2^n$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"choices": [
-				{
-					"content": "$u_n={{a}}\\times 0.5^n$"
-				},
-				{
-					"content": "$u_n={{a}}\\times(-0.5)^n$"
-				},
-				{
-					"content": "$u_n={{eval:a/2}}\\times 0.5^n$"
-				},
-				{
-					"content": "$u_n={{eval:a-a/2*n}}$"
-				}
-			],
-			"statement": "Le nuage de points ci-dessous représente les premiers termes d'une suite $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -2 ; {{a}}+2\nu(n) = {{a}}*0.5^n pour n de 0 à 4   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nQuelle formule définit cette suite ?",
+			"statement": "Le nuage de points ci-dessous représente les premiers termes d'une suite $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -2 ; {{a}}+2\nu(n) = {{a}}*0.5^n pour n de 0 à 4   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nQuelle formule définit cette suite ?\n\n```choix\n- $u_n={{a}}\\times 0.5^n$\n- $u_n={{a}}\\times(-0.5)^n$\n- $u_n={{eval:a/2}}\\times 0.5^n$\n- $u_n={{eval:a-a/2*n}}$\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -124,7 +87,11 @@
 					"Conclusion : $u_n=u_0\\times q^n$, soit $u_n={{a}}\\times 0.5^n$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -138,7 +105,7 @@
 			},
 			"description": "variation 0 {'a': -3, 'r': 2} : formule juste",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -150,7 +117,7 @@
 			},
 			"description": "variation 0 {'a': -3, 'r': 2} : signe de la raison",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -162,7 +129,7 @@
 			},
 			"description": "variation 0 {'a': -3, 'r': 2} : premier terme décalé (u_1 pris pour u_0)",
 			"variationIndex": 0,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -174,7 +141,7 @@
 			},
 			"description": "variation 0 {'a': -3, 'r': 2} : géométrique au lieu d'arithmétique",
 			"variationIndex": 0,
-			"selectedChoices": [3]
+			"answers": ["3"]
 		},
 		{
 			"expected": {
@@ -186,7 +153,7 @@
 			},
 			"description": "variation 0 {'a': 8, 'r': -3} : formule juste",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -198,7 +165,7 @@
 			},
 			"description": "variation 0 {'a': 8, 'r': -3} : signe de la raison",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -210,7 +177,7 @@
 			},
 			"description": "variation 0 {'a': 8, 'r': -3} : premier terme décalé (u_1 pris pour u_0)",
 			"variationIndex": 0,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -222,7 +189,7 @@
 			},
 			"description": "variation 0 {'a': 8, 'r': -3} : géométrique au lieu d'arithmétique",
 			"variationIndex": 0,
-			"selectedChoices": [3]
+			"answers": ["3"]
 		},
 		{
 			"expected": {
@@ -233,7 +200,7 @@
 			},
 			"description": "variation 1 {'a': 3} : formule juste",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -244,7 +211,7 @@
 			},
 			"description": "variation 1 {'a': 3} : raison négative",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -255,7 +222,7 @@
 			},
 			"description": "variation 1 {'a': 3} : premier terme décalé",
 			"variationIndex": 1,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -266,7 +233,7 @@
 			},
 			"description": "variation 1 {'a': 3} : arithmétique au lieu de géométrique",
 			"variationIndex": 1,
-			"selectedChoices": [3]
+			"answers": ["3"]
 		},
 		{
 			"expected": {
@@ -277,7 +244,7 @@
 			},
 			"description": "variation 2 {'a': 16} : formule juste",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -288,7 +255,7 @@
 			},
 			"description": "variation 2 {'a': 16} : raison négative",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -299,7 +266,7 @@
 			},
 			"description": "variation 2 {'a': 16} : premier terme décalé",
 			"variationIndex": 2,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -310,7 +277,7 @@
 			},
 			"description": "variation 2 {'a': 16} : arithmétique au lieu de géométrique",
 			"variationIndex": 2,
-			"selectedChoices": [3]
+			"answers": ["3"]
 		}
 	]
 }

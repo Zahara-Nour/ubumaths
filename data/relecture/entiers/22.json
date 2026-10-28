@@ -7,8 +7,7 @@
 		"description": "Nombres inférieurs à $1\\,000$",
 		"variations": [
 			{
-				"statement": "Quel est le plus petit de ces 2 nombres ?",
-				"correctChoiceIndex": ["{{if:h<j|0|1}}"],
+				"statement": "Quel est le plus petit de ces 2 nombres ?\n\n```choix\n- $${{h}}$$\n- $${{j}}$$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -43,18 +42,19 @@
 						"expression": "eval:d*100+f*10+g"
 					}
 				],
-				"choices": [
-					{
-						"content": "$${{h}}$$"
-					},
-					{
-						"content": "$${{j}}$$"
-					}
+				"conditions": [
+					"h!=j"
 				],
-				"conditions": ["h!=j"]
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:h<j|0|1}}"
+					}
+				]
 			}
 		],
-		"grades": ["CE1"],
+		"grades": [
+			"CE1"
+		],
 		"theme": "Entiers",
 		"domain": "Apprivoiser",
 		"subdomain": "Comparer",
@@ -73,10 +73,12 @@
 					"f": "2",
 					"g": "8"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "628 < 799 : mauvais choix",
@@ -89,10 +91,12 @@
 					"f": "2",
 					"g": "8"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "205 < 434",
@@ -105,10 +109,12 @@
 					"f": "3",
 					"g": "4"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}

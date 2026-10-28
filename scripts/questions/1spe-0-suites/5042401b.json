@@ -9,25 +9,9 @@
 	"level": 2,
 	"delay": 30,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "croissante"
-			},
-			{
-				"content": "décroissante"
-			},
-			{
-				"content": "constante"
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -44,10 +28,14 @@
 					"Ici $u_0={{a}}$ est positif et $q-1={{eval:q-1}}$ est positif : $u_{n+1}-u_n$ est **positif**, la suite est **croissante**."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -65,10 +53,14 @@
 					"Attention : multiplier un nombre négatif par $q>1$ le rend **plus petit** (par exemple ${{a}}\\times{{q}}={{eval:a*q}}$)."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -85,10 +77,14 @@
 					"Ici $u_0={{a}}$ est positif et $q-1={{eval:q-1}}$ est négatif : $u_{n+1}-u_n$ est **négatif**, la suite est **décroissante**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -106,10 +102,14 @@
 					"Attention : multiplier un nombre négatif par $0<q<1$ le rend **plus grand** (par exemple ${{a}}\\times{{q}}={{eval:a*q}}$)."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q=1$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q=1$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -122,7 +122,11 @@
 					"La suite est **constante**."
 				]
 			},
-			"correctChoiceIndex": ["2"]
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -136,7 +140,7 @@
 			},
 			"description": "variation 0 (u0 > 0, q > 1) : « croissante » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -148,7 +152,7 @@
 			},
 			"description": "variation 0 (u0 > 0, q > 1) : « décroissante » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -160,7 +164,7 @@
 			},
 			"description": "variation 0 (u0 > 0, q > 1) : « constante » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -172,7 +176,7 @@
 			},
 			"description": "variation 1 (u0 < 0, q > 1) : « croissante » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -184,7 +188,7 @@
 			},
 			"description": "variation 1 (u0 < 0, q > 1) : « décroissante » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -196,7 +200,7 @@
 			},
 			"description": "variation 1 (u0 < 0, q > 1) : « constante » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -208,7 +212,7 @@
 			},
 			"description": "variation 2 (u0 > 0, 0 < q < 1) : « croissante » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -220,7 +224,7 @@
 			},
 			"description": "variation 2 (u0 > 0, 0 < q < 1) : « décroissante » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -232,7 +236,7 @@
 			},
 			"description": "variation 2 (u0 > 0, 0 < q < 1) : « constante » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -244,7 +248,7 @@
 			},
 			"description": "variation 3 (u0 < 0, 0 < q < 1) : « croissante » accepté",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -256,7 +260,7 @@
 			},
 			"description": "variation 3 (u0 < 0, 0 < q < 1) : « décroissante » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -268,7 +272,7 @@
 			},
 			"description": "variation 3 (u0 < 0, 0 < q < 1) : « constante » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -279,7 +283,7 @@
 			},
 			"description": "variation 4 (q = 1) : « croissante » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -290,7 +294,7 @@
 			},
 			"description": "variation 4 (q = 1) : « décroissante » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -301,7 +305,7 @@
 			},
 			"description": "variation 4 (q = 1) : « constante » accepté",
 			"variationIndex": 4,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		}
 	]
 }

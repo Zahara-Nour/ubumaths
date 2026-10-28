@@ -6,7 +6,9 @@
 		"domain": "Additionner",
 		"level": 6,
 		"status": "published",
-		"grades": ["CP"],
+		"grades": [
+			"CP"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -49,7 +51,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["78"],
+				"answers": [
+					"78"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -62,7 +66,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["68"],
+				"answers": [
+					"68"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -75,7 +81,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["31"],
+				"answers": [
+					"31"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -96,7 +104,9 @@
 		"domain": "Additionner",
 		"level": 12,
 		"status": "published",
-		"grades": ["CE2"],
+		"grades": [
+			"CE2"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -135,7 +145,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["70"],
+				"answers": [
+					"70"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -147,7 +159,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["60"],
+				"answers": [
+					"60"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -159,7 +173,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["40"],
+				"answers": [
+					"40"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -179,7 +195,9 @@
 		"domain": "Additionner",
 		"level": 15,
 		"status": "published",
-		"grades": ["CE2"],
+		"grades": [
+			"CE2"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -226,7 +244,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["96"],
+				"answers": [
+					"96"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -240,7 +260,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["86"],
+				"answers": [
+					"86"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -262,7 +284,9 @@
 		"domain": "Soustraire",
 		"level": 5,
 		"status": "published",
-		"grades": ["CE1"],
+		"grades": [
+			"CE1"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -305,7 +329,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["38"],
+				"answers": [
+					"38"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -318,7 +344,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["8"],
+				"answers": [
+					"8"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -331,10 +359,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["45-7"],
+				"answers": [
+					"45-7"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "4",
@@ -345,10 +377,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["38,0"],
+				"answers": [
+					"38,0"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["zeros"]
+					"constraintViolations": [
+						"zeros"
+					]
 				},
 				"variables": {
 					"a": "4",
@@ -359,7 +395,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": [""],
+				"answers": [
+					""
+				],
 				"expected": {
 					"status": "empty"
 				},
@@ -380,7 +418,9 @@
 		"domain": "Apprivoiser",
 		"level": 5,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -450,7 +490,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-\\frac{3}{4}"],
+				"answers": [
+					"-\\frac{3}{4}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -462,10 +504,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{-3}{4}"],
+				"answers": [
+					"\\frac{-3}{4}"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["reducedFractions"]
+					"constraintViolations": [
+						"reducedFractions"
+					]
 				},
 				"variables": {
 					"a": "3",
@@ -475,7 +521,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{3}{4}"],
+				"answers": [
+					"\\frac{3}{4}"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -487,7 +535,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-\\frac{3}{4}"],
+				"answers": [
+					"-\\frac{3}{4}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -499,10 +549,14 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["\\frac{3}{-4}"],
+				"answers": [
+					"\\frac{3}{-4}"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["reducedFractions"]
+					"constraintViolations": [
+						"reducedFractions"
+					]
 				},
 				"variables": {
 					"a": "3",
@@ -512,7 +566,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["\\frac{1}{9}"],
+				"answers": [
+					"\\frac{1}{9}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -524,7 +580,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["-\\frac{3}{4}"],
+				"answers": [
+					"-\\frac{3}{4}"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -544,7 +602,9 @@
 		"domain": "Multiplier et Diviser",
 		"level": 5,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -614,7 +674,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-6"],
+				"answers": [
+					"-6"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -626,7 +688,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["6"],
+				"answers": [
+					"6"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -638,10 +702,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(-6)"],
+				"answers": [
+					"(-6)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "3",
@@ -651,7 +719,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["81"],
+				"answers": [
+					"81"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -663,7 +733,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-81"],
+				"answers": [
+					"-81"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -675,10 +747,14 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["+81"],
+				"answers": [
+					"+81"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["signs"]
+					"constraintViolations": [
+						"signs"
+					]
 				},
 				"variables": {
 					"a": "9",
@@ -688,7 +764,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-4"],
+				"answers": [
+					"-4"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -700,7 +778,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["4"],
+				"answers": [
+					"4"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -720,7 +800,9 @@
 		"domain": "Multiplier et Diviser",
 		"level": 3,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -790,7 +872,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-3"],
+				"answers": [
+					"-3"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -802,7 +886,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["3"],
+				"answers": [
+					"3"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -814,10 +900,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(-3)"],
+				"answers": [
+					"(-3)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "3",
@@ -827,7 +917,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["9"],
+				"answers": [
+					"9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -839,7 +931,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-9"],
+				"answers": [
+					"-9"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -851,7 +945,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-2"],
+				"answers": [
+					"-2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -863,7 +959,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -883,7 +981,9 @@
 		"domain": "Multiplier et Diviser",
 		"level": 6,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -999,7 +1099,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1011,7 +1113,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-2"],
+				"answers": [
+					"-2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1023,7 +1127,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-9"],
+				"answers": [
+					"-9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1035,7 +1141,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["(-9)"],
+				"answers": [
+					"(-9)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1047,7 +1155,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["9"],
+				"answers": [
+					"9"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1059,7 +1169,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["(-3)"],
+				"answers": [
+					"(-3)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1071,7 +1183,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1083,7 +1197,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["-2"],
+				"answers": [
+					"-2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1095,7 +1211,9 @@
 				"variationIndex": 4
 			},
 			{
-				"answers": ["-9"],
+				"answers": [
+					"-9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1107,7 +1225,9 @@
 				"variationIndex": 5
 			},
 			{
-				"answers": ["9"],
+				"answers": [
+					"9"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1127,7 +1247,9 @@
 		"domain": "Multiplier et Diviser",
 		"level": 4,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1243,7 +1365,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1255,7 +1379,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-2"],
+				"answers": [
+					"-2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1267,7 +1393,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-9"],
+				"answers": [
+					"-9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1279,7 +1407,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["(-9)"],
+				"answers": [
+					"(-9)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1291,7 +1421,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["9"],
+				"answers": [
+					"9"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1303,7 +1435,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-3"],
+				"answers": [
+					"-3"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1315,7 +1449,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["-6"],
+				"answers": [
+					"-6"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1327,7 +1463,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["6"],
+				"answers": [
+					"6"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1339,7 +1477,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["-81"],
+				"answers": [
+					"-81"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1351,7 +1491,9 @@
 				"variationIndex": 4
 			},
 			{
-				"answers": ["4"],
+				"answers": [
+					"4"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1363,7 +1505,9 @@
 				"variationIndex": 5
 			},
 			{
-				"answers": ["-4"],
+				"answers": [
+					"-4"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1383,43 +1527,76 @@
 		"domain": "Multiplier et Diviser",
 		"level": 2,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*?={{b}}$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*…={{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*?=-{{b}}$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*…=-{{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$${{a}}*?=-{{b}}$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Quel est le signe du facteur manquant ?\n\n$${{a}}*…=-{{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$${{a}}*?={{b}}$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Quel est le signe du facteur manquant ?\n\n$${{a}}*…={{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*(-{{a}})={{b}}$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$…*(-{{a}})={{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*(-{{a}})=-{{b}}$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$…*(-{{a}})=-{{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*{{a}}=-{{b}}$$",
-				"correctChoiceIndex": ["1"]
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$…*{{a}}=-{{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*{{a}}={{b}}$$",
-				"correctChoiceIndex": ["0"]
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$…*{{a}}={{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			}
 		],
 		"type": "multiple_choice",
-		"options": null,
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -1428,26 +1605,6 @@
 		"subdomain": "Produit",
 		"exercise_instruction": null,
 		"description": null,
-		"shared": {
-			"choices": [
-				{
-					"content": "positif"
-				},
-				{
-					"content": "négatif"
-				}
-			],
-			"variables": [
-				{
-					"name": "a",
-					"expression": "30..99"
-				},
-				{
-					"name": "b",
-					"expression": "30..99"
-				}
-			]
-		},
 		"default_display_options": null,
 		"test_specs": [
 			{
@@ -1460,7 +1617,9 @@
 				},
 				"description": "v0",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -1472,7 +1631,9 @@
 				},
 				"description": "v1",
 				"variationIndex": 1,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1484,7 +1645,9 @@
 				},
 				"description": "v2",
 				"variationIndex": 2,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -1496,7 +1659,9 @@
 				},
 				"description": "v3",
 				"variationIndex": 3,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1508,7 +1673,9 @@
 				},
 				"description": "v4",
 				"variationIndex": 4,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -1520,7 +1687,9 @@
 				},
 				"description": "v5",
 				"variationIndex": 5,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1532,7 +1701,9 @@
 				},
 				"description": "v6",
 				"variationIndex": 6,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -1544,7 +1715,9 @@
 				},
 				"description": "v7",
 				"variationIndex": 7,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1556,7 +1729,9 @@
 				},
 				"description": "v0 erreur de signe",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1568,7 +1743,9 @@
 				},
 				"description": "v3 bornes",
 				"variationIndex": 3,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1580,9 +1757,23 @@
 				},
 				"description": "v6 bornes",
 				"variationIndex": 6,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			}
-		]
+		],
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30..99"
+				},
+				{
+					"name": "b",
+					"expression": "30..99"
+				}
+			]
+		}
 	},
 	{
 		"id": "4bee24f9-60bc-47f3-aab9-e8904c8772bf",
@@ -1591,18 +1782,12 @@
 		"domain": "Multiplier et Diviser",
 		"level": 1,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
-				"choices": [
-					{
-						"content": "positif"
-					},
-					{
-						"content": "négatif"
-					}
-				],
-				"statement": "Quel est le signe de ce produit ?\n\n$${{expression1}}$$",
+				"statement": "Quel est le signe de ce produit ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -1613,21 +1798,24 @@
 						"expression": "30..99;±"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "(a)*(b)",
 						"displayOptions": {
 							"removeUnnecessaryBrackets": true
 						}
 					}
 				],
-				"conditions": ["a<=0 || b<=0"],
-				"correctChoiceIndex": ["{{eval:(1-a*b/abs(a*b))/2}}"]
+				"conditions": [
+					"a<=0 || b<=0"
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1-a*b/abs(a*b))/2}}"
+					}
+				]
 			}
 		],
 		"type": "multiple_choice",
-		"options": {
-			"shuffleChoices": false
-		},
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -1636,7 +1824,6 @@
 		"subdomain": "Produit",
 		"exercise_instruction": null,
 		"description": "$2$ facteurs",
-		"shared": null,
 		"default_display_options": null,
 		"test_specs": [
 			{
@@ -1649,7 +1836,9 @@
 				},
 				"description": "49×(-65) négatif",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -1661,7 +1850,9 @@
 				},
 				"description": "49×(-65) : positif faux",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1673,7 +1864,9 @@
 				},
 				"description": "(-71)×(-90) positif",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1685,7 +1878,9 @@
 				},
 				"description": "(-71)×(-90) : négatif faux",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -1697,7 +1892,9 @@
 				},
 				"description": "bornes -30×99",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -1709,7 +1906,9 @@
 				},
 				"description": "bornes -99×-30",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			}
 		]
 	},
@@ -1720,18 +1919,12 @@
 		"domain": "Multiplier et Diviser",
 		"level": 3,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
-				"choices": [
-					{
-						"content": "positif"
-					},
-					{
-						"content": "négatif"
-					}
-				],
-				"statement": "Quel est le signe de ce produit ?\n\n$${{expression1}}$$",
+				"statement": "Quel est le signe de ce produit ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -1746,20 +1939,21 @@
 						"expression": "30..99;±"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "(a)*(b)*(c)",
 						"displayOptions": {
 							"removeUnnecessaryBrackets": true
 						}
 					}
 				],
-				"correctChoiceIndex": ["{{eval:(1-a*b*c/abs(a*b*c))/2}}"]
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1-a*b*c/abs(a*b*c))/2}}"
+					}
+				]
 			}
 		],
 		"type": "multiple_choice",
-		"options": {
-			"shuffleChoices": false
-		},
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -1768,7 +1962,6 @@
 		"subdomain": "Produit",
 		"exercise_instruction": null,
 		"description": "$3$ facteurs",
-		"shared": null,
 		"default_display_options": null,
 		"test_specs": [
 			{
@@ -1782,7 +1975,9 @@
 				},
 				"description": "tous positifs",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1795,7 +1990,9 @@
 				},
 				"description": "un négatif",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -1808,7 +2005,9 @@
 				},
 				"description": "deux négatifs",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1821,7 +2020,9 @@
 				},
 				"description": "deux négatifs : négatif faux",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -1834,7 +2035,9 @@
 				},
 				"description": "trois négatifs (bornes)",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			}
 		]
 	},
@@ -1845,18 +2048,12 @@
 		"domain": "Multiplier et Diviser",
 		"level": 4,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
-				"choices": [
-					{
-						"content": "positif"
-					},
-					{
-						"content": "négatif"
-					}
-				],
-				"statement": "Quel est le signe de ce produit ?\n\n$${{expression1}}$$",
+				"statement": "Quel est le signe de ce produit ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -1875,20 +2072,21 @@
 						"expression": "30..99;±"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "(a)*(b)*(c)*(d)",
 						"displayOptions": {
 							"removeUnnecessaryBrackets": true
 						}
 					}
 				],
-				"correctChoiceIndex": ["{{eval:(1-a*b*c*d/abs(a*b*c*d))/2}}"]
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1-a*b*c*d/abs(a*b*c*d))/2}}"
+					}
+				]
 			}
 		],
 		"type": "multiple_choice",
-		"options": {
-			"shuffleChoices": false
-		},
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -1897,7 +2095,6 @@
 		"subdomain": "Produit",
 		"exercise_instruction": null,
 		"description": "$4$ facteurs",
-		"shared": null,
 		"default_display_options": null,
 		"test_specs": [
 			{
@@ -1912,7 +2109,9 @@
 				},
 				"description": "tous positifs",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1926,7 +2125,9 @@
 				},
 				"description": "un négatif",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -1940,7 +2141,9 @@
 				},
 				"description": "deux négatifs",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1954,7 +2157,9 @@
 				},
 				"description": "trois négatifs",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -1968,7 +2173,9 @@
 				},
 				"description": "trois négatifs : positif faux",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -1982,7 +2189,9 @@
 				},
 				"description": "quatre négatifs (bornes)",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			}
 		]
 	},
@@ -1993,18 +2202,12 @@
 		"domain": "Multiplier et Diviser",
 		"level": 1,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
-				"choices": [
-					{
-						"content": "positif"
-					},
-					{
-						"content": "négatif"
-					}
-				],
-				"statement": "Quel est le signe de ce quotient ?\n\n$${{expression1}}$$",
+				"statement": "Quel est le signe de ce quotient ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -2015,18 +2218,21 @@
 						"expression": "30..99;±"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "a:(b)"
 					}
 				],
-				"conditions": ["a<=0 || b<0"],
-				"correctChoiceIndex": ["{{eval:(1-a*b/abs(a*b))/2}}"]
+				"conditions": [
+					"a<=0 || b<0"
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1-a*b/abs(a*b))/2}}"
+					}
+				]
 			}
 		],
 		"type": "multiple_choice",
-		"options": {
-			"shuffleChoices": false
-		},
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -2035,7 +2241,6 @@
 		"subdomain": "Quotient",
 		"exercise_instruction": null,
 		"description": null,
-		"shared": null,
 		"default_display_options": null,
 		"test_specs": [
 			{
@@ -2048,7 +2253,9 @@
 				},
 				"description": "49:(-65) négatif",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -2060,7 +2267,9 @@
 				},
 				"description": "49:(-65) : positif faux",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -2072,7 +2281,9 @@
 				},
 				"description": "(-71):(-90) positif",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -2084,7 +2295,9 @@
 				},
 				"description": "(-97):78 négatif",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -2096,7 +2309,9 @@
 				},
 				"description": "bornes -30:(-99)",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			}
 		]
 	},
@@ -2107,18 +2322,12 @@
 		"domain": "Multiplier et Diviser",
 		"level": 2,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
-				"choices": [
-					{
-						"content": "positif"
-					},
-					{
-						"content": "négatif"
-					}
-				],
-				"statement": "Quel est le signe du nombre manquant :\n\n$$({{a}}):?=({{b}})$$",
+				"statement": "Quel est le signe du nombre manquant :\n\n$$({{a}}):…=({{b}})$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -2129,19 +2338,17 @@
 						"expression": "30..99;±"
 					}
 				],
-				"conditions": ["a<=0 || b<0"],
-				"correctChoiceIndex": ["{{eval:(1-a*b/abs(a*b))/2}}"]
+				"conditions": [
+					"a<=0 || b<0"
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1-a*b/abs(a*b))/2}}"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "positif"
-					},
-					{
-						"content": "négatif"
-					}
-				],
-				"statement": "Quel est le signe du nombre manquant :\n\n$$?:({{a}})=({{b}})$$",
+				"statement": "Quel est le signe du nombre manquant :\n\n$$…:({{a}})=({{b}})$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -2152,14 +2359,17 @@
 						"expression": "30..99;±"
 					}
 				],
-				"conditions": ["a<=0 || b<0"],
-				"correctChoiceIndex": ["{{eval:(1-a*b/abs(a*b))/2}}"]
+				"conditions": [
+					"a<=0 || b<0"
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1-a*b/abs(a*b))/2}}"
+					}
+				]
 			}
 		],
 		"type": "multiple_choice",
-		"options": {
-			"shuffleChoices": false
-		},
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -2168,7 +2378,6 @@
 		"subdomain": "Quotient",
 		"exercise_instruction": null,
 		"description": null,
-		"shared": null,
 		"default_display_options": null,
 		"test_specs": [
 			{
@@ -2181,7 +2390,9 @@
 				},
 				"description": "49:?=(-65) → négatif",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -2193,7 +2404,9 @@
 				},
 				"description": "49:?=(-65) : positif faux",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -2205,7 +2418,9 @@
 				},
 				"description": "(-71):?=(-90) → positif",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -2217,7 +2432,9 @@
 				},
 				"description": "?:49=(-65) → négatif",
 				"variationIndex": 1,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -2229,7 +2446,9 @@
 				},
 				"description": "?:(-71)=(-90) → positif",
 				"variationIndex": 1,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -2241,7 +2460,9 @@
 				},
 				"description": "?:(-71)=(-90) : négatif faux",
 				"variationIndex": 1,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -2253,7 +2474,9 @@
 				},
 				"description": "bornes ?:(-30)=99",
 				"variationIndex": 1,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -2265,7 +2488,9 @@
 				},
 				"description": "bornes (-99):?=(-30)",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			}
 		]
 	}

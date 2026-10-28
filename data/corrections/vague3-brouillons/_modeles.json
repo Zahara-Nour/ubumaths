@@ -6,7 +6,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 1,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -58,7 +60,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-2"],
+				"answers": [
+					"-2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -69,7 +73,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-7"],
+				"answers": [
+					"-7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -80,7 +86,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-8"],
+				"answers": [
+					"-8"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -91,7 +99,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -102,10 +112,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(-2)"],
+				"answers": [
+					"(-2)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "3"
@@ -114,10 +128,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-3+1"],
+				"answers": [
+					"-3+1"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "3"
@@ -134,7 +152,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 4,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -173,7 +193,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-2"],
+				"answers": [
+					"-2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -185,7 +207,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-18"],
+				"answers": [
+					"-18"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -197,7 +221,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -209,10 +235,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(-2)"],
+				"answers": [
+					"(-2)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "1",
@@ -230,7 +260,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 2,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -304,7 +336,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["7"],
+				"answers": [
+					"7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -317,7 +351,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -330,7 +366,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-7"],
+				"answers": [
+					"-7"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -343,7 +381,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-18"],
+				"answers": [
+					"-18"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -356,7 +396,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["18"],
+				"answers": [
+					"18"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -369,7 +411,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-1"],
+				"answers": [
+					"-1"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -382,7 +426,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["-1"],
+				"answers": [
+					"-1"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -395,7 +441,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["1"],
+				"answers": [
+					"1"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -416,7 +464,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 6,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -486,7 +536,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["7"],
+				"answers": [
+					"7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -498,7 +550,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -510,7 +564,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-7"],
+				"answers": [
+					"-7"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -522,7 +578,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-18"],
+				"answers": [
+					"-18"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -534,7 +592,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["18"],
+				"answers": [
+					"18"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -546,7 +606,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-7"],
+				"answers": [
+					"-7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -558,7 +620,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["7"],
+				"answers": [
+					"7"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -578,7 +642,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 1,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -661,7 +727,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-2"],
+				"answers": [
+					"-2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -673,7 +741,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -685,10 +755,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(-2)"],
+				"answers": [
+					"(-2)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "3",
@@ -698,10 +772,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-3+1"],
+				"answers": [
+					"-3+1"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "3",
@@ -711,7 +789,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -723,7 +803,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-3"],
+				"answers": [
+					"-3"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -735,7 +817,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-1"],
+				"answers": [
+					"-1"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -747,7 +831,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-4"],
+				"answers": [
+					"-4"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -759,7 +845,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-3"],
+				"answers": [
+					"-3"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -771,7 +859,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["3"],
+				"answers": [
+					"3"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -791,7 +881,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 2,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -874,7 +966,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-2"],
+				"answers": [
+					"-2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -886,7 +980,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -898,10 +994,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(-2)"],
+				"answers": [
+					"(-2)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "3",
@@ -911,10 +1011,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-3+1"],
+				"answers": [
+					"-3+1"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "3",
@@ -924,7 +1028,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["1"],
+				"answers": [
+					"1"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -936,7 +1042,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-3"],
+				"answers": [
+					"-3"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -948,7 +1056,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-1"],
+				"answers": [
+					"-1"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -960,7 +1070,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-7"],
+				"answers": [
+					"-7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -972,7 +1084,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-3"],
+				"answers": [
+					"-3"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -984,7 +1098,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["3"],
+				"answers": [
+					"3"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -996,7 +1112,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["-1"],
+				"answers": [
+					"-1"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1016,7 +1134,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 5,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1099,7 +1219,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-1.5"],
+				"answers": [
+					"-1.5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1111,7 +1233,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-1{,}5"],
+				"answers": [
+					"-1{,}5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1123,7 +1247,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["1.5"],
+				"answers": [
+					"1.5"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1135,7 +1261,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-1.49"],
+				"answers": [
+					"-1.49"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1147,10 +1275,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-3/2"],
+				"answers": [
+					"-3/2"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "2",
@@ -1160,10 +1292,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(-1.5)"],
+				"answers": [
+					"(-1.5)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "2",
@@ -1173,10 +1309,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-1.50"],
+				"answers": [
+					"-1.50"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["zeros"]
+					"constraintViolations": [
+						"zeros"
+					]
 				},
 				"variables": {
 					"a": "2",
@@ -1186,7 +1326,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0.5"],
+				"answers": [
+					"0.5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1198,7 +1340,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-3.5"],
+				"answers": [
+					"-3.5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1210,7 +1354,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-1.5"],
+				"answers": [
+					"-1.5"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1222,7 +1368,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-2.5"],
+				"answers": [
+					"-2.5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1234,7 +1382,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["2.5"],
+				"answers": [
+					"2.5"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1254,7 +1404,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 1,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1306,7 +1458,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-2"],
+				"answers": [
+					"-2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1317,7 +1471,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-9"],
+				"answers": [
+					"-9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1328,7 +1484,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-5"],
+				"answers": [
+					"-5"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1339,10 +1497,14 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["(-2)"],
+				"answers": [
+					"(-2)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "1"
@@ -1359,7 +1521,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 3,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1447,7 +1611,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["1"],
+				"answers": [
+					"1"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1459,7 +1625,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-1"],
+				"answers": [
+					"-1"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1471,10 +1639,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["+1"],
+				"answers": [
+					"+1"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["signs"]
+					"constraintViolations": [
+						"signs"
+					]
 				},
 				"variables": {
 					"a": "3",
@@ -1484,7 +1656,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(1)"],
+				"answers": [
+					"(1)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1496,7 +1670,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["4"],
+				"answers": [
+					"4"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1508,7 +1684,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["1"],
+				"answers": [
+					"1"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1520,7 +1698,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-1"],
+				"answers": [
+					"-1"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1532,7 +1712,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["4"],
+				"answers": [
+					"4"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1544,7 +1726,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["-3"],
+				"answers": [
+					"-3"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1564,7 +1748,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 4,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1652,7 +1838,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["1"],
+				"answers": [
+					"1"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1664,7 +1852,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-1"],
+				"answers": [
+					"-1"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1676,10 +1866,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["+1"],
+				"answers": [
+					"+1"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["signs"]
+					"constraintViolations": [
+						"signs"
+					]
 				},
 				"variables": {
 					"a": "3",
@@ -1689,7 +1883,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(1)"],
+				"answers": [
+					"(1)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1701,7 +1897,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["8"],
+				"answers": [
+					"8"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1713,7 +1911,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["1"],
+				"answers": [
+					"1"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1725,7 +1925,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-1"],
+				"answers": [
+					"-1"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1737,7 +1939,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["4"],
+				"answers": [
+					"4"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1749,7 +1953,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["-3"],
+				"answers": [
+					"-3"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1769,7 +1975,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 3,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1843,7 +2051,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["9"],
+				"answers": [
+					"9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1856,7 +2066,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-9"],
+				"answers": [
+					"-9"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1869,10 +2081,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["+9"],
+				"answers": [
+					"+9"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["signs"]
+					"constraintViolations": [
+						"signs"
+					]
 				},
 				"variables": {
 					"a": "2",
@@ -1883,7 +2099,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["9"],
+				"answers": [
+					"9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1896,7 +2114,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-9"],
+				"answers": [
+					"-9"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1909,7 +2129,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["9"],
+				"answers": [
+					"9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1922,7 +2144,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1935,7 +2159,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["-9"],
+				"answers": [
+					"-9"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1956,7 +2182,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 7,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2072,7 +2300,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["9"],
+				"answers": [
+					"9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2084,7 +2314,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-9"],
+				"answers": [
+					"-9"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2096,7 +2328,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-9"],
+				"answers": [
+					"-9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2108,7 +2342,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["(-9)"],
+				"answers": [
+					"(-9)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2120,7 +2356,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["9"],
+				"answers": [
+					"9"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2132,10 +2370,14 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-11+2"],
+				"answers": [
+					"-11+2"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "2",
@@ -2145,7 +2387,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-9"],
+				"answers": [
+					"-9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2157,7 +2401,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2169,7 +2415,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["(-9)"],
+				"answers": [
+					"(-9)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2181,7 +2429,9 @@
 				"variationIndex": 4
 			},
 			{
-				"answers": ["-2"],
+				"answers": [
+					"-2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2193,7 +2443,9 @@
 				"variationIndex": 5
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2213,7 +2465,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 2,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2265,7 +2519,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2276,7 +2532,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2287,7 +2545,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["1"],
+				"answers": [
+					"1"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2298,10 +2558,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-0"],
+				"answers": [
+					"-0"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "1"
@@ -2318,7 +2582,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 4,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2368,7 +2634,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-2"],
+				"answers": [
+					"-2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2381,7 +2649,9 @@
 				"description": "9-7-6+2 = -2"
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2394,7 +2664,9 @@
 				"description": "signe du résultat oublié"
 			},
 			{
-				"answers": ["24"],
+				"answers": [
+					"24"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2407,10 +2679,14 @@
 				"description": "valeurs absolues additionnées (erreur typique)"
 			},
 			{
-				"answers": ["9-7-6+2"],
+				"answers": [
+					"9-7-6+2"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "9",
@@ -2421,10 +2697,14 @@
 				"description": "recopie de la somme refusée"
 			},
 			{
-				"answers": ["(-2)"],
+				"answers": [
+					"(-2)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "9",
@@ -2435,7 +2715,9 @@
 				"description": "parenthèses inutiles"
 			},
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2448,7 +2730,9 @@
 				"description": "bornes : -9+9+9-9 = 0"
 			},
 			{
-				"answers": ["4"],
+				"answers": [
+					"4"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2461,7 +2745,9 @@
 				"description": "bornes : 2+2+2-2 = 4"
 			},
 			{
-				"answers": ["16"],
+				"answers": [
+					"16"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2482,7 +2768,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 4,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2566,7 +2854,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["7"],
+				"answers": [
+					"7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2578,7 +2868,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-7"],
+				"answers": [
+					"-7"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2590,7 +2882,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["18"],
+				"answers": [
+					"18"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2602,7 +2896,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2614,7 +2910,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2626,7 +2924,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["-7"],
+				"answers": [
+					"-7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2638,10 +2938,14 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["(-7)"],
+				"answers": [
+					"(-7)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "2",
@@ -2651,7 +2955,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["-18"],
+				"answers": [
+					"-18"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2663,7 +2969,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2683,7 +2991,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 1,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2771,7 +3081,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-2-9"],
+				"answers": [
+					"-2-9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2783,10 +3095,15 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-2+(-9)"],
+				"answers": [
+					"-2+(-9)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["signs", "form"]
+					"constraintViolations": [
+						"signs",
+						"form"
+					]
 				},
 				"variables": {
 					"a": "2",
@@ -2796,10 +3113,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-11"],
+				"answers": [
+					"-11"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "2",
@@ -2809,7 +3130,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2-9"],
+				"answers": [
+					"2-9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2821,7 +3144,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-9+2"],
+				"answers": [
+					"-9+2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2833,7 +3158,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-2+9"],
+				"answers": [
+					"-2+9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2845,10 +3172,15 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["-2-(-9)"],
+				"answers": [
+					"-2-(-9)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["signs", "form"]
+					"constraintViolations": [
+						"signs",
+						"form"
+					]
 				},
 				"variables": {
 					"a": "2",
@@ -2858,7 +3190,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["9+9"],
+				"answers": [
+					"9+9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2870,10 +3204,14 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["11"],
+				"answers": [
+					"11"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "2",
@@ -2891,7 +3229,9 @@
 		"domain": "Additionner et soustraire",
 		"level": 3,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2980,7 +3320,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-7+3"],
+				"answers": [
+					"-7+3"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2992,10 +3334,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(-7)-(-3)"],
+				"answers": [
+					"(-7)-(-3)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "7",
@@ -3005,10 +3351,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["-4"],
+				"answers": [
+					"-4"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "7",
@@ -3018,7 +3368,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["7+3"],
+				"answers": [
+					"7+3"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3030,10 +3382,14 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["7-(-3)"],
+				"answers": [
+					"7-(-3)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "7",
@@ -3043,7 +3399,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["2+(-9)"],
+				"answers": [
+					"2+(-9)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3055,10 +3413,14 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["2-9"],
+				"answers": [
+					"2-9"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "2",
@@ -3068,7 +3430,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["2+9"],
+				"answers": [
+					"2+9"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -3080,7 +3444,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["-4+(-5)"],
+				"answers": [
+					"-4+(-5)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3092,10 +3458,14 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["(-4)-5"],
+				"answers": [
+					"(-4)-5"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "4",
@@ -3113,47 +3483,36 @@
 		"domain": "Apprivoiser",
 		"level": 1,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
-				"choices": [
+				"statement": "Quel est le plus petit de ces 2 nombres ?\n\n```choix\n- $${{a}}$$\n- $$-{{b}}$$\n```",
+				"blanks": [
 					{
-						"content": "$${{a}}$$"
-					},
-					{
-						"content": "$$-{{b}}$$"
+						"expectedAnswer": "1"
 					}
-				],
-				"statement": "Quel est le plus petit de ces 2 nombres ?",
-				"correctChoiceIndex": ["1"]
+				]
 			},
 			{
-				"choices": [
+				"statement": "Quel est le plus petit de ces 2 nombres ?\n\n```choix\n- $$-{{a}}$$\n- $$-{{b}}$$\n```",
+				"blanks": [
 					{
-						"content": "$$-{{a}}$$"
-					},
-					{
-						"content": "$$-{{b}}$$"
+						"expectedAnswer": "1"
 					}
-				],
-				"statement": "Quel est le plus petit de ces 2 nombres ?",
-				"correctChoiceIndex": ["1"]
+				]
 			},
 			{
-				"choices": [
+				"statement": "Quel est le plus petit de ces 2 nombres ?\n\n```choix\n- $$-{{b}}$$\n- $$-{{a}}$$\n```",
+				"blanks": [
 					{
-						"content": "$$-{{b}}$$"
-					},
-					{
-						"content": "$$-{{a}}$$"
+						"expectedAnswer": "0"
 					}
-				],
-				"statement": "Quel est le plus petit de ces 2 nombres ?",
-				"correctChoiceIndex": ["0"]
+				]
 			}
 		],
 		"type": "multiple_choice",
-		"options": null,
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -3162,19 +3521,6 @@
 		"subdomain": "Comparer",
 		"exercise_instruction": null,
 		"description": "Valeurs entières - qcm",
-		"shared": {
-			"statement": "Quel est le plus petit de ces 2 nombres ?",
-			"variables": [
-				{
-					"name": "a",
-					"expression": "1..19"
-				},
-				{
-					"name": "b",
-					"expression": "{{eval:a+1}}..20"
-				}
-			]
-		},
 		"default_display_options": null,
 		"test_specs": [
 			{
@@ -3187,7 +3533,9 @@
 				},
 				"description": "positif contre négatif : le négatif est le plus petit",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3199,7 +3547,9 @@
 				},
 				"description": "piège : le positif choisi",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3211,7 +3561,9 @@
 				},
 				"description": "deux négatifs : -b < -a",
 				"variationIndex": 1,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3223,7 +3575,9 @@
 				},
 				"description": "piège : -a choisi (plus petite distance à zéro)",
 				"variationIndex": 1,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3235,7 +3589,9 @@
 				},
 				"description": "borne haute a=19, b=20",
 				"variationIndex": 1,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3247,7 +3603,9 @@
 				},
 				"description": "ordre inversé : -b en premier",
 				"variationIndex": 2,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3259,7 +3617,9 @@
 				},
 				"description": "borne basse a=1, b=2",
 				"variationIndex": 2,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3271,9 +3631,23 @@
 				},
 				"description": "piège : -a choisi",
 				"variationIndex": 2,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			}
-		]
+		],
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..19"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+1}}..20"
+				}
+			]
+		}
 	},
 	{
 		"id": "12e27dba-8939-4f84-94e9-87c88458b7c3",
@@ -3282,18 +3656,12 @@
 		"domain": "Apprivoiser",
 		"level": 2,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
-				"choices": [
-					{
-						"content": "$${{g}}$$"
-					},
-					{
-						"content": "$${{h}}$$"
-					}
-				],
-				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"statement": "Quel est le plus petit de ces 2 nombres ?\n\n```choix\n- $${{g}}$$\n- $${{h}}$$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -3320,19 +3688,18 @@
 						"expression": "{{eval:-(a+d/10);d}}"
 					}
 				],
-				"conditions": ["mod(c,10)!=0", "c!=d"],
-				"correctChoiceIndex": "{{eval:(1+(g-h)/abs(g-h))/2}}"
+				"conditions": [
+					"mod(c,10)!=0",
+					"c!=d"
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1+(g-h)/abs(g-h))/2}}"
+					}
+				]
 			},
 			{
-				"choices": [
-					{
-						"content": "$${{g}}$$"
-					},
-					{
-						"content": "$${{h}}$$"
-					}
-				],
-				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"statement": "Quel est le plus petit de ces 2 nombres ?\n\n```choix\n- $${{g}}$$\n- $${{h}}$$\n```",
 				"variables": [
 					{
 						"name": "s",
@@ -3371,12 +3738,18 @@
 						"expression": "{{eval:t*(q+d/10);d}}"
 					}
 				],
-				"conditions": ["mod(c,10)!=0", "c!=d"],
-				"correctChoiceIndex": "{{eval:(1+(g-h)/abs(g-h))/2}}"
+				"conditions": [
+					"mod(c,10)!=0",
+					"c!=d"
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1+(g-h)/abs(g-h))/2}}"
+					}
+				]
 			}
 		],
 		"type": "multiple_choice",
-		"options": null,
 		"precision": null,
 		"delay": 20,
 		"multiple_answers": null,
@@ -3385,9 +3758,6 @@
 		"subdomain": "Comparer",
 		"exercise_instruction": null,
 		"description": "Valeurs décimales.",
-		"shared": {
-			"statement": "Quel est le plus petit de ces 2 nombres ?"
-		},
 		"default_display_options": null,
 		"test_specs": [
 			{
@@ -3402,7 +3772,9 @@
 				},
 				"description": "même partie entière, plus de décimales : -3,45 < -3,4",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3416,7 +3788,9 @@
 				},
 				"description": "piège : -3,4 choisi",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3430,7 +3804,9 @@
 				},
 				"description": "piège longueur : -3,7 < -3,45",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3444,7 +3820,9 @@
 				},
 				"description": "piège longueur refusé",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3458,7 +3836,9 @@
 				},
 				"description": "bornes : un chiffre, -9,9 < -9,1",
 				"variationIndex": 0,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3472,7 +3852,9 @@
 				},
 				"description": "bornes : -1,99 < -1,1",
 				"variationIndex": 0,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3489,7 +3871,9 @@
 				},
 				"description": "positif contre négatif : -8,5 < 5,95",
 				"variationIndex": 1,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			},
 			{
 				"expected": {
@@ -3506,7 +3890,9 @@
 				},
 				"description": "piège : le positif choisi",
 				"variationIndex": 1,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3523,7 +3909,9 @@
 				},
 				"description": "deux négatifs : -4,5 < -3,4",
 				"variationIndex": 1,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3540,7 +3928,9 @@
 				},
 				"description": "deux positifs : 2,15 < 2,3",
 				"variationIndex": 1,
-				"selectedChoices": [0]
+				"selectedChoices": [
+					0
+				]
 			},
 			{
 				"expected": {
@@ -3557,7 +3947,9 @@
 				},
 				"description": "deux positifs, piège longueur refusé",
 				"variationIndex": 1,
-				"selectedChoices": [1]
+				"selectedChoices": [
+					1
+				]
 			}
 		]
 	},
@@ -3568,7 +3960,9 @@
 		"domain": "Apprivoiser",
 		"level": 2,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -3610,7 +4004,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["0-15"],
+				"answers": [
+					"0-15"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3620,7 +4016,9 @@
 				"description": "bonne réponse"
 			},
 			{
-				"answers": ["0-2"],
+				"answers": [
+					"0-2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3630,7 +4028,9 @@
 				"description": "borne basse"
 			},
 			{
-				"answers": ["0-20"],
+				"answers": [
+					"0-20"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3640,10 +4040,14 @@
 				"description": "borne haute"
 			},
 			{
-				"answers": ["-15"],
+				"answers": [
+					"-15"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "15"
@@ -3651,10 +4055,14 @@
 				"description": "recopie du nombre : pas une soustraction"
 			},
 			{
-				"answers": ["0+(-15)"],
+				"answers": [
+					"0+(-15)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "15"
@@ -3662,10 +4070,14 @@
 				"description": "addition de l'opposé : pas la soustraction demandée"
 			},
 			{
-				"answers": ["1-16"],
+				"answers": [
+					"1-16"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "15"
@@ -3673,7 +4085,9 @@
 				"description": "autre soustraction égale"
 			},
 			{
-				"answers": ["15"],
+				"answers": [
+					"15"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -3683,10 +4097,14 @@
 				"description": "oubli du signe"
 			},
 			{
-				"answers": ["0-(15)"],
+				"answers": [
+					"0-(15)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "15"
@@ -3702,7 +4120,9 @@
 		"domain": "Apprivoiser",
 		"level": 1,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -3741,7 +4161,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-15"],
+				"answers": [
+					"-15"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3751,7 +4173,9 @@
 				"description": "bonne réponse"
 			},
 			{
-				"answers": ["-2"],
+				"answers": [
+					"-2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3761,7 +4185,9 @@
 				"description": "borne basse"
 			},
 			{
-				"answers": ["-20"],
+				"answers": [
+					"-20"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3771,10 +4197,15 @@
 				"description": "borne haute"
 			},
 			{
-				"answers": ["0-15"],
+				"answers": [
+					"0-15"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["nullTerms", "form"]
+					"constraintViolations": [
+						"nullTerms",
+						"form"
+					]
 				},
 				"variables": {
 					"a": "15"
@@ -3782,7 +4213,9 @@
 				"description": "recopie 0-15 : terme nul refusé"
 			},
 			{
-				"answers": ["15"],
+				"answers": [
+					"15"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -3792,10 +4225,14 @@
 				"description": "oubli du signe"
 			},
 			{
-				"answers": ["(-15)"],
+				"answers": [
+					"(-15)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "15"
@@ -3811,7 +4248,9 @@
 		"domain": "A trou",
 		"level": 1,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -3903,7 +4342,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["9"],
+				"answers": [
+					"9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3917,7 +4358,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{9}{4}"],
+				"answers": [
+					"\\frac{9}{4}"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -3931,7 +4374,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["4"],
+				"answers": [
+					"4"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3945,7 +4390,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["8"],
+				"answers": [
+					"8"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3959,7 +4406,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["7"],
+				"answers": [
+					"7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3973,7 +4422,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["9"],
+				"answers": [
+					"9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3987,7 +4438,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["8"],
+				"answers": [
+					"8"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -4009,7 +4462,9 @@
 		"domain": "A trou",
 		"level": 2,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -4101,7 +4556,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["-5"],
+				"answers": [
+					"-5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -4115,7 +4572,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5"],
+				"answers": [
+					"5"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -4129,10 +4588,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(-5)"],
+				"answers": [
+					"(-5)"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["brackets"]
+					"constraintViolations": [
+						"brackets"
+					]
 				},
 				"variables": {
 					"a": "-5",
@@ -4144,7 +4607,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -4158,7 +4623,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["-7"],
+				"answers": [
+					"-7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -4172,7 +4639,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["3"],
+				"answers": [
+					"3"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -4186,7 +4655,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["-3"],
+				"answers": [
+					"-3"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -4200,7 +4671,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["3"],
+				"answers": [
+					"3"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -4222,7 +4695,9 @@
 		"domain": "Calculer",
 		"level": 5,
 		"status": "draft",
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -4257,7 +4732,9 @@
 						"expression": "{a/c}*{b/d}"
 					}
 				],
-				"conditions": ["gcd(a*b,c*d)<c*d"]
+				"conditions": [
+					"gcd(a*b,c*d)<c*d"
+				]
 			}
 		],
 		"type": "fill_in_blanks",
@@ -4274,7 +4751,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["\\frac{21}{10}"],
+				"answers": [
+					"\\frac{21}{10}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -4288,10 +4767,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{42}{20}"],
+				"answers": [
+					"\\frac{42}{20}"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["reducedFractions"]
+					"constraintViolations": [
+						"reducedFractions"
+					]
 				},
 				"variables": {
 					"a": "7",
@@ -4303,10 +4786,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2.1"],
+				"answers": [
+					"2.1"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "7",
@@ -4318,7 +4805,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{13}{9}"],
+				"answers": [
+					"\\frac{13}{9}"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -4332,7 +4821,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{35}{6}"],
+				"answers": [
+					"\\frac{35}{6}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -4346,7 +4837,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{1}{2}"],
+				"answers": [
+					"\\frac{1}{2}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -4368,7 +4861,9 @@
 		"domain": "Pourcentages",
 		"level": 1,
 		"status": "draft",
-		"grades": ["6"],
+		"grades": [
+			"6"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -4411,7 +4906,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["\\frac{71}{100}"],
+				"answers": [
+					"\\frac{71}{100}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -4422,7 +4919,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["71"],
+				"answers": [
+					"71"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -4433,10 +4932,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0{,}71"],
+				"answers": [
+					"0{,}71"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "71"
@@ -4445,10 +4948,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["71\\%"],
+				"answers": [
+					"71\\%"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "71"
@@ -4457,7 +4964,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{50}{100}"],
+				"answers": [
+					"\\frac{50}{100}"
+				],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
@@ -4469,10 +4978,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{1}{2}"],
+				"answers": [
+					"\\frac{1}{2}"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "50"
@@ -4489,7 +5002,9 @@
 		"domain": "Pourcentages",
 		"level": 2,
 		"status": "draft",
-		"grades": ["6"],
+		"grades": [
+			"6"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -4524,7 +5039,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["71\\%"],
+				"answers": [
+					"71\\%"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -4535,7 +5052,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["1\\%"],
+				"answers": [
+					"1\\%"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -4546,7 +5065,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["100\\%"],
+				"answers": [
+					"100\\%"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -4557,10 +5078,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0{,}71"],
+				"answers": [
+					"0{,}71"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["percent"]
+					"constraintViolations": [
+						"percent"
+					]
 				},
 				"variables": {
 					"a": "71"
@@ -4569,10 +5094,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{71}{100}"],
+				"answers": [
+					"\\frac{71}{100}"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["percent"]
+					"constraintViolations": [
+						"percent"
+					]
 				},
 				"variables": {
 					"a": "71"
@@ -4581,7 +5110,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["71"],
+				"answers": [
+					"71"
+				],
 				"expected": {
 					"status": "incorrect"
 				},

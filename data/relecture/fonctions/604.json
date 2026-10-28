@@ -5,6 +5,129 @@
 	"editNotes": "v3/v4 : `correctChoiceIndex` `{{if:{{eval:d*(f)}} >0|0|1}}` non évaluable (génération en échec) → `{{if:d*f>0|0|1}}` / `{{if:a*d*f>0|0|1}}` ; corrections : deux étapes conditionnelles (dont une vide) fusionnées en « qui est {{if:…|positif|négatif}} », produit calculé affiché en v3/v4. Décision de David (2026-09-27) : c ≠ b dans la forme factorisée (plus de facteur répété `3(x+5)(x+5)`, comme #602).",
 	"template": {
 		"title": "Déterminer la nature de l'extremum",
+		"variations": [
+			{
+				"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- un minimum\n- un maximum\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expr1",
+						"expression": "{{eval:ax^2}}{{eval:b;+}}x{{eval:c;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le coefficient du terme de degré 2 est $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}$, qui est {{if:{{a}}>0|positif|négatif}}.",
+						"Le polynôme admet donc {{solution:html}}."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:a>0|0|1}}"
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- un minimum\n- un maximum\n```",
+				"variables": [
+					{
+						"name": "expr2",
+						"expression": "{{a}}(x{{eval:b;+}})(x{{eval:c;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le coefficient du terme de degré 2 est $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}$, qui est {{if:{{a}}>0|positif|négatif}}.",
+						"Le polynôme admet donc {{solution:html}}."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:a>0|0|1}}"
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expr3}}$$\n\n```choix\nmelanger: non\n- un minimum\n- un maximum\n```",
+				"variables": [
+					{
+						"name": "expr3",
+						"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le coefficient du terme de degré 2 est $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}$, qui est {{if:{{a}}>0|positif|négatif}}.",
+						"Le polynôme admet donc {{solution:html}}."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:a>0|0|1}}"
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expr4}}$$\n\n```choix\nmelanger: non\n- un minimum\n- un maximum\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expr4",
+						"expression": "({{eval:dx}}{{eval:b;+}})({{eval:fx}}{{eval:c;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le coefficient du terme de degré 2 est ${{d}} \\times {{eval:f;()}}={{eval:d*(f)}}$, qui est {{if:{{d}}*({{f}})>0|positif|négatif}}.",
+						"Le polynôme admet donc {{solution:html}}."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:d*f>0|0|1}}"
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expr5}}$$\n\n```choix\nmelanger: non\n- un minimum\n- un maximum\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expr5",
+						"expression": "{{a}}({{eval:dx}}{{eval:b;+}})({{eval:fx}}{{eval:c;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le coefficient du terme de degré 2 est ${{a}} \\times {{eval:d;()}} \\times {{eval:f;()}}={{eval:a*(d)*(f)}}$, qui est {{if:{{a}}*({{d}})*({{f}})>0|positif|négatif}}.",
+						"Le polynôme admet donc {{solution:html}}."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:a*d*f>0|0|1}}"
+					}
+				]
+			}
+		],
+		"grades": [
+			"1_SPE"
+		],
+		"theme": "Fonctions",
+		"domain": "Polynôme du second degré",
+		"subdomain": "Apprivoiser",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
 		"shared": {
 			"variables": [
 				{
@@ -28,120 +151,10 @@
 					"expression": "1..5;±"
 				}
 			],
-			"choices": [
-				{
-					"content": "un minimum"
-				},
-				{
-					"content": "un maximum"
-				}
-			],
-			"conditions": ["abs(a) != abs(b) && abs(a) != abs(c)"]
+			"conditions": [
+				"abs(a) != abs(b) && abs(a) != abs(c)"
+			]
 		},
-		"variations": [
-			{
-				"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["{{if:a>0|0|1}}"],
-				"variables": [
-					{
-						"name": "x",
-						"expression": "x|x"
-					},
-					{
-						"name": "expression1",
-						"expression": "{{eval:ax^2}}{{eval:b;+}}x{{eval:c;+}}"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Le coefficient du terme de degré 2 est $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}$, qui est {{if:{{a}}>0|positif|négatif}}.",
-						"Le polynôme admet donc {{solution:html}}."
-					]
-				}
-			},
-			{
-				"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["{{if:a>0|0|1}}"],
-				"variables": [
-					{
-						"name": "expression2",
-						"expression": "{{a}}(x{{eval:b;+}})(x{{eval:c;+}})"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Le coefficient du terme de degré 2 est $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}$, qui est {{if:{{a}}>0|positif|négatif}}.",
-						"Le polynôme admet donc {{solution:html}}."
-					]
-				}
-			},
-			{
-				"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression3}}$$",
-				"correctChoiceIndex": ["{{if:a>0|0|1}}"],
-				"variables": [
-					{
-						"name": "expression3",
-						"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Le coefficient du terme de degré 2 est $\\bold{\\textcolor{{{color:primary.0}}}{{{a}}}}$, qui est {{if:{{a}}>0|positif|négatif}}.",
-						"Le polynôme admet donc {{solution:html}}."
-					]
-				}
-			},
-			{
-				"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression4}}$$",
-				"correctChoiceIndex": ["{{if:d*f>0|0|1}}"],
-				"variables": [
-					{
-						"name": "x",
-						"expression": "x|x"
-					},
-					{
-						"name": "expression4",
-						"expression": "({{eval:dx}}{{eval:b;+}})({{eval:fx}}{{eval:c;+}})"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Le coefficient du terme de degré 2 est ${{d}} \\times {{eval:f;()}}={{eval:d*(f)}}$, qui est {{if:{{d}}*({{f}})>0|positif|négatif}}.",
-						"Le polynôme admet donc {{solution:html}}."
-					]
-				}
-			},
-			{
-				"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression5}}$$",
-				"correctChoiceIndex": ["{{if:a*d*f>0|0|1}}"],
-				"variables": [
-					{
-						"name": "x",
-						"expression": "x|x"
-					},
-					{
-						"name": "expression5",
-						"expression": "{{a}}({{eval:dx}}{{eval:b;+}})({{eval:fx}}{{eval:c;+}})"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Le coefficient du terme de degré 2 est ${{a}} \\times {{eval:d;()}} \\times {{eval:f;()}}={{eval:a*(d)*(f)}}$, qui est {{if:{{a}}*({{d}})*({{f}})>0|positif|négatif}}.",
-						"Le polynôme admet donc {{solution:html}}."
-					]
-				}
-			}
-		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["1_SPE"],
-		"theme": "Fonctions",
-		"domain": "Polynôme du second degré",
-		"subdomain": "Apprivoiser",
-		"level": 4,
-		"status": "draft",
-		"delay": 20,
 		"testSpecs": [
 			{
 				"description": "v0 cas + : minimum",
@@ -153,11 +166,13 @@
 					"d": "2",
 					"f": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v0 cas + : maximum refusé",
@@ -169,11 +184,13 @@
 					"d": "2",
 					"f": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v1 cas + : minimum",
@@ -185,11 +202,13 @@
 					"d": "2",
 					"f": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v1 cas + : maximum refusé",
@@ -201,11 +220,13 @@
 					"d": "2",
 					"f": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v2 cas + : minimum",
@@ -217,11 +238,13 @@
 					"d": "2",
 					"f": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v2 cas + : maximum refusé",
@@ -233,11 +256,13 @@
 					"d": "2",
 					"f": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v3 cas + : minimum",
@@ -249,11 +274,13 @@
 					"d": "2",
 					"f": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v3 cas + : maximum refusé",
@@ -265,11 +292,13 @@
 					"d": "2",
 					"f": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v4 cas + : minimum",
@@ -281,11 +310,13 @@
 					"d": "2",
 					"f": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v4 cas + : maximum refusé",
@@ -297,11 +328,13 @@
 					"d": "2",
 					"f": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "a<0 : maximum",
@@ -313,11 +346,13 @@
 					"d": "2",
 					"f": "-3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "a<0 : maximum",
@@ -329,11 +364,13 @@
 					"d": "2",
 					"f": "-3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "a<0 : maximum",
@@ -345,11 +382,13 @@
 					"d": "2",
 					"f": "-3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "d×f<0 : maximum",
@@ -361,11 +400,13 @@
 					"d": "2",
 					"f": "-3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "a×d×f=24>0 : minimum",
@@ -377,11 +418,13 @@
 					"d": "2",
 					"f": "-3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "a×d×f>0 : maximum (signe de a seul) refusé",
@@ -393,11 +436,13 @@
 					"d": "2",
 					"f": "-3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			}
 		]
 	}

@@ -9,25 +9,9 @@
 	"level": 1,
 	"delay": 20,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "croissante"
-			},
-			{
-				"content": "décroissante"
-			},
-			{
-				"content": "ni croissante, ni décroissante"
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{9}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 10\ny: {{eval:a-2}} ; 6\nu(0) = {{a}} ; u(n+1) = 0.5*u(n)+2 pour n de 0 à 9   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{9}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 10\ny: {{eval:a-2}} ; 6\nu(0) = {{a}} ; u(n+1) = 0.5*u(n)+2 pour n de 0 à 9   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -40,10 +24,14 @@
 					"La suite semble **croissante**."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{9}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 10\ny: -1 ; {{eval:a+2}}\nu(0) = {{a}} ; u(n+1) = 0.5*u(n)+2 pour n de 0 à 9   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{9}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 10\ny: -1 ; {{eval:a+2}}\nu(0) = {{a}} ; u(n+1) = 0.5*u(n)+2 pour n de 0 à 9   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -56,10 +44,14 @@
 					"La suite semble **décroissante**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{8}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 9\ny: {{eval:b-2}} ; {{eval:b+8*r+2}}\nu(n) = {{b}}+{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{8}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 9\ny: {{eval:b-2}} ; {{eval:b+8*r+2}}\nu(n) = {{b}}+{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "b",
@@ -76,10 +68,14 @@
 					"Attention : les termes sont **négatifs**, mais ils augmentent. La suite semble **croissante**."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{8}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 9\ny: -1 ; {{eval:a+2}}\nu(n) = {{a}}/(n+1) pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{8}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 9\ny: -1 ; {{eval:a+2}}\nu(n) = {{a}}/(n+1) pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -92,10 +88,14 @@
 					"La suite semble **décroissante**."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{8}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 9\ny: {{eval:h-27}} ; {{eval:h+2}}\nu(n) = {{h}}-(n-{{c}})^2 pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{8}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 9\ny: {{eval:h-27}} ; {{eval:h+2}}\nu(n) = {{h}}-(n-{{c}})^2 pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -112,10 +112,14 @@
 					"La suite semble **ni croissante, ni décroissante**."
 				]
 			},
-			"correctChoiceIndex": ["2"]
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		},
 		{
-			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{9}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 10\ny: -5 ; 10\nu(0) = {{a}} ; u(n+1) = -0.5*u(n)+3 pour n de 0 à 9   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?",
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{9}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 10\ny: -5 ; 10\nu(0) = {{a}} ; u(n+1) = -0.5*u(n)+3 pour n de 0 à 9   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -128,7 +132,11 @@
 					"La suite semble **ni croissante, ni décroissante**."
 				]
 			},
-			"correctChoiceIndex": ["2"]
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -141,7 +149,7 @@
 			},
 			"description": "variation 0 (récurrence, croissante) : « croissante » accepté",
 			"variationIndex": 0,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -152,7 +160,7 @@
 			},
 			"description": "variation 0 (récurrence, croissante) : « décroissante » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -163,7 +171,7 @@
 			},
 			"description": "variation 0 (récurrence, croissante) : « ni croissante, ni décroissante » refusé",
 			"variationIndex": 0,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -174,7 +182,7 @@
 			},
 			"description": "variation 1 (récurrence, décroissante) : « croissante » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -185,7 +193,7 @@
 			},
 			"description": "variation 1 (récurrence, décroissante) : « décroissante » accepté",
 			"variationIndex": 1,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -196,7 +204,7 @@
 			},
 			"description": "variation 1 (récurrence, décroissante) : « ni croissante, ni décroissante » refusé",
 			"variationIndex": 1,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -208,7 +216,7 @@
 			},
 			"description": "variation 2 (termes négatifs croissants) : « croissante » accepté",
 			"variationIndex": 2,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -220,7 +228,7 @@
 			},
 			"description": "variation 2 (termes négatifs croissants) : « décroissante » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -232,7 +240,7 @@
 			},
 			"description": "variation 2 (termes négatifs croissants) : « ni croissante, ni décroissante » refusé",
 			"variationIndex": 2,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -243,7 +251,7 @@
 			},
 			"description": "variation 3 (termes positifs décroissants) : « croissante » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -254,7 +262,7 @@
 			},
 			"description": "variation 3 (termes positifs décroissants) : « décroissante » accepté",
 			"variationIndex": 3,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -265,7 +273,7 @@
 			},
 			"description": "variation 3 (termes positifs décroissants) : « ni croissante, ni décroissante » refusé",
 			"variationIndex": 3,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -277,7 +285,7 @@
 			},
 			"description": "variation 4 (monte puis descend) : « croissante » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -289,7 +297,7 @@
 			},
 			"description": "variation 4 (monte puis descend) : « décroissante » refusé",
 			"variationIndex": 4,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -301,7 +309,7 @@
 			},
 			"description": "variation 4 (monte puis descend) : « ni croissante, ni décroissante » accepté",
 			"variationIndex": 4,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"expected": {
@@ -312,7 +320,7 @@
 			},
 			"description": "variation 5 (alterne) : « croissante » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"expected": {
@@ -323,7 +331,7 @@
 			},
 			"description": "variation 5 (alterne) : « décroissante » refusé",
 			"variationIndex": 5,
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"expected": {
@@ -334,7 +342,7 @@
 			},
 			"description": "variation 5 (alterne) : « ni croissante, ni décroissante » accepté",
 			"variationIndex": 5,
-			"selectedChoices": [2]
+			"answers": ["2"]
 		}
 	]
 }

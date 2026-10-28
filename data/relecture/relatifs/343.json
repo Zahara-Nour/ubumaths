@@ -7,8 +7,7 @@
 		"title": "Déterminer le signe d'un quotient",
 		"variations": [
 			{
-				"statement": "Quel est le signe de ce quotient ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["{{eval:(1-a*b/abs(a*b))/2}}"],
+				"statement": "Quel est le signe de ce quotient ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -19,25 +18,23 @@
 						"expression": "30..99;±"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "a:(b)"
 					}
 				],
-				"choices": [
-					{
-						"content": "positif"
-					},
-					{
-						"content": "négatif"
-					}
+				"conditions": [
+					"a<=0 || b<0"
 				],
-				"conditions": ["a<=0 || b<0"]
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(1-a*b/abs(a*b))/2}}"
+					}
+				]
 			}
 		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"theme": "Relatifs",
 		"domain": "Multiplier et Diviser",
 		"subdomain": "Quotient",
@@ -52,10 +49,12 @@
 					"a": "49",
 					"b": "-65"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "49:(-65) : positif faux",
@@ -64,10 +63,12 @@
 					"a": "49",
 					"b": "-65"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "(-71):(-90) positif",
@@ -76,10 +77,12 @@
 					"a": "-71",
 					"b": "-90"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "(-97):78 négatif",
@@ -88,10 +91,12 @@
 					"a": "-97",
 					"b": "78"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "bornes -30:(-99)",
@@ -100,10 +105,12 @@
 					"a": "-30",
 					"b": "-99"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}

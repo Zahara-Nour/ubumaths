@@ -5,20 +5,9 @@
 	"editNotes": "Correction : « le résultat de {{expression}} » s'affichait vide (placeholder inexistant) → « la somme » ; variation (-a)+(-b) : l'ancienne correction affirmait a>b, faux quand a≤b (a et b tirés indépendamment) → « -a et -b sont négatifs donc leur somme est de signe négatif ». Specs : bonne et mauvaise case pour chaque variation, écart minimal a=31, b=30, et a<b pour deux négatifs.",
 	"template": {
 		"title": "Déterminer le signe d'une somme",
-		"shared": {
-			"choices": [
-				{
-					"content": "positif"
-				},
-				{
-					"content": "négatif"
-				}
-			]
-		},
 		"variations": [
 			{
-				"statement": "Quel est le signe de cette somme ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Quel est le signe de cette somme ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -29,7 +18,7 @@
 						"expression": "1..{{eval:a-1}}"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "(-a)+b"
 					}
 				],
@@ -37,11 +26,15 @@
 					"steps": [
 						"${{a}}>{{b}}$ donc la somme est du signe de $-{{a}}$ c'est-à-dire {{solution:html}}"
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe de cette somme ?\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Quel est le signe de cette somme ?\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -52,7 +45,7 @@
 						"expression": "1..{{eval:a-1}}"
 					},
 					{
-						"name": "expression2",
+						"name": "expr2",
 						"expression": "(-b)+a"
 					}
 				],
@@ -60,11 +53,15 @@
 					"steps": [
 						"${{a}}>{{b}}$ donc la somme est du signe de ${{a}}$ c'est-à-dire {{solution:html}}"
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe de cette somme ?\n\n$${{expression3}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Quel est le signe de cette somme ?\n\n$${{expr3}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -75,7 +72,7 @@
 						"expression": "30..99"
 					},
 					{
-						"name": "expression3",
+						"name": "expr3",
 						"expression": "(-a)+(-b)"
 					}
 				],
@@ -83,11 +80,15 @@
 					"steps": [
 						"$-{{a}}$ et $-{{b}}$ sont tous les deux négatifs, donc leur somme est de signe {{solution:html}}"
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe de cette somme ?\n\n$${{expression4}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Quel est le signe de cette somme ?\n\n$${{expr4}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -98,7 +99,7 @@
 						"expression": "1..{{eval:a-1}}"
 					},
 					{
-						"name": "expression4",
+						"name": "expr4",
 						"expression": "a+(-b)"
 					}
 				],
@@ -106,11 +107,15 @@
 					"steps": [
 						"${{a}}>{{b}}$ donc la somme est du signe de ${{a}}$ c'est-à-dire {{solution:html}}"
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe de cette somme ?\n\n$${{expression5}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Quel est le signe de cette somme ?\n\n$${{expr5}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -121,7 +126,7 @@
 						"expression": "1..{{eval:a-1}}"
 					},
 					{
-						"name": "expression5",
+						"name": "expr5",
 						"expression": "b+(-a)"
 					}
 				],
@@ -129,13 +134,17 @@
 					"steps": [
 						"${{a}}>{{b}}$ donc la somme est du signe de $-{{a}}$ c'est-à-dire {{solution:html}}"
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			}
 		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"theme": "Relatifs",
 		"domain": "Additionner et soustraire",
 		"subdomain": "Sommes",
@@ -153,7 +162,9 @@
 				"expected": {
 					"status": "correct"
 				},
-				"selectedChoices": [1]
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "(-a)+b : positif faux",
@@ -165,7 +176,9 @@
 				"expected": {
 					"status": "incorrect"
 				},
-				"selectedChoices": [0]
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "(-b)+a positif",
@@ -177,7 +190,9 @@
 				"expected": {
 					"status": "correct"
 				},
-				"selectedChoices": [0]
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "(-b)+a : négatif faux",
@@ -189,7 +204,9 @@
 				"expected": {
 					"status": "incorrect"
 				},
-				"selectedChoices": [1]
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "deux négatifs, a<b",
@@ -201,7 +218,9 @@
 				"expected": {
 					"status": "correct"
 				},
-				"selectedChoices": [1]
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "deux négatifs : positif faux",
@@ -213,7 +232,9 @@
 				"expected": {
 					"status": "incorrect"
 				},
-				"selectedChoices": [0]
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "a+(-b) positif",
@@ -225,7 +246,9 @@
 				"expected": {
 					"status": "correct"
 				},
-				"selectedChoices": [0]
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "b+(-a) négatif",
@@ -237,7 +260,9 @@
 				"expected": {
 					"status": "correct"
 				},
-				"selectedChoices": [1]
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "b+(-a) : positif faux",
@@ -249,7 +274,9 @@
 				"expected": {
 					"status": "incorrect"
 				},
-				"selectedChoices": [0]
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}

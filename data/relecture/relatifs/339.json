@@ -8,8 +8,7 @@
 		"description": "$4$ facteurs",
 		"variations": [
 			{
-				"statement": "Quel est le signe de ce produit ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["{{eval:(1-a*b*c*d/abs(a*b*c*d))/2}}"],
+				"statement": "Quel est le signe de ce produit ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -28,27 +27,23 @@
 						"expression": "30..99;±"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "(a)*(b)*(c)*(d)",
 						"displayOptions": {
 							"removeUnnecessaryBrackets": true
 						}
 					}
 				],
-				"choices": [
+				"blanks": [
 					{
-						"content": "positif"
-					},
-					{
-						"content": "négatif"
+						"expectedAnswer": "{{eval:(1-a*b*c*d/abs(a*b*c*d))/2}}"
 					}
 				]
 			}
 		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"theme": "Relatifs",
 		"domain": "Multiplier et Diviser",
 		"subdomain": "Produit",
@@ -65,10 +60,12 @@
 					"c": "97",
 					"d": "49"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "un négatif",
@@ -79,10 +76,12 @@
 					"c": "97",
 					"d": "49"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "deux négatifs",
@@ -93,10 +92,12 @@
 					"c": "-72",
 					"d": "30"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "trois négatifs",
@@ -107,10 +108,12 @@
 					"c": "34",
 					"d": "-34"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "trois négatifs : positif faux",
@@ -121,10 +124,12 @@
 					"c": "34",
 					"d": "-34"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "quatre négatifs (bornes)",
@@ -135,10 +140,12 @@
 					"c": "-30",
 					"d": "-99"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}

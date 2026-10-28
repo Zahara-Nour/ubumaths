@@ -5,132 +5,151 @@
 	"editNotes": "Renvois {{exp}}/{{expression}} → ${{expressionN}}$ ; {{solution:html}} remplacé par Oui/Non explicite ; variations π : variable a=pi supprimée (introuvable), sqrt(pi) écrit directement ; « racine carrée » ; \\simeq → \\approx. Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28).",
 	"template": {
 		"title": "Existence d'une racine carrée",
-		"shared": {
-			"choices": [
-				{
-					"content": "Oui"
-				},
-				{
-					"content": "Non"
-				}
-			]
-		},
 		"variations": [
 			{
-				"statement": "Est-ce que ce nombre existe ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Est-ce que ce nombre existe ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "a",
 						"expression": "2..15"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "sqrt({{eval:a^2}})"
 					}
 				],
 				"correction": {
 					"steps": [
-						"Oui, ${{expression1}}$ existe car ${{eval:a^2}}$ est positif.",
-						"${{expression1}} = {{a}}$ car ${{a}} \\times {{a}} = {{eval:a^2}}$."
+						"Oui, ${{expr1}}$ existe car ${{eval:a^2}}$ est positif.",
+						"${{expr1}} = {{a}}$ car ${{a}} \\times {{a}} = {{eval:a^2}}$."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Est-ce que ce nombre existe ?\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Est-ce que ce nombre existe ?\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "a",
 						"expression": "digits:1.1"
 					},
 					{
-						"name": "expression2",
+						"name": "expr2",
 						"expression": "sqrt({{eval:a^2;d}})"
 					}
 				],
 				"correction": {
 					"steps": [
-						"Oui, ${{expression2}}$ existe car ${{eval:a^2;d}}$ est positif.",
-						"${{expression2}} = {{eval:a;d}}$ car ${{eval:a;d}} \\times {{eval:a;d}} = {{eval:a^2;d}}$."
+						"Oui, ${{expr2}}$ existe car ${{eval:a^2;d}}$ est positif.",
+						"${{expr2}} = {{eval:a;d}}$ car ${{eval:a;d}} \\times {{eval:a;d}} = {{eval:a^2;d}}$."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Est-ce que ce nombre existe ?\n\n$${{expression3}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Est-ce que ce nombre existe ?\n\n$${{expr3}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "a",
 						"expression": "2|3|5|7|10|11|13"
 					},
 					{
-						"name": "expression3",
+						"name": "expr3",
 						"expression": "sqrt(a)"
 					}
 				],
 				"correction": {
 					"steps": [
-						"Oui, ${{expression3}}$ existe car ${{a}}$ est positif.",
-						"On ne peut pas écrire ${{expression3}}$ sous la forme d'un nombre décimal.",
+						"Oui, ${{expr3}}$ existe car ${{a}}$ est positif.",
+						"On ne peut pas écrire ${{expr3}}$ sous la forme d'un nombre décimal.",
 						"On peut seulement écrire que $\\sqrt{{{a}}} \\times \\sqrt{{{a}}} = {{a}}$, et trouver une **valeur approchée** à la calculatrice : $\\sqrt{{{a}}} \\approx {{eval:round(sqrt(a)*1000)/1000;d}}$."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Est-ce que ce nombre existe ?\n\n$${{expression4}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Est-ce que ce nombre existe ?\n\n$${{expr4}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "a",
 						"expression": "2..15"
 					},
 					{
-						"name": "expression4",
+						"name": "expr4",
 						"expression": "sqrt(-{{eval:a^2}})"
 					}
 				],
 				"correction": {
-					"steps": ["Non, ${{expression4}}$ n'existe pas car $-{{eval:a^2}}$ est négatif."]
-				}
+					"steps": [
+						"Non, ${{expr4}}$ n'existe pas car $-{{eval:a^2}}$ est négatif."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Est-ce que ce nombre existe ?\n\n$${{expression5}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Est-ce que ce nombre existe ?\n\n$${{expr5}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "a",
 						"expression": "digits:1.1"
 					},
 					{
-						"name": "expression5",
+						"name": "expr5",
 						"expression": "sqrt(-{{eval:a^2;d}})"
 					}
 				],
 				"correction": {
-					"steps": ["Non, ${{expression5}}$ n'existe pas car $-{{eval:a^2;d}}$ est négatif."]
-				}
+					"steps": [
+						"Non, ${{expr5}}$ n'existe pas car $-{{eval:a^2;d}}$ est négatif."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Est-ce que ce nombre existe ?\n\n$${{expression6}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Est-ce que ce nombre existe ?\n\n$${{expr6}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [
 					{
 						"name": "a",
 						"expression": "2|3|5|7|10|11|13"
 					},
 					{
-						"name": "expression6",
+						"name": "expr6",
 						"expression": "sqrt(-a)"
 					}
 				],
 				"correction": {
-					"steps": ["Non, ${{expression6}}$ n'existe pas car $-{{a}}$ est négatif."]
-				}
+					"steps": [
+						"Non, ${{expr6}}$ n'existe pas car $-{{a}}$ est négatif."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{\\pi}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{\\pi}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [],
 				"correction": {
 					"steps": [
@@ -138,21 +157,31 @@
 						"On ne peut pas écrire $\\sqrt{\\pi}$ sous la forme d'un nombre décimal.",
 						"On peut seulement écrire que $\\sqrt{\\pi} \\times \\sqrt{\\pi} = \\pi$, et trouver une **valeur approchée** à la calculatrice : $\\sqrt{\\pi} \\approx 1.772$."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-\\pi}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Est-ce que ce nombre existe ?\n\n$$\\sqrt{-\\pi}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
 				"variables": [],
 				"correction": {
-					"steps": ["Non, $\\sqrt{-\\pi}$ n'existe pas car $-\\pi$ est négatif."]
-				}
+					"steps": [
+						"Non, $\\sqrt{-\\pi}$ n'existe pas car $-\\pi$ est négatif."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			}
 		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["4"],
+		"grades": [
+			"4"
+		],
 		"theme": "Racines carrées",
 		"domain": "Apprivoiser",
 		"subdomain": "Définition",
@@ -166,10 +195,12 @@
 				"variables": {
 					"a": "2"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v0 mauvaise réponse",
@@ -177,10 +208,12 @@
 				"variables": {
 					"a": "2"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v1 bonne réponse",
@@ -188,10 +221,12 @@
 				"variables": {
 					"a": "1.1"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v1 mauvaise réponse",
@@ -199,10 +234,12 @@
 				"variables": {
 					"a": "1.1"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v2 bonne réponse",
@@ -210,10 +247,12 @@
 				"variables": {
 					"a": "13"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v2 mauvaise réponse",
@@ -221,10 +260,12 @@
 				"variables": {
 					"a": "13"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v3 bonne réponse",
@@ -232,10 +273,12 @@
 				"variables": {
 					"a": "2"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v3 mauvaise réponse",
@@ -243,10 +286,12 @@
 				"variables": {
 					"a": "2"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v4 bonne réponse",
@@ -254,10 +299,12 @@
 				"variables": {
 					"a": "1.1"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v4 mauvaise réponse",
@@ -265,10 +312,12 @@
 				"variables": {
 					"a": "1.1"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v5 bonne réponse",
@@ -276,10 +325,12 @@
 				"variables": {
 					"a": "13"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v5 mauvaise réponse",
@@ -287,46 +338,56 @@
 				"variables": {
 					"a": "13"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v6 bonne réponse",
 				"variationIndex": 6,
 				"variables": {},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v6 mauvaise réponse",
 				"variationIndex": 6,
 				"variables": {},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v7 bonne réponse",
 				"variationIndex": 7,
 				"variables": {},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v7 mauvaise réponse",
 				"variationIndex": 7,
 				"variables": {},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}

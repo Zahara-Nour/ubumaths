@@ -6,27 +6,9 @@
 	"template": {
 		"title": "Comparer deux fractions",
 		"description": "Fractions de même numérateur",
-		"shared": {
-			"statement": "Quelle est la plus petite de ces $2$ fractions ?",
-			"correctChoiceIndex": ["{{if:d<f|0|1}}"],
-			"correction": {
-				"steps": [
-					"$\\dfrac{{{a}}}{{{eval:max(b,c)}}}$ est plus petite que $\\dfrac{{{a}}}{{{eval:min(b,c)}}}$ car les deux fractions ont **même numérateur** et ${{eval:max(b,c)}}>{{eval:min(b,c)}}$."
-				]
-			},
-			"choices": [
-				{
-					"content": "$$\\dfrac{{{a}}}{{{b}}}$$"
-				},
-				{
-					"content": "$$\\dfrac{{{a}}}{{{c}}}$$"
-				}
-			]
-		},
 		"variations": [
 			{
-				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
-				"correctChoiceIndex": ["{{if:d<f|0|1}}"],
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?\n\n```choix\n- $$\\dfrac{{{a}}}{{{b}}}$$\n- $$\\dfrac{{{a}}}{{{c}}}$$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -48,11 +30,15 @@
 						"name": "f",
 						"expression": "a/c"
 					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:d<f|0|1}}"
+					}
 				]
 			},
 			{
-				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
-				"correctChoiceIndex": ["{{if:d<f|0|1}}"],
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?\n\n```choix\n- $$\\dfrac{{{a}}}{{{b}}}$$\n- $$\\dfrac{{{a}}}{{{c}}}$$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -74,16 +60,30 @@
 						"name": "f",
 						"expression": "a/c"
 					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:d<f|0|1}}"
+					}
 				]
 			}
 		],
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"theme": "Fractions",
 		"domain": "Apprivoiser",
 		"subdomain": "Comparer",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,
+		"shared": {
+			"correction": {
+				"steps": [
+					"$\\dfrac{{{a}}}{{{eval:max(b,c)}}}$ est plus petite que $\\dfrac{{{a}}}{{{eval:min(b,c)}}}$ car les deux fractions ont **même numérateur** et ${{eval:max(b,c)}}>{{eval:min(b,c)}}$."
+				]
+			}
+		},
 		"testSpecs": [
 			{
 				"description": "12/5 vs 12/7 : 12/7 (choix 1)",
@@ -93,10 +93,12 @@
 					"b": "5",
 					"c": "7"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "mauvais choix",
@@ -106,10 +108,12 @@
 					"b": "5",
 					"c": "7"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "bornes : 8/7 < 8/2 (choix 0)",
@@ -119,10 +123,12 @@
 					"b": "7",
 					"c": "2"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "2/5 < 2/3 (choix 0)",
@@ -132,10 +138,12 @@
 					"b": "5",
 					"c": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "mauvais choix",
@@ -145,10 +153,12 @@
 					"b": "5",
 					"c": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			}
 		]
 	}

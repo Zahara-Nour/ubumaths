@@ -5,8 +5,156 @@
 	"editNotes": "Tirages FAUX : c pouvait valoir a → en v2/v3 g(x)=a·x+… a le même coefficient que f alors que la réponse attendue est « non parallèles » ; et c=b en v0 donnait deux fonctions identiques. c exclut désormais a et b. Correction : {{expression}} en texte brut → $f$ et $g$. Typographie « parallèles ? », « deux ».",
 	"template": {
 		"title": "Déterminer si deux fonctions affines ont des droites représentatives parallèles",
+		"variations": [
+			{
+				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- parallèles\n- **non** parallèles\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expr2",
+						"expression": "g(x)={{a}}x{{eval:c;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles ont le même coefficient directeur ${{a}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- parallèles\n- **non** parallèles\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expr2",
+						"expression": "g(x)={{c}}{{eval:a;+}}x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles ont le même coefficient directeur ${{a}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- parallèles\n- **non** parallèles\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expr2",
+						"expression": "g(x)={{c}}x{{eval:b;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles n'ont pas le même coefficient directeur."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- parallèles\n- **non** parallèles\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expr2",
+						"expression": "g(x)={{b}}{{eval:c;+}}x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles n'ont pas le même coefficient directeur."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- parallèles\n- **non** parallèles\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expr2",
+						"expression": "g(x)={{eval:-(a)}}x{{eval:c;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles n'ont pas le même coefficient directeur."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- parallèles\n- **non** parallèles\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expr2",
+						"expression": "g(x)={{c}}{{eval:-(a);+}}x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles n'ont pas le même coefficient directeur."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			}
+		],
+		"grades": [
+			"3"
+		],
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Variations-Signe",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
 		"shared": {
-			"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$",
 			"variables": [
 				{
 					"name": "a",
@@ -20,142 +168,8 @@
 					"name": "c",
 					"expression": "2..9;±!a,b"
 				}
-			],
-			"choices": [
-				{
-					"content": "parallèles"
-				},
-				{
-					"content": "**non** parallèles"
-				}
 			]
 		},
-		"variations": [
-			{
-				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["0"],
-				"variables": [
-					{
-						"name": "expression1",
-						"expression": "f(x)={{a}}x{{eval:b;+}}"
-					},
-					{
-						"name": "expression2",
-						"expression": "g(x)={{a}}x{{eval:c;+}}"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles ont le même coefficient directeur ${{a}}$."
-					]
-				}
-			},
-			{
-				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["0"],
-				"variables": [
-					{
-						"name": "expression1",
-						"expression": "f(x)={{a}}x{{eval:b;+}}"
-					},
-					{
-						"name": "expression2",
-						"expression": "g(x)={{c}}{{eval:a;+}}x"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles ont le même coefficient directeur ${{a}}$."
-					]
-				}
-			},
-			{
-				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["1"],
-				"variables": [
-					{
-						"name": "expression1",
-						"expression": "f(x)={{a}}x{{eval:b;+}}"
-					},
-					{
-						"name": "expression2",
-						"expression": "g(x)={{c}}x{{eval:b;+}}"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles n'ont pas le même coefficient directeur."
-					]
-				}
-			},
-			{
-				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["1"],
-				"variables": [
-					{
-						"name": "expression1",
-						"expression": "f(x)={{a}}x{{eval:b;+}}"
-					},
-					{
-						"name": "expression2",
-						"expression": "g(x)={{b}}{{eval:c;+}}x"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles n'ont pas le même coefficient directeur."
-					]
-				}
-			},
-			{
-				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["1"],
-				"variables": [
-					{
-						"name": "expression1",
-						"expression": "f(x)={{a}}x{{eval:b;+}}"
-					},
-					{
-						"name": "expression2",
-						"expression": "g(x)={{eval:-(a)}}x{{eval:c;+}}"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles n'ont pas le même coefficient directeur."
-					]
-				}
-			},
-			{
-				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["1"],
-				"variables": [
-					{
-						"name": "expression1",
-						"expression": "f(x)={{a}}x{{eval:b;+}}"
-					},
-					{
-						"name": "expression2",
-						"expression": "g(x)={{c}}{{eval:-(a);+}}x"
-					}
-				],
-				"correction": {
-					"steps": [
-						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles n'ont pas le même coefficient directeur."
-					]
-				}
-			}
-		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["3"],
-		"theme": "Fonctions",
-		"domain": "Fonctions affines",
-		"subdomain": "Variations-Signe",
-		"level": 2,
-		"status": "draft",
-		"delay": 10,
 		"testSpecs": [
 			{
 				"description": "v0",
@@ -165,10 +179,12 @@
 					"b": "9",
 					"c": "-3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v1",
@@ -178,10 +194,12 @@
 					"b": "9",
 					"c": "-3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v2",
@@ -191,10 +209,12 @@
 					"b": "9",
 					"c": "-3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v3",
@@ -204,10 +224,12 @@
 					"b": "9",
 					"c": "-3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v4",
@@ -217,10 +239,12 @@
 					"b": "9",
 					"c": "-3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v5",
@@ -230,10 +254,12 @@
 					"b": "9",
 					"c": "-3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v2 parallèles refusé",
@@ -243,10 +269,12 @@
 					"b": "9",
 					"c": "-3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}
