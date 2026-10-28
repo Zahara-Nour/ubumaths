@@ -6,11 +6,11 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1900 et #1902._
+_Mis à jour le 2026-10-28, après le deploy:prod v0.54.1._
 
-- **État** : ⚠️ **prod v0.54.0 sans couleurs** (Lightning CSS de Vite 8 récrivait `light-dark()`) ; correctif #1902 mergé, pas encore en prod. Rustine #1892 retirée (#1900, § 6).
-- **Prochaine action** : `deploy:prod` (David) dès la CI de `main` verte ; vérifier les couleurs sur chiph.re (clair et sombre) et le succès du build Vercel sans rustine ; puis versement du chantier (§ 7 compris).
-- **En attente de David** : le `deploy:prod` de #1902.
+- **État** : v0.54.1 en prod : couleurs rétablies (#1902, vérifié sur chiph.re, clair et sombre : `--color-primary` = `light-dark(…)`, « verte », bouton Connexion, onglet actif) ; premier build Vercel sans rustine (#1900) réussi en 3 min 4 s.
+- **Prochaine action** : versement du chantier (durable → `docs/systeme/`, §§ 2, 6, 7 ; journal archivé), quand David le dit.
+- **En attente de David** : son go pour le versement.
 - **Pièges en cours** : SvelteKit impose `cssMinify: true` (= Lightning CSS sous Vite 8) : `build.cssMinify` ne sert à rien, régler `css.lightningcss`. `test:client` complet plante sur le Mac (la CI fait foi) ; mesurer dans Docker, jamais sur le Mac.
 - **Worktree / branche** : aucun.
 
