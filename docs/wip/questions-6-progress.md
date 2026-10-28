@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1905 et son `db:migrate`._
+_Mis à jour le 2026-10-28, après #1914._
 
-- **État** : lots 1 à 3 publiés. Lot 4 « Fractions » : 10 brouillons rangés et tagués en prod, 3 modèles de 5e passés en 6e (6-131), e3d87166 corrigé (§ 11.4-11.5). Page à cocher publiée : https://claude.ai/artifact/UjdMqaWsaKhLN1dMC1aHro (0 verdict).
-- **Prochaine action** : relecture de David ; compter les verdicts (`ArtifactData list verdicts`, 10 attendus) ; « À revoir » → correction (§ 7 de la démarche) ; puis `publier-lot.ts --dir scripts/questions/6-fractions` en simulation, `--publier` par David, relu au MCP.
-- **En attente de David** : relecture du lot 4 (case choix de 01, 02, 04 à jouer dans l'aperçu). Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
-- **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; nombres calculables de tête dans les problèmes ; un geste de calcul = un modèle ; `--mettre-a-jour` après le merge seulement ; page à cocher générée depuis un `main` à jour, rendu vu dans Chrome AVANT de l'annoncer ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval`.
-- **Worktree / branche** : aucun (retiré après #1905).
+- **État** : lots 1 à 3 publiés. Lot 4 « Fractions » : 10 brouillons rangés et tagués ; 01 corrigé sur commentaire de David (#1914, choix entier / décimal / non décimal à plusieurs réponses), pas encore en base. David demande la publication de TOUS les modèles de 6e (§ 11.6) ; `publier-lot` en simulation : 10 passent.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/6-fractions --publier --mettre-a-jour` PUIS `publier-lot.ts --dir scripts/questions/6-fractions --publier` ; relire au MCP (01 nouveau contenu, 10 `published`, seul brouillon 6e restant = 3a7a5711).
+- **En attente de David** : les deux commandes. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **Pièges en cours** : 3a7a5711 = doublon de 059e3fc9 repassé en brouillon exprès (migration `20261027100100`), NE PAS le publier ; relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; `--mettre-a-jour` après le merge seulement ; page à cocher générée depuis un `main` à jour ; `e`/`i` interdites dans les `eval`.
+- **Worktree / branche** : aucun (retiré après #1914).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -644,3 +644,12 @@ David a lancé `create-questions --publier` : 10 créés. Vérifiés par MCP : `
   `\textcolor` brut. Worktree et branche retirés.
 - Page à cocher générée depuis `main` (9789a1ed6), publiée : https://claude.ai/artifact/UjdMqaWsaKhLN1dMC1aHro ;
   homonymes écartés (04, 08) conformes aux ids du § 11.3 ; case choix non dessinée (01, 02, 04) ; rendu vu dans Chrome.
+
+### 11.6 Correction de 01 et publication de la 6e (2026-10-28)
+
+- Commentaire de David sur 01 (« décimal non entier » trop compliqué en 6e) → choix entier / décimal / non
+  décimal, `plusieurs: oui` ; 35/7 = `0;1`, entier seul → ½ (spec `unoptimal_form`) ; 8 specs, `checkTemplate` vert.
+  Relevé `questions-6/etat-prod-2026-10-28-fractions-01/`, 0 donnée d'élève. #1914 mergée (CI verte). Verdict de 01
+  remis à zéro.
+- David : « je veux que les modèles de 6e soient tous publiés ». MCP : 11 brouillons `[6]` = les 10 du lot 4 +
+  3a7a5711 (doublon, brouillon voulu, § 6-7) ; 116 publiés. `publier-lot` en simulation : 10 passent.
