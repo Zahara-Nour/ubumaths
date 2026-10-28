@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1918 et son `db:migrate`._
+_Mis à jour le 2026-10-28, après la relecture après coup du lot 4 (§ 11.8)._
 
-- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). 01 corrigé en prod (#1918, § 11.7) : plus de dénominateur 7, reste qui revient nommé, « Pose la division ».
-- **Prochaine action** : relecture APRÈS COUP du lot 4 par David sur la page à cocher (https://claude.ai/artifact/UjdMqaWsaKhLN1dMC1aHro, version 3 depuis `main` e1e380158, 0 verdict) ; compter les verdicts (`ArtifactData list verdicts`, 10 attendus) ; « À revoir » → modèle PUBLIÉ : démarche § 7, comme au § 11.7 (question d'accès posée AVANT le SQL, `security-auditor` avant `db:migrate`).
-- **En attente de David** : sa relecture. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
-- **Pièges en cours** : 3a7a5711 = doublon repassé en brouillon exprès, NE PAS le publier ; relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; `--mettre-a-jour` ne touche pas un modèle publié ; `e`/`i` interdites dans les `eval`.
+- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Relecture du lot 4 : 10/10 verdicts, 5 OK, 5 « À revoir » (§ 11.8).
+- **Prochaine action** : lot 5 = scinder 02, 03, 04, 08 (découpage validé par David, § 11.8) ; phase 0 (comportements) à écrire après réponse à la question en attente ; nouveaux modèles en brouillon + migration de contenu § 7 qui retire les variantes déplacées des modèles publiés (relevé MCP, 0 donnée d'élève à vérifier).
+- **En attente de David** : 03 v3 (commutativité « 2/9 × 7 = 7 × ? ») : modèle à part ou retirée ? Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **Pièges en cours** : 06 et 07 (ranger) attendent l'outil « étiquettes à ranger », réintégré au chantier `reponses-a-placer` : ne pas les refaire avant. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
@@ -675,3 +675,15 @@ David a lancé `create-questions --publier` : 10 créés. Vérifiés par MCP : `
   Question d'accès oubliée avant le SQL, posée après : David confirme « personne ne gagne d'accès » ; `security-auditor`
   sans finding. `db:migrate` : MCP md5 `26bf654a…` (= « après » de la migration), `published`, niveau 13, nœud et tag
   inchangés ; `create-questions` en simulation : 01 identique à la source. Page à cocher regénérée (version 3), 0 verdict.
+
+### 11.8 Relecture après coup du lot 4 (2026-10-28)
+
+- 10/10 verdicts (`ArtifactData list verdicts`). OK : 01, 05, 09, 10 ; 08 OK avec « je séparerais la variation 4 du
+  reste ». À revoir : 02 (« séparer la v1, la définition, du calcul »), 03 (« plusieurs méthodes, un modèle pour
+  chaque ? »), 04 (« séparer les méthodes »), 06 (« outil étiquettes à placer au bon endroit ? »), 07 (idem).
+- Découpage validé par David (« je valide A ») : 02 → « de » = × (v1) | calcul (v2, v3) ; 03 → (a × n)/b dans les deux
+  ordres (v1, v2) | simplifier d'abord (v4), v3 en attente ; 04 → 4 modèles : même dénominateur ou même numérateur
+  (v1, v2) | comparer à 1 ou à 1/2 (v3, v4) | dénominateurs multiples (v5) | dénominateur commun (v6) ; 08 → entier
+  moins fraction (v4) à part.
+- 06, 07 : l'outil « étiquettes à ranger » se crée dans `reponses-a-placer` (David) ; il en avait été écarté le
+  2026-10-26 sur ma recommandation (CP-007 se faisait déjà en case texte), journal de ce chantier mis à jour.

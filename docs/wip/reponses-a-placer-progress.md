@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-28, après #1915._
 
 - **État** : droite, horloge, barres à construire (#1908) et plafond de l'axe à 100 avec `placer:` (Q19, #1915) mergés, pas en prod. Worktree retiré.
-- **Prochaine action** : reste du chantier à redécider avec David (choix de l'échelle par l'élève, CM1-CM2).
+- **Prochaine action** : reste du chantier à redécider avec David (choix de l'échelle par l'élève, CM1-CM2) ; **étiquettes à ranger RÉINTÉGRÉES** (David, 2026-10-28 : ces outils se créent ici), demandées par questions-6 (06 « Ranger des fractions », 07 « Ranger des nombres mixtes ») et CP-007 ; ordre avec l'échelle à trancher.
 - **En attente de David** : la suite du chantier (ci-dessus).
 - **Pièges en cours** : `BuildKind` patron commun (`generator/build-answer.ts`, `buildCaseCount`) ; `isPlaceKind` = droite + horloge ; `placer:` des barres refusé avec `indicateurs:` et avec un axe au-delà de 100 ; une PR = une session.
 - **Worktree / branche** : aucun (nouveau worktree à créer depuis `origin/main` pour la suite).
@@ -109,7 +109,8 @@ placer: {{a}}
 
 ## 6. Décisions (David, 2026-10-26 : « go sur tes recos »)
 
-1. Ordre : **droite graduée** → aiguilles → barres ; étiquettes à ranger hors chantier.
+1. Ordre : **droite graduée** → aiguilles → barres ; étiquettes à ranger hors chantier (décision revue le
+   2026-10-28 : réintégrées, § Reprendre ici).
 2. Écriture : ligne **`placer:`** dans le bloc ` ```line ` (patron `construire:`).
 3. Jugé : la **graduation exacte**, sans tolérance (aimant).
 4. **PR 1 : un seul point par droite** (`placer: 7`) ; PR 2 : plusieurs (`placer: A=3 ; B=7`, une case par
