@@ -6,12 +6,12 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, PR « Vite 8 » en préparation._
+_Mis à jour le 2026-10-28, PR « Vite 8 » ouverte._
 
-- **État** : go de David pour Vite 8 (§ 3 A). Sur la branche : `vite` 8.3.5 + `@sveltejs/vite-plugin-svelte` 7.3.1 (pas encore commité). `check:incremental` 0 erreur, `test:server` vert (63 150), `pnpm build` OK (garde Safari : nœud racine 49,7 Ko).
-- **Prochaine action** : comparer le site construit Vite 7 / Vite 8 (§ 4 : 245 pages, Chromium + WebKit, anonyme + admin, base locale), `test:client`, puis commit + PR.
+- **État** : Vite 8 sur la branche (`vite` 8.3.5, `@sveltejs/vite-plugin-svelte` 7.3.1) + correctif du worker Pyodide (§ 4). Vérifié : `check:incremental`, `test:server`, build, garde Safari, 245 pages comparées Vite 7 / Vite 8 (Chromium + WebKit, anonyme + admin) sans écart, Python exécuté.
+- **Prochaine action** : CI de la PR (les tests client y font foi, § 4), revue, merge ; puis mesurer le build Vercel au prochain `deploy:prod` et retirer la rustine #1892 (heap 6144) si la marge le permet.
 - **En attente de David** : rien.
-- **Pièges en cours** : mesurer dans Docker (`--memory=8g --cpus=2`), jamais sur le Mac ; previews sur 5186 (Vite 8) et 5177 (témoin Vite 7, worktree `ubumaths-wt-build-memoire-temoin`, détaché, à retirer) ; 5176 est pris par une autre session.
+- **Pièges en cours** : `test:client` complet plante sur le Mac sous Vite 7 comme sous Vite 8 (navigateur fermé vers 260/402 fichiers) : pas un critère local ; témoin `ubumaths-wt-build-memoire-temoin` (détaché) et previews 5186 / 5177 à retirer.
 - **Worktree / branche** : `ubumaths-wt-build-memoire`, `chore/build-memoire`.
 
 ---
@@ -58,3 +58,10 @@ Pic du conteneur **4,82 Go** (7,67 avec Vite 7), build ~45 s (~3 min 50 avec Vit
 - **A. Vite 8** (recommandée) : `vite` 8 + `@sveltejs/vite-plugin-svelte` 7 ; `@sveltejs/kit` 2.70 accepte déjà Vite 8 (pas besoin de Kit 3), vitest 4 aussi. À vérifier : site construit (pages, Safari TDZ, chunks), `pnpm dev`, tests client et serveur, plugins de `vite.config.ts`.
 - **B. Libérer le graphe Rollup entre les compilations** (rester en Vite 7) : chercher qui retient le graphe ; gain au mieux ~1,8 Go, moins sûr.
 - **C. Build dans GitHub Actions + `vercel deploy --prebuilt`** : filet indépendant de la mémoire, touche `deploy:prod` (ADR 0021).
+
+## 4. Montée en Vite 8 — vérifications (2026-10-28)
+
+- `check:incremental` 0 erreur ; `test:server` 2 173 fichiers, 63 150 tests verts ; `pnpm build` OK (client 9 s, serveur 21 s), nœud racine 49,7 Ko (garde Safari < 100 Ko). Avertissements du build identiques à Vite 7 (`xml2js`/`sax` externalisés, `sharp` de nft).
+- **Comparaison du site construit** : previews Vite 7 (`main`) et Vite 8 sur la base locale, 245 pages sans paramètre, Chromium et WebKit, anonyme et `admin@local.test` ; statut, adresse finale, erreurs JS et console comparés page à page. Seul écart : `/python`.
+- **`/python` cassé sous Vite 8** : le worker Pyodide importait des valeurs par le barrel `$lib/shared/python`, qui tire `pythonDebug.svelte.ts` (store instancié au niveau du module, runes non compilées dans un worker). Rollup l'élaguait, Rolldown le garde → « $state is not defined ». Correctif : imports module par module ; garde `src/lib/workers/__tests__/workers-sans-runes.test.ts` (rouge avant, avec le chemin d'imports ; verte après). Après correctif : 0 écart sur les 245 pages, code Python exécuté (sortie + graphique) dans les deux navigateurs.
+- **`test:client`** : plante sur le Mac sous Vite 7 comme sous Vite 8 (navigateur fermé, ~260/402 fichiers ; erreurs `wrapDynamicImport` du serveur de dev SvelteKit dans les deux). La CI (par tranches) fait foi.
