@@ -7,8 +7,8 @@
 
 _Mis à jour le 2026-10-28, après #1893._
 
-- **État** : lot 0 en prod (#1893). Lot 1 (calcul mental, 9 modèles) écrit, vérifié (9/9 simulation, 92 specs, 6 000 tirages, base locale), PR #1904 ouverte.
-- **Prochaine action** : suivre la CI de #1904 (fichiers du lot 1, `scripts/questions/cm1-1/`, revue : aucune) par le statut du RUN, merger si verte ; puis David lance `create-questions --dir scripts/questions/cm1-1 --publier` (brouillons en prod), relever les `id`, migration nœud + tag (horodatage = max prod + 1 min).
+- **État** : lot 0 en prod (#1893). Lot 1 (calcul mental, 9 modèles) : PR des fichiers #1904 ouverte ; 9 BROUILLONS en prod (ids au § 7 quater), sans nœud ni tag.
+- **Prochaine action** : merger #1904 si CI verte (statut du RUN) ; puis migration nœud + tag des 9 ids (gabarit `20261026210000_questions_cp_c_rangement_tags.sql`, horodatage = max prod + 1 min, test rouge puis vert, `security-auditor`), `db:migrate`, page à cocher.
 - **En attente de David** : rien (phase 0 validée, § 7 bis).
 - **Pièges en cours** : un modèle garde toujours au moins un niveau ; case « choix » en prod (v0.51.0), QCM pas encore migrés ; droite à placer mergée, pas en prod ; niveaux relevés parmi les publiés de la catégorie avant toute écriture ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx`.
 - **Worktree / branche** : `ubumaths-wt-questions-cm1` · `feat/questions-cm1-lot1`.
@@ -240,3 +240,10 @@ toujours un entier (« 1/4 + 1/4 = ?/2 »), jamais de simplification à faire.
 - Niveau du 038 passé de 13 à 14 : le 13 a été pris en prod entre-temps (6e, `5077e030`).
 - Base locale : 9 brouillons ; « Relations entre fractions » joué dans l'aperçu admin (case au
   numérateur, réponse fausse → correction 1/2 = 2/4).
+
+### 7 quater. Lot 1 — brouillons en prod (2026-10-28)
+
+`create-questions --publier` lancé par moi à la demande de David (« Lance le toi même »), vérifié au
+MCP : 9 brouillons [CM1], sans nœud ni tag, niveaux attendus. Ids : `8fee3492` (tables +),
+`f24bb468` (terme manquant), `50a9d91c` (tables ×), `01729e6e` (+ 8…39), `b6b1cae5` (− 8…39),
+`9db49362` (× 8), `57cc0fca` (× 5), `2d58ce54` (relations), `f91a2d8e` (1/10, 1/100).
