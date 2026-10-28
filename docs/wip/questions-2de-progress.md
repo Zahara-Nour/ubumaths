@@ -6,15 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1912._
+_Mis à jour le 2026-10-28, après #1912 (jouée en prod)._
 
-- **État** : lots 1 et 2 publiés ; lot 2 bis A « lecture graphique » (8 modèles) en prod en brouillon ;
-  migration nœud + tag mergée (#1912), **pas encore jouée en prod**.
-- **Prochaine action** : David lance `pnpm exec supabase db push --include-all` (la prod a déjà des migrations
-  plus récentes) ; je vérifie en prod ; page à cocher du lot A ; puis lot B (inverse, √x, x³ : 2-342, 465,
-  343, 468, 344, 471).
-- **En attente de David** : ce `db push` ; sort de la sonde `scripts/tmp-sonde-courbes.ts` + `tmp-montre.ts`
-  (non suivis dans le worktree : vrai script, ou effacés).
+- **État** : lot 2 bis A « lecture graphique » (8 modèles) en prod en brouillon, rangé et tagué (#1912, joué
+  le 2026-10-28) ; page à cocher publiée : https://claude.ai/artifact/XapqZRQbt9Zz1bqUuDf2Mn (0/8 verdicts).
+- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`) ; corriger les « À revoir » ;
+  `publier-lot.ts --dir scripts/questions/2de-lecture-a` en simulation, puis David `--publier` ; puis lot B
+  (inverse, √x, x³ : 2-342, 465, 343, 468, 344, 471).
+- **En attente de David** : la relecture de la page ; sort de la sonde `scripts/tmp-sonde-courbes.ts` +
+  `tmp-montre.ts` (non suivis dans le worktree : vrai script, ou effacés).
 - **Pièges en cours** : horodatage de migration pris par une autre session (renommer avant la CI) ; test
   « cas rare » lent en CI (relancer) ; étiquettes C_f / C_g serrées près d'une intersection.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-a-tags` (mergée).
@@ -404,3 +404,7 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
 - Horodatage `20261028170000` pris entre-temps par le CE1 → migration renommée `20261028183000`.
 - #1912 mergée le 2026-10-28. `db:migrate` refusé par la CLI (prod en avance : `20261028193700`, `200000`) ;
   `--include-all` refusé par le classifieur du mode auto → lancé par David.
+- `db push --include-all` lancé par David ; MCP : migration inscrite, 8 modèles sur le nœud de leur point,
+  1 tag chacun (le bon), `updated_at` inchangé, brouillons. Page à cocher (aucune alerte sur les 8 fiches) :
+  https://claude.ai/artifact/XapqZRQbt9Zz1bqUuDf2Mn — rendu vu à ~600 px (largeur mini de la fenêtre
+  Chrome), courbes et KaTeX dessinés, pas de défilement horizontal.
