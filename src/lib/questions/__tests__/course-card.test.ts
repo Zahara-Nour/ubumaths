@@ -22,8 +22,8 @@ import {
 	isCourseCard
 } from '../course-card';
 import { questionTypeSchema } from '$lib/server/validation/questions';
-import { checkTemplate } from '$lib/migration/review/check-template';
-import { toTemplateInsertRow } from '$lib/migration/review/template-insert-row';
+import { checkTemplate } from '$lib/questions/review/check-template';
+import { toTemplateInsertRow } from '$lib/questions/review/template-insert-row';
 import { templateMarkdown } from '$lib/ubumark';
 
 // ============================================================================

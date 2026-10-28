@@ -24,7 +24,7 @@ import { refineAssumptionCollisions } from '$lib/questions/answer-assumptions';
 import { genericFunctionNamesSchema } from '$lib/questions/generic-functions';
 import { capitalPairsSchema } from '$lib/questions/capital-pairs';
 
-// Re-export building blocks for downstream consumers (migration-review.ts, index.ts)
+// Re-export building blocks for downstream consumers (index.ts)
 export {
 	displayOptionsSchema,
 	variableSchema,

@@ -18,7 +18,7 @@
 
 import type { QuestionTemplate } from '$lib/questions/types';
 import { detectCircularDependencies } from '$lib/questions';
-import { checkTemplate } from '$lib/migration/review/check-template';
+import { checkTemplate } from '$lib/questions/review/check-template';
 
 // ============================================================================
 // FUNCTIONS

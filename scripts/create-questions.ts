@@ -29,8 +29,8 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { QuestionTemplate } from '$lib/questions/types';
-import { checkTemplate } from '$lib/migration/review/check-template';
-import { toTemplateInsertRow } from '$lib/migration/review/template-insert-row';
+import { checkTemplate } from '$lib/questions/review/check-template';
+import { toTemplateInsertRow } from '$lib/questions/review/template-insert-row';
 import { argValue, createScriptClient, findReviewerId, hasFlag } from './relecture/common';
 import { readTemplateFile, sameGrades } from './lib/template-file';
 

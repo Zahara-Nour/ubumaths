@@ -112,16 +112,15 @@ Pratiques : [base-de-donnees.md](base-de-donnees.md) · schéma : [../systeme/ba
 
 ## Contenus : questions, relecture, corrections, fiches
 
-| Commande                                                                       | Effet                                                               |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| `pnpm question:specs`                                                          | Spécifications de questions (lit `data/relecture/`)                 |
-| `pnpm relecture:verdicts` / `relecture:import`                                 | Enregistre les verdicts de relecture / importe les questions relues |
-| `pnpm corrections:generate` / `:check` / `:preview` / `:import` / `:retouches` | Chaîne des corrections (`data/corrections/`)                        |
-| `pnpm fiche:verifier`                                                          | Vérifie une fiche PDF ([fiches-exercices.md](fiches-exercices.md))  |
-| `pnpm math`                                                                    | CLI mathAST                                                         |
-| `pnpm openapi:generate`                                                        | Spec OpenAPI                                                        |
+| Commande                                                                       | Effet                                                              |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `pnpm question:specs`                                                          | Contrôle d'un modèle (`--file` source ou `--template` en base)     |
+| `pnpm corrections:generate` / `:check` / `:preview` / `:import` / `:retouches` | Chaîne des corrections (`data/corrections/`)                       |
+| `pnpm fiche:verifier`                                                          | Vérifie une fiche PDF ([fiches-exercices.md](fiches-exercices.md)) |
+| `pnpm math`                                                                    | CLI mathAST                                                        |
+| `pnpm openapi:generate`                                                        | Spec OpenAPI                                                       |
 
-Historique (migrations de données ponctuelles, à ne relancer qu'en connaissance de cause) : `migrate:phase1*`, `migration:import*`, `migration:rollback*`, `migrate:sanitize`.
+Historique (migration de données ponctuelle, à ne relancer qu'en connaissance de cause) : `migrate:sanitize`. Les scripts de l'import TinyMath ont été retirés le 2026-10-28 (import terminé).
 
 ## Jeux
 

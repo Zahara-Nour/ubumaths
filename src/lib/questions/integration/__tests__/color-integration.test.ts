@@ -1,23 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { convertTinyCASToNew } from '../../../migration/syntax-converter';
 import { resolveExpression } from '../../generator/content-resolver';
 import { COLOR_PALETTES } from '../../colors';
 import { createRandomSource } from '$lib/utils/random';
 
 describe('Color Template System - End to End', () => {
-	it('should convert old syntax and resolve to actual colors', () => {
-		// Step 1: Convert old TinyCAS syntax to new Markdown syntax
-		const oldSyntax = 'Draw a ${get(color1)} circle and a ${get(color2)} square';
-		const conversionResult = convertTinyCASToNew(oldSyntax);
-
-		expect(conversionResult.success).toBe(true);
-		// Now produces pure Markdown syntax {{...}}
-		expect(conversionResult.converted).toBe(
-			'Draw a {{color:primary.0}} circle and a {{color:primary.1}} square'
-		);
-
-		// Step 2: Resolve the colors during instance generation
-		const resolved = resolveExpression(conversionResult.converted!, [], createRandomSource(42));
+	it('should resolve color references to actual colors', () => {
+		const template = 'Draw a {{color:primary.0}} circle and a {{color:primary.1}} square';
+		const resolved = resolveExpression(template, [], createRandomSource(42));
 
 		// Should contain actual hex colors
 		expect(resolved).toMatch(/#[A-F0-9]{6}/i);
@@ -64,23 +53,9 @@ describe('Color Template System - End to End', () => {
 	});
 
 	it('should integrate with variables and evaluations', () => {
-		const oldSyntax = 'Color $' + '{get(color1)}, value &a, result [_&a+5_]';
-		const conversionResult = convertTinyCASToNew(oldSyntax);
-
-		expect(conversionResult.success).toBe(true);
-		// convertEvaluations now emits bare variable names inside eval (simplified syntax)
-		// i.e. &a → a (not {{a}}). See syntax-converter.ts convertVarsInExpr().
-		expect(conversionResult.converted).toBe(
-			'Color {{color:primary.0}}, value {{a}}, result {{eval:a+5}}'
-		);
-
-		// Provide a resolved variable 'a' to test the integration
+		const template = 'Color {{color:primary.0}}, value {{a}}, result {{eval:a+5}}';
 		const resolvedVariables = [{ name: 'a', value: '7' }];
-		const resolved = resolveExpression(
-			conversionResult.converted!,
-			resolvedVariables,
-			createRandomSource(42)
-		);
+		const resolved = resolveExpression(template, resolvedVariables, createRandomSource(42));
 
 		// Should contain the resolved color
 		expect(resolved).toContain(COLOR_PALETTES.primary[0]);
@@ -88,18 +63,6 @@ describe('Color Template System - End to End', () => {
 		expect(resolved).toContain('7');
 		// Eval expression should be resolved
 		expect(resolved).toContain('12'); // 7 + 5 = 12
-	});
-
-	it('should handle French color names', () => {
-		const oldSyntax = 'La couleur $' + '{get(couleur1)} est belle';
-		const conversionResult = convertTinyCASToNew(oldSyntax);
-
-		expect(conversionResult.success).toBe(true);
-		// Now produces pure Markdown syntax {{...}}
-		expect(conversionResult.converted).toBe('La couleur {{color:primary.0}} est belle');
-
-		const resolved = resolveExpression(conversionResult.converted!, [], createRandomSource(42));
-		expect(resolved).toContain(COLOR_PALETTES.primary[0]);
 	});
 
 	it('should create varied colors for shapes and diagrams', () => {
@@ -138,35 +101,5 @@ describe('Color Template System - End to End', () => {
 
 		// Verify they are different
 		expect(color1).not.toBe(color2);
-	});
-
-	it('should handle conversion statistics correctly', () => {
-		// Build the string to avoid template literal issues with ${get(...)}
-		const oldSyntax =
-			'$' +
-			'{get(color1)} $' +
-			'{get(color2)} $' +
-			'{get(couleur3)} ' +
-			'$e[1;10] &variable [_&a+5_]';
-
-		const result = convertTinyCASToNew(oldSyntax);
-
-		expect(result.success).toBe(true);
-		// decimals, relativeIntegers, ternaryOperators, minMaxFunctions were added to ConversionStats
-		// when those conversion cases were implemented — they are always present, defaulting to 0.
-		expect(result.stats).toEqual({
-			colorReferences: 3,
-			randomIntegers: 1,
-			relativeIntegers: 0,
-			decimals: 0,
-			variableRefs: 2, // &variable and &a
-			evaluations: 1,
-			ternaryOperators: 0,
-			minMaxFunctions: 0,
-			exclusions: 0,
-			nDigitNumbers: 0,
-			listSelections: 0,
-			total: 7
-		});
 	});
 });

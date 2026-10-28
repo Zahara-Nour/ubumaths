@@ -1,17 +1,12 @@
 /**
- * Outillage de relecture TinyMath — modules purs
+ * Contrôle d'un modèle — modules purs
  * (vérification d'un template, ligne d'import, fichier de verdict)
  */
 
 import { describe, it, expect } from 'vitest';
 import { checkTemplate, formatCheckReport } from '../check-template';
 import { toTemplateInsertRow } from '../template-insert-row';
-import {
-	buildEditNotes,
-	buildTrackingReviewUpdate,
-	draftTemplate,
-	parseReviewFile
-} from '../review-file';
+import { draftTemplate, parseReviewFile } from '../review-file';
 import type { QuestionTemplate, TestSpec } from '$lib/questions/types';
 import { templateMarkdown } from '$lib/ubumark';
 
@@ -55,7 +50,6 @@ function doubleTemplate(overrides: Partial<QuestionTemplate> = {}): QuestionTemp
 	};
 }
 
-const NOW = '2026-09-26T12:00:00.000Z';
 const DAVID = '6e1dbd63-dc7f-4aa4-abe1-771a7556b78e';
 
 // ============================================================================
@@ -190,62 +184,6 @@ describe('parseReviewFile', () => {
 		[{ verdict: 'rejected', reason: 'x', inconnu: 1 }, /inconnu|unrecognized/i]
 	])('refuse %j', (overrides, message) => {
 		expect(() => parseReviewFile({ ...base, ...overrides })).toThrow(message);
-	});
-});
-
-describe('buildTrackingReviewUpdate', () => {
-	it('approuvée par Claude : verdict, David comme relecteur, marqueur daté', () => {
-		const review = parseReviewFile({
-			globalIndex: 1,
-			verdict: 'approved',
-			reviewer: 'claude',
-			template: doubleTemplate()
-		});
-		expect(buildTrackingReviewUpdate(review, DAVID, NOW)).toEqual({
-			review_status: 'approved',
-			reviewed_by: DAVID,
-			reviewed_at: NOW,
-			conversion_notes: 'Relu par Claude le 2026-09-26 — approuvée telle que transformée.'
-		});
-	});
-
-	it('à arbitrer : reste pending, sans relecteur, la question est notée', () => {
-		const review = parseReviewFile({
-			globalIndex: 1,
-			verdict: 'arbitrate',
-			reviewer: 'claude',
-			question: 'Le mot « opposé » est-il vu en 5e ?'
-		});
-		const update = buildTrackingReviewUpdate(review, DAVID, NOW);
-		expect(update.review_status).toBe('pending');
-		expect(update.reviewed_by).toBeNull();
-		expect(update.conversion_notes).toContain('À ARBITRER : Le mot « opposé »');
-	});
-
-	it('rejetée : la raison est notée', () => {
-		const review = parseReviewFile({
-			globalIndex: 1,
-			verdict: 'rejected',
-			reviewer: 'claude',
-			reason: 'doublon de #12'
-		});
-		const update = buildTrackingReviewUpdate(review, DAVID, NOW);
-		expect(update.review_status).toBe('rejected');
-		expect(update.conversion_notes).toContain('rejetée : doublon de #12');
-	});
-
-	it('verdict de David : sans marqueur Claude, date d’origine conservée', () => {
-		const review = parseReviewFile({
-			globalIndex: 1,
-			verdict: 'approved',
-			reviewer: 'david',
-			reviewedAt: '2026-03-02T10:00:00+00:00',
-			template: doubleTemplate()
-		});
-		const update = buildTrackingReviewUpdate(review, DAVID, NOW);
-		expect(update.reviewed_at).toBe('2026-03-02T10:00:00+00:00');
-		expect(update).not.toHaveProperty('conversion_notes');
-		expect(buildEditNotes(review)).toBeUndefined();
 	});
 });
 
