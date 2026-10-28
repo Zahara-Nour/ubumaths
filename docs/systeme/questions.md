@@ -804,8 +804,7 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - **Case graphique (droite graduée)** : `InstanceBlank.type` admet `'graphical'` et
   `graphicalConfig`, mais aucun générateur ne la produit et `NumberLineInput.svelte` n'est importé
   par aucun composant (la droite à placer passe par `NumberLinePlacer.svelte` et `construire: 'line'`).
-- Composants sans appelant : `question-inputs/MathInput.svelte`, `question-inputs/OrderingInput.svelte`,
-  et `src/lib/questions/examples/color-demo.ts`.
+- Composants sans appelant : `question-inputs/MathInput.svelte`, `question-inputs/OrderingInput.svelte`.
 - `question_templates.type` existe en base, mais le code déduit le type de la structure
   (`getQuestionType`). CONTEXT.md liste encore des types TinyMath (`numerical_exact`…) absents de
   `QuestionType`.
