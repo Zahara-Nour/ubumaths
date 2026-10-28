@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après la relecture après coup du lot 4 (§ 11.8)._
+_Mis à jour le 2026-10-28, découpage du lot 5 tranché (§ 11.8)._
 
-- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Relecture du lot 4 : 10/10 verdicts, 5 OK, 5 « À revoir » (§ 11.8).
-- **Prochaine action** : lot 5 = scinder 02, 03, 04, 08 (découpage validé par David, § 11.8) ; phase 0 (comportements) à écrire après réponse à la question en attente ; nouveaux modèles en brouillon + migration de contenu § 7 qui retire les variantes déplacées des modèles publiés (relevé MCP, 0 donnée d'élève à vérifier).
-- **En attente de David** : 03 v3 (commutativité « 2/9 × 7 = 7 × ? ») : modèle à part ou retirée ? Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
-- **Pièges en cours** : 06 et 07 (ranger) attendent l'outil « étiquettes à ranger », réintégré au chantier `reponses-a-placer` : ne pas les refaire avant. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
+- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Relecture du lot 4 comptée (10/10). Lot 5 décidé : scinder 02, 03, 04, 08 → 7 modèles neufs, 4 publiés retouchés (§ 11.8).
+- **Prochaine action** : écrire la PHASE 0 du lot 5 et attendre la validation de David : comportements (nominal / limite / erreur) de chaque modèle neuf, titres, ce que garde chaque modèle publié (titre de 04 à resserrer), specs réparties, niveaux numérotés APRÈS relevé MCP des niveaux publiés de chaque catégorie, 0 donnée d'élève à vérifier sur les 4 publiés. Puis § 5 (brouillons) et § 7 (migration de contenu qui retire les variantes déplacées).
+- **En attente de David** : rien (sa validation de la phase 0, une fois écrite). Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **Pièges en cours** : 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`) : ne pas les refaire. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
@@ -687,3 +687,9 @@ David a lancé `create-questions --publier` : 10 créés. Vérifiés par MCP : `
   moins fraction (v4) à part.
 - 06, 07 : l'outil « étiquettes à ranger » se crée dans `reponses-a-placer` (David) ; il en avait été écarté le
   2026-10-26 sur ma recommandation (CP-007 se faisait déjà en case texte), journal de ce chantier mis à jour.
+- 03 v3 (commutativité) : **modèle à part** (David, « je valide »). Découpage final : 02 garde v2, v3 | neuf « de » = ×
+  (v1) ; 03 garde v1, v2 | neufs « simplifier d'abord » (v4) et « changer l'ordre » (v3) ; 04 garde v1, v2 (titre à
+  resserrer) | neufs « à 1 ou à 1/2 » (v3, v4), « dénominateurs multiples » (v5), « dénominateur commun » (v6) ; 08
+  garde v1-v3 | neuf « entier moins fraction » (v4). Catégories : 02 Fractions/Calculer/Fraction d'une quantité
+  (niv 4) ; 03 …/Calculer/Multiplication (niv 7) ; 04 …/Apprivoiser/Comparer (niv 5) ; 08 …/Calculer/Addition et
+  Soustraction (niv 11). Specs par variante : 02 [2, 3, 4] ; 03 [3, 2, 2, 3] ; 04 [1, 2, 2, 2, 2, 2] ; 08 [2, 4, 2, 2].
