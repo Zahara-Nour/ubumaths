@@ -8,21 +8,18 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après la migration des QCM en prod._
+_Mis à jour le 2026-10-28, ouverture du lot 5 (phase 0 validée, § 2.12)._
 
-- **État** : lots 1 à 4 EN PROD (depuis v0.52.0, 2026-10-27). Le 2026-10-28, David a lancé `--ecrire` :
-  178 / 178 QCM migrés, **0 `multiple_choice` en base** (vérifié) ; sauvegarde
-  `data/migration-output/qcm-en-cases/2026-10-28T08-34-00.924Z-sauvegarde.json`. CP-058 (a7dfe502) et
-  « Termine le carré… » (1cf6eaa9) créés en brouillon. CP-057 (b5389494) : consigne « Quels points semblent
-  être alignés ? » passée en prod (#1878, script ponctuel, 4 / 4 vérifiées).
-- **Prochaine action** : lot 5 — retrait de `multiple_choice` du code, de `src/lib/migration/` et de sa page
-  admin ; puis, après un `deploy:prod`, retrait de la valeur de la contrainte SQL (destructif : s'arrêter et
-  expliquer). Puis lot 6 (`deplacable:` partout).
+- **État** : lots 1 à 4 EN PROD (v0.52.0) ; 178 / 178 QCM migrés le 2026-10-28, **0 `multiple_choice` en base**
+  ni dans les copies enregistrées (vérifié en prod : évaluations, tests, fiches, défis). Lot 5 en cours.
+- **Prochaine action** : PR 5a (retrait de `multiple_choice` du code) → PR 5b (retrait de l'import TinyMath,
+  `check-template` / `template-insert-row` déplacés) → après `deploy:prod`, migration destructive
+  (contrainte + tables `migration_*`, export JSON d'abord) : s'arrêter et expliquer. Puis lot 6.
 - **En attente de David** : essais à l'écran (QCM migrés, CP-058) ; avis sur les séries PDF (choix d'une case
   mélangée imprimés dans l'ordre mélangé) ; publication de CP-058 quand il l'a essayé.
-- **Pièges en cours** : 6 des 10 modèles `cp-b2` ont un `level` différent en prod et dans la source →
-  `create-questions` ne les retrouve pas (créerait des doublons) ; à régler côté chantier « questions ».
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : 6 des 10 modèles `cp-b2` ont un `level` différent en prod et dans la source
+  (chantier « questions »).
+- **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `refactor/figure-et-choix-lot5`.
 
 ---
 
@@ -361,3 +358,23 @@ la réponse d'un élève. Phase 0 validée.
   ordre de l'auteur, bonne réponse souvent en a)), signalé à David.
 - Piège : les sources de `scripts/questions/**` sont réécrites dès le merge, la base seulement après
   `--ecrire` ; d'ici là `create-questions` voit « CONTENU DIFFÉRENT » sur ces modèles (sans écrire).
+
+### 2.12 Lot 5 : phase 0 (validée par David le 2026-10-28, recos suivies)
+
+Constat : aucune instance de QCM dans les copies enregistrées en prod (`evaluation_attempt_questions`,
+`test_answers`, `worksheet_instances`, `game_challenge_attempts`) → aucun affichage ancien à préserver.
+
+- **Nominal** : types `fill_in_blanks` et `course_card` seuls ; mode QCM de l'éditeur retiré (case choix /
+  Vrai / Faux) ; notation, copie corrigée, carte flash, aperçu, PDF : chemin de la case choix seul (note
+  inchangée 1 / ½ / 0). QCM des énigmes (`riddles/`) hors champ.
+- **Limite** : `type: 'multiple_choice'` reçu → 400 avec message (« case choix ») ; champs QCM de modèle
+  (`choices`, `correctChoiceIndex`, `multipleAnswers`, `shuffleChoices`) retirés des types et de Zod, reçus
+  → 400 (pas de retrait silencieux).
+- **Découpage** : PR 5a = retrait de `multiple_choice` (revue `code-reviewer` opus) ; PR 5b = retrait de
+  l'import TinyMath (page admin, `/api/migration/*`, `components/migration/`, `server/migration/`,
+  transformateur, anciens types, scripts d'import, `relecture:*`, modes `--index/--file/--lot` de
+  `question:specs`, `data/tinymath/`, `data/relecture/`) ; `check-template` et `template-insert-row`
+  passent sous `src/lib/questions/`.
+- **Après `deploy:prod`** : une migration retire la valeur de `question_templates_type_check` et supprime
+  `migration_tracking` (633 lignes) et `migration_edits` (632), export JSON commité dans `data/` avant ;
+  destructif → arrêt et explication.
