@@ -587,6 +587,7 @@ Les Palotins viennent de **deux pièces** : Giron, Pile et Cotice sont ceux d'_U
 - **Giron** : ado trapu et sportif, penché en avant, prêt à foncer, poing levé ; visage rond, joues roses, nez rond, grand sourire confiant ; bonnet pointu mi-orange mi-encre à pompon blanc, tunique orange `#E0612F` à col blanc, écusson gironné or et encre, ceinture brune, culotte encre, bottes courtes brunes. Prompt d'illustration : Section XI, « Illustrations ».
 - **Pile** : grand et mince, silhouette en triangle pointe en bas comme sa pièce héraldique (larges épaules, jambes fines, petits pieds pointus) ; visage allongé au menton pointu, nez en triangle, moustache en guidon, regard rêveur de côté, demi-sourire énigmatique ; pose nonchalante de prestidigitateur, une carte levée entre deux doigts, un éventail de cartes qui coule de l'autre main (cartes blanches à étoile d'or, sans chiffres) ; haut-de-forme encre à bandeau marqué d'un triangle bleu pointe en bas, habit à queue bleu `#2F62B0`, plastron en V doré à col blanc, pantalon encre. ⚠️ Caractère à trancher : « fourbe, opportuniste » ici, « rêveur philosophe » dans `docs/systeme/buddy-palotins.md` ; l'image mêle les deux (rêveur un peu roublard). Prompt d'illustration : Section XI, « Illustrations ».
 - **Cotice** : taille moyenne, tout en rondeur, entre le trapu Giron et le mince Pile ; tout le corps penché en diagonale vers le spectateur, dans le sens de son écharpe, comme pour confier un secret ; visage rond, joues roses, grosses lunettes rondes, yeux pétillants, bouche ouverte en pleine explication ; livre ouvert dans une main (reliure pourpre, pages à lignes ondulées sans lettres), index de l'autre pointé sur la page ; béret encre barré d'une bande verte en diagonale, plume d'oie blanche piquée dedans, tunique verte à col blanc, large écharpe dorée en diagonale (la cotice héraldique), culotte encre, bas et chaussons pourpres (sa couleur d'identité). Prompt d'illustration : Section XI, « Illustrations ».
+- **Merdranpo** : pas de SVG dans l'appli, dessiné directement au trait Steinlen ; grand échalas désarticulé, tout en genoux et en coudes, saisi en pleine charge héroïque au moment où il trébuche sur ses propres pieds (une jambe en l'air, bras qui moulinent), toujours souriant de fierté ; visage allongé, gros nez de travers, yeux écarquillés d'enthousiasme, sourire édenté, mèches qui dépassent ; casserole cabossée en guise de casque, manche sur le côté ; tunique brun merdre (sa couleur d'identité) trop courte, à col blanc ; à la place d'un blason (les Palotins d'_Ubu Cocu_ n'ont pas de nom héraldique), une pièce de tissu blanc reprisée d'une grosse croix de couture dorée ; culotte encre, bas dépareillés (un vert, un pourpre), souliers bruns trop grands ; carnet de reporter aux pages blanches à la main, crayon doré derrière l'oreille (reporter du Shtam). Prompt d'illustration : Section XI, « Illustrations ».
 
 ### Personnages mineurs et figurants
 
@@ -2237,6 +2238,24 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines, the beret, the glasses and the breeches, emerald green for the tunic and the beret band, marigold yellow for the sash, deep crimson for the stockings, the slippers and the book binding, white for the feather, the collar and the pages, a soft pink for the cheeks.
 
 Composition: Cotice standing, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — Merdranpo (Palotin) 🟡
+
+Validé par David le 2026-10-28 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png`, l'image de référence de Père Ubu et les Giron, Pile et Cotice Steinlen, pour l'âge et l'échelle ; pas de capture de l'appli, il n'a pas de SVG). Toutes ses couleurs sont au nuancier ; le brun merdre (« dark chocolate brown ») est sa couleur d'identité. La croix de couture est blanche et or : brune, elle disparaîtrait sur la tunique.
+
+```text
+Draw Merdranpo, one of the Palotins (Père Ubu's henchmen from Alfred Jarry's play "Ubu Cocu"), as a full-body character portrait in exactly the same drawing style as the attached Père Ubu image, and the same age and scale as the attached Giron, Pile and Cotice.
+
+Character: a tall, gangly young Palotin, all knees and elbows, a loose-limbed beanpole; caught in the middle of a brave charge, tripping over his own feet, one leg kicked up, arms flailing, yet still grinning with pride. A long face, a big crooked nose, wide eyes full of enthusiasm, a gap-toothed smile, a few strands of hair sticking out from under his helmet. He is brave but clumsy: he fails everything with panache, gets up and tries again; funny and lovable, never scary, never pitiful, for students aged 11 to 17.
+
+Clothing: a dented cooking pot worn as a helmet, its handle sticking out to the side; a dark chocolate brown tunic, too short for him, with a white collar; on his chest, a darned patch in place of a coat of arms, a white cloth square stitched with a big marigold yellow cross of thick sewing stitches; navy ink breeches, mismatched stockings (one emerald green, one deep crimson) and oversized brown shoes. In one hand, a small reporter's notebook with blank white pages and a pencil tucked behind his ear.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines, the hair and the breeches, dark chocolate brown for the tunic and the shoes, white for the collar, the patch and the notebook pages, marigold yellow for the stitched cross and the pencil, emerald green and deep crimson for the mismatched stockings, a light grey-white for the dented pot with navy ink dents, a soft pink for the cheeks.
+
+Composition: Merdranpo in mid-stumble, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
 ```
 
 ---
