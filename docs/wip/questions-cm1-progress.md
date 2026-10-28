@@ -7,8 +7,8 @@
 
 _Mis à jour le 2026-10-28, après #1893._
 
-- **État** : lot 0 en prod (#1893 mergée, `db:migrate` joué, vérifié au MCP : 14 en [CM2] tagués, 4 en [6] tagués, 8 brouillons [CM1] sans tag, md5 attendus) ; sessions `6EME` et `CM2` prévenues.
-- **Prochaine action** : PR des fichiers du lot 1 (`scripts/questions/cm1-1/`), CI verte, merge ; puis David lance `create-questions --publier` (brouillons en prod) et migration nœud + tag.
+- **État** : lot 0 en prod (#1893). Lot 1 (calcul mental, 9 modèles) écrit, vérifié (9/9 simulation, 92 specs, 6 000 tirages, base locale), PR #1904 ouverte.
+- **Prochaine action** : suivre la CI de #1904 (fichiers du lot 1, `scripts/questions/cm1-1/`, revue : aucune) par le statut du RUN, merger si verte ; puis David lance `create-questions --dir scripts/questions/cm1-1 --publier` (brouillons en prod), relever les `id`, migration nœud + tag (horodatage = max prod + 1 min).
 - **En attente de David** : rien (phase 0 validée, § 7 bis).
 - **Pièges en cours** : un modèle garde toujours au moins un niveau ; case « choix » en prod (v0.51.0), QCM pas encore migrés ; droite à placer mergée, pas en prod ; niveaux relevés parmi les publiés de la catégorie avant toute écriture ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx`.
 - **Worktree / branche** : `ubumaths-wt-questions-cm1` · `feat/questions-cm1-lot1`.
