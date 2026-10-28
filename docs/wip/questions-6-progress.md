@@ -575,3 +575,8 @@ Session `questions-cm1`, lot 0 (#1893, migration jouée en prod) : 4 modèles pu
 nœud et contenu inchangés (MCP relu) : 6a16303a et 7d57fb3b (« Calculer une différence », Soustraire / Différence
 2 et 4) → 6-198 ; 0a93ac99 et 08bbf1c6 (« Additionner par regroupements », Somme astucieuse 1 et 2, 3 et 4 termes)
 → 6-114, voisins de 6adcd053 (lot 3, Somme astucieuse 3) sans doublon. À compter dans la couverture de la 6e.
+
+**Décisions de David (2026-10-28, « oui » aux trois recos)** : phase 0 du § 11 validée ; 0be55013, 9293eb9a, 8ffdbdb1
+passent en 6e (`grades` remplacé) et sont tagués 6-131 dans la migration du lot ; modèle 10 ajouté, « Additionner des
+fractions de dénominateurs différents » (6-135, Addition et Soustraction, 12 : v1 dénominateurs multiples, v2
+quelconques dans des cas simples, $\frac{5}{4} + \frac{2}{3}$) ; « Ranger » à trois nombres partout.
