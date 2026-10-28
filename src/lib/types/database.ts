@@ -9222,6 +9222,38 @@ export type Database = {
           },
         ]
       }
+      question_template_reviews: {
+        Row: {
+          comment: string
+          reviewed_at: string
+          reviewed_by: string | null
+          template_id: string
+          verdict: string
+        }
+        Insert: {
+          comment?: string
+          reviewed_at?: string
+          reviewed_by?: string | null
+          template_id: string
+          verdict: string
+        }
+        Update: {
+          comment?: string
+          reviewed_at?: string
+          reviewed_by?: string | null
+          template_id?: string
+          verdict?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_template_reviews_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: true
+            referencedRelation: "question_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       question_templates: {
         Row: {
           classification_node_id: string | null

@@ -4,7 +4,7 @@
 > (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
-224 tables · 25 vues · 322 fonctions. Colonne suivie de `?` : peut être nulle.
+225 tables · 25 vues · 322 fonctions. Colonne suivie de `?` : peut être nulle.
 
 ## Établissement et personnes (20)
 
@@ -198,7 +198,7 @@ Liens : `point_id` → `curriculum_points` · `student_id` → `profiles`
 
 `created_at` · `created_by?` · `id` · `name` · `slug?`
 
-## Questions et exercices (18)
+## Questions et exercices (19)
 
 ### `exercise_assignments`
 
@@ -269,6 +269,12 @@ Liens : `new_template_id` → `question_templates` · `reviewed_by` → `profile
 `created_at` · `point_id` · `template_id`
 
 Liens : `point_id` → `curriculum_points` · `template_id` → `question_templates`
+
+### `question_template_reviews`
+
+`comment` · `reviewed_at` · `reviewed_by?` · `template_id` · `verdict`
+
+Liens : `template_id` → `question_templates`
 
 ### `question_templates`
 
