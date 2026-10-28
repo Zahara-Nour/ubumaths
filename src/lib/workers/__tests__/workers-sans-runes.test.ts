@@ -9,8 +9,9 @@
  * tout module à effet de bord, comme un store instancié au niveau du module.
  *
  * Ce test suit les imports de VALEUR (les `import type` / `export type`
- * disparaissent à la compilation) et les ré-exports des barrels, sans élagage :
- * l'hypothèse la plus prudente, celle de Rolldown.
+ * disparaissent à la compilation), les `import('…')` à chemin littéral et les
+ * ré-exports des barrels, sans élagage : l'hypothèse la plus prudente, celle
+ * de Rolldown.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -23,6 +24,8 @@ const WORKERS = join(LIB, 'workers');
 
 const IMPORT_DE_VALEUR =
 	/(?:^|\n)\s*(?:import|export)\s+(?!type\b)(?:[^'";]*?\bfrom\s+)?['"]([^'"]+)['"]/g;
+/** `import('…')` à chemin littéral : Rolldown le suit aussi (chunk du worker). */
+const IMPORT_DYNAMIQUE = /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
 
 function resoudre(depuis: string, specifier: string): string | null {
 	let base: string;
@@ -31,6 +34,8 @@ function resoudre(depuis: string, specifier: string): string | null {
 	else return null; // paquet de node_modules : hors périmètre
 	const candidats = [
 		base,
+		// `./foo.js` qui désigne `./foo.ts` (résolution à la TypeScript)
+		base.replace(/\.js$/, '.ts'),
 		`${base}.ts`,
 		`${base}.js`,
 		`${base}.svelte.ts`,
@@ -53,7 +58,7 @@ function fichiersSvelteAtteints(entree: string): string[] {
 			continue;
 		}
 		const source = readFileSync(courant, 'utf8');
-		for (const m of source.matchAll(IMPORT_DE_VALEUR)) {
+		for (const m of [...source.matchAll(IMPORT_DE_VALEUR), ...source.matchAll(IMPORT_DYNAMIQUE)]) {
 			const cible = resoudre(courant, m[1]);
 			if (cible && !vus.has(cible)) {
 				vus.set(cible, [...chemin, cible]);
