@@ -4,8 +4,7 @@
  *
  * `validateAnswerDetailed` rend, pour une instance et une réponse d'élève, le
  * statut global (IDENTIQUE à celui de `validateAnswer`) et, pour chaque case,
- * son statut et ses remarques de forme. Un QCM rend en plus l'issue de chaque
- * choix (bon coché, bon oublié, faux coché).
+ * son statut et ses remarques de forme (une case choix comprise).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -176,45 +175,6 @@ describe('validateAnswerDetailed — statut de chaque case', () => {
 	});
 });
 
-describe('validateAnswerDetailed — QCM', () => {
-	const choices = [
-		{ content: 'a' as ResolvedMarkdown, isCorrect: true },
-		{ content: 'b' as ResolvedMarkdown, isCorrect: false },
-		{ content: 'c' as ResolvedMarkdown, isCorrect: true }
-	];
-	const multi = instanceWith([], undefined, {
-		blanks: undefined,
-		choices,
-		correctChoiceIndex: ['0', '2'],
-		multipleAnswers: true
-	});
-	const single = instanceWith([], undefined, {
-		blanks: undefined,
-		choices: [choices[0], choices[1]],
-		correctChoiceIndex: '0'
-	});
-
-	it('simple, bon coché : correct, issues par choix', () => {
-		const v = validateAnswerDetailed(single, { choiceIndexes: [0] });
-		expect(v.status).toBe('correct');
-		expect(v.choices?.map((c) => c.outcome)).toEqual(['checked-correct', 'unchecked']);
-	});
-
-	it('simple, faux coché : le bon est oublié, le faux coché à tort', () => {
-		const v = validateAnswerDetailed(single, { choiceIndexes: [1] });
-		expect(v.status).toBe('incorrect');
-		expect(v.choices?.map((c) => c.outcome)).toEqual(['missed', 'checked-wrong']);
-	});
-
-	it('multiple, un bon oublié : statut global = validateAnswer, issue « missed »', () => {
-		const v = validateAnswerDetailed(multi, { choiceIndexes: [0] });
-		const r = validateAnswer([0], multi);
-		expect(v.status).toBe(r.status ?? (r.isCorrect ? 'correct' : 'incorrect'));
-		expect(v.choices?.map((c) => c.outcome)).toEqual(['checked-correct', 'unchecked', 'missed']);
-		expect(v.blanks).toEqual([]);
-	});
-});
-
 describe('validateAnswerDetailed — non-régression sur des modèles réels', () => {
 	function real(name: keyof typeof REAL_TEMPLATES, seed: number): QuestionInstance {
 		const r = generateInstance(REAL_TEMPLATES[name], seed);
@@ -256,12 +216,11 @@ describe('validateAnswerDetailed — non-régression sur des modèles réels', (
 		}
 	});
 
-	it.each([1, 2, 3])('QCM réel (graine %i)', (seed) => {
-		const inst = real('multipleChoice', seed);
-		for (const idx of [0, 1]) {
-			const r = validateAnswer(idx, inst);
-			expect(validateAnswerDetailed(inst, { choiceIndexes: [idx] }).status).toBe(
-				r.status ?? (r.isCorrect ? 'correct' : 'incorrect')
+	it.each([1, 2, 3])('case choix réelle (graine %i)', (seed) => {
+		const inst = real('choiceCase', seed);
+		for (const value of ['0', '1', '']) {
+			expect(validateAnswerDetailed(inst, { values: [value], latex: [''] }).status).toBe(
+				globalStatus([value], inst)
 			);
 		}
 	});
@@ -279,40 +238,6 @@ describe('Revue PR #643', () => {
 		const inst = instanceWith([math('5')]);
 		const v = validateAnswerDetailed(inst, { values: ['x=5'], latex: ['x=5'] });
 		expect(v.blanks[0]).toMatchObject({ status: 'correct', answer: '5' });
-	});
-
-	it('QCM à règles : issue de chaque choix selon les règles', () => {
-		const inst = instanceWith([], undefined, {
-			blanks: undefined,
-			choices: [
-				{ content: '3' as ResolvedMarkdown, isCorrect: true },
-				{ content: '4' as ResolvedMarkdown, isCorrect: false }
-			],
-			correctChoiceIndex: '0',
-			validationRules: [{ type: 'custom', expression: 'answer == 1' }]
-		});
-		const v = validateAnswerDetailed(inst, { choiceIndexes: [1] });
-		expect(v.status).toBe('correct');
-		expect(v.choices?.map((c) => c.outcome)).toEqual(['unchecked', 'checked-correct']);
-		const w = validateAnswerDetailed(inst, { choiceIndexes: [0] });
-		expect(w.status).toBe('incorrect');
-		expect(w.choices?.map((c) => c.outcome)).toEqual(['checked-wrong', 'missed']);
-	});
-
-	it('QCM : le LaTeX est transmis à validateAnswer (forme exigée)', () => {
-		const inst = instanceWith([], undefined, {
-			blanks: undefined,
-			choices: [
-				{ content: 'a' as ResolvedMarkdown, isCorrect: true },
-				{ content: 'b' as ResolvedMarkdown, isCorrect: false }
-			],
-			correctChoiceIndex: '0',
-			requiredForm: 'fraction'
-		} as Partial<QuestionInstance>);
-		const latex = ['3'];
-		const r = validateAnswer(0, inst, latex);
-		const v = validateAnswerDetailed(inst, { choiceIndexes: [0], latex });
-		expect(v.status).toBe(r.status ?? (r.isCorrect ? 'correct' : 'incorrect'));
 	});
 });
 

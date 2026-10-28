@@ -42,10 +42,11 @@ const singleBlankRow = {
 	default_display_options: null
 };
 
-// QCM (signe d'un quotient)
-const multipleChoiceRow = {
+// Case choix (signe d'un quotient) : l'ancien QCM, tel que migré en prod le 2026-10-28
+// (lot 4 du chantier figure-et-choix ; correction retirée, sans objet ici)
+const choiceCaseRow = {
 	id: '4d13f5d6-8350-4c34-96de-a5e31fb9759b',
-	type: 'multiple_choice',
+	type: 'fill_in_blanks',
 	delay: 20,
 	level: 1,
 	theme: 'Relatifs',
@@ -54,20 +55,20 @@ const multipleChoiceRow = {
 	grades: ['4'],
 	shared: null,
 	status: 'draft',
-	options: { shuffleChoices: false },
+	options: null,
 	precision: null,
 	subdomain: 'Quotient',
 	variations: [
 		{
-			choices: [{ content: 'positif' }, { content: 'négatif' }],
-			statement: 'Quel est le signe de ce quotient ?\n\n$${{expression1}}$$',
+			blanks: [{ expectedAnswer: '{{eval:(1-a*b/abs(a*b))/2}}' }],
+			statement:
+				'Quel est le signe de ce quotient ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```',
 			variables: [
 				{ name: 'a', expression: '30..99;±' },
 				{ name: 'b', expression: '30..99;±' },
-				{ name: 'expression1', expression: 'a:(b)' }
+				{ name: 'expr1', expression: 'a:(b)' }
 			],
-			conditions: ['a<=0 || b<0'],
-			correctChoiceIndex: ['{{eval:(1-a*b/abs(a*b))/2}}']
+			conditions: ['a<=0 || b<0']
 		}
 	],
 	description: null,
@@ -180,7 +181,7 @@ const courseCardRow = {
 // La page automaths caste la ligne telle quelle : on fait pareil
 export const REAL_TEMPLATES = {
 	singleBlank: singleBlankRow as unknown as QuestionTemplate,
-	multipleChoice: multipleChoiceRow as unknown as QuestionTemplate,
+	choiceCase: choiceCaseRow as unknown as QuestionTemplate,
 	multiBlank: multiBlankRow as unknown as QuestionTemplate,
 	unit: unitRow as unknown as QuestionTemplate,
 	courseCard: courseCardRow as unknown as QuestionTemplate

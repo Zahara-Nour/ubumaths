@@ -444,7 +444,7 @@ describe('R9 — sans réponse d’élève', () => {
 	});
 
 	it('QCM : bons choix « solution », les autres neutres', () => {
-		const inst = generate(REAL_TEMPLATES.multipleChoice, 1);
+		const inst = generate(REAL_TEMPLATES.choiceCase, 1);
 		const r = buildExpectedResult(inst);
 		const statuses = line(r, 'choices').choices.map((c) => c.status);
 		expect(statuses.filter((s) => s === 'solution')).toHaveLength(1);
