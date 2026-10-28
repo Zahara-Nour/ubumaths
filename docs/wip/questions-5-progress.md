@@ -5,10 +5,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 0 (niveaux) en PR._
+_Mis à jour le 2026-10-28, lot 0 (niveaux) en PR #1917._
 
 - **État** : questions du § 4 tranchées (§ 5). Lot 0 (8 modèles changent de niveau, 7 tags) : migration `20261028193700_questions_5_niveaux` + test d'intégration (19 verts, rouge vérifié sans la migration).
-- **Prochaine action** : `security-auditor`, PR, CI verte, merge, `db:migrate` depuis le dépôt principal, vérification en prod ; puis phase 0 du lot 1 (A, calcul).
+- **Prochaine action** : (`security-auditor` : aucun bloquant) CI verte de #1917, merge, `db:migrate` depuis le dépôt principal, vérification en prod ; puis phase 0 du lot 1 (A, calcul).
 - **En attente de David** : rien.
 - **Pièges en cours** : droite à placer et barres à construire mergés mais **pas en prod** (modèles qui s'en servent : brouillons jusqu'au `deploy:prod`) ; relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot ; `e`/`i` interdites dans les `eval` ; horodatages de migration pris par les sessions CE1 / CM1 / CM2 le même jour : vérifier avant d'en choisir un.
 - **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot0-niveaux`.
