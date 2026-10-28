@@ -1,0 +1,233 @@
+{
+	"title": "Problèmes avec la racine carrée",
+	"description": "Trouver le côté d'un carré connaissant son aire : 49 cm² → 7 cm ; 21 cm² → √21 cm ; 20 cm² → ≈ 4,5 cm ; carré de même aire qu'un rectangle 18 cm × 2 cm",
+	"grades": ["3"],
+	"theme": "Racines carrées",
+	"domain": "Problèmes",
+	"subdomain": "Aire et côté",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un carré a une aire de ${{eval:n*n}}~\\unit{cm^2}$. Quelle est la longueur de son côté ?\n\nCôté : $?$ cm",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Côté et aire.** L'aire d'un carré de côté $c$ est $c^2$ : le côté est le nombre positif dont le carré vaut l'aire, $c = \\sqrt{\\text{aire}}$.",
+					"$$c = \\sqrt{{{eval:n*n}}} = \\textcolor{{{color:primary.0}}}{{{n}}}~\\unit{cm} \\quad \\text{car } {{n}}^2 = {{eval:n*n}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Un carré a une aire de ${{a}}~\\unit{cm^2}$. Quelle est la longueur de son côté (valeur exacte) ?\n\nCôté : $?$ cm",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..99"
+				}
+			],
+			"conditions": ["mod(a,4) != 0", "mod(a,9) != 0", "mod(a,25) != 0", "mod(a,49) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\sqrt{ {{a}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Côté et aire.** L'aire d'un carré de côté $c$ est $c^2$ : le côté est le nombre positif dont le carré vaut l'aire, $c = \\sqrt{\\text{aire}}$.",
+					"${{a}}$ n'est pas un carré parfait : la valeur exacte du côté s'écrit avec une racine.",
+					"$$c = \\textcolor{{{color:primary.0}}}{\\sqrt{ {{a}} }}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Un carré a une aire de ${{a}}~\\unit{cm^2}$. Quelle est la longueur de son côté, arrondie au millimètre ?\n\nCôté : $?$ cm",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..99"
+				}
+			],
+			"conditions": ["floor(sqrt(a))^2 != a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*sqrt(a))/10;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Côté et aire.** L'aire d'un carré de côté $c$ est $c^2$ : le côté est le nombre positif dont le carré vaut l'aire, $c = \\sqrt{\\text{aire}}$.",
+					"$c = \\sqrt{ {{a}} }~\\unit{cm}$. À la calculatrice, $\\sqrt{ {{a}} } \\approx {{eval:floor(1000*sqrt(a))/1000;d}}$.",
+					"Au millimètre, c'est-à-dire au dixième de centimètre : $$c \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Un rectangle mesure ${{eval:m*k*k}}~\\unit{cm}$ sur ${{m}}~\\unit{cm}$. Un carré a la même aire que ce rectangle.\n\nQuelle est la longueur du côté du carré ?\n\nCôté : $?$ cm",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..6"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"conditions": ["m*k*k<=50"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Aire du rectangle.** ${{eval:m*k*k}} \\times {{m}} = {{eval:m*k*m*k}}~\\unit{cm^2}$ : c'est aussi l'aire du carré.",
+					"**Côté et aire.** L'aire d'un carré de côté $c$ est $c^2$ : le côté est le nombre positif dont le carré vaut l'aire, $c = \\sqrt{\\text{aire}}$.",
+					"$$c = \\sqrt{{{eval:m*k*m*k}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\unit{cm}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Aire 49 : côté 7",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aire ÷ 2 (24,5)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["24,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : aire ÷ 4, comme un périmètre (12,25)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["12,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Aire 21 : côté √21",
+			"variationIndex": 1,
+			"variables": {
+				"a": "21"
+			},
+			"answers": ["\\sqrt{21}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aire ÷ 2 (10,5)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "21"
+			},
+			"answers": ["10,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : valeur approchée 4,6 (valeur exacte demandée)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "21"
+			},
+			"answers": ["4,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Aire 20 : ≈ 4,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "20"
+			},
+			"answers": ["4,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4,4 (troncature)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "20"
+			},
+			"answers": ["4,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle 18 × 2 : côté 6",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"k": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : demi-périmètre (20)",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"k": "3"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : l'aire (36)",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"k": "3"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
