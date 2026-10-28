@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1888 et la publication du lot 3._
+_Mis à jour le 2026-10-28, lot 4 écrit (#1898 ouverte)._
 
 - **État** : lots 1, 2 et 3 publiés. Lot 3 « Calcul décimal » : 13 modèles publiés le 2026-10-28 (13/13 OK sur la page à cocher, `publier-lot --publier` lancé par David, MCP : 13 publiés, rangés, tagués). Page à cocher : décimaux à la française (#1888).
-- **Prochaine action** : lot 4 « Fractions » — phase 0 écrite (§ 11, 9 modèles), à faire valider ; puis worktree `ubumaths-wt-questions-6`, script `lot-6-fractions.py`.
-- **En attente de David** : validation de la phase 0 du lot 4 et ses 3 questions (§ 11 : modèles de 5e sur 6-131, addition 6-135, ranger 3 ou 5 nombres). Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **Prochaine action** : lot 4 « Fractions » — PR #1898 (fichiers) : CI, merge ; puis David `create-questions --publier` (`scripts/questions/6-fractions`), migration rangement + tags + 3 modèles de 5e passés en 6e (6-131) + contenu de e3d87166 (§ 11.1), page à cocher.
+- **En attente de David** : rien avant le merge de #1898. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
 - **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; nombres calculables de tête dans les problèmes (relecture du lot 3) ; un geste de calcul = un modèle ; `--mettre-a-jour` après le merge seulement (il lit `main`) ; page à cocher générée depuis un `main` à jour, rendu vu dans Chrome AVANT de l'annoncer ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-fractions` (#1898).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -580,3 +580,22 @@ nœud et contenu inchangés (MCP relu) : 6a16303a et 7d57fb3b (« Calculer une d
 passent en 6e (`grades` remplacé) et sont tagués 6-131 dans la migration du lot ; modèle 10 ajouté, « Additionner des
 fractions de dénominateurs différents » (6-135, Addition et Soustraction, 12 : v1 dénominateurs multiples, v2
 quelconques dans des cas simples, $\frac{5}{4} + \frac{2}{3}$) ; « Ranger » à trois nombres partout.
+
+### 11.1 Écriture (2026-10-28)
+
+- Worktree `../ubumaths-wt-questions-6`, branche `feat/questions-6-fractions`, PR #1898.
+- `docs/wip/questions/lot-6-fractions.py` → `scripts/questions/6-fractions/` (10 fichiers, 79 specs : justes, erreurs
+  typiques, 10/12 et 3/6 en ambre `reducedFractions`, 3,75 refusé quand la consigne demande une fraction, 7/4 refusé
+  au lieu de « 1 + 3/4 » dans « ranger ») ; `create-questions` en simulation : 10 verts ; `question:specs` à 300 tirages
+  par variation : 10 500 tirages réussis.
+- Retouches après aperçu : « 0 + 5/6 » (v3 des nombres mixtes, partie entière ≥ 1), résultat coloré même déjà
+  irréductible, « 1 × 12 » et « les 1/2 des élèves » (p ≥ 2 sauf « ce qui reste »), étape « 20/15 − 12/15 » ajoutée à la
+  soustraction, « au quart » (et non « à le quart ») dans le gâteau.
+- Base locale : 10 brouillons, joués dans l'aperçu admin (port 5177) : 01 case choix juste ; 06 trois cases justes et
+  correction ; 08 « 8/10 » → « forme à améliorer », **½ point** (pas un point entier) ; 09 case suivie de € juste ;
+  07 nombres mixtes justes.
+- **Défaut trouvé** : `\textcolor` hors formule s'affiche brut. Corrigé (gras) dans 01 et dans **e3d87166** (lot 3,
+  « Multiplier par 0,1 », v1, **publié** en prod avec le défaut). Modèle publié → `--mettre-a-jour` ne le touche pas :
+  migration de contenu (gabarit CE1 lot 0, § 7 de la démarche), à joindre à la migration de rangement du lot 4.
+  Hors 6e, le même motif apparaît dans des modèles de terminale (`fonctions-terminale` A-06, C-06 ;
+  `trigo-terminale` A-01) : non vérifié, à signaler.
