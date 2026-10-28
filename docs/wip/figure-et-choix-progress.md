@@ -8,19 +8,18 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1924 (lot 5b mergé)._
+_Mis à jour le 2026-10-28, lot 5a prêt, PR à ouvrir._
 
-- **État** : lots 1 à 4 EN PROD. Lot 5b MERGÉ (#1924) : outillage TinyMath retiré, `checkTemplate` /
-  `toTemplateInsertRow` / lecteur du corpus dans `src/lib/questions/review/`. Lot 5a EN COURS sur
-  `refactor/figure-et-choix-lot5` : code sans `multiple_choice` (typecheck 0), corpus / données / sources
-  `1spe-0-*` réécrits en cases choix (90 modèles, garde sans écart) ; reste : tests à porter, revue opus, PR.
-- **Prochaine action** : finir les tests de la 5a (cliquet + suites serveur / client / intégration),
-  `code-reviewer` opus + `security-auditor` (notation, API, évaluations), PR. Puis, après `deploy:prod` :
-  migration destructive (contrainte, tables `migration_*`, colonne `multiple_answers`) : s'arrêter et expliquer.
+- **État** : lots 1 à 4 EN PROD, 5b MERGÉ (#1924). Lot 5a fini sur `refactor/figure-et-choix-lot5` : code sans
+  `multiple_choice`, tests portés, suites serveur / client vertes, intégration verte hors 2 seeds (base locale
+  sans la migration `20261026170000`), revues opus + sécurité sans bloquant (§ 2.13). PR à ouvrir puis merger.
+- **Prochaine action** : PR, CI, merge. Puis, après `deploy:prod` : migration destructive (contrainte,
+  tables `migration_*`, colonne `multiple_answers`, ET `options - 'shuffleChoices'` sur 3 brouillons) :
+  s'arrêter et expliquer à David.
 - **En attente de David** : essais à l'écran (QCM migrés, CP-058) ; avis sur les séries PDF ; publication de CP-058.
-- **Pièges en cours** : `scripts/questions/1spe-0-*` réécrits sur cette branche (instantanés pris avant la
-  migration) : le chantier `questions-1spe` doit repartir de `main` après le merge. 6 modèles `cp-b2` :
-  `level` prod ≠ source (chantier « questions »).
+- **Pièges en cours** : `scripts/questions/1spe-0-*` et `logique-1spe/B-02`, `B-04` réécrits sur cette branche :
+  le chantier `questions-1spe` doit repartir de `main` après le merge. Entre `deploy:prod` et la migration,
+  les 3 brouillons à `shuffleChoices` ne se dupliquent plus (400). 6 modèles `cp-b2` : `level` prod ≠ source.
 - **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `refactor/figure-et-choix-lot5`.
 
 ---
@@ -380,3 +379,18 @@ Constat : aucune instance de QCM dans les copies enregistrées en prod (`evaluat
 - **Après `deploy:prod`** : une migration retire la valeur de `question_templates_type_check` et supprime
   `migration_tracking` (633 lignes) et `migration_edits` (632), export JSON commité dans `data/` avant ;
   destructif → arrêt et explication.
+
+### 2.13 Lot 5a : fin des tests et revues (2026-10-28)
+
+- Restes retirés : badge et filtre « QCM » de l'admin, enum OpenAPI, « Choix non mélangés » de la fiche.
+- 8 fichiers de tests client encore au format QCM portés (`CorrectionCard`, `FlashCard-resultat-attendu`,
+  `QuestionCard-allegee`, `-mots-cliquables`, `-pending`, `QuestionPreviewTabs`, `fonctions-declarees`,
+  `TestInteractive`). Piège : la suite client complète s'arrête en silence (navigateur fermé, `wrapDynamicImport`)
+  et n'exécute que 169 à 262 fichiers sur 400 → la lancer par `--shard=i/4` et vérifier « 100 (100) ».
+- `security-auditor` : aucun bloquant. `code-reviewer` opus : prêt pour PR. Suites données :
+  - 3 brouillons en prod (`6c3ee9e6`, `55341e85`, `f98164b1`, logique 1re spé) ont `options.shuffleChoices:
+false` sans bloc ```choix : sources nettoyées ici ; en base, à retirer dans la migration d'après deploy.
+  - Champ QCM reçu à `null` : admis (éditeur ouvert avant) mais n'est plus écrit (`.transform(() => undefined)`).
+- Laissés (mineurs) : `shared.choices: null` refusé là où la variation l'admet ; `answerValueSchema` des tests
+  accepte encore `number` ; aperçu `/dev/apercu-question` montre `$$0;2$$` pour une case choix ;
+  `multiple_answers` reste dans les types de réponse (colonne encore là).
