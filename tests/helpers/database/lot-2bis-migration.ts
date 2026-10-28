@@ -518,7 +518,8 @@ export function decrireLotModifier(lot: LotModifier): void {
 			}
 		}
 
-		it('TOUT ou RIEN : un modèle manquant fait échouer la migration', async () => {
+		// Lot d'un seul modèle : le retirer donne la base locale (0 présent), que la migration tolère.
+		it.runIf(n > 1)('TOUT ou RIEN : un modèle manquant fait échouer la migration', async () => {
 			await echoue(
 				() => pg.query('delete from public.question_templates where id = $1', [ids[0]]),
 				new RegExp(`identifiants partiellement présents : ${n - 1} modèle\\(s\\) sur ${n}`)
