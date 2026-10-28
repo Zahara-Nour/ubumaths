@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 1 écrit (PR des fichiers à merger)._
+_Mis à jour le 2026-10-28, après #1928 (fichiers du lot 1 mergés)._
 
 - **État** : lot 1 (5 modèles, § 8) écrit dans `scripts/questions/3-lot-1/` (`lot-3-1.py`) ; simulation verte
   (specs, tirages), essai en base locale, affichage vérifié dans l'aperçu admin.
-- **Prochaine action** : merger la PR des fichiers ; puis **David** lance
+- **Prochaine action** : **David** lance
   `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-1 --publier` (brouillons en prod) ; relever
   les `id` ; migration nœud + tag des 5 modèles + rangement de 90dca27a / acbd2280 (§ 8.2).
-- **En attente de David** : le `--publier` en prod, après le merge.
+- **En attente de David** : le `--publier` en prod (#1928 mergée).
 - **Pièges en cours** : horodatages de migration pris par d'autres sessions (vérifier `schema_migrations` en prod
   ET `origin/main`) ; `db:migrate` bloqué si une migration plus ancienne n'est pas jouée (`--include-all` =
   David) ; x² = a : `shared.blankDefaults.answerKind = 'intervalles'` obligatoire ; § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : `../ubumaths-wt-questions-3-lot-1` · `feat/questions-3-lot-1`.
+- **Worktree / branche** : aucun (lot 1 fichiers retiré) ; la migration aura le sien.
 
 ## 1. Relevé (prod, 2026-10-28)
 
