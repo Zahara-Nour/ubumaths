@@ -192,7 +192,7 @@ describe('FillBlanksInput — étiquettes à ranger', () => {
 				)
 			}
 		],
-		grades: ['6e'],
+		grades: ['6'],
 		theme: 'Test',
 		domain: 'Test',
 		level: 1
