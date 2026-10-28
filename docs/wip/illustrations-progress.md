@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après le prompt de Pile (pas de PR : chantier 100 % doc pour l'instant)._
+_Mis à jour le 2026-10-28, après le prompt de Cotice (pas de PR : chantier 100 % doc pour l'instant)._
 
-- **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu, du Capitaine Bordure, de Bougrelas, de Conscience, du Czar Alexis, de Monsieur Prudhomme du Flegmatique (Tristan Bernard) du Professeur Achras du Docteur Faustroll de Bosse-de-Nage et du Cheval à Phynances validés (casting et quatre gouverneurs complets) ; Palotins redessinés au trait Steinlen pour le lore (SVG de l'appli inchangés) : Giron et Pile validés et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
-- **Prochaine action** : ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` (David doit les fournir) ; puis prompts des autres personnages (Palotins : Cotice, Merdranpo, Mousched-Gogh, Quatrezoneilles, à décider : les trois déjà dessinés gardent leur style ?), un par un, chacun validé par David.
-- **En attente de David** : les quatorze images de référence · caractère de Pile : « fourbe » (Compendium) ou « rêveur philosophe » (`buddy-palotins.md`) ? · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
+- **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu, du Capitaine Bordure, de Bougrelas, de Conscience, du Czar Alexis, de Monsieur Prudhomme du Flegmatique (Tristan Bernard) du Professeur Achras du Docteur Faustroll de Bosse-de-Nage et du Cheval à Phynances validés (casting et quatre gouverneurs complets) ; Palotins redessinés au trait Steinlen pour le lore (SVG de l'appli inchangés) : Giron, Pile et Cotice validés et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
+- **Prochaine action** : ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` (David doit les fournir) ; puis prompts des autres personnages (Palotins sans visuel : Merdranpo, Mousched-Gogh, Quatrezoneilles, à décider : les trois déjà dessinés gardent leur style ?), un par un, chacun validé par David.
+- **En attente de David** : les quinze images de référence · caractère de Pile : « fourbe » (Compendium) ou « rêveur philosophe » (`buddy-palotins.md`) ? · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
 - **Pièges en cours** : Ubu sans chapeau pointu ni longue robe blanche (aucune ressemblance avec une cagoule) ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée (Nano Banana refuse : personnage inventé à la place). Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 

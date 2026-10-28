@@ -586,6 +586,7 @@ Les Palotins viennent de **deux pièces** : Giron, Pile et Cotice sont ceux d'_U
 
 - **Giron** : ado trapu et sportif, penché en avant, prêt à foncer, poing levé ; visage rond, joues roses, nez rond, grand sourire confiant ; bonnet pointu mi-orange mi-encre à pompon blanc, tunique orange `#E0612F` à col blanc, écusson gironné or et encre, ceinture brune, culotte encre, bottes courtes brunes. Prompt d'illustration : Section XI, « Illustrations ».
 - **Pile** : grand et mince, silhouette en triangle pointe en bas comme sa pièce héraldique (larges épaules, jambes fines, petits pieds pointus) ; visage allongé au menton pointu, nez en triangle, moustache en guidon, regard rêveur de côté, demi-sourire énigmatique ; pose nonchalante de prestidigitateur, une carte levée entre deux doigts, un éventail de cartes qui coule de l'autre main (cartes blanches à étoile d'or, sans chiffres) ; haut-de-forme encre à bandeau marqué d'un triangle bleu pointe en bas, habit à queue bleu `#2F62B0`, plastron en V doré à col blanc, pantalon encre. ⚠️ Caractère à trancher : « fourbe, opportuniste » ici, « rêveur philosophe » dans `docs/systeme/buddy-palotins.md` ; l'image mêle les deux (rêveur un peu roublard). Prompt d'illustration : Section XI, « Illustrations ».
+- **Cotice** : taille moyenne, tout en rondeur, entre le trapu Giron et le mince Pile ; tout le corps penché en diagonale vers le spectateur, dans le sens de son écharpe, comme pour confier un secret ; visage rond, joues roses, grosses lunettes rondes, yeux pétillants, bouche ouverte en pleine explication ; livre ouvert dans une main (reliure pourpre, pages à lignes ondulées sans lettres), index de l'autre pointé sur la page ; béret encre barré d'une bande verte en diagonale, plume d'oie blanche piquée dedans, tunique verte à col blanc, large écharpe dorée en diagonale (la cotice héraldique), culotte encre, bas et chaussons pourpres (sa couleur d'identité). Prompt d'illustration : Section XI, « Illustrations ».
 
 ### Personnages mineurs et figurants
 
@@ -2218,6 +2219,24 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image, plus Pile's own royal blue (#2F62B0) for the tailcoat and the hat triangle: navy ink for the outlines, the hat, the moustache and the trousers, marigold yellow for the shirt front and the stars, white for the collar and the cards, a soft pink for the cheeks.
 
 Composition: Pile standing, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no numbers, no signature.
+```
+
+#### Prompt de référence — Cotice (Palotin) 🟡
+
+Validé par David le 2026-10-28 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png`, l'image de référence de Père Ubu, la capture `palotins-appli/cotice.png` et les Giron et Pile Steinlen, pour l'âge et l'échelle). Toutes ses couleurs sont au nuancier ; le pourpre est sa couleur d'identité.
+
+```text
+Draw Cotice, one of the Palotins (Père Ubu's henchmen from Alfred Jarry's play "Ubu Roi"), as a full-body character portrait in exactly the same drawing style as the attached Père Ubu image, keeping the face, beret, glasses, colors and coat of arms of the attached Cotice image, and the same age and scale as the attached Giron and Pile.
+
+Character: a young Palotin of medium height with a soft, rounded build, between stocky Giron and slim Pile; his whole body leans diagonally toward the viewer, in the same direction as his diagonal sash, as if sharing a secret. A round face with rosy cheeks, big round glasses, sparkling eyes, mouth open in the middle of an enthusiastic explanation. He holds an open book in one hand and points at a page with the other index finger. He is warm, chatty, encouraging and a little too talkative: the friendly know-it-all buddy, funny, never scary, for students aged 11 to 17.
+
+Clothing: a navy ink beret crossed by a diagonal emerald green band, with a white goose-quill feather tucked into it; an emerald green tunic with a white collar; a broad marigold yellow sash worn diagonally across the chest, like the heraldic "cotice"; navy ink breeches, deep crimson stockings and soft crimson slippers. The book has a deep crimson binding and white pages with only wavy lines, no letters.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines, the beret, the glasses and the breeches, emerald green for the tunic and the beret band, marigold yellow for the sash, deep crimson for the stockings, the slippers and the book binding, white for the feather, the collar and the pages, a soft pink for the cheeks.
+
+Composition: Cotice standing, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
 ```
 
 ---
