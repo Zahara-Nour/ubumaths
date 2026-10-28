@@ -144,17 +144,29 @@ def surligne(nom, expression, a, b, large, gauche_ouverte=None, droite_ouverte=N
     return nom + '(x) = ' + expression + ' sur ' + og + a + ' ; ' + b + fd + '   vert'
 
 
-def surlignes_entre_ou_dehors(expr, a, b, gauche, droite):
+def surlignes_entre_ou_dehors(expr, a, b, gauche, droite, noms='hj'):
     """Deux lignes h, j selon `s` : entre a et b (s = 0, 1), dehors (s = 2, 3).
 
     `gauche`, `droite` : bornes du domaine (fermées) ; `-10`, `10` = hors fenêtre, sans disque.
+    `expr` = '0' : l'ensemble des solutions repassé sur l'axe des abscisses (noms 'tu').
     """
-    h = [surligne('h', expr, a, b, False), surligne('h', expr, a, b, True),
-         surligne('h', expr, gauche, a, False, '['), surligne('h', expr, gauche, a, True, '[')]
-    j = [surligne('j', expr, a, b, False), surligne('j', expr, a, b, True),
-         surligne('j', expr, b, droite, False, None, ']'),
-         surligne('j', expr, b, droite, True, None, ']')]
+    n1, n2 = noms
+    h = [surligne(n1, expr, a, b, False), surligne(n1, expr, a, b, True),
+         surligne(n1, expr, gauche, a, False, '['), surligne(n1, expr, gauche, a, True, '[')]
+    j = [surligne(n2, expr, a, b, False), surligne(n2, expr, a, b, True),
+         surligne(n2, expr, b, droite, False, None, ']'),
+         surligne(n2, expr, b, droite, True, None, ']')]
     return h, j
+
+
+def sur_axe(nom, x, y):
+    """Point nom'(x ; 0) de l'axe des abscisses, omis quand y = 0 (il serait confondu avec le
+    point de la courbe) ; `y` = nom d'une variable."""
+    return '{{if:' + y + '==0| |, ' + nom + "'(" + x + ' ; 0)}}'
+
+
+AXE = ' Les solutions sont marquées sur l\'axe des abscisses.'
+AXE_VERT = ' L\'ensemble des solutions est repassé en vert sur l\'axe des abscisses.'
 
 
 MODELES = []
@@ -196,10 +208,11 @@ ANT_DEUX = variation(
      courbe(X_PARABOLE, Y_PARABOLE,
             ['f(x) = ' + F_PARABOLE + ' sur ' + DOM_PARABOLE + '   bleu   nom=C_f',
              'g(x) = {{k}}   rouge   pointillé'],
-            'Courbe de f et droite horizontale y = {{k}}, qui la coupe en deux points A et B.',
-            'A({{p}} ; {{k}}), B({{q}} ; {{k}})'),
+            'Courbe de f et droite horizontale y = {{k}}, qui la coupe en deux points A et B.' + AXE,
+            'A({{p}} ; {{k}}), B({{q}} ; {{k}})' + sur_axe('A', '{{p}}', 'k')
+            + sur_axe('B', '{{q}}', 'k')),
      'La droite coupe $\\mathcal{C}_f$ en $A({{p}}\\,;{{k}})$ et $B({{q}}\\,;{{k}})$ : ${{k}}$ a'
-     ' deux antécédents. ' + conclusion('\\{ {{p}} ; {{q}} \\}')])
+     ' deux antécédents, leurs abscisses, lues sur l\'axe des abscisses. ' + conclusion('\\{ {{p}} ; {{q}} \\}')])
 
 # Cubique : f = k + c(x − p)(x − q)(x − r), définie sur [p − 0,5 ; r + 0,5] ; trois antécédents.
 F_CUBIQUE = '{{k}}+({{c}})*(x-({{p}}))*(x-({{q}}))*(x-({{r}}))'
@@ -220,9 +233,12 @@ ANT_TROIS = variation(
      courbe(X_CUBIQUE, Y_CUBIQUE,
             ['f(x) = ' + F_CUBIQUE + ' sur ' + DOM_CUBIQUE + '   bleu   nom=C_f',
              'g(x) = {{k}}   rouge   pointillé'],
-            'Courbe de f et droite horizontale y = {{k}}, qui la coupe en trois points A, B et C.',
-            'A({{p}} ; {{k}}), B({{q}} ; {{k}}), C({{r}} ; {{k}})'),
-     'La droite coupe $\\mathcal{C}_f$ en trois points : ${{k}}$ a trois antécédents. '
+            'Courbe de f et droite horizontale y = {{k}}, qui la coupe en trois points A, B et C.'
+            + AXE,
+            'A({{p}} ; {{k}}), B({{q}} ; {{k}}), C({{r}} ; {{k}})' + sur_axe('A', '{{p}}', 'k')
+            + sur_axe('B', '{{q}}', 'k') + sur_axe('C', '{{r}}', 'k')),
+     'La droite coupe $\\mathcal{C}_f$ en trois points : ${{k}}$ a trois antécédents, leurs'
+     ' abscisses, lues sur l\'axe des abscisses. '
      + conclusion('\\{ {{p}} ; {{q}} ; {{r}} \\}')])
 
 # Sommet : f = m + c(x − a)², définie sur [a − 3 ; a + 3] ; k = m (un antécédent) ou k du
@@ -245,7 +261,8 @@ ANT_SOMMET = variation(
      courbe(X_SOMMET, Y_SOMMET,
             ['f(x) = ' + F_SOMMET + ' sur ' + DOM_SOMMET + '   bleu   nom=C_f',
              'g(x) = {{k}}   rouge   pointillé'],
-            'Courbe de f et droite horizontale y = {{k}}.'),
+            'Courbe de f et droite horizontale y = {{k}}.',
+            selon('t', ['S({{a}} ; {{m}})' + sur_axe('S', '{{a}}', 'm'), ' '])),
      selon('t', ['La droite touche $\\mathcal{C}_f$ en un seul point, le sommet $({{a}}\\,;{{m}})$ :'
                  ' ${{k}}$ a un seul antécédent. ' + conclusion('\\{ {{a}} \\}'),
                  'La droite est {{if:c>0|sous|au-dessus de}} la courbe et ne la coupe pas : ${{k}}$'
@@ -282,7 +299,8 @@ GA = '(a)*((p)-1)+(b)'
 GB = '(a)*((q)+1)+(b)'
 Y_DEUX = ('{{eval:min(0,' + GA + ',' + GB + ')-5}} ; {{eval:max(0,' + GA + ',' + GB + ')+5}}')
 VAR_DEUX = [var('p', '-4..0'), var('d', '2..4'), var('q', 'eval:(p)+(d)'), var('a', '1|-1'),
-            var('b', '-2..2'), var('c', '1|-1')]
+            var('b', '-2..2'), var('c', '1|-1'), var('e', 'eval:(a)*(p)+(b)'),
+            var('w', 'eval:(a)*(q)+(b)')]
 DEUX_COURBES = ['f(x) = ' + F_DEUX + ' sur ' + DOM_DEUX + '   bleu   nom=C_f',
                 'g(x) = ' + G_AFFINE + ' sur ' + DOM_DEUX + '   rouge   nom=C_g']
 DEUX_DESC = 'Une courbe C_f en forme de parabole et une droite C_g, qui se coupent en deux points.'
@@ -298,11 +316,12 @@ EGAL_DEUX = variation(
     '\\{ {{p}} ; {{q}} \\}',
     ['Les solutions de $f(x)=g(x)$ sont les **abscisses** des points d\'intersection de'
      ' $\\mathcal{C}_f$ et $\\mathcal{C}_g$.',
-     courbe(X_PARABOLE, Y_DEUX, DEUX_COURBES, DEUX_DESC, POINTS_DEUX),
+     courbe(X_PARABOLE, Y_DEUX, DEUX_COURBES, DEUX_DESC + AXE,
+            POINTS_DEUX + sur_axe('A', '{{p}}', 'e') + sur_axe('B', '{{q}}', 'w')),
      'Les courbes se coupent en $A$ et $B$, d\'abscisses ${{p}}$ et ${{q}}$. '
      + conclusion('\\{ {{p}} ; {{q}} \\}')])
 
-SP_EG = {'p': -2, 'd': 3, 'q': 1, 'a': 1, 'b': 1, 'c': 1}
+SP_EG = {'p': -2, 'd': 3, 'q': 1, 'a': 1, 'b': 1, 'c': 1, 'e': -1, 'w': 2}
 MODELES.append(modele(
     '02-equation-f-egal-g-graphique', 'Résoudre graphiquement une équation f(x) = g(x)',
     'Solutions de f(x) = g(x) : abscisses des points d\'intersection d\'une parabole et d\'une'
@@ -322,10 +341,12 @@ def ineg_deux(c):
     gauche, droite = '{{eval:(p)-1}}', '{{eval:(q)+1}}'
     ensembles = entre_ou_dehors(a, b, gauche, droite)
     h, j = surlignes_entre_ou_dehors(F_DEUX.replace('{{c}}', str(c)), a, b, gauche, droite)
+    t, u = surlignes_entre_ou_dehors('0', a, b, gauche, droite, 'tu')
     if c < 0:
         ensembles = ensembles[2:] + ensembles[:2]
         h, j = h[2:] + h[:2], j[2:] + j[:2]
-    lignes = [selon('s', h), selon('s', j)]
+        t, u = t[2:] + t[:2], u[2:] + u[:2]
+    lignes = [selon('s', h), selon('s', j), selon('s', t), selon('s', u)]
     courbes = [l.replace('{{c}}', str(c)) for l in DEUX_COURBES]
     return variation(
         INTRO_DEUX.replace('{{c}}', str(c)) + courbe(X_PARABOLE, Y_DEUX, courbes, DEUX_DESC)
@@ -335,16 +356,16 @@ def ineg_deux(c):
         ['On cherche les abscisses des points de $\\mathcal{C}_f$ situés ' + selon('s', POSITION)
          + ' $\\mathcal{C}_g$ ; ' + selon('s', BORNES) + '.',
          courbe(X_PARABOLE, Y_DEUX, courbes + lignes, DEUX_DESC + ' La partie cherchée de C_f est'
-                ' en vert.', POINTS_DEUX),
+                ' en vert.' + AXE_VERT, POINTS_DEUX),
          'Les courbes se coupent en $x={{p}}$ et $x={{q}}$ ; $f$ est définie sur'
          ' $\\left[{{eval:(p)-1}}\\,;{{eval:(q)+1}}\\right]$. '
          + conclusion(selon('s', [affiche(x) for x in ensembles]))])
 
 
 # Pour < et c = 1 : ]p ; q[ ; pour > et c = 1 : [p − 1 ; p[ ∪ ]q ; q + 1]
-SP_IP = {'p': -2, 'd': 3, 'q': 1, 'a': 1, 'b': 1, 's': 0}
-SP_IPS = {'p': -2, 'd': 3, 'q': 1, 'a': 1, 'b': 1, 's': 3}
-SP_IN = {'p': -2, 'd': 3, 'q': 1, 'a': -1, 'b': 0, 's': 1}
+SP_IP = {'p': -2, 'd': 3, 'q': 1, 'a': 1, 'b': 1, 'e': -1, 'w': 2, 's': 0}
+SP_IPS = {'p': -2, 'd': 3, 'q': 1, 'a': 1, 'b': 1, 'e': -1, 'w': 2, 's': 3}
+SP_IN = {'p': -2, 'd': 3, 'q': 1, 'a': -1, 'b': 0, 'e': 2, 'w': -1, 's': 1}
 MODELES.append(modele(
     '03-inequation-f-inferieur-g-graphique', 'Résoudre graphiquement une inéquation f(x) < g(x)',
     'Solutions de f(x) < g(x) lues sur une parabole et une droite : entre les points'
@@ -379,6 +400,7 @@ def ineg_affine(pentes, croissante):
     h_droite = [surligne('h', expr, x0, '10', False, None, ']'),
                 surligne('h', expr, x0, '10', True, None, ']')]
     h = h_gauche + h_droite if croissante else h_droite + h_gauche
+    t = [l.replace('h(x) = ' + expr, 't(x) = 0') for l in h]
     y = ('{{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}')
     droite_f = 'f(x) = ' + expr + '   bleu   nom=\\mathcal{D}'
     desc = 'Droite D représentant une fonction affine f.'
@@ -392,8 +414,10 @@ def ineg_affine(pentes, croissante):
         ['On trace la droite horizontale d\'équation $y={{k}}$ ; elle coupe $\\mathcal{D}$ au point'
          ' $A$ d\'abscisse ${{z}}$. On cherche les abscisses des points de $\\mathcal{D}$ situés '
          + selon('s', POSITION) + ' cette droite.',
-         courbe('-5 ; 5', y, [droite_f, 'g(x) = {{k}}   rouge   pointillé', selon('s', h)],
-                desc + ' Droite y = {{k}} en pointillé, partie cherchée en vert.', 'A({{z}} ; {{k}})'),
+         courbe('-5 ; 5', y, [droite_f, 'g(x) = {{k}}   rouge   pointillé', selon('s', h),
+                              selon('s', t)],
+                desc + ' Droite y = {{k}} en pointillé, partie cherchée en vert.' + AXE_VERT,
+                'A({{z}} ; {{k}})'),
          'La fonction $f$ est ' + ('croissante' if croissante else 'décroissante') + ' : la partie'
          ' cherchée est à ' + selon('s', ['gauche', 'gauche', 'droite', 'droite'] if croissante
                                      else ['droite', 'droite', 'gauche', 'gauche'])
@@ -437,8 +461,9 @@ def equation_reference(intro, expr_courbe, expr_tex, x, y, nom_f, valeurs_k, rac
          ' **abscisses** des points où elle coupe $\\mathcal{C}_f$.',
          courbe(x, y, ['f(x) = ' + expr_courbe + '   bleu   nom=C_f',
                        'g(x) = {{k}}   rouge   pointillé'],
-                'Courbe de la fonction ' + nom_f + ' et droite y = {{k}}, qui la coupe en A et B.',
-                'A({{eval:-(r)}} ; {{k}}), B({{r}} ; {{k}})'),
+                'Courbe de la fonction ' + nom_f + ' et droite y = {{k}}, qui la coupe en A et B.'
+                + AXE,
+                'A({{eval:-(r)}} ; {{k}}), B({{r}} ; {{k}}), A\'({{eval:-(r)}} ; 0), B\'({{r}} ; 0)'),
          'La droite coupe la courbe en deux points, d\'abscisses $-{{r}}$ et ${{r}}$. '
          + conclusion('\\{ -{{r}} ; {{r}} \\}')])
     cas = variation(
@@ -450,7 +475,8 @@ def equation_reference(intro, expr_courbe, expr_tex, x, y, nom_f, valeurs_k, rac
          courbe(x, '-5 ; ' + y.split(';')[1].strip(),
                 ['f(x) = ' + expr_courbe + '   bleu   nom=C_f',
                  'g(x) = {{k}}   rouge   pointillé'],
-                'Courbe de la fonction ' + nom_f + ' et droite y = {{k}}.'),
+                'Courbe de la fonction ' + nom_f + ' et droite y = {{k}}.',
+                selon('t', ['O(0 ; 0)', ' '])),
          selon('t', ['La droite $y=0$ (l\'axe des abscisses) touche la courbe en un seul point,'
                      ' l\'origine. ' + conclusion('\\{ 0 \\}'),
                      'La droite est sous la courbe et ne la coupe pas : ' + raison + ' '
@@ -462,7 +488,8 @@ def inequation_reference(intro, expr_courbe, expr_tex, x, y, nom_f, valeurs_k, r
     """Variation 0 : k > 0, entre −r et r ou en dehors ; variation 1 : k < 0 (∅ ou ℝ)."""
     ensembles = entre_ou_dehors('-{{r}}', '{{r}}', '-\\infty', '+\\infty')
     h, j = surlignes_entre_ou_dehors(expr_courbe, '-{{r}}', '{{r}}', '-10', '10')
-    lignes = [selon('s', h), selon('s', j)]
+    t, u = surlignes_entre_ou_dehors('0', '-{{r}}', '{{r}}', '-10', '10', 'tu')
+    lignes = [selon('s', h), selon('s', j), selon('s', t), selon('s', u)]
     positif = variation(
         reference(intro, expr_courbe, x, y, nom_f)
         + '\n\nRésous graphiquement l\'inéquation $' + expr_tex + signe() + '{{k}}$.' + S_EGAL,
@@ -474,7 +501,7 @@ def inequation_reference(intro, expr_courbe, expr_tex, x, y, nom_f, valeurs_k, r
          courbe(x, y, ['f(x) = ' + expr_courbe + '   bleu   nom=C_f',
                        'g(x) = {{k}}   rouge   pointillé'] + lignes,
                 'Courbe de la fonction ' + nom_f + ', droite y = {{k}} en pointillé, partie'
-                ' cherchée en vert.',
+                ' cherchée en vert.' + AXE_VERT,
                 'A({{eval:-(r)}} ; {{k}}), B({{r}} ; {{k}})'),
          conclusion(selon('s', [affiche(x) for x in ensembles]))])
     negatif = variation(
@@ -486,8 +513,10 @@ def inequation_reference(intro, expr_courbe, expr_tex, x, y, nom_f, valeurs_k, r
          ' courbe, car ' + raison,
          courbe(x, '-5 ; ' + y.split(';')[1].strip(),
                 ['f(x) = ' + expr_courbe + '   bleu   nom=C_f',
-                 'g(x) = {{k}}   rouge   pointillé'],
-                'Courbe de la fonction ' + nom_f + ' et droite y = {{k}}, sous la courbe.'),
+                 'g(x) = {{k}}   rouge   pointillé',
+                 selon('s', [' ', ' ', 't(x) = 0   vert', 't(x) = 0   vert'])],
+                'Courbe de la fonction ' + nom_f + ' et droite y = {{k}}, sous la courbe.'
+                + selon('s', ['', '', AXE_VERT, AXE_VERT])),
          selon('s', ['Aucun point de la courbe n\'est sous la droite. ' + conclusion('\\varnothing'),
                      'Aucun point de la courbe n\'est sous la droite. ' + conclusion('\\varnothing'),
                      'Tous les points de la courbe sont au-dessus de la droite. '
