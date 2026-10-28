@@ -6,14 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1887._
+_Mis à jour le 2026-10-28, lot 2 publié._
 
-- **État** : lot 2 « équations et inéquations » (§ 8 à § 10) : 10 brouillons en prod, rangés et tagués (#1882),
-  relus : **10 OK sur 10** (page à cocher, aucun commentaire). `publier-lot.ts` en simulation : 10 passent.
-  #1877 (√12 = ½) est en prod (v0.52.0).
-- **Prochaine action** : **David** lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/2de-equations --publier` ;
-  vérifier `published` en base (MCP), puis choisir le lot 3 (§ 4 : points restants).
-- **En attente de David** : le `--publier` ci-dessus.
+- **État** : lots 1 (corrections) et 2 (équations et inéquations, 10 modèles) **publiés** ; lot 2 vérifié en
+  prod (MCP : 10 `published`, 10 rangés, 10 tags).
+- **Prochaine action** : lot 2 bis « lecture graphique » (§ 4 : 492, 338, 453, 456, 340, 459, 341, 462, 342,
+  465, 343, 468, 344, 471 ; outil `courbe`) — relevé des points et du bloc `courbe`, puis phase 0 à David.
+- **En attente de David** : son go pour le lot 2 bis.
 - **Pièges en cours** : la garde de doc lit `Doc-inchangée:` dans un COMMIT, pas dans la description de PR ;
   test `scripts/corrections` « cas rare » qui dépasse 5 s en CI de temps en temps (relancer) ; QCM en réécriture.
 - **Worktree / branche** : aucun.
@@ -339,3 +338,42 @@ produit nul en base. Phase 0 validée telle que proposée (mes 4 recommandations
   Unicode (MathML de Chrome sans `double-struck`). Page republiée, verdicts gardés.
 - Relecture : 10 OK sur 10 (verdicts comptés le 2026-10-28) ; `publier-lot.ts` en simulation : 10 brouillons
   passent ; #1877 vérifié sur `production` (v0.52.0).
+- **Publié** par David le 2026-10-28 (`publier-lot.ts --publier`, 10/10) ; MCP : 10 `published`, rangés, tagués.
+
+## 11. Lot 2 bis « lecture graphique » : relevé et phase 0 (proposée le 2026-10-28, à valider)
+
+**Relevé MCP (prod, 2026-10-28)** : aucun modèle sur les 14 points. Aucun modèle de lecture graphique au
+collège ni en 2de ; patron en 1re/Tle : 68db64b0 « Lire une image sur une courbe » (T_SPE, case + ` ```courbe `,
+corrigé avec `points:` sur la courbe). Catégories prises en Fonctions : « Fonctions affines » (Apprivoiser
+1-7, Equations 1-2, Variations-Signe 1-3), « Valeur absolue » (Apprivoiser 1-8, Equations 1-2) ; rien
+d'autre.
+
+Nœuds des points : 2-492 → Généralités › images et antécédents ; 2-338, 2-453 → Généralités › équations et
+inéquations f(x) = k ; 2-456 → Fonctions affines › équations ; 2-340, 2-459 → Fonction valeur absolue ›
+équations et inéquations ; 2-341/462 carré, 2-342/465 inverse, 2-343/468 racine carrée, 2-344/471 cube →
+nœud « x… = k, x… < k » de chaque fonction.
+
+Bornes : courbe fournie par l'énoncé (l2-2, vaut aussi pour √x et x³) ; |x| = k, |x| < k seulement (l2-1) ;
+les quatre sens (l2-3) ; 2-338/453 graphiquement seulement.
+
+**Phase 0 proposée** — un modèle par point (14), niveau `['2']`, brouillons :
+
+- **Réponse** : une case `S = ?`, `answerKind: 'intervalles'` (comme le lot 2), réunion `∪` comprise ;
+  2-492 : « les antécédents de k sont… » en ensemble `{−2 ; 1}`.
+- **Lisibilité** : solutions sur des nœuds de la grille (entiers ; demis pour 1/x avec grille 0,5).
+  x² = k : k ∈ {1, 4, 9} ; √x = k : k ∈ {1, 2, 3} ; x³ = k : k ∈ {−8, −1, 1, 8} ; 1/x = k : k ∈ {±½, ±1,
+  ±2} ; |x| = k : k ∈ {1…4}. Une variation « aucune solution » par équation (k < 0 pour x², |x|, √x ;
+  k = 0 pour 1/x) et k = 0 pour x², |x| ({0}).
+- **Généralités** (2-492, 2-338, 2-453) : courbes sur [a ; b] fermé, construites pour tomber sur la grille
+  (f = g + c(x − p)(x − q) avec g affine ; antécédents : f = k + c(x − p)(x − q)(x − r)) ; bornes du
+  domaine fermées.
+- **Corrigé** : même courbe + droite y = k (ou la seconde courbe) en pointillé, points d'intersection
+  nommés ; pour une inéquation, la partie de la courbe solution repassée en couleur (`sur [..]`).
+- **Erreurs typiques en specs** : crochet du mauvais côté, x lu sur l'axe des y, oubli de la solution
+  négative (x² = 4), √x < 2 → ]−∞ ; 4[ au lieu de [0 ; 4[, 0 inclus pour 1/x, « 3 » sans accolades.
+- **Catégories** (Fonctions › domaine › « Lecture graphique ») : Généralités 1 · 492, 2 · 338, 3 · 453 ;
+  Fonctions affines 1 · 456 ; Valeur absolue 1 · 340, 2 · 459 ; Fonction carré, Fonction inverse,
+  Fonction racine carrée, Fonction cube : 1 · équation, 2 · inéquation.
+- **Découpage** : deux PR de 8 et 6 modèles (A : généralités, affine, |x|, carré ; B : inverse, racine,
+  cube), chacune avec sa migration nœud + tag.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).

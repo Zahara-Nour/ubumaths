@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1886 (et #1891 ouverte)._
+_Mis à jour le 2026-10-28, après publication du lot 2._
 
-- **État** : lot 2 (numération, 7 modèles) en prod en brouillon, rangé et tagué (#1886, `db:migrate` fait, vérifié en prod) ; page à cocher https://claude.ai/artifact/EkqSwsNAs54bDrNxvmCQE3 relue par David : **7/7 OK**.
-- **Prochaine action** : (1) #1891 (fix `titresDuLot` : titres à antislash entre guillemets PostgREST) : un check « Client Tests (browser, shard 1/2) » rouge au 1er run, sans lien apparent (le diff ne touche que `scripts/`) → lire le log, relancer si flaky, merger au vert ; worktree `ubumaths-wt-questions-ce1` (branche `fix/lot-questions-titres-antislash`). (2) Niveau de c4d4bf70 (« Le nombre qui suit… ») : Ecriture 3 → 10 (3 pris par « Parité », publié ; règle du lot 1 : premier niveau libre) → migration niveau + fichier `ce1-2/03` + `lot-ce1-2.py`, gabarit `20261027160000_questions_ce1_lot1_niveaux.sql`. (3) `publier-lot` en simulation, puis David publie.
-- **En attente de David** : rien. Question d'accès de la migration de niveau tranchée par David le 2026-10-28 : **personne** ne gagne ni ne perd d'accès.
+- **État** : lot 2 (numération, 7 modèles) CLOS : **publié** par David le 2026-10-28 (`publier-lot --publier`, 7/7), statuts et niveaux vérifiés en prod (MCP). Lots 0, 1, 2 clos.
+- **Prochaine action** : lot 2 bis, ordinaux (CE1-011 à 015, § 7 point 1) : relevé de l'existant, phase 0 avec David — dont la forme des deux QCM du CP (rang en lettres, suites de formes). Puis lot 3 fractions (§ 4 bis, point 6).
+- **En attente de David** : rien avant la phase 0 du lot 2 bis.
 - **Pièges en cours** : relever les niveaux pris par TOUS les publiés de la catégorie (l'Ecriture 3 a été manqué) ; `subdomain` « Ecriture » sans accent ; worktree neuf → `pnpm exec svelte-kit sync`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `fix/lot-questions-titres-antislash` (#1891).
+- **Worktree / branche** : aucun (worktree retiré, branche supprimée après #1895).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 

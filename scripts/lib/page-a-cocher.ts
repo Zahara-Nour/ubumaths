@@ -44,6 +44,7 @@ import {
 } from '../../src/lib/ubumark/types/courbe';
 import { buildCourbeScene, type ScenePoint } from '../../src/lib/ubumark/utils/courbe-scene';
 import { namedColorScreen, namedColorTable } from '../../src/lib/theme/named-colors';
+import { toFrenchDecimal } from '../../src/lib/utils/french-math';
 import type { ModeleFichier } from './lot-questions';
 
 // Types
@@ -535,6 +536,22 @@ export function dessinerBlocs(markdown: string): {
 /** Case de texte `{{blank:N}}` → la même case que dans une formule, que le gabarit dessine */
 const casesDeTexte = (md: string) => md.replace(/\{\{blank:(\d+)\}\}/g, '$\\placeholder[$1]{}$');
 
+/** Nombres des formules à la française (`7{,}2`, espaces fines), comme le rendu de l'appli
+ *  (`toLocaleDecimal` de components/markdown/utils/math-utils.ts) ; les blocs dessinés n'y passent pas */
+const aLaFrancaise = (md: string) =>
+	md
+		.split(/(@@HTML@@[^\n]*)/)
+		.map((p) =>
+			p.startsWith('@@HTML@@')
+				? p
+				: p.replace(/\$\$([\s\S]*?)\$\$|\$([^$]*)\$/g, (_, bloc?: string, ligne?: string) =>
+						bloc === undefined
+							? `$${toFrenchDecimal(ligne ?? '')}$`
+							: `$$${toFrenchDecimal(bloc)}$$`
+					)
+		)
+		.join('');
+
 /** Un exemple par variation, tiré par le vrai générateur (graine fixe : page reproductible) */
 export function exemplesDuModele(modele: ModeleFichier): {
 	exemples: Exemple[];
@@ -547,7 +564,7 @@ export function exemplesDuModele(modele: ModeleFichier): {
 		const r = dessinerBlocs(md);
 		r.nonDessines.forEach((t) => nonDessines.add(t));
 		r.avertissements.forEach((a) => avertissements.add(a));
-		return r;
+		return { ...r, markdown: aLaFrancaise(r.markdown) };
 	};
 	const exemples = modele.variations.map((variation, i) => {
 		const r = generateInstance(
@@ -565,7 +582,7 @@ export function exemplesDuModele(modele: ModeleFichier): {
 			choices: inst.choices
 				? inst.choices.map((c) => ({ content: dessine(c.content).markdown, bon: c.isCorrect }))
 				: null,
-			answer: (inst.blanks ?? []).map((b) => b.expectedAnswer).join(' | '),
+			answer: (inst.blanks ?? []).map((b) => toFrenchDecimal(b.expectedAnswer)).join(' | '),
 			solution: enonce.solutions.join(''),
 			steps: (inst.correction?.steps ?? []).map((s) => dessine(s).markdown)
 		};

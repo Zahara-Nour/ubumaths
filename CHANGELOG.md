@@ -2,6 +2,56 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.53.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.52.0...v0.53.0) (2026-10-28)
+
+### ✨ Features
+
+- **db:** rangement et tags du lot 1 du CE2, multiples de 25 en CE2, jumeaux dépubliés ([2250d9c](https://github.com/Zahara-Nour/ubumaths/commit/2250d9c36a99a4bca8e1d310137d4cc84b13a1a9))
+- **questions:** 2de lot 2, nœud et tag des 10 modèles (migration de données) ([d4f937c](https://github.com/Zahara-Nour/ubumaths/commit/d4f937cc7e8c6ff4fa28b7c4080a58fb90cd7fc1))
+- **questions:** 6e lot 3, nœud et tag des 3 modèles de calcul astucieux ([2b8026f](https://github.com/Zahara-Nour/ubumaths/commit/2b8026fd3df46a01ce32ef1fd412639179fcb2db))
+- **questions:** lot 0 du CM1, 26 modèles hors programme rangés (CM2, 6e, brouillons) ([ae5e263](https://github.com/Zahara-Nour/ubumaths/commit/ae5e263b28586d77c38f7bb450b3b789c35d2120))
+- **questions:** lot 1 du CE2, calcul mental (tables, terme manquant, 60, × 4, × 8) ([338f3a7](https://github.com/Zahara-Nour/ubumaths/commit/338f3a701d16d01ac952e87cbb3fc2419abe5eb0))
+- **questions:** lot 2 du CE1, numération (7 modèles en fichiers) ([92ff328](https://github.com/Zahara-Nour/ubumaths/commit/92ff328e1160a1e8d67b5612313215ce95238366))
+- **questions:** nœud et tag des 7 modèles du lot 2 du CE1 (numération) ([cadcc4e](https://github.com/Zahara-Nour/ubumaths/commit/cadcc4ebcdb9136fb81b740969e343da3c38c117))
+
+### 🐛 Bug Fixes
+
+- **build:** heap de 6 Go sur Vercel, le conteneur de 8 Go tuait le build ([e883c62](https://github.com/Zahara-Nour/ubumaths/commit/e883c629ba350d672eb2868819053098d7d4d5d2))
+- **db:** accès des brouillons précisé (prof et admin), test du nœud archivé ([08b237c](https://github.com/Zahara-Nour/ubumaths/commit/08b237cf1de80ce5143fe96b2da1a83a0438158d))
+- **db:** migration du lot 1 du CE2 renommée après 20261028130000 déjà jouée ([20fa7ae](https://github.com/Zahara-Nour/ubumaths/commit/20fa7aee0f36c8a068839b1f55d1f2c9f42b4e88))
+- **questions:** niveau libre pour un brouillon du lot 2 du CE1 ([3e9bdf2](https://github.com/Zahara-Nour/ubumaths/commit/3e9bdf2daac0c68a95b40e966511ab9f1666f17f))
+- **questions:** page à cocher, décimaux à la française comme à l'écran ([ccfa92b](https://github.com/Zahara-Nour/ubumaths/commit/ccfa92b773d9667d636442f3f08df12a450cc591))
+- **questions:** page à cocher, formules du lycée rendues par KaTeX ([dcda870](https://github.com/Zahara-Nour/ubumaths/commit/dcda8709b58aa540b3ee61f0e24a1cdee3b50e7c))
+- **questions:** page à cocher, LaTeX du point, des specs et des blocs align rendu ([d89187b](https://github.com/Zahara-Nour/ubumaths/commit/d89187b4427ac6ffc155402be171da6f2b20ac21))
+- **questions:** titres à antislash retrouvés par page-a-cocher et publier-lot ([a043969](https://github.com/Zahara-Nour/ubumaths/commit/a043969e98c79854aebce5dfa4f07ab808861b5d))
+
+### 📚 Documentation
+
+- **questions:** lot 0 du CM1, commentaire d'accès des brouillons corrigé ([45a1b4f](https://github.com/Zahara-Nour/ubumaths/commit/45a1b4fbe0cb42e2268d69ddcdc114a12b60866d))
+- **wip:** questions-1spe, lot 0-dérivation publié (15/15) ([dd5e553](https://github.com/Zahara-Nour/ubumaths/commit/dd5e553ee6230a2c249742e51eabaddd142cd568))
+- **wip:** questions-1spe, lot 0-variations mergé ([#1890](https://github.com/Zahara-Nour/ubumaths/issues/1890)), page à cocher ([38c5f85](https://github.com/Zahara-Nour/ubumaths/commit/38c5f8598bc5070e470b3b518abdc4583c3d1efa))
+- **wip:** questions-1spe, page à cocher de la dérivation rendue en KaTeX ([#1885](https://github.com/Zahara-Nour/ubumaths/issues/1885)) ([7ca0bdd](https://github.com/Zahara-Nour/ubumaths/commit/7ca0bdd4d8acb6c5a35c2435d5df6abeab9644c4))
+- **wip:** questions-2de, lot 2 migration nœud + tag en PR ([a9daebe](https://github.com/Zahara-Nour/ubumaths/commit/a9daebe4f44b9b9fb8ff9c24a9ea9d8f2e1fe5d6))
+- **wip:** questions-2de, lot 2 publié en prod ([0812450](https://github.com/Zahara-Nour/ubumaths/commit/0812450cfe65344a4242c45e9e4f2b67e223abfc))
+- **wip:** questions-2de, lot 2 rangé et tagué en prod ([#1882](https://github.com/Zahara-Nour/ubumaths/issues/1882)), page à cocher ([3fc0aa4](https://github.com/Zahara-Nour/ubumaths/commit/3fc0aa4fe68ac3c40d694036f45b7aba016919f5))
+- **wip:** questions-2de, lot 2 relu (10 OK), prêt à publier ([3e8542a](https://github.com/Zahara-Nour/ubumaths/commit/3e8542a37ae4a460557ac3f8c9318cf55864cd8b))
+- **wip:** questions-2de, page à cocher corrigée ([#1887](https://github.com/Zahara-Nour/ubumaths/issues/1887)) ([f46d214](https://github.com/Zahara-Nour/ubumaths/commit/f46d2140524752ac5f9402d78b65c8dcf5be1383))
+- **wip:** questions-2de, phase 0 du lot 2 bis lecture graphique ([89d1c72](https://github.com/Zahara-Nour/ubumaths/commit/89d1c724fbeb255094d1dcceb5c76259ad208082))
+- **wip:** questions-6, 4 modèles reçus du CM1 ([#1893](https://github.com/Zahara-Nour/ubumaths/issues/1893)) ([f360bb2](https://github.com/Zahara-Nour/ubumaths/commit/f360bb27c35aaa727bd787aacda701d5437253b1))
+- **wip:** questions-6, lot 3 « Calcul décimal » publié (13/13) ([983a33d](https://github.com/Zahara-Nour/ubumaths/commit/983a33ddf887f994360fe804f9ff2f4794658a7c))
+- **wip:** questions-6, lot 3 retouches en prod et 3 neufs rangés ([#1883](https://github.com/Zahara-Nour/ubumaths/issues/1883)) ([8612153](https://github.com/Zahara-Nour/ubumaths/commit/86121534f1f149e68a3474d0cddae061b0512cd9))
+- **wip:** questions-6, phase 0 du lot 4 « Fractions » ([27fa653](https://github.com/Zahara-Nour/ubumaths/commit/27fa65315b52c2d21f8020a520a202b09656cc1a))
+- **wip:** questions-ce1, lot 2 mergé ([#1884](https://github.com/Zahara-Nour/ubumaths/issues/1884)) ([21937ed](https://github.com/Zahara-Nour/ubumaths/commit/21937ed5a1bdf659b94f3e78ce7f28b6f47d453c))
+- **wip:** questions-ce1, lot 2 rangé et tagué en prod ([#1886](https://github.com/Zahara-Nour/ubumaths/issues/1886)), relu 7/7 ([3bb2390](https://github.com/Zahara-Nour/ubumaths/commit/3bb23906b33652849192cb28090c373847fe7dbb))
+- **wip:** questions-ce1, niveau de c4d4bf70 corrigé ([#1895](https://github.com/Zahara-Nour/ubumaths/issues/1895)), lot 2 prêt à publier ([24906ff](https://github.com/Zahara-Nour/ubumaths/commit/24906ffc428f609381e684dc0bce83f9880f4f4c))
+- **wip:** questions-ce1, question d'accès du niveau tranchée (personne) ([618088f](https://github.com/Zahara-Nour/ubumaths/commit/618088f91aa8b40109358a960b1a74646fcad5ff))
+- **wip:** questions-ce2, décisions de David et phase 0 du lot 1 validée ([1d5c3ce](https://github.com/Zahara-Nour/ubumaths/commit/1d5c3ce045c9c839103f02b86762ea4e94abf112))
+- **wip:** questions-ce2, lot 1 mergé ([#1889](https://github.com/Zahara-Nour/ubumaths/issues/1889)), brouillons à créer ([dda1f66](https://github.com/Zahara-Nour/ubumaths/commit/dda1f6678556c8157549bf8f907adfd1d07ed046))
+- **wip:** questions-ce2, lots 0 et 1 rangés en prod, page à cocher ([c62d630](https://github.com/Zahara-Nour/ubumaths/commit/c62d6303f34c7ae5ee319441f4eb06a84da97a4e))
+- **wip:** questions-cm1, décisions et phase 0 du lot 0 ([2b46cc5](https://github.com/Zahara-Nour/ubumaths/commit/2b46cc5ee6736bad03bbe7e847398e12485d2108))
+- **wip:** questions-cm1, lot 0 validé ([16789b6](https://github.com/Zahara-Nour/ubumaths/commit/16789b670de3c4ff91d2b6e83c832ee1ca92e0dc))
+- **wip:** questions-cm2, décisions et phase 0 du lot 0 ([5115b1d](https://github.com/Zahara-Nour/ubumaths/commit/5115b1d9564cfc90bfbfeb10ee838d282c7922f5))
+
 ## [0.52.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.51.0...v0.52.0) (2026-10-27)
 
 ### ✨ Features

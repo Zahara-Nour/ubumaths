@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1880 et #1883._
+_Mis à jour le 2026-10-28, après #1888 et la publication du lot 3._
 
-- **État** : lots 1 et 2 publiés. Lot 3 « Calcul décimal » : 13 brouillons en prod, rangés et tagués (#1873, #1883, `db:migrate` joués), retouches de relecture en prod (#1880, `--publier --mettre-a-jour` lancé par David, simulation : 13 « déjà en base »). Page à cocher republiée (même adresse) : https://claude.ai/artifact/Fyf6TTZ3h32RJ4ms7ZSwHQ ; verdicts de 01 et 08 effacés, OK de 02, 03, 04, 05, 07 gardés.
-- **Prochaine action** : lire `verdicts` (ArtifactData list) et **compter** (13 attendus) ; « À revoir » → corriger (§ 7) ; tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-calcul-decimal` en simulation, puis David `--publier` ; relire `published` au MCP. Ensuite lot 4 « Fractions » (§ 4).
-- **En attente de David** : relire 01, 06, 08, 09, 10, 11, 12, 13 (choix et division posée à jouer dans l'aperçu admin) ; revoir 02, 04, 07 s'il le veut (consigne seule changée). Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
-- **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; `--mettre-a-jour` après le merge seulement (il lit `main`) ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval` ; serveur de dev sur `localhost`.
+- **État** : lots 1, 2 et 3 publiés. Lot 3 « Calcul décimal » : 13 modèles publiés le 2026-10-28 (13/13 OK sur la page à cocher, `publier-lot --publier` lancé par David, MCP : 13 publiés, rangés, tagués). Page à cocher : décimaux à la française (#1888).
+- **Prochaine action** : lot 4 « Fractions » — phase 0 écrite (§ 11, 9 modèles), à faire valider ; puis worktree `ubumaths-wt-questions-6`, script `lot-6-fractions.py`.
+- **En attente de David** : validation de la phase 0 du lot 4 et ses 3 questions (§ 11 : modèles de 5e sur 6-131, addition 6-135, ranger 3 ou 5 nombres). Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; nombres calculables de tête dans les problèmes (relecture du lot 3) ; un geste de calcul = un modèle ; `--mettre-a-jour` après le merge seulement (il lit `main`) ; page à cocher générée depuis un `main` à jour, rendu vu dans Chrome AVANT de l'annoncer ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval`.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
@@ -488,3 +488,95 @@ Verdicts lus (`verdicts`, 7 sur 10) : 5 OK (02, 03, 04, 05, 07), 2 à revoir (01
   « > soustraction », 6-198). Test rouge sans (5/9), vert avec (18/18) ; `security-auditor` sans finding bloquant ;
   CI verte, `db:migrate` (sans `--include-all`), vérifié au MCP (`updated_at` préservé).
 - Page à cocher republiée ; verdicts « à revoir » de 01 et 08 effacés.
+
+### 10.8 Publication (2026-10-28)
+
+- Page à cocher d'abord publiée sans KaTeX (gabarit #1885 arrivé sur `main` après la génération) et avec des points
+  décimaux : #1888 (`toFrenchDecimal` sur formules et réponses, rendu texte `{,}` et `\,`), page régénérée, vue dans Chrome.
+- Verdicts : 13/13 OK, aucun commentaire. `publier-lot.ts --publier` (David) : 13/13 publiés ; MCP : 13 publiés, rangés, tagués.
+
+## 11. Lot 4 « Fractions » : phase 0 (proposée le 2026-10-28, à valider)
+
+Relevé MCP (2026-10-28) : 0 modèle sur les 9 points. Voisins en 6e : 6-125 (2), 6-126, 6-127, 6-132, 6-135
+(58bbee5d, même dénominateur seulement). En 5e **sans point** et qui décrivent 6-131 (passe « arbre des notions » :
+« reclassement possible en 6e ») : 0be55013 (« b/c de n »), 9293eb9a (« b/c × n », deux sens), 8ffdbdb1 (« bc/c × a »,
+fraction entière). Exemples de réussite 6e 2025, p. 7-8 (PDF p. 8-9) relus : ils fixent les variations ci-dessous.
+Case choix là où il y a un choix ; une fraction non simplifiée reste juste, en ambre (`reducedFractions`, défaut `warn`).
+Un point par modèle ; sous-notion = nœud du point (posé par la migration). Niveaux : à la suite des niveaux publiés
+de la catégorie (relevé du 2026-10-28).
+
+| #   | Point | Sous-notion (notion)                           | Modèle                                 | Rangement ancien (thème / domaine / sous-domaine, niveau) |
+| --- | ----- | ---------------------------------------------- | -------------------------------------- | --------------------------------------------------------- |
+| 1   | 130   | forme décimale (Fractions : sens et écritures) | Entier, décimal ou non décimal ?       | Fractions / Apprivoiser / Forme décimale, 13              |
+| 2   | 131   | fraction d'une quantité (Fractions : calculs)  | Appliquer une fraction à un entier     | Fractions / Calculer / Fraction d'une quantité, 4         |
+| 3   | 136   | multiplication (Fractions : calculs)           | Multiplier une fraction par un entier  | Fractions / Calculer / Multiplication, 7                  |
+| 4   | 133   | ordre (Fractions : sens et écritures)          | Comparer deux fractions                | Fractions / Apprivoiser / Comparer, 5                     |
+| 5   | 203   | ordre (Fractions : sens et écritures)          | Encadrer une fraction par deux entiers | Fractions / Apprivoiser / Encadrer, 1 (neuf)              |
+| 6   | 134   | ordre (Fractions : sens et écritures)          | Ranger des fractions                   | Fractions / Apprivoiser / Ordonner, 1 (neuf)              |
+| 7   | 204   | ordre (Fractions : sens et écritures)          | Ranger des nombres mixtes              | Fractions / Apprivoiser / Ordonner, 2                     |
+| 8   | 205   | addition et soustraction (Fractions : calculs) | Soustraire des fractions               | Fractions / Calculer / Addition et Soustraction, 11       |
+| 9   | 137   | Fractions : calculs (notion)                   | Problèmes de fractions                 | Fractions / Problèmes / Parts et restes, 1 (neuf)         |
+
+Variations et réponses (cas simples : dénominateurs ≤ 12, tables de multiplication) :
+
+1. **Entier, décimal ou non décimal ?** (case choix « un nombre entier / un nombre décimal non entier / un nombre
+   non décimal », `melanger: non`) — v1 a multiple de b ($\frac{35}{7}$) → entier ; v2 b dans {2, 4, 5, 8, 10, 20, 25},
+   a non multiple ($\frac{3}{4}$, $\frac{7}{5}$) → décimal non entier ; v3 a et b premiers entre eux, b dans
+   {3, 6, 7, 9, 11, 12} ($\frac{2}{3}$, $\frac{7}{6}$) → non décimal. Correction par la division (s'arrête ou non).
+   Erreurs : « une fraction n'est jamais un entier », $\frac{3}{6}$ cru non décimal (exclu des tirages de v3).
+2. **Appliquer une fraction à un entier** (case) — v1 traduire « de » (case choix « $\frac{2}{5}$ de $60$, c'est :
+   $\frac{2}{5} \times 60$ / $\frac{2}{5} + 60$ / $60 - \frac{2}{5}$ / $60 \div \frac{2}{5}$ ») ; v2 n multiple de c
+   ($\frac{2}{5}$ de $60$ → $24$, correction $2 \times \frac{60}{5} = 2 \times 12$, n ≤ 100) ; v3 n non multiple de c
+   ($\frac{5}{4}$ de $3$ → $\frac{15}{4}$). Erreurs : $60 \div 2 \times 5$ (rôles inversés), $\frac{2}{300}$. Voir question 1.
+3. **Multiplier une fraction par un entier** (case) — v1 $\frac{3}{7} \times 4$ → $\frac{12}{7}$ ; v2 $5 \times \frac{2}{9}$
+   (l'entier d'abord) ; v3 commutativité, trou « $\frac{3}{4} \times 7 = 7 \times ?$ » ; v4 produit entier
+   ($\frac{5}{6} \times 12$ → $10$). Erreurs : numérateur et dénominateur multipliés ($\frac{12}{28}$), $\frac{3}{28}$.
+4. **Comparer deux fractions** (case choix $<$ / $=$ / $>$, `melanger: non`) — les 5 cas de la borne : v1 même
+   dénominateur ; v2 même numérateur ($\frac{5}{7}$ et $\frac{5}{9}$) ; v3 de part et d'autre de 1 ($\frac{7}{8}$ et
+   $\frac{10}{9}$) ; v4 de part et d'autre de $\frac{1}{2}$ ($\frac{5}{12}$ et $\frac{6}{11}$) ; v5 dénominateur commun
+   ($\frac{3}{4}$ et $\frac{5}{6}$, ou un dénominateur multiple de l'autre). Erreur : « 9 > 7 donc $\frac{5}{9} > \frac{5}{7}$ ».
+5. **Encadrer par deux entiers consécutifs** (deux cases « $? < \frac{7}{3} < ?$ ») — v1 b de 2 à 6, fraction entre
+   1 et 5 ; v2 plus grande ($\frac{47}{6}$, partie entière ≤ 10) ; v3 fraction < 1 ($0 < \frac{2}{5} < 1$). Jamais une
+   fraction entière. Correction par le nombre mixte ($\frac{7}{3} = \frac{6}{3} + \frac{1}{3} = 2 + \frac{1}{3}$).
+   Erreurs : $3$ et $7$ (numérateur et dénominateur), $1$ et $3$.
+6. **Ranger des fractions** (trois cases `$? < ? < ?$`, décision du § 5) — v1 même dénominateur ; v2 dénominateurs
+   multiples ($\frac{3}{4}$, $\frac{5}{8}$, $\frac{1}{2}$) ; v3 autour de 1, l'exemple du BO ($1$, $\frac{5}{3}$,
+   $\frac{99}{100}$ ; ou $\frac{7}{6}$, $1 + \frac{1}{3}$). Erreur : rangées par numérateurs.
+7. **Ranger des nombres mixtes** (trois cases) — v1 parties entières différentes ; v2 même partie entière
+   ($2 + \frac{1}{4}$ et $2 + \frac{1}{3}$, l'exemple du BO) ; v3 un nombre mixte et des fractions
+   ($\frac{9}{4}$, $1 + \frac{3}{4}$, $2 + \frac{1}{3}$). Erreur : $\frac{1}{4} > \frac{1}{3}$ « car 4 > 3 ».
+8. **Soustraire des fractions** (case) — v1 même dénominateur ($\frac{7}{9} - \frac{2}{9}$) ; v2 dénominateurs
+   multiples ($\frac{2}{3} - \frac{1}{6}$) ; v3 quelconques, cas simples ($\frac{7}{2} - \frac{3}{5}$, dénominateurs
+   ≤ 6) ; v4 entier moins fraction ($1 - \frac{3}{8}$, $2 - \frac{3}{4}$). Résultat positif. Erreurs : numérateurs et
+   dénominateurs ôtés entre eux ($\frac{5}{0}$, $\frac{1}{-3}$), dénominateur commun sans changer le numérateur.
+9. **Problèmes** (case, nombres calculables de tête, prénoms dans le texte) — v1 le gâteau du BO (« un quart » et
+   « un sixième », quelle fraction reste ? → $\frac{7}{12}$) ; v2 fraction d'un effectif ($\frac{3}{4}$ des $28$
+   élèves) ; v3 ce qu'il reste ($\frac{1}{3}$ de $24~\unit{€}$ dépensé, reste $16~\unit{€}$) ; v4 deux parts d'un même
+   tout ($\frac{2}{5}$ en rouge, $\frac{3}{10}$ en bleu : quelle fraction en tout ? → $\frac{7}{10}$, l'exemple « inventer »).
+
+Question d'accès (migration nœud + tag, après le `--publier` de David) : **personne** ne gagne de lecture — brouillons
+neufs, visibles des seuls admin et auteur, lisibles à la publication seulement.
+
+Questions à David :
+
+1. **Trois modèles de 5e sans point** (0be55013, 9293eb9a, 8ffdbdb1) décrivent 6-131. Règle du § 6 (« un modèle prend
+   le niveau du point qui le décrit ») : les passer en 6e et les taguer 6-131 ? Reco : **oui, dans la migration du lot**
+   (élèves de 6e : 3 modèles de plus ; élèves de 5e : 3 de moins, aucun point de 5e ne les porte) ; le modèle 2 garde
+   alors v1 (traduire « de ») et v3 (résultat fractionnaire), qu'ils n'ont pas.
+2. **6-135** (addition) n'a qu'un modèle, même dénominateur, alors que la borne demande aussi dénominateurs multiples
+   et quelconques ($\frac{5}{4} + \frac{2}{3}$). Ajouter « Additionner des fractions de dénominateurs différents »
+   (Addition et Soustraction, 12) au lot ? Reco : **oui**.
+3. **Ranger** : trois nombres partout, ou une variation à cinq nombres comme l'exemple du BO ($1$, $\frac{5}{3}$,
+   $\frac{7}{6}$, $\frac{99}{100}$, $1 + \frac{1}{3}$) ? Reco : **trois** (cinq cases à retaper, c'est long sur téléphone).
+
+### 11.0 Reçus du CM1 (2026-10-28)
+
+Session `questions-cm1`, lot 0 (#1893, migration jouée en prod) : 4 modèles publiés passés de CM1 à `[6]`, tagués,
+nœud et contenu inchangés (MCP relu) : 6a16303a et 7d57fb3b (« Calculer une différence », Soustraire / Différence
+2 et 4) → 6-198 ; 0a93ac99 et 08bbf1c6 (« Additionner par regroupements », Somme astucieuse 1 et 2, 3 et 4 termes)
+→ 6-114, voisins de 6adcd053 (lot 3, Somme astucieuse 3) sans doublon. À compter dans la couverture de la 6e.
+
+**Décisions de David (2026-10-28, « oui » aux trois recos)** : phase 0 du § 11 validée ; 0be55013, 9293eb9a, 8ffdbdb1
+passent en 6e (`grades` remplacé) et sont tagués 6-131 dans la migration du lot ; modèle 10 ajouté, « Additionner des
+fractions de dénominateurs différents » (6-135, Addition et Soustraction, 12 : v1 dénominateurs multiples, v2
+quelconques dans des cas simples, $\frac{5}{4} + \frac{2}{3}$) ; « Ranger » à trois nombres partout.
