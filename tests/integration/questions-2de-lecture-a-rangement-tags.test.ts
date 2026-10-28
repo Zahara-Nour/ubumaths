@@ -2,7 +2,7 @@
  * Chantier « questions-2de », lot 2 bis A : nœud et tag de 8 modèles neufs (Supabase local requis)
  * ======================================================================================
  *
- * Migration `20261028170000_questions_2de_lecture_a_rangement_tags` : les 8 brouillons
+ * Migration `20261028183000_questions_2de_lecture_a_rangement_tags` : les 8 brouillons
  * « lecture graphique » (généralités, affine, valeur absolue, carré) créés le 2026-10-28 par
  * scripts/create-questions.ts (sans nœud ni tag) vont sur le nœud de leur point et reçoivent ce
  * point, un seul (ADR 0020). Décision de David (journal docs/wip/questions-2de-progress.md § 11).
@@ -38,7 +38,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261028170000_questions_2de_lecture_a_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261028183000_questions_2de_lecture_a_rangement_tags.sql';
 const LONGUEURS = 'Grandeurs et mesures > Longueurs';
 /** Le lot : identifiant créé en prod le 2026-10-28, nœud et points attendus. */
 const LOT: { id: string; noeud: string; code: string }[] = [

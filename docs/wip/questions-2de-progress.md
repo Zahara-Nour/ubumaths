@@ -398,5 +398,5 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
 - Brouillons créés en prod par David le 2026-10-28 : 08c059b8 (2-462), 17809937 (2-492), 406fd9a8 (2-338),
   7efd2e76 (2-453), 9c4f6b4f (2-341), a55ad3b4 (2-456), b807cc6c (2-340), cbf00ce7 (2-459) ; relevé MCP :
   brouillons, niveau 2de, sans nœud ni tag ; les 8 points sans aucun tag.
-- Migration `20261028170000_questions_2de_lecture_a_rangement_tags.sql` (gabarit du lot 2) et son test
+- Migration `20261028183000_questions_2de_lecture_a_rangement_tags.sql` (gabarit du lot 2) et son test
   d’intégration : rouge sans la migration, 9/9 vert avec ; `security-auditor` : aucun finding bloquant.
