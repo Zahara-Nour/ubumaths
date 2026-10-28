@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après le relevé._
+_Mis à jour le 2026-10-28, phase 0 du lot 0 validée._
 
-- **État** : relevé et classement faits (§ 1 à 4), aucun lot écrit.
-- **Prochaine action** : réponses de David aux questions du § 5, puis phase 0 du premier lot.
-- **En attente de David** : § 5 (corrections de l'existant, changements de niveau, ordre des lots, outils C).
+- **État** : relevé et classement faits (§ 1 à 4) ; questions du § 5 et phase 0 du lot 0 (§ 6) validées par David.
+- **Prochaine action** : écrire le lot 0 (instantané prod, migration de contenu de 290dcf6f, migration de rangement de 20 modèles, tests d'intégration), PR.
+- **En attente de David** : rien.
 - **Pièges en cours** : QCM = case « choix » seulement (0 `multiple_choice` en base depuis le 2026-10-28) ; relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot.
 - **Worktree / branche** : aucun.
 
@@ -118,3 +118,54 @@ Changer leur niveau et les taguer couvrirait **3-001, 3-004, 3-005, 3-006** sans
 4. **Outils C** : la boîte à moustaches en chantier à part (affichage, puis construire) — à lancer, et
    quand ? Les solides : un seul chantier avec ceux de la 6e ?
 5. **3-032 (tableur)** : formule en texte, ou non évaluable ?
+
+## 6. Décisions (David, 2026-10-28)
+
+### 6.1 Réponses au § 5
+
+David a répondu « je te suis » aux recommandations faites sur les cinq questions :
+
+1. Les modèles de 4e / 5e du § 2.3 passent en 3e **seulement**, tagués (sauf 2d8e7948, à modifier :
+   laissé à la session 4e) ; la session 3e s'en charge.
+2. Les HORS_PROGRAMME du § 2.2 vont au niveau de leur point (4e, 5e, 2de) ; ceux sans point restent
+   sans tag, non archivés.
+3. Ordre des lots : 0 corrections, 1 puissances et nombres, 2 calcul littéral et équations,
+   **5 Thalès et trigonométrie avancé en 3e position**, puis 3 fonctions, 4 statistiques et
+   probabilités, 6 vecteurs et sphère, 7 algorithmique.
+4. Boîte à moustaches : chantier à part après le lot de statistiques en texte (affichage, puis
+   construire). Solides : un chantier commun avec la 6e, après les lots A et B.
+5. 3-032 (tableur) : classe A, case « choix » entre formules (`=MOYENNE(B2:B9)`…), dans le lot 4.
+
+### 6.2 Lot 0 (corrections) : phase 0 validée (« je te suis »)
+
+**A. Vers la 3e seule, tag posé** :
+
+| Modèle                                 | Point | Nœud                                                                        |
+| -------------------------------------- | ----- | --------------------------------------------------------------------------- |
+| 90dca27a, acbd2280 (5e), c9d6c5db (4e) | 3-001 | gardé                                                                       |
+| 15368b02 (4e)                          | 3-004 | gardé                                                                       |
+| 65110463 (4e)                          | 3-004 | Fractions : calculs > inverse → Puissances : sens et écritures > définition |
+| bb9cff7b, 5b627bb7 (4e)                | 3-005 | gardé                                                                       |
+| 1db08bdc, 743c0809 (4e)                | 3-052 | gardé                                                                       |
+| 8ac99be4 (4e)                          | 3-052 | Puissances : calculs → … > quotient de puissances                           |
+| 953574d4, 9f380957 (4e)                | 3-006 | gardé                                                                       |
+| 17f3dfcd (4e)                          | aucun | gardé (puissance d'une puissance, exposants relatifs)                       |
+
+**B. Hors de la 3e** :
+
+| Modèle   | Niveau | Point | Nœud                                                                   |
+| -------- | ------ | ----- | ---------------------------------------------------------------------- |
+| 54107079 | 4e     | 4-022 | gardé                                                                  |
+| 2bdb3db6 | 4e     | 4-024 | Fonctions affines > équations → Équations : premier degré > ax + b = c |
+| ac5d0413 | 5e     | 5-039 | gardé                                                                  |
+| 7c0ee046 | 2de    | 2-348 | gardé                                                                  |
+| bba95c2d | 2de    | 2-328 | gardé                                                                  |
+| 336451af | 2de    | 2-318 | Fonctions affines → Géométrie repérée > intersection de deux droites   |
+
+Restent en 3e sans tag : 77b82211, cf4468c3. a1ae1558 (exposants positifs) reste en 4e.
+
+**C. Contenu** : 290dcf6f « Augmentation » perd sa variation à 200 % (« cas simples ») ; 24f7a007
+« Diminution » (10, 20, 30, 50 %) inchangé.
+
+**Accès (tranché)** : les élèves et le prof de 3e voient 12 modèles publiés de plus ; la 4e et la
+5e les perdent ; la 3e en cède 6 (4e : 2, 5e : 1, 2de : 3). Aucune règle ne change.

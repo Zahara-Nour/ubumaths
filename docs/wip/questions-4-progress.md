@@ -149,3 +149,10 @@ pour afficher un programme ; les transformations (`translation`, `vecteur`) exis
 5. **Schéma de fraction** (074) : même outil que le schéma en barres de la 6e ?
 6. **Pensée informatique** (065-067) : programmes affichés en Python (` ```python `) ou en pseudo-code
    « Scratch en texte » ?
+
+## Note de la session 3e (2026-10-28)
+
+Le lot 0 de la 3e (journal `questions-3-progress.md` § 6.2) passe en **3e seule** et tague : 90dca27a,
+acbd2280 (5e), c9d6c5db, 15368b02, 65110463, bb9cff7b, 5b627bb7, 1db08bdc, 743c0809, 8ac99be4,
+953574d4, 9f380957, 17f3dfcd ; il passe en 4e 54107079 (4-022) et 2bdb3db6 (4-024). Ne pas les
+traiter ici. **2d8e7948** (« Puissances de 10 », exposants négatifs à retirer) reste à la 4e.
