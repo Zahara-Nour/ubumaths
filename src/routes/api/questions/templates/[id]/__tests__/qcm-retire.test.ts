@@ -57,6 +57,22 @@ describe('PUT : champs du QCM refusés', () => {
 		await expectRefusedPut({ options: { shuffleChoices: false } });
 	});
 
+	// Éditeur ouvert avant le retrait : il renvoie les champs vidés à null
+	it('champs du QCM à null → enregistré, sans écrire ces clés', async () => {
+		const db = fakeDb();
+		const response = await callPut(db, {
+			status: 'draft',
+			variations: [{ statement: 'Capitale ?', choices: null, correctChoiceIndex: null }],
+			options: { orderIndependent: true, shuffleChoices: null },
+			multipleAnswers: null
+		});
+		expect(response.status).not.toBe(400);
+		expect(db.updates).toHaveLength(1);
+		expect(JSON.stringify(db.updates)).not.toMatch(
+			/"choices"|correctChoiceIndex|shuffleChoices|multipleAnswers|multiple_answers/
+		);
+	});
+
 	it('modèle à cases sans champ de QCM → enregistré', async () => {
 		const db = fakeDb();
 		const response = await callPut(db, { status: 'draft', title: 'Nouveau titre' });

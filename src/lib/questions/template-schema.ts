@@ -121,12 +121,16 @@ export const validationRuleSchema = z.discriminatedUnion('type', [
  * Champ du QCM de modèle retiré (ADR 0033, lot 5) : le QCM est une case.
  * Reçu, il est refusé avec ce message — jamais retiré en silence (un schéma
  * non strict retirerait la clé sans rien dire). `null` (champ vidé, que
- * renvoie un éditeur ouvert avant le retrait) est admis : il ne dit rien.
+ * renvoie un éditeur ouvert avant le retrait) est admis : il ne dit rien, et
+ * devient `undefined` pour que la clé ne soit jamais écrite en base.
  */
 export const QCM_RETIRED_MESSAGE =
 	'le QCM est une case : écrire une case choix (bloc ```choix dans l’énoncé)';
 
-export const retiredQcmFieldSchema = z.null({ error: QCM_RETIRED_MESSAGE }).optional();
+export const retiredQcmFieldSchema = z
+	.null({ error: QCM_RETIRED_MESSAGE })
+	.transform(() => undefined)
+	.optional();
 
 // === Test Specs ===
 

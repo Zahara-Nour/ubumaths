@@ -423,6 +423,11 @@ describe('building blocks (non-strict)', () => {
 		expect(optionsSchema.safeParse({ shuffleChoices: false }).success).toBe(false);
 		expect(optionsSchema.safeParse({ shuffleChoices: null }).success).toBe(true);
 	});
+
+	it('champ du QCM retiré à null : admis mais jamais écrit (la clé disparaît au JSON)', () => {
+		const options = optionsSchema.parse({ orderIndependent: true, shuffleChoices: null });
+		expect(JSON.parse(JSON.stringify(options))).toEqual({ orderIndependent: true });
+	});
 });
 
 // ============================================================================
