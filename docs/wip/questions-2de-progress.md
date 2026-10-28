@@ -6,18 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1926._
+_Mis à jour le 2026-10-28, après la publication du lot 2 bis A._
 
-- **État** : lot 2 bis A (8 brouillons en prod, rangés, tagués). Relecture : 2 OK, 6 « À revoir » (« faire
-  apparaître les solutions sur l'axe des x ») → corrigés retouchés pour les 8 (§ 14), page republiée, les 6
-  verdicts remis à zéro.
-- **Prochaine action** : David lance `create-questions --dir
-scripts/questions/2de-lecture-a --mettre-a-jour --publier` ; relecture des 6 ; `publier-lot.ts` ; lot B.
-- **En attente de David** : ce `--mettre-a-jour`, la relecture ; sort de la sonde
-  `scripts/tmp-sonde-courbes.ts` + `tmp-montre.ts` (non suivis dans le worktree ; resservie au § 14).
+- **État** : lot 2 bis A **publié en prod** (8/8, relecture 8/8 OK, § 15). Sonde des blocs `courbe`
+  devenue `scripts/questions/sonde-courbes.ts` (commit `ea5f2295c` sur `feat/questions-2de-lecture-b`,
+  pas encore poussé ; étape ajoutée à `couvrir-un-niveau.md` § 5).
+- **Prochaine action** : lot B (2-342, 2-465, 2-343, 2-468, 2-344, 2-471 : inverse, racine carrée, cube),
+  phase 0 validée au § 11 (pas de variation ∅ pour 1/x = 0) ; corrigés avec les solutions sur l'axe dès le
+  départ (convention § 14) ; sonde à 0 problème avant la page à cocher.
+- **En attente de David** : rien.
 - **Pièges en cours** : horodatage de migration pris par une autre session ; test « cas rare » lent en CI ;
   étiquettes C_f / C_g serrées près d'une intersection.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `fix/questions-2de-lecture-a-axe` (mergée).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-b` (depuis
+  origin/main ; branches du lot A supprimées).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -422,3 +423,12 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
   republiée (version 2), rendu vu (f ⩽ g : [−4 ; 0] vert sur l'axe) ; simulation prod : 8 à mettre à jour.
 - Instantané d'avant : les fichiers de #1906 (les brouillons en sont issus, aucune donnée d'élève).
 - #1926 mergée le 2026-10-28 (CI verte du premier coup).
+
+## 15. Lot 2 bis A publié (2026-10-28)
+
+- David a lancé `create-questions --mettre-a-jour --publier` (8 mis à jour, 14 h 11) : en prod, les 8
+  corrigés contiennent « sur l'axe des abscisses », trait vert dans les 4 inéquations seulement.
+- Relecture : 8/8 OK sur la page à cocher. `publier-lot.ts` simulé vert, puis lancé par David :
+  8/8 `published`, revérifié par MCP.
+- Sonde : `tmp-sonde-courbes.ts` + `tmp-montre.ts` fusionnés en `scripts/questions/sonde-courbes.ts`
+  (`--dir … [--tirages N]`, `--montre <fichier> [graine]`) ; essayée sur le lot A : 0 problème.
