@@ -526,6 +526,9 @@ importers:
       jsqr:
         specifier: 1.4.0
         version: 1.4.0
+      lightningcss:
+        specifier: 1.33.0
+        version: 1.33.0
       lint-staged:
         specifier: ^16.4.0
         version: 16.4.0

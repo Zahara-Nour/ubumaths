@@ -3,6 +3,7 @@ import { defineConfig, type ViteUserConfig } from 'vitest/config';
 import { loadEnv, type Plugin } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { readFileSync } from 'fs';
+import { Features } from 'lightningcss';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { baseTestConfig } from './vitest.base.config';
 
@@ -161,6 +162,17 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 			// 4 Ko) l'était depuis `mathlive/static.css`, sur toute page à maths.
 			// `undefined` : la règle par défaut de Vite pour les autres fichiers.
 			assetsInlineLimit: (filePath) => (FONT_FILE.test(filePath) ? false : undefined)
+		},
+
+		// Sous Vite 8, le CSS du build est compressé par Lightning CSS (SvelteKit impose
+		// `cssMinify: true`, qui voulait dire esbuild sous Vite 7). Lightning CSS récrit
+		// `light-dark()` en `var(--lightningcss-light, …)`, variables qu'il ne pose qu'à côté
+		// d'un `color-scheme` du CSS ; le nôtre est posé sur <html> par mode-watcher : la
+		// valeur devenait invalide et les jetons de couleur disparaissaient (v0.54.0,
+		// 2026-10-28). Tailwind exclut cette récriture de la même façon.
+		// Garde : étape « light-dark() intact » de la CI.
+		css: {
+			lightningcss: { exclude: Features.LightDark }
 		},
 
 		test: {

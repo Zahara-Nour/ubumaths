@@ -296,6 +296,17 @@ jobs:
           fi
           echo "::notice::Root layout chunk OK ($size B < 100 KB)"
 
+      # Lightning CSS récrit light-dark() en var(--lightningcss-light, …), variables jamais
+      # posées chez nous (color-scheme vient de mode-watcher) : couleurs perdues en v0.54.0.
+      - name: Guard light-dark() intact in built CSS
+        run: |
+          bad=$(grep -l -- '--lightningcss-' .svelte-kit/output/client/_app/immutable/assets/*.css || true)
+          if [ -n "$bad" ]; then
+            echo "::error::light-dark() récrit par Lightning CSS (cf. css.lightningcss dans vite.config.ts) : $bad"
+            exit 1
+          fi
+          echo "::notice::light-dark() intact dans le CSS construit"
+
   # Server tests (node env): the real regression gate — fast, deterministic,
   # no browser. Sharded for parallelism.
   test-server:
