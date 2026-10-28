@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après les 3 corrections de la relecture du lot 0-exponentielle (PR à venir)._
+_Mis à jour le 2026-10-28, après #1934._
 
-- **État** : lots 0-suites, 0-second-degré, 0-dérivation, 0-variations publiés ; lot 0-exponentielle (17, § 10) mergé (#1916), 3 corrections de la relecture appliquées (D16), specs vertes, instantané conforme à la prod (vérifié le 2026-10-28).
-- **Prochaine action** : merger la PR, puis David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-0-exponentielle --publier --mettre-a-jour` et `publier-lot --dir … --publier` ; ensuite lot 0-trigo, produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
-- **En attente de David** : verdict de e572933c (absent de la page) ; les deux commandes de publication.
-- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation` ni `choix` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; index vide vérifié avant tout commit sur `main` ; CI : job navigateur instable (`wrapDynamicImport`) → relancer le job.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `chore/questions-1spe-exponentielle-relecture`.
+- **État** : lots 0-suites, 0-second-degré, 0-dérivation, 0-variations publiés ; lot 0-exponentielle (17, § 10) relu et corrigé (#1916, #1934), 17/17 « ok », prêt à publier.
+- **Prochaine action** : après la publication, lot 0-trigo, puis produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-0-exponentielle --publier --mettre-a-jour` puis `pnpm tsx scripts/publier-lot.ts --dir scripts/questions/1spe-0-exponentielle --publier` ; je vérifie ensuite en base.
+- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation` ni `choix` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; `.env.local` du worktree : les scripts `tsx` lisent quand même la prod (vérifier la ligne « base ») ; index vide vérifié avant tout commit sur `main` ; CI : job navigateur instable → relancer.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (branche #1934 mergée, à retirer à la clôture du lot).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -415,3 +415,6 @@ attente de go :
 
 Export frais de la prod (2026-10-28) comparé à l'instantané : écarts limités aux corrections C1, C2 et 245b4eb1 pas encore
 publiées ; aucun `updated_at` postérieur aux migrations de 08 h 35 UTC, déjà prises dans l'instantané.
+
+e572933c : « ok » (David, 2026-10-28, sur reco : rien à corriger, C1 déjà appliqué). Corrections mergées (#1934) ; 17/17
+validés.
