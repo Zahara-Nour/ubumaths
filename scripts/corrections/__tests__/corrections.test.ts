@@ -202,28 +202,34 @@ describe('R-PASS', () => {
 		expect(report.passed).toBe(true);
 	});
 
-	it('voit un cas rare (1 combinaison sur 10 000) que 300 graines manqueraient', () => {
-		// c = 9 seulement pour a = 100 et b = 100
-		const template: QuestionTemplate = {
-			...sumTemplate(),
-			variations: [
-				{
-					statement: templateMarkdown('Calcule.\n\n$${{expression1}}$$'),
-					variables: [
-						{ name: 'a', expression: '1..100' },
-						{ name: 'b', expression: '1..100' },
-						{ name: 'c', expression: '{{eval:8+floor(a/100)*floor(b/100)}}' },
-						{ name: 'expression1', expression: '{{eval:a*10 + 1}} + {{c}}' }
-					],
-					blanks: [{ expectedAnswer: '{{eval:{{expression1}}}}' }]
-				}
-			]
-		};
-		const op = splitBinaryOperation('{{eval:a*10 + 1}} + {{c}}')!;
-		const cases = detectRPassCases(template, 0, op);
-		expect(cases.sampling).toEqual({ mode: 'exhaustive', size: 10000 });
-		expect(cases.nine).toBe(true);
-	});
+	// Balayage exhaustif de 10 000 combinaisons : ~3 s en local, mais frôle le
+	// délai par défaut de 5 s sous la charge du shard CI. Marge explicite.
+	it(
+		'voit un cas rare (1 combinaison sur 10 000) que 300 graines manqueraient',
+		{ timeout: 20_000 },
+		() => {
+			// c = 9 seulement pour a = 100 et b = 100
+			const template: QuestionTemplate = {
+				...sumTemplate(),
+				variations: [
+					{
+						statement: templateMarkdown('Calcule.\n\n$${{expression1}}$$'),
+						variables: [
+							{ name: 'a', expression: '1..100' },
+							{ name: 'b', expression: '1..100' },
+							{ name: 'c', expression: '{{eval:8+floor(a/100)*floor(b/100)}}' },
+							{ name: 'expression1', expression: '{{eval:a*10 + 1}} + {{c}}' }
+						],
+						blanks: [{ expectedAnswer: '{{eval:{{expression1}}}}' }]
+					}
+				]
+			};
+			const op = splitBinaryOperation('{{eval:a*10 + 1}} + {{c}}')!;
+			const cases = detectRPassCases(template, 0, op);
+			expect(cases.sampling).toEqual({ mode: 'exhaustive', size: 10000 });
+			expect(cases.nine).toBe(true);
+		}
+	);
 
 	it('différence à diminuende rond (30 − 6) : passage par la dizaine, pas « sans passage »', () => {
 		const template: QuestionTemplate = {
