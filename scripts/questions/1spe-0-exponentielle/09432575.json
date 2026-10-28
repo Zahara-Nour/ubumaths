@@ -9,71 +9,58 @@
 	"level": 7,
 	"delay": 20,
 	"status": "draft",
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"choices": [
+			"blanks": [
 				{
-					"content": "$2{,}718$"
-				},
-				{
-					"content": "$3{,}142$"
-				},
-				{
-					"content": "$2{,}178$"
-				},
-				{
-					"content": "$1{,}414$"
+					"expectedAnswer": "0"
 				}
 			],
-			"statement": "Quelle est la valeur approchée de $e=e^1$ au millième près ?",
+			"statement": "Quelle est la valeur approchée de $e=e^1$ au millième près ?\n\n```choix\nmelanger: non\n- $2{,}718$\n- $3{,}142$\n- $2{,}178$\n- $1{,}414$\n```",
 			"variables": [],
 			"correction": {
 				"steps": [
 					"$\\textcolor{{{color:primary.0}}}{e\\approx2{,}718 }$. Attention : $3{,}142$ est une valeur approchée de $\\pi$, et $1{,}414$ de $\\sqrt2$."
 				]
-			},
-			"correctChoiceIndex": ["0"]
+			}
 		}
 	],
 	"testSpecs": [
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			},
 			"variables": {},
 			"description": "variation 4 : choix 0 accepté",
-			"variationIndex": 0,
-			"selectedChoices": [0]
+			"variationIndex": 0
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 4 : choix 1 refusé",
-			"variationIndex": 0,
-			"selectedChoices": [1]
+			"variationIndex": 0
 		},
 		{
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 4 : choix 2 refusé",
-			"variationIndex": 0,
-			"selectedChoices": [2]
+			"variationIndex": 0
 		},
 		{
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 4 : choix 3 refusé",
-			"variationIndex": 0,
-			"selectedChoices": [3]
+			"variationIndex": 0
 		}
 	]
 }

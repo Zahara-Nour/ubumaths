@@ -9,38 +9,28 @@
 	"level": 1,
 	"delay": 20,
 	"status": "draft",
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"choices": [
+			"blanks": [
 				{
-					"content": "Vrai"
-				},
-				{
-					"content": "Faux"
+					"expectedAnswer": "0"
 				}
 			],
-			"statement": "Vrai ou faux ? Pour tout réel $x$, $e^x>0$.",
+			"statement": "Vrai ou faux ? Pour tout réel $x$, $e^x>0$.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
 			"variables": [],
 			"correction": {
 				"steps": [
 					"La fonction exponentielle est **strictement positive** sur $\\mathbb{R}$ : pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{e^x>0 }$. C'est **vrai**."
 				]
-			},
-			"correctChoiceIndex": ["0"]
+			}
 		},
 		{
-			"choices": [
+			"blanks": [
 				{
-					"content": "Vrai"
-				},
-				{
-					"content": "Faux"
+					"expectedAnswer": "1"
 				}
 			],
-			"statement": "Vrai ou faux ? Le nombre $e^{ {{a}} }$ est négatif.",
+			"statement": "Vrai ou faux ? Le nombre $e^{ {{a}} }$ est négatif.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -52,49 +42,45 @@
 					"L'exposant ${{a}}$ est négatif, mais une exponentielle est **toujours strictement positive** : $\\textcolor{{{color:primary.0}}}{e^{ {{a}} }>0 }$.",
 					"C'est **faux** : $e^{ {{a}} }=\\dfrac{1}{e^{ {{eval:-a}} }}$ est un nombre compris entre $0$ et $1$."
 				]
-			},
-			"correctChoiceIndex": ["1"]
+			}
 		},
 		{
-			"choices": [
+			"blanks": [
 				{
-					"content": "Vrai"
-				},
-				{
-					"content": "Faux"
+					"expectedAnswer": "1"
 				}
 			],
-			"statement": "Vrai ou faux ? Pour tout réel $x$, $e^x\\geqslant1$.",
+			"statement": "Vrai ou faux ? Pour tout réel $x$, $e^x\\geqslant1$.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
 			"variables": [],
 			"correction": {
 				"steps": [
 					"$e^x\\geqslant1$ seulement pour $x\\geqslant0$. Par exemple $e^{-1}=\\dfrac{1}{e}\\approx0{,}37<1$.",
 					"C'est **faux** : on sait seulement que $\\textcolor{{{color:primary.0}}}{e^x>0 }$ pour tout réel $x$."
 				]
-			},
-			"correctChoiceIndex": ["1"]
+			}
 		}
 	],
 	"testSpecs": [
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			},
 			"variables": {},
 			"description": "variation 1 : choix 0 accepté",
-			"variationIndex": 0,
-			"selectedChoices": [0]
+			"variationIndex": 0
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 1 : choix 1 refusé",
-			"variationIndex": 0,
-			"selectedChoices": [1]
+			"variationIndex": 0
 		},
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -102,10 +88,10 @@
 				"a": "-3"
 			},
 			"description": "variation 2 : choix 0 refusé",
-			"variationIndex": 1,
-			"selectedChoices": [0]
+			"variationIndex": 1
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "correct"
 			},
@@ -113,26 +99,25 @@
 				"a": "-3"
 			},
 			"description": "variation 2 : choix 1 accepté",
-			"variationIndex": 1,
-			"selectedChoices": [1]
+			"variationIndex": 1
 		},
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 3 : choix 0 refusé",
-			"variationIndex": 2,
-			"selectedChoices": [0]
+			"variationIndex": 2
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "correct"
 			},
 			"variables": {},
 			"description": "variation 3 : choix 1 accepté",
-			"variationIndex": 2,
-			"selectedChoices": [1]
+			"variationIndex": 2
 		}
 	]
 }

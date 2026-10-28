@@ -9,26 +9,14 @@
 	"level": 1,
 	"delay": 30,
 	"status": "draft",
-	"options": {
-		"shuffleChoices": true
-	},
 	"variations": [
 		{
-			"choices": [
+			"blanks": [
 				{
-					"content": "$f(x)=e^{x}$"
-				},
-				{
-					"content": "$f(x)=e^{-x}$"
-				},
-				{
-					"content": "$f(x)=-e^{x}$"
-				},
-				{
-					"content": "$f(x)=e^{x}+1$"
+					"expectedAnswer": "0"
 				}
 			],
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{x}$\n- $f(x)=e^{-x}$\n- $f(x)=-e^{x}$\n- $f(x)=e^{x}+1$\n```",
 			"correction": {
 				"steps": [
 					"Sur la figure : la courbe passe par le point $A(0\\,;1)$, elle **monte** (la fonction est croissante) et elle se rapproche de l'axe des abscisses quand $x$ tend vers $-\\infty$.",
@@ -36,25 +24,15 @@
 					"```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)   bleu   nom=C_f\npoints: A(0 ; f(0))\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```",
 					"Conclusion : $f(x)=e^{x}$."
 				]
-			},
-			"correctChoiceIndex": ["0"]
+			}
 		},
 		{
-			"choices": [
+			"blanks": [
 				{
-					"content": "$f(x)=e^{-x}$"
-				},
-				{
-					"content": "$f(x)=e^{x}$"
-				},
-				{
-					"content": "$f(x)=-e^{-x}$"
-				},
-				{
-					"content": "$f(x)=e^{-x}+1$"
+					"expectedAnswer": "0"
 				}
 			],
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(-x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(-x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{-x}$\n- $f(x)=e^{x}$\n- $f(x)=-e^{-x}$\n- $f(x)=e^{-x}+1$\n```",
 			"correction": {
 				"steps": [
 					"Sur la figure : la courbe passe par le point $A(0\\,;1)$, elle **descend** (la fonction est décroissante) et elle se rapproche de l'axe des abscisses quand $x$ tend vers $+\\infty$.",
@@ -62,25 +40,15 @@
 					"```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(-x)   bleu   nom=C_f\npoints: A(0 ; f(0))\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```",
 					"Conclusion : $f(x)=e^{-x}$."
 				]
-			},
-			"correctChoiceIndex": ["0"]
+			}
 		},
 		{
-			"choices": [
+			"blanks": [
 				{
-					"content": "$f(x)=e^{2x}$"
-				},
-				{
-					"content": "$f(x)=e^{-2x}$"
-				},
-				{
-					"content": "$f(x)=-e^{2x}$"
-				},
-				{
-					"content": "$f(x)=e^{2x}+1$"
+					"expectedAnswer": "0"
 				}
 			],
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(2*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(2*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{2x}$\n- $f(x)=e^{-2x}$\n- $f(x)=-e^{2x}$\n- $f(x)=e^{2x}+1$\n```",
 			"correction": {
 				"steps": [
 					"Sur la figure : la courbe passe par le point $A(0\\,;1)$, elle **monte** (la fonction est croissante) et elle se rapproche de l'axe des abscisses quand $x$ tend vers $-\\infty$.",
@@ -88,25 +56,15 @@
 					"```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(2*x)   bleu   nom=C_f\npoints: A(0 ; f(0))\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```",
 					"Conclusion : $f(x)=e^{2x}$."
 				]
-			},
-			"correctChoiceIndex": ["0"]
+			}
 		},
 		{
-			"choices": [
+			"blanks": [
 				{
-					"content": "$f(x)=-e^{x}$"
-				},
-				{
-					"content": "$f(x)=e^{x}$"
-				},
-				{
-					"content": "$f(x)=-e^{-x}$"
-				},
-				{
-					"content": "$f(x)=e^{-x}$"
+					"expectedAnswer": "0"
 				}
 			],
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = -exp(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = -exp(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=-e^{x}$\n- $f(x)=e^{x}$\n- $f(x)=-e^{-x}$\n- $f(x)=e^{-x}$\n```",
 			"correction": {
 				"steps": [
 					"Sur la figure : la courbe est **sous l'axe des abscisses**, elle passe par le point $A(0\\,;-1)$, elle **descend** (la fonction est décroissante) et se rapproche de l'axe des abscisses quand $x$ tend vers $-\\infty$.",
@@ -114,25 +72,15 @@
 					"```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = -exp(x)   bleu   nom=C_f\npoints: A(0 ; f(0))\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```",
 					"Conclusion : $f(x)=-e^{x}$."
 				]
-			},
-			"correctChoiceIndex": ["0"]
+			}
 		},
 		{
-			"choices": [
+			"blanks": [
 				{
-					"content": "$f(x)=e^{x}{{eval:b;+}}$"
-				},
-				{
-					"content": "$f(x)=e^{x}{{eval:-b;+}}$"
-				},
-				{
-					"content": "$f(x)=e^{x{{eval:b;+}}}$"
-				},
-				{
-					"content": "$f(x)=-e^{x}{{eval:b;+}}$"
+					"expectedAnswer": "0"
 				}
 			],
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{x}{{eval:b;+}}$\n- $f(x)=e^{x}{{eval:-b;+}}$\n- $f(x)=e^{x{{eval:b;+}}}$\n- $f(x)=-e^{x}{{eval:b;+}}$\n```",
 			"variables": [
 				{
 					"name": "b",
@@ -146,25 +94,15 @@
 					"```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)+({{b}})   bleu   nom=C_f\npoints: A(0 ; f(0))\nasymptotes: y={{b}}\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```",
 					"Conclusion : $f(x)=e^{x}{{eval:b;+}}$."
 				]
-			},
-			"correctChoiceIndex": ["0"]
+			}
 		},
 		{
-			"choices": [
+			"blanks": [
 				{
-					"content": "$f(x)=e^{x-{{c}}}$"
-				},
-				{
-					"content": "$f(x)=e^{x+{{c}}}$"
-				},
-				{
-					"content": "$f(x)=e^{x}-{{c}}$"
-				},
-				{
-					"content": "$f(x)=e^{-x-{{c}}}$"
+					"expectedAnswer": "0"
 				}
 			],
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x-{{c}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x-{{c}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=e^{x-{{c}}}$\n- $f(x)=e^{x+{{c}}}$\n- $f(x)=e^{x}-{{c}}$\n- $f(x)=e^{-x-{{c}}}$\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -178,156 +116,156 @@
 					"```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x-{{c}})   bleu   nom=C_f\npoints: A(0 ; f(0)), B({{c}} ; 1)\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```",
 					"Conclusion : $f(x)=e^{x-{{c}}}$."
 				]
-			},
-			"correctChoiceIndex": ["0"]
+			}
 		}
 	],
 	"testSpecs": [
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			},
 			"variables": {},
 			"description": "variation 0 : « e^x » accepté",
-			"variationIndex": 0,
-			"selectedChoices": [0]
+			"variationIndex": 0
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 0 : « e^-x » refusé",
-			"variationIndex": 0,
-			"selectedChoices": [1]
+			"variationIndex": 0
 		},
 		{
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 0 : « -e^x » refusé",
-			"variationIndex": 0,
-			"selectedChoices": [2]
+			"variationIndex": 0
 		},
 		{
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 0 : « e^x+1 » refusé",
-			"variationIndex": 0,
-			"selectedChoices": [3]
+			"variationIndex": 0
 		},
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			},
 			"variables": {},
 			"description": "variation 1 : « e^-x » accepté",
-			"variationIndex": 1,
-			"selectedChoices": [0]
+			"variationIndex": 1
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 1 : « e^x » refusé",
-			"variationIndex": 1,
-			"selectedChoices": [1]
+			"variationIndex": 1
 		},
 		{
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 1 : « -e^-x » refusé",
-			"variationIndex": 1,
-			"selectedChoices": [2]
+			"variationIndex": 1
 		},
 		{
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 1 : « e^-x+1 » refusé",
-			"variationIndex": 1,
-			"selectedChoices": [3]
+			"variationIndex": 1
 		},
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			},
 			"variables": {},
 			"description": "variation 2 : « e^2x » accepté",
-			"variationIndex": 2,
-			"selectedChoices": [0]
+			"variationIndex": 2
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 2 : « e^-2x » refusé",
-			"variationIndex": 2,
-			"selectedChoices": [1]
+			"variationIndex": 2
 		},
 		{
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 2 : « -e^2x » refusé",
-			"variationIndex": 2,
-			"selectedChoices": [2]
+			"variationIndex": 2
 		},
 		{
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 2 : « e^2x+1 » refusé",
-			"variationIndex": 2,
-			"selectedChoices": [3]
+			"variationIndex": 2
 		},
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			},
 			"variables": {},
 			"description": "variation 3 : « -e^x » accepté",
-			"variationIndex": 3,
-			"selectedChoices": [0]
+			"variationIndex": 3
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 3 : « e^x » refusé",
-			"variationIndex": 3,
-			"selectedChoices": [1]
+			"variationIndex": 3
 		},
 		{
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 3 : « -e^-x » refusé",
-			"variationIndex": 3,
-			"selectedChoices": [2]
+			"variationIndex": 3
 		},
 		{
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 3 : « e^-x » refusé",
-			"variationIndex": 3,
-			"selectedChoices": [3]
+			"variationIndex": 3
 		},
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			},
@@ -335,10 +273,10 @@
 				"b": "1"
 			},
 			"description": "variation 4 : b=1, « e^x+b » accepté",
-			"variationIndex": 4,
-			"selectedChoices": [0]
+			"variationIndex": 4
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -346,10 +284,10 @@
 				"b": "1"
 			},
 			"description": "variation 4 : b=1, « e^x−b » refusé",
-			"variationIndex": 4,
-			"selectedChoices": [1]
+			"variationIndex": 4
 		},
 		{
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -357,10 +295,10 @@
 				"b": "1"
 			},
 			"description": "variation 4 : b=1, « e^(x+b) » refusé",
-			"variationIndex": 4,
-			"selectedChoices": [2]
+			"variationIndex": 4
 		},
 		{
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -368,10 +306,10 @@
 				"b": "1"
 			},
 			"description": "variation 4 : b=1, « −e^x+b » refusé",
-			"variationIndex": 4,
-			"selectedChoices": [3]
+			"variationIndex": 4
 		},
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			},
@@ -379,10 +317,10 @@
 				"b": "-2"
 			},
 			"description": "variation 4 : b=-2, « e^x+b » accepté",
-			"variationIndex": 4,
-			"selectedChoices": [0]
+			"variationIndex": 4
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -390,10 +328,10 @@
 				"b": "-2"
 			},
 			"description": "variation 4 : b=-2, « e^x−b » refusé",
-			"variationIndex": 4,
-			"selectedChoices": [1]
+			"variationIndex": 4
 		},
 		{
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -401,10 +339,10 @@
 				"b": "-2"
 			},
 			"description": "variation 4 : b=-2, « e^(x+b) » refusé",
-			"variationIndex": 4,
-			"selectedChoices": [2]
+			"variationIndex": 4
 		},
 		{
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -412,10 +350,10 @@
 				"b": "-2"
 			},
 			"description": "variation 4 : b=-2, « −e^x+b » refusé",
-			"variationIndex": 4,
-			"selectedChoices": [3]
+			"variationIndex": 4
 		},
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			},
@@ -423,10 +361,10 @@
 				"c": "1"
 			},
 			"description": "variation 5 : c=1, « e^(x−c) » accepté",
-			"variationIndex": 5,
-			"selectedChoices": [0]
+			"variationIndex": 5
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -434,10 +372,10 @@
 				"c": "1"
 			},
 			"description": "variation 5 : c=1, « e^(x+c) » refusé",
-			"variationIndex": 5,
-			"selectedChoices": [1]
+			"variationIndex": 5
 		},
 		{
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -445,10 +383,10 @@
 				"c": "1"
 			},
 			"description": "variation 5 : c=1, « e^x−c » refusé",
-			"variationIndex": 5,
-			"selectedChoices": [2]
+			"variationIndex": 5
 		},
 		{
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -456,10 +394,10 @@
 				"c": "1"
 			},
 			"description": "variation 5 : c=1, « e^(−x−c) » refusé",
-			"variationIndex": 5,
-			"selectedChoices": [3]
+			"variationIndex": 5
 		},
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			},
@@ -467,10 +405,10 @@
 				"c": "2"
 			},
 			"description": "variation 5 : c=2, « e^(x−c) » accepté",
-			"variationIndex": 5,
-			"selectedChoices": [0]
+			"variationIndex": 5
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -478,10 +416,10 @@
 				"c": "2"
 			},
 			"description": "variation 5 : c=2, « e^(x+c) » refusé",
-			"variationIndex": 5,
-			"selectedChoices": [1]
+			"variationIndex": 5
 		},
 		{
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -489,10 +427,10 @@
 				"c": "2"
 			},
 			"description": "variation 5 : c=2, « e^x−c » refusé",
-			"variationIndex": 5,
-			"selectedChoices": [2]
+			"variationIndex": 5
 		},
 		{
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -500,8 +438,7 @@
 				"c": "2"
 			},
 			"description": "variation 5 : c=2, « e^(−x−c) » refusé",
-			"variationIndex": 5,
-			"selectedChoices": [3]
+			"variationIndex": 5
 		}
 	]
 }

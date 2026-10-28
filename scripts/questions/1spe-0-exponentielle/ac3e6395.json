@@ -9,71 +9,58 @@
 	"level": 6,
 	"delay": 20,
 	"status": "draft",
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"choices": [
+			"blanks": [
 				{
-					"content": "$0$"
-				},
-				{
-					"content": "$1$"
-				},
-				{
-					"content": "$e$"
-				},
-				{
-					"content": "Ce nombre n'existe pas."
+					"expectedAnswer": "1"
 				}
 			],
-			"statement": "Que vaut $e^0$ ?",
+			"statement": "Que vaut $e^0$ ?\n\n```choix\nmelanger: non\n- $0$\n- $1$\n- $e$\n- Ce nombre n'existe pas.\n```",
 			"variables": [],
 			"correction": {
 				"steps": [
 					"Par définition, la fonction exponentielle vaut $1$ en $0$ : $\\textcolor{{{color:primary.0}}}{e^0=1 }$."
 				]
-			},
-			"correctChoiceIndex": ["1"]
+			}
 		}
 	],
 	"testSpecs": [
 		{
+			"answers": ["0"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 0 : choix 0 refusé",
-			"variationIndex": 0,
-			"selectedChoices": [0]
+			"variationIndex": 0
 		},
 		{
+			"answers": ["1"],
 			"expected": {
 				"status": "correct"
 			},
 			"variables": {},
 			"description": "variation 0 : choix 1 accepté",
-			"variationIndex": 0,
-			"selectedChoices": [1]
+			"variationIndex": 0
 		},
 		{
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 0 : choix 2 refusé",
-			"variationIndex": 0,
-			"selectedChoices": [2]
+			"variationIndex": 0
 		},
 		{
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {},
 			"description": "variation 0 : choix 3 refusé",
-			"variationIndex": 0,
-			"selectedChoices": [3]
+			"variationIndex": 0
 		}
 	]
 }

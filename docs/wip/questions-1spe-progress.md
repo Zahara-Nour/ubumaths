@@ -387,3 +387,10 @@ f40e8a4a), publiés tels quels comme ceux des lots précédents.
 
 Specs des 17 modèles vertes après correction (225 specs, 2 600 tirages) ; 25 tirages forcés relus (dénominateur négatif,
 fraction simplifiable ou non, exposant 1).
+
+**Instantané rafraîchi (2026-10-28)** : les 4 QCM (09432575, ac3e6395, 68166a11, f40e8a4a) ont été migrés en case choix en
+prod à 08 h 35 UTC (lot 4 de `figure-et-choix`), après l'instantané : ré-exportés, C2 refait sur f40e8a4a. Sans cela,
+`--mettre-a-jour` aurait remis l'ancien format. Écart à la base relu champ par champ : seules les corrections voulues.
+
+**Relecture (David, page à cocher)** : 245b4eb1 variation 2, « il faut un QCM, pas une case où il faut entrer le mot
+décroissante » → case choix (croissante / décroissante / constante, `melanger: non`), 3 specs.

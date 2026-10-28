@@ -38,11 +38,10 @@
 		{
 			"blanks": [
 				{
-					"pool": ["croissante", "décroissante", "constante"],
-					"expectedAnswer": "décroissante"
+					"expectedAnswer": "1"
 				}
 			],
-			"statement": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)={{N}}\\,e^{-{{k}}t}\\qquad(t\\geqslant0).$$\n\nComplète : sur $[0\\,;+\\infty[$, la fonction $N$ est [_].",
+			"statement": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)={{N}}\\,e^{-{{k}}t}\\qquad(t\\geqslant0).$$\n\nSur $[0\\,;+\\infty[$, la fonction $N$ est :\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
 			"variables": [
 				{
 					"name": "N",
@@ -171,7 +170,7 @@
 			"variationIndex": 0
 		},
 		{
-			"answers": ["décroissante"],
+			"answers": ["1"],
 			"expected": {
 				"status": "correct"
 			},
@@ -179,23 +178,11 @@
 				"N": "500",
 				"k": "0.2"
 			},
-			"description": "variation 1 : décroissante",
+			"description": "variation 2 : choix « décroissante » accepté",
 			"variationIndex": 1
 		},
 		{
-			"answers": ["Decroissante"],
-			"expected": {
-				"status": "correct"
-			},
-			"variables": {
-				"N": "500",
-				"k": "0.2"
-			},
-			"description": "variation 1 : Decroissante (majuscule, sans accent)",
-			"variationIndex": 1
-		},
-		{
-			"answers": ["croissante"],
+			"answers": ["0"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -203,11 +190,11 @@
 				"N": "500",
 				"k": "0.2"
 			},
-			"description": "variation 1 : croissante",
+			"description": "variation 2 : choix « croissante » refusé",
 			"variationIndex": 1
 		},
 		{
-			"answers": ["constante"],
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			},
@@ -215,7 +202,7 @@
 				"N": "500",
 				"k": "0.2"
 			},
-			"description": "variation 1 : constante",
+			"description": "variation 2 : choix « constante » refusé",
 			"variationIndex": 1
 		},
 		{
