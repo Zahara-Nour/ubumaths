@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1936._
+_Mis à jour le 2026-10-28, après #1939._
 
-- **État** : lot 3 (fractions, 9 modèles, CE1-016 à 021 et 099) : fichiers mergés (#1936, CI verte) ; brouillons pas encore créés en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce1-3 --publier` (base prod) depuis le dépôt principal ; relever les `id` ; puis migration nœud + tag (nouvelle branche dans le worktree), page à cocher, publication.
-- **En attente de David** : le `create-questions --publier` en prod.
+- **État** : lot 3 (fractions, 9 modèles, CE1-016 à 021 et 099) : 9 brouillons en prod, rangés et tagués (#1939, `db:migrate` joué, vérifié 9/9) ; page à cocher publiée (https://claude.ai/artifact/PZb69g4xfAJUS8cm5q5JsS, 0 alerte, 0 verdict).
+- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`) ; 9/9 OK → `publier-lot --dir scripts/questions/ce1-3` en simulation, puis `--publier` par David ; retirer le worktree.
+- **En attente de David** : la relecture de la page à cocher.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 (« 1 demi », « le 1/4 ») ; `reducedFractions: off` (simplification = CE2) ; worktree neuf : `svelte-kit sync` avant `tsx` (`$lib`) ; ports 5176-5178 pris (5179 pour ce lot) ; commitlint : sujet sans majuscule initiale.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `feat/questions-ce1-lot3`.
 
@@ -326,3 +326,4 @@ tag ne change aucune règle.
   avant comme après ; 9 brouillons en base locale ; aperçu admin : choix juste (02), 3/8 juste et 3/24 faux (08).
   Vu en passant (pas du lot) : dans la carte de correction, le cadre vert de la réponse attendue coupe le bas d'une
   fraction.
+- 2026-10-28 : #1936 mergée ; 9 brouillons créés en prod par David ; #1939 (nœud + tag, test rouge 5/9 sans, vert 9/9, `security-auditor` sans finding bloquant) mergée, `db:migrate` joué, vérifié (9/9 sur leur nœud, un point chacun) ; page à cocher publiée, aucune alerte.
