@@ -1,6 +1,6 @@
 {
 	"title": "Les décompositions de $60$",
-	"description": "1 × 60, 2 × 30, 3 × 20, 4 × 15, 5 × 12, 6 × 10",
+	"description": "2 × 30, 3 × 20, 4 × 15, 5 × 12, 6 × 10",
 	"grades": ["CE2"],
 	"theme": "Entiers",
 	"domain": "Multiplier",
@@ -14,7 +14,7 @@
 			"variables": [
 				{
 					"name": "k",
-					"expression": "1|2|3|4|5|6|10|12|15|20|30|60"
+					"expression": "2|3|4|5|6|10|12|15|20|30"
 				},
 				{
 					"name": "expression1",
@@ -28,7 +28,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Les décompositions de $60$ à connaître : $1\\times 60$, $2\\times 30$, $3\\times 20$, $4\\times 15$, $5\\times 12$, $6\\times 10$.",
+					"Les décompositions de $60$ à connaître : $2\\times 30$, $3\\times 20$, $4\\times 15$, $5\\times 12$, $6\\times 10$.",
 					"$${{k}}\\times {{eval:60/k}}=60$$"
 				]
 			}
@@ -38,7 +38,7 @@
 			"variables": [
 				{
 					"name": "k",
-					"expression": "1|2|3|4|5|6|10|12|15|20|30|60"
+					"expression": "2|3|4|5|6|10|12|15|20|30"
 				},
 				{
 					"name": "expression1",
@@ -52,7 +52,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Les décompositions de $60$ à connaître : $1\\times 60$, $2\\times 30$, $3\\times 20$, $4\\times 15$, $5\\times 12$, $6\\times 10$.",
+					"Les décompositions de $60$ à connaître : $2\\times 30$, $3\\times 20$, $4\\times 15$, $5\\times 12$, $6\\times 10$.",
 					"$${{k}}\\times {{eval:60/k}}=60$$"
 				]
 			}
@@ -104,12 +104,12 @@
 			}
 		},
 		{
-			"description": "borne : 1 × ? = 60 : 60",
+			"description": "borne : 2 × ? = 60 : 30",
 			"variationIndex": 0,
 			"variables": {
-				"k": "1"
+				"k": "2"
 			},
-			"answers": ["60"],
+			"answers": ["30"],
 			"expected": {
 				"status": "correct"
 			}
