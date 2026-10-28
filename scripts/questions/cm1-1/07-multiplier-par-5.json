@@ -1,6 +1,6 @@
 {
 	"title": "Multiplier par $5$",
-	"description": "Multiplier par 10, puis prendre la moitié : 5 × 46, 5 × 37, 5 × 148",
+	"description": "Multiplier par 10, puis prendre la moitié : 5 × 46, 5 × 37",
 	"grades": ["CM1"],
 	"theme": "Entiers",
 	"domain": "Multiplier",
@@ -49,32 +49,6 @@
 				{
 					"name": "n",
 					"expression": "eval:2*h+1"
-				},
-				{
-					"name": "expression1",
-					"expression": "5*{{n}}"
-				}
-			],
-			"blanks": [
-				{
-					"expectedAnswer": "{{eval:5*n}}"
-				}
-			],
-			"correction": {
-				"steps": [
-					"Multiplier par $5$, c'est multiplier par $10$, puis prendre la moitié.",
-					"**Étape 1.** $10\\times {{n}}=\\textcolor{{{color:primary.0}}}{{{eval:10*n}}}$.",
-					"**Étape 2.** La moitié de ${{eval:10*n}}$ : $\\textcolor{{{color:primary.1}}}{{{solution}}}$.",
-					"Donc $5\\times {{n}}={{solution}}$."
-				]
-			}
-		},
-		{
-			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
-			"variables": [
-				{
-					"name": "n",
-					"expression": "101..109|111..119|121..124|126..129|131..139|141..149|151..159|161..169|171..174|176..179|181..189|191..199"
 				},
 				{
 					"name": "expression1",
@@ -170,39 +144,6 @@
 				"h": "5"
 			},
 			"answers": ["55"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "5 × 148 = 740",
-			"variationIndex": 2,
-			"variables": {
-				"n": "148"
-			},
-			"answers": ["740"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "Erreur : × 10 sans la moitié (1 480)",
-			"variationIndex": 2,
-			"variables": {
-				"n": "148"
-			},
-			"answers": ["1480"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "borne : 5 × 199 = 995",
-			"variationIndex": 2,
-			"variables": {
-				"n": "199"
-			},
-			"answers": ["995"],
 			"expected": {
 				"status": "correct"
 			}
