@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, phase 0 du lot 0 validée._
+_Mis à jour le 2026-10-28, lot 0 en PR #1921._
 
-- **État** : relevé et classement faits (§ 1 à 4) ; questions du § 5 et phase 0 du lot 0 (§ 6) validées par David.
-- **Prochaine action** : écrire le lot 0 (instantané prod, migration de contenu de 290dcf6f, migration de rangement de 20 modèles, tests d'intégration), PR.
-- **En attente de David** : rien.
-- **Pièges en cours** : QCM = case « choix » seulement (0 `multiple_choice` en base depuis le 2026-10-28) ; relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot.
-- **Worktree / branche** : aucun.
+- **État** : lot 0 écrit (§ 7), PR #1921 ouverte ; CI et `security-auditor` en cours.
+- **Prochaine action** : CI verte + auditeur sans bloquant → merge, `db:migrate` depuis le dépôt principal, vérification MCP ; puis phase 0 du lot 1 (puissances et nombres : 3-007, 3-008, 3-009, 3-010, 3-003).
+- **En attente de David** : rien (sortie de 90dca27a / acbd2280 du lot à lui signaler, § 7).
+- **Pièges en cours** : d'autres sessions (4e, 5e, 2de) rangent les mêmes modèles du collège : relire `supabase/migrations/` d'`origin/main` avant chaque relevé ; QCM = case « choix » seulement ; relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot.
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, `feat/questions-3-lot0`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -169,3 +169,18 @@ Restent en 3e sans tag : 77b82211, cf4468c3. a1ae1558 (exposants positifs) reste
 
 **Accès (tranché)** : les élèves et le prof de 3e voient 12 modèles publiés de plus ; la 4e et la
 5e les perdent ; la 3e en cède 6 (4e : 2, 5e : 1, 2de : 3). Aucune règle ne change.
+
+## 7. Lot 0 : écrit (2026-10-28)
+
+- **Écart à la phase 0** : 90dca27a et acbd2280 (5e, prévus en 3e avec 3-001) sont **sortis du lot**. La
+  session 5e les avait déjà passés en 4e avec le tag 4-005, sur décision de David
+  (`20261028193700_questions_5_niveaux`, #1917, jouée en prod). 3-001 reste couvert par c9d6c5db.
+  Le lot compte donc 18 modèles (17 rangés + 290dcf6f).
+- **Relevé** `docs/wip/questions/etat-prod-2026-10-28-3e/` (`releve-prod-3.ts`, lecture seule) : 18 modèles,
+  md5 = MCP pour les 18 ; 1 tag (290dcf6f → 3-068) ; 0 donnée d'élève (9 tables).
+- **Contenu** `20261028200000_questions_3_contenu.sql` (`lot-corrections-3.py`) : 290dcf6f sans la variation
+  à 200 % ; la spec « augmentation seule » passe sur 50 %. `verifier-contenu.ts` : specs 14/14, tirages 400/400.
+- **Rangement** `20261028200100_questions_3_rangement_tags.sql` (`lot-rangement-3.py`, repris du CM1) :
+  17 modèles, 17 niveaux changés, 4 déplacés (65110463, 8ac99be4, 2bdb3db6, 336451af), 16 tags posés.
+- **Tests** `questions-3-contenu`, `questions-3-rangement-tags` : rouges les migrations vidées (17 échecs),
+  verts avec (31 verts, 17 sautés = options du helper sans objet), relancés après le commit.

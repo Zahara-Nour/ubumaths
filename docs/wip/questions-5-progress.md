@@ -143,3 +143,8 @@ en prod ; la figure à compléter ne sait tracer que `droite` / `segment` et vé
 
 Accès : brouillons (admin seul) jusqu'à la publication. Script `docs/wip/questions/lot-5-calcul.py`,
 fichiers `scripts/questions/5-calcul/` ; simulation prod : 7 à créer, 59 specs vertes.
+
+## Note de la session 3e (2026-10-28)
+
+Le lot 0 de la 3e (PR #1921) passe **ac5d0413** (« Réduire une somme », qa + ra) de la 3e à la **5e**, tag
+5-039, nœud gardé. 90dca27a et acbd2280 ne sont pas touchés par la 3e (laissés en 4e, 4-005).
