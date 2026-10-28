@@ -1965,6 +1965,7 @@ Décisions de David (2026-10-25 et 2026-10-26), journal : `docs/wip/illustration
 - **Style** : affiche lithographiée de Montmartre (1896), à la manière de Steinlen ; même famille que les Mathoux. Pas de halo systématique.
 - **Deux nuanciers** (`docs/Chiphres/illustrations/nuancier/`) : _numérique_ (la palette canonique ci-dessus) pour tout ce qui vit dans l'interface (personnages qui parlent à l'élève, icônes, bannières) ; _encre d'imprimerie_ (la même, désaturée, sur papier crème) pour les objets imprimés du Royaume (grande carte, Shtam, Almanach, Édits Royaux, diplômes, affiches d'événements). Les Mathoux et les Palotins gardent leurs couleurs.
 - **Dans un prompt**, nommer les couleurs en anglais courant (navy ink, cream parchment, emerald green, marigold yellow, deep crimson…), jamais par leur nom du Royaume, et joindre le nuancier de référence sans texte.
+- **Images de référence** (`docs/Chiphres/illustrations/personnages/`, une par prompt ci-dessous, nommée d'après le personnage : `pere-ubu.jpg`, `flegmatique.jpg`, `quatrezoneilles.jpg`…) : à joindre au prompt d'un nouveau personnage (Père Ubu toujours, et les personnages de même rang pour l'âge et l'échelle). Captures des SVG des Palotins dans l'appli : `personnages/palotins-appli/`.
 
 #### Prompt de référence — Père Ubu 🟡
 

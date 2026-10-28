@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après le prompt de Quatrezoneilles (pas de PR : chantier 100 % doc pour l'instant)._
+_Mis à jour le 2026-10-28, après le rangement des dix-huit images (pas de PR : chantier 100 % doc pour l'instant)._
 
 - **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu, du Capitaine Bordure, de Bougrelas, de Conscience, du Czar Alexis, de Monsieur Prudhomme, du Flegmatique (Tristan Bernard), du Professeur Achras, du Docteur Faustroll, de Bosse-de-Nage et du Cheval à Phynances validés (casting et quatre gouverneurs complets) ; Palotins redessinés au trait Steinlen pour le lore (SVG de l'appli inchangés) : Giron, Pile, Cotice, Merdranpo (sans SVG, brun merdre, casserole, bas dépareillés) , Mousched-Gogh (sans SVG, artiste, glace du Czar, mouche sur le nez) et Quatrezoneilles (sans SVG, valet de pied or, grandes oreilles décollées) validés : les six Palotins sont faits et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
-- **Prochaine action** : tous les personnages prévus ont leur prompt ; ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` quand David les fournit ; puis, selon David : géographie et carte, lieux, ou personnages mineurs.
-- **En attente de David** : les dix-huit images de référence · caractère de Pile : « fourbe » (Compendium) ou « rêveur philosophe » (`buddy-palotins.md`) ? · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
+- **Prochaine action** : tous les personnages prévus ont leur prompt et leur image (dix-huit, rangées dans `docs/Chiphres/illustrations/personnages/`, référencées au Compendium § XI) ; suite selon David : géographie et carte, lieux, ou personnages mineurs.
+- **En attente de David** : caractère de Pile : « fourbe » (Compendium) ou « rêveur philosophe » (`buddy-palotins.md`) ? · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
 - **Pièges en cours** : Ubu sans chapeau pointu ni longue robe blanche (aucune ressemblance avec une cagoule) ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée (Nano Banana refuse : personnage inventé à la place). Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 
