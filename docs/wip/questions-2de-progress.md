@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1906 (PR de migration du lot 2 bis A ouverte)._
+_Mis à jour le 2026-10-28, après #1912._
 
-- **État** : lots 1 et 2 publiés ; lot 2 bis A « lecture graphique » (8 modèles) mergé (#1906), créé en prod
-  en brouillon par David le 2026-10-28 ; migration nœud + tag écrite (test rouge sans elle, 9/9 vert avec).
-- **Prochaine action** : merger la PR de migration, `db:migrate` depuis le dépôt principal, vérifier en prod ;
-  page à cocher du lot A ; puis lot B (inverse, √x, x³ : 2-342, 465, 343, 468, 344, 471).
-- **En attente de David** : sort de la sonde `scripts/tmp-sonde-courbes.ts` + `tmp-montre.ts` (non suivis
-  dans le worktree : en faire un vrai script, ou les effacer).
-- **Pièges en cours** : test « cas rare » lent en CI (relancer) ; étiquettes C_f / C_g parfois serrées près
-  d'une intersection (moteur du bloc).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-a-tags`.
+- **État** : lots 1 et 2 publiés ; lot 2 bis A « lecture graphique » (8 modèles) en prod en brouillon ;
+  migration nœud + tag mergée (#1912), **pas encore jouée en prod**.
+- **Prochaine action** : David lance `pnpm exec supabase db push --include-all` (la prod a déjà des migrations
+  plus récentes) ; je vérifie en prod ; page à cocher du lot A ; puis lot B (inverse, √x, x³ : 2-342, 465,
+  343, 468, 344, 471).
+- **En attente de David** : ce `db push` ; sort de la sonde `scripts/tmp-sonde-courbes.ts` + `tmp-montre.ts`
+  (non suivis dans le worktree : vrai script, ou effacés).
+- **Pièges en cours** : horodatage de migration pris par une autre session (renommer avant la CI) ; test
+  « cas rare » lent en CI (relancer) ; étiquettes C_f / C_g serrées près d'une intersection.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-a-tags` (mergée).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -400,3 +401,6 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
   brouillons, niveau 2de, sans nœud ni tag ; les 8 points sans aucun tag.
 - Migration `20261028183000_questions_2de_lecture_a_rangement_tags.sql` (gabarit du lot 2) et son test
   d’intégration : rouge sans la migration, 9/9 vert avec ; `security-auditor` : aucun finding bloquant.
+- Horodatage `20261028170000` pris entre-temps par le CE1 → migration renommée `20261028183000`.
+- #1912 mergée le 2026-10-28. `db:migrate` refusé par la CLI (prod en avance : `20261028193700`, `200000`) ;
+  `--include-all` refusé par le classifieur du mode auto → lancé par David.
