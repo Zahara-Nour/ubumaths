@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après le deploy:prod v0.54.0._
+_Mis à jour le 2026-10-28, PR du retrait de la rustine ouverte._
 
-- **État** : Vite 8 en prod (v0.54.0). Build Vercel réussi : **2 min 47 s** (contre 4 min 58 s et 5 min 17 s pour les deux builds de prod précédents, sous Vite 7) ; chiph.re répond 200.
-- **Prochaine action** : PR qui retire la rustine #1892 (`scripts/vite-build.sh`, heap 6144 sur Vercel), à mesurer d'abord dans Docker 8 Go avec Vite 8.
-- **En attente de David** : son go pour cette PR.
+- **État** : Vite 8 en prod (v0.54.0, build Vercel 2 min 47 s au lieu de ~5 min). Rustine #1892 retirée sur la branche : `pnpm build` = `vite build` avec le heap par défaut de Node (§ 6).
+- **Prochaine action** : merger la PR ; au `deploy:prod` suivant (décidé par David), lire le succès du build Vercel ; puis versement du chantier (durable → `docs/systeme/`, journal archivé).
+- **En attente de David** : rien.
 - **Pièges en cours** : `test:client` complet plante sur le Mac sous Vite 7 comme sous Vite 8 (la CI fait foi) ; mesurer dans Docker (`--memory=8g --cpus=2`), jamais sur le Mac.
-- **Worktree / branche** : aucun (à recréer pour la PR de la rustine).
+- **Worktree / branche** : `ubumaths-wt-build-memoire` · `chore/build-memoire-heap`.
 
 ---
 
@@ -71,3 +71,15 @@ Pic du conteneur **4,82 Go** (7,67 avec Vite 7), build ~45 s (~3 min 50 avec Vit
 - Garde SECURITY DEFINER rouge : sous Vite 8, oxc lit `tsconfig.json` (qui étend `.svelte-kit/tsconfig.json`, absent du job) ; `esbuild.tsconfigRaw` ne sert plus. Correctif : `svelte-kit sync` dans `test:definer-guard`.
 - Revue `code-reviewer` (Sonnet) : aucun bloquant ; garde durcie (`import()` littéraux, `.js` → `.ts`).
 - CI verte (16 checks, intégration comprise), mergée le 2026-10-28.
+
+## 6. Retrait de la rustine #1892 (2026-10-28)
+
+Mesure dans `docker run --memory=8g --memory-swap=8g --cpus=2 node:22-bookworm` (copie du dépôt, `pnpm install --frozen-lockfile`, un conteneur neuf par build, pic lu dans `memory.peak` du cgroup), `vite build` complet, adaptateur Vercel compris (`.vercel/output/functions` écrit) :
+
+| heap V8                    | sortie | durée | pic du conteneur |
+| -------------------------- | ------ | ----- | ---------------- |
+| défaut de Node (2 096 Mio) | 0      | 37 s  | 4,79 Go          |
+| 6144 (rustine)             | 0      | 37 s  | 4,92 Go          |
+| défaut de Node, 2ᵉ passage | 0      | 36 s  | 4,93 Go          |
+
+Le heap vivant ne dépasse plus ~0,25 Go (§ 2) : le plafond ne joue plus. Marge ~3 Go sur les 8 Go de Vercel (~1 Go avec la rustine sous Vite 7). `scripts/vite-build.sh` supprimé, `pnpm build` = `gros-process.sh … vite build` partout (Mac, CI, Vercel). `pnpm build` sur le Mac : 30 s, sortie 0.
