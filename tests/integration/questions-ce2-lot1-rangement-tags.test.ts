@@ -2,7 +2,7 @@
  * Chantier « questions-ce2 », lots 0 et 1 : rangement, tags, niveaux et statut (Supabase local requis)
  * ===================================================================================================
  *
- * Migration `20261028120000_questions_ce2_lot1_rangement_tags` : les 5 brouillons du lot 1 (sans
+ * Migration `20261028130100_questions_ce2_lot1_rangement_tags` : les 5 brouillons du lot 1 (sans
  * nœud ni tag) vont sur le nœud de leur point et reçoivent son tag ; 03675b9b (Les multiples de
  * 25) passe de [CE1] à [CE1, CE2] et reçoit CE2-077 ; 427c735c et 44c46578 repassent en
  * brouillon. Phase 0 validée par David le 2026-10-28 (journal docs/wip/questions-ce2-progress.md
@@ -55,7 +55,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261028120000_questions_ce2_lot1_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261028130100_questions_ce2_lot1_rangement_tags.sql';
 const TABLES = 'Nombres et calculs > Entiers : addition et soustraction > tables';
 const DOUBLE_ADDITION =
 	'Nombres et calculs > Entiers : addition et soustraction > double et moitié';
