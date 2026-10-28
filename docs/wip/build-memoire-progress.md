@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, PR « Vite 8 » ouverte._
+_Mis à jour le 2026-10-28, après #1899._
 
-- **État** : Vite 8 sur la branche (`vite` 8.3.5, `@sveltejs/vite-plugin-svelte` 7.3.1) + correctif du worker Pyodide (§ 4). Vérifié : `check:incremental`, `test:server`, build, garde Safari, 245 pages comparées Vite 7 / Vite 8 (Chromium + WebKit, anonyme + admin) sans écart, Python exécuté.
-- **Prochaine action** : CI de la PR (les tests client y font foi, § 4), revue, merge ; puis mesurer le build Vercel au prochain `deploy:prod` et retirer la rustine #1892 (heap 6144) si la marge le permet.
-- **En attente de David** : rien.
-- **Pièges en cours** : `test:client` complet plante sur le Mac sous Vite 7 comme sous Vite 8 (navigateur fermé vers 260/402 fichiers) : pas un critère local ; témoin `ubumaths-wt-build-memoire-temoin` (détaché) et previews 5186 / 5177 à retirer.
-- **Worktree / branche** : `ubumaths-wt-build-memoire`, `chore/build-memoire`.
+- **État** : Vite 8 mergé (#1899), pas encore en prod. Avec lui : correctif du worker Pyodide (barrel → imports module par module, garde `workers-sans-runes.test.ts`) et `svelte-kit sync` avant la garde SECURITY DEFINER (oxc lit `tsconfig.json`).
+- **Prochaine action** : au prochain `deploy:prod` (demandé par David), lire la durée et le succès du build Vercel ; puis PR qui retire la rustine #1892 (`scripts/vite-build.sh`, heap 6144 sur Vercel), à mesurer d'abord dans Docker 8 Go avec Vite 8.
+- **En attente de David** : `deploy:prod` quand il le voudra.
+- **Pièges en cours** : `test:client` complet plante sur le Mac sous Vite 7 comme sous Vite 8 (la CI fait foi) ; mesurer dans Docker (`--memory=8g --cpus=2`), jamais sur le Mac.
+- **Worktree / branche** : aucun (à recréer pour la PR de la rustine).
 
 ---
 
@@ -65,3 +65,9 @@ Pic du conteneur **4,82 Go** (7,67 avec Vite 7), build ~45 s (~3 min 50 avec Vit
 - **Comparaison du site construit** : previews Vite 7 (`main`) et Vite 8 sur la base locale, 245 pages sans paramètre, Chromium et WebKit, anonyme et `admin@local.test` ; statut, adresse finale, erreurs JS et console comparés page à page. Seul écart : `/python`.
 - **`/python` cassé sous Vite 8** : le worker Pyodide importait des valeurs par le barrel `$lib/shared/python`, qui tire `pythonDebug.svelte.ts` (store instancié au niveau du module, runes non compilées dans un worker). Rollup l'élaguait, Rolldown le garde → « $state is not defined ». Correctif : imports module par module ; garde `src/lib/workers/__tests__/workers-sans-runes.test.ts` (rouge avant, avec le chemin d'imports ; verte après). Après correctif : 0 écart sur les 245 pages, code Python exécuté (sortie + graphique) dans les deux navigateurs.
 - **`test:client`** : plante sur le Mac sous Vite 7 comme sous Vite 8 (navigateur fermé, ~260/402 fichiers ; erreurs `wrapDynamicImport` du serveur de dev SvelteKit dans les deux). La CI (par tranches) fait foi.
+
+## 5. CI de #1899
+
+- Garde SECURITY DEFINER rouge : sous Vite 8, oxc lit `tsconfig.json` (qui étend `.svelte-kit/tsconfig.json`, absent du job) ; `esbuild.tsconfigRaw` ne sert plus. Correctif : `svelte-kit sync` dans `test:definer-guard`.
+- Revue `code-reviewer` (Sonnet) : aucun bloquant ; garde durcie (`import()` littéraux, `.js` → `.ts`).
+- CI verte (16 checks, intégration comprise), mergée le 2026-10-28.
