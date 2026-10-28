@@ -1,6 +1,6 @@
 {
 	"title": "Entier, décimal ou non décimal ?",
-	"description": "Dire si une fraction représente un nombre entier (35/7), un décimal non entier (3/4, 7/5) ou un nombre non décimal (2/3, 7/6), par la division du numérateur par le dénominateur",
+	"description": "Dire si une fraction représente un nombre entier (35/7, entier donc aussi décimal), un nombre décimal (3/4, 7/5) ou un nombre non décimal (2/3, 7/6), par la division du numérateur par le dénominateur",
 	"grades": ["6"],
 	"theme": "Fractions",
 	"domain": "Apprivoiser",
@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Le nombre $\\frac{{{a}}}{{{b}}}$ est :\n\n```choix\nmelanger: non\n- un nombre entier\n- un nombre décimal non entier\n- un nombre non décimal\n```",
+			"statement": "Le nombre $\\frac{{{a}}}{{{b}}}$ est :\n\n```choix\nplusieurs: oui\nmelanger: non\n- un nombre entier\n- un nombre décimal\n- un nombre non décimal\n```",
 			"variables": [
 				{
 					"name": "b",
@@ -27,18 +27,19 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "0"
+					"expectedAnswer": "0;1"
 				}
 			],
 			"correction": {
 				"steps": [
 					"**Fraction et division.** $\\frac{{{a}}}{{{b}}}$ est le quotient de ${{a}}$ par ${{b}}$ : c'est le résultat de la division ${{a}} \\div {{b}}$.",
-					"${{a}} \\div {{b}} = {{q}}$ : la division tombe juste, $\\frac{{{a}}}{{{b}}} = {{q}}$ est **un nombre entier**."
+					"${{a}} \\div {{b}} = {{q}}$ : la division tombe juste, $\\frac{{{a}}}{{{b}}} = {{q}}$ est **un nombre entier**.",
+					"Un nombre entier est aussi **un nombre décimal** : ${{q}} = {{q}},0$. Il faut cocher les deux."
 				]
 			}
 		},
 		{
-			"statement": "Le nombre $\\frac{{{a}}}{{{b}}}$ est :\n\n```choix\nmelanger: non\n- un nombre entier\n- un nombre décimal non entier\n- un nombre non décimal\n```",
+			"statement": "Le nombre $\\frac{{{a}}}{{{b}}}$ est :\n\n```choix\nplusieurs: oui\nmelanger: non\n- un nombre entier\n- un nombre décimal\n- un nombre non décimal\n```",
 			"variables": [
 				{
 					"name": "b",
@@ -58,12 +59,12 @@
 			"correction": {
 				"steps": [
 					"**Fraction et division.** $\\frac{{{a}}}{{{b}}}$ est le quotient de ${{a}}$ par ${{b}}$ : c'est le résultat de la division ${{a}} \\div {{b}}$.",
-					"${{a}} \\div {{b}} = {{eval:a/b;d}}$ : la division s'arrête, avec des chiffres après la virgule. $\\frac{{{a}}}{{{b}}}$ est **un nombre décimal non entier**."
+					"${{a}} \\div {{b}} = {{eval:a/b;d}}$ : la division s'arrête, avec des chiffres après la virgule. $\\frac{{{a}}}{{{b}}}$ est **un nombre décimal**, mais pas un nombre entier."
 				]
 			}
 		},
 		{
-			"statement": "Le nombre $\\frac{{{a}}}{{{b}}}$ est :\n\n```choix\nmelanger: non\n- un nombre entier\n- un nombre décimal non entier\n- un nombre non décimal\n```",
+			"statement": "Le nombre $\\frac{{{a}}}{{{b}}}$ est :\n\n```choix\nplusieurs: oui\nmelanger: non\n- un nombre entier\n- un nombre décimal\n- un nombre non décimal\n```",
 			"variables": [
 				{
 					"name": "b",
@@ -91,7 +92,20 @@
 	],
 	"testSpecs": [
 		{
-			"description": "35/7 : entier",
+			"description": "35/7 : entier et décimal",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"q": "5",
+				"a": "35"
+			},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "35/7 : entier seul, il manque décimal",
 			"variationIndex": 0,
 			"variables": {
 				"b": "7",
@@ -100,7 +114,7 @@
 			},
 			"answers": ["0"],
 			"expected": {
-				"status": "correct"
+				"status": "unoptimal_form"
 			}
 		},
 		{
@@ -117,7 +131,7 @@
 			}
 		},
 		{
-			"description": "3/4 : décimal non entier",
+			"description": "3/4 : décimal",
 			"variationIndex": 1,
 			"variables": {
 				"b": "4",
@@ -136,6 +150,18 @@
 				"a": "3"
 			},
 			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 entier et décimal",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "3"
+			},
+			"answers": ["0;1"],
 			"expected": {
 				"status": "incorrect"
 			}
