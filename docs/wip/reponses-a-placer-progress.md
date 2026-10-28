@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après la phase 0 des étiquettes à ranger (§ 21)._
+_Mis à jour le 2026-10-28, après les décisions du § 22._
 
-- **État** : droite, horloge, barres (#1908) et plafond de l'axe (#1915) mergés, pas en prod. Étiquettes à ranger choisies avant l'échelle (David) ; phase 0 écrite (§ 21), questions posées, pas de réponse. Secondes de l'horloge : hors chantier.
-- **Prochaine action** : réponses de David aux 5 questions du § 21, puis worktree `ubumaths-wt-reponses-a-placer` depuis `origin/main`, tests rouges, bloc ```ranger.
-- **En attente de David** : § 21, questions 1-5 (écriture ```ranger, note par place, geste, mélange, qui réécrit les 5 modèles « ranger »).
-- **Pièges en cours** : `BuildKind` patron commun (`generator/build-answer.ts`, `buildCaseCount`) ; `isPlaceKind` = droite + horloge ; patron le plus proche des étiquettes = case choix (ADR 0033, `choix-parser.ts`, `questions/choice-case.ts`) ; questions-6 attend 06 et 07 ; une PR = une session.
-- **Worktree / branche** : aucun.
+- **État** : droite, horloge, barres (#1908) et plafond de l'axe (#1915) mergés, pas en prod. Étiquettes à ranger : phase 0 (§ 21) tranchée (§ 22, toutes les recos). PR en cours, tests rouges d'abord.
+- **Prochaine action** : bloc ```ranger (parseur, mélange, case, écran glisser/toucher, PDF, page d'aide).
+- **En attente de David** : rien.
+- **Pièges en cours** : `BuildKind` patron commun (`generator/build-answer.ts`, `buildCaseCount`) ; `isPlaceKind` = droite + horloge ; patron le plus proche = case choix (ADR 0033, `choix-parser.ts`, `questions/choice-case.ts`) ; les 5 modèles « ranger » ne sont PAS réécrits ici.
+- **Worktree / branche** : `ubumaths-wt-reponses-a-placer` · `feat/reponses-a-placer`.
 
 ---
 
@@ -493,3 +493,12 @@ Le prof écrit les étiquettes **dans le bon ordre** ; le tirage les mélange. `
 4. **Mélange** jamais déjà rangé, ni à l'envers (reco) ?
 5. **Les 5 modèles existants** : cette PR livre l'outil et la page d'aide ; 06 et 07 réécrits par la session
    questions-6 (qui les attend), CP, CE1 et CM2 par la session « questions » (reco) — ou tout ici ?
+
+## 22. Décisions étiquettes à ranger (David, 2026-10-28 : les 5 recos)
+
+1. Écriture : bloc ```ranger, étiquettes dans le bon ordre (ubumark), `signe: <` (défaut) ou `signe: >`.
+2. Note : une case par place, note partielle.
+3. Geste : glisser **et** toucher-toucher ; place prise → échange ; clavier.
+4. Mélange : jamais déjà rangé, ni à l'envers ; graine de l'instance.
+5. Cette PR livre l'outil et la page d'aide ; 06 et 07 réécrits par questions-6, CP, CE1, CM2 par la session
+   « questions ».
