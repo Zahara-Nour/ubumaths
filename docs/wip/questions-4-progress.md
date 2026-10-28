@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1923 (mergée, pas encore jouée en prod)._
+_Mis à jour le 2026-10-28, après #1923 (en prod, vérifiée)._
 
-- **État** : lot 0 mergé (#1923, `20261028223000_questions_4_niveaux`) ; **pas encore en prod**. #1921 (3e) mergée
-  aussi, pas encore jouée : 17f3dfcd encore en [4].
-- **Prochaine action** : `db:migrate` (le premier lancé, par la 3e ou par moi, pousse 213000, 213100 puis 223000
-  dans l'ordre) ; vérifier au MCP les 7 modèles (niveaux, nœuds, un tag chacun) ; retirer le worktree ; puis
-  phase 0 du lot 1 (relatifs et rationnels : 082, 004, 006, 009, 010, 013, 014).
-- **En attente de David** : rien. **En attente de la 3e** : son `db:migrate` (prévenue par message).
-- **Pièges en cours** : jouée seule avant #1921, ma migration refuse sans rien écrire mais bloque `db push` ;
-  4-005 couvert par 4f4a5c94 et d14fe0cf ; QCM = case choix ; relire § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : `../ubumaths-wt-questions-4` (à retirer après la vérification en prod).
+- **État** : lot 0 en prod (#1923, joué par David avec `db push --include-all`), vérifié au MCP. 4e : 71 modèles
+  publiés, 7 sans point (voulu, § 6.2) ; 18 points couverts, 64 sans modèle.
+- **Prochaine action** : phase 0 du lot 1, relatifs et rationnels (082, 004, 006, 009, 010, 013, 014 ; 005 déjà
+  couvert) : relever d'abord les niveaux publiés des catégories visées.
+- **En attente de David** : rien.
+- **Pièges en cours** : 90dca27a et acbd2280 (4-005, « le plus possible ») partiront en 3e avec un lot de la 3e ;
+  `db:migrate` peut exiger `--include-all` (migrations d'autres sessions non jouées) : réservé à David ; la ligne
+  `Doc-inchangée:` va dans un message de commit ; QCM = case choix ; relire § 9 de `couvrir-un-niveau.md`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -239,3 +239,11 @@ lisibles par tout connecté, comme aujourd'hui. Aucune règle ne change.
   de #1921, sinon `db push` échoue sans rien écrire mais bloque les migrations suivantes.
 - CI de #1923 : tout vert sauf la garde « doc à jour » (`docs/systeme/base-de-donnees.md` couvre les
   migrations) ; la ligne `Doc-inchangée:` doit être dans un MESSAGE DE COMMIT, pas dans la description de la PR.
+
+## 8. Lot 0 : en prod (2026-10-28)
+
+- #1923 mergée (CI verte après un commit `Doc-inchangée:`). `db:migrate` bloqué (`DbPushMissingRemoteError` :
+  migration 2de non jouée) → David a lancé `supabase db push --include-all` : 2de 183000, 3e 213000 / 213100,
+  5e 214500, 4e 223000, dans l'ordre.
+- MCP : les 7 modèles aux niveaux, nœuds et tags attendus, `updated_at` inchangé ; 17f3dfcd en [2] + 2-260.
+- Worktree retiré, branche supprimée.
