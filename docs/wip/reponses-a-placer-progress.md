@@ -437,3 +437,59 @@ l'effectif, copie corrigée : un diagramme, une réponse par barre).
 
 A : avec `placer:`, `axe:` va au plus jusqu'à 100 (CE1-088 : moins de 100 individus) ; l'aimant et ▲ ▼
 restent à l'unité. PR `fix/barres-axe-plafond`, test rouge d'abord.
+
+## 21. Phase 0 — étiquettes à ranger (2026-10-28)
+
+### Existant
+
+- 5 modèles « ranger » en prod, tous en cases tapées `$$? < ? < ?$$` (une case par place, note partielle) :
+  CP 78a6ba79 « Ranger des nombres » (4), CE1 0e60a71e « Ranger cinq nombres » (5), CM2 7d258acc « Ranger cinq
+  grands nombres » (5, brouillon), 6e 83c835bb « Ranger des fractions » (06, 3) et c360d588 « Ranger des nombres
+  mixtes » (07, 3). L'élève **recopie** chaque nombre (07 v3 : `7/4` tapé pour `1 + 3/4` → « mauvaise forme »).
+- Le désordre affiché est fait à la main : variable `p`/`o` et `{{if:…}}` imbriqués, 4 à 6 permutations.
+- Patron le plus proche : la case choix (ADR 0033), bloc ```choix (liste `- …`, ubumark par choix, mélange au
+  tirage, réponse = indices d'origine `"0;2"`, `questions/choice-case.ts`).
+
+### Écriture par le prof (proposée)
+
+````text
+Range ces nombres dans l'ordre croissant.
+```ranger
+signe: <
+- $\frac{2}{7}$
+- $\frac{3}{7}$
+- $\frac{6}{7}$
+```
+````
+
+Le prof écrit les étiquettes **dans le bon ordre** ; le tirage les mélange. `signe: <` (défaut) ou `signe: >`
+(décroissant). Chaque étiquette est de l'ubumark (formules, variables). Plus de `p` ni de `{{if:…}}`.
+
+### Nominal
+
+1. Écran : les étiquettes mélangées en haut ; en dessous, les places vides séparées du signe
+   (`□ < □ < □`).
+2. Geste : glisser une étiquette sur une place ; au doigt ou à la souris, aussi **toucher l'étiquette puis la
+   place**. Place déjà prise : les deux étiquettes s'échangent. Toucher une étiquette posée la renvoie en haut.
+   Clavier : Tab, Entrée, flèches.
+3. Une case par place (note partielle, comme les modèles actuels) ; réponse = l'étiquette posée (indice
+   d'origine), jugée par l'étiquette, pas par sa valeur : plus de « mauvaise forme ».
+4. Faux : le rangement juste à côté, les places fausses marquées.
+5. Mélange : jamais déjà rangé (ni dans un sens ni dans l'autre) ; graine de l'instance, comme le choix.
+6. PDF : les étiquettes (mélangées) puis `□ < □ < □` ; l'enfant écrit.
+7. Nom accessible : « étiquette 2 sur 3 : deux septièmes », sans trahir l'ordre.
+
+### Limites et erreurs (messages au prof)
+
+- 2 à 8 étiquettes ; deux étiquettes au texte identique : refus (laquelle va où ?).
+- Valeurs égales sous deux écritures (`1/2` et `2/4`) : l'outil ne calcule pas ; le prof les évite.
+- Étiquette vide, `signe:` inconnu, `case:` écrite à la main : refus.
+
+### Questions à David
+
+1. **Écriture** : bloc ```ranger, étiquettes dans le bon ordre, `signe: <` / `>` (reco) ?
+2. **Note** : une case par place, note partielle (reco, comme aujourd'hui), ou tout ou rien ?
+3. **Geste** : glisser **et** toucher-toucher, échange si la place est prise (reco) ?
+4. **Mélange** jamais déjà rangé, ni à l'envers (reco) ?
+5. **Les 5 modèles existants** : cette PR livre l'outil et la page d'aide ; 06 et 07 réécrits par la session
+   questions-6 (qui les attend), CP, CE1 et CM2 par la session « questions » (reco) — ou tout ici ?
