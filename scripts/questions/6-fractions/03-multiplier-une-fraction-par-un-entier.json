@@ -1,0 +1,271 @@
+{
+	"title": "Multiplier une fraction par un entier",
+	"description": "Produit d'une fraction par un entier dans les deux sens (3/7 × 4, 5 × 2/9), commutativité (3/4 × 7 = 7 × ?), produit entier (5/6 × 12)",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Multiplication",
+	"level": 7,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{a}}}{{{b}}} \\times {{n}} = ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(n,b)==1", "a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:a*n}}}{{{b}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction $\\times$ entier.** On multiplie le numérateur par l'entier ; le dénominateur ne change pas : $\\frac{a}{b} \\times n = \\frac{a \\times n}{b}$.",
+					"$$\\frac{{{a}}}{{{b}}} \\times {{n}} = \\frac{{{a}} \\times {{n}}}{{{b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{n}} \\times \\frac{{{a}}}{{{b}}} = ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(n,b)==1", "a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:a*n}}}{{{b}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction $\\times$ entier.** On multiplie le numérateur par l'entier ; le dénominateur ne change pas : $\\frac{a}{b} \\times n = \\frac{a \\times n}{b}$.",
+					"L'ordre ne compte pas dans un produit : ${{n}} \\times \\frac{{{a}}}{{{b}}} = \\frac{{{a}}}{{{b}}} \\times {{n}}$.",
+					"$${{n}} \\times \\frac{{{a}}}{{{b}}} = \\frac{{{n}} \\times {{a}}}{{{b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$$\\frac{{{a}}}{{{b}}} \\times {{n}} = {{n}} \\times ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{a}}}{{{b}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'ordre ne compte pas** dans un produit : on peut échanger les deux facteurs.",
+					"$$\\frac{{{a}}}{{{b}}} \\times {{n}} = {{n}} \\times \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{a}}}{{{b}}} \\times {{n}} = ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:b*k"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction $\\times$ entier.** On multiplie le numérateur par l'entier ; le dénominateur ne change pas : $\\frac{a}{b} \\times n = \\frac{a \\times n}{b}$.",
+					"$$\\frac{{{a}}}{{{b}}} \\times {{n}} = \\frac{{{a}} \\times {{n}}}{{{b}}} = \\frac{{{eval:a*n}}}{{{b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"On pouvait aussi simplifier d'abord : ${{n}} \\div {{b}} = {{k}}$, puis ${{a}} \\times {{k}} = {{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/7 × 4 = 12/7",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["\\frac{12}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12/28",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["\\frac{12}{28}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/28",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["\\frac{3}{28}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 × 2/9 = 10/9",
+			"variationIndex": 1,
+			"variables": {
+				"b": "9",
+				"a": "2",
+				"n": "5"
+			},
+			"answers": ["\\frac{10}{9}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10/45",
+			"variationIndex": 1,
+			"variables": {
+				"b": "9",
+				"a": "2",
+				"n": "5"
+			},
+			"answers": ["\\frac{10}{45}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/4 × 7 = 7 × 3/4",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"a": "3",
+				"n": "7"
+			},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 × 3/4 complété par 3",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"a": "3",
+				"n": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5/6 × 12 = 10",
+			"variationIndex": 3,
+			"variables": {
+				"b": "6",
+				"a": "5",
+				"k": "2",
+				"n": "12"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "60/6 non simplifié : ambre",
+			"variationIndex": 3,
+			"variables": {
+				"b": "6",
+				"a": "5",
+				"k": "2",
+				"n": "12"
+			},
+			"answers": ["\\frac{60}{6}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : 60/72",
+			"variationIndex": 3,
+			"variables": {
+				"b": "6",
+				"a": "5",
+				"k": "2",
+				"n": "12"
+			},
+			"answers": ["\\frac{60}{72}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
