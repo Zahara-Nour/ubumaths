@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, phase 0 du lot 0 proposée._
+_Mis à jour le 2026-10-28, PR #1896 ouverte (lot 0 réduit)._
 
-- **État** : décisions du § 4 prises (§ 4 bis) ; phase 0 du lot 0 écrite (§ 5 : 23 modèles, 1 retouche de contenu, changements de niveau, tags, 4 brouillons) ; rien en base.
-- **Prochaine action** : validation du § 5 par David, puis worktree `ubumaths-wt-questions-cm2`, migration de contenu (`edc5d7d4`) et migration de rangement + tests d'intégration.
-- **En attente de David** : validation du § 5 et réponse à la question d'accès.
-- **Pièges en cours** : `create-questions --mettre-a-jour` ne touche pas un modèle publié → migrations ; garde d'état dans le rollback ; prévenir la session `6EME` (6 modèles de plus en 6e) ; case « choix », droite et horloge à placer mergées, pas en prod.
-- **Worktree / branche** : aucun.
+- **État** : lot 0 validé par David ; les 12 modèles venus du CM1 ont été passés au CM2 par le chantier `questions-cm1` (#1893, joué en prod) ; #1896 ne garde que les 11 modèles du CM2 (6 → 6e, 2 → 5e, 3 brouillons), CI en cours.
+- **Prochaine action** : CI verte → merge → `db:migrate` depuis le dépôt principal → vérification MCP ; prévenir la session de 6e (6 modèles reçus) ; puis phase 0 du lot 1 (entiers) en refaisant le relevé.
+- **En attente de David** : `322f3479` (forme décimale), réécrit par `questions-cm1` avec les 9 fractions de CM2-039 : doublon exact de `dd7db98e` ; le dépublier (décision du § 5) ou garder les deux ?
+- **Pièges en cours** : sessions CM1 et CM2 sur les mêmes modèles → relever la prod juste avant d'écrire une migration ; horodatages de migration pris par une autre session (#1893 a pris 20261028100000 / 100100) ; `create-questions --mettre-a-jour` ne touche pas un publié.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot0`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -173,3 +173,9 @@ niveaux scolaires / statut.
 du **CM2** : 11 modèles publiés de plus ; de **6e** : 6 ; de **5e** : 2. En miroir, qui ne lira plus ce
 qu'il lisait ? Ceux du **CM1** : 12 modèles (11 passés au CM2, `322f3479` en brouillon) ; ceux du
 **CM2** : 11 (8 partis en 6e / 5e, 3 en brouillon). Aucune règle (policy) ne change.
+
+### 5.1 Lot 0 : ce qui s'est passé (2026-10-28)
+
+- Écrit : migration de contenu (`edc5d7d4`) + migration de rangement (22 modèles), tests verts / rouges sans elles, `security-auditor` sans finding bloquant (présence partielle refusée au rollback, ajouté).
+- Avant le merge, message de la session `questions-cm1` : son lot 0 (#1893, joué en prod) a déjà passé au CM2 les 12 modèles venus du CM1 (dont `edc5d7d4`, même retouche, et `322f3479`, réécrit et tagué CM2-039 au lieu d'être dépublié), et a pris les mêmes horodatages de migration. Vérifié au MCP.
+- #1896 réduite aux 11 modèles du CM2, horodatage `20261028120000`, migration de contenu retirée ; test 19 verts, 10 rouges sans la migration.
