@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1915._
+_Mis à jour le 2026-10-28, après la phase 0 des étiquettes à ranger (§ 21)._
 
-- **État** : droite, horloge, barres à construire (#1908) et plafond de l'axe à 100 avec `placer:` (Q19, #1915) mergés, pas en prod. Worktree retiré.
-- **Prochaine action** : reste du chantier à redécider avec David (choix de l'échelle par l'élève, CM1-CM2) ; **étiquettes à ranger RÉINTÉGRÉES** (David, 2026-10-28 : ces outils se créent ici), demandées par questions-6 (06 « Ranger des fractions », 07 « Ranger des nombres mixtes ») et CP-007 ; ordre avec l'échelle à trancher.
-- **En attente de David** : la suite du chantier (ci-dessus).
-- **Pièges en cours** : `BuildKind` patron commun (`generator/build-answer.ts`, `buildCaseCount`) ; `isPlaceKind` = droite + horloge ; `placer:` des barres refusé avec `indicateurs:` et avec un axe au-delà de 100 ; une PR = une session.
-- **Worktree / branche** : aucun (nouveau worktree à créer depuis `origin/main` pour la suite).
+- **État** : droite, horloge, barres (#1908) et plafond de l'axe (#1915) mergés, pas en prod. Étiquettes à ranger choisies avant l'échelle (David) ; phase 0 écrite (§ 21), questions posées, pas de réponse. Secondes de l'horloge : hors chantier.
+- **Prochaine action** : réponses de David aux 5 questions du § 21, puis worktree `ubumaths-wt-reponses-a-placer` depuis `origin/main`, tests rouges, bloc ```ranger.
+- **En attente de David** : § 21, questions 1-5 (écriture ```ranger, note par place, geste, mélange, qui réécrit les 5 modèles « ranger »).
+- **Pièges en cours** : `BuildKind` patron commun (`generator/build-answer.ts`, `buildCaseCount`) ; `isPlaceKind` = droite + horloge ; patron le plus proche des étiquettes = case choix (ADR 0033, `choix-parser.ts`, `questions/choice-case.ts`) ; questions-6 attend 06 et 07 ; une PR = une session.
+- **Worktree / branche** : aucun.
 
 ---
 
