@@ -1,0 +1,120 @@
+{
+	"title": "Encadrer un grand nombre",
+	"description": "Encadrer un entier de 7 à 9 chiffres au millier, à la dizaine de mille, à la centaine de mille ou au million près",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 9,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Encadre ${{n}}$ {{if:k==3|au millier près|{{if:k==4|à la dizaine de mille près|{{if:k==5|à la centaine de mille près|au million près}}}}}}.\n\n$$?<{{n}}<?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "7..9"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "k",
+					"expression": "3..6"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:n-mod(n,10^k)"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:lo+10^k"
+				}
+			],
+			"conditions": ["mod(n,10^k)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{lo}}"
+				},
+				{
+					"expectedAnswer": "{{hi}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Encadrer {{if:k==3|au millier près|{{if:k==4|à la dizaine de mille près|{{if:k==5|à la centaine de mille près|au million près}}}}}}.** On garde les chiffres jusqu'au rang des {{if:k==3|unités de mille|{{if:k==4|dizaines de mille|{{if:k==5|centaines de mille|unités de millions}}}}}} et on remplace les suivants par des zéros : ${{lo}}$. On ajoute {{if:k==3|$1$ millier|{{if:k==4|$1$ dizaine de mille|{{if:k==5|$1$ centaine de mille|$1$ million}}}}}} : ${{hi}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{lo}}} < {{n}} < \\textcolor{{{color:primary.0}}}{{{hi}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 400 000 < 3 405 270 < 3 410 000",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"n": "3405270",
+				"k": "4",
+				"lo": "3400000",
+				"hi": "3410000"
+			},
+			"answers": ["3\\,400\\,000", "3\\,410\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nombres juste avant et juste après",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"n": "3405270",
+				"k": "4",
+				"lo": "3400000",
+				"hi": "3410000"
+			},
+			"answers": ["3\\,405\\,269", "3\\,405\\,271"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : au millier près",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"n": "3405270",
+				"k": "4",
+				"lo": "3400000",
+				"hi": "3410000"
+			},
+			"answers": ["3\\,405\\,000", "3\\,406\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : au-dessus mal arrondi (3 500 000)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"n": "3405270",
+				"k": "4",
+				"lo": "3400000",
+				"hi": "3410000"
+			},
+			"answers": ["3\\,400\\,000", "3\\,500\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

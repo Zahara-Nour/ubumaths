@@ -1,0 +1,206 @@
+{
+	"title": "Comparer deux grands nombres",
+	"description": "Comparer deux entiers de 6 à 9 chiffres avec <, = ou > : chiffres échangés, nombres de chiffres différents",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 8,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$${{if:s==0|{{n}}|{{m}}}} \\ldots {{if:s==0|{{m}}|{{n}}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "c",
+					"expression": "7..9"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "cm",
+					"expression": "eval:c-2"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{cm}}"
+				},
+				{
+					"name": "d1",
+					"expression": "eval:mod(floor(n/10^r),10)"
+				},
+				{
+					"name": "d2",
+					"expression": "eval:mod(floor(n/10^(r-1)),10)"
+				},
+				{
+					"name": "m",
+					"expression": "eval:n+(d2-d1)*10^r+(d1-d2)*10^(r-1)"
+				}
+			],
+			"conditions": ["d1!=d2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|{{if:d1>d2|2|0}}|{{if:d1>d2|0|2}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même nombre de chiffres.** Les deux nombres ont ${{c}}$ chiffres : on compare leurs chiffres un à un, de gauche à droite, jusqu'au premier qui diffère.",
+					"Le premier chiffre qui diffère est celui des {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|unités de mille|{{if:r==4|dizaines de mille|{{if:r==5|centaines de mille|{{if:r==6|unités de millions|{{if:r==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}} : ${{d1}}$ dans ${{n}}$, ${{d2}}$ dans ${{m}}$.",
+					"$${{if:s==0|{{n}} \\textcolor{{{color:primary.0}}}{{{if:d1>d2|>|<}}} {{m}}|{{m}} \\textcolor{{{color:primary.0}}}{{{if:d1>d2|<|>}}} {{n}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$${{if:s==0|{{a}}|{{b}}}} \\ldots {{if:s==0|{{b}}|{{a}}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "c",
+					"expression": "6..8"
+				},
+				{
+					"name": "a",
+					"expression": "digits:c"
+				},
+				{
+					"name": "c1",
+					"expression": "eval:c+1"
+				},
+				{
+					"name": "b",
+					"expression": "digits:c1"
+				}
+			],
+			"conditions": ["floor(a/10^(c-1))>=7", "floor(b/10^c)<=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|0|2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nombre de chiffres.** On compte d'abord les chiffres : ${{b}}$ en a ${{c1}}$, ${{a}}$ n'en a que ${{c}}$. Le nombre qui a le plus de chiffres est le plus grand, même s'il commence par un petit chiffre.",
+					"$${{if:s==0|{{a}} \\textcolor{{{color:primary.0}}}{<} {{b}}|{{b}} \\textcolor{{{color:primary.0}}}{>} {{a}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 405 270 < 3 450 270",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"c": "7",
+				"n": "3405270",
+				"cm": "5",
+				"r": "4",
+				"d1": "0",
+				"d2": "5",
+				"m": "3450270"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : >",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"c": "7",
+				"n": "3405270",
+				"cm": "5",
+				"r": "4",
+				"d1": "0",
+				"d2": "5",
+				"m": "3450270"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Échangés : 3 450 270 > 3 405 270",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"c": "7",
+				"n": "3405270",
+				"cm": "5",
+				"r": "4",
+				"d1": "0",
+				"d2": "5",
+				"m": "3450270"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "987 654 < 1 023 456",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"c": "6",
+				"a": "987654",
+				"c1": "7",
+				"b": "1023456"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : premier chiffre lu (>)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"c": "6",
+				"a": "987654",
+				"c1": "7",
+				"b": "1023456"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Échangés : 1 023 456 > 987 654",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"c": "6",
+				"a": "987654",
+				"c1": "7",
+				"b": "1023456"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

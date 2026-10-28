@@ -1,0 +1,179 @@
+{
+	"title": "Le nombre de milliers, de dizaines de mille…",
+	"description": "Distinguer le chiffre et le nombre de dizaines… de millions dans un entier de 7 à 9 chiffres ; problème des cartons (12 342 320 pailles en cartons de 10 000)",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 16,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel est le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|{{if:k==3|milliers|{{if:k==4|dizaines de mille|{{if:k==5|centaines de mille|millions}}}}}}}}}} dans ${{n}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "7..9"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "reste",
+					"expression": "eval:mod(n,10^k)"
+				}
+			],
+			"conditions": ["c-k>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(n/10^k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Chiffre ou nombre ?** Le chiffre des {{if:k==1|dizaines|{{if:k==2|centaines|{{if:k==3|milliers|{{if:k==4|dizaines de mille|{{if:k==5|centaines de mille|millions}}}}}}}}}} est un seul chiffre ; le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|{{if:k==3|milliers|{{if:k==4|dizaines de mille|{{if:k==5|centaines de mille|millions}}}}}}}}}} les compte toutes : on garde tous les chiffres jusqu'à ce rang.",
+					"$${{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}} \\times {{eval:10^k}}{{if:reste>0| + {{reste}}|}}$$",
+					"Il y a $\\textcolor{{{color:primary.0}}}{{{solution}}}$ {{if:k==1|dizaines|{{if:k==2|centaines|{{if:k==3|milliers|{{if:k==4|dizaines de mille|{{if:k==5|centaines de mille|millions}}}}}}}}}} dans ${{n}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une usine a fabriqué ${{n}}$ pailles. Elle les range dans des cartons de ${{t}}$ pailles.\n\nCombien de cartons peut-elle remplir entièrement ?\n\nElle remplit $?$ cartons.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "7..9"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "t",
+					"expression": "eval:10^k"
+				},
+				{
+					"name": "reste",
+					"expression": "eval:mod(n,t)"
+				}
+			],
+			"conditions": ["reste>0", "c-k>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(n/t)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carton contient ${{t}}$ pailles : le nombre de cartons pleins, c'est le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|{{if:k==3|milliers|{{if:k==4|dizaines de mille|{{if:k==5|centaines de mille|millions}}}}}}}}}} dans ${{n}}$.",
+					"$${{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}} \\times {{t}} + {{reste}}$$",
+					"Elle remplit $\\textcolor{{{color:primary.0}}}{{{solution}}}$ cartons ; il reste ${{reste}}$ pailles."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12 342 320, milliers : 12 342",
+			"variationIndex": 0,
+			"variables": {
+				"c": "8",
+				"n": "12342320",
+				"k": "3",
+				"reste": "320"
+			},
+			"answers": ["12\\,342"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le chiffre des milliers (2)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "8",
+				"n": "12342320",
+				"k": "3",
+				"reste": "320"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la classe des mille (342)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "8",
+				"n": "12342320",
+				"k": "3",
+				"reste": "320"
+			},
+			"answers": ["342"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cartons de 10 000 : 1 234",
+			"variationIndex": 1,
+			"variables": {
+				"c": "8",
+				"n": "12342320",
+				"k": "4",
+				"t": "10000",
+				"reste": "2320"
+			},
+			"answers": ["1\\,234"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un carton de trop (1 235)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "8",
+				"n": "12342320",
+				"k": "4",
+				"t": "10000",
+				"reste": "2320"
+			},
+			"answers": ["1\\,235"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le chiffre des dizaines de mille (3)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "8",
+				"n": "12342320",
+				"k": "4",
+				"t": "10000",
+				"reste": "2320"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
