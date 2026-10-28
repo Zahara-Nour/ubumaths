@@ -7,10 +7,12 @@
 
 _Mis à jour le 2026-10-28, après #1923 (en prod, vérifiée)._
 
-- **État** : lot 1 (relatifs et rationnels, § 9) validé et **écrit** sur la branche : `docs/wip/questions/lot-4-1.py`
-  → `scripts/questions/4-lot-1/` (7 modèles), `create-questions` en simulation tout vert, 66 specs, tirages OK.
-- **Prochaine action** : essai en base **locale** (`set -a; . ./.env.local; set +a` puis `create-questions --publier`),
-  jouer chaque modèle dans l'aperçu admin, puis PR des fichiers (« revue : aucune, contenu »).
+- **État** : lot 1 (relatifs et rationnels, § 9) écrit (`docs/wip/questions/lot-4-1.py` → `scripts/questions/4-lot-1/`,
+  7 modèles, 66 specs) ; essai en base **locale** fait le 2026-10-28 : les 7 rendus, juste / faux / correction OK
+  dans l'aperçu admin. PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR, puis § 6 de `couvrir-un-niveau.md` : **David** lance
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-1 --publier` (prod, brouillons), je relève les `id`,
+  puis migration nœud + tag.
 - **En attente de David** : rien.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005, « le plus possible ») partiront en 3e avec un lot de la 3e ;
   `db:migrate` peut exiger `--include-all` (migrations d'autres sessions non jouées) : réservé à David ; la ligne
