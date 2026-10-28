@@ -144,25 +144,34 @@ DIFFERENCE_PARENTHESES_DECIMAUX = variation(
 
 SPEC_DEC = {'X': 55, 'c': 6, 'Y': 24, 'x': '5.5', 'y': '2.4'}
 SPEC_DEC_PAR = {'a': 12, 'Y': 53, 'Z': 38, 'y': '5.3', 'z': '3.8'}
+# Relecture de David (2026-10-28) : le niveau 1 vérifie les priorités sur des entiers seulement ;
+# les décimaux passent dans un modèle de même type, au niveau 2 (08).
 MODELES.append(modele(
     '01-enchainer-des-operations', 'Enchaîner des opérations',
-    'Calculer en respectant les priorités : multiplication avant addition (5 + 3 × 4 ;'
-    ' 5,5 + 6 × 2,4), parenthèses d\'abord (10 − (1 + 6) ; 12 − (5,3 + 3,8))',
+    'Calculer en respectant les priorités, sur des entiers : multiplication avant addition'
+    ' (5 + 3 × 4), parenthèses d\'abord (10 − (1 + 6))',
     'Décimaux', 'Priorités opératoires', 'Enchaînements', 1,
-    [SOMME_PRODUIT, DIFFERENCE_PARENTHESES, SOMME_PRODUIT_DECIMAUX,
-     DIFFERENCE_PARENTHESES_DECIMAUX],
+    [SOMME_PRODUIT, DIFFERENCE_PARENTHESES],
     [spec('5 + 3 × 4 = 17', 0, {'a': 5, 'b': 3, 'c': 4}, '17', 'correct'),
      spec('Erreur : calcul de gauche à droite (32)', 0, {'a': 5, 'b': 3, 'c': 4}, '32',
           'incorrect'),
      spec('10 − (1 + 6) = 3', 1, {'a': 10, 'b': 1, 'c': 6}, '3', 'correct'),
      spec('Erreur : parenthèses ignorées (10 − 1 + 6 = 15)', 1, {'a': 10, 'b': 1, 'c': 6}, '15',
-          'incorrect'),
-     spec('5,5 + 6 × 2,4 = 19,9', 2, SPEC_DEC, '19,9', 'correct'),
-     spec('Erreur : de gauche à droite (11,5 × 2,4 = 27,6)', 2, SPEC_DEC, '27,6', 'incorrect'),
-     spec('12 − (5,3 + 3,8) = 2,9', 3, SPEC_DEC_PAR, '2,9', 'correct'),
-     spec('Erreur : parenthèses ignorées (12 − 5,3 + 3,8 = 10,5)', 3, SPEC_DEC_PAR, '10,5',
           'incorrect')],
     delay=45))
+
+MODELES.append(modele(
+    '08-enchainer-des-operations-decimaux', 'Enchaîner des opérations',
+    'Calculer en respectant les priorités, avec des décimaux : 5,5 + 6 × 2,4 ;'
+    ' 12 − (5,3 + 3,8)',
+    'Décimaux', 'Priorités opératoires', 'Enchaînements', 2,
+    [SOMME_PRODUIT_DECIMAUX, DIFFERENCE_PARENTHESES_DECIMAUX],
+    [spec('5,5 + 6 × 2,4 = 19,9', 0, SPEC_DEC, '19,9', 'correct'),
+     spec('Erreur : de gauche à droite (11,5 × 2,4 = 27,6)', 0, SPEC_DEC, '27,6', 'incorrect'),
+     spec('12 − (5,3 + 3,8) = 2,9', 1, SPEC_DEC_PAR, '2,9', 'correct'),
+     spec('Erreur : parenthèses ignorées (12 − 5,3 + 3,8 = 10,5)', 1, SPEC_DEC_PAR, '10,5',
+          'incorrect')],
+    delay=60))
 
 # --- 2. 5-006 : nommer un calcul (somme ou produit) ----------------------------------------
 
@@ -389,13 +398,14 @@ MODELES.append(modele(
 
 # --- 7. 5-032 : calculer avec des carrés et des cubes --------------------------------------
 
+# Relecture de David (2026-10-28) : calcul de tête → v1 a, b ≤ 5 (≤ 125) ; v4 b ≤ 4, c ≤ 5 (≤ 120).
 PRIORITE_PUISSANCE = ('**Priorités.** On calcule d\'abord entre les parenthèses, puis les'
                       ' carrés et les cubes, puis les multiplications, enfin les additions et'
                       ' les soustractions.')
 
 PRODUIT_CARRE = variation(
     CALCULE.replace('CALCUL', '{{a}} ' + X + ' {{b}}^2 - {{c}}'),
-    [var('a', '2..9'), var('b', '2..9'), var('c', '1..20')],
+    [var('a', '2..5'), var('b', '2..5'), var('c', '1..20')],
     ['{{eval:a*b*b-c}}'],
     [PRIORITE_PUISSANCE,
      'Le carré porte seulement sur ${{b}}$ : ${{b}}^2 = {{b}} ' + X + ' {{b}} = '
@@ -427,7 +437,7 @@ CARRE_PLUS_CUBE = variation(
 
 SOMME_PRODUIT_CARRE = variation(
     CALCULE.replace('CALCUL', '{{a}} + {{b}} ' + X + ' {{c}}^2'),
-    [var('a', '1..20'), var('b', '2..9'), var('c', '2..9')],
+    [var('a', '1..20'), var('b', '2..4'), var('c', '2..5')],
     ['{{eval:a+b*c*c}}'],
     [PRIORITE_PUISSANCE,
      '$$' + '{{a}} + {{b}} ' + X + ' ' + col('{{c}}^2', 1) + ' = {{a}} + {{b}} ' + X + ' '

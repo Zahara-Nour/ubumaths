@@ -14,11 +14,11 @@
 			"variables": [
 				{
 					"name": "a",
-					"expression": "2..9"
+					"expression": "2..5"
 				},
 				{
 					"name": "b",
-					"expression": "2..9"
+					"expression": "2..5"
 				},
 				{
 					"name": "c",
@@ -103,11 +103,11 @@
 				},
 				{
 					"name": "b",
-					"expression": "2..9"
+					"expression": "2..4"
 				},
 				{
 					"name": "c",
-					"expression": "2..9"
+					"expression": "2..5"
 				}
 			],
 			"blanks": [
