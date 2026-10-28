@@ -1,45 +1,31 @@
 """Génère la migration de RANGEMENT du chantier « questions-cm2 », lot 0 (changements de niveau) :
-22 modèles, sans contenu changé ; niveaux scolaires, tags, nœud (3 modèles à trou) et statut
-(4 brouillons). Le 23e modèle du lot (edc5d7d4, contenu réécrit) est dans la migration précédente,
-`20261028100000_questions_cm2_contenu.sql` (lot-corrections-cm2.py).
+11 modèles du CM2, sans contenu changé ; niveaux scolaires, tags et statut (3 brouillons).
+
+Les 12 modèles du lot venus du CM1 (CM1 → CM2, edc5d7d4 et 322f3479 compris) ont été traités par le
+chantier « questions-cm1 » (#1893, migrations 20261028100000 / 20261028100100, jouées le 2026-10-28) :
+ils sortent de ce lot. Le sort de 322f3479 (doublon de dd7db98e sur CM2-039) reste à trancher.
 
 Corps (étapes 1 à 5) repris du lot 0 du CE1 (`20261027000100_questions_ce1_rangement_tags.sql`) ;
 seules les données et le rollback sont écrits ici. Phase 0 validée par David le 2026-10-28 (§ 5 du
 journal `docs/wip/questions-cm2-progress.md`). Relevé en prod le 2026-10-28 (MCP, lecture seule) :
-chemins des nœuds, niveaux, statuts, aucun tag sur les 22 modèles, 0 donnée d'élève.
+chemins des nœuds, niveaux, statuts, aucun tag sur les 11 modèles, 0 donnée d'élève.
 
     python3 docs/wip/questions/lot-rangement-cm2-0.py
 """
 
-MIGRATION = 'supabase/migrations/20261028100100_questions_cm2_rangement_tags.sql'
+MIGRATION = 'supabase/migrations/20261028120000_questions_cm2_rangement_tags.sql'
 P = '_qcm2r'
 
 NC = 'Nombres et calculs'
 DEC_CALC = (NC, 'Décimaux : calculs')
 MULT_DEC = (*DEC_CALC, 'multiplication')
 DIV_DEC = (*DEC_CALC, 'division')
-ENCADREMENT = (NC, 'Décimaux : numération', 'encadrement')
-ASTUCIEUX = (NC, 'Entiers : multiplication', 'calcul astucieux')
 PARTICULIERS = (NC, 'Entiers : multiplication', 'produits particuliers')
-MULT_FRAC = (NC, 'Fractions : calculs', 'multiplication')
-FORME_DEC = (NC, 'Fractions : sens et écritures', 'forme décimale')
-TROUS = ('Algèbre', 'Premiers pas algébriques', 'égalités à trous')
 CRITERES = ('Arithmétique', 'Divisibilité', 'critères de divisibilité')
 
 # (id, nœud avant, nœud après, niveaux avant, niveaux après, statut après, tag posé (grade, code) ou None)
 # Tous relevés publiés, sans tag.
 LOT = [
-    # CM1 → CM2
-    ('32724446-558b-4eea-ad4a-13d7c6afe435', ENCADREMENT, ENCADREMENT, 'CM1', 'CM2', 'published', ('CM2', 'CM2-117')),
-    ('6379fa20-672c-4771-9d48-6d167a7a922e', ENCADREMENT, ENCADREMENT, 'CM1', 'CM2', 'published', ('CM2', 'CM2-117')),
-    ('e38d205a-5737-4a0a-a9cd-aab742107c2b', MULT_DEC, MULT_DEC, 'CM1', 'CM2', 'published', ('CM2', 'CM2-042')),
-    ('19323604-1e27-4b0f-8a24-1eef76ab6e59', MULT_DEC, MULT_DEC, 'CM1', 'CM2', 'published', ('CM2', 'CM2-042')),
-    ('4643ed4a-4cb9-456f-bc7b-a36c99b8290a', ASTUCIEUX, ASTUCIEUX, 'CM1', 'CM2', 'published', ('CM2', 'CM2-046')),
-    ('aa788ca7-bb32-45a3-9566-cc2d70a11d29', MULT_DEC, TROUS, 'CM1', 'CM2', 'published', ('CM2', 'CM2-065')),
-    ('ac2dae38-425e-4f10-ba6a-045c285355d0', MULT_DEC, TROUS, 'CM1', 'CM2', 'published', ('CM2', 'CM2-065')),
-    ('a5d5a7a0-2b7f-4174-a487-4c673fee5eeb', ASTUCIEUX, TROUS, 'CM1', 'CM2', 'published', ('CM2', 'CM2-065')),
-    ('8fa3108c-692b-45d1-ac2a-7d4cb8cbf798', MULT_FRAC, MULT_FRAC, 'CM1', 'CM2', 'published', ('CM2', 'CM2-021')),
-    ('e320755f-fa1d-4230-9997-c5917e1c56ef', MULT_FRAC, MULT_FRAC, 'CM1', 'CM2', 'published', ('CM2', 'CM2-021')),
     # CM2 → 6e
     ('7f0fbff0-88ee-41b7-962c-8ddeb3880a9d', DIV_DEC, DIV_DEC, 'CM2', '6', 'published', ('6', '6-121')),
     ('3c40e59b-cde5-4eab-85b5-f8bd0f91ed80', MULT_DEC, MULT_DEC, 'CM2', '6', 'published', ('6', '6-118')),
@@ -54,23 +40,18 @@ LOT = [
     ('32351845-9672-415f-9397-fa446b6edd78', PARTICULIERS, PARTICULIERS, 'CM2', 'CM2', 'draft', None),
     ('e58b1357-6fa8-4fce-9518-91d09d9acc49', PARTICULIERS, PARTICULIERS, 'CM2', 'CM2', 'draft', None),
     ('e009f9d0-bc51-452e-9119-b6eff18cfe83', PARTICULIERS, PARTICULIERS, 'CM2', 'CM2', 'draft', None),
-    ('322f3479-0120-4a6d-839a-4e8df194f99e', FORME_DEC, FORME_DEC, 'CM1', 'CM1', 'draft', None),
 ]
 N = len(LOT)
 TAGS = [(i, *t) for i, *_, t in LOT if t]
 ENTETE = f"""-- ============================================================================
 -- Chantier « questions-cm2 », lot 0 (changements de niveau) : rangement, tags, niveaux et statut de {N} modèles
 -- ============================================================================
---   - 10 modèles du CM1 passent au CM2 et sont tagués : 32724446, 6379fa20 (CM2-117) ; e38d205a,
---     19323604 (CM2-042) ; 4643ed4a (CM2-046) ; aa788ca7, ac2dae38, a5d5a7a0 (CM2-065, déplacés vers
---     Algèbre > Premiers pas algébriques > égalités à trous, où vit le point) ; 8fa3108c, e320755f (CM2-021) ;
 --   - 6 modèles du CM2 passent en 6e et sont tagués : 7f0fbff0 (6-121) ; 3c40e59b, 814a46a9,
 --     4b543657, 918598f5, 9826af8b (6-118) ;
 --   - 2 modèles du CM2 passent en 5e et sont tagués : e81493f7 (5-010), 9c03423a (5-119) ;
---   - 4 modèles repassent en BROUILLON (niveaux, nœud, catégorie gardés) : 32351845, e58b1357,
---     e009f9d0 (CM2), 322f3479 (CM1, doublon de dd7db98e).
--- Le contenu ne change pas : `updated_at` est PRÉSERVÉ. Le 23e modèle du lot (edc5d7d4) est dans la
--- migration précédente (20261028100000_questions_cm2_contenu).
+--   - 3 modèles repassent en BROUILLON (niveaux, nœud, catégorie gardés) : 32351845, e58b1357, e009f9d0.
+-- Le contenu ne change pas : `updated_at` est PRÉSERVÉ. Les modèles du CM1 passés au CM2 l'ont été par
+-- le chantier « questions-cm1 » (#1893).
 -- ============================================================================
 -- Phase 0 validée par David le 2026-10-28 (journal docs/wip/questions-cm2-progress.md § 5).
 -- Fichier GÉNÉRÉ par docs/wip/questions/lot-rangement-cm2-0.py — ne pas éditer à la main ; corps
@@ -87,10 +68,9 @@ ENTETE = f"""-- ================================================================
 -- Données d'élèves : aucune (relevé du 2026-10-28 : 0 carte SRS, 0 tentative de compétence ou
 -- d'évaluation, 0 réponse de test, 0 activité de journal, 0 exercice de chapitre, 0 favori).
 --
--- Accès (question tranchée par David le 2026-10-28) : les élèves et le prof du CM2 voient 10
--- modèles publiés de plus (11 avec edc5d7d4), ceux de 6e 6, ceux de 5e 2 ; ceux du CM1 ne voient plus
--- 11 modèles (10 passés au CM2, 322f3479 en brouillon ; 12 avec edc5d7d4), ceux du CM2 ne voient plus
--- 11 modèles (8 partis en 6e et en 5e, 3 en brouillon). Aucune règle (policy) ne change.
+-- Accès (question tranchée par David le 2026-10-28) : les élèves et le prof de 6e voient 6 modèles
+-- publiés de plus, ceux de 5e 2 ; ceux du CM2 ne voient plus ces 11 modèles (8 partis en 6e et en 5e,
+-- 3 en brouillon). Aucune règle (policy) ne change.
 --"""
 
 
@@ -120,11 +100,21 @@ def rollback() -> str:
     tags = lignes([f"('{i}'::uuid, {q(g)}, {q(c)})" for i, g, c in TAGS], '-- \t')
     deplaces = [(i, av) for i, av, ap, *_ in LOT if av != ap]
     noeuds = lignes([f"('{i}'::uuid, {q(av[0])}, {q(av[1])}, {q(av[2])})" for i, av in deplaces], '-- \t')
+    # Aucun déplacé : pas de bloc (un `values` vide serait refusé).
+    bloc_noeuds = '' if not deplaces else f"""-- update public.question_templates q set classification_node_id = s.id
+--   from (values
+{noeuds}
+--   ) as r(id, branche, notion, sous_notion)
+--   join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.archived_at is null and b.name = r.branche
+--   join public.classification_nodes n on n.kind = 'notion' and n.parent_id = b.id and n.archived_at is null and n.name = r.notion
+--   join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = n.id and s.archived_at is null and s.name = r.sous_notion
+--  where q.id = r.id;
+"""
     grades = lignes([f"('{i}'::uuid, {arr(gv)})" for i, _a, _b, gv, ga, *_ in LOT if gv != ga], '-- \t')
     statuts = ', '.join(f"'{i}'" for i, *r in LOT if r[4] != 'published')
     n_tags = len(TAGS)
     return f"""-- Rollback (aucune donnée d'élève). Il retire les {n_tags} tags posés, rend aux modèles leur nœud,
--- leurs niveaux et leur statut d'avant (tous relevés publiés, sans tag). Garde : il refuse si un
+-- leurs niveaux et leur statut d'avant (tous relevés publiés, sans tag ; aucun nœud ne change). Garde : il refuse si un
 -- modèle n'a plus EXACTEMENT le nœud, les niveaux, le statut et les tags posés par la migration
 -- (sinon une saisie faite depuis serait écrasée en silence). Bloc éprouvé par le test d'intégration,
 -- à jouer dans UNE transaction (`psql -1 -v ON_ERROR_STOP=1 -f`, ou l'éditeur SQL en un seul envoi) :
@@ -173,15 +163,7 @@ def rollback() -> str:
 --  ) as r(id, grade, code)
 --  where q.template_id = r.id and p.id = q.point_id and p.grade = r.grade and p.code = r.code;
 -- alter table public.question_templates disable trigger update_question_templates_updated_at;
--- update public.question_templates q set classification_node_id = s.id
---   from (values
-{noeuds}
---   ) as r(id, branche, notion, sous_notion)
---   join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.archived_at is null and b.name = r.branche
---   join public.classification_nodes n on n.kind = 'notion' and n.parent_id = b.id and n.archived_at is null and n.name = r.notion
---   join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = n.id and s.archived_at is null and s.name = r.sous_notion
---  where q.id = r.id;
--- update public.question_templates q set grades = r.grades
+{bloc_noeuds}-- update public.question_templates q set grades = r.grades
 --   from (values
 {grades}
 --   ) as r(id, grades)

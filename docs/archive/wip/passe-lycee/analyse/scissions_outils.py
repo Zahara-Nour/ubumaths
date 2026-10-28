@@ -284,12 +284,6 @@ def ecrire_migration(modeles: list[dict], prefixe: str, entete: str) -> str:
         "-- Rollback : il rend aux modèles leur contenu d'avant (aucun modèle neuf, aucun tag posé). Garde :",
         "-- il refuse si un modèle n'a plus EXACTEMENT le contenu posé par la migration (empreinte md5).",
         "-- Bloc éprouvé par le test d'intégration, à jouer",
-    ] if not any(m['tags'] or 'grades_apres' in m for m in modeles) else [
-        # Retouche qui pose aussi des tags ou change le niveau scolaire (questions-cm2, lot 0).
-        "-- Rollback : il retire les tags posés, rend aux modèles leurs niveaux scolaires et leur contenu",
-        "-- d'avant (aucun modèle neuf). Gardes : il refuse si un modèle n'a plus EXACTEMENT le contenu",
-        "-- (empreinte md5) ou les niveaux scolaires posés par la migration. Bloc éprouvé par le test",
-        "-- d'intégration, à jouer",
     ]) + [
         "-- dans UNE transaction (sinon une garde qui échoue n'arrête pas la suite) :",
         "-- `psql -1 -v ON_ERROR_STOP=1 -f`, ou l'éditeur SQL en un seul envoi :",

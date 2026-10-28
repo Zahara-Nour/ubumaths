@@ -2,9 +2,9 @@
  * Chantier « questions-cm2 », lot 0 (changements de niveau) : rangement, tags, niveaux et statut (Supabase local requis)
  * ======================================================================================================================
  *
- * Migration `20261028100100_questions_cm2_rangement_tags` : 10 modèles du CM1 passent au CM2 (tagués,
- * les 3 à trou déplacés vers « égalités à trous ») ; 6 modèles du CM2 passent en 6e et 2 en 5e (tagués) ;
- * 4 repassent en brouillon. Phase 0 validée par David le 2026-10-28 (journal
+ * Migration `20261028120000_questions_cm2_rangement_tags` : 6 modèles du CM2 passent en 6e et 2 en 5e
+ * (tagués) ; 3 repassent en brouillon. Les modèles venus du CM1 ont été traités par le chantier
+ * « questions-cm1 » (#1893). Phase 0 validée par David le 2026-10-28 (journal
  * docs/wip/questions-cm2-progress.md § 5).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
@@ -51,30 +51,13 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261028100100_questions_cm2_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261028120000_questions_cm2_rangement_tags.sql';
 const MULT_DEC = 'Nombres et calculs > Décimaux : calculs > multiplication';
 const DIV_DEC = 'Nombres et calculs > Décimaux : calculs > division';
-const ENCADREMENT = 'Nombres et calculs > Décimaux : numération > encadrement';
-const ASTUCIEUX = 'Nombres et calculs > Entiers : multiplication > calcul astucieux';
 const PARTICULIERS = 'Nombres et calculs > Entiers : multiplication > produits particuliers';
-const MULT_FRAC = 'Nombres et calculs > Fractions : calculs > multiplication';
-const FORME_DEC = 'Nombres et calculs > Fractions : sens et écritures > forme décimale';
-const TROUS = 'Algèbre > Premiers pas algébriques > égalités à trous';
 const CRITERES = 'Arithmétique > Divisibilité > critères de divisibilité';
 /** Tous les modèles du lot sont relevés publiés, sans tag. */
 const STATUT_AVANT = 'published';
-
-function versCm2(id: string, noeud: string, code: string, noeudApres = noeud): Modele {
-	return {
-		id,
-		noeudAvant: noeud,
-		noeudApres,
-		gradesAvant: ['CM1'],
-		gradesApres: ['CM2'],
-		statutApres: 'published',
-		tagApres: `CM2§${code}`
-	};
-}
 
 function depuisCm2(id: string, noeud: string, grade: string, code: string): Modele {
 	return {
@@ -102,16 +85,6 @@ function brouillon(id: string, noeud: string, grade: string): Modele {
 
 /** Le lot, tel que relevé en prod le 2026-10-28. */
 const LOT: Modele[] = [
-	versCm2('32724446-558b-4eea-ad4a-13d7c6afe435', ENCADREMENT, 'CM2-117'),
-	versCm2('6379fa20-672c-4771-9d48-6d167a7a922e', ENCADREMENT, 'CM2-117'),
-	versCm2('e38d205a-5737-4a0a-a9cd-aab742107c2b', MULT_DEC, 'CM2-042'),
-	versCm2('19323604-1e27-4b0f-8a24-1eef76ab6e59', MULT_DEC, 'CM2-042'),
-	versCm2('4643ed4a-4cb9-456f-bc7b-a36c99b8290a', ASTUCIEUX, 'CM2-046'),
-	versCm2('aa788ca7-bb32-45a3-9566-cc2d70a11d29', MULT_DEC, 'CM2-065', TROUS),
-	versCm2('ac2dae38-425e-4f10-ba6a-045c285355d0', MULT_DEC, 'CM2-065', TROUS),
-	versCm2('a5d5a7a0-2b7f-4174-a487-4c673fee5eeb', ASTUCIEUX, 'CM2-065', TROUS),
-	versCm2('8fa3108c-692b-45d1-ac2a-7d4cb8cbf798', MULT_FRAC, 'CM2-021'),
-	versCm2('e320755f-fa1d-4230-9997-c5917e1c56ef', MULT_FRAC, 'CM2-021'),
 	depuisCm2('7f0fbff0-88ee-41b7-962c-8ddeb3880a9d', DIV_DEC, '6', '6-121'),
 	depuisCm2('3c40e59b-cde5-4eab-85b5-f8bd0f91ed80', MULT_DEC, '6', '6-118'),
 	depuisCm2('814a46a9-2f73-4b2d-91e4-2052fc425b53', MULT_DEC, '6', '6-118'),
@@ -122,8 +95,7 @@ const LOT: Modele[] = [
 	depuisCm2('9c03423a-38ce-44e3-ab44-20b4e90659b7', CRITERES, '5', '5-119'),
 	brouillon('32351845-9672-415f-9397-fa446b6edd78', PARTICULIERS, 'CM2'),
 	brouillon('e58b1357-6fa8-4fce-9518-91d09d9acc49', PARTICULIERS, 'CM2'),
-	brouillon('e009f9d0-bc51-452e-9119-b6eff18cfe83', PARTICULIERS, 'CM2'),
-	brouillon('322f3479-0120-4a6d-839a-4e8df194f99e', FORME_DEC, 'CM1')
+	brouillon('e009f9d0-bc51-452e-9119-b6eff18cfe83', PARTICULIERS, 'CM2')
 ];
 const ids = LOT.map((m) => m.id);
 const N = LOT.length;
@@ -235,15 +207,15 @@ describe('Questions CM2 : rangement, tags, niveaux et statut (migration de donn�
 		await cleanupAllTestData();
 	});
 
-	it('chaque modèle est EXACTEMENT au nœud attendu (les 3 à trou sous « égalités à trous »)', () => {
+	it('chaque modèle reste EXACTEMENT à son nœud', () => {
 		expect(LOT.map((m) => apres.noeuds.get(m.id))).toEqual(LOT.map((m) => m.noeudApres));
 	});
 
-	it('chaque modèle a EXACTEMENT les niveaux attendus (CM1 → CM2, CM2 → 6e et 5e)', () => {
+	it('chaque modèle a EXACTEMENT les niveaux attendus (CM2 → 6e et 5e)', () => {
 		expect(LOT.map((m) => apres.grades.get(m.id))).toEqual(LOT.map((m) => m.gradesApres));
 	});
 
-	it('chaque modèle a EXACTEMENT le statut attendu (4 brouillons)', () => {
+	it('chaque modèle a EXACTEMENT le statut attendu (3 brouillons)', () => {
 		expect(LOT.map((m) => apres.statuts.get(m.id))).toEqual(LOT.map((m) => m.statutApres));
 	});
 
@@ -310,7 +282,7 @@ describe('Questions CM2, rangement et tags : les branches d’échec de la migra
 			await poserEtatProd(pg, auteur);
 			await pg.query(
 				'update public.question_templates set classification_node_id = null where id = $1',
-				['aa788ca7-bb32-45a3-9566-cc2d70a11d29']
+				['7f0fbff0-88ee-41b7-962c-8ddeb3880a9d']
 			);
 			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
 				/modèles déplacés depuis le relevé : 1/
@@ -333,8 +305,8 @@ describe('Questions CM2, rangement et tags : les branches d’échec de la migra
 	it('des niveaux changés depuis le relevé font échouer la migration', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
-			await pg.query(`update public.question_templates set grades = array['CM2'] where id = $1`, [
-				'32724446-558b-4eea-ad4a-13d7c6afe435'
+			await pg.query(`update public.question_templates set grades = array['CM1'] where id = $1`, [
+				'3c40e59b-cde5-4eab-85b5-f8bd0f91ed80'
 			]);
 			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
 				/niveaux changés depuis le relevé : 1/
@@ -346,7 +318,7 @@ describe('Questions CM2, rangement et tags : les branches d’échec de la migra
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
 			await pg.query(`update public.question_templates set status = 'draft' where id = $1`, [
-				'7f0fbff0-88ee-41b7-962c-8ddeb3880a9d'
+				'814a46a9-2f73-4b2d-91e4-2052fc425b53'
 			]);
 			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
 				/statuts changés depuis le relevé : 1/
@@ -359,11 +331,11 @@ describe('Questions CM2, rangement et tags : les branches d’échec de la migra
 			await poserEtatProd(pg, auteur);
 			await pg.query(
 				`insert into public.question_template_points (template_id, point_id)
-				 select $1, id from public.curriculum_points where grade = 'CM1' and code = 'CM1-132' and archived_at is null`,
-				['32724446-558b-4eea-ad4a-13d7c6afe435']
+				 select $1, id from public.curriculum_points where grade = 'CM2' and code = 'CM2-042' and archived_at is null`,
+				['3c40e59b-cde5-4eab-85b5-f8bd0f91ed80']
 			);
 			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
-				/tags différents du relevé : \+32724446 CM1-132/
+				/tags différents du relevé : \+3c40e59b CM2-042/
 			);
 		});
 	});
@@ -374,7 +346,7 @@ describe('Questions CM2, rangement et tags : les branches d’échec de la migra
 			await pg.query(readFileSync(MIGRATION, 'utf-8'));
 			await pg.query(
 				`update public.question_templates set grades = array['CM2', '6'] where id = $1`,
-				['32724446-558b-4eea-ad4a-13d7c6afe435']
+				['3c40e59b-cde5-4eab-85b5-f8bd0f91ed80']
 			);
 			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
 				new RegExp(
@@ -417,8 +389,8 @@ describe('Questions CM2, rangement et tags : les branches d’échec de la migra
 			await pg.query(readFileSync(MIGRATION, 'utf-8'));
 			await pg.query(
 				`insert into public.question_template_points (template_id, point_id)
-				 select $1, id from public.curriculum_points where grade = 'CM1' and code = 'CM1-132' and archived_at is null`,
-				['32724446-558b-4eea-ad4a-13d7c6afe435']
+				 select $1, id from public.curriculum_points where grade = 'CM2' and code = 'CM2-042' and archived_at is null`,
+				['3c40e59b-cde5-4eab-85b5-f8bd0f91ed80']
 			);
 			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
 				new RegExp(
