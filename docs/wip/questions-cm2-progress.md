@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, #1911 ouverte._
+_Mis à jour le 2026-10-28, après #1911._
 
-- **État** : lot 1 : fichiers mergés (#1909), 8 brouillons créés en prod par David (`0372fe18`, `41e8421f`, `8e1f6003`, `d9872d4f`, `d6466135`, `7d258acc`, `2953c9c0`, `69ea8b2a`). Migration `20261028160000_questions_cm2_lot1_rangement_tags.sql` (nœud + tag des 8, `322f3479` en brouillon) : **PR #1911 ouverte, CI en cours**. Test 19 verts, rouge sans la migration (12 rouges) ; `security-auditor` sans finding bloquant ; 0 donnée d'élève sur `322f3479`.
-- **Prochaine action** : CI de #1911 verte → merger → `pnpm db:migrate` depuis le dépôt principal (4 conditions réunies) → vérifier au MCP (8 nœuds + 8 tags, `322f3479` en `draft`, `updated_at` intacts) → retirer le worktree → page à cocher du lot 1.
-- **En attente de David** : rien.
-- **Pièges en cours** : relever la prod juste avant `db:migrate` (d'autres sessions touchent les modèles) ; si `db:migrate` refuse (migrations d'autres sessions jouées), `db push --include-all` après `--dry-run` (seule la nôtre listée). Ports 5175-5178 souvent pris (5179 libre). Rendu à 390 px de « Ranger » pas vu : à regarder sur la page à cocher.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot1-rangement`.
+- **État** : lot 1 : 8 brouillons en prod ; migration `20261028160000_questions_cm2_lot1_rangement_tags.sql` (nœud + tag des 8, `322f3479` en brouillon) **mergée (#1911), pas encore jouée** : `db:migrate` refusé par le classifieur du mode auto. Prod relevée juste après le merge : état d'avant intact (8 sans nœud ni tag, `322f3479` publié + CM2-039).
+- **Prochaine action** : après le `db:migrate` de David, vérifier au MCP (8 nœuds + 8 tags, `322f3479` en `draft`, `updated_at` intacts) → page à cocher du lot 1.
+- **En attente de David** : `! pnpm db:migrate` depuis le dépôt principal. Il joue aussi `20261028170000` du CE1 (#1910, ses 4 conditions sont réunies, il n'attend que ça).
+- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute migration. Ports 5175-5178 souvent pris (5179 libre). Rendu à 390 px de « Ranger » pas vu : à regarder sur la page à cocher.
+- **Worktree / branche** : aucun (retiré après #1911).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
