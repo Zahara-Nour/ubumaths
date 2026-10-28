@@ -16,7 +16,7 @@
 					"expectedAnswer": "e^{ {{a}} }"
 				}
 			],
-			"statement": "Pour tout entier naturel $n$, on pose $u_n=e^{ {{a}}n}$.\n\nLa suite $(u_n)$ est géométrique. Quelle est sa raison ?\n\n$q=?$",
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{ {{a}}x}$.\n\nPour tout réel $x$, calcule le quotient $\\dfrac{f(x+1)}{f(x)}$.\n\n$\\dfrac{f(x+1)}{f(x)}=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -25,9 +25,9 @@
 			],
 			"correction": {
 				"steps": [
-					"Pour tout $n$ : $u_{n+1}=e^{ {{a}}(n+1)}=e^{ {{a}}n+{{a}}}=e^{ {{a}}n}\\times e^{ {{a}} }=u_n\\times e^{ {{a}} }$.",
-					"On passe d'un terme au suivant en multipliant toujours par le même nombre $e^{ {{a}} }$.",
-					"Conclusion : $(u_n)$ est géométrique de raison $q=e^{ {{a}} }$."
+					"$f(x+1)=e^{ {{a}}(x+1)}=e^{ {{a}}x+{{a}}}=e^{ {{a}}x}\\times e^{ {{a}} }$.",
+					"Donc $\\dfrac{f(x+1)}{f(x)}=\\dfrac{e^{ {{a}}x}\\times e^{ {{a}} }}{e^{ {{a}}x}}=e^{ {{a}} }$ : le quotient de deux images distantes de $1$ est toujours le même, quel que soit $x$.",
+					"Conséquence : avec $u_n=f(n)=e^{ {{a}}n}$, on a $u_{n+1}=u_n\\times e^{ {{a}} }$ pour tout entier naturel $n$ : la suite $(u_n)$ est géométrique de raison $e^{ {{a}} }$."
 				]
 			}
 		},
@@ -81,14 +81,14 @@
 			"variationIndex": 0
 		},
 		{
-			"answers": ["e^{2n}"],
+			"answers": ["e^{2x}"],
 			"expected": {
 				"status": "incorrect"
 			},
 			"variables": {
 				"a": "2"
 			},
-			"description": "variation 0 : a=2 : e^{2n} (le terme général, pas la raison)",
+			"description": "variation 0 : a=2 : e^{2x} (f(x), pas le quotient)",
 			"variationIndex": 0
 		},
 		{
@@ -111,6 +111,18 @@
 				"a": "2"
 			},
 			"description": "variation 0 : a=2 : e",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{e^{2x+2}}{e^{2x}}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "variation 0 : a=2 : quotient non simplifié",
 			"variationIndex": 0
 		},
 		{
