@@ -498,6 +498,11 @@ export const STAT_CHART_LIMITS = {
 	rawValues: 500,
 	/** Graduations de l'axe vertical écrit (`axe:`) */
 	axisTicks: 40,
+	/**
+	 * Haut de l'axe d'un diagramme à construire (`placer:`) : au-delà, l'unité ne se
+	 * vise plus au doigt (Q19 du chantier « réponses à placer »)
+	 */
+	placeAxisMax: 100,
 	/** Caractères d'un nom de catégorie */
 	labelLength: 40,
 	/** Caractères d'un titre ou d'une description */

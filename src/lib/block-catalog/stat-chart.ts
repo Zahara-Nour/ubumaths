@@ -113,7 +113,7 @@ export const statChartEntry: BlockCatalogEntry = {
 					values: 'les barres à construire : Natation ; Danse, ou toutes',
 					defaultValue: 'aucune',
 					description:
-						'L’élève monte ces barres (toucher la colonne, glisser, boutons ▲ ▼), d’unité en unité, même sur un axe gradué de 2 en 2 ; les autres sont dessinées. Une case par barre (note partielle) ; jamais d’effectif attendu écrit à l’écran. Exige axe: (calculé, il trahirait la plus grande barre) ; refusé avec valeurs: oui, indicateurs: (la barre se déduirait), des pourcentages ou deux séries. Avec données:, l’élève compte puis construit (série: affichée montre la série). Sur le PDF, les barres à construire sont absentes : l’enfant les dessine.'
+						'L’élève monte ces barres (toucher la colonne, glisser, boutons ▲ ▼), d’unité en unité, même sur un axe gradué de 2 en 2 ; les autres sont dessinées. Une case par barre (note partielle) ; jamais d’effectif attendu écrit à l’écran. Exige axe: (calculé, il trahirait la plus grande barre), jusqu’à 100 au plus ; refusé avec valeurs: oui, indicateurs: (la barre se déduirait), des pourcentages ou deux séries. Avec données:, l’élève compte puis construit (série: affichée montre la série). Sur le PDF, les barres à construire sont absentes : l’enfant les dessine.'
 				}
 			]
 		},

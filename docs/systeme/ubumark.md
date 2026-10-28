@@ -375,7 +375,8 @@ Danse = 7            ```                                     ```
   de 0, haut multiple du pas, au plus 40 graduations ; une barre plus haute refusée ; sans `de N en N` :
   de 1 en 1), `placer: Natation ; Danse` ou `placer: toutes` (`spec.toPlace`, rangs dans `data`, dans
   l'ordre des données ; nom sans tenir compte de la casse) et `caseIndex` (`case: N`, posé par le
-  générateur). Refus de `placer:` : sans `axe:` (calculé, il trahirait la plus grande barre), avec
+  générateur). Refus de `placer:` : sans `axe:` (calculé, il trahirait la plus grande barre), axe
+  au-delà de 100 (`STAT_CHART_LIMITS.placeAxisMax` : l'unité ne se viserait plus au doigt), avec
   `valeurs: oui`, `indicateurs:` (l'effectif total ou la moyenne donneraient la barre), des pourcentages,
   deux séries, un nom absent, nommé deux fois ou ambigu (nom exact d'abord : `Lundi` et `lundi`) ; `case:` sans
   `placer:`. `données:` permis (l'élève compte puis construit). Repérage dans un énoncé :

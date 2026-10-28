@@ -942,6 +942,12 @@ function checkBarsToPlace(
 				'placer : écrire aussi l’axe vertical (axe: 0 à 20, de 2 en 2) : calculé, il trahirait la plus grande barre'
 			);
 		}
+		if (options.axis.max > STAT_CHART_LIMITS.placeAxisMax) {
+			return fail(
+				line,
+				`placer : axe jusqu’à ${STAT_CHART_LIMITS.placeAxisMax} au plus (au-delà, l’élève ne viserait plus l’unité)`
+			);
+		}
 		if (options.showValues) {
 			return fail(line, 'placer : impossible avec valeurs: oui (l’effectif attendu serait écrit)');
 		}

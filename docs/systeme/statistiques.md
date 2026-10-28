@@ -217,8 +217,9 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   Détails : [ubumark.md](ubumark.md).
 - **Questions** : aucun import direct (`git grep` sur `src/lib/questions`, `src/lib/exercises`).
   Une question qui affiche un bloc statistique passe par ubumark ; un diagramme en barres à
-  construire (`placer:`, `axe:`) aussi : le générateur lit ses barres par `parseStatChartContent`
-  (`generator/build-answer.ts`), l'effectif attendu est celui que le parseur a compté.
+  construire (`placer:`, `axe:` jusqu'à 100 au plus, `STAT_CHART_LIMITS.placeAxisMax`) aussi : le
+  générateur lit ses barres par `parseStatChartContent` (`generator/build-answer.ts`), l'effectif
+  attendu est celui que le parseur a compté.
 
 ## Invariants
 
