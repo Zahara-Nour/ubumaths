@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1917 (lot 0 en prod)._
+_Mis à jour le 2026-10-28, après #1922 (lot 1 rangé en prod, page à cocher publiée)._
 
-- **État** : lot 0 mergé (#1917) et migré en prod (`20261028193700`, vérifié : 8 modèles aux niveaux [4] / [6], 7 tags, `updated_at` intact). Lot 1 « Calcul » (7 modèles, phase 0 validée le 2026-10-28, § 7) en PR #1919, simulation prod verte, essayé en base locale.
-- **Prochaine action** : CI verte de #1919 → merge → **David** lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-calcul --publier` (brouillons) → relever les `id` → migration nœud + tag (gabarit `20261026210000_questions_cp_c_rangement_tags.sql`) → page à cocher → publication. Puis phase 0 du lot 2 (relatifs : 5-120, 5-014, 5-019, 5-015, 5-024, 5-021).
-- **En attente de David** : le `--publier` du lot 1 après le merge de #1919.
-- **Pièges en cours** : droite à placer et barres à construire mergés mais **pas en prod** ; relire § 9 de `couvrir-un-niveau.md` avant d'écrire un lot ; `e`/`i` interdites dans les `eval` ; horodatages de migration pris par les sessions CE1 / CM1 / CM2 le même jour : vérifier avant d'en choisir un ; worktree neuf : `svelte-kit sync` avant `create-questions` ; `question:specs --template` dit « NON importable » (colonnes `created_at`…), sans incidence.
-- **Worktree / branche** : `../ubumaths-wt-questions-5-lot1`, `feat/questions-5-lot1-calcul`.
+- **État** : lot 0 en prod (#1917). Lot 1 « Calcul » : fichiers #1919, 7 brouillons créés par David, rangés et tagués (#1922, `20261028214500`, jouée par une autre session avec `db push --include-all`, vérifiée : 7 brouillons, nœud du point, un tag chacun).
+- **Prochaine action** : relecture de David sur la page à cocher https://claude.ai/artifact/6PS8PZmgzaniDhkr8sThzh (7 fiches, 0 verdict) ; compter les verdicts (`ArtifactData list verdicts`, 7 attendus) ; tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/5-calcul` en simulation, puis David avec `--publier`. Ensuite phase 0 du lot 2 (relatifs : 5-120, 5-014, 5-019, 5-015, 5-024, 5-021).
+- **En attente de David** : sa relecture du lot 1.
+- **Pièges en cours** : `db push` refuse une migration plus ancienne que la dernière jouée (sessions parallèles) → `--include-all`, lancé par David ; horodatages pris par les autres sessions : vérifier `schema_migrations` et les worktrees avant d'en choisir un ; 3 modèles à choix non dessinés sur la page (« jouer dans l'aperçu ») ; worktree neuf : `svelte-kit sync` avant `create-questions` ; droite à placer et barres à construire pas en prod.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -148,3 +148,12 @@ fichiers `scripts/questions/5-calcul/` ; simulation prod : 7 à créer, 59 specs
 
 Le lot 0 de la 3e (PR #1921) passe **ac5d0413** (« Réduire une somme », qa + ra) de la 3e à la **5e**, tag
 5-039, nœud gardé. 90dca27a et acbd2280 ne sont pas touchés par la 3e (laissés en 4e, 4-005).
+
+## 8. Lot 1 en prod (2026-10-28)
+
+- David a lancé `create-questions --publier` : 8e571049 (01), 2f1657b0 (02), 8df8ba2b (03), faf57d3b (04),
+  be35cd63 (05), 7b08589b (06), 9d9b2301 (07), brouillons [5], sans nœud ni tag (vérifié MCP).
+- Migration `20261028214500_questions_5_lot1_rangement_tags` (#1922, gabarit CM1 lot 1) : test 9/9, rouge sans
+  elle, `security-auditor` sans finding ; jouée en prod par une autre session (`db push --include-all` avec les
+  migrations 2de et 3e en attente) ; vérifiée : nœud du point (notion pour 5-004 et 5-032), un tag chacun.
+- Page à cocher : https://claude.ai/artifact/6PS8PZmgzaniDhkr8sThzh (capacité `db`, collection `verdicts`).
