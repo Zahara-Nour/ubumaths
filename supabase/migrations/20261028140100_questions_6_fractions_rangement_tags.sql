@@ -38,7 +38,8 @@
 -- (policy) ne change.
 --
 -- Rollback (aucune donnée d'élève). Il retire les 13 tags, rend les 10 brouillons sans nœud et
--- les 3 modèles à la 5e. Bloc éprouvé par le test d'intégration, à jouer dans UNE transaction
+-- les 3 modèles à la 5e. Garde : il refuse si un modèle n'est plus en 6e, rangé, au statut posé,
+-- avec son seul tag (une saisie faite depuis serait écrasée en silence). Bloc éprouvé par le test d'intégration, à jouer dans UNE transaction
 -- (`psql -1 -v ON_ERROR_STOP=1 -f`, ou l'éditeur SQL en un seul envoi) :
 -- ROLLBACK:BEGIN
 -- set local lock_timeout = '5s';
@@ -57,6 +58,22 @@
 --                ('c9c3a8a3-575a-4d8d-b278-cc22d348f274'::uuid),
 --                ('ddf5d292-d792-41d9-9136-2018e73cff9d'::uuid)) as r(id)
 --  order by r.id;
+-- do $garde_retour$
+-- declare v_presents integer; v_intacts integer; v_tags integer;
+-- begin
+-- 	perform 1 from public.question_templates where id in ('0be55013-6c7d-447b-98f4-bdfa574ad506', '378aa770-4d92-4c21-aa2f-05d8f9cc4fb4', '5077e030-ab90-4660-91a7-25cb48281445', '5cd25c2b-1def-492c-a81f-998255ea4f1d', '7ff1ac44-8099-472a-b688-a331f91be9c5', '83c835bb-5534-4b1a-afc2-2d3430622f9e', '8ffdbdb1-4688-47d6-89c1-f3c33e147311', '9293eb9a-8b9a-43c1-b6bf-d2f71134dd44', 'afebbb91-4d08-46f0-8640-77fe4e6f4e62', 'c360d588-3e4f-4ea5-8d27-1f671fe47bcd', 'c99be374-4d52-4a9c-bcd4-03b71f45f717', 'c9c3a8a3-575a-4d8d-b278-cc22d348f274', 'ddf5d292-d792-41d9-9136-2018e73cff9d') order by id for update;
+-- 	-- Intact : en 6e, rangé, au statut posé (brouillons pas publiés depuis, 3 de 5e toujours publiés)
+-- 	select count(*), count(*) filter (where q.grades = array['6'] and q.classification_node_id is not null
+-- 	                                     and q.status = case when q.id in ('0be55013-6c7d-447b-98f4-bdfa574ad506', '9293eb9a-8b9a-43c1-b6bf-d2f71134dd44', '8ffdbdb1-4688-47d6-89c1-f3c33e147311') then 'published' else 'draft' end)
+-- 	  into v_presents, v_intacts
+-- 	  from public.question_templates q
+-- 	 where q.id in ('0be55013-6c7d-447b-98f4-bdfa574ad506', '378aa770-4d92-4c21-aa2f-05d8f9cc4fb4', '5077e030-ab90-4660-91a7-25cb48281445', '5cd25c2b-1def-492c-a81f-998255ea4f1d', '7ff1ac44-8099-472a-b688-a331f91be9c5', '83c835bb-5534-4b1a-afc2-2d3430622f9e', '8ffdbdb1-4688-47d6-89c1-f3c33e147311', '9293eb9a-8b9a-43c1-b6bf-d2f71134dd44', 'afebbb91-4d08-46f0-8640-77fe4e6f4e62', 'c360d588-3e4f-4ea5-8d27-1f671fe47bcd', 'c99be374-4d52-4a9c-bcd4-03b71f45f717', 'c9c3a8a3-575a-4d8d-b278-cc22d348f274', 'ddf5d292-d792-41d9-9136-2018e73cff9d');
+-- 	select count(*) into v_tags from public.question_template_points
+-- 	 where template_id in ('0be55013-6c7d-447b-98f4-bdfa574ad506', '378aa770-4d92-4c21-aa2f-05d8f9cc4fb4', '5077e030-ab90-4660-91a7-25cb48281445', '5cd25c2b-1def-492c-a81f-998255ea4f1d', '7ff1ac44-8099-472a-b688-a331f91be9c5', '83c835bb-5534-4b1a-afc2-2d3430622f9e', '8ffdbdb1-4688-47d6-89c1-f3c33e147311', '9293eb9a-8b9a-43c1-b6bf-d2f71134dd44', 'afebbb91-4d08-46f0-8640-77fe4e6f4e62', 'c360d588-3e4f-4ea5-8d27-1f671fe47bcd', 'c99be374-4d52-4a9c-bcd4-03b71f45f717', 'c9c3a8a3-575a-4d8d-b278-cc22d348f274', 'ddf5d292-d792-41d9-9136-2018e73cff9d');
+-- 	if v_intacts <> v_presents or v_tags <> v_presents then
+-- 		raise exception 'rollback : état changé depuis la migration (% intact(s) sur %, % tag(s))', v_intacts, v_presents, v_tags;
+-- 	end if;
+-- end $garde_retour$;
 -- delete from public.question_template_points q
 --  using public.curriculum_points p, (values
 -- 	('5077e030-ab90-4660-91a7-25cb48281445'::uuid, '6-130'),

@@ -293,6 +293,33 @@ describe('Questions 6e, lot 4 « Fractions » : les branches d’échec de la mi
 		});
 	});
 
+	it('le rollback refuse si un modèle a été publié depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query(`update public.question_templates set status = 'published' where id = $1`, [
+				ids[0]
+			]);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : état changé depuis la migration \(12 intact\(s\) sur 13, 13 tag\(s\)\)/
+			);
+		});
+	});
+
+	it('le rollback refuse si un modèle de 5e a changé de niveau depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query(
+				`update public.question_templates set grades = array['5', '6'] where id = $1`,
+				[ids5e[0]]
+			);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : état changé depuis la migration/
+			);
+		});
+	});
+
 	it('un point du lot archivé fait échouer la migration (résolution stricte)', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
