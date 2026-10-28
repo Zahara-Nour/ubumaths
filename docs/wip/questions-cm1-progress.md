@@ -7,11 +7,11 @@
 
 _Mis à jour le 2026-10-28, après #1893._
 
-- **État** : lot 0 en prod (#1893 mergée, `db:migrate` joué, vérifié au MCP : 14 en [CM2] tagués, 4 en [6] tagués, 8 brouillons [CM1] sans tag, md5 attendus) ; sessions `6EME` et `CM2` prévenues.
-- **Prochaine action** : lot 1, calcul mental (043, 163, 046, 164, 037, 038, et tables 035, 161, 036 en tables mélangées de 0 à 10) : phase 0 (comportements, à valider par David), skill `couvrir-niveau`.
-- **En attente de David** : rien.
-- **Pièges en cours** : un modèle garde toujours au moins un niveau ; case « choix » en prod (v0.51.0), QCM pas encore migrés ; droite à placer mergée, pas en prod ; niveaux relevés parmi les publiés de la catégorie avant toute écriture ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx`.
-- **Worktree / branche** : aucun (à recréer pour le lot 1).
+- **État** : lot 0 en prod (#1893). Lot 1 (calcul mental, 9 modèles) : PR des fichiers #1904 ouverte ; 9 BROUILLONS en prod (ids au § 7 quater), sans nœud ni tag.
+- **Prochaine action** : merger #1904 si CI verte (statut du RUN) ; puis migration nœud + tag des 9 ids (gabarit `20261026210000_questions_cp_c_rangement_tags.sql`, horodatage = max prod + 1 min, test rouge puis vert, `security-auditor`), `db:migrate`, page à cocher.
+- **En attente de David** : rien (phase 0 validée, § 7 bis).
+- **Pièges en cours** : un modèle garde toujours au moins un niveau ; case « choix » en prod (v0.51.0), QCM pas encore migrés ; droite à placer mergée, pas en prod ; niveaux relevés parmi les publiés de la catégorie avant toute écriture ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx`. ; niveaux réservés par la session CM2 (lot 1) dans Entiers / Apprivoiser : Décomposition 15-17, Ecriture 16, Comparer 8-9, Encadrer 9-10 → notre lot 2 prend les suivants, relus en base.
+- **Worktree / branche** : `ubumaths-wt-questions-cm1` · `feat/questions-cm1-lot1`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -197,3 +197,53 @@ point repassent en brouillon, niveau CM1 gardé, jamais supprimés.
   `gardeStatut` laissé de côté : le test du helper suppose une origine en brouillon.
 - **Livré** (#1893, 2026-10-28) : `security-auditor` sans bloquant (commentaire d'accès corrigé : le prof lit
   encore les brouillons) ; CI verte ; `db:migrate` ; vérification MCP conforme.
+
+## 7. Lot 1 — calcul mental : phase 0 (à valider)
+
+Niveaux relevés le 2026-10-28 parmi les modèles de chaque catégorie (publiés et brouillons) :
+Entiers / Additionner / Tables 1-10 (10 = brouillon CE2), A trou 1-14, Somme astucieuse 1-10 ;
+Entiers / Soustraire / Différence astucieuse 1-3 ; Entiers / Multiplier / Tables 1-9, Produits
+astucieux 1-3 (3 = ×8 du CE2, brouillon) ; Fractions / Apprivoiser / Egalité de fractions 1-4,
+Forme décimale 1-12. À relire juste avant `create-questions` (sessions CE2 et CM2 en cours).
+
+| #   | Point   | Sous-notion (nœud du point)          | Modèle                                    | Variations et plages                                                                                                                                                                               | Catégorie, niveau                                 |
+| --- | ------- | ------------------------------------ | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| 1   | CM1-035 | addition et soustraction > tables    | Tables d'addition                         | a + b, a et b de 2 à 10, tables mêlées                                                                                                                                                             | Entiers / Additionner / Tables, 11                |
+| 2   | CM1-161 | addition et soustraction > tables    | Trouver le terme manquant                 | V1 a + ? = s ; V2 ? + a = s (a et le terme de 2 à 10)                                                                                                                                              | Entiers / Additionner / A trou, 15                |
+| 3   | CM1-036 | multiplication > tables              | Tables de multiplication                  | a × b, a et b de 2 à 10, tables mêlées                                                                                                                                                             | Entiers / Multiplier / Tables, 10                 |
+| 4   | CM1-043 | addition et soustraction > astucieux | Ajouter 8, 9, 18, 19, 28, 29, 38 ou 39    | V1 n + 8 ou 9, n de 12 à 89 ; V2 n + 18 à 39, n de 12 à 59 ; V3 n + l'un des huit, n de 102 à 959 ; chiffre des unités de n de 2 à 9 (toujours une retenue) ; corrigé « + 30 puis − 1 »            | Entiers / Additionner / Somme astucieuse, 11      |
+| 5   | CM1-163 | addition et soustraction > astucieux | Soustraire 8, 9, 18, 19, 28, 29, 38 ou 39 | V1 n − 8 ou 9, n de 20 à 97 ; V2 n − 18 à 39, n de 50 à 97 ; V3 n − l'un des huit, n de 100 à 997 ; chiffre des unités de n de 0 à 7 (toujours un emprunt) ; corrigé « − 30 puis + 1 »             | Entiers / Soustraire / Différence astucieuse, 4   |
+| 6   | CM1-164 | multiplication > calcul astucieux    | Multiplier par 8                          | 8 × n : V1 n de 26 à 99, V2 n de 101 à 199 ; jamais multiple de 10, ni 25, 125 ; corrigé « le double, puis le double, puis encore le double », une étape par ligne (comme le CE2 corrigé)          | Entiers / Multiplier / Produits astucieux, 4      |
+| 7   | CM1-046 | multiplication > calcul astucieux    | Multiplier par 5                          | 5 × n : V1 n pair de 12 à 98, V2 n impair de 11 à 99, V3 n de 101 à 199 ; jamais multiple de 10 ni de 25 (exclusion du livret : 5 × 20, 5 × 100, 5 × 25) ; corrigé « × 10 puis la moitié »         | Entiers / Multiplier / Produits astucieux, 5      |
+| 8   | CM1-037 | fractions > égalité de fractions     | Relations entre fractions usuelles        | case = un entier, toujours : V1 égalités 1/2 = ?/4, 1 = ?/2, 1 = ?/4, 1 = ?/10, 1 = ?/100, 1/10 = ?/100 ; V2 calculs 1/2 + 1/2 = ?, 1/4 + 1/4 = ?/2, 1 − 1/4 = ?/4, 1 − 1/2 = ?/2, 1/2 + 1/4 = ?/4 | Fractions / Apprivoiser / Egalité de fractions, 5 |
+| 9   | CM1-038 | fractions > forme décimale           | 1/10 et 1/100 en écriture décimale        | V1 1/10 = ? et 1/100 = ? (réponse décimale) ; V2 0,1 = 1/? et 0,01 = 1/? (case = le dénominateur)                                                                                                  | Fractions / Apprivoiser / Forme décimale, 14      |
+
+Une case par question, aucun QCM. Tables : modèles CM1 propres (décision du 2026-10-27), plages 2
+à 10 comme au CE2 (0 et 1 sont dans le point mais n'apprennent rien). Erreurs typiques en specs :
+
+- 10 sans compenser (57 + 29 → 87), compensation à l'envers (→ 85), table voisine (7 × 8 → 54),
+  somme au lieu du produit, 1/10 → 0,10 juste, 1/100 → 0,1 faux. Question d'accès (brouillons, puis
+  nœud + tag par migration) : **personne** ne gagne d'accès, aucune règle ne change.
+
+### 7 bis. Lot 1 : décisions (David, 2026-10-28)
+
+« je suis tes recos » : phase 0 du § 7 validée telle quelle, avec les trois recommandations —
+tables de 2 à 10 ; × 8 jusqu'à n = 199 (variation à 3 chiffres) ; fractions (037) : la case est
+toujours un entier (« 1/4 + 1/4 = ?/2 »), jamais de simplification à faire.
+
+### 7 ter. Lot 1 — écriture (2026-10-28)
+
+- Script `docs/wip/questions/lot-cm1-1.py` → `scripts/questions/cm1-1/` (9 JSON). Délai 20 s pour
+  les tables et les fractions, 30 s pour les quatre procédures (nombres à 3 chiffres).
+- Simulation `create-questions` (prod, lecture) : 9/9 verts, 92 specs. `question:specs` : specs
+  vertes, 6 000 tirages réussis, corrigés relus (corrigé du × 5 : moitié remise en formule).
+- Niveau du 038 passé de 13 à 14 : le 13 a été pris en prod entre-temps (6e, `5077e030`).
+- Base locale : 9 brouillons ; « Relations entre fractions » joué dans l'aperçu admin (case au
+  numérateur, réponse fausse → correction 1/2 = 2/4).
+
+### 7 quater. Lot 1 — brouillons en prod (2026-10-28)
+
+`create-questions --publier` lancé par moi à la demande de David (« Lance le toi même »), vérifié au
+MCP : 9 brouillons [CM1], sans nœud ni tag, niveaux attendus. Ids : `8fee3492` (tables +),
+`f24bb468` (terme manquant), `50a9d91c` (tables ×), `01729e6e` (+ 8…39), `b6b1cae5` (− 8…39),
+`9db49362` (× 8), `57cc0fca` (× 5), `2d58ce54` (relations), `f91a2d8e` (1/10, 1/100).
