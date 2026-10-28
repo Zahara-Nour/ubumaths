@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 4 écrit (#1898 ouverte)._
+_Mis à jour le 2026-10-28, après #1898._
 
-- **État** : lots 1, 2 et 3 publiés. Lot 3 « Calcul décimal » : 13 modèles publiés le 2026-10-28 (13/13 OK sur la page à cocher, `publier-lot --publier` lancé par David, MCP : 13 publiés, rangés, tagués). Page à cocher : décimaux à la française (#1888).
-- **Prochaine action** : lot 4 « Fractions » — PR #1898 (fichiers) : CI, merge ; puis David `create-questions --publier` (`scripts/questions/6-fractions`), migration rangement + tags + 3 modèles de 5e passés en 6e (6-131) + contenu de e3d87166 (§ 11.1), page à cocher.
-- **En attente de David** : rien avant le merge de #1898. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
+- **État** : lots 1 à 3 publiés. Lot 4 « Fractions » : fichiers mergés (#1898, 10 modèles, `scripts/questions/6-fractions`), rien en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-fractions --publier` (brouillons en prod) ; relever les `id` (MCP) ; puis migration rangement + tags des 10, 3 modèles de 5e passés en 6e et tagués 6-131 (0be55013, 9293eb9a, 8ffdbdb1), contenu de e3d87166 (publié, `\textcolor` brut, § 11.1) ; page à cocher.
+- **En attente de David** : le `--publier` du lot 4. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
 - **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; nombres calculables de tête dans les problèmes (relecture du lot 3) ; un geste de calcul = un modèle ; `--mettre-a-jour` après le merge seulement (il lit `main`) ; page à cocher générée depuis un `main` à jour, rendu vu dans Chrome AVANT de l'annoncer ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval`.
-- **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-fractions` (#1898).
+- **Worktree / branche** : aucun (à recréer pour la migration).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -583,7 +583,7 @@ quelconques dans des cas simples, $\frac{5}{4} + \frac{2}{3}$) ; « Ranger » à
 
 ### 11.1 Écriture (2026-10-28)
 
-- Worktree `../ubumaths-wt-questions-6`, branche `feat/questions-6-fractions`, PR #1898.
+- Worktree `../ubumaths-wt-questions-6`, branche `feat/questions-6-fractions`, PR #1898 mergée le 2026-10-28 (CI verte), worktree retiré.
 - `docs/wip/questions/lot-6-fractions.py` → `scripts/questions/6-fractions/` (10 fichiers, 79 specs : justes, erreurs
   typiques, 10/12 et 3/6 en ambre `reducedFractions`, 3,75 refusé quand la consigne demande une fraction, 7/4 refusé
   au lieu de « 1 + 3/4 » dans « ranger ») ; `create-questions` en simulation : 10 verts ; `question:specs` à 300 tirages
