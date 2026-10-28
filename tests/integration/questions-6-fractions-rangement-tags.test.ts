@@ -102,7 +102,8 @@ async function poserEtatProd(pg: Client, auteur: string): Promise<void> {
 		[ids]
 	);
 	await pg.query(
-		`update public.question_templates set grades = array['5'], status = 'published', classification_node_id = $2
+		`update public.question_templates set grades = array['5'], status = 'published', classification_node_id = $2,
+		        level = 10 + array_position($1::uuid[], id)
 		  where id = any($1::uuid[])`,
 		[ids5e, parChemin.get(QUANTITE)]
 	);

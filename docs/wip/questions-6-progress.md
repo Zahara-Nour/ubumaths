@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1898 et le `--publier` du lot 4._
+_Mis à jour le 2026-10-28, PR du rangement du lot 4 en cours._
 
-- **État** : lots 1 à 3 publiés. Lot 4 « Fractions » : 10 brouillons en prod (ids § 11.3, vérifiés MCP : draft, grades 6, 0 tag).
-- **Prochaine action** : worktree `questions-6` + migration rangement + tags des 10, 3 modèles de 5e passés en 6e et tagués 6-131 (0be55013, 9293eb9a, 8ffdbdb1), contenu de e3d87166 (publié, `\textcolor` brut, § 11.1) ; page à cocher.
+- **État** : lots 1 à 3 publiés. Lot 4 « Fractions » : 10 brouillons en prod ; migrations `20261028140000` (contenu de e3d87166) et `20261028140100` (rangement, tags, 3 modèles de 5e → 6e) sur `feat/questions-6`, tests verts (§ 11.4).
+- **Prochaine action** : revue `security-auditor`, PR, CI, merge, `db:migrate` (sans `--include-all`), vérification MCP ; puis page à cocher du lot 4 (depuis `main` à jour, vue dans Chrome).
 - **En attente de David** : rien. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
-- **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; nombres calculables de tête dans les problèmes (relecture du lot 3) ; un geste de calcul = un modèle ; `--mettre-a-jour` après le merge seulement (il lit `main`) ; page à cocher générée depuis un `main` à jour, rendu vu dans Chrome AVANT de l'annoncer ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval`.
-- **Worktree / branche** : aucun (à recréer pour la migration).
+- **Pièges en cours** : relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; nombres calculables de tête dans les problèmes ; un geste de calcul = un modèle ; `--mettre-a-jour` après le merge seulement ; page à cocher générée depuis un `main` à jour, rendu vu dans Chrome AVANT de l'annoncer ; `--include-all` avec l'accord de David ; `e`/`i` interdites dans les `eval`.
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -624,3 +624,14 @@ David a lancé `create-questions --publier` : 10 créés. Vérifiés par MCP : `
 | 8   | Soustraire des fractions                              | ddf5d292-d792-41d9-9136-2018e73cff9d | 6-205 |
 | 9   | Problèmes de fractions                                | 5cd25c2b-1def-492c-a81f-998255ea4f1d | 6-137 |
 | 10  | Additionner des fractions de dénominateurs différents | c99be374-4d52-4a9c-bcd4-03b71f45f717 | 6-135 |
+
+### 11.4 Rangement et contenu (2026-10-28)
+
+- Relevé MCP avant le SQL : 10 brouillons `[6]` sans nœud ni tag ; 0be55013, 9293eb9a, 8ffdbdb1 publiés, `[5]`, déjà sur
+  « Fractions : calculs > fraction d'une quantité » (nœud de 6-131), sans tag, 0 donnée d'élève ; e3d87166 publié, tag 6-116.
+- `20261028140000_questions_6_fractions_contenu` (générée par `docs/wip/questions-6/lot-contenu-6-fractions.py`, relevé
+  `etat-prod-2026-10-28-fractions/`, md5 du contenu vérifié au MCP) : la couleur brute de la v1 de e3d87166 devient du gras.
+- `20261028140100_questions_6_fractions_rangement_tags` (gabarit du lot 3, plus niveaux et statut gardés) : 10 brouillons
+  sur le nœud de leur point + tag ; les 3 de 5e passent `[6]` + 6-131, nœud inchangé.
+- Tests `questions-6-fractions-contenu` et `questions-6-fractions-rangement-tags` : rouges sans les migrations (ENOENT),
+  24 verts avec. Aide `lot-2bis-migration.ts` : le cas « TOUT ou RIEN » est sauté pour un lot d'un seul modèle.
