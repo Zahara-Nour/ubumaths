@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1910._
+_Mis à jour le 2026-10-28, lot 2 bis publié._
 
-- **État** : lot 2 bis (ordinaux, 7 modèles, § 8) : 7 brouillons en prod (8e9c0137, 50d9118b, 14dfdd8c, 8471f4b3, 2dec5c08, ef446e9b, e54c58f0), rangés sur « ordinaux et rangs » et tagués CE1-011 à 015 (#1910 mergée, migration jouée en prod, vérifiée). Page à cocher publiée : https://claude.ai/artifact/5eAt1dERBTfPzLSBTU1r6f (3 modèles à case choix : à jouer dans l'aperçu).
-- **Prochaine action** : lire et compter les verdicts (collection `verdicts`) ; corriger les « À revoir » ; puis `publier-lot --dir scripts/questions/ce1-2bis` en simulation, `--publier` par David. Puis lot 3 fractions (§ 4 bis, point 6).
-- **En attente de David** : la relecture des 7 modèles sur la page à cocher.
+- **État** : lot 2 bis (ordinaux, 7 modèles, CE1-011 à 015) **publié en prod** (relecture 7/7 OK, `publier-lot` 7/7, statut vérifié en base). Lots 0, 1, 2, 2 bis clos. Aucun worktree.
+- **Prochaine action** : lot 3 fractions (§ 4 bis, point 6) : nouveau worktree `ubumaths-wt-questions-ce1`, branche `feat/questions-ce1-lot3`, phase 0 (modèles proposés, niveaux, catégorie) à faire valider par David.
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `i` (unité imaginaire) → liste `21|30|…` ; △ plus petit que ✕ ▢ ○ (police) ; niveaux « Ordinaux » 7 à 13 (1 à 6 = CP) ; ports 5176-5178 pris ; commitlint : sujet sans majuscule initiale (« CE1 » en tête refusé), corps ≤ 100 caractères par ligne.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` · `feat/questions-ce1-lot2bis-rangement` (mergée, à retirer).
+- **Worktree / branche** : aucun (worktree du lot 2 bis retiré).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -287,3 +287,5 @@ convertie (178 QCM, `migrer-qcm-en-cases --ecrire` pas lancé). Recommandations 
   classifieur du mode auto → lancé par David avec `!`.
 * 2026-10-28 : migration de #1910 déjà jouée en prod (le `db:migrate` de David : « up to date »), vérifiée
   (7/7 sur « ordinaux et rangs », points justes) ; page à cocher publiée (3 alertes : case choix non dessinée).
+* 2026-10-28 : relecture 7/7 OK ; `publier-lot` (simulation 7/7) puis `--publier` par David : 7/7 publiés,
+  vérifié en base ; worktree retiré.
