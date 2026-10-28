@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1896._
+_Mis à jour le 2026-10-28, après #1909._
 
-- **État** : lot 0 CLOS. #1896 mergée, migration `20261028120000` jouée (`--include-all`, seule manquante), vérifiée au MCP : 6 modèles en 6e (6-121, 6-118), 2 en 5e (5-010, 5-119), 3 brouillons, `updated_at` gardé. Les 12 modèles venus du CM1 : #1893 (`questions-cm1`). Sessions CM1 et 6EME prévenues.
-- **Prochaine action** : lot 1 (entiers, 8 modèles, phase 0 validée § 6) : script `lot-cm2-1.py` dans le worktree, simulation, essai local, PR des fichiers.
-- **En attente de David** : rien.
-- **Pièges en cours** : d'autres sessions touchent les mêmes modèles → relever la prod juste avant une migration ; horodatages de migration déjà pris ailleurs ; migration plus ancienne que la dernière jouée → `db push --include-all` après `--dry-run` (vérifier qu'elle est la seule listée).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot1`.
+- **État** : lot 1 (entiers, 8 modèles) : fichiers mergés (#1909), `scripts/questions/cm2-1/`, script `docs/wip/questions/lot-cm2-1.py`. Simulation 8/8 verte (59 specs), essai en base locale fait. **Pas encore en prod.**
+- **Prochaine action** : après le `--publier` de David, relever les `id` en prod, puis écrire la migration nœud + tag des 8 modèles **et la dépublication de `322f3479`** (gabarit `20261026210000_questions_cp_c_rangement_tags.sql` + test), puis la page à cocher.
+- **En attente de David** : depuis le dépôt principal, `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-1 --publier` (8 brouillons en prod).
+- **Pièges en cours** : d'autres sessions touchent les mêmes modèles → relever la prod juste avant une migration ; horodatages de migration déjà pris ailleurs ; migration plus ancienne que la dernière jouée → `db push --include-all` après `--dry-run`. Ports 5175-5178 souvent pris : 5179 libre le 2026-10-28. Rendu à 390 px de « Ranger » pas vu (fenêtre Chrome pas réductible) : à regarder sur la page à cocher.
+- **Worktree / branche** : aucun (retirés après #1909) ; la migration se fera dans un nouveau worktree `questions-cm2`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -219,3 +219,10 @@ Recommandations suivies (« tes recos ? » puis « go ») : le tableau tel quel,
 modèles ; `322f3479` **dépublié** (doublon exact de `dd7db98e`, CM2-039), dans la migration de
 rangement du lot 1. Session `questions-cm1` prévenue : son lot 2 prend Décomposition 18+, Ecriture
 17+, Comparer 10+, Encadrer 11+.
+
+### 6.2 Lot 1 : écriture (2026-10-28)
+
+- Script `lot-cm2-1.py` → `scripts/questions/cm2-1/` (8 fichiers). `create-questions` en simulation : tout vert du premier coup ; tirages relus à la main (accords, chiffre unique, case « choix ») : justes.
+- « Le chiffre 7 de 4 712 305 » : une condition par rang (`i>=c || i==r || chiffre≠ch`) garantit que le chiffre n'apparaît qu'une fois dans le nombre.
+- Aperçu admin local (port 5179) : case « choix » de Comparer jugée juste, correction lisible ; Ranger : la liste des 5 nombres était une seule formule et aurait débordé sur un téléphone → une formule par nombre.
+- #1909 (fichiers seuls, revue : aucune) mergée, CI verte.
