@@ -53,20 +53,17 @@ const twoBlanks = instance({
 		{ expectedAnswer: '4', expectedAnswerLatex: '4', type: 'math' }
 	]
 });
-const qcm = instance({
-	statement: resolvedMarkdown('Quel nombre est pair ?'),
-	blanks: undefined,
-	choices: [
-		{ content: resolvedMarkdown('7'), isCorrect: false },
-		{ content: resolvedMarkdown('12'), isCorrect: true },
-		{ content: resolvedMarkdown('9'), isCorrect: false }
-	],
-	shuffledChoices: [
-		{ content: resolvedMarkdown('9'), originalIndex: 2 },
-		{ content: resolvedMarkdown('12'), originalIndex: 1 },
-		{ content: resolvedMarkdown('7'), originalIndex: 0 }
+// Case choix mélangée : « 9 » (origine 2) affiché en A, « 12 » (origine 1, le bon) en B
+const choiceCase = instance({
+	statement: resolvedMarkdown('Quel nombre est pair ?\n\n```choix\ncase: 0\n- 7\n- 12\n- 9\n```'),
+	blanks: [
+		{
+			expectedAnswer: '1',
+			type: 'choice',
+			choice: { choices: ['7', '12', '9'], order: [2, 1, 0], multiple: false }
+		}
 	]
-} as Partial<QuestionInstance>);
+});
 const textBlank = instance({
 	statement: resolvedMarkdown('Un triangle à trois côtés égaux est {{blank:0}}.'),
 	blanks: [{ expectedAnswer: 'équilatéral', type: 'text' }]
@@ -163,8 +160,8 @@ describe('FlashCard — verso sans réponse (R9)', () => {
 		expect(back(container).querySelector('[data-testid="instruction"]')).toBeNull();
 	});
 
-	it('QCM : tous les choix dans l’ordre affiché, le bon marqué « bonne réponse »', async () => {
-		const { container } = await show({ instance: qcm });
+	it('case choix : tous les choix dans l’ordre affiché, le bon marqué « bonne réponse »', async () => {
+		const { container } = await show({ instance: choiceCase });
 		const items = [...back(container).querySelectorAll<HTMLElement>('[data-kind="choices"] li')];
 		expect(items.map((li) => li.getAttribute('data-status'))).toEqual([
 			'neutral',
@@ -262,8 +259,8 @@ describe('FlashCard interactive — verso avec la réponse de l’élève (R1-R7
 		expect(back(container).querySelector('[data-testid="global-verdict"]')).toBeNull();
 	});
 
-	it('QCM coché à tort : choix rouge, bon choix encadré, « Faux »', async () => {
-		const { container } = await show({ instance: qcm, interactive: true });
+	it('case choix cochée à tort : choix rouge, bon choix encadré, « Faux »', async () => {
+		const { container } = await show({ instance: choiceCase, interactive: true });
 		// Position affichée 0 = « 9 » (faux)
 		front(container).querySelectorAll<HTMLButtonElement>('.choice-button')[0].click();
 		flushSync();
