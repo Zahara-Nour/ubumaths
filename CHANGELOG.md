@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.54.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.54.0...v0.54.1) (2026-10-28)
+
+### 🐛 Bug Fixes
+
+- **build:** light-dark() intact sous Vite 8, couleurs perdues en v0.54.0 ([1ddd521](https://github.com/Zahara-Nour/ubumaths/commit/1ddd521407f249ede05f47265b2600be3ac235d6))
+
+### 📚 Documentation
+
+- **env:** garde light-dark() du build, Lightning CSS sous Vite 8 ([1c6a7b9](https://github.com/Zahara-Nour/ubumaths/commit/1c6a7b94fa6f0132d1ffc7a2521b599b52eb5a04))
+- **wip:** build-memoire, couleurs de v0.54.0 corrigées par [#1902](https://github.com/Zahara-Nour/ubumaths/issues/1902) ([c9e9a31](https://github.com/Zahara-Nour/ubumaths/commit/c9e9a312298fff338731307683ffc4ec064855df))
+- **wip:** build-memoire, Vite 8 en prod (v0.54.0), build Vercel en 2 min 47 s ([a3ef3c6](https://github.com/Zahara-Nour/ubumaths/commit/a3ef3c6528897492525b8673c32a0b05b6e781c9))
+
 ## [0.54.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.53.0...v0.54.0) (2026-10-28)
 
 ### ✨ Features
