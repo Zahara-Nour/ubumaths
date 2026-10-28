@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 2 écrit (PR des fichiers ouverte)._
+_Mis à jour le 2026-10-28, après #1920._
 
-- **État** : lot 1 en prod en BROUILLON, rangé et tagué, 2 OK sur 5 (3 fiches corrigées à relire). Lot 2 (numération, 9 modèles) écrit sur `content/questions-ce2-lot2` : specs vertes, essai en base locale, PR des fichiers.
-- **Prochaine action** : CI verte → merge ; David lance `create-questions --dir scripts/questions/ce2-2 --publier` ; relever les `id` ; migration nœud + tag du lot 2. En parallèle, lot 1 : compter les verdicts (https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4) ; 5/5 OK → `publier-lot --dir scripts/questions/ce2-1` (simulation), puis David `--publier`.
-- **En attente de David** : relecture des 3 fiches corrigées du lot 1 (60, × 4, × 8) ; `--publier` du lot 2 après le merge.
-- **Pièges en cours** : `question:specs --template` dit « NON importable » à tort : vérifier avec `--file` ; client tests `wrapDynamicImport` intermittent → relancer le job ; horodatage de migration = max de la PROD + 1 min ; commitlint refuse un sujet en majuscule ; worktree neuf → `pnpm exec svelte-kit sync` avant `create-questions` ($lib introuvable).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `content/questions-ce2-lot2`.
+- **État** : lot 1 en prod en BROUILLON, rangé et tagué, 2 OK sur 5 (3 fiches corrigées à relire). Lot 2 (numération, 9 modèles, espaces dès 4 chiffres) mergé (#1920), pas encore en prod.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce2-2 --publier` ; relever les `id` ; migration nœud + tag du lot 2 (gabarit `20261028130100_questions_ce2_lot1_rangement_tags.sql`), page à cocher. Lot 1 : compter les verdicts (https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4) ; 5/5 OK → `publier-lot --dir scripts/questions/ce2-1` (simulation), puis David `--publier`.
+- **En attente de David** : relecture des 3 fiches du lot 1 (60, × 4, × 8) ; `--publier` du lot 2 ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
+- **Pièges en cours** : `question:specs --template` dit « NON importable » à tort : vérifier avec `--file` ; client tests `wrapDynamicImport` intermittent → relancer le job ; horodatage de migration = max de la PROD + 1 min ; commitlint refuse un sujet en majuscule (« CE2 ») ; worktree neuf → `pnpm exec svelte-kit sync` avant `create-questions`.
+- **Worktree / branche** : aucun (retirés après #1920).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -210,3 +210,4 @@ CM2) : règle de l'école en numération, `4500` sans espace = « forme à amél
 - `question:specs --file` : 90 specs vertes, 1 450 tirages réussis ; `create-questions` (prod, lecture) : 9/9 « à créer ».
 - Base locale : 9 brouillons ; aperçu admin : « Ranger » (4 justes + `4500` → ½ point, « Les chiffres sont mal
   espacés »), « Lire en lettres » (mille-un, réponse fausse → faux, corrigé `1 001`).
+- 2026-10-28 : #1920 mergée (CI verte, revue : aucune, contenu) ; worktree retiré.
