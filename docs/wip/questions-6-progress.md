@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 5 écrit (§ 12.1)._
+_Mis à jour le 2026-10-28, migration rangement + tags du lot 5 écrite (§ 12.2)._
 
 - **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Lot 5 (scissions, § 12) : #1929 mergée, 7 brouillons en prod (§ 12.2). Migration rangement + tags des 7 écrite sur `feat/questions-6-rangement-scissions`, test 13/13.
 - **Prochaine action** : PR de la migration → CI verte + `security-auditor` → merge → `db:migrate` ; page à cocher ; publication des 7 (`publier-lot`) ; ENFIN migration de contenu des 4 publiés (§ 7).
 - **En attente de David** : rien jusqu'à la page à cocher. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
 - **Pièges en cours** : ⚠️ jamais `--publier` sur `6-fractions/` avant la migration de contenu (04 change de titre). 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`) : ne pas les refaire. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-scissions`.
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-rangement-scissions` (neuve, depuis `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-26)
 
