@@ -1,0 +1,232 @@
+{
+	"title": "Rang et nombre de coureurs avant ou après",
+	"description": "167 cyclistes : combien avant le 48e ? 35 avant moi : quelle place ? Combien après ?",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ordinaux",
+	"level": 11,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "${{n}}$ cyclistes terminent une étape du Tour de France. Combien de cyclistes sont arrivés **avant** le ${{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|{{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ ?\n\n$?$ cyclistes sont arrivés avant lui.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "100..200"
+				},
+				{
+					"name": "k",
+					"expression": "2..100"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les cyclistes arrivés avant le ${{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|{{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|{{if:k==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ sont ceux des places $1$ à ${{eval:k-1}}$ : il ne faut pas le compter, lui.",
+					"$${{k}}-1={{eval:k-1}}$$ ${{eval:k-1}}$ cyclistes sont arrivés avant lui."
+				]
+			}
+		},
+		{
+			"statement": "À l'arrivée d'une course, ${{d}}$ coureurs ont franchi la ligne avant Lina.\n\nQuelle est la place de Lina ?\n\nLina est à la place numéro $?$.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "10..99"
+				},
+				{
+					"name": "p",
+					"expression": "eval:d+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les ${{d}}$ premières places sont prises par les coureurs arrivés avant Lina ; Lina arrive juste après.",
+					"$${{d}}+1={{p}}$$ Lina est la ${{if:p==11|11^{\\text{e}}|{{if:p==12|12^{\\text{e}}|{{if:p==13|13^{\\text{e}}|{{if:p==14|14^{\\text{e}}|{{if:p==15|15^{\\text{e}}|{{if:p==16|16^{\\text{e}}|{{if:p==17|17^{\\text{e}}|{{if:p==18|18^{\\text{e}}|{{if:p==19|19^{\\text{e}}|{{if:p==20|20^{\\text{e}}|{{if:p==21|21^{\\text{e}}|{{if:p==22|22^{\\text{e}}|{{if:p==23|23^{\\text{e}}|{{if:p==24|24^{\\text{e}}|{{if:p==25|25^{\\text{e}}|{{if:p==26|26^{\\text{e}}|{{if:p==27|27^{\\text{e}}|{{if:p==28|28^{\\text{e}}|{{if:p==29|29^{\\text{e}}|{{if:p==30|30^{\\text{e}}|{{if:p==31|31^{\\text{e}}|{{if:p==32|32^{\\text{e}}|{{if:p==33|33^{\\text{e}}|{{if:p==34|34^{\\text{e}}|{{if:p==35|35^{\\text{e}}|{{if:p==36|36^{\\text{e}}|{{if:p==37|37^{\\text{e}}|{{if:p==38|38^{\\text{e}}|{{if:p==39|39^{\\text{e}}|{{if:p==40|40^{\\text{e}}|{{if:p==41|41^{\\text{e}}|{{if:p==42|42^{\\text{e}}|{{if:p==43|43^{\\text{e}}|{{if:p==44|44^{\\text{e}}|{{if:p==45|45^{\\text{e}}|{{if:p==46|46^{\\text{e}}|{{if:p==47|47^{\\text{e}}|{{if:p==48|48^{\\text{e}}|{{if:p==49|49^{\\text{e}}|{{if:p==50|50^{\\text{e}}|{{if:p==51|51^{\\text{e}}|{{if:p==52|52^{\\text{e}}|{{if:p==53|53^{\\text{e}}|{{if:p==54|54^{\\text{e}}|{{if:p==55|55^{\\text{e}}|{{if:p==56|56^{\\text{e}}|{{if:p==57|57^{\\text{e}}|{{if:p==58|58^{\\text{e}}|{{if:p==59|59^{\\text{e}}|{{if:p==60|60^{\\text{e}}|{{if:p==61|61^{\\text{e}}|{{if:p==62|62^{\\text{e}}|{{if:p==63|63^{\\text{e}}|{{if:p==64|64^{\\text{e}}|{{if:p==65|65^{\\text{e}}|{{if:p==66|66^{\\text{e}}|{{if:p==67|67^{\\text{e}}|{{if:p==68|68^{\\text{e}}|{{if:p==69|69^{\\text{e}}|{{if:p==70|70^{\\text{e}}|{{if:p==71|71^{\\text{e}}|{{if:p==72|72^{\\text{e}}|{{if:p==73|73^{\\text{e}}|{{if:p==74|74^{\\text{e}}|{{if:p==75|75^{\\text{e}}|{{if:p==76|76^{\\text{e}}|{{if:p==77|77^{\\text{e}}|{{if:p==78|78^{\\text{e}}|{{if:p==79|79^{\\text{e}}|{{if:p==80|80^{\\text{e}}|{{if:p==81|81^{\\text{e}}|{{if:p==82|82^{\\text{e}}|{{if:p==83|83^{\\text{e}}|{{if:p==84|84^{\\text{e}}|{{if:p==85|85^{\\text{e}}|{{if:p==86|86^{\\text{e}}|{{if:p==87|87^{\\text{e}}|{{if:p==88|88^{\\text{e}}|{{if:p==89|89^{\\text{e}}|{{if:p==90|90^{\\text{e}}|{{if:p==91|91^{\\text{e}}|{{if:p==92|92^{\\text{e}}|{{if:p==93|93^{\\text{e}}|{{if:p==94|94^{\\text{e}}|{{if:p==95|95^{\\text{e}}|{{if:p==96|96^{\\text{e}}|{{if:p==97|97^{\\text{e}}|{{if:p==98|98^{\\text{e}}|{{if:p==99|99^{\\text{e}}|100^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "${{n}}$ coureurs participent à une course. Noé arrive ${{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|{{if:k==39|39^{\\text{e}}|{{if:k==40|40^{\\text{e}}|{{if:k==41|41^{\\text{e}}|{{if:k==42|42^{\\text{e}}|{{if:k==43|43^{\\text{e}}|{{if:k==44|44^{\\text{e}}|{{if:k==45|45^{\\text{e}}|{{if:k==46|46^{\\text{e}}|{{if:k==47|47^{\\text{e}}|{{if:k==48|48^{\\text{e}}|{{if:k==49|49^{\\text{e}}|{{if:k==50|50^{\\text{e}}|{{if:k==51|51^{\\text{e}}|{{if:k==52|52^{\\text{e}}|{{if:k==53|53^{\\text{e}}|{{if:k==54|54^{\\text{e}}|{{if:k==55|55^{\\text{e}}|{{if:k==56|56^{\\text{e}}|{{if:k==57|57^{\\text{e}}|{{if:k==58|58^{\\text{e}}|{{if:k==59|59^{\\text{e}}|{{if:k==60|60^{\\text{e}}|{{if:k==61|61^{\\text{e}}|{{if:k==62|62^{\\text{e}}|{{if:k==63|63^{\\text{e}}|{{if:k==64|64^{\\text{e}}|{{if:k==65|65^{\\text{e}}|{{if:k==66|66^{\\text{e}}|{{if:k==67|67^{\\text{e}}|{{if:k==68|68^{\\text{e}}|{{if:k==69|69^{\\text{e}}|{{if:k==70|70^{\\text{e}}|{{if:k==71|71^{\\text{e}}|{{if:k==72|72^{\\text{e}}|{{if:k==73|73^{\\text{e}}|{{if:k==74|74^{\\text{e}}|{{if:k==75|75^{\\text{e}}|{{if:k==76|76^{\\text{e}}|{{if:k==77|77^{\\text{e}}|{{if:k==78|78^{\\text{e}}|{{if:k==79|79^{\\text{e}}|{{if:k==80|80^{\\text{e}}|{{if:k==81|81^{\\text{e}}|{{if:k==82|82^{\\text{e}}|{{if:k==83|83^{\\text{e}}|{{if:k==84|84^{\\text{e}}|{{if:k==85|85^{\\text{e}}|{{if:k==86|86^{\\text{e}}|{{if:k==87|87^{\\text{e}}|{{if:k==88|88^{\\text{e}}|{{if:k==89|89^{\\text{e}}|{{if:k==90|90^{\\text{e}}|{{if:k==91|91^{\\text{e}}|{{if:k==92|92^{\\text{e}}|{{if:k==93|93^{\\text{e}}|{{if:k==94|94^{\\text{e}}|{{if:k==95|95^{\\text{e}}|{{if:k==96|96^{\\text{e}}|{{if:k==97|97^{\\text{e}}|{{if:k==98|98^{\\text{e}}|99^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$.\n\nCombien de coureurs arrivent **après** lui ?\n\n$?$ coureurs arrivent après Noé.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "40..100"
+				},
+				{
+					"name": "k",
+					"expression": "10..99"
+				}
+			],
+			"conditions": ["k < n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Jusqu'à Noé, lui compris, ${{k}}$ coureurs sont arrivés. Les autres arrivent après lui.",
+					"$${{n}}-{{k}}={{eval:n-k}}$$ ${{eval:n-k}}$ coureurs arrivent après Noé."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 167 cyclistes, avant le 48e : 47",
+			"variationIndex": 0,
+			"variables": {
+				"n": "167",
+				"k": "48"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le rang (48)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "167",
+				"k": "48"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ceux d'après (119)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "167",
+				"k": "48"
+			},
+			"answers": ["119"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : avant le 2e : 1",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100",
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : avant le 100e : 99",
+			"variationIndex": 0,
+			"variables": {
+				"n": "200",
+				"k": "100"
+			},
+			"answers": ["99"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "35 avant Lina : 36e",
+			"variationIndex": 1,
+			"variables": {
+				"d": "35",
+				"p": "36"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 35 avant Lina, 35",
+			"variationIndex": 1,
+			"variables": {
+				"d": "35",
+				"p": "36"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 99 avant Lina : 100e",
+			"variationIndex": 1,
+			"variables": {
+				"d": "99",
+				"p": "100"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "60 coureurs, Noé 25e : 35 après",
+			"variationIndex": 2,
+			"variables": {
+				"n": "60",
+				"k": "25"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Noé compté (36)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "60",
+				"k": "25"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ceux d'avant (24)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "60",
+				"k": "25"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 100 coureurs, Noé 99e : 1 après",
+			"variationIndex": 2,
+			"variables": {
+				"n": "100",
+				"k": "99"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

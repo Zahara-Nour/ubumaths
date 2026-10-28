@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après publication du lot 2._
+_Mis à jour le 2026-10-28, lot 2 bis écrit (PR des fichiers ouverte)._
 
-- **État** : lot 2 (numération, 7 modèles) CLOS : **publié** par David le 2026-10-28 (`publier-lot --publier`, 7/7), statuts et niveaux vérifiés en prod (MCP). Lots 0, 1, 2 clos.
-- **Prochaine action** : lot 2 bis, ordinaux (CE1-011 à 015, § 7 point 1) : relevé de l'existant, phase 0 avec David — dont la forme des deux QCM du CP (rang en lettres, suites de formes). Puis lot 3 fractions (§ 4 bis, point 6).
-- **En attente de David** : rien avant la phase 0 du lot 2 bis.
-- **Pièges en cours** : relever les niveaux pris par TOUS les publiés de la catégorie (l'Ecriture 3 a été manqué) ; `subdomain` « Ecriture » sans accent ; worktree neuf → `pnpm exec svelte-kit sync`.
-- **Worktree / branche** : aucun (worktree retiré, branche supprimée après #1895).
+- **État** : lot 2 bis (ordinaux, 7 modèles, § 8) écrit en case « choix » / case nombre ; simulation 7/7 (79 specs), 3 000 tirages verts, 7 brouillons en base locale, joués dans l'aperçu admin (5179). PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR ; puis **David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce1-2bis --publier` (brouillons en prod) ; puis migration nœud + tag (sous-notion « ordinaux et rangs », points CE1-011 à 015), page à cocher, publication. Puis lot 3 fractions (§ 4 bis, point 6).
+- **En attente de David** : la création des brouillons en prod après le merge.
+- **Pièges en cours** : jamais de variable `i` (unité imaginaire : chaîne `{{if:i==…}}` toujours sur sa dernière branche ; specs vertes quand même, elles passent les variables) → liste `21|30|…` ; △ s'affiche plus petit que ✕ ▢ ○ (police) ; niveaux « Ordinaux » 7 à 13 (1 à 6 = CP).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `feat/questions-ce1-lot2bis`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -251,3 +251,35 @@ Case seule, aucun QCM. Niveaux : places libres des catégories relevées en prod
 
 - 2026-10-27 : #1884 mergée (CI verte, revue : aucune, contenu).
 - 2026-10-28 : 7 brouillons créés en prod par David ; #1886 (nœud + tag, test rouge 5/9 sans, vert 9/9, `security-auditor` sans finding) mergée, `db:migrate`, vérifiée ; page à cocher : 2 titres « absents » (antislash, bug `titresDuLot`) → #1891 ; relue 7/7 OK ; `publier-lot` refuse c4d4bf70 (Ecriture 3 occupé).
+
+## 8. Lot 2 bis : ordinaux — décisions (David, 2026-10-28)
+
+Relevé MCP du 2026-10-28 : CE1-011 à 015 sans modèle ; au CP, 6 modèles « Ordinaux » (niveaux 1 à 6, rangs ≤ 20e,
+deux QCM). Case « choix » : code en prod (lots 1-4 de `figure-et-choix` dans `production`), base pas encore
+convertie (178 QCM, `migrer-qcm-en-cases --ecrire` pas lancé). Recommandations suivies (« je te suis ») :
+
+1. Choix écrits directement en **case « choix »** (bloc ```choix).
+2. Mots jusqu'à cent écrits par le script, rangs des modèles 1 et 2 tirés dans une liste de cas qui piègent
+   (21, 30, 31, 41, 48, 52, 60, 61, 67, 70, 71, 72, 77, 80, 81, 85, 89, 90, 91, 97, 99, 100) ; orthographe
+   rectifiée du BO (« vingt-et-unième », « soixante-et-onzième »).
+3. Rangs des énoncés des modèles 3 à 7 en chiffres (89e).
+4. « 1, 3, 5, 7, 9… » avec les suites évolutives (modèle 7), jusqu'au 50e.
+
+| Fichier                              | Point   | Niveau | Variations                                                                    |
+| ------------------------------------ | ------- | ------ | ----------------------------------------------------------------------------- |
+| `01-rang-en-lettres-jusqu-a-cent`    | CE1-011 | 7      | 48e → quarante-huitième (choix ; leurres : rangs voisins, le nombre)          |
+| `02-rang-en-chiffres-jusqu-a-cent`   | CE1-011 | 8      | quatre-vingt-unième → 81                                                      |
+| `03-place-dans-une-liste`            | CE1-012 | 9      | listes de 5 en 5, 2 en 2, 10 en 10 (depuis 100), l'alphabet : place de …      |
+| `04-reperer-un-rang-jusqu-a-cent`    | CE1-013 | 10     | le k-ième nombre ; le k-ième depuis la fin ; file retournée (n − k + 1)       |
+| `05-rang-et-nombre-avant`            | CE1-014 | 11     | 167 cyclistes, avant le 48e (BO) ; d avant Lina → rang ; après Noé            |
+| `06-suites-repetitives-jusqu-a-cent` | CE1-015 | 12     | A B (89e), △ ▢ ○ (60e), △ ✕ ▢ ○ (80e), A B G F (17e), jusqu'à la 100e (choix) |
+| `07-suites-evolutives`               | CE1-015 | 13     | 1, 2, 4, 7, 11… ; 1, 2, 4, 8… (≤ 10e) ; 1, 3, 5… (≤ 50e) ; △ ✕ △ ✕✕… (choix)  |
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud
+
+- tag ne change aucune règle.
+
+* 2026-10-28 : écrit (`lot-ce1-2bis.py`), `create-questions` en simulation 7/7 (79 specs), `question:specs`
+  3 000 tirages verts ; deux défauts vus à la relecture des tirages, specs vertes : rang toujours 100 (variable
+  `i` = unité imaginaire → liste `21|30|…`) et « on fait 4 pas » de 100 à 130 (→ « on compte 4 nombres ») ;
+  7 brouillons en base locale, case choix jouée dans l'aperçu admin (juste, coché à tort).
