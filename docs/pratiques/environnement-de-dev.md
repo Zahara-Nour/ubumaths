@@ -191,6 +191,15 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 - Quotas qui ont dicté ces choix : 100 déploiements par jour (un déploiement annulé **compte**),
   10 Go de stockage de déploiements, un build à la fois. Rétention des déploiements passée à
   **1 jour** le 2026-10-10 (réglage du tableau de bord).
+- **Mémoire du build** : le conteneur de build Vercel a **8 Go en tout**. Sous Vite 7 (Rollup), le
+  build montait à ~7,7 Go (graphes serveur et client gardés jusqu'à la fin) : deux builds de v0.52.0
+  tués en OOM, rustine de heap à 6144 (#1892). Vite 8 (Rolldown, #1899) : pic **~4,9 Go**, heap
+  vivant ~0,25 Go, build Vercel ~3 min au lieu de ~5 ; plus de plafond de heap (#1900).
+  Mesurer **dans Docker** (`--memory=8g --memory-swap=8g --cpus=2 node:22-bookworm`, pic lu dans
+  `memory.peak` du cgroup), jamais sur le Mac, qui sous-estime Linux.
+- ⚠️ **Une montée de l'outil de build se vérifie sur le rendu**, pas seulement sur les statuts et la
+  console : un CSS invalide ne fait aucune erreur (couleurs perdues en v0.54.0, cf. décision du
+  2026-10-28).
 - Région des fonctions : **`cdg1`**, imposée par `svelte.config.js` (`regions: ['cdg1']`, runtime
   `nodejs22.x`) ; le `iad1` des réglages du projet n'est qu'un défaut remplacé. Fluid Compute actif.
 - `vercel.json` pose les en-têtes de cache : 30 jours pour `/fonts/` et `/upsilon-simulator/`, 1 jour
@@ -240,6 +249,7 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 | 2026-10-11 | **préchargement réservé au CSS** (#1073)                                                                          | 94 modulepreload volaient la bande passante aux CSS : FCP p75 de l'accueil à 3,4 s pour un TTFB de 0,5 s.                                                                                                                   |
 | 2026-10-11 | **relevé Core Web Vitals mensuel en GitHub Action, pas en routine cloud** (#1074)                                 | il faut `VERCEL_TOKEN`, et l'environnement cloud n'a pas de secrets.                                                                                                                                                        |
 | 2026-10-11 | **auto-merge Dependabot durci, 3 jours d'âge minimal des versions**                                               | le workflow tourne avec un jeton en écriture : `github.actor` se contourne depuis un fork, et un tag d'action se déplace.                                                                                                   |
+| 2026-10-28 | **Vite 8 (Rolldown), plus de plafond de heap au build** (#1899, #1900)                                            | pic du build 7,7 → 4,9 Go dans le conteneur Vercel de 8 Go ; la rustine à 6144 (#1892) ne laissait que ~1 Go de marge.                                                                                                      |
 | 2026-10-28 | **Lightning CSS ne touche pas à `light-dark()`** (`css.lightningcss.exclude` de `vite.config.ts`, garde au build) | sous Vite 8, la compression CSS passe par Lightning CSS (SvelteKit impose `cssMinify: true`) ; il récrivait `light-dark()` en variables jamais posées (`color-scheme` vient de mode-watcher) : couleurs perdues en v0.54.0. |
 
 ## Écarts connus

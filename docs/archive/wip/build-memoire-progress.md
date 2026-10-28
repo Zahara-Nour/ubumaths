@@ -1,18 +1,16 @@
 ---
-status: en cours
+status: clos
 ---
 
 # Chantier « build-memoire » — réduire la mémoire du build de prod
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après le deploy:prod v0.54.1._
+_Mis à jour le 2026-10-28, après le deploy:prod v0.54.1 — chantier CLOS, journal archivé._
 
-- **État** : v0.54.1 en prod : couleurs rétablies (#1902, vérifié sur chiph.re, clair et sombre : `--color-primary` = `light-dark(…)`, « verte », bouton Connexion, onglet actif) ; premier build Vercel sans rustine (#1900) réussi en 3 min 4 s.
-- **Prochaine action** : versement du chantier (durable → `docs/systeme/`, §§ 2, 6, 7 ; journal archivé), quand David le dit.
-- **En attente de David** : son go pour le versement.
-- **Pièges en cours** : SvelteKit impose `cssMinify: true` (= Lightning CSS sous Vite 8) : `build.cssMinify` ne sert à rien, régler `css.lightningcss`. `test:client` complet plante sur le Mac (la CI fait foi) ; mesurer dans Docker, jamais sur le Mac.
-- **Worktree / branche** : aucun.
+- **État** : Vite 8 en prod (v0.54.1) ; build Vercel ~3 min, pic ~4,9 Go dans 8 Go, sans plafond de heap (#1899, #1900) ; couleurs de v0.54.0 rétablies (#1902).
+- **Versé** : `docs/pratiques/environnement-de-dev.md` (§ « Vercel et Supabase », mémoire du build ; décisions du 2026-10-28) ; le correctif du worker Pyodide dans `docs/systeme/python/`.
+- **Hors chantier** : rien.
 
 ---
 
