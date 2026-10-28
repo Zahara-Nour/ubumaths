@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1920._
+_Mis à jour le 2026-10-28, lot 2 en prod en brouillon, migration de rangement en PR._
 
-- **État** : lot 1 en prod en BROUILLON, rangé et tagué, 2 OK sur 5 (3 fiches corrigées à relire). Lot 2 (numération, 9 modèles, espaces dès 4 chiffres) mergé (#1920), pas encore en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce2-2 --publier` ; relever les `id` ; migration nœud + tag du lot 2 (gabarit `20261028130100_questions_ce2_lot1_rangement_tags.sql`), page à cocher. Lot 1 : compter les verdicts (https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4) ; 5/5 OK → `publier-lot --dir scripts/questions/ce2-1` (simulation), puis David `--publier`.
-- **En attente de David** : relecture des 3 fiches du lot 1 (60, × 4, × 8) ; `--publier` du lot 2 ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
-- **Pièges en cours** : `question:specs --template` dit « NON importable » à tort : vérifier avec `--file` ; client tests `wrapDynamicImport` intermittent → relancer le job ; horodatage de migration = max de la PROD + 1 min ; commitlint refuse un sujet en majuscule (« CE2 ») ; worktree neuf → `pnpm exec svelte-kit sync` avant `create-questions`.
-- **Worktree / branche** : aucun (retirés après #1920).
+- **État** : lot 1 en prod en BROUILLON, rangé et tagué, 2 OK sur 5 (60, × 4, × 8 sans verdict). Lot 2 : 9 brouillons créés en prod par David (2026-10-28) ; migration nœud + tag `20261028233100_questions_ce2_lot2_rangement_tags.sql` + test (9 verts, 5 rouges sans elle) en PR.
+- **Prochaine action** : PR verte → merge → `db:migrate` depuis le dépôt principal (4 conditions) → vérifier en prod (MCP) → page à cocher du lot 2 (`page-a-cocher.ts --dir scripts/questions/ce2-2`). Lot 1 : 5/5 OK (https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4) → `publier-lot --dir scripts/questions/ce2-1` (simulation), puis David `--publier`.
+- **En attente de David** : relecture des 3 fiches du lot 1 (60, × 4, × 8) ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
+- **Pièges en cours** : `question:specs --template` dit « NON importable » à tort : vérifier avec `--file` ; client tests `wrapDynamicImport` intermittent → relancer le job ; horodatage de migration = max de la PROD + 1 min ; commitlint refuse un sujet en majuscule (« CE2 ») ; worktree neuf → `pnpm exec svelte-kit sync` avant `create-questions` ; page à cocher APRÈS `db:migrate` (sinon alertes « sans nœud »).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-lot2-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -211,3 +211,14 @@ CM2) : règle de l'école en numération, `4500` sans espace = « forme à amél
 - Base locale : 9 brouillons ; aperçu admin : « Ranger » (4 justes + `4500` → ½ point, « Les chiffres sont mal
   espacés »), « Lire en lettres » (mille-un, réponse fausse → faux, corrigé `1 001`).
 - 2026-10-28 : #1920 mergée (CI verte, revue : aucune, contenu) ; worktree retiré.
+
+### Lot 2 — en prod (2026-10-28)
+
+- `create-questions --publier` (David) : 9 brouillons — `5258350a` (milliers, centaines, dizaines), `78d3ff5b`
+  (lots de 100), `b4dd4008` (unités non canoniques), `692d237e` (suit / précède), `3dd3b738` (lettres → chiffres),
+  `8c5c7d70` (ranger cinq), `d6753aef` (supérieur, inférieur, compris), `41dd05bc` (encadrer), `f8fd9552` (intercaler).
+- Relevé MCP : 9 brouillons [CE2], sans nœud ni tag ; points sous « Nombres et calculs > Entiers : numération »
+  (003 décomposition ; 004, 005 écritures ; 008, 009, 087, 088 ordre). Dernière migration en prod : `20261028233000`.
+- Migration `20261028233100_questions_ce2_lot2_rangement_tags.sql` (gabarit `20261028233000_questions_5_lot1_08`,
+  tout ou rien sur 9) ; test `tests/integration/questions-ce2-lot2-rangement-tags.test.ts` : 9 verts ; corps de la
+  migration retiré → 5 rouges (nœud, tag, tout ou rien, déjà rangé, point archivé).
