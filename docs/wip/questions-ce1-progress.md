@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1907._
+_Mis à jour le 2026-10-28, #1910 ouverte._
 
-- **État** : lot 2 bis (ordinaux, 7 modèles, § 8) en fichiers, #1907 mergée ; 7 brouillons en base locale seulement.
-- **Prochaine action** : **David** crée les brouillons en prod (`pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce1-2bis --publier`) ; puis relever les `id`, migration nœud + tag (sous-notion « ordinaux et rangs », CE1-011 à 015), page à cocher, publication. Puis lot 3 fractions (§ 4 bis, point 6).
-- **En attente de David** : la création des brouillons en prod.
-- **Pièges en cours** : jamais de variable `i` (unité imaginaire : `{{if:i==…}}` toujours sur sa dernière branche ; specs vertes quand même) → liste `21|30|…` ; △ plus petit que ✕ ▢ ○ (police) ; niveaux « Ordinaux » 7 à 13 (1 à 6 = CP) ; ports 5176-5178 pris par d'autres sessions.
-- **Worktree / branche** : aucun (worktree retiré après #1907).
+- **État** : lot 2 bis (ordinaux, 7 modèles, § 8) : fichiers mergés (#1907) ; 7 brouillons créés en prod par David (8e9c0137, 50d9118b, 14dfdd8c, 8471f4b3, 2dec5c08, ef446e9b, e54c58f0) ; migration nœud + tag `20261028170000_questions_ce1_lot2bis_rangement_tags` en PR **#1910** : test rouge sans (5 échecs) / vert avec (9/9), `security-auditor` sans finding bloquant, accès : personne (phase 0). CI en cours à la relance.
+- **Prochaine action** : CI verte → merger #1910, `db:migrate` depuis le dépôt principal (4 conditions réunies), vérifier en prod (nœud « ordinaux et rangs », 7 tags) ; puis page à cocher, `publier-lot` en simulation, `--publier` par David. Puis lot 3 fractions (§ 4 bis, point 6).
+- **En attente de David** : rien (la publication viendra après la page à cocher).
+- **Pièges en cours** : jamais de variable `i` (unité imaginaire) → liste `21|30|…` ; △ plus petit que ✕ ▢ ○ (police) ; niveaux « Ordinaux » 7 à 13 (1 à 6 = CP) ; ports 5176-5178 pris ; commitlint : sujet sans majuscule initiale (« CE1 » en tête refusé), corps ≤ 100 caractères par ligne.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` · `feat/questions-ce1-lot2bis-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
