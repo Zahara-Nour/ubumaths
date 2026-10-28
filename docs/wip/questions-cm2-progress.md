@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1911._
+_Mis à jour le 2026-10-28, après #1911 et son `db:migrate`._
 
-- **État** : lot 1 : 8 brouillons en prod ; migration `20261028160000_questions_cm2_lot1_rangement_tags.sql` (nœud + tag des 8, `322f3479` en brouillon) **mergée (#1911), pas encore jouée** : `db:migrate` refusé par le classifieur du mode auto. Prod relevée juste après le merge : état d'avant intact (8 sans nœud ni tag, `322f3479` publié + CM2-039).
-- **Prochaine action** : après le `db:migrate` de David, vérifier au MCP (8 nœuds + 8 tags, `322f3479` en `draft`, `updated_at` intacts) → page à cocher du lot 1.
-- **En attente de David** : `! pnpm db:migrate` depuis le dépôt principal. Il joue aussi `20261028170000` du CE1 (#1910, ses 4 conditions sont réunies, il n'attend que ça).
-- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute migration. Ports 5175-5178 souvent pris (5179 libre). Rendu à 390 px de « Ranger » pas vu : à regarder sur la page à cocher.
-- **Worktree / branche** : aucun (retiré après #1911).
+- **État** : lot 1 : 8 brouillons en prod, rangés et tagués (migration `20261028160000` jouée par David, vérifiée au MCP : 8 nœuds + 8 tags, `322f3479` en `draft`, `updated_at` intacts). Page à cocher publiée : https://claude.ai/artifact/2atypewPSdch6ut4eMBL27 (collection `verdicts`, vide à la publication).
+- **Prochaine action** : lire `verdicts` (`ArtifactData list`), **compter** (8 attendus) ; « À revoir » → corriger (§ 7 de la démarche) ; tout OK → `publier-lot` en simulation, puis `--publier` par David.
+- **En attente de David** : relecture de la page à cocher.
+- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture. Alertes de la page attendues : `choix` non dessiné (8e1f6003, d6466135 : à jouer dans l'aperçu), homonyme b831b7b8 (niveau 11) écarté pour d9872d4f (le bon). Rendu à 390 px de « Ranger » toujours pas vu. Ports 5175-5178 souvent pris (5179 libre).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
