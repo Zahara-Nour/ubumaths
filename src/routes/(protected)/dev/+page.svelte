@@ -63,6 +63,12 @@
 			description: 'Comparaison des polices de rendu, et PDF de démonstration du corrigé.'
 		},
 		{
+			href: '/dev/modeles',
+			title: 'Revue des modèles',
+			description:
+				'Tous les modèles en base par programme, branche et notion : fiches, aperçus des variations, verdicts.'
+		},
+		{
 			href: '/dev/apercu-question',
 			title: 'Aperçu de question',
 			description: 'La carte de base de l’aperçu d’une question.'

@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, avant la PR 1._
+_Mis à jour le 2026-10-28, après #1940 (PR 2 #1944 en revue)._
 
-- **État** : phase 0 validée ; PR 1 (migration `question_template_reviews` + tests d'intégration) en cours.
-- **Prochaine action** : PR 1 verte → merge → `db:migrate` (dépôt principal) → `db:types` ; puis PR 2 (page).
-- **En attente de David** : rien.
-- **Pièges en cours** : `updated_at` des modèles bouge aussi aux migrations de rangement/tags → l'alerte « modifié depuis le verdict » peut sonner à tort (à affiner en PR 2 si gênant).
-- **Worktree / branche** : `../ubumaths-wt-revue-modeles` · `feat/revue-modeles`.
+- **État** : table `question_template_reviews` en prod (#1940, `db:migrate` fait, vérifiée). PR 2 #1944 (page `/dev/modeles` + script de reprise) ouverte, CI et revues en cours.
+- **Prochaine action** : revues + CI vertes → merge #1944 ; puis David lance la reprise (`--ecrire`).
+- **En attente de David** : `pnpm tsx scripts/questions/reprise-verdicts.ts --fichier data/revue-modeles/verdicts-artefacts.json --ecrire` (simulation prod : 188 à écrire, 179 validés, 9 à revoir) ; `deploy:prod` pour voir la page en prod.
+- **Pièges en cours** : `updated_at` bouge aussi aux migrations de rangement → « modifié depuis le verdict » peut sonner à tort. Shard 1 des Client Tests : crash du navigateur sur `fonctions-declarees` (relancé 2×, sans lien).
+- **Worktree / branche** : `../ubumaths-wt-revue-modeles` · `feat/revue-modeles-page`.
 
 ## Phase 0 (validée par David le 2026-10-28)
 
@@ -32,3 +32,6 @@ Découpage : PR 1 migration · PR 2 page (fonctions de `scripts/lib/page-a-coche
 ## Journal
 
 - 2026-10-28 — phase 0 validée ; worktree créé ; PR 1 commencée.
+- 2026-10-28 — #1940 mergée (audit : rien de bloquant ; test service_role ajouté) ; `db:migrate` ; RLS, 4 policies, anon sans droit vérifiés en prod.
+- 2026-10-28 — PR 2 #1944 : page essayée en local (arbre, fiche, bornes, ↻, verdict posé / retiré). Écart au plan : les aperçus réutilisent `QuestionPreviewTabs` (vrai rendu élève) au lieu des fonctions de `page-a-cocher.ts`, qui restent au script.
+- 2026-10-28 — Collecte des artefacts : 35 lus, 188 verdicts dans 25 (179 ok, 9 revoir) ; 7 pages « Relecture » sans verdict encore ; « Verdicts des modèles », « Verdicts modèles lycée », « Lot MODIFIER lycée » = verdicts de TAGS, hors sujet. Anciennes pages CP : id abrégé à 8 caractères, résolu par préfixe.
