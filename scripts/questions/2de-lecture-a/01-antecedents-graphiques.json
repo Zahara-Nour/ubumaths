@@ -46,8 +46,8 @@
 			"correction": {
 				"steps": [
 					"On trace la droite horizontale d'équation $y={{k}}$ : les antécédents de ${{k}}$ sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
-					"```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(q)+2)}}\ny: {{eval:floor(min(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))-1}} ; {{eval:ceil(max(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))+1}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{p}} ; {{k}}), B({{q}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de f et droite horizontale y = {{k}}, qui la coupe en deux points A et B.\n```",
-					"La droite coupe $\\mathcal{C}_f$ en $A({{p}}\\,;{{k}})$ et $B({{q}}\\,;{{k}})$ : ${{k}}$ a deux antécédents. $S=\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{q}} \\}}$."
+					"```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(q)+2)}}\ny: {{eval:floor(min(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))-1}} ; {{eval:ceil(max(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))+1}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{p}} ; {{k}}), B({{q}} ; {{k}}){{if:k==0| |, A'({{p}} ; 0)}}{{if:k==0| |, B'({{q}} ; 0)}}\ntaille: moyenne\ndescription: Courbe de f et droite horizontale y = {{k}}, qui la coupe en deux points A et B. Les solutions sont marquées sur l'axe des abscisses.\n```",
+					"La droite coupe $\\mathcal{C}_f$ en $A({{p}}\\,;{{k}})$ et $B({{q}}\\,;{{k}})$ : ${{k}}$ a deux antécédents, leurs abscisses, lues sur l'axe des abscisses. $S=\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{q}} \\}}$."
 				]
 			}
 		},
@@ -91,8 +91,8 @@
 			"correction": {
 				"steps": [
 					"On trace la droite horizontale d'équation $y={{k}}$ : les antécédents de ${{k}}$ sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
-					"```courbe\nx: {{eval:(p)-1}} ; {{eval:(r)+1}}\ny: {{eval:min(-1,(k)-4)}} ; {{eval:max(1,(k)+4)}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{q}}))*(x-({{r}})) sur [{{eval:(p)-0.5}} ; {{eval:(r)+0.5}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{p}} ; {{k}}), B({{q}} ; {{k}}), C({{r}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de f et droite horizontale y = {{k}}, qui la coupe en trois points A, B et C.\n```",
-					"La droite coupe $\\mathcal{C}_f$ en trois points : ${{k}}$ a trois antécédents. $S=\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{q}} ; {{r}} \\}}$."
+					"```courbe\nx: {{eval:(p)-1}} ; {{eval:(r)+1}}\ny: {{eval:min(-1,(k)-4)}} ; {{eval:max(1,(k)+4)}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{q}}))*(x-({{r}})) sur [{{eval:(p)-0.5}} ; {{eval:(r)+0.5}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{p}} ; {{k}}), B({{q}} ; {{k}}), C({{r}} ; {{k}}){{if:k==0| |, A'({{p}} ; 0)}}{{if:k==0| |, B'({{q}} ; 0)}}{{if:k==0| |, C'({{r}} ; 0)}}\ntaille: moyenne\ndescription: Courbe de f et droite horizontale y = {{k}}, qui la coupe en trois points A, B et C. Les solutions sont marquées sur l'axe des abscisses.\n```",
+					"La droite coupe $\\mathcal{C}_f$ en trois points : ${{k}}$ a trois antécédents, leurs abscisses, lues sur l'axe des abscisses. $S=\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{q}} ; {{r}} \\}}$."
 				]
 			}
 		},
@@ -132,7 +132,7 @@
 			"correction": {
 				"steps": [
 					"On trace la droite horizontale d'équation $y={{k}}$ : les antécédents de ${{k}}$ sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
-					"```courbe\nx: {{eval:min(-1,(a)-4)}} ; {{eval:max(1,(a)+4)}}\ny: {{eval:min(0,(m),(m)+9*(c),(k))-1}} ; {{eval:max(0,(m),(m)+9*(c),(k))+1}}\ngrille: 1 ; 1\nf(x) = {{m}}+({{c}})*(x-({{a}}))^2 sur [{{eval:(a)-3}} ; {{eval:(a)+3}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\ntaille: moyenne\ndescription: Courbe de f et droite horizontale y = {{k}}.\n```",
+					"```courbe\nx: {{eval:min(-1,(a)-4)}} ; {{eval:max(1,(a)+4)}}\ny: {{eval:min(0,(m),(m)+9*(c),(k))-1}} ; {{eval:max(0,(m),(m)+9*(c),(k))+1}}\ngrille: 1 ; 1\nf(x) = {{m}}+({{c}})*(x-({{a}}))^2 sur [{{eval:(a)-3}} ; {{eval:(a)+3}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: {{if:t==0|S({{a}} ; {{m}}){{if:m==0| |, S'({{a}} ; 0)}}| }}\ntaille: moyenne\ndescription: Courbe de f et droite horizontale y = {{k}}.\n```",
 					"{{if:t==0|La droite touche $\\mathcal{C}_f$ en un seul point, le sommet $({{a}}\\,;{{m}})$ : ${{k}}$ a un seul antécédent. $S=\\textcolor{{{color:primary.0}}}{\\{ {{a}} \\}}$.|La droite est {{if:c>0|sous|au-dessus de}} la courbe et ne la coupe pas : ${{k}}$ n'a aucun antécédent. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.}}"
 				]
 			}

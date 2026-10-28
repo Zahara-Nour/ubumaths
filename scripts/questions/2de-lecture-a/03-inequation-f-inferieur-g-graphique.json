@@ -38,6 +38,14 @@
 					"expression": "-2..2"
 				},
 				{
+					"name": "e",
+					"expression": "eval:(a)*(p)+(b)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:(a)*(q)+(b)"
+				},
+				{
 					"name": "s",
 					"expression": "0..3"
 				}
@@ -50,7 +58,7 @@
 			"correction": {
 				"steps": [
 					"On cherche les abscisses des points de $\\mathcal{C}_f$ situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} $\\mathcal{C}_g$ ; {{if:s==0|les abscisses des points d'intersection sont **exclues**|{{if:s==1|les abscisses des points d'intersection sont **comprises**|{{if:s==2|les abscisses des points d'intersection sont **exclues**|les abscisses des points d'intersection sont **comprises**}}}}}}.",
-					"```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(q)+2)}}\ny: {{eval:min(0,(a)*((p)-1)+(b),(a)*((q)+1)+(b))-5}} ; {{eval:max(0,(a)*((p)-1)+(b),(a)*((q)+1)+(b))+5}}\ngrille: 1 ; 1\nf(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   bleu   nom=C_f\ng(x) = ({{a}})*x+({{b}}) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   rouge   nom=C_g\n{{if:s==0|h(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur ]{{p}} ; {{q}}[   vert|{{if:s==1|h(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur [{{p}} ; {{q}}]   vert|{{if:s==2|h(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{p}}[   vert|h(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{p}}]   vert}}}}}}\n{{if:s==0|j(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur ]{{p}} ; {{q}}[   vert|{{if:s==1|j(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur [{{p}} ; {{q}}]   vert|{{if:s==2|j(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur ]{{q}} ; {{eval:(q)+1}}]   vert|j(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur [{{q}} ; {{eval:(q)+1}}]   vert}}}}}}\npoints: A({{p}} ; g({{p}})), B({{q}} ; g({{q}}))\ntaille: moyenne\ndescription: Une courbe C_f en forme de parabole et une droite C_g, qui se coupent en deux points. La partie cherchée de C_f est en vert.\n```",
+					"```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(q)+2)}}\ny: {{eval:min(0,(a)*((p)-1)+(b),(a)*((q)+1)+(b))-5}} ; {{eval:max(0,(a)*((p)-1)+(b),(a)*((q)+1)+(b))+5}}\ngrille: 1 ; 1\nf(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   bleu   nom=C_f\ng(x) = ({{a}})*x+({{b}}) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   rouge   nom=C_g\n{{if:s==0|h(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur ]{{p}} ; {{q}}[   vert|{{if:s==1|h(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur [{{p}} ; {{q}}]   vert|{{if:s==2|h(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{p}}[   vert|h(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{p}}]   vert}}}}}}\n{{if:s==0|j(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur ]{{p}} ; {{q}}[   vert|{{if:s==1|j(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur [{{p}} ; {{q}}]   vert|{{if:s==2|j(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur ]{{q}} ; {{eval:(q)+1}}]   vert|j(x) = ({{a}})*x+({{b}})+(1)*(x-({{p}}))*(x-({{q}})) sur [{{q}} ; {{eval:(q)+1}}]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur ]{{p}} ; {{q}}[   vert|{{if:s==1|t(x) = 0 sur [{{p}} ; {{q}}]   vert|{{if:s==2|t(x) = 0 sur [{{eval:(p)-1}} ; {{p}}[   vert|t(x) = 0 sur [{{eval:(p)-1}} ; {{p}}]   vert}}}}}}\n{{if:s==0|u(x) = 0 sur ]{{p}} ; {{q}}[   vert|{{if:s==1|u(x) = 0 sur [{{p}} ; {{q}}]   vert|{{if:s==2|u(x) = 0 sur ]{{q}} ; {{eval:(q)+1}}]   vert|u(x) = 0 sur [{{q}} ; {{eval:(q)+1}}]   vert}}}}}}\npoints: A({{p}} ; g({{p}})), B({{q}} ; g({{q}}))\ntaille: moyenne\ndescription: Une courbe C_f en forme de parabole et une droite C_g, qui se coupent en deux points. La partie cherchée de C_f est en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
 					"Les courbes se coupent en $x={{p}}$ et $x={{q}}$ ; $f$ est définie sur $\\left[{{eval:(p)-1}}\\,;{{eval:(q)+1}}\\right]$. $S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]{{p}}\\,;{{q}}\\right[|{{if:s==1|\\left[{{p}}\\,;{{q}}\\right]|{{if:s==2|\\left[{{eval:(p)-1}}\\,;{{p}}\\right[\\cup\\left]{{q}}\\,;{{eval:(q)+1}}\\right]|\\left[{{eval:(p)-1}}\\,;{{p}}\\right]\\cup\\left[{{q}}\\,;{{eval:(q)+1}}\\right]}}}}}}}$."
 				]
 			}
@@ -79,6 +87,14 @@
 					"expression": "-2..2"
 				},
 				{
+					"name": "e",
+					"expression": "eval:(a)*(p)+(b)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:(a)*(q)+(b)"
+				},
+				{
 					"name": "s",
 					"expression": "0..3"
 				}
@@ -91,7 +107,7 @@
 			"correction": {
 				"steps": [
 					"On cherche les abscisses des points de $\\mathcal{C}_f$ situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} $\\mathcal{C}_g$ ; {{if:s==0|les abscisses des points d'intersection sont **exclues**|{{if:s==1|les abscisses des points d'intersection sont **comprises**|{{if:s==2|les abscisses des points d'intersection sont **exclues**|les abscisses des points d'intersection sont **comprises**}}}}}}.",
-					"```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(q)+2)}}\ny: {{eval:min(0,(a)*((p)-1)+(b),(a)*((q)+1)+(b))-5}} ; {{eval:max(0,(a)*((p)-1)+(b),(a)*((q)+1)+(b))+5}}\ngrille: 1 ; 1\nf(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   bleu   nom=C_f\ng(x) = ({{a}})*x+({{b}}) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   rouge   nom=C_g\n{{if:s==0|h(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{p}}[   vert|{{if:s==1|h(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{p}}]   vert|{{if:s==2|h(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur ]{{p}} ; {{q}}[   vert|h(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur [{{p}} ; {{q}}]   vert}}}}}}\n{{if:s==0|j(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur ]{{q}} ; {{eval:(q)+1}}]   vert|{{if:s==1|j(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur [{{q}} ; {{eval:(q)+1}}]   vert|{{if:s==2|j(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur ]{{p}} ; {{q}}[   vert|j(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur [{{p}} ; {{q}}]   vert}}}}}}\npoints: A({{p}} ; g({{p}})), B({{q}} ; g({{q}}))\ntaille: moyenne\ndescription: Une courbe C_f en forme de parabole et une droite C_g, qui se coupent en deux points. La partie cherchée de C_f est en vert.\n```",
+					"```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(q)+2)}}\ny: {{eval:min(0,(a)*((p)-1)+(b),(a)*((q)+1)+(b))-5}} ; {{eval:max(0,(a)*((p)-1)+(b),(a)*((q)+1)+(b))+5}}\ngrille: 1 ; 1\nf(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   bleu   nom=C_f\ng(x) = ({{a}})*x+({{b}}) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   rouge   nom=C_g\n{{if:s==0|h(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{p}}[   vert|{{if:s==1|h(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{p}}]   vert|{{if:s==2|h(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur ]{{p}} ; {{q}}[   vert|h(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur [{{p}} ; {{q}}]   vert}}}}}}\n{{if:s==0|j(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur ]{{q}} ; {{eval:(q)+1}}]   vert|{{if:s==1|j(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur [{{q}} ; {{eval:(q)+1}}]   vert|{{if:s==2|j(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur ]{{p}} ; {{q}}[   vert|j(x) = ({{a}})*x+({{b}})+(-1)*(x-({{p}}))*(x-({{q}})) sur [{{p}} ; {{q}}]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur [{{eval:(p)-1}} ; {{p}}[   vert|{{if:s==1|t(x) = 0 sur [{{eval:(p)-1}} ; {{p}}]   vert|{{if:s==2|t(x) = 0 sur ]{{p}} ; {{q}}[   vert|t(x) = 0 sur [{{p}} ; {{q}}]   vert}}}}}}\n{{if:s==0|u(x) = 0 sur ]{{q}} ; {{eval:(q)+1}}]   vert|{{if:s==1|u(x) = 0 sur [{{q}} ; {{eval:(q)+1}}]   vert|{{if:s==2|u(x) = 0 sur ]{{p}} ; {{q}}[   vert|u(x) = 0 sur [{{p}} ; {{q}}]   vert}}}}}}\npoints: A({{p}} ; g({{p}})), B({{q}} ; g({{q}}))\ntaille: moyenne\ndescription: Une courbe C_f en forme de parabole et une droite C_g, qui se coupent en deux points. La partie cherchée de C_f est en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
 					"Les courbes se coupent en $x={{p}}$ et $x={{q}}$ ; $f$ est définie sur $\\left[{{eval:(p)-1}}\\,;{{eval:(q)+1}}\\right]$. $S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left[{{eval:(p)-1}}\\,;{{p}}\\right[\\cup\\left]{{q}}\\,;{{eval:(q)+1}}\\right]|{{if:s==1|\\left[{{eval:(p)-1}}\\,;{{p}}\\right]\\cup\\left[{{q}}\\,;{{eval:(q)+1}}\\right]|{{if:s==2|\\left]{{p}}\\,;{{q}}\\right[|\\left[{{p}}\\,;{{q}}\\right]}}}}}}}$."
 				]
 			}
@@ -107,6 +123,8 @@
 				"q": "1",
 				"a": "1",
 				"b": "1",
+				"e": "-1",
+				"w": "2",
 				"s": "0"
 			},
 			"answers": ["]-2;1["],
@@ -123,6 +141,8 @@
 				"q": "1",
 				"a": "1",
 				"b": "1",
+				"e": "-1",
+				"w": "2",
 				"s": "0"
 			},
 			"answers": ["[-2;1]"],
@@ -139,6 +159,8 @@
 				"q": "1",
 				"a": "1",
 				"b": "1",
+				"e": "-1",
+				"w": "2",
 				"s": "0"
 			},
 			"answers": ["[-3;-2[\\cup]1;2]"],
@@ -155,6 +177,8 @@
 				"q": "1",
 				"a": "1",
 				"b": "1",
+				"e": "-1",
+				"w": "2",
 				"s": "3"
 			},
 			"answers": ["[-3;-2]\\cup[1;2]"],
@@ -171,6 +195,8 @@
 				"q": "1",
 				"a": "1",
 				"b": "1",
+				"e": "-1",
+				"w": "2",
 				"s": "3"
 			},
 			"answers": ["]-\\infty;-2]\\cup[1;+\\infty["],
@@ -187,6 +213,8 @@
 				"q": "1",
 				"a": "-1",
 				"b": "0",
+				"e": "2",
+				"w": "-1",
 				"s": "1"
 			},
 			"answers": ["[-3;-2]\\cup[1;2]"],
@@ -203,6 +231,8 @@
 				"q": "1",
 				"a": "-1",
 				"b": "0",
+				"e": "2",
+				"w": "-1",
 				"s": "1"
 			},
 			"answers": ["[-2;1]"],

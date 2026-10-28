@@ -6,18 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1912 (jouée en prod)._
+_Mis à jour le 2026-10-28, PR « solutions sur l'axe des x » du lot 2 bis A ouverte._
 
-- **État** : lot 2 bis A « lecture graphique » (8 modèles) en prod en brouillon, rangé et tagué (#1912, joué
-  le 2026-10-28) ; page à cocher publiée : https://claude.ai/artifact/XapqZRQbt9Zz1bqUuDf2Mn (0/8 verdicts).
-- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`) ; corriger les « À revoir » ;
-  `publier-lot.ts --dir scripts/questions/2de-lecture-a` en simulation, puis David `--publier` ; puis lot B
-  (inverse, √x, x³ : 2-342, 465, 343, 468, 344, 471).
-- **En attente de David** : la relecture de la page ; sort de la sonde `scripts/tmp-sonde-courbes.ts` +
-  `tmp-montre.ts` (non suivis dans le worktree : vrai script, ou effacés).
-- **Pièges en cours** : horodatage de migration pris par une autre session (renommer avant la CI) ; test
-  « cas rare » lent en CI (relancer) ; étiquettes C_f / C_g serrées près d'une intersection.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-a-tags` (mergée).
+- **État** : lot 2 bis A (8 brouillons en prod, rangés, tagués). Relecture : 2 OK, 6 « À revoir » (« faire
+  apparaître les solutions sur l'axe des x ») → corrigés retouchés pour les 8 (§ 14), page republiée, les 6
+  verdicts remis à zéro.
+- **Prochaine action** : merger la PR, puis David lance `create-questions --dir
+scripts/questions/2de-lecture-a --mettre-a-jour --publier` ; relecture des 6 ; `publier-lot.ts` ; lot B.
+- **En attente de David** : ce `--mettre-a-jour`, la relecture ; sort de la sonde
+  `scripts/tmp-sonde-courbes.ts` + `tmp-montre.ts` (non suivis dans le worktree ; resservie au § 14).
+- **Pièges en cours** : horodatage de migration pris par une autre session ; test « cas rare » lent en CI ;
+  étiquettes C_f / C_g serrées près d'une intersection.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `fix/questions-2de-lecture-a-axe`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -408,3 +408,16 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
   1 tag chacun (le bon), `updated_at` inchangé, brouillons. Page à cocher (aucune alerte sur les 8 fiches) :
   https://claude.ai/artifact/XapqZRQbt9Zz1bqUuDf2Mn — rendu vu à ~600 px (largeur mini de la fenêtre
   Chrome), courbes et KaTeX dessinés, pas de défilement horizontal.
+
+## 14. Lot 2 bis A, solutions sur l'axe des x (2026-10-28)
+
+- Relecture de la page (verdicts comptés) : 2 OK (01 antécédents, 02 f = g), 6 « À revoir », même remarque :
+  « faire apparaître les solutions / l'intervalle solution sur l'axe des x ? ».
+- Décision de David : **trait + points** (recommandation) pour **tout le lot** : inéquation → ensemble des
+  solutions repassé en vert sur l'axe (`t(x) = 0 sur [a ; b]   vert`, disques selon les crochets ; ℝ → axe
+  entier) ; équation → points `A'`, `B'`… sur l'axe (omis quand le point de la courbe y est déjà, via
+  `{{if:k==0| |…}}` ; `S'` pour le sommet, `O` pour x² = 0) ; pas de verticale (le bloc n'a pas de segment).
+- Variables `e`, `w` (ordonnées des intersections de f = g) ajoutées aux variations 02 et 03, et à leurs specs.
+- Sonde : 2 400 tirages, 4 800 blocs, 0 problème ; base locale mise à jour ; page à cocher régénérée et
+  republiée (version 2), rendu vu (f ⩽ g : [−4 ; 0] vert sur l'axe) ; simulation prod : 8 à mettre à jour.
+- Instantané d'avant : les fichiers de #1906 (les brouillons en sont issus, aucune donnée d'élève).
