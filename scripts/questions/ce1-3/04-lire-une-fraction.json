@@ -1,0 +1,116 @@
+{
+	"title": "Lire une fraction",
+	"description": "Lire 3/8 : trois huitièmes (leurres : « huit tiers », « trois huit », un numérateur voisin)",
+	"grades": ["CE1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Comment lit-on la fraction $\\frac{{{n}}}{{{d}}}$ ?\n\n```choix\n- {{if:d==3|deux tiers|{{if:d==4|{{if:n==2|deux quarts|trois quarts}}|{{if:d==5|{{if:n==2|deux cinquièmes|{{if:n==3|trois cinquièmes|quatre cinquièmes}}}}|{{if:d==6|{{if:n==2|deux sixièmes|{{if:n==3|trois sixièmes|{{if:n==4|quatre sixièmes|cinq sixièmes}}}}}}|{{if:d==8|{{if:n==2|deux huitièmes|{{if:n==3|trois huitièmes|{{if:n==4|quatre huitièmes|{{if:n==5|cinq huitièmes|{{if:n==6|six huitièmes|sept huitièmes}}}}}}}}}}|{{if:n==2|deux dixièmes|{{if:n==3|trois dixièmes|{{if:n==4|quatre dixièmes|{{if:n==5|cinq dixièmes|{{if:n==6|six dixièmes|{{if:n==7|sept dixièmes|{{if:n==8|huit dixièmes|neuf dixièmes}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:d==3|trois demis|{{if:d==4|{{if:n==2|quatre demis|quatre tiers}}|{{if:d==5|{{if:n==2|cinq demis|{{if:n==3|cinq tiers|cinq quarts}}}}|{{if:d==6|{{if:n==2|six demis|{{if:n==3|six tiers|{{if:n==4|six quarts|six cinquièmes}}}}}}|{{if:d==8|{{if:n==2|huit demis|{{if:n==3|huit tiers|{{if:n==4|huit quarts|{{if:n==5|huit cinquièmes|{{if:n==6|huit sixièmes|huit septièmes}}}}}}}}}}|{{if:n==2|dix demis|{{if:n==3|dix tiers|{{if:n==4|dix quarts|{{if:n==5|dix cinquièmes|{{if:n==6|dix sixièmes|{{if:n==7|dix septièmes|{{if:n==8|dix huitièmes|dix neuvièmes}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:d==3|deux trois|{{if:d==4|{{if:n==2|deux quatre|trois quatre}}|{{if:d==5|{{if:n==2|deux cinq|{{if:n==3|trois cinq|quatre cinq}}}}|{{if:d==6|{{if:n==2|deux six|{{if:n==3|trois six|{{if:n==4|quatre six|cinq six}}}}}}|{{if:d==8|{{if:n==2|deux huit|{{if:n==3|trois huit|{{if:n==4|quatre huit|{{if:n==5|cinq huit|{{if:n==6|six huit|sept huit}}}}}}}}}}|{{if:n==2|deux dix|{{if:n==3|trois dix|{{if:n==4|quatre dix|{{if:n==5|cinq dix|{{if:n==6|six dix|{{if:n==7|sept dix|{{if:n==8|huit dix|neuf dix}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:d==3|trois tiers|{{if:d==4|{{if:n==2|trois quarts|deux quarts}}|{{if:d==5|{{if:n==2|trois cinquièmes|{{if:n==3|deux cinquièmes|trois cinquièmes}}}}|{{if:d==6|{{if:n==2|trois sixièmes|{{if:n==3|deux sixièmes|{{if:n==4|trois sixièmes|quatre sixièmes}}}}}}|{{if:d==8|{{if:n==2|trois huitièmes|{{if:n==3|deux huitièmes|{{if:n==4|trois huitièmes|{{if:n==5|quatre huitièmes|{{if:n==6|cinq huitièmes|six huitièmes}}}}}}}}}}|{{if:n==2|trois dixièmes|{{if:n==3|deux dixièmes|{{if:n==4|trois dixièmes|{{if:n==5|quatre dixièmes|{{if:n==6|cinq dixièmes|{{if:n==7|six dixièmes|{{if:n==8|sept dixièmes|huit dixièmes}}}}}}}}}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3|4|5|6|8|10"
+				},
+				{
+					"name": "n",
+					"expression": "2..{{eval:d-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\frac{{{n}}}{{{d}}}$ : le tout est partagé en ${{d}}$ parts égales (des {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==8|huitièmes|dixièmes}}}}}}}}}}}}), on en prend ${{n}}$.",
+					"On lit « **{{if:n==1|un|{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|dix}}}}}}}}}}}}}}}}}} {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==8|huitièmes|dixièmes}}}}}}}}}}}}** »."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 3/8, trois huitièmes",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/8, « huit tiers » (inversé)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/8, « trois huit »",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/8, « deux huitièmes »",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 2/3, deux tiers",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"n": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 9/10, neuf dixièmes",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"n": "9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
