@@ -6,18 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, PR « solutions sur l'axe des x » du lot 2 bis A ouverte._
+_Mis à jour le 2026-10-28, après #1926._
 
 - **État** : lot 2 bis A (8 brouillons en prod, rangés, tagués). Relecture : 2 OK, 6 « À revoir » (« faire
   apparaître les solutions sur l'axe des x ») → corrigés retouchés pour les 8 (§ 14), page republiée, les 6
   verdicts remis à zéro.
-- **Prochaine action** : merger la PR, puis David lance `create-questions --dir
+- **Prochaine action** : David lance `create-questions --dir
 scripts/questions/2de-lecture-a --mettre-a-jour --publier` ; relecture des 6 ; `publier-lot.ts` ; lot B.
 - **En attente de David** : ce `--mettre-a-jour`, la relecture ; sort de la sonde
   `scripts/tmp-sonde-courbes.ts` + `tmp-montre.ts` (non suivis dans le worktree ; resservie au § 14).
 - **Pièges en cours** : horodatage de migration pris par une autre session ; test « cas rare » lent en CI ;
   étiquettes C_f / C_g serrées près d'une intersection.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `fix/questions-2de-lecture-a-axe`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `fix/questions-2de-lecture-a-axe` (mergée).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -421,3 +421,4 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
 - Sonde : 2 400 tirages, 4 800 blocs, 0 problème ; base locale mise à jour ; page à cocher régénérée et
   republiée (version 2), rendu vu (f ⩽ g : [−4 ; 0] vert sur l'axe) ; simulation prod : 8 à mettre à jour.
 - Instantané d'avant : les fichiers de #1906 (les brouillons en sont issus, aucune donnée d'élève).
+- #1926 mergée le 2026-10-28 (CI verte du premier coup).
