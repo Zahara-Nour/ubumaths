@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après les décisions du § 22._
+_Mis à jour le 2026-10-28, après #1943._
 
-- **État** : droite, horloge, barres (#1908) et plafond de l'axe (#1915) mergés, pas en prod. Étiquettes à ranger : phase 0 (§ 21) tranchée (§ 22, toutes les recos). PR en cours, tests rouges d'abord.
-- **Prochaine action** : bloc ```ranger (parseur, mélange, case, écran glisser/toucher, PDF, page d'aide).
-- **En attente de David** : rien.
-- **Pièges en cours** : `BuildKind` patron commun (`generator/build-answer.ts`, `buildCaseCount`) ; `isPlaceKind` = droite + horloge ; patron le plus proche = case choix (ADR 0033, `choix-parser.ts`, `questions/choice-case.ts`) ; les 5 modèles « ranger » ne sont PAS réécrits ici.
-- **Worktree / branche** : `ubumaths-wt-reponses-a-placer` · `feat/reponses-a-placer`.
+- **État** : droite, horloge, barres (#1908), plafond de l'axe (#1915) et étiquettes à ranger (#1943) mergés, pas en prod. Secondes de l'horloge : hors chantier.
+- **Prochaine action** : l'échelle (choix de l'échelle par l'élève, CM1-CM2, § 18.4) — phase 0 à écrire ; ou autre geste au choix de David.
+- **En attente de David** : quel geste ensuite ; vérification manuelle #1943 (`verifications-manuelles.md`).
+- **Pièges en cours** : les 5 modèles « ranger » sont à réécrire en ```ranger par questions-6 (06, 07) et la session « questions » (CP, CE1, CM2), au moins 3 étiquettes ; compte prof local supprimé par une suite d'intégration interrompue → `pnpm db:dev-accounts`.
+- **Worktree / branche** : aucun.
 
 ---
 
