@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1886 (et #1891 ouverte)._
+_Mis à jour le 2026-10-28, après #1891 (et PR du niveau de c4d4bf70 ouverte)._
 
 - **État** : lot 2 (numération, 7 modèles) en prod en brouillon, rangé et tagué (#1886, `db:migrate` fait, vérifié en prod) ; page à cocher https://claude.ai/artifact/EkqSwsNAs54bDrNxvmCQE3 relue par David : **7/7 OK**.
-- **Prochaine action** : (1) #1891 (fix `titresDuLot` : titres à antislash entre guillemets PostgREST) : un check « Client Tests (browser, shard 1/2) » rouge au 1er run, sans lien apparent (le diff ne touche que `scripts/`) → lire le log, relancer si flaky, merger au vert ; worktree `ubumaths-wt-questions-ce1` (branche `fix/lot-questions-titres-antislash`). (2) Niveau de c4d4bf70 (« Le nombre qui suit… ») : Ecriture 3 → 10 (3 pris par « Parité », publié ; règle du lot 1 : premier niveau libre) → migration niveau + fichier `ce1-2/03` + `lot-ce1-2.py`, gabarit `20261027160000_questions_ce1_lot1_niveaux.sql`. (3) `publier-lot` en simulation, puis David publie.
+- **Prochaine action** : (1) PR `fix/questions-ce1-lot2-niveau` (c4d4bf70 « Le nombre qui suit… », Ecriture 3 → 10 ; relevé MCP du 2026-10-28 : seule collision du lot 2, 10 libre) : CI verte → merge → `db:migrate` depuis la branche mergée (accès tranché, test vérifié rouge sans la migration, rollback écrit ; `security-auditor` lancé) → vérifier en prod. (2) `publier-lot` en simulation sur `ce1-2`, puis David publie.
 - **En attente de David** : rien. Question d'accès de la migration de niveau tranchée par David le 2026-10-28 : **personne** ne gagne ni ne perd d'accès.
 - **Pièges en cours** : relever les niveaux pris par TOUS les publiés de la catégorie (l'Ecriture 3 a été manqué) ; `subdomain` « Ecriture » sans accent ; worktree neuf → `pnpm exec svelte-kit sync`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `fix/lot-questions-titres-antislash` (#1891).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` sur `fix/questions-ce1-lot2-niveau`. #1891 mergée (titres à antislash), CI rouge au 1er run = timeouts et erreur d'infra vitest, verte à la relance.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
