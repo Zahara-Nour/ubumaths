@@ -582,6 +582,10 @@ Les Palotins sont les sbires d'Ubu dans la pièce. **Dans Chiphre, ce sont les a
 
 Les Palotins viennent de **deux pièces** : Giron, Pile et Cotice sont ceux d'_Ubu Roi_ (leurs noms sont des termes d'héraldique : le giron, la pile et la cotice sont des pièces d'un blason) ; Merdanpo (Merdranpo à Chiphre), Mousched-Gogh et Quatrezoneilles sont « les trois Palotins » d'_Ubu Cocu_, qui chantent ensemble leur chanson (« Dans de grandes boît's en fer-blanc / Empilés la semaine entière… »). Personnalités et rôles sont des extensions Chiphre 🟠.
 
+**Apparence des Palotins** 🟡 (décision de David, 2026-10-28) : les SVG de l'appli (`static/images/buddies/`, 7 expressions) restent tels quels ; pour le lore (cartes, Shtam, scènes), chaque Palotin est redessiné en pied au trait Steinlen, en gardant le visage, le couvre-chef, la couleur d'identité et la pièce héraldique de son SVG (captures de référence : `docs/Chiphres/illustrations/personnages/palotins-appli/`).
+
+- **Giron** : ado trapu et sportif, penché en avant, prêt à foncer, poing levé ; visage rond, joues roses, nez rond, grand sourire confiant ; bonnet pointu mi-orange mi-encre à pompon blanc, tunique orange `#E0612F` à col blanc, écusson gironné or et encre, ceinture brune, culotte encre, bottes courtes brunes. Prompt d'illustration : Section XI, « Illustrations ».
+
 ### Personnages mineurs et figurants
 
 - **Le Père Pissedoux** : marchand ambulant qui apparaît rarement, propose des cartes VIP secrètes contre des défis impossibles.
@@ -2177,6 +2181,24 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines and the mane, dark chocolate brown for the coat, white for a blaze on the face and the dice, emerald green for the visor and the saddle cloth, deep crimson for the waistcoat and the dice dots, marigold yellow for the laurel crown, the buttons, the spiral and the gold tooth.
 
 Composition: the horse standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no numbers, no signature.
+```
+
+#### Prompt de référence — Giron (Palotin) 🟡
+
+Validé par David le 2026-10-28 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png`, l'image de référence de Père Ubu et la capture de Giron dans l'appli, `palotins-appli/giron.png`). L'orange `#E0612F`, hors nuancier, est sa couleur d'identité : il entre exprès dans le prompt. Pas de halo, contrairement au SVG de l'appli.
+
+```text
+Draw Giron, one of the Palotins (Père Ubu's henchmen from Alfred Jarry's play "Ubu Roi"), as a full-body character portrait in exactly the same drawing style as the attached Père Ubu image, keeping the face, cap, colors and coat of arms of the attached Giron image.
+
+Character: a young, stocky, sporty Palotin, a teenager-like sidekick, smaller and younger than the adults of the court; leaning forward, ready to charge, one fist raised with enthusiasm. A round face with rosy cheeks, a round nose, small bright eyes, a big confident grin. He is brave, loyal, simple and a little reckless: a lovable buddy who rushes in first, funny, never scary, for students aged 11 to 17.
+
+Clothing: a floppy pointed cap split half bright orange, half navy ink, with a white pompom; a bright orange tunic with a white collar; on his chest, a small heraldic shield "gironny": divided into eight triangles alternating marigold yellow and navy ink, like a pinwheel; a dark chocolate brown belt, navy ink breeches and short brown boots.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image, plus Giron's own bright orange (#E0612F) for the cap and the tunic: navy ink for the outlines, the cap and the breeches, marigold yellow and navy ink for the shield, dark chocolate brown for the belt and the boots, white for the pompom and the collar, a soft pink for the cheeks.
+
+Composition: Giron standing, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
 ```
 
 ---

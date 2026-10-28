@@ -2,15 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après le prompt du Cheval à Phynances (pas de PR : chantier 100 % doc pour l'instant)._
+_Mis à jour le 2026-10-28, après le prompt de Giron (pas de PR : chantier 100 % doc pour l'instant)._
 
-- **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu, du Capitaine Bordure, de Bougrelas, de Conscience, du Czar Alexis, de Monsieur Prudhomme du Flegmatique (Tristan Bernard) du Professeur Achras du Docteur Faustroll de Bosse-de-Nage et du Cheval à Phynances validés (casting et quatre gouverneurs complets) et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
-- **Prochaine action** : ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` (David doit les fournir) ; puis prompts des autres personnages (Palotins : Giron, Pile, Cotice, Merdranpo, Mousched-Gogh, Quatrezoneilles, à décider : les trois déjà dessinés gardent leur style ?), un par un, chacun validé par David.
-- **En attente de David** : les douze images de référence · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
+- **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu, du Capitaine Bordure, de Bougrelas, de Conscience, du Czar Alexis, de Monsieur Prudhomme du Flegmatique (Tristan Bernard) du Professeur Achras du Docteur Faustroll de Bosse-de-Nage et du Cheval à Phynances validés (casting et quatre gouverneurs complets) ; Palotins redessinés au trait Steinlen pour le lore (SVG de l'appli inchangés) : Giron validé et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
+- **Prochaine action** : ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` (David doit les fournir) ; puis prompts des autres personnages (Palotins : Pile, Cotice, Merdranpo, Mousched-Gogh, Quatrezoneilles, à décider : les trois déjà dessinés gardent leur style ?), un par un, chacun validé par David.
+- **En attente de David** : les treize images de référence · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
 - **Pièges en cours** : Ubu sans chapeau pointu ni longue robe blanche (aucune ressemblance avec une cagoule) ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée (Nano Banana refuse : personnage inventé à la place). Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 
 ## Décisions de David
+
+- 2026-10-28 — **Palotins** : version Steinlen en plus pour le lore ; les SVG de l'appli restent tels quels ; captures de référence dans `docs/Chiphres/illustrations/personnages/palotins-appli/`.
 
 - 2026-10-25 — **Style** : celui des Mathoux (`docs/systeme/mathoux.md` § Les dessins, direction AB3), c'est-à-dire l'affiche lithographiée de Steinlen (1896, domaine public). Pas d'image d'Épinal.
 - 2026-10-25 — **Pas de halo partout** : réservé, au plus, aux portraits au format carte.
