@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 3 écrit._
+_Mis à jour le 2026-10-28, après #1936._
 
-- **État** : lot 3 (fractions, 9 modèles, CE1-016 à 021 et 099) écrit, simulation 9/9 (77 specs), 3 200 tirages verts, 9 brouillons en base locale, jugement joué dans l'aperçu ; PR des fichiers à ouvrir.
-- **Prochaine action** : PR des fichiers → merge → David lance `create-questions --publier` → migration nœud + tag → page à cocher → publication.
-- **En attente de David** : rien.
+- **État** : lot 3 (fractions, 9 modèles, CE1-016 à 021 et 099) : fichiers mergés (#1936, CI verte) ; brouillons pas encore créés en prod.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce1-3 --publier` (base prod) depuis le dépôt principal ; relever les `id` ; puis migration nœud + tag (nouvelle branche dans le worktree), page à cocher, publication.
+- **En attente de David** : le `create-questions --publier` en prod.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 (« 1 demi », « le 1/4 ») ; `reducedFractions: off` (simplification = CE2) ; worktree neuf : `svelte-kit sync` avant `tsx` (`$lib`) ; ports 5176-5178 pris (5179 pour ce lot) ; commitlint : sujet sans majuscule initiale.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `feat/questions-ce1-lot3`.
 
