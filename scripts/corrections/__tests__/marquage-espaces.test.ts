@@ -7,7 +7,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { QuestionTemplate, TestSpec } from '../../../src/lib/questions/types';
-import { checkTemplate } from '../../../src/lib/migration/review/check-template';
+import { checkTemplate } from '../../../src/lib/questions/review/check-template';
 import {
 	alreadyDone,
 	bipmTestSpecs,

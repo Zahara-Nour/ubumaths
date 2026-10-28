@@ -6,7 +6,7 @@ couvre:
   - src/lib/srs/generator.ts
   - src/lib/utils/answer-validator.ts
   - src/lib/mathAST/cosmetic-transforms.ts
-  - 'src/lib/migration/review/**'
+  - 'src/lib/questions/review/**'
   - 'src/lib/types/{question-display,question-template}.ts'
   - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail}.ts'
   - src/lib/server/exercise-search-indexed.ts
@@ -88,7 +88,7 @@ le SRS ([srs.md](srs.md)).
 | `src/lib/mathAST/pedagogical-*/`                                                    | Étapes de correction générées (mode B) ; stratégies par niveau `STRATEGIES`, `STRATEGIES_QUADRATIC`, `STRATEGIES_RATIONAL` (`pedagogical-solve/types.ts`). |
 | `src/lib/types/question-display.ts`, `src/lib/types/question-template.ts`           | `ValidationResult` ; `toQuestionTemplate` (ligne de base → modèle).                                                                                        |
 | `src/lib/server/validation/questions.ts`                                            | Zod des routes : `createQuestionTemplateSchema`, `updateQuestionTemplateSchema`, `bulkTemplateStatusSchema`, `generateQuestionSchema`.                     |
-| `src/lib/migration/review/check-template.ts`                                        | `checkTemplate` : le contrôle complet (structure, schéma strict, specs, 50 tirages par variation, figure de chaque case « figure » construite).            |
+| `src/lib/questions/review/check-template.ts`                                        | `checkTemplate` : le contrôle complet (structure, schéma strict, specs, 50 tirages par variation, figure de chaque case « figure » construite).            |
 | `src/lib/server/template-publication.ts`                                            | `templatePublicationErrors` : **le** contrôle de publication, partagé par le `PUT` d'un modèle et la publication par lot.                                  |
 | `src/lib/server/questions-bulk-status.ts`                                           | Publication par lot.                                                                                                                                       |
 | `src/lib/server/evaluation-attempts.ts`, `grading-budget.ts`, `corrected-detail.ts` | Évaluations notées, corrigées par le serveur (ADR 0015).                                                                                                   |
@@ -766,7 +766,7 @@ listes — **pas** dans `constraint-validators.ts`.
   `runAllTestSpecs`, `pnpm question:specs`. Une spec `correct` par variation est exigée pour publier
   (par lot comme modèle seul).
 - **Corpus de la relecture** : `data/relecture/` (633 modèles TinyMath relus, 13 lots), rejoué à
-  chaque PR par `src/lib/migration/review/__tests__/corpus-relecture.test.ts` (`checkTemplate`
+  chaque PR par `src/lib/questions/review/__tests__/corpus-relecture.test.ts` (`checkTemplate`
   complet) ; il borne aussi la garde de complexité (`answer-complexity-corpus.test.ts`) et le rendu
   sûr (`student-answer-safety.render.test.ts`). Limite : instantané de la relecture, un modèle
   modifié ensuite dans l'éditeur n'est pas couvert.

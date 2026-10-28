@@ -1,20 +1,14 @@
----
-couvre:
-  - 'src/lib/migration/*.ts'
-  - 'src/lib/migration/review/*.ts'
-  - 'src/lib/server/migration/**'
-  - 'src/lib/components/migration/**'
-  - 'src/routes/api/migration/**'
-  - 'src/routes/(protected)/dashboard/admin/migration/**'
-  - 'src/lib/server/validation/migration*.ts'
-  - src/lib/types/migration.ts
-  - 'src/lib/transpilers/**'
----
+> **Archivé le 2026-10-28** (chantier `figure-et-choix`, lot 5) : l'import TinyMath est terminé, son
+> outillage est retiré (`src/lib/migration/`, `src/lib/server/migration/`, page admin, `/api/migration/*`,
+> scripts d'import, `data/tinymath/`). Restent : `checkTemplate` et `toTemplateInsertRow`, déplacés dans
+> `src/lib/questions/review/` (voir [questions.md](../systeme/questions.md)), et le corpus des 632
+> questions relues sous `data/relecture/`. Tables `migration_tracking` / `migration_edits` : supprimées
+> après le `deploy:prod` qui livre ce retrait.
 
 # Migration des anciennes questions (TinyMath)
 
 > Ce que fait le code qui transforme les questions de l'ancien site (TinyMath) en modèles de questions Chiphre, les fait relire, puis les importe en brouillon.
-> Ce qui n'est **pas** recopié ici : le format d'un modèle et son cycle de vie ([questions.md](questions.md)), la notation des énoncés ([ubumark.md](ubumark.md)), les exercices de fiche ([exercices.md](exercices.md)), le vocabulaire ([CONTEXT.md](../../CONTEXT.md), entrée « Relecture »). Le circuit de relecture pas à pas est dans [`data/relecture/README.md`](../../data/relecture/README.md).
+> Ce qui n'est **pas** recopié ici : le format d'un modèle et son cycle de vie ([questions.md](../systeme/questions.md)), la notation des énoncés ([ubumark.md](../systeme/ubumark.md)), les exercices de fiche ([exercices.md](../systeme/exercices.md)), le vocabulaire ([CONTEXT.md](../../CONTEXT.md), entrée « Relecture »). Le circuit de relecture pas à pas est dans [`data/relecture/README.md`](../../data/relecture/README.md).
 >
 > Vérifié contre le code le 2026-10-13 (commit `4f3eb2b3e`) ; garde E1 de `checkTemplate` le 2026-10-24 ; figure à compléter construite à chaque tirage le 2026-10-26.
 
@@ -22,7 +16,7 @@ couvre:
 
 TinyMath était l'ancien site. Ses questions sont figées dans un fichier : `data/tinymath/old-questions.json`, **633 questions**, rangées par thème, domaine, sous-domaine et niveau. Chaque question porte un champ `_migration` avec son numéro global (`globalIndex`, de 0 à 632) et sa catégorie.
 
-Le but : faire de chaque ancienne question un **modèle de question** Chiphre (`QuestionTemplate`, voir [questions.md](questions.md)), rangé dans la table `question_templates`. Le chemin compte trois étapes :
+Le but : faire de chaque ancienne question un **modèle de question** Chiphre (`QuestionTemplate`, voir [questions.md](../systeme/questions.md)), rangé dans la table `question_templates`. Le chemin compte trois étapes :
 
 1. **Transformer** : réécrire l'ancienne syntaxe (variables `&1`, tirages, conditions `@@…@@`, grandeurs, réponses) dans la syntaxe du moteur actuel.
 2. **Relire** : un humain dit si le résultat est bon (`approved`), à écarter (`rejected`), ou le corrige.
@@ -61,7 +55,7 @@ Deux convertisseurs AsciiMath existent mais **ne sont pas branchés** : `src/lib
 
 - **Zod des routes** : `src/lib/server/validation/migration-review.ts`. `globalIndexSchema` (entier de 0 à 632), `approveQuestionSchema` et `rejectQuestionSchema` (notes ou motif, 1 000 caractères au plus), `batchApproveSchema` (100 numéros au plus), `saveEditSchema` et `editedQuestionTemplateSchema` (modèle corrigé, champs bornés).
 - **Zod du suivi** : `src/lib/server/validation/migration.ts`. `migrationTrackingInsertSchema` valide chaque ligne que `MigrationStateManager` écrit dans `migration_tracking` ; `migrationStateSchema` valide le fichier d'état.
-- **Contrôle d'un modèle avant import** : `checkTemplate` dans `src/lib/migration/review/check-template.ts`. Un modèle passe seulement si : `validateTemplate` et le schéma strict passent, il a au moins une spec de test et toutes sont vertes (sauf carte de cours, qui doit avoir recto et verso non vides), et chaque variation se génère sur `instances` tirages sans échec (50 par défaut : `DEFAULT_INSTANCES_PER_VARIATION`). Quand une case exige une forme de l'élève (`requiredForm`), la réponse de la correction automatique d'une dérivée ou d'une primitive doit passer ce juge à chaque tirage, qu'elle demande une forme (`finalForm`) ou non (`correctionForm` du rapport, E1, chantier simplify-carte Q37, 2026-10-24) ; test : `check-template-forme-demandee.test.ts`. Une case « figure » (bloc ```figure-a-completer) doit se construire à chaque tirage, avec les points de `verifier:` en place et distincts (`figures` du rapport, détail dans [questions.md](questions.md)) ; test : `check-template-figure.test.ts`.
+- **Contrôle d'un modèle avant import** : `checkTemplate` dans `src/lib/migration/review/check-template.ts`. Un modèle passe seulement si : `validateTemplate` et le schéma strict passent, il a au moins une spec de test et toutes sont vertes (sauf carte de cours, qui doit avoir recto et verso non vides), et chaque variation se génère sur `instances` tirages sans échec (50 par défaut : `DEFAULT_INSTANCES_PER_VARIATION`). Quand une case exige une forme de l'élève (`requiredForm`), la réponse de la correction automatique d'une dérivée ou d'une primitive doit passer ce juge à chaque tirage, qu'elle demande une forme (`finalForm`) ou non (`correctionForm` du rapport, E1, chantier simplify-carte Q37, 2026-10-24) ; test : `check-template-forme-demandee.test.ts`. Une case « figure » (bloc ```figure-a-completer) doit se construire à chaque tirage, avec les points de `verifier:` en place et distincts (`figures` du rapport, détail dans [questions.md](../systeme/questions.md)) ; test : `check-template-figure.test.ts`.
 
 ### 4. Écran admin de relecture
 
@@ -114,7 +108,7 @@ Le verdict humain (`review_status` : `pending`, `approved`, `rejected`) est sép
 ## Comment étendre
 
 - **Réécrire une nouvelle construction TinyMath** : ajouter la règle dans le convertisseur concerné (tableau du §2), avec un test dans `src/lib/migration/__tests__/`. Si la règle touche le modèle entier (options, variations), elle va dans `question-transformer.ts`, avec un test `transformer-<sujet>.test.ts` sur le modèle des fichiers existants.
-- **Un nouveau type de question cible** : il naît dans le moteur ([questions.md](questions.md), §Comment étendre), pas ici. Le type d'une ligne importée n'est pas choisi par la migration : `toTemplateInsertRow` le déduit avec `getQuestionType`.
+- **Un nouveau type de question cible** : il naît dans le moteur ([questions.md](../systeme/questions.md), §Comment étendre), pas ici. Le type d'une ligne importée n'est pas choisi par la migration : `toTemplateInsertRow` le déduit avec `getQuestionType`.
 - **Un nouveau critère d'import** : il va dans `checkTemplate`. Il est alors rejoué sur tout le corpus relu par `corpus-relecture.test.ts`.
 - **Un nouveau transpileur** : rien ne l'appellera tant que `question-transformer.ts` ne l'importe pas. Vérifier avec `git grep` qu'il est branché avant de le documenter comme actif.
 

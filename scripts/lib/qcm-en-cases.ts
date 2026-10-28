@@ -32,7 +32,7 @@ import { serializeTemplateChoiceBlock } from '$lib/ubumark/parser/choix-parser';
 import { formatChoiceAnswer, parseChoiceAnswer } from '$lib/questions/choice-case';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { findChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
-import { checkTemplate } from '$lib/migration/review/check-template';
+import { checkTemplate } from '$lib/questions/review/check-template';
 import { resolveMarkdownContent } from '$lib/questions/generator/content-resolver';
 import {
 	declaredGenericFunctions,

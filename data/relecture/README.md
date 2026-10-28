@@ -1,24 +1,16 @@
 # Relecture des questions TinyMath
 
-Suivi : [`docs/wip/relecture-questions-progress.md`](../wip/relecture-questions-progress.md).
+## Ce que ce dossier est devenu
 
-## Le circuit
+L'import est **terminé** (632 questions relues, importées en brouillon). Son outillage (circuit
+`question:specs --index/--lot` → `relecture:verdicts` → `relecture:import`, tables
+`migration_tracking` / `migration_edits`) a été retiré le 2026-10-28 (chantier `figure-et-choix`,
+lot 5) : voir [`docs/archive/migration-tinymath.md`](../../docs/archive/migration-tinymath.md).
 
-1. **Relire** une question (Claude) : `pnpm question:specs --index <n> --apercu 5` montre la
-   transformation, des instances générées et le verdict technique.
-2. **Écrire le verdict** dans `data/relecture/<lot>/<n>.json` (format ci-dessous).
-   `pnpm question:specs --lot data/relecture/<lot>` vérifie tout le lot.
-3. **Feu vert de David** sur le rapport du lot.
-4. **Reporter les verdicts** : `pnpm relecture:verdicts --lot data/relecture/<lot>` (simulation),
-   puis avec `--publier`.
-5. **Importer en brouillon** : `pnpm relecture:import --lot data/relecture/<lot>` (simulation),
-   puis avec `--publier`. David publie lui-même.
+Les fichiers restent **versionnés comme corpus** des gardes de non-régression (lus par
+`parseReviewFile` / `draftTemplate`, `src/lib/questions/review/review-file.ts`).
 
-Toutes les commandes d'écriture sont **en simulation sans `--publier`**, n'écrivent que sur la prod
-(projet EU) ou une base locale, sauvegardent les lignes visées dans
-`data/migration-output/backups/` (non versionné) et relisent chaque ligne écrite.
-
-## Un template n'est importable que si
+## Un template n'a été importé que si
 
 - `validateTemplate` et le schéma strict passent ;
 - il a **au moins une spec de test**, toutes vertes ;
@@ -26,7 +18,7 @@ Toutes les commandes d'écriture sont **en simulation sans `--publier`**, n'écr
 - son niveau est ≥ 1 (contrainte de la base ; les niveaux TinyMath commencent à 0).
 
 **Ce contrôle est rejoué à chaque PR** sur tous les fichiers de ce dossier
-(`src/lib/migration/review/__tests__/corpus-relecture.test.ts`, ~7 s) : une modification du
+(`src/lib/questions/review/__tests__/corpus-relecture.test.ts`, ~7 s) : une modification du
 générateur, du validateur ou de mathAST qui casse une question relue rougit la CI. Seul
 l'instantané de la relecture est couvert, pas un modèle modifié ensuite dans l'éditeur.
 
@@ -45,8 +37,4 @@ l'instantané de la relecture est couvert, pas un modèle modifié ensuite dans 
 }
 ```
 
-- `reviewer: "david"` reporte un verdict déjà rendu par David (pas de marqueur Claude, date
-  d'origine conservée dans `reviewedAt`).
-- En base : `review_status` (`approved` / `rejected` ; `pending` si à arbitrer),
-  `reviewed_by` = David, `conversion_notes` = « Relu par Claude le … — … » ; la version corrigée va
-  dans `migration_edits` (jamais écrasée sans `--remplacer`).
+- `reviewer: "david"` : verdict déjà rendu par David (date d'origine conservée dans `reviewedAt`).

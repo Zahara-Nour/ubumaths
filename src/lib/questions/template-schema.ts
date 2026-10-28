@@ -5,7 +5,7 @@
  * object level to reject unknown/misspelled keys.
  *
  * Building blocks are exported WITHOUT .strict() for reuse by server-side
- * validation schemas (questions.ts, migration-review.ts). The strict versions
+ * validation schemas (questions.ts). The strict versions
  * are used only locally for the questionTemplateSchema (JsonEditor validation).
  *
  * Used by:

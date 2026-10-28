@@ -37,7 +37,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { QuestionTemplate } from '$lib/questions/types';
-import { checkTemplate } from '$lib/migration/review/check-template';
+import { checkTemplate } from '$lib/questions/review/check-template';
 import { runAllTestSpecs } from '$lib/questions/test-spec-runner';
 import { toQuestionTemplate } from '$lib/types/question-template';
 import { toJson } from '$lib/types/database-helpers';

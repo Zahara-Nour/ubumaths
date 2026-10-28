@@ -16,7 +16,7 @@ import { join, relative } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { convertLatexToMarkup } from 'mathlive/ssr';
 import { neutralizeStudentLatex } from '../student-answer-safety';
-import { draftTemplate, parseReviewFile } from '$lib/migration/review/review-file';
+import { draftTemplate, parseReviewFile } from '$lib/questions/review/review-file';
 import { generateInstance } from '../generator/instance-generator';
 import { REAL_TEMPLATES } from '$lib/server/validation/__tests__/fixtures/real-templates';
 import { parseLatex, toLatex } from '$lib/mathAST';

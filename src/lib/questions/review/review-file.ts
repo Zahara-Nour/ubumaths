@@ -2,22 +2,20 @@
  * Fichier de verdict de relecture (`data/relecture/<lot>/<globalIndex>.json`)
  * ==========================================================================
  *
- * Un fichier par question relue. Il reste dans le dépôt (lisible par David)
- * jusqu'à son feu vert ; `scripts/record-review.ts` le reporte alors en base.
+ * Les 632 questions TinyMath relues (import terminé, ADR 0033 lot 5) restent
+ * versionnées : elles servent de CORPUS aux gardes de non-régression
+ * (`corpus-relecture`, complexité des réponses, neutralisation des réponses
+ * d'élèves). Ce module ne fait plus que les lire.
  *
  * Verdicts :
  * - `approved`  : approuvée telle que transformée (le template porte les specs) ;
  * - `corrected` : corrigée puis approuvée (`editNotes` dit quoi et pourquoi) ;
  * - `rejected`  : rejetée (`reason` obligatoire) ;
  * - `arbitrate` : doute pédagogique, à trancher par David (`question` obligatoire).
- *
- * `reviewer: 'david'` reporte un verdict DÉJÀ rendu par David (ses 41 questions) :
- * pas de marqueur « Relu par Claude », et son horodatage d'origine est conservé.
  */
 
 import { z } from 'zod';
 import type { QuestionTemplate } from '$lib/questions/types';
-import type { TablesUpdate } from '$lib/types/database';
 
 // ============================================================================
 // TYPES
@@ -41,7 +39,7 @@ export interface ReviewFile {
 // CONSTANTS
 // ============================================================================
 
-/** Nombre total de questions TinyMath (`data/tinymath/old-questions.json`) */
+/** Nombre total de questions TinyMath (index 0 à 632) */
 const OLD_QUESTION_COUNT = 633;
 
 const reviewFileSchema = z
@@ -99,58 +97,6 @@ export function parseReviewFile(raw: unknown, source = 'fichier'): ReviewFile {
 		throw new Error(`${source} invalide — ${detail}`);
 	}
 	return result.data as ReviewFile;
-}
-
-/** Date AAAA-MM-JJ d'un instant ISO */
-function isoDate(iso: string): string {
-	return iso.slice(0, 10);
-}
-
-/** Note de suivi (`migration_tracking.conversion_notes`) ; undefined = ne pas toucher */
-export function buildConversionNote(review: ReviewFile, now: string): string | undefined {
-	if (review.reviewer === 'david') return undefined;
-	const prefix = `Relu par Claude le ${isoDate(review.reviewedAt ?? now)}`;
-	switch (review.verdict) {
-		case 'approved':
-			return `${prefix} — approuvée telle que transformée.`;
-		case 'corrected':
-			return `${prefix} — corrigée : ${review.editNotes}`;
-		case 'rejected':
-			return `${prefix} — rejetée : ${review.reason}`;
-		case 'arbitrate':
-			return `${prefix} — À ARBITRER : ${review.question}`;
-	}
-}
-
-/** Champs de relecture à écrire dans `migration_tracking` */
-export function buildTrackingReviewUpdate(
-	review: ReviewFile,
-	reviewerId: string,
-	now: string
-): TablesUpdate<'migration_tracking'> {
-	const note = buildConversionNote(review, now);
-	const decided = review.verdict !== 'arbitrate';
-	return {
-		review_status:
-			review.verdict === 'rejected'
-				? 'rejected'
-				: review.verdict === 'arbitrate'
-					? 'pending'
-					: 'approved',
-		reviewed_by: decided ? reviewerId : null,
-		reviewed_at: decided ? (review.reviewedAt ?? now) : null,
-		...(note !== undefined && { conversion_notes: note })
-	};
-}
-
-/** Note de la version corrigée (`migration_edits.edit_notes`) ; undefined = ne pas toucher */
-export function buildEditNotes(review: ReviewFile): string | undefined {
-	if (review.reviewer === 'david') return undefined;
-	if (review.verdict === 'corrected') return `[Claude] ${review.editNotes}`;
-	if (review.verdict === 'approved') {
-		return '[Claude] Approuvée telle que transformée ; specs de test ajoutées.';
-	}
-	return undefined;
 }
 
 /**

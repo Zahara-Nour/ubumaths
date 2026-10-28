@@ -1,22 +1,18 @@
 /**
- * Outils communs aux scripts de relecture TinyMath
- * ================================================
+ * Outils communs aux scripts qui écrivent des modèles de questions
+ * ================================================================
  *
  * - client Supabase service_role, avec GARDE sur la base visée : en écriture,
  *   seules la prod (projet EU) et une base locale sont acceptées ;
  * - relecteur = l'unique profil admin (modèle mono-professeur : David) ;
- * - sauvegarde JSON des lignes visées AVANT toute écriture (dossier ignoré par git) ;
- * - lecture des fichiers de verdict `data/relecture/<lot>/*.json`.
+ * - sauvegarde JSON des lignes visées AVANT toute écriture (dossier ignoré par git).
  */
 
 import 'dotenv/config';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import type { Database } from '../../src/lib/types/database';
-import { loadAllQuestions } from '../../src/lib/migration/question-data-loader';
-import type { QuestionWithMigration } from '../../src/lib/migration/old-question-types';
-import { parseReviewFile, type ReviewFile } from '../../src/lib/migration/review/review-file';
 
 // ============================================================================
 // CONSTANTS
@@ -114,26 +110,4 @@ export async function backupRows(
 		JSON.stringify({ migration_tracking: tracking.data, migration_edits: edits.data }, null, 2)
 	);
 	return path;
-}
-
-// ============================================================================
-// DONNÉES
-// ============================================================================
-
-/** Les 633 questions TinyMath, indexées par `_migration.globalIndex` */
-export async function loadOldQuestions(): Promise<Map<number, QuestionWithMigration>> {
-	// Le fichier figé porte `_migration` sur chaque question
-	const questions = (await loadAllQuestions()) as QuestionWithMigration[];
-	return new Map(questions.map((q) => [q._migration.globalIndex, q]));
-}
-
-/** Fichiers de verdict d'un lot, triés par index ; toute erreur de format est fatale */
-export function readReviewFiles(dir: string): ReviewFile[] {
-	const absolute = resolve(dir);
-	const files = readdirSync(absolute).filter((name) => name.endsWith('.json'));
-	return files
-		.map((name) =>
-			parseReviewFile(JSON.parse(readFileSync(join(absolute, name), 'utf-8')), `${dir}/${name}`)
-		)
-		.sort((a, b) => a.globalIndex - b.globalIndex);
 }

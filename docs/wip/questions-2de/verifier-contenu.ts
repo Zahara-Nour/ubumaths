@@ -11,7 +11,7 @@
  *   pnpm tsx docs/wip/questions-2de/verifier-contenu.ts <dossier> [--apercu N]
  */
 import { readdirSync, readFileSync } from 'node:fs';
-import { checkTemplate, formatCheckReport } from '../../../src/lib/migration/review/check-template';
+import { checkTemplate, formatCheckReport } from '../../../src/lib/questions/review/check-template';
 import { generateInstance } from '../../../src/lib/questions/generator/instance-generator';
 import { toQuestionTemplate } from '../../../src/lib/types/question-template';
 

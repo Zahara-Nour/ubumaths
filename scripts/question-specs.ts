@@ -5,10 +5,8 @@
  * LECTURE SEULE — n'écrit jamais en base.
  *
  * Usage :
- *   pnpm question:specs --index 120                  transformation actuelle de l'ancienne question #120
- *   pnpm question:specs --file data/relecture/relatifs/120.json   fichier de verdict (ou template brut)
- *   pnpm question:specs --lot data/relecture/relatifs             tous les verdicts d'un lot (résumé)
- *   pnpm question:specs --template <uuid>            template en base (question_templates)
+ *   pnpm question:specs --file scripts/questions/<…>.json   fichier de modèle (source)
+ *   pnpm question:specs --template <uuid>                   template en base (question_templates)
  *
  * Options :
  *   --instances N   tirages par variation (défaut : 50)
@@ -22,46 +20,18 @@
 
 import { readFileSync } from 'node:fs';
 import type { QuestionTemplate } from '../src/lib/questions/types';
-import { transformQuestion } from '../src/lib/migration/question-transformer';
-import { checkTemplate, formatCheckReport } from '../src/lib/migration/review/check-template';
-import { parseReviewFile, draftTemplate } from '../src/lib/migration/review/review-file';
+import { checkTemplate, formatCheckReport } from '../src/lib/questions/review/check-template';
 import { generateInstance } from '../src/lib/questions/generator/instance-generator';
 import { toQuestionTemplate } from '../src/lib/types/question-template';
-import {
-	argValue,
-	createScriptClient,
-	hasFlag,
-	loadOldQuestions,
-	readReviewFiles
-} from './relecture/common';
+import { argValue, createScriptClient, hasFlag } from './relecture/common';
 import { readTemplateFile } from './lib/template-file';
 
 // ============================================================================
 // SOURCES
 // ============================================================================
 
-async function templateFromIndex(index: number): Promise<QuestionTemplate> {
-	const old = (await loadOldQuestions()).get(index);
-	if (!old) throw new Error(`ancienne question #${index} introuvable`);
-	const result = transformQuestion(old, index);
-	if (!result.success || !result.template) {
-		throw new Error(`transformation de #${index} impossible : ${result.errors?.join('; ')}`);
-	}
-	if (result.warnings?.length) {
-		console.log(`Avertissements du transformateur (${result.warnings.length}) :`);
-		for (const warning of result.warnings) console.log(`  ⚠️  ${warning}`);
-	}
-	return result.template;
-}
-
 function templateFromFile(path: string): QuestionTemplate {
 	const raw: unknown = JSON.parse(readFileSync(path, 'utf-8'));
-	// Fichier de verdict (porte `verdict`) ou template brut
-	if (raw && typeof raw === 'object' && 'verdict' in raw) {
-		const template = draftTemplate(parseReviewFile(raw, path));
-		if (!template) throw new Error(`${path} : ce verdict ne porte pas de template`);
-		return template;
-	}
 	const extrait = readTemplateFile(raw, path);
 	if (!extrait.ok) throw new Error(extrait.error);
 	return extrait.template as unknown as QuestionTemplate;
@@ -117,44 +87,11 @@ async function main(): Promise<number> {
 	const instances = Number(argValue('--instances') ?? 50);
 	const preview = Number(argValue('--apercu') ?? 0);
 
-	const lot = argValue('--lot');
-	if (lot) {
-		const reviews = readReviewFiles(lot);
-		let failures = 0;
-		for (const review of reviews) {
-			const template = draftTemplate(review);
-			if (!template) {
-				console.log(`#${review.globalIndex} ${review.verdict} (sans template)`);
-				continue;
-			}
-			const report = checkTemplate(template, { instances });
-			if (!report.passed) failures++;
-			const specs = `${report.specs.filter((s) => s.passed).length}/${report.specs.length} specs`;
-			const draws = `${report.generation.attempts - report.generation.failures.length}/${report.generation.attempts} tirages`;
-			const warnings = report.warnings.length
-				? ` — ⚠️ ${report.warnings.length} avertissement(s)`
-				: '';
-			console.log(
-				`#${review.globalIndex} ${review.verdict} — ${specs}, ${draws} — ${report.passed ? '✅' : `❌ ${report.reasons.join(', ')}`}${warnings}`
-			);
-			for (const warning of report.warnings) console.log(`    ⚠️  ${warning}`);
-		}
-		console.log(`\n${reviews.length} verdict(s) analysé(s), ${failures} non importable(s).`);
-		return failures === 0 && reviews.length > 0 ? 0 : 1;
-	}
-
-	const index = argValue('--index');
 	const file = argValue('--file');
 	const id = argValue('--template');
-	const template = index
-		? await templateFromIndex(Number(index))
-		: file
-			? templateFromFile(file)
-			: id
-				? await templateFromDatabase(id)
-				: undefined;
+	const template = file ? templateFromFile(file) : id ? await templateFromDatabase(id) : undefined;
 	if (!template) {
-		console.error('Préciser --index, --file, --lot ou --template (voir l’en-tête du script).');
+		console.error('Préciser --file ou --template (voir l’en-tête du script).');
 		return 1;
 	}
 
