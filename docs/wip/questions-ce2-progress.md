@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1897._
+_Mis à jour le 2026-10-28, PR #1903 en cours._
 
-- **État** : lot 1 en prod en BROUILLON, rangé et tagué (migration `20261028130100`, #1894 + renommage #1897, `db:migrate` fait, vérifié au MCP : 5 nœuds + 5 tags, `updated_at` intact). Lot 0 fait par la même migration : `03675b9b` en CE1 + CE2 (tags CE1-083, CE2-077), `427c735c` et `44c46578` en brouillon.
-- **Prochaine action** : compter les verdicts de la page à cocher https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4 (`ArtifactData list verdicts`) ; 5/5 OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce2-1` (simulation), puis David avec `--publier`. Puis lot 2 (numération) : phase 0.
-- **En attente de David** : relecture de la page à cocher (5 fiches) ; jouer les modèles dans l'aperçu admin si possible.
-- **Pièges en cours** : horodatage de migration = max de la PROD + 1 min, vérifié par `migration list` juste avant `db:migrate` (#1897 : 20261028130000 joué entre-temps par une autre session) ; `Doc-inchangée:` dans un MESSAGE DE COMMIT (≤ 100 car. par ligne), pas dans la PR ; commitlint refuse un sujet en majuscule ; `gh pr checks --watch` rend la main trop tôt ; un 2ᵉ point du même niveau sur un modèle est refusé par trigger.
-- **Worktree / branche** : aucun (retirés après #1897).
+- **État** : lot 1 en prod en BROUILLON, rangé et tagué (#1894, #1897). Relecture de la page à cocher : 2 OK (tables, terme manquant), 3 « À revoir » corrigés dans #1903 (× 4 et × 8 : un double par étape ; 60 : 1 × 60 retirée). Instantané prod : `docs/wip/questions-ce2/etat-prod-2026-10-28/`.
+- **Prochaine action** : merge de #1903 → David lance `create-questions --dir scripts/questions/ce2-1 --publier --mettre-a-jour` → vérifier en prod → remettre à zéro les 3 verdicts et republier la page https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4 → David relit → 5/5 OK → `publier-lot.ts` (simulation), puis David `--publier`. Puis lot 2 (numération) : phase 0.
+- **En attente de David** : la commande `--mettre-a-jour` après le merge ; la relecture des 3 fiches corrigées.
+- **Pièges en cours** : `question:specs --template` signale « NON importable » (clés `created_at`… de la ligne en base) : faux, vérifier avec `--file` ; horodatage de migration = max de la PROD + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint refuse un sujet en majuscule ; `gh pr checks --watch` rend la main trop tôt.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `fix/questions-ce2-lot1-corriges`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -169,3 +169,9 @@ gagne d'accès, aucune règle ne change ; « Les multiples de 25 » est aussi pr
   brouillons ; test du nœud archivé ajouté). Renommée `20261028130100` (#1897), jouée en prod.
 - Page à cocher publiée : https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4 (capacité `db`,
   collection `verdicts` vide au départ). Rendu à 390 px non vérifié (extension Chrome muette).
+
+### Lot 1 — relecture (2026-10-28)
+
+Page à cocher : 2 OK, 3 « À revoir ». × 4 et × 8 : « bien séparer les 2 étapes » → un double par
+ligne, puis « Donc … ». Décompositions de 60 : « quel est l'intérêt de 1 × 60 ? » → 1 et 60
+retirés des tirages (validé par David). Corrigés dans #1903.
