@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, PR « non décimal » de 01 ouverte (§ 11.7)._
+_Mis à jour le 2026-10-28, après #1918 et son `db:migrate`._
 
-- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Branche `fix/questions-6-non-decimal` : 01 sans dénominateur 7, reste qui revient nommé, « Pose la division » ; migration de contenu `20261028200000_questions_6_non_decimal_contenu` + test (rouge sans, vert avec).
-- **Prochaine action** : CI verte → merge → `db:migrate` depuis `main` (contenu seul, additive, rollback écrit) → MCP : contenu de 5077e030 = source, tag 6-130 gardé ; regénérer la page à cocher (même adresse) ; puis relecture après coup du lot 4 par David (https://claude.ai/artifact/UjdMqaWsaKhLN1dMC1aHro, 10 verdicts attendus ; « À revoir » → § 7, comme ici).
+- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). 01 corrigé en prod (#1918, § 11.7) : plus de dénominateur 7, reste qui revient nommé, « Pose la division ».
+- **Prochaine action** : relecture APRÈS COUP du lot 4 par David sur la page à cocher (https://claude.ai/artifact/UjdMqaWsaKhLN1dMC1aHro, version 3 depuis `main` e1e380158, 0 verdict) ; compter les verdicts (`ArtifactData list verdicts`, 10 attendus) ; « À revoir » → modèle PUBLIÉ : démarche § 7, comme au § 11.7 (question d'accès posée AVANT le SQL, `security-auditor` avant `db:migrate`).
 - **En attente de David** : sa relecture. Pour mémoire (audit #1861, non tranché) : `question_template_points_read_authenticated` laisse un élève connecté voir le point d'un brouillon.
 - **Pièges en cours** : 3a7a5711 = doublon repassé en brouillon exprès, NE PAS le publier ; relire § 9 de `couvrir-un-niveau.md` AVANT d'écrire un lot ; `--mettre-a-jour` ne touche pas un modèle publié ; `e`/`i` interdites dans les `eval`.
-- **Worktree / branche** : `../ubumaths-wt-questions-6` · `fix/questions-6-non-decimal`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -671,3 +671,7 @@ David a lancé `create-questions --publier` : 10 créés. Vérifiés par MCP : `
   (md5 `b30c91ee…` = prod au MCP), 0 donnée d'élève (tentatives, cartes, journal, évaluations).
 - `20261028200000_questions_6_non_decimal_contenu` (générée par `lot-contenu-6-non-decimal.py`, qui exige retouche =
   source) ; test `questions-6-non-decimal-contenu` rouge sans (ENOENT), 11 verts avec. Revue : aucune (contenu).
+- #1918 mergée (CI verte après relance du shard client 1/2, erreur `wrapDynamicImport` sans lien, vue aussi sur `main`).
+  Question d'accès oubliée avant le SQL, posée après : David confirme « personne ne gagne d'accès » ; `security-auditor`
+  sans finding. `db:migrate` : MCP md5 `26bf654a…` (= « après » de la migration), `published`, niveau 13, nœud et tag
+  inchangés ; `create-questions` en simulation : 01 identique à la source. Page à cocher regénérée (version 3), 0 verdict.
