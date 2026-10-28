@@ -5,13 +5,14 @@
 _Mis à jour le 2026-10-28, après le prompt de Merdranpo (pas de PR : chantier 100 % doc pour l'instant)._
 
 - **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu, du Capitaine Bordure, de Bougrelas, de Conscience, du Czar Alexis, de Monsieur Prudhomme, du Flegmatique (Tristan Bernard), du Professeur Achras, du Docteur Faustroll, de Bosse-de-Nage et du Cheval à Phynances validés (casting et quatre gouverneurs complets) ; Palotins redessinés au trait Steinlen pour le lore (SVG de l'appli inchangés) : Giron, Pile, Cotice et Merdranpo (sans SVG, brun merdre, casserole, bas dépareillés) validés et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
-- **Prochaine action** : **Mousched-Gogh**, caractère et rôle à définir d'abord (proposition faite le 2026-10-28, pas encore validée), puis son prompt ; ensuite Quatrezoneilles, de la même façon ; un par un, chacun validé par David. Ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` quand David les fournit.
+- **Prochaine action** : **Mousched-Gogh** : caractère et rôle validés le 2026-10-28 (artiste exalté qui pousse à faire une figure, illustrateur du Shtam, couleur glace du Czar `#66AACC`) ; prompt proposé, pas encore validé ; ensuite Quatrezoneilles, de la même façon ; un par un, chacun validé par David. Ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` quand David les fournit.
 - **En attente de David** : les quinze images de référence · caractère de Pile : « fourbe » (Compendium) ou « rêveur philosophe » (`buddy-palotins.md`) ? · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
 - **Pièges en cours** : Ubu sans chapeau pointu ni longue robe blanche (aucune ressemblance avec une cagoule) ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée (Nano Banana refuse : personnage inventé à la place). Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 
 ## Décisions de David
 
+- 2026-10-28 — **Mousched-Gogh** : l'artiste de la bande (« Gogh » évoque le peintre, jamais cité ni dessiné), exalté et distrait, voit des formes partout ; rôle : pousse l'élève à faire une figure, un schéma, un tableau ; illustrateur du Shtam ; couleur d'identité glace du Czar `#66AACC`.
 - 2026-10-28 — **Palotins** : version Steinlen en plus pour le lore ; les SVG de l'appli restent tels quels ; captures de référence dans `docs/Chiphres/illustrations/personnages/palotins-appli/`.
 
 - 2026-10-25 — **Style** : celui des Mathoux (`docs/systeme/mathoux.md` § Les dessins, direction AB3), c'est-à-dire l'affiche lithographiée de Steinlen (1896, domaine public). Pas d'image d'Épinal.
