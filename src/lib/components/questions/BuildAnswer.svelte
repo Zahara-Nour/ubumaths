@@ -11,7 +11,9 @@
 	`placer:`) : la droite verrouillée avec les points de l'élève (`answers`, un par
 	point, quand il y en a plusieurs), ou les points justes. Horloge à placer
 	(```horloge, `placer:`) : le cadran verrouillé avec les aiguilles de l'élève,
-	ou le cadran à l'heure juste.
+	ou le cadran à l'heure juste. Diagramme en barres à construire (```barres,
+	`placer:`) : le diagramme verrouillé avec les barres de l'élève (`answers`, une
+	par barre), ou le diagramme juste.
 
 	@module components/questions/BuildAnswer
 -->
@@ -25,6 +27,9 @@
 	import Horloge from '$lib/components/markdown/nodes/Horloge.svelte';
 	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
 	import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
+	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
+	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
+	import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 	import { HORLOGE_SIZE_CM } from '$lib/ubumark/types/horloge';
 	import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 	import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
@@ -44,7 +49,10 @@
 		/** Valeur posée par l'élève ; null : la construction juste seule */
 		answer: string | null;
 		status: ExpectedStatus;
-		/** Droite à plusieurs points : la réponse et le statut de chaque point (prime sur `answer`) */
+		/**
+		 * Droite à plusieurs points, diagramme à plusieurs barres : la réponse et le
+		 * statut de chaque point (barre), prime sur `answer`
+		 */
 		answers?: { answer: string; status: ExpectedStatus }[];
 	}
 
@@ -59,7 +67,7 @@
 	});
 
 	let locked = $derived(answer === null ? undefined : lockedCase(answer, status));
-	/** Cases de la droite, une par point ; undefined : les points justes seuls */
+	/** Cases de la droite (du diagramme), une par point (barre) ; undefined : la figure juste seule */
 	let lineCases = $derived(
 		answers ? answers.map((a) => lockedCase(a.answer, a.status)) : locked ? [locked] : undefined
 	);
@@ -67,6 +75,7 @@
 	let monnaie = $derived(kind === 'monnaie' ? parseMonnaieContent(source) : null);
 	let line = $derived(kind === 'line' ? parseNumberLineContent(source).node : null);
 	let horloge = $derived(kind === 'horloge' ? parseHorlogeContent(source) : null);
+	let barres = $derived(kind === 'barres' ? parseStatChartContent('barres', source) : null);
 </script>
 
 {#if collection?.spec?.build !== undefined}
@@ -94,6 +103,13 @@
 			}}
 			pointsOnLine
 		/>
+	{/if}
+{:else if barres?.spec?.toPlace}
+	{#if lineCases}
+		<BarresPlacer node={barres} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- Le diagramme juste, sans `placer:` : toutes les barres dessinées -->
+		<StatChart node={{ ...barres, spec: { ...barres.spec, toPlace: null } }} />
 	{/if}
 {:else if horloge?.spec?.placer !== undefined}
 	{@const spec = horloge.spec}

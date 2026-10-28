@@ -1,0 +1,272 @@
+/**
+ * Diagramme en barres à construire à l'écran (chantier
+ * `docs/wip/reponses-a-placer-progress.md` § 17, 18)
+ *
+ * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).
+ */
+import { describe, it, expect, afterEach } from 'vitest';
+import { render } from 'vitest-browser-svelte';
+import { userEvent } from 'vitest/browser';
+import BarresPlacer from '../BarresPlacer.svelte';
+import MarkdownRenderer from '../../MarkdownRenderer.svelte';
+import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
+import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
+import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
+import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { InstanceBlank, QuestionTemplate } from '$lib/questions/types';
+import { generateInstance } from '$lib/questions/generator/instance-generator';
+import { templateMarkdown } from '$lib/ubumark';
+
+let mains: HTMLElement[] = [];
+function mainElement(): HTMLElement {
+	const main = document.body.appendChild(document.createElement('main'));
+	mains.push(main);
+	return main;
+}
+afterEach(() => {
+	for (const m of mains) m.remove();
+	mains = [];
+});
+
+const SPORTS = ['Football = 12', 'Natation = 8', 'Danse = 7', 'axe: 0 à 20, de 2 en 2'];
+const node = (...lines: string[]) => parseStatChartContent('barres', lines.join('\n'));
+
+const drawing = (root: Element) => root.querySelector<SVGSVGElement>('svg[role="slider"]')!;
+
+const button = (root: Element, name: string) => {
+	const found = [...root.querySelectorAll<HTMLButtonElement>('button')].find(
+		(b) => b.getAttribute('aria-label') === name || b.textContent?.trim() === name
+	);
+	if (!found) throw new Error(`bouton « ${name} » introuvable`);
+	return found;
+};
+
+/** Toucher la colonne `label` à la hauteur `value` (lue sur la grille 0 → 20), comme un doigt */
+function tapAt(root: Element, label: string, value: number, max = 20) {
+	const svg = drawing(root);
+	const name = [...svg.querySelectorAll('.stat-categories text')].find(
+		(t) => t.textContent === label
+	)!;
+	const grid = [...svg.querySelectorAll('line.stat-grille')].map((l) => l.getBoundingClientRect());
+	const [bottom, top] = [grid[0].top, grid[grid.length - 1].top];
+	const init = {
+		bubbles: true,
+		clientX: name.getBoundingClientRect().left + name.getBoundingClientRect().width / 2,
+		clientY: bottom + ((top - bottom) * value) / max,
+		pointerId: 1
+	};
+	svg.dispatchEvent(new PointerEvent('pointerdown', init));
+	svg.dispatchEvent(new PointerEvent('pointerup', init));
+}
+
+/** Barres en attente (pointillés au pied de leur colonne) */
+const waiting = (root: Element) => drawing(root).querySelectorAll('line.barres-attente').length;
+
+function answersProbe(count: number) {
+	const probe = { values: Array<string>(count).fill(''), changes: [] as string[] };
+	return {
+		probe,
+		answers: () =>
+			probe.values.map((value, k) => ({
+				value,
+				isCorrect: null,
+				disabled: false,
+				onChange: (next: string) => {
+					probe.values[k] = next;
+					probe.changes.push(next);
+				}
+			}))
+	};
+}
+
+describe('Barres à construire — le geste', () => {
+	it('au départ, les barres à construire attendent ; toucher une colonne monte sa barre', async () => {
+		const { probe, answers } = answersProbe(2);
+		const screen = await render(BarresPlacer, {
+			target: mainElement(),
+			props: { node: node(...SPORTS, 'placer: Natation ; Danse'), answers: answers() }
+		});
+		const root = screen.container;
+		expect(waiting(root)).toBe(2);
+		expect(drawing(root).getAttribute('aria-valuetext')).toBe('barre Natation pas construite');
+		tapAt(root, 'Danse', 7);
+		await expect.poll(() => probe.values).toEqual(['', '7']);
+		await expect.poll(() => waiting(root)).toBe(1);
+		expect(drawing(root).getAttribute('aria-valuetext')).toBe('barre Danse : 7');
+	});
+
+	it('toucher une colonne dessinée : rien', async () => {
+		const { probe, answers } = answersProbe(1);
+		const screen = await render(BarresPlacer, {
+			target: mainElement(),
+			props: { node: node(...SPORTS, 'placer: Danse'), answers: answers() }
+		});
+		tapAt(screen.container, 'Football', 5);
+		await new Promise((r) => setTimeout(r, 50));
+		expect(probe.changes).toEqual([]);
+	});
+
+	it('étiquettes et ▲ ▼ : une unité, la barre choisie', async () => {
+		const { probe, answers } = answersProbe(2);
+		const screen = await render(BarresPlacer, {
+			target: mainElement(),
+			props: { node: node(...SPORTS, 'placer: Natation ; Danse'), answers: answers() }
+		});
+		const root = screen.container;
+		await userEvent.click(button(root, 'Danse'));
+		expect(button(root, 'Danse').getAttribute('aria-pressed')).toBe('true');
+		await userEvent.click(button(root, 'Monter la barre Danse d’une unité'));
+		await userEvent.click(button(root, 'Monter la barre Danse d’une unité'));
+		await userEvent.click(button(root, 'Descendre la barre Danse d’une unité'));
+		expect(probe.changes).toEqual(['1', '2', '1']);
+	});
+
+	it('clavier : flèches, Fin, Début', async () => {
+		const { probe, answers } = answersProbe(1);
+		const screen = await render(BarresPlacer, {
+			target: mainElement(),
+			props: { node: node(...SPORTS, 'placer: Danse'), answers: answers() }
+		});
+		drawing(screen.container).focus();
+		await userEvent.keyboard('{ArrowUp}{End}{ArrowDown}{Home}');
+		expect(probe.changes).toEqual(['1', '20', '19', '0']);
+	});
+
+	it('nom accessible et description : jamais l’effectif attendu', async () => {
+		const screen = await render(BarresPlacer, {
+			target: mainElement(),
+			props: { node: node(...SPORTS, 'placer: Danse') }
+		});
+		const svg = drawing(screen.container);
+		expect(svg.textContent).not.toMatch(/\b7\b(?!\d)/);
+		expect(svg.querySelector('title')?.textContent).toBe(
+			'Diagramme en barres à construire : barre Danse'
+		);
+	});
+
+	it('remonté avec des réponses : la barre choisie est la première pas construite', async () => {
+		const answers = [
+			{ value: '8', isCorrect: null, disabled: false, onChange: () => {} },
+			{ value: '', isCorrect: null, disabled: false, onChange: () => {} }
+		];
+		const screen = await render(BarresPlacer, {
+			target: mainElement(),
+			props: { node: node(...SPORTS, 'placer: Natation ; Danse'), answers }
+		});
+		expect(button(screen.container, 'Danse').getAttribute('aria-pressed')).toBe('true');
+	});
+
+	it('hors question (aperçu, cours) : le bloc rend le geste', async () => {
+		const screen = await render(MarkdownRenderer, {
+			target: mainElement(),
+			props: {
+				content: ['```barres', ...SPORTS, 'placer: Danse', '```'].join('\n') as ResolvedMarkdown
+			}
+		});
+		expect(drawing(screen.container)).not.toBeNull();
+		expect(screen.container.textContent).not.toContain('Correction');
+	});
+});
+
+describe('FillBlanksInput — barres à construire', () => {
+	const STATEMENT = [
+		'Construis le diagramme.',
+		'',
+		'```barres',
+		'case: 0',
+		...SPORTS,
+		'placer: Natation ; Danse',
+		'```'
+	].join('\n') as ResolvedMarkdown;
+	const blanks: InstanceBlank[] = [
+		{ type: 'math', expectedAnswer: '8', expectedAnswerLatex: '8', construire: 'barres' },
+		{ type: 'math', expectedAnswer: '7', expectedAnswerLatex: '7', construire: 'barres' }
+	];
+
+	it('décor de la prod : la question générée remplit ses cases', async () => {
+		const generated = generateInstance(
+			{
+				id: 'test-barres',
+				title: 'Construire',
+				status: 'draft',
+				variations: [
+					{
+						statement: templateMarkdown(
+							['Construis.', '', '```barres', ...SPORTS, 'placer: Natation ; Danse', '```'].join(
+								'\n'
+							)
+						)
+					}
+				],
+				grades: ['CE1'],
+				theme: 'Test',
+				domain: 'Test',
+				level: 1
+			} as QuestionTemplate,
+			42
+		);
+		if (!generated.success) throw new Error(generated.errors.join(' ; '));
+		const values: string[] = [];
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				statement: generated.instance.statement,
+				blanks: generated.instance.blanks ?? [],
+				values,
+				validationResults: []
+			}
+		});
+		tapAt(screen.container, 'Danse', 6);
+		await expect.poll(() => values[1]).toBe('6');
+		expect(values[0] ?? '').toBe('');
+	});
+
+	it('correction : une phrase par barre fausse et le diagramme juste', async () => {
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				statement: STATEMENT,
+				blanks,
+				values: ['8', ''],
+				disabled: true,
+				validationResults: [true, false]
+			}
+		});
+		const text = screen.container.textContent ?? '';
+		expect(text).toContain('Tu n’as pas construit la barre Danse.');
+		expect(text).not.toContain('Ta barre Natation');
+		expect(screen.container.querySelector('.placer-correction')).not.toBeNull();
+	});
+
+	it('bonne réponse affichée : le diagramme juste, sans boutons', async () => {
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: { statement: STATEMENT, blanks, showCorrectAnswers: true, validationResults: [] }
+		});
+		const root = screen.container;
+		expect(root.querySelector('svg[role="slider"]')).toBeNull();
+		expect(root.querySelectorAll('rect.stat-barre')).toHaveLength(3);
+	});
+});
+
+describe('BuildAnswer — barres à construire', () => {
+	it('copie corrigée : les barres de l’élève, verrouillées, sans boutons', async () => {
+		const screen = await render(BuildAnswer, {
+			target: mainElement(),
+			props: {
+				kind: 'barres',
+				source: [...SPORTS, 'placer: Natation ; Danse'].join('\n'),
+				answer: '8 ; 7',
+				status: 'correct',
+				answers: [
+					{ answer: '8', status: 'correct' },
+					{ answer: '7', status: 'correct' }
+				]
+			}
+		});
+		const root = screen.container;
+		expect(drawing(root).getAttribute('aria-disabled')).toBe('true');
+		expect(root.querySelector('button')).toBeNull();
+		expect(root.querySelector('.placer-juste')).not.toBeNull();
+	});
+});

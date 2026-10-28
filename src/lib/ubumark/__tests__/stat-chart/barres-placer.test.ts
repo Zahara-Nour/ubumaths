@@ -14,6 +14,7 @@ import {
 	parseStatChartContent
 } from '../../parser/stat-chart-parser';
 import { buildStatChartScene, type BarScene } from '../../utils/stat-chart-scene';
+import { generateStatChartTypst } from '../../generators/stat-chart-typst';
 import { barMistake, barValueAt, barValueOfAnswer, barsToPlace } from '../../utils/barres-placer';
 
 // =============================================================================
@@ -221,6 +222,21 @@ describe('scène d’un diagramme à construire', () => {
 		expect(scene.description).not.toContain('8');
 		expect(scene.description).not.toContain('7');
 		expect(scene.description).toContain('Natation à construire');
+	});
+});
+
+// =============================================================================
+// PDF : l'enfant dessine les barres à construire
+// =============================================================================
+
+describe('PDF d’un diagramme à construire', () => {
+	it('axe écrit, barres à construire absentes, noms des catégories présents', () => {
+		const node = nodeOf(...SPORTS, 'axe: 0 à 20, de 2 en 2', 'placer: Natation ; Danse');
+		const typst = generateStatChartTypst(node);
+		expect(typst.match(/\/\/ barre\n/g)).toHaveLength(1);
+		expect(typst).toContain('[20]');
+		expect(typst).toContain('Natation');
+		expect(typst).toContain('Danse');
 	});
 });
 
