@@ -1,0 +1,136 @@
+{
+	"title": "Comparer des fractions de même dénominateur",
+	"description": "Comparer 2/5 et 3/5 : le symbole <, = ou >",
+	"grades": ["CE1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète avec le symbole qui convient.\n\n$$\\frac{{{a}}}{{{d}}} \\ldots \\frac{{{b}}}{{{d}}}$$\n\n```choix\nmelanger: non\n- $$<$$\n- $$=$$\n- $$>$$\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3|4|5|6|8|10"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{d}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{d}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(a-b)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux fractions partagent le tout en ${{d}}$ parts égales : les parts ont la même taille. La plus grande fraction est celle qui prend **le plus de parts**.",
+					"$$\\frac{{{a}}}{{{d}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{b}}}{{{d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 2/5 < 3/5",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"a": "2",
+				"b": "3",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2/5 > 3/5",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"a": "2",
+				"b": "3",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7/8 > 3/8",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"a": "7",
+				"b": "3",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "égalité : 4/6 = 4/6",
+			"variationIndex": 0,
+			"variables": {
+				"d": "6",
+				"a": "4",
+				"b": "4",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : égalité, < choisi",
+			"variationIndex": 0,
+			"variables": {
+				"d": "6",
+				"a": "4",
+				"b": "4",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 10/10 > 9/10",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"a": "10",
+				"b": "9",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
