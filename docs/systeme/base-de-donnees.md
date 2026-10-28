@@ -188,7 +188,7 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
     et perd sa balise `noindex` (code à venir, après `db:types`). CHECK `exercises_search_indexed_requires_public` (23514) : un exercice privé ne peut
     pas être affiché sur Google, et dépublier exige de décocher Google dans la même mise à jour. La
     colonne suit les droits de la ligne (aucune policy ni GRANT propre).
-- `migration_*` : outillage de la migration des questions TinyMath.
+- `migration_*` : suivi de l'import des questions TinyMath, terminé ; plus aucun code ne les lit (outillage retiré le 2026-10-28), tables à supprimer après le `deploy:prod` qui livre ce retrait.
 
 Accès : les modèles **publiés** sont lisibles par tous les élèves (et `anon`), les autres par le
 professeur ; l'écriture des modèles est admin. Un exercice est lu par son auteur, par un élève qui y a
