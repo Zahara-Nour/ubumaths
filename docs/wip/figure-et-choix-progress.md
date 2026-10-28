@@ -8,24 +8,21 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-27, après #1878._
+_Mis à jour le 2026-10-28, après la migration des QCM en prod._
 
-- **État** : lots 1 (#1816, #1822), 2 (#1826), 3 (#1840, CP-058) et 4 (#1855, script de migration des QCM +
-  garde, sources `scripts/questions/**` converties) mergés, plus #1833, #1836, #1842. Rien en prod ; base
-  inchangée (essai à blanc en prod : 178 / 178, 85 050 tirages, § 2.11). CP-058 pas encore en base.
-- **Prochaine action** : après le `deploy:prod` des lots 1-4 (décidé par David) : David publie CP-058
-  (`create-questions --dir scripts/questions/cp-figure --publier`), puis lance
-  `! pnpm tsx scripts/migrer-qcm-en-cases.ts --ecrire` ; je vérifie (0 QCM restant) ; puis CP-057 (b5389494) :
-  consigne « Quels points semblent être alignés ? » en prod (#1878 ; `create-questions` ne le retrouve pas,
-  `level` 3 en prod contre 1 dans la source, comme 6 des 10 modèles `cp-b2`) ; puis lot 5 (retrait de
-  `multiple_choice` du code, de `src/lib/migration/`, puis de la contrainte SQL après un 2ᵉ `deploy:prod`).
-- **En attente de David** : essai de tout sur 5175 (`main`) — base LOCALE migrée (10 / 10 QCM) et CP-058 + deux
-  modèles `cp-figure` créés en brouillon en local le 2026-10-27 ; avis sur les séries PDF
-  (choix d'une case mélangée imprimés dans l'ordre mélangé, avant : ordre de l'auteur).
-- **Pièges en cours** : jusqu'à `--ecrire`, `create-questions` voit « CONTENU DIFFÉRENT » sur les QCM (sources
-  converties, base non) ; `--ecrire` refait la garde et ne touche que les lignes lues, encore QCM (relançable) ;
-  une seule session par worktree.
-- **Worktree / branche** : aucun (worktrees des lots 2, 3 et 4 retirés le 2026-10-27, essais déplacés sur `main`).
+- **État** : lots 1 à 4 EN PROD (depuis v0.52.0, 2026-10-27). Le 2026-10-28, David a lancé `--ecrire` :
+  178 / 178 QCM migrés, **0 `multiple_choice` en base** (vérifié) ; sauvegarde
+  `data/migration-output/qcm-en-cases/2026-10-28T08-34-00.924Z-sauvegarde.json`. CP-058 (a7dfe502) et
+  « Termine le carré… » (1cf6eaa9) créés en brouillon. CP-057 (b5389494) : consigne « Quels points semblent
+  être alignés ? » passée en prod (#1878, script ponctuel, 4 / 4 vérifiées).
+- **Prochaine action** : lot 5 — retrait de `multiple_choice` du code, de `src/lib/migration/` et de sa page
+  admin ; puis, après un `deploy:prod`, retrait de la valeur de la contrainte SQL (destructif : s'arrêter et
+  expliquer). Puis lot 6 (`deplacable:` partout).
+- **En attente de David** : essais à l'écran (QCM migrés, CP-058) ; avis sur les séries PDF (choix d'une case
+  mélangée imprimés dans l'ordre mélangé) ; publication de CP-058 quand il l'a essayé.
+- **Pièges en cours** : 6 des 10 modèles `cp-b2` ont un `level` différent en prod et dans la source →
+  `create-questions` ne les retrouve pas (créerait des doublons) ; à régler côté chantier « questions ».
+- **Worktree / branche** : aucun.
 
 ---
 
