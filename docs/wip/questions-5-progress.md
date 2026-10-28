@@ -5,13 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, lot 1 publié, lot 2 en PR (#1935)._
+_Mis à jour le 2026-10-28, lot 2 en brouillon en prod, migration de rangement en PR (#1941)._
 
-- **État** : lot 1 « Calcul » **publié** (8/8, relu en base le 2026-10-28). Lot 2 « Relatifs » : phase 0 validée
-  (§ 10), 8 modèles écrits (`5-relatifs/`), simulation prod verte (62 specs), joués en base locale ; PR #1935.
-- **Prochaine action** : merge de #1935 (CI verte) ; puis David lance
-  `create-questions --dir scripts/questions/5-relatifs --publier`, relever les `id`, migration nœud + tag.
-- **En attente de David** : le `create-questions --publier` du lot 2, après le merge.
+- **État** : lot 1 « Calcul » publié (8/8). Lot 2 « Relatifs » : fichiers mergés (#1935), 8 brouillons créés en
+  prod par David ; migration `20261029170000_questions_5_lot2_rangement_tags` (#1941) : test rouge sans elle
+  (5/9), vert avec (9/9), `security-auditor` sans finding bloquant.
+- **Prochaine action** : CI verte → merge #1941 → `pnpm db:migrate` depuis le dépôt principal → vérifier nœud +
+  tag en prod ; puis page à cocher du lot 2, verdicts comptés en base, `publier-lot.ts` en simulation.
+- **En attente de David** : rien (la relecture viendra avec la page à cocher).
 - **Pièges en cours** : `db push` refuse une migration plus ancienne que la dernière jouée → `--include-all`, par
   David ; horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions --mettre-a-jour`
   ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` (`$lib` introuvable) ; port 5176 pris par
@@ -203,3 +204,8 @@ Page à cocher, 7 verdicts : 5 OK (02, 03, 04, 05, 06), 2 à revoir. Corrections
   8 à créer, 62 specs vertes. Base locale : 8 créés, joués dans l'aperçu (rendu des unités °C / m après la case,
   choix à plusieurs réponses, Oui / Non, correction à `{{if:…}}` imbriqués ; « −29 » refusé pour |−29|).
   Corrigé en route : sous-marin tiré en dizaines (44 tirages sur 200 en échec), 08 avec a ≠ b (« −(9 + 9) »).
+- #1935 mergé ; David : `create-questions --publier` → 0b491d0e (07), 3b9d3ec2 (01), 469f1c9d (06), 7f9d7df5 (08),
+  b92b4b51 (04), c52836ad (03), d5d1f676 (05), fc8fb430 (02), brouillons [5] sans nœud ni tag (vérifié MCP).
+- Migration `20261029170000_questions_5_lot2_rangement_tags` (#1941, gabarit lot 1) : horodatage choisi après les
+  migrations des autres worktrees (jusqu'à `20261029150000`) ; test 9/9, rouge sans elle (5/9) ; audit sans
+  finding bloquant. La ligne `Doc-inchangée:` va dans un **message de commit** (la garde ne lit pas la PR).
