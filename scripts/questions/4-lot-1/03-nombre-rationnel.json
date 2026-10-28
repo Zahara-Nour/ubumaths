@@ -1,0 +1,296 @@
+{
+	"title": "Nombre rationnel",
+	"description": "Un rationnel est le quotient de deux entiers relatifs : dire si −12/4, 7/(−4), −5/3 est un entier, un décimal non entier ou ni l'un ni l'autre ; écrire −0,3 comme quotient",
+	"grades": ["4"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Définition",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le nombre $\\frac{{{N}}}{{{D}}}$ est :\n\n```choix\nmelanger: non\n- un nombre entier\n- un nombre décimal non entier\n- ni un entier, ni un décimal\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "t",
+					"expression": "-1|1"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "b0",
+					"expression": "2..9"
+				},
+				{
+					"name": "b1",
+					"expression": "2|4|5|8|10"
+				},
+				{
+					"name": "a1",
+					"expression": "1..99"
+				},
+				{
+					"name": "b2",
+					"expression": "3|6|7|9|11|12"
+				},
+				{
+					"name": "a2",
+					"expression": "1..60"
+				},
+				{
+					"name": "A",
+					"expression": "eval:(1-k)*(2-k)/2*b0*q+k*(2-k)*a1+k*(k-1)/2*a2"
+				},
+				{
+					"name": "B",
+					"expression": "eval:(1-k)*(2-k)/2*b0+k*(2-k)*b1+k*(k-1)/2*b2"
+				},
+				{
+					"name": "N",
+					"expression": "eval:s*A"
+				},
+				{
+					"name": "D",
+					"expression": "eval:t*B"
+				}
+			],
+			"conditions": ["s+t<2", "mod(a1,b1)!=0", "a1<10*b1", "gcd(a2,b2)==1", "a2<5*b2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nombre rationnel.** $\\frac{{{N}}}{{{D}}}$ est le quotient de deux entiers relatifs : c'est un nombre rationnel. Un rationnel peut être un entier, un décimal non entier, ou ni l'un ni l'autre.",
+					"Le signe : {{if:s*t<0|les signes sont contraires, le quotient est négatif|les deux nombres sont négatifs, le quotient est positif}}. On divise ${{A}}$ par ${{B}}$.",
+					"{{if:k==0|${{A}} \\div {{B}} = {{q}}$ : la division tombe juste. $\\frac{{{N}}}{{{D}}} = {{if:s*t<0|-|}}{{q}}$ est $\\textcolor{{{color:primary.0}}}{\\text{un nombre entier}}$.|{{if:k==1|${{A}} \\div {{B}} = {{eval:A/B;d}}$ : la division s'arrête, avec des chiffres après la virgule. $\\frac{{{N}}}{{{D}}} = {{if:s*t<0|-|}}{{eval:A/B;d}}$ est $\\textcolor{{{color:primary.0}}}{\\text{un nombre décimal non entier}}$.|${{A}} \\div {{B}} = {{eval:floor(10000*A/B)/10000;d}}\\ldots$ : la division ne s'arrête jamais. $\\frac{{{N}}}{{{D}}}$ n'est $\\textcolor{{{color:primary.0}}}{\\text{ni un entier, ni un décimal}}$.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Complète par un nombre entier relatif.\n\n$$-{{x}} = \\frac{?}{10}$$",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "1..999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:X/10;d"
+				}
+			],
+			"conditions": ["mod(X,10)!=0", "X<100"],
+			"blanks": [
+				{
+					"expectedAnswer": "-{{X}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nombre rationnel.** Un décimal relatif s'écrit comme un quotient de deux entiers relatifs.",
+					"$-{{x}}$, c'est $-{{X}}$ dixièmes : $$-{{x}} = \\frac{\\textcolor{{{color:primary.0}}}{-{{X}}}}{10}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−12/4 : entier",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"s": "-1",
+				"t": "1",
+				"q": "3",
+				"b0": "4",
+				"b1": "4",
+				"a1": "7",
+				"b2": "3",
+				"a2": "5",
+				"A": "12",
+				"B": "4",
+				"N": "-12",
+				"D": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −12/4 « ni l'un ni l'autre » (une fraction n'est pas un entier)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"s": "-1",
+				"t": "1",
+				"q": "3",
+				"b0": "4",
+				"b1": "4",
+				"a1": "7",
+				"b2": "3",
+				"a2": "5",
+				"A": "12",
+				"B": "4",
+				"N": "-12",
+				"D": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7/(−4) : décimal non entier",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"s": "1",
+				"t": "-1",
+				"q": "3",
+				"b0": "4",
+				"b1": "4",
+				"a1": "7",
+				"b2": "3",
+				"a2": "5",
+				"A": "7",
+				"B": "4",
+				"N": "7",
+				"D": "-4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/(−4) entier",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"s": "1",
+				"t": "-1",
+				"q": "3",
+				"b0": "4",
+				"b1": "4",
+				"a1": "7",
+				"b2": "3",
+				"a2": "5",
+				"A": "7",
+				"B": "4",
+				"N": "7",
+				"D": "-4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−5/3 : ni entier, ni décimal",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "-1",
+				"t": "1",
+				"q": "3",
+				"b0": "4",
+				"b1": "4",
+				"a1": "7",
+				"b2": "3",
+				"a2": "5",
+				"A": "5",
+				"B": "3",
+				"N": "-5",
+				"D": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −5/3 décimal",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "-1",
+				"t": "1",
+				"q": "3",
+				"b0": "4",
+				"b1": "4",
+				"a1": "7",
+				"b2": "3",
+				"a2": "5",
+				"A": "5",
+				"B": "3",
+				"N": "-5",
+				"D": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−0,3 = −3/10",
+			"variationIndex": 1,
+			"variables": {
+				"X": "3",
+				"x": "0.3"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié",
+			"variationIndex": 1,
+			"variables": {
+				"X": "3",
+				"x": "0.3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−4,7 = −47/10",
+			"variationIndex": 1,
+			"variables": {
+				"X": "47",
+				"x": "4.7"
+			},
+			"answers": ["-47"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −4,7 → −4",
+			"variationIndex": 1,
+			"variables": {
+				"X": "47",
+				"x": "4.7"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
