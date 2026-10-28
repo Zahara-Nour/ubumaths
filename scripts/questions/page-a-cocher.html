@@ -208,6 +208,13 @@
 		font-size: 1.15rem;
 		overflow-wrap: anywhere;
 	}
+	mtext.case-m {
+		border: 2px solid var(--muted);
+		border-radius: 6px;
+		color: var(--muted);
+		padding: 1px 5px;
+		margin: 2px 0;
+	}
 	.case {
 		display: inline-block;
 		min-width: 2.2em;
@@ -727,6 +734,8 @@
 	const AJOUREES = { C: 'ℂ', N: 'ℕ', Q: 'ℚ', R: 'ℝ', Z: 'ℤ' };
 	function mathsKatex(t, bloc = false) {
 		if (!window.katex) return null;
+		/* Formule en bloc : coupée, chaque morceau serait un bloc et la case tomberait à la ligne */
+		if (bloc) return mathsKatexEntiere(t, bloc);
 		try {
 			return t
 				.split(/\\placeholder\[\d+\]\{\}/)
@@ -746,6 +755,26 @@
 						: ''
 				)
 				.join('<span class="case">?</span>');
+		} catch {
+			return mathsKatexEntiere(t, bloc);
+		}
+	}
+	/* Case DANS une sous-formule (\dfrac{\placeholder}{4}) : la coupe laisse des accolades orphelines ;
+	   formule rendue d'un tenant, la case devient un repère texte remplacé par une case MathML */
+	function mathsKatexEntiere(t, bloc) {
+		try {
+			return katex
+				.renderToString(t.replace(/\\placeholder\[\d+\]\{\}/g, '\\text{¤}'), {
+					output: 'mathml',
+					displayMode: bloc,
+					throwOnError: true,
+					macros: { ...MACROS }
+				})
+				.replace(/<mtext>¤<\/mtext>/g, '<mtext class="case-m">?</mtext>')
+				.replace(
+					/<mi mathvariant="double-struck">([CNQRZ])<\/mi>/g,
+					(_, l) => `<mi mathvariant="normal">${AJOUREES[l]}</mi>`
+				);
 		} catch {
 			return null;
 		}
