@@ -8,8 +8,8 @@
 _Mis à jour le 2026-10-28, après #1893._
 
 - **État** : lot 0 en prod (#1893 mergée, `db:migrate` joué, vérifié au MCP : 14 en [CM2] tagués, 4 en [6] tagués, 8 brouillons [CM1] sans tag, md5 attendus) ; sessions `6EME` et `CM2` prévenues.
-- **Prochaine action** : lot 1 (calcul mental, 9 modèles) : phase 0 écrite au § 7, à valider par David ; puis script `lot-cm1-1.py`.
-- **En attente de David** : validation de la phase 0 du lot 1 (§ 7).
+- **Prochaine action** : PR des fichiers du lot 1 (`scripts/questions/cm1-1/`), CI verte, merge ; puis David lance `create-questions --publier` (brouillons en prod) et migration nœud + tag.
+- **En attente de David** : rien (phase 0 validée, § 7 bis).
 - **Pièges en cours** : un modèle garde toujours au moins un niveau ; case « choix » en prod (v0.51.0), QCM pas encore migrés ; droite à placer mergée, pas en prod ; niveaux relevés parmi les publiés de la catégorie avant toute écriture ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx`.
 - **Worktree / branche** : `ubumaths-wt-questions-cm1` · `feat/questions-cm1-lot1`.
 
@@ -224,3 +224,18 @@ Une case par question, aucun QCM. Tables : modèles CM1 propres (décision du 20
 - 10 sans compenser (57 + 29 → 87), compensation à l'envers (→ 85), table voisine (7 × 8 → 54),
   somme au lieu du produit, 1/10 → 0,10 juste, 1/100 → 0,1 faux. Question d'accès (brouillons, puis
   nœud + tag par migration) : **personne** ne gagne d'accès, aucune règle ne change.
+
+### 7 bis. Lot 1 : décisions (David, 2026-10-28)
+
+« je suis tes recos » : phase 0 du § 7 validée telle quelle, avec les trois recommandations —
+tables de 2 à 10 ; × 8 jusqu'à n = 199 (variation à 3 chiffres) ; fractions (037) : la case est
+toujours un entier (« 1/4 + 1/4 = ?/2 »), jamais de simplification à faire.
+
+### 7 ter. Lot 1 — écriture (2026-10-28)
+
+- Script `docs/wip/questions/lot-cm1-1.py` → `scripts/questions/cm1-1/` (9 JSON). Délai 20 s pour
+  les tables et les fractions, 30 s pour les quatre procédures (nombres à 3 chiffres).
+- Simulation `create-questions` (prod, lecture) : 9/9 verts, 92 specs. `question:specs` : specs
+  vertes, 6 000 tirages réussis, corrigés relus (corrigé du × 5 : moitié remise en formule).
+- Base locale : 9 brouillons ; « Relations entre fractions » joué dans l'aperçu admin (case au
+  numérateur, réponse fausse → correction 1/2 = 2/4).

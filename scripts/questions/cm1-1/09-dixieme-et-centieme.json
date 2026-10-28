@@ -1,0 +1,153 @@
+{
+	"title": "Écrire $\\dfrac{1}{10}$ et $\\dfrac{1}{100}$ en écriture décimale",
+	"description": "1/10 = 0,1 et 1/100 = 0,01, dans les deux sens",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Forme décimale",
+	"level": 13,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{if:k==1|1/10|1/100}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression1}};d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Un dixième s'écrit $\\textcolor{{{color:primary.0}}}{0.1}$ : le $1$ est au rang des dixièmes, le premier après la virgule.|Un centième s'écrit $\\textcolor{{{color:primary.0}}}{0.01}$ : le $1$ est au rang des centièmes, le deuxième après la virgule ; on écrit $0$ aux dixièmes.}}"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==1|10|100}}"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{if:k==1|0.1=1/?|0.01=1/?}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|$0.1$, c'est un dixième : $0.1=\\dfrac{1}{\\textcolor{{{color:primary.0}}}{10}}$.|$0.01$, c'est un centième : $0.01=\\dfrac{1}{\\textcolor{{{color:primary.0}}}{100}}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/10 = 0,1",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0.1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/100 = 0,01",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0.01"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/100 → 0,1",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0.1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/10 → 0,01",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0.01"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/100 → 0,100",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0.100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,1 = 1/10",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0,01 = 1/100",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,01 = 1/? → 10",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

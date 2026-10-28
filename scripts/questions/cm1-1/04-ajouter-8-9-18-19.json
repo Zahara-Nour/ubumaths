@@ -1,0 +1,316 @@
+{
+	"title": "Ajouter $8$, $9$, $18$, $19$, $28$, $29$, $38$ ou $39$",
+	"description": "Ajouter la dizaine au-dessus, puis enlever 1 ou 2 : 57 + 9, 57 + 29, 347 + 28",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Additionner",
+	"subdomain": "Somme astucieuse",
+	"level": 11,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "8|9"
+				},
+				{
+					"name": "d",
+					"expression": "1..8"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*d+u"
+				},
+				{
+					"name": "m",
+					"expression": "eval:b+10-mod(b,10)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:10-mod(b,10)"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}+{{b}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ajouter ${{b}}$, c'est ajouter ${{m}}$, puis enlever ${{r}}$.",
+					"**Étape 1.** ${{n}}+{{m}}=\\textcolor{{{color:primary.0}}}{{{eval:n+m}}}$.",
+					"**Étape 2.** ${{eval:n+m}}-{{r}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$.",
+					"Donc ${{n}}+{{b}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "18|19|28|29|38|39"
+				},
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*d+u"
+				},
+				{
+					"name": "m",
+					"expression": "eval:b+10-mod(b,10)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:10-mod(b,10)"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}+{{b}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ajouter ${{b}}$, c'est ajouter ${{m}}$, puis enlever ${{r}}$.",
+					"**Étape 1.** ${{n}}+{{m}}=\\textcolor{{{color:primary.0}}}{{{eval:n+m}}}$.",
+					"**Étape 2.** ${{eval:n+m}}-{{r}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$.",
+					"Donc ${{n}}+{{b}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "8|9|18|19|28|29|38|39"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "0..5"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*c+10*d+u"
+				},
+				{
+					"name": "m",
+					"expression": "eval:b+10-mod(b,10)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:10-mod(b,10)"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}+{{b}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ajouter ${{b}}$, c'est ajouter ${{m}}$, puis enlever ${{r}}$.",
+					"**Étape 1.** ${{n}}+{{m}}=\\textcolor{{{color:primary.0}}}{{{eval:n+m}}}$.",
+					"**Étape 2.** ${{eval:n+m}}-{{r}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$.",
+					"Donc ${{n}}+{{b}}={{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "57 + 9 = 66",
+			"variationIndex": 0,
+			"variables": {
+				"b": "9",
+				"d": "5",
+				"u": "7"
+			},
+			"answers": ["66"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 57 + 9 → 67 (+ 10 sans compenser)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "9",
+				"d": "5",
+				"u": "7"
+			},
+			"answers": ["67"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 57 + 9 → 68 (compensation à l'envers)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "9",
+				"d": "5",
+				"u": "7"
+			},
+			"answers": ["68"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 89 + 8 = 97",
+			"variationIndex": 0,
+			"variables": {
+				"b": "8",
+				"d": "8",
+				"u": "9"
+			},
+			"answers": ["97"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "57 + 29 = 86",
+			"variationIndex": 1,
+			"variables": {
+				"b": "29",
+				"d": "5",
+				"u": "7"
+			},
+			"answers": ["86"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 57 + 29 → 87 (+ 30 sans compenser)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "29",
+				"d": "5",
+				"u": "7"
+			},
+			"answers": ["87"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 57 + 29 → 76 (retenue oubliée)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "29",
+				"d": "5",
+				"u": "7"
+			},
+			"answers": ["76"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "46 + 38 = 84",
+			"variationIndex": 1,
+			"variables": {
+				"b": "38",
+				"d": "4",
+				"u": "6"
+			},
+			"answers": ["84"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 46 + 38 → 85 (− 1 au lieu de − 2)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "38",
+				"d": "4",
+				"u": "6"
+			},
+			"answers": ["85"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "347 + 28 = 375",
+			"variationIndex": 2,
+			"variables": {
+				"b": "28",
+				"c": "3",
+				"d": "4",
+				"u": "7"
+			},
+			"answers": ["375"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 959 + 39 = 998",
+			"variationIndex": 2,
+			"variables": {
+				"b": "39",
+				"c": "9",
+				"d": "5",
+				"u": "9"
+			},
+			"answers": ["998"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 347 + 28 → 365 (retenue oubliée)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "28",
+				"c": "3",
+				"d": "4",
+				"u": "7"
+			},
+			"answers": ["365"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

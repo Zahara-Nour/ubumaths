@@ -1,0 +1,211 @@
+{
+	"title": "Multiplier par $5$",
+	"description": "Multiplier par 10, puis prendre la moitié : 5 × 46, 5 × 37, 5 × 148",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Produits astucieux",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "6..9|11..14|16..19|21..24|26..29|31..34|36..39|41..44|46..49"
+				},
+				{
+					"name": "n",
+					"expression": "eval:2*h"
+				},
+				{
+					"name": "expression1",
+					"expression": "5*{{n}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $5$, c'est multiplier par $10$, puis prendre la moitié.",
+					"**Étape 1.** $10\\times {{n}}=\\textcolor{{{color:primary.0}}}{{{eval:10*n}}}$.",
+					"**Étape 2.** La moitié de ${{eval:10*n}}$ : $\\textcolor{{{color:primary.1}}}{{{solution}}}$.",
+					"Donc $5\\times {{n}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "5..11|13..36|38..49"
+				},
+				{
+					"name": "n",
+					"expression": "eval:2*h+1"
+				},
+				{
+					"name": "expression1",
+					"expression": "5*{{n}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $5$, c'est multiplier par $10$, puis prendre la moitié.",
+					"**Étape 1.** $10\\times {{n}}=\\textcolor{{{color:primary.0}}}{{{eval:10*n}}}$.",
+					"**Étape 2.** La moitié de ${{eval:10*n}}$ : $\\textcolor{{{color:primary.1}}}{{{solution}}}$.",
+					"Donc $5\\times {{n}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "101..109|111..119|121..124|126..129|131..139|141..149|151..159|161..169|171..174|176..179|181..189|191..199"
+				},
+				{
+					"name": "expression1",
+					"expression": "5*{{n}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $5$, c'est multiplier par $10$, puis prendre la moitié.",
+					"**Étape 1.** $10\\times {{n}}=\\textcolor{{{color:primary.0}}}{{{eval:10*n}}}$.",
+					"**Étape 2.** La moitié de ${{eval:10*n}}$ : $\\textcolor{{{color:primary.1}}}{{{solution}}}$.",
+					"Donc $5\\times {{n}}={{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5 × 46 = 230",
+			"variationIndex": 0,
+			"variables": {
+				"h": "23"
+			},
+			"answers": ["230"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : × 10 sans la moitié (460)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "23"
+			},
+			"answers": ["460"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la moitié sans × 10 (23)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "23"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 5 × 98 = 490",
+			"variationIndex": 0,
+			"variables": {
+				"h": "49"
+			},
+			"answers": ["490"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5 × 37 = 185",
+			"variationIndex": 1,
+			"variables": {
+				"h": "18"
+			},
+			"answers": ["185"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 × 3 et 5 × 7 accolés (1 535)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "18"
+			},
+			"answers": ["1535"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 5 × 11 = 55",
+			"variationIndex": 1,
+			"variables": {
+				"h": "5"
+			},
+			"answers": ["55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5 × 148 = 740",
+			"variationIndex": 2,
+			"variables": {
+				"n": "148"
+			},
+			"answers": ["740"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : × 10 sans la moitié (1 480)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "148"
+			},
+			"answers": ["1480"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 5 × 199 = 995",
+			"variationIndex": 2,
+			"variables": {
+				"n": "199"
+			},
+			"answers": ["995"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
