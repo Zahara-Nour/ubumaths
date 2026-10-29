@@ -95,6 +95,7 @@ import { BINOMIAL_MAX_N } from '$lib/statistics/binomial';
 import { GEOMETRIC_MAX_K } from '$lib/statistics/geometric';
 import { UNIFORM_MAX_VALUES } from '$lib/statistics/uniform';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
+import { SCALE_STEPS, scaleAxis } from '../utils/barres-placer';
 
 // ============================================================================
 // TYPES
@@ -152,6 +153,8 @@ interface Options {
 	simulationClasses: number | null;
 	/** Barres : `axe: 0 à 20, de 2 en 2` */
 	axis: StatChartAxis | null;
+	/** Barres : `axe: à choisir` (l'élève choisit l'échelle) */
+	chooseScale: boolean;
 	/** Barres à construire (`placer:`) : noms tels qu'écrits, ou `toutes` ; vérifiés une fois tout lu */
 	placer: string[] | 'toutes' | null;
 	/** Numéro de la première case (`case: N`, posé par le générateur) */
@@ -507,6 +510,9 @@ export function findStatChartBlocks(lines: string[]): StatChartBlockRange[] {
 /** Ligne vue sans retrait ni marque de citation */
 const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
 
+/** `axe: à choisir` : l'élève choisit l'échelle */
+const CHOOSE_SCALE = 'à choisir';
+
 /** Ligne `placer:` d'un diagramme en barres à construire */
 const PLACER_LINE_REGEX = /^placer\s*:/i;
 
@@ -843,7 +849,8 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			);
 			return;
 		case 'axe':
-			options.axis = parseAxis(value);
+			if (normalizeKey(value.trim()) === normalizeKey(CHOOSE_SCALE)) options.chooseScale = true;
+			else options.axis = parseAxis(value);
 			return;
 		case 'placer': {
 			const written = value.trim();
@@ -936,13 +943,13 @@ function checkBarsToPlace(
 	let toPlace: number[] | null = null;
 	if (options.placer !== null) {
 		const line = optionLines.placer ?? 0;
-		if (options.axis === null) {
+		if (options.axis === null && !options.chooseScale) {
 			return fail(
 				line,
-				'placer : écrire aussi l’axe vertical (axe: 0 à 20, de 2 en 2) : calculé, il trahirait la plus grande barre'
+				'placer : écrire aussi l’axe vertical (axe: 0 à 20, de 2 en 2, ou axe: à choisir) : calculé, il trahirait la plus grande barre'
 			);
 		}
-		if (options.axis.max > STAT_CHART_LIMITS.placeAxisMax) {
+		if (options.axis !== null && options.axis.max > STAT_CHART_LIMITS.placeAxisMax) {
 			return fail(
 				line,
 				`placer : axe jusqu’à ${STAT_CHART_LIMITS.placeAxisMax} au plus (au-delà, l’élève ne viserait plus l’unité)`
@@ -981,6 +988,24 @@ function checkBarsToPlace(
 			toPlace = ranks.sort((a, b) => a - b);
 		}
 		// Effectif décimal : déjà refusé à sa ligne (un effectif est entier)
+	}
+	if (options.chooseScale) {
+		const axeLine = optionLines.axe ?? 0;
+		// Sans échelle, une barre dessinée n'aurait pas de hauteur (§ 24)
+		if (options.placer !== 'toutes') {
+			return fail(
+				axeLine,
+				'axe : à choisir seulement avec placer: toutes (l’élève construit tout le diagramme)'
+			);
+		}
+		const highest = scaleAxis(SCALE_STEPS[SCALE_STEPS.length - 1]).max;
+		const over = data.find((d) => d.value > highest);
+		if (over) {
+			return fail(
+				over.line,
+				`la barre ${over.label} (${formatForMessage(over.value)}) dépasse ${highest} : aucune échelle à choisir ne rentre`
+			);
+		}
 	}
 	if (options.caseIndex !== undefined && options.placer === null) {
 		return fail(optionLines.case ?? 0, 'case: sans objet sans placer:');
@@ -3014,6 +3039,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		areaQuery: null,
 		simulationClasses: null,
 		axis: null,
+		chooseScale: false,
 		placer: null,
 		caseIndex: undefined
 	};
@@ -3626,7 +3652,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					twoSeries,
 					scatter: null,
 					axis: options.axis,
-					toPlace
+					toPlace,
+					chooseScale: options.chooseScale
 				}
 			: null;
 

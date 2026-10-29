@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; bloc ranger le 2026-10-28.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28.
 
 ## À quoi ça sert
 
@@ -405,8 +405,19 @@ Danse = 7            ```                                     ```
   défile) ; aimant à l'unité (`barValueAt`), étiquettes, ▲ ▼, flèches, Début, Fin ; `role="slider"`,
   nom accessible sans l'effectif attendu. Faux : une phrase par barre (`barMistake` : « Ta barre Danse
   monte à 9. », « Tu n’as pas construit la barre Danse. ») et le diagramme juste. Calcul pur
-  `utils/barres-placer.ts`. PDF : barres à construire absentes, l'enfant les dessine. Choix de
-  l'échelle par l'élève (CM1-CM2) : hors chantier.
+  `utils/barres-placer.ts`. PDF : barres à construire absentes, l'enfant les dessine.
+  **Échelle choisie par l'élève** (§ 24, 25 ; CE2-082 « échelle adaptée ») —
+  `barres-echelle.test.ts` : `axe: à choisir` (nœud : `spec.chooseScale`, `spec.axis` reste null), avec
+  `placer: toutes` seulement (sans échelle, une barre dessinée n'aurait pas de hauteur), données
+  jusqu'à 100 (sinon refus : aucune échelle ne rentre). Scène : `SCALE_TICKS` (10) graduations sans
+  nombres (`scaleToChoose`) tant qu'aucune échelle n'est choisie. Écran : boutons « Une graduation
+  vaut : 1 · 2 · 5 · 10 » (`SCALE_STEPS`) ; avant le choix, « Choisis d’abord l’échelle. » et les barres
+  ne bougent pas ; choisir numérote l'axe (`scaleAxis`), changer d'échelle garde la valeur des barres
+  et efface celles qui ne rentrent plus. Une case pour l'échelle **avant** celles des barres
+  (`barsCaseCount`) ; juste = la plus petite échelle où tout rentre (`adaptedScale`) ; faux :
+  `scaleMistake` (« Avec 2 par graduation, la barre Alphaville (42) ne rentre pas. », « … rentre, mais
+  avec 5 il serait plus grand et plus lisible. ») ; diagramme juste à cette échelle (`solvedSpec`).
+  PDF : axe muet et une ligne « Une graduation vaut : ____ » où l'enfant écrit l'échelle.
 
 **QR code** (lot 2 des QR codes, [qr-codes](qr-codes.md)) — `src/lib/ubumark/__tests__/qr/` :
 

@@ -146,3 +146,51 @@ describe('barres à construire : les cases et leurs réponses', () => {
 		});
 	});
 });
+
+describe('échelle choisie par l’élève (axe: à choisir, § 24-25)', () => {
+	const VILLES = ['Alphaville = 42', 'Bêtaville = 35', 'Gammaville = 18', 'axe: à choisir'];
+
+	it('une case échelle d’abord, puis une case par barre', () => {
+		const result = assignBlankIndices(bars(...VILLES, 'placer: toutes'));
+		expect(result.totalBlanks).toBe(4);
+		expect(result.blankTypes).toEqual(['math', 'math', 'math', 'math']);
+	});
+
+	it('réponses : la plus petite échelle où tout rentre, puis les effectifs', () => {
+		const instance = generate(template({ statement: bars(...VILLES, 'placer: toutes') }));
+		expect(instance.blanks?.map((b) => b.expectedAnswer)).toEqual(['5', '42', '35', '18']);
+		// Note partielle : échelle trop grande, barres justes
+		const verdict = validateAnswer(['10', '42', '35', '18'], instance, ['10', '42', '35', '18']);
+		expect(verdict.isCorrect).toBe(false);
+		expect(validateAnswer(['5', '42', '35', '18'], instance, ['5', '42', '35', '18']).status).toBe(
+			'correct'
+		);
+	});
+
+	it('variables : l’échelle suit les données tirées', () => {
+		const instance = generate(
+			template({
+				statement: bars('A = {{n}}', 'B = 3', 'axe: à choisir', 'placer: toutes'),
+				variables: [{ name: 'n', expression: '64' }]
+			})
+		);
+		expect(instance.blanks?.[0].expectedAnswer).toBe('10');
+	});
+
+	it('résultat attendu : un diagramme, l’échelle puis chaque barre', () => {
+		const instance = generate(template({ statement: bars(...VILLES, 'placer: toutes') }));
+		const { lines } = buildExpectedResult(instance, { values: ['10', '42', '35', '18'] });
+		const built = lines.filter((l) => l.kind === 'build');
+		expect(built).toHaveLength(1);
+		expect(built[0]).toMatchObject({
+			buildKind: 'barres',
+			status: 'incorrect',
+			answers: [
+				{ answer: '10', status: 'incorrect' },
+				{ answer: '42', status: 'correct' },
+				{ answer: '35', status: 'correct' },
+				{ answer: '18', status: 'correct' }
+			]
+		});
+	});
+});

@@ -119,7 +119,7 @@ describe('placer: — les barres que l’élève construit', () => {
 	it.each([
 		[
 			['placer: Danse'],
-			'Ligne 5 : placer : écrire aussi l’axe vertical (axe: 0 à 20, de 2 en 2) : calculé, il trahirait la plus grande barre'
+			'Ligne 5 : placer : écrire aussi l’axe vertical (axe: 0 à 20, de 2 en 2, ou axe: à choisir) : calculé, il trahirait la plus grande barre'
 		],
 		[
 			['axe: 0 à 20', 'placer: Rugby'],

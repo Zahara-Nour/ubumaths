@@ -403,6 +403,11 @@ export interface StatChartSpec {
 	 * l'ordre des données ; absent ou null : diagramme à lire
 	 */
 	toPlace?: number[] | null;
+	/**
+	 * Barres : `axe: à choisir`, l'élève choisit ce que vaut une graduation
+	 * (`axis` reste null : l'axe a 10 graduations sans nombres)
+	 */
+	chooseScale?: boolean;
 }
 
 /** Axe vertical d'un diagramme en barres, de 0 à `max`, gradué de `step` en `step` */

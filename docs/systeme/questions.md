@@ -31,7 +31,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28 ; étiquettes à ranger (``ranger) le 2026-10-28 ; texte d'aide des cases à écrire le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, échelle à choisir le 2026-10-29 ; étiquettes à ranger (``ranger) le 2026-10-28 ; texte d'aide des cases à écrire le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -306,11 +306,12 @@ diagramme en barres à construire (```barres, `placer: Natation ; Danse`), au pr
 niveau, sinon échec (`buildBlanks`, genre et texte du bloc), compte aussi pour
 **une** case, `case: N` posé dans le bloc ; une droite à plusieurs points (`placer: A=3 ; B=7`) compte
 une case par point, N, N + 1…, seul N posé (`buildBlanks[…].point`, rang du point) ; un diagramme en
-barres, une case par barre à construire, dans l'ordre des données (`point` : rang de la barre) ;
+barres, une case par barre à construire, dans l'ordre des données (`point` : rang de la barre),
+précédées d'une case pour l'échelle avec `axe: à choisir` (`barsCaseCount`) ;
 nombre de cases : `buildCaseCount`. Sa réponse attendue
 est la valeur `N` du bloc (droite : la graduation du point, écrite par `placerAnswer` ; horloge : l'heure
 sur le cadran de 12, `'2 h 25'` pour `placer: 14 h 25`, écrite par `timeText` ; barres : l'effectif de
-la barre, `'8'` ; lecture commune
+la barre, `'8'`, et pour la case de l'échelle la plus petite où tout rentre, `'5'` (`adaptedScale`) ; lecture commune
 `generator/build-answer.ts`, `buildAnswerOf(kind, source, point)`), jamais
 du modèle (`blanks[]` peut l'omettre, une réponse écrite est refusée, `case:` écrite aussi, bloc en
 erreur, non fermé ou avec `options.orderIndependent` → échec). Le bloc est délimité comme le parseur
@@ -577,7 +578,8 @@ placé. » ; plusieurs points : UNE ligne `build` pour la droite, à la place de
 `answers` (réponse et statut de chaque point), juste quand tous le sont, « rien placé » quand aucun ne
 l'est ; diagramme en barres à construire, ``barres `placer:`, de même : UN diagramme, `answers` par
 barre, « Tu n'as rien posé. » quand aucune n'est construite ; `BarresPlacer` verrouillé avec les barres
-de l'élève, ou `StatChart` avec toutes les barres justes ; étiquettes à ranger, ``ranger, de même : UNE
+de l'élève (et son échelle écrite, « Une graduation vaut 5. »), ou `StatChart` avec toutes les
+barres justes (`solvedSpec` : à la bonne échelle quand elle était à choisir) ; étiquettes à ranger, ``ranger, de même : UNE
 ligne `build`, `answers` par place, et `expected` (la bonne position de chaque place, que le bloc ne dit
 pas) ; `RangerPlacer` verrouillé avec les places de l'élève, fausses marquées, et le rangement juste
 dessous) : une ligne `build` (genre, texte

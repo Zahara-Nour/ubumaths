@@ -19,6 +19,10 @@
 	  la réponse de chaque case est la hauteur posée (`12`), `''` tant que la barre
 	  n'est pas construite. Faux : une phrase par barre fausse (`barMistake`) et le
 	  diagramme juste à côté.
+	- `axe: à choisir` (§ 24, 25) : l'élève choisit d'abord ce que vaut une
+	  graduation (1, 2, 5, 10) ; avant, l'axe est muet et les barres ne bougent
+	  pas. Sa case vient avant celles des barres. Changer d'échelle : les barres
+	  gardent leur valeur, celles qui ne rentrent plus s'effacent.
 	- Sans `answers` (aperçu du prof, cours) : le même geste, rien de jugé.
 
 	@module components/markdown/nodes/BarresPlacer
@@ -33,7 +37,13 @@
 		barMistake,
 		barsToPlace,
 		barValueAt,
-		barValueOfAnswer
+		barValueOfAnswer,
+		SCALE_STEPS,
+		SCALE_TICKS,
+		scaleAxis,
+		scaleMistake,
+		scaleOfAnswer,
+		solvedSpec
 	} from '$lib/ubumark/utils/barres-placer';
 	import { readContentLocale } from '../content-locale';
 	import type { BuildCase } from './CollectionConstruire.svelte';
@@ -42,7 +52,10 @@
 	interface Props {
 		/** Diagramme à construire (`spec.toPlace` et `spec.axis` définis) */
 		node: StatChartNode;
-		/** Une case par barre à construire, dans l'ordre des données ; absentes : geste libre */
+		/**
+		 * Une case par barre à construire, dans l'ordre des données (précédées de la
+		 * case de l'échelle avec `axe: à choisir`) ; absentes : geste libre
+		 */
 		answers?: BuildCase[];
 		/** false : diagramme seul, sans boutons ni étiquettes (copie corrigée) */
 		showControls?: boolean;
@@ -67,13 +80,25 @@
 	const locale = readContentLocale();
 
 	let spec = $derived(node.spec!);
-	let axisMax = $derived(spec.axis?.max ?? 1);
+	let choosing = $derived(spec.chooseScale === true);
+	/** Case de l'échelle (`axe: à choisir`), puis une case par barre */
+	let scaleCase = $derived(choosing ? answers?.[0] : undefined);
+	let barCases = $derived(choosing ? answers?.slice(1) : answers);
+	/** Échelle choisie, relue dans sa case, réassignée au choix (dérivé modifiable) */
+	let scale = $derived(scaleOfAnswer(scaleCase?.value ?? ''));
+	/** Le diagramme dessiné : à l'échelle choisie, axe muet tant qu'il n'y en a pas */
+	let shownSpec = $derived(
+		choosing ? { ...spec, axis: scale === null ? null : scaleAxis(scale) } : spec
+	);
+	let axisMax = $derived(shownSpec.axis?.max ?? (choosing ? SCALE_TICKS : 1));
 	let scene = $derived.by(() => {
-		const built = buildStatChartScene(spec, { locale: locale() });
+		const built = buildStatChartScene(shownSpec, { locale: locale() });
 		return built.kind === 'barres' ? built : null;
 	});
 	/** Les barres à construire, dans l'ordre des cases */
 	let targets = $derived(barsToPlace(spec));
+	/** Échelle à choisir d'abord : les barres ne bougent pas */
+	let waitingScale = $derived(choosing && scale === null);
 
 	/**
 	 * Hauteurs posées, une par barre à construire : relues quand la valeur d'une
@@ -81,7 +106,7 @@
 	 * geste (dérivé modifiable)
 	 */
 	let values = $derived<(number | null)[]>(
-		targets.map((_, k) => barValueOfAnswer(answers?.[k]?.value ?? ''))
+		targets.map((_, k) => barValueOfAnswer(barCases?.[k]?.value ?? ''))
 	);
 	/** Barre choisie (rang dans `targets`) : la première pas construite au montage */
 	let chosen = $state(untrack(() => Math.max(0, values.indexOf(null))));
@@ -91,14 +116,18 @@
 	let dragging = $state(false);
 	let svg: SVGSVGElement | undefined = $state();
 
-	let verdicts = $derived(targets.map((_, k) => answers?.[k]?.isCorrect ?? null));
-	let judged = $derived(verdicts.some((v) => v !== null));
-	let allRight = $derived(judged && verdicts.every((v) => v === true));
-	let mistakes = $derived(
-		targets.flatMap((target, k) =>
+	let verdicts = $derived(targets.map((_, k) => barCases?.[k]?.isCorrect ?? null));
+	let scaleVerdict = $derived(scaleCase?.isCorrect ?? null);
+	let judged = $derived(verdicts.some((v) => v !== null) || scaleVerdict !== null);
+	let allRight = $derived(
+		judged && verdicts.every((v) => v === true) && (!choosing || scaleVerdict === true)
+	);
+	let mistakes = $derived([
+		...(scaleVerdict === false ? [scaleMistake(spec.data, scale)].flatMap((m) => m ?? []) : []),
+		...targets.flatMap((target, k) =>
 			verdicts[k] === false ? (barMistake(target.label, values[k], target.expected) ?? []) : []
 		)
-	);
+	]);
 
 	let count = $derived(scene?.labels.length ?? 1);
 	let plotWidth = $derived(scene?.pixelSize.width ?? 0);
@@ -143,11 +172,24 @@
 	}
 
 	function place(k: number, value: number) {
-		if (locked) return;
+		if (locked || waitingScale) return;
 		const next = Math.min(axisMax, Math.max(0, value));
 		if (values[k] === next) return;
 		values = values.map((v, i) => (i === k ? next : v));
-		answers?.[k]?.onChange(String(next));
+		barCases?.[k]?.onChange(String(next));
+	}
+
+	/** Choisir l'échelle : les barres gardent leur valeur, celles qui ne rentrent plus s'effacent */
+	function chooseScale(step: number) {
+		if (locked || scale === step) return;
+		scale = step;
+		scaleCase?.onChange(String(step));
+		const max = scaleAxis(step).max;
+		values = values.map((v, k) => {
+			if (v === null || v <= max) return v;
+			barCases?.[k]?.onChange('');
+			return null;
+		});
 	}
 
 	/** Point du doigt dans le repère du dessin ; null hors du dessin */
@@ -180,7 +222,7 @@
 	 * Écouteur non passif (Svelte rend `ontouchstart` passif) ; ailleurs, la page défile.
 	 */
 	function handleTouchStart(event: TouchEvent) {
-		if (locked || event.touches.length !== 1) return;
+		if (locked || waitingScale || event.touches.length !== 1) return;
 		const point = pointerAt(event.touches[0]);
 		if (point !== null && columnAt(point) !== null) event.preventDefault();
 	}
@@ -246,6 +288,34 @@
 			<p class="stat-serie">{scene.series}</p>
 		{/if}
 
+		{#if choosing && showControls}
+			<div class="flex flex-wrap items-center justify-center gap-2">
+				<span class="text-sm font-medium">Une graduation vaut :</span>
+				<div class="flex gap-1" role="group" aria-label="Échelle">
+					{#each SCALE_STEPS as step (step)}
+						<button
+							type="button"
+							class="placer-etiquette flex min-h-11 min-w-11 items-center justify-center rounded-md border px-3 text-sm font-semibold"
+							class:placer-etiquette-active={scale === step}
+							aria-pressed={scale === step}
+							aria-label="Une graduation vaut {step}"
+							disabled={locked}
+							onclick={() => chooseScale(step)}
+						>
+							{step}
+						</button>
+					{/each}
+				</div>
+			</div>
+			{#if waitingScale && !locked}
+				<p class="text-sm text-muted-foreground">Choisis d’abord l’échelle.</p>
+			{/if}
+		{:else if choosing}
+			<p class="text-sm">
+				{scale === null ? 'Pas d’échelle choisie.' : `Une graduation vaut ${scale}.`}
+			</p>
+		{/if}
+
 		<div
 			class="placer-zone w-full rounded-md border p-2"
 			class:placer-juste={allRight}
@@ -308,7 +378,9 @@
 				<!-- Barres : dessinées, ou posées par l'élève (jamais l'effectif attendu) -->
 				{#each scene.bars as bar, i (i)}
 					{@const k = rankOfIndex.get(i)}
-					{@const value = k === undefined ? bar.value : values[k]}
+					{@const posed = k === undefined ? bar.value : values[k]}
+					<!-- Jamais au-dessus de l'axe (réponses relues d'une autre échelle) -->
+					{@const value = posed === null ? null : Math.min(posed, axisMax)}
 					{#if value === null}
 						<line
 							class="barres-attente"
@@ -398,7 +470,7 @@
 						type="button"
 						class="placer-cran flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-background text-lg hover:bg-muted disabled:opacity-40"
 						aria-label="Descendre la barre {targets[active]?.label ?? ''} d’une unité"
-						disabled={locked}
+						disabled={locked || waitingScale}
 						onclick={() => stepBy(-1)}
 					>
 						<span aria-hidden="true">▼</span>
@@ -407,7 +479,7 @@
 						type="button"
 						class="placer-cran flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-background text-lg hover:bg-muted disabled:opacity-40"
 						aria-label="Monter la barre {targets[active]?.label ?? ''} d’une unité"
-						disabled={locked}
+						disabled={locked || waitingScale}
 						onclick={() => stepBy(1)}
 					>
 						<span aria-hidden="true">▲</span>
@@ -429,7 +501,7 @@
 			<div class="placer-correction flex w-full flex-col items-center gap-1">
 				<p class="text-sm font-medium text-muted-foreground">Correction</p>
 				<!-- Le diagramme juste : toutes les barres dessinées -->
-				<StatChart node={{ ...node, spec: { ...spec, toPlace: null } }} class="w-full" />
+				<StatChart node={{ ...node, spec: solvedSpec(spec) }} class="w-full" />
 			</div>
 		{/if}
 	</figure>
