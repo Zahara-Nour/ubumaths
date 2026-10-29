@@ -1,0 +1,263 @@
+{
+	"title": "Décrire une expérience aléatoire",
+	"description": "Écrire l'univers d'une expérience aléatoire et un évènement comme un ensemble d'issues : dé à six faces, « obtenir un nombre pair » = {2 ; 4 ; 6}",
+	"grades": ["4"],
+	"theme": "Probabilités",
+	"domain": "Évènements",
+	"subdomain": "Univers",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On lance {{if:k==0|un dé équilibré à six faces, numérotées de $1$ à $6$|{{if:k==1|une roue équilibrée partagée en huit secteurs égaux, numérotés de $1$ à $8$|un dé équilibré à dix faces, numérotées de $1$ à $10$}}}} et on note le nombre obtenu.\n\nÉcris l'univers de cette expérience. Écris l'ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1 ; 3 ; 5\\}$).\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==0|\\{ 1;2;3;4;5;6 \\}|{{if:k==1|\\{ 1;2;3;4;5;6;7;8 \\}|\\{ 1;2;3;4;5;6;7;8;9;10 \\}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Univers.** L'ensemble de toutes les issues possibles d'une expérience aléatoire s'appelle l'univers. Un évènement est un ensemble d'issues : on l'écrit entre accolades.",
+					"Les issues possibles sont tous les nombres qui peuvent sortir : l'univers est $\\textcolor{{{color:primary.0}}}{{{if:k==0|\\{1 ; 2 ; 3 ; 4 ; 5 ; 6\\}|{{if:k==1|\\{1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8\\}|\\{1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8 ; 9 ; 10\\}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à six faces, numérotées de $1$ à $6$. On note $A$ l'évènement « {{if:j==0|obtenir un nombre pair|{{if:j==1|obtenir un nombre impair|{{if:j==2|obtenir un multiple de $3$|{{if:j==3|obtenir un nombre supérieur ou égal à $4$|obtenir un nombre inférieur à $3$}}}}}}}} ».\n\nÉcris l'évènement $A$ comme un ensemble d'issues. Écris l'ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1 ; 3 ; 5\\}$).\n\n$$?$$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:j==0|\\{ 2;4;6 \\}|{{if:j==1|\\{ 1;3;5 \\}|{{if:j==2|\\{ 3;6 \\}|{{if:j==3|\\{ 4;5;6 \\}|\\{ 1;2 \\}}}}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Univers.** L'ensemble de toutes les issues possibles d'une expérience aléatoire s'appelle l'univers. Un évènement est un ensemble d'issues : on l'écrit entre accolades.",
+					"L'univers est $\\{1 ; 2 ; 3 ; 4 ; 5 ; 6\\}$. On garde les issues qui réalisent $A$ : $A = \\textcolor{{{color:primary.0}}}{{{if:j==0|\\{2 ; 4 ; 6\\}|{{if:j==1|\\{1 ; 3 ; 5\\}|{{if:j==2|\\{3 ; 6\\}|{{if:j==3|\\{4 ; 5 ; 6\\}|\\{1 ; 2\\}}}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à douze faces, numérotées de $1$ à $12$. On note $B$ l'évènement « {{if:j==0|obtenir un multiple de $4$|{{if:j==1|obtenir un diviseur de $12$|{{if:j==2|obtenir un nombre premier|{{if:j==3|obtenir un multiple de $5$|obtenir un nombre supérieur ou égal à $9$}}}}}}}} ».\n\nÉcris l'évènement $B$ comme un ensemble d'issues. Écris l'ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1 ; 3 ; 5\\}$).\n\n$$?$$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:j==0|\\{ 4;8;12 \\}|{{if:j==1|\\{ 1;2;3;4;6;12 \\}|{{if:j==2|\\{ 2;3;5;7;11 \\}|{{if:j==3|\\{ 5;10 \\}|\\{ 9;10;11;12 \\}}}}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Univers.** L'ensemble de toutes les issues possibles d'une expérience aléatoire s'appelle l'univers. Un évènement est un ensemble d'issues : on l'écrit entre accolades.",
+					"L'univers est $\\{1 ; 2 ; \\ldots ; 12\\}$. On garde les issues qui réalisent $B$ : $B = \\textcolor{{{color:primary.0}}}{{{if:j==0|\\{4 ; 8 ; 12\\}|{{if:j==1|\\{1 ; 2 ; 3 ; 4 ; 6 ; 12\\}|{{if:j==2|\\{2 ; 3 ; 5 ; 7 ; 11\\}|{{if:j==3|\\{5 ; 10\\}|\\{9 ; 10 ; 11 ; 12\\}}}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à six faces, numérotées de $1$ à $6$.\n\nQue désigne {{if:k==0|le résultat « $5$ »|{{if:k==1|$\\{2 ; 4 ; 6\\}$|$\\{1 ; 2 ; 3 ; 4 ; 5 ; 6\\}$}}}} ?\n\n```choix\nmelanger: non\n- Une issue de l'expérience.\n- Un évènement, qui n'est pas l'univers.\n- L'univers de l'expérience.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Univers.** L'ensemble de toutes les issues possibles d'une expérience aléatoire s'appelle l'univers. Un évènement est un ensemble d'issues : on l'écrit entre accolades.",
+					"{{if:k==0|« $5$ » est un des résultats possibles du lancer : $\\textcolor{{{color:primary.0}}}{\\text{c'est une issue}}$.|{{if:k==1|$\\{2 ; 4 ; 6\\}$ regroupe trois issues (« obtenir un nombre pair ») sans être l'ensemble de toutes les issues : $\\textcolor{{{color:primary.0}}}{\\text{c'est un évènement}}$.|$\\{1 ; 2 ; 3 ; 4 ; 5 ; 6\\}$ contient toutes les issues : $\\textcolor{{{color:primary.0}}}{\\text{c'est l'univers}}$.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Dé à 6 faces : {1;…;6}",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["\\{1;2;3;4;5;6\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Roue à 8 : désordre accepté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["\\{8;1;2;3;4;5;6;7\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : issue oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["\\{1;2;3;4;5\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pair : {2;4;6}",
+			"variationIndex": 1,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\{2;4;6\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pair, dans le désordre",
+			"variationIndex": 1,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\{6;2;4\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : impair au lieu de pair",
+			"variationIndex": 1,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\{1;3;5\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "≥ 4 : 4 compris",
+			"variationIndex": 1,
+			"variables": {
+				"j": "3"
+			},
+			"answers": ["\\{4;5;6\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 oublié",
+			"variationIndex": 1,
+			"variables": {
+				"j": "3"
+			},
+			"answers": ["\\{5;6\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Premiers jusqu'à 12",
+			"variationIndex": 2,
+			"variables": {
+				"j": "2"
+			},
+			"answers": ["\\{2;3;5;7;11\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 compté premier",
+			"variationIndex": 2,
+			"variables": {
+				"j": "2"
+			},
+			"answers": ["\\{1;2;3;5;7;11\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diviseurs de 12",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["\\{1;2;3;4;6;12\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "« 5 » : une issue",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "{2;4;6} : un évènement",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {2;4;6} pris pour l'univers",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Univers",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
