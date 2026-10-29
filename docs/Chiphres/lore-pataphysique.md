@@ -434,6 +434,13 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
   - **Ville** : Grand Hôtel thermal, buvette à colonnade, kiosque à musique, gidouille de bronze ; à l'entrée des bains, les guichets de péage de Mère Ubu (tout se paie). L'argent de Mère Ubu suffit à dire la province, sans bouliers ni chiffres.
   - **Repère sur la carte** : la gidouille de bronze devant le Grand Hôtel, avec un filet de vapeur.
   - **Couleur** : Or phynance `#F3C025`.
+- **Plan de la ville** 🟡 (décision de David, 2026-10-29) : station thermale au fond d'une vallée boisée, traversée par la Vistule ; la ville s'organise autour d'un grand parc thermal, entre la place et les bains. Six lieux :
+  1. **La Place de la Gidouille** : la gidouille de bronze devant le Grand Hôtel thermal, dont le restaurant entend chaque soir « Patron, la soustraction ! ».
+  2. **Le Parc thermal** : allées, parterres, kiosque à musique.
+  3. **La Buvette à colonnade**, bâtie au-dessus de la source chaude.
+  4. **Les Bains** : l'établissement thermal, les guichets de péage de Mère Ubu à l'entrée.
+  5. **La Villa des Phynances** : résidence de Mère Ubu, villa bourgeoise cossue avec sa salle des coffres.
+  6. **La Promenade de la Vistule** : quai planté de marronniers.
 
 #### Bedonstan — _Géométrie_
 
