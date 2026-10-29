@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, migration de contenu des 4 commencée (pas encore de PR)._
+_Mis à jour le 2026-10-29, après #1949._
 
-- **État** : lot 5 publié (7/7). David a donné son accord (2026-10-29, « oui ») pour retirer des 4 modèles d'origine les variations déplacées (§ 12.4). Instantané `questions-6/etat-prod-2026-10-29-scissions/` pris ; md5 = MCP = § 12 ; 0 donnée d'élève.
-- **Prochaine action** : `docs/wip/questions-6/lot-contenu-6-scissions.py` sur le modèle de `lot-contenu-6-non-decimal.py` : un MODIFIER par modèle (variations gardées, tag relevé, titre et description de la source `scripts/questions/6-fractions/0{2,3,4,8}-*.json`, résultat = source exigé ; 04 : titre resserré + spec ajoutée en v1). Puis la migration, le test (`decrireLotModifier`, taille 4) rouge sans, `security-auditor`, PR, `db:migrate`, et la vérification au MCP.
-- **En attente de David** : rien (accord et question d'accès tranchés). Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
-- **Pièges en cours** : ⚠️ jamais `--publier` sur `6-fractions/` avant la migration de contenu (04 change de titre). 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`). 3a7a5711 : NE PAS publier. `security-auditor` avant `db:migrate`.
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, branche `feat/questions-6-scissions-contenu` (poussée, pas de PR).
+- **État** : lots 1 à 5 en prod. Lot 5 (scissions des fractions) clos : 7 neufs publiés, migration de contenu des 4 d'origine jouée (#1949, MCP vérifié, `create-questions` en simulation : `6-fractions/` 10/10 identiques).
+- **Prochaine action** : phase 0 du lot « Pourcentages, proportionnalité, grandeurs » (§ 4, point 5 : 139, 140, 189, 211, 145-147, 153, 156, 158, 186), dans un worktree neuf (`git worktree add -b feat/questions-6-<lot> ../ubumaths-wt-questions-6 origin/main`).
+- **En attente de David** : les 4 verdicts de `revue-modeles` (02, 03, 04, 08) portent sur l'ancien contenu : les refaire ? Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **Pièges en cours** : 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`). 3a7a5711 : NE PAS publier.
+- **Worktree / branche** : aucun (retiré après #1949).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -833,3 +833,8 @@ migration de contenu après la publication des 7).
 - Test `questions-6-scissions-contenu` (`decrireLotModifier`, taille 4) : rouge contre une migration vide (6 échecs),
   12 verts avec (16 sautés : propres aux neufs).
 - Garde doc : `docs/systeme/base-de-donnees.md` inchangée (migration de données, schéma identique).
+- #1949 mergée (CI verte). `security-auditor` : aucun finding bloquant (md5 « avant » = prod recalculés au MCP) ;
+  suivis : 4 verdicts de `revue-modeles` périmés (question à David), rollback à jouer en une transaction (déjà dit
+  dans son commentaire). `db:migrate` depuis le dépôt principal (seule migration manquante) : MCP md5 = « après »
+  (90ca4921…, 86741b68…, 98074702…, 886149a8…), `published`, niveaux et tags inchangés ; `create-questions` en
+  simulation sur `6-fractions/` : 10/10 « déjà en base ». Le piège `--publier` sur `6-fractions/` est levé.
