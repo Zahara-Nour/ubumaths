@@ -5,14 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, phase 0 du lot 4 proposée (§ 20)._
+_Mis à jour le 2026-10-30, après #2000 (lot 4 écrit, mergé)._
 
-- **État** : lots 1 à 3 en prod ; lot 1 en brouillon, lots 2 et 3 publiés ; lot 4 (probabilités) : phase 0 écrite
-  (§ 20), 7 modèles proposés.
-- **Prochaine action** : réponses de David au § 20.4 consignées, puis écrire le lot (`lot-4-4.py` →
-  `scripts/questions/4-lot-4/`) dans le worktree, branche `feat/questions-4-lot-4` depuis `origin/main`.
-- **En attente de David** : § 20.4 (7 modèles, catégories, écriture des probabilités) ; publication des 7 brouillons
-  du lot 1.
+- **État** : lots 1 à 3 en prod (lot 1 en brouillon, lots 2 et 3 publiés) ; lot 4 (probabilités, § 20-21) : 7 fichiers
+  mergés (#2000), pas encore en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-4 --publier`
+  depuis le dépôt principal ; puis relever les 7 `id` (MCP), migration nœud + tag (gabarit lot 3, `20261030003000`),
+  test rouge puis vert, `security-auditor`, PR, `db:migrate`, page à cocher.
+- **En attente de David** : le `--publier` du lot 4 ; « fᵢ » et « graine » du bloc ` ```simulation ` (§ 21 : garder,
+  ou tableau d'effectifs écrit) ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
   passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
