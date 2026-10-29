@@ -5,17 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1993._
+_Mis à jour le 2026-10-29, après #1993 et son `db:migrate`._
 
 - **État** : lots 1 à 3 publiés ; **4a** mergé (#1977), pas créé en prod ; **4b** : 4 brouillons en prod
-  (2f556139, 1e68327e, 1cd9dc60, d4668b2d), migration de rangement + reclassement + niveaux mergée (#1993),
-  **pas encore jouée** (`db:migrate`).
-- **Prochaine action** : feu vert de David → `pnpm db:migrate` depuis le dépôt principal → vérifier au MCP (nœuds,
-  tags, grades, niveaux) → page à cocher du 4b → publication. 4a : attendre `virgule-forme-exigee`.
-- **En attente de David** : feu vert du `db:migrate` (la migration retire 3 tags de 4e, remplacés par ceux de 5e ;
-  rollback écrit) ; la session `virgule-forme-exigee`.
-- **Pièges en cours** : ⚠️ ne pas lancer `create-questions --publier` sur `3-lot-2` avant le `db:migrate` (dcaabf69 y
-  est au niveau 12) ; horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
+  (2f556139, 1e68327e, 1cd9dc60, d4668b2d), migration #1993 **jouée** (`db:migrate`, feu vert de David) et vérifiée au MCP
+  (nœuds, tags, grades, rangs ; `updated_at` préservé).
+- **Prochaine action** : page à cocher du 4b (`page-a-cocher.ts
+--dir scripts/questions/5-litteral-b` ; alertes attendues : homonymes 1cd9dc60 / d4668b2d), capacité `db`, 390 px,
+  Chrome → compter les verdicts → `publier-lot.ts` en simulation → David `--publier`. 4a : attendre `virgule-forme-exigee`.
+- **En attente de David** : la session `virgule-forme-exigee`.
+- **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
 --mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
   **message de commit** ; page à cocher à 390 px ; **jamais de variable `e` ni `i`** ; saisie MathLive de
   l'aperçu non pilotable à l'automate.
