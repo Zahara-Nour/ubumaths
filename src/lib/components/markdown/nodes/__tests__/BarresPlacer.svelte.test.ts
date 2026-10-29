@@ -270,3 +270,105 @@ describe('BuildAnswer — barres à construire', () => {
 		expect(root.querySelector('.placer-juste')).not.toBeNull();
 	});
 });
+
+describe('Échelle choisie par l’élève (axe: à choisir, § 24-25)', () => {
+	const VILLES = [
+		'Alphaville = 42',
+		'Bêtaville = 35',
+		'Gammaville = 18',
+		'axe: à choisir',
+		'placer: toutes'
+	];
+	const tickLabels = (root: Element) =>
+		[...drawing(root).querySelectorAll('.stat-graduations text')].map((t) => t.textContent);
+
+	it('pas d’échelle : axe muet, les barres ne se construisent pas', async () => {
+		const { probe, answers } = answersProbe(4);
+		const screen = await render(BarresPlacer, {
+			target: mainElement(),
+			props: { node: node(...VILLES), answers: answers() }
+		});
+		const root = screen.container;
+		expect(tickLabels(root).every((t) => t === '')).toBe(true);
+		expect(root.textContent).toContain('Choisis d’abord l’échelle.');
+		await userEvent.click(button(root, 'Monter la barre Alphaville d’une unité'));
+		expect(probe.changes).toEqual([]);
+	});
+
+	it('choisir 5 : la case échelle vaut 5, l’axe se numérote, la barre se construit', async () => {
+		const { probe, answers } = answersProbe(4);
+		const screen = await render(BarresPlacer, {
+			target: mainElement(),
+			props: { node: node(...VILLES), answers: answers() }
+		});
+		const root = screen.container;
+		await userEvent.click(button(root, 'Une graduation vaut 5'));
+		expect(probe.values[0]).toBe('5');
+		await expect.poll(() => tickLabels(root).at(-1)).toBe('50');
+		tapAt(root, 'Gammaville', 18, 50);
+		await expect.poll(() => probe.values[3]).toBe('18');
+	});
+
+	it('changer d’échelle : les barres gardent leur valeur, celles qui ne rentrent plus s’effacent', async () => {
+		const { probe, answers } = answersProbe(4);
+		probe.values = ['5', '42', '', '18'];
+		const screen = await render(BarresPlacer, {
+			target: mainElement(),
+			props: { node: node(...VILLES), answers: answers() }
+		});
+		await userEvent.click(button(screen.container, 'Une graduation vaut 2'));
+		expect(probe.values).toEqual(['2', '', '', '18']);
+	});
+
+	it('correction : la phrase de l’échelle et le diagramme juste à son échelle', async () => {
+		const statement = ['```barres', 'case: 0', ...VILLES, '```'].join('\n') as ResolvedMarkdown;
+		const blanks: InstanceBlank[] = ['5', '42', '35', '18'].map((v) => ({
+			type: 'math',
+			expectedAnswer: v,
+			expectedAnswerLatex: v,
+			construire: 'barres'
+		}));
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				statement,
+				blanks,
+				values: ['10', '42', '35', '18'],
+				disabled: true,
+				validationResults: [false, true, true, true]
+			}
+		});
+		const root = screen.container;
+		expect(root.textContent).toContain(
+			'Avec 10 par graduation, ton diagramme rentre, mais avec 5 il serait plus grand et plus lisible.'
+		);
+		const solution = root.querySelector('.placer-correction')!;
+		expect(solution.textContent).toContain('50');
+	});
+
+	it('copie corrigée : l’échelle choisie écrite, sans boutons', async () => {
+		const screen = await render(BuildAnswer, {
+			target: mainElement(),
+			props: {
+				kind: 'barres',
+				source: VILLES.join('\n'),
+				answer: '5 ; 42 ; 35 ; 18',
+				status: 'correct',
+				answers: ['5', '42', '35', '18'].map((answer) => ({ answer, status: 'correct' as const }))
+			}
+		});
+		const root = screen.container;
+		expect(root.querySelector('button')).toBeNull();
+		expect(root.textContent).toContain('Une graduation vaut 5.');
+		expect(tickLabels(root).at(-1)).toBe('50');
+	});
+
+	it('bonne réponse affichée : le diagramme à la bonne échelle', async () => {
+		const screen = await render(BuildAnswer, {
+			target: mainElement(),
+			props: { kind: 'barres', source: VILLES.join('\n'), answer: null, status: 'solution' }
+		});
+		expect(screen.container.querySelectorAll('rect.stat-barre')).toHaveLength(3);
+		expect(screen.container.textContent).toContain('50');
+	});
+});

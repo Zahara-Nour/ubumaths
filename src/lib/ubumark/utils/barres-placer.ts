@@ -57,6 +57,20 @@ export function adaptedScale(values: readonly number[]): number | null {
 	return SCALE_STEPS.find((step) => highest <= scaleAxis(step).max) ?? null;
 }
 
+/**
+ * Le diagramme juste : toutes les barres dessinées ; échelle à choisir : à la
+ * plus petite échelle où tout rentre
+ */
+export function solvedSpec(spec: StatChartSpec): StatChartSpec {
+	const scale = spec.chooseScale ? adaptedScale(spec.data.map((d) => d.value)) : null;
+	return {
+		...spec,
+		toPlace: null,
+		chooseScale: false,
+		axis: scale === null ? (spec.axis ?? null) : scaleAxis(scale)
+	};
+}
+
 /** Échelle lue dans la réponse de sa case ; null : pas choisie (ou hors des choix) */
 export function scaleOfAnswer(value: string): number | null {
 	const step = Number(value.trim());

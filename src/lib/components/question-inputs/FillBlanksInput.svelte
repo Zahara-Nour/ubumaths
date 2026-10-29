@@ -49,6 +49,7 @@
 	} from '$lib/components/markdown/utils/math-utils';
 	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
+	import { barsCaseCount } from '$lib/ubumark/utils/barres-placer';
 	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
 	import { buildVectorsKeyboardLayout } from '$lib/questions/vectors/keyboard-vectors';
@@ -895,9 +896,10 @@
 				{/if}
 			{:else if node.type === 'stat-chart' && node.caseIndex !== undefined && node.spec?.toPlace}
 				<!-- Diagramme en barres à construire : l'élève monte ses barres, une case par
-				     barre (N, N + 1…), la hauteur de chacune est sa réponse -->
+				     barre (N, N + 1…), la hauteur de chacune est sa réponse ; `axe: à choisir` :
+				     la case N est l'échelle, les barres suivent -->
 				{@const firstCase = node.caseIndex}
-				{@const caseCount = node.spec.toPlace.length}
+				{@const caseCount = barsCaseCount(node.spec)}
 				{#if showCorrectAnswers}
 					<!-- Bonne réponse : le diagramme juste -->
 					<BuildAnswer kind="barres" source={node.source} answer={null} status="solution" />
@@ -905,7 +907,7 @@
 					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
 						<BarresPlacer
 							{node}
-							answers={node.spec.toPlace.map((_, k) => ({
+							answers={Array.from({ length: caseCount }, (_, k) => ({
 								value: inputStates[firstCase + k]?.value ?? '',
 								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
 								disabled: flashMode || effectiveDisabled,

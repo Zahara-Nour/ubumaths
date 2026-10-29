@@ -34,6 +34,7 @@
 	import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 	import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
+	import { solvedSpec } from '$lib/ubumark/utils/barres-placer';
 	import { HORLOGE_SIZE_CM } from '$lib/ubumark/types/horloge';
 	import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 	import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
@@ -116,7 +117,7 @@
 		<BarresPlacer node={barres} answers={lineCases} showControls={false} />
 	{:else}
 		<!-- Le diagramme juste, sans `placer:` : toutes les barres dessinées -->
-		<StatChart node={{ ...barres, spec: { ...barres.spec, toPlace: null } }} />
+		<StatChart node={{ ...barres, spec: solvedSpec(barres.spec) }} />
 	{/if}
 {:else if ranger && ranger.errors.length === 0}
 	{@const node = { ...ranger, caseIndex: 0 }}
