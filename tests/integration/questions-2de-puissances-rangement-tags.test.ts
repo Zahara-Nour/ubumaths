@@ -33,6 +33,8 @@ interface Etat {
 	noeuds: Map<string, string>;
 	dates: Map<string, string>;
 	tags: string[];
+	/** État du trigger `updated_at` : `O` = actif */
+	trigger: string;
 }
 
 // ============================================================================
@@ -114,7 +116,11 @@ async function lireEtat(pg: Client): Promise<Etat> {
 		   join public.curriculum_points p on p.id = q.point_id where q.template_id = any($1::uuid[])`,
 		[ids]
 	);
+	const g = await pg.query<{ tgenabled: string }>(
+		`select tgenabled from pg_trigger where tgname = 'update_question_templates_updated_at'`
+	);
 	return {
+		trigger: g.rows[0]?.tgenabled ?? '∅',
 		noeuds: new Map(q.rows.map((r) => [r.id, chemins.get(r.node ?? '') ?? '∅'])),
 		dates: new Map(q.rows.map((r) => [r.id, r.updated_at.toISOString()])),
 		tags: t.rows.map((r) => `${r.template_id}§${r.grade}§${r.code}`).sort()
@@ -154,6 +160,10 @@ describe('Questions 2de, lot 3 : nœud et tag des modèles neufs (migration de d
 
 	it('chaque modèle porte EXACTEMENT son point, rien de plus', () => {
 		expect(apres.tags).toEqual(LOT.map((m) => `${m.id}§2§${m.code}`).sort());
+	});
+
+	it('le trigger `updated_at` est de nouveau actif après la migration et après le rollback', () => {
+		expect([apres.trigger, annule.trigger]).toEqual(['O', 'O']);
 	});
 
 	it('`updated_at` des modèles est préservé', () => {
