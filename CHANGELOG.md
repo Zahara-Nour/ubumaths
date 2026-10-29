@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.57.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.57.0...v0.57.1) (2026-10-29)
+
+### 🐛 Bug Fixes
+
+- **questions:** 1re spé produit scalaire, fractions réduites et dénominateur positif ([89e947b](https://github.com/Zahara-Nour/ubumaths/commit/89e947b7f63328e3dd687404f854d0a11364478d))
+
+### 📚 Documentation
+
+- **wip:** fractions-a-colorier clos, journal archivé ([962f065](https://github.com/Zahara-Nour/ubumaths/commit/962f0650e333c58296af32fe57ea701e13f6d235))
+- **wip:** illustrations, image de Sandomir validée ([2c66702](https://github.com/Zahara-Nour/ubumaths/commit/2c667028ef655b8673d3c0d2730676e9e2b109af))
+- **wip:** illustrations, Sandomir, route par Nano Banana et Pont-Levis raccourci ([f26e7d9](https://github.com/Zahara-Nour/ubumaths/commit/f26e7d982dab1bc5787ad2ce8756b3398b597686))
+- **wip:** questions-1spe, commande create-questions exacte ([6c3b061](https://github.com/Zahara-Nour/ubumaths/commit/6c3b061f1e13fecc772f22b79b1bc7472e5cb637))
+- **wip:** questions-1spe, lot 0-produit scalaire : instantané et constats ([9385c37](https://github.com/Zahara-Nour/ubumaths/commit/9385c37bca5513933b7c45667f0babac28e3f584))
+- **wip:** questions-1spe, page à cocher du lot 0-produit scalaire ([225a75b](https://github.com/Zahara-Nour/ubumaths/commit/225a75bffe5f632ef05659c33142936c7cde5c04))
+- **wip:** questions-1spe, relecture du lot 0-produit scalaire (15/15) ([7dd420e](https://github.com/Zahara-Nour/ubumaths/commit/7dd420e580109211f809828ae31a5e45f2d19cc5))
+- **wip:** questions-1spe, reprendre ici après [#1995](https://github.com/Zahara-Nour/ubumaths/issues/1995) ([ff212f2](https://github.com/Zahara-Nour/ubumaths/commit/ff212f20254884c6e7c16f66c478e5ed611905e8))
+- **wip:** questions-4, lot 4 validé par David ([4dd5eb3](https://github.com/Zahara-Nour/ubumaths/commit/4dd5eb3c8db338901db0019dce0ba93143c1ddeb))
+- **wip:** questions-4, phase 0 du lot 4 (probabilités) ([7e43d7e](https://github.com/Zahara-Nour/ubumaths/commit/7e43d7eb862192ea5ea892324a911c623d8178b8))
+- **wip:** questions-4, reprendre ici après la phase 0 du lot 4 ([ae6621c](https://github.com/Zahara-Nour/ubumaths/commit/ae6621cb2e6de40f84f8c1411634b336aeeff89a))
+- **wip:** questions-5, lot 4b migré en prod ([82ec6b6](https://github.com/Zahara-Nour/ubumaths/commit/82ec6b643e385d91bcb0ac4b330a2b5bde7e7599))
+- **wip:** questions-cm1, phase 0 du lot 3 (fractions) ([fb865d7](https://github.com/Zahara-Nour/ubumaths/commit/fb865d7b7ffd80fc5d1a6b65f8b7bc9358d4f6d7))
+- **wip:** questions-cm2, phase 0 du lot 3 (calcul mental entiers) ([05f3fc2](https://github.com/Zahara-Nour/ubumaths/commit/05f3fc2b933a91c94506846a1f0b6beeae457235))
+- **wip:** questions-tspe, décisions D1-D7 ([51e5c99](https://github.com/Zahara-Nour/ubumaths/commit/51e5c9993414a5804721df2a8c7a6c0e54561e71))
+
 ## [0.57.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.56.0...v0.57.0) (2026-10-29)
 
 ### ✨ Features
