@@ -137,31 +137,20 @@ describe('scène — parts coloriées', () => {
 	});
 });
 
-describe('nom accessible', () => {
-	it('bande et disque', () => {
-		expect(partageLabel(specOf('forme: bande 8', 'gris: 3'))).toBe(
-			'Bande partagée en 8 parts égales, 3 coloriées'
-		);
-		expect(partageLabel(specOf('forme: disque 6'))).toBe(
-			'Disque partagé en 6 parts égales, aucune coloriée'
-		);
-	});
-
-	it('une seule part coloriée : singulier', () => {
-		expect(partageLabel(specOf('forme: bande 4', 'gris: 1'))).toBe(
-			'Bande partagée en 4 parts égales, 1 coloriée'
-		);
-	});
-
-	it('grille et carré', () => {
-		expect(partageLabel(specOf('forme: grille 10×10', 'gris: 30'))).toBe(
-			'Grille de 10 lignes et 10 colonnes, partagée en 100 parts égales, 30 coloriées'
-		);
-		expect(partageLabel(specOf('forme: grille 1×2'))).toBe(
-			'Grille de 1 ligne et 2 colonnes, partagée en 2 parts égales, aucune coloriée'
-		);
-		expect(partageLabel(specOf('forme: carre-diagonales', 'gris: 2, 3'))).toBe(
-			'Carré partagé en 4 parts égales par ses diagonales, 2 coloriées'
-		);
+describe('nom accessible : la forme, jamais la réponse', () => {
+	it('ni le nombre de parts ni le nombre de parts coloriées', () => {
+		const cases: [string[], string][] = [
+			[['forme: bande 8', 'gris: 3'], 'Bande partagée en parts égales'],
+			[['forme: disque 6'], 'Disque partagé en parts égales'],
+			[['forme: grille 10×10', 'gris: 30'], 'Grille partagée en parts égales'],
+			[
+				['forme: carre-diagonales', 'gris: 2, 3'],
+				'Carré partagé en parts égales par ses diagonales'
+			]
+		];
+		for (const [lines, label] of cases) {
+			expect(partageLabel(specOf(...lines)), lines.join(' ; ')).toBe(label);
+			expect(partageLabel(specOf(...lines))).not.toMatch(/\d/);
+		}
 	});
 });

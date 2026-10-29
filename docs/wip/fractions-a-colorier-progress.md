@@ -10,7 +10,7 @@ _Mis à jour le 2026-10-29, phase 0 validée, PR 1 en cours._
 
 - **État** : PR 1 (bloc ```partage affiché, `gris:`) codée, revue Sonnet faite (2 points corrigés : `gris: 4,` pour une seule part, teinte `--color-fig-orange` à ≥ 3:1), PR ouverte.
 - **Prochaine action** : finir la PR 1, puis PR 2 (`colorier:`), puis PR 3 (`unites:`).
-- **En attente de David** : nom accessible de la figure (§ 7) — le dire sans la réponse, comme l'horloge (reco), ou garder « 3 coloriées » ?
+- **En attente de David** : rien.
 - **Après ce chantier** : chantier `solides` (assemblages de cubes, perspective, patrons ; 6e → 3e), ordre
   validé par David le 2026-10-29.
 - **Worktree / branche** : `../ubumaths-wt-fractions-a-colorier` · `feat/fractions-a-colorier`.
@@ -136,6 +136,7 @@ Rendu vérifié en Playwright (serveur 5178, compte prof local) : disque, grille
 Revue `code-reviewer` (Sonnet), aucun bloquant ; corrigés : une seule part isolée n'était pas exprimable →
 `gris: 4,` (virgule finale) ; contraste `--color-primary` / fond ≈ 2,3:1 → `--color-fig-orange` (≥ 3:1).
 
-**Question ouverte (David)** : le nom accessible dit « Bande partagée en 8 parts égales, 3 coloriées » — il donne la
+**Tranché (David, 2026-10-29 : « je te suis »)** : nom accessible = la forme seule (« Bande partagée en parts égales »), sans nombre de parts ni de parts coloriées.
+Question posée : le nom accessible dit « Bande partagée en 8 parts égales, 3 coloriées » — il donne la
 réponse d'une question « interpréter ». L'horloge dit seulement « Horloge à aiguilles ». Reco : même règle (« Figure
 partagée en parts égales », sans la réponse).

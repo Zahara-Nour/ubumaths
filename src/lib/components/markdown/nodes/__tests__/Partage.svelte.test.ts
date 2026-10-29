@@ -25,25 +25,23 @@ afterEach(() => {
 const node = (...lines: string[]) => parsePartageContent(lines.join('\n'));
 
 describe('Partage — figure', () => {
-	it('un SVG role="img" au nom accessible qui dit le partage et le coloriage', async () => {
+	it('un SVG role="img" au nom accessible qui dit la forme sans la réponse', async () => {
 		const screen = await render(Partage, {
 			target: mainElement(),
 			props: { node: node('forme: bande 8', 'gris: 3') }
 		});
 		const svgs = screen.container.querySelectorAll('svg[role="img"]');
 		expect(svgs).toHaveLength(1);
-		expect(svgs[0].getAttribute('aria-label')).toBe(
-			'Bande partagée en 8 parts égales, 3 coloriées'
-		);
+		expect(svgs[0].getAttribute('aria-label')).toBe('Bande partagée en parts égales');
 	});
 
-	it('disque sans part coloriée : « aucune coloriée »', async () => {
+	it('disque : la forme seule', async () => {
 		const screen = await render(Partage, {
 			target: mainElement(),
 			props: { node: node('forme: disque 6') }
 		});
 		expect(screen.container.querySelector('svg')!.getAttribute('aria-label')).toBe(
-			'Disque partagé en 6 parts égales, aucune coloriée'
+			'Disque partagé en parts égales'
 		);
 	});
 

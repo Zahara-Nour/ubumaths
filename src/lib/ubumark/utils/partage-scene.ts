@@ -21,7 +21,7 @@
  * @module ubumark/utils/partage-scene
  */
 
-import { partageTotal, type PartageShape, type PartageSpec } from '../types/partage';
+import type { PartageShape, PartageSpec } from '../types/partage';
 
 // ============================================================================
 // CONSTANTES
@@ -166,30 +166,20 @@ export function buildPartageScene(spec: PartageSpec): PartageScene {
 	};
 }
 
-const plural = (n: number, one: string, many: string) => `${n} ${n > 1 ? many : one}`;
-
 /**
- * Nom accessible de la figure : le partage et le coloriage, jamais les rangs
- * (« Bande partagée en 8 parts égales, 3 coloriées »).
+ * Nom accessible de la figure : la forme seule, jamais le nombre de parts ni de
+ * parts coloriées (ce serait la réponse de « quelle fraction est coloriée ? »),
+ * comme l'horloge (décision de David, 2026-10-29).
  */
 export function partageLabel(spec: PartageSpec): string {
-	const total = partageTotal(spec.shape);
-	const shape = spec.shape;
-	let whole: string;
-	switch (shape.kind) {
+	switch (spec.shape.kind) {
 		case 'bande':
-			whole = `Bande partagée en ${total} parts égales`;
-			break;
+			return 'Bande partagée en parts égales';
 		case 'grille':
-			whole = `Grille de ${plural(shape.rows, 'ligne', 'lignes')} et ${plural(shape.cols, 'colonne', 'colonnes')}, partagée en ${total} parts égales`;
-			break;
+			return 'Grille partagée en parts égales';
 		case 'disque':
-			whole = `Disque partagé en ${total} parts égales`;
-			break;
+			return 'Disque partagé en parts égales';
 		case 'carre-diagonales':
-			whole = `Carré partagé en ${total} parts égales par ses diagonales`;
-			break;
+			return 'Carré partagé en parts égales par ses diagonales';
 	}
-	const n = spec.gray.length;
-	return `${whole}, ${n === 0 ? 'aucune coloriée' : `${n} ${n > 1 ? 'coloriées' : 'coloriée'}`}`;
 }

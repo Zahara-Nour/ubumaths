@@ -495,8 +495,8 @@ coloriée. Une clé inconnue (`colorier:` arrive en PR 2) ou répétée, un rang
 dans `errors: string[]`. Numérotation : bande de gauche à droite, grille ligne par ligne depuis le coin haut
 gauche, disque depuis midi dans le sens horaire, carré haut / droite / bas / gauche. Scène partagée
 `utils/partage-scene.ts` (un polygone par part, arc du disque en pas de 3° ; 1 unité = 0,025 cm, écran comme
-PDF) ; écran : SVG, parts coloriées en `--color-fig-orange` (contraste ≥ 3:1 sur le fond, WCAG 1.4.11), nom accessible « Bande partagée en 8 parts égales,
-3 coloriées » ; PDF : Typst natif (`polygon`), parts coloriées **grisées**. Bloc en erreur : messages pour le prof,
+PDF) ; écran : SVG, parts coloriées en `--color-fig-orange` (contraste ≥ 3:1 sur le fond, WCAG 1.4.11), nom accessible sans la réponse
+(« Bande partagée en parts égales », ni le nombre de parts ni les coloriées, comme l'horloge) ; PDF : Typst natif (`polygon`), parts coloriées **grisées**. Bloc en erreur : messages pour le prof,
 cadre « Partage indisponible » pour l'élève. Éditeur riche : bloc de code `partage`. Chat élève (rendu restreint) :
 jamais rendu. Fiche fixe du catalogue : `src/lib/block-catalog/partage.ts`.
 
