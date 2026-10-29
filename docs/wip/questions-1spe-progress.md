@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1934._
+_Mis à jour le 2026-10-29, après #1934 et la publication du lot 0-exponentielle._
 
-- **État** : lots 0-suites, 0-second-degré, 0-dérivation, 0-variations publiés ; lot 0-exponentielle (17, § 10) relu et corrigé (#1916, #1934), 17/17 « ok », prêt à publier.
-- **Prochaine action** : après la publication, lot 0-trigo, puis produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-0-exponentielle --publier --mettre-a-jour` puis `pnpm tsx scripts/publier-lot.ts --dir scripts/questions/1spe-0-exponentielle --publier` ; je vérifie ensuite en base.
-- **Pièges en cours** : `publier-lot` = tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation` ni `choix` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; `.env.local` du worktree : les scripts `tsx` lisent quand même la prod (vérifier la ligne « base ») ; index vide vérifié avant tout commit sur `main` ; CI : job navigateur instable → relancer.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (branche #1934 mergée, à retirer à la clôture du lot).
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) et 0-exponentielle (17, § 10) publiés.
+- **Prochaine action** : lot 0-trigo (brouillons du thème, § 3.8), puis produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
+- **En attente de David** : rien.
+- **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation` ni `choix` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -355,7 +355,7 @@ PR #1890 mergée (CI verte). Page à cocher : https://claude.ai/artifact/8StybG8
 **Publication (2026-10-28)** : `create-questions --publier --mettre-a-jour` (4 mis à jour, 4 déjà en base) puis
 `publier-lot --publier` lancés par David ; 8 / 8 `published`, les 4 corrections relues en base (MCP). Lot clos.
 
-## 10. Lot 0-exponentielle : vérification des brouillons
+## 10. Lot 0-exponentielle : vérification des brouillons (CLOS : 17 publiés le 2026-10-29, #1916, #1934)
 
 _2026-10-28. 17 brouillons tagués d'un point de l'exponentielle (289, 291, 292, 293, 294, 295, 297, 405, 406), instantané
 `scripts/questions/1spe-0-exponentielle/`, `question:specs --apercu 3` puis un aperçu par variation (46), sorties dans le
