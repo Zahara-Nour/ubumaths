@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1969 : lot 0-trigo publié en prod (6/6)._
+_Mis à jour le 2026-10-29 : lot 0-produit scalaire, C1-C3 corrigés (D18), 15/15 « ok » à la relecture (§ 12)._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10) et 0-trigo (6, § 11) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
-- **Prochaine action** : lot 0-produit scalaire (relevé, instantané, specs, constats) ; puis géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : rien.
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10) et 0-trigo (6, § 11) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3). Lot 0-produit scalaire : 15 brouillons, instantané `scripts/questions/1spe-0-produit-scalaire/`, 15/15 verts, C1-C3 corrigés (D18), relecture 15/15 « ok ».
+- **Prochaine action** : PR, merge, puis publication par David (`create-questions --publier --mettre-a-jour` puis `publier-lot --publier`) ; ensuite géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : publication du lot après le merge.
 - **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
-- **Worktree / branche** : aucun (worktree retiré après #1969) ; le prochain lot ouvre `../ubumaths-wt-questions-1spe` sur une branche neuve.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-produit-scalaire`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -471,3 +471,47 @@ brute), page republiée à la même adresse.
 
 **Publication (2026-10-29)** : #1969 mergée ; `create-questions --publier --mettre-a-jour` (ee4e2ac6 mis à jour, 5 identiques)
 puis `publier-lot --publier` lancés par David : 6/6 `published`, corrigé v7 relu en base.
+
+## 12. Lot 0-produit scalaire : vérification des brouillons
+
+_2026-10-29. 15 brouillons tagués d'un point du produit scalaire (312, 317, 318, 319, 320, 321), un point chacun ; instantané
+`scripts/questions/1spe-0-produit-scalaire/`, `question:specs --apercu 3` puis un aperçu par variation (55), sorties dans le
+scratchpad de la session. Aucun modèle publié sur ces points._
+
+**Mécanique** : 15 / 15 verts, 2 550 tirages réussis.
+
+**Bornes** : rien au-delà du BO 1re spé (p. 9). Quatre méthodes de calcul (projection, coordonnées, normes et angle, normes
+seules), bilinéarité, ‖u ± v‖², Al-Kashi (longueur, angle), orthogonalité, MA·MB par le milieu. Angles lus parmi les valeurs
+remarquables, à 2kπ près (4π/3 : l1s-3) ; arccos à la calculatrice pour les angles non remarquables.
+
+**Constats** :
+
+- **C1** : réponse attendue écrite `\frac{N}{2}` sans réduction : l'élève voit « 76/2 », « 8/2 », « 12/4 » quand les réponses
+  sont montrées, alors que le corrigé écrit 38, 4, 3. d787d8c0 (4 variations), b73923a1 v2 (et son corrigé : « BA·BC = 4/2 »)
+  et v4 ; fe407c88 v4 (« −3/2 » écrit `\frac{-3}{2}`, impair, cosmétique).
+- **C2** : fraction à dénominateur négatif : « m = 8/−3 = −8/3 » (2bfbf2fc v2), même défaut que C1 du lot 0-exponentielle.
+- **C3** : « −1² + 2² » (b73923a1 v4, IA·ID dans le carré) : se lit (−1)², alors que c'est −IB².
+- Écartés : décimaux « 5.1 », « 37.3 » de l'outil (affichés à la française) ; 044a3ae3 v1-v2 (MA·MB = 0) cite le cercle de
+  diamètre [AB] sans passer par le milieu, et reste sous 317 (le résultat est celui de la démonstration 323, point P) ; « AB = √17 »
+  sans détail à côté de « AC = √(9 + 25) » (bf5dadf6 v2) ; CH donnée sans servir (9c7f7ef0, voulu : « CH n'intervient pas »).
+
+**Recommandations** :
+
+- C1 : réponse attendue = l'expression du corrigé (`{{eval:N/2}}`, `{{eval:a*a/2}}`, `{{eval:3*a*a/4}}`…), qui rend l'entier ou
+  la fraction irréductible ; corrigé de b73923a1 v2 aligné.
+- C2 : règle de D15 : fraction écrite avec un dénominateur positif seulement si elle se simplifie, sinon résultat direct.
+- C3 : « IA·ID = −IB² + BA² = −1 + 4 = 3 » (carrés calculés).
+  **D18 (David, 2026-10-29, « je valide » sur C1-C3)** :
+
+- C1 : réponses attendues en `{{eval:…}}` (entier ou fraction irréductible) : d787d8c0 (4 variations), b73923a1 v2 et v4,
+  fe407c88 v4 ; corrigé de b73923a1 v2 (« BA·BC = a²/2 ») aligné.
+- C2 : 2bfbf2fc v1 à v3 (même défaut trouvé sur les trois) : `m = {{if:gcd(N,D)!=1 && N!=0|N/D =|}}` résultat, dénominateur
+  positif.
+- C3 : b73923a1 v4, « IA·ID = −IB² + BA² = −a²/4 + a² ».
+
+Specs des 4 modèles vertes (55 specs, 800 tirages) ; 160 tirages relus : aucune fraction réductible ni dénominateur négatif.
+
+**Page à cocher** : https://claude.ai/artifact/NwH2PPrbGHhiqjuyiu2V8A (15 fiches, 55 exemples, aucune alerte), collection
+`verdicts` vide à la publication.
+
+**Relecture (David, page à cocher, 2026-10-29)** : 15 « ok » sur 15, aucun commentaire.

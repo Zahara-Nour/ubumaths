@@ -1,0 +1,412 @@
+{
+	"id": "2bfbf2fc-e7dc-4fd9-ab50-0cb3e7f5d402",
+	"title": "Vecteurs orthogonaux",
+	"description": "Utiliser la caractérisation de l'orthogonalité par le produit scalaire en repère orthonormé",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Propriétés",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m\\\\{{a}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{b}}\\\\{{c}}\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:-a*c/b}}"
+				}
+			],
+			"conditions": ["a != 0", "c != 0", "mod(abs(a*c),abs(b)) == 0"],
+			"correction": {
+				"steps": [
+					"Deux vecteurs sont orthogonaux si et seulement si leur produit scalaire est nul. Dans un repère orthonormé, $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}\\cdot\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}=xx'+yy'$.",
+					"$\\vec{u}\\cdot\\vec{v}=m\\times {{b;()}}+{{a;()}}\\times {{c;()}}$, soit ${{b}}m{{eval:a*c;+}}$.",
+					"$\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si ${{b}}m{{eval:a*c;+}}=0$, c'est-à-dire $m={{if:gcd(-a*c,b)!=1 && -a*c!=0|{{if:b<0|\\dfrac{ {{eval:-(-a*c)}} }{ {{eval:-(b)}} }|\\dfrac{ {{eval:-a*c}} }{ {{eval:b}} }}}=|}}\\textcolor{{{color:primary.0}}}{ {{R}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m{{k;+}}\\\\{{a}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{b}}\\\\m\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux. Donne la valeur exacte.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "sm",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "a",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:sm-a}}"
+				},
+				{
+					"name": "k",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:-k*b/sm}}"
+				}
+			],
+			"conditions": ["b != 0", "abs(b) <= 6"],
+			"correction": {
+				"steps": [
+					"Deux vecteurs sont orthogonaux si et seulement si leur produit scalaire est nul. Dans un repère orthonormé, $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}\\cdot\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}=xx'+yy'$.",
+					"$\\vec{u}\\cdot\\vec{v}=(m{{k;+}})\\times {{b;()}}+{{a;()}}\\times m$, soit ${{b}}m{{eval:k*b;+}}{{a;+}}m$, c'est-à-dire ${{eval:a+b}}m{{eval:k*b;+}}$.",
+					"$\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si ${{eval:a+b}}m{{eval:k*b;+}}=0$, c'est-à-dire $m={{if:gcd(-k*b,sm)!=1 && -k*b!=0|{{if:sm<0|\\dfrac{ {{eval:-(-k*b)}} }{ {{eval:-(sm)}} }|\\dfrac{ {{eval:-k*b}} }{ {{eval:sm}} }}}=|}}\\textcolor{{{color:primary.0}}}{ {{R}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$, $B({{xb}}\\,;{{yb}})$ et $C(m\\,;{{yc}})$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que le triangle $ABC$ soit rectangle en $A$.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-4..4"
+				},
+				{
+					"name": "ya",
+					"expression": "-4..4"
+				},
+				{
+					"name": "p",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "q",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "yc",
+					"expression": "-5..5"
+				},
+				{
+					"name": "xb",
+					"expression": "{{eval:xa+p}}"
+				},
+				{
+					"name": "yb",
+					"expression": "{{eval:ya+q}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:xa-q*(yc-ya)/p}}"
+				}
+			],
+			"conditions": ["q != 0", "yc != ya", "mod(abs(q*(yc-ya)),abs(p)) == 0"],
+			"correction": {
+				"steps": [
+					"Le triangle $ABC$ est rectangle en $A$ si et seulement si $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=0$.",
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}m{{if:xa>0|-{{eval:xa}}}}{{if:xa< 0|+{{eval:-xa}}}}\\\\{{eval:yc-ya}}\\end{pmatrix}$.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=xx'+yy'$, soit ${{p}}{{if:xa==0|m|(m{{eval:-xa;+}})}}{{eval:q*(yc-ya);+}}${{if:xa!=0|, c'est-à-dire ${{p}}m{{eval:-p*xa+q*(yc-ya);+}}$}}.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=0$ si et seulement si ${{p}}m{{eval:-p*xa+q*(yc-ya);+}}=0$, c'est-à-dire $m={{if:gcd(p*xa-q*(yc-ya),p)!=1 && p*xa-q*(yc-ya)!=0|{{if:p<0|\\dfrac{ {{eval:-(p*xa-q*(yc-ya))}} }{ {{eval:-(p)}} }|\\dfrac{ {{eval:p*xa-q*(yc-ya)}} }{ {{eval:p}} }}}=|}}\\textcolor{{{color:primary.0}}}{ {{R}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$, puis indique si les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-6..6"
+				},
+				{
+					"name": "q",
+					"expression": "-6..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "{{eval:min(w,1)}}"
+				},
+				{
+					"name": "r",
+					"expression": "-2..2"
+				},
+				{
+					"name": "s",
+					"expression": "-2..2"
+				},
+				{
+					"name": "x",
+					"expression": "{{eval:-k*q+t*r}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{eval:k*p+t*s}}"
+				},
+				{
+					"name": "N",
+					"expression": "{{eval:p*x+q*y}}"
+				}
+			],
+			"conditions": [
+				"p != 0",
+				"q != 0",
+				"abs(p) != abs(q)",
+				"x != 0",
+				"y != 0",
+				"t*(abs(r)+abs(s)) != 1",
+				"t == 0 || r != 0 || s != 0"
+			],
+			"correction": {
+				"steps": [
+					"Dans un repère orthonormé, $\\vec{u}\\cdot\\vec{v}=xx'+yy'$.",
+					"$\\vec{u}\\cdot\\vec{v}={{p}}\\times {{x;()}}+{{q;()}}\\times {{y;()}}=\\textcolor{{{color:primary.0}}}{ {{N}} }$",
+					"{{if:N=0|Le produit scalaire est nul : les vecteurs $\\vec{u}$ et $\\vec{v}$ **sont orthogonaux**.}}{{if:N!=0|Le produit scalaire n'est pas nul : les vecteurs $\\vec{u}$ et $\\vec{v}$ **ne sont pas orthogonaux**.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "4"
+			},
+			"description": "v0 : u(m;3), v(-2;4) → m = 6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "4"
+			},
+			"description": "v0 : signe faux (−6)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "4"
+			},
+			"description": "v0 : produit en croix (colinéarité) m = −3/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{12}{2}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "4"
+			},
+			"description": "v0 : 12/2 non simplifié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3",
+				"sm": "6"
+			},
+			"description": "v1 : u(m+3;2), v(4;m) → m = −2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{9}{4}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"k": "3",
+				"sm": "4"
+			},
+			"description": "v1 : u(m+3;1), v(3;m) → m = −9/4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-2,25"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"k": "3",
+				"sm": "4"
+			},
+			"description": "v1 : −2,25 décimal exact",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-2,2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"k": "3",
+				"sm": "4"
+			},
+			"description": "v1 : −2,2 arrondi refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"k": "3",
+				"sm": "4"
+			},
+			"description": "v1 : 3m oublié dans la somme (m = −9/3 = −3)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"xa": "1",
+				"ya": "2",
+				"yc": "0"
+			},
+			"description": "v2 : A(1;2), B(3;5), C(m;0) → m = 4",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"xa": "1",
+				"ya": "2",
+				"yc": "0"
+			},
+			"description": "v2 : xA oublié (m = 3)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "1",
+				"p": "2",
+				"q": "3",
+				"r": "1",
+				"s": "1",
+				"w": "0"
+			},
+			"description": "v3 : orthogonaux, u·v = 0",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "1",
+				"p": "2",
+				"q": "3",
+				"r": "1",
+				"s": "1",
+				"w": "1"
+			},
+			"description": "v3 : non orthogonaux, u·v = 5",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1",
+				"p": "2",
+				"q": "3",
+				"r": "1",
+				"s": "1",
+				"w": "1"
+			},
+			"description": "v3 : déterminant au lieu du produit scalaire",
+			"variationIndex": 3
+		}
+	]
+}
