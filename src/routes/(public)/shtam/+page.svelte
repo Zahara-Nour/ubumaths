@@ -105,7 +105,10 @@
 							<div class="text-sm text-muted-foreground">
 								<InlineMarkdown content={teaser.lede} />
 							</div>
-							<div class="text-sm italic">Par {teaser.byline} · suite page {teaser.page}</div>
+							<div class="text-sm italic">
+								Par {teaser.byline} ·
+								<span class="whitespace-nowrap">suite page {teaser.page}</span>
+							</div>
 						</li>
 					{/each}
 				</ol>
