@@ -5,21 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1941 (lot 2 rangé et tagué en prod, page à cocher publiée)._
+_Mis à jour le 2026-10-29, après la publication du lot 2._
 
-- **État** : lot 1 « Calcul » publié (8/8). Lot 2 « Relatifs » : 8 brouillons en prod, rangés et tagués
-  (`db:migrate` de #1941, vérifié au MCP) ; page à cocher https://claude.ai/artifact/HA76Zw57mgk7o3B73GBN7A
-  (capacité `db`, collection `verdicts`, 0 verdict au départ).
-- **Prochaine action** : lire et **compter** les verdicts en base (`ArtifactData list verdicts`) ; « À revoir » →
-  correction (§ 7 de la doc : instantané, `--mettre-a-jour` par David) ; 8/8 OK → `publier-lot.ts --dir
-scripts/questions/5-relatifs` en simulation, puis `--publier` par David. Ensuite phase 0 du lot 3.
-- **En attente de David** : la relecture du lot 2 sur la page à cocher.
-- **Pièges en cours** : horodatages : `schema_migrations` ET worktrees (lot 2 : `20261029170000`, après
-  `20261029150000` d'un autre worktree) ; le classifieur refuse `create-questions --mettre-a-jour` ; worktree neuf :
-  `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un **message de commit** ; le job
-  d'intégration est un run à part (« Nightly Integration Tests ») : l'attendre avant de merger ; 04 et 05 homonymes
-  (niveaux 1 et 2) : alerte attendue sur la page.
-- **Worktree / branche** : aucun (retiré après #1941).
+- **État** : lot 1 « Calcul » et lot 2 « Relatifs » publiés (8/8 chacun, vérifié au MCP). Lot 2 : 8 verdicts « OK »
+  sur la page à cocher, aucun commentaire.
+- **Prochaine action** : phase 0 du lot 3 (suite des lots A, § 3 / § 5 : fractions et puissances 5-027, 029, 030,
+  032, 033), puis attendre la validation de David.
+- **En attente de David** : rien.
+- **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
+--mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
+  **message de commit** ; le job d'intégration est un run à part (« Nightly Integration Tests ») : l'attendre.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -217,3 +213,9 @@ Page à cocher, 7 verdicts : 5 OK (02, 03, 04, 05, 06), 2 à revoir. Corrections
 - Page à cocher : https://claude.ai/artifact/HA76Zw57mgk7o3B73GBN7A (capacité `db`, collection `verdicts`) ; une
   alerte attendue (04 / 05 homonymes). Rendu vérifié à 606 px (largeur minimale de la fenêtre), pas de défilement
   horizontal.
+
+## 11. Lot 2 : relecture et publication (2026-10-29)
+
+- Page à cocher : 8 verdicts « OK », aucun commentaire (compté en base).
+- `publier-lot.ts` en simulation : 8 brouillons passent ; David : `--publier` → 8/8 publiés ; vérifié au MCP
+  (`published` pour 3b9d3ec2, fc8fb430, c52836ad, b92b4b51, d5d1f676, 469f1c9d, 0b491d0e, 7f9d7df5). Lot 2 clos.
