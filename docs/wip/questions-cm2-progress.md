@@ -295,3 +295,40 @@ en choix de 1 à 12.
 - #1985 mergée (CI verte après relance du plantage `wrapDynamicImport`), `security-auditor` : aucun finding bloquant (un non bloquant hérité du patron : `set local lock_timeout` sans effet hors transaction explicite). `db:migrate` (seule migration en attente) : 5 modèles rangés et tagués, vérifié au MCP. Page à cocher publiée, sans alerte.
 - Relecture (David, 2026-10-29) : 5/5 OK, sans commentaire. `publier-lot` en simulation : 5 brouillons passent le contrôle.
 - 2026-10-29 : David lance `publier-lot --publier` : 5/5 publiés ; vérifié au MCP (published, CM2, nœud et tag de chacun). **Lot 2 clos.**
+
+## 8. Lot 3 — calcul mental sur les entiers : phase 0 (proposée le 2026-10-30)
+
+Relevé MCP du 2026-10-30 : les 8 points (035, 148, 036, 149, 045, 150, 050, 151) sont sans modèle.
+Nœuds : tables → « Entiers : addition et soustraction > tables » (035, 148) et « Entiers :
+multiplication > tables » (036, 149) ; 045, 150 → « … > calcul astucieux » ; 050, 151 → « Entiers :
+division > calcul réfléchi ». Bornes `cycle3.json` : tables, termes et facteurs **de 0 à 10**,
+les **mêmes qu'au CM1** (c3-6) ; ± 8, 9, 18, 19, …, 98, 99, autre nombre de 10 à 9 999 (c3-5) ;
+÷ 4 et ÷ 8 sans taille propre, quotient décimal admis (260 ÷ 8 = 32,5, c3-4).
+
+**Tables : des modèles du CM1 font déjà exactement le point du CM2** (mêmes bornes) :
+`8fee3492` Tables d'addition (a + b, 2 à 10, CM1-035), `f24bb468` Trouver le terme manquant
+(8 + ? = 15, CM1-161), `50a9d91c` Tables de multiplication (a × b, 2 à 10, CM1-036). Pas de modèle
+« 7 × ? = 56 » (CM1-162 porte `7caa084f`, « Décomposer un entier en produit », autre chose).
+
+| #   | Point   | Proposition                                                                                                                                         | Catégorie, niveau        |
+| --- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| 1   | CM2-035 | `8fee3492` : **CM2 ajouté à ses niveaux** + tag (rien à écrire)                                                                                     | inchangée                |
+| 2   | CM2-148 | `f24bb468` : idem                                                                                                                                   | inchangée                |
+| 3   | CM2-036 | `50a9d91c` : idem                                                                                                                                   | inchangée                |
+| 4   | CM2-149 | **Neuf** « Compléter une multiplication à trou » : V1 7 × ? = 56, V2 ? × 8 = 56 ; facteurs 2 à 10                                                   | Multiplier / A trou, 21  |
+| 5   | CM2-045 | **Neuf** « Ajouter 9, 19, …, 99 » : V1 + 9, 19, …, 99 (+ 10, 20… puis − 1) ; V2 + 8, 18, …, 98 (puis − 2) ; autre nombre de 2 à 4 chiffres          | Somme astucieuse, 12     |
+| 6   | CM2-150 | **Neuf** « Soustraire 9, 19, …, 99 » : même découpage (− 10, 20… puis + 1 ou + 2) ; premier nombre de 2 à 4 chiffres, résultat positif              | Différence astucieuse, 5 |
+| 7   | CM2-050 | **Neuf** « Diviser par 4 » : V1 quotient entier, 3 chiffres ; V2 quotient entier, 4 chiffres ; V3 quotient décimal (130 ÷ 4 = 32,5 ; … ,25 ; … ,75) | Diviser / Quotient, 10   |
+| 8   | CM2-151 | **Neuf** « Diviser par 8 » : mêmes variations (dividende pair en V3 : quotient en ,25, ,5 ou ,75)                                                   | Diviser / Quotient, 11   |
+
+Corrigés : + 99 = + 100 − 1 (droite numérique en mots, pas de bloc) ; ÷ 4 = moitié de la moitié ;
+÷ 8 = trois moitiés successives (« Exemples de réussite CM2 2025 » p. 10). Erreurs typiques en
+`testSpecs` : + 100 sans le − 1, − 1 au lieu de + 1 dans la soustraction, une moitié oubliée,
+quotient décimal tronqué.
+
+**Question d'accès** : 1 à 3 → les élèves et le prof du **CM2** lisent 3 modèles publiés de plus
+(ceux du CM1 les gardent) ; 4 à 8 → brouillons, puis nœud + tag → personne ne lit rien de plus
+avant la publication.
+
+**Points d'attention** : 1 à 3 touchent des modèles du CM1 → prévenir la session `questions-cm1` ;
+« Diviser / Quotient » : la session CM1 y a deux brouillons (niveaux 2 et 3), je prends 10 et 11.
