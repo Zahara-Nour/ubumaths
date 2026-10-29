@@ -112,4 +112,19 @@
 	.cubes-cote {
 		fill: color-mix(in srgb, var(--color-foreground) 28%, var(--color-background));
 	}
+
+	/* Thème sombre : mélanger vers le premier plan ÉCLAIRCIT ; les dosages
+	   s'inversent pour garder la même lumière (dessus le plus clair, côté le plus
+	   foncé), sinon le relief se lit à l'envers */
+	:global(.dark) .cubes-dessus {
+		fill: color-mix(in srgb, var(--color-foreground) 40%, var(--color-background));
+	}
+
+	:global(.dark) .cubes-devant {
+		fill: color-mix(in srgb, var(--color-foreground) 22%, var(--color-background));
+	}
+
+	:global(.dark) .cubes-cote {
+		fill: color-mix(in srgb, var(--color-foreground) 8%, var(--color-background));
+	}
 </style>
