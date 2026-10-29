@@ -134,6 +134,7 @@ function nodeLines(node: ASTNode): number {
 		case 'stat-chart':
 		case 'qr':
 		case 'horloge':
+		case 'partage':
 		case 'operation':
 		case 'collection':
 		case 'monnaie':
