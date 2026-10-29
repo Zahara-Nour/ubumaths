@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, phase 0 du lot 4 validée._
+_Mis à jour le 2026-10-29, après #1987._
 
-- **État** : lot 3 clos (9/9 publiés). Lot 4 (problèmes, 10 modèles) : phase 0 validée (§ 10), en écriture.
-- **Prochaine action** : PR des fichiers du lot 4 (CI verte → merge) ; puis David lance `create-questions --dir scripts/questions/ce1-4 --publier` (brouillons en prod) ; puis migration nœud + tag.
-- **En attente de David** : rien.
-- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes (deux décimales), `zeros: off` ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule initiale.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `feat/questions-ce1-lot4`.
+- **État** : lot 3 clos (9/9 publiés). Lot 4 (problèmes, 10 modèles, § 10) : fichiers mergés (#1987), rien en prod.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce1-4 --publier` (brouillons en prod) ; relever les `id` ; migration nœud + tag (gabarit du lot 3) et son test ; page à cocher.
+- **En attente de David** : le `create-questions --publier` du lot 4.
+- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes (deux décimales), `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`), pas `type` ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule initiale ; aucun lien de session dans une PR.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -364,3 +364,4 @@ suivies (« ok, je valide ») :
 tag ne change aucune règle.
 
 - 2026-10-29 : écrit (`lot-ce1-4.py`), `create-questions` en simulation 10/10 (87 specs) ; `question:specs` 200 tirages par variation, verts ; relecture des tirages : « deux gâteaux » → « deux achats », nombre hors formule, « tout le monde tient » pour l'album, monnaie rendue sur 5 € par complément (de 1,95 € à 2 €, puis à 5 €) au lieu de « 5 − 1,95 ». 10 brouillons en base locale ; aperçu admin : prix affichés « 1,10 € », 6,65 juste, corrigé lisible ; case choix oui / non juste.
+  \n- 2026-10-29 : #1987 mergée (CI verte) ; brouillons en prod à créer par David.\n

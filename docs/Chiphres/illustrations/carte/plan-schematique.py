@@ -1,7 +1,9 @@
 # Plan schématique de la carte du Royaume (validé par David le 2026-10-29).
-# Usage : python3 plan-schematique.py plan-schematique.svg
+# Usage : python3 plan-schematique.py plan-schematique.svg [--sans-texte]
+# Couleurs des provinces : lignes « Pour l'illustration » du Compendium (2026-10-29).
+# --sans-texte : même plan sans aucun texte, pour servir de référence à l'IA (qui recopie les lettres).
 # Rendu PNG : Chromium de Playwright (viewport 1100×860, deviceScaleFactor 2) ; magick ne trouve pas les polices.
-import math, random, sys
+import math, random, re, sys
 
 W, H = 1100, 860
 INK = '#1B2232'
@@ -75,12 +77,12 @@ SEA = mix('#2F62B0', .40)
 RIVER = mix('#2F62B0', .85)
 # (nom, secteur (angle début, angle fin), teinte, capitale, position de la capitale, étape, position du nom)
 PROV = [
-    ('Yoyolande', (295, 360), mix('#1F9346', .30), 'Sinusborg', geo(18.65, 54.36), 3, geo(17.3, 53.8)),
-    ('Bedonstan', (0, 75), mix('#593B26', .28), 'Lobatchevsk', geo(21.4, 53.55), 4, geo(21.9, 53.0)),
-    ('Glitchistan', (75, 165), mix('#1B2232', .22), 'Turingrad', geo(22.2, 51.85), 6, geo(22.28, 51.41)),
-    ('Patatovie', (165, 215), mix('#C98A2E', .30), 'Cracovenn', geo(19.94, 50.06), 5, geo(20.44, 50.62)),
+    ('Yoyolande', (295, 360), mix('#8F2447', .28), 'Sinusborg', geo(18.65, 54.36), 3, geo(17.3, 53.8)),
+    ('Bedonstan', (0, 75), mix('#1F9346', .30), 'Lobatchevsk', geo(21.4, 53.55), 4, geo(21.9, 53.0)),
+    ('Glitchistan', (75, 165), mix('#AE4E1F', .30), 'Turingrad', geo(22.2, 51.85), 6, geo(22.28, 51.41)),
+    ('Patatovie', (165, 215), mix('#3E8E86', .30), 'Cracovenn', geo(19.94, 50.06), 5, geo(20.44, 50.62)),
     ('Nombrilie', (215, 250), mix('#F3C025', .45), 'Empoche-les-Bains', None, 1, geo(18.55, 51.38)),
-    ('Pifométrie', (250, 295), mix('#8F2447', .28), 'Bonneteau-sur-Vistule', None, 2, geo(15.6, 52.75)),
+    ('Pifométrie', (250, 295), mix('#593B26', .28), 'Bonneteau-sur-Vistule', None, 2, geo(15.6, 52.75)),
 ]
 
 # Vistule : Pythagoriades (Bedonstan) → Glitchistan → Cracovenn (Patatovie) → Nombrilie → Bonneteau (Pifométrie)
@@ -166,4 +168,7 @@ o.append(f'<text x="{W - 20}" y="{H - 40}" font-size="18" text-anchor="end" font
 o.append(f'<text x="{W - 20}" y="{H - 18}" font-size="13" text-anchor="end" fill="{INK}">plan schématique validé le 2026-10-29 · étapes : ordre digestif</text>')
 o.append('</svg>')
 
-open(sys.argv[1], 'w').write('\n'.join(o))
+svg = '\n'.join(o)
+if '--sans-texte' in sys.argv:
+    svg = re.sub(r'<text\b.*?</text>', '', svg, flags=re.S)
+open(sys.argv[1], 'w').write(svg)
