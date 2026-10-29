@@ -5,17 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 3 écrit, #1978 ouverte (13 checks verts, « CI Summary » en file d'attente)._
+_Mis à jour le 2026-10-29, après #1978 (lot 3 mergé)._
 
-- **État** : lots 1 et 2 en prod (lot 1 en brouillon, lot 2 publié) ; lot 3 (statistiques, 9 modèles) écrit sur
-  `feat/questions-4-lot-3` (§ 17), essayé en base locale.
-- **Prochaine action** : `gh pr checks 1978` ; verte → merger #1978 (pas de merge en rouge), puis David lance `create-questions --dir scripts/questions/4-lot-3
---publier` ; relever les `id` ; migration nœud + tag (4-045 **et 3-032** pour le tableur, grades 4 et 3).
-- **En attente de David** : publication des 7 brouillons du lot 1 ; `--publier` du lot 3 après le merge.
+- **État** : lots 1 et 2 en prod (lot 1 en brouillon, lot 2 publié) ; lot 3 (statistiques, 9 modèles, § 17)
+  mergé (#1978), pas encore créé en prod.
+- **Prochaine action** : David lance `pnpm create-questions --dir scripts/questions/4-lot-3 --publier` (avec `!`) ;
+  relever les 9 `id` (MCP) ; migration nœud + tag sur le gabarit `20261029220000_questions_4_lot2_rangement_tags.sql`
+  (4-045 **et 3-032** pour le tableur, grades 4 et 3), nouvelle branche dans le worktree depuis `origin/main`.
+- **En attente de David** : `--publier` du lot 3 ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
-  `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit ; QCM = case choix ; pas de code en
-  ligne (accents graves) dans ubumark ; `median` absente des `eval` ; port 5176 souvent pris par une autre session.
-- **Worktree / branche** : `../ubumaths-wt-questions-4`, `feat/questions-4-lot-3`.
+  `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
+  passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
+- **Worktree / branche** : `../ubumaths-wt-questions-4`, `feat/questions-4-lot-3` (mergée, à remplacer).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
