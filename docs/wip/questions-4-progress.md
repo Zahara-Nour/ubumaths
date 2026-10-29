@@ -318,3 +318,47 @@ niveau 3 ; 4-013 ouvre Fractions / Calculer / Enchaînements.
 - Migration et test repris du lot 2 de la 5e (`20261029170000`, qui gère déjà les points à la notion). Question
   d'accès : § 9.3 (personne ne gagne d'accès), validée avec la phase 0.
 - #1948 mergée (CI verte, `security-auditor` sans finding) ; `db:migrate` le 2026-10-29 ; vérifié en prod (MCP).
+
+## 12. Lot 2 (proportionnalité et pourcentages) : phase 0 (proposée le 2026-10-29)
+
+### 12.1 Relevé (MCP, 2026-10-29)
+
+- Points du lot, tous sans modèle : 053, 054, 056, 057, 080, 058, 059 (4-052 et 4-055 sont déjà couverts).
+- Voisins à ne pas doubler : 6e Pourcentages / Calculer 1-6 (6-141 : 50 %, 10 %, a % de b·10, 25 %, 75 %) ;
+  3e Pourcentages / Variations 1-2 (3-068, 3-069 : augmenter de 10 à 100 % **sans** coefficient) ; 2de
+  Pourcentages / Variations 3-11 (2-366 : coefficient pour t de 1 à 100, puis taux, évolutions successives) ;
+  4e Tableaux / 4e proportionnelle 3 (4-055). 5-086 et 5-140 (5e, sans modèle) : chantier de la 5e.
+- « Pourcentages / Variations » est pris de 1 à 11 par la 3e et la 2de : la 4e ne peut pas s'y glisser sans
+  renuméroter ces modèles ; d'où une sous-notion neuve pour le coefficient multiplicateur.
+- Aucune catégorie « Ratios ».
+
+### 12.2 Modèles proposés (7, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                     | Variations                                                                                                                                                                                                         | Réponse           |
+| ----- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------- |
+| 053   | Comparer avec un rapport (Proportionnalité / Ratios / Comparer, 1)             | 1) rapport de a à b, simplifié (12 filles, 18 garçons : 2/3) ; 2) « AB = 15 cm, CD = 5 cm : AB = ? × CD », puis CD = ? × AB (1/3) ; 3) deux sirops au ratio 1 : 4 et 2 : 7 : lequel est le plus sucré ? (cas tiré) | case · case choix |
+| 054   | Égalités de rapports (Proportionnalité / Ratios / Égalités de rapports, 1)     | 1) x/2 = y/3, x donné : y = ? ; 2) a/2 = b/3 = c/7, a donné : c = ? (borne) ; 3) « 6, 9 et 21 sont-ils dans le ratio 2 : 3 : 7 ? » oui / non (cas tiré)                                                            | case · case choix |
+| 056   | Calculer avec des pourcentages (Proportionnalité / Pourcentages / Calculer, 7) | 1) 1 % de c (c de 200 à 5 000) ; 2) t % de c, t hors automatismes de 6e (5, 15, 30, 35, 45, 60) ; 3) retrouver le tout : « 20 % d'un nombre valent 30 : ce nombre ? »                                              | case              |
+| 058   | Coefficient multiplicateur (Proportionnalité / Pourcentages / Coefficient, 1)  | 1) un prix passe de 80 € à 100 € : par quel nombre a-t-il été multiplié ? (1,25) ; 2) idem en baisse (0,75) ; 3) « multiplier par 0,9 : augmentation / diminution / ni l'un ni l'autre » (cas tiré, 1 compris)     | case · case choix |
+| 057   | Augmentation et coefficient (Proportionnalité / Pourcentages / Coefficient, 2) | 1) augmenter de t %, c'est multiplier par ? (t : 5, 7, 10, 15, 20, 25, 40, 50, 100) ; 2) prix P augmenté de t % avec le coefficient ; 3) multiplier par 1,35 : augmenter de ? %                                    | case              |
+| 080   | Diminution et coefficient (Proportionnalité / Pourcentages / Coefficient, 3)   | miroir de 057 : 1) diminuer de t %, c'est multiplier par ? ; 2) prix P diminué de t % ; 3) multiplier par 0,85 : diminuer de ? %                                                                                   | case              |
+| 059   | Partage proportionnel (Proportionnalité / Ratios / Partage proportionnel, 1)   | 1) partager N dans le ratio a : b, part du premier (5 : 11, borne) ; 2) trois parts a : b : c (4 : 3 : 2), part demandée tirée ; 3) mises de 30 € et 50 €, gain de 120 € partagé proportionnellement aux mises     | case              |
+
+- Pas de case « 2 : 3 » (ratio non saisi tel quel) : le ratio est donné, la réponse est un nombre ou une fraction.
+- Plages : nombres entiers ou décimaux simples ; N multiple de a + b (partages exacts) ; t et P tels que le
+  résultat ait au plus deux décimales (prix).
+- `testSpecs` d'erreurs typiques : 053 → 3/2 (rapport inversé) ; 054 → x + 1 (additif) ; 056 → 30 × 0,2 = 6 ;
+  058 → 100/80 et 80/100 échangés ; 057 → 1,5 pour + 5 %, 0,2 ou 20 pour + 20 % ; 080 → 1,2 ou 0,2 pour
+  − 20 % ; 059 → N/2 (partage égal).
+
+### 12.3 Question d'accès
+
+Comme le lot 1 : brouillons, puis migration nœud + tag ; **personne** ne gagne d'accès. À la publication, les
+élèves de 4e voient 7 modèles de plus.
+
+### 12.4 Questions à David
+
+1. Valider les 7 modèles du § 12.2 ?
+2. Catégories neuves : domaine **Ratios** (sous-notions Comparer, Égalités de rapports, Partage proportionnel) et
+   **Pourcentages / Coefficient** (058, 057, 080 aux niveaux 1-3), plutôt que de renuméroter « Variations » ?
+3. 4-056 à la suite de la 6e (Pourcentages / Calculer, niveau 7) ?
