@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1934 et la publication du lot 0-exponentielle._
+_Mis à jour le 2026-10-29, relevé du lot 0-trigo (§ 11)._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) et 0-exponentielle (17, § 10) publiés.
-- **Prochaine action** : lot 0-trigo (brouillons du thème, § 3.8), puis produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
-- **En attente de David** : rien.
-- **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation` ni `choix` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
-- **Worktree / branche** : aucun.
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) et 0-exponentielle (17, § 10) publiés ; lot 0-trigo relevé (§ 11 : 8 brouillons, instantané, specs vertes).
+- **Prochaine action** : corrections du lot 0-trigo selon les réponses de David, puis page à cocher ; ensuite produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
+- **En attente de David** : Q-T1 (174e202b, dc4b8d08 : simplification littérale, contraire à l1s-3), Q-T2 (cos² + sin² = 1 en 1re), Q-T3 (blocs `trig` non dessinés par la page à cocher), go sur C1-C2 (§ 11).
+- **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `chore/questions-1spe-trigo`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -418,3 +418,35 @@ publiées ; aucun `updated_at` postérieur aux migrations de 08 h 35 UTC, déjà
 
 e572933c : « ok » (David, 2026-10-28, sur reco : rien à corriger, C1 déjà appliqué). Corrections mergées (#1934) ; 17/17
 validés.
+
+## 11. Lot 0-trigo : vérification des brouillons
+
+_2026-10-29. 8 brouillons : les 6 tagués d'un point de la trigonométrie (aad6c700, f7194c9d → 304 ; ee4e2ac6 → 305 ;
+679a2e3e → 307 ; 4b3c1d88 → 409 ; 5a89b292 → 410) et les 2 sans tag que D3 range en 307 (174e202b, dc4b8d08). fece187e et
+afd9b3ff (TSPE-457) restent hors du lot (D3 : `1_SPE` à retirer). Instantané `scripts/questions/1spe-0-trigo/`,
+`question:specs --apercu 3` puis un aperçu par variation (48), tirages forcés sur ee4e2ac6 (60 par variation) et
+174e202b v12 ; sorties dans le scratchpad de la session. Aucun modèle publié sur ces points._
+
+**Mécanique** : 8 / 8 verts, 247 specs, 2 400 tirages réussis.
+
+**Bornes** : réels lus ou ramenés dans ]−π ; π] parmi les valeurs remarquables et leurs associés (±x, π ± x, à 2kπ près),
+conformes à l1s-3 ; conversions degrés ↔ radians, y compris hors valeurs remarquables (π/12, π/5, π/9…), permises par 409. Deux écarts :
+
+- **Q-T1** : 174e202b (13 variations : cos(−x), sin(π − x), cos(π/2 + x), cos(x − 6π)…) et dc4b8d08 (5 variations :
+  « A = cos(π − x) + 3 cos(x + 2π) ») demandent une **simplification littérale**, que l1s-3 exclut en 1re spé (« valeurs
+  numériques seulement, pas de simplification littérale (cos(π − x) + sin(π + x)) »). D3 (tag 1SPE-307) les rangeait
+  d'après leur titre.
+- **Q-T2** : ee4e2ac6 (cos x connaissant sin x) repose sur cos² x + sin² x = 1, que le BO de 1re spé n'écrit pas ; c'est
+  Pythagore dans le cercle de rayon 1 (lien avec le triangle rectangle, 305).
+
+**Constats** :
+
+- **C1** : « on fait 1 tour(s) complet(s) » (174e202b v12, v13) : accord à faire (`{{if:k==1|…|…}}`), si le modèle reste.
+- **C2** : ee4e2ac6 v7 : « √(8/9) = (√4 × √2)/3 » saute √8/3 ; écrire « √(8/9) = √8/3 = (2√2)/3 ». Variation à un seul
+  tirage (sin x = 1/3), laissée telle.
+- Écartés : `\frac{\pi}{ 6 }` (espaces, sans effet au rendu) ; titre de 4b3c1d88 « Convertir des degrés en radians »
+  alors que v2 va des radians aux degrés (changer le titre change la clé de `publier-lot`) ; 5a89b292 à une valeur par
+  variation (voulu : une variation par angle remarquable).
+
+**Q-T3** : la page à cocher ne dessine pas les blocs ` ```trig ` (montrés par leur source) ; ils portent l'énoncé
+d'aad6c700 (le point M à lire) et les corrigés de 6 modèles.
