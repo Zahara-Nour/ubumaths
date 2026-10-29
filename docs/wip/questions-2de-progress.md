@@ -464,7 +464,7 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
   `updated_at` inchangé, brouillons. Page à cocher (aucune alerte) :
   https://claude.ai/artifact/Pg2wcdRUGdQpjQs3FdjJsb
 
-## 19. Lot 3 « puissances, racines, fractions » : relevé et phase 0 (proposée le 2026-10-29, à valider)
+## 19. Lot 3 « puissances, racines, fractions » : relevé et phase 0 (proposée le 2026-10-29)
 
 **Relevé MCP (prod, 2026-10-29)** : 2-270, 2-272, 2-423, 2-238 sans modèle. **2-260 n'est plus vide** :
 `questions-4` y a rattaché le 2026-10-28 a1ae1558, 2158a2fc, 17f3dfcd ((aᵐ)ⁿ et (10ᵐ)ⁿ, exposants 2 à 9,
@@ -510,3 +510,21 @@ nœud + tag.
 - **L3-c — 2-272 littéral** : dénominateurs monômes seulement (x, 2x, x²), ou aussi x + 1 (1/x − 1/(x + 1)) ?
   → Je recommande **monômes seulement**. Les dénominateurs affines reviendront avec le quotient = k
   (2-269, hors lot).
+
+**Décisions de David (2026-10-29)** : phase 0 validée avec mes trois recommandations — L3-a notion
+« Puissances : calculs » ; L3-b oui ; L3-c monômes seulement.
+
+## 20. Lot 3, PR des fichiers (2026-10-29)
+
+- Script `questions-2de/lot-puissances-2de.py` → `scripts/questions/2de-puissances/` (8 modèles, 23 variations,
+  68 specs) ; `create-questions` en simulation : tout vert.
+- Catégories (niveaux relevés en prod) : Puissances › Calculer › « Puissance d'un produit » 1, « Puissance
+  d'un quotient » 1, « Mixer tout ça » 2 et 3 ; Calcul littéral › Calculs › « Avec des puissances » 3 ;
+  Racines carrées › Manipuler › « Propriétés » 2 ; Calcul littéral › Transformation › « Écritures
+  fractionnaires » 1 ; Fractions › Apprivoiser › « Simplification » 7.
+- **Écart à la phase 0** (modèle 5) : 3x³y⁻² devait être accepté pour 6x⁴y/(2xy³). Le jugement exact le
+  refuse (forme), et un motif `requiredForm` refusait aussi 3x³/y². La consigne demande donc « un quotient,
+  sans exposant négatif » : 3x³y⁻² = forme refusée, 6x³/(2y²) = à améliorer.
+- Relecture des tirages : « 1z/2 » corrigé (numérateur réduit à 1, modèle 7).
+- Base locale : 8 brouillons créés ; aperçu admin joué ((2t³)² : 4t⁶ juste, correction lisible ;
+  8 × 10⁷ × 9 × 10⁻⁴ : réponse fausse refusée, attendu 7,2 × 10⁴ affiché avec la virgule).

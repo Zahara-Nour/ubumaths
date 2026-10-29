@@ -1,0 +1,271 @@
+{
+	"title": "Calculer avec des puissances",
+	"description": "Calcul numérique, exposants relatifs : résultat entier, fraction irréductible, notation scientifique",
+	"grades": ["2"],
+	"theme": "Puissances",
+	"domain": "Calculer",
+	"subdomain": "Mixer tout ça",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\dfrac{ {{k}}^{ {{a}} }\\times {{k}}^{ {{b}} } }{ {{k}}^{ {{c}} } }=?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|3"
+				},
+				{
+					"name": "r",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "3..7"
+				},
+				{
+					"name": "b",
+					"expression": "-5..-1"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(a)+(b)-(r)"
+				}
+			],
+			"conditions": ["(k)^(r) <= 81", "c != 0", "c != 1", "(a)+(b) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k)^(r)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit d'abord une seule puissance de ${{k}}$. Règles : $a^m\\times a^n=a^{m+n}$ ; $\\dfrac{a^m}{a^n}=a^{m-n}$ ; $(a^m)^n=a^{m\\times n}$.",
+					"$$\\dfrac{ {{k}}^{ {{a}} }\\times {{k}}^{ {{b}} } }{ {{k}}^{ {{c}} } }={{k}}^{ {{a}}+{{if:b<0|({{b}})|{{b}}}}-{{if:c<0|({{c}})|{{c}}}} }=\\textcolor{{{color:primary.0}}}{{{k}}^{ {{r}} }}=\\textcolor{{{color:primary.1}}}{{{eval:(k)^(r)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule et donne le résultat sous la forme d'une fraction irréductible.\n\n$$\\dfrac{2^{ {{a}} }\\times 3^{ {{b}} } }{2^{ {{c}} }\\times 3^{ {{d}} } }=?$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "-2..2"
+				},
+				{
+					"name": "v",
+					"expression": "-2..2"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..4"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(a)-(u)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(b)-(v)"
+				}
+			],
+			"conditions": ["c >= 1", "d >= 1", "u < 0 or v < 0", "u > 0 or v > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^(u)*3^(v)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On regroupe les puissances de $2$, puis celles de $3$ : $\\dfrac{a^m}{a^n}=a^{m-n}$.",
+					"$$\\dfrac{2^{ {{a}} }\\times 3^{ {{b}} } }{2^{ {{c}} }\\times 3^{ {{d}} } }=\\textcolor{{{color:primary.0}}}{2^{ {{u}} }}\\times\\textcolor{{{color:primary.1}}}{3^{ {{v}} }}=\\textcolor{{{color:primary.2}}}{{{eval:2^(u)*3^(v)}}}$$",
+					"Un exposant négatif envoie la puissance au dénominateur : $a^{-n}=\\dfrac{1}{a^n}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule et donne le résultat en notation scientifique.\n\n$${{p}}\\times10^{ {{a}} }\\times{{q}}\\times10^{ {{b}} }=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "-9..-2"
+				},
+				{
+					"name": "w",
+					"expression": "eval:(a)+(b)"
+				}
+			],
+			"conditions": ["(p)*(q) >= 10", "w != 0", "w != -1", "w != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p)*(q)/10;d}}\\times10^{ {{eval:(a)+(b)+1}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie les nombres entre eux, puis les puissances de $10$ entre elles.",
+					"$${{p}}\\times10^{ {{a}} }\\times{{q}}\\times10^{ {{b}} }=\\textcolor{{{color:primary.0}}}{{{eval:(p)*(q)}}}\\times\\textcolor{{{color:primary.1}}}{10^{ {{eval:(a)+(b)}} }}$$",
+					"${{eval:(p)*(q)}}$ n'est pas compris entre $1$ et $10$ : ${{eval:(p)*(q)}}={{eval:(p)*(q)/10;d}}\\times10$, donc",
+					"$${{eval:(p)*(q)}}\\times10^{ {{eval:(a)+(b)}} }={{eval:(p)*(q)/10;d}}\\times10^{1+{{if:w<0|({{w}})|{{w}}}} }=\\textcolor{{{color:primary.2}}}{{{eval:(p)*(q)/10;d}}\\times10^{ {{eval:(a)+(b)+1}} }}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2⁵ × 2⁻² / 2¹ = 4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "2",
+				"a": "5",
+				"b": "-2",
+				"c": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 2² non calculé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "2",
+				"a": "5",
+				"b": "-2",
+				"c": "1"
+			},
+			"answers": ["2^2"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : signe de −2 perdu (2⁶ = 64)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "2",
+				"a": "5",
+				"b": "-2",
+				"c": "1"
+			},
+			"answers": ["64"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2³ × 3²)/(2⁴ × 3) = 3/2",
+			"variationIndex": 1,
+			"variables": {
+				"u": "-1",
+				"v": "1",
+				"a": "3",
+				"b": "2",
+				"c": "4",
+				"d": "1"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2/3 (fraction renversée)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "-1",
+				"v": "1",
+				"a": "3",
+				"b": "2",
+				"c": "4",
+				"d": "1"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Fraction non réduite (6/4)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "-1",
+				"v": "1",
+				"a": "3",
+				"b": "2",
+				"c": "4",
+				"d": "1"
+			},
+			"answers": ["\\frac{6}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "4 × 10⁵ × 3 × 10⁻² = 1,2 × 10⁴",
+			"variationIndex": 2,
+			"variables": {
+				"p": "4",
+				"q": "3",
+				"a": "5",
+				"b": "-2"
+			},
+			"answers": ["1{,}2\\times10^4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 12 × 10³ (pas scientifique)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "4",
+				"q": "3",
+				"a": "5",
+				"b": "-2"
+			},
+			"answers": ["12\\times10^3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : exposant non corrigé (1,2 × 10³)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "4",
+				"q": "3",
+				"a": "5",
+				"b": "-2"
+			},
+			"answers": ["1{,}2\\times10^3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
