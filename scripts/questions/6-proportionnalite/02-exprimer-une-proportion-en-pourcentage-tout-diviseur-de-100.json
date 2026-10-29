@@ -1,0 +1,119 @@
+{
+	"title": "Exprimer une proportion en pourcentage (tout diviseur de 100)",
+	"description": "Écrire la partie sur le tout, puis la fraction égale sur 100 : 7 billes sur 20, c'est 35/100, soit 35 % (le tout vaut 10, 20, 25 ou 50)",
+	"grades": ["6"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Proportion",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:c==0|Dans un sac de ${{d}}$ billes, ${{a}}$ sont rouges.|Sur un parking de ${{d}}$ places, ${{a}}$ sont occupées.}}\n\n{{if:c==0|Quel pourcentage des billes sont rouges ?|Quel pourcentage des places sont occupées ?}}\n\n$$?\\,\\%$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "10|20|25|50"
+				},
+				{
+					"name": "k",
+					"expression": "eval:100/d"
+				},
+				{
+					"name": "a",
+					"expression": "2..49"
+				}
+			],
+			"conditions": ["a<d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportion en pourcentage.** On écrit la proportion (la partie sur le tout) sous forme d'une fraction, puis on cherche la fraction égale de dénominateur $100$.",
+					"$$\\frac{{{a}}}{{{d}}} = \\frac{{{a}} \\times {{k}}}{{{d}} \\times {{k}}} = \\frac{{{eval:a*k}}}{100}$$",
+					"$\\textcolor{{{color:primary.0}}}{{{solution}}\\,\\%}$ {{if:c==0|des billes sont rouges|des places sont occupées}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 sur 20 : 35 %",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"d": "20",
+				"k": "5",
+				"a": "7"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 (la partie)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"d": "20",
+				"k": "5",
+				"a": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,35",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"d": "20",
+				"k": "5",
+				"a": "7"
+			},
+			"answers": ["0,35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 13 (20 − 7)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"d": "20",
+				"k": "5",
+				"a": "7"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 sur 25 : 36 %",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"d": "25",
+				"k": "4",
+				"a": "9"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

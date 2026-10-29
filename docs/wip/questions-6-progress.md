@@ -8,10 +8,10 @@
 _Mis à jour le 2026-10-29, après #1949._
 
 - **État** : lots 1 à 5 en prod. Lot 5 (scissions des fractions) clos : 7 neufs publiés, migration de contenu des 4 d'origine jouée (#1949, MCP vérifié, `create-questions` en simulation : `6-fractions/` 10/10 identiques).
-- **Prochaine action** : phase 0 du lot « Pourcentages, proportionnalité, grandeurs » (§ 4, point 5 : 139, 140, 189, 211, 145-147, 153, 156, 158, 186), dans un worktree neuf (`git worktree add -b feat/questions-6-<lot> ../ubumaths-wt-questions-6 origin/main`).
-- **En attente de David** : les 4 verdicts de `revue-modeles` (02, 03, 04, 08) portent sur l'ancien contenu : les refaire ? Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **Prochaine action** : phase 0 du lot 6 écrite (§ 13, 13 modèles, coupés en 6a / 6b) ; à la validation, écrire 6a.
+- **En attente de David** : validation du § 13 (4 questions) ; les 4 verdicts de `revue-modeles` (02, 03, 04, 08) portent sur l'ancien contenu : les refaire ? Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
 - **Pièges en cours** : 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`). 3a7a5711 : NE PAS publier.
-- **Worktree / branche** : aucun (retiré après #1949).
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-proportionnalite`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -838,3 +838,110 @@ migration de contenu après la publication des 7).
   dans son commentaire). `db:migrate` depuis le dépôt principal (seule migration manquante) : MCP md5 = « après »
   (90ca4921…, 86741b68…, 98074702…, 886149a8…), `published`, niveaux et tags inchangés ; `create-questions` en
   simulation sur `6-fractions/` : 10/10 « déjà en base ». Le piège `--publier` sur `6-fractions/` est levé.
+
+## 13. Lot 6 « Pourcentages, proportionnalité, grandeurs » : phase 0 (proposée le 2026-10-29, à valider)
+
+Relevé MCP (2026-10-29) : les 11 points (139, 140, 189, 211, 145, 146, 147, 153, 156, 158, 186) ont **0 modèle**.
+Aucun modèle voisin à reprendre (CM1 : « Trouver le quadruple » ; CE1-CM1 : catégories Double et moitié, Triple et
+tiers, Quadruple et quart, sur les calculs, pas sur la relation). Tous les nœuds de rangement existent : aucun
+changement de l'arbre. Niveaux : **à la suite** des niveaux publiés de chaque catégorie (règle du lot 5).
+
+**13 modèles, au-delà des 3 à 10 d'un lot** → deux lots, une phase 0 commune :
+**6a « Pourcentages et proportionnalité »** (M1-M6) puis **6b « Grandeurs et probabilités »** (M7-M13).
+
+| #   | Modèle                                               | Point | Catégorie (niveau)                                      | Nœud                         | Réponse                 |
+| --- | ---------------------------------------------------- | ----- | ------------------------------------------------------- | ---------------------------- | ----------------------- |
+| M1  | Comprendre le sens d'un pourcentage                  | 139   | Proportionnalité / Pourcentages / Définition (**4**)    | pourcentages > définition    | case nombre             |
+| M2  | Exprimer une proportion en pourcentage (tout ≤ 100)  | 140   | Proportionnalité / Pourcentages / Proportion (**1**)    | calculs de pourcentages      | case nombre             |
+| M3  | Exprimer une proportion en pourcentage (tout > 100)  | 140   | idem (**2**)                                            | calculs de pourcentages      | case nombre             |
+| M4  | Reconnaître la proportionnalité par son effet        | 189   | Proportionnalité / Situations / Définition (**1**)      | situations > caractérisation | case choix              |
+| M5  | Comprendre « prix au kilo », « par minute »          | 189   | idem (**2**)                                            | situations > caractérisation | case choix, case nombre |
+| M6  | Repérer double, moitié, quadruple, quart, tiers      | 211   | Proportionnalité / Situations / Relations (**1**)       | voir question 2              | case choix, case nombre |
+| M7  | Le périmètre du disque est proportionnel au diamètre | 145   | Grandeurs / Périmètres / Périmètre d'un disque (**1**)  | périmètres > disque          | case choix, case nombre |
+| M8  | Connaître la formule du périmètre d'un disque        | 146   | idem (**2**)                                            | périmètres > disque          | case choix              |
+| M9  | Calculer le périmètre d'un disque                    | 147   | idem (**3**)                                            | périmètres > disque          | case nombre             |
+| M10 | Connaître le centimètre cube                         | 153   | Grandeurs / Volumes / Unités (**1**)                    | volumes > cube et pavé       | case choix, case nombre |
+| M11 | Années, siècles, millénaires                         | 156   | Grandeurs / Durées / Convertir (**13**)                 | durées > conversions         | case nombre             |
+| M12 | Résoudre un problème d'horaires et de durées         | 158   | Grandeurs / Durées / Problèmes (**1**)                  | durées > calcul de durées    | cases h et min          |
+| M13 | Une probabilité est comprise entre 0 et 1            | 186   | Probabilités / Apprivoiser / Probabilité simple (**2**) | expériences > probab. simple | case choix, case nombre |
+
+Comportements (nominal / limite / erreur) :
+
+- **M1** (139) — v1 « Dans un collège, 35 % des élèves sont demi-pensionnaires : combien sur 100 élèves ? » → 35 ;
+  v2 « Sur 100 élèves, 23 font du judo : quel pourcentage ? » → 23 % ; v3 « Tous » / « aucun » / « la moitié »
+  → 100 %, 0 %, 50 %. Limite : pourcentages entiers de 1 à 99 (v1, v2). Erreur : 0,35 ou 3,5 en v1.
+- **M2** (140) — « 7 élèves sur 20 portent des lunettes : quel pourcentage ? » → 35 % ; tout ∈ {10, 20, 25, 50},
+  partie < tout. Limite : partie = tout → 100 %. Erreurs : 7 (la partie), 0,35, 20 − 7.
+- **M3** (140) — « 120 élèves sur 400 » → 30 % ; tout ∈ {200, 300, 400, 500}, partie multiple de tout / 100 (résultat
+  entier). Erreurs : 120, 0,3, 3.
+- **M4** (189) — « Le prix est proportionnel à la masse. Quand la masse est multipliée par 3, le prix est… » :
+  multiplié par 3 / augmenté de 3 / multiplié par 6 / ne change pas. v2 avec « divisée par 2 ». Grandeurs seulement
+  (masse et prix, temps et distance, nombre d'objets et prix). Erreur : « augmenté de 3 ».
+- **M5** (189) — v1 case choix « Les pommes coûtent 3 € le kilo » ↔ « 1 kg coûte 3 € » (leurres : « 3 kg coûtent
+  1 € », « le sac coûte 3 € », « le prix ne dépend pas de la masse ») ; v2 « Le cœur de Léa bat 70 fois par minute :
+  combien de battements en 3 minutes ? » → 210 ; v3 « 5 kg de pommes coûtent 15 € : quel est le prix au kilo ? »
+  → 3 €. Erreurs : 73 (v2), 75 (v3). Voir question 1 (v3 relève-t-elle de 191 ?).
+- **M6** (211) — v1 « 12 est le … de 36 » : double / quadruple / moitié / tiers / quart (les cinq du BO, mélangés),
+  b ≤ 100 ; v2 « 12 est le tiers de ? » → 36 (relation tirée parmi les cinq). Erreurs : « triple » (sens inversé),
+  4 (v2 : 12 ÷ 3).
+- **M7** (145) — v1 « Le périmètre d'un disque de diamètre 3 cm vaut environ 9,42 cm. Et pour un diamètre de 6 cm ? »
+  → 18,84 (coefficient 2 à 4) ; v2 case choix « Quand le diamètre double, le périmètre est… » multiplié par 2 /
+  par 4 / augmenté de 2 / inchangé ; v3 « Périmètre ÷ diamètre vaut environ… » → 3,14 (borne : π, 3,14 au centième).
+  Erreur : 12,42 (+ 3, linéarité additive mal employée).
+- **M8** (146) — case choix : v1 diamètre D → $\pi \times D$ (leurres $\pi \times R$, $2 \times \pi \times D$,
+  $\pi \times D \times D$) ; v2 rayon R → $2 \times \pi \times R$.
+- **M9** (147) — « On prend 3,14 pour π. » v1 diamètre entier de 1 à 20 cm → 3,14 × D ; v2 rayon de 1 à 10 cm →
+  2 × 3,14 × R. Réponse décimale exacte. Erreurs : 3,14 × R (v2, rayon pris pour diamètre), 3,14 × D × D.
+- **M10** (153) — v1 case choix « Le volume d'un cube de 1 cm d'arête est 1… » cm / cm² / cm³ / dm³ ; v2 « Un pavé
+  est formé de 24 cubes de 1 cm d'arête : son volume ? » → 24 cm³ (n de 8 à 60, nombre de cubes donné, pas de
+  formule du pavé) ; v3 « Quelle unité pour le volume d'une boîte ? » parmi cm, cm², cm³. Version dessinée
+  (assemblage à dénombrer) : attend l'outil « assemblages de cubes » (§ 5, question 6).
+- **M11** (156) — v1 k siècles → années (k de 2 à 9) ; v2 millénaires → années ou siècles ; v3 année bissextile /
+  non bissextile → 366 / 365, puis 2 années non bissextiles → 730 jours. Erreurs : 30 au lieu de 300, 365 en
+  bissextile.
+- **M12** (158) — problèmes à deux étapes, réponse dans la forme des modèles de durées existants (cases h et min) :
+  v1 3 séances de 45 min → 2 h 15 ; v2 départ 7 h 50, trajet 2 h 25 + arrêt 15 min → 10 h 30 ; v3 film de 20 h 45 à
+  22 h 35, publicités 10 min → durée du film 1 h 40. Minutes < 60, horaires de jour (pas de passage à minuit).
+  Erreurs : 1 h 35 (v1, 135 lu en h), 10 h 15 (v2, arrêt oublié).
+- **M13** (186) — v1 case choix « Laquelle ne peut pas être une probabilité ? » parmi 0,5 / 1 / 0 / 1,2 (leurre
+  hors [0 ; 1] tiré : 1,2 ; 3/2 ; 120 %) ; v2 « Sac de boules toutes rouges : probabilité de tirer une rouge ? » → 1,
+  « une verte ? » → 0. Erreurs : 100 (v2), 1,2 accepté (v1).
+
+Déroulé : 6a puis 6b, chacun : script (`lot-6-proportionnalite.py`, `lot-6-grandeurs.py`) → JSON de
+`scripts/questions/6-proportionnalite/` et `6-grandeurs/` ; `checkTemplate` + `question:specs` ; base locale, aperçu
+admin ; PR contenu ; David : `create-questions --publier` (brouillons) ; migration nœud + tags ; page à cocher ;
+publication par `publier-lot`.
+
+Question d'accès (à trancher avant le SQL) : **personne ne gagne de lecture**. Les modèles neufs sont des brouillons
+(admin et auteur seuls) jusqu'à leur publication ; la migration ne fait que ranger et taguer. À la publication,
+ils deviennent lisibles comme tout modèle publié (élèves de 6e et professeurs), rien de plus.
+
+Questions à David :
+
+1. **M5 v3** « 5 kg coûtent 15 € : prix au kilo ? » : c'est aussi un retour à l'unité (191). La garder dans M5 (point
+   189 : l'expression « prix au kilo »), ou la retirer ? Reco : **la garder**, l'énoncé fait trouver la grandeur
+   « prix au kilo » que nomme le point.
+2. **Nœud de M6** (211 : double, quadruple, moitié, tiers, quart mélangés) : aucun nœud ne couvre les cinq. Reco :
+   **« Entiers : multiplication > triple et tiers »** (le libellé du point prend le tiers en exemple) ; autre choix :
+   un nœud neuf « relations multiplicatives » (migration de l'arbre).
+3. **Deux lots** (6a : M1-M6, 6b : M7-M13) plutôt qu'un lot de 13 ? Reco : **oui**.
+4. **Nouvelles catégories** : Pourcentages / Proportion, Situations / Définition et Relations, Périmètre d'un
+   disque, Volumes / Unités, Durées / Problèmes ; M11 à la suite de Durées / Convertir (13). D'accord ?
+
+**Décisions de David (2026-10-29, « je valide »)** : phase 0 du § 13 validée avec les quatre recos : M5 v3 gardée
+(point 189) ; M6 rangé sur « Entiers : multiplication > triple et tiers » ; deux lots, 6a (M1-M6) puis 6b (M7-M13) ;
+catégories proposées, M11 au niveau 13 de Durées / Convertir. Le domaine « Situations » s'écrit en entier
+« Situations de proportionnalité » (comme « Tableaux de proportionnalité »), la catégorie de M6 « Relations
+multiplicatives ». Verdicts de `revue-modeles` (02, 03, 04 « à revoir », 08 « validé ») : leurs commentaires
+demandaient tous la scission faite au lot 5 → reco : David les passe en « validé » depuis `/dev/modeles`, sans
+nouvelle revue.
+
+### 13.1 Écriture du lot 6a (2026-10-29)
+
+- `docs/wip/questions/lot-6-proportionnalite.py scripts/questions` → 6 modèles dans `scripts/questions/6-proportionnalite/`
+  (01 à 06 = M1 à M6). Écart à la phase 0 : tirages à partir de 2 (M1 v1-v2, M2) pour éviter « $1$ font du judo » ;
+  M2 sans le cas limite partie = tout.
+- `question:specs` à 300 tirages par variation : 6 fichiers, 3 600 tirages réussis, 39 specs vertes.
+- `create-questions` en simulation contre la prod : 6 « à créer ». Base locale (`.env.local`) : 6 brouillons créés ;
+  aperçu admin joué sur 04 (case choix, « Juste ») et 02 (case `?\,\%`, « Juste ») ; liens du dictionnaire posés
+  (proportionnel, masse, pourcentage).

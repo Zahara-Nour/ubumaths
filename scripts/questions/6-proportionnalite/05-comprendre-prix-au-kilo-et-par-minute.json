@@ -1,0 +1,188 @@
+{
+	"title": "Comprendre « prix au kilo » et « par minute »",
+	"description": "Relier les expressions de la vie courante à la proportionnalité : « 3 € le kilo », c'est le prix de 1 kg ; 70 battements par minute, c'est 210 en 3 minutes ; 15 € pour 5 kg, c'est 3 € le kilo",
+	"grades": ["6"],
+	"theme": "Proportionnalité",
+	"domain": "Situations de proportionnalité",
+	"subdomain": "Définition",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Au marché, les {{if:f==0|pommes|{{if:f==1|poires|tomates}}}} coûtent ${{p}}~\\unit{€}$ le kilo.\n\nCela signifie que :\n\n```choix\n- $1~\\unit{kg}$ de {{if:f==0|pommes|{{if:f==1|poires|tomates}}}} coûte ${{p}}~\\unit{€}$\n- ${{p}}~\\unit{kg}$ de {{if:f==0|pommes|{{if:f==1|poires|tomates}}}} coûtent $1~\\unit{€}$\n- le cageot de {{if:f==0|pommes|{{if:f==1|poires|tomates}}}} coûte ${{p}}~\\unit{€}$\n- le prix ne dépend pas de la masse achetée\n```",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "p",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**« Prix au kilo », « par minute ».** Ces expressions donnent la quantité pour une unité : le prix de $1~\\unit{kg}$, le nombre de battements en $1$ minute.",
+					"« ${{p}}~\\unit{€}$ le kilo » : $\\textcolor{{{color:primary.0}}}{1~\\unit{kg} \\text{ coûte } {{p}}~\\unit{€}}$. Le prix payé est proportionnel à la masse achetée."
+				]
+			}
+		},
+		{
+			"statement": "Au repos, le cœur de Léa bat ${{b}}$ fois par minute.\n\nCombien de fois bat-il en ${{n}}$ minutes ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "60..80"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**« Prix au kilo », « par minute ».** Ces expressions donnent la quantité pour une unité : le prix de $1~\\unit{kg}$, le nombre de battements en $1$ minute.",
+					"En $1$ minute, ${{b}}$ battements ; en ${{n}}$ minutes, ${{n}}$ fois plus :",
+					"$${{b}} \\times {{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Au marché, ${{m}}~\\unit{kg}$ de {{if:f==0|pommes|{{if:f==1|poires|tomates}}}} coûtent ${{t}}~\\unit{€}$.\n\nQuel est le prix au kilo ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "2..6"
+				},
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "eval:m*p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**« Prix au kilo », « par minute ».** Ces expressions donnent la quantité pour une unité : le prix de $1~\\unit{kg}$, le nombre de battements en $1$ minute.",
+					"Le prix au kilo, c'est le prix de $1~\\unit{kg}$ : ${{m}}$ fois moins que pour ${{m}}~\\unit{kg}$.",
+					"$${{t}} \\div {{m}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Le prix au kilo est de ${{p}}~\\unit{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 € le kilo : 1 kg coûte 3 €",
+			"variationIndex": 0,
+			"variables": {
+				"f": "0",
+				"p": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 kg coûtent 1 €",
+			"variationIndex": 0,
+			"variables": {
+				"f": "0",
+				"p": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "70 par minute, 3 minutes : 210",
+			"variationIndex": 1,
+			"variables": {
+				"b": "70",
+				"n": "3"
+			},
+			"answers": ["210"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 73 (70 + 3)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "70",
+				"n": "3"
+			},
+			"answers": ["73"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "15 € pour 5 kg : 3 € le kilo",
+			"variationIndex": 2,
+			"variables": {
+				"f": "0",
+				"m": "5",
+				"p": "3",
+				"t": "15"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 75 (15 × 5)",
+			"variationIndex": 2,
+			"variables": {
+				"f": "0",
+				"m": "5",
+				"p": "3",
+				"t": "15"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10 (15 − 5)",
+			"variationIndex": 2,
+			"variables": {
+				"f": "0",
+				"m": "5",
+				"p": "3",
+				"t": "15"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
