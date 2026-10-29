@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, relevé du lot 0-trigo (§ 11)._
+_Mis à jour le 2026-10-29, lot 0-trigo : D17 appliquée, page à cocher publiée (§ 11)._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) et 0-exponentielle (17, § 10) publiés ; lot 0-trigo relevé (§ 11 : 8 brouillons, instantané, specs vertes).
-- **Prochaine action** : corrections du lot 0-trigo selon les réponses de David, puis page à cocher ; ensuite produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
-- **En attente de David** : Q-T1 (174e202b, dc4b8d08 : simplification littérale, contraire à l1s-3), Q-T2 (cos² + sin² = 1 en 1re), Q-T3 (blocs `trig` non dessinés par la page à cocher), go sur C1-C2 (§ 11).
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) et 0-exponentielle (17, § 10) publiés ; lot 0-trigo : 6 brouillons, D17 appliquée, page à cocher publiée (§ 11).
+- **Prochaine action** : lire les verdicts de la page (https://claude.ai/artifact/NASe9bJes7g6kceK3wMjaF), corriger les « à revoir », PR des fichiers, `--mettre-a-jour` (ee4e2ac6) puis publication par David ; ensuite produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
+- **En attente de David** : relecture de la page à cocher (aad6c700 dans l'aperçu de l'admin : cercle non dessiné).
 - **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `chore/questions-1spe-trigo`.
 
@@ -450,3 +450,15 @@ conformes à l1s-3 ; conversions degrés ↔ radians, y compris hors valeurs rem
 
 **Q-T3** : la page à cocher ne dessine pas les blocs ` ```trig ` (montrés par leur source) ; ils portent l'énoncé
 d'aad6c700 (le point M à lire) et les corrigés de 6 modèles.
+
+**D17 (David, 2026-10-29, « je te suis » sur les recommandations de Q-T1, Q-T2, Q-T3 et C2)** :
+
+- Q-T1 : l1s-3 prévaut. 174e202b et dc4b8d08 sortent du lot (rangés dans `scripts/questions/1spe-0-trigo-attente/`),
+  restent en brouillon ; le tag 1SPE-307 de D3 est annulé pour eux (aucun point de terminale ne leur va exactement :
+  TSPE-597 et 598 ne couvrent que −x et 2π). C1 sans objet.
+- Q-T2 : ee4e2ac6 gardé (cos² x + sin² x = 1 : Pythagore dans le cercle de rayon 1, point 305).
+- Q-T3 : la page montre les blocs `trig` par leur source ; aad6c700 à relire dans l'aperçu de l'admin.
+- C2 : ee4e2ac6 v7, « √(8/9) = √8/3 = (√4 × √2)/3 = (2√2)/3 » ; 27/27 specs vertes, tirage relu.
+
+**Page à cocher** : https://claude.ai/artifact/NASe9bJes7g6kceK3wMjaF (6 fiches, 30 exemples, 4 alertes « bloc trig non
+dessiné »), collection `verdicts` vide à la publication.

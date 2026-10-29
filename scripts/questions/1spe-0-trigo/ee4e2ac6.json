@@ -240,7 +240,7 @@
 				"steps": [
 					"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\cos^2x=1-\\sin^2x$.",
 					"$$\\cos^2x=1-\\left(\\frac{ {{a}} }{ {{b}} }\\right)^2=1-\\frac{ {{eval:a^2}} }{ {{eval:b^2}} }=\\frac{ {{d}} }{ {{eval:b^2}} }$$",
-					"Donc $\\cos x=\\sqrt{\\frac{8}{9}}=\\frac{\\sqrt{4}\\times\\sqrt{2}}{3}=\\frac{2\\sqrt{2}}{3}$ ou $\\cos x=-\\frac{2\\sqrt{2}}{3}$.",
+					"Donc $\\cos x=\\sqrt{\\frac{8}{9}}=\\frac{\\sqrt{8}}{3}=\\frac{\\sqrt{4}\\times\\sqrt{2}}{3}=\\frac{2\\sqrt{2}}{3}$ ou $\\cos x=-\\frac{2\\sqrt{2}}{3}$.",
 					"Comme $x\\in\\left[\\frac{\\pi}{2}\\,;\\pi\\right]$, $\\cos x\\leqslant0$ : $\\cos x=\\textcolor{{{color:primary.0}}}{-\\frac{2\\sqrt{2}}{3} }$."
 				]
 			}
