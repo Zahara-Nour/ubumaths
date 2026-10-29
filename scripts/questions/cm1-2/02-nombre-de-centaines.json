@@ -1,0 +1,179 @@
+{
+	"title": "Le nombre de centaines, de milliers…",
+	"description": "Distinguer le chiffre et le nombre de dizaines… de dizaines de mille dans un entier de 5 à 6 chiffres ; problème des cartons (342 320 filtres en cartons de 1 000)",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 22,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel est le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|{{if:k==3|milliers|dizaines de mille}}}}}} dans ${{n}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "5..6"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "reste",
+					"expression": "eval:mod(n,10^k)"
+				}
+			],
+			"conditions": ["c-k>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(n/10^k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Chiffre ou nombre ?** Le chiffre des {{if:k==1|dizaines|{{if:k==2|centaines|{{if:k==3|milliers|dizaines de mille}}}}}} est un seul chiffre ; le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|{{if:k==3|milliers|dizaines de mille}}}}}} les compte toutes : on garde tous les chiffres jusqu'à ce rang.",
+					"$${{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}} \\times {{eval:10^k}}{{if:reste>0| + {{reste}}|}}$$",
+					"Il y a $\\textcolor{{{color:primary.0}}}{{{solution}}}$ {{if:k==1|dizaines|{{if:k==2|centaines|{{if:k==3|milliers|dizaines de mille}}}}}} dans ${{n}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une usine a fabriqué ${{n}}$ filtres. Elle les range dans des cartons de ${{t}}$ filtres.\n\nCombien de cartons peut-elle remplir entièrement ?\n\nElle remplit $?$ cartons.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "5..6"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "t",
+					"expression": "eval:10^k"
+				},
+				{
+					"name": "reste",
+					"expression": "eval:mod(n,t)"
+				}
+			],
+			"conditions": ["reste>0", "c-k>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(n/t)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carton contient ${{t}}$ filtres : le nombre de cartons pleins, c'est le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|{{if:k==3|milliers|dizaines de mille}}}}}} dans ${{n}}$.",
+					"$${{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}} \\times {{t}} + {{reste}}$$",
+					"Elle remplit $\\textcolor{{{color:primary.0}}}{{{solution}}}$ cartons ; il reste ${{reste}}$ filtres."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "342 320, centaines : 3 423",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6",
+				"n": "342320",
+				"k": "2",
+				"reste": "20"
+			},
+			"answers": ["3\\,423"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le chiffre des centaines (3)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6",
+				"n": "342320",
+				"k": "2",
+				"reste": "20"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la classe des mille (342)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6",
+				"n": "342320",
+				"k": "2",
+				"reste": "20"
+			},
+			"answers": ["342"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cartons de 1 000 : 342",
+			"variationIndex": 1,
+			"variables": {
+				"c": "6",
+				"n": "342320",
+				"k": "3",
+				"t": "1000",
+				"reste": "320"
+			},
+			"answers": ["342"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un carton de trop (343)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "6",
+				"n": "342320",
+				"k": "3",
+				"t": "1000",
+				"reste": "320"
+			},
+			"answers": ["343"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le chiffre des milliers (2)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "6",
+				"n": "342320",
+				"k": "3",
+				"t": "1000",
+				"reste": "320"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

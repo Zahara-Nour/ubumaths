@@ -1,0 +1,299 @@
+{
+	"title": "Le nombre qui suit, le nombre qui précède (jusqu'à $999\\,999$)",
+	"description": "Suite écrite des nombres jusqu'à 999 999 : nombre qui suit, nombre qui précède, avec les passages (… 999 → … 000, 99 999 → 100 000)",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 19,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le nombre qui suit ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10000..999998"
+				}
+			],
+			"conditions": ["mod(n,10)<=8"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre qui suit, c'est celui qu'on écrit juste après en comptant : on avance de $1$.",
+					"$${{n}} \\rightarrow \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le nombre qui suit ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "5..6"
+				},
+				{
+					"name": "z",
+					"expression": "2..4"
+				},
+				{
+					"name": "m",
+					"expression": "eval:c-z"
+				},
+				{
+					"name": "a",
+					"expression": "digits:m"
+				},
+				{
+					"name": "n",
+					"expression": "eval:a*10^z+10^z-1"
+				}
+			],
+			"conditions": ["mod(a,10)!=9"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre qui suit, c'est celui qu'on écrit juste après en comptant : on avance de $1$.",
+					"${{n}}$ se termine par ${{z}}$ chiffres $9$ : en avançant de $1$, ils deviennent tous des $0$ et le chiffre juste à leur gauche augmente de $1$.",
+					"$${{n}} \\rightarrow \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le nombre qui précède ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "5..6"
+				},
+				{
+					"name": "z",
+					"expression": "2..4"
+				},
+				{
+					"name": "m",
+					"expression": "eval:c-z"
+				},
+				{
+					"name": "a",
+					"expression": "digits:m"
+				},
+				{
+					"name": "n",
+					"expression": "eval:a*10^z"
+				}
+			],
+			"conditions": ["mod(a,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre qui précède, c'est celui qu'on écrit juste avant en comptant : on recule de $1$.",
+					"${{n}}$ se termine par ${{z}}$ zéros : en reculant de $1$, ils deviennent tous des $9$ et le chiffre juste à leur gauche diminue de $1$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{solution}}} \\rightarrow {{n}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le nombre qui {{if:s==0|suit|précède}} ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..5"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10^c-1+s"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+1-2*s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==0|Le nombre qui suit, c'est celui qu'on écrit juste après en comptant : on avance de $1$.|Le nombre qui précède, c'est celui qu'on écrit juste avant en comptant : on recule de $1$.}}",
+					"{{if:s==0|Tous les chiffres de ${{n}}$ sont des $9$ : ils deviennent tous des $0$, et un $1$ apparaît devant. Le nombre a un chiffre de plus.|${{n}}$, c'est $1$ suivi de ${{c}}$ zéros : en reculant de $1$, les zéros deviennent des $9$ et le $1$ disparaît. Le nombre a un chiffre de moins.}}",
+					"$${{if:s==0|{{n}} \\rightarrow \\textcolor{{{color:primary.0}}}{{{solution}}}|\\textcolor{{{color:primary.0}}}{{{solution}}} \\rightarrow {{n}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "suit 452 731 : 452 732",
+			"variationIndex": 0,
+			"variables": {
+				"n": "452731"
+			},
+			"answers": ["452\\,732"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "suit 34 599 : 34 600",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"z": "2",
+				"m": "3",
+				"a": "345",
+				"n": "34599"
+			},
+			"answers": ["34\\,600"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 345 100 (99 + 1 accolé)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"z": "2",
+				"m": "3",
+				"a": "345",
+				"n": "34599"
+			},
+			"answers": ["345\\,100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : chiffre de gauche oublié (34 500)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"z": "2",
+				"m": "3",
+				"a": "345",
+				"n": "34599"
+			},
+			"answers": ["34\\,500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "précède 274 000 : 273 999",
+			"variationIndex": 2,
+			"variables": {
+				"c": "6",
+				"z": "3",
+				"m": "3",
+				"a": "274",
+				"n": "274000"
+			},
+			"answers": ["273\\,999"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 274 999",
+			"variationIndex": 2,
+			"variables": {
+				"c": "6",
+				"z": "3",
+				"m": "3",
+				"a": "274",
+				"n": "274000"
+			},
+			"answers": ["274\\,999"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 273 000",
+			"variationIndex": 2,
+			"variables": {
+				"c": "6",
+				"z": "3",
+				"m": "3",
+				"a": "274",
+				"n": "274000"
+			},
+			"answers": ["273\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "suit 99 999 : 100 000",
+			"variationIndex": 3,
+			"variables": {
+				"c": "5",
+				"s": "0",
+				"n": "99999"
+			},
+			"answers": ["100\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 99 1000 (991 000)",
+			"variationIndex": 3,
+			"variables": {
+				"c": "5",
+				"s": "0",
+				"n": "99999"
+			},
+			"answers": ["991\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "précède 10 000 : 9 999",
+			"variationIndex": 3,
+			"variables": {
+				"c": "4",
+				"s": "1",
+				"n": "10000"
+			},
+			"answers": ["9\\,999"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 999",
+			"variationIndex": 3,
+			"variables": {
+				"c": "4",
+				"s": "1",
+				"n": "10000"
+			},
+			"answers": ["1\\,999"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
