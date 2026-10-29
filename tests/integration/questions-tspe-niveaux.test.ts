@@ -2,7 +2,7 @@
  * Chantier « questions-tspe » : niveau de 14 brouillons dans leur catégorie (Supabase local requis)
  * ===================================================================================
  *
- * Migration `20261030011000_questions_tspe_niveaux` : 14 brouillons de terminale spé partagent
+ * Migration `20261030120100_questions_tspe_niveaux` : 14 brouillons de terminale spé partagent
  * leur niveau avec un autre modèle de leur catégorie (13 brouillons, 1 modèle publié de 1re spé),
  * ce qui bloque leur publication ; un modèle de chaque paire prend un niveau libre. Décision de
  * David du 2026-10-30 (journal docs/wip/questions-tspe-progress.md, § 6).
@@ -35,7 +35,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261030011000_questions_tspe_niveaux.sql';
+const MIGRATION = 'supabase/migrations/20261030120100_questions_tspe_niveaux.sql';
 /** Le lot : identifiant de la prod, catégorie, niveau relevé le 2026-10-29 et niveau visé. */
 const LOT: {
 	id: string;

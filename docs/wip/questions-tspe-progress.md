@@ -277,6 +277,8 @@ seul f(ℓ) = ℓ est demandé, dans 432 (l'étude de la convergence, 571, n'est
 **Page à cocher** : https://claude.ai/artifact/CRPu9Wj8MaomQe8nS6v7Jy (17 fiches, 64 exemples), collection `verdicts`
 vide à la publication.
 
+**Horodatage** : #2002 mergée ; `db:migrate` refusé (`DbPushMissingRemoteError`) : `20261030120000` (1re spé, produit scalaire) déjà jouée en prod, ma migration se retrouvait avant. Renommée en `20261030120100` (max + 1 min), sans `--include-all`.
+
 **Relecture (David, page à cocher, 2026-10-30)** : 17 « ok » sur 17, aucun commentaire (lu en base).
 
 **Publication bloquée (simulation `publier-lot`)** : 7063979e et 98ba277c occupent le même niveau (2) de la même
@@ -306,7 +308,7 @@ Le fichier `tspe-0-suites/7063979e.json` porte déjà le niveau 1.
 
 **D8 (David, 2026-10-30, « je valide » sur les recommandations)** : accès — personne ne gagne ni ne perd d'accès ;
 une seule migration pour les 14, avant toute publication ; niveaux du tableau ci-dessus. Migration
-`20261030011000_questions_tspe_niveaux.sql` (patron du CE1 lot 3), test
+`20261030120100_questions_tspe_niveaux.sql` (patron du CE1 lot 3), test
 `tests/integration/questions-tspe-niveaux.test.ts` : 7/7 vert, **rouge** sans l'`update` des niveaux (« lot
 incohérent : niveaux 0/14 ») et sans le fichier. Les autres thèmes s'exporteront de la base après la migration
 (niveaux à jour). `security-auditor` (2026-10-30) : aucun finding bloquant (14 id, niveaux et rollback recoupés
