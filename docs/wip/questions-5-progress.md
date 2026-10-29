@@ -5,21 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1986._
+_Mis à jour le 2026-10-29, après #1993._
 
-- **État** : lots 1 à 3 publiés ; **4a** mergé (#1977), pas encore publié ; **4b** (4 modèles, § 15) écrit,
-  37 specs vertes, joué en local ; fichiers mergés (#1986), **pas encore créés en prod**.
-- **Prochaine action** : David `create-questions --dir scripts/questions/5-litteral-b --publier`
-  (4b ne dépend PAS de `virgule-forme-exigee` : aucune forme exigée) → migration de rangement 4b **avec**
-  reclassement (d4679e2d, e66089e0, 9231b54b → 5e) et décalage des niveaux (§ 15) → page à cocher.
-  4a : attendre `virgule-forme-exigee`, puis `--publier` et sa migration.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-litteral-b --publier`
-  (dépôt principal) ; la session `virgule-forme-exigee` (à lancer par David).
-- **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
+- **État** : lots 1 à 3 publiés ; **4a** mergé (#1977), pas créé en prod ; **4b** : 4 brouillons en prod
+  (2f556139, 1e68327e, 1cd9dc60, d4668b2d), migration de rangement + reclassement + niveaux mergée (#1993),
+  **pas encore jouée** (`db:migrate`).
+- **Prochaine action** : feu vert de David → `pnpm db:migrate` depuis le dépôt principal → vérifier au MCP (nœuds,
+  tags, grades, niveaux) → page à cocher du 4b → publication. 4a : attendre `virgule-forme-exigee`.
+- **En attente de David** : feu vert du `db:migrate` (la migration retire 3 tags de 4e, remplacés par ceux de 5e ;
+  rollback écrit) ; la session `virgule-forme-exigee`.
+- **Pièges en cours** : ⚠️ ne pas lancer `create-questions --publier` sur `3-lot-2` avant le `db:migrate` (dcaabf69 y
+  est au niveau 12) ; horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
 --mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
-  **message de commit** ; job d'intégration = run à part ; page à cocher à 390 px ; **jamais de variable `e` ni
-  `i`** ; la saisie MathLive de l'aperçu ne se pilote pas à l'automate (relire le rendu par la page à cocher).
-- **Worktree / branche** : aucun (retiré après #1986) ; migration 4b → nouveau worktree.
+  **message de commit** ; page à cocher à 390 px ; **jamais de variable `e` ni `i`** ; saisie MathLive de
+  l'aperçu non pilotable à l'automate.
+- **Worktree / branche** : aucun (retiré après #1993).
 
 ## 1. Relevé (prod, 2026-10-28)
 
