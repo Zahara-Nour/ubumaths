@@ -203,7 +203,7 @@ Le Royaume comporte **Six Provinces**, qui correspondent aux six grands domaines
 
 #### Carte du Royaume 🟡
 
-Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustrations/carte/plan-schematique.svg` (et `.png`, généré par `plan-schematique.py`).
+Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustrations/carte/plan-schematique.svg` (et `.png`, généré par `plan-schematique.py`, couleurs des provinces d'après leurs lignes « Pour l'illustration ») ; version sans texte pour servir de référence à l'IA : `plan-schematique-sans-texte.svg` / `.png`.
 
 - **Contour** : celui de la Pologne réelle, simplifié ; la Baltique au nord.
 - **Sandomir** à l'emplacement de Varsovie ; les six provinces rayonnent autour d'elle, frontières irrégulières : **Yoyolande** au nord (Sinusborg, port, à l'emplacement de Gdańsk), **Bedonstan** au nord-est (Lobatchevsk ; les Pythagoriades), **Glitchistan** à l'est (Turingrad, vers Lublin), **Patatovie** au sud (Cracovenn à l'emplacement de Cracovie), **Nombrilie** au sud-ouest (Empoche-les-Bains, sur la Vistule), **Pifométrie** à l'ouest (Bonneteau-sur-Vistule, vers Poznań). Les trois provinces de l'ouest sont plus vastes, Sandomir étant décalée vers l'est.
