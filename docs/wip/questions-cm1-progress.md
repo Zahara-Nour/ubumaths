@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 3a écrit (PR des fichiers)._
+_Mis à jour le 2026-10-30, après #2001 (fichiers du lot 3a mergés)._
 
-- **État** : lots 0, 1 et 2 en prod et **publiés**. Lot 2 (numération des entiers, 10 modèles) : #1964, #1976, relecture 10/10 OK, `publier-lot.ts --publier` lancé par David, 10 `published` relus au MCP.
-- **Prochaine action** : PR des fichiers du lot 3a (§ 9 ter), merge, puis David lance `create-questions --dir scripts/questions/cm1-3a --publier` ; ensuite migration nœud + tag. Puis 3b (fractions décimales), 3c (partages).
+- **État** : lots 0, 1 et 2 en prod et publiés. Lot 3a (fractions, 10 modèles) : fichiers mergés (#2001), pas encore en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-3a --publier` (dépôt principal) ; je relève les 10 ids au MCP, puis migration nœud + tag (gabarit du lot 2), page à cocher. Ensuite 3b (fractions décimales), 3c (partages).
 - **En attente de David** : la phrase « Tu as placé le point sur 0,8 » de la droite à placer (décimal pour une fraction, § 9 ter) : à corriger dans un chantier à part ?
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente (relever `schema_migrations`) ; un worktree n'a pas `supabase/.temp/` (lien) : le copier du dépôt principal ; « Multiples et diviseurs » : niveaux 4-8 pris par le CM2, les nôtres partent de 9 ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot3a` ; serveur de test sur 5177 (5176 pris par questions-4).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1` gardé pour la migration (nouvelle branche `feat/questions-cm1-lot3a-rangement` depuis `origin/main`) ; serveur de test sur 5177.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
