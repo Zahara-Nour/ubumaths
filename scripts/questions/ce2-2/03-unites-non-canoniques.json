@@ -112,7 +112,7 @@
 			}
 		},
 		{
-			"statement": "Décompose le nombre.\n\n$${{n}}=?+?+?+?$$",
+			"statement": "Décompose le nombre en milliers, centaines, dizaines et unités, comme $2\\,513=2\\,000+500+10+3$.\n\n$${{n}}=?+?+?+?$$",
 			"variables": [
 				{
 					"name": "m",
