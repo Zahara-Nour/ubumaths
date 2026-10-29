@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1953._
+_Mis à jour le 2026-10-29, après #1953 et la mise à jour en prod._
 
 - **État** : lot 3 (fractions) en brouillon en prod, rangé et tagué (#1939). Réponses de David à la relecture : 03 perd la variation 2 (« un huitième plus un huitième… », doublon de 08 variation 3) ; 09 perd la variation 3 (Lucie), gardée dans `lot-ce1-3.py` (`LUCIE`, `SPECS_LUCIE`) pour le lot 4 problèmes. #1953 (mergée) : simulation prod, seuls 03 et 09 « CONTENU DIFFÉRENT ».
-- **Prochaine action** : #1953 mergée → David lance `create-questions --dir scripts/questions/ce1-3 --publier --mettre-a-jour` ; remettre à zéro les verdicts de 03 et 09 ; relecture de ces deux ; puis `publier-lot`.
-- **En attente de David** : le `--publier --mettre-a-jour` en prod, après le merge.
+- **Prochaine action** : David relit 03 et 09 sur la page à cocher (republiée, leurs deux verdicts remis à zéro, les 7 autres OK gardés) ; 9/9 OK → `publier-lot` (simulation d'abord).
+- **En attente de David** : la relecture de 03 et 09.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 (« 1 demi », « le 1/4 ») ; `reducedFractions: off` (simplification = CE2) ; worktree neuf : `svelte-kit sync` avant `tsx` (`$lib`) ; ports 5176-5178 pris (5179 pour ce lot) ; commitlint : sujet sans majuscule initiale ; le générateur Python écrit des JSON non formatés → `prettier --write` après.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `feat/questions-ce1-lot3-relecture` mergée : en partir d'une neuve sur `origin/main`). Page à cocher : https://claude.ai/artifact/PZb69g4xfAJUS8cm5q5JsS.
 
@@ -328,3 +328,4 @@ tag ne change aucune règle.
   fraction.
 - 2026-10-28 : #1936 mergée ; 9 brouillons créés en prod par David ; #1939 (nœud + tag, test rouge 5/9 sans, vert 9/9, `security-auditor` sans finding bloquant) mergée, `db:migrate` joué, vérifié (9/9 sur leur nœud, un point chacun) ; page à cocher publiée, aucune alerte.
 - 2026-10-29 : relecture tranchée par David (ses réponses aux deux questions : les deux recommandations) : 03 sans la variation 2, 09 sans Lucie (gardée pour le lot 4) ; `question:specs` 200 tirages verts sur 03 et 09 ; simulation en prod : 7 « = », 03 et 09 « CONTENU DIFFÉRENT ».
+- 2026-10-29 : #1953 mergée ; `create-questions --publier --mettre-a-jour` par David : 03 et 09 mis à jour, 7 « = » ; vérifié au MCP (03 : 1 variation, 7 specs ; 09 : 2 variations, 10 specs) ; page à cocher régénérée et republiée, verdicts de 03 et 09 remis à zéro.

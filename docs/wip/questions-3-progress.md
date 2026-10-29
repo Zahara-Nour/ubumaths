@@ -5,16 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, phase 0 du lot 2 validée._
+_Mis à jour le 2026-10-29, lot 2 écrit (PR #1959)._
 
-- **État** : lots 0 et 1 terminés (lot 1 publié en prod, 5/5). Lot 2 (calcul littéral, équations) :
-  phase 0 validée (§ 9.5), écriture en cours (worktree `ubumaths-wt-questions-3`).
-- **Prochaine action** : écrire `lot-3-2.py` → `scripts/questions/3-lot-2/`.
-- **En attente de David** : rien.
+- **État** : lots 0 et 1 terminés. Lot 2 (calcul littéral, équations) : 4 modèles écrits, specs et
+  tirages verts (§ 9.6), PR #1959 des fichiers en CI.
+- **Prochaine action** : merger #1959 ; puis David lance `create-questions --dir
+scripts/questions/3-lot-2 --publier` (brouillons en prod) ; relever les `id`, migration de rangement.
+- **En attente de David** : le `--publier` après le merge.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation, car il lit la prod) refusés
   par le classifieur du mode auto → David les lance avec `!` ; test `forfait-palotin` qui dépasse 5 s en CI
   (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `ubumaths-wt-questions-3`, `feat/questions-3-lot-2`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -334,3 +335,14 @@ prof de 3e voient 4 modèles publiés de plus. Aucune règle ne change.
 - Les 6 modèles de 2de restent à la 2de, sans tag 3e.
 - 3-015 v5 (factoriser puis produit nul) gardée, au niveau le plus haut du modèle.
 - Droite graduée avec crochet : notée comme geste manquant (`couvrir-un-niveau.md` § 3 bis), sans bloquer.
+
+### 9.6 Lot 2 : écrit (2026-10-29)
+
+- `docs/wip/questions/lot-3-2.py` → `scripts/questions/3-lot-2/` (4 JSON) ; `question:specs` : 54 specs vertes,
+  3 600 tirages ; `create-questions` en simulation : vert. PR #1959.
+- Écart de rendu corrigé : `{{eval:…}}` écrit 2,5 en 5/2 (7x/2 − 63/10) ; la v3 de 3-015 passe par `;d`
+  (écriture décimale) et `;d;+` (signe forcé), mesurés.
+- Délais : 60 s (identités, inéquation), 90 s (factorisation, produit nul).
+- Base locale : 4 brouillons créés (b1e9bc94, 8bf02b12, 1048f256, d4250900). Aperçu admin non joué : la
+  session Chrome sur `localhost` n'était pas admin, et s'en déconnecter aurait fermé celle de David
+  (cookies partagés entre ports). Énoncés et corrigés relus dans l'aperçu de `question:specs`.
