@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 2 rangé en prod, page à cocher publiée._
+_Mis à jour le 2026-10-29, lot 2 relu (4/4 OK)._
 
-- **État** : lot 2 : 4 brouillons rangés et tagués en prod (§ 9.8) ; relecture de David en attente.
-- **Prochaine action** : lire et COMPTER les verdicts (`ArtifactData list verdicts`,
-  https://claude.ai/artifact/KRBQJkNHzZABUFwXrSzYAv) ; si 4 OK, `publier-lot.ts --dir scripts/questions/3-lot-2`
-  lancé par David (simulation puis `--publier`) ; puis phase 0 du lot suivant (Thalès et trigonométrie).
-- **En attente de David** : la relecture des 4 modèles (jouer un modèle dans l'aperçu admin, je n'ai pas pu).
+- **État** : lot 2 : 4 brouillons rangés et tagués en prod, relus par David : 4 verdicts en base, 4 OK (§ 9.8).
+- **Prochaine action** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/3-lot-2` en
+  simulation, puis David avec `--publier` ; relire `published` au MCP ; puis phase 0 du lot suivant
+  (Thalès et trigonométrie, § 6.1).
+- **En attente de David** : la publication du lot 2.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation, car il lit la prod) refusés
   par le classifieur du mode auto → David les lance avec `!` ; test `forfait-palotin` qui dépasse 5 s en CI
   (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
@@ -373,3 +373,4 @@ prof de 3e voient 4 modèles publiés de plus. Aucune règle ne change.
 - Page à cocher : https://claude.ai/artifact/KRBQJkNHzZABUFwXrSzYAv (capacité `db`, collection `verdicts`
   vide au départ ; aucune alerte). Rendu relu en vue large ; la vue à 390 px n'a pas pu être forcée.
 - Worktree `ubumaths-wt-questions-3` et ses deux branches retirés (#1959, #1965 mergées).
+- Relecture (2026-10-29) : 4 verdicts en base, 4 OK, aucun commentaire.
