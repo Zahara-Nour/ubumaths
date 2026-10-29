@@ -8,14 +8,15 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 6 en cours (aucune PR encore)._
+_Mis à jour le 2026-10-29, lot 6 codé, PR en cours._
 
 - **État** : lots 1 à 5 EN PROD (v0.55.0). Lot 6 (`deplacable:` / `rendu:` dans tout ```figure à l'écran,
-  § 2.14, validé) en cours sur `feat/figure-et-choix-deplacable` : parseur + catalogue faits.
-- **Prochaine action** : vue toile (`FigureCanvasView`, chargée à la demande par `FigureBlock`), mode « figure
-  d'un texte » de `GeometryCanvas`, bouton « Remettre la figure », tests composant, doc `ubumark.md`, PR.
-  Après le PROCHAIN `deploy:prod` (qui livre #1950) : migration qui supprime la colonne vide
-  `question_templates.multiple_answers`, puis retirer `multiple_answers: null` des faux modèles de tests.
+  § 2.14, validé) codé sur `feat/figure-et-choix-deplacable` : parseur, catalogue, `FigureCanvasView`, mode
+  `inDocument` de `GeometryCanvas`, « Remettre la figure », doc ; revue Sonnet faite (2 points corrigés).
+- **Prochaine action** : PR ouverte → CI verte → merge. Puis vérif manuelle de David (iPhone : glisser au doigt,
+  défilement au-dessus d'une figure ; cadre de la toile vs figure statique) à noter dans
+  `verifications-manuelles.md`. Après le PROCHAIN `deploy:prod` (qui livre #1950) : migration qui supprime la
+  colonne vide `question_templates.multiple_answers`, puis retirer `multiple_answers: null` des faux modèles.
 - **En attente de David** : publication de CP-058 (`a7dfe502`, brouillon) ; avis sur les séries PDF ; fiche
   `/aide-ecriture/blocs/figure-de-travail` (403 en admin, à voir en prof) ; vérifs restantes (série PDF,
   verdict ½, éditeur de tests, 15 brouillons lycée).
