@@ -8,25 +8,28 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, v0.55.0 en prod (lots 1 à 5) ; PR de la migration en cours._
+_Mis à jour le 2026-10-29, après #1950 et #1954._
 
-- **État** : lots 1 à 5 EN PROD (v0.55.0, 2026-10-29). Migration destructive écrite (branche
-  `chore/figure-et-choix-migration-qcm`) : contrainte sans `multiple_choice`, `shuffleChoices` retiré
-  (3 brouillons), `migration_tracking` / `migration_edits` / vue `migration_review_tree` / fonction de trigger
-  supprimées (export `data/import-tinymath/`, lancé par David) ; le code ne lit plus `multiple_answers`.
-  Tests d'intégration rouges sans la migration, verts avec. Ce qui sera perdu expliqué à David, qui a suivi.
-- **Prochaine action** : revue sécurité → PR → CI → merge → `db:migrate` → `db:types` (PR à part). Au
-  prochain `deploy:prod` : migration qui supprime la colonne `multiple_answers` (vide). Ensuite lot 6.
-- **En attente de David** : avis sur les séries PDF ; publication de CP-058 ; vérifs à l'écran (agent Chrome).
-- **Pièges en cours** : tant que la migration n'est pas jouée, les 3 brouillons à `shuffleChoices` ne se
-  dupliquent plus (400). 6 modèles `cp-b2` : `level` prod ≠ source. `corrections.test.ts` (R-PASS) instable en CI.
-- **Worktree / branche** : `ubumaths-wt-figure-et-choix` · `chore/figure-et-choix-migration-qcm`.
+- **État** : lots 1 à 5 EN PROD (v0.55.0). Migration destructive jouée en prod le 2026-10-29 (#1950) :
+  plus de `multiple_choice`, plus de `shuffleChoices`, suivi de l'import TinyMath supprimé (export
+  `data/import-tinymath/`) ; types régénérés (#1954). Le code ne lit plus `multiple_answers`. Worktree retiré.
+- **Prochaine action** : lot 6 (`deplacable:` partout, § 2.4) — phase 0 à écrire et faire valider.
+  Après le PROCHAIN `deploy:prod` (qui livre #1950) : migration qui supprime la colonne vide
+  `question_templates.multiple_answers`, puis retirer `multiple_answers: null` des faux modèles de tests.
+- **En attente de David** : publication de CP-058 (« Trois points alignés ? Vérifie à la règle »,
+  `a7dfe502`, brouillon) ; avis sur les séries PDF ; fiche `/aide-ecriture/blocs/figure-de-travail` (403 en
+  admin, à voir en prof) ; vérifs restantes (série PDF, verdict ½, éditeur de tests, 15 brouillons lycée).
+- **Pièges en cours** : 6 modèles `cp-b2` : `level` prod ≠ source. `corrections.test.ts` (R-PASS) instable
+  en CI. `migration_images` reste (hors champ, aucun code ne la lit).
+- **Worktree / branche** : aucun.
 
 ---
 
 ## Historique
 
-- 2026-10-29 — **v0.55.0 en prod** (lots 5a + 5b) ; migration destructive d'après deploy écrite.
+- 2026-10-29 — **v0.55.0 en prod** (lots 5a + 5b) ; **#1950 mergée** et migration jouée en prod (QCM et
+  import TinyMath retirés de la base) ; **#1954** types régénérés. Vérifs Chrome : rien de cassé (QCM migrés,
+  éditeur de case choix, CP-058).
 - 2026-10-28 — **#1938 mergée** (lot 5a) : QCM retiré du code, tests portés, revues sans bloquant.
 - 2026-10-26 — **#1842 mergée** (restes, phase 0 suivie) : `withBlockCases` réaligne un modèle à
   variables quand l'énoncé brut compte comme le résolu (pas de variable dans un ```operation, mêmes
