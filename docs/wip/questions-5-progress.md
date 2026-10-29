@@ -5,17 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la phase 0 du lot 3._
+_Mis à jour le 2026-10-29, après la publication du lot 3 (#1952, #1960)._
 
-- **État** : lots 1 et 2 publiés. Lot 3 « Fractions et puissances » (5-027 ×2, 5-033 ×2) validé en phase 0
-  (§ 12) ; 5-029, 5-030, 5-032 étaient déjà couverts par le lot 1 (le bloc précédent se trompait).
-- **Prochaine action** : lot 3 écrit (simulation prod : 4 à créer, 32 specs vertes ; joué en base locale), PR des
-  fichiers à merger, puis David : `create-questions --dir scripts/questions/5-fractions-puissances --publier`.
+- **État** : lots 1 « Calcul », 2 « Relatifs » et 3 « Fractions et puissances » publiés (8 + 8 + 4, vérifié au MCP).
+- **Prochaine action** : phase 0 du lot 4, suite des lots A (§ 3 / § 5) : calcul littéral (034, 124, 036, 037, 038,
+  107, 041, 044, 125). Avant d'écrire « traduire en une expression » (034, 124) : vérifier que le juge exige
+  l'écriture et pas sa valeur (§ 5, point 6). Relever d'abord les modèles existants de ces points.
 - **En attente de David** : rien.
 - **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
 --mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
-  **message de commit** ; le job d'intégration est un run à part (« Nightly Integration Tests ») : l'attendre.
-- **Worktree / branche** : `ubumaths-wt-questions-5` / `feat/questions-5-lot3`.
+  **message de commit** ; le job d'intégration est un run à part (« Nightly Integration Tests ») : l'attendre ;
+  page à cocher : vérifier à 390 px (une formule large élargissait la page, corrigé dans le gabarit).
+- **Worktree / branche** : `ubumaths-wt-questions-5` / `fix/page-a-cocher-largeur` (correctif du gabarit, PR à finir).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -243,3 +244,16 @@ Page à cocher, 7 verdicts : 5 OK (02, 03, 04, 05, 06), 2 à revoir. Corrections
   5-027 tirées sous le dénominateur (`1..{{eval:n-1}}`) : 3 tirages sur 150 échouaient avec des plages fixes.
   Base locale : 4 créés, joués dans l'aperçu (énoncés, réponses, corrections) ; corrigé en route : le carré coloré
   écrit `\textcolor{…}{3}^3` s'affichait « 3 ³ », toute la puissance est colorée.
+
+## 13. Lot 3 en prod (2026-10-29)
+
+- #1952 mergé ; David : `create-questions --publier` → a6e5acf2 (01), b30d199c (02), 027d1e21 (03), e1f18ff5 (04),
+  brouillons [5] sans nœud ni tag (vérifié MCP).
+- Migration `20261029213000_questions_5_lot3_rangement_tags` (#1960, gabarit lot 2) : test 9/9, rouge sans elle
+  (3 échecs, 4 ignorés faute de rollback) ; audit sans finding bloquant (en-tête du test corrigé) ; CI verte,
+  intégration comprise ; `db:migrate` (seule en attente) ; vérifié : nœud du point, un tag chacun.
+- Page à cocher : https://claude.ai/artifact/Qqoan7rLmzYvi94SdFbbdy (capacité `db`, collection `verdicts`) ; alertes
+  attendues (homonymes 01/02, 03/04). À 390 px la page débordait (colonne de grille élargie par une formule) :
+  corrigé sur la page (v3) et dans le gabarit `scripts/questions/page-a-cocher.html` (PR à part).
+- Relecture : **4/4 OK**, aucun commentaire (compté en base). `publier-lot.ts` : simulation verte, puis David
+  `--publier` → 4/4 `published`, vérifié au MCP. **Lot 3 clos.**
