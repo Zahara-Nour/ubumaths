@@ -5,18 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1962._
+_Mis à jour le 2026-10-29, lot 6a publié en brouillons, migration de rangement en PR._
 
-- **État** : lots 1 à 5 en prod. Lot 6 (§ 13) validé, coupé en 6a (M1-M6, pourcentages et proportionnalité) et 6b
-  (M7-M13, grandeurs et probabilités). 6a : 6 fichiers dans `scripts/questions/6-proportionnalite/`, mergés (#1962).
-- **Prochaine action** : David lance, depuis le dépôt principal, `pnpm tsx --env-file=.env scripts/create-questions.ts
---dir scripts/questions/6-proportionnalite --publier` (6 brouillons) ; puis relever les `id`, migration rangement +
-  tags (nœuds du § 13, M6 sur « triple et tiers »), page à cocher, publication ; ensuite le lot 6b.
-- **En attente de David** : le `--publier` ci-dessus ; passer en « validé » les verdicts de 02, 03, 04 sur
-  `/dev/modeles` (scission faite). Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **État** : lots 1 à 5 en prod. Lot 6a (M1-M6) : 6 brouillons créés en prod par David le 2026-10-29 (`id` au
+  § 13.2) ; migration `20261029223000_questions_6_lot6a_rangement_tags` (nœud + tag) en PR, test rouge sans elle.
+- **Prochaine action** : merge, puis `db:migrate` depuis le dépôt principal ; page à cocher des 6 ; publication
+  (`publier-lot`) ; ensuite le lot 6b (M7-M13).
+- **En attente de David** : passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles` (scission faite).
+  Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
 - **Pièges en cours** : 06 et 07 attendent l'outil « étiquettes à ranger » (bloc ```ranger, livré le 2026-10-28 :
   à reprendre). 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs` dans un worktree neuf.
-- **Worktree / branche** : aucun (retiré après #1962).
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot6a-rangement`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -950,3 +949,15 @@ nouvelle revue.
 - `create-questions` en simulation contre la prod : 6 « à créer ». Base locale (`.env.local`) : 6 brouillons créés ;
   aperçu admin joué sur 04 (case choix, « Juste ») et 02 (case `?\,\%`, « Juste ») ; liens du dictionnaire posés
   (proportionnel, masse, pourcentage).
+
+### 13.2 Brouillons en prod et rangement du lot 6a (2026-10-29)
+
+- `create-questions --publier` lancé par David : 6 brouillons créés, 0 mis à jour. Identifiants :
+  01 `f9e9637c-b62f-4758-baf4-0b28de4a5dc6` (6-139) · 02 `35754c24-2abf-4c9b-bebd-17b889f33d80` (6-140) ·
+  03 `5c8a6da6-f99b-4d61-94cc-7147605ec7c6` (6-140) · 04 `c26597b4-c2c6-463c-a5ca-b18cae5e1662` (6-189) ·
+  05 `d960edfb-120f-44ba-a118-cfbcd629caf3` (6-189) · 06 `7981dab0-c1f9-4e87-961f-91be61e698dc` (6-211).
+- Relevé MCP : les 6 en 6e, brouillons, sans nœud ni tag ; points 6-139 et 6-140 sur « Proportionnalité >
+  Pourcentages > définition / calculs de pourcentages », 6-189 sur « Situations de proportionnalité >
+  caractérisation », 6-211 sur « Nombres et calculs > Entiers : multiplication > triple et tiers ».
+- Migration `20261029223000_questions_6_lot6a_rangement_tags.sql` (calquée sur celle du lot 5) et test
+  `tests/integration/questions-6-lot6a-rangement-tags.test.ts` : 14 verts ; sans la migration, 8 rouges et 5 sautés.
