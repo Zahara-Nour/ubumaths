@@ -275,3 +275,15 @@ règles (`multiple` + `range`, toute réponse juste acceptée).
   4 000 tirages réussis, aucun avertissement.
 - Base locale : 6 brouillons créés ; aperçu admin joué : 03 (termes 27 et 40 donnés à l'envers → « Juste »), 06
   (26 pour un multiple de 5 entre 23 et 27 → « Faux », réponse possible 25, correction affichée).
+
+### Lot 3 — en prod : brouillons et migration (2026-10-29)
+
+- David a lancé `create-questions --publier` : 6 brouillons, relus au MCP (draft, niveaux justes, sans nœud ni tag) :
+  `1076ebed` (01), `b461cd02` (02), `0ada6949` (03), `c9bd997c` (04), `baec0070` (05), `376a2264` (06).
+- Migration `20261029234500_questions_ce2_lot3_rangement_tags` (calquée sur le lot 2, nœuds = notions) + test
+  d'intégration : rouge sans le corps de la migration (5/9), vert avec (9/9). `security-auditor` : aucun finding
+  bloquant.
+- ⚠️ `db:migrate` **bloqué** par la collision d'horodatage `20261029213000` sur `main` (questions_5_lot3 jouée,
+  questions_ce1_lot3_niveaux non jouée) : la session ce1 doit renommer la sienne (voir journal questions-3). La CI
+  est rouge pour la même raison (`migrations-horodatage-unique`, `migration-versions`, garde SECURITY DEFINER).
+  Le `db:migrate` jouera aussi `20261029233000` (questions-3, qui l'attend).
