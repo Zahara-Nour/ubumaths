@@ -201,10 +201,20 @@ Le Royaume comporte **Six Provinces**, qui correspondent aux six grands domaines
 
 **Six provinces, six suffixes différents, six registres distincts** : -ie noble, -stan oriental, -lande nordique, -métrie scientifique, -istan industriel, -ovie slave. La carte sonne comme une vraie Europe imaginaire à six royaumes.
 
+#### Carte du Royaume 🟡
+
+Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustrations/carte/plan-schematique.svg` (et `.png`, généré par `plan-schematique.py`).
+
+- **Contour** : celui de la Pologne réelle, simplifié ; la Baltique au nord.
+- **Sandomir** à l'emplacement de Varsovie ; les six provinces rayonnent autour d'elle, frontières irrégulières : **Yoyolande** au nord (Sinusborg, port, à l'emplacement de Gdańsk), **Bedonstan** au nord-est (Lobatchevsk ; les Pythagoriades), **Glitchistan** à l'est (Turingrad, vers Lublin), **Patatovie** au sud (Cracovenn à l'emplacement de Cracovie), **Nombrilie** au sud-ouest (Empoche-les-Bains, sur la Vistule), **Pifométrie** à l'ouest (Bonneteau-sur-Vistule, vers Poznań). Les trois provinces de l'ouest sont plus vastes, Sandomir étant décalée vers l'est.
+- **Voisins** : la Lithuanie au nord-est, l'Empire du Czar à l'est ; l'Isle de la Réunion Pataphysique en encart. Bedonstan et Glitchistan, les deux marches orientales, ont une frontière commune.
+- **L'ordre digestif ne fait pas le tour de Sandomir** sur la carte (dans le sens des aiguilles d'une montre : étapes 3, 4, 6, 5, 1, 2) : il reste celui des étapes, sans flèche.
+- **Mer** : bleu de Pile `#2F62B0`, éclairci (le nuancier n'a pas de bleu de mer).
+
 #### Sandomir, capitale du Royaume 🟢🟡
 
 - **Nom** 🟢 : canon Jarry. Dans _Ubu Roi_ (acte I), le roi Venceslas récompense Ubu : « je te fais aujourd'hui comte de Sandomir ». Chez Jarry, c'est un titre, pas un lieu de bataille : la défaite face au Czar a lieu ailleurs (acte IV).
-- **Géographie** 🟡 (décision de David, 2026-10-06) : Sandomir est une ville **en spirale**, bâtie au point où se rejoignent les six provinces. Elle n'appartient à aucune d'elles. Le **Trône Royal** se trouve au centre de la spirale, comme le cœur d'une gidouille.
+- **Géographie** 🟡 (décision de David, 2026-10-06) : Sandomir est une ville **en spirale**, bâtie au point où se rejoignent les six provinces (à l'emplacement de Varsovie sur la carte, décision de David, 2026-10-29). Elle n'appartient à aucune d'elles. Le **Trône Royal** se trouve au centre de la spirale, comme le cœur d'une gidouille.
 - **Ce qu'on n'en reprend pas** : Sandomierz est aussi une vraie ville de Pologne ; on n'en garde que le nom. Le fondateur du Collège de 'Pataphysique a pris « Sandomir » pour pseudonyme (1948) : le nom vient de Jarry et reste libre, mais rien du Collège n'est repris.
 - **Usage** : « À Sandomir, au Trône Royal… » dans les articles du Shtam et les cinématiques d'Ubu. Pendant de l'Empire du Czar, gouverné depuis son palais d'Hiver.
 
@@ -450,7 +460,7 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 
 ### La Vistule, fleuve de la Pologne pataphysique
 
-Le fleuve **Vistule** (inspiré du fleuve réel de Pologne) traverse la Pologne d'est en ouest. Il prend sa source dans les montagnes de Bedonstan (au pied des Pythagoriades), traverse Cracovenn (Patatovie), longe Bonneteau-sur-Vistule (Pifométrie), et se jette dans la **mer Baltique** au-delà des frontières — la même mer que celle où Ubu et Mère Ubu fuient à la fin d'_Ubu Roi_ (acte V, scène 4 — canon Jarry 🟢).
+Le fleuve **Vistule** (inspiré du fleuve réel de Pologne) **traverse les six provinces** 🟡 (tracé décidé par David le 2026-10-29, voir « Carte du Royaume ») : il prend sa source dans les montagnes de Bedonstan (au pied des Pythagoriades), descend par Glitchistan, passe à Cracovenn (Patatovie) et à Empoche-les-Bains (Nombrilie), remonte par Bonneteau-sur-Vistule (Pifométrie), traverse Yoyolande et se jette dans la **mer Baltique** à Sinusborg, comme la vraie Vistule à Gdańsk — la mer où Ubu et Mère Ubu fuient à la fin d'_Ubu Roi_ (acte V, scène 4 — canon Jarry 🟢). Il fait le tour de Sandomir sans la traverser.
 
 ### Les Axiomes Ubuesques
 

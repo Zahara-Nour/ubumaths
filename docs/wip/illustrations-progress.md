@@ -2,16 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après le rangement des dix-huit images (pas de PR : chantier 100 % doc pour l'instant)._
+_Mis à jour le 2026-10-29, après la validation du plan schématique de la carte (pas de PR : chantier 100 % doc)._
 
-- **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu, du Capitaine Bordure, de Bougrelas, de Conscience, du Czar Alexis, de Monsieur Prudhomme, du Flegmatique (Tristan Bernard), du Professeur Achras, du Docteur Faustroll, de Bosse-de-Nage et du Cheval à Phynances validés (casting et quatre gouverneurs complets) ; Palotins redessinés au trait Steinlen pour le lore (SVG de l'appli inchangés) : Giron, Pile, Cotice, Merdranpo (sans SVG, brun merdre, casserole, bas dépareillés) , Mousched-Gogh (sans SVG, artiste, glace du Czar, mouche sur le nez) et Quatrezoneilles (sans SVG, valet de pied or, grandes oreilles décollées) validés : les six Palotins sont faits et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
-- **Prochaine action** : tous les personnages prévus ont leur prompt et leur image (dix-huit, rangées dans `docs/Chiphres/illustrations/personnages/`, référencées au Compendium § XI) ; suite selon David : géographie et carte, lieux, ou personnages mineurs.
-- **En attente de David** : bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
+- **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu, du Capitaine Bordure, de Bougrelas, de Conscience, du Czar Alexis, de Monsieur Prudhomme, du Flegmatique (Tristan Bernard), du Professeur Achras, du Docteur Faustroll, de Bosse-de-Nage et du Cheval à Phynances validés (casting et quatre gouverneurs complets) ; Palotins redessinés au trait Steinlen pour le lore (SVG de l'appli inchangés) : Giron, Pile, Cotice, Merdranpo (sans SVG, brun merdre, casserole, bas dépareillés) , Mousched-Gogh (sans SVG, artiste, glace du Czar, mouche sur le nez) et Quatrezoneilles (sans SVG, valet de pied or, grandes oreilles décollées) validés : les six Palotins sont faits et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour). ; dix-huit images rangées ; **plan schématique de la carte validé** (`docs/Chiphres/illustrations/carte/`).
+- **Prochaine action** : carte, étape suivante de la méthode (fond par l'IA sans texte, guidé par le plan schématique validé `docs/Chiphres/illustrations/carte/plan-schematique.svg`) ; ou lieux, ou personnages mineurs, selon David.
+- **En attente de David** : rien.
 - **Pièges en cours** : Ubu sans chapeau pointu ni longue robe blanche (aucune ressemblance avec une cagoule) ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée (Nano Banana refuse : personnage inventé à la place). Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 
 ## Décisions de David
 
+- 2026-10-29 — **Carte, plan schématique validé** (`docs/Chiphres/illustrations/carte/`) : contour de la Pologne réelle ; Sandomir à Varsovie ; Yoyolande N (Sinusborg = Gdańsk), Bedonstan NE, Glitchistan E, Patatovie S (Cracovenn = Cracovie), Nombrilie SO, Pifométrie O ; frontières irrégulières ; Vistule par le sud, à travers les six provinces, jusqu'à Sinusborg, sans passer par Sandomir ; bleu de mer = bleu de Pile éclairci ; plus de flèche de l'ordre digestif. Versé au Compendium (§ II « Carte du Royaume », Vistule).
 - 2026-10-28 — **Pile** : rêveur philosophe, un brin roublard (comme dans l'appli) ; rôle : « pourquoi ça marche ? » ; « fourbe, opportuniste » et « trades douteux » abandonnés.
 - 2026-10-28 — **Quatrezoneilles** : valet de pied 1890 cérémonieux et obséquieux, qui entend tout ; rôle : « relis bien l'énoncé ! » (le mot sauté, la donnée oubliée) ; échos et rumeurs du Shtam ; pas de quatre oreilles dessinées (cornets acoustiques refusés) : deux grandes oreilles décollées, toujours dressées, le nom reste un jeu de mots ; couleur d'identité or phynance `#F3C025`.
 - 2026-10-28 — **Mousched-Gogh** : l'artiste de la bande (« Gogh » évoque le peintre, jamais cité ni dessiné), exalté et distrait, voit des formes partout ; rôle : pousse l'élève à faire une figure, un schéma, un tableau ; illustrateur du Shtam ; couleur d'identité glace du Czar `#66AACC`.
@@ -54,7 +55,7 @@ style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 
 ## À préciser dans le lore avant de générer
 
-- **Carte** : position des six provinces (seuls indices : Sandomir au point de jonction, Sinusborg port, Bedonstan et Glitchistan à l'est) ; cours de la Vistule (« traverse toutes » contre trois provinces ; « d'est en ouest » mais se jette dans la Baltique) ; Empire du Czar, Lithuanie, Pythagoriades ; Isle de la Réunion en encart ?
+- ~~**Carte**~~ : tranché le 2026-10-29 (plan schématique validé).
 - **Personnages** : fiches visuelles (silhouette, costume, couleurs, accessoire) pour le casting, les gouverneurs (Achras, Faustroll, Bosse-de-Nage, Cheval à Phynances) et les Palotins.
 - **Patatovie** : trait anatomique encore en TODO dans le Compendium.
 
