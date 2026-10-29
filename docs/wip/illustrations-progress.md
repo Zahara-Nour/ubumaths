@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après le 2e essai du fond de la grande carte (pas de PR : chantier 100 % doc)._
+_Mis à jour le 2026-10-29, après les retouches du fond de la grande carte (pas de PR : chantier 100 % doc)._
 
-- **État** : casting, gouverneurs et Palotins versés au Compendium (§ XI) ; plans des sept capitales au Compendium. **Fond de la grande carte** : style carte de conte / carte marine, Nano Banana, référence `carte/plan-reference-ia.png` (sans texte ni couleur de province) ; 2e essai aimé par David : `carte/fond-essai-2026-10-29.jpeg` (1089×976). Prompt complet dans la session du 2026-10-29 (à reprendre de l'essai : retouches seulement).
-- **Prochaine action** : retouches du fond (lettres « NO » de la rose des vents, clairière de Sinusborg manquante, montagnes au sud de Patatovie), puis haute définition, puis vignettes des villes, noms en SVG, encart de l'Isle (le cartouche a pris le coin bas-gauche).
+- **État** : casting, gouverneurs et Palotins versés au Compendium (§ XI) ; plans des sept capitales au Compendium. **Fond de la grande carte** (Nano Banana, style carte de conte / carte marine, référence `carte/plan-reference-ia.png`) : meilleure version = `carte/fond-retouche-2026-10-29.jpeg` (1089×976), retouchée une à une : lettres de la rose retirées, frontière sud redessinée, montagnes seulement au sud-ouest, routes retirées (six frontières en pointillés), pas de clairière à Sinusborg (sa vignette couvrira le delta). Leçon : chaque retouche dégrade l'image (aplats marbrés, contours durcis) ; repartir d'une image propre dans une NOUVELLE conversation Gemini, une retouche par demande.
+- **Prochaine action** : haute définition (agrandisseur IA de préférence : il ne redessine pas), puis figer le fond ; ensuite vignettes des villes, noms et contour en SVG (masquer le bout de pointillé qui déborde à l'est), encart de l'Isle (le cartouche a pris le coin bas-gauche).
 - **En attente de David** : rien.
 - **Pièges en cours** : **pas de formes géométriques plaquées sur le paysage** (David, 2026-10-29) : la discipline de chaque province ne se montre que dans sa ville. Ubu sans chapeau pointu ni longue robe blanche ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée. Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
