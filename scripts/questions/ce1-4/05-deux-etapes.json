@@ -1,0 +1,243 @@
+{
+	"title": "Problèmes en deux étapes (jusqu'à 1 000)",
+	"description": "Ajouts et retraits enchaînés : 83 + 18 − 27 ; deux achats et la monnaie rendue sur un billet",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Deux étapes",
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans la bibliothèque de l'école, il y a ${{a}}$ livres. Le professeur en apporte ${{b}}$ de plus. Les élèves en empruntent ${{c}}$.\n\nCombien y a-t-il de livres dans la bibliothèque maintenant ?\n\nIl y a $?$ livres.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "50..700"
+				},
+				{
+					"name": "b",
+					"expression": "10..200"
+				},
+				{
+					"name": "c",
+					"expression": "10..300"
+				}
+			],
+			"conditions": ["a + b <= 1000", "a + b - c >= 20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. D'abord, le professeur apporte des livres : on ajoute.",
+					"$${{a}} + {{b}} = {{eval:a+b}}$$",
+					"Puis les élèves en empruntent : on enlève.",
+					"$${{eval:a+b}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b-c}}}$$",
+					"Il y a maintenant ${{eval:a+b-c}}$ livres dans la bibliothèque."
+				]
+			}
+		},
+		{
+			"statement": "À la pâtisserie, madame Martin achète une tarte à ${{p}}~\\unit{€}$ et un gâteau à ${{q}}~\\unit{€}$. Elle donne un billet de ${{B}}~\\unit{€}$ à la vendeuse.\n\nCombien la vendeuse va-t-elle lui rendre ?\n\nLa vendeuse rend $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "B",
+					"expression": "50|100"
+				},
+				{
+					"name": "p",
+					"expression": "5..45"
+				},
+				{
+					"name": "q",
+					"expression": "5..45"
+				}
+			],
+			"conditions": ["p + q <= B - 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:B-p-q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. D'abord, le prix des deux achats : on ajoute.",
+					"$${{p}} + {{q}} = {{eval:p+q}}$$",
+					"Puis la vendeuse rend ce qui manque pour aller de ${{eval:p+q}}~\\unit{€}$ à ${{B}}~\\unit{€}$ : on enlève.",
+					"$${{B}} - {{eval:p+q}} = \\textcolor{{{color:primary.0}}}{{{eval:B-p-q}}}$$",
+					"La vendeuse rend ${{eval:B-p-q}}~\\unit{€}$ à madame Martin."
+				]
+			}
+		},
+		{
+			"statement": "À la boulangerie, monsieur Milack achète une baguette à ${{eval:floor((100+pc)/100)}}.{{eval:floor(mod(100+pc,100)/10)}}{{eval:mod(100+pc,10)}}~\\unit{€}$ et un pain aux raisins à ${{c}}$ centimes. Il donne un billet de $5~\\unit{€}$.\n\nCombien le vendeur va-t-il lui rendre ?\n\nLe vendeur rend $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..19"
+				},
+				{
+					"name": "pc",
+					"expression": "eval:5*k"
+				},
+				{
+					"name": "m",
+					"expression": "10..19"
+				},
+				{
+					"name": "c",
+					"expression": "eval:5*m"
+				}
+			],
+			"conditions": ["pc + c != 100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(400-pc-c)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. D'abord, le prix des deux pains : on ajoute les euros, puis les centimes ($1~\\unit{€} = 100$ centimes).",
+					"Les euros : $1$ euro. Les centimes : ${{pc}} + {{c}} = {{eval:pc+c}}$ centimes{{if:pc+c>=100|, c'est $1~\\unit{€}$ et ${{eval:pc+c-100}}$ centimes|}}.",
+					"$${{eval:floor((100+pc+c)/100)}}.{{eval:floor(mod(100+pc+c,100)/10)}}{{eval:mod(100+pc+c,10)}}~\\unit{€}$$",
+					"Puis le vendeur rend ce qui manque pour aller de ${{eval:floor((100+pc+c)/100)}}.{{eval:floor(mod(100+pc+c,100)/10)}}{{eval:mod(100+pc+c,10)}}~\\unit{€}$ à $5~\\unit{€}$ : on complète jusqu'à l'euro suivant, puis jusqu'à $5~\\unit{€}$.",
+					"De ${{eval:floor((100+pc+c)/100)}}.{{eval:floor(mod(100+pc+c,100)/10)}}{{eval:mod(100+pc+c,10)}}~\\unit{€}$ à ${{eval:floor((100+pc+c)/100)+1}}~\\unit{€}$ : ${{eval:100-mod(pc+c,100)}}$ centimes. De ${{eval:floor((100+pc+c)/100)+1}}~\\unit{€}$ à $5~\\unit{€}$ : ${{eval:4-floor((100+pc+c)/100)}}~\\unit{€}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{eval:floor((400-pc-c)/100)}}.{{eval:floor(mod(400-pc-c,100)/10)}}{{eval:mod(400-pc-c,10)}}~\\unit{€}}$$",
+					"Le vendeur rend ${{eval:floor((400-pc-c)/100)}}.{{eval:floor(mod(400-pc-c,100)/10)}}{{eval:mod(400-pc-c,10)}}~\\unit{€}$ à monsieur Milack."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 83 + 18 − 27 = 74",
+			"variationIndex": 0,
+			"variables": {
+				"a": "83",
+				"b": "18",
+				"c": "27"
+			},
+			"answers": ["74"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrêt après la 1re étape (101)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "83",
+				"b": "18",
+				"c": "27"
+			},
+			"answers": ["101"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tout ajouté (128)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "83",
+				"b": "18",
+				"c": "27"
+			},
+			"answers": ["128"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 50 − 17 − 26 = 7 €",
+			"variationIndex": 1,
+			"variables": {
+				"B": "50",
+				"p": "17",
+				"q": "26"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le prix payé au lieu du rendu (43)",
+			"variationIndex": 1,
+			"variables": {
+				"B": "50",
+				"p": "17",
+				"q": "26"
+			},
+			"answers": ["43"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 5 − (1,15 + 0,95) = 2,90 €",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"pc": "15",
+				"m": "19",
+				"c": "95"
+			},
+			"answers": ["2{,}9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 2,90 € avec le zéro",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"pc": "15",
+				"m": "19",
+				"c": "95"
+			},
+			"answers": ["2{,}90"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le prix payé au lieu du rendu (2,10 €)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"pc": "15",
+				"m": "19",
+				"c": "95"
+			},
+			"answers": ["2{,}1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : centimes sans retenue (3,90 €)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"pc": "15",
+				"m": "19",
+				"c": "95"
+			},
+			"answers": ["3{,}9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
