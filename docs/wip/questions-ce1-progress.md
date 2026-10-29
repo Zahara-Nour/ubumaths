@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après la relecture du lot 3._
+_Mis à jour le 2026-10-29, relecture du lot 3 tranchée (PR à merger)._
 
-- **État** : lot 3 (fractions, 9 modèles) en brouillon en prod, rangé et tagué (#1939). Relecture (verdicts comptés en base) : 7 OK ; **03** À revoir (« pourquoi un calcul dans la variation 2 ? ») ; **09** commentaire sans verdict (« la variation 3 n'a pas sa place dans ce modèle »).
-- **Prochaine action** : selon les réponses de David, corriger `docs/wip/questions/lot-ce1-3.py` (branche neuve dans le worktree), PR, `create-questions --mettre-a-jour` par David, remettre les deux verdicts à zéro, relecture, puis `publier-lot`.
-- **En attente de David** : (1) 03 : retirer la variation 2 (« un huitième plus un huitième… », doublon de 08 variation 3) ? — reco : oui. (2) 09 variation 3 (Lucie, complément) : A. retirée et gardée pour le lot 4 problèmes (reco) ; B. modèle à part (CE1-099, niveau 15).
-- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 (« 1 demi », « le 1/4 ») ; `reducedFractions: off` (simplification = CE2) ; worktree neuf : `svelte-kit sync` avant `tsx` (`$lib`) ; ports 5176-5178 pris (5179 pour ce lot) ; commitlint : sujet sans majuscule initiale.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `feat/questions-ce1-lot3-rangement` mergée : en partir d'une neuve sur `origin/main`). Page à cocher : https://claude.ai/artifact/PZb69g4xfAJUS8cm5q5JsS.
+- **État** : lot 3 (fractions) en brouillon en prod, rangé et tagué (#1939). Réponses de David à la relecture : 03 perd la variation 2 (« un huitième plus un huitième… », doublon de 08 variation 3) ; 09 perd la variation 3 (Lucie), gardée dans `lot-ce1-3.py` (`LUCIE`, `SPECS_LUCIE`) pour le lot 4 problèmes. Branche `feat/questions-ce1-lot3-relecture` : simulation prod, seuls 03 et 09 « CONTENU DIFFÉRENT ».
+- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/ce1-3 --publier --mettre-a-jour` ; remettre à zéro les verdicts de 03 et 09 ; relecture de ces deux ; puis `publier-lot`.
+- **En attente de David** : le `--publier --mettre-a-jour` en prod, après le merge.
+- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 (« 1 demi », « le 1/4 ») ; `reducedFractions: off` (simplification = CE2) ; worktree neuf : `svelte-kit sync` avant `tsx` (`$lib`) ; ports 5176-5178 pris (5179 pour ce lot) ; commitlint : sujet sans majuscule initiale ; le générateur Python écrit des JSON non formatés → `prettier --write` après.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `feat/questions-ce1-lot3-relecture`. Page à cocher : https://claude.ai/artifact/PZb69g4xfAJUS8cm5q5JsS.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -327,3 +327,4 @@ tag ne change aucune règle.
   Vu en passant (pas du lot) : dans la carte de correction, le cadre vert de la réponse attendue coupe le bas d'une
   fraction.
 - 2026-10-28 : #1936 mergée ; 9 brouillons créés en prod par David ; #1939 (nœud + tag, test rouge 5/9 sans, vert 9/9, `security-auditor` sans finding bloquant) mergée, `db:migrate` joué, vérifié (9/9 sur leur nœud, un point chacun) ; page à cocher publiée, aucune alerte.
+- 2026-10-29 : relecture tranchée par David (ses réponses aux deux questions : les deux recommandations) : 03 sans la variation 2, 09 sans Lucie (gardée pour le lot 4) ; `question:specs` 200 tirages verts sur 03 et 09 ; simulation en prod : 7 « = », 03 et 09 « CONTENU DIFFÉRENT ».

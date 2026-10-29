@@ -1,6 +1,6 @@
 {
 	"title": "Écrire en chiffres une fraction",
-	"description": "Trois huitièmes → 3/8 ; un huitième plus un huitième plus un huitième → 3/8",
+	"description": "Trois huitièmes → 3/8",
 	"grades": ["CE1"],
 	"theme": "Fractions",
 	"domain": "Apprivoiser",
@@ -36,31 +36,6 @@
 					"« {{if:n==1|un|{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|dix}}}}}}}}}}}}}}}}}} {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==8|huitièmes|dixièmes}}}}}}}}}}}} » : on partage le tout en ${{d}}$ parts égales et on en prend ${{n}}$.",
 					"Le **dénominateur** (en bas) dit en combien de parts égales on partage le tout ; le **numérateur** (en haut) dit combien de parts on prend.",
 					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{{{d}}}}$$"
-				]
-			}
-		},
-		{
-			"statement": "« **{{if:n==2|un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}} plus un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}}|{{if:n==3|un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}} plus un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}} plus un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}}|un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}} plus un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}} plus un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}} plus un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}}}}}}** », c'est la fraction :\n\n$$?$$",
-			"variables": [
-				{
-					"name": "d",
-					"expression": "3|4|5|6|8|10"
-				},
-				{
-					"name": "n",
-					"expression": "2..4"
-				}
-			],
-			"conditions": ["n<d"],
-			"blanks": [
-				{
-					"expectedAnswer": "\\frac{{{n}}}{{{d}}}"
-				}
-			],
-			"correction": {
-				"steps": [
-					"On prend ${{n}}$ fois un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}} : cela fait {{if:n==1|un|{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|dix}}}}}}}}}}}}}}}}}} {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==8|huitièmes|dixièmes}}}}}}}}}}}}.",
-					"$${{if:n==2|\\frac{1}{{{d}}} + \\frac{1}{{{d}}}|{{if:n==3|\\frac{1}{{{d}}} + \\frac{1}{{{d}}} + \\frac{1}{{{d}}}|\\frac{1}{{{d}}} + \\frac{1}{{{d}}} + \\frac{1}{{{d}}} + \\frac{1}{{{d}}}}}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{{{d}}}}$$"
 				]
 			}
 		}
@@ -139,44 +114,8 @@
 			}
 		},
 		{
-			"description": "BO : 1/8 + 1/8 + 1/8 = 3/8",
-			"variationIndex": 1,
-			"variables": {
-				"d": "8",
-				"n": "3"
-			},
-			"answers": ["\\frac{3}{8}"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "Erreur : 3/24 (dénominateurs ajoutés)",
-			"variationIndex": 1,
-			"variables": {
-				"d": "8",
-				"n": "3"
-			},
-			"answers": ["\\frac{3}{24}"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "Erreur : 1/8 (une seule part)",
-			"variationIndex": 1,
-			"variables": {
-				"d": "8",
-				"n": "3"
-			},
-			"answers": ["\\frac{1}{8}"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
 			"description": "borne : deux tiers, 2/3",
-			"variationIndex": 1,
+			"variationIndex": 0,
 			"variables": {
 				"d": "3",
 				"n": "2"

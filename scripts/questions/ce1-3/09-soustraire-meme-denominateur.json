@@ -1,6 +1,6 @@
 {
 	"title": "Soustraire des fractions de même dénominateur",
-	"description": "4/5 − 1/5 ; 1 − 3/10 ; Lucie colorie 3/10 en bleu, le reste en rouge (exemples du BO)",
+	"description": "4/5 − 1/5 ; 1 − 3/10 (exemples du BO)",
 	"grades": ["CE1"],
 	"theme": "Fractions",
 	"domain": "Calculer",
@@ -65,31 +65,6 @@
 			],
 			"correction": {
 				"steps": [
-					"Le tout, c'est ${{d}}$ {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==8|huitièmes|dixièmes}}}}}}}}}}}} : $1 = \\frac{{{d}}}{{{d}}}$.",
-					"$$1 - \\frac{{{a}}}{{{d}}} = \\frac{{{d}}}{{{d}}} - \\frac{{{a}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:d-a}}}{{{d}}}}$$"
-				]
-			}
-		},
-		{
-			"statement": "Lucie a colorié {{if:a==1|le|les}} $\\frac{{{a}}}{{{d}}}$ d'une figure en bleu et le reste en rouge.\n\nQuelle fraction de la figure est coloriée en rouge ?\n\n$$?$$",
-			"variables": [
-				{
-					"name": "d",
-					"expression": "3|4|5|6|8|10"
-				},
-				{
-					"name": "a",
-					"expression": "1..{{eval:d-1}}"
-				}
-			],
-			"blanks": [
-				{
-					"expectedAnswer": "\\frac{{{eval:d-a}}}{{{d}}}"
-				}
-			],
-			"correction": {
-				"steps": [
-					"La figure entière, c'est le tout : la partie rouge est ce qui manque à la partie bleue pour faire le tout.",
 					"Le tout, c'est ${{d}}$ {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==8|huitièmes|dixièmes}}}}}}}}}}}} : $1 = \\frac{{{d}}}{{{d}}}$.",
 					"$$1 - \\frac{{{a}}}{{{d}}} = \\frac{{{d}}}{{{d}}} - \\frac{{{a}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:d-a}}}{{{d}}}}$$"
 				]
@@ -227,42 +202,6 @@
 			"answers": ["\\frac{1}{2}"],
 			"expected": {
 				"status": "correct"
-			}
-		},
-		{
-			"description": "BO : Lucie, 3/10 bleu, 7/10 rouge",
-			"variationIndex": 2,
-			"variables": {
-				"d": "10",
-				"a": "3"
-			},
-			"answers": ["\\frac{7}{10}"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "Erreur : Lucie, la partie bleue (3/10)",
-			"variationIndex": 2,
-			"variables": {
-				"d": "10",
-				"a": "3"
-			},
-			"answers": ["\\frac{3}{10}"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "Erreur : Lucie, 7 (dénominateur oublié)",
-			"variationIndex": 2,
-			"variables": {
-				"d": "10",
-				"a": "3"
-			},
-			"answers": ["7"],
-			"expected": {
-				"status": "incorrect"
 			}
 		}
 	]
