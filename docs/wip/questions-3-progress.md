@@ -5,19 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1930 (rangement du lot 1 joué en prod)._
+_Mis à jour le 2026-10-29, après la relecture du lot 1 (5/5 OK)._
 
-- **État** : lot 1 en prod en brouillon, rangé (migration `20261029003100` jouée, vérifiée au MCP : 5 sur leur
-  nœud, tags 3-003/007/008/009/010 ; 90dca27a et acbd2280 en [3], tag 3-001, publiés). Page à cocher publiée :
-  https://claude.ai/artifact/RzBxX9RLjAtvkNnTWssq4X (collection `verdicts`, 0/5 au départ).
-- **Prochaine action** : David relit ; `ArtifactData list verdicts`, compter les 5 verdicts ; « À revoir » →
-  corriger (§ 7 de `couvrir-un-niveau.md`) ; tout OK → `publier-lot.ts --dir scripts/questions/3-lot-1` en
-  simulation, puis David `--publier`. Ensuite : phase 0 du lot 2 (§ 4).
-- **En attente de David** : la relecture de la page à cocher. 77ab770d (facteurs premiers) : bloc choix non
-  dessiné sur la page, à jouer dans l'aperçu admin.
+- **État** : lot 1 en prod en brouillon, rangé (#1930, migration `20261029003100` jouée et vérifiée). Page à
+  cocher https://claude.ai/artifact/RzBxX9RLjAtvkNnTWssq4X : **5 verdicts, 5 OK** (relus le 2026-10-29).
+- **Prochaine action** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/3-lot-1` en
+  simulation ; puis **David** le relance avec `--publier` ; relire `published` en base (MCP). Ensuite : phase 0
+  du lot 2 (§ 4).
+- **En attente de David** : le `--publier` après la simulation.
 - **Pièges en cours** : `db:migrate` refusé par le classifieur du mode auto → David le lance avec `!` ;
   test `forfait-palotin` qui dépasse 5 s en CI (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : aucun (worktree de #1930 retiré).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -271,3 +269,4 @@ modèles publiés de plus, ceux de 4e les perdent. Aucune règle ne change.
 - #1930 mergée (CI : run annulé puis `forfait-palotin` en délai dépassé, sans rapport, relancé vert) ;
   `db:migrate` lancé par David ; MCP : les 7 modèles conformes à l'en-tête de la migration.
 - Page à cocher : https://claude.ai/artifact/RzBxX9RLjAtvkNnTWssq4X (alerte : 77ab770d, bloc choix non dessiné).
+- Relecture (2026-10-29) : 5 verdicts en base, 5 OK, aucun commentaire.
