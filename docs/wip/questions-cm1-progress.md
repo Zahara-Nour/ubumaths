@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, phase 0 du lot 3 écrite._
+_Mis à jour le 2026-10-30, lot 3a écrit (PR des fichiers)._
 
 - **État** : lots 0, 1 et 2 en prod et **publiés**. Lot 2 (numération des entiers, 10 modèles) : #1964, #1976, relecture 10/10 OK, `publier-lot.ts --publier` lancé par David, 10 `published` relus au MCP.
-- **Prochaine action** : lot 3a (fractions, 10 modèles, § 9) — écrire le script dès la validation de David ; puis 3b (fractions décimales), 3c (partages, bloc pas en prod).
-- **En attente de David** : validation de la phase 0 du lot 3 (§ 9, trois questions : 147 en deux cases, sous-notion « Repérage », découpage 3a / 3b / 3c).
+- **Prochaine action** : PR des fichiers du lot 3a (§ 9 ter), merge, puis David lance `create-questions --dir scripts/questions/cm1-3a --publier` ; ensuite migration nœud + tag. Puis 3b (fractions décimales), 3c (partages).
+- **En attente de David** : la phrase « Tu as placé le point sur 0,8 » de la droite à placer (décimal pour une fraction, § 9 ter) : à corriger dans un chantier à part ?
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente (relever `schema_migrations`) ; un worktree n'a pas `supabase/.temp/` (lien) : le copier du dépôt principal ; « Multiples et diviseurs » : niveaux 4-8 pris par le CM2, les nôtres partent de 9 ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
-- **Worktree / branche** : aucun (worktree du lot 2 retiré) ; au lot 3, `git worktree add -b feat/questions-cm1-lot3 ../ubumaths-wt-questions-cm1 origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot3a` ; serveur de test sur 5177 (5176 pris par questions-4).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -379,3 +379,27 @@ Questions :
    `deploy:prod` du bloc ```partage ? Reco : après 3b, sans attendre le déploiement.
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 9 bis. Lot 3 : réponse de David (2026-10-30)
+
+« je te suis », en réponse aux trois questions du § 9 et à leurs recommandations : CM1-147 en deux
+cases ; sous-notion « Repérage » dans la catégorie Fractions ; découpage 3a / 3b / 3c, 3c écrit
+juste après 3b en brouillons, sans attendre le `deploy:prod` du bloc ```partage.
+
+### 9 ter. Lot 3a — écriture (2026-10-30)
+
+- Script `docs/wip/questions/lot-cm1-3a.py` → `scripts/questions/cm1-3a/` (10 JSON),
+  `reducedFractions: off` partout.
+- **Écarts à la phase 0** : droites graduées à au plus 12 intervalles (`u = min(4, floor(12/d))`),
+  pour viser au doigt sur un téléphone ; « Lire une fraction » : le leurre « n + 1 parts » écarté
+  quand il vaut 1 (« huit huitièmes »).
+- **Piège** : la variable `e` des droites (le nombre d'unités) était lue comme le nombre d'Euler
+  (`nm = 2e − 1`) : 30 % des droites à placer hors de la droite. Renommée `u`.
+- `create-questions` en simulation (prod) : 10/10 verts, 54 specs ; `question:specs` 300 tirages
+  par variation : tout réussi.
+- Base locale : 10 brouillons. Aperçu admin (port 5177) : fraction d'une quantité (3,8 L juste,
+  virgule dans la case et dans la correction), repérer par entier + fraction (droite et cases
+  « ? + ?/5 »), placer 6/5 (point posé sur 4/5 : faux, droite juste en vert).
+- **À signaler à David** : la droite à placer écrit la phrase de correction en décimal quand le
+  dénominateur le permet (« Tu as placé le point sur 0,8. » pour une question en cinquièmes ;
+  `placerText`, `src/lib/ubumark/utils/number-line-placer.ts`). Hors de ce lot (contenu seul).

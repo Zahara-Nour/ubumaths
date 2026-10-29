@@ -1,0 +1,135 @@
+{
+	"title": "Repérer un point par un entier plus une fraction",
+	"description": "Lire le nombre qui repère un point d'une demi-droite graduée, sous la forme d'un entier plus une fraction inférieure à 1 (B repère 2 + 1/4) ; unité partagée en 2 à 6 parts",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le point $A$ repère la somme d'un nombre entier et d'une fraction inférieure à $1$. Complète.\n\n```line\nstart: 0\nend: {{u}}\nstep: 1/{{d}}\nmajor: {{d}}\npoints: A={{n}}/{{d}}\n```\n\n$$A : ? + \\frac{?}{{{d}}}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6"
+				},
+				{
+					"name": "u",
+					"expression": "eval:min(4,floor(12/d))"
+				},
+				{
+					"name": "qm",
+					"expression": "eval:u-1"
+				},
+				{
+					"name": "q",
+					"expression": "1..{{qm}}"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'unité.** De $0$ à $1$, l'unité est partagée en ${{d}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{d}}}$.",
+					"Le point $A$ est après la graduation ${{q}}$, à ${{r}}$ petit{{if:r>1|s|}} intervalle{{if:r>1|s|}} plus loin : il repère $\\textcolor{{{color:primary.0}}}{{{q}}} + \\frac{\\textcolor{{{color:primary.0}}}{{{r}}}}{{{d}}}$, c'est-à-dire $\\frac{{{n}}}{{{d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A repère 2 + 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"qm": "2",
+				"q": "2",
+				"dm": "3",
+				"r": "1",
+				"n": "9"
+			},
+			"answers": ["2", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 + 1/4 (graduation suivante)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"qm": "2",
+				"q": "2",
+				"dm": "3",
+				"r": "1",
+				"n": "9"
+			},
+			"answers": ["3", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0 + 9/4 (fraction pas inférieure à 1)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"qm": "2",
+				"q": "2",
+				"dm": "3",
+				"r": "1",
+				"n": "9"
+			},
+			"answers": ["0", "9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 + 3/4 (compté depuis 3)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"qm": "2",
+				"q": "2",
+				"dm": "3",
+				"r": "1",
+				"n": "9"
+			},
+			"answers": ["2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

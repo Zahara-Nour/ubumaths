@@ -1,0 +1,127 @@
+{
+	"title": "Placer un entier plus une fraction sur une demi-droite",
+	"description": "Placer la somme d'un entier et d'une fraction inférieure à 1 sur une demi-droite graduée (place 2 + 1/4) ; unité partagée en 2 à 6 parts",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Place le nombre ${{q}} + \\frac{{{r}}}{{{d}}}$ sur la demi-droite graduée.\n\n```line\nstart: 0\nend: {{u}}\nstep: 1/{{d}}\nmajor: {{d}}\nplacer: {{n}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6"
+				},
+				{
+					"name": "u",
+					"expression": "eval:min(4,floor(12/d))"
+				},
+				{
+					"name": "qm",
+					"expression": "eval:u-1"
+				},
+				{
+					"name": "q",
+					"expression": "1..{{qm}}"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'unité.** De $0$ à $1$, l'unité est partagée en ${{d}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{d}}}$.",
+					"${{q}} + \\frac{{{r}}}{{{d}}}$ : on va jusqu'à la graduation ${{q}}$, puis ${{r}}$ petit{{if:r>1|s|}} intervalle{{if:r>1|s|}} plus loin."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 + 1/4 placé",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"qm": "2",
+				"q": "2",
+				"dm": "3",
+				"r": "1",
+				"n": "9"
+			},
+			"answers": ["2.25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/4 (entier oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"qm": "2",
+				"q": "2",
+				"dm": "3",
+				"r": "1",
+				"n": "9"
+			},
+			"answers": ["0.25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 + 4/4 (3)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"qm": "2",
+				"q": "2",
+				"dm": "3",
+				"r": "1",
+				"n": "9"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 + 2/3 placé",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"qm": "3",
+				"q": "1",
+				"dm": "2",
+				"r": "2",
+				"n": "5"
+			},
+			"answers": ["\\frac{5}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

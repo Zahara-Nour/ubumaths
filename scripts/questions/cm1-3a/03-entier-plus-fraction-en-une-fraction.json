@@ -1,0 +1,116 @@
+{
+	"title": "Écrire un entier plus une fraction comme une fraction",
+	"description": "Écrire la somme d'un entier et d'une fraction inférieure à 1 comme une seule fraction (2 + 2/3 = 8/3) ; dénominateur au plus 20",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris cette somme sous la forme d'une seule fraction.\n\n$${{q}} + \\frac{{{r}}}{{{d}}} = \\frac{?}{{{d}}}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6|7|8|9|10|12|15|20"
+				},
+				{
+					"name": "q",
+					"expression": "1..5"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "a",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une unité, c'est $\\frac{{{d}}}{{{d}}}$.** Donc ${{q}}$ unités, c'est ${{q}} \\times {{d}} = {{eval:q*d}}$ {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|vingtièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} : ${{q}} = \\frac{{{eval:q*d}}}{{{d}}}$.",
+					"$${{q}} + \\frac{{{r}}}{{{d}}} = \\frac{{{eval:q*d}}}{{{d}}} + \\frac{{{r}}}{{{d}}} = \\frac{\\textcolor{{{color:primary.0}}}{{{a}}}}{{{d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 + 2/3 = 8/3",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"q": "2",
+				"dm": "2",
+				"r": "2",
+				"a": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (2 + 2)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"q": "2",
+				"dm": "2",
+				"r": "2",
+				"a": "8"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 (fraction oubliée)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"q": "2",
+				"dm": "2",
+				"r": "2",
+				"a": "8"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7 (2 × 3 + 1)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"q": "2",
+				"dm": "2",
+				"r": "2",
+				"a": "8"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

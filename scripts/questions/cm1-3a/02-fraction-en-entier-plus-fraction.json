@@ -1,0 +1,135 @@
+{
+	"title": "Écrire une fraction comme un entier plus une fraction",
+	"description": "Écrire une fraction supérieure à 1 comme la somme d'un entier et d'une fraction inférieure à 1 (21/8 = 2 + 5/8) ; dénominateur au plus 20",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris cette fraction comme la somme d'un nombre entier et d'une fraction inférieure à $1$.\n\n$$\\frac{{{a}}}{{{d}}} = ? + \\frac{?}{{{d}}}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6|7|8|9|10|12|15|20"
+				},
+				{
+					"name": "q",
+					"expression": "1..5"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "a",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Combien d'unités ?** Une unité, c'est $\\frac{{{d}}}{{{d}}}$. On cherche combien de fois ${{d}}$ dans ${{a}}$ : ${{a}} = {{q}} \\times {{d}} + {{r}}$.",
+					"$$\\frac{{{a}}}{{{d}}} = \\frac{{{eval:q*d}}}{{{d}}} + \\frac{{{r}}}{{{d}}} = {{q}} + \\frac{{{r}}}{{{d}}}$$",
+					"$\\frac{{{r}}}{{{d}}}$ est inférieure à $1$ : $\\frac{{{a}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{{{q}}} + \\frac{\\textcolor{{{color:primary.0}}}{{{r}}}}{{{d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "21/8 = 2 + 5/8",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"q": "2",
+				"dm": "7",
+				"r": "5",
+				"a": "21"
+			},
+			"answers": ["2", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 + 13/8 (fraction pas inférieure à 1)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"q": "2",
+				"dm": "7",
+				"r": "5",
+				"a": "21"
+			},
+			"answers": ["1", "13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5 et 2 échangés",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"q": "2",
+				"dm": "7",
+				"r": "5",
+				"a": "21"
+			},
+			"answers": ["5", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 + 5/8",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"q": "2",
+				"dm": "7",
+				"r": "5",
+				"a": "21"
+			},
+			"answers": ["3", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7/4 = 1 + 3/4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"q": "1",
+				"dm": "3",
+				"r": "3",
+				"a": "7"
+			},
+			"answers": ["1", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

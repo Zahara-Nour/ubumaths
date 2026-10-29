@@ -1,0 +1,190 @@
+{
+	"title": "Lire et écrire une fraction",
+	"description": "Cinq tiers ↔ 5/3 : écrire en chiffres une fraction donnée en lettres, la lire parmi quatre écritures ; dénominateur au plus 20, fractions éventuellement supérieures à 1",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris en chiffres la fraction « **{{if:n==0|zéro|{{if:n==1|un|{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|{{if:n==10|dix|{{if:n==11|onze|{{if:n==12|douze|{{if:n==13|treize|{{if:n==14|quatorze|{{if:n==15|quinze|{{if:n==16|seize|{{if:n==17|dix-sept|{{if:n==18|dix-huit|{{if:n==19|dix-neuf|{{if:n==20|vingt|{{if:n==21|vingt et un|{{if:n==22|vingt-deux|{{if:n==23|vingt-trois|{{if:n==24|vingt-quatre|{{if:n==25|vingt-cinq|{{if:n==26|vingt-six|{{if:n==27|vingt-sept|{{if:n==28|vingt-huit|{{if:n==29|vingt-neuf|trente}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} {{if:n==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|{{if:d==12|douzième|{{if:d==13|treizième|{{if:d==14|quatorzième|{{if:d==15|quinzième|{{if:d==16|seizième|{{if:d==17|dix-septième|{{if:d==18|dix-huitième|{{if:d==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|vingtièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}** ».\n\n$$?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..20"
+				},
+				{
+					"name": "m",
+					"expression": "eval:min(3*d,30)"
+				},
+				{
+					"name": "n",
+					"expression": "1..{{m}}"
+				}
+			],
+			"conditions": ["n!=d"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« {{if:n==0|zéro|{{if:n==1|un|{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|{{if:n==10|dix|{{if:n==11|onze|{{if:n==12|douze|{{if:n==13|treize|{{if:n==14|quatorze|{{if:n==15|quinze|{{if:n==16|seize|{{if:n==17|dix-sept|{{if:n==18|dix-huit|{{if:n==19|dix-neuf|{{if:n==20|vingt|{{if:n==21|vingt et un|{{if:n==22|vingt-deux|{{if:n==23|vingt-trois|{{if:n==24|vingt-quatre|{{if:n==25|vingt-cinq|{{if:n==26|vingt-six|{{if:n==27|vingt-sept|{{if:n==28|vingt-huit|{{if:n==29|vingt-neuf|trente}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} {{if:n==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|{{if:d==12|douzième|{{if:d==13|treizième|{{if:d==14|quatorzième|{{if:d==15|quinzième|{{if:d==16|seizième|{{if:d==17|dix-septième|{{if:d==18|dix-huitième|{{if:d==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|vingtièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} » : on partage l'unité en ${{d}}$ parts égales et on en prend ${{n}}$.",
+					"Le **dénominateur** (en bas) dit en combien de parts égales on partage l'unité ; le **numérateur** (en haut) dit combien de parts on prend.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{{{d}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Comment lit-on la fraction $\\frac{{{n}}}{{{d}}}$ ?\n\n```choix\n- {{if:n==0|zéro|{{if:n==1|un|{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|{{if:n==10|dix|{{if:n==11|onze|{{if:n==12|douze|{{if:n==13|treize|{{if:n==14|quatorze|{{if:n==15|quinze|{{if:n==16|seize|{{if:n==17|dix-sept|{{if:n==18|dix-huit|{{if:n==19|dix-neuf|{{if:n==20|vingt|{{if:n==21|vingt et un|{{if:n==22|vingt-deux|{{if:n==23|vingt-trois|{{if:n==24|vingt-quatre|{{if:n==25|vingt-cinq|{{if:n==26|vingt-six|{{if:n==27|vingt-sept|{{if:n==28|vingt-huit|{{if:n==29|vingt-neuf|trente}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} {{if:n==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|{{if:d==12|douzième|{{if:d==13|treizième|{{if:d==14|quatorzième|{{if:d==15|quinzième|{{if:d==16|seizième|{{if:d==17|dix-septième|{{if:d==18|dix-huitième|{{if:d==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|vingtièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:d==0|zéro|{{if:d==1|un|{{if:d==2|deux|{{if:d==3|trois|{{if:d==4|quatre|{{if:d==5|cinq|{{if:d==6|six|{{if:d==7|sept|{{if:d==8|huit|{{if:d==9|neuf|{{if:d==10|dix|{{if:d==11|onze|{{if:d==12|douze|{{if:d==13|treize|{{if:d==14|quatorze|{{if:d==15|quinze|{{if:d==16|seize|{{if:d==17|dix-sept|{{if:d==18|dix-huit|{{if:d==19|dix-neuf|{{if:d==20|vingt|{{if:d==21|vingt et un|{{if:d==22|vingt-deux|{{if:d==23|vingt-trois|{{if:d==24|vingt-quatre|{{if:d==25|vingt-cinq|{{if:d==26|vingt-six|{{if:d==27|vingt-sept|{{if:d==28|vingt-huit|{{if:d==29|vingt-neuf|trente}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} {{if:n==2|demis|{{if:n==3|tiers|{{if:n==4|quarts|{{if:n==5|cinquièmes|{{if:n==6|sixièmes|{{if:n==7|septièmes|{{if:n==8|huitièmes|{{if:n==9|neuvièmes|{{if:n==10|dixièmes|{{if:n==11|onzièmes|{{if:n==12|douzièmes|{{if:n==13|treizièmes|{{if:n==14|quatorzièmes|{{if:n==15|quinzièmes|{{if:n==16|seizièmes|{{if:n==17|dix-septièmes|{{if:n==18|dix-huitièmes|{{if:n==19|dix-neuvièmes|vingtièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:n==0|zéro|{{if:n==1|un|{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|{{if:n==10|dix|{{if:n==11|onze|{{if:n==12|douze|{{if:n==13|treize|{{if:n==14|quatorze|{{if:n==15|quinze|{{if:n==16|seize|{{if:n==17|dix-sept|{{if:n==18|dix-huit|{{if:n==19|dix-neuf|{{if:n==20|vingt|{{if:n==21|vingt et un|{{if:n==22|vingt-deux|{{if:n==23|vingt-trois|{{if:n==24|vingt-quatre|{{if:n==25|vingt-cinq|{{if:n==26|vingt-six|{{if:n==27|vingt-sept|{{if:n==28|vingt-huit|{{if:n==29|vingt-neuf|trente}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} {{if:d==0|zéro|{{if:d==1|un|{{if:d==2|deux|{{if:d==3|trois|{{if:d==4|quatre|{{if:d==5|cinq|{{if:d==6|six|{{if:d==7|sept|{{if:d==8|huit|{{if:d==9|neuf|{{if:d==10|dix|{{if:d==11|onze|{{if:d==12|douze|{{if:d==13|treize|{{if:d==14|quatorze|{{if:d==15|quinze|{{if:d==16|seize|{{if:d==17|dix-sept|{{if:d==18|dix-huit|{{if:d==19|dix-neuf|{{if:d==20|vingt|{{if:d==21|vingt et un|{{if:d==22|vingt-deux|{{if:d==23|vingt-trois|{{if:d==24|vingt-quatre|{{if:d==25|vingt-cinq|{{if:d==26|vingt-six|{{if:d==27|vingt-sept|{{if:d==28|vingt-huit|{{if:d==29|vingt-neuf|trente}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:p==0|zéro|{{if:p==1|un|{{if:p==2|deux|{{if:p==3|trois|{{if:p==4|quatre|{{if:p==5|cinq|{{if:p==6|six|{{if:p==7|sept|{{if:p==8|huit|{{if:p==9|neuf|{{if:p==10|dix|{{if:p==11|onze|{{if:p==12|douze|{{if:p==13|treize|{{if:p==14|quatorze|{{if:p==15|quinze|{{if:p==16|seize|{{if:p==17|dix-sept|{{if:p==18|dix-huit|{{if:p==19|dix-neuf|{{if:p==20|vingt|{{if:p==21|vingt et un|{{if:p==22|vingt-deux|{{if:p==23|vingt-trois|{{if:p==24|vingt-quatre|{{if:p==25|vingt-cinq|{{if:p==26|vingt-six|{{if:p==27|vingt-sept|{{if:p==28|vingt-huit|{{if:p==29|vingt-neuf|trente}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} {{if:p==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|{{if:d==12|douzième|{{if:d==13|treizième|{{if:d==14|quatorzième|{{if:d==15|quinzième|{{if:d==16|seizième|{{if:d==17|dix-septième|{{if:d==18|dix-huitième|{{if:d==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|vingtièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..20"
+				},
+				{
+					"name": "m",
+					"expression": "eval:min(3*d,20)"
+				},
+				{
+					"name": "n",
+					"expression": "2..{{m}}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:n+1"
+				}
+			],
+			"conditions": ["n!=d", "p!=d"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **dénominateur** (en bas) dit en combien de parts égales on partage l'unité ; le **numérateur** (en haut) dit combien de parts on prend.",
+					"Ici, l'unité est partagée en ${{d}}$ parts égales (des {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|vingtièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}) et on en prend ${{n}}$ : $\\frac{{{n}}}{{{d}}}$ se lit **« {{if:n==0|zéro|{{if:n==1|un|{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|{{if:n==10|dix|{{if:n==11|onze|{{if:n==12|douze|{{if:n==13|treize|{{if:n==14|quatorze|{{if:n==15|quinze|{{if:n==16|seize|{{if:n==17|dix-sept|{{if:n==18|dix-huit|{{if:n==19|dix-neuf|{{if:n==20|vingt|{{if:n==21|vingt et un|{{if:n==22|vingt-deux|{{if:n==23|vingt-trois|{{if:n==24|vingt-quatre|{{if:n==25|vingt-cinq|{{if:n==26|vingt-six|{{if:n==27|vingt-sept|{{if:n==28|vingt-huit|{{if:n==29|vingt-neuf|trente}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} {{if:n==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|{{if:d==12|douzième|{{if:d==13|treizième|{{if:d==14|quatorzième|{{if:d==15|quinzième|{{if:d==16|seizième|{{if:d==17|dix-septième|{{if:d==18|dix-huitième|{{if:d==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|vingtièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} »**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "cinq tiers : 5/3",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"m": "9",
+				"n": "5"
+			},
+			"answers": ["\\frac{5}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/5 (inversée)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"m": "9",
+				"n": "5"
+			},
+			"answers": ["\\frac{3}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 53",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"m": "9",
+				"n": "5"
+			},
+			"answers": ["53"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "douze vingtièmes : 12/20",
+			"variationIndex": 0,
+			"variables": {
+				"d": "20",
+				"m": "30",
+				"n": "12"
+			},
+			"answers": ["\\frac{12}{20}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "un quart : 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"m": "12",
+				"n": "1"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7/4 : sept quarts",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"m": "12",
+				"n": "7",
+				"p": "8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : quatre septièmes",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"m": "12",
+				"n": "7",
+				"p": "8"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sept quatre",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"m": "12",
+				"n": "7",
+				"p": "8"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
