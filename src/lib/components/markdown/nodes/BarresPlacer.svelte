@@ -123,7 +123,7 @@
 		judged && verdicts.every((v) => v === true) && (!choosing || scaleVerdict === true)
 	);
 	let mistakes = $derived([
-		...(scaleVerdict === false ? [scaleMistake(spec.data, scale) ?? ''] : []),
+		...(scaleVerdict === false ? [scaleMistake(spec.data, scale)].flatMap((m) => m ?? []) : []),
 		...targets.flatMap((target, k) =>
 			verdicts[k] === false ? (barMistake(target.label, values[k], target.expected) ?? []) : []
 		)
@@ -222,7 +222,7 @@
 	 * Écouteur non passif (Svelte rend `ontouchstart` passif) ; ailleurs, la page défile.
 	 */
 	function handleTouchStart(event: TouchEvent) {
-		if (locked || event.touches.length !== 1) return;
+		if (locked || waitingScale || event.touches.length !== 1) return;
 		const point = pointerAt(event.touches[0]);
 		if (point !== null && columnAt(point) !== null) event.preventDefault();
 	}
@@ -470,7 +470,7 @@
 						type="button"
 						class="placer-cran flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-background text-lg hover:bg-muted disabled:opacity-40"
 						aria-label="Descendre la barre {targets[active]?.label ?? ''} d’une unité"
-						disabled={locked}
+						disabled={locked || waitingScale}
 						onclick={() => stepBy(-1)}
 					>
 						<span aria-hidden="true">▼</span>
@@ -479,7 +479,7 @@
 						type="button"
 						class="placer-cran flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-background text-lg hover:bg-muted disabled:opacity-40"
 						aria-label="Monter la barre {targets[active]?.label ?? ''} d’une unité"
-						disabled={locked}
+						disabled={locked || waitingScale}
 						onclick={() => stepBy(1)}
 					>
 						<span aria-hidden="true">▲</span>

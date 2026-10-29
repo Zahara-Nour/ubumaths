@@ -291,7 +291,10 @@ describe('Échelle choisie par l’élève (axe: à choisir, § 24-25)', () => {
 		const root = screen.container;
 		expect(tickLabels(root).every((t) => t === '')).toBe(true);
 		expect(root.textContent).toContain('Choisis d’abord l’échelle.');
-		await userEvent.click(button(root, 'Monter la barre Alphaville d’une unité'));
+		expect(button(root, 'Monter la barre Alphaville d’une unité').disabled).toBe(true);
+		expect(button(root, 'Descendre la barre Alphaville d’une unité').disabled).toBe(true);
+		tapAt(root, 'Gammaville', 5, 10);
+		await new Promise((r) => setTimeout(r, 50));
 		expect(probe.changes).toEqual([]);
 	});
 

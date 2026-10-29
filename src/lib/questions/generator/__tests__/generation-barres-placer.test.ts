@@ -182,6 +182,15 @@ describe('échelle choisie par l’élève (axe: à choisir, § 24-25)', () => {
 		const { lines } = buildExpectedResult(instance, { values: ['10', '42', '35', '18'] });
 		const built = lines.filter((l) => l.kind === 'build');
 		expect(built).toHaveLength(1);
-		expect(built[0]).toMatchObject({ buildKind: 'barres', status: 'incorrect' });
+		expect(built[0]).toMatchObject({
+			buildKind: 'barres',
+			status: 'incorrect',
+			answers: [
+				{ answer: '10', status: 'incorrect' },
+				{ answer: '42', status: 'correct' },
+				{ answer: '35', status: 'correct' },
+				{ answer: '18', status: 'correct' }
+			]
+		});
 	});
 });
