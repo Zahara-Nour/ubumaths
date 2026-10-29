@@ -8,24 +8,25 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1938 (lot 5a mergé)._
+_Mis à jour le 2026-10-29, v0.55.0 en prod (lots 1 à 5) ; PR de la migration en cours._
 
-- **État** : lots 1 à 4 EN PROD ; 5b (#1924) et 5a (#1938) MERGÉS, pas encore en prod : le type
-  `multiple_choice` n'existe plus dans le code (revues opus + sécurité sans bloquant, § 2.13). Worktree retiré.
-- **Prochaine action** : rien avant le `deploy:prod` (décision de David). Après : migration destructive
-  (contrainte `question_templates_type_check`, tables `migration_tracking` / `migration_edits` exportées en JSON
-  dans `data/` avant, colonne `multiple_answers`, `options - 'shuffleChoices'` sur 3 brouillons) :
-  s'arrêter et expliquer à David ce qui sera perdu. Ensuite lot 6.
-- **En attente de David** : essais à l'écran (QCM migrés, CP-058) ; avis sur les séries PDF ; publication de CP-058.
-- **Pièges en cours** : `questions-1spe` repart de `main` (sources `1spe-0-*`, `logique-1spe/B-02`, `B-04`
-  réécrites). Entre `deploy:prod` et la migration, les 3 brouillons à `shuffleChoices` ne se dupliquent plus
-  (400). 6 modèles `cp-b2` : `level` prod ≠ source. Test `corrections.test.ts` (R-PASS) instable en CI (5 s).
-- **Worktree / branche** : aucun (nouvelle branche pour la migration d'après deploy).
+- **État** : lots 1 à 5 EN PROD (v0.55.0, 2026-10-29). Migration destructive écrite (branche
+  `chore/figure-et-choix-migration-qcm`) : contrainte sans `multiple_choice`, `shuffleChoices` retiré
+  (3 brouillons), `migration_tracking` / `migration_edits` / vue `migration_review_tree` / fonction de trigger
+  supprimées (export `data/import-tinymath/`, lancé par David) ; le code ne lit plus `multiple_answers`.
+  Tests d'intégration rouges sans la migration, verts avec. Ce qui sera perdu expliqué à David, qui a suivi.
+- **Prochaine action** : revue sécurité → PR → CI → merge → `db:migrate` → `db:types` (PR à part). Au
+  prochain `deploy:prod` : migration qui supprime la colonne `multiple_answers` (vide). Ensuite lot 6.
+- **En attente de David** : avis sur les séries PDF ; publication de CP-058 ; vérifs à l'écran (agent Chrome).
+- **Pièges en cours** : tant que la migration n'est pas jouée, les 3 brouillons à `shuffleChoices` ne se
+  dupliquent plus (400). 6 modèles `cp-b2` : `level` prod ≠ source. `corrections.test.ts` (R-PASS) instable en CI.
+- **Worktree / branche** : `ubumaths-wt-figure-et-choix` · `chore/figure-et-choix-migration-qcm`.
 
 ---
 
 ## Historique
 
+- 2026-10-29 — **v0.55.0 en prod** (lots 5a + 5b) ; migration destructive d'après deploy écrite.
 - 2026-10-28 — **#1938 mergée** (lot 5a) : QCM retiré du code, tests portés, revues sans bloquant.
 - 2026-10-26 — **#1842 mergée** (restes, phase 0 suivie) : `withBlockCases` réaligne un modèle à
   variables quand l'énoncé brut compte comme le résolu (pas de variable dans un ```operation, mêmes
