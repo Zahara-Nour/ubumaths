@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #1996._
+_Mis à jour le 2026-10-30, brouillons du lot 4 en prod._
 
-- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions, 10 modèles) : fichiers mergés (#1996), pas encore en base.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-4
---publier` ; relever les `id` au MCP ; puis migration nœud + tag (calquée sur le lot 3).
-- **En attente de David** : `create-questions --publier` ; correctif de la carte de correction (choix `$$…$$`
-  en LaTeX brut, 15 modèles publiés) : recommandé maintenant, en PR de code à part (§ 8) — go ou plus tard ?
+- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions) : 10 brouillons en prod (relus au MCP), sans nœud ni tag (§ 8).
+- **Prochaine action** : migration nœud + tag du lot 4 (calquée sur le lot 3, nœuds = sous-notions) + test
+  d'intégration, dans un nouveau worktree.
+- **En attente de David** : correctif de la carte de correction (choix `$$…$$` en LaTeX brut, 15 modèles
+  publiés) : recommandé maintenant, en PR de code à part (§ 8) — go ou plus tard ?
 - **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
 - **Worktree / branche** : aucun (retiré après #1996) ; migration : nouveau worktree `../ubumaths-wt-questions-ce2`.
 
@@ -340,3 +340,10 @@ de plus (brouillons neufs ; la migration nœud + tag ne change aucune règle).
   juste, seule la correction est touchée. **15 modèles publiés** concernés (CP, CE1, CE2, CM1, 5e, 1re et Tle spé ;
   relevé MCP). Le lot garde `$$` (même écriture que le CE1) : le correctif du composant le couvrira.
 - 2026-10-30 : #1996 mergée (CI verte, revue : aucune, contenu) ; worktree retiré.
+
+### Lot 4 — en prod : brouillons (2026-10-30)
+
+- `create-questions --publier` (lancé par Claude à la demande de David) : 10 brouillons, relus au MCP (draft, CE2,
+  niveaux justes, `reducedFractions` coupé, sans nœud ni tag, aucun niveau en double) : `e0aaf18f` (01), `176b6b93`
+  (02), `51b95890` (03), `788a22c7` (04), `75ec78a1` (05), `c21fe20b` (06), `b892331e` (07), `c73dfcd0` (08),
+  `1f6fb2c2` (09), `de7d9cf3` (10).
