@@ -2482,6 +2482,7 @@ export type Database = {
           see_also: Json | null
           sense: string | null
           shared_with: string[]
+          slug: string
           synonyms: string[]
           tags: string[]
           term: string
@@ -2504,6 +2505,7 @@ export type Database = {
           see_also?: Json | null
           sense?: string | null
           shared_with?: string[]
+          slug: string
           synonyms?: string[]
           tags?: string[]
           term: string
@@ -2526,6 +2528,7 @@ export type Database = {
           see_also?: Json | null
           sense?: string | null
           shared_with?: string[]
+          slug?: string
           synonyms?: string[]
           tags?: string[]
           term?: string
@@ -14893,6 +14896,7 @@ export type Database = {
       delete_all_resolved_errors: { Args: never; Returns: number }
       delete_attachment: { Args: { p_attachment_id: string }; Returns: string }
       delete_user_account: { Args: { p_user_id: string }; Returns: Json }
+      dictionary_slugify: { Args: { source: string }; Returns: string }
       discard_vip_cards: {
         Args: {
           p_instance_ids: string[]

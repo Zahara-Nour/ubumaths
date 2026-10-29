@@ -115,7 +115,9 @@ export async function createEntry(
 	const position = rows.reduce((max, row) => Math.max(max, row.position), -1) + 1;
 	const { data, error } = await supabase
 		.from('dictionary_entries')
-		.insert({ ...toColumns(input), position })
+		// L'adresse est posée par le trigger `dictionary_entries_slug` (terme + sens), qui
+		// écrase toute valeur reçue : la colonne est obligatoire pour le type, pas pour nous.
+		.insert({ ...toColumns(input), position, slug: '' })
 		.select(ADMIN_DICTIONARY_COLUMNS)
 		.single();
 	if (error?.code === '23505')

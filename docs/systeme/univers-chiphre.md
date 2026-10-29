@@ -7,6 +7,7 @@ couvre:
   - src/lib/config/lore.ts
   - 'src/lib/server/shtam/**'
   - src/lib/server/sitemap-exercises.ts
+  - src/lib/server/sitemap-glossary.ts
   - 'src/routes/(public)/almanach/**'
   - 'src/routes/(public)/chiffrement/**'
   - 'src/routes/(public)/shtam/**'
@@ -94,8 +95,9 @@ qui l'emporte sur `main h1` / `main h2`.
 Autres lecteurs : l'accueil (`pickRandomArticle` : un lien vers un article paru) et
 `src/routes/sitemap.xml/+server.ts` (articles parus seulement). Le même plan liste aussi les
 exercices cochés « Afficher sur Google » (`is_public AND search_indexed`, lus par un client anonyme
-via `src/lib/server/sitemap-exercises.ts`, `lastmod` = `updated_at`) ; une panne de la base le sert
-sans eux, jamais en 500.
+via `src/lib/server/sitemap-exercises.ts`, `lastmod` = `updated_at`) et les pages du glossaire
+(`/glossaire/<slug>`, sauf renvois nus, via `src/lib/server/sitemap-glossary.ts`, détail dans
+[dictionnaire.md](dictionnaire.md)) ; une panne de la base le sert sans eux, jamais en 500.
 
 ### Lore de l'interface
 

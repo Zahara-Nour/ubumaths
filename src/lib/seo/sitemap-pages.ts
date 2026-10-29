@@ -144,6 +144,10 @@ export const SITEMAP_PAGES: SitemapPage[] = [
 export const SITEMAP_DYNAMIC_ROUTES: SitemapDynamicRoute[] = [
 	{ route: '/shtam/[slug]', source: 'articles du Shtam parus (publishedArticles)' },
 	{
+		route: '/glossaire/[slug]',
+		source: 'termes visibles du glossaire, sauf renvois nus, lus en anonyme (fetchGlossaryPages)'
+	},
+	{
 		route: '/exercice/[slug]',
 		source:
 			'exercices publics cochés « Afficher sur Google », lus en anonyme (fetchIndexedExercises)'

@@ -68,6 +68,8 @@ async function seedEntry(suffix: string, hidden: boolean): Promise<string> {
 	const { data, error } = await service
 		.from('dictionary_entries')
 		.insert({
+			// Adresse posée par le trigger `dictionary_entries_slug` : la valeur reçue est écrasée
+			slug: '',
 			position: 100000,
 			term: `${TAG} ${suffix}`,
 			grade: '6',
@@ -152,6 +154,7 @@ describe('Dictionnaire en base — lecture par le site (loadDictionary)', () => 
 
 	it('une image hébergée ailleurs (`//hôte/…`) est refusée par la base', async () => {
 		const { error } = await service.from('dictionary_entries').insert({
+			slug: '',
 			position: 100000,
 			term: `${TAG} image`,
 			grade: '6',
@@ -160,6 +163,7 @@ describe('Dictionnaire en base — lecture par le site (loadDictionary)', () => 
 		});
 		expect(error?.code).toBe('23514');
 		const { error: ok } = await service.from('dictionary_entries').insert({
+			slug: '',
 			position: 100000,
 			term: `${TAG} image du site`,
 			grade: '6',

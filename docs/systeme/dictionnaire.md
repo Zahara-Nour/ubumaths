@@ -43,6 +43,9 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `src/routes/api/dictionnaire/+server.ts`                              | `GET /api/dictionnaire` : les entrées visibles, en JSON, avec cache public               |
 | `src/lib/dictionary/fetch-dictionary.ts`                              | Côté navigateur : `fetchDictionary`, `dictionaryUrl`, `markDictionaryEdited`             |
 | `src/routes/(public)/glossaire/`                                      | Page du glossaire (`+page.server.ts` lit la base, sélecteur de niveau, recherche)        |
+| `src/routes/(public)/glossaire/[slug]/`                               | Page d'un terme : toutes ses définitions avec leur niveau ; renvoi nu → redirection 308  |
+| `src/lib/dictionary/glossary-page.ts`                                 | `termKey`, `pageSlugFor`, `isBareRedirect`, `glossaryDescription` (pages du glossaire)   |
+| `src/lib/server/sitemap-glossary.ts`                                  | `fetchGlossaryPages` : les pages du glossaire du plan du site, lues en anonyme           |
 | `src/routes/(public)/games/mathemo/dictionary-words.ts`               | `playableTerms` : mots jouables réduits à nom / niveau / filières                        |
 | `src/lib/lexicon/linker.ts`                                           | `createLinker` : repérage des mots dans l'AST d'ubumark (`TextNode.terms`)               |
 | `src/lib/lexicon/card.ts`                                             | `lexiconCard`, `findPrincipal` : contenu de la fiche d'un mot                            |
@@ -105,11 +108,27 @@ personne n'écrit directement dans l'historique.
    `rowToTerm` (une ligne invalide est ignorée et journalisée, pas fatale). Résultat gardé
    `DICTIONARY_MEMO_MS` (90 s) pour toute l'instance ; lectures simultanées fusionnées ; base
    injoignable → dernière lecture servie au plus `DICTIONARY_FALLBACK_MS` (15 min).
-2. **Glossaire et Mathémo** : `+page.server.ts` appelle `loadDictionary` ; l'admin
-   (`isDictionaryAdmin`) lit frais.
+2. **Glossaire et Mathémo** : `+page.server.ts` appelle `loadDictionary` (ou `loadGlossary`,
+   qui rend aussi l'adresse et la date de chaque entrée, lues dans la même requête et gardées
+   dans la même mémoire, hors de `MathTerm`) ; l'admin (`isDictionaryAdmin`) lit frais.
 3. **Navigateur (mots cliquables)** : `GET /api/dictionnaire`, cache `DICTIONARY_PUBLIC_CACHE`
    (navigateur 60 s, CDN 90 s) → une modification est visible en moins de 5 minutes. `?frais`
    n'est honoré que pour l'admin (`DICTIONARY_ADMIN_CACHE`), sinon ignoré.
+
+### Pages du glossaire (chantier seo, 2026-10-29)
+
+- `/glossaire` liste les termes ; chaque terme est un **lien** vers sa page (plus de fenêtre,
+  choix B1 de David). Un renvoi nu (sans définition, exemple ni histoire : « multiplier ») mène
+  droit à la page du terme cité (`pageSlugFor`).
+- `/glossaire/<slug>` : titre « terme (sens) : définition », description = première définition
+  en texte brut (≤ 155 caractères), toutes les définitions et tous les exemples **chacun avec son
+  niveau** (la page ne suit pas le filtre de niveau de la liste), histoire, synonymes, « Voir
+  aussi », `BackLink` vers `/glossaire`. Un renvoi qui a sa propre définition (« Thalès », 6 en
+  prod) garde sa page, avec « Voir : » le terme cité.
+- Adresse inconnue ou hors format, entrée masquée → 404. Renvoi nu → **308** vers le terme
+  cité, en un seul saut (`redirectTargetOf`) : jamais vers un autre renvoi nu ni vers lui-même
+  (sinon le renvoi a sa page, avec « Voir : ») ; 404 si le terme cité manque.
+- `sitemap.xml` liste chaque page (sauf renvois nus), `lastmod` = `updated_at` de l'entrée.
 
 ### Mots cliquables
 
