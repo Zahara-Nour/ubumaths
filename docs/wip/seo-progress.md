@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, PR 1 (#1979) en CI, PR 2 écrite._
+_Mis à jour le 2026-10-29, après #1980._
 
-- **État** : PR 1 `robots.txt` (#1979) en CI. PR 2 migration `slug` (branche `feat/glossaire-slug`) ouverte, test d'intégration vert en local (rouge sans la migration).
-- **Prochaine action** : PR 2 mergée → `db:migrate` (si `security-auditor` sans bloquant) → `db:types` → PR 3 : pages `/glossaire/[slug]`, liens dans `/glossaire`, sitemap.
-- **En attente de David** : rien (A1 + B1 tranchés le 2026-10-29).
-- **Pièges en cours** : données structurées toujours reportées par David. Base locale en avance sur `main` : migration `slug` appliquée à la main (psql + ligne dans `schema_migrations`).
-- **Worktree / branche** : `../ubumaths-wt-seo` · `feat/glossaire-slug`.
+- **État** : #1979 (`robots.txt`) et #1980 (migration `slug`) mergées, pas encore en prod (`deploy:prod`). Migration `20261030001000_dictionnaire_slug.sql` **pas encore appliquée en prod** : le mode auto refuse `db push`.
+- **Prochaine action** : David lance `! pnpm exec supabase db push --include-all --yes` (dry-run : seule cette migration part) → vérifier en prod (675 slugs, 0 doublon) → `pnpm db:types` → PR 3 sur `feat/glossaire-pages` : pages `/glossaire/[slug]`, liens dans `/glossaire` (B1), sitemap.
+- **En attente de David** : le `db push` ci-dessus.
+- **Pièges en cours** : données structurées reportées par David. Horodatage de migration pris par une autre session → renommée en `20261030001000`. Le test de la visite lit maintenant seulement le groupe `User-agent: *` de `robots.txt`.
+- **Worktree / branche** : `../ubumaths-wt-seo` · `feat/glossaire-pages`.
 
 ## Plan (validé par David le 2026-10-29 : « on commence avec tes recos »)
 
@@ -27,3 +27,5 @@ _Mis à jour le 2026-10-29, PR 1 (#1979) en CI, PR 2 écrite._
 ## Historique
 
 - 2026-10-29 : worktree ouvert, PR 1 écrite. Prod : 625 termes principaux visibles, 0 collision d'adresse.
+- 2026-10-29 : #1979 mergée (test de la visite corrigé : il lisait tous les groupes de `robots.txt`).
+- 2026-10-29 : #1980 mergée. `security-auditor` : 0 bloquant, 2 mineurs appliqués (collision avec entrée masquée testée, `dictionary_slugify` retirée à anon). Test rouge sans la migration, 7/7 vert avec.
