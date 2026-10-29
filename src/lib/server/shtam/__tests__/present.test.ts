@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { parseArticle } from '../articles';
-import { toArticleView, toSummary, todayIsoInParis } from '../present';
+import {
+	ARTICLES_PER_PAGE,
+	frontPageParts,
+	pageCountFor,
+	pageOfArticle,
+	toArticleView,
+	toEdition,
+	toSummary,
+	todayIsoInParis
+} from '../present';
 
 const raw = `---
 title: Titre
@@ -49,5 +58,64 @@ describe('toArticleView', () => {
 		const v = toArticleView(parseArticle('titre', raw));
 		expect(v.body).toBe('Corps.');
 		expect(v.truth).toBe('Le fait réel.');
+	});
+});
+
+describe('frontPageParts', () => {
+	const image = '![Des rails qui semblent se rejoindre.](/shtam/rails.svg){size=large}';
+	const long = 'Un paragraphe assez long. '.repeat(15).trim();
+
+	it('reprend la première image du corps, où qu’elle soit', () => {
+		const body = `Premier.\n\nDeuxième.\n\n${image}\n\nTroisième.`;
+		expect(frontPageParts(body).image).toBe(image);
+	});
+
+	it('sinon prend celle du vrai du faux, où sont les figures des articles', () => {
+		expect(frontPageParts('Premier.', `- Le fait.\n\n${image}`).image).toBe(image);
+	});
+
+	it('sans image nulle part, n’en invente pas', () => {
+		expect(frontPageParts('Premier.\n\nDeuxième.', 'Le fait.').image).toBeNull();
+	});
+
+	it('garde les premiers paragraphes jusqu’à environ 500 caractères, sans l’image', () => {
+		const body = `${long}\n\n${image}\n\n${long}\n\nNon repris.`;
+		expect(frontPageParts(body).excerpt).toBe(`${long}\n\n${long}`);
+	});
+
+	it('s’arrête avant un bloc (liste, tableau, intertitre, code), qui ne se coupe pas', () => {
+		for (const block of [
+			'- un point',
+			'| a | b |',
+			'### Intertitre',
+			'```variation',
+			'1. premier'
+		]) {
+			expect(frontPageParts(`Court.\n\n${block}\n\nAprès.`).excerpt).toBe('Court.');
+		}
+	});
+});
+
+describe('pages du journal', () => {
+	it('range deux articles par page intérieure, à partir de la page 2', () => {
+		expect(ARTICLES_PER_PAGE).toBe(2);
+		expect([0, 1, 2, 3, 4].map(pageOfArticle)).toEqual([2, 2, 3, 3, 4]);
+	});
+
+	it('compte la une en plus des pages intérieures', () => {
+		expect(pageCountFor(0)).toBe(1);
+		expect(pageCountFor(1)).toBe(2);
+		expect(pageCountFor(12)).toBe(7);
+		expect(pageCountFor(13)).toBe(8);
+	});
+});
+
+describe('toEdition', () => {
+	it('numérote le journal par le nombre d’articles parus et le date du jour', () => {
+		expect(toEdition('2026-10-05', 12)).toEqual({
+			number: 12,
+			almanachDate: expect.stringMatching(/^\d+ Ambraire, An \d+ E\.R\.$/),
+			gregorianDate: '5 octobre 2026'
+		});
 	});
 });
