@@ -1,0 +1,126 @@
+{
+	"id": "affe59f7-3de6-4f30-89ce-33486ed01fcf",
+	"title": "Produit scalaire à partir de trois normes",
+	"description": "u·v à partir de ‖u‖, ‖v‖ et ‖u + v‖, par le développement de ‖u + v‖²",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Propriétés",
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"statement": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\|\\vec{u}+\\vec{v}\\|={{c}}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$. Donne la valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:(c^2-a^2-b^2)/2}}"
+				}
+			],
+			"conditions": ["c > abs(a-b)", "c < a+b", "c^2 != a^2+b^2"],
+			"correction": {
+				"steps": [
+					"Par bilinéarité, $\\|\\vec{u}+\\vec{v}\\|^2=\\|\\vec{u}\\|^2+2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$.",
+					"Donc $\\vec{u}\\cdot\\vec{v}=\\dfrac{1}{2}\\left(\\|\\vec{u}+\\vec{v}\\|^2-\\|\\vec{u}\\|^2-\\|\\vec{v}\\|^2\\right)$.",
+					"$\\vec{u}\\cdot\\vec{v}=\\dfrac{1}{2}\\left({{eval:c^2}}-{{eval:a^2}}-{{eval:b^2}}\\right)=\\dfrac{ {{eval:c^2-a^2-b^2}} }{2}=\\textcolor{{{color:primary.0}}}{ {{R}} }$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{11}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"description": "v0 : 11/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"description": "v0 : 5,5 décimal exact",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"description": "v0 : division par 2 oubliée (11)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"description": "v0 : normes non élevées au carré ((6−3−4)/2)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{22}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"description": "v0 : fraction non réduite 22/4",
+			"variationIndex": 0
+		}
+	]
+}
