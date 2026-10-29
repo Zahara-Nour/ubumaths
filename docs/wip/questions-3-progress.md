@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 2 publié._
+_Mis à jour le 2026-10-29, phase 0 du lot 3 écrite._
 
 - **État** : lots 0, 1 et 2 publiés en prod ; lot 2 : 4/4 `published` relus au MCP (§ 9.9).
-- **Prochaine action** : phase 0 du lot 5 (Thalès et trigonométrie : 3-022, 3-059, 3-060, 3-055, 3-023,
-  3-061 ; ` ```figure ` + cases, lire `figure-et-choix` d'abord), ordre du § 6.1.
-- **En attente de David** : rien.
+- **Prochaine action** : réponses de David au § 10.4, puis écrire le lot 3 (Thalès et trigonométrie,
+  6 modèles, § 10.1) dans un worktree `ubumaths-wt-questions-3`.
+- **En attente de David** : les 5 questions du § 10.4.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation, car il lit la prod) refusés
   par le classifieur du mode auto → David les lance avec `!` (`--publier` simule d'abord, tout ou rien) ;
   test `forfait-palotin` qui dépasse 5 s en CI (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
