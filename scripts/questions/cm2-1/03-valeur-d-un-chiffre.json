@@ -56,7 +56,7 @@
 			}
 		},
 		{
-			"statement": "Dans le nombre ${{n}}$, que vaut le chiffre ${{ch}}$ ?\n\nIl vaut $?$.",
+			"statement": "Dans le nombre ${{n}}$, le chiffre ${{ch}}$ représente combien d'unités ?\n\nIl représente $?$ unités.",
 			"variables": [
 				{
 					"name": "c",
@@ -99,7 +99,7 @@
 			"correction": {
 				"steps": [
 					"**Les rangs.** On découpe le nombre en classes de trois chiffres à partir de la droite : classe des unités, des mille, des millions. Dans chaque classe, de droite à gauche : unités, dizaines, centaines.",
-					"Dans ${{n}}$, le chiffre ${{ch}}$ est le chiffre des {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|unités de mille|{{if:r==4|dizaines de mille|{{if:r==5|centaines de mille|{{if:r==6|unités de millions|{{if:r==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}} : il vaut ${{ch}}$ {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|milliers|{{if:r==4|dizaines de mille|{{if:r==5|centaines de mille|{{if:r==6|millions|{{if:r==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}, c'est-à-dire $\\textcolor{{{color:primary.0}}}{{{solution}}}$."
+					"Dans ${{n}}$, le chiffre ${{ch}}$ est le chiffre des {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|unités de mille|{{if:r==4|dizaines de mille|{{if:r==5|centaines de mille|{{if:r==6|unités de millions|{{if:r==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}} : il représente ${{ch}}$ {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|milliers|{{if:r==4|dizaines de mille|{{if:r==5|centaines de mille|{{if:r==6|millions|{{if:r==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}, c'est-à-dire $\\textcolor{{{color:primary.0}}}{{{solution}}}$ unités."
 				]
 			}
 		},
