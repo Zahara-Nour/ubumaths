@@ -5,17 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, #1955 mergée, migration du lot 2 en PR._
+_Mis à jour le 2026-10-29, après #1961 (nœud + tag du lot 2, mergé et migré)._
 
-- **État** : lot 1 en prod (rangé, tagué). Lot 2 (proportionnalité et pourcentages) : 7 brouillons créés en prod par
-  David (#1955) ; migration nœud + tag `20261029220000` écrite, test rouge sans elle puis vert (9/9) (§ 14).
-- **Prochaine action** : CI verte → merge → `db:migrate` depuis le dépôt principal → vérification MCP → page à
-  cocher du lot 2.
+- **État** : lots 1 et 2 en prod, en brouillon, rangés et tagués. Lot 2 (proportionnalité et pourcentages, 7 modèles) :
+  migration `20261029220000`, `db:migrate` fait le 2026-10-29, vérifié au MCP (nœud, tag, brouillon, `updated_at`
+  inchangé).
+- **Prochaine action** : page à cocher du lot 2 (`scripts/questions/page-a-cocher.ts --dir scripts/questions/4-lot-2`,
+  artefact avec capacité `db`) ; puis phase 0 du lot 3 (statistiques, § 5 bis).
 - **En attente de David** : publication des 7 brouillons du lot 1 (après relecture dans l'admin).
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
-  `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit, corps ≤ 100 caractères par ligne
-  (commitlint) ; QCM = case choix ; worktree neuf : `svelte-kit sync` avant `create-questions` (`$lib`).
-- **Worktree / branche** : `ubumaths-wt-questions-4` · `feat/questions-4-lot-2-tags`.
+  `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit ; QCM = case choix ; worktree neuf :
+  `svelte-kit sync` avant `create-questions` (`$lib`) ; `Client Tests` peut tomber sur `wrapDynamicImport` (lanceur) :
+  relancer le job.
+- **Worktree / branche** : aucun (retiré après #1961).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -392,3 +394,5 @@ neuves **Ratios** (Comparer, Égalités de rapports, Partage proportionnel) et *
 - Question d'accès : § 12.3 (personne ne gagne d'accès), validée avec la phase 0.
 - `security-auditor` : aucun finding (diff avec le lot 1 limité aux données, gardes et rollback justes, aucun accès
   ouvert ni retiré).
+- #1961 mergée (CI verte au 2e passage : `Client Tests` tombé sur `wrapDynamicImport`, sans lien) ; `db:migrate` le
+  2026-10-29 ; vérifié en prod (MCP) : 7 brouillons sur leur nœud, un tag chacun, `updated_at` inchangé.
