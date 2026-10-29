@@ -5,21 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 4a écrit, PR #1977 ouverte (CI relancée)._
+_Mis à jour le 2026-10-29, après #1977._
 
-- **État** : lots 1 à 3 publiés ; lot 4 « Calcul littéral » décidé (§ 14) ; **4a** (7 modèles) écrit, PR #1977.
-  Premier run rouge à cause d'un doublon d'horodatage venu de la session CE1 (corrigé sur `main`, fusionné dans la
-  branche) ; second run en cours.
-- **Prochaine action** : CI de #1977 verte → merge → David `create-questions --dir scripts/questions/5-litteral-a
---publier` → migration de rangement (gabarit lot 3) → page à cocher. Puis lot 4b (§ 14).
+- **État** : lots 1 à 3 publiés ; lot 4 « Calcul littéral » décidé (§ 14) ; **4a** (7 modèles) mergé (#1977),
+  **pas encore publié**.
+- **Prochaine action** : attendre le merge de la PR `virgule-forme-exigee` (pas encore ouverte au 2026-10-29) →
+  David `create-questions --dir scripts/questions/5-litteral-a --publier` → migration de rangement (gabarit lot 3)
+  → page à cocher. En parallèle possible : écrire le lot 4b (§ 14) sur une branche neuve.
 - **Décidé par David (2026-10-29)** : PR à part `virgule-forme-exigee` (défaut du juge, § 14.1), dans sa propre
   session, phase 0 d'abord, revue `code-reviewer` Opus ; à merger **avant la publication** du lot 4a.
-- **En attente de David** : rien.
+- **En attente de David** : la session `virgule-forme-exigee` (à lancer par David).
 - **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
 --mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
   **message de commit** ; job d'intégration = run à part ; page à cocher à 390 px ; **jamais de variable `e` ni
   `i`** (les specs qui fixent les variables ne le voient pas : relire le rendu).
-- **Worktree / branche** : `ubumaths-wt-questions-5` · `feat/questions-5-lot4a`.
+- **Worktree / branche** : aucun (`ubumaths-wt-questions-5` retiré après #1977) ; lot 4b → nouveau worktree.
 
 ## 1. Relevé (prod, 2026-10-28)
 
