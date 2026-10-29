@@ -52,9 +52,21 @@ export function glossaryPath(slug: string): string {
 	return `/glossaire/${slug}`;
 }
 
-/** Renvoi sans contenu propre : son adresse redirige vers le terme cité. */
+/** Renvoi sans contenu propre : définition, exemple et histoire absents. */
 export function isBareRedirect(term: MathTerm): boolean {
 	return Boolean(term.derivedFrom) && !term.definitions && !term.exemples && !term.history;
+}
+
+/**
+ * Terme vers lequel l'adresse d'un renvoi nu redirige. Un seul saut, jamais vers un autre
+ * renvoi nu ni vers lui-même : pas de chaîne ni de boucle de redirections, même si l'admin
+ * en écrivait une. `undefined` : pas de redirection, le terme a sa page.
+ */
+export function redirectTargetOf(term: MathTerm, entries: MathTerm[]): MathTerm | undefined {
+	if (!isBareRedirect(term) || !term.derivedFrom) return undefined;
+	const target = findPrincipal(entries, term.derivedFrom);
+	if (!target || target === term || isBareRedirect(target)) return undefined;
+	return target;
 }
 
 /**
@@ -66,11 +78,7 @@ export function pageSlugFor(
 	entries: MathTerm[],
 	slugs: GlossarySlugs
 ): string | undefined {
-	if (isBareRedirect(term) && term.derivedFrom) {
-		const target = findPrincipal(entries, term.derivedFrom);
-		if (target) return slugs[termKey(target)];
-	}
-	return slugs[termKey(term)];
+	return slugs[termKey(redirectTargetOf(term, entries) ?? term)];
 }
 
 /** Nom affiché d'un terme : « base (puissance) ». */

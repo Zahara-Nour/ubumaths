@@ -34,6 +34,7 @@ export async function fetchGlossaryPages(
 		const { entries, addresses } = await loadGlossary(supabase);
 		return entries.flatMap((term) => {
 			const address = addresses.get(termKey(term));
+			// Un renvoi nu redirige, ou n'a qu'un lien à montrer : rien à indexer
 			if (!address || isBareRedirect(term)) return [];
 			return [{ path: glossaryPath(address.slug), lastmod: address.lastmod }];
 		});

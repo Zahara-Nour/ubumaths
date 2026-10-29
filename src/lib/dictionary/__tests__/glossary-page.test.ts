@@ -33,6 +33,9 @@ describe('glossary-page', () => {
 		expect(pageSlugFor(derived, [cited, derived], slugs)).toBe('resolution');
 		expect(pageSlugFor(cited, [cited, derived], slugs)).toBe('resolution');
 		expect(pageSlugFor(derived, [derived], slugs)).toBe('resoudre');
+		// Cible elle-même renvoi nu : pas de chaîne, le renvoi garde son adresse
+		const relay: MathTerm = { term: 'résolution', tags: [], grade: '4', derivedFrom: 'x' };
+		expect(pageSlugFor(derived, [relay, derived], slugs)).toBe('resoudre');
 	});
 
 	it('la description est la première définition en texte brut, coupée à un mot', () => {

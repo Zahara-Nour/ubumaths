@@ -28,7 +28,10 @@ const ENTRIES: MathTerm[] = [
 		grade: '4',
 		definitions: { items: [{ grade: '4', content: 'Droites sécantes et parallèles.' }] }
 	},
-	{ term: 'orphelin', tags: [], grade: '6', derivedFrom: 'absent' }
+	{ term: 'orphelin', tags: [], grade: '6', derivedFrom: 'absent' },
+	// Deux renvois nus qui se citent : l'admin ne devrait pas l'écrire, mais rien ne boucle
+	{ term: 'ping', tags: [], grade: '6', derivedFrom: 'pong' },
+	{ term: 'pong', tags: [], grade: '6', derivedFrom: 'ping' }
 ];
 
 const glossary: Glossary = {
@@ -38,7 +41,9 @@ const glossary: Glossary = {
 		['multiplier|', { slug: 'multiplier', lastmod: '2026-10-11' }],
 		['Thalès|', { slug: 'thales', lastmod: '2026-10-11' }],
 		['théorème de Thalès|', { slug: 'theoreme-de-thales', lastmod: '2026-10-11' }],
-		['orphelin|', { slug: 'orphelin', lastmod: '2026-10-11' }]
+		['orphelin|', { slug: 'orphelin', lastmod: '2026-10-11' }],
+		['ping|', { slug: 'ping', lastmod: '2026-10-11' }],
+		['pong|', { slug: 'pong', lastmod: '2026-10-11' }]
 	])
 };
 
@@ -100,6 +105,13 @@ describe('/glossaire/[slug]', () => {
 
 	it('renvoi nu dont le terme cité manque → 404', async () => {
 		expect((await status('orphelin')).status).toBe(404);
+	});
+
+	it('deux renvois nus qui se citent : pas de boucle, chacun a sa page avec le lien vers l’autre', async () => {
+		expect(await loadSlug('ping')).toMatchObject({
+			term: { term: 'ping' },
+			cited: { slug: 'pong' }
+		});
 	});
 
 	it('renvoi qui a sa propre définition → sa page, avec le lien vers le terme cité', async () => {

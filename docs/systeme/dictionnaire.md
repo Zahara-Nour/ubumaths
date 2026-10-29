@@ -126,7 +126,8 @@ personne n'écrit directement dans l'historique.
   aussi », `BackLink` vers `/glossaire`. Un renvoi qui a sa propre définition (« Thalès », 6 en
   prod) garde sa page, avec « Voir : » le terme cité.
 - Adresse inconnue ou hors format, entrée masquée → 404. Renvoi nu → **308** vers le terme
-  cité (404 si celui-ci manque).
+  cité, en un seul saut (`redirectTargetOf`) : jamais vers un autre renvoi nu ni vers lui-même
+  (sinon le renvoi a sa page, avec « Voir : ») ; 404 si le terme cité manque.
 - `sitemap.xml` liste chaque page (sauf renvois nus), `lastmod` = `updated_at` de l'entrée.
 
 ### Mots cliquables

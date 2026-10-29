@@ -2,7 +2,8 @@
  * Page d'un terme du glossaire, `/glossaire/<slug>` (chantier seo).
  *
  * - adresse inconnue ou entrée masquée → 404 ;
- * - renvoi nu (« résoudre ») → redirection permanente vers la page du terme cité ;
+ * - renvoi nu (« résoudre ») → redirection permanente vers la page du terme cité, en
+ *   un saut (`redirectTargetOf`) ; s'il n'y a pas de cible sûre, le renvoi a sa page ;
  * - sinon la page du terme, avec, pour un renvoi qui a sa propre définition, le
  *   lien vers le terme cité.
  */
@@ -15,6 +16,7 @@ import {
 	glossaryDescription,
 	glossaryPath,
 	isBareRedirect,
+	redirectTargetOf,
 	termKey
 } from '$lib/dictionary/glossary-page';
 import { createServerLogger } from '$lib/utils/logger';
@@ -42,13 +44,15 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const term = entries.find((t) => addresses.get(termKey(t))?.slug === params.slug);
 	if (!term) throw error(404, 'Ce terme n’est pas dans le glossaire.');
 
-	const cited = term.derivedFrom ? findPrincipal(entries, term.derivedFrom) : undefined;
-	const citedSlug = cited ? addresses.get(termKey(cited))?.slug : undefined;
+	const target = redirectTargetOf(term, entries);
+	const targetSlug = target ? addresses.get(termKey(target))?.slug : undefined;
+	if (targetSlug) throw redirect(308, glossaryPath(targetSlug));
 
-	if (isBareRedirect(term)) {
-		if (!citedSlug) throw error(404, 'Ce terme n’est pas dans le glossaire.');
-		throw redirect(308, glossaryPath(citedSlug));
-	}
+	// Renvoi qui a sa page (sa définition, ou un terme cité absent, lui-même un renvoi nu…)
+	const cited = term.derivedFrom ? findPrincipal(entries, term.derivedFrom) : undefined;
+	const citedSlug = cited && cited !== term ? addresses.get(termKey(cited))?.slug : undefined;
+	// Renvoi nu sans terme cité : la page serait vide
+	if (isBareRedirect(term) && !citedSlug) throw error(404, 'Ce terme n’est pas dans le glossaire.');
 
 	return {
 		term,
