@@ -6,15 +6,15 @@ status: phase 0
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, PR 2 en cours._
+_Mis à jour le 2026-10-29, après #1974._
 
-- **État** : PR 1 mergée (#1958). PR 2 (`colorier:`) codée sur `feat/fractions-a-colorier-2`, PR ouverte, revue et CI en cours. Rien en prod.
-- **Prochaine action** : merger la PR 2 si CI verte et revue sans bloquant ; puis PR 3 (`unites:`, fractions > 1).
+- **État** : PR 1 (#1958, bloc affiché, `gris:`) et PR 2 (#1974, `colorier:`, l'élève colorie) mergées. Rien en prod.
+- **Prochaine action** : PR 3, `unites:` (fractions > 1, plusieurs figures ; CM1 / CM2) ; nouveau worktree depuis `origin/main`.
 - **En attente de David** : rien.
-- **Pièges en cours** : réponse de l'élève = rangs coloriés `1, 4, 6`, attendue `3/8` (lue du bloc) ; corrigé PDF d'un bloc à placer : aucun appelant (`generatePartageTypst(…, { solved: true })` prêt, inutilisé, comme les autres blocs à placer).
+- **Pièges en cours** : réponse de l'élève = rangs coloriés `1, 4, 6`, attendue `3/8` (lue du bloc) ; fraction > 1 refusée aujourd'hui avec « `unites:`, pas encore disponible » (message à changer en PR 3) ; corrigé PDF des blocs à placer sans appelant (`generatePartageTypst(…, { solved: true })` prêt).
 - **Après ce chantier** : chantier `solides` (assemblages de cubes, perspective, patrons ; 6e → 3e), ordre
   validé par David le 2026-10-29.
-- **Worktree / branche** : `../ubumaths-wt-fractions-a-colorier` · `feat/fractions-a-colorier-2`.
+- **Worktree / branche** : aucun (celui de la PR 2 retiré).
 
 ---
 
@@ -165,3 +165,9 @@ Choix d'exécution (dans le cadre validé, calqués sur horloge / ranger) :
 
 Point ouvert : aucun corrigé PDF n'imprime les blocs à placer (`serie-automatismes.ts`) ;
 `generatePartageTypst(node, { solved: true })` existe, testé, sans appelant.
+
+Revue `code-reviewer` (Opus), aucun bloquant ; corrigé : le glissé rapide sautait des parts (segment parcouru à
+petits pas), clic droit et second doigt ignorés. Mineur laissé : après un essai faux non verrouillé, la phrase
+« Tu as colorié N parts » suit les parts en direct.
+
+- 2026-10-29 : #1974 mergée (CI verte, intégration comprise, après le correctif d'horodatage #1972 sur `main`).
