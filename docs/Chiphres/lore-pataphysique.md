@@ -223,12 +223,12 @@ Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustration
   - **Plan** : une seule rue en spirale qui monte doucement vers le centre, bordée de maisons serrées (la spirale est la gidouille, seule forme géométrique de la ville).
   - **Centre** : le Palais Royal, rond et ventru, coiffé d'un dôme doré surmonté d'une gidouille d'or ; le Trône Royal est dedans.
   - **Style** : faste ubuesque, beaucoup d'or, bannières vertes de la livrée d'Ubu ; un luxe trop voyant, de mauvais goût assumé. Pas de statues d'Ubu, ni trappe ni machine à décerveler.
-  - **Eau** : la Vistule l'entoure comme des douves naturelles, franchies par quelques ponts.
+  - **Eau** 🟡 (décision de David, 2026-10-29) : la Vistule ne passe pas par Sandomir (plan de la carte) ; un grand lac voisin alimente des douves qui entourent la ville, franchies par un seul pont, le Pont-Levis.
   - **Alentours** : campagne neutre, prés et routes qui partent vers les six provinces.
   - **Repère sur la carte** : la spirale de la ville avec le dôme doré au centre.
   - **Couleur** : aucune couleur de province ; Encre et Or pour la ville seule.
 - **Plan de la ville = carte du site** 🟡 (décision de David, 2026-10-29) : les lieux de la Section IV (« Géographie de l'Académie », une page du site = un lieu du Royaume) sont placés le long de la spirale, de l'entrée au centre :
-  1. **Le Pont-Levis du Royaume** (`/`) : l'entrée, sur la Vistule, seul pont de la ville (une spirale de gidouille n'a qu'une ouverture) ; les routes vers les provinces partent de l'autre rive.
+  1. **Le Pont-Levis du Royaume** (`/`) : l'entrée, sur les douves, seul pont de la ville (une spirale de gidouille n'a qu'une ouverture) ; les routes vers les provinces partent de l'autre bord des douves.
   2. **Le Grand Marché Polonais** (marché) : les étals de Mère Ubu, au premier tour de la spirale.
   3. **La Caserne des Palotins** (amis) : la caserne de Bordure.
   4. **L'Arène des Polonais** (jeux) : petite arène ronde.
