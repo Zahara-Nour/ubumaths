@@ -108,7 +108,8 @@ def variation(statement, variables, blanks, steps, conditions=None):
     v = {'statement': statement, 'variables': variables}
     if conditions:
         v['conditions'] = conditions
-    v['blanks'] = [b if isinstance(b, dict) else {'expectedAnswer': b} for b in blanks]
+    if blanks:  # sans case écrite : bloc ```ranger (une case par place, posée au tirage)
+        v['blanks'] = [b if isinstance(b, dict) else {'expectedAnswer': b} for b in blanks]
     v['correction'] = {'steps': steps}
     return v
 
@@ -227,7 +228,8 @@ NON_CANONIQUES = [
               ['${{m}}\\times 1\\,000={{eval:1000*m}}$ ; ${{c}}\\times 100={{eval:100*c}}$ ;'
                ' ${{d}}\\times 10={{eval:10*d}}$.',
                '$${{eval:1000*m}}+{{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$']),
-    variation('Décompose le nombre.\n\n$${{n}}=?+?+?+?$$',
+    variation('Décompose le nombre en milliers, centaines, dizaines et unités, comme'
+              ' $2\\,513=2\\,000+500+10+3$.\n\n$${{n}}=?+?+?+?$$',
               [var('m', '1..9'), var('c', '1..9'), var('d', '1..9'), var('u', '1..9'),
                var('n', 'eval:1000*m+100*c+10*d+u')],
               ['{{eval:1000*m}}', '{{eval:100*c}}', '{{eval:10*d}}', '{{u}}'],
@@ -359,14 +361,16 @@ SPECS_LIRE = [
 RANG = [var('m', '2..9'), var('c', '1..8'), var('t', '1..7'), var('u', '{{eval:t+1}}..8'),
         var('s1', 'eval:1000*(m-1)+100*c+10*(t-1)+9'), var('s2', 'eval:1000*m+100*c+10*t+u'),
         var('s3', 'eval:1000*m+100*c+10*t+9'), var('s4', 'eval:1000*m+100*c+10*u+t'),
-        var('s5', 'eval:1000*m+100*(c+1)'), var('o', '1..4')]
-# Ordre d'affichage : une permutation par valeur de o
-ORDRES = [['s3', 's1', 's5', 's2', 's4'], ['s2', 's5', 's4', 's1', 's3'],
-          ['s4', 's2', 's1', 's5', 's3'], ['s5', 's3', 's2', 's4', 's1']]
-AFFICHE = [var(f'x{i + 1}', 'eval:{{if:o==1|' + ORDRES[0][i] + '|{{if:o==2|' + ORDRES[1][i]
-               + '|{{if:o==3|' + ORDRES[2][i] + '|' + ORDRES[3][i] + '}}}}}}')
-           for i in range(5)]
-LISTE = '${{x1}} \\quad ; \\quad {{x2}} \\quad ; \\quad {{x3}} \\quad ; \\quad {{x4}} \\quad ; \\quad {{x5}}$'
+        var('s5', 'eval:1000*m+100*(c+1)')]
+# Bloc ```ranger : étiquettes écrites dans le bon ordre, mélangées au tirage ; une case par
+# place, la réponse d'une place est la position AFFICHÉE de l'étiquette (specs : POSITIONS)
+
+
+def etiquettes(signe, noms):
+    return ('```ranger\nsigne: ' + signe + '\n' + '\n'.join('- ${{' + n + '}}$' for n in noms)
+            + '\n```')
+
+
 COMPARER = ['On compare d\'abord les milliers : ${{s1}}$ a ${{eval:m-1}}$ {{if:m<=2|millier|milliers}},'
             ' les autres en'
             ' ont ${{m}}$.',
@@ -375,31 +379,30 @@ COMPARER = ['On compare d\'abord les milliers : ${{s1}}$ a ${{eval:m-1}}$ {{if:m
             'Pour les nombres de la même centaine, on compare les dizaines, puis les unités.']
 
 RANGER = [
-    variation('Range ces nombres du plus petit au plus grand.\n\n' + LISTE + '\n\n$$?<?<?<?<?$$',
-              RANG + AFFICHE, ['{{s1}}', '{{s2}}', '{{s3}}', '{{s4}}', '{{s5}}'],
+    variation('Range ces nombres du plus petit au plus grand.\n\n'
+              + etiquettes('<', ['s1', 's2', 's3', 's4', 's5']), RANG, [],
               COMPARER + ['$${{s1}} < {{s2}} < {{s3}} < {{s4}} < {{s5}}$$']),
-    variation('Range ces nombres du plus grand au plus petit.\n\n' + LISTE + '\n\n$$?>?>?>?>?$$',
-              RANG + AFFICHE, ['{{s5}}', '{{s4}}', '{{s3}}', '{{s2}}', '{{s1}}'],
+    variation('Range ces nombres du plus grand au plus petit.\n\n'
+              + etiquettes('>', ['s5', 's4', 's3', 's2', 's1']), RANG, [],
               COMPARER + ['$${{s5}} > {{s4}} > {{s3}} > {{s2}} > {{s1}}$$']),
 ]
 
 EX = {'m': '6', 'c': '2', 't': '3', 'u': '4', 's1': '5229', 's2': '6234', 's3': '6239',
-      's4': '6243', 's5': '6300', 'o': '1'}
+      's4': '6243', 's5': '6300'}
+EX_BORNE = {'m': '9', 'c': '8', 't': '1', 'u': '2', 's1': '8809', 's2': '9812', 's3': '9819',
+            's4': '9821', 's5': '9900'}
+# Positions affichées, lues sur l'instance tirée avec ces variables (mélange fixé par la source)
+POS = {'c': ['4', '0', '1', '2', '3'], 'd': ['4', '0', '1', '2', '3'],
+       'b': ['4', '0', '1', '2', '3']}
 SPECS_RANGER = [
-    spec('croissant : 5 229 < 6 234 < 6 239 < 6 243 < 6 300', 0, EX,
-         ['5229', '6234', '6239', '6243', '6300'], 'correct'),
+    spec('croissant : 5 229 < 6 234 < 6 239 < 6 243 < 6 300', 0, EX, POS['c'], 'correct'),
     spec('Erreur : 6 243 avant 6 239 (unités lues d\'abord)', 0, EX,
-         ['5229', '6234', '6243', '6239', '6300'], 'incorrect'),
+         [POS['c'][i] for i in (0, 1, 3, 2, 4)], 'incorrect'),
     spec('Erreur : 5 229 après 6 234 (centaines lues d\'abord)', 0, EX,
-         ['6234', '5229', '6239', '6243', '6300'], 'incorrect'),
-    spec('Erreur : ordre décroissant', 0, EX, ['6300', '6243', '6239', '6234', '5229'],
-         'incorrect'),
-    spec('décroissant : 6 300 > 6 243 > 6 239 > 6 234 > 5 229', 1, EX,
-         ['6300', '6243', '6239', '6234', '5229'], 'correct'),
-    spec('borne : 8 809 < 9 812 < 9 819 < 9 821 < 9 900', 0,
-         {'m': '9', 'c': '8', 't': '1', 'u': '2', 's1': '8809', 's2': '9812', 's3': '9819',
-          's4': '9821', 's5': '9900', 'o': '4'}, ['8809', '9812', '9819', '9821', '9900'],
-         'correct'),
+         [POS['c'][i] for i in (1, 0, 2, 3, 4)], 'incorrect'),
+    spec('Erreur : ordre décroissant', 0, EX, POS['c'][::-1], 'incorrect'),
+    spec('décroissant : 6 300 > 6 243 > 6 239 > 6 234 > 5 229', 1, EX, POS['d'], 'correct'),
+    spec('borne : 8 809 < 9 812 < 9 819 < 9 821 < 9 900', 0, EX_BORNE, POS['b'], 'correct'),
 ]
 
 # --- 7. CE2-009 : « supérieur à », « inférieur à », « compris entre » -------------------------

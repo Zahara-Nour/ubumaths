@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la relecture du lot 2 par David._
+_Mis à jour le 2026-10-29, PR des 2 « à revoir » du lot 2 ouverte._
 
-- **État** : lot 1 en prod en BROUILLON, rangé et tagué, 2 OK sur 5 (60, × 4, × 8 TOUJOURS sans verdict). Lot 2 en prod en BROUILLON, rangé et tagué (migration `20261029003200`) ; relecture : 6 OK, 2 à revoir, 1 sans verdict (`78d3ff5b`, lots de 100).
-- **Prochaine action** : traiter les 2 « à revoir » du lot 2 (https://claude.ai/artifact/KLQGsdQYbft3hoQt5yHnCL) : (1) `b4dd4008` (03-unites-non-canoniques) variation 4 « Décompose le nombre. $$n=?+?+?+?$$ » jugée trop vague (« quelle forme on attend ? ») → consigne à préciser (ex. « en milliers, centaines, dizaines et unités »), corriger (couvrir-un-niveau § 7, `--mettre-a-jour` par David), remettre le verdict à zéro ; (2) `8c5c7d70` (06-ranger-cinq-nombres) : David demande si l'outil « étiquettes à ranger » est prêt → voir le chantier `reponses-a-placer` (phase 0 des étiquettes, `docs/wip/reponses-a-placer-progress.md` ou son worktree) et lui répondre. Puis lot tout OK → `publier-lot --dir scripts/questions/ce2-<n>` (simulation), David `--publier`.
+- **État** : lot 1 en prod en BROUILLON, 2 OK sur 5 (60, × 4, × 8 TOUJOURS sans verdict). Lot 2 en prod en BROUILLON, rangé et tagué ; 6 OK, 1 sans verdict (`78d3ff5b`) ; les 2 « à revoir » corrigés dans les FICHIERS (branche `fix/questions-ce2-consignes`) : `b4dd4008` consigne précisée, `8c5c7d70` réécrit en ```ranger.
+- **Prochaine action** : PR mergée → David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-2 --publier --mettre-a-jour` (2 modèles, 03 et 06) → vérifier au MCP → remettre à zéro les verdicts de `b4dd4008` et `8c5c7d70` sur la page à cocher (https://claude.ai/artifact/KLQGsdQYbft3hoQt5yHnCL) et la republier. Puis lot tout OK → `publier-lot --dir scripts/questions/ce2-<n>` (simulation), David `--publier`.
 - **En attente de David** : verdicts du lot 1 (60, × 4, × 8) et de `78d3ff5b` (lot 2) ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
-- **Pièges en cours** : horodatage = max de la PROD + 1 min, re-vérifier juste avant `db:migrate` ; CI : `corrections.test.ts` « cas rare » > 5 s et client `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule ; page à cocher APRÈS `db:migrate`.
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 (specs lues sur l'instance tirée) ; `--mettre-a-jour` en simulation refusé par le classifieur (même sans `--publier`) ; horodatage = max de la PROD + 1 min ; CI : `corrections.test.ts` « cas rare » > 5 s et `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `fix/questions-ce2-consignes`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -225,3 +225,15 @@ CM2) : règle de l'école en numération, `4500` sans espace = « forme à amél
 - 2026-10-28 : #1932 mergée, `db push` refusé (`20261028234500` et `20261029003100` d'autres sessions jouées entre-temps) ;
   renommage #1937 mergé ; `db:migrate` (seule la mienne au `--dry-run`) ; vérifié au MCP. Page à cocher :
   https://claude.ai/artifact/KLQGsdQYbft3hoQt5yHnCL (9 fiches, aucune alerte). Worktree retiré.
+
+### Lot 2 — les 2 « à revoir » (2026-10-29)
+
+- Instantané `docs/wip/questions-ce2/etat-prod-2026-10-29/` (`export-question-templates`) : `b4dd4008` et
+  `8c5c7d70` en prod = fichiers du dépôt (variations et specs identiques), brouillons.
+- `b4dd4008` (03), variation 4 : « Décompose le nombre. » jugé trop vague → « Décompose le nombre en milliers,
+  centaines, dizaines et unités, comme $2\,513=2\,000+500+10+3$. » (l'exemple montre la forme attendue).
+  `question:specs` : 10/10, 200 tirages.
+- `8c5c7d70` (06) : l'outil « étiquettes à ranger » (```ranger, #1943, chantier `reponses-a-placer` clos) est en
+  prod depuis v0.55.0 → réécrit avec le bloc : étiquettes dans le bon ordre, mélangées au tirage (variables
+  `o`, `x1…x5` et les 5 cases retirées). Specs en positions affichées (depuis 0), lues sur l'instance tirée :
+  6/6, 100 tirages.
