@@ -73,9 +73,6 @@ import type { GradeCode } from '$lib/types/grades';
 /** Class table row type alias */
 export type Class = Tables<'classes'>;
 
-/** Migration edit row type alias */
-export type MigrationEdit = Tables<'migration_edits'>;
-
 /** Class schedule table row type alias */
 export type ClassSchedule = Tables<'class_schedules'>;
 

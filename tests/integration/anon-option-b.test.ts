@@ -97,9 +97,7 @@ const RELATIONS_FERMEES = [
 	'mathemo_scores',
 	'message_template_versions',
 	'message_templates',
-	'migration_edits',
 	'migration_images',
-	'migration_tracking',
 	'minesweeper_multiplayer_game_state',
 	'minesweeper_multiplayer_matches',
 	'minesweeper_multiplayer_queue',
@@ -165,7 +163,6 @@ const RELATIONS_FERMEES = [
 	'admin_user_activity',
 	'deck_stats_view',
 	'game_scores_unified',
-	'migration_review_tree',
 	'minesweeper_achievements_compat',
 	'minesweeper_leaderboard',
 	'minesweeper_multiplayer_leaderboard',
@@ -283,7 +280,6 @@ const FONCTIONS_REVOQUEES = [
 	'public.update_message_drafts_updated_at()',
 	'public.update_message_search_index()',
 	'public.update_message_template_updated_at()',
-	'public.update_migration_tracking_updated_at()',
 	'public.update_parental_consents_updated_at()',
 	'public.update_parody_evaluations_updated_at()',
 	'public.update_pem_updated_at()',
@@ -374,11 +370,14 @@ describe('(a) anon n’a plus aucun droit sur les objets fermés', () => {
 	// → 135 relations, 135 fonctions.
 	// 2026-10-25 (table du tableur V4 supprimée) : `update_spreadsheets_updated_at()`
 	// supprimée → 135 relations, 134 fonctions.
-	it('l’inventaire compte 135 relations et 134 fonctions', () => {
-		expect(RELATIONS_FERMEES).toHaveLength(135);
-		expect(new Set(RELATIONS_FERMEES).size).toBe(135);
-		expect(FONCTIONS_REVOQUEES).toHaveLength(134);
-		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(134);
+	// 2026-10-29 (fin de l'import TinyMath, figure-et-choix) : `migration_tracking`, `migration_edits`,
+	// `migration_review_tree` et `update_migration_tracking_updated_at()` supprimées
+	// → 132 relations, 133 fonctions.
+	it('l’inventaire compte 132 relations et 133 fonctions', () => {
+		expect(RELATIONS_FERMEES).toHaveLength(132);
+		expect(new Set(RELATIONS_FERMEES).size).toBe(132);
+		expect(FONCTIONS_REVOQUEES).toHaveLength(133);
+		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(133);
 	});
 
 	it.each(RELATIONS_FERMEES)('table/vue %s : aucun droit pour anon', async (rel) => {

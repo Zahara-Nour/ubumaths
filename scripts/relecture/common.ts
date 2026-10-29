@@ -4,14 +4,11 @@
  *
  * - client Supabase service_role, avec GARDE sur la base visée : en écriture,
  *   seules la prod (projet EU) et une base locale sont acceptées ;
- * - relecteur = l'unique profil admin (modèle mono-professeur : David) ;
- * - sauvegarde JSON des lignes visées AVANT toute écriture (dossier ignoré par git).
+ * - relecteur = l'unique profil admin (modèle mono-professeur : David).
  */
 
 import 'dotenv/config';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
 import type { Database } from '../../src/lib/types/database';
 
 // ============================================================================
@@ -20,7 +17,6 @@ import type { Database } from '../../src/lib/types/database';
 
 /** Projet Supabase de production (EU, eu-west-3) */
 const PROD_PROJECT_REF = 'cnevnzsvixxpnurautls';
-const BACKUP_DIR = 'data/migration-output/backups';
 
 // ============================================================================
 // ARGUMENTS
@@ -88,26 +84,4 @@ export async function findReviewerId(supabase: SupabaseClient<Database>): Promis
 		throw new Error(`il faut exactement 1 profil admin, trouvé ${data?.length ?? 0}`);
 	}
 	return data[0].id;
-}
-
-/** Sauvegarde des lignes visées, avant écriture ; renvoie le chemin */
-export async function backupRows(
-	supabase: SupabaseClient<Database>,
-	label: string,
-	hashes: string[]
-): Promise<string> {
-	const [tracking, edits] = await Promise.all([
-		supabase.from('migration_tracking').select('*').in('old_question_hash', hashes),
-		supabase.from('migration_edits').select('*').in('old_question_hash', hashes)
-	]);
-	if (tracking.error) throw new Error(`sauvegarde du suivi : ${tracking.error.message}`);
-	if (edits.error) throw new Error(`sauvegarde des corrections : ${edits.error.message}`);
-
-	mkdirSync(BACKUP_DIR, { recursive: true });
-	const path = join(BACKUP_DIR, `${label}-${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
-	writeFileSync(
-		path,
-		JSON.stringify({ migration_tracking: tracking.data, migration_edits: edits.data }, null, 2)
-	);
-	return path;
 }

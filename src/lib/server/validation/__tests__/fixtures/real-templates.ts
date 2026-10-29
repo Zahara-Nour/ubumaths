@@ -37,7 +37,6 @@ const singleBlankRow = {
 		}
 	],
 	description: 'de 1',
-	multiple_answers: null,
 	exercise_instruction: 'Calcule.',
 	default_display_options: null
 };
@@ -72,7 +71,6 @@ const choiceCaseRow = {
 		}
 	],
 	description: null,
-	multiple_answers: null,
 	exercise_instruction: null,
 	default_display_options: null
 };
@@ -105,7 +103,6 @@ const multiBlankRow = {
 		}
 	],
 	description: null,
-	multiple_answers: null,
 	exercise_instruction: null,
 	default_display_options: null
 };
@@ -145,7 +142,6 @@ const unitRow = {
 		}
 	],
 	description: null,
-	multiple_answers: null,
 	exercise_instruction: null,
 	default_display_options: null
 };
@@ -173,7 +169,6 @@ const courseCardRow = {
 		}
 	],
 	description: 'Carte de cours',
-	multiple_answers: null,
 	exercise_instruction: null,
 	default_display_options: null
 };
