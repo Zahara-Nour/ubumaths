@@ -490,12 +490,12 @@ gris: 3
 
 `forme:` (obligatoire) : `bande N` et `disque N` (2 à 12 parts), `grille L×C` (`x` ou `×`, 1 à 10 lignes et
 colonnes, au moins 2 parts ; 10×10 = centièmes), `carre-diagonales` (4 triangles). `gris:` (facultatif) : un
-nombre (les N premières parts, de 0 au total) ou une liste de rangs distincts `1, 4, 6` ; absent : aucune part
+nombre (les N premières parts, de 0 au total) ou une liste de rangs distincts `1, 4, 6` (une seule part : virgule finale, `gris: 4,`) ; absent : aucune part
 coloriée. Une clé inconnue (`colorier:` arrive en PR 2) ou répétée, un rang hors figure : phrase « Ligne N : … »
 dans `errors: string[]`. Numérotation : bande de gauche à droite, grille ligne par ligne depuis le coin haut
 gauche, disque depuis midi dans le sens horaire, carré haut / droite / bas / gauche. Scène partagée
 `utils/partage-scene.ts` (un polygone par part, arc du disque en pas de 3° ; 1 unité = 0,025 cm, écran comme
-PDF) ; écran : SVG, parts coloriées en `--color-primary`, nom accessible « Bande partagée en 8 parts égales,
+PDF) ; écran : SVG, parts coloriées en `--color-fig-orange` (contraste ≥ 3:1 sur le fond, WCAG 1.4.11), nom accessible « Bande partagée en 8 parts égales,
 3 coloriées » ; PDF : Typst natif (`polygon`), parts coloriées **grisées**. Bloc en erreur : messages pour le prof,
 cadre « Partage indisponible » pour l'élève. Éditeur riche : bloc de code `partage`. Chat élève (rendu restreint) :
 jamais rendu. Fiche fixe du catalogue : `src/lib/block-catalog/partage.ts`.

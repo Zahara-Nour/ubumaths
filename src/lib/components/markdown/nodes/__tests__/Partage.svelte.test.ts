@@ -93,9 +93,9 @@ describe('Partage — figure', () => {
 			return color;
 		};
 		const fill = (selector: string) => getComputedStyle(svg.querySelector(selector)!).fill;
-		expect(fill('.partage-coloriee')).toBe(token('--color-primary'));
+		expect(fill('.partage-coloriee')).toBe(token('--color-fig-orange'));
 		expect(fill('.partage-part:not(.partage-coloriee)')).toBe(token('--color-background'));
-		expect(token('--color-primary')).not.toBe(token('--color-background'));
+		expect(token('--color-fig-orange')).not.toBe(token('--color-background'));
 	});
 
 	it('tient sur un téléphone de 320 px, même une grille 10×10', async () => {

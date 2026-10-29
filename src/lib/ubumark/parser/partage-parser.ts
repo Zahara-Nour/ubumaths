@@ -49,7 +49,8 @@ const COUNT_SHAPE_REGEX = /^(bande|disque)(?:\s+(.*))?$/i;
 
 const KEY_LIST = PARTAGE_KEYS.join(', ');
 const FORMES_HINT = 'formes possibles : bande N, grille L×C, disque N, carre-diagonales';
-const GRIS_HINT = 'écris un nombre de parts (gris: 3) ou la liste des parts (gris: 1, 4, 6)';
+const GRIS_HINT =
+	'écris un nombre de parts (gris: 3), la liste des parts (gris: 1, 4, 6) ou une seule part suivie d’une virgule (gris: 4,)';
 
 // ============================================================================
 // DÉTECTION
@@ -149,10 +150,12 @@ function parseGray(value: string): GrayRequest {
 	const text = value.trim();
 	const illegible = () => new LineError(`gris « ${text} » illisible : ${GRIS_HINT}`);
 	if (text === '') throw illegible();
-	const items = text.split(',').map((item) => item.trim());
+	// Virgule finale : liste d'une seule part (gris: 4, colorie la part 4 seule)
+	const singleRank = /^\d+\s*,$/.test(text);
+	const items = (singleRank ? text.slice(0, -1) : text).split(',').map((item) => item.trim());
 	if (items.some((item) => !NUMBER_REGEX.test(item))) throw illegible();
 	// Un seul nombre : les N premières parts
-	if (items.length === 1) return { count: Number(items[0]) };
+	if (items.length === 1 && !singleRank) return { count: Number(items[0]) };
 	return { ranks: items.map(Number) };
 }
 

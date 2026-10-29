@@ -40,6 +40,11 @@ describe('bloc ```partage — cas nominaux', () => {
 		expect(parse('forme: bande 4', 'gris: 4').spec?.gray).toEqual([1, 2, 3, 4]);
 	});
 
+	it('une seule part : virgule finale (gris: 4,)', () => {
+		expect(parse('forme: bande 8', 'gris: 4,').spec?.gray).toEqual([4]);
+		expect(parse('forme: bande 8', 'gris: 4 ,').spec?.gray).toEqual([4]);
+	});
+
 	it('liste de rangs non contigus, rangée par ordre croissant', () => {
 		expect(parse('forme: bande 8', 'gris: 6, 1, 4').spec?.gray).toEqual([1, 4, 6]);
 	});
@@ -154,7 +159,7 @@ describe('bloc ```partage — erreurs (phrases pour le prof)', () => {
 	});
 
 	it('gris illisible', () => {
-		for (const value of ['', 'beaucoup', '2.5', '-1', '1, x', '1,,3', '3,']) {
+		for (const value of ['', 'beaucoup', '2.5', '-1', '1, x', '1,,3', '1, 3,', ',3']) {
 			const text = messages('forme: bande 8', `gris: ${value}`).join('\n');
 			expect(text, value).toContain('Ligne 2 :');
 			expect(text, value).toContain('illisible');

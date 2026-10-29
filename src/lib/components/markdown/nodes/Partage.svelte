@@ -106,6 +106,6 @@
 
 	/* La seule couleur d'accent : les parts coloriées */
 	.partage-coloriee {
-		fill: var(--color-primary);
+		fill: var(--color-fig-orange);
 	}
 </style>

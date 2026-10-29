@@ -29,10 +29,10 @@ export const partageEntry: BlockCatalogEntry = {
 				},
 				{
 					key: 'gris',
-					values: 'un nombre N | une liste de rangs : 1, 4, 6',
+					values: 'un nombre N | une liste de rangs : 1, 4, 6 | une seule part : 4,',
 					defaultValue: 'aucune part coloriée',
 					description:
-						'Un nombre colorie les N premières parts (de 0 au total de parts). Une liste colorie ces parts-là, numérotées à partir de 1, sans doublon.'
+						'Un nombre colorie les N premières parts (de 0 au total de parts). Une liste colorie ces parts-là, numérotées à partir de 1, sans doublon. Pour une seule part, la faire suivre d’une virgule : gris: 4, colorie la part 4 seule.'
 				}
 			]
 		}
