@@ -1,0 +1,228 @@
+{
+	"id": "2bf6edc7-e12f-450e-951c-cbf2b20b1e19",
+	"title": "Suite monotone et bornée : que peut-on conclure ?",
+	"description": "QCM : croissante majorée ⟹ convergente (vers ℓ ≤ M, pas forcément M) ; croissante non majorée ⟹ +∞ ; majorée seule ou croissante seule : pas de conclusion",
+	"grades": ["T_SPE"],
+	"theme": "Suites",
+	"domain": "Comportement global",
+	"subdomain": "Convergence monotone",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On sait qu'une suite $(u_n)$ est **croissante** et **majorée** par ${{M}}$.\n\nQue peut-on en conclure ?\n\n```choix\n- $(u_n)$ converge vers un réel $\\ell\\leqslant{{M}}$\n- $(u_n)$ converge vers ${{M}}$\n- $(u_n)$ tend vers $+\\infty$\n- On ne peut pas savoir si $(u_n)$ converge\n```",
+			"variables": [
+				{
+					"name": "M",
+					"expression": "2..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Théorème : toute suite croissante et majorée **converge**.",
+					"Sa limite $\\ell$ vérifie $\\ell\\leqslant{{M}}$, mais n'est pas forcément ${{M}}$ : une suite majorée par ${{M}}$ l'est aussi par ${{eval:M+1}}$.",
+					"$\\textcolor{{{color:primary.0}}}{(u_n)\\text{ converge vers un réel }\\ell\\leqslant{{M}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On sait qu'une suite $(u_n)$ est **décroissante** et **minorée** par ${{M}}$.\n\nQue peut-on en conclure ?\n\n```choix\n- $(u_n)$ converge vers un réel $\\ell\\geqslant{{M}}$\n- $(u_n)$ converge vers ${{M}}$\n- $(u_n)$ tend vers $-\\infty$\n- On ne peut pas savoir si $(u_n)$ converge\n```",
+			"variables": [
+				{
+					"name": "M",
+					"expression": "-9..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Théorème : toute suite décroissante et minorée **converge**.",
+					"Sa limite $\\ell$ vérifie $\\ell\\geqslant{{M}}$, sans être forcément égale à ${{M}}$.",
+					"$\\textcolor{{{color:primary.0}}}{(u_n)\\text{ converge vers un réel }\\ell\\geqslant{{M}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On sait qu'une suite $(u_n)$ est **croissante** et **n'est pas majorée**.\n\nQue peut-on en conclure ?\n\n```choix\n- $(u_n)$ tend vers $+\\infty$\n- $(u_n)$ converge\n- $(u_n)$ n'a pas de limite\n- On ne peut pas conclure\n```",
+			"correction": {
+				"steps": [
+					"Pour tout réel $A$, un terme $u_N$ dépasse $A$ (non majorée) ; la suite étant croissante, tous les termes suivants aussi.",
+					"Donc $\\textcolor{{{color:primary.0}}}{(u_n)\\text{ tend vers }+\\infty}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On sait seulement qu'une suite $(u_n)$ est **majorée** par ${{M}}$.\n\nQue peut-on en conclure ?\n\n```choix\n- Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite\n- $(u_n)$ converge vers un réel $\\ell\\leqslant{{M}}$\n- $(u_n)$ converge vers ${{M}}$\n- $(u_n)$ tend vers $-\\infty$\n```",
+			"variables": [
+				{
+					"name": "M",
+					"expression": "2..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sans monotonie, le théorème de convergence monotone ne s'applique pas.",
+					"$u_n={{eval:M-1}}+(-1)^{n}$ (pas de limite), $u_n={{M}}-n$ (tend vers $-\\infty$) et $u_n={{M}}-\\dfrac{1}{n+1}$ (converge) sont toutes majorées par ${{M}}$ : $\\textcolor{{{color:primary.0}}}{\\text{on ne peut rien conclure}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On sait seulement qu'une suite $(u_n)$ est **croissante**.\n\nQue peut-on en conclure ?\n\n```choix\n- Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non\n- $(u_n)$ tend vers $+\\infty$\n- $(u_n)$ converge\n- $(u_n)$ peut n'avoir aucune limite\n```",
+			"correction": {
+				"steps": [
+					"Une suite croissante majorée converge ; une suite croissante non majorée tend vers $+\\infty$.",
+					"$u_n=n$ tend vers $+\\infty$, $u_n=1-\\dfrac{1}{n+1}$ converge vers $1$ : $\\textcolor{{{color:primary.0}}}{\\text{elle converge ou tend vers }+\\infty}$ ; elle a toujours une limite (finie ou $+\\infty$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"M": "5"
+			},
+			"description": "v0 croissante majorée : converge vers ℓ ≤ M",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"M": "5"
+			},
+			"description": "v0 : converge vers M refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"M": "5"
+			},
+			"description": "v0 : +∞ refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"M": "0"
+			},
+			"description": "v1 décroissante minorée : ℓ ≥ m",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"M": "0"
+			},
+			"description": "v1 : converge vers m refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v2 croissante non majorée : +∞",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v2 : pas de conclusion refusé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"M": "4"
+			},
+			"description": "v3 majorée seule : rien",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"M": "4"
+			},
+			"description": "v3 : converge vers ℓ ≤ M refusé (pas de monotonie)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v4 croissante seule : converge ou +∞",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v4 : tend vers +∞ refusé",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v4 : peut n'avoir aucune limite refusé",
+			"variationIndex": 4
+		}
+	]
+}

@@ -1,0 +1,127 @@
+{
+	"id": "edb636bf-514e-4d8e-9893-5edb655f2c44",
+	"title": "Suite tendant vers −∞ : un rang à partir duquel tous les termes conviennent",
+	"description": "Suite tendant vers −∞ : donner UN entier N tel que tous les uₙ pour n ⩾ N sont dans ]−∞ ; −A] (toute réponse qui convient est juste ; pièges : rang trop petit, rang non entier)",
+	"grades": ["T_SPE"],
+	"theme": "Suites",
+	"domain": "Limites de suites",
+	"subdomain": "Définition de la limite",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"rulesSuffice": true,
+					"expectedAnswer": "{{N0}}",
+					"validationRules": [
+						{
+							"max": "1000000000",
+							"min": "0",
+							"type": "range",
+							"inclusive": true
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						},
+						{
+							"type": "custom",
+							"expression": "{{b}} - {{c}}*answer <= -{{A}}",
+							"description": "Pour ce rang, $u_N>-{{A}}$ : il est trop petit."
+						}
+					]
+				}
+			],
+			"statement": "Pour tout entier naturel $n$, $u_n={{b}}-{{c}}n$. La suite $(u_n)$ tend vers $-\\infty$ : tout intervalle $]-\\infty\\,;-A]$ contient tous les termes à partir d'un certain rang.\n\nDonne un entier naturel $N$ tel que, pour tout $n\\geqslant N$, $u_n\\leqslant-{{A}}$.\n\n$N=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "A",
+					"expression": "100|1000"
+				},
+				{
+					"name": "N0",
+					"expression": "eval:ceil((A+b)/c)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_n)$ est décroissante. $u_n\\leqslant-{{A}}\\iff{{b}}-{{c}}n\\leqslant-{{A}}\\iff n\\geqslant\\dfrac{ {{eval:A+b}} }{ {{c}} }$.",
+					"Le plus petit rang qui convient est $N=\\textcolor{{{color:primary.0}}}{ {{N0}} }$ ; tout entier plus grand convient aussi."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["53"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "100",
+				"b": "5",
+				"c": "2",
+				"N0": "53"
+			},
+			"description": "v0 b=5, c=2, A=100 : N=53",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "100",
+				"b": "5",
+				"c": "2",
+				"N0": "53"
+			},
+			"description": "v0 : N=60 convient",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["52"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "100",
+				"b": "5",
+				"c": "2",
+				"N0": "53"
+			},
+			"description": "v0 : N=52 trop petit",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "100",
+				"b": "5",
+				"c": "2",
+				"N0": "53"
+			},
+			"description": "v0 : N=50 (b oublié)",
+			"variationIndex": 0
+		}
+	]
+}

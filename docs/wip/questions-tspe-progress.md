@@ -10,16 +10,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, à l'ouverture du chantier._
+_Mis à jour le 2026-10-30, lot 0-suites vérifié, migration des niveaux écrite (§ 6, D8)._
 
-- **État** : relevé prod, existant et classement des points sans modèle écrits (§ 1-4).
-- **Prochaine action** : lot 0-suites (§ 6) : instantané des brouillons, tirages contre les bornes TSPE (et TCOMP), constats.
-- **En attente de David** : rien (D1-D7 validées le 2026-10-29).
+- **État** : D1-D7 validées ; lot 0-suites vérifié (17 brouillons, 1 correction), page à cocher publiée.
+- **Prochaine action** : PR (instantané suites + migration des niveaux D8), CI, merge, `db:migrate` depuis le dépôt principal, vérification des 14 niveaux en prod ; puis David : `create-questions --dir scripts/questions/tspe-0-suites --publier --mettre-a-jour` et `publier-lot --publier` ; ensuite lot 0-limites et fonctions.
+- **En attente de David** : après `db:migrate`, `create-questions --publier --mettre-a-jour` puis `publier-lot --publier` (suites).
 - **Pièges en cours** : `create-questions` et `publier-lot` → David ; les vieux dossiers
   `scripts/questions/<thème>-terminale/` ne concordent peut-être plus avec la base → partir des id
   (`export-question-templates.ts --ids`, comme en 1re spé) ; la case choix est en prod (figure-et-choix lots 1-5,
   v0.55.0) : plus d'ancien QCM à écrire.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe`, `feat/questions-tspe-0-suites`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -250,3 +250,64 @@ _Posées le 2026-10-29. Recommandations de Claude validées par David le 2026-10
 - **Q7 — Chevauchement avec maths complémentaires** : 80 brouillons (81 modèles) portent aussi `T_COMP`. Publier au lot 0
   les rend visibles aux deux niveaux ; je vérifie aussi contre les bornes `tcomp.json` (plus étroites). Recommandé :
   oui, les deux bornes à chaque tirage.
+
+## 6. Lot 0-suites : vérification des brouillons
+
+_2026-10-29. 17 brouillons de niveau `T_SPE` tagués d'un point des suites (304, 378, 379, 380, 383, 384, 385, 432,
+577, 578, 579) ou des suites arithmético-géométriques (9f14d672, 81ff485d : TCOMP seul, D3 → 387). Instantané
+`scripts/questions/tspe-0-suites/` (`export-question-templates.ts`, prod), `question:specs --apercu 3` puis une copie
+par variation (64 variations, 2 tirages lus chacune), réponses des 25 cases « choix » recoupées avec leur option ;
+sorties dans le scratchpad de la session._
+
+**Mécanique** : 17 / 17 verts, 3 650 tirages réussis, 0 avertissement.
+
+**Bornes** : rien hors bornes. TSPE : limites des fonctions de 1re seulement (lts-5) ; qⁿ pour q réel quelconque (383,
+ea9d2de8 avec q ⩽ −1) ; définitions par les intervalles (378-380). TCOMP (D7, plus étroites) : raisons positives
+pour 1ebd1c86, 708f8a08 (0 < q < 1), 81ff485d et 9f14d672 (a ∈ {0,1 … 0,9 ; 1/2 … ; 2 ; 3} ⩾ 0). 57063ada (Héron) :
+seul f(ℓ) = ℓ est demandé, dans 432 (l'étude de la convergence, 571, n'est pas demandée).
+
+**Constats** :
+
+- **C1 (corrigé)** : 2bf6edc7 v3 (« majorée par M, que conclure ? ») donnait pour contre-exemples uₙ = (−1)ⁿ et
+  uₙ = −n, **faux** quand M < 1 (M tiré dans ±2..9 : une fois sur deux). Remplacés par uₙ = (M − 1) + (−1)ⁿ et
+  uₙ = M − n ; 12 / 12 specs vertes, tirages relus (M = −9, −4, 6).
+- Écartés : « −9/9 » non simplifié dans une étape de c611f92b v3 et v4 (étape intermédiaire, réponse juste) ;
+  `0.5`, `1.05` écrits à l'anglaise dans la sortie de l'outil seulement (rendu à la française).
+
+**Page à cocher** : https://claude.ai/artifact/CRPu9Wj8MaomQe8nS6v7Jy (17 fiches, 64 exemples), collection `verdicts`
+vide à la publication.
+
+**Relecture (David, page à cocher, 2026-10-30)** : 17 « ok » sur 17, aucun commentaire (lu en base).
+
+**Publication bloquée (simulation `publier-lot`)** : 7063979e et 98ba277c occupent le même niveau (2) de la même
+catégorie. Relevé sur les **184 brouillons** (MCP, 2026-10-29) : **14 collisions** de ce type, dans 13 catégories
+(13 entre brouillons de terminale, 1 avec un modèle publié de 1re spé : 7f13ca89 au niveau 3 de Dérivation /
+Variations). Proposition : **une seule migration de niveaux** pour tout le niveau, avant la première publication
+(niveau visé = niveau libre de la catégorie, sans toucher aux modèles publiés) — Q8 :
+
+| Modèle   | Catégorie (sous-domaine)                  | Niveau |
+| -------- | ----------------------------------------- | ------ |
+| 7063979e | Limites de suites / Comparaison           | 2 → 1  |
+| d3ae0f61 | Continuité / TVI                          | 2 → 3  |
+| 7f13ca89 | Dérivation / Variations (1re spé publiée) | 3 → 5  |
+| cac2d6ed | Fonctions trigonométriques / Dérivées     | 3 → 4  |
+| 9c7fb7cf | Fonctions trigonométriques / Équations    | 2 → 5  |
+| 5072030d | Fonctions trigonométriques / Parité       | 1 → 3  |
+| 7df468d6 | Fonctions trigonométriques / Parité       | 2 → 4  |
+| 37ce7759 | Convexité / Lecture graphique             | 2 → 1  |
+| eae25eba | Espace / Projeté orthogonal               | 3 → 2  |
+| d0930e8c | Primitives des fonctions de référence     | 1 → 2  |
+| 3aca54e9 | Dénombrement / Combinaisons               | 2 → 1  |
+| ed01a843 | Dénombrement / Principes                  | 1 → 2  |
+| f796ffc0 | Dénombrement / Reconnaître le modèle      | 2 → 1  |
+| a95a9c0d | Loi binomiale / Calcul de probabilités    | 2 → 1  |
+
+Le fichier `tspe-0-suites/7063979e.json` porte déjà le niveau 1.
+
+**D8 (David, 2026-10-30, « je valide » sur les recommandations)** : accès — personne ne gagne ni ne perd d'accès ;
+une seule migration pour les 14, avant toute publication ; niveaux du tableau ci-dessus. Migration
+`20261030011000_questions_tspe_niveaux.sql` (patron du CE1 lot 3), test
+`tests/integration/questions-tspe-niveaux.test.ts` : 7/7 vert, **rouge** sans l'`update` des niveaux (« lot
+incohérent : niveaux 0/14 ») et sans le fichier. Les autres thèmes s'exporteront de la base après la migration
+(niveaux à jour). `security-auditor` (2026-10-30) : aucun finding bloquant (14 id, niveaux et rollback recoupés
+avec la prod ; note : après `db:migrate`, vérifier que le trigger `update_question_templates_updated_at` est actif).
