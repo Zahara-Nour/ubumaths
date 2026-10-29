@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1947._
+_Mis à jour le 2026-10-29, après #1947 — **CHANTIER CLOS**, journal archivé._
 
-- **État** : droite, horloge, barres (#1908), plafond de l'axe (#1915), étiquettes à ranger (#1943) et échelle choisie par l'élève (#1947, `axe: à choisir`, § 24-26) mergés, pas en prod. Secondes de l'horloge : hors chantier.
-- **Prochaine action** : geste suivant au choix de David (phase 0 à écrire), ou fin de chantier (versement dans `docs/systeme/`, journal archivé).
-- **En attente de David** : quel geste ensuite, ou clore ; vérifications manuelles #1943 et #1947 (`verifications-manuelles.md`).
-- **Pièges en cours** : les 5 modèles « ranger » sont à réécrire en ```ranger par questions-6 (06, 07) et la session « questions » (CP, CE1, CM2), au moins 3 étiquettes ; aucun modèle n'utilise encore `axe: à choisir` (CE2-082, session « questions ») ; compte prof local supprimé par une suite d'intégration interrompue → `pnpm db:dev-accounts`.
+- **État** : livré par #1846 → #1947 (droite à un et plusieurs points, horloge, barres, plafond de l'axe, étiquettes à ranger, échelle choisie par l'élève). Durable déjà versé PR par PR dans `docs/systeme/questions.md` et `ubumark.md` ; restes dans « Écarts connus » de `questions.md`. Pas encore en prod.
+- **Hors chantier** : trotteuse (CM2-083) ; CP-058 → figure de travail (`figure-et-choix`).
+- **Restes pour les sessions « questions »** : modèles « ranger » à réécrire en ```ranger (6e 06, 07 ; CP, CE1, CM2) ; `axe: à choisir` pour CE2-082.
+- **En attente de David** : vérifications manuelles #1943 et #1947 (`docs/wip/verifications-manuelles.md`).
 - **Worktree / branche** : aucun.
 
 ---

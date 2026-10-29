@@ -260,7 +260,7 @@ Bleue:1/2          ```                  end: 5
 Branches imbriquées par indentation (`Pile:1/2` puis `  Face:1/2`), options `root:`, `outcomes:`,
 `intersection:` : `src/lib/ubumark/__tests__/parser/probability-tree-parser.test.ts`.
 
-**Droite à placer** (chantier [reponses-a-placer](../wip/reponses-a-placer-progress.md), CP-008) —
+**Droite à placer** (chantier [reponses-a-placer](../archive/wip/reponses-a-placer-progress.md), CP-008) —
 `src/lib/ubumark/__tests__/number-line/number-line-placer.test.ts`,
 `NumberLinePlacer.svelte.test.ts` : `placer: 7` dans un ` ```line ` (nœud : `placer`, et `caseIndex`
 lu de `case: N`, posée par le générateur). Refusé : hors de la droite, entre deux graduations, échelle
@@ -386,7 +386,7 @@ Danse = 7            ```                                     ```
   (`src/lib/ubumark/__tests__/stat-chart/simulation-block.test.ts`) ; ou une loi nommée,
   `X ~ G(0,2)`, `U(1 ; 6)`, `U([0 ; 10])`, `E(0,5)`, `N(10 ; 4)` (σ² en 2ᵉ paramètre ; histogramme
   sur μ ± 3σ) — `src/lib/ubumark/__tests__/stat-chart/simulation-laws.test.ts`.
-- ` ```barres ` à construire (chantier [reponses-a-placer](../wip/reponses-a-placer-progress.md)
+- ` ```barres ` à construire (chantier [reponses-a-placer](../archive/wip/reponses-a-placer-progress.md)
   § 17, 18 ; CP-072, CE1-088, CE2-082) — `src/lib/ubumark/__tests__/stat-chart/barres-placer.test.ts`,
   `BarresPlacer.svelte.test.ts` : `axe: 0 à 20, de 2 en 2` (nœud : `spec.axis`, `{ max, step }` ; part
   de 0, haut multiple du pas, au plus 40 graduations ; une barre plus haute refusée ; sans `de N en N` :
@@ -459,7 +459,7 @@ natif (ni paquet ni image). Nom accessible « Horloge à aiguilles », **jamais 
 Dans un choix d'une case choix : 3 cm (`--horloge-taille` posé par `MultipleChoiceInput` et `ChoiceList` ;
 série figée : `withChoiceClockSize` ajoute `taille: 3cm`, lettre seule sur sa ligne).
 
-**Horloge à placer** (chantier [reponses-a-placer](../wip/reponses-a-placer-progress.md) § 13, 14 ;
+**Horloge à placer** (chantier [reponses-a-placer](../archive/wip/reponses-a-placer-progress.md) § 13, 14 ;
 CP-047, CE1-060, CE2-058, CM1-093) — `src/lib/ubumark/__tests__/horloge/horloge-placer.test.ts`,
 `HorlogePlacer.svelte.test.ts` : `placer: 9 h 25` **à la place de** `heure:` (nœud : `spec.placer`,
 `spec.times` vide — un rendu qui l'ignore ne dessine aucune aiguille — et `caseIndex`, posé par le
