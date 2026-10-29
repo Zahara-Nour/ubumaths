@@ -183,3 +183,21 @@ export function partageLabel(spec: PartageSpec): string {
 			return 'Carré partagé en parts égales par ses diagonales';
 	}
 }
+
+/** Le point (x, y) de la scène est-il dans ce polygone convexe ? (tracé de rayon) */
+function insidePolygon(points: readonly PartagePoint[], x: number, y: number): boolean {
+	let inside = false;
+	for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+		const a = points[i];
+		const b = points[j];
+		if (a.y > y !== b.y > y && x < ((b.x - a.x) * (y - a.y)) / (b.y - a.y) + a.x) {
+			inside = !inside;
+		}
+	}
+	return inside;
+}
+
+/** Rang de la part sous le point (x, y) de la scène (sans la marge) ; null hors de la figure */
+export function partAtPoint(scene: PartageScene, x: number, y: number): number | null {
+	return scene.parts.find((part) => insidePolygon(part.points, x, y))?.rank ?? null;
+}

@@ -5,16 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1965 (rangement du lot 2 mergé)._
+_Mis à jour le 2026-10-29, phase 0 du lot 3 écrite._
 
-- **État** : lot 2 : 4 brouillons en prod, migration de rangement mergée (#1965), PAS jouée (§ 9.7).
-- **Prochaine action** : quand la session ce1 a renommé sa migration `20261029213000_questions_ce1_lot3_niveaux`,
-  David lance `pnpm db:migrate` ; vérifier au MCP, puis page à cocher, publication.
-- **En attente de David / ce1** : le renommage de la migration ce1, puis `db:migrate`.
+- **État** : lots 0, 1 et 2 publiés en prod ; lot 2 : 4/4 `published` relus au MCP (§ 9.9).
+- **Prochaine action** : réponses de David au § 10.4, puis écrire le lot 3 (Thalès et trigonométrie,
+  6 modèles, § 10.1) dans un worktree `ubumaths-wt-questions-3`.
+- **En attente de David** : les 5 questions du § 10.4.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation, car il lit la prod) refusés
-  par le classifieur du mode auto → David les lance avec `!` ; test `forfait-palotin` qui dépasse 5 s en CI
-  (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : `ubumaths-wt-questions-3` (branches mergées, à retirer en fin de lot).
+  par le classifieur du mode auto → David les lance avec `!` (`--publier` simule d'abord, tout ou rien) ;
+  test `forfait-palotin` qui dépasse 5 s en CI (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -363,3 +363,68 @@ prof de 3e voient 4 modèles publiés de plus. Aucune règle ne change.
 - **`db:migrate` bloqué** : collision d'horodatage `20261029213000` (questions_5_lot3, jouée, et
   questions_ce1_lot3_niveaux, non jouée) → `db push` refuse. `--include-all` écarté (doublon de version).
   Session ce1 prévenue (David, 2026-10-29) : renommer sa migration, puis `db:migrate` jouera les deux.
+
+### 9.8 Lot 2 : rangement joué, page à cocher (2026-10-29)
+
+- Migration ce1 renommée en `20261029233100` (#1972, session ce1) ; `db:migrate` lancé par David : 233000 puis
+  233100 jouées. MCP : les 4 modèles sur le nœud de leur point, tags 3-016, 3-054, 3-014, 3-015, brouillons
+  [3], `updated_at` préservé.
+- Page à cocher : https://claude.ai/artifact/KRBQJkNHzZABUFwXrSzYAv (capacité `db`, collection `verdicts`
+  vide au départ ; aucune alerte). Rendu relu en vue large ; la vue à 390 px n'a pas pu être forcée.
+- Worktree `ubumaths-wt-questions-3` et ses deux branches retirés (#1959, #1965 mergées).
+- Relecture (2026-10-29) : 4 verdicts en base, 4 OK, aucun commentaire.
+
+### 9.9 Lot 2 : publié (2026-10-29)
+
+- `publier-lot.ts --dir scripts/questions/3-lot-2 --publier` lancé par David : 4/4 publiés. MCP : 18e2afca,
+  dcaabf69, 24aff7b0, 2ab49a6f en `published`.
+
+## 10. Lot 3 (Thalès et trigonométrie, lot 5 du § 4) : phase 0 proposée (2026-10-29)
+
+Relevé MCP du jour : **aucun modèle de géométrie en 5e, 4e ou 3e** (ni Thalès, ni trigonométrie, ni
+Pythagore) ; les seuls « trigonométriques » sont de 1re et Terminale (cercle, fonctions). Ce lot est le premier
+du cycle 4 en géométrie. Nœuds : 3-022, 3-059, 3-060 sur Théorème de Thalès > calcul de longueurs
+(63e3a973) ; 3-055 sur Théorème de Thalès > réciproque (216be680) ; 3-023, 3-061 sur la notion
+Trigonométrie du triangle rectangle (8809d4ee). Catégories neuves : niveaux libres.
+
+Outils : ` ```figure ` (variables `{{…}}` acceptées dans le script, comme CP-058), angle droit
+`angle(…, marque="carre")`, angle aigu `angle(…)` en arc, longueurs par `texte(…)` ; case choix
+(` ```choix `, en prod depuis v0.55.0) ou case nombre. Figures **à l'échelle** : forme de base fixe par
+variation, M et N placés au rapport tiré (proposé). Lettres tirées parmi quelques jeux (A B C M N ;
+R S T U V ; E F G K L) et deux ou trois orientations par configuration (proposé).
+
+### 10.1 Modèles neufs (6, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                        | Variations                                                                                                                                                                                                                                                                       | Réponse                                             |
+| ----- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| 3-022 | Reconnaître une configuration de Thalès (Géométrie / Thalès / Configurations, 1)  | 1) (MN) // (BC) donné : emboîtés ou papillon ? ; 2) quels triangles ? (AMN et ABC ; distracteurs AMN et MBC, AMB et ANC, MNB et MNC) ; 3) pour appliquer le théorème dans AMN et ABC, quelles droites doivent être parallèles ?                                                  | choix                                               |
+| 3-059 | Écrire l'égalité de Thalès (Géométrie / Thalès / Égalité des rapports, 1)         | 1) emboîtés ; 2) papillon ; 3) petit triangle au dénominateur (AB/AM = AC/AN = BC/MN). Distracteurs : AM/MB = AN/NC = MN/BC, un rapport renversé, sommets croisés (AM/AC = AN/AB = MN/BC)                                                                                        | choix (4 égalités)                                  |
+| 3-060 | Calculer une longueur avec Thalès (Géométrie / Thalès / Calculer une longueur, 1) | 1) emboîtés, côté parallèle MN ; 2) emboîtés, longueur sur un côté (AN) ; 3) papillon ; 4) longueur du grand triangle (AB, par une division) ; 5) MB donné au lieu de AM (AB = AM + MB d'abord). Longueurs en cm, entières ou au dixième, résultat décimal exact (≤ 2 décimales) | case « MN = ? cm »                                  |
+| 3-055 | Réciproque et contraposée de Thalès (Géométrie / Thalès / Réciproque, 1)          | Alignement dans le même ordre dit dans l'énoncé ; 1) emboîtés, rapports égaux ou non (tirés) ; 2) papillon, idem. Rapports différents mais proches (0,6 et 0,625), décimaux simples                                                                                              | choix « Oui » / « Non », non mélangé (CP-058)       |
+| 3-023 | Écrire cos, sin ou tan (Géométrie / Trigonométrie / Lignes trigonométriques, 1)   | Triangle rectangle, angle droit codé, angle aigu marqué ; 1) cos ; 2) sin ; 3) tan ; 4) l'une des trois, sur l'autre angle aigu. Distracteurs : les trois autres rapports de côtés                                                                                               | choix (4 fractions de côtés)                        |
+| 3-061 | Calculer une longueur ou un angle (Géométrie / Trigonométrie / Calculer, 1)       | 1) longueur au numérateur (AB = BC × cos B) ; 2) longueur au dénominateur (BC = AB ÷ cos B) ; 3) avec tan ; 4) angle (cos, sin ou tan connu par deux côtés). Angles en degrés, entiers de 20° à 70° ; longueurs au dixième                                                       | case ; longueur arrondie au dixième, angle au degré |
+
+`testSpecs` d'erreurs typiques : 3-060 → rapport renversé (MN = BC × AB/AM), AM + MB oublié (v5), produit en
+croix faux ; 3-055 → Oui quand les rapports diffèrent ; 3-061 → mauvaise ligne (sin au lieu de cos), produit au
+lieu du quotient (v2), arrondi au degré pour une longueur, valeur non arrondie.
+
+**À mesurer à l'écriture** : `cos` de `eval:` en radians (passer par `cos(a*pi/180)` si besoin), `round` y est ;
+le juge sur un arrondi (4,6 attendu : 4,60 ? 4,58 ?) ; une case précédée d'un nom de segment.
+
+### 10.2 Rangement
+
+Chacun sur le nœud de son point (ci-dessus), tags 3-022, 3-059, 3-060, 3-055, 3-023, 3-061.
+
+### 10.3 Question d'accès
+
+Modèles neufs en brouillon : personne ne lit rien de neuf. Rangement puis publication : les élèves et le
+prof de 3e voient 6 modèles publiés de plus. Aucune règle ne change.
+
+### 10.4 Questions à David
+
+1. Valider les 6 modèles du § 10.1 (points, variations, catégories, formes de réponse) ?
+2. Figures à l'échelle (rapports vrais) plutôt qu'un croquis « la figure n'est pas à l'échelle » ?
+3. Lettres tirées parmi quelques jeux, plutôt que toujours A, B, C, M, N ?
+4. 3-055 : choix « Oui » / « Non » seul (la raison dans le corrigé), ou la raison dans le choix
+   (« Non, car AM/AB ≠ AN/AC ») ?
+5. Pythagore (4e) n'a aucun modèle en prod : le signaler à la session 4e, sans rien faire ici ?

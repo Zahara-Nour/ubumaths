@@ -679,15 +679,18 @@ export type ResolvedVariable = SharedResolvedVariable;
 /**
  * Genre d'un bloc qui porte sa case et dont la réponse est sa valeur : à construire
  * (```collection, ```monnaie, `construire:`) ou à placer (```line, ```horloge,
- * ```barres, `placer:`), ou des étiquettes à ranger (```ranger)
+ * ```barres, `placer:`), des étiquettes à ranger (```ranger), ou une figure à colorier
+ * (```partage, `colorier:`)
  */
-export type BuildKind = 'collection' | 'monnaie' | 'line' | 'horloge' | 'barres' | 'ranger';
+export type BuildKind =
+	'collection' | 'monnaie' | 'line' | 'horloge' | 'barres' | 'ranger' | 'partage';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
 	if (kind === 'line') return 'droite graduée';
 	if (kind === 'barres') return 'diagramme en barres';
 	if (kind === 'ranger') return 'étiquettes à ranger';
+	if (kind === 'partage') return 'figure à colorier';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 
@@ -726,7 +729,10 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * en barres à construire (```barres, `placer:`) : une case par barre, réponse =
 	 * son effectif, l'élève monte la barre. Étiquettes à ranger (```ranger) : une
 	 * case par place, réponse = la position AFFICHÉE de l'étiquette qui y va (`2`),
-	 * l'élève y pose une étiquette, juge à part (l'étiquette, jamais sa valeur).
+	 * l'élève y pose une étiquette, juge à part (l'étiquette, jamais sa valeur). Figure
+	 * à colorier (```partage, `colorier: 3/8`) : réponse attendue = parts à colorier /
+	 * parts de la figure (`3/8`), l'élève colorie des parts (`1, 4, 6`, ses rangs),
+	 * juge à part (`isColoringCorrect`) : le nombre de parts, quelles qu'elles soient.
 	 */
 	construire?: BuildKind;
 	/**

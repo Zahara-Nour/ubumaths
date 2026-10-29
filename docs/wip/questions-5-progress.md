@@ -5,18 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la publication du lot 3 (#1952, #1960) et le correctif du gabarit (#1966)._
+_Mis à jour le 2026-10-29, après #1977._
 
-- **État** : lots 1 « Calcul », 2 « Relatifs » et 3 « Fractions et puissances » publiés (8 + 8 + 4, vérifié au MCP).
-- **Prochaine action** : phase 0 du lot 4, suite des lots A (§ 3 / § 5) : calcul littéral (034, 124, 036, 037, 038,
-  107, 041, 044, 125). Avant d'écrire « traduire en une expression » (034, 124) : vérifier que le juge exige
-  l'écriture et pas sa valeur (§ 5, point 6). Relever d'abord les modèles existants de ces points.
-- **En attente de David** : rien.
+- **État** : lots 1 à 3 publiés ; lot 4 « Calcul littéral » décidé (§ 14) ; **4a** (7 modèles) mergé (#1977),
+  **pas encore publié**.
+- **Prochaine action** : attendre le merge de la PR `virgule-forme-exigee` (pas encore ouverte au 2026-10-29) →
+  David `create-questions --dir scripts/questions/5-litteral-a --publier` → migration de rangement (gabarit lot 3)
+  → page à cocher. En parallèle possible : écrire le lot 4b (§ 14) sur une branche neuve.
+- **Décidé par David (2026-10-29)** : PR à part `virgule-forme-exigee` (défaut du juge, § 14.1), dans sa propre
+  session, phase 0 d'abord, revue `code-reviewer` Opus ; à merger **avant la publication** du lot 4a.
+- **En attente de David** : la session `virgule-forme-exigee` (à lancer par David).
 - **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
 --mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
-  **message de commit** ; le job d'intégration est un run à part (« Nightly Integration Tests ») : l'attendre ;
-  page à cocher : vérifier à 390 px (une formule large élargissait la page, corrigé dans le gabarit).
-- **Worktree / branche** : aucun (retiré après #1966).
+  **message de commit** ; job d'intégration = run à part ; page à cocher à 390 px ; **jamais de variable `e` ni
+  `i`** (les specs qui fixent les variables ne le voient pas : relire le rendu).
+- **Worktree / branche** : aucun (`ubumaths-wt-questions-5` retiré après #1977) ; lot 4b → nouveau worktree.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -257,3 +260,45 @@ Page à cocher, 7 verdicts : 5 OK (02, 03, 04, 05, 06), 2 à revoir. Corrections
   corrigé sur la page (v3) et dans le gabarit `scripts/questions/page-a-cocher.html` (PR à part).
 - Relecture : **4/4 OK**, aucun commentaire (compté en base). `publier-lot.ts` : simulation verte, puis David
   `--publier` → 4/4 `published`, vérifié au MCP. **Lot 3 clos.**
+
+## 14. Lot 4 « Calcul littéral » : décisions (David, 2026-10-29, « je te suis »)
+
+Relevé : aucun modèle sur les 9 points ; trois modèles de 4e dans les bornes de la 5e (d4679e2d « Développer »
+niv. 1, 4-022 ; e66089e0 « Trouver un facteur commun » niv. 3 et 9231b54b « Factoriser » niv. 4, 4-070).
+Juge : forme exacte (`form` strict par défaut) → une valeur est refusée là où une écriture est attendue
+(spec en prod de 2de1b93d : « 91 » refusé pour « 7(9 + 4) ») ; § 5 point 6 levé.
+
+Deux lots :
+
+- **4a** (écrire, raisonner ; catégories neuves) :
+
+| #   | Point | Modèle                                        | Réponse         | Catégorie, niveau                                   |
+| --- | ----- | --------------------------------------------- | --------------- | --------------------------------------------------- |
+| 01  | 5-034 | Écrire une formule (double… prédécesseur)     | case            | Calcul littéral › Écrire › Formules, 1              |
+| 02  | 5-034 | Que représente cette formule ?                | choix parmi 4   | idem, 2                                             |
+| 03  | 5-124 | Formule de périmètre ou d'aire                | case            | idem, 3                                             |
+| 04  | 5-037 | Somme ou produit ?                            | choix           | Calcul littéral › Reconnaître › Somme ou produit, 1 |
+| 05  | 5-036 | L'égalité est-elle vraie pour x = … ?         | choix Oui / Non | Calcul littéral › Calculs › Tester une égalité, 1   |
+| 06  | 5-036 | Pour quelle valeur l'égalité est-elle vraie ? | choix parmi 4   | idem, 2                                             |
+| 07  | 5-041 | Quelle valeur est un contre-exemple ?         | choix parmi 4   | Calcul littéral › Raisonner › Contre-exemple, 1     |
+
+- **4b** : 08 développer à facteur décimal (5-107), 09 factoriser ax + bx et facteur 1 (5-038), 10 et 11
+  « quelle équation traduit le problème ? » (5-044 x + b = c, 5-125 ax = c ; modéliser seulement, résoudre est
+  couvert par 5-045 / 5-126) ; **reclassement** de d4679e2d (→ 5e, 5-107), e66089e0 et 9231b54b (→ 5e, 5-038),
+  données d'élèves vérifiées avant la migration (accès : la 4e perd ces 3 modèles, la 5e les gagne).
+- Périmètre du rectangle : toute écriture équivalente acceptée (forme libre pour cette variation seulement).
+- Accès : brouillons (admin seul) jusqu'à la publication.
+
+### 14.1 Lot 4a écrit (2026-10-29)
+
+- Script `docs/wip/questions/lot-5-litteral-a.py`, fichiers `scripts/questions/5-litteral-a/` ; simulation prod :
+  7 à créer, 74 specs vertes (n + n et c + c + c + c refusés en forme ; 2(L + l), 2L + 2l, L + l + L + l acceptés ;
+  n² / 2n, L + l pour l'aire refusés).
+- Forme libre = `requiredForm: { pattern: 'u' }` sur la case. Aire du rectangle : `products: off` (L × l est la
+  formule du programme ; sinon ½).
+- Base locale : 7 créés, page à cocher locale relue. Corrigé en route : variable `e` (constante d'Euler !) dans
+  « 2x + 8 + e » → `h` ; gras contenant une formule (`**le double de $n$**`) affiché avec ses astérisques ;
+  énoncé du contre-exemple « double » sans `n`.
+- ⚠️ **Défaut du juge, à proposer à David (PR à part)** : dans une case à forme exigée, une virgule tapée nue
+  (`0,5n`) est refusée (`bad_form`) ; `checkRequiredForm` (`required-form-validator.ts`) relit la réponse sans la
+  règle de la virgule nue (#520). Sans forme exigée, `0,5n` passe. Spec du lot écrite avec `0{,}5n`.

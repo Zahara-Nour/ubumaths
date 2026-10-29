@@ -208,6 +208,8 @@ Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustration
 - **Contour** : celui de la Pologne réelle, simplifié ; la Baltique au nord.
 - **Sandomir** à l'emplacement de Varsovie ; les six provinces rayonnent autour d'elle, frontières irrégulières : **Yoyolande** au nord (Sinusborg, port, à l'emplacement de Gdańsk), **Bedonstan** au nord-est (Lobatchevsk ; les Pythagoriades), **Glitchistan** à l'est (Turingrad, vers Lublin), **Patatovie** au sud (Cracovenn à l'emplacement de Cracovie), **Nombrilie** au sud-ouest (Empoche-les-Bains, sur la Vistule), **Pifométrie** à l'ouest (Bonneteau-sur-Vistule, vers Poznań). Les trois provinces de l'ouest sont plus vastes, Sandomir étant décalée vers l'est.
 - **Voisins** : la Lithuanie au nord-est, l'Empire du Czar à l'est ; l'Isle de la Réunion Pataphysique en encart. Bedonstan et Glitchistan, les deux marches orientales, ont une frontière commune.
+  - **Empire du Czar** 🟡 (décision de David, 2026-10-29) : terre gelée, le froid commence à la frontière (neige, forêts de sapins noirs, brume froide, rivières prises par la glace). Au loin, au bord de la carte, le **palais d'Hiver**, palais de glace aux tours pointues et translucides comme des glaçons, **sans bulbes ni coupoles en oignon** (rien qui évoque un pays réel). Repère sur la carte : le palais de glace. Couleur : Glace du Czar `#66AACC`.
+  - **Lithuanie** 🟡 (décision de David, 2026-10-29) : pays réel, montré neutre : simple bordure de forêts et de lacs, sans ville ni repère. Couleur : Polonais pâle (terre hors du Royaume, laissée en blanc).
 - **L'ordre digestif ne fait pas le tour de Sandomir** sur la carte (dans le sens des aiguilles d'une montre : étapes 3, 4, 6, 5, 1, 2) : il reste celui des étapes, sans flèche.
 - **Mer** : bleu de Pile `#2F62B0`, éclairci (le nuancier n'a pas de bleu de mer).
 
@@ -217,6 +219,22 @@ Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustration
 - **Géographie** 🟡 (décision de David, 2026-10-06) : Sandomir est une ville **en spirale**, bâtie au point où se rejoignent les six provinces (à l'emplacement de Varsovie sur la carte, décision de David, 2026-10-29). Elle n'appartient à aucune d'elles. Le **Trône Royal** se trouve au centre de la spirale, comme le cœur d'une gidouille.
 - **Ce qu'on n'en reprend pas** : Sandomierz est aussi une vraie ville de Pologne ; on n'en garde que le nom. Le fondateur du Collège de 'Pataphysique a pris « Sandomir » pour pseudonyme (1948) : le nom vient de Jarry et reste libre, mais rien du Collège n'est repris.
 - **Usage** : « À Sandomir, au Trône Royal… » dans les articles du Shtam et les cinématiques d'Ubu. Pendant de l'Empire du Czar, gouverné depuis son palais d'Hiver.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) :
+  - **Plan** : une seule rue en spirale qui monte doucement vers le centre, bordée de maisons serrées (la spirale est la gidouille, seule forme géométrique de la ville).
+  - **Centre** : le Palais Royal, rond et ventru, coiffé d'un dôme doré surmonté d'une gidouille d'or ; le Trône Royal est dedans.
+  - **Style** : faste ubuesque, beaucoup d'or, bannières vertes de la livrée d'Ubu ; un luxe trop voyant, de mauvais goût assumé. Pas de statues d'Ubu, ni trappe ni machine à décerveler.
+  - **Eau** : la Vistule l'entoure comme des douves naturelles, franchies par quelques ponts.
+  - **Alentours** : campagne neutre, prés et routes qui partent vers les six provinces.
+  - **Repère sur la carte** : la spirale de la ville avec le dôme doré au centre.
+  - **Couleur** : aucune couleur de province ; Encre et Or pour la ville seule.
+- **Plan de la ville = carte du site** 🟡 (décision de David, 2026-10-29) : les lieux de la Section IV (« Géographie de l'Académie », une page du site = un lieu du Royaume) sont placés le long de la spirale, de l'entrée au centre :
+  1. **Le Pont-Levis du Royaume** (`/`) : l'entrée, sur la Vistule.
+  2. **Le Grand Marché Polonais** (marché) : les étals de Mère Ubu, au premier tour de la spirale.
+  3. **La Caserne des Palotins** (amis) : la caserne de Bordure.
+  4. **L'Arène des Polonais** (jeux) : petite arène ronde.
+  5. **La Gazette du Royaume** (Shtam) : l'imprimerie, ses presses.
+  6. **La Bibliothèque du Décervelage** (cours).
+  7. **Le Trône Royal** (`/pere-ubu`) : au centre, dans le Palais au dôme doré.
 
 #### Logique sonore et anatomique du Royaume
 
@@ -315,12 +333,16 @@ Bedonstan et Glitchistan sont **les deux provinces -stan** du Royaume. Ce sont *
 - **Cloche de Reset** — bouton de réinitialisation
 - **Pile de Charbon** — file d'attente ou stack
 
-**Capitale Turingrad** : la grande capitale de Glitchistan tire son nom d'**Alan Turing** (1912-1954), mais elle est architecturalement **victorienne-steampunk** plutôt que mid-century. Elle se compose de **quatre quartiers** :
+**Capitale Turingrad** : la grande capitale de Glitchistan tire son nom d'**Alan Turing** (1912-1954), mais elle est architecturalement **victorienne-steampunk** plutôt que mid-century.
 
-- **Quartier Babbage** : machines analytiques, calcul mécanique, polyèdres à engrenages
-- **Quartier Lovelace** : programmation, suites récursives, mascotte Python (Ada Lovelace stylisée en silhouette victorienne tenant un rouleau d'instructions)
-- **Quartier des Tubes** : transmission, mémoires, archives
-- **Place du Reset** : grande place centrale ornée de la **Cloche de Reset** (clocher à vapeur)
+**Plan de la ville** 🟡 (décision de David, 2026-10-29) : ville de brique et de fonte coupée du nord au sud par la Vistule canalisée ; une grande place ronde au centre, trois quartiers autour ; des tubes pneumatiques de laiton relient tous les toits. Six lieux :
+
+1. **Place du Reset** (centre) : la **Machine de Turing** géante (ruban de papier perforé sans fin, tête de lecture cliquetante) au milieu de la place ; au-dessus, la **Cloche de Reset** dans un clocher à vapeur. Quand la machine boucle, on sonne la cloche et tout repart (« Aux grands maux les grands Reset ! »).
+2. **Quartier Babbage** (rive ouest) : usines, cheminées, et la Machine Analytique géante dans une halle à verrière.
+3. **Quartier Lovelace** (rive est) : ateliers de métiers à tisser à cartes perforées (la Machine Analytique « tisse des motifs algébriques comme le métier Jacquard tisse des fleurs », d'après Ada Lovelace, citée de mémoire). Mascotte du quartier : un **python mécanique** en laiton, automate serpent. Le quartier porte le nom d'Ada Lovelace, mais on ne la dessine pas (personne réelle).
+4. **Quartier des Tubes** (nord) : la grande centrale des tubes pneumatiques, les archives où arrivent les cartes perforées.
+5. **La Gare** (sud) : terminus du chemin de fer à vapeur qui traverse la province.
+6. **Les Écluses** : là où la Vistule traverse la ville, avec le dépôt de charbon (la Pile de Charbon).
 
 #### Lecture narrative du cycle des six provinces
 
@@ -377,6 +399,17 @@ Située hors des Six Provinces, **L'Isle de la Réunion Pataphysique** est un te
 - **Lieu de pratique de l'équivalence des contraires** : c'est sur L'Isle de la Réunion Pataphysique que les paradoxes du Royaume se résolvent. Une réponse fausse et une réponse juste y sont **également pataphysiques**. Un Galopin de Syz'esme et un Patanaute Yllustre y sont **également vénérables**. Le Père Ubu et le Czar Alexis y sont **également royaux**.
 - **Observatoire des solutions imaginaires** : le Père Ubu y a installé son observatoire pour noter les _« solutions imaginaires »_ (canon Jarry strict 🟢, _Faustroll_) qui se produisent dans le Royaume.
 - **Lieu transversal sans province** : L'Isle de la Réunion Pataphysique n'est **pas** une 7ᵉ province (le système des Six Provinces reste intact). C'est un **statut différent** — un territoire **outre-mer**, **transversal**, **réservé à l'expérimentation doctrinale**.
+
+#### Pour l'illustration 🟡
+
+Décision de David (2026-10-29). Sur la carte, l'Isle figure en encart.
+
+- **Relief** : île volcanique et montagneuse, volcan au sommet arrondi, pentes vertes et escarpées (le relief de la vraie Réunion, et rien d'autre : ni habitants dessinés ni caricature).
+- **Équivalence des contraires, par la nature** : comme la vraie Réunion, une côte humide et verdoyante à l'est (forêt tropicale), une côte sèche et ensoleillée à l'ouest (savane, herbes sèches) ; les deux se valent.
+- **Observatoire** : au sommet du volcan, la coupole de l'observatoire des solutions imaginaires d'Ubu, lunette pointée vers le ciel.
+- **Réunion des provinces** : un petit port où flottent six drapeaux aux couleurs des six provinces, sans texte.
+- **Repère sur la carte** : l'île entière dans son encart, la coupole au sommet.
+- **Couleur** : mer en bleu de Pile éclairci (comme la Baltique) ; terre sans couleur de province.
 
 #### Fête possible (proposition pour l'Almanach)
 
@@ -1748,7 +1781,7 @@ Les easter eggs sont **un moteur de bouche-à-oreille gratuit**. Quand un ado tr
 ### Datés
 
 - **1ᵉʳ avril** (le Poisson à Phynances) : toutes les valeurs numériques affichées sont **multipliées par π** pendant 24 h. À midi pile, restitution. _« Cornegidouille ! Notre Mathres ont rencontré le nombre transcendant. »_
-- **2ᵉ mardi d'octobre** (Ada Lovelace Day international) : la mascotte Lovelace du Quartier Lovelace de Turingrad porte une couronne pour la journée. Tous les exercices d'algorithmique de Glitchistan donnent +50 % gidouilles.
+- **2ᵉ mardi d'octobre** (Ada Lovelace Day international) : le python mécanique du Quartier Lovelace de Turingrad porte une couronne pour la journée. Tous les exercices d'algorithmique de Glitchistan donnent +50 % gidouilles.
 
 ### Pages secrètes
 

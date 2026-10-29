@@ -37,12 +37,22 @@ const SHADE_LUMA = 175;
 
 const cm = (units: number) => `${Number((units * PARTAGE_CM_PER_UNIT).toFixed(4))}cm`;
 
-/** Typst d'un bloc ```partage */
-export function generatePartageTypst(node: PartageNode): string {
+/**
+ * Typst d'un bloc ```partage. Figure à colorier (`colorier:`) : vide, l'enfant
+ * colorie au crayon ; `solved` (corrigé) : les premières parts coloriées.
+ */
+export function generatePartageTypst(
+	node: PartageNode,
+	options: { solved?: boolean } = {}
+): string {
 	const spec = node.spec;
 	if (node.errors.length > 0 || spec === null) return UNAVAILABLE_TYPST;
 
-	const scene = buildPartageScene(spec);
+	const scene = buildPartageScene(
+		options.solved && spec.colorier
+			? { ...spec, gray: Array.from({ length: spec.colorier.parts }, (_, i) => i + 1) }
+			: spec
+	);
 	const stroke = `(paint: black, thickness: ${cm(PARTAGE_STROKE)}, join: "round")`;
 	const polygons = scene.parts.map((part) => {
 		const points = part.points

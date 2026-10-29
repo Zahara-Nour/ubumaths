@@ -5,17 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la publication du lot 2._
+_Mis à jour le 2026-10-29, après #1978 (lot 3 mergé)._
 
-- **État** : lot 1 en prod en brouillon, rangé et tagué ; lot 2 (proportionnalité et pourcentages, 7 modèles)
-  **publié** le 2026-10-29 (page à cocher 7/7 OK, `publier-lot --publier` par David, statut relu au MCP).
-- **Prochaine action** : écrire le lot 3 (statistiques, § 16, validé) dans le worktree.
-- **En attente de David** : publication des 7 brouillons du lot 1 (relecture dans l'admin, ou page à cocher).
+- **État** : lots 1 et 2 en prod (lot 1 en brouillon, lot 2 publié) ; lot 3 (statistiques, 9 modèles, § 17)
+  mergé (#1978), pas encore créé en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-3 --publier` (avec `!`, dépôt principal) ;
+  relever les 9 `id` (MCP) ; migration nœud + tag sur le gabarit `20261029220000_questions_4_lot2_rangement_tags.sql`
+  (4-045 **et 3-032** pour le tableur, grades 4 et 3), nouvelle branche dans le worktree depuis `origin/main`.
+- **En attente de David** : `--publier` du lot 3 ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
-  `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit ; QCM = case choix ; worktree neuf :
-  `svelte-kit sync` avant `create-questions` (`$lib`) ; `Client Tests` peut tomber sur `wrapDynamicImport` (lanceur) :
-  relancer le job.
-- **Worktree / branche** : aucun (retiré après #1961).
+  `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
+  passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
+- **Worktree / branche** : `../ubumaths-wt-questions-4`, `feat/questions-4-lot3-rangement` (depuis `origin/main`, vide).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -459,3 +460,19 @@ pas accepter une réponse autre que l'attendue, 4-040 variation 3 retirée (effe
 signalant ; catégories Statistiques / Indicateurs (Moyenne 3, Médiane 1-2, Étendue 1-2), Statistiques / Problèmes
 (Valeur extrême, Indicateurs, Comparer des séries), Statistiques / Tableur / Formules ; **un seul modèle tableur,
 grades 4 et 3, tagué 4-045 et 3-032** (note laissée dans le journal de la 3e).
+
+## 17. Lot 3 : écrit (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-3`)
+
+- Script `docs/wip/questions/lot-4-3.py` (repris de `lot-4-2.py`) → `scripts/questions/4-lot-3/` : 9 modèles ;
+  `create-questions` (simulation) : 9 « à créer », 0 en base ; `question:specs` : 68 specs vertes, 200 tirages par
+  variation réussis.
+- Règle `range` vérifiée : avec `rulesSuffice`, toute valeur entre les deux valeurs centrales est juste (specs :
+  les deux bornes, le milieu, une valeur entre ; hors de l'intervalle faux) ; 4-040 variation 3 gardée.
+- `median` absente des `eval` : séries tirées rangées, affichées dans un ordre mélangé parmi trois (la valeur du
+  milieu de la liste affichée n'est jamais la médiane) ; `min` et `max` servent à l'étendue des températures.
+- Corrigé en relisant : formules du tableur entre accents graves non rendues (code en ligne absent d'ubumark) →
+  guillemets dans le texte, nues dans les cases choix ; « frères et sœurs » (7 frères pour 8 élèves) → livres
+  empruntés au CDI ; 7e joueur « au match suivant » → joueur oublié du même match ; « élève(s) ont » → « note 9,
+  effectif 2 » ; spec 4-039 fausse (10,9, pas 11) et données des specs rendues compatibles avec les conditions.
+- Base locale : 9 brouillons créés ; aperçu admin : diagramme en barres à notes numériques rendu, décimaux en
+  virgule dans les corrigés, case choix du tableur jouée juste, grades 4e et 3e affichés.

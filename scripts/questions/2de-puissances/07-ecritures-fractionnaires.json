@@ -1,0 +1,290 @@
+{
+	"title": "Calculer avec des écritures fractionnaires",
+	"description": "Une seule fraction : (a/b + c/d) ÷ e/f ; a/x + b/(2x) ; (a/x) ÷ (b/x²) ; 1 + k/x",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Transformation",
+	"subdomain": "Écritures fractionnaires",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule et donne le résultat sous la forme d'une fraction irréductible.\n\n$$\\left(\\dfrac{ {{a}} }{ {{b}} }+\\dfrac{ {{c}} }{ {{d}} }\\right)\\div\\dfrac{ {{f}} }{ {{g}} }=?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "d",
+					"expression": "2..6!b"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				},
+				{
+					"name": "f",
+					"expression": "2..5"
+				},
+				{
+					"name": "g",
+					"expression": "2..5!f"
+				}
+			],
+			"conditions": [
+				"gcd(a,b) == 1",
+				"gcd(c,d) == 1",
+				"gcd(f,g) == 1",
+				"mod((a)*(d)+(c)*(b), (b)*(d)) != 0",
+				"mod(((a)*(d)+(c)*(b))*(g), (b)*(d)*(f)) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((a)/(b)+(c)/(d))*(g)/(f)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule d'abord la parenthèse (même dénominateur), puis **diviser par une fraction, c'est multiplier par son inverse** : $\\dfrac{a}{b}\\div\\dfrac{c}{d}=\\dfrac{a}{b}\\times\\dfrac{d}{c}$.",
+					"$$\\dfrac{ {{a}} }{ {{b}} }+\\dfrac{ {{c}} }{ {{d}} }=\\textcolor{{{color:primary.0}}}{{{eval:(a)/(b)+(c)/(d)}}}$$",
+					"$$\\textcolor{{{color:primary.0}}}{{{eval:(a)/(b)+(c)/(d)}}}\\div\\dfrac{ {{f}} }{ {{g}} }=\\textcolor{{{color:primary.0}}}{{{eval:(a)/(b)+(c)/(d)}}}\\times\\textcolor{{{color:primary.1}}}{\\dfrac{ {{g}} }{ {{f}} }}=\\textcolor{{{color:primary.2}}}{{{eval:((a)/(b)+(c)/(d))*(g)/(f)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une seule fraction, la plus simple possible (${{L}}\\neq0$).\n\n$$\\dfrac{ {{a}} }{ {{L}} }+\\dfrac{ {{b}} }{2{{L}} }=?$$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "x|y|t|z"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1|3|5|7|9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{eval:2*(a)+(b)}} }{2{{L}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On met au **même dénominateur** $2{{L}}$ : on multiplie le numérateur et le dénominateur de $\\dfrac{ {{a}} }{ {{L}} }$ par $2$.",
+					"$$\\dfrac{ {{a}} }{ {{L}} }+\\dfrac{ {{b}} }{2{{L}} }=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{eval:2*(a)}} }{2{{L}} }}+\\dfrac{ {{b}} }{2{{L}} }=\\textcolor{{{color:primary.1}}}{\\dfrac{ {{eval:2*(a)+(b)}} }{2{{L}} }}$$",
+					"On n'additionne **jamais** les dénominateurs."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une seule fraction, la plus simple possible (${{L}}\\neq0$).\n\n$$\\dfrac{ {{a}} }{ {{L}} }\\div\\dfrac{ {{b}} }{ {{L}}^2}=?$$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "x|y|t|z"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!a"
+				},
+				{
+					"name": "na",
+					"expression": "eval:(a)/gcd(a,b)"
+				},
+				{
+					"name": "nb",
+					"expression": "eval:(b)/gcd(a,b)"
+				}
+			],
+			"conditions": ["nb != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{if:na==1|{{L}}|{{na}}{{L}}}}}{ {{nb}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviser par une fraction, c'est multiplier par son inverse.**",
+					"$$\\dfrac{ {{a}} }{ {{L}} }\\div\\dfrac{ {{b}} }{ {{L}}^2}=\\dfrac{ {{a}} }{ {{L}} }\\times\\textcolor{{{color:primary.0}}}{\\dfrac{ {{L}}^2}{ {{b}} }}=\\dfrac{ {{a}}{{L}}^2}{ {{b}}{{L}} }=\\textcolor{{{color:primary.1}}}{\\dfrac{{{if:na==1|{{L}}|{{na}}{{L}}}}}{ {{nb}} }}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une seule fraction, la plus simple possible (${{L}}\\neq0$).\n\n$$1+\\dfrac{ {{k}} }{ {{L}} }=?$$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "x|y|t|z"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{L}}+{{k}} }{ {{L}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit $1$ avec le dénominateur ${{L}}$ : $1=\\dfrac{ {{L}} }{ {{L}} }$.",
+					"$$1+\\dfrac{ {{k}} }{ {{L}} }=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{L}} }{ {{L}} }}+\\dfrac{ {{k}} }{ {{L}} }=\\textcolor{{{color:primary.1}}}{\\dfrac{ {{L}}+{{k}} }{ {{L}} }}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(1/2 + 1/3) ÷ 5/3 = 1/2",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"d": "3",
+				"a": "1",
+				"c": "1",
+				"f": "5",
+				"g": "3"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : multiplié par 5/3 (25/18)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"d": "3",
+				"a": "1",
+				"c": "1",
+				"f": "5",
+				"g": "3"
+			},
+			"answers": ["\\frac{25}{18}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/2 + 1/3 = 2/5, puis ÷ 5/3 (6/25)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"d": "3",
+				"a": "1",
+				"c": "1",
+				"f": "5",
+				"g": "3"
+			},
+			"answers": ["\\frac{6}{25}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/x + 1/(2x) = 7/(2x)",
+			"variationIndex": 1,
+			"variables": {
+				"L": "x|x",
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["\\frac{7}{2x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dénominateurs additionnés (4/(3x))",
+			"variationIndex": 1,
+			"variables": {
+				"L": "x|x",
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["\\frac{4}{3x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : numérateurs additionnés sans mise au même dénominateur (4/(2x))",
+			"variationIndex": 1,
+			"variables": {
+				"L": "x|x",
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["\\frac{4}{2x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2/x) ÷ (4/x²) = x/2",
+			"variationIndex": 2,
+			"variables": {
+				"L": "x|x",
+				"a": "2",
+				"b": "4"
+			},
+			"answers": ["\\frac{x}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : inverse de la première fraction (2/x)",
+			"variationIndex": 2,
+			"variables": {
+				"L": "x|x",
+				"a": "2",
+				"b": "4"
+			},
+			"answers": ["\\frac{2}{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 + 3/x = (x + 3)/x",
+			"variationIndex": 3,
+			"variables": {
+				"L": "x|x",
+				"k": "3"
+			},
+			"answers": ["\\frac{x+3}{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 ajouté au numérateur (4/x)",
+			"variationIndex": 3,
+			"variables": {
+				"L": "x|x",
+				"k": "3"
+			},
+			"answers": ["\\frac{4}{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -5,11 +5,12 @@
 	Figure partagée en parts égales (bande, grille, disque, carré coupé par ses
 	diagonales), dont certaines sont coloriées (`gris:`). Affichage seul : aucune
 	case, aucun geste. Dessinée depuis `buildPartageScene`, la même scène que le PDF.
+	Figure à colorier (`colorier:`) : `PartageColorier.svelte`.
 
 	- Une seule couleur d'accent pour les parts coloriées ; traits nets. Couleurs
 	  du thème uniquement (`var(--color-*)`).
-	- Nom accessible : le partage et le coloriage (« Bande partagée en 8 parts
-	  égales, 3 coloriées »), jamais le rang des parts.
+	- Nom accessible : la forme seule (« Bande partagée en parts égales »), jamais
+	  le nombre de parts ni de parts coloriées (ce serait la réponse).
 	- Taille réelle identique à l'écran et au PDF (`PARTAGE_CM_PER_UNIT`) ;
 	  jamais plus large que le conteneur.
 	- Bloc en erreur : messages pour le prof, cadre neutre pour l'élève (Q48).
@@ -26,6 +27,7 @@
 		partageLabel
 	} from '$lib/ubumark/utils/partage-scene';
 	import { readAuthoringErrors } from '../authoring-errors';
+	import PartageColorier from './PartageColorier.svelte';
 
 	interface Props {
 		node: PartageNode;
@@ -66,6 +68,9 @@
 			{PARTAGE_UNAVAILABLE}
 		</div>
 	{/if}
+{:else if node.spec.colorier}
+	<!-- Figure à colorier hors question (aperçu, cours) : le geste, rien de jugé -->
+	<PartageColorier {node} class={className} />
 {:else}
 	{@const width = scene.width + 2 * PARTAGE_MARGIN}
 	{@const height = scene.height + 2 * PARTAGE_MARGIN}

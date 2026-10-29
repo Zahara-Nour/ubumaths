@@ -31,7 +31,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, échelle à choisir le 2026-10-29 ; étiquettes à ranger (``ranger) le 2026-10-28 ; texte d'aide des cases à écrire le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; figure à colorier (`partage, `colorier:`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -317,7 +317,7 @@ du modèle (`blanks[]` peut l'omettre, une réponse écrite est refusée, `case:
 erreur, non fermé ou avec `options.orderIndependent` → échec). Le bloc est délimité comme le parseur
 (`findBuildCollections`, `findBuildMonnaies`, `findLinesToPlace`, `findHorlogesToPlace`, `findBarsToPlace` : une ligne vide suivie d'une clé reste dans un bloc
 fermé) ; l'énoncé numéroté est relu par `parseMarkdown` : une case dont le bloc n'est pas lu à l'écran
-(fence de fin en retrait, bloc montré dans un bloc de code) → échec. La case est `type: 'math'`, `construire: 'collection' | 'monnaie' | 'line' | 'horloge' | 'barres'` (`BuildKind` ; messages
+(fence de fin en retrait, bloc montré dans un bloc de code) → échec. La case est `type: 'math'`, `construire: 'collection' | 'monnaie' | 'line' | 'horloge' | 'barres' | 'partage'` (`BuildKind` ; messages
 au prof par `buildKindName` : « droite graduée », « horloge », « diagramme en barres »), jugée comme une case ordinaire : l'élève répond
 par la valeur qu'il a posée (`'34'`, `'35'` €, graduation `'7'`, hauteur de barre `'8'`, `''` plan vide,
 aucun point ou barre pas construite).
@@ -338,6 +338,15 @@ moins de 3 (`RANGER_MIN_LABELS_IN_QUESTION` : à 2, l'affichage serait toujours 
 devinerait) ou plus de 8 étiquettes, vide, `signe:` autre que `<` / `>`. Deux étiquettes identiques après
 tirage : condition implicite, le tirage des variables est refait (`rangerLabelsCollide`, résolution à part
 sur une source jetable) ; toujours identiques après 100 essais → échec, message au prof.
+Figure à colorier (```partage + `colorier: 3/8`, chantier `fractions-a-colorier` ; `partage-parser.ts`,
+`findPartagesToColorier`) : au premier niveau, une case, `case: N` posé dans le bloc ; `construire: 'partage'`
+(« figure à colorier »), `type: 'text'`. Réponse attendue (`buildAnswerOf`, `expectedColoringAnswer`) :
+`parts à colorier / parts de la figure` (`'3/8'` ; `1/2` sur une bande de 4 : `'2/4'`), jamais du modèle
+(`blanks[]` peut l'omettre, une réponse écrite est refusée). L'élève répond les rangs qu'il a coloriés
+(`'1, 4, 6'`, `''` = rien colorié) ; juge à part, `isColoringCorrect` (`utils/partage-colorier.ts`, dans
+`validateSingleBlank` et `validateBlankValue`) : le nombre de parts, pas lesquelles. Copie corrigée :
+`BuildAnswer` (`PartageColorier` verrouillé, phrase « Tu as colorié 2 parts sur 8 ; il fallait en colorier 3
+(3/8). », figure juste dessous ; vide : « Tu n'as rien colorié. »).
 Un bloc ``choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
    compte pour **une** case, `case: N` posé en tête du bloc (`choix-parser.ts`, lu dans
    `assignBlankIndices`) : réglages en tête (`plusieurs: oui`, `melanger: non` ; défauts : une

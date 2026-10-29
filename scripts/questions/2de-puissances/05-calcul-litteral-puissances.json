@@ -1,0 +1,201 @@
+{
+	"title": "Réduire une expression avec des puissances",
+	"description": "Calcul littéral, exposants relatifs : (kxᵃ)² × mxᵇ ; quotient de monômes en x et y",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Calculs",
+	"subdomain": "Avec des puissances",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Réduis l'expression (${{L}}\\neq0$).\n\n$$\\left({{k}}{{L}}^{ {{a}} }\\right)^2\\times{{m}}{{L}}^{ {{b}} }=?$$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "x|y|t|z"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				},
+				{
+					"name": "a",
+					"expression": "2..3"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "-3..-1"
+				}
+			],
+			"conditions": ["2*(a)+(b) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k)*(k)*(m)}}{{if:2*(a)+(b)==1|{{L}}|{{L}}^{ {{eval:2*(a)+(b)}} }}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On élève au carré, puis on multiplie les nombres entre eux et les puissances de ${{L}}$ entre elles.",
+					"$$\\left({{k}}{{L}}^{ {{a}} }\\right)^2\\times{{m}}{{L}}^{ {{b}} }=\\textcolor{{{color:primary.0}}}{{{eval:(k)*(k)}}{{L}}^{ {{eval:2*(a)}} }}\\times{{m}}{{L}}^{ {{b}} }={{eval:(k)*(k)}}\\times{{m}}\\times{{L}}^{ {{eval:2*(a)}}+({{b}})}=\\textcolor{{{color:primary.1}}}{{{eval:(k)*(k)*(m)}}{{if:2*(a)+(b)==1|{{L}}|{{L}}^{ {{eval:2*(a)+(b)}} }}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression et écris-la sous la forme d'un quotient, sans exposant négatif ($x\\neq0$, $y\\neq0$).\n\n$$\\dfrac{ {{eval:(c)*(q)}}x^{ {{a}} }y}{ {{q}}xy^{ {{b}} } }=?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..3"
+				},
+				{
+					"name": "a",
+					"expression": "3..5"
+				},
+				{
+					"name": "b",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{c}}x^{ {{eval:(a)-1}} } }{y^{ {{eval:(b)-1}} } }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On simplifie les nombres, puis les puissances de $x$, puis celles de $y$ : $\\dfrac{a^m}{a^n}=a^{m-n}$.",
+					"$$\\dfrac{ {{eval:(c)*(q)}}x^{ {{a}} }y}{ {{q}}xy^{ {{b}} } }=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{eval:(c)*(q)}} }{ {{q}} }}\\times\\textcolor{{{color:primary.1}}}{x^{ {{a}}-1}}\\times\\textcolor{{{color:primary.2}}}{y^{1-{{b}} }}={{c}}x^{ {{eval:(a)-1}} }y^{ {{eval:1-(b)}} }=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{c}}x^{ {{eval:(a)-1}} } }{y^{ {{eval:(b)-1}} } }}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(2x³)² × 3x⁻¹ = 12x⁵",
+			"variationIndex": 0,
+			"variables": {
+				"L": "x|x",
+				"k": "2",
+				"a": "3",
+				"m": "3",
+				"b": "-1"
+			},
+			"answers": ["12x^5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coefficient non élevé au carré (6x⁵)",
+			"variationIndex": 0,
+			"variables": {
+				"L": "x|x",
+				"k": "2",
+				"a": "3",
+				"m": "3",
+				"b": "-1"
+			},
+			"answers": ["6x^5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (x³)² lu x⁵ (12x⁴)",
+			"variationIndex": 0,
+			"variables": {
+				"L": "x|x",
+				"k": "2",
+				"a": "3",
+				"m": "3",
+				"b": "-1"
+			},
+			"answers": ["12x^4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6x⁴y / (2xy³) = 3x³/y²",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"q": "2",
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{3x^3}{y^2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : exposant négatif 3x³y⁻² (quotient demandé)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"q": "2",
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["3x^3y^{-2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Fraction non simplifiée (6x³/(2y²))",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"q": "2",
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{6x^3}{2y^2}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : 3x⁴/y³ (rien simplifié en lettres)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"q": "2",
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{3x^4}{y^3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3x³y² (exposant de y mal soustrait)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"q": "2",
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["3x^3y^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

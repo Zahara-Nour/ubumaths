@@ -1,0 +1,227 @@
+{
+	"title": "Puissance d'un produit",
+	"description": "Écrire sans parenthèses (kx)ⁿ, (−kx)ⁿ et (kxᵐ)ⁿ",
+	"grades": ["2"],
+	"theme": "Puissances",
+	"domain": "Calculer",
+	"subdomain": "Puissance d'un produit",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris sans parenthèses, sous la forme la plus simple.\n\n$$\\left({{k}}{{L}}\\right)^{ {{n}} }=?$$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "x|y|t|z"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				}
+			],
+			"conditions": ["k^n <= 125"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k)^(n)}}{{L}}^{ {{n}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissance d'un produit** : $(ab)^n=a^n\\times b^n$ : chaque facteur est élevé à la puissance $n$.",
+					"$$\\left({{k}}{{L}}\\right)^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{k}}^{ {{n}} }}\\times\\textcolor{{{color:primary.1}}}{{{L}}^{ {{n}} }}=\\textcolor{{{color:primary.0}}}{{{eval:(k)^(n)}}{{L}}^{ {{n}} }}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris sans parenthèses, sous la forme la plus simple.\n\n$$\\left(-{{k}}{{L}}\\right)^{ {{n}} }=?$$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "x|y|t|z"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				}
+			],
+			"conditions": ["k^n <= 125"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(-(k))^(n)}}{{L}}^{ {{n}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissance d'un produit** : $(ab)^n=a^n\\times b^n$ : chaque facteur est élevé à la puissance $n$. Le facteur $-{{k}}$ garde son signe dans la puissance.",
+					"$$\\left(-{{k}}{{L}}\\right)^{ {{n}} }=\\textcolor{{{color:primary.0}}}{(-{{k}})^{ {{n}} }}\\times\\textcolor{{{color:primary.1}}}{{{L}}^{ {{n}} }}=\\textcolor{{{color:primary.0}}}{{{eval:(-(k))^(n)}}{{L}}^{ {{n}} }}$$",
+					"{{if:n==2|Un exposant pair rend le signe positif.|Un exposant impair garde le signe négatif.}}"
+				]
+			}
+		},
+		{
+			"statement": "Écris sans parenthèses, sous la forme la plus simple.\n\n$$\\left({{k}}{{L}}^{ {{m}} }\\right)^{ {{n}} }=?$$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "x|y|t|z"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				},
+				{
+					"name": "m",
+					"expression": "2..4"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k)^(n)}}{{L}}^{ {{eval:(m)*(n)}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissance d'un produit** : $(ab)^n=a^n\\times b^n$ : chaque facteur est élevé à la puissance $n$. Puis **puissance d'une puissance** : $(a^m)^n=a^{m\\times n}$.",
+					"$$\\left({{k}}{{L}}^{ {{m}} }\\right)^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{k}}^{ {{n}} }}\\times\\textcolor{{{color:primary.1}}}{\\left({{L}}^{ {{m}} }\\right)^{ {{n}} }}=\\textcolor{{{color:primary.0}}}{{{eval:(k)^(n)}}}\\times\\textcolor{{{color:primary.1}}}{{{L}}^{ {{m}}\\times{{n}} }}=\\textcolor{{{color:primary.0}}}{{{eval:(k)^(n)}}{{L}}^{ {{eval:(m)*(n)}} }}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(2x)³ = 8x³",
+			"variationIndex": 0,
+			"variables": {
+				"L": "x|x",
+				"k": "2",
+				"n": "3"
+			},
+			"answers": ["8x^3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : seule la lettre élevée au cube (2x³)",
+			"variationIndex": 0,
+			"variables": {
+				"L": "x|x",
+				"k": "2",
+				"n": "3"
+			},
+			"answers": ["2x^3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 × 3 au lieu de 2³ (6x³)",
+			"variationIndex": 0,
+			"variables": {
+				"L": "x|x",
+				"k": "2",
+				"n": "3"
+			},
+			"answers": ["6x^3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 2³x³ non calculé",
+			"variationIndex": 0,
+			"variables": {
+				"L": "x|x",
+				"k": "2",
+				"n": "3"
+			},
+			"answers": ["2^3x^3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "(−3y)² = 9y²",
+			"variationIndex": 1,
+			"variables": {
+				"L": "y|y",
+				"k": "3",
+				"n": "2"
+			},
+			"answers": ["9y^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe gardé (−9y²)",
+			"variationIndex": 1,
+			"variables": {
+				"L": "y|y",
+				"k": "3",
+				"n": "2"
+			},
+			"answers": ["-9y^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2x²)³ = 8x⁶",
+			"variationIndex": 2,
+			"variables": {
+				"L": "x|x",
+				"k": "2",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["8x^6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exposants additionnés (8x⁵)",
+			"variationIndex": 2,
+			"variables": {
+				"L": "x|x",
+				"k": "2",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["8x^5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coefficient oublié (2x⁶)",
+			"variationIndex": 2,
+			"variables": {
+				"L": "x|x",
+				"k": "2",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["2x^6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

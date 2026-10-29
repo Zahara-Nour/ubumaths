@@ -1,0 +1,172 @@
+{
+	"title": "Interpréter la médiane",
+	"description": "Interpréter la médiane d'une série de petit effectif : si la médiane vaut 12, au moins la moitié des valeurs sont supérieures ou égales à 12",
+	"grades": ["4"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Médiane",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans une classe de ${{N}}$ élèves, la note médiane du dernier contrôle est ${{m}}$.\n\nQuelle affirmation est vraie ?\n\n```choix\n- {{if:k==0|Au moins la moitié des élèves ont une note supérieure ou égale à ${{m}}$.|Au moins la moitié des élèves ont une note inférieure ou égale à ${{m}}$.}}\n- La moyenne de la classe est ${{m}}$.\n- Exactement ${{m}}$ élèves ont eu la note ${{m}}$.\n- Exactement la moitié des élèves ont une note {{if:k==0|inférieure|supérieure}} à ${{m}}$.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "p",
+					"expression": "10..14"
+				},
+				{
+					"name": "N",
+					"expression": "eval:2*p+1"
+				},
+				{
+					"name": "m",
+					"expression": "8..14"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Médiane.** On range les valeurs dans l'ordre croissant : la médiane partage la série en deux parties de même effectif.",
+					"La note médiane est la ${{eval:p+1}}^\\text{e}$ des ${{N}}$ notes rangées : elle a ${{p}}$ notes avant elle et ${{p}}$ après. Donc au moins ${{eval:p+1}}$ élèves, plus de la moitié, ont une note {{if:k==0|supérieure|inférieure}} ou égale à ${{m}}$ : $\\textcolor{{{color:primary.0}}}{\\text{c'est l'affirmation vraie}}$.",
+					"La médiane ne dit rien de la moyenne, ni du nombre d'élèves qui ont exactement ${{m}}$ ; et ${{N}}$ est impair : « exactement la moitié » est impossible."
+				]
+			}
+		},
+		{
+			"statement": "Dans un club de ${{N}}$ sportifs, la taille médiane est ${{m}}~\\unit{cm}$.\n\nCombien de sportifs, au moins, mesurent ${{m}}~\\unit{cm}$ ou plus ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "8..14"
+				},
+				{
+					"name": "N",
+					"expression": "eval:2*p+1"
+				},
+				{
+					"name": "m",
+					"expression": "145..175"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Médiane.** On range les valeurs dans l'ordre croissant : la médiane partage la série en deux parties de même effectif.",
+					"Les ${{N}}$ tailles rangées : la médiane est la ${{eval:p+1}}^\\text{e}$, avec ${{p}}$ tailles avant et ${{p}}$ après.",
+					"La médiane et les ${{p}}$ tailles suivantes sont supérieures ou égales à ${{m}}$ : au moins ${{p}} + 1 = \\textcolor{{{color:primary.0}}}{{{solution}}}$ sportifs."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Affirmation vraie (≥)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"p": "12",
+				"N": "25",
+				"m": "12"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la moyenne",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"p": "12",
+				"N": "25",
+				"m": "12"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Affirmation vraie (≤)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"p": "10",
+				"N": "21",
+				"m": "9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exactement la moitié",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"p": "10",
+				"N": "21",
+				"m": "9"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "21 sportifs, médiane 150 : 11",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"N": "21",
+				"m": "150"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 (sans la médiane)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"N": "21",
+				"m": "150"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10,5 (moitié de 21)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"N": "21",
+				"m": "150"
+			},
+			"answers": ["10,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

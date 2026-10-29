@@ -1,0 +1,155 @@
+{
+	"title": "Pour quelle valeur l'égalité est-elle vraie ?",
+	"description": "Trouver, parmi quatre valeurs, celle pour laquelle une égalité à une variable est vraie : 5x + 3 = 2x + 15 pour x = 4 ; 4(x + 1) = 2x + 10 pour x = 3",
+	"grades": ["5"],
+	"theme": "Calcul littéral",
+	"domain": "Calculs",
+	"subdomain": "Tester une égalité",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pour quelle valeur de $x$ l'égalité ${{a}}x + {{b}} = {{c}}x + {{d}}$ est-elle vraie ?\n\n```choix\n- $x = {{k}}$\n- $x = {{eval:k+1}}$\n- $x = {{eval:k-1}}$\n- $x = {{eval:k+2}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a*k+b)-c*k"
+				}
+			],
+			"conditions": ["c<a"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tester une égalité.** On remplace $x$ par la valeur dans **chaque membre**, on calcule séparément, puis on compare les deux résultats. On essaie les valeurs proposées : seule $x = {{k}}$ donne deux membres égaux.",
+					"Pour $x = {{k}}$ :",
+					"$${{a}} \\times {{k}} + {{b}} = \\textcolor{{{color:primary.1}}}{{{eval:a*k+b}}}$$",
+					"$${{c}} \\times {{k}} + {{d}} = \\textcolor{{{color:primary.1}}}{{{eval:c*k+d}}}$$",
+					"L'égalité est vraie pour $\\textcolor{{{color:primary.0}}}{x = {{k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour quelle valeur de $x$ l'égalité ${{a}}(x + {{b}}) = {{c}}x + {{d}}$ est-elle vraie ?\n\n```choix\n- $x = {{k}}$\n- $x = {{eval:k+1}}$\n- $x = {{eval:k-1}}$\n- $x = {{eval:k+2}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a*(k+b))-c*k"
+				}
+			],
+			"conditions": ["c<a"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tester une égalité.** On remplace $x$ par la valeur dans **chaque membre**, on calcule séparément, puis on compare les deux résultats. On essaie les valeurs proposées : seule $x = {{k}}$ donne deux membres égaux.",
+					"Pour $x = {{k}}$ :",
+					"$${{a}} \\times ({{k}} + {{b}}) = {{a}} \\times {{eval:k+b}} = \\textcolor{{{color:primary.1}}}{{{eval:a*(k+b)}}}$$",
+					"$${{c}} \\times {{k}} + {{d}} = \\textcolor{{{color:primary.1}}}{{{eval:c*k+d}}}$$",
+					"L'égalité est vraie pour $\\textcolor{{{color:primary.0}}}{x = {{k}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5x + 3 = 2x + 15 : x = 4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"a": "5",
+				"c": "2",
+				"b": "3",
+				"d": "15"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x = 5",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"a": "5",
+				"c": "2",
+				"b": "3",
+				"d": "15"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4(x + 1) = 2x + 10 : x = 3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "4",
+				"c": "2",
+				"b": "1",
+				"d": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x = 2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "4",
+				"c": "2",
+				"b": "1",
+				"d": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,261 @@
+{
+	"title": "Écrire une formule de périmètre ou d'aire",
+	"description": "Écrire la formule du périmètre ou de l'aire d'un carré de côté c (4c, c²), d'un rectangle de longueur L et de largeur l (L × l, 2(L + l)), d'un triangle équilatéral de côté a (3a)",
+	"grades": ["5"],
+	"theme": "Calcul littéral",
+	"domain": "Écrire",
+	"subdomain": "Formules",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un carré a des côtés de longueur $c$.\n\nÉcris la formule de son périmètre $P$.\n\n$P = ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "4c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre.** Le périmètre est la longueur du tour de la figure : on additionne les longueurs des côtés.",
+					"$P = c + c + c + c = 4 \\times c$, qui s'écrit $P = \\textcolor{{{color:primary.0}}}{4c}$."
+				]
+			}
+		},
+		{
+			"statement": "Un carré a des côtés de longueur $c$.\n\nÉcris la formule de son aire $A$.\n\n$A = ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "c^2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Aire.** L'aire d'un rectangle est le produit de sa longueur par sa largeur ; celle d'un carré, le côté multiplié par lui-même.",
+					"$A = c \\times c$, qui s'écrit $A = \\textcolor{{{color:primary.0}}}{c^2}$."
+				]
+			}
+		},
+		{
+			"statement": "Un rectangle a pour longueur $L$ et pour largeur $l$.\n\nÉcris la formule de son aire $A$.\n\n$A = ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "L\\times l"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Aire.** L'aire d'un rectangle est le produit de sa longueur par sa largeur ; celle d'un carré, le côté multiplié par lui-même.",
+					"$A = \\textcolor{{{color:primary.0}}}{L \\times l}$ (on peut écrire aussi $Ll$)."
+				]
+			}
+		},
+		{
+			"statement": "Un rectangle a pour longueur $L$ et pour largeur $l$.\n\nÉcris la formule de son périmètre $P$.\n\n$P = ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2(L+l)",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre.** Le périmètre est la longueur du tour de la figure : on additionne les longueurs des côtés.",
+					"$P = L + l + L + l$, que l'on peut écrire $P = \\textcolor{{{color:primary.0}}}{2(L + l)}$ ou $P = 2L + 2l$."
+				]
+			}
+		},
+		{
+			"statement": "Un triangle équilatéral a des côtés de longueur $a$.\n\nÉcris la formule de son périmètre $P$.\n\n$P = ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "3a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre.** Le périmètre est la longueur du tour de la figure : on additionne les longueurs des côtés.",
+					"Les trois côtés ont la même longueur : $P = a + a + a = 3 \\times a$, qui s'écrit $P = \\textcolor{{{color:primary.0}}}{3a}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carré : P = 4c",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["4c"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : c² pour le périmètre",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["c^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c + c + c + c : pas la formule attendue",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["c+c+c+c"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Carré : A = c²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["c^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4c pour l'aire",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["4c"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2c pour l'aire",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2c"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle : A = L × l",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["L\\times l"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle : A = Ll",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["Ll"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle : A = l × L",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["l\\times L"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : L + l pour l'aire",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["L+l"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle : P = 2(L + l)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2(L+l)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle : P = 2L + 2l",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2L+2l"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle : P = L + l + L + l",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["L+l+L+l"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : L + l (demi-périmètre)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["L+l"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2L + l",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2L+l"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle équilatéral : P = 3a",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["3a"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle équilatéral : P = 3 × a",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["3\\times a"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a³",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["a^3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"products": "off"
+		}
+	}
+}

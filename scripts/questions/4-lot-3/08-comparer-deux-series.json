@@ -1,0 +1,423 @@
+{
+	"title": "Comparer deux séries",
+	"description": "Comparer deux séries statistiques par leurs indicateurs : meilleure moyenne, affirmation vraie sur moyenne, médiane et étendue, plus grande médiane",
+	"grades": ["4"],
+	"theme": "Statistiques",
+	"domain": "Problèmes",
+	"subdomain": "Comparer des séries",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Ana et Bilal jouent aux fléchettes. Voici leurs scores sur cinq parties :\n\n- Ana : ${{a1}} ; {{a2}} ; {{a3}} ; {{a4}} ; {{a5}}$ ;\n- Bilal : ${{b1}} ; {{b2}} ; {{b3}} ; {{b4}} ; {{b5}}$.\n\nQui a la meilleure moyenne ?\n\n```choix\nmelanger: non\n- Ana\n- Bilal\n- ils ont la même moyenne\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "1..6"
+				},
+				{
+					"name": "a1",
+					"expression": "10..40"
+				},
+				{
+					"name": "a2",
+					"expression": "10..40"
+				},
+				{
+					"name": "a3",
+					"expression": "10..40"
+				},
+				{
+					"name": "a4",
+					"expression": "10..40"
+				},
+				{
+					"name": "a5",
+					"expression": "10..40"
+				},
+				{
+					"name": "b1",
+					"expression": "10..40"
+				},
+				{
+					"name": "b2",
+					"expression": "10..40"
+				},
+				{
+					"name": "b3",
+					"expression": "10..40"
+				},
+				{
+					"name": "b4",
+					"expression": "10..40"
+				},
+				{
+					"name": "b5",
+					"expression": "eval:(a1+a2+a3+a4+a5)-t*(1-k)*(2-k)/2+t*k*(2-k)-(b1+b2+b3+b4)"
+				}
+			],
+			"conditions": ["b5>=10", "b5<=40", "b5!=a5", "max(b1,b2,b3,b4,b5)!=max(a1,a2,a3,a4,a5)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer des moyennes.** Ils ont joué le même nombre de parties : on compare les moyennes (ou les sommes).",
+					"Ana : $\\dfrac{{{eval:a1+a2+a3+a4+a5}}}{5} = {{eval:(a1+a2+a3+a4+a5)/5;d}}$. Bilal : $\\dfrac{{{eval:b1+b2+b3+b4+b5}}}{5} = {{eval:(b1+b2+b3+b4+b5)/5;d}}$.",
+					"{{if:k==0|$\\textcolor{{{color:primary.0}}}{\\text{Ana}}$ a la meilleure moyenne.|{{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{Bilal}}$ a la meilleure moyenne.|$\\textcolor{{{color:primary.0}}}{\\text{Ils ont la même moyenne}}$.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Voici les indicateurs des notes de deux classes à un même contrôle.\n\n| | Moyenne | Médiane | Étendue |\n|---|---|---|---|\n| Classe A | ${{eval:ma/2;d}}$ | ${{da}}$ | ${{ea}}$ |\n| Classe B | ${{eval:mb/2;d}}$ | ${{db}}$ | ${{eb}}$ |\n\nQuelle affirmation est vraie ?\n\n```choix\n- La moyenne de la classe A est la plus grande.\n- Les notes de la classe A sont les plus dispersées.\n- La médiane de la classe A est la plus grande.\n- Dans la classe A, tous les élèves ont au moins ${{eval:ma/2;d}}$.\n```",
+			"variables": [
+				{
+					"name": "mb",
+					"expression": "18..26"
+				},
+				{
+					"name": "w",
+					"expression": "1..4"
+				},
+				{
+					"name": "ma",
+					"expression": "eval:mb+w"
+				},
+				{
+					"name": "db",
+					"expression": "10..14"
+				},
+				{
+					"name": "u",
+					"expression": "1..3"
+				},
+				{
+					"name": "da",
+					"expression": "eval:db-u"
+				},
+				{
+					"name": "ea",
+					"expression": "6..12"
+				},
+				{
+					"name": "r",
+					"expression": "2..6"
+				},
+				{
+					"name": "eb",
+					"expression": "eval:ea+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer des séries.** La moyenne et la médiane disent où se placent les notes ; l'étendue dit si elles sont dispersées.",
+					"Moyennes : ${{eval:ma/2;d}} > {{eval:mb/2;d}}$, $\\textcolor{{{color:primary.0}}}{\\text{la moyenne de A est la plus grande}}$.",
+					"Étendues : ${{ea}} < {{eb}}$, les notes de B sont les plus dispersées ; médianes : ${{da}} < {{db}}$. Une moyenne ne dit pas que tous les élèves l'atteignent."
+				]
+			}
+		},
+		{
+			"statement": "Voici le nombre de jours de pluie relevés en juillet, pendant sept ans, dans deux villes :\n\n- ville A : ${{v3}} ; {{v6}} ; {{v1}} ; {{v5}} ; {{v7}} ; {{v2}} ; {{v4}}$ ;\n- ville B : ${{w5}} ; {{w2}} ; {{w7}} ; {{w1}} ; {{w4}} ; {{w6}} ; {{w3}}$.\n\nQuelle ville a la plus grande médiane ?\n\n```choix\nmelanger: non\n- la ville A\n- la ville B\n- les médianes sont égales\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "v1",
+					"expression": "2..5"
+				},
+				{
+					"name": "dv2",
+					"expression": "1..3"
+				},
+				{
+					"name": "v2",
+					"expression": "eval:v1+dv2"
+				},
+				{
+					"name": "dv3",
+					"expression": "1..3"
+				},
+				{
+					"name": "v3",
+					"expression": "eval:v2+dv3"
+				},
+				{
+					"name": "dv4",
+					"expression": "1..3"
+				},
+				{
+					"name": "v4",
+					"expression": "eval:v3+dv4"
+				},
+				{
+					"name": "dv5",
+					"expression": "1..3"
+				},
+				{
+					"name": "v5",
+					"expression": "eval:v4+dv5"
+				},
+				{
+					"name": "dv6",
+					"expression": "1..3"
+				},
+				{
+					"name": "v6",
+					"expression": "eval:v5+dv6"
+				},
+				{
+					"name": "dv7",
+					"expression": "1..3"
+				},
+				{
+					"name": "v7",
+					"expression": "eval:v6+dv7"
+				},
+				{
+					"name": "w4",
+					"expression": "eval:v4-t*(1-k)*(2-k)/2+t*k*(2-k)"
+				},
+				{
+					"name": "g3",
+					"expression": "1..3"
+				},
+				{
+					"name": "w3",
+					"expression": "eval:w4-g3"
+				},
+				{
+					"name": "g2",
+					"expression": "1..2"
+				},
+				{
+					"name": "w2",
+					"expression": "eval:w3-g2"
+				},
+				{
+					"name": "g1",
+					"expression": "1..2"
+				},
+				{
+					"name": "w1",
+					"expression": "eval:w2-g1"
+				},
+				{
+					"name": "g5",
+					"expression": "1..3"
+				},
+				{
+					"name": "w5",
+					"expression": "eval:w4+g5"
+				},
+				{
+					"name": "g6",
+					"expression": "1..2"
+				},
+				{
+					"name": "w6",
+					"expression": "eval:w5+g6"
+				},
+				{
+					"name": "g7",
+					"expression": "1..3"
+				},
+				{
+					"name": "w7",
+					"expression": "eval:w6+g7"
+				}
+			],
+			"conditions": ["w1>=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Médiane.** On range les valeurs dans l'ordre croissant : la médiane partage la série en deux parties de même effectif.",
+					"Ville A rangée : ${{v1}} \\leqslant {{v2}} \\leqslant {{v3}} \\leqslant {{v4}} \\leqslant {{v5}} \\leqslant {{v6}} \\leqslant {{v7}}$, médiane ${{v4}}$.",
+					"Ville B rangée : ${{w1}} \\leqslant {{w2}} \\leqslant {{w3}} \\leqslant {{w4}} \\leqslant {{w5}} \\leqslant {{w6}} \\leqslant {{w7}}$, médiane ${{w4}}$.",
+					"{{if:k==0|$\\textcolor{{{color:primary.0}}}{\\text{la ville A}}$ a la plus grande médiane.|{{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{la ville B}}$ a la plus grande médiane.|$\\textcolor{{{color:primary.0}}}{\\text{les médianes sont égales}}$.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Ana 130, Bilal 134 : Bilal",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"t": "4",
+				"a1": "25",
+				"a2": "30",
+				"a3": "18",
+				"a4": "22",
+				"a5": "35",
+				"b1": "28",
+				"b2": "31",
+				"b3": "20",
+				"b4": "25",
+				"b5": "30"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Ana (meilleur score unique, 35)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"t": "4",
+				"a1": "25",
+				"a2": "30",
+				"a3": "18",
+				"a4": "22",
+				"a5": "35",
+				"b1": "28",
+				"b2": "31",
+				"b3": "20",
+				"b4": "25",
+				"b5": "30"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Moyenne de A plus grande",
+			"variationIndex": 1,
+			"variables": {
+				"mb": "22",
+				"w": "2",
+				"ma": "24",
+				"db": "12",
+				"u": "2",
+				"da": "10",
+				"ea": "8",
+				"r": "4",
+				"eb": "12"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A plus dispersée",
+			"variationIndex": 1,
+			"variables": {
+				"mb": "22",
+				"w": "2",
+				"ma": "24",
+				"db": "12",
+				"u": "2",
+				"da": "10",
+				"ea": "8",
+				"r": "4",
+				"eb": "12"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Médianes 7 et 5 : ville A",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"t": "2",
+				"v1": "3",
+				"dv2": "1",
+				"v2": "4",
+				"dv3": "2",
+				"v3": "6",
+				"dv4": "1",
+				"v4": "7",
+				"dv5": "2",
+				"v5": "9",
+				"dv6": "1",
+				"v6": "10",
+				"dv7": "3",
+				"v7": "13",
+				"w4": "5",
+				"g3": "1",
+				"w3": "4",
+				"g2": "2",
+				"w2": "2",
+				"g1": "1",
+				"w1": "1",
+				"g5": "3",
+				"w5": "8",
+				"g6": "2",
+				"w6": "10",
+				"g7": "3",
+				"w7": "13"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ville B",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"t": "2",
+				"v1": "3",
+				"dv2": "1",
+				"v2": "4",
+				"dv3": "2",
+				"v3": "6",
+				"dv4": "1",
+				"v4": "7",
+				"dv5": "2",
+				"v5": "9",
+				"dv6": "1",
+				"v6": "10",
+				"dv7": "3",
+				"v7": "13",
+				"w4": "5",
+				"g3": "1",
+				"w3": "4",
+				"g2": "2",
+				"w2": "2",
+				"g1": "1",
+				"w1": "1",
+				"g5": "3",
+				"w5": "8",
+				"g6": "2",
+				"w6": "10",
+				"g7": "3",
+				"w7": "13"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

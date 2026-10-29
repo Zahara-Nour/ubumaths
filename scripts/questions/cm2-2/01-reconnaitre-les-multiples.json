@@ -1,0 +1,345 @@
+{
+	"title": "Reconnaître les multiples d'un nombre",
+	"description": "Dire si un entier est un multiple d'un entier de 3 à 9 (56 est-il un multiple de 7 ?), jusqu'à 100 puis jusqu'à 999 ; cocher les multiples dans une liste",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Multiples et diviseurs",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "${{n}}$ est-il un multiple de ${{d}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "ok",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..10"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:d*q+(1-ok)*r"
+				}
+			],
+			"conditions": ["n<=100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-ok}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiple.** ${{n}}$ est un multiple de ${{d}}$ s'il est dans la table de ${{d}}$ : la division de ${{n}}$ par ${{d}}$ tombe juste.",
+					"{{if:ok==1|${{n}} = {{d}} \\times {{q}}$ : la division tombe juste.|${{eval:d*q}} = {{d}} \\times {{q}}$ et ${{eval:d*q+d}} = {{d}} \\times {{eval:q+1}}$ : ${{n}}$ est entre les deux. ${{n}} = {{d}} \\times {{q}} + {{r}}$ : il reste ${{r}}$.}}",
+					"{{if:ok==1|$\\textcolor{{{color:primary.0}}}{\\text{Oui}}$, ${{n}}$ est un multiple de ${{d}}$.|$\\textcolor{{{color:primary.0}}}{\\text{Non}}$, ${{n}}$ n'est pas un multiple de ${{d}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "${{n}}$ est-il un multiple de ${{d}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "ok",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "q",
+					"expression": "12..111"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:d*q+(1-ok)*r"
+				}
+			],
+			"conditions": ["n>=100", "n<=999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-ok}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiple.** ${{n}}$ est un multiple de ${{d}}$ s'il est dans la table de ${{d}}$ : la division de ${{n}}$ par ${{d}}$ tombe juste.",
+					"{{if:ok==1|${{n}} = {{d}} \\times {{q}}$ : la division tombe juste.|${{eval:d*q}} = {{d}} \\times {{q}}$ et ${{eval:d*q+d}} = {{d}} \\times {{eval:q+1}}$ : ${{n}}$ est entre les deux. ${{n}} = {{d}} \\times {{q}} + {{r}}$ : il reste ${{r}}$.}}",
+					"{{if:ok==1|$\\textcolor{{{color:primary.0}}}{\\text{Oui}}$, ${{n}}$ est un multiple de ${{d}}$.|$\\textcolor{{{color:primary.0}}}{\\text{Non}}$, ${{n}}$ n'est pas un multiple de ${{d}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Coche tous les multiples de ${{d}}$.\n\n```choix\nplusieurs: oui\n- ${{a0}}$\n- ${{a1}}$\n- ${{b2}}$\n- ${{b3}}$\n- ${{x4}}$\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "q0",
+					"expression": "2..10"
+				},
+				{
+					"name": "q1",
+					"expression": "2..10"
+				},
+				{
+					"name": "q2",
+					"expression": "2..9"
+				},
+				{
+					"name": "r2",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "q3",
+					"expression": "2..9"
+				},
+				{
+					"name": "r3",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "x4",
+					"expression": "11..99"
+				},
+				{
+					"name": "a0",
+					"expression": "eval:d*q0"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:d*q1"
+				},
+				{
+					"name": "b2",
+					"expression": "eval:d*q2+r2"
+				},
+				{
+					"name": "b3",
+					"expression": "eval:d*q3+r3"
+				}
+			],
+			"conditions": [
+				"q0!=q1",
+				"b2!=b3",
+				"x4!=a0",
+				"x4!=a1",
+				"x4!=b2",
+				"x4!=b3",
+				"b2<=100",
+				"b3<=100"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;{{eval:1*1}};{{eval:2*0}};{{eval:3*0}};{{eval:4*floor((d-mod(x4,d))/d)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiple de ${{d}}$** : un nombre de la table de ${{d}}$, la division par ${{d}}$ tombe juste.",
+					"${{a0}} = {{d}} \\times {{q0}}$ : oui.",
+					"${{a1}} = {{d}} \\times {{q1}}$ : oui.",
+					"${{b2}} = {{d}} \\times {{q2}} + {{r2}}$ : non.",
+					"${{b3}} = {{d}} \\times {{q3}} + {{r3}}$ : non.",
+					"{{if:mod(x4,d)==0|${{x4}} = {{d}} \\times {{eval:x4/d}}$ : oui.|${{x4}} = {{d}} \\times {{eval:floor(x4/d)}} + {{eval:mod(x4,d)}}$ : non.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "56 est un multiple de 7",
+			"variationIndex": 0,
+			"variables": {
+				"ok": "1",
+				"d": "7",
+				"q": "8",
+				"r": "3",
+				"n": "56"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 56, non",
+			"variationIndex": 0,
+			"variables": {
+				"ok": "1",
+				"d": "7",
+				"q": "8",
+				"r": "3",
+				"n": "56"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "57 n'est pas un multiple de 7",
+			"variationIndex": 0,
+			"variables": {
+				"ok": "0",
+				"d": "7",
+				"q": "8",
+				"r": "1",
+				"n": "57"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 57, oui",
+			"variationIndex": 0,
+			"variables": {
+				"ok": "0",
+				"d": "7",
+				"q": "8",
+				"r": "1",
+				"n": "57"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "252 est un multiple de 7",
+			"variationIndex": 1,
+			"variables": {
+				"ok": "1",
+				"d": "7",
+				"q": "36",
+				"r": "2",
+				"n": "252"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "254 n'est pas un multiple de 6",
+			"variationIndex": 1,
+			"variables": {
+				"ok": "0",
+				"d": "6",
+				"q": "42",
+				"r": "2",
+				"n": "254"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 254, oui",
+			"variationIndex": 1,
+			"variables": {
+				"ok": "0",
+				"d": "6",
+				"q": "42",
+				"r": "2",
+				"n": "254"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Multiples de 7 : 56, 21, 35",
+			"variationIndex": 2,
+			"variables": {
+				"d": "7",
+				"q0": "8",
+				"q1": "3",
+				"q2": "6",
+				"r2": "1",
+				"q3": "9",
+				"r3": "4",
+				"x4": "35",
+				"a0": "56",
+				"a1": "21",
+				"b2": "43",
+				"b3": "67"
+			},
+			"answers": ["0;1;4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "35 oublié : la moitié des points",
+			"variationIndex": 2,
+			"variables": {
+				"d": "7",
+				"q0": "8",
+				"q1": "3",
+				"q2": "6",
+				"r2": "1",
+				"q3": "9",
+				"r3": "4",
+				"x4": "35",
+				"a0": "56",
+				"a1": "21",
+				"b2": "43",
+				"b3": "67"
+			},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Erreur : 43 coché (6 × 7 + 1)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "7",
+				"q0": "8",
+				"q1": "3",
+				"q2": "6",
+				"r2": "1",
+				"q3": "9",
+				"r3": "4",
+				"x4": "35",
+				"a0": "56",
+				"a1": "21",
+				"b2": "43",
+				"b3": "67"
+			},
+			"answers": ["0;1;2;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

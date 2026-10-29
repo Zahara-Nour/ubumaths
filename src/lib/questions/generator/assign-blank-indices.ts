@@ -34,6 +34,7 @@ import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
+import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { buildCaseCount } from './build-answer';
 import { buildKindName, type BuildKind } from '../types';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
@@ -334,7 +335,8 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	line: 'Une droite à placer',
 	horloge: 'Une horloge à placer',
 	barres: 'Un diagramme en barres à construire',
-	ranger: 'Des étiquettes à ranger'
+	ranger: 'Des étiquettes à ranger',
+	partage: 'Une figure à colorier'
 };
 
 const buildNestedMessage = (kind: BuildKind) =>
@@ -448,7 +450,8 @@ function markBuildBlocks(statement: string): {
 		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const })),
 		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const })),
 		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const })),
-		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const }))
+		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
+		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
 	const marked = found.filter((b) => !b.nested);
@@ -631,8 +634,12 @@ export function assignBlankIndices(
 						};
 						counter++;
 						// Horloge : la réponse est une heure (`9 h 25`), étiquettes : une position
-						// (`2`) ; jamais lues comme un calcul
-						blankTypes.push(build.kind === 'horloge' || build.kind === 'ranger' ? 'text' : 'math');
+						// (`2`), figure à colorier : des rangs (`1, 4`) ; jamais lues comme un calcul
+						blankTypes.push(
+							build.kind === 'horloge' || build.kind === 'ranger' || build.kind === 'partage'
+								? 'text'
+								: 'math'
+						);
 					}
 					i += BUILD_CASE_MARK.length;
 				} else if (text[i] === '[' && text[i + 1] === '_' && text[i + 2] === ']') {

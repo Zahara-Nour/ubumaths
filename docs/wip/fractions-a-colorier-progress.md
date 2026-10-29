@@ -6,15 +6,15 @@ status: phase 0
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1958._
+_Mis à jour le 2026-10-29, après #1974._
 
-- **État** : PR 1 mergée (#1958) : bloc ```partage affiché (`forme:`, `gris:`), nom accessible sans la réponse. Pas en prod.
-- **Prochaine action** : PR 2, `colorier:` (case, geste toucher + glisser, corrigé, PDF) ; nouveau worktree depuis `origin/main`. Puis PR 3 (`unites:`).
+- **État** : PR 1 (#1958, bloc affiché, `gris:`) et PR 2 (#1974, `colorier:`, l'élève colorie) mergées. Rien en prod.
+- **Prochaine action** : PR 3, `unites:` (fractions > 1, plusieurs figures ; CM1 / CM2) ; nouveau worktree depuis `origin/main`.
 - **En attente de David** : rien.
-- **Pièges en cours** : `gris: 4` = les 4 premières parts, `gris: 4,` = la part 4 seule ; PR 2 suivra la liste « saisie / correction » de l'horloge (`build-answer`, `answer-validator`, `template-validator`, `FillBlanksInput`, `BuildAnswer`).
+- **Pièges en cours** : réponse de l'élève = rangs coloriés `1, 4, 6`, attendue `3/8` (lue du bloc) ; fraction > 1 refusée aujourd'hui avec « `unites:`, pas encore disponible » (message à changer en PR 3) ; corrigé PDF des blocs à placer sans appelant (`generatePartageTypst(…, { solved: true })` prêt).
 - **Après ce chantier** : chantier `solides` (assemblages de cubes, perspective, patrons ; 6e → 3e), ordre
   validé par David le 2026-10-29.
-- **Worktree / branche** : aucun (celui de la PR 1 retiré).
+- **Worktree / branche** : aucun (celui de la PR 2 retiré).
 
 ---
 
@@ -143,3 +143,31 @@ réponse d'une question « interpréter ». L'horloge dit seulement « Horloge �
 partagée en parts égales », sans la réponse).
 
 - 2026-10-29 : #1958 mergée (CI verte, intégration comprise).
+
+## 8. PR 2 — `colorier:`, l'élève colorie (2026-10-29)
+
+Agent `frontend-developer` sur le patron de l'horloge à placer (`a244bd665`) : `utils/partage-colorier.ts`
+(réponse, jugement, phrases), `PartageColorier.svelte`, `BuildKind` `'partage'` (« figure à colorier »),
+branchements `build-answer`, `assign-blank-indices`, `instance-generator`, `expected-result`,
+`template-validator`, `answer-validator`, `FillBlanksInput`, `BuildAnswer` ; fiche du catalogue, docs
+`ubumark.md` et `questions.md`. Rendu vu en Playwright (5178) : bande 3/8, grille 10 × 10 à 37/100, à 1200 et
+360 px (cellules ≈ 28 px), correction avec figure de l'élève et figure juste.
+
+Choix d'exécution (dans le cadre validé, calqués sur horloge / ranger) :
+
+- réponse de l'élève = ses rangs coloriés triés (`1, 4, 6`), vide = rien répondu ; attendue = `3/8` ;
+  `colorier: 1/2` sur une bande de 4 → `2/4` ; juste si le nombre de parts coloriées est le bon ;
+- `colorier: 0/N` refusé (« rien à colorier ») ; fraction > 1 refusée (« `unites:`, pas encore disponible ») ;
+  `case: N` sans `colorier:` refusé ;
+- figure agrandie de 15 % à l'écran (grille 10 × 10 touchable), PDF inchangé ; bouton « Tout effacer »,
+  masqué en copie corrigée ; corrigé : « Tu as colorié 7 parts sur 100 ; il fallait en colorier 37 (37/100). »,
+  « Tu n'as rien colorié. » pour une case vide.
+
+Point ouvert : aucun corrigé PDF n'imprime les blocs à placer (`serie-automatismes.ts`) ;
+`generatePartageTypst(node, { solved: true })` existe, testé, sans appelant.
+
+Revue `code-reviewer` (Opus), aucun bloquant ; corrigé : le glissé rapide sautait des parts (segment parcouru à
+petits pas), clic droit et second doigt ignorés. Mineur laissé : après un essai faux non verrouillé, la phrase
+« Tu as colorié N parts » suit les parts en direct.
+
+- 2026-10-29 : #1974 mergée (CI verte, intégration comprise, après le correctif d'horodatage #1972 sur `main`).

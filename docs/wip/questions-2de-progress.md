@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1951._
+_Mis à jour le 2026-10-29, après #1970._
 
-- **État** : lot 2 bis B (1/x, √x, x³) publié en prod ; correctif « accolades » mergé (#1951, § 17), pas
-  encore en prod (attend un `deploy:prod` décidé par David).
-- **Prochaine action** : lot suivant de la 2de (relire le relevé du journal pour le choisir, phase 0 à
-  proposer à David).
-- **En attente de David** : rien.
+- **État** : lot 3 « puissances, racines, fractions » (8 modèles, § 19-20) : fichiers mergés (#1970) ;
+  brouillons créés en base locale seulement. Correctif « accolades » (#1951) pas encore en prod.
+- **Prochaine action** : après le `--publier` de David, relever les 8 `id` en prod, puis migration nœud + tag
+  (2-260 ×3, 2-270 ×2, 2-423, 2-272, 2-238 ; L3-a : modèles 1-3 sur la notion « Puissances : calculs »).
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-puissances
+--publier` depuis le dépôt principal à jour ; avis sur l'écart du modèle 5 (§ 20 : 3x³y⁻² refusé en forme).
 - **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT, pas dans la PR ;
-  horodatage de migration pris par une autre session ; port 5176 pris par `questions-4` (serveur sur 5177).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, détaché sur `origin/main` (branches mergées supprimées).
+  horodatage de migration : vérifier les doublons sur `origin/main` (collision du 2026-10-29, #1972).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, détaché sur `origin/main` (branche mergée supprimée).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -464,7 +465,7 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
   `updated_at` inchangé, brouillons. Page à cocher (aucune alerte) :
   https://claude.ai/artifact/Pg2wcdRUGdQpjQs3FdjJsb
 
-## 19. Lot 3 « puissances, racines, fractions » : relevé et phase 0 (proposée le 2026-10-29, à valider)
+## 19. Lot 3 « puissances, racines, fractions » : relevé et phase 0 (proposée le 2026-10-29)
 
 **Relevé MCP (prod, 2026-10-29)** : 2-270, 2-272, 2-423, 2-238 sans modèle. **2-260 n'est plus vide** :
 `questions-4` y a rattaché le 2026-10-28 a1ae1558, 2158a2fc, 17f3dfcd ((aᵐ)ⁿ et (10ᵐ)ⁿ, exposants 2 à 9,
@@ -510,3 +511,21 @@ nœud + tag.
 - **L3-c — 2-272 littéral** : dénominateurs monômes seulement (x, 2x, x²), ou aussi x + 1 (1/x − 1/(x + 1)) ?
   → Je recommande **monômes seulement**. Les dénominateurs affines reviendront avec le quotient = k
   (2-269, hors lot).
+
+**Décisions de David (2026-10-29)** : phase 0 validée avec mes trois recommandations — L3-a notion
+« Puissances : calculs » ; L3-b oui ; L3-c monômes seulement.
+
+## 20. Lot 3, PR des fichiers (2026-10-29)
+
+- Script `questions-2de/lot-puissances-2de.py` → `scripts/questions/2de-puissances/` (8 modèles, 23 variations,
+  68 specs) ; `create-questions` en simulation : tout vert.
+- Catégories (niveaux relevés en prod) : Puissances › Calculer › « Puissance d'un produit » 1, « Puissance
+  d'un quotient » 1, « Mixer tout ça » 2 et 3 ; Calcul littéral › Calculs › « Avec des puissances » 3 ;
+  Racines carrées › Manipuler › « Propriétés » 2 ; Calcul littéral › Transformation › « Écritures
+  fractionnaires » 1 ; Fractions › Apprivoiser › « Simplification » 7.
+- **Écart à la phase 0** (modèle 5) : 3x³y⁻² devait être accepté pour 6x⁴y/(2xy³). Le jugement exact le
+  refuse (forme), et un motif `requiredForm` refusait aussi 3x³/y². La consigne demande donc « un quotient,
+  sans exposant négatif » : 3x³y⁻² = forme refusée, 6x³/(2y²) = à améliorer.
+- Relecture des tirages : « 1z/2 » corrigé (numérateur réduit à 1, modèle 7).
+- Base locale : 8 brouillons créés ; aperçu admin joué ((2t³)² : 4t⁶ juste, correction lisible ;
+  8 × 10⁷ × 9 × 10⁻⁴ : réponse fausse refusée, attendu 7,2 × 10⁴ affiché avec la virgule).
