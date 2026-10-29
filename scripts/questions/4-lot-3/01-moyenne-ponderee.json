@@ -1,0 +1,396 @@
+{
+	"title": "Moyenne pondérée",
+	"description": "Calculer une moyenne pondérée d'une série de petit effectif donnée par un tableau, un diagramme en barres, des données brutes ou des coefficients",
+	"grades": ["4"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Moyenne",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici les notes obtenues par les élèves d'un groupe à un contrôle.\n\n| Note | {{v1}} | {{v2}} | {{v3}} | {{v4}} |\n|---|---|---|---|---|\n| Effectif | {{n1}} | {{n2}} | {{n3}} | {{n4}} |\n\nCalcule la note moyenne du groupe.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "v1",
+					"expression": "5..9"
+				},
+				{
+					"name": "dv2",
+					"expression": "1..3"
+				},
+				{
+					"name": "v2",
+					"expression": "eval:v1+dv2"
+				},
+				{
+					"name": "dv3",
+					"expression": "1..3"
+				},
+				{
+					"name": "v3",
+					"expression": "eval:v2+dv3"
+				},
+				{
+					"name": "dv4",
+					"expression": "1..3"
+				},
+				{
+					"name": "v4",
+					"expression": "eval:v3+dv4"
+				},
+				{
+					"name": "n1",
+					"expression": "1..6"
+				},
+				{
+					"name": "n2",
+					"expression": "1..6"
+				},
+				{
+					"name": "n3",
+					"expression": "1..6"
+				},
+				{
+					"name": "n4",
+					"expression": "1..6"
+				}
+			],
+			"conditions": [
+				"n1+n2+n3+n4>=8",
+				"n1+n2+n3+n4<=20",
+				"mod(100*(v1*n1+v2*n2+v3*n3+v4*n4),n1+n2+n3+n4)==0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(v1*n1+v2*n2+v3*n3+v4*n4)/(n1+n2+n3+n4);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Moyenne pondérée.** On multiplie chaque valeur par son effectif, on additionne ces produits, puis on divise par l'effectif total.",
+					"Effectif total : ${{n1}} + {{n2}} + {{n3}} + {{n4}} = {{eval:n1+n2+n3+n4}}$.",
+					"Somme des produits : ${{v1}} \\times {{n1}} + {{v2}} \\times {{n2}} + {{v3}} \\times {{n3}} + {{v4}} \\times {{n4}} = {{eval:v1*n1+v2*n2+v3*n3+v4*n4}}$.",
+					"$$\\text{moyenne} = \\frac{{{eval:v1*n1+v2*n2+v3*n3+v4*n4}}}{{{eval:n1+n2+n3+n4}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le diagramme donne les notes obtenues par les élèves d'un groupe à un contrôle.\n\n```barres\naxes: Note ; Effectif\n{{v1}} = {{n1}}\n{{v2}} = {{n2}}\n{{v3}} = {{n3}}\n{{v4}} = {{n4}}\n```\n\nCalcule la note moyenne du groupe.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "v1",
+					"expression": "5..9"
+				},
+				{
+					"name": "dv2",
+					"expression": "1..3"
+				},
+				{
+					"name": "v2",
+					"expression": "eval:v1+dv2"
+				},
+				{
+					"name": "dv3",
+					"expression": "1..3"
+				},
+				{
+					"name": "v3",
+					"expression": "eval:v2+dv3"
+				},
+				{
+					"name": "dv4",
+					"expression": "1..3"
+				},
+				{
+					"name": "v4",
+					"expression": "eval:v3+dv4"
+				},
+				{
+					"name": "n1",
+					"expression": "1..6"
+				},
+				{
+					"name": "n2",
+					"expression": "1..6"
+				},
+				{
+					"name": "n3",
+					"expression": "1..6"
+				},
+				{
+					"name": "n4",
+					"expression": "1..6"
+				}
+			],
+			"conditions": [
+				"n1+n2+n3+n4>=8",
+				"n1+n2+n3+n4<=20",
+				"mod(100*(v1*n1+v2*n2+v3*n3+v4*n4),n1+n2+n3+n4)==0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(v1*n1+v2*n2+v3*n3+v4*n4)/(n1+n2+n3+n4);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit les effectifs sur le diagramme : note ${{v1}}$, effectif ${{n1}}$, note ${{v2}}$, effectif ${{n2}}$, note ${{v3}}$, effectif ${{n3}}$, note ${{v4}}$, effectif ${{n4}}$.",
+					"**Moyenne pondérée.** On multiplie chaque valeur par son effectif, on additionne ces produits, puis on divise par l'effectif total.",
+					"Effectif total : ${{n1}} + {{n2}} + {{n3}} + {{n4}} = {{eval:n1+n2+n3+n4}}$.",
+					"Somme des produits : ${{v1}} \\times {{n1}} + {{v2}} \\times {{n2}} + {{v3}} \\times {{n3}} + {{v4}} \\times {{n4}} = {{eval:v1*n1+v2*n2+v3*n3+v4*n4}}$.",
+					"$$\\text{moyenne} = \\frac{{{eval:v1*n1+v2*n2+v3*n3+v4*n4}}}{{{eval:n1+n2+n3+n4}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici le nombre de buts marqués par une équipe à chaque match de la saison :\n\n$${{if:k==0|{{b}} ; {{a}} ; {{c}} ; {{b}} ; {{b}} ; {{a}} ; {{c}} ; {{b}} ; {{a}}|{{c}} ; {{a}} ; {{b}} ; {{c}} ; {{b}} ; {{c}} ; {{a}} ; {{c}} ; {{b}} ; {{c}}}}$$\n\nCalcule le nombre moyen de buts par match.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "0..2"
+				},
+				{
+					"name": "da",
+					"expression": "1..2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+da"
+				},
+				{
+					"name": "db",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "eval:b+db"
+				},
+				{
+					"name": "na",
+					"expression": "eval:3-k"
+				},
+				{
+					"name": "nb",
+					"expression": "eval:4-k"
+				},
+				{
+					"name": "nc",
+					"expression": "eval:2+3*k"
+				}
+			],
+			"conditions": ["mod(100*(a*na+b*nb+c*nc),na+nb+nc)==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*na+b*nb+c*nc)/(na+nb+nc);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Moyenne pondérée.** On multiplie chaque valeur par son effectif, on additionne ces produits, puis on divise par l'effectif total.",
+					"On regroupe les valeurs : ${{a}}$ apparaît ${{na}}$ fois, ${{b}}$ apparaît ${{nb}}$ fois, ${{c}}$ apparaît ${{nc}}$ fois. Effectif total : ${{eval:na+nb+nc}}$.",
+					"Somme : ${{a}} \\times {{na}} + {{b}} \\times {{nb}} + {{c}} \\times {{nc}} = {{eval:a*na+b*nb+c*nc}}$.",
+					"$$\\text{moyenne} = \\frac{{{eval:a*na+b*nb+c*nc}}}{{{eval:na+nb+nc}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Léa a obtenu trois notes ce trimestre :\n\n- ${{p}}$ au devoir maison (coefficient $1$) ;\n- ${{q}}$ à l'interrogation (coefficient $2$) ;\n- ${{r}}$ au contrôle (coefficient $3$).\n\nCalcule sa moyenne.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "6..20"
+				},
+				{
+					"name": "q",
+					"expression": "6..20"
+				},
+				{
+					"name": "r",
+					"expression": "6..20"
+				}
+			],
+			"conditions": ["mod(p+2*q+3*r,3)==0", "p!=q", "q!=r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p+2*q+3*r)/6;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Moyenne pondérée.** Chaque note compte autant de fois que son coefficient : on divise par la somme des coefficients.",
+					"Somme : ${{p}} \\times 1 + {{q}} \\times 2 + {{r}} \\times 3 = {{eval:p+2*q+3*r}}$ ; somme des coefficients : $1 + 2 + 3 = 6$.",
+					"$$\\text{moyenne} = \\frac{{{eval:p+2*q+3*r}}}{6} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Notes 8, 10, 12, 15 ; effectifs 2, 3, 4, 1 : 10,9",
+			"variationIndex": 0,
+			"variables": {
+				"v1": "8",
+				"dv2": "2",
+				"v2": "10",
+				"dv3": "2",
+				"v3": "12",
+				"dv4": "3",
+				"v4": "15",
+				"n1": "2",
+				"n2": "3",
+				"n3": "4",
+				"n4": "1"
+			},
+			"answers": ["10,9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moyenne des notes sans effectifs (11,25)",
+			"variationIndex": 0,
+			"variables": {
+				"v1": "8",
+				"dv2": "2",
+				"v2": "10",
+				"dv3": "2",
+				"v3": "12",
+				"dv4": "3",
+				"v4": "15",
+				"n1": "2",
+				"n2": "3",
+				"n3": "4",
+				"n4": "1"
+			},
+			"answers": ["11,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme des produits ÷ 4 valeurs",
+			"variationIndex": 0,
+			"variables": {
+				"v1": "8",
+				"dv2": "2",
+				"v2": "10",
+				"dv3": "2",
+				"v3": "12",
+				"dv4": "3",
+				"v4": "15",
+				"n1": "2",
+				"n2": "3",
+				"n3": "4",
+				"n4": "1"
+			},
+			"answers": ["27,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diagramme : même série, 10,9",
+			"variationIndex": 1,
+			"variables": {
+				"v1": "8",
+				"dv2": "2",
+				"v2": "10",
+				"dv3": "2",
+				"v3": "12",
+				"dv4": "3",
+				"v4": "15",
+				"n1": "2",
+				"n2": "3",
+				"n3": "4",
+				"n4": "1"
+			},
+			"answers": ["10,9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Buts 0, 2, 5 (3, 4, 2 fois) : 2",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"a": "0",
+				"da": "2",
+				"b": "2",
+				"db": "3",
+				"c": "5",
+				"na": "3",
+				"nb": "4",
+				"nc": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moyenne de 0, 2, 5 sans répétitions",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"a": "0",
+				"da": "2",
+				"b": "2",
+				"db": "3",
+				"c": "5",
+				"na": "3",
+				"nb": "4",
+				"nc": "2"
+			},
+			"answers": ["\\frac{7}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Coefficients 12, 9, 14 : 12",
+			"variationIndex": 3,
+			"variables": {
+				"p": "12",
+				"q": "9",
+				"r": "14"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Coefficients 10, 13, 15 : 13,5",
+			"variationIndex": 3,
+			"variables": {
+				"p": "10",
+				"q": "13",
+				"r": "15"
+			},
+			"answers": ["13,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans coefficients (12,67)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "10",
+				"q": "13",
+				"r": "15"
+			},
+			"answers": ["12,67"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
