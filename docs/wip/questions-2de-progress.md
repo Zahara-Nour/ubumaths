@@ -6,17 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1982 et #1989 (migration jouée)._
+_Mis à jour le 2026-10-29, après la publication du lot 3._
 
-- **État** : lot 3 (8 modèles, § 19-21) : brouillons en prod, rangés et tagués (migration `20261030004900`
-  jouée avec l'`--include-all` de questions-3, vérifiée au MCP). Page à cocher publiée :
-  https://claude.ai/artifact/6CcVZNPqLQg1M8t3AjWZuk (aucune alerte, 0 verdict au départ).
-- **Prochaine action** : compter les verdicts de la page ; tout OK → `publier-lot.ts` en simulation, puis
-  David le lance avec `--publier`.
-- **En attente de David** : sa relecture (page à cocher) ; avis sur l'écart du modèle 5 (§ 20 : 3x³y⁻² refusé en forme).
+- **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 3 (8 modèles) relu 8/8 OK et publié par David (§ 22).
+- **Prochaine action** : lot 4 « vecteurs en coordonnées » (§ 4 : 434, 294, 293, 300, 436, 301, 302, 295,
+  435, 303, 437) : relevé MCP, puis phase 0 à proposer.
+- **En attente de David** : rien.
 - **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT ; horodatage = max + 1 min
   de `origin/main` ET des worktrees, puis `migration list --linked` avant `db:migrate`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` (branche `fix/questions-2de-puissances-horodatage` mergée).
+- **Worktree / branche** : aucun (`ubumaths-wt-questions-2de` retiré) ; en créer un pour le lot 4.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -544,3 +542,10 @@ nœud + tag.
   2-260 et 2-270 sur la notion « Puissances : calculs », 2-423 sur « propriétés » (Racines carrées : calculs),
   2-272 sur « expressions fractionnaires », 2-238 sur « simplification » ; un tag chacun, le bon.
 - Page à cocher (aucune alerte) : https://claude.ai/artifact/6CcVZNPqLQg1M8t3AjWZuk
+
+## 22. Lot 3 publié (2026-10-29)
+
+- Page à cocher : 8/8 OK, sans commentaire. Modèle 5 (consigne « quotient, sans exposant négatif ») marqué OK :
+  écart du § 20 tenu pour accepté.
+- `publier-lot.ts` en simulation puis lancé par David avec `--publier` : 8/8 publiés, relus au MCP.
+- Serveur 5177 arrêté, worktree `ubumaths-wt-questions-2de` et sa branche retirés.
