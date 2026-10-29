@@ -36,6 +36,8 @@
 	} from '$lib/ubumark/utils/partage-colorier';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
+	type ScenePoint = { x: number; y: number };
+
 	interface Props {
 		/** Figure à colorier (`spec.colorier` défini) */
 		node: PartageNode;
@@ -50,6 +52,8 @@
 
 	/** À l'écran, un peu plus grande qu'au PDF : une part de grille 10 × 10 reste touchable */
 	const SCREEN_ZOOM = 1.15;
+	/** Pas du glissé : le plus petit côté de la figure en 40 pas (4 par part d'une grille 10 × 10) */
+	const DRAG_STEPS_PER_SIDE = 40;
 
 	let spec = $derived(node.spec!);
 	let total = $derived(partageTotal(spec.shape));
@@ -76,6 +80,8 @@
 
 	/** Geste en cours : true = on colorie, false = on efface ; null hors geste */
 	let painting = $state<boolean | null>(null);
+	/** Dernier point du glissé, pour parcourir le segment jusqu'au suivant */
+	let lastPoint: ScenePoint | null = null;
 	let svg: SVGSVGElement | undefined = $state();
 
 	const polygonPoints = (points: { x: number; y: number }[]) =>
@@ -92,33 +98,56 @@
 		setRanks(paint ? [...ranks, rank].sort((a, b) => a - b) : ranks.filter((r) => r !== rank));
 	}
 
-	/** Part sous le doigt, lue sur la géométrie de la scène (pas sur le DOM) */
-	function partUnder(event: { clientX: number; clientY: number }): number | null {
+	/** Point sous le doigt, en coordonnées de la scène (pas sur le DOM) */
+	function scenePoint(event: { clientX: number; clientY: number }): ScenePoint | null {
 		if (!svg) return null;
 		const rect = svg.getBoundingClientRect();
 		if (rect.width === 0 || rect.height === 0) return null;
-		const x = ((event.clientX - rect.left) / rect.width) * width - PARTAGE_MARGIN;
-		const y = ((event.clientY - rect.top) / rect.height) * height - PARTAGE_MARGIN;
-		return partAtPoint(scene, x, y);
+		return {
+			x: ((event.clientX - rect.left) / rect.width) * width - PARTAGE_MARGIN,
+			y: ((event.clientY - rect.top) / rect.height) * height - PARTAGE_MARGIN
+		};
 	}
 
 	function handlePointerDown(event: PointerEvent) {
-		if (locked) return;
-		const rank = partUnder(event);
-		if (rank === null) return;
+		// Bouton principal, premier doigt : un clic droit ou un second doigt ne colorie rien
+		if (locked || event.button !== 0 || !event.isPrimary) return;
+		const point = scenePoint(event);
+		const rank = point && partAtPoint(scene, point.x, point.y);
+		if (!point || rank === null) return;
 		painting = !ranks.includes(rank);
+		lastPoint = point;
 		apply(rank, painting);
 		svg?.setPointerCapture?.(event.pointerId);
 	}
 
+	/**
+	 * Le navigateur n'envoie que quelques mouvements pendant un glissé rapide : le
+	 * segment depuis le point précédent est parcouru à petits pas, pour qu'aucune
+	 * part enjambée ne soit oubliée
+	 */
 	function handlePointerMove(event: PointerEvent) {
-		if (painting === null) return;
-		const rank = partUnder(event);
-		if (rank !== null) apply(rank, painting);
+		if (painting === null || !event.isPrimary) return;
+		const point = scenePoint(event);
+		if (!point) return;
+		const from = lastPoint ?? point;
+		const step = Math.min(scene.width, scene.height) / DRAG_STEPS_PER_SIDE;
+		const count = Math.max(1, Math.ceil(Math.hypot(point.x - from.x, point.y - from.y) / step));
+		for (let i = 1; i <= count; i++) {
+			const t = i / count;
+			const rank = partAtPoint(
+				scene,
+				from.x + (point.x - from.x) * t,
+				from.y + (point.y - from.y) * t
+			);
+			if (rank !== null) apply(rank, painting);
+		}
+		lastPoint = point;
 	}
 
 	function handlePointerUp() {
 		painting = null;
+		lastPoint = null;
 	}
 
 	function toggle(rank: number) {

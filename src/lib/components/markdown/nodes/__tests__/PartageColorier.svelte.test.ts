@@ -55,12 +55,17 @@ function answerProbe(initial = '') {
 /** Pointeur au centre de la part de rang `rank` (à partir de 1) */
 function pointAt(root: Element, rank: number) {
 	const box = parts(root)[rank - 1].getBoundingClientRect();
-	return { clientX: box.left + box.width / 2, clientY: box.top + box.height / 2, pointerId: 1 };
+	return {
+		clientX: box.left + box.width / 2,
+		clientY: box.top + box.height / 2,
+		pointerId: 1,
+		isPrimary: true
+	};
 }
 
-function fire(root: Element, type: string, rank: number) {
+function fire(root: Element, type: string, rank: number, init: PointerEventInit = {}) {
 	const svg = root.querySelector('svg.partage-figure')!;
-	svg.dispatchEvent(new PointerEvent(type, { bubbles: true, ...pointAt(root, rank) }));
+	svg.dispatchEvent(new PointerEvent(type, { bubbles: true, ...pointAt(root, rank), ...init }));
 }
 
 const tap = (root: Element, rank: number) => {
@@ -111,7 +116,35 @@ describe('PartageColorier — le geste', () => {
 		fire(root, 'pointermove', 3);
 		fire(root, 'pointermove', 6);
 		fire(root, 'pointerup', 6);
-		await expect.poll(() => probe.value).toBe('1, 4');
+		// Les parts 4 et 5, enjambées entre deux mouvements, sont effacées aussi
+		await expect.poll(() => probe.value).toBe('1');
+	});
+
+	it('glissé rapide : les parts enjambées entre deux mouvements sont coloriées', async () => {
+		const { probe, answer } = answerProbe();
+		const screen = await render(PartageColorier, {
+			target: mainElement(),
+			props: { node: node('forme: bande 10', 'colorier: 3/10'), answer: answer() }
+		});
+		const root = screen.container;
+		fire(root, 'pointerdown', 1);
+		fire(root, 'pointermove', 10);
+		fire(root, 'pointerup', 10);
+		await expect.poll(() => probe.value).toBe('1, 2, 3, 4, 5, 6, 7, 8, 9, 10');
+	});
+
+	it('clic droit ou second doigt : rien n’est colorié', async () => {
+		const { probe, answer } = answerProbe();
+		const screen = await render(PartageColorier, {
+			target: mainElement(),
+			props: { node: node('forme: bande 8', 'colorier: 3/8'), answer: answer() }
+		});
+		const root = screen.container;
+		fire(root, 'pointerdown', 2, { button: 2 });
+		fire(root, 'pointerup', 2, { button: 2 });
+		fire(root, 'pointerdown', 3, { isPrimary: false, pointerId: 2 });
+		fire(root, 'pointerup', 3, { isPrimary: false, pointerId: 2 });
+		expect(probe.changes).toEqual([]);
 	});
 
 	it('grille 10 × 10 : 100 parts, un glissé sur une ligne', async () => {
