@@ -1,0 +1,217 @@
+{
+	"title": "Diviser par $4$",
+	"description": "La moitié de la moitié : 128 ÷ 4, 2 436 ÷ 4, quotient décimal 130 ÷ 4 = 32,5",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Quotient",
+	"level": 10,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{n}}\\div 4=?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "25..249"
+				},
+				{
+					"name": "n",
+					"expression": "eval:4*q"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/4;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diviser par $4$, c'est prendre la moitié de la moitié.",
+					"**Moitié 1.** ${{n}}\\div 2=\\textcolor{{{color:primary.0}}}{{{eval:n/2;d}}}$.",
+					"**Moitié 2.** ${{eval:n/2;d}}\\div 2=\\textcolor{{{color:primary.1}}}{{{eval:n/4;d}}}$.",
+					"Donc ${{n}}\\div 4={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{n}}\\div 4=?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "250..2499"
+				},
+				{
+					"name": "n",
+					"expression": "eval:4*q"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/4;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diviser par $4$, c'est prendre la moitié de la moitié.",
+					"**Moitié 1.** ${{n}}\\div 2=\\textcolor{{{color:primary.0}}}{{{eval:n/2;d}}}$.",
+					"**Moitié 2.** ${{eval:n/2;d}}\\div 2=\\textcolor{{{color:primary.1}}}{{{eval:n/4;d}}}$.",
+					"Donc ${{n}}\\div 4={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{n}}\\div 4=?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3..249"
+				},
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:4*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/4;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diviser par $4$, c'est prendre la moitié de la moitié.",
+					"**Moitié 1.** ${{n}}\\div 2=\\textcolor{{{color:primary.0}}}{{{eval:n/2;d}}}$.",
+					"**Moitié 2.** ${{eval:n/2;d}}\\div 2=\\textcolor{{{color:primary.1}}}{{{eval:n/4;d}}}$.",
+					"Donc ${{n}}\\div 4={{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "128 ÷ 4 = 32",
+			"variationIndex": 0,
+			"variables": {
+				"q": "32"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 128 ÷ 4 → 64 (une seule moitié)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "32"
+			},
+			"answers": ["64"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 100 ÷ 4 = 25",
+			"variationIndex": 0,
+			"variables": {
+				"q": "25"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 436 ÷ 4 = 609",
+			"variationIndex": 1,
+			"variables": {
+				"q": "609"
+			},
+			"answers": ["609"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 436 ÷ 4 → 69 (zéro oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "609"
+			},
+			"answers": ["69"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "130 ÷ 4 = 32,5",
+			"variationIndex": 2,
+			"variables": {
+				"q": "32",
+				"r": "2"
+			},
+			"answers": ["32,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 130 ÷ 4 → 32 (quotient tronqué)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "32",
+				"r": "2"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "129 ÷ 4 = 32,25",
+			"variationIndex": 2,
+			"variables": {
+				"q": "32",
+				"r": "1"
+			},
+			"answers": ["32,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 129 ÷ 4 → 32,1 (reste écrit après la virgule)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "32",
+				"r": "1"
+			},
+			"answers": ["32,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "15 ÷ 4 = 3,75",
+			"variationIndex": 2,
+			"variables": {
+				"q": "3",
+				"r": "3"
+			},
+			"answers": ["3,75"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

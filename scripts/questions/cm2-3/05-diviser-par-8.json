@@ -1,0 +1,208 @@
+{
+	"title": "Diviser par $8$",
+	"description": "Trois moitiés successives : 128 ÷ 8, 2 432 ÷ 8, quotient décimal 260 ÷ 8 = 32,5",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Quotient",
+	"level": 11,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{n}}\\div 8=?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "13..124"
+				},
+				{
+					"name": "n",
+					"expression": "eval:8*q"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/8;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diviser par $8$, c'est prendre trois fois la moitié.",
+					"**Moitié 1.** ${{n}}\\div 2=\\textcolor{{{color:primary.0}}}{{{eval:n/2;d}}}$.",
+					"**Moitié 2.** ${{eval:n/2;d}}\\div 2=\\textcolor{{{color:primary.0}}}{{{eval:n/4;d}}}$.",
+					"**Moitié 3.** ${{eval:n/4;d}}\\div 2=\\textcolor{{{color:primary.1}}}{{{eval:n/8;d}}}$.",
+					"Donc ${{n}}\\div 8={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{n}}\\div 8=?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "125..1249"
+				},
+				{
+					"name": "n",
+					"expression": "eval:8*q"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/8;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diviser par $8$, c'est prendre trois fois la moitié.",
+					"**Moitié 1.** ${{n}}\\div 2=\\textcolor{{{color:primary.0}}}{{{eval:n/2;d}}}$.",
+					"**Moitié 2.** ${{eval:n/2;d}}\\div 2=\\textcolor{{{color:primary.0}}}{{{eval:n/4;d}}}$.",
+					"**Moitié 3.** ${{eval:n/4;d}}\\div 2=\\textcolor{{{color:primary.1}}}{{{eval:n/8;d}}}$.",
+					"Donc ${{n}}\\div 8={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{n}}\\div 8=?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..124"
+				},
+				{
+					"name": "r",
+					"expression": "2|4|6"
+				},
+				{
+					"name": "n",
+					"expression": "eval:8*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/8;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diviser par $8$, c'est prendre trois fois la moitié.",
+					"**Moitié 1.** ${{n}}\\div 2=\\textcolor{{{color:primary.0}}}{{{eval:n/2;d}}}$.",
+					"**Moitié 2.** ${{eval:n/2;d}}\\div 2=\\textcolor{{{color:primary.0}}}{{{eval:n/4;d}}}$.",
+					"**Moitié 3.** ${{eval:n/4;d}}\\div 2=\\textcolor{{{color:primary.1}}}{{{eval:n/8;d}}}$.",
+					"Donc ${{n}}\\div 8={{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "128 ÷ 8 = 16",
+			"variationIndex": 0,
+			"variables": {
+				"q": "16"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 128 ÷ 8 → 32 (deux moitiés seulement)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "16"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 104 ÷ 8 = 13",
+			"variationIndex": 0,
+			"variables": {
+				"q": "13"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 432 ÷ 8 = 304",
+			"variationIndex": 1,
+			"variables": {
+				"q": "304"
+			},
+			"answers": ["304"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 432 ÷ 8 → 608 (deux moitiés seulement)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "304"
+			},
+			"answers": ["608"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "260 ÷ 8 = 32,5",
+			"variationIndex": 2,
+			"variables": {
+				"q": "32",
+				"r": "4"
+			},
+			"answers": ["32,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 260 ÷ 8 → 32 (quotient tronqué)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "32",
+				"r": "4"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "258 ÷ 8 = 32,25",
+			"variationIndex": 2,
+			"variables": {
+				"q": "32",
+				"r": "2"
+			},
+			"answers": ["32,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "22 ÷ 8 = 2,75",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"r": "6"
+			},
+			"answers": ["2,75"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
