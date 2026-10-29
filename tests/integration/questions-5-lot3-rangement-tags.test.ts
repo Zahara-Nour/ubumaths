@@ -1,5 +1,5 @@
 /**
- * Chantier « questions-5 », lot 3 : nœud et tag de 8 modèles neufs (Supabase local requis)
+ * Chantier « questions-5 », lot 3 : nœud et tag de 4 modèles neufs (Supabase local requis)
  * ====================================================================================
  *
  * Migration `20261029213000_questions_5_lot3_rangement_tags` : les 4 brouillons du lot « Fractions et
