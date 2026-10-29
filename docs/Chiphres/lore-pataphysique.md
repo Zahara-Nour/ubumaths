@@ -228,7 +228,7 @@ Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustration
   - **Repère sur la carte** : la spirale de la ville avec le dôme doré au centre.
   - **Couleur** : aucune couleur de province ; Encre et Or pour la ville seule.
 - **Plan de la ville = carte du site** 🟡 (décision de David, 2026-10-29) : les lieux de la Section IV (« Géographie de l'Académie », une page du site = un lieu du Royaume) sont placés le long de la spirale, de l'entrée au centre :
-  1. **Le Pont-Levis du Royaume** (`/`) : l'entrée, sur la Vistule.
+  1. **Le Pont-Levis du Royaume** (`/`) : l'entrée, sur la Vistule, seul pont de la ville (une spirale de gidouille n'a qu'une ouverture) ; les routes vers les provinces partent de l'autre rive.
   2. **Le Grand Marché Polonais** (marché) : les étals de Mère Ubu, au premier tour de la spirale.
   3. **La Caserne des Palotins** (amis) : la caserne de Bordure.
   4. **L'Arène des Polonais** (jeux) : petite arène ronde.
@@ -528,6 +528,12 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
   - **Eau** : la Vistule traverse Cracovenn, comme Cracovie.
   - **Végétation** : champs de pommes de terre en rangs, fleurs blanches et mauves ; quelques vergers.
   - **Repère sur la carte** : les trois enceintes de Cracovenn.
+- **Plan de la ville** 🟡 (décision de David, 2026-10-29) : le diagramme de Venn se voit par les **matériaux**, sans étiquette ni quartiers à activités.
+  - Enceinte A en brique rouge, enceinte B en pierre grise, enceinte C en bois clair.
+  - Chaque maison est bâtie dans les matériaux des enceintes qui l'entourent : brique seule dans A seule, moitié brique moitié pierre dans A ∩ B, etc.
+  - Au centre (A ∩ B ∩ C), la bibliothèque de Faustroll mêle les trois matériaux.
+  - Hors des trois enceintes (le complémentaire) : faubourgs et champs de patates.
+  - La Vistule traverse la ville ; trois portes, une par enceinte.
   - **Couleur** : vert de mer `#3E8E86` (hors nuancier, les moustaches de Faustroll).
 
 ### La Vistule, fleuve de la Pologne pataphysique
