@@ -5,21 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1977._
+_Mis à jour le 2026-10-29, lot 4b écrit (PR des fichiers en cours)._
 
-- **État** : lots 1 à 3 publiés ; lot 4 « Calcul littéral » décidé (§ 14) ; **4a** (7 modèles) mergé (#1977),
-  **pas encore publié**.
-- **Prochaine action** : attendre le merge de la PR `virgule-forme-exigee` (pas encore ouverte au 2026-10-29) →
-  David `create-questions --dir scripts/questions/5-litteral-a --publier` → migration de rangement (gabarit lot 3)
-  → page à cocher. En parallèle possible : écrire le lot 4b (§ 14) sur une branche neuve.
-- **Décidé par David (2026-10-29)** : PR à part `virgule-forme-exigee` (défaut du juge, § 14.1), dans sa propre
-  session, phase 0 d'abord, revue `code-reviewer` Opus ; à merger **avant la publication** du lot 4a.
+- **État** : lots 1 à 3 publiés ; **4a** mergé (#1977), pas encore publié ; **4b** (4 modèles, § 15) écrit,
+  37 specs vertes, joué en local ; PR des fichiers `feat/questions-5-lot4b` en cours.
+- **Prochaine action** : merger la PR 4b → David `create-questions --dir scripts/questions/5-litteral-b --publier`
+  (4b ne dépend PAS de `virgule-forme-exigee` : aucune forme exigée) → migration de rangement 4b **avec**
+  reclassement (d4679e2d, e66089e0, 9231b54b → 5e) et décalage des niveaux (§ 15) → page à cocher.
+  4a : attendre `virgule-forme-exigee`, puis `--publier` et sa migration.
 - **En attente de David** : la session `virgule-forme-exigee` (à lancer par David).
 - **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
 --mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
   **message de commit** ; job d'intégration = run à part ; page à cocher à 390 px ; **jamais de variable `e` ni
-  `i`** (les specs qui fixent les variables ne le voient pas : relire le rendu).
-- **Worktree / branche** : aucun (`ubumaths-wt-questions-5` retiré après #1977) ; lot 4b → nouveau worktree.
+  `i`** ; la saisie MathLive de l'aperçu ne se pilote pas à l'automate (relire le rendu par la page à cocher).
+- **Worktree / branche** : `ubumaths-wt-questions-5` · `feat/questions-5-lot4b`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -302,3 +301,32 @@ Deux lots :
 - ⚠️ **Défaut du juge, à proposer à David (PR à part)** : dans une case à forme exigée, une virgule tapée nue
   (`0,5n`) est refusée (`bad_form`) ; `checkRequiredForm` (`required-form-validator.ts`) relit la réponse sans la
   règle de la virgule nue (#520). Sans forme exigée, `0,5n` passe. Spec du lot écrite avec `0{,}5n`.
+
+## 15. Lot 4b « Calcul littéral : transformer, mettre en équation » : décisions (David, 2026-10-29, « je te suis »)
+
+| #   | Point | Modèle                                            | Réponse       | Catégorie, niveau                         |
+| --- | ----- | ------------------------------------------------- | ------------- | ----------------------------------------- |
+| 08  | 5-107 | Développer avec un facteur décimal                | case          | Transformation › Développement, 2         |
+| 09  | 5-038 | Factoriser ax + bx (et le coefficient 1)          | 3 cases       | Transformation › Factorisation, 3         |
+| 10  | 5-044 | Quelle équation traduit le problème ? (x + b = c) | choix parmi 4 | Equations › Mettre en équation, 1 (neuve) |
+| 11  | 5-125 | idem (ax = c)                                     | choix parmi 4 | idem, 2                                   |
+
+- **Niveaux** (reco acceptée) : insérer 08 et 09, **décaler de +1** les niveaux qui suivent, dans la migration de
+  rangement : Développement 32a81f6f, 54107079, 1703620c, 9fefb94c (2-5 → 3-6) ; Factorisation e66089e0, 9231b54b,
+  3abfcd7b, d7f2568a, 39c5bcfa, 11607586, dac2e771, 2120ce5f, dcaabf69 (3-11 → 4-12). Garde : niveaux relevés le
+  2026-10-29.
+- **Reclassement** : d4679e2d (4e → 5e, 4-022 → 5-107, niveau 1), e66089e0 et 9231b54b (4e → 5e, 4-070 → 5-038).
+  Mêmes nœuds (`développement`, `factorisation` = nœuds des points de 5e) : rien ne bouge dans l'arbre.
+- **Données d'élèves** (MCP, 2026-10-29) : 0 carte SRS, 0 tentative, 0 question d'évaluation, 0 activité de journal,
+  0 relecture, sur les 3 reclassés et sur les 13 décalés.
+- **Accès** (tranché par David) : la 4e ne voit plus les 3 modèles reclassés, la 5e les voit ; le décalage ne change
+  que l'ordre ; les 4 neufs restent en brouillon (admin seul) ; aucune règle ne change.
+
+### 15.1 Lot 4b écrit (2026-10-29)
+
+- Script `docs/wip/questions/lot-5-litteral-b.py`, fichiers `scripts/questions/5-litteral-b/` ; simulation prod :
+  4 à créer, 37 specs vertes (0,5x + 2 accepté virgule nue ou `{,}`, 2 + 0,5x accepté ; 0,5x + 4, 0,5x + 0,2 refusés ;
+  0,5x + 0,5 × 4 en `bad_form` ; coefficient 0 pour « x » seul refusé ; x = c + b et x = a × c refusés).
+- 08 sans forme exigée : la virgule nue passe, **pas de dépendance** à `virgule-forme-exigee`.
+- Base locale : 4 créés (535e78b2, c5e8bacc, ab5056b0, b0832fdb), page à cocher locale relue (virgules, cases de
+  09, corrigés). Corrigé en route : énoncé de 08 sans `= ?` (« 0 case dans l'énoncé »).
