@@ -5,16 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la relecture du lot 6a._
+_Mis à jour le 2026-10-29, lot 6a publié._
 
-- **État** : lots 1 à 5 en prod. Lot 6a (M1-M6) : 6 brouillons en prod, rangés et tagués (#1968) ; relus par David,
-  6/6 « OK » sans commentaire (verdicts comptés) ; `publier-lot` en simulation : 6 brouillons passent.
-- **Prochaine action** : David lance `pnpm tsx --env-file=.env scripts/questions/publier-lot.ts --dir
-scripts/questions/6-proportionnalite --publier` ; vérifier en base (MCP) ; puis le lot 6b (M7-M13, § 13).
-- **En attente de David** : le `--publier` ci-dessus ; passer en « validé » les verdicts de 02, 03, 04 sur
-  `/dev/modeles` (scission faite). Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **État** : lots 1 à 5 et lot 6a (M1-M6, 6 modèles) en prod, publiés, rangés, tagués (#1968).
+- **Prochaine action** : lot 6b (M7-M13, grandeurs et probabilités, § 13, phase 0 validée) : script
+  `lot-6-grandeurs.py` → `scripts/questions/6-grandeurs/`, specs, base locale, PR contenu.
+- **En attente de David** : passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles` (scission faite).
+  Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
 - **Pièges en cours** : 06 et 07 attendent l'outil « étiquettes à ranger » (bloc ```ranger, livré le 2026-10-28 :
   à reprendre). 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs` dans un worktree neuf.
+  M10 : version dessinée attend l'outil « assemblages de cubes ».
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
@@ -971,3 +971,4 @@ nouvelle revue.
   https://claude.ai/artifact/MMAGnQYvdeEBFd1MMZR8Rf.
 - David a relu : 6/6 « OK », aucun commentaire (base de la page lue, 6 verdicts comptés). `publier-lot` en
   simulation : 6 brouillons passent le contrôle.
+- David a lancé `publier-lot --publier` (2026-10-29) : 6/6 publiés. MCP : `published`, rangés, un tag chacun.
