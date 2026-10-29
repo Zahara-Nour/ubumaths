@@ -1,0 +1,306 @@
+{
+	"title": "Probabilité d'un évènement",
+	"description": "Calculer la probabilité d'un évènement dans une situation d'équiprobabilité : urne, dé, jeu de 32 cartes, lettres d'un mot",
+	"grades": ["4"],
+	"theme": "Probabilités",
+	"domain": "Calculer",
+	"subdomain": "Équiprobabilité",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une urne contient ${{r}}$ boules rouges, ${{v}}$ boules vertes et ${{b}}$ boules bleues, indiscernables au toucher. On tire une boule au hasard.\n\nQuelle est la probabilité de tirer {{if:k==0|une boule verte|une boule rouge ou bleue}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["r!=v", "v!=b", "r!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:({{if:k==0|v|r+b}})/(r+v+b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Équiprobabilité.** Quand toutes les issues ont la même probabilité, $P(A) = \\dfrac{\\text{nombre d'issues favorables à } A}{\\text{nombre total d'issues}}$.",
+					"Il y a ${{r}} + {{v}} + {{b}} = {{eval:r+v+b}}$ boules, toutes équiprobables. {{if:k==0|${{v}}$ sont vertes.|${{r}} + {{b}} = {{eval:r+b}}$ sont rouges ou bleues.}}",
+					"$$P = \\frac{{{eval:{{if:k==0|v|r+b}}}}}{{{eval:r+v+b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à ${{n}}$ faces, numérotées de $1$ à ${{n}}$.\n\nQuelle est la probabilité d'{{if:k==0|obtenir un nombre pair|obtenir un nombre supérieur ou égal à ${{m}}$}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "6|8|10|12"
+				},
+				{
+					"name": "m",
+					"expression": "2..n"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{if:k==0|1/2|(n-m+1)/n}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Équiprobabilité.** Quand toutes les issues ont la même probabilité, $P(A) = \\dfrac{\\text{nombre d'issues favorables à } A}{\\text{nombre total d'issues}}$.",
+					"Les ${{n}}$ faces sont équiprobables. {{if:k==0|Les nombres pairs de $1$ à ${{n}}$ sont ${{eval:n/2}}$.|Les nombres de ${{m}}$ à ${{n}}$ sont ${{n}} - {{m}} + 1 = {{eval:n-m+1}}$.}}",
+					"$$P = \\frac{{{eval:{{if:k==0|n/2|n-m+1}}}}}{{{n}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Un jeu de $32$ cartes compte quatre couleurs (pique, cœur, carreau, trèfle) et huit cartes par couleur : $7$, $8$, $9$, $10$, valet, dame, roi, as. On tire une carte au hasard.\n\nQuelle est la probabilité de tirer {{if:k==0|un roi|{{if:k==1|un cœur|{{if:k==2|une figure (valet, dame ou roi)|un as rouge}}}}}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==0|\\frac{1}{8}|{{if:k==1|\\frac{1}{4}|{{if:k==2|\\frac{3}{8}|\\frac{1}{16}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Équiprobabilité.** Quand toutes les issues ont la même probabilité, $P(A) = \\dfrac{\\text{nombre d'issues favorables à } A}{\\text{nombre total d'issues}}$.",
+					"Les $32$ cartes sont équiprobables. Il y a {{if:k==0|4 rois, un par couleur|{{if:k==1|8 cœurs|{{if:k==2|3 figures par couleur, soit $3 \\times 4 = 12$|2 as rouges (cœur et carreau)}}}}}}.",
+					"$$P = {{if:k==0|\\frac{4}{32} = |{{if:k==1|\\frac{8}{32} = |{{if:k==2|\\frac{12}{32} = |\\frac{2}{32} = }}}}}}\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On écrit chaque lettre du mot {{if:k==0|« PROBABILITE »|{{if:k==1|« MATHEMATIQUES »|« ALEATOIRE »}}}} sur un carton, puis on tire un carton au hasard.\n\nQuelle est la probabilité de tirer {{if:j==0|une voyelle|la lettre « {{if:k==0|B|{{if:k==1|M|A}}}} »}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "j",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==0|{{if:j==0|\\frac{5}{11}|\\frac{2}{11}}}|{{if:k==1|{{if:j==0|\\frac{6}{13}|\\frac{2}{13}}}|{{if:j==0|\\frac{2}{3}|\\frac{2}{9}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Équiprobabilité.** Quand toutes les issues ont la même probabilité, $P(A) = \\dfrac{\\text{nombre d'issues favorables à } A}{\\text{nombre total d'issues}}$.",
+					"Il y a {{if:k==0|$11$ cartons|{{if:k==1|$13$ cartons|$9$ cartons}}}}, tous équiprobables. {{if:k==0|{{if:j==0|$5$ portent une voyelle.|$2$ portent la lettre « B ».}}|{{if:k==1|{{if:j==0|$6$ portent une voyelle.|$2$ portent la lettre « M ».}}|{{if:j==0|$6$ portent une voyelle.|$2$ portent la lettre « A ».}}}}}}",
+					"$$P = {{if:k==0|{{if:j==0|\\frac{5}{11}|\\frac{2}{11}}}|{{if:k==1|{{if:j==0|\\frac{6}{13}|\\frac{2}{13}}}|{{if:j==0|\\frac{6}{9}|\\frac{2}{9}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 R, 5 V, 4 B : verte 5/12",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"r": "3",
+				"v": "5",
+				"b": "4"
+			},
+			"answers": ["\\frac{5}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : favorables / défavorables 5/7",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"r": "3",
+				"v": "5",
+				"b": "4"
+			},
+			"answers": ["\\frac{5}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rouge ou bleue 7/12",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "3",
+				"v": "5",
+				"b": "4"
+			},
+			"answers": ["\\frac{7}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 R, 4 V, 6 B : 4/12 non simplifié (ambre)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"r": "2",
+				"v": "4",
+				"b": "6"
+			},
+			"answers": ["\\frac{4}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Dé à 8 : pair, 0,5 accepté",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"n": "8",
+				"m": "2"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Dé à 10 : ≥ 7, 4/10 → 2/5",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"n": "10",
+				"m": "7"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/10 (7 oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"n": "10",
+				"m": "7"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Roi : 1/8",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["\\frac{1}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Figure : 3/8",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\frac{3}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : figure 3/32",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\frac{3}{32}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "PROBABILITE, voyelle : 5/11",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"j": "0"
+			},
+			"answers": ["\\frac{5}{11}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ALEATOIRE, voyelle : 2/3",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"j": "0"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "MATHEMATIQUES, M : 2/13",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"j": "1"
+			},
+			"answers": ["\\frac{2}{13}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/13 (une seule lettre M comptée)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"j": "1"
+			},
+			"answers": ["\\frac{1}{13}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

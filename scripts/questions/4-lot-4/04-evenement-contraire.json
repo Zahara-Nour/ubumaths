@@ -1,0 +1,244 @@
+{
+	"title": "Évènement contraire",
+	"description": "Calculer la probabilité de l'évènement contraire : P(non A) = 1 − P(A), avec P(A) décimal ou en fraction",
+	"grades": ["4"],
+	"theme": "Probabilités",
+	"domain": "Calculer",
+	"subdomain": "Évènement contraire",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La probabilité qu'il pleuve demain est estimée à ${{eval:a/100;d}}$.\n\nQuelle est la probabilité qu'il ne pleuve pas demain ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..89"
+				}
+			],
+			"conditions": ["mod(a,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-a/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Évènement contraire.** $P(\\text{non } A) = 1 - P(A)$ : un évènement et son contraire ont des probabilités de somme $1$.",
+					"$$1 - {{eval:a/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "À un jeu, la probabilité de gagner est $\\dfrac{{{a}}}{{{b}}}$.\n\nQuelle est la probabilité de perdre ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "5..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..b"
+				}
+			],
+			"conditions": ["a<b", "gcd(a,b)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b-a)/b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Évènement contraire.** $P(\\text{non } A) = 1 - P(A)$ : un évènement et son contraire ont des probabilités de somme $1$.",
+					"« Perdre » est le contraire de « gagner ».",
+					"$$1 - \\frac{{{a}}}{{{b}}} = \\frac{{{b}}}{{{b}}} - \\frac{{{a}}}{{{b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à ${{n}}$ faces, numérotées de $1$ à ${{n}}$.\n\nQuelle est la probabilité de ne pas obtenir le ${{m}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6|8|10|12|20"
+				},
+				{
+					"name": "m",
+					"expression": "1..n"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n-1)/n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Évènement contraire.** $P(\\text{non } A) = 1 - P(A)$ : un évènement et son contraire ont des probabilités de somme $1$.",
+					"La probabilité d'obtenir le ${{m}}$ est $\\dfrac{1}{{{n}}}$.",
+					"$$1 - \\frac{1}{{{n}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Un sac contient ${{r}}$ jetons rouges, ${{v}}$ jetons verts et ${{b}}$ jetons bleus. On tire un jeton au hasard.\n\nQuelle est la probabilité de ne pas tirer un jeton rouge ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["r!=v", "v!=b", "r!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-r/(r+v+b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Évènement contraire.** $P(\\text{non } A) = 1 - P(A)$ : un évènement et son contraire ont des probabilités de somme $1$.",
+					"Il y a ${{eval:r+v+b}}$ jetons : $P(\\text{rouge}) = \\dfrac{{{r}}}{{{eval:r+v+b}}}$.",
+					"$$P(\\text{non rouge}) = 1 - \\frac{{{r}}}{{{eval:r+v+b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,35 → 0,65",
+			"variationIndex": 0,
+			"variables": {
+				"a": "35"
+			},
+			"answers": ["0,65"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,75 (retenue)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "35"
+			},
+			"answers": ["0,75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/8 → 5/8",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "8"
+			},
+			"answers": ["\\frac{5}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3/8 → 0,625 accepté",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "8"
+			},
+			"answers": ["0,625"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : inverse 8/3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "8"
+			},
+			"answers": ["\\frac{8}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dé à 6 : 5/6",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"m": "6"
+			},
+			"answers": ["\\frac{5}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/6",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"m": "6"
+			},
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 R, 5 V, 4 B : 9/12 (ambre)",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3",
+				"v": "5",
+				"b": "4"
+			},
+			"answers": ["\\frac{9}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "3 R, 5 V, 4 B : 3/4",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3",
+				"v": "5",
+				"b": "4"
+			},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/4 (rouge)",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3",
+				"v": "5",
+				"b": "4"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,162 @@
+{
+	"title": "Fluctuation des fréquences",
+	"description": "Observer la fluctuation des fréquences pour un nombre de répétitions fixé : trois groupes de 50 lancers, deux simulations de 100 lancers, recommencer 20 lancers",
+	"grades": ["4"],
+	"theme": "Probabilités",
+	"domain": "Simulation",
+	"subdomain": "Fluctuation",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Trois groupes lancent chacun $50$ fois une même pièce équilibrée. Le groupe 1 obtient ${{a}}$ fois Pile, le groupe 2 ${{b}}$ fois, le groupe 3 ${{c}}$ fois.\n\nLe groupe 2 affirme : « Notre fréquence de Pile n'est pas $0{,}5$, donc la pièce est truquée. » A-t-il raison ?\n\n```choix\n- Non : sur $50$ lancers, la fréquence fluctue d'une série à l'autre.\n- Oui : la fréquence devrait valoir exactement $0{,}5$.\n- Oui : les trois groupes n'ont pas obtenu le même résultat.\n- On ne peut rien dire d'une pièce.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "21..29"
+				},
+				{
+					"name": "b",
+					"expression": "21..29"
+				},
+				{
+					"name": "c",
+					"expression": "21..29"
+				}
+			],
+			"conditions": ["a!=b", "b!=c", "a!=c", "b!=25"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fluctuation.** Pour un même nombre de répétitions, les résultats d'une expérience aléatoire changent d'une série à l'autre : les fréquences fluctuent. Un écart à la probabilité ne prouve pas que la pièce ou le dé est truqué.",
+					"Les fréquences de Pile sont ${{eval:a/50;d}}$, ${{eval:b/50;d}}$ et ${{eval:c/50;d}}$ : elles varient autour de $0{,}5$. Sur $50$ lancers, de tels écarts sont normaux : $\\textcolor{{{color:primary.0}}}{\\text{le groupe 2 a tort}}$."
+				]
+			}
+		},
+		{
+			"statement": "Inès et Malo simulent chacun $100$ lancers d'un dé équilibré à six faces.\n\nSimulation d'Inès :\n\n```simulation\nF = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6\ntirages: 100\ngraine: {{g}}\n```\n\nSimulation de Malo :\n\n```simulation\nF = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6\ntirages: 100\ngraine: {{h}}\n```\n\nPourquoi leurs fréquences observées sont-elles différentes ?\n\n```choix\n- Les résultats d'une expérience aléatoire changent d'une série de lancers à l'autre.\n- L'un des deux s'est trompé dans sa simulation.\n- Les deux dés n'ont pas les mêmes probabilités.\n- Il faudrait que les fréquences soient égales.\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1..999"
+				},
+				{
+					"name": "h",
+					"expression": "1..999"
+				}
+			],
+			"conditions": ["g!=h"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fluctuation.** Pour un même nombre de répétitions, les résultats d'une expérience aléatoire changent d'une série à l'autre : les fréquences fluctuent. Un écart à la probabilité ne prouve pas que la pièce ou le dé est truqué.",
+					"Les deux simulations utilisent les mêmes probabilités et le même nombre de lancers ; seuls les tirages changent. $\\textcolor{{{color:primary.0}}}{\\text{C'est la fluctuation}}$."
+				]
+			}
+		},
+		{
+			"statement": "Léa lance $20$ fois une pièce équilibrée et obtient ${{a}}$ fois Pile. Elle recommence $20$ lancers.\n\nQue peut-on dire de son nouveau nombre de Pile ?\n\n```choix\n- On ne peut pas savoir à l'avance combien de fois elle obtiendra Pile.\n- Elle obtiendra encore ${{a}}$ fois Pile.\n- Elle obtiendra exactement $10$ fois Pile.\n- Elle obtiendra ${{eval:20-a}}$ fois Pile, pour compenser.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "6..14"
+				}
+			],
+			"conditions": ["a!=10"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fluctuation.** Pour un même nombre de répétitions, les résultats d'une expérience aléatoire changent d'une série à l'autre : les fréquences fluctuent. Un écart à la probabilité ne prouve pas que la pièce ou le dé est truqué.",
+					"Chaque série de $20$ lancers donne un résultat différent ; la pièce ne « se souvient » pas des lancers d'avant. $\\textcolor{{{color:primary.0}}}{\\text{On ne peut pas savoir à l'avance}}$ : on sait seulement que le nombre de Pile tourne souvent autour de $10$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Fluctuation",
+			"variationIndex": 0,
+			"variables": {
+				"a": "23",
+				"b": "27",
+				"c": "24"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,5 exactement",
+			"variationIndex": 0,
+			"variables": {
+				"a": "23",
+				"b": "27",
+				"c": "24"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Fluctuation (simulations)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "12",
+				"h": "345"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une erreur de simulation",
+			"variationIndex": 1,
+			"variables": {
+				"g": "12",
+				"h": "345"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "On ne peut pas savoir",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : compenser",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
