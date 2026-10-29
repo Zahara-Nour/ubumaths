@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, PR #1975 (migration du lot 3) ouverte._
+_Mis à jour le 2026-10-29, après #1975._
 
-- **État** : lots 1 et 2 PUBLIÉS. Lot 3 (6 modèles, § 7) : brouillons en prod (ids au § 7), migration nœud + tag `20261029234500` dans la PR #1975 (test 9/9, rouge 5/9 sans elle ; `security-auditor` : rien de bloquant). Collision `213000` réglée (#1972), CI relancée après merge de `main`.
-- **Prochaine action** : CI de #1975 verte → merge → `pnpm db:migrate` depuis le dépôt principal (4 conditions réunies ; ne joue que `234500`, le reste est déjà en prod) → vérifier au MCP (6 rangés, 1 point chacun) → page à cocher → publication par David.
-- **En attente de David** : confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
-- **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `--mettre-a-jour` en simulation refusé par le classifieur ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT, pas dans la PR ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot-3-rangement` (PR #1975).
+- **État** : lots 1 et 2 PUBLIÉS. Lot 3 (6 modèles, § 7) : migration `234500` jouée en prod (avec celle du CM1, `235500`), vérifié au MCP : 6 brouillons rangés, 1 point chacun. Page à cocher : https://claude.ai/artifact/GQKRkFMPrLg2Yt26db62gn (aucune alerte, 0 verdict).
+- **Prochaine action** : David relit la page → compter les verdicts (`ArtifactData list verdicts`) → « À revoir » à corriger (§ 7 de la démarche) → `publier-lot.ts --dir scripts/questions/ce2-3` (simulation, puis David le lance avec `!`). Ensuite : choisir le lot 4 (§ 3).
+- **En attente de David** : relecture du lot 3 ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
+- **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
+- **Worktree / branche** : aucun (retiré après #1975) ; prochain lot : nouveau worktree `../ubumaths-wt-questions-ce2`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -287,3 +287,7 @@ règles (`multiple` + `range`, toute réponse juste acceptée).
   questions_ce1_lot3_niveaux non jouée) : la session ce1 doit renommer la sienne (voir journal questions-3). La CI
   est rouge pour la même raison (`migrations-horodatage-unique`, `migration-versions`, garde SECURITY DEFINER).
   Le `db:migrate` jouera aussi `20261029233000` (questions-3, qui l'attend).
+- 2026-10-29 : collision réglée (#1972) ; #1975 mergée (CI verte, revue : `security-auditor` seul, migration de
+  contenu) ; `db:migrate` lancé par David : `234500` et `235500` (CM1, ses 4 conditions écrites dans son journal ;
+  session cm1 prévenue). MCP : les 6 modèles CE2 et les 10 CM1 ont un nœud et un seul point. Page à cocher :
+  https://claude.ai/artifact/GQKRkFMPrLg2Yt26db62gn (6 fiches, aucune alerte).
