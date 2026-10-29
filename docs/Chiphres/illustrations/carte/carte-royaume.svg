@@ -12,18 +12,17 @@
 <path id="frontiere-pifometrie-yoyolande" d="M2390,1724 C2357,1708 2246,1658 2192,1625 C2138,1592 2106,1551 2065,1526 C2024,1501 2002,1498 1945,1477 C1888,1456 1785,1417 1725,1400 C1665,1383 1617,1380 1584,1375 C1551,1370 1567,1382 1528,1371 C1489,1360 1392,1331 1350,1310 C1308,1289 1309,1277 1273,1245 C1237,1213 1179,1150 1132,1117 C1085,1084 1047,1073 990,1047 C933,1021 858,994 792,962 C726,930 627,874 594,856" stroke="#8F2447" stroke-opacity="0" stroke-width="34"/>
 </g>
 <g id="noms">
-<text x="1180" y="500" font-size="76" text-anchor="middle" class="eau">Mer Baltique</text>
+<text x="1000" y="470" font-size="70" text-anchor="middle" class="eau">Mer Baltique</text>
 <text x="2660" y="2830" font-size="56" text-anchor="middle" class="eau" transform="rotate(-10 2660 2830)">Vistule</text>
 <text x="3080" y="1010" font-size="50" text-anchor="middle" class="voisin">Pythagoriades</text>
-<text x="3950" y="480" font-size="84" text-anchor="middle" class="voisin">Lithuanie</text>
-<text x="3950" y="560" font-size="52" text-anchor="middle" class="voisin">(Champs Minés)</text>
-<text x="3600" y="2900" font-size="84" text-anchor="middle" class="voisin">Empire du Czar</text>
+<text x="3950" y="520" font-size="84" text-anchor="middle" class="voisin">Lithuanie</text>
+<text x="3880" y="3050" font-size="84" text-anchor="middle" class="voisin">Empire du Czar</text>
 <g id="province-yoyolande"><text x="2100" y="1300" font-size="92" text-anchor="middle" class="prov">YOYOLANDE</text></g>
 <g id="province-bedonstan"><text x="3050" y="1480" font-size="92" text-anchor="middle" class="prov">BEDONSTAN</text></g>
 <g id="province-glitchistan"><text x="3150" y="2560" font-size="92" text-anchor="middle" class="prov">GLITCHISTAN</text></g>
 <g id="province-patatovie"><text x="2560" y="3200" font-size="92" text-anchor="middle" class="prov">PATATOVIE</text></g>
 <g id="province-nombrilie"><text x="1980" y="2330" font-size="92" text-anchor="middle" class="prov">NOMBRILIE</text></g>
-<g id="province-pifometrie"><text x="760" y="2130" font-size="92" text-anchor="middle" class="prov">PIFOMÉTRIE</text></g>
+<g id="province-pifometrie"><text x="980" y="2130" font-size="92" text-anchor="middle" class="prov">PIFOMÉTRIE</text></g>
 <g id="ville-sandomir"><text x="2613" y="1615" font-size="80" text-anchor="middle" class="capitale">Sandomir</text></g>
 <g id="ville-sinusborg"><text x="1900" y="890" font-size="60" text-anchor="middle" class="cap">Sinusborg</text></g>
 <g id="ville-lobatchevsk"><text x="2810" y="1335" font-size="60" text-anchor="middle" class="cap">Lobatchevsk</text></g>

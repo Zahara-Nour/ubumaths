@@ -34,7 +34,7 @@ PROVINCES = [
     ('glitchistan', 'Glitchistan', 3150, 2560),
     ('patatovie', 'Patatovie', 2560, 3200),
     ('nombrilie', 'Nombrilie', 1980, 2330),
-    ('pifometrie', 'Pifométrie', 760, 2130),
+    ('pifometrie', 'Pifométrie', 980, 2130),
 ]
 # (id, nom, x, y, ancrage)
 CAPITALS = [
@@ -96,12 +96,11 @@ for name, pts in BORDERS.items():
 o.append('</g>')
 
 o.append('<g id="noms">')
-o.append(text(1180, 500, 'Mer Baltique', 76, 'eau'))
+o.append(text(1000, 470, 'Mer Baltique', 70, 'eau'))
 o.append(text(2660, 2830, 'Vistule', 56, 'eau', extra=' transform="rotate(-10 2660 2830)"'))
 o.append(text(3080, 1010, 'Pythagoriades', 50, 'voisin'))
-o.append(text(3950, 480, 'Lithuanie', 84, 'voisin'))
-o.append(text(3950, 560, '(Champs Minés)', 52, 'voisin'))
-o.append(text(3600, 2900, 'Empire du Czar', 84, 'voisin'))
+o.append(text(3950, 520, 'Lithuanie', 84, 'voisin'))
+o.append(text(3880, 3050, 'Empire du Czar', 84, 'voisin'))
 for pid, name, x, y in PROVINCES:
     o.append(f'<g id="province-{pid}">{text(x, y, name.upper(), 92, "prov")}</g>')
 o.append(f'<g id="ville-sandomir">{text(*SANDOMIR, "Sandomir", 80, "capitale")}</g>')
