@@ -6,14 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1982 et #1989._
+_Mis à jour le 2026-10-29, après #1982 et #1989 (migration jouée)._
 
-- **État** : lot 3 (8 modèles, § 19-21) : brouillons créés en prod par David ; migration nœud + tag
-  `20261030004900` mergée (#1982, renommée #1989) mais **pas encore jouée** : `db push` exige
-  `--include-all` à cause de `20261030002300` (questions-3), mergée et non jouée.
-- **Prochaine action** : une fois la migration jouée (par questions-3, règle du 2026-10-27), vérifier en prod
-  nœud + tag des 8 ; puis page à cocher et publication (David).
-- **En attente de David** : avis sur l'écart du modèle 5 (§ 20 : 3x³y⁻² refusé en forme).
+- **État** : lot 3 (8 modèles, § 19-21) : brouillons en prod, rangés et tagués (migration `20261030004900`
+  jouée avec l'`--include-all` de questions-3, vérifiée au MCP). Page à cocher publiée :
+  https://claude.ai/artifact/6CcVZNPqLQg1M8t3AjWZuk (aucune alerte, 0 verdict au départ).
+- **Prochaine action** : compter les verdicts de la page ; tout OK → `publier-lot.ts` en simulation, puis
+  David le lance avec `--publier`.
+- **En attente de David** : sa relecture (page à cocher) ; avis sur l'écart du modèle 5 (§ 20 : 3x³y⁻² refusé en forme).
 - **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT ; horodatage = max + 1 min
   de `origin/main` ET des worktrees, puis `migration list --linked` avant `db:migrate`.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de` (branche `fix/questions-2de-puissances-horodatage` mergée).
@@ -540,3 +540,7 @@ nœud + tag.
   sessions. Renommée `20261030004900` (#1989 ; `…004800` pris par un worktree). Puis `migration list
 --linked` : `20261030002300` (questions-3) aussi non jouée → `--include-all` nécessaire ; session
   questions-3 prévenue, rien poussé de mon côté.
+- Jouée le 2026-10-29 par l'`--include-all` de questions-3 (avec `20261030002300`). MCP : les 8 en brouillon,
+  2-260 et 2-270 sur la notion « Puissances : calculs », 2-423 sur « propriétés » (Racines carrées : calculs),
+  2-272 sur « expressions fractionnaires », 2-238 sur « simplification » ; un tag chacun, le bon.
+- Page à cocher (aucune alerte) : https://claude.ai/artifact/6CcVZNPqLQg1M8t3AjWZuk
