@@ -276,3 +276,28 @@ seul f(ℓ) = ℓ est demandé, dans 432 (l'étude de la convergence, 571, n'est
 
 **Page à cocher** : https://claude.ai/artifact/CRPu9Wj8MaomQe8nS6v7Jy (17 fiches, 64 exemples), collection `verdicts`
 vide à la publication.
+
+**Publication bloquée (simulation `publier-lot`)** : 7063979e et 98ba277c occupent le même niveau (2) de la même
+catégorie. Relevé sur les **184 brouillons** (MCP, 2026-10-29) : **14 collisions** de ce type, dans 13 catégories
+(13 entre brouillons de terminale, 1 avec un modèle publié de 1re spé : 7f13ca89 au niveau 3 de Dérivation /
+Variations). Proposition : **une seule migration de niveaux** pour tout le niveau, avant la première publication
+(niveau visé = niveau libre de la catégorie, sans toucher aux modèles publiés) — Q8 :
+
+| Modèle   | Catégorie (sous-domaine)                  | Niveau |
+| -------- | ----------------------------------------- | ------ |
+| 7063979e | Limites de suites / Comparaison           | 2 → 1  |
+| d3ae0f61 | Continuité / TVI                          | 2 → 3  |
+| 7f13ca89 | Dérivation / Variations (1re spé publiée) | 3 → 5  |
+| cac2d6ed | Fonctions trigonométriques / Dérivées     | 3 → 4  |
+| 9c7fb7cf | Fonctions trigonométriques / Équations    | 2 → 5  |
+| 5072030d | Fonctions trigonométriques / Parité       | 1 → 3  |
+| 7df468d6 | Fonctions trigonométriques / Parité       | 2 → 4  |
+| 37ce7759 | Convexité / Lecture graphique             | 2 → 1  |
+| eae25eba | Espace / Projeté orthogonal               | 3 → 2  |
+| d0930e8c | Primitives des fonctions de référence     | 1 → 2  |
+| 3aca54e9 | Dénombrement / Combinaisons               | 2 → 1  |
+| ed01a843 | Dénombrement / Principes                  | 1 → 2  |
+| f796ffc0 | Dénombrement / Reconnaître le modèle      | 2 → 1  |
+| a95a9c0d | Loi binomiale / Calcul de probabilités    | 2 → 1  |
+
+Le fichier `tspe-0-suites/7063979e.json` porte déjà le niveau 1.
