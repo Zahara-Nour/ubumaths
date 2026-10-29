@@ -465,7 +465,7 @@ prof de 3e voient 6 modèles publiés de plus. Aucune règle ne change.
   `etat-prod-2026-10-29-3e-lot3/`, lu par `releve-prod-3.ts`) : chacun sur le nœud de son point (§ 10.2).
   Horodatage pris après `20261030001000` (dictionnaire), le plus récent de toutes les branches.
 - Test `questions-3-lot3-rangement-tags` : 19 verts ; corps de la migration vidé : 8 rouges.
-- `security-auditor` : aucun bloquant (diff avec le lot 2 : données et compteurs seuls ; prod mesurée : 6 brouillons
+- PR #1984. `security-auditor` : aucun bloquant (diff avec le lot 2 : données et compteurs seuls ; prod mesurée : 6 brouillons
   sans nœud ni tag, points actifs, nœuds uniques). Point faible relevé : la notion « Trigonométrie du triangle
   rectangle » a deux sous-notions sans point (« calcul de longueurs », « calcul d'angles ») ; 57c73be1 mêle
   longueurs et angle → gardé sur la notion (§ 10.2), à confirmer par David.
