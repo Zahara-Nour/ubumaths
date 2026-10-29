@@ -1,0 +1,438 @@
+{
+	"title": "Multiples communs à deux nombres",
+	"description": "Multiples communs à deux entiers inférieurs à 15 (6 et 8) : le plus petit, un multiple commun inférieur à 100, les cocher dans une liste",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Multiples et diviseurs",
+	"level": 8,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel est le plus petit multiple commun à ${{a}}$ et ${{b}}$, autre que $0$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..4"
+				},
+				{
+					"name": "u",
+					"expression": "2..6"
+				},
+				{
+					"name": "v",
+					"expression": "3..7"
+				},
+				{
+					"name": "a",
+					"expression": "eval:g*u"
+				},
+				{
+					"name": "b",
+					"expression": "eval:g*v"
+				},
+				{
+					"name": "m",
+					"expression": "eval:g*u*v"
+				}
+			],
+			"conditions": ["u<v", "gcd(u,v)==1", "b<=14", "m<100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiple commun** : un nombre qui est dans la table de ${{a}}$ **et** dans celle de ${{b}}$.",
+					"Table de ${{b}}$ : ${{b}}${{if:2*b<=m| ; ${{eval:2*b}}$|}}{{if:3*b<=m| ; ${{eval:3*b}}$|}}{{if:4*b<=m| ; ${{eval:4*b}}$|}}{{if:5*b<=m| ; ${{eval:5*b}}$|}}{{if:6*b<=m| ; ${{eval:6*b}}$|}}{{if:7*b<=m| ; ${{eval:7*b}}$|}}{{if:8*b<=m| ; ${{eval:8*b}}$|}}{{if:9*b<=m| ; ${{eval:9*b}}$|}}{{if:10*b<=m| ; ${{eval:10*b}}$|}}{{if:11*b<=m| ; ${{eval:11*b}}$|}}{{if:12*b<=m| ; ${{eval:12*b}}$|}}{{if:13*b<=m| ; ${{eval:13*b}}$|}}{{if:14*b<=m| ; ${{eval:14*b}}$|}}…",
+					"On cherche chacun dans la table de ${{a}}$ : le premier qui y est, c'est $\\textcolor{{{color:primary.0}}}{{{m}}} = {{a}} \\times {{eval:m/a}} = {{b}} \\times {{eval:m/b}}$.",
+					"${{a}} \\times {{b}} = {{eval:a*b}}$ est aussi un multiple commun, mais pas le plus petit."
+				]
+			}
+		},
+		{
+			"statement": "Trouve un multiple commun à ${{a}}$ et ${{b}}$, autre que $0$ et plus petit que $100$.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..4"
+				},
+				{
+					"name": "u",
+					"expression": "2..6"
+				},
+				{
+					"name": "v",
+					"expression": "3..7"
+				},
+				{
+					"name": "a",
+					"expression": "eval:g*u"
+				},
+				{
+					"name": "b",
+					"expression": "eval:g*v"
+				},
+				{
+					"name": "m",
+					"expression": "eval:g*u*v"
+				}
+			],
+			"conditions": ["u<v", "gcd(u,v)==1", "b<=14", "m<100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "multiple",
+							"base": "{{a}}"
+						},
+						{
+							"type": "multiple",
+							"base": "{{b}}"
+						},
+						{
+							"type": "range",
+							"min": "0",
+							"max": "100",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiple commun** : un nombre qui est dans la table de ${{a}}$ **et** dans celle de ${{b}}$.",
+					"Table de ${{b}}$ : ${{b}}${{if:2*b<=m| ; ${{eval:2*b}}$|}}{{if:3*b<=m| ; ${{eval:3*b}}$|}}{{if:4*b<=m| ; ${{eval:4*b}}$|}}{{if:5*b<=m| ; ${{eval:5*b}}$|}}{{if:6*b<=m| ; ${{eval:6*b}}$|}}{{if:7*b<=m| ; ${{eval:7*b}}$|}}{{if:8*b<=m| ; ${{eval:8*b}}$|}}{{if:9*b<=m| ; ${{eval:9*b}}$|}}{{if:10*b<=m| ; ${{eval:10*b}}$|}}{{if:11*b<=m| ; ${{eval:11*b}}$|}}{{if:12*b<=m| ; ${{eval:12*b}}$|}}{{if:13*b<=m| ; ${{eval:13*b}}$|}}{{if:14*b<=m| ; ${{eval:14*b}}$|}}…",
+					"$\\textcolor{{{color:primary.0}}}{{{m}}} = {{a}} \\times {{eval:m/a}} = {{b}} \\times {{eval:m/b}}$ est dans les deux tables.",
+					"{{if:2*m<100|${{eval:2*m}}${{if:3*m<100|, ${{eval:3*m}}$|}}{{if:4*m<100|, ${{eval:4*m}}$|}} conviennent aussi.|Le multiple commun suivant, ${{eval:2*m}}$, dépasse $100$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Coche tous les multiples communs à ${{a}}$ et ${{b}}$.\n\n```choix\nplusieurs: oui\n- ${{m}}$\n- ${{c1}}$\n- ${{c2}}$\n- ${{x3}}$\n- ${{x4}}$\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..4"
+				},
+				{
+					"name": "u",
+					"expression": "2..6"
+				},
+				{
+					"name": "v",
+					"expression": "3..7"
+				},
+				{
+					"name": "a",
+					"expression": "eval:g*u"
+				},
+				{
+					"name": "b",
+					"expression": "eval:g*v"
+				},
+				{
+					"name": "m",
+					"expression": "eval:g*u*v"
+				},
+				{
+					"name": "s",
+					"expression": "2..{{eval:floor(100/a)}}"
+				},
+				{
+					"name": "t",
+					"expression": "2..{{eval:floor(100/b)}}"
+				},
+				{
+					"name": "c1",
+					"expression": "eval:a*s"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:b*t"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:2*m"
+				},
+				{
+					"name": "x4",
+					"expression": "10..99"
+				}
+			],
+			"conditions": [
+				"u<v",
+				"gcd(u,v)==1",
+				"b<=14",
+				"m<100",
+				"2*m<100",
+				"mod(c1,b)!=0",
+				"mod(c2,a)!=0",
+				"c1!=c2",
+				"x3!=x4",
+				"x3!=m",
+				"x3!=c1",
+				"x3!=c2",
+				"x4!=m",
+				"x4!=c1",
+				"x4!=c2"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;{{eval:1*0}};{{eval:2*0}};{{eval:3*floor((m-mod(x3,m))/m)}};{{eval:4*floor((m-mod(x4,m))/m)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiple commun** : un nombre qui est dans la table de ${{a}}$ **et** dans celle de ${{b}}$.",
+					"${{m}}$ : {{if:mod(m,a)==0|dans la table de ${{a}}$|pas dans la table de ${{a}}$}}, {{if:mod(m,b)==0|dans celle de ${{b}}$|pas dans celle de ${{b}}$}}.",
+					"${{c1}}$ : {{if:mod(c1,a)==0|dans la table de ${{a}}$|pas dans la table de ${{a}}$}}, {{if:mod(c1,b)==0|dans celle de ${{b}}$|pas dans celle de ${{b}}$}}.",
+					"${{c2}}$ : {{if:mod(c2,a)==0|dans la table de ${{a}}$|pas dans la table de ${{a}}$}}, {{if:mod(c2,b)==0|dans celle de ${{b}}$|pas dans celle de ${{b}}$}}.",
+					"${{x3}}$ : {{if:mod(x3,a)==0|dans la table de ${{a}}$|pas dans la table de ${{a}}$}}, {{if:mod(x3,b)==0|dans celle de ${{b}}$|pas dans celle de ${{b}}$}}.",
+					"${{x4}}$ : {{if:mod(x4,a)==0|dans la table de ${{a}}$|pas dans la table de ${{a}}$}}, {{if:mod(x4,b)==0|dans celle de ${{b}}$|pas dans celle de ${{b}}$}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "6 et 8 : 24",
+			"variationIndex": 0,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le produit 48",
+			"variationIndex": 0,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8",
+			"variationIndex": 0,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 0,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 et 8 : 24",
+			"variationIndex": 1,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "6 et 8 : 72",
+			"variationIndex": 1,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24"
+			},
+			"answers": ["72"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "6 et 8 : 96",
+			"variationIndex": 1,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24"
+			},
+			"answers": ["96"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 1,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 30 (table de 6 seulement)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 120 (plus grand que 100)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Multiples communs : 24 et 48",
+			"variationIndex": 2,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24",
+				"s": "3",
+				"t": "2",
+				"c1": "18",
+				"c2": "16",
+				"x3": "48",
+				"x4": "50"
+			},
+			"answers": ["0;3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "48 oublié : la moitié des points",
+			"variationIndex": 2,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24",
+				"s": "3",
+				"t": "2",
+				"c1": "18",
+				"c2": "16",
+				"x3": "48",
+				"x4": "50"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Erreur : 18 coché (table de 6 seulement)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "2",
+				"u": "3",
+				"v": "4",
+				"a": "6",
+				"b": "8",
+				"m": "24",
+				"s": "3",
+				"t": "2",
+				"c1": "18",
+				"c2": "16",
+				"x3": "48",
+				"x4": "50"
+			},
+			"answers": ["0;1;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

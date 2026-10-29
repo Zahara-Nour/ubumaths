@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1957 et la publication du lot 1._
+_Mis à jour le 2026-10-29, lot 2 écrit (PR des fichiers ouverte)._
 
-- **État** : lot 1 : 03 et 06 mis à jour en prod par David (`--mettre-a-jour`, vérifié au MCP : contenu nouveau, nœuds et tags intacts) ; **7 modèles publiés** (vérifié au MCP) ; 06 « Ranger cinq grands nombres » (7d258acc, bloc ```ranger) reste en brouillon.
-- **Prochaine action** : lot 2 — choisir les points suivants parmi les 144 sans modèle (§ 3), phase 0 à écrire et faire valider.
-- **En attente de David** : publier 7d258acc après le prochain `deploy:prod` (```ranger, #1943, pas encore en prod) : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`, après un coup d'œil dans l'aperçu en prod.
-- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture. Specs de Ranger = positions AFFICHÉES au mélange de la graine 0 : changer étiquettes ou variables → les relever (`generateInstanceWithFixedVariables`). `create-questions` dans un worktree neuf : `pnpm exec svelte-kit sync` d'abord.
-- **Worktree / branche** : aucun.
+- **État** : lot 1 publié (7/8). **Lot 2 (divisibilité, 5 modèles)** : phase 0 validée, fichiers `scripts/questions/cm2-2/` écrits, specs vertes, joués en local ; PR des fichiers ouverte.
+- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --dir scripts/questions/cm2-2 --publier` (brouillons), relevé des `id`, migration nœud + tag (CM2-130, 009, 010, 011, 012).
+- **En attente de David** : publier 7d258acc (lot 1, ```ranger) après le prochain `deploy:prod` : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`.
+- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture ; `create-questions` reconnaît un modèle à son **titre** (collision avec le CM1 évitée, § 7.2). Specs de Ranger = positions affichées au mélange de la graine 0. Worktree neuf : `pnpm exec svelte-kit sync` d'abord.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot-2`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -251,3 +251,38 @@ ni de `x1…x5`. Specs : positions affichées au mélange de la graine 0, relev�
   correction comme ci-dessus.
 - Prod (2026-10-29) : David lance `--mettre-a-jour` (2 mis à jour), puis `publier-lot --publier` sur les 7 fichiers
   sans 06 (copiés à part) : 7/7 publiés, vérifié au MCP.
+
+## 7. Lot 2 — divisibilité : phase 0 (validée par David le 2026-10-29)
+
+Relevé MCP du 2026-10-29 : CM2-130, 009, 010, 011, 012 sans modèle, tous sur **Divisibilité >
+multiples et diviseurs**. Bornes `cycle3.json` : CM2-130 diviseur 2 à 10 ; 009 nombre ≤ 100 ; 010
+et 011 nombres ≤ 30 ; 012 deux nombres < 15, multiples communs ≤ 100. Catégorie `Entiers / Diviser /
+Multiples et diviseurs`.
+
+| #   | Point   | Modèle                                | Variations                                                                                                                                         | Niveau |
+| --- | ------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1   | CM2-130 | Reconnaître les multiples d'un nombre | V1 « 56 est-il un multiple de 7 ? » Oui / Non, n ≤ 100, d 3 à 9 ; V2 la même, n de 100 à 999 ; V3 « coche les multiples de 7 » parmi 5 nombres     | 4      |
+| 2   | CM2-009 | Des diviseurs d'un nombre             | V1 « coche tous les diviseurs de 72 » parmi 1 à 10 ; V2 « 72 élèves en équipes égales : propose un nombre d'équipes » (tout diviseur ≠ 1, n juste) | 5      |
+| 3   | CM2-010 | Tous les diviseurs d'un nombre        | une case par diviseur, ordre libre, leur nombre est donné ; V1 4 diviseurs (pq), V2 6 (p²q : 12, 18, 20, 28), V3 8 (24, 30)                        | 6      |
+| 4   | CM2-011 | Diviseurs communs à deux nombres      | « coche tous les diviseurs communs à 12 et 18 » parmi 1 à 12 ; V1 l'un divise l'autre, V2 non (pgcd de 4 à 10)                                     | 7      |
+| 5   | CM2-012 | Multiples communs à deux nombres      | V1 le plus petit non nul (6 et 8 → 24) ; V2 un multiple commun < 100 (tout multiple juste) ; V3 « coche les multiples communs » parmi 5 nombres    | 8      |
+
+Corrigés : paires (28 = 1 × 28 = 2 × 14 = 4 × 7), n = d × q (+ r), listes de diviseurs puis
+communs, table du plus grand jusqu'au premier multiple de l'autre. Question d'accès : brouillons,
+puis nœud + tag → personne ne lit rien de plus.
+
+### 7.1 Lot 2 : décisions (David, 2026-10-29)
+
+Recommandations suivies (« tes recos ? » puis « go ») : le tableau tel quel ; 009 coche parmi 1 à
+10 ; 010 en cases, le nombre de diviseurs donné (pousse à chercher les paires jusqu'au bout) ; 011
+en choix de 1 à 12.
+
+### 7.2 Lot 2 : écriture (2026-10-29)
+
+- Script `lot-cm2-2.py` → `scripts/questions/cm2-2/` (5 fichiers) ; `question:specs` 300 tirages par variation, tout vert ; `create-questions` en simulation (prod) : 5 à créer.
+- « Coche tous les… » : bonne réponse calculée choix par choix (`{{eval:i*floor((k-mod(x,k))/k)}}` rend i ou 0, le 0 répété compte une fois) → le choix 0 doit toujours être bon (« 1 », ou un vrai multiple dans une liste mélangée).
+- Un bon choix oublié vaut **½ point** (`unoptimal_form`, règle du moteur `statusFromChoices`) : specs écrites ainsi, vu dans l'aperçu (« bonne réponse oubliée »).
+- Pas de « trouve trois diviseurs » en cases libres : trois cases « n'importe quel diviseur » acceptent trois fois le même.
+- Tirages : 011 V2 et 012 construits (a = g × u, b = g × v, u et v premiers entre eux), sinon trop de rejets ; 012 V3, 2m toujours parmi les choix (au hasard, un 2e multiple commun ne tombait presque jamais).
+- **Collision avec le lot 2 du CM1** (écrit, pas mergé) : niveaux 2 et 3 de la même catégorie et titre « Est-ce un multiple ? » (CM1-012, jumeau de CM2-130) → niveaux 4 à 8, titre « Reconnaître les multiples d'un nombre » ; session `questions-cm1` prévenue (9 et au-delà pour elle).
+- Local (port 5180, `admin@local.test`, Playwright 390 px au toucher) : 04 (20 et 30) juste → « Juste », oubli de 10 → « ½ point », 4 coché → faux ; 12 choix lisibles ; 010 : 8 cases l'une sous l'autre, lisibles.

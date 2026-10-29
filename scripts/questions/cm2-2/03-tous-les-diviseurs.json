@@ -1,0 +1,291 @@
+{
+	"title": "Tous les diviseurs d'un nombre",
+	"description": "Écrire tous les diviseurs d'un entier jusqu'à 30 (4, 6 ou 8 diviseurs, leur nombre est donné), dans n'importe quel ordre",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Multiples et diviseurs",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		},
+		"orderIndependent": true
+	},
+	"variations": [
+		{
+			"statement": "Écris tous les diviseurs de ${{n}}$. Il y en a $4$.\n\n$?$ ; $?$ ; $?$ ; $?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|3"
+				},
+				{
+					"name": "q",
+					"expression": "3|5|7|11|13"
+				},
+				{
+					"name": "n",
+					"expression": "eval:p*q"
+				}
+			],
+			"conditions": ["q>p", "n<=30"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviseurs par paires.** On cherche les produits égaux à ${{n}}$, en partant de $1 \\times {{n}}$ et en essayant $2$, $3$, $4$… jusqu'à ce que les paires se croisent.",
+					"$${{n}} = 1 \\times {{n}} = {{p}} \\times {{q}}$$",
+					"Les 4 diviseurs de ${{n}}$ : $\\textcolor{{{color:primary.0}}}{1 \\ ; \\ {{p}} \\ ; \\ {{q}} \\ ; \\ {{n}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris tous les diviseurs de ${{n}}$. Il y en a $6$.\n\n$?$ ; $?$ ; $?$ ; $?$ ; $?$ ; $?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|3"
+				},
+				{
+					"name": "q",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "n",
+					"expression": "eval:p*p*q"
+				}
+			],
+			"conditions": ["q!=p", "n<=30"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p*p}}"
+				},
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p*q}}"
+				},
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviseurs par paires.** On cherche les produits égaux à ${{n}}$, en partant de $1 \\times {{n}}$ et en essayant $2$, $3$, $4$… jusqu'à ce que les paires se croisent.",
+					"{{if:p==2|$${{n}} = 1 \\times {{n}} = 2 \\times {{eval:2*q}} = {{eval:min(4,q)}} \\times {{eval:max(4,q)}}$$|$$18 = 1 \\times 18 = 2 \\times 9 = 3 \\times 6$$}}",
+					"Les 6 diviseurs de ${{n}}$ : $\\textcolor{{{color:primary.0}}}{1 \\ ; \\ {{p}} \\ ; \\ {{eval:p*p}} \\ ; \\ {{q}} \\ ; \\ {{eval:p*q}} \\ ; \\ {{n}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris tous les diviseurs de ${{n}}$. Il y en a $8$.\n\n$?$ ; $?$ ; $?$ ; $?$ ; $?$ ; $?$ ; $?$ ; $?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "eval:24+6*t"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "2"
+				},
+				{
+					"expectedAnswer": "3"
+				},
+				{
+					"expectedAnswer": "{{eval:4+t}}"
+				},
+				{
+					"expectedAnswer": "6"
+				},
+				{
+					"expectedAnswer": "{{eval:8+2*t}}"
+				},
+				{
+					"expectedAnswer": "{{eval:12+3*t}}"
+				},
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviseurs par paires.** On cherche les produits égaux à ${{n}}$, en partant de $1 \\times {{n}}$ et en essayant $2$, $3$, $4$… jusqu'à ce que les paires se croisent.",
+					"$${{n}} = 1 \\times {{n}} = 2 \\times {{eval:12+3*t}} = 3 \\times {{eval:8+2*t}} = {{eval:4+t}} \\times 6$$",
+					"Les 8 diviseurs de ${{n}}$ : $\\textcolor{{{color:primary.0}}}{1 \\ ; \\ 2 \\ ; \\ 3 \\ ; \\ {{eval:4+t}} \\ ; \\ 6 \\ ; \\ {{eval:8+2*t}} \\ ; \\ {{eval:12+3*t}} \\ ; \\ {{n}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Diviseurs de 14",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "7",
+				"n": "14"
+			},
+			"answers": ["1", "2", "7", "14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Diviseurs de 14, dans le désordre",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "7",
+				"n": "14"
+			},
+			"answers": ["14", "7", "2", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 oublié, 28 ajouté",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "7",
+				"n": "14"
+			},
+			"answers": ["2", "7", "14", "28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7 deux fois",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "7",
+				"n": "14"
+			},
+			"answers": ["1", "2", "7", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diviseurs de 28",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "7",
+				"n": "28"
+			},
+			"answers": ["1", "2", "4", "7", "14", "28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Diviseurs de 18, dans le désordre",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"q": "2",
+				"n": "18"
+			},
+			"answers": ["18", "1", "9", "2", "6", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 au lieu de 4 (28)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "7",
+				"n": "28"
+			},
+			"answers": ["1", "2", "3", "7", "14", "28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 14 deux fois (28)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "7",
+				"n": "28"
+			},
+			"answers": ["1", "2", "4", "7", "14", "14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diviseurs de 24",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"n": "24"
+			},
+			"answers": ["1", "2", "3", "4", "6", "8", "12", "24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Diviseurs de 30",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1",
+				"n": "30"
+			},
+			"answers": ["30", "15", "10", "6", "5", "3", "2", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 parmi les diviseurs de 30",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1",
+				"n": "30"
+			},
+			"answers": ["1", "2", "3", "4", "6", "10", "15", "30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
