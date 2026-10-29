@@ -5,12 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 3 publié (9/9)._
+_Mis à jour le 2026-10-29, phase 0 du lot 4 proposée (§ 20)._
 
-- **État** : lots 1 à 3 en prod ; lot 1 en brouillon, lots 2 et 3 publiés (lot 3 : 9/9 `published`, vérifié au MCP).
-- **Prochaine action** : phase 0 du **lot 4, probabilités** (046, 047, 048, 079, 049, 050, 051 ; ordre du § 5,
-  décision 3) : relevé MCP, modèles proposés, question d'accès, puis attendre la validation de David.
-- **En attente de David** : publication des 7 brouillons du lot 1.
+- **État** : lots 1 à 3 en prod ; lot 1 en brouillon, lots 2 et 3 publiés ; lot 4 (probabilités) : phase 0 écrite
+  (§ 20), 7 modèles proposés.
+- **Prochaine action** : réponses de David au § 20.4 consignées, puis écrire le lot (`lot-4-4.py` →
+  `scripts/questions/4-lot-4/`) dans le worktree, branche `feat/questions-4-lot-4` depuis `origin/main`.
+- **En attente de David** : § 20.4 (7 modèles, catégories, écriture des probabilités) ; publication des 7 brouillons
+  du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
   passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
