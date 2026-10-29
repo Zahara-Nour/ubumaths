@@ -321,7 +321,8 @@ Deux lots :
 - **Données d'élèves** (MCP, 2026-10-29) : 0 carte SRS, 0 tentative, 0 question d'évaluation, 0 activité de journal,
   0 relecture, sur les 3 reclassés et sur les 13 décalés.
 - **Accès** (tranché par David) : la 4e ne voit plus les 3 modèles reclassés, la 5e les voit ; le décalage ne change
-  que l'ordre ; les 4 neufs restent en brouillon (admin seul) ; aucune règle ne change.
+  que l'ordre ; les 4 neufs restent en brouillon ; aucune règle ne change. Rectifié par l'audit : un brouillon
+  est lisible par l'admin ET le prof, et ses tags (pas son contenu) par tout compte connecté — déjà vrai avant.
 
 ### 15.1 Lot 4b écrit (2026-10-29)
 
@@ -331,3 +332,16 @@ Deux lots :
 - 08 sans forme exigée : la virgule nue passe, **pas de dépendance** à `virgule-forme-exigee`.
 - Base locale : 4 créés (535e78b2, c5e8bacc, ab5056b0, b0832fdb), page à cocher locale relue (virgules, cases de
   09, corrigés). Corrigé en route : énoncé de 08 sans `= ?` (« 0 case dans l'énoncé »).
+
+### 15.2 Lot 4b en prod, migration de rangement (2026-10-29)
+
+- David : `create-questions --publier` → 2f556139 (08), 1e68327e (09), 1cd9dc60 (10), d4668b2d (11), brouillons [5]
+  sans nœud ni tag (vérifié MCP).
+- Relevé `questions-5/etat-prod-2026-10-29-lot4b/` (18 modèles) ; générateur `questions-5/lot-4b-rangement.py`
+  (copie étendue de `lot-niveaux-5.py` : nœud d'avant vide, rang dans la catégorie) → migration
+  `20261030010500_questions_5_lot4b_rangement` + fixture. Rangs posés un modèle à la fois, décroissant (index « un
+  publié par catégorie et par niveau ») ; garde : aucun publié hors du lot au rang visé.
+- dcaabf69 (3e, `scripts/questions/3-lot-2/02-…`) : fichier et `lot-3-2.py` passés au niveau 12 (clé de
+  `create-questions`) ; entre le merge et le `db:migrate`, `create-questions` sur `3-lot-2` le verrait « à créer ».
+- Test `questions-5-lot4b-rangement.test.ts` : 21/21, rouge sans la migration (15 échecs). `security-auditor` :
+  aucun bloquant (gardes vérifiées sur la prod réelle ; seule rectification, la phrase d'accès ci-dessus).

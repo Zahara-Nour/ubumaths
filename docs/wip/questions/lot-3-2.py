@@ -4,7 +4,7 @@ Phase 0 validée par David le 2026-10-29 (journal `questions-3-progress.md` § 9
 
 | # | Point | Titre | Catégorie, niveau |
 | 1 | 3-016 | Développer (a + b)² et (a − b)² | Calcul littéral › Transformation › Identités remarquables, 10 |
-| 2 | 3-054 | Factoriser avec un facteur commun | Calcul littéral › Transformation › Factorisation, 11 |
+| 2 | 3-054 | Factoriser avec un facteur commun | Calcul littéral › Transformation › Factorisation, 12 |
 | 3 | 3-014 | Résoudre une inéquation ax ⩾ b | Calcul littéral › Inéquations › ax ⩾ b, 1 |
 | 4 | 3-015 | Résoudre une équation produit nul | Calcul littéral › Equations › Produit nul, 1 |
 
@@ -259,7 +259,7 @@ MODELES.append(modele(
     'Factoriser quand le facteur commun est une expression entre parenthèses :'
     ' (x + 2)(3x − 1) + (x + 2)(x + 4), avec un −, facteur en tête puis en queue, facteur au'
     ' carré, facteur seul (le 1 caché)',
-    'Calcul littéral', 'Transformation', 'Factorisation', 11,
+    'Calcul littéral', 'Transformation', 'Factorisation', 12,
     [SOMME, DIFFERENCE, TETE_QUEUE, CARRE, SEUL],
     [spec('(x + 2)(4x + 3)', 0, {'a': 2, 'b': 3, 'c': -1, 'd': 1, 'f': 4}, '(x+2)(4x+3)',
           'correct'),
