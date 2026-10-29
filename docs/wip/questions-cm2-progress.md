@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1985 et la relecture du lot 2._
+_Mis à jour le 2026-10-29, lot 2 publié._
 
-- **État** : lot 1 publié (7/8). **Lot 2 (divisibilité, 5 brouillons)** : rangés sur « Arithmétique > Divisibilité > multiples et diviseurs » et tagués (#1985, migration jouée, vérifiée au MCP, `updated_at` inchangé). Page à cocher https://claude.ai/artifact/GZSRbpPPSKwDTDWsS6N9si : **5/5 OK** ; `publier-lot` en simulation : 5 brouillons passent le contrôle.
-- **Prochaine action** : vérifier au MCP la publication des 5 (David lance `publier-lot.ts --dir scripts/questions/cm2-2 --publier`). Ensuite, lot 3 (à choisir parmi les points sans modèle, § 5).
-- **En attente de David** : `--publier` du lot 2 ; publier 7d258acc (lot 1, ```ranger) après le prochain `deploy:prod` : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`.
+- **État** : lot 1 publié (7/8). **Lot 2 (divisibilité) publié (5/5)** : CM2-130, 009 à 012, rangés, tagués (#1985), relus 5/5 OK, publiés par David, vérifié au MCP.
+- **Prochaine action** : lot 3, à choisir parmi les points sans modèle (§ 5) : relevé MCP d'abord, puis phase 0 à faire valider par David.
+- **En attente de David** : publier 7d258acc (lot 1, ```ranger) après le prochain `deploy:prod` : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`.
 - **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture ; `create-questions` reconnaît un modèle à son **titre** ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente (relever `schema_migrations`) ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
 - **Worktree / branche** : aucun (retiré après #1985).
 
@@ -294,3 +294,4 @@ en choix de 1 à 12.
 - Migration `20261030004700_questions_cm2_lot2_rangement_tags.sql` sur le patron du lot 2 du CM1 (#1976) : présence tout ou rien, sans nœud ni tag avant, nœud = celui du point, `updated_at` préservé, rollback éprouvé. Test `questions-cm2-lot2-rangement-tags` : 9 verts ; migration remplacée par `select 1;` → 7 rouges (les 2 verts restants : base locale vide, tag sans nœud refusé par la base).
 - #1985 mergée (CI verte après relance du plantage `wrapDynamicImport`), `security-auditor` : aucun finding bloquant (un non bloquant hérité du patron : `set local lock_timeout` sans effet hors transaction explicite). `db:migrate` (seule migration en attente) : 5 modèles rangés et tagués, vérifié au MCP. Page à cocher publiée, sans alerte.
 - Relecture (David, 2026-10-29) : 5/5 OK, sans commentaire. `publier-lot` en simulation : 5 brouillons passent le contrôle.
+- 2026-10-29 : David lance `publier-lot --publier` : 5/5 publiés ; vérifié au MCP (published, CM2, nœud et tag de chacun). **Lot 2 clos.**
