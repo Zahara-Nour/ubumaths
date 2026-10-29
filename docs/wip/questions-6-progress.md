@@ -823,3 +823,12 @@ migration de contenu après la publication des 7).
   et 4 tags, non touchés.
 - Instantané `questions-6/etat-prod-2026-10-29-scissions/` (`releve-prod.ts`, base distante) : 4 modèles, 4 tags ;
   md5 recalculés au format jsonb de Postgres = MCP.
+
+### 12.5 Migration de contenu des 4 (2026-10-29)
+
+- `lot-contenu-6-scissions.py` → `20261029200000_questions_6_scissions_contenu` : 4 MODIFIER (le générateur exige
+  que chaque variation aille dans une part : la part les prend toutes, la retouche retire les déplacées), tags
+  relevés exigés, résultat = source `6-fractions/0{2,3,4,8}` exigé (titre, description, variations, specs ; 04 :
+  spec « Erreur : 3/7 > 5/7 » insérée en v1).
+- Test `questions-6-scissions-contenu` (`decrireLotModifier`, taille 4) : rouge contre une migration vide (6 échecs),
+  12 verts avec (16 sautés : propres aux neufs).
