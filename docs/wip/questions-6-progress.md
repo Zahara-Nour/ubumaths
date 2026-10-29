@@ -832,3 +832,4 @@ migration de contenu après la publication des 7).
   spec « Erreur : 3/7 > 5/7 » insérée en v1).
 - Test `questions-6-scissions-contenu` (`decrireLotModifier`, taille 4) : rouge contre une migration vide (6 échecs),
   12 verts avec (16 sautés : propres aux neufs).
+- Garde doc : `docs/systeme/base-de-donnees.md` inchangée (migration de données, schéma identique).
