@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, PR des espaces insécables ouverte._
+_Mis à jour le 2026-10-30, après #1994 (en prod, v0.57.1)._
 
-- **État** : #1991 mergée (une + pages intérieures), pas en prod ; PR `fix/shtam-insecables` : espaces insécables posées à la lecture (`frenchSpacing`), « suite page N » insécable · **Prochaine action** : merger, puis retouches 3-5 si David les veut (une plus compacte, chapô plus contrasté, date en casse homogène, lien « Page de l'article » plus visible), sinon chantier clos (journal à archiver) · **En attente de David** : retouches 3-5 ; regard sur `/shtam` (ligne #1991 de `verifications-manuelles.md`) · **Pièges en cours** : `<header>` interdit (app.css force 1rem) ; CI : « Browser connection was closed » → relancer le job · **Worktree / branche** : `ubumaths-wt-shtam-journal` / `fix/shtam-insecables`
+- **État** : #1991 (une + pages intérieures) et #1994 (espaces insécables, « suite page N » insécable) EN PROD v0.57.1 · **Prochaine action** : retouches 3-5 si David les veut (une plus compacte, chapô plus contrasté, date en casse homogène, lien « Page de l'article » plus visible), sinon chantier clos (journal à archiver, le durable est dans `docs/systeme/univers-chiphre.md`) · **En attente de David** : retouches 3-5 ; regard sur `/shtam` en prod (ligne #1991 de `verifications-manuelles.md`) · **Pièges en cours** : `<header>` interdit (app.css force 1rem) ; CI : « Browser connection was closed » → relancer le job · **Worktree / branche** : retirés
 
 ## Décisions de David (2026-10-29)
 
