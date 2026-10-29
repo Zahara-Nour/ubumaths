@@ -968,5 +968,4 @@ nouvelle revue.
 - #1968 mergée (CI verte). `db:migrate` : seule notre migration jouée. MCP : 6 brouillons sur le nœud de leur point,
   un tag juste chacun, `updated_at` inchangé, trigger `updated_at` à `O`.
 - Page à cocher générée depuis `main` (5ba49da44), aucune alerte, publiée (`db`, 0 verdict) :
-  https://claude.ai/artifact/MMAGnQYvdeEBFd1MMZR8Rf ; case choix non dessinée (04, 05, 06) : la jouer dans l'aperçu
-  admin.
+  https://claude.ai/artifact/MMAGnQYvdeEBFd1MMZR8Rf.
