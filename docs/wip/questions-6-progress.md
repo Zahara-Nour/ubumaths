@@ -8,10 +8,10 @@
 _Mis à jour le 2026-10-29, après #1949._
 
 - **État** : lots 1 à 5 en prod. Lot 5 (scissions des fractions) clos : 7 neufs publiés, migration de contenu des 4 d'origine jouée (#1949, MCP vérifié, `create-questions` en simulation : `6-fractions/` 10/10 identiques).
-- **Prochaine action** : phase 0 du lot « Pourcentages, proportionnalité, grandeurs » (§ 4, point 5 : 139, 140, 189, 211, 145-147, 153, 156, 158, 186), dans un worktree neuf (`git worktree add -b feat/questions-6-<lot> ../ubumaths-wt-questions-6 origin/main`).
-- **En attente de David** : les 4 verdicts de `revue-modeles` (02, 03, 04, 08) portent sur l'ancien contenu : les refaire ? Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **Prochaine action** : phase 0 du lot 6 écrite (§ 13, 13 modèles, coupés en 6a / 6b) ; à la validation, écrire 6a.
+- **En attente de David** : validation du § 13 (4 questions) ; les 4 verdicts de `revue-modeles` (02, 03, 04, 08) portent sur l'ancien contenu : les refaire ? Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
 - **Pièges en cours** : 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`). 3a7a5711 : NE PAS publier.
-- **Worktree / branche** : aucun (retiré après #1949).
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-proportionnalite`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
