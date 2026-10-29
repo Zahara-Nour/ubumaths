@@ -8,12 +8,13 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1950 et #1954._
+_Mis à jour le 2026-10-29, après #1950 et #1954 (phase 0 du lot 6 écrite)._
 
 - **État** : lots 1 à 5 EN PROD (v0.55.0). Migration destructive jouée en prod le 2026-10-29 (#1950) :
   plus de `multiple_choice`, plus de `shuffleChoices`, suivi de l'import TinyMath supprimé (export
   `data/import-tinymath/`) ; types régénérés (#1954). Le code ne lit plus `multiple_answers`. Worktree retiré.
-- **Prochaine action** : lot 6 (`deplacable:` partout, § 2.4) — phase 0 à écrire et faire valider.
+- **Prochaine action** : lot 6 (`deplacable:` dans les énoncés) — phase 0 écrite (§ 2.14), à faire valider
+  (questions Q1-Q4), puis worktree `ubumaths-wt-figure-et-choix`.
   Après le PROCHAIN `deploy:prod` (qui livre #1950) : migration qui supprime la colonne vide
   `question_templates.multiple_answers`, puis retirer `multiple_answers: null` des faux modèles de tests.
 - **En attente de David** : publication de CP-058 (« Trois points alignés ? Vérifie à la règle »,
@@ -399,3 +400,62 @@ false` sans bloc ```choix : sources nettoyées ici ; en base, à retirer dans la
 - Laissés (mineurs) : `shared.choices: null` refusé là où la variation l'admet ; `answerValueSchema` des tests
   accepte encore `number` ; aperçu `/dev/apercu-question` montre `$$0;2$$` pour une case choix ;
   `multiple_answers` reste dans les types de réponse (colonne encore là).
+
+### 2.14 Lot 6 (`deplacable:` dans les énoncés) : phase 0 (écrite le 2026-10-29, à valider)
+
+**Existant (lu le 2026-10-29)** : le parseur refuse `deplacable:` / `rendu:` hors figure enregistrée
+(`figure-parser.ts`, option `interactive`) ; le bloc ```figure d'un énoncé est un SVG statique
+(`FigureBlock` → `FigureBlockView`, chargé à la demande) ; seule `StoredFigurePreview` passe par
+`GeometryCanvas` (lourde : mathlive + roughjs). Le parseur ne sait pas OÙ il est (énoncé, cours, fiche,
+lexique) : le périmètre « énoncés seulement » (2.6 Q5) se règle donc AU RENDU, par un contexte posé par la
+vue des questions. La toile capte aujourd'hui molette (zoom) et doigt (`touch-action: none`) : posée telle
+quelle dans un énoncé, elle empêcherait de faire défiler la page sur téléphone.
+
+**Nominal**
+
+- Un bloc ```figure d'énoncé peut porter `deplacable: oui` et / ou `rendu: croquis|mixte` (accent et
+  variante `déplaçable` admis, comme aujourd'hui).
+- `deplacable: oui` : l'élève fait glisser points, textes et étiquettes ; tout ce qui en dépend suit. Rien
+  n'est noté ni enregistré (entraînement comme évaluation) ; la figure repart de sa position d'origine à
+  chaque affichage (après « Valider », dans la copie corrigée, à la question suivante).
+- `rendu: croquis|mixte` seul (sans `deplacable: oui`) : la toile, mais figée (rien ne bouge).
+- Même cadre que la figure statique : fenêtre, taille, axes, grille, graduations (`FigureFrameLayer`, comme
+  la figure enregistrée) ; largeur bornée par l'écran.
+- Toile chargée à la demande, seulement pour une figure qui porte l'une des deux clés ; les autres figures
+  restent en SVG statique (aucun changement pour les figures existantes).
+- Aperçu du prof, éditeur, copie corrigée : la même toile.
+
+**Limite**
+
+- PDF (fiche, contrôle) : figure statique, clés ignorées (2.6 Q7).
+- Hors énoncé de question (cours, fiche à l'écran, lexique…) : clés acceptées par le parseur, figure
+  statique (les clés sont sans effet) ; dit dans l'aide à l'écriture. Chat élève : rien ne change (rendu
+  restreint, aucun bloc spécial).
+- Budget d'exécution : celui des blocs d'énoncé (5 000 pas), pas celui des figures enregistrées (200 000).
+- Vue de la toile figée (ni zoom, ni déplacement de la vue, ni molette) : la molette fait défiler la page
+  (Q2 ci-dessous).
+
+**Erreur**
+
+- Valeur inconnue (`deplacable: peut-être`, `rendu: aquarelle`) → messages situés actuels.
+- `deplacable:` ou `rendu:` dans `figure-a-completer / `figure-de-travail → refus situé dédié
+  (« une figure à compléter ne se déplace pas » / « … de travail … ») (2.6 Q5).
+- Script en erreur → cadre et messages actuels (rien de neuf).
+
+**Questions à David**
+
+1. **Périmètre** (déjà tranché 2.6 Q5, je le rappelle) : énoncés de questions seulement. À savoir : ouvrir
+   d'un coup tout le rendu à l'écran (cours, fiches à l'écran) coûterait MOINS (pas de contexte « énoncé ») ;
+   je garde Q5 sauf avis contraire.
+2. **Gestes de la vue** — reco : **vue figée**, seuls les objets bougent ; le doigt n'est capté que sur une
+   figure `deplacable: oui`, la molette jamais. Autre choix : zoom et déplacement de la vue comme la figure
+   enregistrée (mais la page ne défile plus au-dessus de la figure).
+3. **Bouton « Remettre la figure »** (retour à la position d'origine) sous une figure déplaçable — reco :
+   **oui**, discret ; sans lui, un point tiré hors de la fenêtre est perdu jusqu'à l'affichage suivant.
+4. **`rendu:` sans `deplacable:`** → toile figée — reco : **oui** (le croquis n'existe que dans la toile).
+
+**Découpage** : une PR (parseur, contexte « énoncé », vue toile chargée à la demande, gestes, bouton,
+aide à l'écriture, doc `docs/systeme/ubumark.md`). Tests d'abord : parseur (acceptée dans ```figure, refusée
+dans les deux autres blocs), choix toile / SVG dans `FigureBlock` (énoncé vs cours), PDF statique, toile figée
+sans `deplacable:`. Revue : `code-reviewer` Sonnet (rien ne touche la correction ni les données). Vérif
+manuelle de David : glisser au doigt sur iPhone, défilement de la page au-dessus d'une figure.
