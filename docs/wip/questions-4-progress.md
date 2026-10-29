@@ -5,18 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1978 (lot 3 mergé)._
+_Mis à jour le 2026-10-29, migration nœud + tags du lot 3 écrite (§ 18)._
 
-- **État** : lots 1 et 2 en prod (lot 1 en brouillon, lot 2 publié) ; lot 3 (statistiques, 9 modèles, § 17)
-  mergé (#1978), pas encore créé en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-3 --publier` (avec `!`, dépôt principal) ;
-  relever les 9 `id` (MCP) ; migration nœud + tag sur le gabarit `20261029220000_questions_4_lot2_rangement_tags.sql`
-  (4-045 **et 3-032** pour le tableur, grades 4 et 3), nouvelle branche dans le worktree depuis `origin/main`.
-- **En attente de David** : `--publier` du lot 3 ; publication des 7 brouillons du lot 1.
+- **État** : lots 1 et 2 en prod (lot 1 en brouillon, lot 2 publié) ; lot 3 : 9 brouillons créés en prod
+  (#1978, `--publier` lancé par David) ; migration `20261030003000` + test sur `feat/questions-4-lot3-rangement`.
+- **Prochaine action** : `security-auditor` sans finding bloquant → PR, CI verte, merge, `db:migrate` depuis le
+  dépôt principal, vérifier en prod (MCP) ; puis page à cocher du lot 3 et `publier-lot.ts` (David).
+- **En attente de David** : publication des 7 brouillons du lot 1 ; relecture puis publication du lot 3.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
   passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
-- **Worktree / branche** : `../ubumaths-wt-questions-4`, `feat/questions-4-lot3-rangement` (depuis `origin/main`, vide).
+- **Worktree / branche** : `../ubumaths-wt-questions-4`, `feat/questions-4-lot3-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -476,3 +475,17 @@ grades 4 et 3, tagué 4-045 et 3-032** (note laissée dans le journal de la 3e).
   effectif 2 » ; spec 4-039 fausse (10,9, pas 11) et données des specs rendues compatibles avec les conditions.
 - Base locale : 9 brouillons créés ; aperçu admin : diagramme en barres à notes numériques rendu, décimaux en
   virgule dans les corrigés, case choix du tableur jouée juste, grades 4e et 3e affichés.
+
+## 18. Lot 3 : nœud et tags (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot3-rangement`)
+
+- #1978 mergée (CI verte au 2e passage : `Client Tests` shard 2/2, « Browser connection was closed », sans lien) ;
+  David a lancé `create-questions --publier` le 2026-10-29.
+- Relevé prod (MCP, 2026-10-29) : 9 brouillons sans nœud ni tag, 8 en `[4]`, le tableur en `[4, 3]`. Identifiants :
+  c2497d96 (4-039), b2908d52 (4-040), e8990535 (4-077), 4604b429 (4-041), e4d9eb0f (4-078), 410c104b (4-042),
+  7bb351d0 (4-043), 3afa8d97 (4-044), 5c092e43 (4-045 et 3-032). Nœuds des points : 039 → Statistiques >
+  Indicateurs > moyenne ; 040, 077 → … > médiane ; 041, 078 → … > étendue ; 042, 043, 044, 045 et 3-032 →
+  Statistiques > Indicateurs (notion).
+- Migration `20261030003000` reprise du lot 2, avec une table des tags à part (le tableur en porte deux, un par
+  programme : le trigger l'admet) ; horodatage après #1980 (`20261030001000`). Test rouge sans la migration
+  (5 échecs sur 9), vert avec (9/9).
+- Question d'accès : § 16.3 (personne ne gagne d'accès), validée avec la phase 0.
