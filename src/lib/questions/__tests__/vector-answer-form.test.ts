@@ -101,3 +101,32 @@ describe('vecteurs dans le désordre (orderIndependent)', () => {
 		expect(result.status).toBe('unoptimal_form');
 	});
 });
+
+describe('acceptDecimal : attendue exacte, décimal exact juste dans chaque coordonnée', () => {
+	// Comme une case ordinaire `acceptDecimal` (et comme les coefficients d'une matrice)
+	function judgeDecimal(answer: string, expected: string) {
+		const blank: InstanceBlank = {
+			expectedAnswer: expected,
+			type: 'math',
+			answerKind: 'vecteur',
+			acceptDecimal: true
+		};
+		const result = validateAnswer([answer], instanceWith([blank]), [answer]);
+		return result.status ?? (result.isCorrect ? 'correct' : 'incorrect');
+	}
+
+	it.each([
+		['\\left(-2;0.5\\right)', '(-2;\\dfrac{1}{2})', 'correct'],
+		['\\left(-2;0{,}5\\right)', '(-2;\\dfrac{1}{2})', 'correct'],
+		['\\begin{pmatrix}-0.5\\\\3\\end{pmatrix}', '(-\\frac{1}{2};3)', 'correct'],
+		['\\left(-2;\\frac{1}{2}\\right)', '(-2;\\dfrac{1}{2})', 'correct'],
+		['\\left(-2;0.6\\right)', '(-2;\\dfrac{1}{2})', 'incorrect'],
+		['\\left(-2;0.33\\right)', '(-2;\\dfrac{1}{3})', 'incorrect']
+	] as const)('%s pour %s → %s', (answer, expected, status) => {
+		expect(judgeDecimal(answer, expected)).toBe(status);
+	});
+
+	it('sans l’option, le décimal reste une mauvaise forme', () => {
+		expect(judge('\\left(-2;0.5\\right)', '(-2;\\dfrac{1}{2})').status).toBe('bad_form');
+	});
+});

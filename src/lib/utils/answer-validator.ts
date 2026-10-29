@@ -1100,7 +1100,9 @@ function vectorCoordinatesForm(
 	for (const [i, coordinate] of answers.entries()) {
 		const coordinateBlank: InstanceBlank = {
 			expectedAnswer: blank.vectorMode === 'colineaire' ? coordinate : expected[i],
-			type: 'math'
+			type: 'math',
+			// `acceptDecimal` de la case vaut pour chaque coordonnée (comme pour une matrice)
+			...(blank.acceptDecimal && { acceptDecimal: true })
 		};
 		const result = validateSingleBlank(coordinate, coordinateBlank, coordinate, instance);
 		if (result.status === 'bad_form') return result;
