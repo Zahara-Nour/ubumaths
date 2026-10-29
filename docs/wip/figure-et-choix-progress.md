@@ -8,21 +8,20 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 6 codé, PR en cours._
+_Mis à jour le 2026-10-29, après #1973._
 
 - **État** : lots 1 à 5 EN PROD (v0.55.0). Lot 6 (`deplacable:` / `rendu:` dans tout ```figure à l'écran,
-  § 2.14, validé) codé sur `feat/figure-et-choix-deplacable` : parseur, catalogue, `FigureCanvasView`, mode
-  `inDocument` de `GeometryCanvas`, « Remettre la figure », doc ; revue Sonnet faite (2 points corrigés).
-- **Prochaine action** : PR ouverte → CI verte → merge. Puis vérif manuelle de David (iPhone : glisser au doigt,
-  défilement au-dessus d'une figure ; cadre de la toile vs figure statique) à noter dans
-  `verifications-manuelles.md`. Après le PROCHAIN `deploy:prod` (qui livre #1950) : migration qui supprime la
-  colonne vide `question_templates.multiple_answers`, puis retirer `multiple_answers: null` des faux modèles.
-- **En attente de David** : publication de CP-058 (`a7dfe502`, brouillon) ; avis sur les séries PDF ; fiche
-  `/aide-ecriture/blocs/figure-de-travail` (403 en admin, à voir en prof) ; vérifs restantes (série PDF,
+  § 2.14) MERGÉ (#1973), pas encore en prod. Worktree retiré. Les 6 lots du § 2.5 sont faits.
+- **Prochaine action** : après le PROCHAIN `deploy:prod` (qui livre #1950 et #1973) : migration qui supprime
+  la colonne vide `question_templates.multiple_answers` (destructive : arrêt et explication), puis retirer
+  `multiple_answers: null` des faux modèles de tests ; ensuite clore le chantier (versement dans `docs/systeme/`).
+- **En attente de David** : vérif de la figure à manipuler (iPhone, cadre de la toile) dans
+  `verifications-manuelles.md` ; publication de CP-058 (`a7dfe502`, brouillon) ; avis sur les séries PDF ;
+  fiche `/aide-ecriture/blocs/figure-de-travail` (403 en admin, à voir en prof) ; vérifs restantes (série PDF,
   verdict ½, éditeur de tests, 15 brouillons lycée).
 - **Pièges en cours** : 6 modèles `cp-b2` : `level` prod ≠ source. `corrections.test.ts` (R-PASS) instable
   en CI. `migration_images` reste (hors champ).
-- **Worktree / branche** : `../ubumaths-wt-figure-et-choix` · `feat/figure-et-choix-deplacable`.
+- **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -471,3 +470,9 @@ aide à l'écriture, doc `docs/systeme/ubumark.md`). Tests d'abord : parseur (ac
 dans les deux autres blocs), choix toile / SVG dans `FigureBlock` (énoncé vs cours), PDF statique, toile figée
 sans `deplacable:`. Revue : `code-reviewer` Sonnet (rien ne touche la correction ni les données). Vérif
 manuelle de David : glisser au doigt sur iPhone, défilement de la page au-dessus d'une figure.
+
+**Livré (#1973, 2026-10-29)** : parseur (`interactive` porté seulement si une clé est écrite ; refus dédié dans
+les figures à compléter / de travail), `FigureCanvasView` (chargée à la demande ; scène refaite seulement si le
+texte du bloc change, « Remettre » sans redépenser le budget), `GeometryCanvas` prop `inDocument`, repère au
+séparateur décimal du document, catalogue, doc `ubumark.md`. Revue Sonnet : 2 points corrigés. CI rouge une
+fois à cause d'une collision d'horodatage de migrations d'autres chantiers (corrigée par #1972).
