@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la mise à jour en prod de 03 et 06 (lot 2)._
+_Mis à jour le 2026-10-29, après la publication du lot 2._
 
-- **État** : lot 1 en prod en BROUILLON, 2 OK sur 5 (60, × 4, × 8 TOUJOURS sans verdict). Lot 2 en prod en BROUILLON, rangé et tagué ; 6 OK, 3 sans verdict : `78d3ff5b`, et `b4dd4008` (consigne précisée) + `8c5c7d70` (```ranger) corrigés EN PROD le 2026-10-29 (vérifié au MCP), verdicts remis à zéro, page republiée.
-- **Prochaine action** : David relit les 3 du lot 2 sur la page à cocher (https://claude.ai/artifact/KLQGsdQYbft3hoQt5yHnCL ; ```ranger non dessiné → aperçu `/dashboard/admin/questions/8c5c7d70-ce4c-410c-9b8c-f0a041ffd67f/preview`) → lire les verdicts (`ArtifactData list verdicts`). Lot tout OK → `publier-lot --dir scripts/questions/ce2-<n>` (simulation), David `--publier`.
-- **En attente de David** : verdicts du lot 1 (60, × 4, × 8) et du lot 2 (`78d3ff5b`, `b4dd4008`, `8c5c7d70`) ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
+- **État** : lot 2 PUBLIÉ en prod le 2026-10-29 (9/9 OK, statut `published` relu au MCP). Lot 1 en prod en BROUILLON, 2 OK sur 5 : 03 (décompositions de 60), 04 (× 4), 05 (× 8) TOUJOURS sans verdict sur https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4.
+- **Prochaine action** : verdicts du lot 1 → `publier-lot --dir scripts/questions/ce2-1` (simulation), David `--publier`. Puis lot 3 (points CE2 sans modèle, § 1).
+- **En attente de David** : verdicts du lot 1 (03, 04, 05) ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
 - **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 (specs lues sur l'instance tirée) ; `--mettre-a-jour` en simulation refusé par le classifieur (même sans `--publier`) ; horodatage = max de la PROD + 1 min ; CI : `corrections.test.ts` « cas rare » > 5 s et `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule.
 - **Worktree / branche** : aucun (#1956 mergée, worktree retiré).
 
