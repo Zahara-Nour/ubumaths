@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1937 et `db:migrate`._
+_Mis à jour le 2026-10-29, après la relecture du lot 2 par David._
 
-- **État** : lot 1 en prod en BROUILLON, rangé et tagué, 2 OK sur 5 (60, × 4, × 8 sans verdict). Lot 2 en prod en BROUILLON, rangé et tagué (migration `20261029003200` jouée, vérifiée au MCP : 9 nœuds, 1 point chacun, `updated_at` intact) ; page à cocher publiée, 0 verdict.
-- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`) — lot 1 : https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4 ; lot 2 : https://claude.ai/artifact/KLQGsdQYbft3hoQt5yHnCL. Lot tout OK → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce2-<n>` (simulation), puis David `--publier`. « À revoir » → corriger (couvrir-un-niveau § 7), remettre le verdict à zéro. Puis lot 3.
-- **En attente de David** : relecture du lot 1 (60, × 4, × 8) et du lot 2 (9 fiches) ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
-- **Pièges en cours** : horodatage = max de la PROD + 1 min, re-vérifier juste avant `db:migrate` (la prod avance vite : #1932 → renommage #1937) ; CI : `corrections.test.ts` « cas rare » > 5 s et client `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule ; page à cocher APRÈS `db:migrate`.
-- **Worktree / branche** : aucun (retirés après #1937).
+- **État** : lot 1 en prod en BROUILLON, rangé et tagué, 2 OK sur 5 (60, × 4, × 8 TOUJOURS sans verdict). Lot 2 en prod en BROUILLON, rangé et tagué (migration `20261029003200`) ; relecture : 6 OK, 2 à revoir, 1 sans verdict (`78d3ff5b`, lots de 100).
+- **Prochaine action** : traiter les 2 « à revoir » du lot 2 (https://claude.ai/artifact/KLQGsdQYbft3hoQt5yHnCL) : (1) `b4dd4008` (03-unites-non-canoniques) variation 4 « Décompose le nombre. $$n=?+?+?+?$$ » jugée trop vague (« quelle forme on attend ? ») → consigne à préciser (ex. « en milliers, centaines, dizaines et unités »), corriger (couvrir-un-niveau § 7, `--mettre-a-jour` par David), remettre le verdict à zéro ; (2) `8c5c7d70` (06-ranger-cinq-nombres) : David demande si l'outil « étiquettes à ranger » est prêt → voir le chantier `reponses-a-placer` (phase 0 des étiquettes, `docs/wip/reponses-a-placer-progress.md` ou son worktree) et lui répondre. Puis lot tout OK → `publier-lot --dir scripts/questions/ce2-<n>` (simulation), David `--publier`.
+- **En attente de David** : verdicts du lot 1 (60, × 4, × 8) et de `78d3ff5b` (lot 2) ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
+- **Pièges en cours** : horodatage = max de la PROD + 1 min, re-vérifier juste avant `db:migrate` ; CI : `corrections.test.ts` « cas rare » > 5 s et client `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule ; page à cocher APRÈS `db:migrate`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
