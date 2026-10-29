@@ -78,7 +78,6 @@ o.append('<style>'
          '.eau{font-style:italic;fill:#2B5C9E;stroke-width:10px;stroke-opacity:.6;letter-spacing:12px}'
          '.voisin{font-style:italic;stroke-width:10px;stroke-opacity:.6}'
          '.titre{font-weight:bold;letter-spacing:5px;stroke:none}'
-         '.sous-titre{font-style:italic;stroke:none}'
          '</style>')
 p = PATCH
 o.append('<defs>'
@@ -92,7 +91,8 @@ o.append('<g id="frontieres" fill="none" stroke-linecap="round" stroke-linejoin=
 for name, pts in BORDERS.items():
     d = path(pts)
     ctrl = f'<path d="{d}" stroke="red" stroke-width="3"/>' if CONTROLE else ''
-    o.append(f'<path id="frontiere-{name}" d="{d}" stroke="#8F2447" stroke-opacity=".28" stroke-width="34"/>{ctrl}')
+    # invisibles : les pointillés peints suffisent ; les tracés servent de cibles (survol, clic) sur le site
+    o.append(f'<path id="frontiere-{name}" d="{d}" stroke="#8F2447" stroke-opacity="0" stroke-width="34"/>{ctrl}')
 o.append('</g>')
 
 o.append('<g id="noms">')
@@ -110,8 +110,7 @@ for cid, name, x, y, anchor in CAPITALS:
 o.append('</g>')
 
 o.append('<g id="cartouche">')
-o.append(text(817, 3365, 'ROYAUME DE POLOGNE', 54, 'titre'))
-o.append(text(817, 3450, 'pataphysique', 56, 'sous-titre'))
+o.append(text(817, 3395, 'ROYAUME DE POLOGNE', 54, 'titre'))
 o.append('</g>')
 o.append('</svg>')
 
