@@ -16,7 +16,7 @@ CARRES=(
   cracovenn:1864:2640
   empoche:1056:2144
   bonneteau:800:1400
-  sinusborg:1488:216
+  sinusborg:1488:400
 )
 
 cp fond-carte-hd.webp "$tmp/carte.png"
@@ -28,7 +28,10 @@ for c in "${CARRES[@]}"; do
   magick "$ia" -resize '768x768!' "$tmp/ia.png"
   magick "$tmp/orig.png" "$tmp/ia.png" -compose difference -composite -colorspace gray \
     -threshold 8% -morphology Open Disk:2 -morphology Close Disk:30 -morphology Dilate Disk:14 -blur 0x8 "$tmp/masque.png"
-  magick "$tmp/orig.png" "$tmp/ia.png" "$tmp/masque.png" -composite "$tmp/recolle.png"
+  # Le fond du collage est la carte EN COURS (pas le fond d'origine) : les carrés voisins
+  # se chevauchent (Sandomir et Turingrad), un collage ne doit pas effacer la ville d'à côté.
+  magick "$tmp/carte.png" -crop "768x768+$x+$y" +repage "$tmp/actuel.png"
+  magick "$tmp/actuel.png" "$tmp/ia.png" "$tmp/masque.png" -composite "$tmp/recolle.png"
   magick "$tmp/carte.png" "$tmp/recolle.png" -geometry "+$x+$y" -composite "$tmp/carte.png"
   echo "✓ $ville"
 done
