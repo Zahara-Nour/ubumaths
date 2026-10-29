@@ -14,7 +14,7 @@ _Mis à jour le 2026-10-30, lot 0-suites vérifié, migration des niveaux écrit
 
 - **État** : D1-D7 validées ; lot 0-suites vérifié (17 brouillons, 1 correction), page à cocher publiée.
 - **Prochaine action** : PR (instantané suites + migration des niveaux D8), CI, merge, `db:migrate` depuis le dépôt principal, vérification des 14 niveaux en prod ; puis David : `create-questions --dir scripts/questions/tspe-0-suites --publier --mettre-a-jour` et `publier-lot --publier` ; ensuite lot 0-limites et fonctions.
-- **En attente de David** : verdicts de la page à cocher des suites (§ 6).
+- **En attente de David** : après `db:migrate`, `create-questions --publier --mettre-a-jour` puis `publier-lot --publier` (suites).
 - **Pièges en cours** : `create-questions` et `publier-lot` → David ; les vieux dossiers
   `scripts/questions/<thème>-terminale/` ne concordent peut-être plus avec la base → partir des id
   (`export-question-templates.ts --ids`, comme en 1re spé) ; la case choix est en prod (figure-et-choix lots 1-5,
@@ -276,6 +276,8 @@ seul f(ℓ) = ℓ est demandé, dans 432 (l'étude de la convergence, 571, n'est
 
 **Page à cocher** : https://claude.ai/artifact/CRPu9Wj8MaomQe8nS6v7Jy (17 fiches, 64 exemples), collection `verdicts`
 vide à la publication.
+
+**Relecture (David, page à cocher, 2026-10-30)** : 17 « ok » sur 17, aucun commentaire (lu en base).
 
 **Publication bloquée (simulation `publier-lot`)** : 7063979e et 98ba277c occupent le même niveau (2) de la même
 catégorie. Relevé sur les **184 brouillons** (MCP, 2026-10-29) : **14 collisions** de ce type, dans 13 catégories
