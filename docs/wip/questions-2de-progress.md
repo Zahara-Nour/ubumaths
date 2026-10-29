@@ -463,3 +463,50 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
   `db:migrate` le 2026-10-29 ; MCP : 6 modèles sur le nœud de leur point, 1 tag chacun (le bon),
   `updated_at` inchangé, brouillons. Page à cocher (aucune alerte) :
   https://claude.ai/artifact/Pg2wcdRUGdQpjQs3FdjJsb
+
+## 19. Lot 3 « puissances, racines, fractions » : relevé et phase 0 (proposée le 2026-10-29, à valider)
+
+**Relevé MCP (prod, 2026-10-29)** : 2-270, 2-272, 2-423, 2-238 sans modèle. **2-260 n'est plus vide** :
+`questions-4` y a rattaché le 2026-10-28 a1ae1558, 2158a2fc, 17f3dfcd ((aᵐ)ⁿ et (10ᵐ)ⁿ, exposants 2 à 9,
+« puissance de puissance »). La 3e couvre déjà produit et quotient de puissances d'un même nombre, exposants
+relatifs, lettres comprises (bb9cff7b, 18761148), la définition de a⁻ⁿ (15368b02) et la simplification de
+fractions (acbd2280, 90dca27a, c9d6c5db). Manquent en 2de, d'après l2-6 : (ab)ⁿ, (a/b)ⁿ et l'enchaînement
+des règles.
+
+Nœuds des points : 2-260 et 2-270 → notion « Puissances : calculs » (sous-notions : produit, quotient,
+puissance de puissance) ; 2-423 → Racines carrées : calculs › propriétés ; 2-272 → Algèbre › Calcul
+littéral › expressions fractionnaires ; 2-238 → Fractions : sens et écritures › simplification.
+
+**Phase 0 proposée** : 8 modèles, niveau `['2']`, brouillons, une PR de fichiers puis une migration
+nœud + tag.
+
+1. **2-260 · Puissance d'un produit** : (2x)³ ; (−3x)² ; (2x²)³ = 8x⁶. Coefficient 2 à 5, exposants 2 à 4.
+2. **2-260 · Puissance d'un quotient** : (x/3)² ; (2/x)³ ; (2/3)⁻² = 9/4 (exposant négatif → inverse).
+3. **2-260 · Enchaîner les règles** (une seule puissance, réponse `x^?`) : (x²)³ × x⁻⁴ ; x⁵ × x³ / x⁻² ;
+   (a⁻²)³ / a⁻⁴. Exposants relatifs entre −5 et 5, résultat ≠ 0 et ≠ 1.
+4. **2-270 · Calcul numérique** : 2⁵ × 2⁻² / 2 (entier) ; (2³ × 3²)/(2⁵ × 3) → fraction irréductible ;
+   (3 × 10⁴ × 4 × 10⁻²)/(6 × 10⁵) → notation scientifique.
+5. **2-270 · Calcul littéral** : (2x³)² × 3x⁻¹ = 12x⁵ ; 6x⁴y / (2xy³) = 3x³/y² (x³y⁻² accepté).
+6. **2-423 · √a² = |a|** : √((−5)²) ; √((1 − √2)²) = √2 − 1 (aussi 3 − π, √3 − 2) ; √((x − 2)²) sachant
+   x < 2 → 2 − x, puis x > 2 → x − 2.
+7. **2-272 · Écritures fractionnaires** (réponse : une seule fraction réduite) : numérique (a/b + c/d) ÷ e/f ;
+   littéral à dénominateurs monômes : a/x + b/(2x), (2/x) ÷ (4/x²) = x/2, 1 + 1/x = (x + 1)/x.
+8. **2-238 · Forme irréductible** : numérateur et dénominateur jusqu'à ~ 500, produits de 2, 3, 5, 7
+   (84/126 = 2/3) ; corrigé par décomposition en facteurs premiers (lien multiples et diviseurs) ; une
+   variation où la fraction est donnée en produits de puissances (2³ × 3² / (2² × 3³)).
+
+- **Corrigé** : chaque règle nommée et colorée, comme bb9cff7b ; 2-423 dit le signe de a avant de conclure.
+- **Erreurs typiques en specs** : (2x)³ = 2x³ ; (x/3)² = x²/3 ; x⁻³ × x⁵ = x⁻¹⁵ ; √((1 − √2)²) = 1 − √2 ;
+  1/x + 2/x = 3/(2x) ; fraction non réduite.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L3-a — Nœud de (ab)ⁿ, (a/b)ⁿ et de l'enchaînement** : aucune sous-notion ne leur va. → Je recommande
+  la **notion « Puissances : calculs »** elle-même (le point y est rangé, aucun nœud neuf). Autre choix :
+  une sous-notion « puissance d'un produit, d'un quotient ».
+- **L3-b — 2-423 littéral** : √((x − 2)²) sachant x < 2 reste-t-il dans la borne « √a² = |a|, a réel » ?
+  → Je recommande **oui**, en variation la plus difficile.
+- **L3-c — 2-272 littéral** : dénominateurs monômes seulement (x, 2x, x²), ou aussi x + 1 (1/x − 1/(x + 1)) ?
+  → Je recommande **monômes seulement**. Les dénominateurs affines reviendront avec le quotient = k
+  (2-269, hors lot).
