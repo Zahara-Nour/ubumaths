@@ -2,7 +2,7 @@
  * Chantier « questions-2de », lot 3 : nœud et tag de 8 modèles neufs (Supabase local requis)
  * ======================================================================================
  *
- * Migration `20261030002000_questions_2de_puissances_rangement_tags` : les 8 brouillons
+ * Migration `20261030004900_questions_2de_puissances_rangement_tags` : les 8 brouillons
  * « puissances, racines, fractions » créés le 2026-10-29 par scripts/create-questions.ts (sans
  * nœud ni tag) vont sur le nœud de leur point et reçoivent ce point, un seul (ADR 0020). 2-260 et
  * 2-270 sont sur la notion « Puissances : calculs » (décision L3-a, journal
@@ -41,7 +41,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261030002000_questions_2de_puissances_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261030004900_questions_2de_puissances_rangement_tags.sql';
 const LONGUEURS = 'Grandeurs et mesures > Longueurs';
 /** Le lot : identifiant créé en prod le 2026-10-29, nœud et points attendus. */
 const LOT: { id: string; noeud: string; code: string }[] = [
