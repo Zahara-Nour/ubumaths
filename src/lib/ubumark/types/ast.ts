@@ -562,6 +562,7 @@ export type { StatChartNode } from './stat-chart';
 export type { QrNode } from './qr';
 export type { HorlogeNode } from './horloge';
 export type { PartageNode } from './partage';
+export type { EspaceNode } from './espace';
 export type { OperationNode } from './operation';
 export type { CollectionNode } from './collection';
 export type { MonnaieNode } from './monnaie';
@@ -579,6 +580,7 @@ import type { StatChartNode } from './stat-chart';
 import type { QrNode } from './qr';
 import type { HorlogeNode } from './horloge';
 import type { PartageNode } from './partage';
+import type { EspaceNode } from './espace';
 import type { OperationNode } from './operation';
 import type { CollectionNode } from './collection';
 import type { MonnaieNode } from './monnaie';
@@ -609,6 +611,7 @@ export type BlockNode =
 	| QrNode
 	| HorlogeNode
 	| PartageNode
+	| EspaceNode
 	| OperationNode
 	| CollectionNode
 	| MonnaieNode

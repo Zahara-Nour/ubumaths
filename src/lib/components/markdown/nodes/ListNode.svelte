@@ -39,6 +39,7 @@
 	import QrBlock from './QrBlock.svelte';
 	import Horloge from './Horloge.svelte';
 	import Partage from './Partage.svelte';
+	import Espace from './Espace.svelte';
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
@@ -53,6 +54,7 @@
 	import type { QrNode } from '$lib/ubumark/types/qr';
 	import type { HorlogeNode } from '$lib/ubumark/types/horloge';
 	import type { PartageNode } from '$lib/ubumark/types/partage';
+	import type { EspaceNode } from '$lib/ubumark/types/espace';
 	import type { OperationNode } from '$lib/ubumark/types/operation';
 	import type { CollectionNode } from '$lib/ubumark/types/collection';
 	import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
@@ -293,6 +295,13 @@
 	}
 
 	/**
+	 * Bloc d'espace (```cubes) en retrait dans un item de liste
+	 */
+	function isEspaceNode(node: ASTNode): node is EspaceNode {
+		return node.type === 'espace';
+	}
+
+	/**
 	 * Check if node is a block-level element (for hardbreak removal)
 	 */
 	function isBlockNode(node: ASTNode): boolean {
@@ -312,6 +321,7 @@
 			'qr',
 			'horloge',
 			'partage',
+			'espace',
 			'operation',
 			'collection',
 			'monnaie'
@@ -445,6 +455,8 @@
 						<Horloge node={child} />
 					{:else if isPartageNode(child)}
 						<Partage node={child} />
+					{:else if isEspaceNode(child)}
+						<Espace node={child} />
 					{:else if isOperationNode(child)}
 						<Operation node={child} />
 					{:else if isCollectionNode(child)}
@@ -539,6 +551,8 @@
 						<Horloge node={child} />
 					{:else if isPartageNode(child)}
 						<Partage node={child} />
+					{:else if isEspaceNode(child)}
+						<Espace node={child} />
 					{:else if isOperationNode(child)}
 						<Operation node={child} />
 					{:else if isCollectionNode(child)}

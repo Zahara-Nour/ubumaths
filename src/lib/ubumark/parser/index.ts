@@ -146,6 +146,14 @@ export {
 	isPartageBlockStart
 } from './partage-parser';
 
+// Blocs d'espace (```cubes)
+export {
+	parseEspace,
+	parseEspaceContent,
+	findEspaceBlocks,
+	isEspaceBlockStart
+} from './espace-parser';
+
 // Bloc ```operation
 export {
 	parseOperation,

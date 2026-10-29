@@ -321,6 +321,8 @@
 		--horloge-taille: 3cm;
 		/* Collection d'un choix (bloc ```collection sans taille:) : 3 cm pleine largeur */
 		--collection-taille: 3cm;
+		/* Assemblage de cubes d'un choix (bloc ```cubes) : 3 cm au plus */
+		--espace-taille: 3cm;
 		/* Monnaie d'un choix (bloc ```monnaie sans taille:) : 10 cm, réduits ensemble si la colonne
 		   est trop étroite (`monnaieChoiceSize`, qui mesure la colonne en `cqw`) */
 		container-type: inline-size;

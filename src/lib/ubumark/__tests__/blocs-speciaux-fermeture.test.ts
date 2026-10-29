@@ -26,6 +26,7 @@ describe('Q66 — un ``` lointain ne ferme pas un bloc séparé par du texte', (
 		['line', '```line\nstart: 0\nend: 5'],
 		['horloge', '```horloge\nheure: 9 h'],
 		['partage', '```partage\nforme: bande 8'],
+		['cubes', '```cubes\nhauteurs: 2 1'],
 		['operation', '```operation\ncalcul: 45 + 37'],
 		['collection', '```collection\nunités: 9'],
 		['monnaie', '```monnaie\nbillets: 10']
@@ -51,6 +52,7 @@ describe('une faute de frappe dans un bloc fermé : la suite du document intacte
 		['line', '```line\nstart: 0\nend: 5\n\narrows true\n```'],
 		['horloge', '```horloge\nheure: 9 h\n\nchiffres quarts\n```'],
 		['partage', '```partage\nforme: bande 8\n\ngris 3\n```'],
+		['cubes', '```cubes\nhauteurs: 2 1\n\nvue face\n```'],
 		['operation', '```operation\ncalcul: 45 + 37\n\ncases aucune\n```'],
 		['collection', '```collection\nunités: 9\n\ndessin paquets\n```'],
 		['monnaie', '```monnaie\nbillets: 10\n\ndisposition mélangé\n```'],

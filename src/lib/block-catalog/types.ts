@@ -25,6 +25,7 @@ export type CatalogNodeType =
 	| 'qr'
 	| 'horloge'
 	| 'partage'
+	| 'espace'
 	| 'operation'
 	| 'ranger';
 

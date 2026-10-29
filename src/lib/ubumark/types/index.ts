@@ -218,6 +218,12 @@ export type { HorlogeNode, HorlogeIssue, HorlogeSpec, HorlogeTime } from './horl
 export type { PartageNode, PartageSpec, PartageShape } from './partage';
 
 // ============================================================================
+// ESPACE (blocs ```cubes, puis ```solide et ```patron)
+// ============================================================================
+
+export type { EspaceNode, EspaceSpec, EspaceKind, CubesView } from './espace';
+
+// ============================================================================
 // OPÉRATION POSÉE (bloc ```operation)
 // ============================================================================
 
