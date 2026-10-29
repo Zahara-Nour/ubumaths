@@ -1,0 +1,231 @@
+{
+	"title": "Le coefficient multiplicateur",
+	"description": "Définir le coefficient multiplicateur (arrivée ÷ départ) : de 80 € à 100 €, × 1,25 ; de 80 € à 60 €, × 0,75 ; multiplier par 0,9 est une diminution",
+	"grades": ["4"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Coefficient",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le prix d'un article passe de ${{a}}~\\unit{€}$ à ${{b}}~\\unit{€}$.\n\nPar quel nombre le prix a-t-il été multiplié ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "K",
+					"expression": "110|120|125|150|200"
+				},
+				{
+					"name": "j",
+					"expression": "2..12"
+				},
+				{
+					"name": "a",
+					"expression": "eval:20*j"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a*K/100"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:K/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Coefficient multiplicateur.** C'est le nombre par lequel on multiplie la valeur de départ pour obtenir la valeur d'arrivée : $\\text{coefficient} = \\dfrac{\\text{valeur d'arrivée}}{\\text{valeur de départ}}$.",
+					"$$\\frac{{{b}}}{{{a}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Vérification : ${{a}} \\times {{solution}} = {{b}}$. Le coefficient est plus grand que $1$ : le prix a augmenté."
+				]
+			}
+		},
+		{
+			"statement": "Le prix d'un article passe de ${{a}}~\\unit{€}$ à ${{b}}~\\unit{€}$.\n\nPar quel nombre le prix a-t-il été multiplié ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "K",
+					"expression": "50|60|75|80|90"
+				},
+				{
+					"name": "j",
+					"expression": "2..12"
+				},
+				{
+					"name": "a",
+					"expression": "eval:20*j"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a*K/100"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:K/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Coefficient multiplicateur.** C'est le nombre par lequel on multiplie la valeur de départ pour obtenir la valeur d'arrivée : $\\text{coefficient} = \\dfrac{\\text{valeur d'arrivée}}{\\text{valeur de départ}}$.",
+					"$$\\frac{{{b}}}{{{a}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Vérification : ${{a}} \\times {{solution}} = {{b}}$. Le coefficient est plus petit que $1$ : le prix a baissé."
+				]
+			}
+		},
+		{
+			"statement": "Multiplier un prix par ${{x}}$, c'est :\n\n```choix\nmelanger: non\n- une augmentation\n- une diminution\n- ni l'un ni l'autre\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "u",
+					"expression": "1..18"
+				},
+				{
+					"name": "x",
+					"expression": "eval:1+5*u*(1-k)*(2-k)/2/100-5*u*k*(2-k)/100;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Coefficient multiplicateur.** C'est le nombre par lequel on multiplie la valeur de départ pour obtenir la valeur d'arrivée : $\\text{coefficient} = \\dfrac{\\text{valeur d'arrivée}}{\\text{valeur de départ}}$.",
+					"{{if:k==0|${{x}} > 1$ : le prix grandit, c'est $\\textcolor{{{color:primary.0}}}{\\text{une augmentation}}$.|{{if:k==1|${{x}} < 1$ : le prix diminue, c'est $\\textcolor{{{color:primary.0}}}{\\text{une diminution}}$.|Multiplier par $1$ ne change rien : $\\textcolor{{{color:primary.0}}}{\\text{ni l'un ni l'autre}}$.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "80 € → 100 € : 1,25",
+			"variationIndex": 0,
+			"variables": {
+				"K": "125",
+				"j": "4",
+				"a": "80",
+				"b": "100"
+			},
+			"answers": ["1,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 80/100 = 0,8",
+			"variationIndex": 0,
+			"variables": {
+				"K": "125",
+				"j": "4",
+				"a": "80",
+				"b": "100"
+			},
+			"answers": ["0,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la hausse, 20",
+			"variationIndex": 0,
+			"variables": {
+				"K": "125",
+				"j": "4",
+				"a": "80",
+				"b": "100"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "80 € → 60 € : 0,75",
+			"variationIndex": 1,
+			"variables": {
+				"K": "75",
+				"j": "4",
+				"a": "80",
+				"b": "60"
+			},
+			"answers": ["0,75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 80/60 inversé",
+			"variationIndex": 1,
+			"variables": {
+				"K": "75",
+				"j": "4",
+				"a": "80",
+				"b": "60"
+			},
+			"answers": ["\\frac{4}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "× 1,15 : augmentation",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"u": "3",
+				"x": "1.15"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "× 0,9 : diminution",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"u": "2",
+				"x": "0.9"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : × 0,9 « augmentation »",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"u": "2",
+				"x": "0.9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "× 1 : ni l'un ni l'autre",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"u": "2",
+				"x": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

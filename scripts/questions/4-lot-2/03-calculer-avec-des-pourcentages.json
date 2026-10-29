@@ -1,0 +1,176 @@
+{
+	"title": "Calculer avec des pourcentages",
+	"description": "Calculer avec des pourcentages : 1 % de 4 537 ; 35 % de 120 ; 20 % d'un nombre valent 30, quel est ce nombre ?",
+	"grades": ["4"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Calculer",
+	"level": 7,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule $1~\\%$ de ${{c}}$.\n\n$1~\\%$ de ${{c}}$ est égal à $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "120..9999"
+				}
+			],
+			"conditions": ["mod(c,100)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pourcentage.** Prendre $t~\\%$ d'un nombre, c'est le multiplier par $\\dfrac{t}{100}$.",
+					"$1~\\%$ de ${{c}}$, c'est ${{c}} \\div 100$.",
+					"$$\\frac{1}{100} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule ${{t}}~\\%$ de ${{c}}$.\n\n${{t}}~\\%$ de ${{c}}$ est égal à $?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "5|15|30|35|45|60"
+				},
+				{
+					"name": "j",
+					"expression": "2..15"
+				},
+				{
+					"name": "c",
+					"expression": "eval:20*j"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t*c/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pourcentage.** Prendre $t~\\%$ d'un nombre, c'est le multiplier par $\\dfrac{t}{100}$.",
+					"$1~\\%$ de ${{c}}$ vaut ${{eval:c/100;d}}$.",
+					"$$\\frac{{{t}}}{100} \\times {{c}} = {{t}} \\times {{eval:c/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "${{t}}~\\%$ d'un nombre valent ${{v}}$.\n\nQuel est ce nombre ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "10|20|25|50"
+				},
+				{
+					"name": "v",
+					"expression": "3..40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v*100/t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pourcentage.** Prendre $t~\\%$ d'un nombre, c'est le multiplier par $\\dfrac{t}{100}$.",
+					"${{t}}~\\%$, c'est $\\frac{1}{{{eval:100/t}}}$ du nombre : il faut ${{eval:100/t}}$ fois ${{v}}$ pour avoir le tout.",
+					"$${{eval:100/t}} \\times {{v}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Vérification : ${{t}}~\\%$ de ${{solution}}$ font bien ${{v}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 % de 4 537 = 45,37",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4537"
+			},
+			"answers": ["45,37"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 453,7 (÷ 10)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4537"
+			},
+			"answers": ["453,7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "35 % de 120 = 42",
+			"variationIndex": 1,
+			"variables": {
+				"t": "35",
+				"j": "6",
+				"c": "120"
+			},
+			"answers": ["42"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 120 − 35 = 85",
+			"variationIndex": 1,
+			"variables": {
+				"t": "35",
+				"j": "6",
+				"c": "120"
+			},
+			"answers": ["85"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "20 % d'un nombre = 30 : 150",
+			"variationIndex": 2,
+			"variables": {
+				"t": "20",
+				"v": "30"
+			},
+			"answers": ["150"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 20 % de 30 = 6",
+			"variationIndex": 2,
+			"variables": {
+				"t": "20",
+				"v": "30"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 30 + 20 = 50",
+			"variationIndex": 2,
+			"variables": {
+				"t": "20",
+				"v": "30"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

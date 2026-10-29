@@ -1,0 +1,262 @@
+{
+	"title": "Partage proportionnel",
+	"description": "Partager une quantité en parts proportionnelles : 80 € dans le ratio 5 : 11 ; 90 € dans le ratio 4 : 3 : 2 ; un gain partagé proportionnellement aux mises",
+	"grades": ["4"],
+	"theme": "Proportionnalité",
+	"domain": "Ratios",
+	"subdomain": "Partage proportionnel",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Inès et Tom se partagent ${{N}}~\\unit{€}$ dans le ratio ${{a}} : {{b}}$.\n\nQuelle est la part d'Inès ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..11"
+				},
+				{
+					"name": "b",
+					"expression": "2..11"
+				},
+				{
+					"name": "u",
+					"expression": "2..20"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(a+b)*u"
+				}
+			],
+			"conditions": ["a!=b", "gcd(a,b)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Partage proportionnel.** Partager dans le ratio $a : b$, c'est faire $a + b$ parts égales : le premier en reçoit $a$, le second $b$.",
+					"Il y a ${{a}} + {{b}} = {{eval:a+b}}$ parts. Une part vaut ${{N}} \\div {{eval:a+b}} = {{u}}~\\unit{€}$.",
+					"Inès reçoit ${{a}}$ parts : $${{a}} \\times {{u}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\unit{€}$$"
+				]
+			}
+		},
+		{
+			"statement": "Ali, Béa et Chloé se partagent ${{N}}~\\unit{€}$ dans le ratio ${{a}} : {{b}} : {{c}}$ (dans cet ordre).\n\nQuelle est la part de {{if:k==0|Ali|{{if:k==1|Béa|Chloé}}}} ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "2..6"
+				},
+				{
+					"name": "u",
+					"expression": "2..15"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(a+b+c)*u"
+				},
+				{
+					"name": "n",
+					"expression": "eval:a*(1-k)*(2-k)/2+b*k*(2-k)+c*k*(k-1)/2"
+				}
+			],
+			"conditions": ["a!=b", "b!=c", "a!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Partage proportionnel.** Partager dans le ratio $a : b$, c'est faire $a + b$ parts égales : le premier en reçoit $a$, le second $b$.",
+					"Il y a ${{a}} + {{b}} + {{c}} = {{eval:a+b+c}}$ parts. Une part vaut ${{N}} \\div {{eval:a+b+c}} = {{u}}~\\unit{€}$.",
+					"{{if:k==0|Ali|{{if:k==1|Béa|Chloé}}}} reçoit ${{n}}$ parts : $${{n}} \\times {{u}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\unit{€}$$"
+				]
+			}
+		},
+		{
+			"statement": "Lina a versé ${{m}}~\\unit{€}$ et Noé ${{p}}~\\unit{€}$ pour acheter un billet de tombola. Ils gagnent ${{G}}~\\unit{€}$ et se partagent le gain proportionnellement à leurs mises.\n\nQuelle est la part de Lina ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "u",
+					"expression": "11..40"
+				},
+				{
+					"name": "m",
+					"expression": "eval:10*a"
+				},
+				{
+					"name": "p",
+					"expression": "eval:10*b"
+				},
+				{
+					"name": "G",
+					"expression": "eval:(a+b)*u"
+				}
+			],
+			"conditions": ["a!=b", "gcd(a,b)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Partage proportionnel.** Les parts sont proportionnelles aux mises ${{m}}$ et ${{p}}$, c'est-à-dire au ratio ${{a}} : {{b}}$.",
+					"Il y a ${{a}} + {{b}} = {{eval:a+b}}$ parts. Une part vaut ${{G}} \\div {{eval:a+b}} = {{u}}~\\unit{€}$.",
+					"Lina reçoit ${{a}}$ parts : $${{a}} \\times {{u}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\unit{€}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "80 € dans le ratio 5 : 11 : 25 €",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "11",
+				"u": "5",
+				"N": "80"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : partage égal 40",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "11",
+				"u": "5",
+				"N": "80"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 80 ÷ 5 = 16",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "11",
+				"u": "5",
+				"N": "80"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "90 € dans le ratio 4 : 3 : 2, Béa : 30 €",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "4",
+				"b": "3",
+				"c": "2",
+				"u": "10",
+				"N": "90",
+				"n": "3"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la part de Béa (30) pour Chloé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "4",
+				"b": "3",
+				"c": "2",
+				"u": "10",
+				"N": "90",
+				"n": "2"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "90 € dans le ratio 4 : 3 : 2, Chloé : 20 €",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "4",
+				"b": "3",
+				"c": "2",
+				"u": "10",
+				"N": "90",
+				"n": "2"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Mises 30 € et 50 €, gain 120 € : Lina 45 €",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"u": "15",
+				"m": "30",
+				"p": "50",
+				"G": "120"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : partage égal 60",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"u": "15",
+				"m": "30",
+				"p": "50",
+				"G": "120"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
