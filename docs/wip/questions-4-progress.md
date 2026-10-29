@@ -553,3 +553,8 @@ les élèves de 4e voient 7 modèles de plus.
    (Équiprobabilité 1, Évènement contraire 1, Deux épreuves 2), **Probabilités / Simulation** (Fréquences 1,
    Fluctuation 1) ; la 6e garde « Apprivoiser » ?
 3. Probabilités : toute écriture égale acceptée (fraction non simplifiée, décimal), ou fraction exigée ?
+
+**Décisions de David (2026-10-30, « je suis tes recos »)** : les 7 modèles du § 20.2 ; catégories Probabilités /
+Évènements (Univers 1, Opérations 2), Probabilités / Calculer (Équiprobabilité 1, Évènement contraire 1, Deux
+épreuves 2), Probabilités / Simulation (Fréquences 1, Fluctuation 1), la 6e garde « Apprivoiser » ; probabilités :
+toute écriture égale acceptée (fraction non simplifiée, décimal), corrigé en fraction irréductible.
