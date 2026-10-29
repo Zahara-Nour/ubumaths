@@ -1,0 +1,230 @@
+{
+	"title": "Termes, somme et différence dans une égalité",
+	"description": "Dans 12 + 25 = 37 : les termes, la somme ; dans 60 − 37 = 23 : les termes, la différence",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Additionner",
+	"subdomain": "Sens",
+	"level": 7,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans l'égalité ${{a}}+{{b}}={{eval:a+b}}$, quels sont les termes ?\n\nLes termes sont $?$ et $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..69"
+				},
+				{
+					"name": "b",
+					"expression": "11..69"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les **termes** sont les nombres qu'on additionne.",
+					"Dans ${{a}}+{{b}}={{eval:a+b}}$, les termes sont ${{a}}$ et ${{b}}$ ; ${{eval:a+b}}$ est la somme."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'égalité ${{eval:b+d}}-{{b}}={{d}}$, quels sont les termes ?\n\nLes termes sont $?$ et $?$.",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "11..59"
+				},
+				{
+					"name": "d",
+					"expression": "5..39"
+				}
+			],
+			"conditions": ["b != d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b+d}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les **termes** d'une soustraction sont les nombres de part et d'autre du signe $-$.",
+					"Dans ${{eval:b+d}}-{{b}}={{d}}$, les termes sont ${{eval:b+d}}$ et ${{b}}$ ; ${{d}}$ est la différence."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'égalité ${{a}}+{{b}}={{eval:a+b}}$, quelle est la somme ?\n\nLa somme est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..69"
+				},
+				{
+					"name": "b",
+					"expression": "11..69"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **somme** de deux nombres, c'est le résultat de leur addition.",
+					"Dans ${{a}}+{{b}}={{eval:a+b}}$, la somme est ${{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'égalité ${{eval:b+d}}-{{b}}={{d}}$, quelle est la différence ?\n\nLa différence est $?$.",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "11..59"
+				},
+				{
+					"name": "d",
+					"expression": "5..39"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **différence** entre deux nombres, c'est le résultat de la soustraction du plus petit au plus grand.",
+					"Dans ${{eval:b+d}}-{{b}}={{d}}$, la différence est ${{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "termes de 12 + 25 = 37 : 12 et 25",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "25"
+			},
+			"answers": ["12", "25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "termes dans l'autre ordre : 25 et 12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "25"
+			},
+			"answers": ["25", "12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme prise pour un terme",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "25"
+			},
+			"answers": ["12", "37"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "termes de 60 − 37 = 23 : 60 et 37",
+			"variationIndex": 1,
+			"variables": {
+				"b": "37",
+				"d": "23"
+			},
+			"answers": ["60", "37"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la différence prise pour un terme",
+			"variationIndex": 1,
+			"variables": {
+				"b": "37",
+				"d": "23"
+			},
+			"answers": ["37", "23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "somme de 12 + 25 = 37 : 37",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "25"
+			},
+			"answers": ["37"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un terme (25)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "25"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "différence de 60 − 37 = 23 : 23",
+			"variationIndex": 3,
+			"variables": {
+				"b": "37",
+				"d": "23"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le premier terme (60)",
+			"variationIndex": 3,
+			"variables": {
+				"b": "37",
+				"d": "23"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"orderIndependent": true
+	}
+}
