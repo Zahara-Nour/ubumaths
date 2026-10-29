@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, PR des 2 « à revoir » du lot 2 ouverte._
+_Mis à jour le 2026-10-29, après #1956._
 
-- **État** : lot 1 en prod en BROUILLON, 2 OK sur 5 (60, × 4, × 8 TOUJOURS sans verdict). Lot 2 en prod en BROUILLON, rangé et tagué ; 6 OK, 1 sans verdict (`78d3ff5b`) ; les 2 « à revoir » corrigés dans les FICHIERS (branche `fix/questions-ce2-consignes`) : `b4dd4008` consigne précisée, `8c5c7d70` réécrit en ```ranger.
-- **Prochaine action** : PR mergée → David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-2 --publier --mettre-a-jour` (2 modèles, 03 et 06) → vérifier au MCP → remettre à zéro les verdicts de `b4dd4008` et `8c5c7d70` sur la page à cocher (https://claude.ai/artifact/KLQGsdQYbft3hoQt5yHnCL) et la republier. Puis lot tout OK → `publier-lot --dir scripts/questions/ce2-<n>` (simulation), David `--publier`.
+- **État** : lot 1 en prod en BROUILLON, 2 OK sur 5 (60, × 4, × 8 TOUJOURS sans verdict). Lot 2 en prod en BROUILLON, rangé et tagué ; 6 OK, 1 sans verdict (`78d3ff5b`) ; les 2 « à revoir » corrigés dans les FICHIERS (#1956 mergée), PAS encore en prod : `b4dd4008` consigne précisée, `8c5c7d70` réécrit en ```ranger.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-2 --publier --mettre-a-jour` (2 modèles, 03 et 06) → vérifier au MCP → remettre à zéro les verdicts de `b4dd4008` et `8c5c7d70` sur la page à cocher (https://claude.ai/artifact/KLQGsdQYbft3hoQt5yHnCL) et la republier. Puis lot tout OK → `publier-lot --dir scripts/questions/ce2-<n>` (simulation), David `--publier`.
 - **En attente de David** : verdicts du lot 1 (60, × 4, × 8) et de `78d3ff5b` (lot 2) ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
 - **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 (specs lues sur l'instance tirée) ; `--mettre-a-jour` en simulation refusé par le classifieur (même sans `--publier`) ; horodatage = max de la PROD + 1 min ; CI : `corrections.test.ts` « cas rare » > 5 s et `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `fix/questions-ce2-consignes`.
+- **Worktree / branche** : aucun (#1956 mergée, worktree retiré).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -237,3 +237,4 @@ CM2) : règle de l'école en numération, `4500` sans espace = « forme à amél
   prod depuis v0.55.0 → réécrit avec le bloc : étiquettes dans le bon ordre, mélangées au tirage (variables
   `o`, `x1…x5` et les 5 cases retirées). Specs en positions affichées (depuis 0), lues sur l'instance tirée :
   6/6, 100 tirages.
+- 2026-10-29 : #1956 mergée (CI verte, revue : aucune, contenu) ; worktree retiré.
