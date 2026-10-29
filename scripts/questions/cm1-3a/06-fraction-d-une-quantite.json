@@ -1,0 +1,176 @@
+{
+	"title": "Fraction d'une quantité",
+	"description": "Un tiers de 12 billes, un quart de 10 m (2,5 m) : fractions de numérateur 1 seulement, résultat entier ou décimal",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Fraction d'une quantité",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule {{if:k==2|la moitié|{{if:k==3|un tiers|{{if:k==4|un quart|{{if:k==5|un cinquième|{{if:k==6|un sixième|{{if:k==7|un septième|{{if:k==8|un huitième|{{if:k==9|un neuvième|un dixième}}}}}}}}}}}}}}}} de ${{n}}$ {{if:o==0|billes|{{if:o==1|bonbons|{{if:o==2|images|{{if:o==3|élèves|timbres}}}}}}}}.\n\n{{if:k==2|La moitié|{{if:k==3|Un tiers|{{if:k==4|Un quart|{{if:k==5|Un cinquième|{{if:k==6|Un sixième|{{if:k==7|Un septième|{{if:k==8|Un huitième|{{if:k==9|Un neuvième|Un dixième}}}}}}}}}}}}}}}} de ${{n}}$ {{if:o==0|billes|{{if:o==1|bonbons|{{if:o==2|images|{{if:o==3|élèves|timbres}}}}}}}}, c'est $?$ {{if:o==0|billes|{{if:o==1|bonbons|{{if:o==2|images|{{if:o==3|élèves|timbres}}}}}}}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..10"
+				},
+				{
+					"name": "p",
+					"expression": "2..12"
+				},
+				{
+					"name": "n",
+					"expression": "eval:k*p"
+				},
+				{
+					"name": "o",
+					"expression": "0..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction d'une quantité.** Prendre {{if:k==2|la moitié|{{if:k==3|un tiers|{{if:k==4|un quart|{{if:k==5|un cinquième|{{if:k==6|un sixième|{{if:k==7|un septième|{{if:k==8|un huitième|{{if:k==9|un neuvième|un dixième}}}}}}}}}}}}}}}}, c'est partager en ${{k}}$ parts égales et prendre une part.",
+					"$${{n}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{p}}}$$ car ${{k}} \\times {{p}} = {{n}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule {{if:k==2|la moitié|{{if:k==3|un tiers|{{if:k==4|un quart|{{if:k==5|un cinquième|{{if:k==6|un sixième|{{if:k==7|un septième|{{if:k==8|un huitième|{{if:k==9|un neuvième|un dixième}}}}}}}}}}}}}}}} de ${{n}}$ {{if:g==0|mètres|{{if:g==1|kilogrammes|{{if:g==2|litres|euros}}}}}}.\n\n{{if:k==2|La moitié|{{if:k==3|Un tiers|{{if:k==4|Un quart|{{if:k==5|Un cinquième|{{if:k==6|Un sixième|{{if:k==7|Un septième|{{if:k==8|Un huitième|{{if:k==9|Un neuvième|Un dixième}}}}}}}}}}}}}}}} de ${{n}}$ {{if:g==0|mètres|{{if:g==1|kilogrammes|{{if:g==2|litres|euros}}}}}}, c'est $?$ {{if:g==0|mètres|{{if:g==1|kilogrammes|{{if:g==2|litres|euros}}}}}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|4|5|10"
+				},
+				{
+					"name": "n",
+					"expression": "3..30"
+				},
+				{
+					"name": "g",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["mod(n,k)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/k;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction d'une quantité.** Prendre {{if:k==2|la moitié|{{if:k==3|un tiers|{{if:k==4|un quart|{{if:k==5|un cinquième|{{if:k==6|un sixième|{{if:k==7|un septième|{{if:k==8|un huitième|{{if:k==9|un neuvième|un dixième}}}}}}}}}}}}}}}}, c'est partager en ${{k}}$ parts égales et prendre une part.",
+					"${{n}}$ n'est pas dans la table de ${{k}}$ : le partage ne tombe pas juste, le résultat a une virgule.",
+					"$${{n}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:n/k;d}}}$$ car ${{k}} \\times {{eval:n/k;d}} = {{n}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "un tiers de 12 billes : 4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"p": "4",
+				"n": "12",
+				"o": "0"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 36 (multiplié)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"p": "4",
+				"n": "12",
+				"o": "0"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9 (12 − 3)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"p": "4",
+				"n": "12",
+				"o": "0"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un quart de 10 m : 2,5",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"n": "10",
+				"g": "0"
+			},
+			"answers": ["2.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 (reste oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"n": "10",
+				"g": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,2 (2 reste 2)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"n": "10",
+				"g": "0"
+			},
+			"answers": ["2.2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un cinquième de 7 kg : 1,4",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"n": "7",
+				"g": "1"
+			},
+			"answers": ["1.4"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
