@@ -6,14 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 4 écrit (PR de fichiers à ouvrir)._
+_Mis à jour le 2026-10-30, après #1996._
 
-- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions, 10 modèles) écrit, specs vertes, essayé en base locale (§ 8).
-- **Prochaine action** : PR des fichiers du lot 4 → merge → David lance `create-questions --publier` → migration nœud + tag.
-- **En attente de David** : défaut de la carte de correction (choix `$$…$$` affichés en LaTeX brut, 15 modèles
-  publiés) : correctif à part maintenant ou plus tard ? (§ 8).
+- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions, 10 modèles) : fichiers mergés (#1996), pas encore en base.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-4
+--publier` ; relever les `id` au MCP ; puis migration nœud + tag (calquée sur le lot 3).
+- **En attente de David** : `create-questions --publier` ; correctif de la carte de correction (choix `$$…$$`
+  en LaTeX brut, 15 modèles publiés) : recommandé maintenant, en PR de code à part (§ 8) — go ou plus tard ?
 - **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `content/questions-ce2-lot4`.
+- **Worktree / branche** : aucun (retiré après #1996) ; migration : nouveau worktree `../ubumaths-wt-questions-ce2`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -338,3 +339,4 @@ de plus (brouillons neufs ; la migration nœud + tag ne change aucune règle).
   (`$$\frac{2}{3}$$`) : `ChoiceList.svelte` passe le choix à `InlineMarkdown`, qui ne dessine pas `$$`. La saisie est
   juste, seule la correction est touchée. **15 modèles publiés** concernés (CP, CE1, CE2, CM1, 5e, 1re et Tle spé ;
   relevé MCP). Le lot garde `$$` (même écriture que le CE1) : le correctif du composant le couvrira.
+- 2026-10-30 : #1996 mergée (CI verte, revue : aucune, contenu) ; worktree retiré.
