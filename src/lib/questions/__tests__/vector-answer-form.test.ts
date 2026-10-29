@@ -130,7 +130,7 @@ describe('acceptDecimal : attendue exacte, décimal exact juste dans chaque coor
 		expect(judge('\\left(-2;0.5\\right)', '(-2;\\dfrac{1}{2})').status).toBe('bad_form');
 	});
 
-	it('colinéaire : un multiple écrit en décimaux est juste avec l’option, mauvaise forme sans', () => {
+	it('colinéaire : un multiple en décimaux est juste, avec ou sans l’option (coordonnée libre)', () => {
 		const blank: InstanceBlank = {
 			expectedAnswer: '(2;1)',
 			type: 'math',
@@ -141,6 +141,6 @@ describe('acceptDecimal : attendue exacte, décimal exact juste dans chaque coor
 		const answer = '\\left(1;0.5\\right)';
 		const result = validateAnswer([answer], instanceWith([blank]), [answer]);
 		expect(result.status ?? (result.isCorrect ? 'correct' : 'incorrect')).toBe('correct');
-		expect(judge(answer, '(2;1)', 'colineaire').status).toBe('bad_form');
+		expect(judge(answer, '(2;1)', 'colineaire').status).toBe('correct');
 	});
 });
