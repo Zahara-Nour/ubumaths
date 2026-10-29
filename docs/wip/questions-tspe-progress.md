@@ -13,8 +13,8 @@
 _Mis à jour le 2026-10-29, à l'ouverture du chantier._
 
 - **État** : relevé prod, existant et classement des points sans modèle écrits (§ 1-4).
-- **Prochaine action** : réponses de David aux questions Q1-Q7 (§ 5), puis lot 0 du premier thème.
-- **En attente de David** : Q1-Q7.
+- **Prochaine action** : lot 0-suites (§ 6) : instantané des brouillons, tirages contre les bornes TSPE (et TCOMP), constats.
+- **En attente de David** : rien (D1-D7 validées le 2026-10-29).
 - **Pièges en cours** : `create-questions` et `publier-lot` → David ; les vieux dossiers
   `scripts/questions/<thème>-terminale/` ne concordent peut-être plus avec la base → partir des id
   (`export-question-templates.ts --ids`, comme en 1re spé) ; la case choix est en prod (figure-et-choix lots 1-5,
@@ -225,7 +225,7 @@ existant couvre une fois retagué (Q2, Q3).
 
 ## 5. Questions à David
 
-_Posées le 2026-10-29._
+_Posées le 2026-10-29. Recommandations de Claude validées par David le 2026-10-29 (« je te suis ») : D1 = Q1 … D7 = Q7, chacune avec sa recommandation._
 
 - **Q1 — Brouillons d'abord ?** Comme en 1re spé (D1) : les 184 brouillons passent avant tout lot neuf, un lot
   par thème, dans l'ordre du § 4. Recommandé : oui, premier thème = suites.
