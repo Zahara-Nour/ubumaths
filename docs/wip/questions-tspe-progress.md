@@ -10,16 +10,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, à l'ouverture du chantier._
+_Mis à jour le 2026-10-29, lot 0-suites vérifié (§ 6)._
 
-- **État** : relevé prod, existant et classement des points sans modèle écrits (§ 1-4).
-- **Prochaine action** : lot 0-suites (§ 6) : instantané des brouillons, tirages contre les bornes TSPE (et TCOMP), constats.
-- **En attente de David** : rien (D1-D7 validées le 2026-10-29).
+- **État** : D1-D7 validées ; lot 0-suites vérifié (17 brouillons, 1 correction), page à cocher publiée.
+- **Prochaine action** : après les verdicts : PR de l'instantané, merge, puis David lance `create-questions --dir scripts/questions/tspe-0-suites --publier --mettre-a-jour` et `publier-lot --publier` ; ensuite lot 0-limites et fonctions.
+- **En attente de David** : verdicts de la page à cocher des suites (§ 6).
 - **Pièges en cours** : `create-questions` et `publier-lot` → David ; les vieux dossiers
   `scripts/questions/<thème>-terminale/` ne concordent peut-être plus avec la base → partir des id
   (`export-question-templates.ts --ids`, comme en 1re spé) ; la case choix est en prod (figure-et-choix lots 1-5,
   v0.55.0) : plus d'ancien QCM à écrire.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe`, `feat/questions-tspe-0-suites`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -250,3 +250,29 @@ _Posées le 2026-10-29. Recommandations de Claude validées par David le 2026-10
 - **Q7 — Chevauchement avec maths complémentaires** : 80 brouillons (81 modèles) portent aussi `T_COMP`. Publier au lot 0
   les rend visibles aux deux niveaux ; je vérifie aussi contre les bornes `tcomp.json` (plus étroites). Recommandé :
   oui, les deux bornes à chaque tirage.
+
+## 6. Lot 0-suites : vérification des brouillons
+
+_2026-10-29. 17 brouillons de niveau `T_SPE` tagués d'un point des suites (304, 378, 379, 380, 383, 384, 385, 432,
+577, 578, 579) ou des suites arithmético-géométriques (9f14d672, 81ff485d : TCOMP seul, D3 → 387). Instantané
+`scripts/questions/tspe-0-suites/` (`export-question-templates.ts`, prod), `question:specs --apercu 3` puis une copie
+par variation (64 variations, 2 tirages lus chacune), réponses des 25 cases « choix » recoupées avec leur option ;
+sorties dans le scratchpad de la session._
+
+**Mécanique** : 17 / 17 verts, 3 650 tirages réussis, 0 avertissement.
+
+**Bornes** : rien hors bornes. TSPE : limites des fonctions de 1re seulement (lts-5) ; qⁿ pour q réel quelconque (383,
+ea9d2de8 avec q ⩽ −1) ; définitions par les intervalles (378-380). TCOMP (D7, plus étroites) : raisons positives
+pour 1ebd1c86, 708f8a08 (0 < q < 1), 81ff485d et 9f14d672 (a ∈ {0,1 … 0,9 ; 1/2 … ; 2 ; 3} ⩾ 0). 57063ada (Héron) :
+seul f(ℓ) = ℓ est demandé, dans 432 (l'étude de la convergence, 571, n'est pas demandée).
+
+**Constats** :
+
+- **C1 (corrigé)** : 2bf6edc7 v3 (« majorée par M, que conclure ? ») donnait pour contre-exemples uₙ = (−1)ⁿ et
+  uₙ = −n, **faux** quand M < 1 (M tiré dans ±2..9 : une fois sur deux). Remplacés par uₙ = (M − 1) + (−1)ⁿ et
+  uₙ = M − n ; 12 / 12 specs vertes, tirages relus (M = −9, −4, 6).
+- Écartés : « −9/9 » non simplifié dans une étape de c611f92b v3 et v4 (étape intermédiaire, réponse juste) ;
+  `0.5`, `1.05` écrits à l'anglaise dans la sortie de l'outil seulement (rendu à la française).
+
+**Page à cocher** : https://claude.ai/artifact/CRPu9Wj8MaomQe8nS6v7Jy (17 fiches, 64 exemples), collection `verdicts`
+vide à la publication.

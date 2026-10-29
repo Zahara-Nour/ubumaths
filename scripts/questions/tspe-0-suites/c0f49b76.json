@@ -1,0 +1,135 @@
+{
+	"id": "c0f49b76-fe50-44cf-80b6-3ee8ee5ab9f5",
+	"title": "Définition de la limite : un rang à partir duquel tous les termes conviennent",
+	"description": "Suite tendant vers +∞ : donner UN entier N tel que tous les uₙ pour n ⩾ N sont dans [A ; +∞[ (toute réponse qui convient est juste ; pièges : rang trop petit, rang non entier)",
+	"grades": ["T_SPE"],
+	"theme": "Suites",
+	"domain": "Limites de suites",
+	"subdomain": "Définition de la limite",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"rulesSuffice": true,
+					"expectedAnswer": "{{eval:10^t}}",
+					"validationRules": [
+						{
+							"max": "1000000000",
+							"min": "0",
+							"type": "range",
+							"inclusive": true
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						},
+						{
+							"type": "custom",
+							"expression": "answer^2 >= {{A}}",
+							"description": "Pour ce rang, $u_N<{{A}}$ : il est trop petit."
+						}
+					]
+				}
+			],
+			"statement": "Pour tout entier naturel $n$, $u_n=n^{2}$. La suite $(u_n)$ tend vers $+\\infty$ : tout intervalle $[A\\,;+\\infty[$ contient tous les termes à partir d'un certain rang.\n\nDonne un entier naturel $N$ tel que, pour tout $n\\geqslant N$, $u_n\\geqslant{{A}}$.\n\n$N=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2..3"
+				},
+				{
+					"name": "A",
+					"expression": "eval:10^(2*t)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_n)$ est croissante sur $\\mathbb{N}$ : dès que $u_N\\geqslant{{A}}$, tous les termes suivants aussi.",
+					"$n^{2}\\geqslant{{A}}\\iff n\\geqslant{{eval:10^t}}$ (pour $n\\geqslant0$). Le plus petit rang qui convient est $N=\\textcolor{{{color:primary.0}}}{ {{eval:10^t}} }$ ; tout entier plus grand convient aussi."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "10000",
+				"t": "2"
+			},
+			"description": "v0 A=10⁴ : N=100",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["500"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "10000",
+				"t": "2"
+			},
+			"description": "v0 : N=500 convient aussi",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["99"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "10000",
+				"t": "2"
+			},
+			"description": "v0 : N=99 trop petit",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "10000",
+				"t": "2"
+			},
+			"description": "v0 : N=50 (A/2 ÷ 100)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["100.5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "10000",
+				"t": "2"
+			},
+			"description": "v0 : rang non entier 100,5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-200"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "10000",
+				"t": "2"
+			},
+			"description": "v0 : rang négatif −200",
+			"variationIndex": 0
+		}
+	]
+}
