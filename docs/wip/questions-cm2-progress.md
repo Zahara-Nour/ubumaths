@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1957._
+_Mis à jour le 2026-10-29, après #1957 et la publication du lot 1._
 
-- **État** : relecture du lot 1 faite (6 OK, 2 à revoir) ; 03 (variation 2 « combien d'unités ») et 06 (bloc ```ranger) corrigés dans les fichiers (#1957, mergée), **pas encore en prod** (§ 6.3).
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-1 --publier --mettre-a-jour` depuis le dépôt principal (2 brouillons mis à jour : 8e1f6003, 7d258acc) ; vérifier au MCP (contenu nouveau, `draft`, nœuds et tags intacts) ; puis `publier-lot` en simulation pour les 7 modèles sans ```ranger, `--publier` par David.
-- **En attente de David** : la mise à jour en prod ci-dessus ; 06 (Ranger) publié seulement après le prochain `deploy:prod` (```ranger, #1943, pas encore en prod).
-- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture. Specs de Ranger = positions AFFICHÉES au mélange de la graine 0 : changer les étiquettes ou les variables → les relever (`generateInstanceWithFixedVariables`). `create-questions` dans un worktree neuf : `pnpm exec svelte-kit sync` d'abord.
+- **État** : lot 1 : 03 et 06 mis à jour en prod par David (`--mettre-a-jour`, vérifié au MCP : contenu nouveau, nœuds et tags intacts) ; **7 modèles publiés** (vérifié au MCP) ; 06 « Ranger cinq grands nombres » (7d258acc, bloc ```ranger) reste en brouillon.
+- **Prochaine action** : lot 2 — choisir les points suivants parmi les 144 sans modèle (§ 3), phase 0 à écrire et faire valider.
+- **En attente de David** : publier 7d258acc après le prochain `deploy:prod` (```ranger, #1943, pas encore en prod) : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`, après un coup d'œil dans l'aperçu en prod.
+- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture. Specs de Ranger = positions AFFICHÉES au mélange de la graine 0 : changer étiquettes ou variables → les relever (`generateInstanceWithFixedVariables`). `create-questions` dans un worktree neuf : `pnpm exec svelte-kit sync` d'abord.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -249,3 +249,5 @@ ni de `x1…x5`. Specs : positions affichées au mélange de la graine 0, relev�
   au toucher) : étiquettes avec espaces (96 398 029), pas de débordement, 5e place à la ligne ;
   rangement juste posé au toucher → « Juste ». Variation 2 de 03 tirée au générateur : énoncé et
   correction comme ci-dessus.
+- Prod (2026-10-29) : David lance `--mettre-a-jour` (2 mis à jour), puis `publier-lot --publier` sur les 7 fichiers
+  sans 06 (copiés à part) : 7/7 publiés, vérifié au MCP.
