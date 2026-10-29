@@ -6,13 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1946 et `db:migrate`._
+_Mis à jour le 2026-10-29, après la relecture du lot 2 bis B._
 
-- **État** : lot 2 bis B (1/x, √x, x³) en prod en brouillon, rangé et tagué (§ 18) ; page à cocher publiée,
-  0 verdict sur 6 : https://claude.ai/artifact/Pg2wcdRUGdQpjQs3FdjJsb
-- **Prochaine action** : relecture par David ; compter les verdicts (`ArtifactData list verdicts`) ; puis
-  `publier-lot.ts --dir scripts/questions/2de-lecture-b` en simulation, `--publier` lancé par David.
-- **En attente de David** : la relecture ; la phase 0 du correctif « accolades » (§ 17, avec ou sans
+- **État** : lot 2 bis B (1/x, √x, x³) en prod en brouillon, rangé et tagué (§ 18) ; relu par David,
+  **6/6 OK** (https://claude.ai/artifact/Pg2wcdRUGdQpjQs3FdjJsb) ; `publier-lot.ts` en simulation : 6 brouillons
+  passent le contrôle.
+- **Prochaine action** : David lance
+  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/2de-lecture-b --publier` ; vérifier
+  `published` par MCP ; puis le correctif « accolades » (§ 17).
+- **En attente de David** : le `--publier` ; la phase 0 du correctif « accolades » (§ 17, avec ou sans
   « x = 2 »).
 - **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT, pas dans la PR ;
   horodatage de migration pris par une autre session ; port 5176 pris par `questions-4` (serveur sur 5177).
