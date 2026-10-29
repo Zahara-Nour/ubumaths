@@ -60,6 +60,7 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `supabase/migrations/20261013090000_dictionnaire_image_meme_site.sql` | Contrainte : image du site seulement (`//hôte` refusé)                                   |
 | `supabase/migrations/20261015090000_dictionnaire_historique_*.sql`    | Historique écrit par le trigger seul (SECURITY DEFINER gardé par `is_admin()`)           |
 | `supabase/migrations/20261016090300_dictionnaire_mots_lecture.sql`    | Données : les 4 mots de la lecture (copie figée `mots-lecture-2026-10-11.ts`)            |
+| `supabase/migrations/20261029235500_dictionnaire_slug.sql`            | Adresse fixe `slug` de chaque entrée (`/glossaire/<slug>`), posée et figée par trigger   |
 
 Page de test (admin seul) : `/dev/mots-cliquables` (`src/routes/(protected)/dev/mots-cliquables/+page.svelte`, ex-`/demo/mots-cliquables`).
 
@@ -76,7 +77,13 @@ liste fermée de mots trop courants), `derivedFrom` (renvoi d'un verbe ou adject
 principal), `seeAlso` (lien vers une page du Cabinet Noir, liste blanche `SEE_ALSO_PATHS`),
 `sharedWith` (filières parallèles qui lisent aussi le terme). Colonnes propres à la base :
 `position` (ordre d'origine : un renvoi vise le premier terme principal de son nom), `hidden`,
-`updated_by`, dates.
+`updated_by`, dates, et `slug`.
+
+`slug` est l'adresse de la page du terme (`/glossaire/<slug>`, chantier seo) : terme (+ sens), en
+minuscules, sans accents, tirets (`base-puissance`, `ecart-interquartile`). Le trigger
+`dictionary_entries_slug` (droits de l'appelant) la pose à la création, avec un suffixe `-2`, `-3`…
+en cas de collision, puis la **fige** : renommer le terme ne la change pas (lien indexé par Google
+jamais cassé, choix de David du 2026-10-29). Personne ne l'écrit, pas même l'admin.
 
 `dictionary_entry_versions` garde, à chaque modification, l'entrée **telle qu'elle était avant**
 (trigger `dictionary_entries_keep_version`, droits de l'appelant ; auteur et dates posés par le
@@ -168,6 +175,7 @@ personne n'écrit directement dans l'historique.
 | `tests/integration/dictionnaire-lecture.test.ts`                                  | Lecture : base locale = référence + ajouts, filtre `hidden`, mémoire 90 s |
 | `tests/integration/dictionnaire-mots-lecture.test.ts`                             | Les 4 mots de la lecture : lus par un visiteur, cohérents                 |
 | `tests/integration/dictionnaire-admin.test.ts`                                    | Enregistrement admin : refus de cohérence, historique, masquage           |
+| `tests/integration/dictionnaire-slug.test.ts`                                     | Adresse fixe : calcul, figée au renommage, suffixe `-2`, masquée cachée   |
 | `src/lib/server/dictionary/__tests__/load.test.ts`                                | Mémoire, repli, lecture unique                                            |
 | `src/routes/api/dictionnaire/__tests__/server.test.ts`                            | Cache public, `?frais` réservé à l'admin                                  |
 | `src/lib/dictionary/__tests__/entry-schema.test.ts`                               | Toutes les entrées relues à l'identique par le schéma                     |
