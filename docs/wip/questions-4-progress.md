@@ -5,16 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, migration nœud + tag du lot 1 écrite (PR ouverte)._
+_Mis à jour le 2026-10-29, après #1948 (nœud + tag du lot 1, mergé et migré)._
 
-- **État** : lot 1 (7 brouillons en prod, § 9-10) ; migration `20261029190000_questions_4_lot1_rangement_tags.sql`
-  - test `tests/integration/questions-4-lot1-rangement-tags.test.ts` : rouge sans la migration (5/9), vert avec (9/9).
-- **Prochaine action** : `security-auditor`, CI verte, merge, puis `pnpm db:migrate` depuis le dépôt principal et
-  vérification en prod (MCP : nœud, tag, brouillon, `updated_at` inchangé). Ensuite : lot 2 de la 4e.
-- **En attente de David** : rien (la publication des 7 brouillons est à lui, après la migration).
+- **État** : lot 1 (relatifs et rationnels) complet en prod : 7 brouillons rangés et tagués (migration
+  `20261029190000`, `db:migrate` fait le 2026-10-29, vérifié au MCP : nœud, tag, brouillon, `updated_at` inchangé).
+- **Prochaine action** : lot 2 de la 4e (relevé § 1, points sans modèle ; phase 0 à proposer à David).
+- **En attente de David** : publication des 7 brouillons du lot 1 (après relecture dans l'admin).
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
-  `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit ; QCM = case choix.
-- **Worktree / branche** : `ubumaths-wt-questions-4` · `feat/questions-4-tags`.
+  `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit, corps ≤ 100 caractères par ligne
+  (commitlint) ; QCM = case choix ; gabarit de migration à jour : `20261029190000` (gère les points à la notion).
+- **Worktree / branche** : aucun (retiré après #1948).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -317,3 +317,4 @@ niveau 3 ; 4-013 ouvre Fractions / Calculer / Enchaînements.
   4-013 et 4-014 à la **notion** Fractions : calculs.
 - Migration et test repris du lot 2 de la 5e (`20261029170000`, qui gère déjà les points à la notion). Question
   d'accès : § 9.3 (personne ne gagne d'accès), validée avec la phase 0.
+- #1948 mergée (CI verte, `security-auditor` sans finding) ; `db:migrate` le 2026-10-29 ; vérifié en prod (MCP).
