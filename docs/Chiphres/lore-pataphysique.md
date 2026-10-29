@@ -225,6 +225,7 @@ Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustration
   - **Style** : faste ubuesque, beaucoup d'or, bannières vertes de la livrée d'Ubu ; un luxe trop voyant, de mauvais goût assumé. Pas de statues d'Ubu, ni trappe ni machine à décerveler.
   - **Eau** 🟡 (décision de David, 2026-10-29) : la Vistule ne passe pas par Sandomir (plan de la carte) ; un grand lac voisin alimente des douves qui entourent la ville, franchies par un seul pont, le Pont-Levis.
   - **Alentours** : campagne neutre, prés et routes qui partent vers les six provinces.
+  - **Gare** 🟡 (décision de David, 2026-10-29) : le chemin de fer à vapeur arrive de l'est (Glitchistan) et s'arrête à une petite gare au bord de la route circulaire, **hors des douves** : les rails ne franchissent pas les douves, le voyageur fait le tour jusqu'au Pont-Levis. La Gare n'est pas un lieu du site.
   - **Repère sur la carte** : la spirale de la ville avec le dôme doré au centre.
   - **Couleur** : aucune couleur de province ; Encre et Or pour la ville seule.
 - **Plan de la ville = carte du site** 🟡 (décision de David, 2026-10-29) : les lieux de la Section IV (« Géographie de l'Académie », une page du site = un lieu du Royaume) sont placés le long de la spirale, de l'entrée au centre :
