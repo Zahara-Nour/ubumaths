@@ -9,7 +9,7 @@ _Mis à jour le 2026-10-29, après la publication du lot 2._
 
 - **État** : lot 1 en prod en brouillon, rangé et tagué ; lot 2 (proportionnalité et pourcentages, 7 modèles)
   **publié** le 2026-10-29 (page à cocher 7/7 OK, `publier-lot --publier` par David, statut relu au MCP).
-- **Prochaine action** : réponses de David à la phase 0 du lot 3 (statistiques, § 16.4), puis écrire le lot.
+- **Prochaine action** : écrire le lot 3 (statistiques, § 16, validé) dans le worktree.
 - **En attente de David** : publication des 7 brouillons du lot 1 (relecture dans l'admin, ou page à cocher).
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit ; QCM = case choix ; worktree neuf :
@@ -453,3 +453,9 @@ les élèves de 4e voient 9 modèles de plus.
    pour laisser 1-2 à la 5e (5-080, 5-139), Médiane 1-2 pour laisser 3 à la 3e (3-056) ?
 3. 4-045 et 3-032 ont le même libellé : un seul modèle tagué des deux points (la 3e n'en écrit pas), ou chaque
    niveau le sien ?
+
+**Décisions de David (2026-10-29, « je valide » mes recos)** : les 9 modèles du § 16.2 ; si la règle `range` ne sait
+pas accepter une réponse autre que l'attendue, 4-040 variation 3 retirée (effectifs impairs seulement), en le
+signalant ; catégories Statistiques / Indicateurs (Moyenne 3, Médiane 1-2, Étendue 1-2), Statistiques / Problèmes
+(Valeur extrême, Indicateurs, Comparer des séries), Statistiques / Tableur / Formules ; **un seul modèle tableur,
+grades 4 et 3, tagué 4-045 et 3-032** (note laissée dans le journal de la 3e).
