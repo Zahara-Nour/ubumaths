@@ -8,7 +8,7 @@
 _Mis à jour le 2026-10-29, lot 6a publié en brouillons, migration de rangement en PR._
 
 - **État** : lots 1 à 5 en prod. Lot 6a (M1-M6) : 6 brouillons créés en prod par David le 2026-10-29 (`id` au
-  § 13.2) ; migration `20261029223000_questions_6_lot6a_rangement_tags` (nœud + tag) en PR, test rouge sans elle.
+  § 13.2) ; migration `20261029233200_questions_6_lot6a_rangement_tags` (nœud + tag) en PR, test rouge sans elle.
 - **Prochaine action** : merge, puis `db:migrate` depuis le dépôt principal ; page à cocher des 6 ; publication
   (`publier-lot`) ; ensuite le lot 6b (M7-M13).
 - **En attente de David** : passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles` (scission faite).
@@ -959,7 +959,7 @@ nouvelle revue.
 - Relevé MCP : les 6 en 6e, brouillons, sans nœud ni tag ; points 6-139 et 6-140 sur « Proportionnalité >
   Pourcentages > définition / calculs de pourcentages », 6-189 sur « Situations de proportionnalité >
   caractérisation », 6-211 sur « Nombres et calculs > Entiers : multiplication > triple et tiers ».
-- Migration `20261029223000_questions_6_lot6a_rangement_tags.sql` (calquée sur celle du lot 5) et test
+- Migration `20261029233200_questions_6_lot6a_rangement_tags.sql` (calquée sur celle du lot 5) et test
   `tests/integration/questions-6-lot6a-rangement-tags.test.ts` : 14 verts ; sans la migration, 8 rouges et 5 sautés.
 - PR #1968 ; `security-auditor` : aucun finding bloquant (après `db:migrate`, relire `tgenabled = 'O'` du trigger
   `update_question_templates_updated_at`).
