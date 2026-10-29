@@ -2,6 +2,7 @@
 # Recolle sur le fond HD les villes dessinées par Nano Banana (une image par ville, vignettes/<ville>-ia.webp).
 # Chaque ville a été dessinée dans un carré de 768 px découpé dans fond-carte-hd.webp autour de sa clairière.
 # Le masque vient de la différence entre le carré d'origine et l'image de l'IA : seul ce qui a changé est recollé.
+# Close comble les trous du masque (lac de Sandomir à moitié collé sans lui).
 # Usage : bash recoller.sh  →  carte-villes-hd.webp
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -26,7 +27,7 @@ for c in "${CARRES[@]}"; do
   magick fond-carte-hd.webp -crop "768x768+$x+$y" +repage "$tmp/orig.png"
   magick "$ia" -resize '768x768!' "$tmp/ia.png"
   magick "$tmp/orig.png" "$tmp/ia.png" -compose difference -composite -colorspace gray \
-    -threshold 12% -morphology Open Disk:2 -morphology Dilate Disk:14 -blur 0x8 "$tmp/masque.png"
+    -threshold 8% -morphology Open Disk:2 -morphology Close Disk:30 -morphology Dilate Disk:14 -blur 0x8 "$tmp/masque.png"
   magick "$tmp/orig.png" "$tmp/ia.png" "$tmp/masque.png" -composite "$tmp/recolle.png"
   magick "$tmp/carte.png" "$tmp/recolle.png" -geometry "+$x+$y" -composite "$tmp/carte.png"
   echo "✓ $ville"
