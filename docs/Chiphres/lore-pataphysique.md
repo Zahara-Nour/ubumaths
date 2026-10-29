@@ -474,6 +474,12 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
   - **Devise** : « **Aux grands maux les grands Reset !** »
   - **Commentaire de la devise** : détournement du proverbe « Aux grands maux, les grands remèdes ». La majuscule à _Reset_ fait du redémarrage une **institution royale** (le Grand Reset comme procédure d'État). Mathématiquement, c'est l'application directe de l'impuissance algorithmique : face au **halting problem** de Turing (1936) — on ne peut pas savoir en général si un programme s'arrêtera —, la seule solution face à une boucle infinie reconnue est le reset. La devise canonise par décret royal le geste universel du dev face au bug irréductible : _« Have you tried turning it off and on again ? »_. Hommage discret au gouverneur conceptuel de Turingrad. **Cohérence digestive** : le _Grand Reset_ est aussi l'équivalent informatique du **rot pataphysique** qui termine un repas ubuesque trop chargé — quand le système ne peut plus avaler, on le redémarre.
   - **Paysage canon** 🟡 (décision de David, 2026-10-25 : steampunk victorien, rien de pixelisé) : province industrielle victorienne. Usines de brique rouge et de fonte noircie, verrières, tubes pneumatiques de laiton qui courent de toit en toit, engrenages de cuivre patiné, cadrans partout. Le glitch y prend la forme mécanique du **raté** : une machine qui hoquette, un piston qui part de travers, un jet de vapeur qui fuse au mauvais moment — le chprout' de la machine. Au centre de Turingrad, **une Machine de Turing géante** de laiton et de fonte — ruban de papier perforé sans fin, tête de lecture cliquetante — marque le rythme officiel de la province. Les usines à vapeur du Glitchistan produisent en permanence des nuages qui s'échappent des cheminées victoriennes — visualisation directe des phlatulences industrielles du Royaume.
+  - **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : l'industrie se concentre dans Turingrad et le long du fleuve ; la campagne n'est traversée que par un chemin de fer à vapeur.
+    - **Relief** : plateau de collines douces creusé de vallées et de ravins (comme le plateau de Lublin).
+    - **Eau** : la Vistule, descendue du Bedonstan, devient un fleuve canalisé : écluses, quais, péniches à vapeur.
+    - **Végétation** : bois de bouleaux et champs, un peu noircis par la suie près de la ville.
+    - **Repère sur la carte** : la Machine de Turing géante.
+    - **Couleur** : cuivre `#AE4E1F` (hors nuancier, d'après la palette Glitchistan).
 
 #### Patatovie — _Logique et ensembles_
 
