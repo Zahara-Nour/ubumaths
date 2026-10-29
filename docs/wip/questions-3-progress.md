@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1981._
+_Mis à jour le 2026-10-29, migration de rangement du lot 3 écrite (PR à ouvrir)._
 
-- **État** : lot 3 (Thalès et trigonométrie, 6 modèles) mergé (#1981), pas encore en prod (§ 10.6).
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-3
---publier` (brouillons en prod) ; relever les `id` au MCP ; migration nœud + tag (§ 10.2), test
-  d'intégration, `security-auditor`, `db:migrate` ; page à cocher ; publication.
-- **En attente de David** : le `--publier` des 6 brouillons ; le sort du dossier `../ubumaths-wt-questions-3`
-  (hors git, caches `.svelte-kit`, `.vite`, `node_modules` d'un ancien worktree) ; Pythagore 4e à signaler.
+- **État** : lot 3 (Thalès et trigonométrie) : 6 brouillons en prod (§ 10.7) ; migration nœud + tag
+  `20261030002300` écrite, test vert, rouge sans la migration.
+- **Prochaine action** : `security-auditor`, CI verte, merge, puis `db:migrate` (David, `!`) depuis le dépôt
+  principal ; vérifier au MCP ; page à cocher ; publication.
+- **En attente de David** : le `db:migrate` après le merge ; le sort du dossier `../ubumaths-wt-questions-3`
+  (hors git, caches d'un ancien worktree) ; Pythagore 4e à signaler.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; une variable ne vaut jamais une lettre (lettres par `{{if}}` bout
   à bout) ; valeur tirée dans une figure en décimal (`;d`) ; aperçu admin sur `127.0.0.1`, pas `localhost`.
-- **Worktree / branche** : aucun (`ubumaths-wt-questions-3-lot-3` retiré après #1981).
+- **Worktree / branche** : `../ubumaths-wt-questions-3-lot3-rangement`, `feat/questions-3-lot3-rangement`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -454,3 +454,18 @@ prof de 3e voient 6 modèles publiés de plus. Aucune règle ne change.
   (MN = 4, juste), 3-023 v3 (tan, choix mélangé, juste).
 - Délais : 45 s (configurations, lignes trigonométriques), 60 s (égalité), 120 s (calcul, réciproque),
   150 s (trigonométrie, calcul).
+
+### 10.7 Lot 3 : en prod, rangement (2026-10-29)
+
+- Brouillons créés en prod par David : 16478dab (Reconnaître une configuration de Thalès), 034e6b74 (Écrire
+  l'égalité de Thalès), f55d07b0 (Calculer une longueur avec Thalès), 37c13d51 (Réciproque et contraposée de
+  Thalès), dbd5debf (Écrire cos, sin ou tan d'un angle), 57c73be1 (Calculer une longueur ou un angle) ; MCP :
+  brouillons [3], sans nœud ni tag.
+- Migration `20261030002300_questions_3_lot3_rangement_tags` (`lot-rangement-3-3.py`, relevé
+  `etat-prod-2026-10-29-3e-lot3/`, lu par `releve-prod-3.ts`) : chacun sur le nœud de son point (§ 10.2).
+  Horodatage pris après `20261030001000` (dictionnaire), le plus récent de toutes les branches.
+- Test `questions-3-lot3-rangement-tags` : 19 verts ; corps de la migration vidé : 8 rouges.
+- `security-auditor` : aucun bloquant (diff avec le lot 2 : données et compteurs seuls ; prod mesurée : 6 brouillons
+  sans nœud ni tag, points actifs, nœuds uniques). Point faible relevé : la notion « Trigonométrie du triangle
+  rectangle » a deux sous-notions sans point (« calcul de longueurs », « calcul d'angles ») ; 57c73be1 mêle
+  longueurs et angle → gardé sur la notion (§ 10.2), à confirmer par David.
