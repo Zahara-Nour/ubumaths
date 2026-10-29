@@ -1,0 +1,358 @@
+{
+	"title": "Problèmes : ajouter ou retrancher des fractions",
+	"description": "Résoudre un problème qui additionne ou soustrait deux fractions de dénominateurs quelconques : 2/3 d'une pizza et 1/4 de la même pizza ; ce qui reste d'un réservoir ; la part d'un jardin qui reste",
+	"grades": ["5"],
+	"theme": "Fractions",
+	"domain": "Problèmes",
+	"subdomain": "Additionner et soustraire",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:s==0|Lou|Inès}} mange les $\\frac{{{a}}}{{{n}}}$ d'une pizza et {{if:s==0|Sam|Noé}} les $\\frac{{{b}}}{{{m}}}$ de la même pizza.\n\nQuelle fraction de la pizza ont-ils mangée à eux deux ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:n-1}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:m-1}}"
+				},
+				{
+					"name": "L",
+					"expression": "eval:n*m/gcd(n,m)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:m/gcd(n,m)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:n/gcd(n,m)"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*m/gcd(n,m)"
+				},
+				{
+					"name": "B",
+					"expression": "eval:b*n/gcd(n,m)"
+				}
+			],
+			"conditions": ["mod(n,m)!=0", "mod(m,n)!=0", "gcd(a,n)==1", "gcd(b,m)==1", "A+B<L"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:A+B}}}{{{L}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur.** Pour additionner ou soustraire des fractions, on les écrit d'abord avec le même dénominateur.",
+					"${{L}}$ est un multiple de ${{n}}$ et de ${{m}}$ : on écrit les deux fractions avec le dénominateur ${{L}}$.",
+					"$$\\dfrac{{{a}}}{{{n}}} = \\dfrac{{{a}} \\times {{u}}}{{{n}} \\times {{u}}} = \\dfrac{{{A}}}{{{L}}}$$",
+					"$$\\dfrac{{{b}}}{{{m}}} = \\dfrac{{{b}} \\times {{w}}}{{{m}} \\times {{w}}} = \\dfrac{{{B}}}{{{L}}}$$",
+					"$$\\dfrac{{{A}}}{{{L}}} + \\dfrac{{{B}}}{{{L}}} = \\dfrac{{{A}} + {{B}}}{{{L}}} = \\textcolor{{{color:primary.0}}}{\\dfrac{{{eval:A+B}}}{{{L}}}}$$",
+					"Ils ont mangé les $\\textcolor{{{color:primary.0}}}{\\dfrac{{{eval:A+B}}}{{{L}}}}$ de la pizza."
+				]
+			}
+		},
+		{
+			"statement": "Un réservoir est rempli aux $\\frac{{{a}}}{{{n}}}$ de sa capacité. On utilise une quantité d'eau égale aux $\\frac{{{b}}}{{{m}}}$ de sa capacité.\n\nÀ quelle fraction de sa capacité le réservoir est-il encore rempli ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:n-1}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:m-1}}"
+				},
+				{
+					"name": "L",
+					"expression": "eval:n*m/gcd(n,m)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:m/gcd(n,m)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:n/gcd(n,m)"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*m/gcd(n,m)"
+				},
+				{
+					"name": "B",
+					"expression": "eval:b*n/gcd(n,m)"
+				}
+			],
+			"conditions": ["mod(n,m)!=0", "mod(m,n)!=0", "gcd(a,n)==1", "gcd(b,m)==1", "A>B"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:A-B}}}{{{L}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur.** Pour additionner ou soustraire des fractions, on les écrit d'abord avec le même dénominateur.",
+					"${{L}}$ est un multiple de ${{n}}$ et de ${{m}}$ : on écrit les deux fractions avec le dénominateur ${{L}}$.",
+					"$$\\dfrac{{{a}}}{{{n}}} = \\dfrac{{{a}} \\times {{u}}}{{{n}} \\times {{u}}} = \\dfrac{{{A}}}{{{L}}}$$",
+					"$$\\dfrac{{{b}}}{{{m}}} = \\dfrac{{{b}} \\times {{w}}}{{{m}} \\times {{w}}} = \\dfrac{{{B}}}{{{L}}}$$",
+					"On retire l'eau utilisée :",
+					"$$\\dfrac{{{A}}}{{{L}}} - \\dfrac{{{B}}}{{{L}}} = \\dfrac{{{A}} - {{B}}}{{{L}}} = \\textcolor{{{color:primary.0}}}{\\dfrac{{{eval:A-B}}}{{{L}}}}$$",
+					"Le réservoir est encore rempli aux $\\textcolor{{{color:primary.0}}}{\\dfrac{{{eval:A-B}}}{{{L}}}}$ de sa capacité."
+				]
+			}
+		},
+		{
+			"statement": "Dans un jardin, les $\\frac{{{a}}}{{{n}}}$ de la surface sont un potager et les $\\frac{{{b}}}{{{m}}}$ de la surface sont plantés de fleurs. Le reste est une pelouse.\n\nQuelle fraction de la surface du jardin la pelouse occupe-t-elle ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:n-1}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:m-1}}"
+				},
+				{
+					"name": "L",
+					"expression": "eval:n*m/gcd(n,m)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:m/gcd(n,m)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:n/gcd(n,m)"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*m/gcd(n,m)"
+				},
+				{
+					"name": "B",
+					"expression": "eval:b*n/gcd(n,m)"
+				}
+			],
+			"conditions": ["mod(n,m)!=0", "mod(m,n)!=0", "gcd(a,n)==1", "gcd(b,m)==1", "A+B<L"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:L-A-B}}}{{{L}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur.** Pour additionner ou soustraire des fractions, on les écrit d'abord avec le même dénominateur.",
+					"${{L}}$ est un multiple de ${{n}}$ et de ${{m}}$ : on écrit les deux fractions avec le dénominateur ${{L}}$.",
+					"$$\\dfrac{{{a}}}{{{n}}} = \\dfrac{{{a}} \\times {{u}}}{{{n}} \\times {{u}}} = \\dfrac{{{A}}}{{{L}}}$$",
+					"$$\\dfrac{{{b}}}{{{m}}} = \\dfrac{{{b}} \\times {{w}}}{{{m}} \\times {{w}}} = \\dfrac{{{B}}}{{{L}}}$$",
+					"Le potager et les fleurs occupent :",
+					"$$\\dfrac{{{A}}}{{{L}}} + \\dfrac{{{B}}}{{{L}}} = \\dfrac{{{eval:A+B}}}{{{L}}}$$",
+					"Le jardin entier, c'est $1 = \\dfrac{{{L}}}{{{L}}}$ : la pelouse occupe",
+					"$$\\dfrac{{{L}}}{{{L}}} - \\dfrac{{{eval:A+B}}}{{{L}}} = \\textcolor{{{color:primary.0}}}{\\dfrac{{{eval:L-A-B}}}{{{L}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2/3 + 1/4 = 11/12",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"n": "3",
+				"m": "4",
+				"a": "2",
+				"b": "1",
+				"L": "12",
+				"u": "4",
+				"w": "3",
+				"A": "8",
+				"B": "3"
+			},
+			"answers": ["\\frac{11}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/7 (numérateurs et dénominateurs additionnés)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"n": "3",
+				"m": "4",
+				"a": "2",
+				"b": "1",
+				"L": "12",
+				"u": "4",
+				"w": "3",
+				"A": "8",
+				"B": "3"
+			},
+			"answers": ["\\frac{3}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/4 + 1/6 = 10/24 (dénominateur 24, accepté)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"n": "4",
+				"m": "6",
+				"a": "1",
+				"b": "1",
+				"L": "12",
+				"u": "3",
+				"w": "2",
+				"A": "3",
+				"B": "2"
+			},
+			"answers": ["\\frac{10}{24}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2/3 − 1/4 = 5/12",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"n": "3",
+				"m": "4",
+				"a": "2",
+				"b": "1",
+				"L": "12",
+				"u": "4",
+				"w": "3",
+				"A": "8",
+				"B": "3"
+			},
+			"answers": ["\\frac{5}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 (numérateurs et dénominateurs soustraits)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"n": "3",
+				"m": "4",
+				"a": "2",
+				"b": "1",
+				"L": "12",
+				"u": "4",
+				"w": "3",
+				"A": "8",
+				"B": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 − (2/3 + 1/4) = 1/12",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"n": "3",
+				"m": "4",
+				"a": "2",
+				"b": "1",
+				"L": "12",
+				"u": "4",
+				"w": "3",
+				"A": "8",
+				"B": "3"
+			},
+			"answers": ["\\frac{1}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 − (1/4 + 1/6) = 7/12",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"n": "4",
+				"m": "6",
+				"a": "1",
+				"b": "1",
+				"L": "12",
+				"u": "3",
+				"w": "2",
+				"A": "3",
+				"B": "2"
+			},
+			"answers": ["\\frac{7}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5/12 (la part du potager et des fleurs)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"n": "4",
+				"m": "6",
+				"a": "1",
+				"b": "1",
+				"L": "12",
+				"u": "3",
+				"w": "2",
+				"A": "3",
+				"B": "2"
+			},
+			"answers": ["\\frac{5}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
