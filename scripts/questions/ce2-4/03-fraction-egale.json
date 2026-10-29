@@ -1,0 +1,128 @@
+{
+	"title": "Trouver la fraction égale",
+	"description": "Parmi quatre, la fraction égale à 3/4 (leurres : même nombre ajouté en haut et en bas, dénominateur seul multiplié)",
+	"grades": ["CE2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Egalité de fractions",
+	"level": 8,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle fraction est égale à $\\frac{{{a}}}{{{d}}}$ ?\n\n```choix\n- $$\\frac{{{eval:a*k}}}{{{eval:d*k}}}$$\n- $$\\frac{{{eval:a+k}}}{{{eval:d+k}}}$$\n- $$\\frac{{{a}}}{{{eval:d*k}}}$$\n- $$\\frac{{{eval:a+1}}}{{{eval:d+1}}}$$\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"conditions": ["d*k <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ne change pas une fraction quand on multiplie (ou qu'on divise) son numérateur **et** son dénominateur par le même nombre.",
+					"$$\\frac{{{a}}}{{{d}}} = \\frac{{{a}} \\times {{k}}}{{{d}} \\times {{k}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:a*k}}}{{{eval:d*k}}}}$$",
+					"Ajouter le même nombre en haut et en bas ne donne pas une fraction égale."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/4 : 6/8",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"k": "2",
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/4, 5/6 (2 ajouté en haut et en bas)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"k": "2",
+				"a": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/4, 3/8 (dénominateur seul multiplié)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"k": "2",
+				"a": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/4, 4/5 (1 ajouté en haut et en bas)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"k": "2",
+				"a": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 1/2, 3/6",
+			"variationIndex": 0,
+			"variables": {
+				"d": "2",
+				"k": "3",
+				"a": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 5/6, 10/12",
+			"variationIndex": 0,
+			"variables": {
+				"d": "6",
+				"k": "2",
+				"a": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
