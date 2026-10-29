@@ -5,16 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1948 (nœud + tag du lot 1, mergé et migré)._
+_Mis à jour le 2026-10-29, lot 2 écrit (PR des fichiers à ouvrir)._
 
-- **État** : lot 1 (relatifs et rationnels) complet en prod : 7 brouillons rangés et tagués (migration
-  `20261029190000`, `db:migrate` fait le 2026-10-29, vérifié au MCP : nœud, tag, brouillon, `updated_at` inchangé).
-- **Prochaine action** : lot 2 de la 4e (relevé § 1, points sans modèle ; phase 0 à proposer à David).
+- **État** : lot 1 en prod (rangé, tagué). Lot 2 (proportionnalité et pourcentages, 7 modèles) écrit dans le
+  worktree : 65 specs vertes, 600 tirages par modèle, simulation verte, essai en base locale (§ 13).
+- **Prochaine action** : PR des fichiers du lot 2 → merge → David lance `create-questions --publier` → migration
+  nœud + tag (gabarit `20261029190000`).
 - **En attente de David** : publication des 7 brouillons du lot 1 (après relecture dans l'admin).
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit, corps ≤ 100 caractères par ligne
-  (commitlint) ; QCM = case choix ; gabarit de migration à jour : `20261029190000` (gère les points à la notion).
-- **Worktree / branche** : aucun (retiré après #1948).
+  (commitlint) ; QCM = case choix ; worktree neuf : `svelte-kit sync` avant `create-questions` (`$lib`).
+- **Worktree / branche** : `ubumaths-wt-questions-4` · `feat/questions-4-lot-2`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -362,3 +363,18 @@ Comme le lot 1 : brouillons, puis migration nœud + tag ; **personne** ne gagne 
 2. Catégories neuves : domaine **Ratios** (sous-notions Comparer, Égalités de rapports, Partage proportionnel) et
    **Pourcentages / Coefficient** (058, 057, 080 aux niveaux 1-3), plutôt que de renuméroter « Variations » ?
 3. 4-056 à la suite de la 6e (Pourcentages / Calculer, niveau 7) ?
+
+**Décisions de David (2026-10-29, « je valide » mes recos)** : les 7 modèles du § 12.2 tels quels ; catégories
+neuves **Ratios** (Comparer, Égalités de rapports, Partage proportionnel) et **Pourcentages / Coefficient** (058,
+057, 080 aux niveaux 1-3) ; 4-056 en Pourcentages / Calculer, niveau 7.
+
+## 13. Lot 2 : écrit (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-2`)
+
+- Script `docs/wip/questions/lot-4-2.py` (repris de `lot-4-1.py`) → `scripts/questions/4-lot-2/` : 7 modèles ;
+  `create-questions` (simulation) : 7 « à créer », 0 en base ; `question:specs` : 65 specs vertes, 600 tirages par
+  modèle réussis.
+- Corrigé en relisant les aperçus : « c'est la augmenter » → « l'augmenter » ; `K-100/100` sans parenthèses dans le
+  corrigé (« 1 + 111 ») ; ratios non simplifiés (2 : 4 : 6) exclus (`gcd(gcd(p,q),r)==1`) ; « 1 parts » évité
+  (parts ≥ 2) ; gain de tombola plus grand que les mises ; « Ajouter le même nombre » (non) corrigé par produits en
+  croix, sans décimaux périodiques.
+- Base locale : 7 brouillons créés ; aperçu admin : case choix (sirops) jouée juste, énoncés avec € et % rendus.

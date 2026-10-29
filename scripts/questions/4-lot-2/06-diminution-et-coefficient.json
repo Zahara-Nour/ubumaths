@@ -1,0 +1,218 @@
+{
+	"title": "Diminution et coefficient multiplicateur",
+	"description": "Traduire une diminution de t % par le coefficient 1 − t/100 : − 20 % → × 0,8 ; 120 € diminué de 20 % ; × 0,85 → − 15 %",
+	"grades": ["4"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Coefficient",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Diminuer une quantité de ${{t}}~\\%$, c'est la multiplier par :\n\n$$?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "5|10|15|20|25|30|40|50|75"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-t/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+					"$$1 - \\frac{{{t}}}{100} = 1 - {{eval:t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Un article coûte ${{P}}~\\unit{€}$. Son prix baisse de ${{t}}~\\%$.\n\nCalcule le nouveau prix à l'aide du coefficient multiplicateur.\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "10|20|30|5|15|25"
+				},
+				{
+					"name": "j",
+					"expression": "2..30"
+				},
+				{
+					"name": "P",
+					"expression": "eval:10*j"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:P*(1-t/100);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+					"Le coefficient multiplicateur est $1 - \\frac{{{t}}}{100} = {{eval:1-t/100;d}}$.",
+					"$${{P}} \\times {{eval:1-t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Multiplier une quantité par ${{x}}$, c'est la diminuer de :\n\n$$?~\\%$$",
+			"variables": [
+				{
+					"name": "K",
+					"expression": "97|92|85|80|75|65|60|40"
+				},
+				{
+					"name": "x",
+					"expression": "eval:K/100;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100-K}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+					"$${{x}} = 1 - {{eval:(100-K)/100;d}} = 1 - \\frac{\\textcolor{{{color:primary.0}}}{{{solution}}}}{100}$$",
+					"C'est une diminution de $\\textcolor{{{color:primary.0}}}{{{solution}}~\\%}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "− 20 % → × 0,8",
+			"variationIndex": 0,
+			"variables": {
+				"t": "20"
+			},
+			"answers": ["0,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,2",
+			"variationIndex": 0,
+			"variables": {
+				"t": "20"
+			},
+			"answers": ["1,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,2",
+			"variationIndex": 0,
+			"variables": {
+				"t": "20"
+			},
+			"answers": ["0,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "− 5 % → × 0,95",
+			"variationIndex": 0,
+			"variables": {
+				"t": "5"
+			},
+			"answers": ["0,95"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : − 5 % → 0,5",
+			"variationIndex": 0,
+			"variables": {
+				"t": "5"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "120 € − 20 % = 96 €",
+			"variationIndex": 1,
+			"variables": {
+				"t": "20",
+				"j": "12",
+				"P": "120"
+			},
+			"answers": ["96"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 120 × 0,2 = 24",
+			"variationIndex": 1,
+			"variables": {
+				"t": "20",
+				"j": "12",
+				"P": "120"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "× 0,85 → − 15 %",
+			"variationIndex": 2,
+			"variables": {
+				"K": "85",
+				"x": "0.85"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 85",
+			"variationIndex": 2,
+			"variables": {
+				"K": "85",
+				"x": "0.85"
+			},
+			"answers": ["85"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "× 0,6 → − 40 %",
+			"variationIndex": 2,
+			"variables": {
+				"K": "60",
+				"x": "0.6"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : × 0,6 → 60",
+			"variationIndex": 2,
+			"variables": {
+				"K": "60",
+				"x": "0.6"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

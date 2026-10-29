@@ -1,0 +1,275 @@
+{
+	"title": "Comparer avec un rapport",
+	"description": "Comparer deux nombres ou deux grandeurs par leur rapport ou leur ratio : 12 filles pour 18 garçons, rapport 2/3 ; AB = 3 × CD ; un mélange au ratio 1 : 4 ou 2 : 7 est-il plus sucré ?",
+	"grades": ["4"],
+	"theme": "Proportionnalité",
+	"domain": "Ratios",
+	"subdomain": "Comparer",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans une classe, il y a ${{f}}$ filles et ${{g}}$ garçons.\n\nQuel est le rapport du nombre de filles au nombre de garçons ? Donne une fraction simplifiée.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "2..6"
+				},
+				{
+					"name": "f",
+					"expression": "eval:p*m"
+				},
+				{
+					"name": "g",
+					"expression": "eval:q*m"
+				}
+			],
+			"conditions": ["gcd(p,q)==1", "p!=q", "f+g>=12", "f+g<=32"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{p}}}{{{q}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Rapport.** Le rapport de $a$ à $b$ est le quotient $\\dfrac{a}{b}$ : il dit combien de fois $a$ contient $b$.",
+					"$$\\frac{{{f}}}{{{g}}} = \\frac{{{p}} \\times {{m}}}{{{q}} \\times {{m}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Pour ${{q}}$ garçons, il y a ${{p}}$ filles."
+				]
+			}
+		},
+		{
+			"statement": "On a $AB = {{a}}~\\unit{cm}$ et $CD = {{c}}~\\unit{cm}$.\n\nComplète.\n\n$$AB = ? \\times CD$$\n\n$$CD = ? \\times AB$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "eval:c*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				},
+				{
+					"expectedAnswer": "\\frac{1}{{{k}}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Rapport.** Le rapport de $a$ à $b$ est le quotient $\\dfrac{a}{b}$ : il dit combien de fois $a$ contient $b$.",
+					"Le rapport de $AB$ à $CD$ est $\\frac{{{a}}}{{{c}}} = {{k}}$ : $AB = \\textcolor{{{color:primary.0}}}{{{k}}} \\times CD$.",
+					"Le rapport de $CD$ à $AB$ est $\\frac{{{c}}}{{{a}}} = \\frac{1}{{{k}}}$ : $CD = \\textcolor{{{color:primary.0}}}{\\frac{1}{{{k}}}} \\times AB$."
+				]
+			}
+		},
+		{
+			"statement": "On prépare deux mélanges de sirop et d'eau :\n\n- mélange A : sirop et eau dans le ratio $1 : {{m}}$ ;\n- mélange B : sirop et eau dans le ratio $2 : {{n}}$.\n\nQuel mélange est le plus sucré ?\n\n```choix\nmelanger: non\n- le mélange A\n- le mélange B\n- ils sont aussi sucrés l'un que l'autre\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "3..6"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:2*m+d*(1-k)*(2-k)/2-d*k*(2-k)"
+				}
+			],
+			"conditions": ["n>=3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ratio.** Un ratio $a : b$ se compare comme le rapport $\\dfrac{a}{b}$ : on ramène les deux mélanges à **une** part de sirop.",
+					"Mélange A : $1$ part de sirop pour ${{m}}$ parts d'eau. Mélange B : $2$ parts de sirop pour ${{n}}$ parts d'eau, soit $1$ part de sirop pour ${{eval:n/2;d}}$ parts d'eau.",
+					"{{if:k==0|Le mélange A a moins d'eau pour la même quantité de sirop : $\\textcolor{{{color:primary.0}}}{\\text{le mélange A}}$ est le plus sucré.|{{if:k==1|Le mélange B a moins d'eau pour la même quantité de sirop : $\\textcolor{{{color:primary.0}}}{\\text{le mélange B}}$ est le plus sucré.|Même quantité d'eau pour la même quantité de sirop : $\\textcolor{{{color:primary.0}}}{\\text{ils sont aussi sucrés}}$.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12 filles, 18 garçons : 2/3",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"m": "6",
+				"f": "12",
+				"g": "18"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "12/18 non simplifié : ambre",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"m": "6",
+				"f": "12",
+				"g": "18"
+			},
+			"answers": ["\\frac{12}{18}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : rapport inversé 3/2",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"m": "6",
+				"f": "12",
+				"g": "18"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB = 15, CD = 5 : 3 et 1/3",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"k": "3",
+				"a": "15"
+			},
+			"answers": ["3", "\\frac{1}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "AB = 8, CD = 2 : 4 et 0,25",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"k": "4",
+				"a": "8"
+			},
+			"answers": ["4", "0,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : différence 10, et 3 dans les deux cases",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"k": "3",
+				"a": "15"
+			},
+			"answers": ["10", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 : 4 et 2 : 7 : B plus sucré",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"m": "4",
+				"d": "1",
+				"n": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A (7 > 4, plus d'eau dans B)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"m": "4",
+				"d": "1",
+				"n": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 : 3 et 2 : 8 : A plus sucré",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"m": "3",
+				"d": "2",
+				"n": "8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 : 5 et 2 : 10 : aussi sucrés",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"m": "5",
+				"d": "1",
+				"n": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 : 5 et 2 : 10, B",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"m": "5",
+				"d": "1",
+				"n": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
