@@ -6,7 +6,8 @@
  * `construire:` (```collection, ```monnaie) ou la graduation d'un point de
  * `placer:` (```line, écrite par `placerAnswer`, comme la réponse de l'élève),
  * ou l'heure de `placer:` (```horloge, sur le cadran de 12 : `9 h 25`), ou
- * l'effectif d'une barre de `placer:` (```barres, `12`), ou le rang ÉCRIT de
+ * l'effectif d'une barre de `placer:` (```barres, `12` ; avec `axe: à choisir`,
+ * la première case est l'échelle, `5`), ou le rang ÉCRIT de
  * l'étiquette d'une place (```ranger, `2` ; le générateur le change en position
  * affichée après le mélange).
  *
@@ -20,6 +21,7 @@ import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
+import { adaptedScale, barsCaseCount } from '$lib/ubumark/utils/barres-placer';
 import { RANGER_MIN_LABELS_IN_QUESTION } from '$lib/ubumark/utils/ranger';
 import { timeText } from '$lib/ubumark/utils/horloge-placer';
 import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-placer';
@@ -40,7 +42,8 @@ export function buildCaseCount(kind: BuildKind, source: string): number {
 	if (kind === 'line') return Math.max(1, parseNumberLineContent(source).node?.placer?.length ?? 1);
 	if (kind === 'ranger') return Math.max(1, parseRangerContent(source).labels.length);
 	if (kind === 'barres') {
-		return Math.max(1, parseStatChartContent('barres', source).spec?.toPlace?.length ?? 1);
+		const spec = parseStatChartContent('barres', source).spec;
+		return Math.max(1, spec ? barsCaseCount(spec) : 1);
 	}
 	return 1;
 }
@@ -68,6 +71,16 @@ export function buildAnswerOf(
 		const node = parseStatChartContent('barres', source);
 		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
 		if (node.spec === null) return { errors: node.errors.map((e) => e.message) };
+		// Échelle à choisir : sa case vient d'abord (§ 25)
+		if (node.spec.chooseScale) {
+			if (point === 0) {
+				const scale = adaptedScale(node.spec.data.map((d) => d.value));
+				return scale === null
+					? { errors: ['aucune échelle ne rentre'] }
+					: { answer: String(scale) };
+			}
+			point -= 1;
+		}
 		const rank = node.spec.toPlace?.[point];
 		if (rank === undefined) return { errors: ['placer: absent'] };
 		return { answer: String(node.spec.data[rank].value) };

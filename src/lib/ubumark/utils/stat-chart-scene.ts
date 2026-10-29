@@ -46,6 +46,7 @@ import {
 } from '$lib/statistics/classes';
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
 import { carreauGrid, usesCarreaux } from './stat-chart-carreaux';
+import { SCALE_TICKS } from './barres-placer';
 import { crossTable } from '$lib/statistics/cross-table';
 import {
 	formatApproxValue,
@@ -205,6 +206,8 @@ export interface BarScene extends SceneCommon {
 	/** Haut de l'axe vertical, multiple du pas */
 	yMax: number;
 	ticks: SceneTick[];
+	/** `axe: à choisir` sans échelle choisie : graduations sans nombres */
+	scaleToChoose?: true;
 	axisTitles: { x: string | null; y: string };
 	color: CourbeColor;
 	showValues: boolean;
@@ -671,7 +674,9 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 
 	const { yMax, ticks } = spec.axis
 		? writtenAxis(spec.axis, locale)
-		: valueAxis(maxValue, height, unit, locale);
+		: spec.chooseScale
+			? mutedAxis(locale)
+			: valueAxis(maxValue, height, unit, locale);
 	const toPlace = new Set(spec.toPlace ?? []);
 
 	const margin = (1 - BAR_WIDTH) / 2;
@@ -730,6 +735,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 		bars,
 		yMax,
 		ticks,
+		...(spec.chooseScale && !spec.axis && { scaleToChoose: true as const }),
 		axisTitles: {
 			x: spec.axes.x,
 			y:
@@ -778,6 +784,15 @@ function writtenAxis(
 		label: formatTick(i * axis.step, locale)
 	}));
 	return { yMax: axis.max, ticks };
+}
+
+/**
+ * Échelle à choisir (`axe: à choisir`) : `SCALE_TICKS` graduations sans nombres,
+ * tant que l'élève n'a pas choisi ce que vaut une graduation
+ */
+function mutedAxis(locale: ContentLocale): { yMax: number; ticks: SceneTick[] } {
+	const { yMax, ticks } = writtenAxis({ max: SCALE_TICKS, step: 1 }, locale);
+	return { yMax, ticks: ticks.map((t) => ({ ...t, label: '' })) };
 }
 
 /** Indicateurs d'une série à effectifs dont les catégories sont des nombres (Q28). */

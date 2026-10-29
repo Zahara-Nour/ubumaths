@@ -98,10 +98,10 @@ export const statChartEntry: BlockCatalogEntry = {
 				},
 				{
 					key: 'axe',
-					values: '0 à 20, de 2 en 2 (ou 0 à 15 : de 1 en 1)',
+					values: '0 à 20, de 2 en 2 (ou 0 à 15 : de 1 en 1) ; à choisir',
 					defaultValue: 'calculé sur les données',
 					description:
-						'Axe vertical fixé : il part de 0, son haut est un multiple du pas, au plus 40 graduations. Une barre plus haute que l’axe est refusée.'
+						'Axe vertical fixé : il part de 0, son haut est un multiple du pas, au plus 40 graduations. Une barre plus haute que l’axe est refusée. « à choisir » (avec placer: toutes) : 10 graduations sans nombres, l’élève choisit ce que vaut une graduation (1, 2, 5 ou 10) ; juste = la plus petite échelle où tout rentre ; une case pour l’échelle avant celles des barres ; données jusqu’à 100. Sur le PDF, l’enfant écrit l’échelle.'
 				}
 			]
 		},
@@ -113,7 +113,7 @@ export const statChartEntry: BlockCatalogEntry = {
 					values: 'les barres à construire : Natation ; Danse, ou toutes',
 					defaultValue: 'aucune',
 					description:
-						'L’élève monte ces barres (toucher la colonne, glisser, boutons ▲ ▼), d’unité en unité, même sur un axe gradué de 2 en 2 ; les autres sont dessinées. Une case par barre (note partielle) ; jamais d’effectif attendu écrit à l’écran. Exige axe: (calculé, il trahirait la plus grande barre), jusqu’à 100 au plus ; refusé avec valeurs: oui, indicateurs: (la barre se déduirait), des pourcentages ou deux séries. Avec données:, l’élève compte puis construit (série: affichée montre la série). Sur le PDF, les barres à construire sont absentes : l’enfant les dessine.'
+						'L’élève monte ces barres (toucher la colonne, glisser, boutons ▲ ▼), d’unité en unité, même sur un axe gradué de 2 en 2 ; les autres sont dessinées. Une case par barre (note partielle) ; jamais d’effectif attendu écrit à l’écran. Exige axe: (calculé, il trahirait la plus grande barre) ou axe: à choisir, jusqu’à 100 au plus ; refusé avec valeurs: oui, indicateurs: (la barre se déduirait), des pourcentages ou deux séries. Avec données:, l’élève compte puis construit (série: affichée montre la série). Sur le PDF, les barres à construire sont absentes : l’enfant les dessine.'
 				}
 			]
 		},
@@ -438,6 +438,20 @@ export const statChartEntry: BlockCatalogEntry = {
 				'Dans une question, l’élève monte les barres Natation et Danse : une case chacune. La consigne (« Construis le diagramme du sport préféré : Natation 8, Danse 7. ») va dans l’énoncé, au-dessus.'
 		},
 		{
+			title: 'Choisir l’échelle puis construire (question)',
+			source: fence(
+				'barres',
+				'axes: Ville ; Élèves',
+				'axe: à choisir',
+				'Alphaville = 42',
+				'Bêtaville = 35',
+				'Gammaville = 18',
+				'placer: toutes'
+			),
+			explanation:
+				'L’axe a 10 graduations sans nombres : l’élève choisit ce que vaut une graduation (1, 2, 5 ou 10), puis monte toutes les barres. Juste : la plus petite échelle où tout rentre (ici 5). Une case pour l’échelle, puis une par barre.'
+		},
+		{
 			title: 'Diagramme circulaire',
 			source: fence(
 				'circulaire',
@@ -561,7 +575,7 @@ export const statChartEntry: BlockCatalogEntry = {
 			title: 'Barres à construire sans axe',
 			source: fence('barres', 'Football = 12', 'Danse = 7', 'placer: Danse'),
 			message:
-				'Ligne 3 : placer : écrire aussi l’axe vertical (axe: 0 à 20, de 2 en 2) : calculé, il trahirait la plus grande barre',
+				'Ligne 3 : placer : écrire aussi l’axe vertical (axe: 0 à 20, de 2 en 2, ou axe: à choisir) : calculé, il trahirait la plus grande barre',
 			explanation:
 				'Un axe calculé sur les données s’arrêterait juste au-dessus de la plus grande barre : il donnerait la réponse.'
 		}

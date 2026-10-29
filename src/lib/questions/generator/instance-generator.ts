@@ -51,6 +51,7 @@ import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
 import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { hasBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { barsCaseCount } from '$lib/ubumark/utils/barres-placer';
 import {
 	findRangersToPlace,
 	hasRangerToPlace,
@@ -761,9 +762,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						}
 						if (child.type === 'stat-chart') {
 							const first = child.caseIndex;
-							const toPlace = child.spec?.toPlace;
-							if (!toPlace || first === undefined) return [];
-							return toPlace.map((_, k) => first + k);
+							if (!child.spec?.toPlace || first === undefined) return [];
+							return Array.from({ length: barsCaseCount(child.spec) }, (_, k) => first + k);
 						}
 						return (child.type === 'collection' || child.type === 'monnaie') &&
 							child.spec !== null &&
