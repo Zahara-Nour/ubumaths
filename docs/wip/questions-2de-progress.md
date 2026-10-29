@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la publication du lot 3._
+_Mis à jour le 2026-10-29, phase 0 du lot 4 proposée (§ 23)._
 
 - **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 3 (8 modèles) relu 8/8 OK et publié par David (§ 22).
-- **Prochaine action** : lot 4 « vecteurs en coordonnées » (§ 4 : 434, 294, 293, 300, 436, 301, 302, 295,
-  435, 303, 437) : relevé MCP, puis phase 0 à proposer.
-- **En attente de David** : rien.
+- **Prochaine action** : lot 4 « vecteurs en coordonnées » : relevé fait, phase 0 proposée (§ 23) ;
+  dès la validation, worktree `ubumaths-wt-questions-2de` et script du lot 4 A.
+- **En attente de David** : validation de la phase 0 du lot 4 et réponses L4-a à L4-d (§ 23).
 - **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT ; horodatage = max + 1 min
   de `origin/main` ET des worktrees, puis `migration list --linked` avant `db:migrate`.
 - **Worktree / branche** : aucun (`ubumaths-wt-questions-2de` retiré) ; en créer un pour le lot 4.
@@ -549,3 +549,63 @@ nœud + tag.
   écart du § 20 tenu pour accepté.
 - `publier-lot.ts` en simulation puis lancé par David avec `--publier` : 8/8 publiés, relus au MCP.
 - Serveur 5177 arrêté, worktree `ubumaths-wt-questions-2de` et sa branche retirés.
+
+## 23. Lot 4 « vecteurs en coordonnées » : relevé et phase 0 (proposée le 2026-10-29)
+
+**Relevé MCP (prod, 2026-10-29)** : les 11 points (2-434, 294, 293, 300, 436, 301, 302, 295, 435, 303, 437) sont toujours sans modèle, et leurs nœuds sont vides, tous niveaux confondus. Nœuds : 2-434, 294,
+300, 436 → Géométrie › Vecteurs › coordonnées ; 2-293 → › norme ; 2-295, 435, 303, 437 → › colinéarité ;
+2-301, 302 → Géométrie › Géométrie repérée › milieu et distance. Aucun modèle du plan en coordonnées, à
+aucun niveau (seulement l'espace en Tle spé, en brouillon : `geometrie-espace-terminale/A-01`, `A-02`, qui
+servent de patron).
+
+**Outils (classe A, tous en prod)** : la case `answerKind: "vecteur"` (plan ou espace, en ligne `(3;-2)`
+ou en colonne, jugée sur les coordonnées ; mode `colineaire` possible) ; la case choix (` ```choix `,
+v0.56.0, déjà utilisée en 3e). Bornes : BO p. 9, base orthonormée pour la norme et le déterminant ;
+milieu calculé quelle que soit la méthode (l2-8).
+
+**Phase 0 proposée** : 11 modèles, un par point, niveau `['2']`, brouillons. Catégorie neuve :
+Géométrie › Vecteurs du plan › Coordonnées / Norme et distance / Milieu / Colinéarité. Coordonnées
+entières de −9 à 9 aux premières variations, puis fractions et décimaux (« produit par un nombre réel »).
+Vecteurs écrits en colonne dans l'énoncé et le corrigé, comme en Tle.
+
+1. **2-434 · Coordonnées d'un vecteur** : u⃗ = 3i⃗ − 2j⃗ → (3 ; −2) ; u⃗ = 4j⃗ → (0 ; 4) ; réciproque
+   u⃗(−1 ; 4) → u⃗ = ?i⃗ + ?j⃗ (deux cases) ; u⃗ = −½i⃗ + 3j⃗.
+2. **2-294 · Coordonnées de AB⃗** : A, B donnés → AB⃗ ; puis A et AB⃗ donnés → B ; puis coordonnées
+   fractionnaires.
+3. **2-300 · Coordonnées d'une somme** : u⃗ + v⃗ ; u⃗ − v⃗ ; AB⃗ + BC⃗ à partir de trois points (Chasles
+   ou calcul, les deux mènent au même) ; combinaison 2u⃗ − 3v⃗ en dernière variation (L4-c).
+4. **2-436 · Produit par un réel** : 3u⃗, −2u⃗ ; ½u⃗, −⅔u⃗ (réponse fractionnaire) ; trouver k tel que
+   v⃗ = k u⃗ (k entier ou fraction).
+5. **2-293 · Norme** : u⃗(3 ; 4) → 5 ; u⃗(2 ; −3) → √13 ; u⃗(2 ; 6) → 2√10 (L4-b) ; coordonnées
+   fractionnaires (u⃗(⅓ ; ¼) → 5/12).
+6. **2-301 · Distance AB** : points entiers → entier ou √n ; puis « AB = AC ? » en case choix (triangle
+   isocèle en A, oui/non), corrigé par les deux distances.
+7. **2-302 · Milieu** : I milieu de [AB] (coordonnées demi-entières) ; réciproque A et I → B ;
+   centre d'un parallélogramme ABCD donné par A et C.
+8. **2-295 · Déterminant** : det(u⃗, v⃗) entier ; puis avec une coordonnée fractionnaire ; puis
+   det(AB⃗, AC⃗) à partir de trois points.
+9. **2-435 · Critère de colinéarité** : « u⃗ et v⃗ colinéaires ? » en case choix (oui/non), corrigé par le
+   déterminant ; trouver m pour que u⃗(m ; 3) et v⃗(4 ; 6) soient colinéaires (case).
+10. **2-303 · Alignement** : « A, B, C alignés ? » en case choix ; C(x ; 5) aligné avec A et B → x.
+11. **2-437 · Parallélisme** : « (AB) et (CD) parallèles ? » en case choix ; D(m ; …) pour (AB) ∥ (CD) → m.
+
+- **Corrigé** : formule écrite puis appliquée, résultat coloré ; déterminant écrit xy′ − x′y avec les
+  parenthèses des négatifs ; oui/non toujours justifié par le calcul.
+- **Erreurs typiques en specs** : A − B au lieu de B − A ; norme sans racine (x² + y²) ; √(x + y)² ;
+  milieu = différence / 2 ; xy′ + x′y ; déterminant nul lu « non colinéaires » ; k inversé (1/k).
+- Les « oui/non » sont devinables à 50 % : chaque modèle à case choix a aussi une variation à calcul
+  (trouver m, x), pour que le point ne se réussisse pas au hasard.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L4-a — Deux lots** : 11 modèles dépassent la taille d'un lot (3 à 10). → Je recommande **4 A**
+  « coordonnées, norme, distance, milieu » (434, 294, 300, 436, 293, 301, 302 : 7 modèles) puis **4 B**
+  « colinéarité » (295, 435, 303, 437 : 4 modèles).
+- **L4-b — Norme non simplifiée** : u⃗(2 ; 6) → √40 ou 2√10 ? → Je recommande **2√10 attendu, √40 « à
+  améliorer »** (juste, mais à simplifier, l2-7) : motif `requiredForm` avec forme `acceptable`, comme
+  au lot 3 (§ 20) ; à vérifier sur les tirages, sinon √40 juste.
+- **L4-c — 2u⃗ − 3v⃗** : point 2-300 (somme) ou 2-436 (produit) ? Un modèle ne porte qu'un point. → Je
+  recommande **2-300**, en dernière variation (la somme est le geste final).
+- **L4-d — Case choix oui/non** pour colinéaires / alignés / parallèles / isocèle ? → Je recommande **oui**,
+  doublée d'une variation à calcul dans chaque modèle (ci-dessus).
