@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.56.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.55.0...v0.56.0) (2026-10-29)
+
+### ✨ Features
+
+- **barres:** axe: à choisir, l'élève choisit l'échelle (parseur, cases, PDF) ([d86543d](https://github.com/Zahara-Nour/ubumaths/commit/d86543d91b0c8746de09cbdf3aa46612950a0f19))
+- **barres:** écran de l'échelle à choisir, correction et copie corrigée ([c70cc9e](https://github.com/Zahara-Nour/ubumaths/commit/c70cc9edff3f2e3ef6daaafafd70281058a9ef2c))
+- **db:** 2de lot 2 bis B, nœud et tag des 6 modèles de lecture graphique ([4363298](https://github.com/Zahara-Nour/ubumaths/commit/43632989d5b4ecd85a0130fed62043fce56fe81c))
+- **questions:** 2de lot 2 bis B, lecture graphique (inverse, racine carrée, cube) ([64559bf](https://github.com/Zahara-Nour/ubumaths/commit/64559bf7e3abe9e6f9bdf25d9c919afb8f793a00))
+- **questions:** 4e lot 1, nœud et tag des 7 brouillons (migration de données) ([58e6883](https://github.com/Zahara-Nour/ubumaths/commit/58e68838239ac9b5c5e170f33743080487a74e4c)), closes [#1931](https://github.com/Zahara-Nour/ubumaths/issues/1931)
+- **questions:** sonde des blocs courbe d'un lot de modèles ([2c4dfd1](https://github.com/Zahara-Nour/ubumaths/commit/2c4dfd1059e108d2ba026acde11e18fd86cf8403))
+
+### 🐛 Bug Fixes
+
+- **barres:** ▲ ▼ et colonnes inactifs avant l'échelle, rang de l'échelle testé ([6c73dfb](https://github.com/Zahara-Nour/ubumaths/commit/6c73dfb7a426b0e2443894c64050b9a0e0e90b3e))
+- **test:** délai explicite de 20 s pour le balayage R-PASS de 10 000 combinaisons ([22c4617](https://github.com/Zahara-Nour/ubumaths/commit/22c4617a05fb00fefeec49ca149ef71468775a8e))
+
+### 📚 Documentation
+
+- **barres:** échelle à choisir dans ubumark, questions, statistiques, catalogue ([49885f9](https://github.com/Zahara-Nour/ubumaths/commit/49885f9afde385d188f056c89add4cf4cb20676c))
+- clôture de reponses-a-placer, restes versés dans questions.md, journal archivé ([6b0543e](https://github.com/Zahara-Nour/ubumaths/commit/6b0543eab709a8f35225b69e5278114a268c6b35))
+- **wip:** questions-1spe, lot 0-exponentielle prêt à publier ([#1934](https://github.com/Zahara-Nour/ubumaths/issues/1934)) ([1ce2b76](https://github.com/Zahara-Nour/ubumaths/commit/1ce2b764ce1b3614548dc4d0eb7f939a78c57b78))
+- **wip:** questions-1spe, lot 0-exponentielle publié (17) ([4a4334d](https://github.com/Zahara-Nour/ubumaths/commit/4a4334d928361ae290e15e93ab4c900248f82290))
+- **wip:** questions-2de, lot 2 bis B mergé ([#1945](https://github.com/Zahara-Nour/ubumaths/issues/1945)), correctif accolades en phase 0 ([73f2f45](https://github.com/Zahara-Nour/ubumaths/commit/73f2f455e34c7944ad7e10b54514cb2494c7015c))
+- **wip:** questions-2de, lot 2 bis B publié ([10ed88b](https://github.com/Zahara-Nour/ubumaths/commit/10ed88b8f7057d78e5549f9679d4ec043e71a94e))
+- **wip:** questions-2de, lot 2 bis B rangé en prod, page à cocher ([722022e](https://github.com/Zahara-Nour/ubumaths/commit/722022e126aa04a0810cd197bed65e6e8337db52))
+- **wip:** questions-2de, lot 2 bis B relu (6/6 OK) ([55d76d0](https://github.com/Zahara-Nour/ubumaths/commit/55d76d00eb61decfc6da8a56b291eb59e045a8e5))
+- **wip:** questions-2de, migration du lot 2 bis B ([#1946](https://github.com/Zahara-Nour/ubumaths/issues/1946)) ([0e03111](https://github.com/Zahara-Nour/ubumaths/commit/0e03111a2d1828a5a528a4442c2447de43f931ef))
+- **wip:** questions-3, lot 1 publié en prod (5/5) ([b38eef3](https://github.com/Zahara-Nour/ubumaths/commit/b38eef3493defbbdeee92e8815fd464e9821617e))
+- **wip:** questions-3, lot 1 relu (5/5 OK) ([ba606ca](https://github.com/Zahara-Nour/ubumaths/commit/ba606ca0307557108c67ee54905ea769815c4358))
+- **wip:** questions-4, lot 1 rangé et tagué en prod ([#1948](https://github.com/Zahara-Nour/ubumaths/issues/1948)) ([ad00bcd](https://github.com/Zahara-Nour/ubumaths/commit/ad00bcd5b44ca3284aecfbb48d0f1133da617258))
+- **wip:** questions-4, phase 0 du lot 2 (proportionnalité et pourcentages) ([fd63d7c](https://github.com/Zahara-Nour/ubumaths/commit/fd63d7ceab440b455356d6a0203c419417ce3f97))
+- **wip:** questions-5, phase 0 du lot 3 validée ([f27dfb9](https://github.com/Zahara-Nour/ubumaths/commit/f27dfb903fe3755fc236f77481cf5f96f2fd3ceb))
+- **wip:** questions-5, relevé des points du lot 3 ([a0205f2](https://github.com/Zahara-Nour/ubumaths/commit/a0205f2f04586f932865e2309f7cbc6df383446f))
+- **wip:** questions-6, lot 5 publié ([eff717b](https://github.com/Zahara-Nour/ubumaths/commit/eff717bdfb1e69cdfed96d2b5a6bb39cb36e03e1))
+- **wip:** questions-6, lot 5 publié ([f8a51d1](https://github.com/Zahara-Nour/ubumaths/commit/f8a51d1fe5e66bd60eda97e3caffc7c1aa11a122))
+- **wip:** questions-6, lot 5 relu 7/7, publication à lancer ([90f4212](https://github.com/Zahara-Nour/ubumaths/commit/90f4212362577fbd15d50a3d0f0fae3acef19714))
+- **wip:** reponses-a-placer, décisions de l'échelle choisie par l'élève ([1c0287c](https://github.com/Zahara-Nour/ubumaths/commit/1c0287c866985a2fdee7b918b932e33b5d5f914c))
+- **wip:** reponses-a-placer, phase 0 de l'échelle choisie par l'élève ([bf55a6d](https://github.com/Zahara-Nour/ubumaths/commit/bf55a6d023c868947112edf6072c31823775b7e6))
+- **wip:** reponses-a-placer, reprendre ici après [#1947](https://github.com/Zahara-Nour/ubumaths/issues/1947) ([51929eb](https://github.com/Zahara-Nour/ubumaths/commit/51929eb16d7d9fbfbb3d595735df6cff6dbd558e))
+- **wip:** revue-modeles, 188 verdicts repris en prod ([e4c263f](https://github.com/Zahara-Nour/ubumaths/commit/e4c263f4574a313ee0952e3f88e3014b5adc77bb))
+
 ## [0.55.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.54.1...v0.55.0) (2026-10-28)
 
 ### ✨ Features
