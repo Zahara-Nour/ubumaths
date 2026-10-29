@@ -1,0 +1,241 @@
+{
+	"title": "Problèmes parties-tout avec des prix",
+	"description": "Des achats en euros et centimes : 1,20 € + 90 centimes + 12 € ; un prix manquant",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Parties-tout",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Lucie a acheté un pain à ${{eval:floor((100+pc)/100)}}.{{eval:floor(mod(100+pc,100)/10)}}{{eval:mod(100+pc,10)}}~\\unit{€}$, un croissant à ${{c}}$ centimes et un gâteau à ${{g}}~\\unit{€}$.\n\nCombien Lucie a-t-elle dépensé ?\n\nElle a dépensé $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..19"
+				},
+				{
+					"name": "pc",
+					"expression": "eval:5*k"
+				},
+				{
+					"name": "m",
+					"expression": "10..19"
+				},
+				{
+					"name": "c",
+					"expression": "eval:5*m"
+				},
+				{
+					"name": "g",
+					"expression": "2..20"
+				}
+			],
+			"conditions": ["pc + c != 100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100+pc+c+100*g)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche **le tout** : on ajoute les trois prix. On ajoute les euros, puis les centimes ($1~\\unit{€} = 100$ centimes).",
+					"Les euros : $1 + {{g}} = {{eval:1+g}}$ euros.",
+					"Les centimes : ${{pc}} + {{c}} = {{eval:pc+c}}$ centimes{{if:pc+c>=100|, c'est $1~\\unit{€}$ et ${{eval:pc+c-100}}$ centimes|}}.",
+					"$$\\textcolor{{{color:primary.0}}}{{{eval:floor((100+pc+c+100*g)/100)}}.{{eval:floor(mod(100+pc+c+100*g,100)/10)}}{{eval:mod(100+pc+c+100*g,10)}}~\\unit{€}}$$",
+					"Lucie a dépensé ${{eval:floor((100+pc+c+100*g)/100)}}.{{eval:floor(mod(100+pc+c+100*g,100)/10)}}{{eval:mod(100+pc+c+100*g,10)}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Noé a payé ${{eval:floor((100*l+100*s+10*k)/100)}}.{{eval:floor(mod(100*l+100*s+10*k,100)/10)}}{{eval:mod(100*l+100*s+10*k,10)}}~\\unit{€}$ pour un livre et un stylo. Le livre coûte ${{l}}~\\unit{€}$.\n\nCombien coûte le stylo ?\n\nLe stylo coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "5..15"
+				},
+				{
+					"name": "s",
+					"expression": "2..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*s+10*k)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le livre et le stylo, c'est **le tout** : ${{eval:floor((100*l+100*s+10*k)/100)}}.{{eval:floor(mod(100*l+100*s+10*k,100)/10)}}{{eval:mod(100*l+100*s+10*k,10)}}~\\unit{€}$. On cherche une partie, le prix du stylo : on enlève le prix du livre.",
+					"Le livre coûte un nombre entier d'euros : les centimes ne changent pas. Les euros : ${{eval:l+s}} - {{l}} = {{s}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{eval:floor((100*s+10*k)/100)}}.{{eval:floor(mod(100*s+10*k,100)/10)}}{{eval:mod(100*s+10*k,10)}}~\\unit{€}}$$",
+					"Le stylo coûte ${{eval:floor((100*s+10*k)/100)}}.{{eval:floor(mod(100*s+10*k,100)/10)}}{{eval:mod(100*s+10*k,10)}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Un vélo coûte ${{a}}~\\unit{€}$ et un casque coûte ${{b}}~\\unit{€}$.\n\nCombien faut-il payer pour le vélo et le casque ?\n\nIl faut payer $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100..800"
+				},
+				{
+					"name": "b",
+					"expression": "20..200"
+				}
+			],
+			"conditions": ["a + b <= 1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche **le tout** : on ajoute les deux prix.",
+					"$${{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b}}}$$",
+					"Il faut payer ${{eval:a+b}}~\\unit{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 1,20 € + 90 centimes + 12 € = 14,10 €",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"pc": "20",
+				"m": "18",
+				"c": "90",
+				"g": "12"
+			},
+			"answers": ["14{,}1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 14,10 € avec le zéro",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"pc": "20",
+				"m": "18",
+				"c": "90",
+				"g": "12"
+			},
+			"answers": ["14{,}10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : centimes sans retenue (13,10 €)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"pc": "20",
+				"m": "18",
+				"c": "90",
+				"g": "12"
+			},
+			"answers": ["13{,}1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : croissant oublié (13,20 €)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"pc": "20",
+				"m": "18",
+				"c": "90",
+				"g": "12"
+			},
+			"answers": ["13{,}2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sans retenue : 1,15 + 0,50 + 5 = 6,65 €",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"pc": "15",
+				"m": "10",
+				"c": "50",
+				"g": "5"
+			},
+			"answers": ["6{,}65"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "prix manquant : 11,40 − 8 = 3,40 €",
+			"variationIndex": 1,
+			"variables": {
+				"l": "8",
+				"s": "3",
+				"k": "4"
+			},
+			"answers": ["3{,}4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : prix manquant, les deux ajoutés (19,40 €)",
+			"variationIndex": 1,
+			"variables": {
+				"l": "8",
+				"s": "3",
+				"k": "4"
+			},
+			"answers": ["19{,}4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "entiers : 459 + 85 = 544 €",
+			"variationIndex": 2,
+			"variables": {
+				"a": "459",
+				"b": "85"
+			},
+			"answers": ["544"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : entiers, la différence (374)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "459",
+				"b": "85"
+			},
+			"answers": ["374"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

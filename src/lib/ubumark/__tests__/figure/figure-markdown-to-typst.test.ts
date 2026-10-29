@@ -15,4 +15,16 @@ describe('markdownToTypst — figures', () => {
 		expect(typst).toContain('cetz.canvas');
 		expect(typst).not.toContain('Figure indisponible');
 	});
+
+	it('PDF : deplacable et rendu ignorés, la figure reste statique (lot 6 figure-et-choix)', async () => {
+		const figure = (...header: string[]) =>
+			['```figure', 'fenetre: 0 ; 4 ; 0 ; 3', ...header, '---', 'A = point(1, 1)', '```'].join(
+				'\n'
+			);
+		const statique = await markdownToTypst(figure(), { includeSetup: false });
+		const manipulable = await markdownToTypst(figure('deplacable: oui', 'rendu: croquis'), {
+			includeSetup: false
+		});
+		expect(manipulable).toBe(statique);
+	});
 });

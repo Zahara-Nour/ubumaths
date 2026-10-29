@@ -203,7 +203,7 @@ Le Royaume comporte **Six Provinces**, qui correspondent aux six grands domaines
 
 #### Carte du Royaume 🟡
 
-Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustrations/carte/plan-schematique.svg` (et `.png`, généré par `plan-schematique.py`).
+Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustrations/carte/plan-schematique.svg` (et `.png`, généré par `plan-schematique.py`, couleurs des provinces d'après leurs lignes « Pour l'illustration ») ; version sans texte pour servir de référence à l'IA : `plan-schematique-sans-texte.svg` / `.png`.
 
 - **Contour** : celui de la Pologne réelle, simplifié ; la Baltique au nord.
 - **Sandomir** à l'emplacement de Varsovie ; les six provinces rayonnent autour d'elle, frontières irrégulières : **Yoyolande** au nord (Sinusborg, port, à l'emplacement de Gdańsk), **Bedonstan** au nord-est (Lobatchevsk ; les Pythagoriades), **Glitchistan** à l'est (Turingrad, vers Lublin), **Patatovie** au sud (Cracovenn à l'emplacement de Cracovie), **Nombrilie** au sud-ouest (Empoche-les-Bains, sur la Vistule), **Pifométrie** à l'ouest (Bonneteau-sur-Vistule, vers Poznań). Les trois provinces de l'ouest sont plus vastes, Sandomir étant décalée vers l'est.
@@ -228,7 +228,7 @@ Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustration
   - **Repère sur la carte** : la spirale de la ville avec le dôme doré au centre.
   - **Couleur** : aucune couleur de province ; Encre et Or pour la ville seule.
 - **Plan de la ville = carte du site** 🟡 (décision de David, 2026-10-29) : les lieux de la Section IV (« Géographie de l'Académie », une page du site = un lieu du Royaume) sont placés le long de la spirale, de l'entrée au centre :
-  1. **Le Pont-Levis du Royaume** (`/`) : l'entrée, sur la Vistule.
+  1. **Le Pont-Levis du Royaume** (`/`) : l'entrée, sur la Vistule, seul pont de la ville (une spirale de gidouille n'a qu'une ouverture) ; les routes vers les provinces partent de l'autre rive.
   2. **Le Grand Marché Polonais** (marché) : les étals de Mère Ubu, au premier tour de la spirale.
   3. **La Caserne des Palotins** (amis) : la caserne de Bordure.
   4. **L'Arène des Polonais** (jeux) : petite arène ronde.
@@ -434,6 +434,13 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
   - **Ville** : Grand Hôtel thermal, buvette à colonnade, kiosque à musique, gidouille de bronze ; à l'entrée des bains, les guichets de péage de Mère Ubu (tout se paie). L'argent de Mère Ubu suffit à dire la province, sans bouliers ni chiffres.
   - **Repère sur la carte** : la gidouille de bronze devant le Grand Hôtel, avec un filet de vapeur.
   - **Couleur** : Or phynance `#F3C025`.
+- **Plan de la ville** 🟡 (décision de David, 2026-10-29) : station thermale au fond d'une vallée boisée, traversée par la Vistule ; la ville s'organise autour d'un grand parc thermal, entre la place et les bains. Six lieux :
+  1. **La Place de la Gidouille** : la gidouille de bronze devant le Grand Hôtel thermal, dont le restaurant entend chaque soir « Patron, la soustraction ! ».
+  2. **Le Parc thermal** : allées, parterres, kiosque à musique.
+  3. **La Buvette à colonnade**, bâtie au-dessus de la source chaude.
+  4. **Les Bains** : l'établissement thermal, les guichets de péage de Mère Ubu à l'entrée.
+  5. **La Villa des Phynances** : résidence de Mère Ubu, villa bourgeoise cossue avec sa salle des coffres.
+  6. **La Promenade de la Vistule** : quai planté de marronniers.
 
 #### Bedonstan — _Géométrie_
 
@@ -443,14 +450,20 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - **Étymologie** : 🟢 **Lobatchevsk est une vraie ville russe**, homonyme de **Nikolaï Lobatchevski (1792-1856)**, mathématicien russe et l'un des trois fondateurs de la **géométrie non-euclidienne** (avec Bolyai et Gauss). Lobatchevski a fait éclater la géométrie « plate » en proposant des géométries sur des surfaces courbes — exactement les bedaines, patates et polyèdres difformes du Royaume.
 - **Devise** : « **La route est droite, mais la courbe est forte** »
 - **Commentaire de la devise** : détournement de la formule de Jean-Pierre Raffarin (2002, _« la route est droite mais la pente est forte »_) en remplaçant _pente_ par _courbe_. Au premier degré, contradiction Shadok parfaite (une route droite n'a pas de courbe). Au second degré, c'est mathématiquement précis : en **géométrie hyperbolique** (celle de Lobatchevski, gouverneur titulaire de la capitale Lobatchevsk), les droites apparaissent courbes parce que **la courbure de l'espace est forte**. Citation officielle attribuée au Professeur Achras lors de l'inauguration du Polyèdre de la Voie Royale.
-- **Paysage canon** : steppes orientales. Lobatchevsk est entourée de murailles dodécaédriques. Au centre, la grande Académie Achrasienne où l'on étudie les courbures.
+- **Paysage canon** : steppes orientales. Lobatchevsk est entourée d'une enceinte à douze côtés (dodécagone), une tour à chaque angle. Au centre, la grande Académie Achrasienne où l'on étudie les courbures.
 - **Relief de Lobatchevsk** 🟡 (décision de David, 2026-10-08) : la ville est bâtie sur un col en forme de **selle de cheval**, une surface à courbure négative. Comme dans la géométrie de Lobatchevski, la somme des angles d'un triangle tracé dans ses rues est **inférieure à 180°**. Achras en tire une fierté locale : « À Lobatchevsk, un triangle bien élevé a moins de 180 degrés. » Pendant, en géométrie, de la sphère (somme supérieure à 180°).
-- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, la géométrie tient à la seule ville (col en selle, remparts dodécaédriques, Académie) ; pas de formes géométriques plaquées sur le paysage.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, la géométrie tient à la seule ville (col en selle, enceinte à douze côtés, Académie) ; pas de formes géométriques plaquées sur le paysage.
   - **Relief** : au nord, steppes rases et ondulées ; à l'est, les **Pythagoriades**, vraies montagnes rocheuses aux sommets enneigés, où la Vistule prend sa source.
   - **Eau** : la source de la Vistule, quelques lacs ordinaires.
   - **Végétation** : herbe de steppe, bouquets de bouleaux.
   - **Polyèdres** : le troupeau d'Achras n'apparaît qu'à ses pieds, sur son portrait ; aucun polyèdre dans le paysage.
   - **Repère sur la carte** : un dodécaèdre d'or.
+- **Plan de la ville** 🟡 (décision de David, 2026-10-29) : la ville occupe le col en selle entre la steppe et les Pythagoriades (deux pentes montent vers les sommets, deux descendent vers les vallées) ; les rues suivent la courbure. La Vistule naissante, encore torrent, descend des Pythagoriades au pied de la ville. Cinq lieux :
+  1. **L'Académie Achrasienne**, au point-selle, centre exact du col.
+  2. **La Place du Triangle** : place triangulaire dont les angles font moins de 180°.
+  3. **Le Polyèdre de la Voie Royale** : monument à l'entrée, sur la route de Sandomir.
+  4. **Le Pont du Torrent** : pont de pierre sur la Vistule naissante.
+  5. **L'enceinte** à douze côtés, une tour à chaque angle.
   - **Couleur** : Vert chandelle `#1F9346`.
 
 #### Yoyolande — _Fonctions_
@@ -467,13 +480,19 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 
 - **Devise** : « **Plus ça monte, moins ça descend** »
 - **Commentaire de la devise** : pléonasme contradictoire de pure veine Shadok / Pierre Dac.
-- **Paysage canon** : ville-port nordique aux quais ondulés, toits en sinusoïdes, ponts en courbes parfaites. Le grand phare de Sinusborg projette son faisceau en oscillation cyclique. Les bateaux qui montent et descendent en cadence dans le port créent un ballet permanent.
-- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, les fonctions ne se montrent que dans la ville (quais, toits, phare, bateaux).
+- **Paysage canon** : ville-port nordique aux toits en sinusoïdes (quais et ponts ordinaires, décision de David, 2026-10-29 : une seule forme, la plus lisible). Le grand phare de Sinusborg projette son faisceau en oscillation cyclique. Les bateaux qui montent et descendent en cadence dans le port créent un ballet permanent.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, les fonctions ne se montrent que dans la ville (toits, phare, bateaux, grue).
   - **Relief** : côte basse de dunes de sable et de plages, longue flèche de sable avançant dans la mer (comme les dunes de Łeba et la presqu'île de Hel) ; derrière, plaine de lacs et de forêts.
   - **Eau** : la Baltique ; le delta de la Vistule, dont les bras se ramifient avant la mer, à Sinusborg.
   - **Végétation** : forêts de pins, herbes des dunes.
   - **Repère sur la carte** : le phare de Sinusborg.
   - **Couleur** : Pourpre royal `#8F2447` (la tunique de Bougrelas).
+- **Plan de la ville** 🟡 (décision de David, 2026-10-29) : port nordique bâti sur les îles du delta de la Vistule ; les bras du fleuve découpent la ville en îlots, le port s'ouvre sur la Baltique. Les fonctions passent par ce qui monte et descend. Cinq lieux :
+  1. **Le Grand Phare**, au bout de la jetée, faisceau qui balaie en cycle.
+  2. **Le Port** : bateaux qui montent et descendent avec la houle.
+  3. **La Grue du Port** : grande grue de bois qui monte et descend les cargaisons, comme le yo-yo (d'après la grue médiévale de Gdańsk).
+  4. **La Résidence de Bougrelas** : maison haute et étroite à pignons nordiques, sur le quai principal.
+  5. **Les Ponts du delta**, entre les îlots.
 
 - Pifométrie — _Probabilités et statistiques_
 
@@ -494,6 +513,12 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
     - **Champ de courses** dans la plaine : tribunes et piste ovale (le Cheval à Phynances, les paris).
     - **Repère sur la carte** : la Roulette Royale.
     - **Couleur** : Brun merdre `#593B26` (la robe du Cheval, le bois des tripots).
+  - **Plan de la ville** 🟡 (décision de David, 2026-10-29) : ville bâtie sur les deux rives d'un grand méandre de la Vistule, un banc de sable au milieu du fleuve ; on y entre par la plaine. Cinq lieux :
+    1. **La Grand-Place** : la Roulette Royale (dessinée sans numéros : pas de texte dans les illustrations) et l'estrade du Cheval à Phynances.
+    2. **Le Quai des Tripots** : maisons de jeu le long du fleuve, tables à tapis vert dehors au bord de l'eau.
+    3. **Le Casino flottant** : bateau à aubes amarré au quai, devenu salle de jeu.
+    4. **Le Champ de courses** : tribunes et piste ovale, à la sortie de la ville, côté plaine.
+    5. **La Caisse du Cheval** : petit comptoir où le Cheval prélève sa commission de 10 % sur tous les paris.
 
 - #### Glitchistan — _Algorithmique_
   - **Gouverneur** : 🟢 **Bosse-de-Nage** (canon Jarry, _Gestes et opinions du docteur Faustroll, pataphysicien_) — cynocéphale (homme à tête de chien) qui **n'articule que « ha ha »**. C'est-à-dire qu'il est **mathématiquement** un programme qui boucle sur une seule instruction (`while True: print('ha ha')`). C'est un **bug humanoïde**, autorité officielle qui répond à toutes les questions par le même son glitché. **Cohérence pataphysique enrichie** : Bosse-de-Nage est aussi, par la même mécanique de répétition automatique, le **maître des bruits inattendus** — son _« ha ha »_ perpétuel **est** le chprout' permanent de la province. C'est le Régent canonique des bugs corporels-numériques. **Voix** : exclusivement « ha ha », parfois « hahaha » lors des grandes décisions, plus rarement un silence (qui est interprété comme un crash royal). Les Galopins apprennent à décoder (« ha ha » suivi d'un sourire = approbation, suivi d'un froncement = désapprobation, simultané avec une morsure = décret royal de bannissement).
@@ -528,6 +553,12 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
   - **Eau** : la Vistule traverse Cracovenn, comme Cracovie.
   - **Végétation** : champs de pommes de terre en rangs, fleurs blanches et mauves ; quelques vergers.
   - **Repère sur la carte** : les trois enceintes de Cracovenn.
+- **Plan de la ville** 🟡 (décision de David, 2026-10-29) : le diagramme de Venn se voit par les **matériaux**, sans étiquette ni quartiers à activités.
+  - Enceinte A en brique rouge, enceinte B en pierre grise, enceinte C en bois clair.
+  - Chaque maison est bâtie dans les matériaux des enceintes qui l'entourent : brique seule dans A seule, moitié brique moitié pierre dans A ∩ B, etc.
+  - Au centre (A ∩ B ∩ C), la bibliothèque de Faustroll mêle les trois matériaux.
+  - Hors des trois enceintes (le complémentaire) : faubourgs et champs de patates.
+  - La Vistule traverse la ville ; trois portes, une par enceinte.
   - **Couleur** : vert de mer `#3E8E86` (hors nuancier, les moustaches de Faustroll).
 
 ### La Vistule, fleuve de la Pologne pataphysique

@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29.
 
 ## À quoi ça sert
 
@@ -325,9 +325,23 @@ A = point(1, 1)
 ````
 
 Clés de l'en-tête : `fenetre:` (obligatoire), `taille:`, `description:`, `axes:`, `grille:`,
-`graduations:`. `deplacable:` et `rendu:` sont **réservées aux figures interactives** (figures
-stockées, option `interactive` de `parseFigureContent`) : dans un bloc d'exercice, refus situé
-« réglage réservé aux figures interactives » — `src/lib/ubumark/__tests__/figure/figure-reglages-interactifs.test.ts`.
+`graduations:`, et deux réglages qui font passer la figure **dans la toile** (chantier
+`figure-et-choix`, lot 6, 2026-10-29) : `deplacable: oui|non` (accent admis) et
+`rendu: normal|croquis|mixte`. Le nœud ne porte `interactive: { draggable, renderMode }` que si l'une
+des deux clés est écrite (figure stockée : toujours, option `interactive`, fenêtre facultative) —
+`src/lib/ubumark/__tests__/figure/figure-reglages-interactifs.test.ts`.
+
+**Figure à manipuler** : `FigureBlock` charge à la demande `FigureCanvasView` quand `deplacable: oui`
+ou `rendu:` ≠ `normal` (sinon le SVG statique, rien ne change). Partout à l'écran (énoncé, cours,
+fiche, lexique) ; chat élève inchangé (rendu restreint, aucun bloc). Même scène que le statique
+(`buildFigureScene` : liste blanche, budgets du bloc), même cadre (`figureViewFromWindow`), repère
+`FigureFrameLayer` (séparateur décimal du document) ; noir par défaut → `noir` (couleur du texte).
+`GeometryCanvas` en mode `inDocument` : **vue figée** (ni molette, qui fait défiler la page, ni
+déplacement de la vue), aucun raccourci clavier sur la page (espace, Ctrl+Z), pas de panneau de
+style ; `touch-action: none` seulement si les objets se déplacent. `deplacable: oui` : points, textes
+et noms glissent, rien n'est noté ni gardé, bouton « Remettre la figure » (la scène est reconstruite).
+`rendu:` seul : toile figée (`role="img"`). **PDF** : figure statique, clés ignorées
+(`figure-markdown-to-typst.test.ts`). Gardes : `components/markdown/nodes/__tests__/FigureBlockToile.svelte.test.ts`.
 
 **Figure à compléter** (case « figure » d'une question : la figure de départ que l'élève complète) —
 `src/lib/ubumark/__tests__/construction/construction-parser.test.ts` :
@@ -360,7 +374,8 @@ de l'aide à l'écriture : `block-catalog/figure-a-completer.ts` (`/aide-ecritur
 noté) : mêmes lignes que la figure à compléter sauf `verifier:`, refusé avec sa ligne
 (`WORK_FIGURE_CHECK_MESSAGE`) ; `outils:` absent → `droite`. `readConstructionHeader(source, { work: true })`
 rend `construction: { tools, checks: [], work: true }` ; `isConstructionBlockStart` reconnaît les deux
-mots, `isWorkFigureBlockStart` celui-ci ; `deplacable:` y est refusé comme dans tout bloc d'exercice.
+mots, `isWorkFigureBlockStart` celui-ci ; `deplacable:` et `rendu:` y sont refusés, comme dans une figure
+à compléter (« une figure de travail ne se déplace pas », option `construction` de `parseFigureContent`).
 Écran, PDF (figure de départ), éditeur riche (`figureFence`) : comme la figure à compléter. Jugement
 (aucun) et correction : [questions](questions.md). Fiche : `block-catalog/figure-de-travail.ts`.
 Gardes : `questions/__tests__/figure-de-travail.test.ts`, `figure-a-completer-typst.test.ts`,

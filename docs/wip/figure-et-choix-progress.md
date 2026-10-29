@@ -8,23 +8,20 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1950 et #1954 (phase 0 du lot 6 écrite)._
+_Mis à jour le 2026-10-29, après #1973._
 
-- **État** : lots 1 à 5 EN PROD (v0.55.0). Migration destructive jouée en prod le 2026-10-29 (#1950) :
-  plus de `multiple_choice`, plus de `shuffleChoices`, suivi de l'import TinyMath supprimé (export
-  `data/import-tinymath/`) ; types régénérés (#1954). Le code ne lit plus `multiple_answers`. Worktree retiré.
-- **Prochaine action** : lot 6 (`deplacable:` dans les énoncés) — phase 0 écrite (§ 2.14), à faire valider
-  (questions Q1-Q4), puis worktree `ubumaths-wt-figure-et-choix`.
-  Après le PROCHAIN `deploy:prod` (qui livre #1950) : migration qui supprime la colonne vide
-  `question_templates.multiple_answers`, puis retirer `multiple_answers: null` des faux modèles de tests.
-- **En attente de David** : publication de CP-058 (« Trois points alignés ? Vérifie à la règle »,
-  `a7dfe502`, brouillon) ; avis sur les séries PDF ; fiche `/aide-ecriture/blocs/figure-de-travail` (403 en
-  admin, à voir en prof) ; vérifs restantes (série PDF, verdict ½, éditeur de tests, 15 brouillons lycée).
+- **État** : lots 1 à 5 EN PROD (v0.55.0). Lot 6 (`deplacable:` / `rendu:` dans tout ```figure à l'écran,
+  § 2.14) MERGÉ (#1973), pas encore en prod. Worktree retiré. Les 6 lots du § 2.5 sont faits.
+- **Prochaine action** : après le PROCHAIN `deploy:prod` (qui livre #1950 et #1973) : migration qui supprime
+  la colonne vide `question_templates.multiple_answers` (destructive : arrêt et explication), puis retirer
+  `multiple_answers: null` des faux modèles de tests ; ensuite clore le chantier (versement dans `docs/systeme/`).
+- **En attente de David** : vérif de la figure à manipuler (iPhone, cadre de la toile) dans
+  `verifications-manuelles.md` ; publication de CP-058 (`a7dfe502`, brouillon) ; avis sur les séries PDF ;
+  fiche `/aide-ecriture/blocs/figure-de-travail` (403 en admin, à voir en prof) ; vérifs restantes (série PDF,
+  verdict ½, éditeur de tests, 15 brouillons lycée).
 - **Pièges en cours** : 6 modèles `cp-b2` : `level` prod ≠ source. `corrections.test.ts` (R-PASS) instable
-  en CI. `migration_images` reste (hors champ, aucun code ne la lit).
+  en CI. `migration_images` reste (hors champ).
 - **Worktree / branche** : aucun.
-
----
 
 ## Historique
 
@@ -401,7 +398,7 @@ false` sans bloc ```choix : sources nettoyées ici ; en base, à retirer dans la
   accepte encore `number` ; aperçu `/dev/apercu-question` montre `$$0;2$$` pour une case choix ;
   `multiple_answers` reste dans les types de réponse (colonne encore là).
 
-### 2.14 Lot 6 (`deplacable:` dans les énoncés) : phase 0 (écrite le 2026-10-29, à valider)
+### 2.14 Lot 6 (`deplacable:` dans les figures) : phase 0 (validée par David le 2026-10-29, recos suivies)
 
 **Existant (lu le 2026-10-29)** : le parseur refuse `deplacable:` / `rendu:` hors figure enregistrée
 (`figure-parser.ts`, option `interactive`) ; le bloc ```figure d'un énoncé est un SVG statique
@@ -442,6 +439,20 @@ quelle dans un énoncé, elle empêcherait de faire défiler la page sur télép
   (« une figure à compléter ne se déplace pas » / « … de travail … ») (2.6 Q5).
 - Script en erreur → cadre et messages actuels (rien de neuf).
 
+**Décisions de David (2026-10-29, recos suivies)** — elles priment sur ce qui précède :
+
+1. **Partout à l'écran** (énoncés, cours, fiches à l'écran, lexique) : révise 2.6 Q5. Pas de contexte
+   « énoncé » : le parseur accepte les deux clés dans tout ```figure ; chat élève inchangé (rendu restreint).
+2. **Vue figée** : ni molette, ni déplacement de la vue, ni zoom ; doigt capté seulement sur une figure
+   `deplacable: oui`.
+3. **Bouton « Remettre la figure »** sous une figure déplaçable.
+4. **`rendu:` sans `deplacable:`** → toile figée.
+
+Pièges vus en lisant `GeometryCanvas` (traités par un mode « figure d'un texte ») : raccourcis clavier posés
+sur `window` (espace = `preventDefault`, Ctrl+Z annule la figure même pendant la saisie dans un `math-field`) ;
+double-clic = panneau de style ; noir par défaut (`#000000`) en dur, invisible en thème sombre (le SVG statique
+le traduit en couleur du texte).
+
 **Questions à David**
 
 1. **Périmètre** (déjà tranché 2.6 Q5, je le rappelle) : énoncés de questions seulement. À savoir : ouvrir
@@ -459,3 +470,9 @@ aide à l'écriture, doc `docs/systeme/ubumark.md`). Tests d'abord : parseur (ac
 dans les deux autres blocs), choix toile / SVG dans `FigureBlock` (énoncé vs cours), PDF statique, toile figée
 sans `deplacable:`. Revue : `code-reviewer` Sonnet (rien ne touche la correction ni les données). Vérif
 manuelle de David : glisser au doigt sur iPhone, défilement de la page au-dessus d'une figure.
+
+**Livré (#1973, 2026-10-29)** : parseur (`interactive` porté seulement si une clé est écrite ; refus dédié dans
+les figures à compléter / de travail), `FigureCanvasView` (chargée à la demande ; scène refaite seulement si le
+texte du bloc change, « Remettre » sans redépenser le budget), `GeometryCanvas` prop `inDocument`, repère au
+séparateur décimal du document, catalogue, doc `ubumark.md`. Revue Sonnet : 2 points corrigés. CI rouge une
+fois à cause d'une collision d'horodatage de migrations d'autres chantiers (corrigée par #1972).

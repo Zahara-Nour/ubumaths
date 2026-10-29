@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1971 et le `--publier` du lot 2._
+_Mis à jour le 2026-10-29, après #1985._
 
-- **État** : lot 1 publié (7/8). **Lot 2 (divisibilité, 5 modèles, CM2-130, 009 à 012)** : mergé (#1971), **5 brouillons en prod** (vérifié au MCP : brouillons, CM2, niveaux 4 à 8, sans nœud ni tag) : CM2-130 `9c69a637`, 009 `d2be01f6`, 010 `9adccef3`, 011 `2c8eb424`, 012 `84749b7b`.
-- **Prochaine action** : worktree + migration nœud (`multiples et diviseurs`) + tag, test d'intégration, `security-auditor`, page à cocher.
-- **En attente de David** : publier 7d258acc (lot 1, ```ranger) après le prochain `deploy:prod` : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`.
-- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture ; `create-questions` reconnaît un modèle à son **titre** (collision CM1 évitée, § 7.2) ; horodatages de migration partagés entre sessions (#1972) → vérifier `supabase/migrations` de `origin/main` avant d'en choisir un. Worktree neuf : `pnpm exec svelte-kit sync` d'abord.
-- **Worktree / branche** : aucun.
+- **État** : lot 1 publié (7/8). **Lot 2 (divisibilité, 5 brouillons)** : rangés sur « Arithmétique > Divisibilité > multiples et diviseurs » et tagués (#1985, migration jouée, vérifiée au MCP, `updated_at` inchangé). Page à cocher : https://claude.ai/artifact/GZSRbpPPSKwDTDWsS6N9si (0/5 verdicts au 2026-10-29, aucune alerte).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, les COMPTER) ; « À revoir » → corriger ; 5 OK → `publier-lot.ts --dir scripts/questions/cm2-2` en simulation, puis David `--publier`. Ensuite, lot 3 (à choisir parmi les points sans modèle, § 5).
+- **En attente de David** : relecture du lot 2 ; publier 7d258acc (lot 1, ```ranger) après le prochain `deploy:prod` : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`.
+- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture ; `create-questions` reconnaît un modèle à son **titre** ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente (relever `schema_migrations`) ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
+- **Worktree / branche** : aucun (retiré après #1985).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -287,3 +287,9 @@ en choix de 1 à 12.
 - **Collision avec le lot 2 du CM1** (écrit, pas mergé) : niveaux 2 et 3 de la même catégorie et titre « Est-ce un multiple ? » (CM1-012, jumeau de CM2-130) → niveaux 4 à 8, titre « Reconnaître les multiples d'un nombre » ; session `questions-cm1` prévenue (9 et au-delà pour elle).
 - Local (port 5180, `admin@local.test`, Playwright 390 px au toucher) : 04 (20 et 30) juste → « Juste », oubli de 10 → « ½ point », 4 coché → faux ; 12 choix lisibles ; 010 : 8 cases l'une sous l'autre, lisibles.
 - 2026-10-29 : #1971 mergée (CI verte après #1972, horodatage en double sur `main` venu d'autres sessions) ; David lance `--publier` : 5 brouillons créés, ids ci-dessus (« Reprendre ici »).
+
+### 7.3 Lot 2 : rangement (2026-10-29)
+
+- Relevé MCP : les 5 brouillons toujours sans nœud ni tag, `updated_at` de la création ; les 5 points sur « Arithmétique > Divisibilité > multiples et diviseurs », chemin unique.
+- Migration `20261030004700_questions_cm2_lot2_rangement_tags.sql` sur le patron du lot 2 du CM1 (#1976) : présence tout ou rien, sans nœud ni tag avant, nœud = celui du point, `updated_at` préservé, rollback éprouvé. Test `questions-cm2-lot2-rangement-tags` : 9 verts ; migration remplacée par `select 1;` → 7 rouges (les 2 verts restants : base locale vide, tag sans nœud refusé par la base).
+- #1985 mergée (CI verte après relance du plantage `wrapDynamicImport`), `security-auditor` : aucun finding bloquant (un non bloquant hérité du patron : `set local lock_timeout` sans effet hors transaction explicite). `db:migrate` (seule migration en attente) : 5 modèles rangés et tagués, vérifié au MCP. Page à cocher publiée, sans alerte.
