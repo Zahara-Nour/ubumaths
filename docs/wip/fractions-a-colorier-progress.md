@@ -6,11 +6,11 @@ status: phase 0
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, phase 0 écrite, aucune PR._
+_Mis à jour le 2026-10-29, phase 0 validée, PR 1 en cours._
 
-- **État** : phase 0 (§ 2 à 4) écrite, rien de codé.
-- **Prochaine action** : coder la PR 1 dès que David a répondu aux questions du § 5.
-- **En attente de David** : questions du § 5.
+- **État** : phase 0 validée (§ 6) ; PR 1 (bloc ```partage affiché, `gris:`) en cours.
+- **Prochaine action** : finir la PR 1, puis PR 2 (`colorier:`), puis PR 3 (`unites:`).
+- **En attente de David** : rien.
 - **Après ce chantier** : chantier `solides` (assemblages de cubes, perspective, patrons ; 6e → 3e), ordre
   validé par David le 2026-10-29.
 - **Worktree / branche** : `../ubumaths-wt-fractions-a-colorier` · `feat/fractions-a-colorier`.
@@ -110,3 +110,17 @@ gris: 3
 4. **Geste** : toucher seulement, ou aussi glisser pour colorier plusieurs parts d'un coup (utile en
    10 × 10 ; la première part touchée décide colorier ou effacer) ? (Reco : les deux.)
 5. **Découpage** en trois PR (§ 4) ? (Reco : oui, PR 1 affiche d'abord.)
+
+## 6. Décisions (David, 2026-10-29 : « je te suis » sur les cinq recos)
+
+1. Bloc ```partage.
+2. Quatre formes : `bande N`, `grille L×C` (jusqu'à 10 × 10), `disque N`, `carre-diagonales` ; pas d'hexagone
+   tant qu'un modèle ne le demande pas.
+3. Jugé sur la valeur : la part coloriée vaut la fraction (2 sur 4 juste pour ½).
+4. Geste : toucher et glisser (la première part touchée décide colorier ou effacer).
+5. Trois PR : affichage (`gris:`), `colorier:`, `unites:`.
+
+Précisions de la PR 1 (choix d'exécution, dans le cadre validé) : numérotation des parts — bande de gauche à
+droite, grille ligne par ligne depuis le coin haut gauche, disque depuis midi dans le sens des aiguilles,
+carré coupé par ses diagonales : haut, droite, bas, gauche ; `gris:` absent = figure sans part coloriée ;
+`colorier:` encore inconnu en PR 1 (clé inconnue → message), il arrive en PR 2.
