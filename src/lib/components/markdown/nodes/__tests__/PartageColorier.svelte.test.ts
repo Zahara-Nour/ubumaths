@@ -414,6 +414,22 @@ describe('PartageColorier — plusieurs figures (unites:)', () => {
 		await expect.poll(() => probe.value).toBe('5, 6, 7, 8');
 	});
 
+	it('un glissé reste dans la figure où il commence', async () => {
+		const { probe, answer } = answerProbe();
+		const screen = await render(PartageColorier, {
+			target: mainElement(),
+			props: { node: sevenQuarters(), answer: answer() }
+		});
+		const root = screen.container;
+		// Départ part 3 (figure 1) ; les mouvements vont vers la part 6 (figure 2), sous capture de la figure 1
+		fire(root, 'pointerdown', 3);
+		const svg = parts(root)[2].closest('svg')!;
+		for (const type of ['pointermove', 'pointerup']) {
+			svg.dispatchEvent(new PointerEvent(type, { bubbles: true, ...pointAt(root, 6) }));
+		}
+		await expect.poll(() => probe.value).toMatch(/^3(, 4)?$/);
+	});
+
 	it('noms accessibles : « Figure 2, part 1 sur 4 », figures « figure 2 sur 3 »', async () => {
 		const { answer } = answerProbe('5');
 		const screen = await render(PartageColorier, {

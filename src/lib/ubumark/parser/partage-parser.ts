@@ -332,6 +332,8 @@ export function parsePartageContent(source: string): PartageNode {
 	let colorierLine = 1;
 	let caseIndex: number | undefined;
 	let units = 1;
+	/** `unites:` illisible ou hors bornes : déjà signalée, les figures ne se vérifient pas */
+	let unitsFailed = false;
 	const seen = new Map<string, number>();
 
 	lines.forEach((line, index) => {
@@ -343,7 +345,8 @@ export function parsePartageContent(source: string): PartageNode {
 			fail(lineNo, `ligne « ${text} » non comprise (attendu : clé: valeur, ex. forme: bande 8)`);
 			return;
 		}
-		const key = match[1].toLowerCase();
+		// Sans accent ni majuscule : `unités:` = `unites:`
+		const key = plain(match[1]);
 		const value = match[2];
 		if (!(PARTAGE_KEYS as readonly string[]).includes(key)) {
 			fail(lineNo, `clé « ${match[1]} » inconnue (clés possibles : ${KEY_LIST})`);
@@ -362,7 +365,9 @@ export function parsePartageContent(source: string): PartageNode {
 				fraction = parseFraction(value);
 				colorierLine = lineNo;
 			} else if (key === 'unites') {
+				unitsFailed = true;
 				units = parseUnits(value);
+				unitsFailed = false;
 			} else if (key === 'case') {
 				if (!NUMBER_REGEX.test(value.trim())) {
 					throw new LineError(`case « ${value.trim()} » : numéro de case entier`);
@@ -386,6 +391,7 @@ export function parsePartageContent(source: string): PartageNode {
 	const readShape = shape as PartageShape | null;
 	const readGray = gray as GrayRequest | null;
 	const readFraction = fraction as { num: number; den: number } | null;
+	const readUnitsFailed = unitsFailed as boolean;
 	const figures = (of: PartageShape): Figures => ({
 		perUnit: partageTotal(of),
 		units,
@@ -398,7 +404,7 @@ export function parsePartageContent(source: string): PartageNode {
 			seen.get('gris') ?? 1,
 			'gris: et colorier: ne vont pas ensemble (gris: montre des parts coloriées, colorier: demande à l’élève de colorier)'
 		);
-	} else if (readFraction !== null && readShape !== null) {
+	} else if (readFraction !== null && readShape !== null && !readUnitsFailed) {
 		try {
 			colorier = resolveColorier(readFraction, figures(readShape));
 		} catch (e) {
@@ -410,7 +416,7 @@ export function parsePartageContent(source: string): PartageNode {
 		fail(seen.get('case') ?? 1, 'case: sans objet sans colorier:');
 	}
 	const withCase = caseIndex === undefined ? {} : { caseIndex };
-	if (readShape !== null && readGray !== null && readFraction === null) {
+	if (readShape !== null && readGray !== null && readFraction === null && !readUnitsFailed) {
 		try {
 			rank = resolveGray(readGray, figures(readShape));
 		} catch (e) {

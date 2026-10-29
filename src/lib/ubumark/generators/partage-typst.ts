@@ -3,7 +3,7 @@
  * =======================
  *
  * Chaque part est un `polygon` Typst natif, depuis la MÊME scène que l'écran
- * (`buildPartageScene`) : mêmes sommets, même numérotation. Ni paquet, ni image.
+ * (`buildPartageScenes`) : mêmes sommets, même numérotation. Ni paquet, ni image.
  *
  * Plusieurs figures (`unites:`) : des boîtes en ligne, séparées par
  * `UNIT_GAP_CM`, qui passent à la ligne quand la page est trop étroite.
@@ -76,7 +76,8 @@ export function generatePartageTypst(
 
 	return [
 		'#align(center)[#block(breakable: false)[',
-		boxes.join(`#h(${UNIT_GAP_CM}cm)\n`),
+		// Écart faible : il disparaît en bout de ligne quand les figures passent à la ligne
+		boxes.join(`#h(${UNIT_GAP_CM}cm, weak: true)`),
 		']]'
 	].join('\n');
 }

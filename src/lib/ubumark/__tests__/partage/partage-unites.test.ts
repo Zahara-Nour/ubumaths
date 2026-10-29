@@ -104,6 +104,17 @@ describe('unites: — messages au prof', () => {
 		expect(messages('forme: bande 4', 'unites: deux')).toMatch(/nombre de figures/);
 	});
 
+	it('unites: hors bornes : un seul message, pas de conseil sur les figures', () => {
+		expect(parse('forme: bande 4', 'unites: 6', 'colorier: 7/4').errors).toEqual([
+			'Ligne 2 : unites: 6 : de 1 à 5 figures'
+		]);
+		expect(parse('forme: bande 4', 'unites: 0', 'gris: 7').errors).toHaveLength(1);
+	});
+
+	it('unités: avec accent : la même clé', () => {
+		expect(specOf('forme: bande 4', 'unités: 2', 'gris: 7').units).toBe(2);
+	});
+
 	it('la fraction qui ne tombe pas juste reste dite d’abord', () => {
 		expect(messages('forme: bande 4', 'unites: 2', 'colorier: 4/3')).toMatch(/ne tombe pas juste/);
 	});

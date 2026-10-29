@@ -230,3 +230,11 @@ figure a 4 parts). ». Catalogue : clé `unites`, exemple « Plus grand que 1 »
 Tests : `partage-unites.test.ts` (24), composants (5), génération (1), compilation Typst réelle (disque × 3).
 Vu en Playwright (5178, prof local) : catalogue à 1200 et 360 px, 7 parts coloriées sur trois bandes, pas de
 défilement horizontal. Choix d'exécution : un glissé reste dans la figure où il commence.
+
+Revue `code-reviewer` (Opus), aucun bloquant ; corrigés : `unités:` avec accent acceptée ; `unites:` en erreur
+ne produit plus un second message sur les figures ; écart Typst `weak: true` (pas de décalage au retour à la
+ligne) ; test « un glissé reste dans sa figure » ; commentaire périmé. **Limite laissée, à trancher par David** :
+l'attendue `7/4` ne dit pas combien de figures sont dessinées, donc `isColoringCorrect` borne les rangs à 5
+figures ; une valeur de case périmée (`1, 2, 9` pour 3/8 sur une bande de 8) serait jugée juste. Inatteignable
+depuis l'écran (le composant ignore les rangs hors figure). Remède possible : mettre le nombre de figures
+dans l'attendue (`7/4×3`), changement de format.
