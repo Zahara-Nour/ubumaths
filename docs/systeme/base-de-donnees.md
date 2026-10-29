@@ -348,7 +348,9 @@ Code : `src/lib/server/` (`evaluations.ts`, `evaluation-attempts.ts`, `test-mode
 Les mots mathématiques et leurs définitions par niveau (ADR 0022) : `dictionary_entries`, et
 `dictionary_entry_versions` pour l'historique des modifications de l'admin. Code : `src/lib/dictionary/`,
 chargement serveur `src/lib/server/dictionary/load.ts` ; affichage : glossaire public et mots
-cliquables (`src/lib/lexicon/`).
+cliquables (`src/lib/lexicon/`). Chaque entrée a une adresse fixe `slug` (`/glossaire/<slug>`),
+posée à la création et figée par le trigger `dictionary_entries_slug` (droits de l'appelant) :
+détail dans [dictionnaire.md](dictionnaire.md).
 
 ### Révisions (SRS)
 
