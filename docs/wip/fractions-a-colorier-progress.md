@@ -6,14 +6,15 @@ status: phase 0
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, phase 0 validée, PR 1 en cours._
+_Mis à jour le 2026-10-29, après #1958._
 
-- **État** : PR 1 (bloc ```partage affiché, `gris:`) codée, revue Sonnet faite (2 points corrigés : `gris: 4,` pour une seule part, teinte `--color-fig-orange` à ≥ 3:1), PR ouverte.
-- **Prochaine action** : finir la PR 1, puis PR 2 (`colorier:`), puis PR 3 (`unites:`).
+- **État** : PR 1 mergée (#1958) : bloc ```partage affiché (`forme:`, `gris:`), nom accessible sans la réponse. Pas en prod.
+- **Prochaine action** : PR 2, `colorier:` (case, geste toucher + glisser, corrigé, PDF) ; nouveau worktree depuis `origin/main`. Puis PR 3 (`unites:`).
 - **En attente de David** : rien.
+- **Pièges en cours** : `gris: 4` = les 4 premières parts, `gris: 4,` = la part 4 seule ; PR 2 suivra la liste « saisie / correction » de l'horloge (`build-answer`, `answer-validator`, `template-validator`, `FillBlanksInput`, `BuildAnswer`).
 - **Après ce chantier** : chantier `solides` (assemblages de cubes, perspective, patrons ; 6e → 3e), ordre
   validé par David le 2026-10-29.
-- **Worktree / branche** : `../ubumaths-wt-fractions-a-colorier` · `feat/fractions-a-colorier`.
+- **Worktree / branche** : aucun (celui de la PR 1 retiré).
 
 ---
 
@@ -140,3 +141,5 @@ Revue `code-reviewer` (Sonnet), aucun bloquant ; corrigés : une seule part isol
 Question posée : le nom accessible dit « Bande partagée en 8 parts égales, 3 coloriées » — il donne la
 réponse d'une question « interpréter ». L'horloge dit seulement « Horloge à aiguilles ». Reco : même règle (« Figure
 partagée en parts égales », sans la réponse).
+
+- 2026-10-29 : #1958 mergée (CI verte, intégration comprise).
