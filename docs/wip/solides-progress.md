@@ -6,12 +6,12 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, à l'ouverture du chantier._
+_Mis à jour le 2026-10-30, après le lot 1 (code poussé, PR pas encore ouverte)._
 
-- **État** : phase 0 validée (« je te suis », § 5), ADR 0034 écrit ; spécification du lot 1 au § 6.
-- **Prochaine action** : lot 1 (` ```cubes `, affichage) en TDD, sur le modèle de la PR #1958.
+- **État** : lot 1 (` ```cubes `, affichage) codé et poussé sur `feat/solides` : tests verts, `check:incremental` 0 erreur, doc mise à jour.
+- **Prochaine action** : revue (`code-reviewer`), PR, CI, merge ; puis lot 2.
 - **En attente de David** : rien.
-- **Pièges en cours** : aucun.
+- **Pièges en cours** : `ls` est un alias `eza` qui peut bloquer un enchaînement de commandes dans le harnais.
 - **Worktree / branche** : `../ubumaths-wt-solides` · `feat/solides`.
 
 ---
