@@ -227,6 +227,14 @@ Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustration
   - **Alentours** : campagne neutre, prés et routes qui partent vers les six provinces.
   - **Repère sur la carte** : la spirale de la ville avec le dôme doré au centre.
   - **Couleur** : aucune couleur de province ; Encre et Or pour la ville seule.
+- **Plan de la ville = carte du site** 🟡 (décision de David, 2026-10-29) : les lieux de la Section IV (« Géographie de l'Académie », une page du site = un lieu du Royaume) sont placés le long de la spirale, de l'entrée au centre :
+  1. **Le Pont-Levis du Royaume** (`/`) : l'entrée, sur la Vistule.
+  2. **Le Grand Marché Polonais** (marché) : les étals de Mère Ubu, au premier tour de la spirale.
+  3. **La Caserne des Palotins** (amis) : la caserne de Bordure.
+  4. **L'Arène des Polonais** (jeux) : petite arène ronde.
+  5. **La Gazette du Royaume** (Shtam) : l'imprimerie, ses presses.
+  6. **La Bibliothèque du Décervelage** (cours).
+  7. **Le Trône Royal** (`/pere-ubu`) : au centre, dans le Palais au dôme doré.
 
 #### Logique sonore et anatomique du Royaume
 
