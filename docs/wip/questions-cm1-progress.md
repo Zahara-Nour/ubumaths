@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 2 en cours (avant sa PR)._
+_Mis à jour le 2026-10-29, après #1964 ; migration #1976 en CI._
 
-- **État** : lots 0 et 1 en prod et publiés. **Lot 2 (numération des entiers, 10 modèles)** : phase 0 validée (§ 8), écrit, simulation verte, brouillons en base locale.
-- **Prochaine action** : jouer les modèles dans l'aperçu admin local (port 5176), PR des fichiers, puis `create-questions --publier` en prod, migration nœud + tag, page à cocher.
+- **État** : lots 0 et 1 en prod et publiés. **Lot 2 (numération des entiers, 10 modèles)** : fichiers mergés (#1964), 10 brouillons en prod (§ 8 quater), migration nœud + tag en PR #1976 (`security-auditor` sans finding bloquant).
+- **Prochaine action** : #1976 verte → merge → `db:migrate` depuis le dépôt principal (seulement si aucune migration d'une autre session n'attend), vérifier au MCP ; puis page à cocher du lot 2.
 - **En attente de David** : rien.
-- **Pièges en cours** : la page à cocher montre les FICHIERS, la prod garde l'ancien contenu tant que `--mettre-a-jour` n'est pas joué ; `Doc-inchangée:` va dans un message de COMMIT ; un modèle garde toujours au moins un niveau ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx` ; niveaux à relire en base juste avant `--publier` (sessions CE2 et CM2 actives) ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot2`.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente : relever d'abord `schema_migrations` en prod ; « Multiples et diviseurs » : la session CM2 prend les niveaux 4 à 8, nos prochains modèles partent de 9 ; `Doc-inchangée:` va dans un message de COMMIT (garde du Lint) ; la page à cocher montre les FICHIERS ; un modèle garde toujours au moins un niveau ; worktree neuf → `pnpm exec svelte-kit sync` ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot2-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -308,3 +308,19 @@ V2 « un parmi quatre » (au hasard, une chance sur quatre au lieu de deux).
 - Base locale : 10 brouillons créés.
 
 ````
+
+- Aperçu admin local (port 5176) : « Est-ce un diviseur ? » (mauvais choix marqué, bon choix montré) et « Ranger cinq nombres » (étiquettes avec espaces, une ligne à 606 px). #1964 mergée (CI verte après relance du plantage `wrapDynamicImport`).
+
+### 8 quater. Lot 2 — brouillons en prod, rangement et tags (2026-10-29)
+
+`create-questions --publier` lancé par David ; MCP : 10 brouillons [CM1], sans nœud ni tag, niveaux
+attendus. Ids : `4292d153` (unités de numération), `b4ea91fe` (nombre de centaines), `573a49b3`
+(valeur d'un chiffre), `1cb66993` (suit / précède), `5291643e` (supérieur, inférieur, compris),
+`d7df43c4` (ranger), `178730c2` (encadrer), `08ec7b9f` (intercaler), `5dbcc8dd` (multiple),
+`6dbea912` (diviseur).
+
+Migration `20261029235500_questions_cm1_lot2_rangement_tags` (gabarit du lot 1) et test
+`tests/integration/questions-cm1-lot2-rangement-tags.test.ts` : rouge contre une migration vide (3
+échecs + suite principale arrêtée), puis 9/9 vert. `security-auditor` : aucun finding bloquant (ids,
+chemins et points remesurés en prod) ; non bloquant : `20261029233000_questions_3_lot2` sur `main`,
+pas encore jouée en prod → ne pas lancer `db:migrate` tant qu'elle attend. PR #1976.
