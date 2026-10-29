@@ -365,3 +365,4 @@ tag ne change aucune règle.
 
 - 2026-10-29 : écrit (`lot-ce1-4.py`), `create-questions` en simulation 10/10 (87 specs) ; `question:specs` 200 tirages par variation, verts ; relecture des tirages : « deux gâteaux » → « deux achats », nombre hors formule, « tout le monde tient » pour l'album, monnaie rendue sur 5 € par complément (de 1,95 € à 2 €, puis à 5 €) au lieu de « 5 − 1,95 ». 10 brouillons en base locale ; aperçu admin : prix affichés « 1,10 € », 6,65 juste, corrigé lisible ; case choix oui / non juste.
   \n- 2026-10-29 : #1987 mergée (CI verte) ; brouillons en prod à créer par David.\n
+- 2026-10-29 : 10 brouillons créés en prod par David (`dfc324b1`, `c43bd203`, `23b13821`, `612eeb31`, `93d318d1`, `f9eeeffe`, `bc521c99`, `5e469f6f`, `e4815e7f`, `584dc8b3`), vérifiés au MCP (brouillons, sans nœud ni tag, niveaux voulus). Migration `20261030004800_questions_ce1_lot4_rangement_tags` (max des worktrees + 1 min) et test : rouge sans (5 échecs sur 9), vert 9/9.
