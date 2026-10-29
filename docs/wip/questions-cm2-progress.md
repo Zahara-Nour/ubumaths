@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 2 écrit (PR des fichiers ouverte)._
+_Mis à jour le 2026-10-29, après #1971._
 
-- **État** : lot 1 publié (7/8). **Lot 2 (divisibilité, 5 modèles)** : phase 0 validée, fichiers `scripts/questions/cm2-2/` écrits, specs vertes, joués en local ; PR des fichiers ouverte.
-- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --dir scripts/questions/cm2-2 --publier` (brouillons), relevé des `id`, migration nœud + tag (CM2-130, 009, 010, 011, 012).
-- **En attente de David** : publier 7d258acc (lot 1, ```ranger) après le prochain `deploy:prod` : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`.
-- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture ; `create-questions` reconnaît un modèle à son **titre** (collision avec le CM1 évitée, § 7.2). Specs de Ranger = positions affichées au mélange de la graine 0. Worktree neuf : `pnpm exec svelte-kit sync` d'abord.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot-2`.
+- **État** : lot 1 publié (7/8). **Lot 2 (divisibilité, 5 modèles, CM2-130, 009 à 012)** : fichiers `scripts/questions/cm2-2/` mergés (#1971), **pas encore en base prod**.
+- **Prochaine action** : après le `--publier` de David, relever les `id` au MCP, puis worktree + migration nœud (`multiples et diviseurs`) + tag, test d'intégration, `security-auditor`, page à cocher.
+- **En attente de David** : (1) `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-2 --publier` (brouillons) ; (2) publier 7d258acc (lot 1, ```ranger) après le prochain `deploy:prod` : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`.
+- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture ; `create-questions` reconnaît un modèle à son **titre** (collision CM1 évitée, § 7.2) ; horodatages de migration partagés entre sessions (#1972) → vérifier `supabase/migrations` de `origin/main` avant d'en choisir un. Worktree neuf : `pnpm exec svelte-kit sync` d'abord.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
