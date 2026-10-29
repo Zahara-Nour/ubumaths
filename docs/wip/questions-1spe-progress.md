@@ -510,3 +510,6 @@ remarquables, à 2kπ près (4π/3 : l1s-3) ; arccos à la calculatrice pour les
 - C3 : b73923a1 v4, « IA·ID = −IB² + BA² = −a²/4 + a² ».
 
 Specs des 4 modèles vertes (55 specs, 800 tirages) ; 160 tirages relus : aucune fraction réductible ni dénominateur négatif.
+
+**Page à cocher** : https://claude.ai/artifact/NwH2PPrbGHhiqjuyiu2V8A (15 fiches, 55 exemples, aucune alerte), collection
+`verdicts` vide à la publication.
