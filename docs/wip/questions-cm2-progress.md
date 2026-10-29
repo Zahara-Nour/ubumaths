@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, relecture du lot 1 (PR `feat/questions-cm2-lot1-revue`)._
+_Mis à jour le 2026-10-29, après #1957._
 
-- **État** : 8 verdicts lus (6 OK, 2 à revoir) ; 03 (variation 2) et 06 (bloc ```ranger) corrigés dans le script, vérifiés en local (§ 6.3). Prod pas encore à jour.
-- **Prochaine action** : PR mergée → David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-1 --publier --mettre-a-jour` (2 brouillons mis à jour) ; je vérifie au MCP ; puis `publier-lot` en simulation pour les 7 modèles sans ```ranger, `--publier` par David.
+- **État** : relecture du lot 1 faite (6 OK, 2 à revoir) ; 03 (variation 2 « combien d'unités ») et 06 (bloc ```ranger) corrigés dans les fichiers (#1957, mergée), **pas encore en prod** (§ 6.3).
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-1 --publier --mettre-a-jour` depuis le dépôt principal (2 brouillons mis à jour : 8e1f6003, 7d258acc) ; vérifier au MCP (contenu nouveau, `draft`, nœuds et tags intacts) ; puis `publier-lot` en simulation pour les 7 modèles sans ```ranger, `--publier` par David.
 - **En attente de David** : la mise à jour en prod ci-dessus ; 06 (Ranger) publié seulement après le prochain `deploy:prod` (```ranger, #1943, pas encore en prod).
-- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture. Specs de Ranger = positions AFFICHÉES au mélange de la graine 0 : changer les étiquettes ou les variables → les relever à nouveau (`generateInstanceWithFixedVariables`). `create-questions` dans un worktree neuf : `pnpm exec svelte-kit sync` d'abord.
-- **Worktree / branche** : `ubumaths-wt-questions-cm2` · `feat/questions-cm2-lot1-revue`.
+- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture. Specs de Ranger = positions AFFICHÉES au mélange de la graine 0 : changer les étiquettes ou les variables → les relever (`generateInstanceWithFixedVariables`). `create-questions` dans un worktree neuf : `pnpm exec svelte-kit sync` d'abord.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
