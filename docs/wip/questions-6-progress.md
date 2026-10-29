@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1933._
+_Mis à jour le 2026-10-29, lot 5 publié._
 
-- **État** : lots 1 à 4 publiés (126 + brouillon voulu 3a7a5711). Lot 5 : 7 brouillons en prod, rangés et tagués (#1933, migration jouée), page à cocher publiée (§ 12.3).
-- **Prochaine action** : David lance `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-fractions-scissions --publier` (simulation verte, 7/7) ; je relis `published` au MCP ; ENFIN migration de contenu des 4 publiés (§ 7).
-- **En attente de David** : la publication ci-dessus (relecture faite, 7/7 OK). Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **État** : lot 5 publié (7/7, 2026-10-29) ; 6e = 136 publiés contenant `6` (dont 8 partagés avec le cours moyen) + 3a7a5711 en brouillon voulu. Les 4 modèles d'origine (02 c9c3a8a3, 03 378aa770, 04 afebbb91, 08 ddf5d292) portent encore les variations déplacées.
+- **Prochaine action** : migration de contenu des 4 (§ 7 : instantané `etat-prod-<date>/`, md5 des `variations` à recomparer avec le § 12, titre de 04, descriptions, variations retirées, specs) ; elle RETIRE du contenu publié → l'expliquer à David et attendre son accord avant le SQL.
+- **En attente de David** : accord sur ce que la migration de contenu retire. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
 - **Pièges en cours** : ⚠️ jamais `--publier` sur `6-fractions/` avant la migration de contenu (04 change de titre). 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`) : ne pas les refaire. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
 - **Worktree / branche** : `../ubumaths-wt-questions-6`, aucune branche ouverte (la prochaine : migration de contenu).
 
@@ -811,3 +811,5 @@ migration de contenu après la publication des 7).
   (`db`, 0 verdict) ; case choix non dessinée (11, 14, 15, 16) : la jouer dans l'aperçu admin.
 - David a relu : 7/7 « OK », aucun commentaire (base de la page lue, 7 verdicts comptés). `publier-lot` en simulation :
   7 brouillons passent le contrôle.
+- David a lancé `publier-lot --publier` (2026-10-29) : 7/7 publiés. MCP : `published`, rangés, un tag chacun. Comptage
+  6e : 136 publiés contenant `6` (128 `[6]` + 7 `[CM2, 6]` + 1 `[CM1, 6]`), 1 brouillon (3a7a5711).
