@@ -4,7 +4,7 @@
 > (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
-225 tables · 25 vues · 322 fonctions. Colonne suivie de `?` : peut être nulle.
+223 tables · 24 vues · 322 fonctions. Colonne suivie de `?` : peut être nulle.
 
 ## Établissement et personnes (20)
 
@@ -198,7 +198,7 @@ Liens : `point_id` → `curriculum_points` · `student_id` → `profiles`
 
 `created_at` · `created_by?` · `id` · `name` · `slug?`
 
-## Questions et exercices (19)
+## Questions et exercices (17)
 
 ### `exercise_assignments`
 
@@ -248,21 +248,9 @@ Liens : `created_by` → `profiles`
 
 Liens : `created_by` → `profiles` · `source_type_id` → `source_types`
 
-### `migration_edits`
-
-`created_at?` · `edit_notes?` · `edited_json` · `editor_id` · `id` · `migration_tracking_id` · `old_question_hash` · `updated_at?`
-
-Liens : `editor_id` → `profiles` · `migration_tracking_id` → `migration_tracking`
-
 ### `migration_images`
 
 `created_at?` · `error_message?` · `file_size?` · `id` · `migrated_at?` · `migration_status` · `new_path` · `old_path`
-
-### `migration_tracking`
-
-`conversion_errors?` · `conversion_notes?` · `converted_at?` · `created_at?` · `domain?` · `id` · `imported_at?` · `level?` · `migration_status` · `new_template_id?` · `old_description` · `old_question_hash` · `old_question_index` · `old_question_json?` · `phase?` · `review_status?` · `reviewed_at?` · `reviewed_by?` · `subdomain?` · `theme?` · `transformed_json?` · `updated_at?` · `validated_at?`
-
-Liens : `new_template_id` → `question_templates` · `reviewed_by` → `profiles`
 
 ### `question_template_points`
 
@@ -1324,9 +1312,9 @@ Liens : `teacher_id` → `profiles`
 
 `created_at?` · `expires_at` · `key` · `value`
 
-## Vues (25)
+## Vues (24)
 
-`active_student_warnings` · `admin_content_stats` · `admin_error_stats_24h` · `admin_job_failures` · `admin_job_status` · `admin_online_users` · `admin_pg_cron_jobs` · `admin_user_activity` · `deck_stats_view` · `game_scores_unified` · `migration_review_tree` · `minesweeper_achievements_compat` · `minesweeper_leaderboard` · `minesweeper_multiplayer_leaderboard` · `minesweeper_student_achievement_progress` · `minesweeper_student_achievements_compat` · `minesweeper_tournament_standings` · `resources` · `riddle_progress` · `riddle_stats` · `riddle_student_history` · `student_achievement_stats` · `student_coursework_view` · `student_point_state_v` · `user_conversations_view`
+`active_student_warnings` · `admin_content_stats` · `admin_error_stats_24h` · `admin_job_failures` · `admin_job_status` · `admin_online_users` · `admin_pg_cron_jobs` · `admin_user_activity` · `deck_stats_view` · `game_scores_unified` · `minesweeper_achievements_compat` · `minesweeper_leaderboard` · `minesweeper_multiplayer_leaderboard` · `minesweeper_student_achievement_progress` · `minesweeper_student_achievements_compat` · `minesweeper_tournament_standings` · `resources` · `riddle_progress` · `riddle_stats` · `riddle_student_history` · `student_achievement_stats` · `student_coursework_view` · `student_point_state_v` · `user_conversations_view`
 
 ## Fonctions (322)
 
