@@ -5,19 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1931 (lot 1 en fichiers, mergé)._
+_Mis à jour le 2026-10-29, migration nœud + tag du lot 1 écrite (PR ouverte)._
 
-- **État** : lot 1 (relatifs et rationnels, § 9) écrit (`docs/wip/questions/lot-4-1.py` → `scripts/questions/4-lot-1/`,
-  7 modèles, 66 specs) ; essai en base **locale** fait le 2026-10-28 : les 7 rendus, juste / faux / correction OK
-  dans l'aperçu admin. Fichiers mergés (#1931).
-- **Prochaine action** : migration nœud + tag (§ 6 de `couvrir-un-niveau.md`, gabarit
-  `20261026210000_questions_cp_c_rangement_tags.sql`) sur un nouveau worktree. Brouillons en prod (2026-10-28) :
-  01 `92be516e` · 02 `25c02016` · 03 `70c52ae9` · 04 `a635df43` · 05 `62eae788` · 06 `a270c7aa` · 07 `05818fa0`.
-- **En attente de David** : rien.
-- **Pièges en cours** : 90dca27a et acbd2280 (4-005, « le plus possible ») partiront en 3e avec un lot de la 3e ;
-  `db:migrate` peut exiger `--include-all` (migrations d'autres sessions non jouées) : réservé à David ; la ligne
-  `Doc-inchangée:` va dans un message de commit ; QCM = case choix ; relire § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : aucun (retiré après #1931) ; nouveau worktree pour la migration nœud + tag.
+- **État** : lot 1 (7 brouillons en prod, § 9-10) ; migration `20261029190000_questions_4_lot1_rangement_tags.sql`
+  - test `tests/integration/questions-4-lot1-rangement-tags.test.ts` : rouge sans la migration (5/9), vert avec (9/9).
+- **Prochaine action** : `security-auditor`, CI verte, merge, puis `pnpm db:migrate` depuis le dépôt principal et
+  vérification en prod (MCP : nœud, tag, brouillon, `updated_at` inchangé). Ensuite : lot 2 de la 4e.
+- **En attente de David** : rien (la publication des 7 brouillons est à lui, après la migration).
+- **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
+  `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit ; QCM = case choix.
+- **Worktree / branche** : `ubumaths-wt-questions-4` · `feat/questions-4-tags`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -311,3 +308,12 @@ niveau 3 ; 4-013 ouvre Fractions / Calculer / Enchaînements.
   (« les 1/3 des élèves » évité).
 - 4-006 : le cas est tiré par `k`, numérateur et dénominateur pris par indicatrices arithmétiques de `k`
   (`question:specs` lent sur ce modèle, ~1 min : normal, trois jeux de variables gardés).
+
+## 11. Lot 1 : nœud et tag (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-tags`)
+
+- Relevé prod (MCP, 2026-10-29) : les 7 brouillons `[4]`, sans nœud ni tag. Nœuds des points : 4-082 Relatifs :
+  calculs > sommes · 4-004 Entiers : priorités opératoires > écriture d'une expression · 4-006 Fractions : sens et
+  écritures > définition · 4-009 Fractions : calculs > fraction d'une quantité · 4-010 Fractions : calculs > inverse ·
+  4-013 et 4-014 à la **notion** Fractions : calculs.
+- Migration et test repris du lot 2 de la 5e (`20261029170000`, qui gère déjà les points à la notion). Question
+  d'accès : § 9.3 (personne ne gagne d'accès), validée avec la phase 0.
