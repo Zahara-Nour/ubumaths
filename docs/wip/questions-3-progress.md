@@ -5,16 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la relecture du lot 1 (5/5 OK)._
+_Mis à jour le 2026-10-29, après la publication du lot 1._
 
-- **État** : lot 1 en prod en brouillon, rangé (#1930, migration `20261029003100` jouée et vérifiée). Page à
-  cocher https://claude.ai/artifact/RzBxX9RLjAtvkNnTWssq4X : **5 verdicts, 5 OK** (relus le 2026-10-29).
-- **Prochaine action** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/3-lot-1` en
-  simulation ; puis **David** le relance avec `--publier` ; relire `published` en base (MCP). Ensuite : phase 0
-  du lot 2 (§ 4).
-- **En attente de David** : le `--publier` après la simulation.
-- **Pièges en cours** : `db:migrate` refusé par le classifieur du mode auto → David le lance avec `!` ;
-  test `forfait-palotin` qui dépasse 5 s en CI (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
+- **État** : lot 1 **publié en prod** (5/5, `status = published` relu en base par MCP le 2026-10-29) :
+  93998734, 35f82aad, 3806ee3d, 70449b92, 77ab770d. Lots 0 et 1 terminés.
+- **Prochaine action** : phase 0 du lot 2 (calcul littéral, équations : 3-016 en (a ± b)², 3-054, 3-014,
+  3-015 ; § 4) — comportements en français, attendre la validation.
+- **En attente de David** : rien.
+- **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation, car il lit la prod) refusés
+  par le classifieur du mode auto → David les lance avec `!` ; test `forfait-palotin` qui dépasse 5 s en CI
+  (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
