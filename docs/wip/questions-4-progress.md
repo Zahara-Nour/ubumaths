@@ -500,3 +500,54 @@ grades 4 et 3, tagué 4-045 et 3-032** (note laissée dans le journal de la 3e).
   commentaire.
 - `publier-lot.ts --dir scripts/questions/4-lot-3 --publier` lancé par David ; 9/9 publiés, vérifié au MCP
   (`published`, nœud présent).
+
+## 20. Lot 4 (probabilités) : phase 0 (proposée le 2026-10-29)
+
+### 20.1 Relevé (MCP, 2026-10-29)
+
+- Points du lot, tous sans modèle : 046, 047, 048, 079, 049, 050, 051.
+- Au collège, seuls deux modèles de 6e : Probabilités / Apprivoiser / Probabilité simple (1), Fréquences (2). Voisins
+  sans modèle, pris par d'autres sessions : 5-082, 5-083, 5-084 (session 5e) ; 3-033, 3-034, 3-035 (session 3e).
+- Outils : ` ```simulation ` (mode `tirages` : tableau valeur / effectif / fréquence observée au millième /
+  probabilité ; `graine:` rend le tirage reproductible, mais les effectifs ne sont pas connus des `eval`),
+  ` ```barres ` (fréquences écrites par le modèle), ` ```probtree `, tableau markdown à double entrée ; ensembles
+  finis en case avec `answerKind: intervalles` (modèle 1re spé « Intersection, réunion et complémentaire »).
+  Aucun outil neuf.
+- Bornes : 046, 047 « univers, évènements comme ensembles d'issues ; complémentaire, ∪, ∩, ∅ » (BO ; la ressource 2016
+  disait la formalisation non attendue : le BO en vigueur fait foi) ; 049 « deux pièces, une pièce et un dé, deux
+  dés ; issues équiprobables ; tableau ou arbre » (arbre admis par le BO en vigueur et l'accompagnement 2026).
+
+### 20.2 Modèles proposés (7, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                   | Variations                                                                                                                                                                                                                                                                                                                                      | Réponse           |
+| ----- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| 046   | Décrire une expérience aléatoire (Probabilités / Évènements / Univers, 1)    | 1) dé à n faces (6, 8, 10, 12) : écrire l'univers ; 2) même dé, « obtenir un nombre pair / un multiple de 3 / plus de k » : écrire l'évènement ; 3) urne de boules numérotées ou sac de lettres d'un mot : écrire l'évènement ; 4) « {2 ; 4 ; 6} est : une issue / un évènement / l'univers »                                                   | case · case choix |
+| 047   | Contraire, réunion, intersection (Probabilités / Évènements / Opérations, 2) | dé à n faces, A et B donnés en mots : 1) Ā ; 2) A ∩ B ; 3) A ∪ B ; 4) A et B incompatibles : A ∩ B = ∅ ; 5) « A ∩ B se lit : A et B / A ou B / non A »                                                                                                                                                                                          | case · case choix |
+| 048   | Probabilité d'un évènement (Probabilités / Calculer / Équiprobabilité, 1)    | 1) urne à trois couleurs (effectifs tirés, total ≤ 30) ; 2) dé à n faces, évènement à plusieurs issues ; 3) jeu de 32 cartes (roi, cœur, figure) ; 4) lettre tirée dans un mot (voyelle)                                                                                                                                                        | case              |
+| 079   | Évènement contraire (Probabilités / Calculer / Évènement contraire, 1)       | 1) P(A) décimal (0,35) → P(non A) ; 2) P(A) en fraction (3/8) ; 3) « ne pas obtenir 6 » avec un dé à n faces ; 4) urne : P(pas rouge) en passant par 1 − P(rouge)                                                                                                                                                                               | case              |
+| 049   | Deux épreuves (Probabilités / Calculer / Deux épreuves, 2)                   | 1) deux pièces : deux piles, au moins un pile ; 2) une pièce et un dé : pile et 6 ; 3) deux dés, tableau à double entrée des sommes affiché : somme égale à k ; 4) arbre des issues (` ```probtree ` non pondéré) d'une pièce puis d'une urne                                                                                                   | case              |
+| 050   | Fréquences et probabilités (Probabilités / Simulation / Fréquences, 1)       | 1) tableau des effectifs de 600 lancers d'un dé (tirés près de 100) : fréquence observée du 6, puis comparée à 1/6 ; 2) deux ` ```barres ` de fréquences (dé équilibré, dé truqué) : « lequel semble truqué ? » ; 3) ` ```simulation ` d'un dé : « les fréquences sont égales aux probabilités / proches sans leur être égales / sans rapport » | case · case choix |
+| 051   | Fluctuation des fréquences (Probabilités / Simulation / Fluctuation, 1)      | 1) trois groupes lancent une pièce 50 fois (fréquences de pile 0,46 ; 0,54 ; 0,5) : « la pièce du groupe B est-elle truquée ? » ; 2) deux ` ```simulation ` de même loi et même nombre de tirages, graines différentes : « pourquoi les résultats diffèrent ? » ; 3) « 7 piles sur 20 : en refaisant 20 lancers, obtient-on encore 7 piles ? »  | case choix        |
+
+- Réponses de probabilité : toute écriture égale acceptée (fraction, fraction non simplifiée, décimal ; borne 5-083),
+  corrigé en fraction irréductible.
+- `testSpecs` d'erreurs typiques : 046 → issue au lieu de l'univers, ensemble d'un élément oublié ; 047 → A ∪ B
+  qui répète un élément (accepté ou non ? à vérifier), Ā pris dans le mauvais univers ; 048 → favorables / défavorables ;
+  079 → 1/P(A), P(A) − 1 ; 049 → 1/3 pour deux piles (PP, PF, FF), 2/12 pour la somme ; 050 → 100/600 lu sans
+  calcul, effectif au lieu de la fréquence.
+- À vérifier à l'écriture : `answerKind: intervalles` accepte un ensemble dans n'importe quel ordre et `∅` ; la case
+  accepte un décimal pour une probabilité attendue en fraction ; deux ` ```simulation ` dans un même énoncé ;
+  graine tirée par le modèle.
+
+### 20.3 Question d'accès
+
+Comme les lots précédents : brouillons, puis migration nœud + tag ; **personne** ne gagne d'accès. À la publication,
+les élèves de 4e voient 7 modèles de plus.
+
+### 20.4 Questions à David
+
+1. Valider les 7 modèles du § 20.2 ?
+2. Catégories neuves : **Probabilités / Évènements** (Univers 1, Opérations 2), **Probabilités / Calculer**
+   (Équiprobabilité 1, Évènement contraire 1, Deux épreuves 2), **Probabilités / Simulation** (Fréquences 1,
+   Fluctuation 1) ; la 6e garde « Apprivoiser » ?
+3. Probabilités : toute écriture égale acceptée (fraction non simplifiée, décimal), ou fraction exigée ?
