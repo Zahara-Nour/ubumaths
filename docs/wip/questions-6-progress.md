@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1968._
+_Mis à jour le 2026-10-29, après la relecture du lot 6a._
 
-- **État** : lots 1 à 5 en prod. Lot 6a (M1-M6) : 6 brouillons en prod, rangés et tagués (#1968, migration
-  `20261029233200` jouée) ; page à cocher publiée, 0 verdict : https://claude.ai/artifact/MMAGnQYvdeEBFd1MMZR8Rf
-- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; 6/6 OK → `publier-lot` en
-  simulation, puis David lance `--publier` ; ensuite le lot 6b (M7-M13, § 13).
-- **En attente de David** : la relecture des 6 ; passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles`
-  (scission faite). Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **État** : lots 1 à 5 en prod. Lot 6a (M1-M6) : 6 brouillons en prod, rangés et tagués (#1968) ; relus par David,
+  6/6 « OK » sans commentaire (verdicts comptés) ; `publier-lot` en simulation : 6 brouillons passent.
+- **Prochaine action** : David lance `pnpm tsx --env-file=.env scripts/questions/publier-lot.ts --dir
+scripts/questions/6-proportionnalite --publier` ; vérifier en base (MCP) ; puis le lot 6b (M7-M13, § 13).
+- **En attente de David** : le `--publier` ci-dessus ; passer en « validé » les verdicts de 02, 03, 04 sur
+  `/dev/modeles` (scission faite). Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
 - **Pièges en cours** : 06 et 07 attendent l'outil « étiquettes à ranger » (bloc ```ranger, livré le 2026-10-28 :
   à reprendre). 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs` dans un worktree neuf.
-- **Worktree / branche** : aucun (retiré après #1968).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -969,3 +969,5 @@ nouvelle revue.
   un tag juste chacun, `updated_at` inchangé, trigger `updated_at` à `O`.
 - Page à cocher générée depuis `main` (5ba49da44), aucune alerte, publiée (`db`, 0 verdict) :
   https://claude.ai/artifact/MMAGnQYvdeEBFd1MMZR8Rf.
+- David a relu : 6/6 « OK », aucun commentaire (base de la page lue, 6 verdicts comptés). `publier-lot` en
+  simulation : 6 brouillons passent le contrôle.
