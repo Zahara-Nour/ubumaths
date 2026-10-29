@@ -24,6 +24,7 @@ export type CatalogNodeType =
 	| 'stat-chart'
 	| 'qr'
 	| 'horloge'
+	| 'partage'
 	| 'operation'
 	| 'ranger';
 

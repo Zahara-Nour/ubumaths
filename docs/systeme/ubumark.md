@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29.
 
 ## À quoi ça sert
 
@@ -198,6 +198,7 @@ en retrait sous un item de liste.
 | `operation`                                                                                                               | `operation`                 | `operation-parser.ts`               | `Operation.svelte`       | `operation-typst.ts`                         |
 | `collection`                                                                                                              | `collection`                | `collection-parser.ts`              | `Collection.svelte`      | `collection-typst.ts`                        |
 | `monnaie`                                                                                                                 | `monnaie`                   | `monnaie-parser.ts`                 | `Monnaie.svelte`         | `monnaie-typst.ts`                           |
+| `partage`                                                                                                                 | `partage`                   | `partage-parser.ts`                 | `Partage.svelte`         | `partage-typst.ts`                           |
 | `choix` (clôture ```` si un choix contient un bloc)                                                                       | `choice`                    | `choix-parser.ts`                   | `ChoiceBlock.svelte`     | `typst-generator.ts` (« A) … »)              |
 | `ranger`                                                                                                                  | `ranger`                    | `ranger-parser.ts`                  | `RangerPlacer.svelte`    | `typst-generator.ts` (`generateRangerTypst`) |
 
@@ -476,6 +477,28 @@ lecture `readHands` (petite pile sur l'heure si minutes = 0, strictement entre d
 « Tu as placé les aiguilles sur 5 h 45. », petite pile sur l'heure ou entre deux heures à tort).
 Hors question (cours, aperçu) : le même geste, rien de jugé. PDF : le cadran sans aiguilles,
 l'enfant les dessine. Secondes (CM2-083) : hors chantier (pas de trotteuse).
+
+**Figure partagée en parts égales** (chantier [fractions-a-colorier](../wip/fractions-a-colorier-progress.md),
+PR 1 : affichage seul) — `src/lib/ubumark/__tests__/partage/` :
+
+````text
+```partage
+forme: bande 8
+gris: 3
+```
+````
+
+`forme:` (obligatoire) : `bande N` et `disque N` (2 à 12 parts), `grille L×C` (`x` ou `×`, 1 à 10 lignes et
+colonnes, au moins 2 parts ; 10×10 = centièmes), `carre-diagonales` (4 triangles). `gris:` (facultatif) : un
+nombre (les N premières parts, de 0 au total) ou une liste de rangs distincts `1, 4, 6` ; absent : aucune part
+coloriée. Une clé inconnue (`colorier:` arrive en PR 2) ou répétée, un rang hors figure : phrase « Ligne N : … »
+dans `errors: string[]`. Numérotation : bande de gauche à droite, grille ligne par ligne depuis le coin haut
+gauche, disque depuis midi dans le sens horaire, carré haut / droite / bas / gauche. Scène partagée
+`utils/partage-scene.ts` (un polygone par part, arc du disque en pas de 3° ; 1 unité = 0,025 cm, écran comme
+PDF) ; écran : SVG, parts coloriées en `--color-primary`, nom accessible « Bande partagée en 8 parts égales,
+3 coloriées » ; PDF : Typst natif (`polygon`), parts coloriées **grisées**. Bloc en erreur : messages pour le prof,
+cadre « Partage indisponible » pour l'élève. Éditeur riche : bloc de code `partage`. Chat élève (rendu restreint) :
+jamais rendu. Fiche fixe du catalogue : `src/lib/block-catalog/partage.ts`.
 
 **Opération posée en colonnes** (chantier [operations-posees](../archive/wip/operations-posees-progress.md),
 addition, soustraction, multiplication, division en potence) — `src/lib/ubumark/__tests__/operation/` :

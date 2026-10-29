@@ -30,6 +30,7 @@
 	import FigureBlock from './FigureBlock.svelte';
 	import QrBlock from './QrBlock.svelte';
 	import Horloge from './Horloge.svelte';
+	import Partage from './Partage.svelte';
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
@@ -91,6 +92,8 @@
 	<QrBlock {node} />
 {:else if node.type === 'horloge'}
 	<Horloge {node} />
+{:else if node.type === 'partage'}
+	<Partage {node} />
 {:else if node.type === 'operation'}
 	<Operation {node} />
 {:else if node.type === 'collection'}

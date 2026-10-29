@@ -98,6 +98,12 @@ import {
 	isHorlogeBlockStart
 } from './horloge-parser';
 import {
+	findPartageBlocks,
+	parsePartage,
+	parsePartageContent,
+	isPartageBlockStart
+} from './partage-parser';
+import {
 	findOperationBlocks,
 	parseOperation,
 	parseOperationContent,
@@ -495,6 +501,7 @@ function parseBlocks(
 	const numberLineBlocks = findNumberLineBlocks(lines);
 	const qrBlocks = findQrBlocks(lines);
 	const horlogeBlocks = findHorlogeBlocks(lines);
+	const partageBlocks = findPartageBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
 	const collectionBlocks = findCollectionBlocks(lines);
 	const monnaieBlocks = findMonnaieBlocks(lines);
@@ -518,6 +525,7 @@ function parseBlocks(
 		{ ranges: numberLineBlocks, parse: parseNumberLine, language: 'line' },
 		{ ranges: qrBlocks, parse: parseQr, language: 'qr' },
 		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' },
+		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
 		{ ranges: collectionBlocks, parse: parseCollection, language: 'collection' },
 		{ ranges: monnaieBlocks, parse: parseMonnaie, language: 'monnaie' },
@@ -586,6 +594,7 @@ function parseBlocks(
 			...numberLineBlocks,
 			...qrBlocks,
 			...horlogeBlocks,
+			...partageBlocks,
 			...operationBlocks,
 			...collectionBlocks,
 			...monnaieBlocks,
@@ -604,6 +613,7 @@ function parseBlocks(
 			...findNumberLineBlocks(originalLines),
 			...findQrBlocks(originalLines),
 			...findHorlogeBlocks(originalLines),
+			...findPartageBlocks(originalLines),
 			...findOperationBlocks(originalLines),
 			...findCollectionBlocks(originalLines),
 			...findMonnaieBlocks(originalLines),
@@ -1683,6 +1693,12 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'horloge'
 	},
 	{
+		is: isPartageBlockStart,
+		find: findPartageBlocks,
+		parse: parsePartage,
+		language: 'partage'
+	},
+	{
 		is: isOperationBlockStart,
 		find: findOperationBlocks,
 		parse: parseOperation,
@@ -1914,6 +1930,9 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'horloge') {
 			// Horloge dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseHorlogeContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'partage') {
+			// Partage dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parsePartageContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'operation') {
 			// Opération posée dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseOperationContent(restoreMathPlaceholders(code, placeholders)));

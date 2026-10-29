@@ -212,6 +212,12 @@ export type { QrNode, QrIssue } from './qr';
 export type { HorlogeNode, HorlogeIssue, HorlogeSpec, HorlogeTime } from './horloge';
 
 // ============================================================================
+// PARTAGE (bloc ```partage)
+// ============================================================================
+
+export type { PartageNode, PartageSpec, PartageShape } from './partage';
+
+// ============================================================================
 // OPÉRATION POSÉE (bloc ```operation)
 // ============================================================================
 

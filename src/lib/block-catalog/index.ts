@@ -11,6 +11,7 @@ import { figureACompleterEntry } from './figure-a-completer';
 import { figureDeTravailEntry } from './figure-de-travail';
 import { horlogeEntry } from './horloge';
 import { numberLineEntry } from './number-line';
+import { partageEntry } from './partage';
 import { operationEntry } from './operation';
 import { probtreeEntry } from './probtree';
 import { qrEntry } from './qr';
@@ -33,6 +34,7 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	statChartEntry,
 	qrEntry,
 	horlogeEntry,
+	partageEntry,
 	rangerEntry,
 	operationEntry,
 	trigEntry

@@ -138,6 +138,14 @@ export {
 	isHorlogeBlockStart
 } from './horloge-parser';
 
+// Bloc ```partage
+export {
+	parsePartage,
+	parsePartageContent,
+	findPartageBlocks,
+	isPartageBlockStart
+} from './partage-parser';
+
 // Bloc ```operation
 export {
 	parseOperation,

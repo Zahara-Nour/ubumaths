@@ -4,7 +4,7 @@
  * `~…~` et `$…$` au rendu écran et signale : erreur rouge, lettres découpées (un
  * nom de fonction non déclaré, `CM` lu comme `C·M`), nom grec sans antislash,
  * `\unit` résiduel. Signale aussi les blocs ```courbe et ```figure en erreur ou hors fenêtre,
- * et les blocs ```horloge, ```operation, ```collection et ```monnaie en erreur.
+ * et les blocs ```horloge, ```operation, ```collection, ```monnaie et ```partage en erreur.
  *
  * Les lettres de fonctions sont celles de `generic_functions` de l'exercice ; sans
  * elles, `C'(x)` s'affiche comme un produit.
@@ -25,11 +25,18 @@ import type { HorlogeNode } from '$lib/ubumark/types/horloge';
 import type { OperationNode } from '$lib/ubumark/types/operation';
 import type { CollectionNode } from '$lib/ubumark/types/collection';
 import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
+import type { PartageNode } from '$lib/ubumark/types/partage';
 
 type BlocNode =
-	CourbeNode | FigureNode | HorlogeNode | OperationNode | CollectionNode | MonnaieNode;
+	| CourbeNode
+	| FigureNode
+	| HorlogeNode
+	| OperationNode
+	| CollectionNode
+	| MonnaieNode
+	| PartageNode;
 
-/** Blocs ```courbe, ```figure, ```horloge, ```operation, ```collection et ```monnaie d'un arbre ubumark, listes comprises. */
+/** Blocs ```courbe, ```figure, ```horloge, ```operation, ```collection, ```monnaie et ```partage d'un arbre ubumark, listes comprises. */
 function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 	if (Array.isArray(node)) {
 		for (const child of node) blocs(child, found);
@@ -41,6 +48,7 @@ function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 		else if (record.type === 'operation') found.push(node as OperationNode);
 		else if (record.type === 'collection') found.push(node as CollectionNode);
 		else if (record.type === 'monnaie') found.push(node as MonnaieNode);
+		else if (record.type === 'partage') found.push(node as PartageNode);
 		else {
 			blocs(record.children, found);
 			blocs(record.items, found);
@@ -55,6 +63,8 @@ function blocMessages(bloc: BlocNode): string[] {
 		const { errors, warnings } = buildFigureScene(bloc);
 		return [...errors, ...warnings].map((m) => m.message);
 	}
+	// Les phrases du bloc ```partage sont déjà des textes
+	if (bloc.type === 'partage') return bloc.errors;
 	if (
 		bloc.type === 'horloge' ||
 		bloc.type === 'operation' ||

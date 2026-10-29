@@ -38,6 +38,7 @@
 	import StatChart from './StatChart.svelte';
 	import QrBlock from './QrBlock.svelte';
 	import Horloge from './Horloge.svelte';
+	import Partage from './Partage.svelte';
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
@@ -51,6 +52,7 @@
 	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
 	import type { QrNode } from '$lib/ubumark/types/qr';
 	import type { HorlogeNode } from '$lib/ubumark/types/horloge';
+	import type { PartageNode } from '$lib/ubumark/types/partage';
 	import type { OperationNode } from '$lib/ubumark/types/operation';
 	import type { CollectionNode } from '$lib/ubumark/types/collection';
 	import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
@@ -284,6 +286,13 @@
 	}
 
 	/**
+	 * Bloc ```partage en retrait dans un item de liste
+	 */
+	function isPartageNode(node: ASTNode): node is PartageNode {
+		return node.type === 'partage';
+	}
+
+	/**
 	 * Check if node is a block-level element (for hardbreak removal)
 	 */
 	function isBlockNode(node: ASTNode): boolean {
@@ -302,6 +311,7 @@
 			'stat-chart',
 			'qr',
 			'horloge',
+			'partage',
 			'operation',
 			'collection',
 			'monnaie'
@@ -433,6 +443,8 @@
 						<QrBlock node={child} />
 					{:else if isHorlogeNode(child)}
 						<Horloge node={child} />
+					{:else if isPartageNode(child)}
+						<Partage node={child} />
 					{:else if isOperationNode(child)}
 						<Operation node={child} />
 					{:else if isCollectionNode(child)}
@@ -525,6 +537,8 @@
 						<QrBlock node={child} />
 					{:else if isHorlogeNode(child)}
 						<Horloge node={child} />
+					{:else if isPartageNode(child)}
+						<Partage node={child} />
 					{:else if isOperationNode(child)}
 						<Operation node={child} />
 					{:else if isCollectionNode(child)}
