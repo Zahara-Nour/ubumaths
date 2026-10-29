@@ -5,20 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 4b écrit (PR des fichiers en cours)._
+_Mis à jour le 2026-10-29, après #1986._
 
 - **État** : lots 1 à 3 publiés ; **4a** mergé (#1977), pas encore publié ; **4b** (4 modèles, § 15) écrit,
-  37 specs vertes, joué en local ; PR des fichiers `feat/questions-5-lot4b` en cours.
-- **Prochaine action** : merger la PR 4b → David `create-questions --dir scripts/questions/5-litteral-b --publier`
+  37 specs vertes, joué en local ; fichiers mergés (#1986), **pas encore créés en prod**.
+- **Prochaine action** : David `create-questions --dir scripts/questions/5-litteral-b --publier`
   (4b ne dépend PAS de `virgule-forme-exigee` : aucune forme exigée) → migration de rangement 4b **avec**
   reclassement (d4679e2d, e66089e0, 9231b54b → 5e) et décalage des niveaux (§ 15) → page à cocher.
   4a : attendre `virgule-forme-exigee`, puis `--publier` et sa migration.
-- **En attente de David** : la session `virgule-forme-exigee` (à lancer par David).
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-litteral-b --publier`
+  (dépôt principal) ; la session `virgule-forme-exigee` (à lancer par David).
 - **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
 --mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
   **message de commit** ; job d'intégration = run à part ; page à cocher à 390 px ; **jamais de variable `e` ni
   `i`** ; la saisie MathLive de l'aperçu ne se pilote pas à l'automate (relire le rendu par la page à cocher).
-- **Worktree / branche** : `ubumaths-wt-questions-5` · `feat/questions-5-lot4b`.
+- **Worktree / branche** : aucun (retiré après #1986) ; migration 4b → nouveau worktree.
 
 ## 1. Relevé (prod, 2026-10-28)
 
