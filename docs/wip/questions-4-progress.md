@@ -5,17 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, migration nœud + tags du lot 3 écrite (§ 18)._
+_Mis à jour le 2026-10-29, après #1983 (lot 3 rangé et tagué en prod)._
 
-- **État** : lots 1 et 2 en prod (lot 1 en brouillon, lot 2 publié) ; lot 3 : 9 brouillons créés en prod
-  (#1978, `--publier` lancé par David) ; migration `20261030003000` + test sur `feat/questions-4-lot3-rangement`.
-- **Prochaine action** : `security-auditor` sans finding bloquant → PR, CI verte, merge, `db:migrate` depuis le
-  dépôt principal, vérifier en prod (MCP) ; puis page à cocher du lot 3 et `publier-lot.ts` (David).
-- **En attente de David** : publication des 7 brouillons du lot 1 ; relecture puis publication du lot 3.
+- **État** : lots 1 et 2 en prod (lot 1 en brouillon, lot 2 publié) ; lot 3 (statistiques) : 9 brouillons en prod,
+  rangés et tagués (#1983, `db:migrate` fait, vérifié au MCP) ; page à cocher publiée (§ 18).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 9) ; « À revoir » → corriger
+  (`--mettre-a-jour`) ; tout « OK » → David lance `pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/4-lot-3 --publier`, relire `published` en base ; puis phase 0 du lot 4.
+- **En attente de David** : relecture du lot 3 (https://claude.ai/artifact/FHydaqaWjFJqeEpRgEC2Mp ; diagrammes
+  `barres` à jouer dans l'aperçu admin) ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
   passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
-- **Worktree / branche** : `../ubumaths-wt-questions-4`, `feat/questions-4-lot3-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-4`, aucune branche en cours (prochaine depuis `origin/main`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -489,3 +491,8 @@ grades 4 et 3, tagué 4-045 et 3-032** (note laissée dans le journal de la 3e).
   programme : le trigger l'admet) ; horodatage après #1980 (`20261030001000`). Test rouge sans la migration
   (5 échecs sur 9), vert avec (9/9).
 - Question d'accès : § 16.3 (personne ne gagne d'accès), validée avec la phase 0.
+- `security-auditor` : aucun finding bloquant (ordre des `drop` des tables temporaires inversé à sa remarque).
+- #1983 mergée (CI verte) ; `db:migrate` le 2026-10-29 ; vérifié en prod (MCP) : 9 brouillons sur leur nœud, le
+  tableur tagué 3-032 et 4-045, les autres un tag chacun, `updated_at` inchangé.
+- Page à cocher : https://claude.ai/artifact/FHydaqaWjFJqeEpRgEC2Mp (9 fiches ; alerte attendue « bloc barres non
+  dessiné » sur 039 et 041 : les jouer dans l'aperçu admin) ; base `verdicts` vide à la publication.
