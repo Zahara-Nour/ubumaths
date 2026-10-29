@@ -6,13 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la publication du lot 3._
+_Mis à jour le 2026-10-29, lot 4 écrit (PR de fichiers à ouvrir)._
 
-- **État** : lots 1, 2 et 3 PUBLIÉS (lot 3 : 6/6 « OK » sur https://claude.ai/artifact/GQKRkFMPrLg2Yt26db62gn, statut relu au MCP).
-- **Prochaine action** : choisir le lot 4 parmi les points sans modèle (§ 3) et en écrire la phase 0.
-- **En attente de David** : confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
+- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions, 10 modèles) écrit, specs vertes, essayé en base locale (§ 8).
+- **Prochaine action** : PR des fichiers du lot 4 → merge → David lance `create-questions --publier` → migration nœud + tag.
+- **En attente de David** : défaut de la carte de correction (choix `$$…$$` affichés en LaTeX brut, 15 modèles
+  publiés) : correctif à part maintenant ou plus tard ? (§ 8).
 - **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
-- **Worktree / branche** : aucun ; prochain lot : nouveau worktree `../ubumaths-wt-questions-ce2`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `content/questions-ce2-lot4`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -293,3 +294,47 @@ règles (`multiple` + `range`, toute réponse juste acceptée).
   https://claude.ai/artifact/GQKRkFMPrLg2Yt26db62gn (6 fiches, aucune alerte).
 - 2026-10-29 : relecture de David, 6/6 « OK » sans commentaire ; `publier-lot.ts --publier` (David) : 6/6
   publiés, statut relu au MCP.
+
+## 8. Lot 4 — fractions (phase 0 validée le 2026-10-29)
+
+Points CE2-011 (égalités), CE2-013 (comparer), CE2-014 (+), CE2-089 (−), sans modèle au relevé MCP du 2026-10-29.
+Nœuds déjà posés (sous-notions) : 011 → « Fractions : sens et écritures › égalité de fractions » ; 013 → « … ›
+ordre » ; 014 et 089 → « Fractions : calculs › addition et soustraction ». Question d'accès : personne ne lit rien
+de plus (brouillons neufs ; la migration nœud + tag ne change aucune règle).
+
+**Décisions (David, « tes recos ? » puis « ok », 2026-10-29)** :
+
+1. `reducedFractions` coupé sur les 10 modèles, comme au CE1 : 6/8 juste pour 3/4, 4/4 comme 1 (la simplification
+   n'est pas du CE2).
+2. Case « choix » dès ce lot (en prod depuis v0.56.0, la condition du § 4 bis, 6 est remplie) : comparer en < = >
+   non mélangé, comme au CE1 ; la fraction égale parmi quatre. « Lesquelles valent 1/2 ? » (plusieurs réponses)
+   attend le lot à QCM.
+3. « Espaces dès 4 chiffres » **confirmé** tel quel (numération seulement : 4500 = ½ point avec message, affichage
+   4 500 ; comme au CM2).
+
+| Fichier                                | Point | Catégorie · niveau                       | Variations                                                                |
+| -------------------------------------- | ----- | ---------------------------------------- | ------------------------------------------------------------------------- |
+| `01-numerateur-manquant`               | 011   | Apprivoiser › Egalité de fractions · 6   | 1/2 = ?/8 ; 6/8 = ?/4 ; 1 = ?/d                                           |
+| `02-denominateur-manquant`             | 011   | Egalité de fractions · 7                 | 1/2 = 4/? ; 6/8 = 3/?                                                     |
+| `03-fraction-egale`                    | 011   | Egalité de fractions · 8                 | choix parmi 4 (leurres : +k en haut et en bas, dénominateur seul × k, +1) |
+| `04-comparer-meme-denominateur`        | 013   | Apprivoiser › Comparer · 11              | d de 3 à 12, numérateurs < d                                              |
+| `05-comparer-meme-numerateur`          | 013   | Comparer · 12                            | 5/12 et 5/8 (numérateur ≥ 2)                                              |
+| `06-comparer-denominateur-multiple`    | 013   | Comparer · 13                            | 7/12 et 5/6, la petite à gauche ou à droite                               |
+| `07-additionner-meme-denominateur`     | 014   | Calculer › Addition et Soustraction · 14 | 5/12 + 4/12 ; somme = 1 (3/4 + 1/4)                                       |
+| `08-additionner-denominateur-multiple` | 014   | Addition et Soustraction · 18            | 1/2 + 1/4 ; 1/4 + 1/2 (d × k ≤ 12)                                        |
+| `09-soustraire-meme-denominateur`      | 089   | Addition et Soustraction · 19            | 3/4 − 1/4 ; 1 − 5/9                                                       |
+| `10-soustraire-denominateur-multiple`  | 089   | Addition et Soustraction · 20            | 2/3 − 1/6 ; 3/4 − 1/2                                                     |
+
+### Lot 4 — écriture (2026-10-29)
+
+- Script `docs/wip/questions/lot-ce2-4.py` → `scripts/questions/ce2-4/` (10 JSON, 78 specs : justes, non simplifiées
+  justes, erreurs typiques — dénominateurs ajoutés, numérateurs ajoutés sans réécrire, même nombre ajouté en haut et
+  en bas, « 12 > 8 donc 5/12 > 5/8 »).
+- `question:specs --instances 300` : 78/78 specs, 5 400 tirages réussis. `create-questions` en simulation (prod) :
+  10 « à créer », tout vert.
+- Base locale : 10 brouillons ; aperçu admin : 08 (3/16 pour 2/12 + 1/4 → « Faux », attendu 5/12), 03 (2/4 pour
+  1/2 → « Juste »).
+- ⚠️ **Défaut trouvé (hors lot)** : sur la carte de correction, un choix écrit `$$…$$` s'affiche en LaTeX brut
+  (`$$\frac{2}{3}$$`) : `ChoiceList.svelte` passe le choix à `InlineMarkdown`, qui ne dessine pas `$$`. La saisie est
+  juste, seule la correction est touchée. **15 modèles publiés** concernés (CP, CE1, CE2, CM1, 5e, 1re et Tle spé ;
+  relevé MCP). Le lot garde `$$` (même écriture que le CE1) : le correctif du composant le couvrira.

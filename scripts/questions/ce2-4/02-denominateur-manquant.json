@@ -1,0 +1,171 @@
+{
+	"title": "Égalité de fractions : le dénominateur manquant",
+	"description": "1/2 = 4/? ; 6/8 = 3/?",
+	"grades": ["CE2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Egalité de fractions",
+	"level": 7,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n$$\\frac{{{a}}}{{{d}}} = \\frac{{{eval:a*k}}}{?}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"conditions": ["d*k <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ne change pas une fraction quand on multiplie (ou qu'on divise) son numérateur **et** son dénominateur par le même nombre.",
+					"${{eval:a*k}} = {{a}} \\times {{k}}$ : le numérateur est multiplié par ${{k}}$, on multiplie aussi le dénominateur par ${{k}}$.",
+					"$$\\frac{{{a}}}{{{d}}} = \\frac{{{a}} \\times {{k}}}{{{d}} \\times {{k}}} = \\frac{{{eval:a*k}}}{\\textcolor{{{color:primary.0}}}{{{eval:d*k}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$$\\frac{{{eval:a*k}}}{{{eval:d*k}}} = \\frac{{{a}}}{?}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"conditions": ["d*k <= 12", "a >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ne change pas une fraction quand on multiplie (ou qu'on divise) son numérateur **et** son dénominateur par le même nombre.",
+					"${{eval:a*k}} = {{a}} \\times {{k}}$ : le numérateur est divisé par ${{k}}$, on divise aussi le dénominateur par ${{k}}$.",
+					"$$\\frac{{{eval:a*k}}}{{{eval:d*k}}} = \\frac{{{a}}}{\\textcolor{{{color:primary.0}}}{{{d}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 1/2 = 4/8",
+			"variationIndex": 0,
+			"variables": {
+				"d": "2",
+				"k": "4",
+				"a": "1"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/2 = 4/5 (on ajoute 3 en haut comme en bas)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "2",
+				"k": "4",
+				"a": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/4 = 9/12",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"k": "3",
+				"a": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 = 9/10",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"k": "3",
+				"a": "3"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 6/8 = 3/4",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"k": "2",
+				"a": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6/8 = 3/5 (on enlève 3 en haut comme en bas)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"k": "2",
+				"a": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 10/12 = 5/6",
+			"variationIndex": 1,
+			"variables": {
+				"d": "6",
+				"k": "2",
+				"a": "5"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

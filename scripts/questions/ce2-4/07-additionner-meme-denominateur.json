@@ -1,0 +1,194 @@
+{
+	"title": "Additionner des fractions de même dénominateur",
+	"description": "5/12 + 4/12 ; une somme qui fait le tout (3/4 + 1/4 = 1)",
+	"grades": ["CE2"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Addition et Soustraction",
+	"level": 14,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{a}}}{{{d}}} + \\frac{{{b}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:d-2}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:d-1-a}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:a+b}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute des parts de même taille : ${{a}}$ {{if:a==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|douzième}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|douzièmes}}}}}}}}}}}}}}}}}}}}}} plus ${{b}}$ {{if:b==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|douzième}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|douzièmes}}}}}}}}}}}}}}}}}}}}}}, cela fait ${{eval:a+b}}$ {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|douzièmes}}}}}}}}}}}}}}}}}}}}. **Le dénominateur ne change pas.**",
+					"$$\\frac{{{a}}}{{{d}}} + \\frac{{{b}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:a+b}}}{{{d}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{a}}}{{{d}}} + \\frac{{{b}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "b",
+					"expression": "eval:d-a"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute des parts de même taille : ${{a}}$ {{if:a==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|douzième}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|douzièmes}}}}}}}}}}}}}}}}}}}}}} plus ${{b}}$ {{if:b==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|douzième}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|douzièmes}}}}}}}}}}}}}}}}}}}}}}, cela fait ${{eval:a+b}}$ {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|douzièmes}}}}}}}}}}}}}}}}}}}}. **Le dénominateur ne change pas.**",
+					"${{d}}$ {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|douzièmes}}}}}}}}}}}}}}}}}}}}, c'est le tout partagé en ${{d}}$ parts égales : c'est **le tout**.",
+					"$$\\frac{{{a}}}{{{d}}} + \\frac{{{b}}}{{{d}}} = \\frac{{{d}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{1}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5/12 + 4/12 = 9/12",
+			"variationIndex": 0,
+			"variables": {
+				"d": "12",
+				"a": "5",
+				"b": "4"
+			},
+			"answers": ["\\frac{9}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5/12 + 4/12 = 3/4, même valeur",
+			"variationIndex": 0,
+			"variables": {
+				"d": "12",
+				"a": "5",
+				"b": "4"
+			},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9/24 (dénominateurs ajoutés)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "12",
+				"a": "5",
+				"b": "4"
+			},
+			"answers": ["\\frac{9}{24}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9 (dénominateur oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "12",
+				"a": "5",
+				"b": "4"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 1/3 + 1/3 = 2/3",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"a": "1",
+				"b": "1"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 3/4 + 1/4 = 1",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 3/4 + 1/4 = 4/4",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["\\frac{4}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4/8",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["\\frac{4}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 7/11 + 4/11 = 1",
+			"variationIndex": 1,
+			"variables": {
+				"d": "11",
+				"a": "7",
+				"b": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
