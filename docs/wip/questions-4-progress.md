@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 3 écrit (PR à merger)._
+_Mis à jour le 2026-10-29, lot 3 écrit, #1978 ouverte (13 checks verts, « CI Summary » en file d'attente)._
 
 - **État** : lots 1 et 2 en prod (lot 1 en brouillon, lot 2 publié) ; lot 3 (statistiques, 9 modèles) écrit sur
   `feat/questions-4-lot-3` (§ 17), essayé en base locale.
-- **Prochaine action** : merger la PR du lot 3, puis David lance `create-questions --dir scripts/questions/4-lot-3
+- **Prochaine action** : `gh pr checks 1978` ; verte → merger #1978 (pas de merge en rouge), puis David lance `create-questions --dir scripts/questions/4-lot-3
 --publier` ; relever les `id` ; migration nœud + tag (4-045 **et 3-032** pour le tableur, grades 4 et 3).
 - **En attente de David** : publication des 7 brouillons du lot 1 ; `--publier` du lot 3 après le merge.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
