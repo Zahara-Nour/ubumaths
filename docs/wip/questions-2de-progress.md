@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1970._
+_Mis à jour le 2026-10-29, après #1982 et #1989._
 
-- **État** : lot 3 « puissances, racines, fractions » (8 modèles, § 19-20) : fichiers mergés (#1970) ;
-  brouillons créés en base locale seulement. Correctif « accolades » (#1951) pas encore en prod.
-- **Prochaine action** : après le `--publier` de David, relever les 8 `id` en prod, puis migration nœud + tag
-  (2-260 ×3, 2-270 ×2, 2-423, 2-272, 2-238 ; L3-a : modèles 1-3 sur la notion « Puissances : calculs »).
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-puissances
---publier` depuis le dépôt principal à jour ; avis sur l'écart du modèle 5 (§ 20 : 3x³y⁻² refusé en forme).
-- **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT, pas dans la PR ;
-  horodatage de migration : vérifier les doublons sur `origin/main` (collision du 2026-10-29, #1972).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, détaché sur `origin/main` (branche mergée supprimée).
+- **État** : lot 3 (8 modèles, § 19-21) : brouillons créés en prod par David ; migration nœud + tag
+  `20261030004900` mergée (#1982, renommée #1989) mais **pas encore jouée** : `db push` exige
+  `--include-all` à cause de `20261030002300` (questions-3), mergée et non jouée.
+- **Prochaine action** : une fois la migration jouée (par questions-3, règle du 2026-10-27), vérifier en prod
+  nœud + tag des 8 ; puis page à cocher et publication (David).
+- **En attente de David** : avis sur l'écart du modèle 5 (§ 20 : 3x³y⁻² refusé en forme).
+- **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT ; horodatage = max + 1 min
+  de `origin/main` ET des worktrees, puis `migration list --linked` avant `db:migrate`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` (branche `fix/questions-2de-puissances-horodatage` mergée).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -529,3 +529,14 @@ nœud + tag.
 - Relecture des tirages : « 1z/2 » corrigé (numérateur réduit à 1, modèle 7).
 - Base locale : 8 brouillons créés ; aperçu admin joué ((2t³)² : 4t⁶ juste, correction lisible ;
   8 × 10⁷ × 9 × 10⁻⁴ : réponse fausse refusée, attendu 7,2 × 10⁴ affiché avec la virgule).
+
+## 21. Lot 3, migration nœud + tag (2026-10-29)
+
+- 8 brouillons créés en prod par David (`create-questions --publier`) : 04b1cc7f, 73514cdb, 634b55b8,
+  fab2680b, 777c5d31, 37ef27bc, 33d8874a, b0c57a57 ; vérifiés : brouillons, sans nœud ni tag.
+- Migration + test d'intégration (rouge sans : 5 échecs ; vert avec : 10/10, trigger `updated_at` réactivé
+  vérifié sur l'idée du `security-auditor`, sans finding bloquant). #1982 mergée.
+- `db:migrate` refusé : `…002000` antérieure à `…003000` et `…004700` jouées entre-temps par d'autres
+  sessions. Renommée `20261030004900` (#1989 ; `…004800` pris par un worktree). Puis `migration list
+--linked` : `20261030002300` (questions-3) aussi non jouée → `--include-all` nécessaire ; session
+  questions-3 prévenue, rien poussé de mon côté.
