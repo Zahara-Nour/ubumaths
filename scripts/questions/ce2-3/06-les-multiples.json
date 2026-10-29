@@ -1,0 +1,202 @@
+{
+	"title": "Les multiples d'un nombre",
+	"description": "Écrire un multiple de 6 entre 22 et 26, de 25 entre 65 et 85 ; 24 = 6 × ?",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Sens",
+	"level": 5,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris un multiple de ${{b}}$ compris entre ${{eval:b*k-2}}$ et ${{eval:b*k+2}}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..9"
+				},
+				{
+					"name": "k",
+					"expression": "3..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*k}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "multiple",
+							"base": "{{b}}"
+						},
+						{
+							"type": "range",
+							"min": "{{eval:b*k-2}}",
+							"max": "{{eval:b*k+2}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les multiples de ${{b}}$ sont les résultats de la table de ${{b}}$ : ${{eval:b*(k-1)}}$, ${{eval:b*k}}$, ${{eval:b*(k+1)}}$…",
+					"${{b}}\\times{{k}}={{eval:b*k}}$, et ${{eval:b*k}}$ est compris entre ${{eval:b*k-2}}$ et ${{eval:b*k+2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris un multiple de $25$ compris entre ${{eval:25*k-10}}$ et ${{eval:25*k+10}}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:25*k}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "multiple",
+							"base": "25"
+						},
+						{
+							"type": "range",
+							"min": "{{eval:25*k-10}}",
+							"max": "{{eval:25*k+10}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les multiples de $25$ : $25$, $50$, $75$, $100$, $125$…",
+					"$25\\times{{k}}={{eval:25*k}}$, et ${{eval:25*k}}$ est compris entre ${{eval:25*k-10}}$ et ${{eval:25*k+10}}$."
+				]
+			}
+		},
+		{
+			"statement": "${{eval:b*a}}$ est un multiple de ${{b}}$, car ${{eval:b*a}}={{b}}\\times ?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:b*a}}$ est dans la table de ${{b}}$.",
+					"${{b}}\\times{{a}}={{eval:b*a}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "multiple de 6 entre 22 et 26 : 24",
+			"variationIndex": 0,
+			"variables": {
+				"b": "6",
+				"k": "4"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 23, pas un multiple",
+			"variationIndex": 0,
+			"variables": {
+				"b": "6",
+				"k": "4"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 30, hors de l'intervalle",
+			"variationIndex": 0,
+			"variables": {
+				"b": "6",
+				"k": "4"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "multiple de 25 entre 65 et 85 : 75",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 70, pas un multiple de 25",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 100, hors de l'intervalle",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "24 = 6 × 4",
+			"variationIndex": 2,
+			"variables": {
+				"b": "6",
+				"a": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 24 − 6 (18)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "6",
+				"a": "4"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
