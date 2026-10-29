@@ -321,7 +321,8 @@ Deux lots :
 - **Données d'élèves** (MCP, 2026-10-29) : 0 carte SRS, 0 tentative, 0 question d'évaluation, 0 activité de journal,
   0 relecture, sur les 3 reclassés et sur les 13 décalés.
 - **Accès** (tranché par David) : la 4e ne voit plus les 3 modèles reclassés, la 5e les voit ; le décalage ne change
-  que l'ordre ; les 4 neufs restent en brouillon (admin seul) ; aucune règle ne change.
+  que l'ordre ; les 4 neufs restent en brouillon ; aucune règle ne change. Rectifié par l'audit : un brouillon
+  est lisible par l'admin ET le prof, et ses tags (pas son contenu) par tout compte connecté — déjà vrai avant.
 
 ### 15.1 Lot 4b écrit (2026-10-29)
 
@@ -342,4 +343,5 @@ Deux lots :
   publié par catégorie et par niveau ») ; garde : aucun publié hors du lot au rang visé.
 - dcaabf69 (3e, `scripts/questions/3-lot-2/02-…`) : fichier et `lot-3-2.py` passés au niveau 12 (clé de
   `create-questions`) ; entre le merge et le `db:migrate`, `create-questions` sur `3-lot-2` le verrait « à créer ».
-- Test `questions-5-lot4b-rangement.test.ts` : 21/21, rouge sans la migration (15 échecs).
+- Test `questions-5-lot4b-rangement.test.ts` : 21/21, rouge sans la migration (15 échecs). `security-auditor` :
+  aucun bloquant (gardes vérifiées sur la prod réelle ; seule rectification, la phrase d'accès ci-dessus).

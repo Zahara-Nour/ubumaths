@@ -33,8 +33,10 @@
 -- d'évaluation, 0 activité de journal, 0 relecture, sur les 18 modèles.
 --
 -- Accès (question tranchée par David le 2026-10-29) : les élèves et le prof de la 4e ne voient plus
--- d4679e2d, e66089e0 et 9231b54b ; ceux de la 5e les voient. Les 4 brouillons restent visibles par
--- l'admin seul. Le décalage des niveaux ne change que l'ordre. Aucune règle (policy) ne change.
+-- d4679e2d, e66089e0 et 9231b54b ; ceux de la 5e les voient. Les 4 brouillons restent lisibles par
+-- l'admin et le prof seulement, comme tout brouillon ; leurs tags (identifiants, pas le contenu) sont
+-- lisibles par tout compte connecté, comme tout tag (règles inchangées, relevées par l'audit du
+-- 2026-10-29). Le décalage des niveaux ne change que l'ordre. Aucune règle (policy) ne change.
 --
 -- Rollback (aucune donnée d'élève). Il rend aux modèles leur nœud (aucun pour les brouillons), leurs
 -- niveaux, leur niveau et leurs tags d'avant. Garde : il refuse si un modèle n'a plus EXACTEMENT
