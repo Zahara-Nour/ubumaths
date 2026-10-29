@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1971._
+_Mis à jour le 2026-10-29, après #1971 et le `--publier` du lot 2._
 
-- **État** : lot 1 publié (7/8). **Lot 2 (divisibilité, 5 modèles, CM2-130, 009 à 012)** : fichiers `scripts/questions/cm2-2/` mergés (#1971), **pas encore en base prod**.
-- **Prochaine action** : après le `--publier` de David, relever les `id` au MCP, puis worktree + migration nœud (`multiples et diviseurs`) + tag, test d'intégration, `security-auditor`, page à cocher.
-- **En attente de David** : (1) `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-2 --publier` (brouillons) ; (2) publier 7d258acc (lot 1, ```ranger) après le prochain `deploy:prod` : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`.
+- **État** : lot 1 publié (7/8). **Lot 2 (divisibilité, 5 modèles, CM2-130, 009 à 012)** : mergé (#1971), **5 brouillons en prod** (vérifié au MCP : brouillons, CM2, niveaux 4 à 8, sans nœud ni tag) : CM2-130 `9c69a637`, 009 `d2be01f6`, 010 `9adccef3`, 011 `2c8eb424`, 012 `84749b7b`.
+- **Prochaine action** : worktree + migration nœud (`multiples et diviseurs`) + tag, test d'intégration, `security-auditor`, page à cocher.
+- **En attente de David** : publier 7d258acc (lot 1, ```ranger) après le prochain `deploy:prod` : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`.
 - **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture ; `create-questions` reconnaît un modèle à son **titre** (collision CM1 évitée, § 7.2) ; horodatages de migration partagés entre sessions (#1972) → vérifier `supabase/migrations` de `origin/main` avant d'en choisir un. Worktree neuf : `pnpm exec svelte-kit sync` d'abord.
 - **Worktree / branche** : aucun.
 
@@ -286,3 +286,4 @@ en choix de 1 à 12.
 - Tirages : 011 V2 et 012 construits (a = g × u, b = g × v, u et v premiers entre eux), sinon trop de rejets ; 012 V3, 2m toujours parmi les choix (au hasard, un 2e multiple commun ne tombait presque jamais).
 - **Collision avec le lot 2 du CM1** (écrit, pas mergé) : niveaux 2 et 3 de la même catégorie et titre « Est-ce un multiple ? » (CM1-012, jumeau de CM2-130) → niveaux 4 à 8, titre « Reconnaître les multiples d'un nombre » ; session `questions-cm1` prévenue (9 et au-delà pour elle).
 - Local (port 5180, `admin@local.test`, Playwright 390 px au toucher) : 04 (20 et 30) juste → « Juste », oubli de 10 → « ½ point », 4 coché → faux ; 12 choix lisibles ; 010 : 8 cases l'une sous l'autre, lisibles.
+- 2026-10-29 : #1971 mergée (CI verte après #1972, horodatage en double sur `main` venu d'autres sessions) ; David lance `--publier` : 5 brouillons créés, ids ci-dessus (« Reprendre ici »).
