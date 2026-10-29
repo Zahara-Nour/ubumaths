@@ -410,8 +410,15 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - **Étymologie** : 🟢 **Lobatchevsk est une vraie ville russe**, homonyme de **Nikolaï Lobatchevski (1792-1856)**, mathématicien russe et l'un des trois fondateurs de la **géométrie non-euclidienne** (avec Bolyai et Gauss). Lobatchevski a fait éclater la géométrie « plate » en proposant des géométries sur des surfaces courbes — exactement les bedaines, patates et polyèdres difformes du Royaume.
 - **Devise** : « **La route est droite, mais la courbe est forte** »
 - **Commentaire de la devise** : détournement de la formule de Jean-Pierre Raffarin (2002, _« la route est droite mais la pente est forte »_) en remplaçant _pente_ par _courbe_. Au premier degré, contradiction Shadok parfaite (une route droite n'a pas de courbe). Au second degré, c'est mathématiquement précis : en **géométrie hyperbolique** (celle de Lobatchevski, gouverneur titulaire de la capitale Lobatchevsk), les droites apparaissent courbes parce que **la courbure de l'espace est forte**. Citation officielle attribuée au Professeur Achras lors de l'inauguration du Polyèdre de la Voie Royale.
-- **Paysage canon** : steppes orientales parsemées de polyèdres en pierre, élevés par les soins d'Achras. Lobatchevsk est entourée de murailles dodécaédriques. Au centre, la grande Académie Achrasienne où l'on étudie les courbures.
+- **Paysage canon** : steppes orientales. Lobatchevsk est entourée de murailles dodécaédriques. Au centre, la grande Académie Achrasienne où l'on étudie les courbures.
 - **Relief de Lobatchevsk** 🟡 (décision de David, 2026-10-08) : la ville est bâtie sur un col en forme de **selle de cheval**, une surface à courbure négative. Comme dans la géométrie de Lobatchevski, la somme des angles d'un triangle tracé dans ses rues est **inférieure à 180°**. Achras en tire une fierté locale : « À Lobatchevsk, un triangle bien élevé a moins de 180 degrés. » Pendant, en géométrie, de la sphère (somme supérieure à 180°).
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, la géométrie tient à la seule ville (col en selle, remparts dodécaédriques, Académie) ; pas de formes géométriques plaquées sur le paysage.
+  - **Relief** : au nord, steppes rases et ondulées ; à l'est, les **Pythagoriades**, vraies montagnes rocheuses aux sommets enneigés, où la Vistule prend sa source.
+  - **Eau** : la source de la Vistule, quelques lacs ordinaires.
+  - **Végétation** : herbe de steppe, bouquets de bouleaux.
+  - **Polyèdres** : le troupeau d'Achras n'apparaît qu'à ses pieds, sur son portrait ; aucun polyèdre dans le paysage.
+  - **Repère sur la carte** : un dodécaèdre d'or.
+  - **Couleur** : Vert chandelle `#1F9346`.
 
 #### Yoyolande — _Fonctions_
 
@@ -428,6 +435,12 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - **Devise** : « **Plus ça monte, moins ça descend** »
 - **Commentaire de la devise** : pléonasme contradictoire de pure veine Shadok / Pierre Dac.
 - **Paysage canon** : ville-port nordique aux quais ondulés, toits en sinusoïdes, ponts en courbes parfaites. Le grand phare de Sinusborg projette son faisceau en oscillation cyclique. Les bateaux qui montent et descendent en cadence dans le port créent un ballet permanent.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, les fonctions ne se montrent que dans la ville (quais, toits, phare, bateaux).
+  - **Relief** : côte basse de dunes de sable et de plages, longue flèche de sable avançant dans la mer (comme les dunes de Łeba et la presqu'île de Hel) ; derrière, plaine de lacs et de forêts.
+  - **Eau** : la Baltique ; le delta de la Vistule, dont les bras se ramifient avant la mer, à Sinusborg.
+  - **Végétation** : forêts de pins, herbes des dunes.
+  - **Repère sur la carte** : le phare de Sinusborg.
+  - **Couleur** : Pourpre royal `#8F2447` (la tunique de Bougrelas).
 
 - Pifométrie — _Probabilités et statistiques_
 
@@ -440,7 +453,14 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
   - **Étymologie de la capitale** : du **bonneteau**, jeu de cartes truqué par excellence. La **Vistule** est la vraie rivière de Pologne (1047 km, traverse Cracovie et Varsovie, se jette dans la Baltique près de Gdańsk) — elle est canonisée comme **fleuve principal de la Pologne pataphysique**, traversant plusieurs provinces. **Note historique pédagogique** : les probabilités sont nées en 1654 du **problème des partis** posé par le chevalier de Méré à Pascal — un problème de **paris au jeu**. La discipline mathématique des probabilités est **historiquement** une science du jeu d'argent. Pifométrie réactive cette filiation oubliée : enseigner les probabilités, c'est revenir aux origines tripotardes de la discipline.
   - **Devise** : « **Jamais trois sans deux** »
   - **Commentaire de la devise** : inversion du proverbe « Jamais deux sans trois » (proverbe qui exprime l'illusion que deux occurrences appellent une troisième) qui devient alors vrai : pour avoir trois occurrences, il en faut déjà deux.
-  - **Paysage canon** : ville-tripot fluvial sur la Vistule. Tapis verts à perte de vue, croupiers qui distribuent des cartes au bord de l'eau. Sur la place principale, une grande **Roulette Royale** visible à des lieues — elle tourne en permanence, ses 37 cases numérotées défilant sous le ciel polonais. Le Cheval à Phynances trône sur l'estrade centrale, hennissant à chaque sortie de numéro. Sur les façades des tripots, des inscriptions : _« La maison gagne toujours, et quand elle perd, elle aurait pu gagner. »_ — devise officieuse des établissements de jeu.
+  - **Paysage canon** : ville-tripot fluvial sur la Vistule. Tapis verts à perte de vue, croupiers qui distribuent des cartes au bord de l'eau. Sur la place principale, une grande **Roulette Royale** visible à des lieues — elle tourne en permanence, ses 37 cases numérotées défilant sous le ciel polonais. Le Cheval à Phynances trône sur l'estrade centrale, hennissant à chaque sortie de numéro. La devise officieuse des établissements de jeu, _« La maison gagne toujours, et quand elle perd, elle aurait pu gagner. »_, se dit mais ne s'écrit pas sur les façades (pas de texte dans les illustrations).
+  - **Pour l'illustration** 🟡 (décision de David, 2026-10-29) :
+    - **Relief** : grande plaine plate et agricole, la plus vaste et la plus ouverte des provinces.
+    - **Eau** : la Vistule large et paresseuse, grands méandres, bancs de sable, péniches ; Bonneteau-sur-Vistule sur la rive.
+    - **Végétation** : champs, prairies, haies.
+    - **Champ de courses** dans la plaine : tribunes et piste ovale (le Cheval à Phynances, les paris).
+    - **Repère sur la carte** : la Roulette Royale.
+    - **Couleur** : Brun merdre `#593B26` (la robe du Cheval, le bois des tripots).
 
 - #### Glitchistan — _Algorithmique_
   - **Gouverneur** : 🟢 **Bosse-de-Nage** (canon Jarry, _Gestes et opinions du docteur Faustroll, pataphysicien_) — cynocéphale (homme à tête de chien) qui **n'articule que « ha ha »**. C'est-à-dire qu'il est **mathématiquement** un programme qui boucle sur une seule instruction (`while True: print('ha ha')`). C'est un **bug humanoïde**, autorité officielle qui répond à toutes les questions par le même son glitché. **Cohérence pataphysique enrichie** : Bosse-de-Nage est aussi, par la même mécanique de répétition automatique, le **maître des bruits inattendus** — son _« ha ha »_ perpétuel **est** le chprout' permanent de la province. C'est le Régent canonique des bugs corporels-numériques. **Voix** : exclusivement « ha ha », parfois « hahaha » lors des grandes décisions, plus rarement un silence (qui est interprété comme un crash royal). Les Galopins apprennent à décoder (« ha ha » suivi d'un sourire = approbation, suivi d'un froncement = désapprobation, simultané avec une morsure = décret royal de bannissement).
@@ -454,6 +474,12 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
   - **Devise** : « **Aux grands maux les grands Reset !** »
   - **Commentaire de la devise** : détournement du proverbe « Aux grands maux, les grands remèdes ». La majuscule à _Reset_ fait du redémarrage une **institution royale** (le Grand Reset comme procédure d'État). Mathématiquement, c'est l'application directe de l'impuissance algorithmique : face au **halting problem** de Turing (1936) — on ne peut pas savoir en général si un programme s'arrêtera —, la seule solution face à une boucle infinie reconnue est le reset. La devise canonise par décret royal le geste universel du dev face au bug irréductible : _« Have you tried turning it off and on again ? »_. Hommage discret au gouverneur conceptuel de Turingrad. **Cohérence digestive** : le _Grand Reset_ est aussi l'équivalent informatique du **rot pataphysique** qui termine un repas ubuesque trop chargé — quand le système ne peut plus avaler, on le redémarre.
   - **Paysage canon** 🟡 (décision de David, 2026-10-25 : steampunk victorien, rien de pixelisé) : province industrielle victorienne. Usines de brique rouge et de fonte noircie, verrières, tubes pneumatiques de laiton qui courent de toit en toit, engrenages de cuivre patiné, cadrans partout. Le glitch y prend la forme mécanique du **raté** : une machine qui hoquette, un piston qui part de travers, un jet de vapeur qui fuse au mauvais moment — le chprout' de la machine. Au centre de Turingrad, **une Machine de Turing géante** de laiton et de fonte — ruban de papier perforé sans fin, tête de lecture cliquetante — marque le rythme officiel de la province. Les usines à vapeur du Glitchistan produisent en permanence des nuages qui s'échappent des cheminées victoriennes — visualisation directe des phlatulences industrielles du Royaume.
+  - **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : l'industrie se concentre dans Turingrad et le long du fleuve ; la campagne n'est traversée que par un chemin de fer à vapeur.
+    - **Relief** : plateau de collines douces creusé de vallées et de ravins (comme le plateau de Lublin).
+    - **Eau** : la Vistule, descendue du Bedonstan, devient un fleuve canalisé : écluses, quais, péniches à vapeur.
+    - **Végétation** : bois de bouleaux et champs, un peu noircis par la suie près de la ville.
+    - **Repère sur la carte** : la Machine de Turing géante.
+    - **Couleur** : cuivre `#AE4E1F` (hors nuancier, d'après la palette Glitchistan).
 
 #### Patatovie — _Logique et ensembles_
 
@@ -463,7 +489,13 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - **Étymologie** : **détournement de Cracovie**, ancienne capitale royale de Pologne (jusqu'au XVIIᵉ siècle), située sur la **Vistule** comme Bonneteau-sur-Vistule (les deux capitales partagent le fleuve). Fusion avec **John Venn (1834-1923)**, mathématicien britannique inventeur des **diagrammes de Venn** (1880) — c'est-à-dire **les patates** qui donnent leur nom à la province.
 - **Devise** : « **L'infini n'en finit pas d'en finir, surtout vers la fin** »
 - **Commentaire de la devise** : aphorisme original construit en deux temps. Le premier temps (_« n'en finit pas d'en finir »_) joue sur l'**allitération en F** (fi-ni-fi-ni-fi-nir) qui mime sonorement le processus qu'elle décrit ; et sur l'**auto-contradiction grammaticale** (« finir » et « ne pas finir » s'annulent), qui exprime exactement le **statut paradoxal de l'infini en théorie des ensembles** (l'infini en acte selon Cantor est à la fois achevé comme objet et inachevé comme processus). Le second temps (_« surtout vers la fin »_) détourne la formule cocasse de Woody Allen sur l'éternité (« L'éternité, c'est long, surtout vers la fin »).
-- **Paysage canon** : pays slave doux et vallonné, parsemé de collines-tubercules. Champs de patates à perte de vue. Cracovenn est bâtie en cinq enceintes concentriques (l'enceinte d'A, l'enceinte d'A∪B, etc.) — la ville **est** un diagramme de Venn habitable.
+- **Paysage canon** : pays slave doux et vallonné, parsemé de collines-tubercules. Champs de patates à perte de vue. Cracovenn est bâtie en **trois enceintes rondes qui se chevauchent** (décision de David, 2026-10-29, au lieu de cinq enceintes concentriques, qui ne font pas un diagramme de Venn) : chaque zone est un quartier — la ville **est** un diagramme de Venn habitable.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, la logique ne se montre que dans la ville.
+  - **Relief** : collines rondes et douces, pays vallonné ; pas de montagnes (les Pythagoriades restent les seules du Royaume).
+  - **Eau** : la Vistule traverse Cracovenn, comme Cracovie.
+  - **Végétation** : champs de pommes de terre en rangs, fleurs blanches et mauves ; quelques vergers.
+  - **Repère sur la carte** : les trois enceintes de Cracovenn.
+  - **Couleur** : vert de mer `#3E8E86` (hors nuancier, les moustaches de Faustroll).
 
 ### La Vistule, fleuve de la Pologne pataphysique
 

@@ -1,0 +1,261 @@
+{
+	"title": "Est-ce un multiple ?",
+	"description": "Dire si un entier jusqu'à 999 est un multiple de 3, 4, 6, 7, 8 ou 9 (141 n'est pas multiple de 7) ; trouver le multiple parmi quatre nombres",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Multiples et diviseurs",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le nombre ${{n}}$ est-il un multiple de ${{d}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3|4|6|7|8|9"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "q",
+					"expression": "4..140"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "s",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:s*o"
+				},
+				{
+					"name": "n",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["n>=20", "n<=999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiple.** ${{n}}$ est un multiple de ${{d}}$ si la division de ${{n}}$ par ${{d}}$ tombe juste : le reste est $0$.",
+					"$${{n}} = {{d}} \\times {{q}}{{if:o==1| + {{r}}|}}$$",
+					"{{if:o==0|Le reste est $0$ : \\textcolor{{{color:primary.0}}}{oui}, ${{n}}$ est un multiple de ${{d}}$ (il est dans la table de ${{d}}$).|Le reste est ${{r}}$, pas $0$ : \\textcolor{{{color:primary.0}}}{non}, ${{n}}$ n'est pas un multiple de ${{d}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Lequel de ces nombres est un multiple de ${{d}}$ ?\n\n```choix\n- ${{m0}}$\n- ${{m1}}$\n- ${{m2}}$\n- ${{m3}}$\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3|4|6|7|8|9"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "q0",
+					"expression": "10..110"
+				},
+				{
+					"name": "q1",
+					"expression": "10..110"
+				},
+				{
+					"name": "q2",
+					"expression": "10..110"
+				},
+				{
+					"name": "q3",
+					"expression": "10..110"
+				},
+				{
+					"name": "r1",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "r2",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "r3",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "m0",
+					"expression": "eval:d*q0"
+				},
+				{
+					"name": "m1",
+					"expression": "eval:d*q1+r1"
+				},
+				{
+					"name": "m2",
+					"expression": "eval:d*q2+r2"
+				},
+				{
+					"name": "m3",
+					"expression": "eval:d*q3+r3"
+				}
+			],
+			"conditions": [
+				"m0<=999",
+				"m1<=999",
+				"m2<=999",
+				"m3<=999",
+				"q1!=q2",
+				"q1!=q3",
+				"q2!=q3",
+				"q0!=q1",
+				"q0!=q2",
+				"q0!=q3"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiple.** Un multiple de ${{d}}$ est un nombre de la table de ${{d}}$ : sa division par ${{d}}$ tombe juste.",
+					"$${{m0}} = {{d}} \\times {{q0}}$$ Le reste est $0$ : $\\textcolor{{{color:primary.0}}}{{{m0}}}$ est un multiple de ${{d}}$.",
+					"Les autres ne le sont pas : ${{m1}} = {{d}} \\times {{q1}} + {{r1}}$, ${{m2}} = {{d}} \\times {{q2}} + {{r2}}$, ${{m3}} = {{d}} \\times {{q3}} + {{r3}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "161 = 7 × 23 : oui",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"o": "0",
+				"q": "23",
+				"dm": "6",
+				"s": "3",
+				"r": "0",
+				"n": "161"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"o": "0",
+				"q": "23",
+				"dm": "6",
+				"s": "3",
+				"r": "0",
+				"n": "161"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "141 = 7 × 20 + 1 : non",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"o": "1",
+				"q": "20",
+				"dm": "6",
+				"s": "1",
+				"r": "1",
+				"n": "141"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui (14 dans la table de 7)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"o": "1",
+				"q": "20",
+				"dm": "6",
+				"s": "1",
+				"r": "1",
+				"n": "141"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "144 est multiple de 6",
+			"variationIndex": 1,
+			"variables": {
+				"d": "6",
+				"dm": "5",
+				"q0": "24",
+				"q1": "23",
+				"q2": "30",
+				"q3": "15",
+				"r1": "4",
+				"r2": "2",
+				"r3": "3",
+				"m0": "144",
+				"m1": "142",
+				"m2": "182",
+				"m3": "93"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 142 (pair, mais pas multiple de 6)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "6",
+				"dm": "5",
+				"q0": "24",
+				"q1": "23",
+				"q2": "30",
+				"q3": "15",
+				"r1": "4",
+				"r2": "2",
+				"r3": "3",
+				"m0": "144",
+				"m1": "142",
+				"m2": "182",
+				"m3": "93"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

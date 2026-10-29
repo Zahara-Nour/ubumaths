@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la validation du plan schématique de la carte (pas de PR : chantier 100 % doc)._
+_Mis à jour le 2026-10-29, après les descriptions des six provinces pour l'illustration (pas de PR : chantier 100 % doc)._
 
-- **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu, du Capitaine Bordure, de Bougrelas, de Conscience, du Czar Alexis, de Monsieur Prudhomme, du Flegmatique (Tristan Bernard), du Professeur Achras, du Docteur Faustroll, de Bosse-de-Nage et du Cheval à Phynances validés (casting et quatre gouverneurs complets) ; Palotins redessinés au trait Steinlen pour le lore (SVG de l'appli inchangés) : Giron, Pile, Cotice, Merdranpo (sans SVG, brun merdre, casserole, bas dépareillés) , Mousched-Gogh (sans SVG, artiste, glace du Czar, mouche sur le nez) et Quatrezoneilles (sans SVG, valet de pied or, grandes oreilles décollées) validés : les six Palotins sont faits et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour). ; dix-huit images rangées ; **plan schématique de la carte validé** (`docs/Chiphres/illustrations/carte/`).
-- **Prochaine action** : carte, étape suivante de la méthode (fond par l'IA sans texte, guidé par le plan schématique validé `docs/Chiphres/illustrations/carte/plan-schematique.svg`) ; ou lieux, ou personnages mineurs, selon David.
-- **En attente de David** : rien.
-- **Pièges en cours** : Ubu sans chapeau pointu ni longue robe blanche (aucune ressemblance avec une cagoule) ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée (Nano Banana refuse : personnage inventé à la place). Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
+- **État** : casting, quatre gouverneurs et six Palotins validés et versés au Compendium (§ XI) ; dix-huit images rangées ; plan schématique de la carte validé (`docs/Chiphres/illustrations/carte/`). **Les six provinces ont une ligne « Pour l'illustration »** au Compendium (relief, eau, végétation, repère sur la carte, couleur) : Nombrilie Or, Bedonstan Vert chandelle, Yoyolande Pourpre, Pifométrie Brun merdre, Glitchistan cuivre `#AE4E1F`, Patatovie vert de mer `#3E8E86` (ces deux-là hors nuancier, choix A de David).
+- **Prochaine action** : décrire de même Sandomir, la Lithuanie, l'Empire du Czar et l'Isle de la Réunion Pataphysique ; puis le fond de carte par l'IA (sans texte, guidé par le plan schématique).
+- **En attente de David** : le monument au centre de Cracovenn (là où les trois enceintes se recoupent).
+- **Pièges en cours** : **pas de formes géométriques plaquées sur le paysage** (David, 2026-10-29) : la discipline de chaque province ne se montre que dans sa ville. Ubu sans chapeau pointu ni longue robe blanche ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée. Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 
 ## Décisions de David

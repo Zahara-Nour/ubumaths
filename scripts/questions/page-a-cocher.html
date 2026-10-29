@@ -194,6 +194,8 @@
 		border-radius: 8px;
 		padding: 10px 12px;
 		display: grid;
+		/* colonne bornée : une formule large défile dans .calc au lieu d'élargir la page */
+		grid-template-columns: minmax(0, 1fr);
 		gap: 6px;
 		min-width: 0;
 		align-content: start;
@@ -201,12 +203,14 @@
 	.enonce {
 		font-size: 1.05rem;
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 6px;
 	}
 	.calc {
 		font-family: var(--mono);
 		font-size: 1.15rem;
 		overflow-wrap: anywhere;
+		overflow-x: auto;
 	}
 	mtext.case-m {
 		border: 2px solid var(--muted);
@@ -782,7 +786,8 @@
 	/* Les maths du CP sont des nombres et des signes : rendu texte, cases dessinées, signes typographiques */
 	function maths(t, bloc = false) {
 		if (/[\\^_{}]/.test(t.replace(/\^\{\\text\{[^}]*\}\}/g, '').replace(TEXTE_SEUL, ''))) {
-			const rendu = mathsKatex(t, bloc);
+			/* Exposant sur une espace (« \,^\circ ») : refusé par la sortie MathML de KaTeX, base vide ajoutée */
+			const rendu = mathsKatex(t.replace(/(\\[,;:!]|\\quad)\s*\^/g, '$1{}^'), bloc);
 			if (rendu) return rendu;
 		}
 		return esc(t)

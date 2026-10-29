@@ -1,0 +1,179 @@
+{
+	"title": "Facteurs et produit dans une égalité",
+	"description": "Dans 4 × 6 = 24 : les facteurs, le produit ; aussi écrit 24 = 4 × 6",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Sens",
+	"level": 4,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans l'égalité ${{a}}\\times{{b}}={{eval:a*b}}$, quels sont les facteurs ?\n\nLes facteurs sont $?$ et $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les **facteurs** sont les nombres qu'on multiplie.",
+					"Dans ${{a}}\\times{{b}}={{eval:a*b}}$, les facteurs sont ${{a}}$ et ${{b}}$ ; ${{eval:a*b}}$ est le produit."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'égalité ${{a}}\\times{{b}}={{eval:a*b}}$, quel est le produit ?\n\nLe produit est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **produit** de deux nombres, c'est le résultat de leur multiplication.",
+					"Dans ${{a}}\\times{{b}}={{eval:a*b}}$, le produit est ${{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'égalité ${{eval:a*b}}={{a}}\\times{{b}}$, quel est le produit ?\n\nLe produit est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **produit** de deux nombres, c'est le résultat de leur multiplication.",
+					"Le résultat peut s'écrire à gauche du signe $=$ : ${{eval:a*b}}={{a}}\\times{{b}}$.",
+					"Le produit est ${{solution}}$ ; les facteurs sont ${{a}}$ et ${{b}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "facteurs de 4 × 6 = 24 : 4 et 6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"answers": ["4", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "facteurs dans l'autre ordre : 6 et 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"answers": ["6", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le produit pris pour un facteur",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"answers": ["4", "24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "produit de 4 × 6 = 24 : 24",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un facteur (6)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "produit de 24 = 4 × 6 : 24",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le dernier nombre écrit (6)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"orderIndependent": true
+	}
+}

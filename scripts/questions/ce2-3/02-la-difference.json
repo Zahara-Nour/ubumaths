@@ -1,0 +1,185 @@
+{
+	"title": "La différence entre deux nombres",
+	"description": "« La différence entre 60 et 37 est 23 » ; nombre retiré, différence donnée",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Soustraire",
+	"subdomain": "Différence",
+	"level": 16,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle est la différence entre ${{eval:b+d}}$ et ${{b}}$ ?\n\nLa différence est $?$.",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "11..59"
+				},
+				{
+					"name": "d",
+					"expression": "5..39"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **différence** entre deux nombres, c'est le résultat de la soustraction du plus petit au plus grand.",
+					"La différence entre ${{eval:b+d}}$ et ${{b}}$, c'est ${{eval:b+d}}-{{b}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la différence entre ${{eval:10*(q+p)}}$ et ${{eval:10*q}}$ ?\n\nLa différence est $?$.",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "5..49"
+				},
+				{
+					"name": "p",
+					"expression": "2..40"
+				}
+			],
+			"conditions": ["q + p <= 90"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **différence** entre deux nombres, c'est le résultat de la soustraction du plus petit au plus grand.",
+					"La différence, c'est ${{eval:10*(q+p)}}-{{eval:10*q}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "La différence entre ${{eval:b+d}}$ et un nombre plus petit est ${{d}}$.\n\nQuel est ce nombre ?\n\nCe nombre est $?$.",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "11..59"
+				},
+				{
+					"name": "d",
+					"expression": "5..39"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **différence** entre deux nombres, c'est le résultat de la soustraction du plus petit au plus grand.",
+					"On cherche le nombre qu'on retire de ${{eval:b+d}}$ pour trouver ${{d}}$ : ${{eval:b+d}}-?={{d}}$.",
+					"${{eval:b+d}}-{{d}}={{solution}}$, donc ce nombre est ${{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "différence entre 60 et 37 : 23",
+			"variationIndex": 0,
+			"variables": {
+				"b": "37",
+				"d": "23"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme (97)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "37",
+				"d": "23"
+			},
+			"answers": ["97"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : soustraction à l'envers (-23)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "37",
+				"d": "23"
+			},
+			"answers": ["-23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "différence entre 300 et 120 : 180",
+			"variationIndex": 1,
+			"variables": {
+				"q": "12",
+				"p": "18"
+			},
+			"answers": ["180"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme (420)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "12",
+				"p": "18"
+			},
+			"answers": ["420"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "60 − ? = 23 : 37",
+			"variationIndex": 2,
+			"variables": {
+				"b": "37",
+				"d": "23"
+			},
+			"answers": ["37"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la différence elle-même (23)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "37",
+				"d": "23"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 60 + 23 (83)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "37",
+				"d": "23"
+			},
+			"answers": ["83"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

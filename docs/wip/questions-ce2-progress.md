@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la publication des lots 1 et 2._
+_Mis à jour le 2026-10-29, après #1967._
 
-- **État** : lots 1 (5) et 2 (9) PUBLIÉS en prod le 2026-10-29, tous OK, statut `published` relu au MCP.
-- **Prochaine action** : lot 3 — choisir les points CE2 sans modèle (§ 1), phase 0 à valider par David.
+- **État** : lots 1 (5) et 2 (9) PUBLIÉS en prod le 2026-10-29. Lot 3 (vocabulaire des opérations, 6 modèles, § 7) : fichiers mergés (#1967), pas encore en prod.
+- **Prochaine action** : **David** lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-3 --publier` (brouillons) → relever les `id` → migration nœud + tag (nœuds des points = notions, § 7).
 - **En attente de David** : confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
-- **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 (specs lues sur l'instance tirée) ; `--mettre-a-jour` en simulation refusé par le classifieur (même sans `--publier`) ; horodatage = max de la PROD + 1 min ; CI : `corrections.test.ts` « cas rare » > 5 s et `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule.
-- **Worktree / branche** : aucun (#1956 mergée, worktree retiré).
+- **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 (specs lues sur l'instance tirée) ; `--mettre-a-jour` en simulation refusé par le classifieur (même sans `--publier`) ; horodatage = max de la PROD + 1 min ; CI : `corrections.test.ts` « cas rare » > 5 s et `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule et une ligne de corps > 100 caractères ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` (`$lib` introuvable).
+- **Worktree / branche** : aucun (#1967 mergée, worktree retiré) ; la migration nœud + tag se fera dans un worktree neuf.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -238,3 +238,40 @@ CM2) : règle de l'école en numération, `4500` sans espace = « forme à amél
   `o`, `x1…x5` et les 5 cases retirées). Specs en positions affichées (depuis 0), lues sur l'instance tirée :
   6/6, 100 tirages.
 - 2026-10-29 : #1956 mergée (CI verte, revue : aucune, contenu) ; worktree retiré.
+
+## 7. Lot 3 — vocabulaire des opérations (phase 0 validée le 2026-10-29)
+
+Points CE2-015 (terme, somme, différence), CE2-017 (facteur, produit), CE2-091 (multiple), sans modèle au relevé
+MCP du 2026-10-29. Phase 0 proposée puis validée (« je te suis ») avec l'option recommandée : **réponses en nombres
+seulement** ; les réponses par un mot (« c'est la somme ou la différence ? », « 24 est-il un multiple de 6 ? » en
+oui / non) attendent le lot à QCM (§ 4 bis, 6). Question d'accès : personne ne lit rien de plus (brouillons neufs,
+la migration nœud + tag ne change aucune règle). « Espaces dès 4 chiffres » : toujours en attente, hors de ce lot
+(nombres < 1 000).
+
+**Nœuds** (relevé MCP) : les trois points sont rangés au niveau de la **notion**, sans sous-notion :
+CE2-015 → « Nombres et calculs > Entiers : addition et soustraction » ; CE2-017 et CE2-091 → « Nombres et calculs >
+Entiers : multiplication ». Les modèles iront sur ces nœuds (la règle refuse un tag hors du nœud du point).
+
+**Catégories et niveaux** (places libres relevées en prod le 2026-10-29) : Additionner › Sens 1-5, Soustraire ›
+Différence 1-15, Multiplier › Sens 1-2 pris.
+
+| Fichier                      | Point   | Catégorie · niveau           | Variations                                                                           |
+| ---------------------------- | ------- | ---------------------------- | ------------------------------------------------------------------------------------ |
+| `01-la-somme`                | CE2-015 | Additionner › Sens · 6       | somme de 2 nombres (11-89) ; de 3 nombres (11-49) ; la somme de 12 et de ? est 37    |
+| `02-la-difference`           | CE2-015 | Soustraire › Différence · 16 | différence entre 60 et 37 ; entre dizaines entières (≤ 900) ; 60 − ? = 23            |
+| `03-termes-somme-difference` | CE2-015 | Additionner › Sens · 7       | termes de a + b = s ; termes de a − b = d ; la somme ; la différence (sans ordre)    |
+| `04-le-produit`              | CE2-017 | Multiplier › Sens · 3        | tables (2-9) ; a × dizaine entière ; a × 25 ; facteur manquant                       |
+| `05-facteurs-et-produit`     | CE2-017 | Multiplier › Sens · 4        | facteurs de a × b = p (sans ordre) ; le produit ; le produit dans p = a × b          |
+| `06-les-multiples`           | CE2-091 | Multiplier › Sens · 5        | multiple de b entre bk − 2 et bk + 2 ; de 25 entre 25k − 10 et 25k + 10 ; 24 = 6 × ? |
+
+Case seule, aucun QCM ; `orderIndependent` sur 03 et 05 (termes, facteurs dans n'importe quel ordre) ; 06 par
+règles (`multiple` + `range`, toute réponse juste acceptée).
+
+### Lot 3 — écriture (2026-10-29)
+
+- Script `docs/wip/questions/lot-ce2-3.py` → `scripts/questions/ce2-3/` (6 JSON, 49 specs : justes et erreurs
+  typiques — somme prise pour produit, différence à l'envers, résultat pris pour un terme, multiple hors intervalle).
+- `create-questions` en simulation (prod) : 6 « à créer », tout vert. `question:specs --instances 200` : 49/49 specs,
+  4 000 tirages réussis, aucun avertissement.
+- Base locale : 6 brouillons créés ; aperçu admin joué : 03 (termes 27 et 40 donnés à l'envers → « Juste »), 06
+  (26 pour un multiple de 5 entre 23 et 27 → « Faux », réponse possible 25, correction affichée).
