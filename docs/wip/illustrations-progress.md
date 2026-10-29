@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après les descriptions des six provinces pour l'illustration (pas de PR : chantier 100 % doc)._
+_Mis à jour le 2026-10-29, après les descriptions des provinces, de Sandomir et des voisins pour l'illustration (pas de PR : chantier 100 % doc)._
 
 - **État** : casting, quatre gouverneurs et six Palotins validés et versés au Compendium (§ XI) ; dix-huit images rangées ; plan schématique de la carte validé (`docs/Chiphres/illustrations/carte/`). **Les six provinces ont une ligne « Pour l'illustration »** au Compendium (relief, eau, végétation, repère sur la carte, couleur) : Nombrilie Or, Bedonstan Vert chandelle, Yoyolande Pourpre, Pifométrie Brun merdre, Glitchistan cuivre `#AE4E1F`, Patatovie vert de mer `#3E8E86` (ces deux-là hors nuancier, choix A de David).
-- **Prochaine action** : décrire de même Sandomir, la Lithuanie, l'Empire du Czar et l'Isle de la Réunion Pataphysique ; puis le fond de carte par l'IA (sans texte, guidé par le plan schématique).
-- **En attente de David** : le monument au centre de Cracovenn (là où les trois enceintes se recoupent).
+- **Prochaine action** : fond de carte par l'IA (sans texte, guidé par le plan schématique et les lignes « Pour l'illustration »), puis lieux ou personnages mineurs. Sandomir, l'Empire du Czar, la Lithuanie et l'Isle de la Réunion Pataphysique sont décrits aussi ; centre de Cracovenn = bibliothèque de Faustroll.
+- **En attente de David** : rien.
 - **Pièges en cours** : **pas de formes géométriques plaquées sur le paysage** (David, 2026-10-29) : la discipline de chaque province ne se montre que dans sa ville. Ubu sans chapeau pointu ni longue robe blanche ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée. Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 
