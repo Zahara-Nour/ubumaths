@@ -5,16 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1965 (rangement du lot 2 mergé)._
+_Mis à jour le 2026-10-29, lot 2 rangé en prod, page à cocher publiée._
 
-- **État** : lot 2 : 4 brouillons en prod, migration de rangement mergée (#1965), PAS jouée (§ 9.7).
-- **Prochaine action** : quand la session ce1 a renommé sa migration `20261029213000_questions_ce1_lot3_niveaux`,
-  David lance `pnpm db:migrate` ; vérifier au MCP, puis page à cocher, publication.
-- **En attente de David / ce1** : le renommage de la migration ce1, puis `db:migrate`.
+- **État** : lot 2 : 4 brouillons rangés et tagués en prod (§ 9.8) ; relecture de David en attente.
+- **Prochaine action** : lire et COMPTER les verdicts (`ArtifactData list verdicts`,
+  https://claude.ai/artifact/KRBQJkNHzZABUFwXrSzYAv) ; si 4 OK, `publier-lot.ts --dir scripts/questions/3-lot-2`
+  lancé par David (simulation puis `--publier`) ; puis phase 0 du lot suivant (Thalès et trigonométrie).
+- **En attente de David** : la relecture des 4 modèles (jouer un modèle dans l'aperçu admin, je n'ai pas pu).
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation, car il lit la prod) refusés
   par le classifieur du mode auto → David les lance avec `!` ; test `forfait-palotin` qui dépasse 5 s en CI
   (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : `ubumaths-wt-questions-3` (branches mergées, à retirer en fin de lot).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -363,3 +364,12 @@ prof de 3e voient 4 modèles publiés de plus. Aucune règle ne change.
 - **`db:migrate` bloqué** : collision d'horodatage `20261029213000` (questions_5_lot3, jouée, et
   questions_ce1_lot3_niveaux, non jouée) → `db push` refuse. `--include-all` écarté (doublon de version).
   Session ce1 prévenue (David, 2026-10-29) : renommer sa migration, puis `db:migrate` jouera les deux.
+
+### 9.8 Lot 2 : rangement joué, page à cocher (2026-10-29)
+
+- Migration ce1 renommée en `20261029233100` (#1972, session ce1) ; `db:migrate` lancé par David : 233000 puis
+  233100 jouées. MCP : les 4 modèles sur le nœud de leur point, tags 3-016, 3-054, 3-014, 3-015, brouillons
+  [3], `updated_at` préservé.
+- Page à cocher : https://claude.ai/artifact/KRBQJkNHzZABUFwXrSzYAv (capacité `db`, collection `verdicts`
+  vide au départ ; aucune alerte). Rendu relu en vue large ; la vue à 390 px n'a pas pu être forcée.
+- Worktree `ubumaths-wt-questions-3` et ses deux branches retirés (#1959, #1965 mergées).
