@@ -76,7 +76,7 @@ Appelants : `src/routes/(public)/+page.server.ts` (ambiance de l'accueil),
 | Fichier                                   | Rôle                                                                                                                                                                                         |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/lib/server/shtam/articles/<slug>.md` | Un article : en-tête YAML, corps ubumark, section `## Le vrai du faux` obligatoire                                                                                                           |
-| `src/lib/server/shtam/articles.ts`        | `ARTICLE_SOURCES` (glob embarqué au build), `parseArticle`, `publishedArticles`, `findPublishedArticle`, `pickRandomArticle`                                                                 |
+| `src/lib/server/shtam/articles.ts`        | `ARTICLE_SOURCES` (glob embarqué au build), `parseArticle`, `frenchSpacing`, `publishedArticles`, `findPublishedArticle`, `pickRandomArticle`                                                |
 | `src/lib/server/shtam/present.ts`         | `todayIsoInParis`, `toSummary` (avec la date de l'Almanach), `toArticleView`, `toFrontArticle` / `frontPageParts` (image et extrait de la une), `toEdition`, `pageOfArticle`, `pageCountFor` |
 | `src/routes/(public)/shtam/`              | Le journal (`?page=N`), `ShtamFullArticle.svelte` (un article en entier), `[slug]/` (l'article seul), `ShtamFooter.svelte` (avertissement « gazette parodique »)                             |
 
@@ -122,6 +122,8 @@ de 250 fichiers l'importent.
   jamais prérendues (un article daté de demain paraît demain, sans rebuild). Le **Vrai du faux** est
   obligatoire (`parseArticle` lève sinon). Titre sans formule (`~`) : il sert aussi au `<title>`.
   Auteur dans une liste fermée (`AUTHOR_LABELS`). Slug kebab-case (`SLUG_PATTERN`), validé par Zod.
+  Espaces insécables posées à la lecture (`frenchSpacing`, sur titre, chapeau, corps et vrai du
+  faux) : les articles s'écrivent avec des espaces ordinaires, code et formules `~…~` non touchés.
 - **Rien du Collège** (de ’Pataphysique) dans le contenu : règle éditoriale du Compendium.
 
 ## Comment étendre
