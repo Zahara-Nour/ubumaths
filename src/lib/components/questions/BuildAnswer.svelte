@@ -11,7 +11,8 @@
 	`placer:`) : la droite verrouillée avec les points de l'élève (`answers`, un par
 	point, quand il y en a plusieurs), ou les points justes. Horloge à placer
 	(```horloge, `placer:`) : le cadran verrouillé avec les aiguilles de l'élève,
-	ou le cadran à l'heure juste. Diagramme en barres à construire (```barres,
+	ou le cadran à l'heure juste. Figure à colorier (```partage, `colorier:`) : la
+	figure verrouillée avec les parts de l'élève, ou la figure juste. Diagramme en barres à construire (```barres,
 	`placer:`) : le diagramme verrouillé avec les barres de l'élève (`answers`, une
 	par barre), ou le diagramme juste. Étiquettes à ranger (```ranger) : les places
 	verrouillées avec les étiquettes de l'élève (`answers`, une par place) et, faux,
@@ -32,6 +33,9 @@
 	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
 	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
 	import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
+	import Partage from '$lib/components/markdown/nodes/Partage.svelte';
+	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
+	import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 	import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 	import { solvedSpec } from '$lib/ubumark/utils/barres-placer';
@@ -84,6 +88,7 @@
 	let horloge = $derived(kind === 'horloge' ? parseHorlogeContent(source) : null);
 	let barres = $derived(kind === 'barres' ? parseStatChartContent('barres', source) : null);
 	let ranger = $derived(kind === 'ranger' ? parseRangerContent(source) : null);
+	let partage = $derived(kind === 'partage' ? parsePartageContent(source) : null);
 </script>
 
 {#if collection?.spec?.build !== undefined}
@@ -134,6 +139,23 @@
 				onChange: () => {}
 			}))}
 			showControls={false}
+		/>
+	{/if}
+{:else if partage?.spec?.colorier !== undefined}
+	{@const spec = partage.spec}
+	{#if locked}
+		<PartageColorier node={partage} answer={locked} showControls={false} />
+	{:else}
+		<!-- La figure juste, sans `colorier:` : les premières parts coloriées, dessinées seules -->
+		<Partage
+			node={{
+				...partage,
+				spec: {
+					...spec,
+					colorier: undefined,
+					gray: Array.from({ length: spec.colorier!.parts }, (_, i) => i + 1)
+				}
+			}}
 		/>
 	{/if}
 {:else if horloge?.spec?.placer !== undefined}

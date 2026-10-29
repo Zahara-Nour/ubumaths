@@ -60,6 +60,7 @@ import {
 	serializeRangerBlock
 } from '$lib/ubumark/parser/ranger-parser';
 import { rangerOrder } from '$lib/ubumark/utils/ranger';
+import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
 import type { RangerSign } from '$lib/ubumark/types/ranger';
 import { buildAnswerOf } from './build-answer';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
@@ -137,6 +138,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'horloge') return 'l’heure de l’horloge (placer:)';
 	if (kind === 'barres') return 'l’effectif de la barre (placer:)';
 	if (kind === 'ranger') return 'l’étiquette à sa place (bloc ranger)';
+	if (kind === 'partage') return 'la fraction du bloc partage (colorier:)';
 	return `la valeur du bloc ${kind} (construire:)`;
 }
 
@@ -536,7 +538,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasLineToPlace(String(resolvedStatement)) ||
 				hasHorlogeToPlace(String(resolvedStatement)) ||
 				hasBarsToPlace(String(resolvedStatement)) ||
-				hasRangerToPlace(String(resolvedStatement))) &&
+				hasRangerToPlace(String(resolvedStatement)) ||
+				hasPartageToColorier(String(resolvedStatement))) &&
 			getQuestionType({ options: template.options }) === 'fill_in_blanks';
 		if (resolvedVariation.blanks || hasOperationBlock) {
 			// 7a. Fill-in-blanks pipeline
@@ -711,7 +714,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push(
-						`une ${isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+						`une ${kind === 'partage' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
 					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {
@@ -752,6 +755,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						}
 						if (child.type === 'horloge') {
 							return child.spec?.placer !== undefined && child.caseIndex !== undefined
+								? [child.caseIndex]
+								: [];
+						}
+						if (child.type === 'partage') {
+							return child.spec?.colorier !== undefined &&
+								child.errors.length === 0 &&
+								child.caseIndex !== undefined
 								? [child.caseIndex]
 								: [];
 						}

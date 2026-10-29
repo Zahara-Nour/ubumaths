@@ -78,6 +78,7 @@ import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-varia
 import { expectsUnitlessValue, withoutDegreeSuffix } from '$lib/questions/answer-degree-suffix';
 import { judgeConstruction } from '$lib/questions/construction/judge';
 import { isPlacedTimeCorrect } from '$lib/ubumark/utils/horloge-placer';
+import { isColoringCorrect } from '$lib/ubumark/utils/partage-colorier';
 import { constructionPositions } from '$lib/questions/construction/positions';
 import {
 	correctChoiceIndexesOf,
@@ -807,6 +808,8 @@ function validateBlankValue(
 ): boolean {
 	// Horloge à placer : la même lecture des aiguilles que la correction
 	if (blank.construire === 'horloge') return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer);
+	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
+	if (blank.construire === 'partage') return isColoringCorrect(userAnswer, blank.expectedAnswer);
 	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
 	if (blank.construire === 'ranger') return userAnswer.trim() === blank.expectedAnswer;
 
@@ -1283,6 +1286,13 @@ function validateSingleBlank(
 	// Horloge à placer : les deux aiguilles de l'élève, petite aiguille jugée sur son secteur
 	if (blank.construire === 'horloge') {
 		return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
+	if (blank.construire === 'partage') {
+		return isColoringCorrect(userAnswer, blank.expectedAnswer)
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };
 	}
