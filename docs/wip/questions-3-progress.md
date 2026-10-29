@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1984 et le `db:migrate`._
+_Mis à jour le 2026-10-30, après la publication du lot 3._
 
-- **État** : lot 3 (Thalès et trigonométrie) : 6 brouillons en prod, rangés et tagués (§ 10.8).
-- **Prochaine action** : page à cocher du lot 3 (`page-a-cocher.ts --dir scripts/questions/3-lot-3`),
-  verdicts comptés, puis publication (`publier-lot.ts`, David avec `!`).
-- **En attente de David** : 57c73be1 (longueur ou angle) laissé sur la notion trigonométrie, à confirmer ;
-  le sort du dossier `../ubumaths-wt-questions-3` (hors git, caches d'un ancien worktree) ; Pythagore 4e à signaler.
+- **État** : lots 0, 1, 2 et 3 (Thalès et trigonométrie) publiés ; lot 3 : 6/6 `published` (§ 10.9).
+- **Prochaine action** : phase 0 du lot suivant, parmi ceux du § 4 non faits : Fonctions (3),
+  Pourcentages, probabilités, statistiques (4), Translation, vecteurs, sphère (6), Algorithmique (7).
+- **En attente de David** : quel lot ensuite ; le sort du dossier `../ubumaths-wt-questions-3` (hors git,
+  caches d'un ancien worktree) ; Pythagore 4e à signaler.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; une variable ne vaut jamais une lettre (lettres par `{{if}}` bout
   à bout) ; valeur tirée dans une figure en décimal (`;d`) ; aperçu admin sur `127.0.0.1`, pas `localhost`.
-- **Worktree / branche** : aucun (page à cocher depuis le dépôt principal).
+- **Worktree / branche** : aucun (prochain lot : worktree neuf).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -476,3 +476,11 @@ prof de 3e voient 6 modèles publiés de plus. Aucune règle ne change.
 - Vérifié au MCP : 16478dab (3-022), 034e6b74 (3-059), f55d07b0 (3-060) sur Thalès > calcul de longueurs ;
   37c13d51 (3-055) sur Thalès > réciproque ; dbd5debf (3-023), 57c73be1 (3-061) sur la notion
   Trigonométrie du triangle rectangle ; tous `draft`, un tag chacun. Session `questions-2de` prévenue.
+
+### 10.9 Lot 3 : relu et publié (2026-10-30)
+
+- Page à cocher : https://claude.ai/artifact/BEU7ZroDY1kdeLsw9i8jiY (capacité `db`, collection `verdicts`
+  vide au départ ; aucune alerte sur les 6 fiches).
+- Relecture : 6 verdicts en base, 6 OK, aucun commentaire. 57c73be1 gardé sur la notion trigonométrie (OK de David).
+- `publier-lot.ts --dir scripts/questions/3-lot-3 --publier` lancé par David : 6/6 publiés. MCP : 16478dab,
+  034e6b74, f55d07b0, 37c13d51, dbd5debf, 57c73be1 `published`, niveau 1.
