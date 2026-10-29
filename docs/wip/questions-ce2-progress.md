@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la publication du lot 2._
+_Mis à jour le 2026-10-29, après la publication des lots 1 et 2._
 
-- **État** : lot 2 PUBLIÉ en prod le 2026-10-29 (9/9 OK, statut `published` relu au MCP). Lot 1 en prod en BROUILLON, 2 OK sur 5 : 03 (décompositions de 60), 04 (× 4), 05 (× 8) TOUJOURS sans verdict sur https://claude.ai/artifact/TVCyuAznqrAuopDJaPXyP4.
-- **Prochaine action** : verdicts du lot 1 → `publier-lot --dir scripts/questions/ce2-1` (simulation), David `--publier`. Puis lot 3 (points CE2 sans modèle, § 1).
-- **En attente de David** : verdicts du lot 1 (03, 04, 05) ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
+- **État** : lots 1 (5) et 2 (9) PUBLIÉS en prod le 2026-10-29, tous OK, statut `published` relu au MCP.
+- **Prochaine action** : lot 3 — choisir les points CE2 sans modèle (§ 1), phase 0 à valider par David.
+- **En attente de David** : confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
 - **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 (specs lues sur l'instance tirée) ; `--mettre-a-jour` en simulation refusé par le classifieur (même sans `--publier`) ; horodatage = max de la PROD + 1 min ; CI : `corrections.test.ts` « cas rare » > 5 s et `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule.
 - **Worktree / branche** : aucun (#1956 mergée, worktree retiré).
 
