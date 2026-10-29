@@ -1,11 +1,12 @@
 # Plan schématique de la carte du Royaume (validé par David le 2026-10-29).
-# Usage : python3 plan-schematique.py plan-schematique.svg [--sans-texte]
+# Usage : python3 plan-schematique.py plan-schematique.svg [--reference-ia]
 # Couleurs des provinces : lignes « Pour l'illustration » du Compendium (2026-10-29).
-# --sans-texte : même plan sans aucun texte, pour servir de référence à l'IA (qui recopie les lettres).
+# --reference-ia : référence pour l'IA (qui recopie tout) : aucun texte, provinces sans couleur (sinon peintes en aplats),
+# clairières visibles à la place des capitales.
 # Rendu PNG : Chromium de Playwright (viewport 1100×860, deviceScaleFactor 2) ; magick ne trouve pas les polices.
 import math, random, re, sys
 
-W, H = 1100, 860
+W, H = 960, 860  # bande des voisins de l'est réduite : ils servent peu
 INK = '#1B2232'
 PAPER = '#F1EDE4'
 K = 120
@@ -90,6 +91,24 @@ PROV = [
 RIVER_PTS = [geo(22.75, 53.55), geo(23.25, 52.75), geo(23.3, 52.0), geo(22.9, 51.0), geo(21.9, 50.45),
              geo(20.9, 50.1), geo(19.94, 50.06), geo(18.7, 50.4), geo(17.5, 50.95), geo(16.8, 51.6),
              geo(16.75, 52.35), geo(17.4, 52.9), geo(18.2, 53.4), geo(18.55, 53.9), geo(18.65, 54.36)]
+IA = '--reference-ia' in sys.argv
+LAND = '#DADBD8'  # terres voisines, à ne pas confondre avec la mer
+
+
+def meander(pts, amp=11):
+    # la Vistule serpente : deux points décalés de part et d'autre entre chaque étape
+    out = [pts[0]]
+    for i, (a, b) in enumerate(zip(pts, pts[1:])):
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        n = math.hypot(dx, dy) or 1
+        nx, ny = -dy / n, dx / n
+        s = 1 if i % 2 else -1
+        for t, k in ((1 / 3, s), (2 / 3, -s)):
+            out.append((a[0] + dx * t + k * amp * nx, a[1] + dy * t + k * amp * ny))
+        out.append(b)
+    return out
+
+
 BON = RIVER_PTS[10]
 EMP = RIVER_PTS[8]
 
@@ -97,23 +116,24 @@ o = []
 o.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" font-family="Georgia, serif">')
 o.append(f'<defs><clipPath id="pl"><path d="{path(POLAND, True)}"/></clipPath>'
          f'<marker id="fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="{mix("#8F2447", .8)}"/></marker></defs>')
-o.append(f'<rect width="{W}" height="{H}" fill="{PAPER}"/>')
+o.append(f'<rect width="{W}" height="{H}" fill="{LAND}"/>')
 # voisins, derrière le Royaume
 lx, ly = geo(21.3, 53.9)
-o.append(f'<rect x="{lx:.0f}" y="0" width="{W - lx:.0f}" height="{ly:.0f}" fill="#DADBD8"/>')
 cx0, _ = geo(22.2, 50)
-o.append(f'<rect x="{cx0:.0f}" y="{ly:.0f}" width="{W - cx0:.0f}" height="{H - ly:.0f}" fill="{mix("#66AACC", .45)}"/>')
-o.append(f'<path d="M{lx:.0f},{ly:.0f} L{W},{ly:.0f}" stroke="{INK}" stroke-width="1.5" stroke-dasharray="6 4"/>')
-o.append(f'<text x="905" y="150" font-size="20" font-style="italic" fill="{INK}">Lithuanie</text>')
-o.append(f'<text x="905" y="172" font-size="13" fill="{INK}">(Champs Minés)</text>')
-o.append(f'<text x="920" y="470" font-size="22" font-style="italic" fill="{INK}">Empire</text>')
-o.append(f'<text x="920" y="496" font-size="22" font-style="italic" fill="{INK}">du Czar</text>')
-o.append(f'<text x="920" y="522" font-size="13" fill="{INK}">★ palais d’Hiver</text>')
+# frontière Lithuanie / Empire du Czar, irrégulière
+LC = [(x, ly + 14 * math.sin(x / 37) + 7 * math.sin(x / 13 + 1)) for x in range(int(cx0), W + 1, 6)]
+o.append(f'<path d="{path(LC + [(W, H), (cx0, H)], True)}" fill="{mix("#66AACC", .45)}"/>')
+o.append(f'<path d="{path(LC)}" fill="none" stroke="{INK}" stroke-width="1.5" stroke-dasharray="6 4"/>')
+o.append(f'<text x="{W - 150}" y="150" font-size="20" font-style="italic" fill="{INK}">Lithuanie</text>')
+o.append(f'<text x="{W - 150}" y="172" font-size="13" fill="{INK}">(Champs Minés)</text>')
+o.append(f'<text x="{W - 150}" y="470" font-size="22" font-style="italic" fill="{INK}">Empire</text>')
+o.append(f'<text x="{W - 150}" y="496" font-size="22" font-style="italic" fill="{INK}">du Czar</text>')
+o.append(f'<text x="{W - 150}" y="522" font-size="13" fill="{INK}">★ palais d’Hiver</text>')
 # provinces : secteurs découpés par le contour
 o.append('<g clip-path="url(#pl)">')
 for name, (a0, a1), col, *_ in PROV:
     wedge = border(a0) + [pt(t, 1200) for t in range(a0, a1 + 1, 5)] + list(reversed(border(a1)))
-    o.append(f'<path d="{path(wedge, True)}" fill="{col}"/>')
+    o.append(f'<path d="{path(wedge, True)}" fill="{PAPER if IA else col}"/>')
 for name, (a0, a1), *_ in PROV:
     o.append(f'<path d="{path(border(a1))}" fill="none" stroke="{INK}" stroke-width="2" stroke-linejoin="round"/>')
 o.append('</g>')
@@ -130,9 +150,10 @@ for lon, lat in [(22.55, 53.85), (22.95, 53.95), (23.3, 53.8), (22.8, 53.65), (2
 x, y = geo(22.35, 54.2)
 o.append(f'<text x="{x:.0f}" y="{y:.0f}" font-size="13" font-style="italic" fill="{INK}">Pythagoriades</text>')
 # Vistule
-rv = smooth(RIVER_PTS)
-o.append(f'<path id="v" d="{rv}" fill="none" stroke="{RIVER}" stroke-width="6" stroke-linecap="round"/>')
-o.append(f'<text font-size="15" font-style="italic" fill="{mix("#2F62B0", 1)}" dy="-8"><textPath href="#v" startOffset="2%">Vistule</textPath></text>')
+rv = smooth(meander(RIVER_PTS))
+o.append(f'<path id="v" d="{rv}" fill="none" stroke="{RIVER}" stroke-width="4" stroke-linecap="round"/>')
+x, y = geo(23.5, 52.95)  # nom posé à côté du fleuve : sur un tracé sinueux, un textPath se chevauche
+o.append(f'<text x="{x:.0f}" y="{y:.0f}" font-size="15" font-style="italic" fill="{mix("#2F62B0", 1)}" transform="rotate(70 {x:.0f} {y:.0f})">Vistule</text>')
 # Sandomir en spirale
 o.append(f'<circle cx="{CX:.1f}" cy="{CY:.1f}" r="34" fill="{PAPER}" stroke="{INK}" stroke-width="2.5"/>')
 o.append(f'<path d="{path([pt(i, 2 + 28 * i / 720) for i in range(0, 721, 8)])}" fill="none" stroke="#C9970F" stroke-width="3"/>')
@@ -153,22 +174,25 @@ for name, a, col, cap, cpos, n, npos in PROV:
     dy = {'Sinusborg': 5, 'Cracovenn': 24}.get(cap, 20)
     anchor = 'start' if cap.startswith('Bonneteau') else ('end' if cap == 'Sinusborg' else 'middle')
     dx = 10 if cap.startswith('Bonneteau') else (-12 if cap == 'Sinusborg' else 0)
+    if IA:  # clairière où poser la vignette de la capitale
+        o.append(f'<circle cx="{cx_:.1f}" cy="{cy_:.1f}" r="17" fill="{PAPER}" stroke="{INK}" stroke-width="1.5"/>')
     o.append(f'<circle cx="{cx_:.1f}" cy="{cy_:.1f}" r="5.5" fill="{INK}"/><circle cx="{cx_:.1f}" cy="{cy_:.1f}" r="2.3" fill="{PAPER}"/>')
     o.append(f'<text x="{cx_ + dx:.0f}" y="{cy_ + dy:.0f}" font-size="14" font-style="italic" text-anchor="{anchor}" fill="{INK}">{label}</text>')
-# encart : Isle de la Réunion
-o.append(f'<rect x="30" y="690" width="210" height="140" fill="{SEA}" stroke="{INK}" stroke-width="2"/>')
-o.append(f'<path d="M95,772 C100,745 150,740 170,758 C190,776 160,800 130,798 C105,797 92,788 95,772 Z" fill="{mix("#1F9346", .30)}" stroke="{INK}" stroke-width="2"/>')
+# encart : Isle de la Réunion (absent de la référence IA : l'encart sera fait à part)
+if not IA:
+    o.append(f'<rect x="30" y="690" width="210" height="140" fill="{SEA}" stroke="{INK}" stroke-width="2"/>')
+    o.append(f'<path d="M95,772 C100,745 150,740 170,758 C190,776 160,800 130,798 C105,797 92,788 95,772 Z" fill="{mix("#1F9346", .30)}" stroke="{INK}" stroke-width="2"/>')
 o.append(f'<text x="135" y="712" font-size="14" font-style="italic" text-anchor="middle" fill="{INK}">Isle de la Réunion</text>')
 o.append(f'<text x="135" y="729" font-size="14" font-style="italic" text-anchor="middle" fill="{INK}">Pataphysique</text>')
 o.append(f'<text x="135" y="820" font-size="11" text-anchor="middle" fill="{INK}">(outre-mer, en encart)</text>')
 # rose des vents
-o.append(f'<g transform="translate(1050,90)"><path d="M0,-34 L8,0 L0,34 L-8,0 Z" fill="{INK}"/><path d="M-34,0 L0,-8 L34,0 L0,8 Z" fill="{INK}" opacity=".45"/><text y="-40" font-size="14" text-anchor="middle" fill="{INK}">N</text></g>')
+o.append(f'<g transform="translate({W - 45},90)"><path d="M0,-34 L8,0 L0,34 L-8,0 Z" fill="{INK}"/><path d="M-34,0 L0,-8 L34,0 L0,8 Z" fill="{INK}" opacity=".45"/><text y="-40" font-size="14" text-anchor="middle" fill="{INK}">N</text></g>')
 # cartouche
 o.append(f'<text x="{W - 20}" y="{H - 40}" font-size="18" text-anchor="end" font-weight="bold" fill="{INK}">Royaume de Pologne pataphysique</text>')
 o.append(f'<text x="{W - 20}" y="{H - 18}" font-size="13" text-anchor="end" fill="{INK}">plan schématique validé le 2026-10-29 · étapes : ordre digestif</text>')
 o.append('</svg>')
 
 svg = '\n'.join(o)
-if '--sans-texte' in sys.argv:
+if IA:
     svg = re.sub(r'<text\b.*?</text>', '', svg, flags=re.S)
 open(sys.argv[1], 'w').write(svg)
