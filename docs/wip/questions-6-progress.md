@@ -961,3 +961,5 @@ nouvelle revue.
   caractérisation », 6-211 sur « Nombres et calculs > Entiers : multiplication > triple et tiers ».
 - Migration `20261029223000_questions_6_lot6a_rangement_tags.sql` (calquée sur celle du lot 5) et test
   `tests/integration/questions-6-lot6a-rangement-tags.test.ts` : 14 verts ; sans la migration, 8 rouges et 5 sautés.
+- PR #1968 ; `security-auditor` : aucun finding bloquant (après `db:migrate`, relire `tgenabled = 'O'` du trigger
+  `update_question_templates_updated_at`).
