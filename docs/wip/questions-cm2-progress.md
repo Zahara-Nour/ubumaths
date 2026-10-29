@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1911 et son `db:migrate`._
+_Mis à jour le 2026-10-29, relecture du lot 1 (PR `feat/questions-cm2-lot1-revue`)._
 
-- **État** : lot 1 : 8 brouillons en prod, rangés et tagués (migration `20261028160000` jouée par David, vérifiée au MCP : 8 nœuds + 8 tags, `322f3479` en `draft`, `updated_at` intacts). Page à cocher publiée : https://claude.ai/artifact/2atypewPSdch6ut4eMBL27 (collection `verdicts`, vide à la publication).
-- **Prochaine action** : lire `verdicts` (`ArtifactData list`), **compter** (8 attendus) ; « À revoir » → corriger (§ 7 de la démarche) ; tout OK → `publier-lot` en simulation, puis `--publier` par David.
-- **En attente de David** : relecture de la page à cocher.
-- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture. Alertes de la page attendues : `choix` non dessiné (8e1f6003, d6466135 : à jouer dans l'aperçu), homonyme b831b7b8 (niveau 11) écarté pour d9872d4f (le bon). Rendu à 390 px de « Ranger » toujours pas vu. Ports 5175-5178 souvent pris (5179 libre).
-- **Worktree / branche** : aucun.
+- **État** : 8 verdicts lus (6 OK, 2 à revoir) ; 03 (variation 2) et 06 (bloc ```ranger) corrigés dans le script, vérifiés en local (§ 6.3). Prod pas encore à jour.
+- **Prochaine action** : PR mergée → David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-1 --publier --mettre-a-jour` (2 brouillons mis à jour) ; je vérifie au MCP ; puis `publier-lot` en simulation pour les 7 modèles sans ```ranger, `--publier` par David.
+- **En attente de David** : la mise à jour en prod ci-dessus ; 06 (Ranger) publié seulement après le prochain `deploy:prod` (```ranger, #1943, pas encore en prod).
+- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture. Specs de Ranger = positions AFFICHÉES au mélange de la graine 0 : changer les étiquettes ou les variables → les relever à nouveau (`generateInstanceWithFixedVariables`). `create-questions` dans un worktree neuf : `pnpm exec svelte-kit sync` d'abord.
+- **Worktree / branche** : `ubumaths-wt-questions-cm2` · `feat/questions-cm2-lot1-revue`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -226,3 +226,26 @@ rangement du lot 1. Session `questions-cm1` prévenue : son lot 2 prend Décompo
 - « Le chiffre 7 de 4 712 305 » : une condition par rang (`i>=c || i==r || chiffre≠ch`) garantit que le chiffre n'apparaît qu'une fois dans le nombre.
 - Aperçu admin local (port 5179) : case « choix » de Comparer jugée juste, correction lisible ; Ranger : la liste des 5 nombres était une seule formule et aurait débordé sur un téléphone → une formule par nombre.
 - #1909 (fichiers seuls, revue : aucune) mergée, CI verte.
+
+### 6.3 Lot 1 : relecture (David, 2026-10-28) et corrections (2026-10-29)
+
+Page à cocher : 8 verdicts sur 8. OK : 0372fe18, 2953c9c0, 41e8421f, 69ea8b2a, d6466135, d9872d4f.
+
+- **41e8421f** (nombre de milliers), OK avec une question : « que vient faire la variation 2 (division
+  euclidienne) ici ? ». Réponse : les cartons font toujours 100, 1 000, 10 000… ; le nombre de cartons
+  pleins **est** le nombre de centaines, de milliers…, lu dans l'écriture. David : **la garder**.
+- **8e1f6003** (valeur d'un chiffre), à revoir : « que vaut le chiffre 8 » n'est pas clair (8, c'est 8,
+  pas 800). David choisit « combien d'unités » : « Dans le nombre 4 712 305, le chiffre 7 représente
+  combien d'unités ? Il représente ? unités. » ; correction : « il représente 7 centaines de mille,
+  c'est-à-dire 700 000 unités ».
+- **7d258acc** (ranger cinq nombres), à revoir : « ce modèle utilise l'outil ranger des étiquettes ? ».
+  Réécrit en ``ranger (étiquettes dans le bon ordre, `signe: <` / `>`), plus de permutations `o`
+ni de `x1…x5`. Specs : positions affichées au mélange de la graine 0, relevées avec le générateur
+(croissant : s2 s3 s4 s5 s1 → `4 0 1 2 3`). David : réécrire maintenant, publier après le
+`deploy:prod` qui livre ``ranger.
+- `create-questions` en simulation (prod) : 8 `checkTemplate` verts, seuls 03 et 06 « CONTENU
+  DIFFÉRENT ».
+- Vu en local (copies créées dans la base locale, port 5179, `admin@local.test`, Playwright 390 px
+  au toucher) : étiquettes avec espaces (96 398 029), pas de débordement, 5e place à la ligne ;
+  rangement juste posé au toucher → « Juste ». Variation 2 de 03 tirée au générateur : énoncé et
+  correction comme ci-dessus.

@@ -52,11 +52,13 @@ def var(nom, expression):
 
 
 def variation(statement, variables, answers, steps, conditions=None):
-    # Chaque `?` de l'énoncé est une case, dans l'ordre de `answers`
+    # Chaque `?` de l'énoncé est une case, dans l'ordre de `answers` ; `answers=None` : les
+    # cases viennent d'un bloc (```ranger), sans `blanks[]`
     v = {'statement': statement, 'variables': variables}
     if conditions:
         v['conditions'] = conditions
-    v['blanks'] = [a if isinstance(a, dict) else {'expectedAnswer': a} for a in answers]
+    if answers is not None:
+        v['blanks'] = [a if isinstance(a, dict) else {'expectedAnswer': a} for a in answers]
     v['correction'] = {'steps': steps}
     return v
 
@@ -239,13 +241,16 @@ CHIFFRE_DU_RANG = variation(
     ['mod(floor(n/10^(r+1)),10)!=ch', 'mod(floor(n/10^(r-1)),10)!=ch'])
 
 VALEUR = variation(
-    'Dans le nombre ${{n}}$, que vaut le chiffre ${{ch}}$ ?\n\nIl vaut $?$.',
+    # « Que vaut le chiffre 7 ? » appelle « 7 » (relecture de David, 2026-10-28)
+    'Dans le nombre ${{n}}$, le chiffre ${{ch}}$ représente combien d\'unités ?\n\n'
+    'Il représente $?$ unités.',
     [var('c', '6..9'), var('n', 'digits:c'), var('cm', 'eval:c-1'), var('r', '1..{{cm}}'),
      var('ch', 'eval:mod(floor(n/10^r),10)')],
     ['{{eval:ch*10^r}}'],
     [CLASSES_ETAPE,
-     'Dans ${{n}}$, le chiffre ${{ch}}$ est le chiffre des ' + selon('r', RANGS) + ' : il vaut'
-     ' ${{ch}}$ ' + selon('r', UNITES) + ', c\'est-à-dire $' + col('{{solution}}') + '$.'],
+     'Dans ${{n}}$, le chiffre ${{ch}}$ est le chiffre des ' + selon('r', RANGS) + ' : il'
+     ' représente ${{ch}}$ ' + selon('r', UNITES) + ', c\'est-à-dire $' + col('{{solution}}')
+     + '$ unités.'],
     ['ch>=2'] + unique('r'))
 
 RANG_DU_CHIFFRE = variation(
@@ -408,41 +413,45 @@ RANG_VARS = [var('M', '10..99'), var('t', '1..7'), var('u', '{{eval:t+1}}..8'),
              var('s2', 'eval:M*10^6+(t-1)*10^5+9*10^4+R1'),
              var('s3', 'eval:M*10^6+t*10^5+u*10^4+R2'),
              var('s4', 'eval:M*10^6+t*10^5+9*10^4+R3'),
-             var('s5', 'eval:M*10^6+u*10^5+t*10^4+R4'), var('o', '1..4')]
-ORDRES = [['s3', 's1', 's5', 's2', 's4'], ['s2', 's5', 's4', 's1', 's3'],
-          ['s4', 's2', 's1', 's5', 's3'], ['s5', 's3', 's2', 's4', 's1']]
-AFFICHE = [var(f'x{i + 1}', 'eval:{{if:o==1|' + ORDRES[0][i] + '|{{if:o==2|' + ORDRES[1][i]
-               + '|{{if:o==3|' + ORDRES[2][i] + '|' + ORDRES[3][i] + '}}}}}}')
-           for i in range(5)]
-# Une formule par nombre : la liste passe à la ligne sur un téléphone (une seule formule déborde)
-LISTE = '${{x1}}$ ; ${{x2}}$ ; ${{x3}}$ ; ${{x4}}$ ; ${{x5}}$'
+             var('s5', 'eval:M*10^6+u*10^5+t*10^4+R4')]
+# Bloc ```ranger (#1943) : étiquettes écrites dans le bon ordre, mélangées au tirage ; l'élève
+# les glisse au lieu de recopier les nombres (relecture de David, 2026-10-28)
+
+
+def etiquettes(signe, noms):
+    return ('\n\n```ranger\nsigne: ' + signe + '\n'
+            + ''.join('- ${{' + n + '}}$\n' for n in noms) + '```')
+
+
 METHODE_RANGER = ('On compte d\'abord les chiffres : ${{s1}}$ n\'en a que $7$, c\'est le plus'
                   ' petit. Les quatre autres ont ${{M}}$ millions : on compare leurs centaines'
                   ' de mille, puis leurs dizaines de mille.')
 
 RANGER = [
-    variation('Range ces nombres du plus petit au plus grand.\n\n' + LISTE + '\n\n$$?<?<?<?<?$$',
-              RANG_VARS + AFFICHE, ['{{s1}}', '{{s2}}', '{{s3}}', '{{s4}}', '{{s5}}'],
+    variation('Range ces nombres du plus petit au plus grand.'
+              + etiquettes('<', ['s1', 's2', 's3', 's4', 's5']), RANG_VARS, None,
               [METHODE_RANGER, '$${{s1}} < {{s2}} < {{s3}} < {{s4}} < {{s5}}$$']),
-    variation('Range ces nombres du plus grand au plus petit.\n\n' + LISTE + '\n\n$$?>?>?>?>?$$',
-              RANG_VARS + AFFICHE, ['{{s5}}', '{{s4}}', '{{s3}}', '{{s2}}', '{{s1}}'],
+    variation('Range ces nombres du plus grand au plus petit.'
+              + etiquettes('>', ['s5', 's4', 's3', 's2', 's1']), RANG_VARS, None,
               [METHODE_RANGER, '$${{s5}} > {{s4}} > {{s3}} > {{s2}} > {{s1}}$$']),
 ]
 
-EX_R = {'M': 34, 't': 2, 'u': 5, 'w': 876543, 'R1': 1234, 'R2': 5678, 'R3': 12, 'R4': 300,
-        's1': 9876543, 's2': 34191234, 's3': 34255678, 's4': 34290012, 's5': 34520300, 'o': 1}
-CROISSANT = [esp(EX_R[f's{i}']) for i in range(1, 6)]
+EX_R = {'M': 34, 't': 2, 'u': 5, 'w': 876543, 'R1': 1234, 'R2': 5678, 'R3': 12, 'R4': 300}
 MODELES.append(modele(
     '06-ranger-cinq-grands-nombres', 'Ranger cinq grands nombres',
     'Ranger cinq entiers de 7 et 8 chiffres dans l\'ordre croissant ou décroissant',
     'Comparer', 9, RANGER,
-    [spec('croissant', 0, EX_R, CROISSANT, 'correct'),
+    # L'élève répond, place par place, la position AFFICHÉE de l'étiquette qu'il y pose. Avec ces
+    # variables, le mélange des specs (graine 0) affiche s2 s3 s4 s5 s1 (croissant) et
+    # s4 s3 s2 s1 s5 (décroissant) : positions relevées avec `generateInstanceWithFixedVariables`
+    [spec('croissant', 0, EX_R, ['4', '0', '1', '2', '3'], 'correct'),
      spec('Erreur : 9 876 543 en dernier (premier chiffre lu)', 0, EX_R,
-          CROISSANT[1:] + CROISSANT[:1], 'incorrect'),
-     spec('Erreur : 34 255 678 et 34 191 234 inversés', 0, EX_R,
-          [CROISSANT[0], CROISSANT[2], CROISSANT[1]] + CROISSANT[3:], 'incorrect'),
-     spec('Erreur : ordre décroissant', 0, EX_R, CROISSANT[::-1], 'incorrect'),
-     spec('décroissant', 1, EX_R, CROISSANT[::-1], 'correct')],
+          ['0', '1', '2', '3', '4'], 'incorrect'),
+     spec('Erreur : 34 255 678 et 34 191 234 inversés', 0, EX_R, ['4', '1', '0', '2', '3'],
+          'incorrect'),
+     spec('Erreur : ordre décroissant', 0, EX_R, ['3', '2', '1', '0', '4'], 'incorrect'),
+     spec('décroissant', 1, EX_R, ['4', '0', '1', '2', '3'], 'correct'),
+     spec('Erreur : ordre croissant', 1, EX_R, ['3', '2', '1', '0', '4'], 'incorrect')],
     delay=60))
 
 
