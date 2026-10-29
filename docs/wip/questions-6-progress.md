@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 5 publié._
+_Mis à jour le 2026-10-29, migration de contenu des 4 commencée (pas encore de PR)._
 
-- **État** : lot 5 publié (7/7, 2026-10-29) ; 6e = 136 publiés contenant `6` (dont 8 partagés avec le cours moyen) + 3a7a5711 en brouillon voulu. Les 4 modèles d'origine (02 c9c3a8a3, 03 378aa770, 04 afebbb91, 08 ddf5d292) portent encore les variations déplacées.
-- **Prochaine action** : migration de contenu des 4 (§ 7 : instantané `etat-prod-<date>/`, md5 des `variations` à recomparer avec le § 12, titre de 04, descriptions, variations retirées, specs) ; elle RETIRE du contenu publié → l'expliquer à David et attendre son accord avant le SQL.
-- **En attente de David** : accord sur ce que la migration de contenu retire. Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
-- **Pièges en cours** : ⚠️ jamais `--publier` sur `6-fractions/` avant la migration de contenu (04 change de titre). 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`) : ne pas les refaire. 3a7a5711 : NE PAS publier. Question d'accès AVANT le SQL ; `security-auditor` avant `db:migrate`.
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, aucune branche ouverte (la prochaine : migration de contenu).
+- **État** : lot 5 publié (7/7). David a donné son accord (2026-10-29, « oui ») pour retirer des 4 modèles d'origine les variations déplacées (§ 12.4). Instantané `questions-6/etat-prod-2026-10-29-scissions/` pris ; md5 = MCP = § 12 ; 0 donnée d'élève.
+- **Prochaine action** : `docs/wip/questions-6/lot-contenu-6-scissions.py` sur le modèle de `lot-contenu-6-non-decimal.py` : un MODIFIER par modèle (variations gardées, tag relevé, titre et description de la source `scripts/questions/6-fractions/0{2,3,4,8}-*.json`, résultat = source exigé ; 04 : titre resserré + spec ajoutée en v1). Puis la migration, le test (`decrireLotModifier`, taille 4) rouge sans, `security-auditor`, PR, `db:migrate`, et la vérification au MCP.
+- **En attente de David** : rien (accord et question d'accès tranchés). Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
+- **Pièges en cours** : ⚠️ jamais `--publier` sur `6-fractions/` avant la migration de contenu (04 change de titre). 06 et 07 attendent l'outil « étiquettes à ranger » (chantier `reponses-a-placer`). 3a7a5711 : NE PAS publier. `security-auditor` avant `db:migrate`.
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, branche `feat/questions-6-scissions-contenu` (poussée, pas de PR).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -813,3 +813,23 @@ migration de contenu après la publication des 7).
   7 brouillons passent le contrôle.
 - David a lancé `publier-lot --publier` (2026-10-29) : 7/7 publiés. MCP : `published`, rangés, un tag chacun. Comptage
   6e : 136 publiés contenant `6` (128 `[6]` + 7 `[CM2, 6]` + 1 `[CM1, 6]`), 1 brouillon (3a7a5711).
+
+### 12.4 Migration de contenu des 4 : accord et relevé (2026-10-29)
+
+- Accord de David (« oui ») pour retirer les variations déplacées : 02 perd v1, 03 perd v3 et v4, 04 perd v3 à v6
+  (titre resserré, spec ajoutée en v1), 08 perd v4 ; les descriptions suivent.
+- MCP : md5 des `variations` inchangés depuis le § 12, `updated_at` 2026-10-28 08:51:10 ; 0 donnée d'élève
+  (tentatives, cartes, journal, évaluations, tests, statistiques, favoris, chapitres) ; 4 verdicts de `revue-modeles`
+  et 4 tags, non touchés.
+- Instantané `questions-6/etat-prod-2026-10-29-scissions/` (`releve-prod.ts`, base distante) : 4 modèles, 4 tags ;
+  md5 recalculés au format jsonb de Postgres = MCP.
+
+### 12.5 Migration de contenu des 4 (2026-10-29)
+
+- `lot-contenu-6-scissions.py` → `20261029200000_questions_6_scissions_contenu` : 4 MODIFIER (le générateur exige
+  que chaque variation aille dans une part : la part les prend toutes, la retouche retire les déplacées), tags
+  relevés exigés, résultat = source `6-fractions/0{2,3,4,8}` exigé (titre, description, variations, specs ; 04 :
+  spec « Erreur : 3/7 > 5/7 » insérée en v1).
+- Test `questions-6-scissions-contenu` (`decrireLotModifier`, taille 4) : rouge contre une migration vide (6 échecs),
+  12 verts avec (16 sautés : propres aux neufs).
+- Garde doc : `docs/systeme/base-de-donnees.md` inchangée (migration de données, schéma identique).

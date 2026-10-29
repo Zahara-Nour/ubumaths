@@ -1,0 +1,1456 @@
+[
+	{
+		"id": "378aa770-4d92-4c21-aa2f-05d8f9cc4fb4",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Multiplication",
+		"level": 7,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a*n}}}{{{b}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$$\\frac{{{a}}}{{{b}}} \\times {{n}} = ?$$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "2..9"
+					}
+				],
+				"conditions": ["gcd(a,b)==1", "gcd(n,b)==1", "a!=b"],
+				"correction": {
+					"steps": [
+						"**Fraction $\\times$ entier.** On multiplie le numérateur par l'entier ; le dénominateur ne change pas : $\\frac{a}{b} \\times n = \\frac{a \\times n}{b}$.",
+						"$$\\frac{{{a}}}{{{b}}} \\times {{n}} = \\frac{{{a}} \\times {{n}}}{{{b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a*n}}}{{{b}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{n}} \\times \\frac{{{a}}}{{{b}}} = ?$$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "2..9"
+					}
+				],
+				"conditions": ["gcd(a,b)==1", "gcd(n,b)==1", "a!=b"],
+				"correction": {
+					"steps": [
+						"**Fraction $\\times$ entier.** On multiplie le numérateur par l'entier ; le dénominateur ne change pas : $\\frac{a}{b} \\times n = \\frac{a \\times n}{b}$.",
+						"L'ordre ne compte pas dans un produit : ${{n}} \\times \\frac{{{a}}}{{{b}}} = \\frac{{{a}}}{{{b}}} \\times {{n}}$.",
+						"$${{n}} \\times \\frac{{{a}}}{{{b}}} = \\frac{{{n}} \\times {{a}}}{{{b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{a}}}{{{b}}}"
+					}
+				],
+				"statement": "Complète.\n\n$$\\frac{{{a}}}{{{b}}} \\times {{n}} = {{n}} \\times ?$$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "2..9"
+					}
+				],
+				"conditions": ["gcd(a,b)==1", "a!=b"],
+				"correction": {
+					"steps": [
+						"**L'ordre ne compte pas** dans un produit : on peut échanger les deux facteurs.",
+						"$$\\frac{{{a}}}{{{b}}} \\times {{n}} = {{n}} \\times \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*k}}"
+					}
+				],
+				"statement": "Calcule.\n\n$$\\frac{{{a}}}{{{b}}} \\times {{n}} = ?$$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "k",
+						"expression": "2..5"
+					},
+					{
+						"name": "n",
+						"expression": "eval:b*k"
+					}
+				],
+				"conditions": ["gcd(a,b)==1", "a!=b"],
+				"correction": {
+					"steps": [
+						"**Fraction $\\times$ entier.** On multiplie le numérateur par l'entier ; le dénominateur ne change pas : $\\frac{a}{b} \\times n = \\frac{a \\times n}{b}$.",
+						"$$\\frac{{{a}}}{{{b}}} \\times {{n}} = \\frac{{{a}} \\times {{n}}}{{{b}}} = \\frac{{{eval:a*n}}}{{{b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+						"On pouvait aussi simplifier d'abord : ${{n}} \\div {{b}} = {{k}}$, puis ${{a}} \\times {{k}} = {{solution}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Multiplier une fraction par un entier",
+		"description": "Produit d'une fraction par un entier dans les deux sens (3/7 × 4, 5 × 2/9), commutativité (3/4 × 7 = 7 × ?), produit entier (5/6 × 12)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{12}{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "7",
+					"n": "4"
+				},
+				"description": "3/7 × 4 = 12/7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{12}{28}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "7",
+					"n": "4"
+				},
+				"description": "Erreur : 12/28",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{28}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "7",
+					"n": "4"
+				},
+				"description": "Erreur : 3/28",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{10}{9}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"n": "5"
+				},
+				"description": "5 × 2/9 = 10/9",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{10}{45}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"n": "5"
+				},
+				"description": "Erreur : 10/45",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"n": "7"
+				},
+				"description": "3/4 × 7 = 7 × 3/4",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"n": "7"
+				},
+				"description": "Erreur : 7 × 3/4 complété par 3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"k": "2",
+					"n": "12"
+				},
+				"description": "5/6 × 12 = 10",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["\\frac{60}{6}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"k": "2",
+					"n": "12"
+				},
+				"description": "60/6 non simplifié : ambre",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["\\frac{60}{72}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"k": "2",
+					"n": "12"
+				},
+				"description": "Erreur : 60/72",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": "ba8077bb-4aa8-473e-ae4f-c4a38b2a32ca"
+	},
+	{
+		"id": "afebbb91-4d08-46f0-8640-77fe4e6f4e62",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Comparer",
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "3..12"
+					},
+					{
+						"name": "a",
+						"expression": "1..20"
+					},
+					{
+						"name": "c",
+						"expression": "1..20"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b"
+					},
+					{
+						"name": "s",
+						"expression": "0..1"
+					},
+					{
+						"name": "gn",
+						"expression": "eval:(1-s)*a+s*c"
+					},
+					{
+						"name": "gd",
+						"expression": "eval:(1-s)*b+s*d"
+					},
+					{
+						"name": "dn",
+						"expression": "eval:(1-s)*c+s*a"
+					},
+					{
+						"name": "dd",
+						"expression": "eval:(1-s)*d+s*b"
+					},
+					{
+						"name": "r",
+						"expression": "eval:sign(gn*dd-dn*gd)+1"
+					}
+				],
+				"conditions": ["a!=c", "mod(a,b)!=0", "mod(c,b)!=0", "a<2*b", "c<2*b"],
+				"correction": {
+					"steps": [
+						"**Même dénominateur.** Les deux fractions comptent des parts de même taille, $\\frac{1}{{{b}}}$ : la plus grande est celle qui a le plus grand numérateur.",
+						"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..11"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:b+1}}..12"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a"
+					},
+					{
+						"name": "s",
+						"expression": "0..1"
+					},
+					{
+						"name": "gn",
+						"expression": "eval:(1-s)*a+s*c"
+					},
+					{
+						"name": "gd",
+						"expression": "eval:(1-s)*b+s*d"
+					},
+					{
+						"name": "dn",
+						"expression": "eval:(1-s)*c+s*a"
+					},
+					{
+						"name": "dd",
+						"expression": "eval:(1-s)*d+s*b"
+					},
+					{
+						"name": "r",
+						"expression": "eval:sign(gn*dd-dn*gd)+1"
+					}
+				],
+				"conditions": ["mod(a,b)!=0", "mod(a,d)!=0"],
+				"correction": {
+					"steps": [
+						"**Même numérateur.** Partager l'unité en ${{d}}$ donne des parts plus petites qu'en ${{b}}$ : $\\frac{1}{{{d}}} < \\frac{1}{{{b}}}$. Avec ${{a}}$ parts de chaque côté, $\\frac{{{a}}}{{{d}}} < \\frac{{{a}}}{{{b}}}$.",
+						"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "3..12"
+					},
+					{
+						"name": "a",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "d",
+						"expression": "2..12"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:d+1}}..{{eval:2*d-1}}"
+					},
+					{
+						"name": "s",
+						"expression": "0..1"
+					},
+					{
+						"name": "gn",
+						"expression": "eval:(1-s)*a+s*c"
+					},
+					{
+						"name": "gd",
+						"expression": "eval:(1-s)*b+s*d"
+					},
+					{
+						"name": "dn",
+						"expression": "eval:(1-s)*c+s*a"
+					},
+					{
+						"name": "dd",
+						"expression": "eval:(1-s)*d+s*b"
+					},
+					{
+						"name": "r",
+						"expression": "eval:sign(gn*dd-dn*gd)+1"
+					}
+				],
+				"conditions": ["gcd(a,b)==1", "gcd(c,d)==1"],
+				"correction": {
+					"steps": [
+						"**Comparer à 1.** $\\frac{{{a}}}{{{b}}} < 1$ car ${{a}} < {{b}}$, et $\\frac{{{c}}}{{{d}}} > 1$ car ${{c}} > {{d}}$ : donc $\\frac{{{a}}}{{{b}}} < \\frac{{{c}}}{{{d}}}$.",
+						"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "4..12"
+					},
+					{
+						"name": "a",
+						"expression": "1..{{eval:floor((b-1)/2)}}"
+					},
+					{
+						"name": "d",
+						"expression": "4..12"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:floor(d/2)+1}}..{{eval:d-1}}"
+					},
+					{
+						"name": "s",
+						"expression": "0..1"
+					},
+					{
+						"name": "gn",
+						"expression": "eval:(1-s)*a+s*c"
+					},
+					{
+						"name": "gd",
+						"expression": "eval:(1-s)*b+s*d"
+					},
+					{
+						"name": "dn",
+						"expression": "eval:(1-s)*c+s*a"
+					},
+					{
+						"name": "dd",
+						"expression": "eval:(1-s)*d+s*b"
+					},
+					{
+						"name": "r",
+						"expression": "eval:sign(gn*dd-dn*gd)+1"
+					}
+				],
+				"conditions": ["gcd(a,b)==1", "gcd(c,d)==1"],
+				"correction": {
+					"steps": [
+						"**Comparer à $\\frac{1}{2}$.** La moitié de ${{b}}$ est ${{eval:b/2;d}}$ : ${{a}}$ est plus petit, donc $\\frac{{{a}}}{{{b}}} < \\frac{1}{2}$. La moitié de ${{d}}$ est ${{eval:d/2;d}}$ : ${{c}}$ est plus grand, donc $\\frac{{{c}}}{{{d}}} > \\frac{1}{2}$.",
+						"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "m",
+						"expression": "2..3"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b*m"
+					},
+					{
+						"name": "a",
+						"expression": "1..{{eval:2*b-1}}"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:2*d-1}}"
+					},
+					{
+						"name": "s",
+						"expression": "0..1"
+					},
+					{
+						"name": "gn",
+						"expression": "eval:(1-s)*a+s*c"
+					},
+					{
+						"name": "gd",
+						"expression": "eval:(1-s)*b+s*d"
+					},
+					{
+						"name": "dn",
+						"expression": "eval:(1-s)*c+s*a"
+					},
+					{
+						"name": "dd",
+						"expression": "eval:(1-s)*d+s*b"
+					},
+					{
+						"name": "r",
+						"expression": "eval:sign(gn*dd-dn*gd)+1"
+					}
+				],
+				"conditions": ["gcd(a,b)==1", "mod(a,b)!=0", "mod(c,d)!=0", "abs(c-a*m)<=2"],
+				"correction": {
+					"steps": [
+						"**Même dénominateur.** ${{d}} = {{b}} \\times {{m}}$ : on écrit $\\frac{{{a}}}{{{b}}}$ avec le dénominateur ${{d}}$, en multipliant numérateur et dénominateur par ${{m}}$.",
+						"$\\frac{{{a}}}{{{b}}} = \\frac{{{a}} \\times {{m}}}{{{b}} \\times {{m}}} = \\frac{{{eval:a*m}}}{{{d}}}$ : on compare ${{eval:a*m}}$ et ${{c}}$.",
+						"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "0..3"
+					},
+					{
+						"name": "b",
+						"expression": "{{if:k==0|4|{{if:k==1|6|{{if:k==2|6|4}}}}}}"
+					},
+					{
+						"name": "d",
+						"expression": "{{if:k==0|6|{{if:k==1|8|{{if:k==2|9|10}}}}}}"
+					},
+					{
+						"name": "L",
+						"expression": "eval:b*d/gcd(b,d)"
+					},
+					{
+						"name": "a",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:d-1}}"
+					},
+					{
+						"name": "s",
+						"expression": "0..1"
+					},
+					{
+						"name": "gn",
+						"expression": "eval:(1-s)*a+s*c"
+					},
+					{
+						"name": "gd",
+						"expression": "eval:(1-s)*b+s*d"
+					},
+					{
+						"name": "dn",
+						"expression": "eval:(1-s)*c+s*a"
+					},
+					{
+						"name": "dd",
+						"expression": "eval:(1-s)*d+s*b"
+					},
+					{
+						"name": "r",
+						"expression": "eval:sign(gn*dd-dn*gd)+1"
+					}
+				],
+				"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "a*d!=c*b"],
+				"correction": {
+					"steps": [
+						"**Même dénominateur.** ${{L}}$ est un multiple de ${{b}}$ et de ${{d}}$ : on écrit les deux fractions avec le dénominateur ${{L}}$.",
+						"$\\frac{{{a}}}{{{b}}} = \\frac{{{eval:a*L/b}}}{{{L}}}$ et $\\frac{{{c}}}{{{d}}} = \\frac{{{eval:c*L/d}}}{{{L}}}$ : on compare ${{eval:a*L/b}}$ et ${{eval:c*L/d}}$.",
+						"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Comparer deux fractions",
+		"description": "Comparer deux fractions : même dénominateur, même numérateur (5/7 et 5/9), de part et d'autre de 1 (7/8 et 10/9) ou de 1/2 (5/12 et 6/11), dénominateur commun (2/3 et 4/6 ; 3/4 et 5/6)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "7",
+					"c": "5",
+					"d": "7",
+					"r": "0",
+					"s": "0",
+					"dd": "7",
+					"dn": "5",
+					"gd": "7",
+					"gn": "3"
+				},
+				"description": "3/7 < 5/7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "7",
+					"c": "5",
+					"d": "9",
+					"r": "2",
+					"s": "0",
+					"dd": "9",
+					"dn": "5",
+					"gd": "7",
+					"gn": "5"
+				},
+				"description": "5/7 > 5/9",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "7",
+					"c": "5",
+					"d": "9",
+					"r": "2",
+					"s": "0",
+					"dd": "9",
+					"dn": "5",
+					"gd": "7",
+					"gn": "5"
+				},
+				"description": "Erreur : 5/7 < 5/9 (« 9 > 7 »)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "10",
+					"d": "9",
+					"r": "0",
+					"s": "0",
+					"dd": "9",
+					"dn": "10",
+					"gd": "8",
+					"gn": "7"
+				},
+				"description": "7/8 < 10/9",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "10",
+					"d": "9",
+					"r": "0",
+					"s": "0",
+					"dd": "9",
+					"dn": "10",
+					"gd": "8",
+					"gn": "7"
+				},
+				"description": "Erreur : 7/8 > 10/9",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "12",
+					"c": "6",
+					"d": "11",
+					"r": "2",
+					"s": "1",
+					"dd": "12",
+					"dn": "5",
+					"gd": "11",
+					"gn": "6"
+				},
+				"description": "6/11 > 5/12",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "12",
+					"c": "6",
+					"d": "11",
+					"r": "2",
+					"s": "1",
+					"dd": "12",
+					"dn": "5",
+					"gd": "11",
+					"gn": "6"
+				},
+				"description": "Erreur : 6/11 < 5/12 (« 12 > 11 »)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "4",
+					"d": "6",
+					"m": "2",
+					"r": "1",
+					"s": "0",
+					"dd": "6",
+					"dn": "4",
+					"gd": "3",
+					"gn": "2"
+				},
+				"description": "2/3 = 4/6",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "4",
+					"d": "6",
+					"m": "2",
+					"r": "1",
+					"s": "0",
+					"dd": "6",
+					"dn": "4",
+					"gd": "3",
+					"gn": "2"
+				},
+				"description": "Erreur : 2/3 < 4/6",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"L": "12",
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "6",
+					"k": "0",
+					"r": "0",
+					"s": "0",
+					"dd": "6",
+					"dn": "5",
+					"gd": "4",
+					"gn": "3"
+				},
+				"description": "3/4 < 5/6",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "12",
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "6",
+					"k": "0",
+					"r": "0",
+					"s": "0",
+					"dd": "6",
+					"dn": "5",
+					"gd": "4",
+					"gn": "3"
+				},
+				"description": "Erreur : 3/4 > 5/6",
+				"variationIndex": 5
+			}
+		],
+		"classification_node_id": "de32728f-68c4-4769-89f9-185a0bd56ab6"
+	},
+	{
+		"id": "c9c3a8a3-575a-4d8d-b278-cc22d348f274",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Fraction d'une quantité",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Calculer $\\frac{{{p}}}{{{q}}}$ de ${{n}}$, c'est calculer :\n\n```choix\n- $\\frac{{{p}}}{{{q}}} \\times {{n}}$\n- $\\frac{{{p}}}{{{q}}} + {{n}}$\n- ${{n}} - \\frac{{{p}}}{{{q}}}$\n- ${{n}} \\div \\frac{{{p}}}{{{q}}}$\n```",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "2..9"
+					},
+					{
+						"name": "p",
+						"expression": "1..9"
+					},
+					{
+						"name": "k",
+						"expression": "2..12"
+					},
+					{
+						"name": "n",
+						"expression": "eval:q*k"
+					}
+				],
+				"conditions": ["gcd(p,q)==1", "p!=q", "n<=100", "p>=2"],
+				"correction": {
+					"steps": [
+						"**Fraction d'un nombre.** Pour calculer une fraction d'un nombre entier, on multiplie la fraction par le nombre : « de » se traduit par « $\\times$ ».",
+						"$\\frac{{{p}}}{{{q}}}$ de ${{n}}$ $= \\textcolor{{{color:primary.0}}}{\\frac{{{p}}}{{{q}}} \\times {{n}}}$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:p*k}}"
+					}
+				],
+				"statement": "Calcule.\n\n$$\\frac{{{p}}}{{{q}}} \\text{ de } {{n}} = ?$$",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "2..9"
+					},
+					{
+						"name": "p",
+						"expression": "1..9"
+					},
+					{
+						"name": "k",
+						"expression": "2..12"
+					},
+					{
+						"name": "n",
+						"expression": "eval:q*k"
+					}
+				],
+				"conditions": ["gcd(p,q)==1", "p!=q", "n<=100", "p>=2"],
+				"correction": {
+					"steps": [
+						"**Fraction d'un nombre.** Pour calculer une fraction d'un nombre entier, on multiplie la fraction par le nombre : « de » se traduit par « $\\times$ ».",
+						"$\\frac{{{p}}}{{{q}}}$ de ${{n}}$, c'est ${{p}}$ fois $\\frac{1}{{{q}}}$ de ${{n}}$ ; on simplifie d'abord : ${{n}} \\div {{q}} = {{k}}$.",
+						"$$\\frac{{{p}}}{{{q}}} \\times {{n}} = {{p}} \\times \\frac{{{n}}}{{{q}}} = {{p}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:p*n}}}{{{q}}}"
+					}
+				],
+				"statement": "Calcule. Donne le résultat sous forme d'une fraction.\n\n$$\\frac{{{p}}}{{{q}}} \\text{ de } {{n}} = ?$$",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "2..9"
+					},
+					{
+						"name": "p",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "2..9"
+					}
+				],
+				"conditions": ["gcd(p,q)==1", "gcd(n,q)==1", "p!=q", "p>=2"],
+				"correction": {
+					"steps": [
+						"**Fraction d'un nombre.** Pour calculer une fraction d'un nombre entier, on multiplie la fraction par le nombre : « de » se traduit par « $\\times$ ».",
+						"$\\frac{{{p}}}{{{q}}}$ de ${{n}}$, c'est ${{p}}$ fois $\\frac{1}{{{q}}}$ de ${{n}}$, c'est-à-dire ${{p}}$ fois $\\frac{{{n}}}{{{q}}}$.",
+						"$$\\frac{{{p}}}{{{q}}} \\times {{n}} = {{p}} \\times \\frac{{{n}}}{{{q}}} = \\frac{{{p}} \\times {{n}}}{{{q}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Appliquer une fraction à un entier",
+		"description": "Traduire « de » par une multiplication ; calculer une fraction d'un entier, en simplifiant d'abord (2/5 de 60 = 2 × 12) ou avec un résultat fractionnaire (5/4 de 3 = 15/4)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "12",
+					"n": "60",
+					"p": "2",
+					"q": "5"
+				},
+				"description": "2/5 de 60 : 2/5 × 60",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "12",
+					"n": "60",
+					"p": "2",
+					"q": "5"
+				},
+				"description": "Erreur : 60 ÷ 2/5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "12",
+					"n": "60",
+					"p": "2",
+					"q": "5"
+				},
+				"description": "2/5 de 60 = 24",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["150"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "12",
+					"n": "60",
+					"p": "2",
+					"q": "5"
+				},
+				"description": "Erreur : rôles inversés (60 ÷ 2 × 5 = 150)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "12",
+					"n": "60",
+					"p": "2",
+					"q": "5"
+				},
+				"description": "Erreur : un cinquième seulement (12)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{15}{4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "3",
+					"p": "5",
+					"q": "4"
+				},
+				"description": "5/4 de 3 = 15/4",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3,75"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"n": "3",
+					"p": "5",
+					"q": "4"
+				},
+				"description": "3,75 : la consigne demande une fraction",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{5}{12}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "3",
+					"p": "5",
+					"q": "4"
+				},
+				"description": "Erreur : 5/12",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{15}{12}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "3",
+					"p": "5",
+					"q": "4"
+				},
+				"description": "Erreur : 15/12 (dénominateur multiplié aussi)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "30897b1d-e910-4196-8cf0-408d71ea0315"
+	},
+	{
+		"id": "ddf5d292-d792-41d9-9136-2018e73cff9d",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Addition et Soustraction",
+		"level": 11,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:(a-c)/gcd(a-c,b)}}}{{{eval:(b)/gcd(a-c,b)}}}"
+					}
+				],
+				"statement": "Calcule. Donne le résultat sous forme d'une fraction simplifiée.\n\n$$\\frac{{{a}}}{{{b}}} - \\frac{{{c}}}{{{b}}} = ?$$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "3..12"
+					},
+					{
+						"name": "a",
+						"expression": "2..{{eval:2*b-1}}"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}"
+					}
+				],
+				"conditions": ["mod(a-c,b)!=0", "mod(a,b)!=0", "mod(c,b)!=0"],
+				"correction": {
+					"steps": [
+						"**Soustraire des fractions.** On écrit les deux fractions avec le même dénominateur, puis on soustrait les numérateurs ; le dénominateur ne change pas.",
+						"$$\\frac{{{a}}}{{{b}}} - \\frac{{{c}}}{{{b}}} = \\frac{{{a}} - {{c}}}{{{b}}} = {{if:gcd(a-c,b)>1|\\frac{{{eval:a-c}}}{{{b}}} = |}}\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:(N)/gcd(N,L)}}}{{{eval:(L)/gcd(N,L)}}}"
+					}
+				],
+				"statement": "Calcule. Donne le résultat sous forme d'une fraction simplifiée.\n\n$${{if:a*d>c*b|\\frac{{{a}}}{{{b}}} - \\frac{{{c}}}{{{d}}}|\\frac{{{c}}}{{{d}}} - \\frac{{{a}}}{{{b}}}}} = ?$$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "m",
+						"expression": "2..3"
+					},
+					{
+						"name": "a",
+						"expression": "1..{{eval:2*b-1}}"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b*m"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:2*d-1}}"
+					},
+					{
+						"name": "L",
+						"expression": "eval:b*d/gcd(b,d)"
+					},
+					{
+						"name": "N",
+						"expression": "eval:abs(a*L/b-c*L/d)"
+					}
+				],
+				"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "a*d!=c*b", "mod(N,L)!=0"],
+				"correction": {
+					"steps": [
+						"**Soustraire des fractions.** On écrit les deux fractions avec le même dénominateur, puis on soustrait les numérateurs ; le dénominateur ne change pas.",
+						"Dénominateur commun ${{L}}$ : $\\frac{{{a}}}{{{b}}} = \\frac{{{eval:a*L/b}}}{{{L}}}$ et $\\frac{{{c}}}{{{d}}} = \\frac{{{eval:c*L/d}}}{{{L}}}$.",
+						"$${{if:a*d>c*b|\\frac{{{a}}}{{{b}}} - \\frac{{{c}}}{{{d}}}|\\frac{{{c}}}{{{d}}} - \\frac{{{a}}}{{{b}}}}} = {{if:a*d>c*b|\\frac{{{eval:a*L/b}}}{{{L}}} - \\frac{{{eval:c*L/d}}}{{{L}}}|\\frac{{{eval:c*L/d}}}{{{L}}} - \\frac{{{eval:a*L/b}}}{{{L}}}}} = {{if:gcd(N,L)>1|\\frac{{{N}}}{{{L}}} = |}}\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:(N)/gcd(N,L)}}}{{{eval:(L)/gcd(N,L)}}}"
+					}
+				],
+				"statement": "Calcule. Donne le résultat sous forme d'une fraction simplifiée.\n\n$${{if:a*d>c*b|\\frac{{{a}}}{{{b}}} - \\frac{{{c}}}{{{d}}}|\\frac{{{c}}}{{{d}}} - \\frac{{{a}}}{{{b}}}}} = ?$$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "a",
+						"expression": "1..{{eval:2*b-1}}"
+					},
+					{
+						"name": "d",
+						"expression": "2..6"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:2*d-1}}"
+					},
+					{
+						"name": "L",
+						"expression": "eval:b*d/gcd(b,d)"
+					},
+					{
+						"name": "N",
+						"expression": "eval:abs(a*L/b-c*L/d)"
+					}
+				],
+				"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "a*d!=c*b", "mod(N,L)!=0", "gcd(b,d)==1"],
+				"correction": {
+					"steps": [
+						"**Soustraire des fractions.** On écrit les deux fractions avec le même dénominateur, puis on soustrait les numérateurs ; le dénominateur ne change pas.",
+						"Dénominateur commun ${{L}}$ : $\\frac{{{a}}}{{{b}}} = \\frac{{{eval:a*L/b}}}{{{L}}}$ et $\\frac{{{c}}}{{{d}}} = \\frac{{{eval:c*L/d}}}{{{L}}}$.",
+						"$${{if:a*d>c*b|\\frac{{{a}}}{{{b}}} - \\frac{{{c}}}{{{d}}}|\\frac{{{c}}}{{{d}}} - \\frac{{{a}}}{{{b}}}}} = {{if:a*d>c*b|\\frac{{{eval:a*L/b}}}{{{L}}} - \\frac{{{eval:c*L/d}}}{{{L}}}|\\frac{{{eval:c*L/d}}}{{{L}}} - \\frac{{{eval:a*L/b}}}{{{L}}}}} = {{if:gcd(N,L)>1|\\frac{{{N}}}{{{L}}} = |}}\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:n*d-c}}}{{{d}}}"
+					}
+				],
+				"statement": "Calcule. Donne le résultat sous forme d'une fraction.\n\n$${{n}} - \\frac{{{c}}}{{{d}}} = ?$$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "1..3"
+					},
+					{
+						"name": "d",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:d-1}}"
+					}
+				],
+				"conditions": ["gcd(c,d)==1"],
+				"correction": {
+					"steps": [
+						"**Soustraire des fractions.** On écrit les deux fractions avec le même dénominateur, puis on soustrait les numérateurs ; le dénominateur ne change pas.",
+						"${{n}} = \\frac{{{eval:n*d}}}{{{d}}}$ : {{if:n==1|une unité, c'est|${{n}}$ unités, c'est}} ${{eval:n*d}}$ fois $\\frac{1}{{{d}}}$.",
+						"$${{n}} - \\frac{{{c}}}{{{d}}} = \\frac{{{eval:n*d}}}{{{d}}} - \\frac{{{c}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Soustraire des fractions",
+		"description": "Différence de deux fractions : même dénominateur (7/9 − 2/9), dénominateurs multiples (2/3 − 1/6), quelconques dans des cas simples (7/2 − 3/5), entier moins fraction (1 − 3/8)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{5}{9}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "2"
+				},
+				"description": "7/9 − 2/9 = 5/9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{5}{18}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "2"
+				},
+				"description": "Erreur : dénominateurs soustraits aussi (5/0)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"L": "6",
+					"N": "3",
+					"a": "2",
+					"b": "3",
+					"c": "1",
+					"d": "6",
+					"m": "2"
+				},
+				"description": "2/3 − 1/6 = 1/2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{3}{6}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"L": "6",
+					"N": "3",
+					"a": "2",
+					"b": "3",
+					"c": "1",
+					"d": "6",
+					"m": "2"
+				},
+				"description": "3/6 non simplifié : ambre",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{1}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "6",
+					"N": "3",
+					"a": "2",
+					"b": "3",
+					"c": "1",
+					"d": "6",
+					"m": "2"
+				},
+				"description": "Erreur : numérateurs et dénominateurs ôtés (1/3)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{1}{6}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "6",
+					"N": "3",
+					"a": "2",
+					"b": "3",
+					"c": "1",
+					"d": "6",
+					"m": "2"
+				},
+				"description": "Erreur : 2/3 écrit 2/6 sans changer le numérateur (1/6)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{29}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"L": "10",
+					"N": "29",
+					"a": "7",
+					"b": "2",
+					"c": "3",
+					"d": "5"
+				},
+				"description": "7/2 − 3/5 = 29/10",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{4}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "10",
+					"N": "29",
+					"a": "7",
+					"b": "2",
+					"c": "3",
+					"d": "5"
+				},
+				"description": "Erreur : 4/3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{5}{8}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "3",
+					"d": "8",
+					"n": "1"
+				},
+				"description": "1 − 3/8 = 5/8",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["\\frac{2}{8}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"d": "8",
+					"n": "1"
+				},
+				"description": "Erreur : 2/8",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": "bd15426a-f613-44ac-a8b8-0e9ab52753d6"
+	}
+]
