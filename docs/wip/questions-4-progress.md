@@ -558,3 +558,20 @@ les élèves de 4e voient 7 modèles de plus.
 Évènements (Univers 1, Opérations 2), Probabilités / Calculer (Équiprobabilité 1, Évènement contraire 1, Deux
 épreuves 2), Probabilités / Simulation (Fréquences 1, Fluctuation 1), la 6e garde « Apprivoiser » ; probabilités :
 toute écriture égale acceptée (fraction non simplifiée, décimal), corrigé en fraction irréductible.
+
+## 21. Lot 4 : écrit (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-4`, #2000)
+
+- Script `docs/wip/questions/lot-4-4.py` (repris de `lot-4-3.py`) → `scripts/questions/4-lot-4/` : 7 modèles ;
+  `question:specs` : 82 specs vertes, 200 tirages par variation réussis ; `create-questions` (simulation) : 7 « à
+  créer », 0 en base.
+- Vérifié à l'écriture : la case `intervalles` accepte un ensemble dans le désordre et `\varnothing` ; `acceptDecimal`
+  accepte 0,625 pour 5/8 ; fraction juste non simplifiée en ambre (`reducedFractions`) ; deux ` ```simulation ` dans
+  un énoncé, graine tirée par le modèle.
+- Corrigé en écrivant : plage `1..b-1` refusée par le tirage (→ `1..b` et condition `a<b`) ; fréquence de 4-050
+  attendue en fraction (décimal accepté), plus « en écriture décimale » ; les deux diagrammes du dé truqué à la même
+  échelle (`axe: 0 à 120, de 10 en 10`), sinon le dé équilibré paraissait aussi irrégulier.
+- Base locale : 7 brouillons ; aperçu admin : diagrammes, arbre pièce puis urne, tableau des sommes 7 × 7,
+  simulation de 1 000 lancers, ensemble `{6 ; 2 ; 4}` jugé juste.
+- ⚠️ **À montrer à David** : le tableau du bloc ` ```simulation ` titre sa 1re colonne « fᵢ » (minuscule de la
+  variable + indice i, notation de lycée, codée dans `StatChart.svelte`) et sa légende dit « graine 665 ». Gardé
+  tel quel (phase 0) ; autre choix : un tableau d'effectifs écrit par le modèle, comme 4-050 variation 1.

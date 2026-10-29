@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1990._
+_Mis à jour le 2026-10-30, après la mise en prod v0.57.1._
 
-- **État** : recos faites et mergées — #1979 (`robots.txt` : robots d'entraînement des IA exclus), #1980 (colonne `slug`, en prod), #1990 (pages `/glossaire/<slug>`, liens, sitemap). Rien en prod côté code tant que David ne lance pas `deploy:prod`.
-- **Prochaine action** : après `deploy:prod`, vérifier en prod une page (`/glossaire/multiplication`), une redirection (`/glossaire/multiplier`) et `sitemap.xml` ; demander l'indexation dans Search Console. Pistes suivantes (David choisit) : chiffres de Search Console, titres/descriptions des outils, données structurées (reportées).
-- **En attente de David** : `deploy:prod` ; avis sur les 2 écarts à la phase 0 (6 renvois à définition gardent leur page ; page d'un terme sans filtre de niveau) ; `default` en base pour `slug` (évite `slug: ''`), oui ou non.
+- **État** : #1979 (`robots.txt`), #1980 (colonne `slug`), #1990 (pages `/glossaire/<slug>`) EN PROD (v0.57.1), vérifié le 2026-10-30 : page 200 + titre + canonique, `/glossaire/multiplier` → `/glossaire/multiplication`, 631 pages dans `sitemap.xml`, robots IA exclus.
+- **Prochaine action** : David resoumet `sitemap.xml` dans Search Console. Pistes suivantes (David choisit) : chiffres de Search Console, titres/descriptions des outils, données structurées (reportées).
+- **En attente de David** : avis sur les 2 écarts à la phase 0 (6 renvois à définition gardent leur page ; page d'un terme sans filtre de niveau) ; `default` en base pour `slug` (évite `slug: ''`), oui ou non.
 - **Pièges en cours** : un nouveau fichier lu par l'intégration doit entrer dans `paths` de `nightly-integration.yml` (`pnpm check:integration-paths`).
 - **Worktree / branche** : aucun (retirés après #1990) ; recréer `../ubumaths-wt-seo` pour la suite.
 
