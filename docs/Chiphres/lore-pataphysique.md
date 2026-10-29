@@ -506,6 +506,12 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
     - **Champ de courses** dans la plaine : tribunes et piste ovale (le Cheval à Phynances, les paris).
     - **Repère sur la carte** : la Roulette Royale.
     - **Couleur** : Brun merdre `#593B26` (la robe du Cheval, le bois des tripots).
+  - **Plan de la ville** 🟡 (décision de David, 2026-10-29) : ville bâtie sur les deux rives d'un grand méandre de la Vistule, un banc de sable au milieu du fleuve ; on y entre par la plaine. Cinq lieux :
+    1. **La Grand-Place** : la Roulette Royale (dessinée sans numéros : pas de texte dans les illustrations) et l'estrade du Cheval à Phynances.
+    2. **Le Quai des Tripots** : maisons de jeu le long du fleuve, tables à tapis vert dehors au bord de l'eau.
+    3. **Le Casino flottant** : bateau à aubes amarré au quai, devenu salle de jeu.
+    4. **Le Champ de courses** : tribunes et piste ovale, à la sortie de la ville, côté plaine.
+    5. **La Caisse du Cheval** : petit comptoir où le Cheval prélève sa commission de 10 % sur tous les paris.
 
 - #### Glitchistan — _Algorithmique_
   - **Gouverneur** : 🟢 **Bosse-de-Nage** (canon Jarry, _Gestes et opinions du docteur Faustroll, pataphysicien_) — cynocéphale (homme à tête de chien) qui **n'articule que « ha ha »**. C'est-à-dire qu'il est **mathématiquement** un programme qui boucle sur une seule instruction (`while True: print('ha ha')`). C'est un **bug humanoïde**, autorité officielle qui répond à toutes les questions par le même son glitché. **Cohérence pataphysique enrichie** : Bosse-de-Nage est aussi, par la même mécanique de répétition automatique, le **maître des bruits inattendus** — son _« ha ha »_ perpétuel **est** le chprout' permanent de la province. C'est le Régent canonique des bugs corporels-numériques. **Voix** : exclusivement « ha ha », parfois « hahaha » lors des grandes décisions, plus rarement un silence (qui est interprété comme un crash royal). Les Galopins apprennent à décoder (« ha ha » suivi d'un sourire = approbation, suivi d'un froncement = désapprobation, simultané avec une morsure = décret royal de bannissement).
