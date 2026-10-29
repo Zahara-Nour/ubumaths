@@ -660,10 +660,15 @@ describe('ensemble fini écrit sans accolades (validé par David le 2026-10-29)'
 		['1', ']0;2]'],
 		['1', '\\varnothing'],
 		['1', '\\mathbb{R}'],
-		['x=2', ']-\\infty;2]']
-	])('attendu intervalle, ∅ ou ℝ : « %s » reste illisible', (answer, expected) => {
-		expect(judgeIntervalAnswer(answer, expected).feedback).toBe(INTERVAL_FEEDBACK.unreadable);
-	});
+		['x=2', ']-\\infty;2]'],
+		['-\\infty', '\\{0{,}5\\}'],
+		['+\\infty', '\\{-3;3\\}']
+	])(
+		'attendu intervalle, ∅ ou ℝ, ou réponse infinie : « %s » reste illisible',
+		(answer, expected) => {
+			expect(judgeIntervalAnswer(answer, expected).feedback).toBe(INTERVAL_FEEDBACK.unreadable);
+		}
+	);
 
 	it('un texte qui n’est pas fait de nombres reste illisible', () => {
 		expect(judgeIntervalAnswer('bonjour', HALF).feedback).toBe(INTERVAL_FEEDBACK.unreadable);

@@ -173,6 +173,8 @@ function isolatedPoints(domain: Domain): string[] | undefined {
  * `x = -3 ou x = 3`), pour le message ; undefined si la réponse n'en est pas un.
  */
 function bareValues(written: string): string[] | undefined {
+	// Un infini n'est pas une solution : ne pas souffler {-∞}
+	if (/\\infty|∞/.test(written)) return undefined;
 	const pieces = written
 		.split(BARE_VALUES_SEPARATOR)
 		.map((piece) => piece.replace(LEADING_EQUALS, '').trim());
