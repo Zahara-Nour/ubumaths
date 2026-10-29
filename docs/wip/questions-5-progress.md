@@ -10,7 +10,8 @@ _Mis à jour le 2026-10-29, après la publication du lot 2._
 - **État** : lot 1 « Calcul » et lot 2 « Relatifs » publiés (8/8 chacun, vérifié au MCP). Lot 2 : 8 verdicts « OK »
   sur la page à cocher, aucun commentaire.
 - **Prochaine action** : phase 0 du lot 3 (suite des lots A, § 3 / § 5 : fractions et puissances 5-027, 029, 030,
-  032, 033), puis attendre la validation de David.
+  032, 033), puis attendre la validation de David. Relevé du 2026-10-29 : 5-029, 5-030 et 5-032 ont désormais
+  **1 modèle chacun** (créés hors de ce chantier : les identifier et les vérifier d'abord) ; 5-027 et 5-033 aucun.
 - **En attente de David** : rien.
 - **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
 --mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
