@@ -394,6 +394,13 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - **Devise** : « **Patron, la soustraction !** »
 - **Commentaire de la devise** : détournement de l'expression française universelle « Patron, l'addition ! » (cri lancé au serveur en fin de repas pour réclamer la note). En remplaçant _addition_ par _soustraction_, on demande qu'on **enlève** de l'argent au lieu d'en payer — geste pataphysique parfait : escroquerie ubuesque condensée en quatre mots. Mathématiquement, addition et soustraction sont les deux opérations fondatrices de la province ; les détourner l'une par l'autre est l'archétype de l'opération inversée. Lien narratif fort avec Empoche-les-Bains : c'est le cri qu'on entend chaque soir au restaurant du Grand Hôtel thermal.
 - **Paysage canon** : station thermale 1880 plébiscitée par les bourgeois Polonais. Place principale dominée par une grande gidouille de bronze.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) :
+  - **Relief** : collines basses et boisées, au pied de montagnes moyennes au sud-ouest (comme les Sudètes, région thermale de la vraie Pologne).
+  - **Eau** : sources chaudes, bassins ronds et fontaines ; la Vistule traverse Empoche-les-Bains. La vapeur est une brume blanche et légère, jamais les fumées grises du Glitchistan.
+  - **Végétation** : campagne domestiquée et bourgeoise (parcs à l'anglaise, allées de marronniers, pelouses, parterres), rien de sauvage.
+  - **Ville** : Grand Hôtel thermal, buvette à colonnade, kiosque à musique, gidouille de bronze ; à l'entrée des bains, les guichets de péage de Mère Ubu (tout se paie). L'argent de Mère Ubu suffit à dire la province, sans bouliers ni chiffres.
+  - **Repère sur la carte** : la gidouille de bronze devant le Grand Hôtel, avec un filet de vapeur.
+  - **Couleur** : Or phynance `#F3C025`.
 
 #### Bedonstan — _Géométrie_
 
