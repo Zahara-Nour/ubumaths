@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1976 et `db:migrate`._
+_Mis à jour le 2026-10-29, après la publication du lot 2._
 
-- **État** : lots 0 et 1 en prod et publiés. **Lot 2 (numération des entiers, 10 modèles)** : fichiers (#1964), 10 brouillons en prod, rangés et tagués (#1976, migration jouée, vérifiée au MCP). Page à cocher : https://claude.ai/artifact/GZT4LQD6HnDkvrmamhWQ1o (0/10 verdicts au 2026-10-29).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, les COMPTER) ; « À revoir » → corriger (§ 7 de la doc) ; 10 OK → `publier-lot.ts --dir scripts/questions/cm1-2` en simulation, puis David `--publier`. Ensuite lot 3 (fractions).
-- **En attente de David** : la relecture du lot 2 sur la page à cocher (« Ranger cinq nombres » : bloc non dessiné sur la page, le jouer dans l'aperçu admin).
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente (relever `schema_migrations`) ; un worktree n'a pas `supabase/.temp/` (lien) : le copier du dépôt principal ; « Multiples et diviseurs » : niveaux 4-8 pris par le CM2, les nôtres partent de 9 ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS ; un modèle garde toujours au moins un niveau ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1` en tête détachée sur `origin/main` (à garder pour la publication, puis à retirer).
+- **État** : lots 0, 1 et 2 en prod et **publiés**. Lot 2 (numération des entiers, 10 modèles) : #1964, #1976, relecture 10/10 OK, `publier-lot.ts --publier` lancé par David, 10 `published` relus au MCP.
+- **Prochaine action** : lot 3 (fractions) — phase 0 à écrire (points, sous-notions, niveaux relus en prod), puis attendre la validation de David.
+- **En attente de David** : rien.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente (relever `schema_migrations`) ; un worktree n'a pas `supabase/.temp/` (lien) : le copier du dépôt principal ; « Multiples et diviseurs » : niveaux 4-8 pris par le CM2, les nôtres partent de 9 ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
+- **Worktree / branche** : aucun (worktree du lot 2 retiré) ; au lot 3, `git worktree add -b feat/questions-cm1-lot3 ../ubumaths-wt-questions-cm1 origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -331,3 +331,9 @@ celle du CE2 (`20261029234500`), depuis le dépôt principal. MCP : les 10 modè
 sous-notion, un point chacun (CM1-003 ×2, 004, 005, 007, 009, 012, 013, 141, 142), toujours
 brouillons, `updated_at` inchangé (09:37, création). Page à cocher :
 https://claude.ai/artifact/GZT4LQD6HnDkvrmamhWQ1o (alerte attendue : ```ranger non dessiné).
+
+### 8 quinquies. Lot 2 — publication (2026-10-29)
+
+Page à cocher : 10/10 OK, sans commentaire. `publier-lot.ts --dir scripts/questions/cm1-2` en
+simulation (10 brouillons passent le contrôle), puis `--publier` lancé par David : 10/10 publiés.
+MCP : les 10 `published`. Worktree `../ubumaths-wt-questions-cm1` retiré.
