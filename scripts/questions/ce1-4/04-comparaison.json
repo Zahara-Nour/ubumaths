@@ -1,0 +1,290 @@
+{
+	"title": "Problèmes de comparaison",
+	"description": "Le plus grand, le plus petit ou l'écart : Léo 188 billes, Lucie 75 de plus ; 111 garçons, 257 filles ; Elsa 15,30 €, 6 € de plus que Noé",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Comparaison",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Léo a ${{a}}$ billes. Lucie en a ${{d}}$ de plus que Léo.\n\nCombien Lucie a-t-elle de billes ?\n\nLucie a $?$ billes.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100..800"
+				},
+				{
+					"name": "d",
+					"expression": "20..200"
+				}
+			],
+			"conditions": ["a + d <= 1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Lucie a autant de billes que Léo, et encore ${{d}}$ de plus : elle en a plus que Léo, on ajoute l'écart.",
+					"$${{a}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a+d}}}$$",
+					"Lucie a ${{eval:a+d}}$ billes."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'école, il y a ${{g}}$ garçons et ${{f}}$ filles.\n\nCombien de filles y a-t-il de plus que de garçons ?\n\nIl y a $?$ filles de plus que de garçons.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "100..400"
+				},
+				{
+					"name": "f",
+					"expression": "120..600"
+				}
+			],
+			"conditions": ["f - g >= 20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:f-g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche **l'écart** entre les filles et les garçons : ce qu'il faut ajouter à ${{g}}$ pour arriver à ${{f}}$. C'est une soustraction, même si l'énoncé dit « de plus ».",
+					"$${{f}} - {{g}} = \\textcolor{{{color:primary.0}}}{{{eval:f-g}}}$$",
+					"Il y a ${{eval:f-g}}$ filles de plus que de garçons."
+				]
+			}
+		},
+		{
+			"statement": "Le chêne a ${{a}}$ ans. Il a ${{d}}$ ans de plus que le tilleul.\n\nQuel âge a le tilleul ?\n\nLe tilleul a $?$ ans.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100..900"
+				},
+				{
+					"name": "d",
+					"expression": "20..300"
+				}
+			],
+			"conditions": ["a - d >= 20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le chêne est plus vieux que le tilleul : le tilleul a ${{d}}$ ans de moins que le chêne. On enlève l'écart, même si l'énoncé dit « de plus ».",
+					"$${{a}} - {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a-d}}}$$",
+					"Le tilleul a ${{eval:a-d}}$ ans."
+				]
+			}
+		},
+		{
+			"statement": "Tom a ${{a}}$ cartes. Il en a ${{d}}$ de moins que Sara.\n\nCombien Sara a-t-elle de cartes ?\n\nSara a $?$ cartes.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "50..700"
+				},
+				{
+					"name": "d",
+					"expression": "20..300"
+				}
+			],
+			"conditions": ["a + d <= 1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Tom en a moins que Sara : Sara en a ${{d}}$ de plus que Tom. On ajoute l'écart, même si l'énoncé dit « de moins ».",
+					"$${{a}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a+d}}}$$",
+					"Sara a ${{eval:a+d}}$ cartes."
+				]
+			}
+		},
+		{
+			"statement": "Elsa a ${{eval:floor((100*x+10*k)/100)}}.{{eval:floor(mod(100*x+10*k,100)/10)}}{{eval:mod(100*x+10*k,10)}}~\\unit{€}$ dans sa tirelire. Elle a ${{d}}~\\unit{€}$ de plus que ce que son frère Noé a dans sa tirelire.\n\nQuelle somme d'argent Noé a-t-il dans sa tirelire ?\n\nNoé a $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "8..40"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..30"
+				}
+			],
+			"conditions": ["x - d >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*(x-d)+10*k)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Elsa a plus d'argent que Noé : Noé a ${{d}}~\\unit{€}$ de moins qu'Elsa. On enlève l'écart, même si l'énoncé dit « de plus ».",
+					"L'écart est un nombre entier d'euros : les centimes ne changent pas. Les euros : ${{x}} - {{d}} = {{eval:x-d}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{eval:floor((100*(x-d)+10*k)/100)}}.{{eval:floor(mod(100*(x-d)+10*k,100)/10)}}{{eval:mod(100*(x-d)+10*k,10)}}~\\unit{€}}$$",
+					"Noé a ${{eval:floor((100*(x-d)+10*k)/100)}}.{{eval:floor(mod(100*(x-d)+10*k,100)/10)}}{{eval:mod(100*(x-d)+10*k,10)}}~\\unit{€}$ dans sa tirelire."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 188 + 75 = 263",
+			"variationIndex": 0,
+			"variables": {
+				"a": "188",
+				"d": "75"
+			},
+			"answers": ["263"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus grand, l'écart enlevé (113)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "188",
+				"d": "75"
+			},
+			"answers": ["113"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 257 − 111 = 146",
+			"variationIndex": 1,
+			"variables": {
+				"g": "111",
+				"f": "257"
+			},
+			"answers": ["146"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : écart, « de plus » lu addition (368)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "111",
+				"f": "257"
+			},
+			"answers": ["368"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "plus petit : 350 − 125 = 225",
+			"variationIndex": 2,
+			"variables": {
+				"a": "350",
+				"d": "125"
+			},
+			"answers": ["225"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit, « de plus » lu addition (475)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "350",
+				"d": "125"
+			},
+			"answers": ["475"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "« de moins » : 245 + 60 = 305",
+			"variationIndex": 3,
+			"variables": {
+				"a": "245",
+				"d": "60"
+			},
+			"answers": ["305"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « de moins » lu soustraction (185)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "245",
+				"d": "60"
+			},
+			"answers": ["185"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 15,30 − 6 = 9,30 €",
+			"variationIndex": 4,
+			"variables": {
+				"x": "15",
+				"k": "3",
+				"d": "6"
+			},
+			"answers": ["9{,}3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 9,30 € avec le zéro",
+			"variationIndex": 4,
+			"variables": {
+				"x": "15",
+				"k": "3",
+				"d": "6"
+			},
+			"answers": ["9{,}30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Elsa, « de plus » lu addition (21,30 €)",
+			"variationIndex": 4,
+			"variables": {
+				"x": "15",
+				"k": "3",
+				"d": "6"
+			},
+			"answers": ["21{,}3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

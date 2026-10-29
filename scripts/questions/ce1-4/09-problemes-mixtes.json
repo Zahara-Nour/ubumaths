@@ -1,0 +1,216 @@
+{
+	"title": "Problèmes mixtes en deux étapes",
+	"description": "Une multiplication et une addition ou une soustraction : 7 L à 2 €, billet de 20 € ; 20 cahiers à 4 € et 20 protège-cahiers à 2 €",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Deux étapes",
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Abi achète ${{q}}$ litres d'huile à ${{p}}~\\unit{€}$ le litre. Elle donne ${{B}}~\\unit{€}$ au vendeur.\n\nCombien le vendeur va-t-il lui rendre ?\n\nLe vendeur rend $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "B",
+					"expression": "20|50"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["q * p <= B - 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:B-q*p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. D'abord, le prix de l'huile : ${{q}}$ fois ${{p}}~\\unit{€}$.",
+					"$${{q}} \\times {{p}} = {{eval:q*p}}$$",
+					"Puis le vendeur rend ce qui manque pour aller de ${{eval:q*p}}~\\unit{€}$ à ${{B}}~\\unit{€}$ : on enlève.",
+					"$${{B}} - {{eval:q*p}} = \\textcolor{{{color:primary.0}}}{{{eval:B-q*p}}}$$",
+					"Le vendeur rend ${{eval:B-q*p}}~\\unit{€}$ à Abi."
+				]
+			}
+		},
+		{
+			"statement": "Un cahier coûte ${{a}}~\\unit{€}$ et un protège-cahier ${{b}}~\\unit{€}$. Jérôme doit acheter ${{n}}$ cahiers et autant de protège-cahiers.\n\nQuel sera le montant de la facture ?\n\nLa facture sera de $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2|3|4|5|10|20"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(a+b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. Les cahiers : ${{n}}$ fois ${{a}}~\\unit{€}$.",
+					"$${{n}} \\times {{a}} = {{eval:n*a}}$$",
+					"Les protège-cahiers : ${{n}}$ fois ${{b}}~\\unit{€}$.",
+					"$${{n}} \\times {{b}} = {{eval:n*b}}$$",
+					"Puis on ajoute les deux.",
+					"$${{eval:n*a}} + {{eval:n*b}} = \\textcolor{{{color:primary.0}}}{{{eval:n*(a+b)}}}$$",
+					"La facture sera de ${{eval:n*(a+b)}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Un car a ${{C}}$ places. ${{g}}$ classes de ${{n}}$ élèves montent dans le car.\n\nCombien de places restent libres ?\n\nIl reste $?$ places libres.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..3"
+				},
+				{
+					"name": "n",
+					"expression": "20..29"
+				},
+				{
+					"name": "C",
+					"expression": "60..90"
+				}
+			],
+			"conditions": ["C - g * n >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:C-g*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. D'abord, le nombre d'élèves : ${{g}}$ fois ${{n}}$ élèves.",
+					"$${{g}} \\times {{n}} = {{eval:g*n}}$$",
+					"Puis les places libres : on enlève les élèves des places du car.",
+					"$${{C}} - {{eval:g*n}} = \\textcolor{{{color:primary.0}}}{{{eval:C-g*n}}}$$",
+					"Il reste ${{eval:C-g*n}}$ places libres."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 20 − 7 × 2 = 6 €",
+			"variationIndex": 0,
+			"variables": {
+				"B": "20",
+				"q": "7",
+				"p": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le prix de l'huile au lieu du rendu (14)",
+			"variationIndex": 0,
+			"variables": {
+				"B": "20",
+				"q": "7",
+				"p": "2"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 20 − 7 − 2 (11)",
+			"variationIndex": 0,
+			"variables": {
+				"B": "20",
+				"q": "7",
+				"p": "2"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 20 × 4 + 20 × 2 = 120 €",
+			"variationIndex": 1,
+			"variables": {
+				"n": "20",
+				"a": "4",
+				"b": "2"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : protège-cahiers comptés une fois (82)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "20",
+				"a": "4",
+				"b": "2"
+			},
+			"answers": ["82"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un cahier et un protège-cahier (6)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "20",
+				"a": "4",
+				"b": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "car : 60 − 2 × 27 = 6",
+			"variationIndex": 2,
+			"variables": {
+				"g": "2",
+				"n": "27",
+				"C": "60"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : car, le nombre d'élèves (54)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "2",
+				"n": "27",
+				"C": "60"
+			},
+			"answers": ["54"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

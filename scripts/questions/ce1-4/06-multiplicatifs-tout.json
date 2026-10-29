@@ -1,0 +1,186 @@
+{
+	"title": "Problèmes multiplicatifs : le tout",
+	"description": "n paquets de p : 6 paquets de 4 biscuits, 10 paquets de 25 gâteaux, 7 paquets de 20",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Multiplicatifs",
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Paul apporte ${{g}}$ paquets de biscuits. Il y a ${{n}}$ biscuits dans chaque paquet.\n\nCombien y a-t-il de biscuits en tout ?\n\nIl y a $?$ biscuits.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il y a ${{g}}$ paquets de ${{n}}$ biscuits : c'est ${{g}}$ fois ${{n}}$ biscuits.",
+					"$${{g}} \\times {{n}} \\text{ biscuits} = \\textcolor{{{color:primary.0}}}{{{eval:g*n}}} \\text{ biscuits}$$",
+					"Il y a ${{eval:g*n}}$ biscuits en tout."
+				]
+			}
+		},
+		{
+			"statement": "Un client achète $10$ paquets de ${{n}}$ gâteaux.\n\nCombien a-t-il acheté de gâteaux ?\n\nIl a acheté $?$ gâteaux.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "11..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"C'est $10$ fois ${{n}}$ gâteaux : ${{n}}$ dizaines de gâteaux.",
+					"$$10 \\times {{n}} \\text{ gâteaux} = \\textcolor{{{color:primary.0}}}{{{eval:10*n}}} \\text{ gâteaux}$$",
+					"Il a acheté ${{eval:10*n}}$ gâteaux."
+				]
+			}
+		},
+		{
+			"statement": "Jan a ${{g}}$ paquets de biscuits. Chaque paquet contient ${{d}}$ biscuits.\n\nCombien Jan a-t-il de biscuits ?\n\nJan a $?$ biscuits.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..9"
+				},
+				{
+					"name": "D",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "eval:10*D"
+				}
+			],
+			"conditions": ["g * d <= 500"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g*d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Jan a ${{g}}$ fois ${{d}}$ biscuits. ${{d}}$, c'est ${{D}}$ dizaines : ${{g}}$ fois ${{D}}$ dizaines, c'est ${{eval:g*D}}$ dizaines.",
+					"$${{g}} \\times {{d}} \\text{ biscuits} = \\textcolor{{{color:primary.0}}}{{{eval:g*d}}} \\text{ biscuits}$$",
+					"Jan a ${{eval:g*d}}$ biscuits."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "paquets : 6 paquets de 4 = 24",
+			"variationIndex": 0,
+			"variables": {
+				"g": "6",
+				"n": "4"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : paquets, 6 + 4 (10)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "6",
+				"n": "4"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : paquets, 64 juxtaposés",
+			"variationIndex": 0,
+			"variables": {
+				"g": "6",
+				"n": "4"
+			},
+			"answers": ["64"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 10 paquets de 25 = 250",
+			"variationIndex": 1,
+			"variables": {
+				"n": "25"
+			},
+			"answers": ["250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 paquets de 25, 35",
+			"variationIndex": 1,
+			"variables": {
+				"n": "25"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 7 paquets de 20 = 140",
+			"variationIndex": 2,
+			"variables": {
+				"g": "7",
+				"D": "2",
+				"d": "20"
+			},
+			"answers": ["140"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 × 2 sans la dizaine (14)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "7",
+				"D": "2",
+				"d": "20"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 10 paquets de 99 = 990",
+			"variationIndex": 1,
+			"variables": {
+				"n": "99"
+			},
+			"answers": ["990"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
