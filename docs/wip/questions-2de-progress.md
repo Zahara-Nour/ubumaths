@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1945._
+_Mis à jour le 2026-10-29, après #1946 et `db:migrate`._
 
-- **État** : lot 2 bis B (6 modèles : 1/x, √x, x³) mergé (#1945), pas encore en prod ; 6 brouillons en base
-  locale, 1/x joué dans l'aperçu (§ 16).
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/2de-lecture-b --publier` ;
-  puis migration nœud + tag (gabarit `20261028183000_…lecture_a…`), page à cocher, publication.
-- **En parallèle** : correctif `fix/intervalles-accolades` (nombres sans accolades → message « entre
-  accolades », § 17) : phase 0 posée, **en attente de David** (avec ou sans « x = 2 »).
-- **Pièges en cours** : horodatage de migration pris par une autre session ; test « cas rare » lent en CI ;
-  étiquettes C_f / C_g serrées près d'une intersection ; port 5176 pris par `questions-4` (serveur sur 5177).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-b` (mergée).
+- **État** : lot 2 bis B (1/x, √x, x³) en prod en brouillon, rangé et tagué (§ 18) ; page à cocher publiée,
+  0 verdict sur 6 : https://claude.ai/artifact/Pg2wcdRUGdQpjQs3FdjJsb
+- **Prochaine action** : relecture par David ; compter les verdicts (`ArtifactData list verdicts`) ; puis
+  `publier-lot.ts --dir scripts/questions/2de-lecture-b` en simulation, `--publier` lancé par David.
+- **En attente de David** : la relecture ; la phase 0 du correctif « accolades » (§ 17, avec ou sans
+  « x = 2 »).
+- **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT, pas dans la PR ;
+  horodatage de migration pris par une autre session ; port 5176 pris par `questions-4` (serveur sur 5177).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-b-rangement`
+  (mergée).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -460,3 +461,7 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
   a371b402 (2-468), 98892db9 (2-344), 52e58bd6 (2-471) ; relevé MCP : brouillons, 2de, sans nœud ni tag.
 - Migration `20261029183000_questions_2de_lecture_b_rangement_tags.sql` (dérivée du lot A) et son test :
   5/9 rouges sans la migration, 9/9 verts avec ; `security-auditor` : aucun finding bloquant. PR #1946.
+- #1946 mergée le 2026-10-29 (premier passage rouge : `Doc-inchangée:` mise dans la PR au lieu d'un commit).
+  `db:migrate` le 2026-10-29 ; MCP : 6 modèles sur le nœud de leur point, 1 tag chacun (le bon),
+  `updated_at` inchangé, brouillons. Page à cocher (aucune alerte) :
+  https://claude.ai/artifact/Pg2wcdRUGdQpjQs3FdjJsb
