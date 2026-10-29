@@ -84,7 +84,7 @@ describe('```cubes — erreurs situées', () => {
 	it('hauteurs: absente', () => {
 		const node = read('vue: face');
 		expect(node.spec).toBeNull();
-		expect(node.errors.join()).toContain('il manque la ligne hauteurs:');
+		expect(node.errors.join()).toContain('il manque les hauteurs');
 	});
 
 	it('vue inconnue : les vues permises sont listées', () => {

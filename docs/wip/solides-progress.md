@@ -6,12 +6,12 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après le lot 1 (code poussé, PR pas encore ouverte)._
+_Mis à jour le 2026-10-30, lot 1 en PR._
 
-- **État** : lot 1 (` ```cubes `, affichage) codé et poussé sur `feat/solides` : tests verts, `check:incremental` 0 erreur, doc mise à jour.
-- **Prochaine action** : revue (`code-reviewer`), PR, CI, merge ; puis lot 2.
+- **État** : lot 1 (` ```cubes `, affichage) en PR ; revue Sonnet sans bloquant ; rendu vérifié sur 5176 (thème sombre corrigé : dessus le plus clair).
+- **Prochaine action** : CI verte → merge ; puis lot 2 (gestes `dessiner:` et `retrouver:`, § 3), phase 0 détaillée à écrire comme le § 6.
 - **En attente de David** : rien.
-- **Pièges en cours** : `ls` est un alias `eza` qui peut bloquer un enchaînement de commandes dans le harnais.
+- **Pièges en cours** : `ls` est un alias `eza` qui peut bloquer un enchaînement de commandes ; tests du lot 1 écrits après le code (pas de rouge vu).
 - **Worktree / branche** : `../ubumaths-wt-solides` · `feat/solides`.
 
 ---

@@ -191,7 +191,7 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 	// Les hauteurs
 	let heights: number[][] = [];
 	if (written.length === 0) {
-		fail(1, 'il manque la ligne hauteurs: (ex. hauteurs: 2 1 1 / 1 0 1)');
+		fail(1, 'il manque les hauteurs (ex. hauteurs: 2 1 1 / 1 0 1)');
 	} else {
 		let readable = true;
 		const parsed: number[][] = [];

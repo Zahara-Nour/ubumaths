@@ -99,7 +99,7 @@ export const cubesEntry: BlockCatalogEntry = {
 		{
 			title: 'Hauteurs absentes',
 			source: fence('cubes', 'vue: face'),
-			message: 'il manque la ligne hauteurs:',
+			message: 'il manque les hauteurs',
 			explanation: 'La ligne hauteurs: dit combien de cubes dans chaque pile.'
 		}
 	],
