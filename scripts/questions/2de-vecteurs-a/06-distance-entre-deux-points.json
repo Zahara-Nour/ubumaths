@@ -1,0 +1,312 @@
+{
+	"title": "Distance entre deux points",
+	"description": "AB en repère orthonormé (entière, √n), puis « ABC isocèle en A ? » par AB² et AC² (pièges : racine oubliée, différences non élevées au carré)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Norme et distance",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{eval:(ax)+(sx)*(x)}}\\,;\\,{{eval:(ay)+(sy)*(y)}})$.\n\nCalcule la distance $AB$ (valeur exacte, sous la forme la plus simple).\n\n$$AB=?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..4"
+				},
+				{
+					"name": "sx",
+					"expression": "1|-1"
+				},
+				{
+					"name": "sy",
+					"expression": "1|-1"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:t==0|3|{{if:t==1|6|{{if:t==2|5|{{if:t==3|4|8}}}}}}}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{if:t==0|4|{{if:t==1|8|{{if:t==2|12|{{if:t==3|3|6}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:t==0|25|{{if:t==1|100|{{if:t==2|169|{{if:t==3|25|100}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:t==0|5|{{if:t==1|10|{{if:t==2|13|{{if:t==3|5|10}}}}}}}}"
+				},
+				{
+					"name": "ax",
+					"expression": "-6..6"
+				},
+				{
+					"name": "ay",
+					"expression": "-6..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En repère orthonormé, $AB=\\|\\overrightarrow{AB}\\|=\\sqrt{(x_B-x_A)^2+(y_B-y_A)^2}$.",
+					"$$AB=\\sqrt{\\left({{eval:(ax)+(sx)*(x)}}-{{ax;()}}\\right)^2+\\left({{eval:(ay)+(sy)*(y)}}-{{ay;()}}\\right)^2}=\\sqrt{{{if:sx==1|{{x}}|(-{{x}})}}^2+{{if:sy==1|{{y}}|(-{{y}})}}^2}=\\sqrt{ {{c}} }$$",
+					"${{c}}={{r}}^2$, donc $AB=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{eval:(ax)+(sx)*(x)}}\\,;\\,{{eval:(ay)+(sy)*(y)}})$.\n\nCalcule la distance $AB$ (valeur exacte, sous la forme la plus simple).\n\n$$AB=?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..9"
+				},
+				{
+					"name": "sx",
+					"expression": "1|-1"
+				},
+				{
+					"name": "sy",
+					"expression": "1|-1"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:t==0|2|{{if:t==1|1|{{if:t==2|2|{{if:t==3|3|{{if:t==4|1|{{if:t==5|4|{{if:t==6|1|{{if:t==7|1|{{if:t==8|2|3}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{if:t==0|3|{{if:t==1|4|{{if:t==2|5|{{if:t==3|5|{{if:t==4|6|{{if:t==5|5|{{if:t==6|2|{{if:t==7|3|{{if:t==8|7|7}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:t==0|13|{{if:t==1|17|{{if:t==2|29|{{if:t==3|34|{{if:t==4|37|{{if:t==5|41|{{if:t==6|5|{{if:t==7|10|{{if:t==8|53|58}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "ax",
+					"expression": "-6..6"
+				},
+				{
+					"name": "ay",
+					"expression": "-6..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\sqrt{ {{c}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En repère orthonormé, $AB=\\|\\overrightarrow{AB}\\|=\\sqrt{(x_B-x_A)^2+(y_B-y_A)^2}$.",
+					"$$AB=\\sqrt{\\left({{eval:(ax)+(sx)*(x)}}-{{ax;()}}\\right)^2+\\left({{eval:(ay)+(sy)*(y)}}-{{ay;()}}\\right)^2}=\\sqrt{{{if:sx==1|{{x}}|(-{{x}})}}^2+{{if:sy==1|{{y}}|(-{{y}})}}^2}=\\sqrt{ {{c}} }$$",
+					"${{c}}$ n'a aucun facteur carré autre que $1$ : $AB=\\textcolor{{{color:primary.0}}}{\\sqrt{ {{c}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$, $B({{eval:(ax)+(p)}}\\,;\\,{{eval:(ay)+(q)}})$ et $C({{eval:(ax)+(sx)*(q)}}\\,;\\,{{eval:(ay)+(sy)*(p)+(w)*(sy)}})$.\n\nLe triangle $ABC$ est-il isocèle en $A$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "sx",
+					"expression": "1|-1"
+				},
+				{
+					"name": "sy",
+					"expression": "1|-1"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["abs(p) != abs(q)", "p+w != 0", "(p)*(sy)*((p)+(w)) - (q)*(sx)*(q) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le triangle est isocèle en $A$ si $AB=AC$ : on compare $AB^2$ et $AC^2$ (sans racine, c'est plus simple).",
+					"$AB^2={{p;()}}^2+{{q;()}}^2=\\textcolor{{{color:primary.0}}}{{{eval:(p)^2+(q)^2}}}$ et $AC^2={{eval:(sx)*(q);()}}^2+{{eval:(sy)*(p)+(w)*(sy);()}}^2=\\textcolor{{{color:primary.1}}}{{{eval:(q)^2+((p)+(w))^2}}}$.",
+					"{{if:w==0|$AB^2=AC^2$, donc $AB=AC$ : **le triangle est isocèle en $A$**.|$AB^2\\neq AC^2$, donc $AB\\neq AC$ : **le triangle n'est pas isocèle en $A$**.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A(1 ; 2), B(4 ; −2) → 5",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "-1",
+				"x": "3",
+				"y": "4",
+				"c": "25",
+				"r": "5",
+				"ax": "1",
+				"ay": "2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : racine oubliée (25)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "-1",
+				"x": "3",
+				"y": "4",
+				"c": "25",
+				"r": "5",
+				"ax": "1",
+				"ay": "2"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme des différences (−1)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "-1",
+				"x": "3",
+				"y": "4",
+				"c": "25",
+				"r": "5",
+				"ax": "1",
+				"ay": "2"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(1 ; −2), B(−1 ; 1) → √13",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"sx": "-1",
+				"sy": "1",
+				"x": "2",
+				"y": "3",
+				"c": "13",
+				"ax": "1",
+				"ay": "-2"
+			},
+			"answers": ["\\sqrt{13}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √(2 + 3)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"sx": "-1",
+				"sy": "1",
+				"x": "2",
+				"y": "3",
+				"c": "13",
+				"ax": "1",
+				"ay": "-2"
+			},
+			"answers": ["\\sqrt{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB² = AC² = 10 : oui",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"sx": "-1",
+				"sy": "1",
+				"w": "0",
+				"ax": "0",
+				"ay": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "AB² = AC² : « non » faux",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"sx": "-1",
+				"sy": "1",
+				"w": "0",
+				"ax": "0",
+				"ay": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB² = 10, AC² = 17 : non",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"sx": "-1",
+				"sy": "1",
+				"w": "1",
+				"ax": "0",
+				"ay": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

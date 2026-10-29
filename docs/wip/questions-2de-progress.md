@@ -6,15 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, phase 0 du lot 4 proposée (§ 23)._
+_Mis à jour le 2026-10-30, lot 4 A écrit (§ 24)._
 
 - **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 3 (8 modèles) relu 8/8 OK et publié par David (§ 22).
-- **Prochaine action** : lot 4 « vecteurs en coordonnées » : relevé fait, phase 0 proposée (§ 23) ;
-  dès la validation, worktree `ubumaths-wt-questions-2de` et script du lot 4 A.
-- **En attente de David** : validation de la phase 0 du lot 4 et réponses L4-a à L4-d (§ 23).
+- **Prochaine action** : lot 4 A (§ 24) : merger #1997 (acceptDecimal des vecteurs), rebaser, simulation
+  verte, essai en base locale, PR des fichiers ; puis lot 4 B (colinéarité).
+- **En attente de David** : rien ; le `deploy:prod` qui livre #1997 conditionne la page à cocher du 4 A.
 - **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT ; horodatage = max + 1 min
   de `origin/main` ET des worktrees, puis `migration list --linked` avant `db:migrate`.
-- **Worktree / branche** : aucun (`ubumaths-wt-questions-2de` retiré) ; en créer un pour le lot 4.
+- **Worktree / branche** : `ubumaths-wt-questions-2de` · `content/questions-2de-vecteurs` ; correctif dans
+  `ubumaths-wt-vecteur-decimal` · `fix/vecteur-accept-decimal` (#1997).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -609,3 +610,20 @@ Vecteurs écrits en colonne dans l'énoncé et le corrigé, comme en Tle.
   recommande **2-300**, en dernière variation (la somme est le geste final).
 - **L4-d — Case choix oui/non** pour colinéaires / alignés / parallèles / isocèle ? → Je recommande **oui**,
   doublée d'une variation à calcul dans chaque modèle (ci-dessus).
+
+**Décisions de David (2026-10-29)** : phase 0 validée avec mes quatre recommandations — L4-a lots 4 A
+puis 4 B ; L4-b 2√10 attendu, √40 « à améliorer » ; L4-c 2u⃗ − 3v⃗ sur 2-300 ; L4-d case choix oui/non
+doublée d'une variation à calcul.
+
+## 24. Lot 4 A, PR des fichiers (2026-10-30)
+
+- Script `questions-2de/lot-vecteurs-a-2de.py` → `scripts/questions/2de-vecteurs-a/` (7 modèles, 24 variations,
+  61 specs). Catégorie neuve Géométrie › Vecteurs du plan › Coordonnées (niveaux 1 à 4), Norme et distance
+  (1, 2), Milieu (1).
+- L4-b tenu sans motif : √40 pour 2√10 tombe seul en « à améliorer » (contrainte `reducedRadicals`).
+- **Bug trouvé** : dans une case `vecteur`, chaque coordonnée était rejugée sans l'option `acceptDecimal`
+  du modèle : (−2 ; 0,5) pour (−2 ; ½) refusé pour sa forme. Correctif à part, #1997 (même transmission que
+  les matrices ; revue `code-reviewer` Opus sans finding bloquant). Le lot en dépend : **ses brouillons
+  attendent le `deploy:prod` qui livre #1997** avant la page à cocher.
+- Relecture des tirages : « −1 j⃗ » (coefficients ±1 retirés), k attendu « 3/1 » (entier si d = 1),
+  conclusions colorées hors formule (en gras), B jusqu'à 21 (borné à 12).

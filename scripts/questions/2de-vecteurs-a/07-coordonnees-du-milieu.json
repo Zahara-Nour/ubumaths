@@ -1,0 +1,228 @@
+{
+	"title": "Coordonnées du milieu d'un segment",
+	"description": "Milieu de [AB], extrémité B connaissant A et le milieu, centre d'un parallélogramme (pièges : différence / 2, moitié de x_I)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Milieu",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{bx}}\\,;\\,{{by}})$.\n\nDonne les coordonnées du milieu $I$ du segment $[AB]$.\n\n$$I(?\\,;\\,?)$$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-9..9"
+				},
+				{
+					"name": "ay",
+					"expression": "-9..9"
+				},
+				{
+					"name": "bx",
+					"expression": "-9..9"
+				},
+				{
+					"name": "by",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["bx != ax", "by != ay", "mod(ax+bx, 2) != 0 || mod(ay+by, 2) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((ax)+(bx))/2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:((ay)+(by))/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le milieu $I$ de $[AB]$ a pour coordonnées les **moyennes** de celles de $A$ et $B$ : $x_I=\\dfrac{x_A+x_B}{2}$ et $y_I=\\dfrac{y_A+y_B}{2}$.",
+					"$x_I=\\dfrac{ {{ax}}+{{bx;()}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:((ax)+(bx))/2;d}}}$ et $y_I=\\dfrac{ {{ay}}+{{by;()}} }{2}=\\textcolor{{{color:primary.1}}}{{{eval:((ay)+(by))/2;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $I({{ix}}\\,;\\,{{iy}})$. Le point $I$ est le milieu du segment $[AB]$.\n\nDonne les coordonnées du point $B$.\n\n$$B(?\\,;\\,?)$$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-9..9"
+				},
+				{
+					"name": "ay",
+					"expression": "-9..9"
+				},
+				{
+					"name": "ix",
+					"expression": "-6..6"
+				},
+				{
+					"name": "iy",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["ix != ax", "iy != ay", "abs(2*(ix)-(ax)) <= 12", "abs(2*(iy)-(ay)) <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(ix)-(ax)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:2*(iy)-(ay)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le milieu $I$ de $[AB]$ a pour coordonnées les **moyennes** de celles de $A$ et $B$ : $x_I=\\dfrac{x_A+x_B}{2}$ et $y_I=\\dfrac{y_A+y_B}{2}$. Ici on connaît $x_I$ et $x_A$ : on cherche $x_B$.",
+					"$\\dfrac{ {{ax}}+x_B}{2}={{ix}}$, donc ${{ax}}+x_B={{eval:2*(ix)}}$ et $x_B={{eval:2*(ix)}}-{{ax;()}}=\\textcolor{{{color:primary.0}}}{{{eval:2*(ix)-(ax)}}}$.",
+					"De même, $y_B={{eval:2*(iy)}}-{{ay;()}}=\\textcolor{{{color:primary.1}}}{{{eval:2*(iy)-(ay)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, $ABCD$ est un parallélogramme, avec $A({{ax}}\\,;\\,{{ay}})$ et $C({{cx}}\\,;\\,{{cy}})$.\n\nDonne les coordonnées de son centre $O'$.\n\n$$O'(?\\,;\\,?)$$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-9..9"
+				},
+				{
+					"name": "ay",
+					"expression": "-9..9"
+				},
+				{
+					"name": "cx",
+					"expression": "-9..9"
+				},
+				{
+					"name": "cy",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["abs(cx-ax) >= 2", "abs(cy-ay) >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((ax)+(cx))/2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:((ay)+(cy))/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les diagonales d'un parallélogramme se coupent en leur milieu : le centre $O'$ est le milieu de $[AC]$.",
+					"Le milieu $O'$ de $[AC]$ a pour coordonnées les **moyennes** de celles de $A$ et $C$ : $x_{O'}=\\dfrac{x_A+x_C}{2}$ et $y_{O'}=\\dfrac{y_A+y_C}{2}$.",
+					"$x_{O'}=\\dfrac{ {{ax}}+{{cx;()}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:((ax)+(cx))/2;d}}}$ et $y_{O'}=\\dfrac{ {{ay}}+{{cy;()}} }{2}=\\textcolor{{{color:primary.1}}}{{{eval:((ay)+(cy))/2;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A(3 ; −1), B(−2 ; 5) → I(0,5 ; 2)",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "3",
+				"ay": "-1",
+				"bx": "-2",
+				"by": "5"
+			},
+			"answers": ["0.5", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "3",
+				"ay": "-1",
+				"bx": "-2",
+				"by": "5"
+			},
+			"answers": ["\\frac{1}{2}", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : différence / 2 (−2,5 ; 3)",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "3",
+				"ay": "-1",
+				"bx": "-2",
+				"by": "5"
+			},
+			"answers": ["-2.5", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(3 ; −1), I(1 ; 2) → B(−1 ; 5)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "3",
+				"ay": "-1",
+				"ix": "1",
+				"iy": "2"
+			},
+			"answers": ["-1", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : milieu de [AI] (2 ; 0,5)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "3",
+				"ay": "-1",
+				"ix": "1",
+				"iy": "2"
+			},
+			"answers": ["2", "0.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(−1 ; 4), C(5 ; −3) → O'(2 ; 0,5)",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "-1",
+				"ay": "4",
+				"cx": "5",
+				"cy": "-3"
+			},
+			"answers": ["2", "0.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (3 ; −3,5)",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "-1",
+				"ay": "4",
+				"cx": "5",
+				"cy": "-3"
+			},
+			"answers": ["3", "-3.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
