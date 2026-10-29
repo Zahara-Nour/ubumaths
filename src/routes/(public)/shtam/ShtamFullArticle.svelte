@@ -17,7 +17,7 @@
 </script>
 
 <article id={article.slug} class="flex scroll-mt-6 flex-col gap-4" data-testid="shtam-full-article">
-	<header class="flex flex-col gap-2">
+	<div class="flex flex-col gap-2">
 		<div class="text-xs text-muted-foreground">
 			<span class="eyebrow">{article.almanachDate}</span> · {article.gregorianDate}
 		</div>
@@ -34,7 +34,7 @@
 				Page de l’article
 			</a>
 		</div>
-	</header>
+	</div>
 
 	<div class="columns-journal">
 		<MarkdownRenderer content={article.body} />

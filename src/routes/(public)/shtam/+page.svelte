@@ -25,7 +25,7 @@
 
 <div class="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-8 sm:px-6">
 	{#if data.kind === 'une'}
-		<header class="flex flex-col" data-testid="shtam-masthead">
+		<div class="flex flex-col" data-testid="shtam-masthead">
 			<div
 				class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b pb-1 text-xs text-muted-foreground"
 			>
@@ -35,13 +35,13 @@
 				</span>
 				<span class="eyebrow">Prix : 1 gidouille</span>
 			</div>
-			<h1 class="serif py-3 text-center text-6xl font-bold tracking-tight sm:text-8xl">Le Shtam</h1>
+			<h1 class="serif titre-journal py-3 text-center font-bold tracking-tight">Le Shtam</h1>
 			<div
 				class="eyebrow border-y-4 border-double py-1.5 text-center text-xs text-muted-foreground"
 			>
 				La gazette du Royaume · les maths à l’envers
 			</div>
-		</header>
+		</div>
 
 		{#if data.une === null}
 			<div class="text-center text-muted-foreground italic" data-testid="shtam-empty">
@@ -49,7 +49,7 @@
 			</div>
 		{:else}
 			<article class="flex flex-col gap-4" data-testid="shtam-une">
-				<h2 class="serif text-center text-3xl leading-tight font-bold text-balance sm:text-5xl">
+				<h2 class="serif titre-une text-center font-bold text-balance">
 					<a
 						href="{resolve('/shtam')}{pageQuery(data.une.page)}#{data.une.slug}"
 						class="rounded-sm underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
@@ -110,7 +110,7 @@
 			{/if}
 		{/if}
 	{:else}
-		<header
+		<div
 			class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b-4 border-double pb-2"
 		>
 			<h1 class="serif text-3xl font-bold">
@@ -126,7 +126,7 @@
 				<span class="eyebrow">{data.edition.almanachDate}</span>
 			</span>
 			<span class="eyebrow text-xs">Page {data.page}</span>
-		</header>
+		</div>
 
 		<div class="flex flex-col gap-10">
 			{#each data.articles as article, i (article.slug)}
@@ -176,6 +176,16 @@
 	.eyebrow {
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
+	}
+	/* Le titre du journal et celui de la une dépassent les tailles de titres de app.css (main h1,
+	   main h2 en !important) : une classe sur l'élément l'emporte */
+	h1.titre-journal {
+		font-size: calc(clamp(3.5rem, 2rem + 6vw, 6.5rem) * var(--font-scale)) !important;
+		line-height: 1.05 !important;
+	}
+	h2.titre-une {
+		font-size: calc(clamp(1.75rem, 1rem + 3vw, 3rem) * var(--font-scale)) !important;
+		line-height: 1.15 !important;
 	}
 	/* Deux colonnes de journal dès qu'il y a la place */
 	@media (min-width: 48rem) {

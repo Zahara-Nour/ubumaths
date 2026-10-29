@@ -72,12 +72,24 @@ Appelants : `src/routes/(public)/+page.server.ts` (ambiance de l'accueil),
 
 ### Shtam (`src/lib/server/shtam/`, serveur seulement)
 
-| Fichier                                   | Rôle                                                                                                                         |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/server/shtam/articles/<slug>.md` | Un article : en-tête YAML, corps ubumark, section `## Le vrai du faux` obligatoire                                           |
-| `src/lib/server/shtam/articles.ts`        | `ARTICLE_SOURCES` (glob embarqué au build), `parseArticle`, `publishedArticles`, `findPublishedArticle`, `pickRandomArticle` |
-| `src/lib/server/shtam/present.ts`         | `todayIsoInParis`, `toSummary` (avec la date de l'Almanach), `toArticleView`                                                 |
-| `src/routes/(public)/shtam/`              | La une, `[slug]/` (l'article), `ShtamFooter.svelte` (avertissement « gazette parodique »)                                    |
+| Fichier                                   | Rôle                                                                                                                                                                                         |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/server/shtam/articles/<slug>.md` | Un article : en-tête YAML, corps ubumark, section `## Le vrai du faux` obligatoire                                                                                                           |
+| `src/lib/server/shtam/articles.ts`        | `ARTICLE_SOURCES` (glob embarqué au build), `parseArticle`, `publishedArticles`, `findPublishedArticle`, `pickRandomArticle`                                                                 |
+| `src/lib/server/shtam/present.ts`         | `todayIsoInParis`, `toSummary` (avec la date de l'Almanach), `toArticleView`, `toFrontArticle` / `frontPageParts` (image et extrait de la une), `toEdition`, `pageOfArticle`, `pageCountFor` |
+| `src/routes/(public)/shtam/`              | Le journal (`?page=N`), `ShtamFullArticle.svelte` (un article en entier), `[slug]/` (l'article seul), `ShtamFooter.svelte` (avertissement « gazette parodique »)                             |
+
+**Le journal `/shtam`** se lit comme un vrai journal qu'on feuillette. La **page 1 (la une)** porte le
+bandeau (numéro = nombre d'articles parus, date du jour en Almanach et en grégorien, « Prix : 1 gidouille »,
+jamais en phynances, qui sont de l'argent réel), le dernier article paru (titre, chapeau, image,
+début du corps en deux colonnes) et les trois suivants en titres. Les **pages 2 et suivantes**
+(`?page=N`) portent **tous** les articles en entier, deux par page, avec leur vrai du faux ; la une
+y renvoie (« suite page N », ancre `#<slug>`). Image de la une : la première du corps, sinon celle du
+vrai du faux, où sont toutes les figures aujourd'hui. Extrait : les premiers paragraphes jusqu'à environ
+500 caractères, arrêté avant tout bloc (liste, tableau, code…). Page hors bornes ou mal formée → 404.
+Pages intérieures en `noindex` : chaque article a déjà sa page indexée. Pas de `<header>` dans ces
+pages : `app.css` y force tout à 1rem ; titres du bandeau et de la une agrandis par une classe locale
+qui l'emporte sur `main h1` / `main h2`.
 
 Autres lecteurs : l'accueil (`pickRandomArticle` : un lien vers un article paru) et
 `src/routes/sitemap.xml/+server.ts` (articles parus seulement). Le même plan liste aussi les
@@ -188,7 +200,7 @@ pour la Patatovie, les seuils de l'Ordre de la Grande Passoire, « Madame la Fin
 | `src/lib/almanach/__tests__/`                     | Conversion dans les deux sens, palettes, contraste du héros                           |
 | `src/routes/(public)/almanach/__tests__/`         | Chargement serveur, page, convertisseur                                               |
 | `src/lib/server/shtam/__tests__/articles.test.ts` | En-tête, Vrai du faux obligatoire, filtrage brouillon / futur, vrais articles valides |
-| `src/routes/(public)/shtam/__tests__/`            | 404 indiscernable, rendu                                                              |
+| `src/routes/(public)/shtam/__tests__/`            | Une, pages intérieures, 404 indiscernable, rendu                                      |
 | `src/routes/sitemap.xml/__tests__/server.test.ts` | Ni brouillon ni article futur ; exercices cochés Google seulement ; panne → sans eux  |
 
 ## Décisions et journaux
