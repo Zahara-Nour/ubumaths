@@ -1,0 +1,431 @@
+{
+	"title": "Ajouter une valeur extrême",
+	"description": "Comprendre l'évolution de la moyenne et de la médiane quand on ajoute une valeur extrême à une série : la moyenne change beaucoup, la médiane peu",
+	"grades": ["4"],
+	"theme": "Statistiques",
+	"domain": "Problèmes",
+	"subdomain": "Valeur extrême",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les six joueurs d'une équipe de basket ont marqué ces points lors d'un match :\n\n$${{if:s==0|{{v4}} ; {{v1}} ; {{v6}} ; {{v2}} ; {{v5}} ; {{v3}}|{{v2}} ; {{v5}} ; {{v3}} ; {{v6}} ; {{v1}} ; {{v4}}}}$$\n\nOn avait oublié le septième joueur de l'équipe : il a marqué ${{Z}}$ points. On ajoute sa valeur à la série.\n\nQuelle est la nouvelle moyenne de la série ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "v1",
+					"expression": "6..9"
+				},
+				{
+					"name": "dv2",
+					"expression": "1..2"
+				},
+				{
+					"name": "v2",
+					"expression": "eval:v1+dv2"
+				},
+				{
+					"name": "dv3",
+					"expression": "1..2"
+				},
+				{
+					"name": "v3",
+					"expression": "eval:v2+dv3"
+				},
+				{
+					"name": "dv4",
+					"expression": "1..2"
+				},
+				{
+					"name": "v4",
+					"expression": "eval:v3+dv4"
+				},
+				{
+					"name": "dv5",
+					"expression": "1..2"
+				},
+				{
+					"name": "v5",
+					"expression": "eval:v4+dv5"
+				},
+				{
+					"name": "dv6",
+					"expression": "1..2"
+				},
+				{
+					"name": "v6",
+					"expression": "eval:v5+dv6"
+				},
+				{
+					"name": "M",
+					"expression": "12..18"
+				},
+				{
+					"name": "Z",
+					"expression": "eval:7*M-(v1+v2+v3+v4+v5+v6)"
+				}
+			],
+			"conditions": ["Z>=v6+15", "Z<=60", "mod(v1+v2+v3+v4+v5+v6,3)==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{M}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Moyenne.** Somme des valeurs divisée par leur nombre : une valeur très grande l'entraîne vers le haut.",
+					"Avant : moyenne $\\dfrac{{{eval:v1+v2+v3+v4+v5+v6}}}{6} = {{eval:(v1+v2+v3+v4+v5+v6)/6;d}}$ ; série rangée ${{v1}} \\leqslant {{v2}} \\leqslant {{v3}} \\leqslant {{v4}} \\leqslant {{v5}} \\leqslant {{v6}}$, médiane entre ${{v3}}$ et ${{v4}}$.",
+					"$$\\frac{{{eval:v1+v2+v3+v4+v5+v6}} + {{Z}}}{7} = \\frac{{{eval:v1+v2+v3+v4+v5+v6+Z}}}{7} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Les six joueurs d'une équipe de basket ont marqué ces points lors d'un match :\n\n$${{if:s==0|{{v4}} ; {{v1}} ; {{v6}} ; {{v2}} ; {{v5}} ; {{v3}}|{{v2}} ; {{v5}} ; {{v3}} ; {{v6}} ; {{v1}} ; {{v4}}}}$$\n\nOn avait oublié le septième joueur de l'équipe : il a marqué ${{Z}}$ points. On ajoute sa valeur à la série.\n\nQuelle est la nouvelle médiane de la série ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "v1",
+					"expression": "6..9"
+				},
+				{
+					"name": "dv2",
+					"expression": "1..2"
+				},
+				{
+					"name": "v2",
+					"expression": "eval:v1+dv2"
+				},
+				{
+					"name": "dv3",
+					"expression": "1..2"
+				},
+				{
+					"name": "v3",
+					"expression": "eval:v2+dv3"
+				},
+				{
+					"name": "dv4",
+					"expression": "1..2"
+				},
+				{
+					"name": "v4",
+					"expression": "eval:v3+dv4"
+				},
+				{
+					"name": "dv5",
+					"expression": "1..2"
+				},
+				{
+					"name": "v5",
+					"expression": "eval:v4+dv5"
+				},
+				{
+					"name": "dv6",
+					"expression": "1..2"
+				},
+				{
+					"name": "v6",
+					"expression": "eval:v5+dv6"
+				},
+				{
+					"name": "M",
+					"expression": "12..18"
+				},
+				{
+					"name": "Z",
+					"expression": "eval:7*M-(v1+v2+v3+v4+v5+v6)"
+				}
+			],
+			"conditions": ["Z>=v6+15", "Z<=60", "mod(v1+v2+v3+v4+v5+v6,3)==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Médiane.** On range les valeurs dans l'ordre croissant : la médiane partage la série en deux parties de même effectif.",
+					"Série rangée avec la nouvelle valeur : ${{v1}} \\leqslant {{v2}} \\leqslant {{v3}} \\leqslant {{v4}} \\leqslant {{v5}} \\leqslant {{v6}}$ $\\leqslant {{Z}}$.",
+					"Il y a $7$ valeurs : la médiane est la $4^\\text{e}$.",
+					"$$\\text{médiane} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Les six joueurs d'une équipe de basket ont marqué ces points lors d'un match :\n\n$${{if:s==0|{{v4}} ; {{v1}} ; {{v6}} ; {{v2}} ; {{v5}} ; {{v3}}|{{v2}} ; {{v5}} ; {{v3}} ; {{v6}} ; {{v1}} ; {{v4}}}}$$\n\nOn avait oublié le septième joueur de l'équipe : il a marqué ${{Z}}$ points. On ajoute sa valeur à la série.\n\nQuel indicateur change le plus ?\n\n```choix\n- la moyenne\n- la médiane\n- aucun des deux : ils changent autant\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "v1",
+					"expression": "6..9"
+				},
+				{
+					"name": "dv2",
+					"expression": "1..2"
+				},
+				{
+					"name": "v2",
+					"expression": "eval:v1+dv2"
+				},
+				{
+					"name": "dv3",
+					"expression": "1..2"
+				},
+				{
+					"name": "v3",
+					"expression": "eval:v2+dv3"
+				},
+				{
+					"name": "dv4",
+					"expression": "1..2"
+				},
+				{
+					"name": "v4",
+					"expression": "eval:v3+dv4"
+				},
+				{
+					"name": "dv5",
+					"expression": "1..2"
+				},
+				{
+					"name": "v5",
+					"expression": "eval:v4+dv5"
+				},
+				{
+					"name": "dv6",
+					"expression": "1..2"
+				},
+				{
+					"name": "v6",
+					"expression": "eval:v5+dv6"
+				},
+				{
+					"name": "M",
+					"expression": "12..18"
+				},
+				{
+					"name": "Z",
+					"expression": "eval:7*M-(v1+v2+v3+v4+v5+v6)"
+				}
+			],
+			"conditions": ["Z>=v6+15", "Z<=60", "mod(v1+v2+v3+v4+v5+v6,3)==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avant : moyenne $\\dfrac{{{eval:v1+v2+v3+v4+v5+v6}}}{6} = {{eval:(v1+v2+v3+v4+v5+v6)/6;d}}$ ; série rangée ${{v1}} \\leqslant {{v2}} \\leqslant {{v3}} \\leqslant {{v4}} \\leqslant {{v5}} \\leqslant {{v6}}$, médiane entre ${{v3}}$ et ${{v4}}$.",
+					"Après : moyenne $\\dfrac{{{eval:v1+v2+v3+v4+v5+v6}} + {{Z}}}{7} = \\dfrac{{{eval:v1+v2+v3+v4+v5+v6+Z}}}{7} = {{M}}$.",
+					"Après : $7$ valeurs, ${{Z}}$ est la plus grande ; la médiane est la $4^\\text{e}$ valeur rangée, ${{v4}}$.",
+					"La moyenne passe de ${{eval:(v1+v2+v3+v4+v5+v6)/6;d}}$ à ${{M}}$ ; la médiane bouge à peine : $\\textcolor{{{color:primary.0}}}{\\text{la moyenne}}$ change le plus. Une valeur extrême tire la moyenne, pas la médiane."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Points 7 à 15, on ajoute 42 : moyenne 15",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"v1": "7",
+				"dv2": "1",
+				"v2": "8",
+				"dv3": "2",
+				"v3": "10",
+				"dv4": "1",
+				"v4": "11",
+				"dv5": "1",
+				"v5": "12",
+				"dv6": "3",
+				"v6": "15",
+				"M": "15",
+				"Z": "42"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ancienne moyenne 10,5",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"v1": "7",
+				"dv2": "1",
+				"v2": "8",
+				"dv3": "2",
+				"v3": "10",
+				"dv4": "1",
+				"v4": "11",
+				"dv5": "1",
+				"v5": "12",
+				"dv6": "3",
+				"v6": "15",
+				"M": "15",
+				"Z": "42"
+			},
+			"answers": ["10,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (10,5 + 42) ÷ 2",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"v1": "7",
+				"dv2": "1",
+				"v2": "8",
+				"dv3": "2",
+				"v3": "10",
+				"dv4": "1",
+				"v4": "11",
+				"dv5": "1",
+				"v5": "12",
+				"dv6": "3",
+				"v6": "15",
+				"M": "15",
+				"Z": "42"
+			},
+			"answers": ["26,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Nouvelle médiane : 11",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"v1": "7",
+				"dv2": "1",
+				"v2": "8",
+				"dv3": "2",
+				"v3": "10",
+				"dv4": "1",
+				"v4": "11",
+				"dv5": "1",
+				"v5": "12",
+				"dv6": "3",
+				"v6": "15",
+				"M": "15",
+				"Z": "42"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la nouvelle moyenne 15",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"v1": "7",
+				"dv2": "1",
+				"v2": "8",
+				"dv3": "2",
+				"v3": "10",
+				"dv4": "1",
+				"v4": "11",
+				"dv5": "1",
+				"v5": "12",
+				"dv6": "3",
+				"v6": "15",
+				"M": "15",
+				"Z": "42"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ancienne valeur centrale 10",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"v1": "7",
+				"dv2": "1",
+				"v2": "8",
+				"dv3": "2",
+				"v3": "10",
+				"dv4": "1",
+				"v4": "11",
+				"dv5": "1",
+				"v5": "12",
+				"dv6": "3",
+				"v6": "15",
+				"M": "15",
+				"Z": "42"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La moyenne change le plus",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"v1": "7",
+				"dv2": "1",
+				"v2": "8",
+				"dv3": "2",
+				"v3": "10",
+				"dv4": "1",
+				"v4": "11",
+				"dv5": "1",
+				"v5": "12",
+				"dv6": "3",
+				"v6": "15",
+				"M": "15",
+				"Z": "42"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la médiane",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"v1": "7",
+				"dv2": "1",
+				"v2": "8",
+				"dv3": "2",
+				"v3": "10",
+				"dv4": "1",
+				"v4": "11",
+				"dv5": "1",
+				"v5": "12",
+				"dv6": "3",
+				"v6": "15",
+				"M": "15",
+				"Z": "42"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
