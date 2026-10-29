@@ -325,12 +325,16 @@ Bedonstan et Glitchistan sont **les deux provinces -stan** du Royaume. Ce sont *
 - **Cloche de Reset** — bouton de réinitialisation
 - **Pile de Charbon** — file d'attente ou stack
 
-**Capitale Turingrad** : la grande capitale de Glitchistan tire son nom d'**Alan Turing** (1912-1954), mais elle est architecturalement **victorienne-steampunk** plutôt que mid-century. Elle se compose de **quatre quartiers** :
+**Capitale Turingrad** : la grande capitale de Glitchistan tire son nom d'**Alan Turing** (1912-1954), mais elle est architecturalement **victorienne-steampunk** plutôt que mid-century.
 
-- **Quartier Babbage** : machines analytiques, calcul mécanique, polyèdres à engrenages
-- **Quartier Lovelace** : programmation, suites récursives, mascotte Python (Ada Lovelace stylisée en silhouette victorienne tenant un rouleau d'instructions)
-- **Quartier des Tubes** : transmission, mémoires, archives
-- **Place du Reset** : grande place centrale ornée de la **Cloche de Reset** (clocher à vapeur)
+**Plan de la ville** 🟡 (décision de David, 2026-10-29) : ville de brique et de fonte coupée du nord au sud par la Vistule canalisée ; une grande place ronde au centre, trois quartiers autour ; des tubes pneumatiques de laiton relient tous les toits. Six lieux :
+
+1. **Place du Reset** (centre) : la **Machine de Turing** géante (ruban de papier perforé sans fin, tête de lecture cliquetante) au milieu de la place ; au-dessus, la **Cloche de Reset** dans un clocher à vapeur. Quand la machine boucle, on sonne la cloche et tout repart (« Aux grands maux les grands Reset ! »).
+2. **Quartier Babbage** (rive ouest) : usines, cheminées, et la Machine Analytique géante dans une halle à verrière.
+3. **Quartier Lovelace** (rive est) : ateliers de métiers à tisser à cartes perforées (la Machine Analytique « tisse des motifs algébriques comme le métier Jacquard tisse des fleurs », d'après Ada Lovelace, citée de mémoire). Mascotte du quartier : un **python mécanique** en laiton, automate serpent. Le quartier porte le nom d'Ada Lovelace, mais on ne la dessine pas (personne réelle).
+4. **Quartier des Tubes** (nord) : la grande centrale des tubes pneumatiques, les archives où arrivent les cartes perforées.
+5. **La Gare** (sud) : terminus du chemin de fer à vapeur qui traverse la province.
+6. **Les Écluses** : là où la Vistule traverse la ville, avec le dépôt de charbon (la Pile de Charbon).
 
 #### Lecture narrative du cycle des six provinces
 
@@ -1769,7 +1773,7 @@ Les easter eggs sont **un moteur de bouche-à-oreille gratuit**. Quand un ado tr
 ### Datés
 
 - **1ᵉʳ avril** (le Poisson à Phynances) : toutes les valeurs numériques affichées sont **multipliées par π** pendant 24 h. À midi pile, restitution. _« Cornegidouille ! Notre Mathres ont rencontré le nombre transcendant. »_
-- **2ᵉ mardi d'octobre** (Ada Lovelace Day international) : la mascotte Lovelace du Quartier Lovelace de Turingrad porte une couronne pour la journée. Tous les exercices d'algorithmique de Glitchistan donnent +50 % gidouilles.
+- **2ᵉ mardi d'octobre** (Ada Lovelace Day international) : le python mécanique du Quartier Lovelace de Turingrad porte une couronne pour la journée. Tous les exercices d'algorithmique de Glitchistan donnent +50 % gidouilles.
 
 ### Pages secrètes
 
