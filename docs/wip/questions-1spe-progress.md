@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29 : lot 0-produit scalaire, C1-C3 corrigés (D18, § 12)._
+_Mis à jour le 2026-10-29 : lot 0-produit scalaire, C1-C3 corrigés (D18), 15/15 « ok » à la relecture (§ 12)._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10) et 0-trigo (6, § 11) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3). Lot 0-produit scalaire : 15 brouillons, instantané `scripts/questions/1spe-0-produit-scalaire/`, 15/15 verts, C1-C3 corrigés (D18).
-- **Prochaine action** : page à cocher (relecture de David), puis PR ; ensuite géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : relecture de la page à cocher.
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10) et 0-trigo (6, § 11) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3). Lot 0-produit scalaire : 15 brouillons, instantané `scripts/questions/1spe-0-produit-scalaire/`, 15/15 verts, C1-C3 corrigés (D18), relecture 15/15 « ok ».
+- **Prochaine action** : PR, merge, puis publication par David (`create-questions --publier --mettre-a-jour` puis `publier-lot --publier`) ; ensuite géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : publication du lot après le merge.
 - **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-produit-scalaire`.
 
@@ -513,3 +513,5 @@ Specs des 4 modèles vertes (55 specs, 800 tirages) ; 160 tirages relus : aucune
 
 **Page à cocher** : https://claude.ai/artifact/NwH2PPrbGHhiqjuyiu2V8A (15 fiches, 55 exemples, aucune alerte), collection
 `verdicts` vide à la publication.
+
+**Relecture (David, page à cocher, 2026-10-29)** : 15 « ok » sur 15, aucun commentaire.
