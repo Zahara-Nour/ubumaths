@@ -8,13 +8,13 @@ status: phase 0
 
 _Mis à jour le 2026-10-29, après #1974._
 
-- **État** : PR 1 (#1958, bloc affiché, `gris:`) et PR 2 (#1974, `colorier:`, l'élève colorie) mergées. Rien en prod.
-- **Prochaine action** : PR 3, `unites:` (fractions > 1, plusieurs figures ; CM1 / CM2) ; nouveau worktree depuis `origin/main`.
-- **En attente de David** : rien.
+- **État** : PR 1 (#1958) et PR 2 (#1974) mergées, rien en prod ; PR 3 (`unites:`) en phase 0 (§ 9).
+- **Prochaine action** : coder la PR 3 une fois les 4 questions du § 9 tranchées.
+- **En attente de David** : les 4 questions du § 9.
 - **Pièges en cours** : réponse de l'élève = rangs coloriés `1, 4, 6`, attendue `3/8` (lue du bloc) ; fraction > 1 refusée aujourd'hui avec « `unites:`, pas encore disponible » (message à changer en PR 3) ; corrigé PDF des blocs à placer sans appelant (`generatePartageTypst(…, { solved: true })` prêt).
 - **Après ce chantier** : chantier `solides` (assemblages de cubes, perspective, patrons ; 6e → 3e), ordre
   validé par David le 2026-10-29.
-- **Worktree / branche** : aucun (celui de la PR 2 retiré).
+- **Worktree / branche** : `ubumaths-wt-fractions-a-colorier`, `feat/fractions-a-colorier-unites`.
 
 ---
 
@@ -171,3 +171,47 @@ petits pas), clic droit et second doigt ignorés. Mineur laissé : après un ess
 « Tu as colorié N parts » suit les parts en direct.
 
 - 2026-10-29 : #1974 mergée (CI verte, intégration comprise, après le correctif d'horodatage #1972 sur `main`).
+
+## 9. PR 3 — `unites:`, fractions > 1 (phase 0, 2026-10-29)
+
+Worktree `ubumaths-wt-fractions-a-colorier`, branche `feat/fractions-a-colorier-unites`.
+
+````text
+```partage
+forme: bande 4
+unites: 3
+colorier: 7/4
+```
+````
+
+### Nominal
+
+- `unites: N` dessine N figures identiques (la même `forme:`), côte à côte, qui passent à la ligne sur
+  téléphone. Sans `unites:`, une seule figure, comme aujourd'hui.
+- Numérotation continue : bande de 4 × 3 → parts 1 à 4 (figure 1), 5 à 8 (figure 2), 9 à 12 (figure 3).
+  `gris: 7` = la figure 1 pleine et 3 parts de la figure 2 ; `gris: 1, 2, 5, 9` marche aussi.
+- `colorier: 7/4` → 7 parts à colorier sur l'ensemble des figures ; jugé sur le nombre de parts
+  coloriées (décision 3), quelle que soit la figure.
+- Corrigé : « Tu as colorié 5 parts ; il fallait en colorier 7 (7/4, chaque figure a 4 parts). » et les
+  figures justes (unités pleines d'abord).
+- PDF : les N figures vides en ligne.
+- Accessibilité : « Figure 2, part 3 sur 4, coloriée » ; nom du groupe : la forme seule (règle de la PR 1).
+
+### Limites
+
+- `unites:` de 1 à 5 ; `unites:` plus grand que nécessaire est permis (figures en trop à laisser vides).
+- Grille 10 × 10 avec plusieurs unités : 100 cellules par figure, figures l'une sous l'autre sur téléphone.
+
+### Erreurs (messages au prof)
+
+- Fraction > 1 sans `unites:` → « 7/4 dépasse 1 : ajoute unites: 2 » (le nombre qu'il faut).
+- `unites:` trop petit (`unites: 1` pour 7/4, `gris: 9` sur 2 bandes de 4) → le nombre qu'il faut.
+- `unites:` hors bornes ou illisible.
+
+### Questions à David
+
+1. Numérotation continue d'une figure à l'autre (`gris: 7` déborde sur la figure 2) ? (Reco : oui.)
+2. `unites:` plus grand que nécessaire permis (figure en trop) ? (Reco : oui, c'est un piège utile.)
+3. Plafond `unites: 5` ? (Reco : oui ; CM1 « 2 + 3/4 » en demande 3.)
+4. Jugé sur le seul nombre de parts, même si l'élève ne remplit pas une unité entière d'abord ? (Reco :
+   oui, c'est la décision 3 ; exiger les unités pleines d'abord serait une règle neuve.)
