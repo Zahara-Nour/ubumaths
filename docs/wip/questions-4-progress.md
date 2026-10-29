@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 2 écrit (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-10-29, #1955 mergée, migration du lot 2 en PR._
 
-- **État** : lot 1 en prod (rangé, tagué). Lot 2 (proportionnalité et pourcentages, 7 modèles) écrit dans le
-  worktree : 65 specs vertes, 600 tirages par modèle, simulation verte, essai en base locale (§ 13).
-- **Prochaine action** : PR des fichiers du lot 2 → merge → David lance `create-questions --publier` → migration
-  nœud + tag (gabarit `20261029190000`).
+- **État** : lot 1 en prod (rangé, tagué). Lot 2 (proportionnalité et pourcentages) : 7 brouillons créés en prod par
+  David (#1955) ; migration nœud + tag `20261029220000` écrite, test rouge sans elle puis vert (9/9) (§ 14).
+- **Prochaine action** : CI verte → merge → `db:migrate` depuis le dépôt principal → vérification MCP → page à
+  cocher du lot 2.
 - **En attente de David** : publication des 7 brouillons du lot 1 (après relecture dans l'admin).
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit, corps ≤ 100 caractères par ligne
   (commitlint) ; QCM = case choix ; worktree neuf : `svelte-kit sync` avant `create-questions` (`$lib`).
-- **Worktree / branche** : `ubumaths-wt-questions-4` · `feat/questions-4-lot-2`.
+- **Worktree / branche** : `ubumaths-wt-questions-4` · `feat/questions-4-lot-2-tags`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -378,3 +378,17 @@ neuves **Ratios** (Comparer, Égalités de rapports, Partage proportionnel) et *
   (parts ≥ 2) ; gain de tombola plus grand que les mises ; « Ajouter le même nombre » (non) corrigé par produits en
   croix, sans décimaux périodiques.
 - Base locale : 7 brouillons créés ; aperçu admin : case choix (sirops) jouée juste, énoncés avec € et % rendus.
+- #1955 mergée (CI verte) ; David a lancé `create-questions --publier` le 2026-10-29.
+
+## 14. Lot 2 : nœud et tag (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-2-tags`)
+
+- Relevé prod (MCP, 2026-10-29) : les 7 brouillons `[4]`, niveaux du § 12.2, sans nœud ni tag. Identifiants :
+  0c5f6039 (4-059), 21c79ea0 (4-054), 342cff76 (4-053), 4f599434 (4-056), 76f5f143 (4-080), ccb51039 (4-057),
+  d727be44 (4-058). Nœuds des points : 053, 054, 059 → Proportionnalité > Situations de proportionnalité > ratio ;
+  056 → Proportionnalité > Pourcentages > calculs de pourcentages ; 057, 058, 080 → Proportionnalité > Évolutions >
+  variations en pourcentage.
+- Migration `20261029220000` et test repris du lot 1 (`20261029190000`) ; horodatage choisi après celui du lot 3 de
+  la 5e (`20261029213000`). Test rouge sans la migration (3 échecs, suite principale sautée), vert avec (9/9).
+- Question d'accès : § 12.3 (personne ne gagne d'accès), validée avec la phase 0.
+- `security-auditor` : aucun finding (diff avec le lot 1 limité aux données, gardes et rollback justes, aucun accès
+  ouvert ni retiré).
