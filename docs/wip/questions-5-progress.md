@@ -5,7 +5,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la publication du lot 3 (#1952, #1960)._
+_Mis à jour le 2026-10-29, après la publication du lot 3 (#1952, #1960) et le correctif du gabarit (#1966)._
 
 - **État** : lots 1 « Calcul », 2 « Relatifs » et 3 « Fractions et puissances » publiés (8 + 8 + 4, vérifié au MCP).
 - **Prochaine action** : phase 0 du lot 4, suite des lots A (§ 3 / § 5) : calcul littéral (034, 124, 036, 037, 038,
@@ -16,7 +16,7 @@ _Mis à jour le 2026-10-29, après la publication du lot 3 (#1952, #1960)._
 --mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
   **message de commit** ; le job d'intégration est un run à part (« Nightly Integration Tests ») : l'attendre ;
   page à cocher : vérifier à 390 px (une formule large élargissait la page, corrigé dans le gabarit).
-- **Worktree / branche** : `ubumaths-wt-questions-5` / `fix/page-a-cocher-largeur` (correctif du gabarit, PR à finir).
+- **Worktree / branche** : aucun (retiré après #1966).
 
 ## 1. Relevé (prod, 2026-10-28)
 
