@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1972 et son `db:migrate`._
+_Mis à jour le 2026-10-29, lot 3 publié._
 
-- **État** : lot 3 (fractions, 9 modèles) relu 9/9 OK, en brouillon en prod. Relecture appliquée (#1953 : 03 sans « un huitième plus… », 09 sans Lucie, gardée dans `lot-ce1-3.py` pour le lot 4). Niveaux déplacés (#1963, renommée par #1972 après une collision d'horodatage) : Comparer 9 et 10, Addition et Soustraction 15 et 16 ; migration jouée, vérifiée au MCP. `publier-lot` en simulation : 9/9 passent.
-- **Prochaine action** : David lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce1-3 --publier` ; vérifier les 9 publiés au MCP ; puis le lot 4 (problèmes, avec Lucie).
-- **En attente de David** : le `publier-lot --publier`.
-- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; `reducedFractions: off` (simplification = CE2) ; JSON du générateur → `prettier --write` ; **niveaux : relever la catégorie juste avant la publication, d'autres sessions publient le même jour** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule initiale.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`). Page à cocher : https://claude.ai/artifact/PZb69g4xfAJUS8cm5q5JsS.
+- **État** : lot 3 (fractions, 9 modèles) **publié en prod** (9/9, vérifié au MCP). Relecture appliquée (#1953), niveaux Comparer 9-10 et Addition et Soustraction 15-16 (#1963, #1972). Lot 3 clos.
+- **Prochaine action** : lot 4 (problèmes), phase 0 à écrire ; y reprendre Lucie (`LUCIE`, `SPECS_LUCIE` dans `lot-ce1-3.py`, variationIndex à recaler).
+- **En attente de David** : rien.
+- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; **niveaux : relever la catégorie juste avant la publication, d'autres sessions publient le même jour** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule initiale.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -332,3 +332,4 @@ tag ne change aucune règle.
 - 2026-10-29 : relecture 9/9 OK ; `publier-lot` (simulation) refuse 06, 07, 08 : Comparer 6 et 7, Addition et Soustraction 13 pris le jour même par des modèles 6e publiés. David : « le résultat le plus propre » → 06 → 9, 07 → 10, 08 → 15, 09 → 16 (la soustraction suit l'addition), aucun publié touché ; question d'accès : personne. Migration `20261029233100_questions_ce1_lot3_niveaux` + fichiers, test rouge sans (3 échecs, rollback refusé), vert 7/7. PR #1963 ; `security-auditor` : aucun finding bloquant ; niveaux visés libres en prod, brouillons compris (MCP).
 - 2026-10-29 : #1963 mergée (CI verte) ; `db:migrate` refusé (`DbPushMissingRemoteError`) : collision d'horodatage, `20261029213000` déjà joué en prod par `questions_5_lot3_rangement_tags` ; rien d'appliqué (niveaux 6, 7, 13, 14 relus au MCP) ; migration renommée `20261029233100` (max des worktrees + 1 min).
 - 2026-10-29 : #1972 mergée (CI verte après relance d'un job navigateur instable) ; `db:migrate` lancé par David : 233000 (questions-3) puis 233100 ; vérifié au MCP (9, 10, 15, 16, brouillons, `updated_at` inchangé) ; `publier-lot` en simulation : 9/9 ; `create-questions` en simulation : 9 « = ».
+- 2026-10-29 : `publier-lot --publier` par David : 9/9 publiés, vérifié au MCP. Lot 3 clos.
