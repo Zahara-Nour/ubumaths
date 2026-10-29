@@ -5,13 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 3 relu (9/9 OK)._
+_Mis à jour le 2026-10-29, lot 3 publié (9/9)._
 
-- **État** : lots 1 et 2 en prod (lot 1 en brouillon, lot 2 publié) ; lot 3 (statistiques) : 9 brouillons en prod,
-  rangés et tagués (#1983), relus par David (9/9 OK, § 19).
-- **Prochaine action** : David lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/4-lot-3
---publier` (dépôt principal) ; relire `published` en base (MCP) ; puis phase 0 du lot 4.
-- **En attente de David** : `--publier` du lot 3 ; publication des 7 brouillons du lot 1.
+- **État** : lots 1 à 3 en prod ; lot 1 en brouillon, lots 2 et 3 publiés (lot 3 : 9/9 `published`, vérifié au MCP).
+- **Prochaine action** : phase 0 du **lot 4, probabilités** (046, 047, 048, 079, 049, 050, 051 ; ordre du § 5,
+  décision 3) : relevé MCP, modèles proposés, question d'accès, puis attendre la validation de David.
+- **En attente de David** : publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
   passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
@@ -499,4 +498,5 @@ grades 4 et 3, tagué 4-045 et 3-032** (note laissée dans le journal de la 3e).
 
 - Page à cocher : https://claude.ai/artifact/FHydaqaWjFJqeEpRgEC2Mp ; 9 verdicts lus en base, 9 « OK », aucun
   commentaire.
-- Publication : `publier-lot.ts --dir scripts/questions/4-lot-3 --publier`, à lancer par David.
+- `publier-lot.ts --dir scripts/questions/4-lot-3 --publier` lancé par David ; 9/9 publiés, vérifié au MCP
+  (`published`, nœud présent).
