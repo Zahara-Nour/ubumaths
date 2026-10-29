@@ -1,20 +1,18 @@
 ---
-status: phase 0
+status: clos
 ---
 
 # Chantier `fractions-a-colorier`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1974._
+_Mis à jour le 2026-10-29, après #1988 — chantier CLOS, journal archivé._
 
-- **État** : PR 1 (#1958) et PR 2 (#1974) mergées, rien en prod ; PR 3 (`unites:`) en phase 0 (§ 9).
-- **Prochaine action** : coder la PR 3 une fois les 4 questions du § 9 tranchées.
-- **En attente de David** : les 4 questions du § 9.
-- **Pièges en cours** : réponse de l'élève = rangs coloriés `1, 4, 6`, attendue `3/8` (lue du bloc) ; fraction > 1 refusée aujourd'hui avec « `unites:`, pas encore disponible » (message à changer en PR 3) ; corrigé PDF des blocs à placer sans appelant (`generatePartageTypst(…, { solved: true })` prêt).
-- **Après ce chantier** : chantier `solides` (assemblages de cubes, perspective, patrons ; 6e → 3e), ordre
-  validé par David le 2026-10-29.
-- **Worktree / branche** : `ubumaths-wt-fractions-a-colorier`, `feat/fractions-a-colorier-unites`.
+- **État** : PR 1 (#1958, affichage, `gris:`), PR 2 (#1974, `colorier:`), PR 3 (#1988, `unites:`) mergées ; rien en prod. Le durable est dans `docs/systeme/ubumark.md` (bloc ```partage).
+- **Décidé par David (2026-10-29)** : l'attendue reste `7/4` (parts / parts d'une figure), borne de jugement à 5 figures gardée (limite du § 9 acceptée, inatteignable depuis l'écran) ; chantier clos.
+- **Après ce chantier** : chantier `solides` (assemblages de cubes, perspective, patrons ; 6e → 3e), nouveau worktree, phase 0 à valider.
+- **Restes hors chantier** : corrigé PDF des blocs à placer sans appelant (`generatePartageTypst(…, { solved: true })` prêt) ; modèles de questions aux sessions « questions ».
+- **Worktree / branche** : retirés.
 
 ---
 

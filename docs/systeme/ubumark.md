@@ -493,7 +493,7 @@ lecture `readHands` (petite pile sur l'heure si minutes = 0, strictement entre d
 Hors question (cours, aperçu) : le même geste, rien de jugé. PDF : le cadran sans aiguilles,
 l'enfant les dessine. Secondes (CM2-083) : hors chantier (pas de trotteuse).
 
-**Figure partagée en parts égales** (chantier [fractions-a-colorier](../wip/fractions-a-colorier-progress.md),
+**Figure partagée en parts égales** (chantier [fractions-a-colorier](../archive/wip/fractions-a-colorier-progress.md),
 PR 1 : affichage ; PR 2 : `colorier:` ; PR 3 : `unites:`) — `src/lib/ubumark/__tests__/partage/` :
 
 ````text
