@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1951._
+_Mis à jour le 2026-10-29, après #1970._
 
-- **État** : lot 2 bis B (1/x, √x, x³) publié en prod ; correctif « accolades » mergé (#1951, § 17), pas
-  encore en prod (attend un `deploy:prod` décidé par David).
-- **Prochaine action** : lot suivant de la 2de (relire le relevé du journal pour le choisir, phase 0 à
-  proposer à David).
-- **En attente de David** : rien.
+- **État** : lot 3 « puissances, racines, fractions » (8 modèles, § 19-20) : fichiers mergés (#1970) ;
+  brouillons créés en base locale seulement. Correctif « accolades » (#1951) pas encore en prod.
+- **Prochaine action** : après le `--publier` de David, relever les 8 `id` en prod, puis migration nœud + tag
+  (2-260 ×3, 2-270 ×2, 2-423, 2-272, 2-238 ; L3-a : modèles 1-3 sur la notion « Puissances : calculs »).
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-puissances
+--publier` depuis le dépôt principal à jour ; avis sur l'écart du modèle 5 (§ 20 : 3x³y⁻² refusé en forme).
 - **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT, pas dans la PR ;
-  horodatage de migration pris par une autre session ; port 5176 pris par `questions-4` (serveur sur 5177).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, détaché sur `origin/main` (branches mergées supprimées).
+  horodatage de migration : vérifier les doublons sur `origin/main` (collision du 2026-10-29, #1972).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, détaché sur `origin/main` (branche mergée supprimée).
 
 ## 1. Relevé (prod, 2026-10-27)
 
