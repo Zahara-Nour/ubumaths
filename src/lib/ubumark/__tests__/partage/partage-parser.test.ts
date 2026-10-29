@@ -184,13 +184,10 @@ describe('bloc ```partage — erreurs (phrases pour le prof)', () => {
 		);
 	});
 
-	it('clé inconnue, colorier: comprise (PR 2)', () => {
-		const text = messages('forme: bande 8', 'colorier: 3/8').join('\n');
-		expect(text).toContain('clé « colorier » inconnue');
-		expect(text).toContain('forme, gris');
-		expect(messages('forme: bande 8', 'couleur: rouge').join('\n')).toContain(
-			'clé « couleur » inconnue'
-		);
+	it('clé inconnue : liste les clés possibles', () => {
+		const text = messages('forme: bande 8', 'couleur: rouge').join('\n');
+		expect(text).toContain('clé « couleur » inconnue');
+		expect(text).toContain('forme, gris, colorier');
 	});
 
 	it('clé répétée', () => {

@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29.
 
 ## À quoi ça sert
 
@@ -479,7 +479,7 @@ Hors question (cours, aperçu) : le même geste, rien de jugé. PDF : le cadran 
 l'enfant les dessine. Secondes (CM2-083) : hors chantier (pas de trotteuse).
 
 **Figure partagée en parts égales** (chantier [fractions-a-colorier](../wip/fractions-a-colorier-progress.md),
-PR 1 : affichage seul) — `src/lib/ubumark/__tests__/partage/` :
+PR 1 : affichage ; PR 2 : `colorier:`) — `src/lib/ubumark/__tests__/partage/` :
 
 ````text
 ```partage
@@ -491,7 +491,7 @@ gris: 3
 `forme:` (obligatoire) : `bande N` et `disque N` (2 à 12 parts), `grille L×C` (`x` ou `×`, 1 à 10 lignes et
 colonnes, au moins 2 parts ; 10×10 = centièmes), `carre-diagonales` (4 triangles). `gris:` (facultatif) : un
 nombre (les N premières parts, de 0 au total) ou une liste de rangs distincts `1, 4, 6` (une seule part : virgule finale, `gris: 4,`) ; absent : aucune part
-coloriée. Une clé inconnue (`colorier:` arrive en PR 2) ou répétée, un rang hors figure : phrase « Ligne N : … »
+coloriée. Une clé inconnue ou répétée, un rang hors figure : phrase « Ligne N : … »
 dans `errors: string[]`. Numérotation : bande de gauche à droite, grille ligne par ligne depuis le coin haut
 gauche, disque depuis midi dans le sens horaire, carré haut / droite / bas / gauche. Scène partagée
 `utils/partage-scene.ts` (un polygone par part, arc du disque en pas de 3° ; 1 unité = 0,025 cm, écran comme
@@ -499,6 +499,26 @@ PDF) ; écran : SVG, parts coloriées en `--color-fig-orange` (contraste ≥ 3:1
 (« Bande partagée en parts égales », ni le nombre de parts ni les coloriées, comme l'horloge) ; PDF : Typst natif (`polygon`), parts coloriées **grisées**. Bloc en erreur : messages pour le prof,
 cadre « Partage indisponible » pour l'élève. Éditeur riche : bloc de code `partage`. Chat élève (rendu restreint) :
 jamais rendu. Fiche fixe du catalogue : `src/lib/block-catalog/partage.ts`.
+
+_Figure à colorier_ (`colorier: 3/8`, à la place de `gris:`) : l'élève colorie, la figure est dessinée sans part
+coloriée. Variables permises (`colorier: {{n}}/{{d}}`, lues sur l'énoncé résolu). `spec.colorier` =
+`{ num, den, parts }` (`parts` = num × total ÷ den, nombre de parts à colorier sur CETTE figure). Erreurs
+au prof : `gris:` et `colorier:` ensemble, fraction mal écrite ou de dénominateur 0, **0 part** (rien à
+colorier), fraction **> 1** (« plusieurs figures : `unites:`, pas encore disponible »), fraction qui ne tombe pas
+juste sur le partage (`1/3` sur une bande de 8) ; `1/2` sur une bande de 4 est permis (2 parts). `case: N`
+est posée par le générateur (`findPartagesToColorier`, `hasPartageToColorier`), jamais écrite par le prof.
+Écran (`PartageColorier.svelte`, aussi hors question : cours, aperçu, geste libre) : toucher une part la
+colorie, la retoucher l'efface ; **glisser** colorie ou efface plusieurs parts, la première part touchée décide
+(pointer events, `touch-action: none`, part lue sur la géométrie de la scène, `partAtPoint`) ; figure
+agrandie de 15 % à l'écran (grille 10×10 : cellules ≈ 28 px) ; bouton « Tout effacer ». Chaque part est un
+`role="button"` à bascule, nom « Part 3 sur 8, coloriée » ; Tab, Espace, Entrée ; le nom de la figure reste la
+forme seule. Réponse de la case (`utils/partage-colorier.ts`) : les rangs coloriés, triés, `1, 4, 6` (vide =
+rien colorié), de sorte que la correction redessine la figure de l'élève ; attendue : `3/8` (parts à colorier /
+parts de la figure). Jugement : juste si le NOMBRE de parts coloriées est celui attendu, quelles que soient
+les parts (`isColoringCorrect`). Correction : « Tu as colorié 2 parts sur 8 ; il fallait en colorier 3
+(3/8). » (`coloringMistakes`), la figure de l'élève et la figure juste (les premières parts). PDF : la figure
+vide à colorier au crayon ; `generatePartageTypst(node, { solved: true })` dessine la figure juste (aucun
+corrigé imprimé ne l'appelle encore : les séries d'automatismes ne gèrent pas les blocs à placer).
 
 **Opération posée en colonnes** (chantier [operations-posees](../archive/wip/operations-posees-progress.md),
 addition, soustraction, multiplication, division en potence) — `src/lib/ubumark/__tests__/operation/` :

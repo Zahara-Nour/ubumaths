@@ -12,7 +12,10 @@
  *   `carre-diagonales` (4 triangles).
  * - `gris:` (facultatif) : un nombre (les N premières parts, de 0 au total) ou
  *   une liste de rangs distincts à partir de 1. Absent : aucune part coloriée.
- * - Une clé inconnue (`colorier:` pour l'instant) ou répétée est une erreur située.
+ * - `colorier: 3/8` (facultatif, exclusif avec `gris:`) : figure À COLORIER par l'élève
+ *   (une question) ; la fraction doit tomber juste sur le partage et valoir au plus 1.
+ *   `case: N` y est posée par le générateur de questions.
+ * - Une clé inconnue ou répétée est une erreur située.
  *
  * Numérotation des parts : voir `utils/partage-scene.ts`. Dans un modèle de
  * question, `{{d}}` est résolu AVANT : le bloc ne lit que des nombres. Une
@@ -29,6 +32,7 @@ import {
 	PARTAGE_PARTS,
 	partageTotal,
 	type PartageBlockRange,
+	type PartageColorier,
 	type PartageNode,
 	type PartageShape
 } from '../types/partage';
@@ -38,6 +42,7 @@ import {
 // ============================================================================
 
 const PARTAGE_BLOCK_START_REGEX = /^```partage\s*$/;
+const COLORIER_LINE_REGEX = /^colorier\s*:/i;
 const BLOCK_END_REGEX = /^```\s*$/;
 
 /** `clé: valeur` */
@@ -49,6 +54,8 @@ const COUNT_SHAPE_REGEX = /^(bande|disque)(?:\s+(.*))?$/i;
 
 const KEY_LIST = PARTAGE_KEYS.join(', ');
 const FORMES_HINT = 'formes possibles : bande N, grille L×C, disque N, carre-diagonales';
+const FRACTION_REGEX = /^(\d+)\s*\/\s*(\d+)$/;
+const COLORIER_HINT = 'écris la fraction à colorier, ex. colorier: 3/8';
 const GRIS_HINT =
 	'écris un nombre de parts (gris: 3), la liste des parts (gris: 1, 4, 6) ou une seule part suivie d’une virgule (gris: 4,)';
 
@@ -82,6 +89,48 @@ export function findPartageBlocks(lines: string[]): PartageBlockRange[] {
 		i++;
 	}
 	return blocks;
+}
+
+/** Ligne vue sans retrait ni marque de citation */
+const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
+
+/**
+ * Les figures à colorier (`colorier:`) d'un énoncé, délimitées comme le parseur :
+ * corps sans clôtures, fermeture, et `nested` pour un bloc en retrait ou cité
+ * (l'élève ne pourrait pas y répondre : sa case n'est pas créée)
+ */
+export function findPartagesToColorier(markdown: string): {
+	startIndex: number;
+	body: string[];
+	closed: boolean;
+	nested: boolean;
+}[] {
+	const lines = markdown.split('\n');
+	const plain = lines.map(unquoted);
+	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
+	let i = 0;
+	while (i < plain.length) {
+		if (isPartageBlockStart(plain[i])) {
+			const { endIndex, closed } = specialBlockEnd(
+				plain,
+				i,
+				(line) => BLOCK_END_REGEX.test(line),
+				PARTAGE_KEYS
+			);
+			const body = plain.slice(i + 1, closed ? endIndex : endIndex + 1);
+			if (body.some((line) => COLORIER_LINE_REGEX.test(line))) {
+				found.push({ startIndex: i, body, closed, nested: lines[i] !== plain[i] });
+			}
+			i = endIndex;
+		}
+		i++;
+	}
+	return found;
+}
+
+/** L'énoncé a-t-il une figure à colorier ? */
+export function hasPartageToColorier(markdown: string): boolean {
+	return findPartagesToColorier(markdown).length > 0;
 }
 
 // ============================================================================
@@ -159,6 +208,34 @@ function parseGray(value: string): GrayRequest {
 	return { ranks: items.map(Number) };
 }
 
+/** Fraction écrite de `colorier:`, avant de connaître la figure */
+function parseFraction(value: string): { num: number; den: number } {
+	const match = FRACTION_REGEX.exec(value.trim());
+	if (!match) throw new LineError(`colorier « ${value.trim()} » illisible : ${COLORIER_HINT}`);
+	const num = Number(match[1]);
+	const den = Number(match[2]);
+	if (den === 0) throw new LineError('colorier : le dénominateur ne peut pas être 0');
+	return { num, den };
+}
+
+/** Parts à colorier sur une figure de `total` parts ; lève si la fraction est impossible */
+function resolveColorier(fraction: { num: number; den: number }, total: number): PartageColorier {
+	const { num, den } = fraction;
+	if (num === 0) throw new LineError('colorier: 0 part : il n’y a rien à colorier');
+	if (num > den) {
+		throw new LineError(
+			`colorier: ${num}/${den} dépasse 1 : il faudrait plusieurs figures (unites:, pas encore disponible)`
+		);
+	}
+	const scaled = num * total;
+	if (scaled % den !== 0) {
+		throw new LineError(
+			`colorier: ${num}/${den} ne tombe pas juste sur une figure de ${total} parts (choisis un partage dont le nombre de parts est un multiple de ${den})`
+		);
+	}
+	return { num, den, parts: scaled / den };
+}
+
 /** Rangs coloriés pour une figure de `total` parts ; lève si hors figure ou en double */
 function resolveGray(request: GrayRequest, total: number): number[] {
 	if ('count' in request) {
@@ -194,6 +271,9 @@ export function parsePartageContent(source: string): PartageNode {
 	let shape: PartageShape | null = null;
 	let gray: GrayRequest | null = null;
 	let grayLine = 1;
+	let fraction: { num: number; den: number } | null = null;
+	let colorierLine = 1;
+	let caseIndex: number | undefined;
 	const seen = new Map<string, number>();
 
 	lines.forEach((line, index) => {
@@ -220,7 +300,15 @@ export function parsePartageContent(source: string): PartageNode {
 
 		try {
 			if (key === 'forme') shape = parseShape(value);
-			else {
+			else if (key === 'colorier') {
+				fraction = parseFraction(value);
+				colorierLine = lineNo;
+			} else if (key === 'case') {
+				if (!NUMBER_REGEX.test(value.trim())) {
+					throw new LineError(`case « ${value.trim()} » : numéro de case entier`);
+				}
+				caseIndex = Number(value.trim());
+			} else {
 				gray = parseGray(value);
 				grayLine = lineNo;
 			}
@@ -237,8 +325,27 @@ export function parsePartageContent(source: string): PartageNode {
 	// Les rangs ne se vérifient qu'une fois la figure connue
 	const readShape = shape as PartageShape | null;
 	const readGray = gray as GrayRequest | null;
+	const readFraction = fraction as { num: number; den: number } | null;
 	let rank: number[] = [];
-	if (readShape !== null && readGray !== null) {
+	let colorier: PartageColorier | undefined;
+	if (readFraction !== null && readGray !== null) {
+		fail(
+			seen.get('gris') ?? 1,
+			'gris: et colorier: ne vont pas ensemble (gris: montre des parts coloriées, colorier: demande à l’élève de colorier)'
+		);
+	} else if (readFraction !== null && readShape !== null) {
+		try {
+			colorier = resolveColorier(readFraction, partageTotal(readShape));
+		} catch (e) {
+			if (!(e instanceof LineError)) throw e;
+			fail(colorierLine, e.message);
+		}
+	}
+	if (seen.has('case') && !seen.has('colorier')) {
+		fail(seen.get('case') ?? 1, 'case: sans objet sans colorier:');
+	}
+	const withCase = caseIndex === undefined ? {} : { caseIndex };
+	if (readShape !== null && readGray !== null && readFraction === null) {
 		try {
 			rank = resolveGray(readGray, partageTotal(readShape));
 		} catch (e) {
@@ -248,9 +355,15 @@ export function parsePartageContent(source: string): PartageNode {
 	}
 
 	if (errors.length > 0 || readShape === null) {
-		return { type: 'partage', source, spec: null, errors };
+		return { type: 'partage', source, spec: null, errors, ...withCase };
 	}
-	return { type: 'partage', source, spec: { shape: readShape, gray: rank }, errors };
+	return {
+		type: 'partage',
+		source,
+		spec: { shape: readShape, gray: rank, ...(colorier && { colorier }) },
+		errors,
+		...withCase
+	};
 }
 
 /**

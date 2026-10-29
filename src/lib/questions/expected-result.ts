@@ -35,6 +35,8 @@ import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
+import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
+import { NOTHING_COLORED } from '$lib/ubumark/utils/partage-colorier';
 import { buildCaseCount } from './generator/build-answer';
 import {
 	validateAnswerDetailed,
@@ -171,6 +173,12 @@ export const EMPTY_ANSWER_TEXT = "Tu n'as rien répondu.";
 export const EMPTY_BUILD_TEXT = "Tu n'as rien posé.";
 /** Droite à placer laissée vide (aucun point) */
 export const EMPTY_PLACE_TEXT = "Tu n'as rien placé.";
+/** Texte d'une case de ce genre laissée vide : rien posé, placé ou colorié */
+function emptyBuildText(kind: BuildKind): string {
+	if (kind === 'partage') return NOTHING_COLORED;
+	return isPlaceKind(kind) ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
+}
+
 /** Case sans valeur connue : pointillés, comme sur une fiche */
 const BLANK_TEXT = '……';
 
@@ -277,7 +285,8 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const })),
 		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const })),
 		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const })),
-		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const }))
+		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
+		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {
@@ -605,7 +614,7 @@ function buildLines(
 	};
 	// Propre à la case : une autre case de l'énoncé peut avoir sa réponse
 	if (withAnswer && status === 'empty') {
-		const text = isPlaceKind(build.kind) ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
+		const text = emptyBuildText(build.kind);
 		return [line, { kind: 'empty', text }];
 	}
 	return [line];
@@ -640,7 +649,7 @@ function placeLines(
 		...(build.kind === 'ranger' && { expected: points.map((p) => p.expected) })
 	};
 	if (withAnswer && !answered) {
-		const text = isPlaceKind(build.kind) ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
+		const text = emptyBuildText(build.kind);
 		return [line, { kind: 'empty', text }];
 	}
 	return [line];

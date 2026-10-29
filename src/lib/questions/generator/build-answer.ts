@@ -9,7 +9,8 @@
  * l'effectif d'une barre de `placer:` (```barres, `12` ; avec `axe: à choisir`,
  * la première case est l'échelle, `5`), ou le rang ÉCRIT de
  * l'étiquette d'une place (```ranger, `2` ; le générateur le change en position
- * affichée après le mélange).
+ * affichée après le mélange), ou les parts à colorier d'une figure (```partage,
+ * `colorier: 3/8` : `3/8`, parts à colorier sur parts de la figure).
  *
  * @module questions/generator/build-answer
  */
@@ -23,6 +24,8 @@ import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
 import { adaptedScale, barsCaseCount } from '$lib/ubumark/utils/barres-placer';
 import { RANGER_MIN_LABELS_IN_QUESTION } from '$lib/ubumark/utils/ranger';
+import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
+import { expectedColoringAnswer } from '$lib/ubumark/utils/partage-colorier';
 import { timeText } from '$lib/ubumark/utils/horloge-placer';
 import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-placer';
 import { numVal } from '$lib/ubumark/utils/number-line-render';
@@ -98,6 +101,13 @@ export function buildAnswerOf(
 			};
 		}
 		return { answer: String(point) };
+	}
+	if (kind === 'partage') {
+		const node = parsePartageContent(source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0) return { errors: node.errors };
+		if (node.spec?.colorier === undefined) return { errors: ['colorier: absent'] };
+		return { answer: expectedColoringAnswer(node.spec) };
 	}
 	if (kind === 'horloge') {
 		const node = parseHorlogeContent(source);

@@ -77,6 +77,7 @@
 	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
 	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
 	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
+	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
 	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
 	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
@@ -213,6 +214,7 @@
 		if (node.type === 'collection') return node.caseIndex !== undefined;
 		if (node.type === 'number-line') return node.caseIndex !== undefined;
 		if (node.type === 'horloge') return node.caseIndex !== undefined;
+		if (node.type === 'partage') return node.caseIndex !== undefined;
 		if (node.type === 'stat-chart') return node.caseIndex !== undefined;
 		if (node.type === 'monnaie') return node.caseIndex !== undefined;
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
@@ -455,7 +457,7 @@
 	 * Une case à remplir, dans l'ordre de l'écran : prompt d'un champ MathLive, champ texte,
 	 * ou grille d'un bloc ```operation (ses cases forment UNE réponse ; division
 	 * euclidienne : deux, le quotient puis le reste), ou plan d'une collection ou d'une monnaie à construire,
-	 * ou droite ou horloge à placer, ou diagramme en barres à construire
+	 * ou droite ou horloge à placer, ou diagramme en barres à construire, ou figure à colorier
 	 */
 	type Slot =
 		| { field: MathfieldElement; promptId: string }
@@ -505,7 +507,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled)'
+					'.construire-ajouter:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;
@@ -955,6 +957,26 @@
 				{:else}
 					<div data-construire-case={caseIndex}>
 						<HorlogePlacer
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'partage' && node.caseIndex !== undefined && node.spec?.colorier !== undefined}
+				<!-- Figure à colorier : l'élève colorie des parts, leurs rangs sont la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la figure juste, les premières parts coloriées -->
+					<BuildAnswer kind="partage" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<PartageColorier
 							{node}
 							answer={{
 								value: state?.value ?? '',

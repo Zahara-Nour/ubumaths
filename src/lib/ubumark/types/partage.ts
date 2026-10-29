@@ -31,8 +31,8 @@ export const PARTAGE_GRID = { min: 1, max: 10 } as const;
 /** Nombre de parts du carré coupé par ses deux diagonales */
 export const PARTAGE_SQUARE_PARTS = 4;
 
-/** Les clés du bloc (`colorier:` arrivera avec la réponse à colorier) */
-export const PARTAGE_KEYS = ['forme', 'gris'] as const;
+/** Les clés du bloc (`colorier:` et `case:` : figure à colorier dans une question) */
+export const PARTAGE_KEYS = ['forme', 'gris', 'colorier', 'case'] as const;
 
 /** Message à l'élève (et dans le PDF) pour un bloc en erreur */
 export const PARTAGE_UNAVAILABLE = 'Partage indisponible';
@@ -60,10 +60,24 @@ export function partageTotal(shape: PartageShape): number {
 	}
 }
 
+/** Ce que l'élève doit colorier (`colorier: 3/8`) */
+export interface PartageColorier {
+	/** Fraction telle qu'écrite par le prof, pour les phrases de la correction */
+	num: number;
+	den: number;
+	/** Nombre de parts à colorier sur CETTE figure (num × total ÷ den, entier) */
+	parts: number;
+}
+
 export interface PartageSpec {
 	shape: PartageShape;
 	/** Rangs coloriés (à partir de 1), distincts, en ordre croissant ; vide : aucune part coloriée */
 	gray: number[];
+	/**
+	 * Figure à colorier (une question) : la figure est dessinée SANS part coloriée,
+	 * l'élève colorie. Exclusif avec `gris:`.
+	 */
+	colorier?: PartageColorier;
 }
 
 export interface PartageNode extends BaseNode {
@@ -74,6 +88,8 @@ export interface PartageNode extends BaseNode {
 	spec: PartageSpec | null;
 	/** Phrases pour l'AUTEUR (jamais montrées à l'élève), « Ligne N : … » */
 	errors: string[];
+	/** Figure à colorier : sa case, posée par le générateur (`case: N`) */
+	caseIndex?: number;
 }
 
 export interface PartageBlockRange {
