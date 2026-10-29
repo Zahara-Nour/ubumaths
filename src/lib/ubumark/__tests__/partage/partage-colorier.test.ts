@@ -62,8 +62,10 @@ describe('colorier: — analyse', () => {
 		expect(messages('forme: bande 8', 'colorier: 3/0')).toMatch(/dénominateur/);
 	});
 
-	it('fraction > 1 : plusieurs figures, pas encore disponible', () => {
-		expect(messages('forme: bande 4', 'colorier: 5/4')).toMatch(/plusieurs figures.*unites:/);
+	it('fraction > 1 sans unites: : le nombre de figures qu’il faut', () => {
+		expect(messages('forme: bande 4', 'colorier: 5/4')).toMatch(
+			/5\/4 dépasse 1 : ajoute unites: 2/
+		);
 	});
 
 	it('0 part : refusé (rien à colorier)', () => {

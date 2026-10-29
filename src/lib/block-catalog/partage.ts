@@ -16,7 +16,7 @@ export const partageEntry: BlockCatalogEntry = {
 	summary:
 		'Une bande, une grille, un disque ou un carré partagé en parts égales : dont certaines sont coloriées (pour lire une fraction), ou que l’élève colorie (pour représenter une fraction).',
 	intro:
-		'Le bloc dessine la figure, ses parts égales et, si vous le demandez, les parts coloriées. Avec gris:, il ne fait que montrer : la réponse (« quelle fraction est coloriée ? ») est une case ordinaire de l’énoncé. Avec colorier:, c’est l’élève qui colorie (en touchant ou en glissant) : la case est posée toute seule dans une question, et la réponse est juste dès que la part coloriée vaut la fraction, quelles que soient les parts. Les parts sont numérotées de 1 à N : la bande de gauche à droite, la grille ligne par ligne depuis le coin en haut à gauche, le disque depuis midi dans le sens des aiguilles d’une montre, le carré de haut en bas puis à droite et à gauche (haut, droite, bas, gauche). Sur la fiche PDF, les parts coloriées sont grisées et la figure à colorier reste vide, pour le crayon.',
+		'Le bloc dessine la figure, ses parts égales et, si vous le demandez, les parts coloriées. Avec gris:, il ne fait que montrer : la réponse (« quelle fraction est coloriée ? ») est une case ordinaire de l’énoncé. Avec colorier:, c’est l’élève qui colorie (en touchant ou en glissant) : la case est posée toute seule dans une question, et la réponse est juste dès que la part coloriée vaut la fraction, quelles que soient les parts. Les parts sont numérotées de 1 à N : la bande de gauche à droite, la grille ligne par ligne depuis le coin en haut à gauche, le disque depuis midi dans le sens des aiguilles d’une montre, le carré de haut en bas puis à droite et à gauche (haut, droite, bas, gauche). Avec unites:, le bloc dessine plusieurs figures identiques côte à côte, pour une fraction plus grande que 1 ; les parts sont alors numérotées à la suite d’une figure à l’autre. Sur la fiche PDF, les parts coloriées sont grisées et la figure à colorier reste vide, pour le crayon.',
 	settingGroups: [
 		{
 			settings: [
@@ -39,7 +39,14 @@ export const partageEntry: BlockCatalogEntry = {
 					values: 'une fraction : 3/8',
 					defaultValue: null,
 					description:
-						'La fraction que l’élève doit colorier, au plus 1 (plusieurs figures : pas encore disponible). Elle doit tomber juste sur la figure : 1/2 sur une bande de 4 (2 parts) est permis, 1/3 sur une bande de 8 non. Ne se combine pas avec gris:. Dans une question, ne pas écrire de case : elle est posée toute seule.'
+						'La fraction que l’élève doit colorier ; plus grande que 1, elle demande plusieurs figures (unites:). Elle doit tomber juste sur la figure : 1/2 sur une bande de 4 (2 parts) est permis, 1/3 sur une bande de 8 non. Ne se combine pas avec gris:. Dans une question, ne pas écrire de case : elle est posée toute seule.'
+				},
+				{
+					key: 'unites',
+					values: 'un nombre de 1 à 5',
+					defaultValue: '1',
+					description:
+						'Le nombre de figures identiques, côte à côte : une par unité, pour une fraction plus grande que 1 (7/4 sur deux bandes de 4). Les parts sont numérotées à la suite : sur deux bandes de 4, la seconde a les parts 5 à 8, et gris: 7 remplit la première et 3 parts de la seconde. Plus de figures que nécessaire est permis : l’élève doit laisser les autres vides.'
 				}
 			]
 		}
@@ -71,6 +78,12 @@ export const partageEntry: BlockCatalogEntry = {
 			source: fence('partage', 'forme: bande 8', 'colorier: 3/8'),
 			explanation:
 				'La figure est vide ; l’élève colorie 3 parts sur 8, les parts qu’il veut. Dans une question, la réponse est jugée sur la valeur : 2 parts sur 4 sont justes pour 1/2.'
+		},
+		{
+			title: 'Plus grand que 1',
+			source: fence('partage', 'forme: bande 4', 'unites: 3', 'colorier: 7/4'),
+			explanation:
+				'Trois bandes de 4 : l’élève colorie 7 quarts, une bande entière et 3 quarts de la suivante ; la troisième bande doit rester vide.'
 		},
 		{
 			title: 'Sans part coloriée',
@@ -105,6 +118,12 @@ export const partageEntry: BlockCatalogEntry = {
 			message: 'ne tombe pas juste',
 			explanation:
 				'Le nombre de parts doit être un multiple du dénominateur : 8 n’est pas un multiple de 3.'
+		},
+		{
+			title: 'Plus grand que 1, une seule figure',
+			source: fence('partage', 'forme: bande 4', 'colorier: 7/4'),
+			message: 'ajoute unites: 2',
+			explanation: 'Une figure ne contient que 4 quarts : pour 7 quarts, il en faut deux.'
 		},
 		{
 			title: 'Forme absente',

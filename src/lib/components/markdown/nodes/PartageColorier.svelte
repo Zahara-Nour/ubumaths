@@ -16,18 +16,21 @@
 	  coloriés (`"1, 4, 6"`, `coloredAnswer`), jugée par `isColoringCorrect`. Faux :
 	  la phrase de `coloringMistakes` et la figure juste à côté.
 	- Sans `answer` (aperçu du prof, cours) : le même geste, rien de jugé.
+	- Plusieurs figures (`unites:`, fractions > 1) : un SVG par figure, côte à côte,
+	  rangs à la suite ; « Figure 2, part 3 sur 4 ». Un glissé reste dans la figure
+	  où il commence.
 
 	@module components/markdown/nodes/PartageColorier
 -->
 <script lang="ts">
-	import { partageTotal, type PartageNode } from '$lib/ubumark/types/partage';
+	import { partageSpecTotal, partageTotal, type PartageNode } from '$lib/ubumark/types/partage';
 	import {
 		PARTAGE_CM_PER_UNIT,
 		PARTAGE_MARGIN,
 		PARTAGE_STROKE,
-		buildPartageScene,
+		buildPartageScenes,
 		partAtPoint,
-		partageLabel
+		partageFigureLabel
 	} from '$lib/ubumark/utils/partage-scene';
 	import {
 		coloredAnswer,
@@ -56,11 +59,12 @@
 	const DRAG_STEPS_PER_SIDE = 40;
 
 	let spec = $derived(node.spec!);
-	let total = $derived(partageTotal(spec.shape));
-	let scene = $derived(buildPartageScene(spec));
-	let label = $derived(partageLabel(spec));
-	let width = $derived(scene.width + 2 * PARTAGE_MARGIN);
-	let height = $derived(scene.height + 2 * PARTAGE_MARGIN);
+	/** Parts d'une figure, et de toutes les figures */
+	let perUnit = $derived(partageTotal(spec.shape));
+	let total = $derived(partageSpecTotal(spec));
+	let scenes = $derived(buildPartageScenes(spec));
+	let width = $derived(scenes[0].width + 2 * PARTAGE_MARGIN);
+	let height = $derived(scenes[0].height + 2 * PARTAGE_MARGIN);
 
 	/**
 	 * Rangs coloriés : relus quand la valeur de la case change (case remise à vide,
@@ -70,9 +74,9 @@
 	let locked = $derived(answer?.disabled ?? false);
 	let verdict = $derived<boolean | null>(answer?.isCorrect ?? null);
 	let mistakes = $derived(verdict === false ? coloringMistakes(ranks.length, spec) : []);
-	/** La figure juste : les premières parts coloriées */
+	/** Les figures justes : les premières parts coloriées, les unités pleines d'abord */
 	let solution = $derived(
-		buildPartageScene({
+		buildPartageScenes({
 			...spec,
 			gray: Array.from({ length: spec.colorier?.parts ?? 0 }, (_, i) => i + 1)
 		})
@@ -80,9 +84,11 @@
 
 	/** Geste en cours : true = on colorie, false = on efface ; null hors geste */
 	let painting = $state<boolean | null>(null);
+	/** Figure du geste en cours (un glissé reste dans sa figure) */
+	let activeUnit = 0;
 	/** Dernier point du glissé, pour parcourir le segment jusqu'au suivant */
 	let lastPoint: ScenePoint | null = null;
-	let svg: SVGSVGElement | undefined = $state();
+	let svgs: (SVGSVGElement | undefined)[] = $state([]);
 
 	const polygonPoints = (points: { x: number; y: number }[]) =>
 		points.map((p) => `${p.x + PARTAGE_MARGIN},${p.y + PARTAGE_MARGIN}`).join(' ');
@@ -98,8 +104,12 @@
 		setRanks(paint ? [...ranks, rank].sort((a, b) => a - b) : ranks.filter((r) => r !== rank));
 	}
 
-	/** Point sous le doigt, en coordonnées de la scène (pas sur le DOM) */
-	function scenePoint(event: { clientX: number; clientY: number }): ScenePoint | null {
+	/** Point sous le doigt, en coordonnées de la scène de la figure `unit` (pas sur le DOM) */
+	function scenePoint(
+		event: { clientX: number; clientY: number },
+		unit: number
+	): ScenePoint | null {
+		const svg = svgs[unit];
 		if (!svg) return null;
 		const rect = svg.getBoundingClientRect();
 		if (rect.width === 0 || rect.height === 0) return null;
@@ -109,16 +119,17 @@
 		};
 	}
 
-	function handlePointerDown(event: PointerEvent) {
+	function handlePointerDown(event: PointerEvent, unit: number) {
 		// Bouton principal, premier doigt : un clic droit ou un second doigt ne colorie rien
 		if (locked || event.button !== 0 || !event.isPrimary) return;
-		const point = scenePoint(event);
-		const rank = point && partAtPoint(scene, point.x, point.y);
+		const point = scenePoint(event, unit);
+		const rank = point && partAtPoint(scenes[unit], point.x, point.y);
 		if (!point || rank === null) return;
 		painting = !ranks.includes(rank);
+		activeUnit = unit;
 		lastPoint = point;
 		apply(rank, painting);
-		svg?.setPointerCapture?.(event.pointerId);
+		svgs[unit]?.setPointerCapture?.(event.pointerId);
 	}
 
 	/**
@@ -128,8 +139,9 @@
 	 */
 	function handlePointerMove(event: PointerEvent) {
 		if (painting === null || !event.isPrimary) return;
-		const point = scenePoint(event);
+		const point = scenePoint(event, activeUnit);
 		if (!point) return;
+		const scene = scenes[activeUnit];
 		const from = lastPoint ?? point;
 		const step = Math.min(scene.width, scene.height) / DRAG_STEPS_PER_SIDE;
 		const count = Math.max(1, Math.ceil(Math.hypot(point.x - from.x, point.y - from.y) / step));
@@ -165,48 +177,55 @@
 		if (event.detail === 0) toggle(rank);
 	}
 
-	const partName = (rank: number) =>
-		`Part ${rank} sur ${total}${ranks.includes(rank) ? ', coloriée' : ''}`;
+	/** « Part 3 sur 8, coloriée » ; plusieurs figures : « Figure 2, part 3 sur 4 » */
+	function partName(rank: number): string {
+		const colored = ranks.includes(rank) ? ', coloriée' : '';
+		if (spec.units === 1) return `Part ${rank} sur ${total}${colored}`;
+		const unit = Math.ceil(rank / perUnit);
+		return `Figure ${unit}, part ${rank - (unit - 1) * perUnit} sur ${perUnit}${colored}`;
+	}
 </script>
 
 <div class="partage-colorier my-2 flex flex-col items-center gap-2 {className}">
 	<div
-		class="placer-zone rounded-md border p-2"
+		class="placer-zone flex flex-wrap justify-center gap-4 rounded-md border p-2"
 		class:placer-juste={verdict === true}
 		class:placer-faux={verdict === false}
 	>
-		<svg
-			bind:this={svg}
-			xmlns="http://www.w3.org/2000/svg"
-			viewBox="0 0 {width} {height}"
-			role="group"
-			aria-label={label}
-			class="partage-figure"
-			class:partage-verrouillee={locked}
-			style:width="{width * PARTAGE_CM_PER_UNIT * SCREEN_ZOOM}cm"
-			style:aspect-ratio="{width} / {height}"
-			stroke-width={PARTAGE_STROKE}
-			stroke-linejoin="round"
-			onpointerdown={handlePointerDown}
-			onpointermove={handlePointerMove}
-			onpointerup={handlePointerUp}
-			onpointercancel={handlePointerUp}
-		>
-			{#each scene.parts as part (part.rank)}
-				<polygon
-					class="partage-part"
-					class:partage-coloriee={ranks.includes(part.rank)}
-					points={polygonPoints(part.points)}
-					role="button"
-					tabindex={locked ? -1 : 0}
-					aria-label={partName(part.rank)}
-					aria-pressed={ranks.includes(part.rank)}
-					aria-disabled={locked}
-					onkeydown={(event) => handleKeyDown(event, part.rank)}
-					onclick={(event) => handleClick(event, part.rank)}
-				/>
-			{/each}
-		</svg>
+		{#each scenes as scene, unit (unit)}
+			<svg
+				bind:this={svgs[unit]}
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 {width} {height}"
+				role="group"
+				aria-label={partageFigureLabel(spec, unit)}
+				class="partage-figure"
+				class:partage-verrouillee={locked}
+				style:width="{width * PARTAGE_CM_PER_UNIT * SCREEN_ZOOM}cm"
+				style:aspect-ratio="{width} / {height}"
+				stroke-width={PARTAGE_STROKE}
+				stroke-linejoin="round"
+				onpointerdown={(event) => handlePointerDown(event, unit)}
+				onpointermove={handlePointerMove}
+				onpointerup={handlePointerUp}
+				onpointercancel={handlePointerUp}
+			>
+				{#each scene.parts as part (part.rank)}
+					<polygon
+						class="partage-part"
+						class:partage-coloriee={ranks.includes(part.rank)}
+						points={polygonPoints(part.points)}
+						role="button"
+						tabindex={locked ? -1 : 0}
+						aria-label={partName(part.rank)}
+						aria-pressed={ranks.includes(part.rank)}
+						aria-disabled={locked}
+						onkeydown={(event) => handleKeyDown(event, part.rank)}
+						onclick={(event) => handleClick(event, part.rank)}
+					/>
+				{/each}
+			</svg>
+		{/each}
 	</div>
 
 	{#if showControls && !locked}
@@ -232,26 +251,28 @@
 		{/each}
 		<div class="placer-correction flex flex-col items-center gap-1">
 			<p class="text-sm font-medium text-muted-foreground">Correction</p>
-			<div class="p-2">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 {width} {height}"
-					role="img"
-					aria-label="{label} : la correction"
-					class="partage-figure"
-					style:width="{width * PARTAGE_CM_PER_UNIT * SCREEN_ZOOM}cm"
-					style:aspect-ratio="{width} / {height}"
-					stroke-width={PARTAGE_STROKE}
-					stroke-linejoin="round"
-				>
-					{#each solution.parts as part (part.rank)}
-						<polygon
-							class="partage-part"
-							class:partage-coloriee={part.shaded}
-							points={polygonPoints(part.points)}
-						/>
-					{/each}
-				</svg>
+			<div class="flex flex-wrap justify-center gap-4 p-2">
+				{#each solution as scene, unit (unit)}
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 {width} {height}"
+						role="img"
+						aria-label="{partageFigureLabel(spec, unit)} : la correction"
+						class="partage-figure"
+						style:width="{width * PARTAGE_CM_PER_UNIT * SCREEN_ZOOM}cm"
+						style:aspect-ratio="{width} / {height}"
+						stroke-width={PARTAGE_STROKE}
+						stroke-linejoin="round"
+					>
+						{#each scene.parts as part (part.rank)}
+							<polygon
+								class="partage-part"
+								class:partage-coloriee={part.shaded}
+								points={polygonPoints(part.points)}
+							/>
+						{/each}
+					</svg>
+				{/each}
 			</div>
 		</div>
 	{/if}

@@ -9,6 +9,10 @@
  * Repère : origine au coin haut gauche, y vers le BAS (comme en SVG). Une
  * unité vaut `PARTAGE_CM_PER_UNIT` cm, à l'écran comme au PDF.
  *
+ * Plusieurs figures (`unites:`) : une scène par figure, dessinées côte à côte
+ * par l'écran et le PDF ; les rangs se suivent d'une figure à l'autre (figure 2
+ * de N + 1 à 2N).
+ *
  * Numérotation des parts (à partir de 1) :
  * - bande : de gauche à droite ;
  * - grille : ligne par ligne, depuis le coin haut gauche ;
@@ -155,15 +159,18 @@ function geometry(shape: PartageShape): {
 	}
 }
 
-/** La scène d'un bloc `partage` */
-export function buildPartageScene(spec: PartageSpec): PartageScene {
+/** Les scènes d'un bloc `partage` : une par figure (`unites:`), rangs à la suite */
+export function buildPartageScenes(spec: PartageSpec): PartageScene[] {
 	const { width, height, polygons } = geometry(spec.shape);
 	const shaded = new Set(spec.gray);
-	return {
+	return Array.from({ length: spec.units }, (_, unit) => ({
 		width,
 		height,
-		parts: polygons.map((points, i) => ({ rank: i + 1, shaded: shaded.has(i + 1), points }))
-	};
+		parts: polygons.map((points, i) => {
+			const rank = unit * polygons.length + i + 1;
+			return { rank, shaded: shaded.has(rank), points };
+		})
+	}));
 }
 
 /**
@@ -182,6 +189,15 @@ export function partageLabel(spec: PartageSpec): string {
 		case 'carre-diagonales':
 			return 'Carré partagé en parts égales par ses diagonales';
 	}
+}
+
+/**
+ * Nom accessible d'une figure parmi `spec.units` : la forme seule, suivie de
+ * « figure 2 sur 3 » quand il y en a plusieurs
+ */
+export function partageFigureLabel(spec: PartageSpec, unit: number): string {
+	const label = partageLabel(spec);
+	return spec.units === 1 ? label : `${label}, figure ${unit + 1} sur ${spec.units}`;
 }
 
 /** Le point (x, y) de la scène est-il dans ce polygone convexe ? (tracé de rayon) */

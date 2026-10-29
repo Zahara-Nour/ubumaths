@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29.
 
 ## À quoi ça sert
 
@@ -479,7 +479,7 @@ Hors question (cours, aperçu) : le même geste, rien de jugé. PDF : le cadran 
 l'enfant les dessine. Secondes (CM2-083) : hors chantier (pas de trotteuse).
 
 **Figure partagée en parts égales** (chantier [fractions-a-colorier](../wip/fractions-a-colorier-progress.md),
-PR 1 : affichage ; PR 2 : `colorier:`) — `src/lib/ubumark/__tests__/partage/` :
+PR 1 : affichage ; PR 2 : `colorier:` ; PR 3 : `unites:`) — `src/lib/ubumark/__tests__/partage/` :
 
 ````text
 ```partage
@@ -504,7 +504,7 @@ _Figure à colorier_ (`colorier: 3/8`, à la place de `gris:`) : l'élève color
 coloriée. Variables permises (`colorier: {{n}}/{{d}}`, lues sur l'énoncé résolu). `spec.colorier` =
 `{ num, den, parts }` (`parts` = num × total ÷ den, nombre de parts à colorier sur CETTE figure). Erreurs
 au prof : `gris:` et `colorier:` ensemble, fraction mal écrite ou de dénominateur 0, **0 part** (rien à
-colorier), fraction **> 1** (« plusieurs figures : `unites:`, pas encore disponible »), fraction qui ne tombe pas
+colorier), fraction **> 1** sans assez de figures (« 7/4 dépasse 1 : ajoute unites: 2 »), fraction qui ne tombe pas
 juste sur le partage (`1/3` sur une bande de 8) ; `1/2` sur une bande de 4 est permis (2 parts). `case: N`
 est posée par le générateur (`findPartagesToColorier`, `hasPartageToColorier`), jamais écrite par le prof.
 Écran (`PartageColorier.svelte`, aussi hors question : cours, aperçu, geste libre) : toucher une part la
@@ -519,6 +519,19 @@ les parts (`isColoringCorrect`). Correction : « Tu as colorié 2 parts sur 8 ; 
 (3/8). » (`coloringMistakes`), la figure de l'élève et la figure juste (les premières parts). PDF : la figure
 vide à colorier au crayon ; `generatePartageTypst(node, { solved: true })` dessine la figure juste (aucun
 corrigé imprimé ne l'appelle encore : les séries d'automatismes ne gèrent pas les blocs à placer).
+
+_Plusieurs figures_ (`unites: N`, de 1 à 5 ; absent = 1) : N figures identiques côte à côte, pour une fraction
+
+> 1 (`colorier: 7/4` sur `unites: 2` de bandes de 4 ; `gris: 7`). `spec.units` ; parts **numérotées à la
+> suite** (figure 2 de N + 1 à 2N), `partageSpecTotal(spec)` ; `spec.colorier.parts` compte sur l'ensemble.
+> Plus de figures que nécessaire est permis (figures à laisser vides). Erreurs : `unites:` hors bornes, fraction
+> ou `gris:` au-delà des figures dessinées (« écris unites: 3 », le nombre qu'il faut ; au-delà de 5 : le
+> plafond). Scènes : `buildPartageScenes(spec)`, une par figure ; écran : un SVG par figure, `flex-wrap` (à la
+> ligne sur téléphone), nom « Bande partagée en parts égales, figure 2 sur 3 », part « Figure 2, part 3 sur
+> 4 » ; un glissé reste dans la figure où il commence. PDF : une `box` par figure, séparées de 0,6 cm, à la ligne
+> quand la page est trop étroite. Attendue : parts / parts d'UNE figure (`'7/4'`) ; `isColoringCorrect` borne
+> les rangs à 5 figures (la réponse attendue ne dit pas combien sont dessinées). Correction : « Tu as colorié
+> 5 parts ; il fallait en colorier 7 (7/4, chaque figure a 4 parts). », figures justes unités pleines d'abord.
 
 **Opération posée en colonnes** (chantier [operations-posees](../archive/wip/operations-posees-progress.md),
 addition, soustraction, multiplication, division en potence) — `src/lib/ubumark/__tests__/operation/` :

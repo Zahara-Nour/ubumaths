@@ -215,3 +215,18 @@ colorier: 7/4
 3. Plafond `unites: 5` ? (Reco : oui ; CM1 « 2 + 3/4 » en demande 3.)
 4. Jugé sur le seul nombre de parts, même si l'élève ne remplit pas une unité entière d'abord ? (Reco :
    oui, c'est la décision 3 ; exiger les unités pleines d'abord serait une règle neuve.)
+
+**Tranché (David, 2026-10-29 : « go » sur les quatre recos)** : numérotation continue ; figures en trop
+permises ; `unites:` de 1 à 5 ; jugé sur le seul nombre de parts.
+
+### Fait (2026-10-29)
+
+Codé en session principale, sans agent : `unites:` dans le parseur (`Figures`, messages « ajoute unites: 2 »,
+« écris unites: 3 (ou plus) », plafond), `spec.units`, `partageSpecTotal`, `buildPartageScenes` (une scène par
+figure, rangs à la suite ; `buildPartageScene` retiré), `partageFigureLabel`, un SVG par figure à l'écran
+(`flex-wrap`) et au PDF (`box` séparées de 0,6 cm), attendue `7/4` (parts / parts d'une figure, rangs bornés à
+5 figures dans `isColoringCorrect`), phrase « Tu as colorié 5 parts ; il fallait en colorier 7 (7/4, chaque
+figure a 4 parts). ». Catalogue : clé `unites`, exemple « Plus grand que 1 », erreur « une seule figure ».
+Tests : `partage-unites.test.ts` (24), composants (5), génération (1), compilation Typst réelle (disque × 3).
+Vu en Playwright (5178, prof local) : catalogue à 1200 et 360 px, 7 parts coloriées sur trois bandes, pas de
+défilement horizontal. Choix d'exécution : un glissé reste dans la figure où il commence.
