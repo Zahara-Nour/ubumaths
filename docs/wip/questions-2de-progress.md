@@ -453,3 +453,10 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
 - Phase 0 proposée : attendu = ensemble fini de nombres, réponse = nombres sans accolades → faux, message
   « Un ensemble de solutions s'écrit entre accolades : {1}. » (ses valeurs) ; attendu intervalle, ∅ ou ℝ →
   message inchangé ; « x = 2 » hors champ sauf avis contraire. **En attente de la validation.**
+
+## 18. Lot 2 bis B, migration nœud + tag (2026-10-29)
+
+- Brouillons créés en prod par David le 2026-10-29 : 60207cfd (2-342), 2d4c0b35 (2-465), 1ac09759 (2-343),
+  a371b402 (2-468), 98892db9 (2-344), 52e58bd6 (2-471) ; relevé MCP : brouillons, 2de, sans nœud ni tag.
+- Migration `20261029183000_questions_2de_lecture_b_rangement_tags.sql` (dérivée du lot A) et son test :
+  5/9 rouges sans la migration, 9/9 verts avec ; `security-auditor` : aucun finding bloquant. PR #1946.
