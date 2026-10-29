@@ -1,5 +1,5 @@
 ---
-status: phase 0
+status: en cours
 ---
 
 # Chantier `solides` — assemblages de cubes, perspective cavalière, patrons, sections
@@ -8,9 +8,9 @@ status: phase 0
 
 _Mis à jour le 2026-10-30, à l'ouverture du chantier._
 
-- **État** : phase 0 écrite (§ 3 et 4), **en attente de David**.
-- **Prochaine action** : réponses aux questions du § 5, puis lot 1 (` ```cubes `, affichage) en TDD.
-- **En attente de David** : Q1 à Q5 (§ 5).
+- **État** : phase 0 validée (« je te suis », § 5), ADR 0034 écrit ; spécification du lot 1 au § 6.
+- **Prochaine action** : lot 1 (` ```cubes `, affichage) en TDD, sur le modèle de la PR #1958.
+- **En attente de David** : rien.
 - **Pièges en cours** : aucun.
 - **Worktree / branche** : `../ubumaths-wt-solides` · `feat/solides`.
 
@@ -139,3 +139,54 @@ forme: 7
    acceptée), ou exiger l'assemblage exact du générateur ? _Reco : mêmes vues._
 4. **Compléter une perspective à la main** : hors chantier (futur, avec `figure-a-completer`) ? _Reco : hors._
 5. **Ordre des lots** (§ 3) : d'accord, ou les patrons du cube (cours moyen, 4 points) avant le ` ```solide ` ?
+
+**Réponse de David (2026-10-30)** : « je te suis » — les cinq recommandations sont retenues : cavalière
+partout (Q1), trois mots / un nœud `espace` / un ADR (Q2, [ADR 0034](../adr/0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)),
+« mêmes vues » (Q3), perspective à compléter hors chantier (Q4), ordre des lots du § 3 (Q5).
+
+## 6. Lot 1 — ` ```cubes `, affichage (spécification)
+
+Modèle de code : la PR #1958 (` ```partage `, affichage), fichier pour fichier.
+
+**Nœud** `EspaceNode` (`types/espace.ts`) : `type: 'espace'`, `source`, `spec: EspaceSpec | null`,
+`errors: string[]`. `EspaceSpec` = union à genres ; au lot 1 seul `{ kind: 'cubes'; heights: number[][];
+view: 'perspective' | 'dessus' | 'face' | 'droite' | 'gauche' }`. Clé inconnue → erreur.
+
+**Lecture de `hauteurs:`** : lignes en retrait sous la clé (ou sur la même ligne, rangées séparées par `/` :
+`hauteurs: 2 1 1 / 1 0 1`), nombres séparés par des espaces. Première rangée = **au fond**, dernière =
+**devant** ; colonnes de gauche à droite. Rangées et colonnes **entièrement vides au bord** retirées
+(une variable à 0 ne décale pas le dessin) ; un trou intérieur reste.
+
+**Scène** (`utils/espace-scene.ts`, calcul pur) : repère SVG (y vers le bas), arête du cube = 1 cm à
+l'écran comme au PDF ; fuyante = 0,5 × arête à 45° vers le **haut à droite**. Faces vues : devant, dessus,
+droite ; une face collée à un cube voisin n'est pas émise. Ordre de dessin (peintre) : du fond vers le
+devant, puis de gauche à droite, puis de bas en haut. Chaque face = un polygone avec son genre (`devant`,
+`dessus`, `cote`) : trois teintes (dessus la plus claire, côté la plus foncée), contours noirs, aucune
+couleur d'accent.
+
+**Vues** (carrés de 1 cm, contours, sans relief) : dessus = cases non vides, rangée du fond en haut ;
+face = par colonne, la plus haute pile ; droite = par rangée, la plus haute pile, **le devant à gauche** ;
+gauche = le devant à droite.
+
+| Cas                                       | Attendu                                                               |
+| ----------------------------------------- | --------------------------------------------------------------------- |
+| `2 1 1 / 1 0 1`, perspective              | 6 cubes dessinés, le trou devant-milieu visible                       |
+| idem, `vue: face`                         | 3 colonnes : 2, 1, 1 (le max de chaque colonne)                       |
+| idem, `vue: dessus`                       | 5 carrés, le trou en bas au milieu                                    |
+| idem, `vue: droite` / `gauche`            | 2 colonnes : devant 1, fond 2 / fond 2, devant 1                      |
+| pile derrière une pile plus haute         | cachée (elle compte, ne se voit pas : 6-209)                          |
+| `0 0 / 0 3`                               | une pile de 3, rien d'autre (bords vides retirés)                     |
+| 1×1 de hauteur 1                          | un cube                                                               |
+| lignes de longueurs différentes           | erreur « Ligne N : chaque rangée doit avoir le même nombre de cases » |
+| `-1`, `1.5`, `x`                          | erreur « … une hauteur est un nombre entier de 0 à 6 »                |
+| plus de 6 rangées / colonnes, hauteur > 6 | erreur (bornes 6 × 6 × 6)                                             |
+| tout à 0, `hauteurs:` absente             | erreur « assemblage vide » / « hauteurs: manquante »                  |
+| `vue: dessous`                            | erreur, vues permises listées                                         |
+| variables `{{a}}`                         | lues sur l'énoncé résolu (comme ` ```partage `)                       |
+
+**Rendu** : `Espace.svelte` (aiguillage par genre, `Cubes.svelte` pour le dessin) ; nom accessible
+« Assemblage de cubes en perspective » / « Vue de face d'un assemblage de cubes » — **jamais le nombre de
+cubes**. Erreur : messages au prof, cadre neutre « Solide indisponible » à l'élève. Dans un choix d'une case
+choix : `--espace-taille: 3cm` comme l'horloge. **PDF** : Typst natif, mêmes polygones, gris imprimables.
+**Éditeur riche** : aller-retour en bloc de code `cubes`. Catalogue de blocs (`block-catalog/cubes.ts`) et
+`pnpm check:ubumark` comme pour ` ```partage `.
