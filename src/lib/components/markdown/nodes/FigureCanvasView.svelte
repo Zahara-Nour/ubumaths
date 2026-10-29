@@ -34,6 +34,7 @@
 	import FigureErrors from './FigureErrors.svelte';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 	import { readContentLocale } from '../content-locale';
+	import { untrack } from 'svelte';
 
 	interface Props {
 		node: FigureNode;
@@ -54,16 +55,25 @@
 		node.interactive ?? { draggable: false, renderMode: 'normal' }
 	);
 
+	/** Texte du bloc et langue : seuls changements qui refont la scène (un nouvel objet `node` au même texte ne ramène pas la figure au départ) */
+	const sourceKey = $derived(`${locale()}\n${node.source}`);
+	/** Le texte a-t-il déjà été admis par le budget du document ? (« Remettre » ne le redépense pas) */
+	let admittedKey: string | null = null;
+
 	/** Scène calculée sous le budget de temps du document ; épuisé → cadre neutre */
 	let result = $derived.by(() => {
+		void sourceKey;
 		void resets;
-		const built = withinBudget(budget(), () => buildFigureScene(node, { locale: locale() })) ?? {
-			scene: null,
-			errors: [{ message: OVER_BUDGET_MESSAGE }],
-			warnings: []
-		};
-		if (built.scene) themeDefaultColor(built.scene.figure);
-		return built;
+		return untrack(() => {
+			const compute = () => buildFigureScene(node, { locale: locale() });
+			const built = admittedKey === sourceKey ? compute() : withinBudget(budget(), compute);
+			if (built === null) {
+				return { scene: null, errors: [{ message: OVER_BUDGET_MESSAGE }], warnings: [] };
+			}
+			admittedKey = sourceKey;
+			if (built.scene) themeDefaultColor(built.scene.figure);
+			return built;
+		});
 	});
 
 	const view = $derived(

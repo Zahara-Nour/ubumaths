@@ -14,9 +14,9 @@ const HEADER = 'fenetre: -5 ; 5 ; -5 ; 5\ntaille: moyenne\ndescription: Le point
 const SCRIPT = 'A = point(1, 1)\nB = point(-2, 0)\ns = segment(A, B)';
 
 let mains: HTMLElement[] = [];
-function mainElement(): HTMLElement {
+function mainElement(width = 800): HTMLElement {
 	const main = document.body.appendChild(document.createElement('main'));
-	main.style.width = '800px';
+	main.style.width = `${width}px`;
 	mains.push(main);
 	return main;
 }
@@ -25,17 +25,25 @@ afterEach(() => {
 	mains = [];
 });
 
-async function renderBlock(header: string): Promise<HTMLElement> {
-	const node = parseFigureContent(`${HEADER}\n${header}\n---\n${SCRIPT}`);
+function parseBlock(header: string) {
+	return parseFigureContent(`${HEADER}\n${header}\n---\n${SCRIPT}`);
+}
+
+async function renderBlock(header: string, width = 800): Promise<HTMLElement> {
+	return (await renderScreen(header, width)).container;
+}
+
+async function renderScreen(header: string, width = 800) {
+	const node = parseBlock(header);
 	expect(node.errors).toEqual([]);
-	const screen = await render(FigureBlock, { target: mainElement(), props: { node } });
+	const screen = await render(FigureBlock, { target: mainElement(width), props: { node } });
 	// Le premier rendu charge la toile à la demande (lent sur une CI à froid)
 	await expect
 		.poll(() => screen.container.querySelector('svg.geometry-canvas, svg.figure-svg'), {
 			timeout: 5000
 		})
 		.not.toBeNull();
-	return screen.container;
+	return screen;
 }
 
 function canvasOf(container: HTMLElement): SVGSVGElement {
@@ -98,6 +106,29 @@ describe('FigureBlock — deplacable: oui', () => {
 		await expect.poll(() => pointA(canvasOf(container))).toEqual({ cx: 240, cy: 160 });
 	});
 
+	it('un nouvel objet nœud au même texte (re-rendu du parent) ne ramène pas la figure au départ', async () => {
+		const screen = await renderScreen('deplacable: oui');
+		await drag(canvasOf(screen.container), [240, 160], [320, 80]);
+		const moved = pointA(canvasOf(screen.container));
+		expect(moved).not.toEqual({ cx: 240, cy: 160 });
+
+		await screen.rerender({ node: parseBlock('deplacable: oui') });
+		await new Promise((r) => setTimeout(r, 0));
+		expect(pointA(canvasOf(screen.container))).toEqual(moved);
+	});
+
+	it('conteneur étroit (téléphone) : la toile tient dans sa largeur', async () => {
+		const container = await renderBlock('deplacable: oui', 300);
+		await expect
+			.poll(() => Number(canvasOf(container).getAttribute('width')))
+			.toBeLessThanOrEqual(300);
+		const svg = canvasOf(container);
+		expect(Number(svg.getAttribute('width'))).toBeGreaterThan(200);
+		expect(svg.getBoundingClientRect().right).toBeLessThanOrEqual(
+			container.getBoundingClientRect().right + 0.5
+		);
+	});
+
 	it('vue figée : la molette n’est pas captée (la page défile) et ne zoome pas', async () => {
 		const container = await renderBlock('deplacable: oui');
 		const svg = canvasOf(container);
@@ -157,8 +188,9 @@ describe('FigureBlock — rendu seul, ou réglages neutres', () => {
 		expect(getComputedStyle(svg).touchAction).toBe('auto');
 		expect(resetButton(container)).toBeUndefined();
 
+		const before = svg.innerHTML;
 		await drag(svg, [240, 160], [320, 80]);
-		expect(container.querySelector('circle.point.draggable')).toBeNull();
+		expect(canvasOf(container).innerHTML).toBe(before);
 	});
 
 	it('deplacable: oui → le doigt est capté par la figure (touch-action: none)', async () => {
