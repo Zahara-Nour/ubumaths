@@ -1,0 +1,185 @@
+{
+	"title": "Le périmètre d'un disque est proportionnel à son diamètre",
+	"description": "Utiliser la proportionnalité entre périmètre et diamètre : diamètre multiplié par 2, périmètre multiplié par 2 ; le périmètre divisé par le diamètre vaut toujours environ 3,14",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Périmètres",
+	"subdomain": "Périmètre d'un disque",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le périmètre {{if:c==0|d'une roue|{{if:c==1|d'une assiette|d'un disque}}}} de diamètre ${{d}}~\\unit{cm}$ vaut environ ${{eval:314*d/100;d}}~\\unit{cm}$.\n\nQuel est, environ, le périmètre {{if:c==0|d'une roue|{{if:c==1|d'une assiette|d'un disque}}}} de diamètre ${{eval:k*d}}~\\unit{cm}$ ?\n\n$$?~\\text{cm}$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:314*d*k/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre d'un disque.** Le périmètre d'un disque est proportionnel à son diamètre : on l'obtient en multipliant le diamètre par le nombre $\\pi$, qui vaut environ $3.14$.",
+					"Le diamètre est multiplié par ${{k}}$ (${{d}} \\times {{k}} = {{eval:k*d}}$) : le périmètre aussi.",
+					"$${{eval:314*d/100;d}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Quand le diamètre d'un disque est multiplié par ${{k}}$, son périmètre est :\n\n```choix\n- multiplié par ${{k}}$\n- multiplié par ${{eval:k*k}}$\n- augmenté de ${{k}}$\n- le même\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre d'un disque.** Le périmètre d'un disque est proportionnel à son diamètre : on l'obtient en multipliant le diamètre par le nombre $\\pi$, qui vaut environ $3.14$.",
+					"Le périmètre est $\\textcolor{{{color:primary.0}}}{\\text{multiplié par } {{k}}}$, comme le diamètre."
+				]
+			}
+		},
+		{
+			"statement": "On mesure {{if:c==0|une roue|{{if:c==1|une assiette|un disque}}}} : son diamètre vaut ${{d}}~\\unit{cm}$ et son périmètre environ ${{eval:314*d/100;d}}~\\unit{cm}$.\n\nCombien vaut, environ, le périmètre divisé par le diamètre ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "3.14"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre d'un disque.** Le périmètre d'un disque est proportionnel à son diamètre : on l'obtient en multipliant le diamètre par le nombre $\\pi$, qui vaut environ $3.14$.",
+					"$${{eval:314*d/100;d}} \\div {{d}} = \\textcolor{{{color:primary.0}}}{3.14}$$",
+					"Pour tous les disques, on trouve le même nombre : $\\pi$, environ $3.14$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Diamètre 3 → 6 : 18,84",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"d": "3",
+				"k": "2"
+			},
+			"answers": ["18,84"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12,42 (9,42 + 3)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"d": "3",
+				"k": "2"
+			},
+			"answers": ["12,42"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diamètre 5 → 20 : 62,8",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"d": "5",
+				"k": "4"
+			},
+			"answers": ["62,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Diamètre × 2 : périmètre × 2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : × 4",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : augmenté de 2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rapport : 3,14",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"d": "7"
+			},
+			"answers": ["3,14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,1",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"d": "7"
+			},
+			"answers": ["3,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

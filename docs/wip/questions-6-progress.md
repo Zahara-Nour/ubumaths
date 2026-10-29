@@ -972,3 +972,14 @@ nouvelle revue.
 - David a relu : 6/6 « OK », aucun commentaire (base de la page lue, 6 verdicts comptés). `publier-lot` en
   simulation : 6 brouillons passent le contrôle.
 - David a lancé `publier-lot --publier` (2026-10-29) : 6/6 publiés. MCP : `published`, rangés, un tag chacun.
+
+### 13.3 Écriture du lot 6b (2026-10-29)
+
+- `docs/wip/questions/lot-6-grandeurs.py scripts/questions` → 7 modèles dans `scripts/questions/6-grandeurs/`
+  (07 à 13 = M7 à M13). Écarts à la phase 0 : M7 v3 part d'une mesure (diamètre, périmètre ≈ 3,14 × D) et demande
+  le quotient ; M12 v3 : corrigé en deux temps (heures entières, puis minutes) ; horaires écrits « 7 h 05 ».
+- `question:specs` à 300 tirages par variation : 7 fichiers, 5 400 tirages réussis, 50 specs vertes.
+- `create-questions` en simulation contre la prod : 7 « à créer ». Base locale (`.env.local`) : 7 brouillons créés.
+- Aperçu admin (port 5180, Chrome piloté) : énoncés bien rendus (12 : « 19 h 55 », cases h et min ; 09 : case cm),
+  mais la **frappe n'atteint pas la première case** (09 et 12 ; la 2e case de 12 prend « 10 ») : outil de pilotage
+  ou régression du champ sur `main` ? **À jouer à la main par David** avant la PR des brouillons en prod.

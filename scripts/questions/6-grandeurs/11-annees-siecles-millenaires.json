@@ -1,0 +1,195 @@
+{
+	"title": "Années, siècles et millénaires",
+	"description": "Connaître les durées du calendrier : 365 ou 366 jours dans une année, 100 ans dans un siècle, 1 000 ans (10 siècles) dans un millénaire",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Convertir",
+	"level": 13,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n$${{k}}~\\text{siècles} = ?~\\text{ans}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Calendrier.** Une année compte $365$ jours, ou $366$ jours si elle est bissextile. Un siècle dure $100$ ans ; un millénaire, $1\\,000$ ans, c'est-à-dire $10$ siècles.",
+					"$${{k}} \\times 100 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"${{k}}$ siècles durent ${{solution}}$ ans."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{k}}~\\text{millénaires} = ?~\\text{{{if:u==0|ans|siècles}}}$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:u==0|{{eval:1000*k}}|{{eval:10*k}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Calendrier.** Une année compte $365$ jours, ou $366$ jours si elle est bissextile. Un siècle dure $100$ ans ; un millénaire, $1\\,000$ ans, c'est-à-dire $10$ siècles.",
+					"$${{k}} \\times {{if:u==0|1\\,000|10}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"${{k}}$ millénaires durent ${{solution}}$ {{if:u==0|ans|siècles}}."
+				]
+			}
+		},
+		{
+			"statement": "Combien de jours compte{{if:b==0| une année bissextile|{{if:b==1| une année non bissextile|nt deux années non bissextiles}}}} ?\n\n$$?~\\text{jours}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:b==0|366|{{if:b==1|365|730}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Calendrier.** Une année compte $365$ jours, ou $366$ jours si elle est bissextile. Un siècle dure $100$ ans ; un millénaire, $1\\,000$ ans, c'est-à-dire $10$ siècles.",
+					"{{if:b==0|Une année bissextile compte $\\textcolor{{{color:primary.0}}}{366}$ jours.|{{if:b==1|Une année non bissextile compte $\\textcolor{{{color:primary.0}}}{365}$ jours.|$$365 \\times 2 = \\textcolor{{{color:primary.0}}}{730}$$}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 siècles : 300 ans",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 millénaires : 2 000 ans",
+			"variationIndex": 1,
+			"variables": {
+				"u": "0",
+				"k": "2"
+			},
+			"answers": ["2000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 200 ans",
+			"variationIndex": 1,
+			"variables": {
+				"u": "0",
+				"k": "2"
+			},
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 millénaires : 40 siècles",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1",
+				"k": "4"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 000 siècles",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1",
+				"k": "4"
+			},
+			"answers": ["4000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bissextile : 366",
+			"variationIndex": 2,
+			"variables": {
+				"b": "0"
+			},
+			"answers": ["366"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 365 en bissextile",
+			"variationIndex": 2,
+			"variables": {
+				"b": "0"
+			},
+			"answers": ["365"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Non bissextile : 365",
+			"variationIndex": 2,
+			"variables": {
+				"b": "1"
+			},
+			"answers": ["365"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Deux années : 730",
+			"variationIndex": 2,
+			"variables": {
+				"b": "2"
+			},
+			"answers": ["730"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
