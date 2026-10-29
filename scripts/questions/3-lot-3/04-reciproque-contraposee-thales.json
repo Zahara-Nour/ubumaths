@@ -1,0 +1,223 @@
+{
+	"title": "Réciproque et contraposée de Thalès",
+	"description": "Dire si deux droites sont parallèles par la réciproque ou la contraposée du théorème de Thalès : triangles emboîtés, papillon ; rapports égaux ou proches",
+	"grades": ["3"],
+	"theme": "Géométrie",
+	"domain": "Théorème de Thalès",
+	"subdomain": "Réciproque",
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les points ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$, ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$ sont alignés dans cet ordre, ainsi que ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$, ${{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$. On donne ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = {{am}}~\\unit{cm}$, ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{ab}}~\\unit{cm}$, ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = {{eval:an;d}}~\\unit{cm}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$. Les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont-elles parallèles ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.6\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}], {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}], segment [{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}].\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point(1, {{if:o==0|1|5.6}}, etiquette=\"gauche\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point(9, {{if:o==0|1.6|5.0}}, etiquette=\"droite\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point(6.2, {{if:o==0|5.6|1.0}}, etiquette=\"{{if:o==0|haut|bas}}\")\n{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x + ({{am}}/{{ab}})*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y + ({{am}}/{{ab}})*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|bas|haut}}\")\n{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x + ({{an}}/{{ac}})*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y + ({{an}}/{{ac}})*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|haut-gauche|bas-gauche}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\n```\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "w",
+					"expression": "0..1"
+				},
+				{
+					"name": "ab",
+					"expression": "4..12"
+				},
+				{
+					"name": "am",
+					"expression": "2..11"
+				},
+				{
+					"name": "ac",
+					"expression": "4..15"
+				},
+				{
+					"name": "h",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "an",
+					"expression": "eval:ac*am/ab+w*h/10;d"
+				}
+			],
+			"conditions": ["am < ab", "round(10*an) == 10*an", "an < ac", "an > 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}$ et $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$ par les **produits en croix** :",
+					"$${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} \\times {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{am}} \\times {{ac}} = {{eval:am*ac;d}} \\qquad {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} \\times {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{eval:an;d}} \\times {{ab}} = {{eval:an*ab;d}}$$",
+					"{{if:w==0|Les produits en croix sont **égaux** : $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$. Les points sont alignés dans le même ordre : d'après la **réciproque du théorème de Thalès**, les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont **parallèles**.|Les produits en croix sont **différents** : $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} \\neq \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$. D'après la **contraposée du théorème de Thalès**, les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ ne sont **pas parallèles**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Les points ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$, ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$ sont alignés dans cet ordre, ainsi que ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$, ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$. On donne ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = {{am}}~\\unit{cm}$, ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{ab}}~\\unit{cm}$, ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = {{eval:an;d}}~\\unit{cm}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$. Les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont-elles parallèles ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.6\ndescription: Papillon : droites ({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}) et ({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}) sécantes en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, segments [{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}] et [{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}].\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point(5, {{if:o==0|3.3|3.3}}, etiquette=\"haut\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point(9.2, {{if:o==0|1.2|5.4}}, etiquette=\"{{if:o==0|bas|haut}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point(8.4, {{if:o==0|5.8|0.8}}, etiquette=\"{{if:o==0|haut|bas}}\")\n{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x - ({{am}}/{{ab}})*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y - ({{am}}/{{ab}})*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|haut|bas}}\")\n{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x - ({{an}}/{{ac}})*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y - ({{an}}/{{ac}})*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|bas|haut}}\")\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\n```\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "w",
+					"expression": "0..1"
+				},
+				{
+					"name": "ab",
+					"expression": "4..12"
+				},
+				{
+					"name": "am",
+					"expression": "2..11"
+				},
+				{
+					"name": "ac",
+					"expression": "4..15"
+				},
+				{
+					"name": "h",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "an",
+					"expression": "eval:ac*am/ab+w*h/10;d"
+				}
+			],
+			"conditions": ["am < ab", "round(10*an) == 10*an", "an < ac", "an > 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}$ et $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$ par les **produits en croix** :",
+					"$${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} \\times {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{am}} \\times {{ac}} = {{eval:am*ac;d}} \\qquad {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} \\times {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{eval:an;d}} \\times {{ab}} = {{eval:an*ab;d}}$$",
+					"{{if:w==0|Les produits en croix sont **égaux** : $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$. Les points sont alignés dans le même ordre : d'après la **réciproque du théorème de Thalès**, les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont **parallèles**.|Les produits en croix sont **différents** : $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} \\neq \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$. D'après la **contraposée du théorème de Thalès**, les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ ne sont **pas parallèles**.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rapports égaux 3/5 = 6/10 : oui",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"w": "0",
+				"ab": "5",
+				"am": "3",
+				"ac": "10",
+				"h": "1",
+				"an": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rapports égaux : « non » faux",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"w": "0",
+				"ab": "5",
+				"am": "3",
+				"ac": "10",
+				"h": "1",
+				"an": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rapports 3/5 et 6,2/10 : non",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"w": "1",
+				"ab": "5",
+				"am": "3",
+				"ac": "10",
+				"h": "2",
+				"an": "6.2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « oui » quand les rapports diffèrent",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"w": "1",
+				"ab": "5",
+				"am": "3",
+				"ac": "10",
+				"h": "2",
+				"an": "6.2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Papillon égaux : oui",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"w": "0",
+				"ab": "4",
+				"am": "3",
+				"ac": "8",
+				"h": "1",
+				"an": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Papillon différents : non",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"w": "1",
+				"ab": "4",
+				"am": "3",
+				"ac": "8",
+				"h": "-1",
+				"an": "5.9"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

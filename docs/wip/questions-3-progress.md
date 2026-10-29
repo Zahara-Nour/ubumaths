@@ -5,16 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, phase 0 du lot 3 écrite._
+_Mis à jour le 2026-10-29, après #1981._
 
-- **État** : lots 0, 1 et 2 publiés en prod ; lot 2 : 4/4 `published` relus au MCP (§ 9.9).
-- **Prochaine action** : réponses de David au § 10.4, puis écrire le lot 3 (Thalès et trigonométrie,
-  6 modèles, § 10.1) dans un worktree `ubumaths-wt-questions-3`.
-- **En attente de David** : les 5 questions du § 10.4.
-- **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation, car il lit la prod) refusés
-  par le classifieur du mode auto → David les lance avec `!` (`--publier` simule d'abord, tout ou rien) ;
-  test `forfait-palotin` qui dépasse 5 s en CI (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : aucun.
+- **État** : lot 3 (Thalès et trigonométrie, 6 modèles) mergé (#1981), pas encore en prod (§ 10.6).
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-3
+--publier` (brouillons en prod) ; relever les `id` au MCP ; migration nœud + tag (§ 10.2), test
+  d'intégration, `security-auditor`, `db:migrate` ; page à cocher ; publication.
+- **En attente de David** : le `--publier` des 6 brouillons ; le sort du dossier `../ubumaths-wt-questions-3`
+  (hors git, caches `.svelte-kit`, `.vite`, `node_modules` d'un ancien worktree) ; Pythagore 4e à signaler.
+- **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
+  du mode auto → David les lance avec `!` ; une variable ne vaut jamais une lettre (lettres par `{{if}}` bout
+  à bout) ; valeur tirée dans une figure en décimal (`;d`) ; aperçu admin sur `127.0.0.1`, pas `localhost`.
+- **Worktree / branche** : aucun (`ubumaths-wt-questions-3-lot-3` retiré après #1981).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -428,3 +430,27 @@ prof de 3e voient 6 modèles publiés de plus. Aucune règle ne change.
 4. 3-055 : choix « Oui » / « Non » seul (la raison dans le corrigé), ou la raison dans le choix
    (« Non, car AM/AB ≠ AN/AC ») ?
 5. Pythagore (4e) n'a aucun modèle en prod : le signaler à la session 4e, sans rien faire ici ?
+
+### 10.5 Décisions (David, 2026-10-29, « je te suis »)
+
+- Les 6 modèles du § 10.1 validés tels quels.
+- Figures à l'échelle ; lettres tirées parmi trois jeux ; 3-055 en « Oui » / « Non », la raison dans le corrigé.
+- Pythagore (4e, aucun modèle en prod) : à signaler à la session 4e, rien ici.
+
+### 10.6 Lot 3 : écrit (2026-10-29)
+
+- `docs/wip/questions/lot-3-3.py` → `scripts/questions/3-lot-3/` (6 JSON, 24 variations, 51 specs) ;
+  `question:specs` vert, `audit-question-draws` 0 défaut (2 400 tirages), `create-questions` en simulation vert.
+- Figures dessinées hors appli (`figure-scene` + `figure-svg`, 6 tirages par variation) puis dans l'aperçu
+  admin : à l'échelle, deux orientations, trois jeux de lettres.
+- **Sonde du juge** (2026-10-29) : `\pi` avec antislash dans `eval:` ; arrondi attendu en `;d` (sinon 23/5) ;
+  4,6 juste, 4,60 forme non optimale, 23/5 mauvaise forme, 4,5 faux. Tirages loin d'un demi-dixième.
+- **Pièges trouvés** : une variable ne peut pas valoir une lettre (« A » relue comme variable) → lettres
+  écrites dans le texte par `{{if:s==0|A|}}…` bout à bout ; AN tiré en fraction (`\dfrac`) cassait la
+  figure de 3-055 → `;d` ; C hors fenêtre pour un angle de 70° → fenêtre 0..8,8 (3-061), 0..6,5 (3-023) ;
+  `\textcolor` hors formule remplacé par du gras.
+- Base locale : 6 brouillons (68bdee32, 1cb702fe, 96e60c92, ae4c93a4, 92af8fa2, 06b064ce). Aperçu admin joué
+  sur `127.0.0.1:5176` (cookies séparés de `localhost` : la session de David n'est pas touchée) : 3-060 v5
+  (MN = 4, juste), 3-023 v3 (tan, choix mélangé, juste).
+- Délais : 45 s (configurations, lignes trigonométriques), 60 s (égalité), 120 s (calcul, réciproque),
+  150 s (trigonométrie, calcul).
