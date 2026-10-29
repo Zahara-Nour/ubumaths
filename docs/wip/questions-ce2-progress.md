@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1967._
+_Mis à jour le 2026-10-29, PR #1975 (migration du lot 3) ouverte._
 
-- **État** : lots 1 (5) et 2 (9) PUBLIÉS en prod le 2026-10-29. Lot 3 (vocabulaire des opérations, 6 modèles, § 7) : fichiers mergés (#1967), pas encore en prod.
-- **Prochaine action** : **David** lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-3 --publier` (brouillons) → relever les `id` → migration nœud + tag (nœuds des points = notions, § 7).
+- **État** : lots 1 et 2 PUBLIÉS. Lot 3 (6 modèles, § 7) : brouillons en prod (ids au § 7), migration nœud + tag `20261029234500` dans la PR #1975 (test 9/9, rouge 5/9 sans elle ; `security-auditor` : rien de bloquant). Collision `213000` réglée (#1972), CI relancée après merge de `main`.
+- **Prochaine action** : CI de #1975 verte → merge → `pnpm db:migrate` depuis le dépôt principal (4 conditions réunies ; ne joue que `234500`, le reste est déjà en prod) → vérifier au MCP (6 rangés, 1 point chacun) → page à cocher → publication par David.
 - **En attente de David** : confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
-- **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 (specs lues sur l'instance tirée) ; `--mettre-a-jour` en simulation refusé par le classifieur (même sans `--publier`) ; horodatage = max de la PROD + 1 min ; CI : `corrections.test.ts` « cas rare » > 5 s et `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule et une ligne de corps > 100 caractères ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` (`$lib` introuvable).
-- **Worktree / branche** : aucun (#1967 mergée, worktree retiré) ; la migration nœud + tag se fera dans un worktree neuf.
+- **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `--mettre-a-jour` en simulation refusé par le classifieur ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT, pas dans la PR ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot-3-rangement` (PR #1975).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -275,3 +275,15 @@ règles (`multiple` + `range`, toute réponse juste acceptée).
   4 000 tirages réussis, aucun avertissement.
 - Base locale : 6 brouillons créés ; aperçu admin joué : 03 (termes 27 et 40 donnés à l'envers → « Juste »), 06
   (26 pour un multiple de 5 entre 23 et 27 → « Faux », réponse possible 25, correction affichée).
+
+### Lot 3 — en prod : brouillons et migration (2026-10-29)
+
+- David a lancé `create-questions --publier` : 6 brouillons, relus au MCP (draft, niveaux justes, sans nœud ni tag) :
+  `1076ebed` (01), `b461cd02` (02), `0ada6949` (03), `c9bd997c` (04), `baec0070` (05), `376a2264` (06).
+- Migration `20261029234500_questions_ce2_lot3_rangement_tags` (calquée sur le lot 2, nœuds = notions) + test
+  d'intégration : rouge sans le corps de la migration (5/9), vert avec (9/9). `security-auditor` : aucun finding
+  bloquant.
+- ⚠️ `db:migrate` **bloqué** par la collision d'horodatage `20261029213000` sur `main` (questions_5_lot3 jouée,
+  questions_ce1_lot3_niveaux non jouée) : la session ce1 doit renommer la sienne (voir journal questions-3). La CI
+  est rouge pour la même raison (`migrations-horodatage-unique`, `migration-versions`, garde SECURITY DEFINER).
+  Le `db:migrate` jouera aussi `20261029233000` (questions-3, qui l'attend).
