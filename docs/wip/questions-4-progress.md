@@ -9,14 +9,14 @@ _Mis à jour le 2026-10-29, après #1978 (lot 3 mergé)._
 
 - **État** : lots 1 et 2 en prod (lot 1 en brouillon, lot 2 publié) ; lot 3 (statistiques, 9 modèles, § 17)
   mergé (#1978), pas encore créé en prod.
-- **Prochaine action** : David lance `pnpm create-questions --dir scripts/questions/4-lot-3 --publier` (avec `!`) ;
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-3 --publier` (avec `!`, dépôt principal) ;
   relever les 9 `id` (MCP) ; migration nœud + tag sur le gabarit `20261029220000_questions_4_lot2_rangement_tags.sql`
   (4-045 **et 3-032** pour le tableur, grades 4 et 3), nouvelle branche dans le worktree depuis `origin/main`.
 - **En attente de David** : `--publier` du lot 3 ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
   passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
-- **Worktree / branche** : `../ubumaths-wt-questions-4`, `feat/questions-4-lot-3` (mergée, à remplacer).
+- **Worktree / branche** : `../ubumaths-wt-questions-4`, `feat/questions-4-lot3-rangement` (depuis `origin/main`, vide).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
