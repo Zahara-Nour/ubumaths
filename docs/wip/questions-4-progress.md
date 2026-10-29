@@ -5,15 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1983 (lot 3 rangé et tagué en prod)._
+_Mis à jour le 2026-10-29, lot 3 relu (9/9 OK)._
 
 - **État** : lots 1 et 2 en prod (lot 1 en brouillon, lot 2 publié) ; lot 3 (statistiques) : 9 brouillons en prod,
-  rangés et tagués (#1983, `db:migrate` fait, vérifié au MCP) ; page à cocher publiée (§ 18).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 9) ; « À revoir » → corriger
-  (`--mettre-a-jour`) ; tout « OK » → David lance `pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/4-lot-3 --publier`, relire `published` en base ; puis phase 0 du lot 4.
-- **En attente de David** : relecture du lot 3 (https://claude.ai/artifact/FHydaqaWjFJqeEpRgEC2Mp ; diagrammes
-  `barres` à jouer dans l'aperçu admin) ; publication des 7 brouillons du lot 1.
+  rangés et tagués (#1983), relus par David (9/9 OK, § 19).
+- **Prochaine action** : David lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/4-lot-3
+--publier` (dépôt principal) ; relire `published` en base (MCP) ; puis phase 0 du lot 4.
+- **En attente de David** : `--publier` du lot 3 ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
   passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
@@ -496,3 +494,9 @@ grades 4 et 3, tagué 4-045 et 3-032** (note laissée dans le journal de la 3e).
   tableur tagué 3-032 et 4-045, les autres un tag chacun, `updated_at` inchangé.
 - Page à cocher : https://claude.ai/artifact/FHydaqaWjFJqeEpRgEC2Mp (9 fiches ; alerte attendue « bloc barres non
   dessiné » sur 039 et 041 : les jouer dans l'aperçu admin) ; base `verdicts` vide à la publication.
+
+## 19. Lot 3 : relecture et publication (2026-10-29)
+
+- Page à cocher : https://claude.ai/artifact/FHydaqaWjFJqeEpRgEC2Mp ; 9 verdicts lus en base, 9 « OK », aucun
+  commentaire.
+- Publication : `publier-lot.ts --dir scripts/questions/4-lot-3 --publier`, à lancer par David.
