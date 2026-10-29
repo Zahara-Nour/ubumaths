@@ -473,13 +473,19 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 
 - **Devise** : « **Plus ça monte, moins ça descend** »
 - **Commentaire de la devise** : pléonasme contradictoire de pure veine Shadok / Pierre Dac.
-- **Paysage canon** : ville-port nordique aux quais ondulés, toits en sinusoïdes, ponts en courbes parfaites. Le grand phare de Sinusborg projette son faisceau en oscillation cyclique. Les bateaux qui montent et descendent en cadence dans le port créent un ballet permanent.
-- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, les fonctions ne se montrent que dans la ville (quais, toits, phare, bateaux).
+- **Paysage canon** : ville-port nordique aux toits en sinusoïdes (quais et ponts ordinaires, décision de David, 2026-10-29 : une seule forme, la plus lisible). Le grand phare de Sinusborg projette son faisceau en oscillation cyclique. Les bateaux qui montent et descendent en cadence dans le port créent un ballet permanent.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, les fonctions ne se montrent que dans la ville (toits, phare, bateaux, grue).
   - **Relief** : côte basse de dunes de sable et de plages, longue flèche de sable avançant dans la mer (comme les dunes de Łeba et la presqu'île de Hel) ; derrière, plaine de lacs et de forêts.
   - **Eau** : la Baltique ; le delta de la Vistule, dont les bras se ramifient avant la mer, à Sinusborg.
   - **Végétation** : forêts de pins, herbes des dunes.
   - **Repère sur la carte** : le phare de Sinusborg.
   - **Couleur** : Pourpre royal `#8F2447` (la tunique de Bougrelas).
+- **Plan de la ville** 🟡 (décision de David, 2026-10-29) : port nordique bâti sur les îles du delta de la Vistule ; les bras du fleuve découpent la ville en îlots, le port s'ouvre sur la Baltique. Les fonctions passent par ce qui monte et descend. Cinq lieux :
+  1. **Le Grand Phare**, au bout de la jetée, faisceau qui balaie en cycle.
+  2. **Le Port** : bateaux qui montent et descendent avec la houle.
+  3. **La Grue du Port** : grande grue de bois qui monte et descend les cargaisons, comme le yo-yo (d'après la grue médiévale de Gdańsk).
+  4. **La Résidence de Bougrelas** : maison haute et étroite à pignons nordiques, sur le quai principal.
+  5. **Les Ponts du delta**, entre les îlots.
 
 - Pifométrie — _Probabilités et statistiques_
 
