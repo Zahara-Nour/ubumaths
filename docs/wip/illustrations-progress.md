@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après les plans des sept capitales (pas de PR : chantier 100 % doc)._
+_Mis à jour le 2026-10-29, après le 2e essai du fond de la grande carte (pas de PR : chantier 100 % doc)._
 
-- **État** : casting, quatre gouverneurs et six Palotins validés et versés au Compendium (§ XI) ; dix-huit images rangées ; plan schématique de la carte validé (`docs/Chiphres/illustrations/carte/`). **Les six provinces ont une ligne « Pour l'illustration »** au Compendium (relief, eau, végétation, repère sur la carte, couleur) : Nombrilie Or, Bedonstan Vert chandelle, Yoyolande Pourpre, Pifométrie Brun merdre, Glitchistan cuivre `#AE4E1F`, Patatovie vert de mer `#3E8E86` (ces deux-là hors nuancier, choix A de David).
-- **Prochaine action** : fond de la grande carte par l'IA (sans texte, guidé par le plan schématique et les lignes « Pour l'illustration »), puis une carte par capitale. **Les sept capitales ont leur « Plan de la ville »** au Compendium (forme, fleuve, 5 à 7 lieux) ; Sandomir = carte du site (7 lieux de la Section IV sur la spirale, Pont-Levis seul pont). Sandomir, l'Empire du Czar, la Lithuanie et l'Isle sont décrits aussi.
+- **État** : casting, gouverneurs et Palotins versés au Compendium (§ XI) ; plans des sept capitales au Compendium. **Fond de la grande carte** : style carte de conte / carte marine, Nano Banana, référence `carte/plan-reference-ia.png` (sans texte ni couleur de province) ; 2e essai aimé par David : `carte/fond-essai-2026-10-29.jpeg` (1089×976). Prompt complet dans la session du 2026-10-29 (à reprendre de l'essai : retouches seulement).
+- **Prochaine action** : retouches du fond (lettres « NO » de la rose des vents, clairière de Sinusborg manquante, montagnes au sud de Patatovie), puis haute définition, puis vignettes des villes, noms en SVG, encart de l'Isle (le cartouche a pris le coin bas-gauche).
 - **En attente de David** : rien.
 - **Pièges en cours** : **pas de formes géométriques plaquées sur le paysage** (David, 2026-10-29) : la discipline de chaque province ne se montre que dans sa ville. Ubu sans chapeau pointu ni longue robe blanche ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée. Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
