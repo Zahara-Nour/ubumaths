@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, phase 0 du lot 2 proposée._
+_Mis à jour le 2026-10-29, phase 0 du lot 2 validée._
 
 - **État** : lots 0 et 1 terminés (lot 1 publié en prod, 5/5). Lot 2 (calcul littéral, équations) :
-  phase 0 écrite au § 9 (4 modèles neufs : 3-016 (a ± b)², 3-054, 3-014, 3-015), juge sondé.
-- **Prochaine action** : selon les réponses du § 9.4, écrire `lot-3-2.py` → `scripts/questions/3-lot-2/`.
-- **En attente de David** : les 4 questions du § 9.4.
+  phase 0 validée (§ 9.5), écriture en cours (worktree `ubumaths-wt-questions-3`).
+- **Prochaine action** : écrire `lot-3-2.py` → `scripts/questions/3-lot-2/`.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation, car il lit la prod) refusés
   par le classifieur du mode auto → David les lance avec `!` ; test `forfait-palotin` qui dépasse 5 s en CI
   (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
@@ -327,3 +327,10 @@ prof de 3e voient 4 modèles publiés de plus. Aucune règle ne change.
 3. 3-015 v5 (factoriser puis produit nul, la suite que cite la borne de 3-054) : dans ce modèle, ou pas ?
 4. La borne de 3-014 cite la droite graduée avec un crochet : ` ```line ` ne trace pas de demi-droite.
    Le noter comme outil manquant (pour plus tard), sans bloquer le lot ?
+
+### 9.5 Décisions (David, 2026-10-29, « je te suis »)
+
+- Les 4 modèles du § 9.1 validés tels quels, réponse en inégalité pour 3-014.
+- Les 6 modèles de 2de restent à la 2de, sans tag 3e.
+- 3-015 v5 (factoriser puis produit nul) gardée, au niveau le plus haut du modèle.
+- Droite graduée avec crochet : notée comme geste manquant (`couvrir-un-niveau.md` § 3 bis), sans bloquer.

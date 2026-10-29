@@ -130,7 +130,8 @@ venir comme vraie fonctionnalité).
 « Reprendre ici » (`docs/wip/`) avant de proposer un modèle ou un outil de géométrie.
 
 **Manquent encore** (connus au CP) : réponses à placer (point sur une droite graduée, étiquettes
-à ranger, hauteur de barres), aiguilles à placer sur l'horloge.
+à ranger, hauteur de barres), aiguilles à placer sur l'horloge ; demi-droite ou intervalle sur une
+droite graduée, avec crochet (3e, 3-014 ; 2de, intervalles) : ` ```line ` ne la trace pas.
 
 ## 3 ter. Créer l'outil qui manque (classe C)
 
