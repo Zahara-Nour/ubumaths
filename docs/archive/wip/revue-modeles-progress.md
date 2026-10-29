@@ -2,13 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la reprise des verdicts._
+_Mis à jour le 2026-10-29 : chantier CLOS, journal archivé._
 
-- **État** : table en prod (#1940) ; page `/dev/modeles` mergée (#1944, pas encore en prod) ; doc versée dans `docs/systeme/questions.md`. Reprise lancée par David le 2026-10-29 : 188 verdicts en base prod, vérifiés (179 validés, 9 à revoir). Worktree et branches retirés.
-- **Prochaine action** : après le `deploy:prod`, archiver ce journal et retirer le renvoi au journal dans `src/routes/(protected)/dev/modeles/+page.svelte` (commentaire d'en-tête), à la prochaine PR qui touche ce fichier.
-- **En attente de David** : `deploy:prod` pour voir la page en prod.
-- **Pièges en cours** : les verdicts repris portent la date des artefacts ; tout modèle retouché depuis (migrations de rangement comprises, `updated_at`) sonnera « modifié depuis le verdict ». Les nouvelles pages à cocher écrivent encore dans les artefacts : à reprendre par le même script, ou juger directement dans `/dev/modeles`.
-- **Worktree / branche** : aucun (chantier fini côté code).
+- **État** : table (#1940) et page `/dev/modeles` (#1944) en prod (v0.55.0, puis v0.56.0) ; 188 verdicts d'artefacts repris en prod le 2026-10-29 (179 validés, 9 à revoir) ; doc versée dans `docs/systeme/questions.md`.
+- **Reste, sans urgence** : le commentaire d'en-tête de `src/routes/(protected)/dev/modeles/+page.svelte` renvoie encore à `docs/wip/` (à corriger à la prochaine PR qui touche ce fichier) ; le libellé « déjà en base, plus récents : gardés » de `reprise-verdicts.ts` couvre aussi les verdicts de même date.
+- **Pièges** : les verdicts repris portent la date des artefacts ; tout modèle retouché depuis (`updated_at`, migrations de rangement comprises) sonnera « modifié depuis le verdict ».
 
 ## Phase 0 (validée par David le 2026-10-28)
 
