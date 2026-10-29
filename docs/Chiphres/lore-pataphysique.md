@@ -435,6 +435,12 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - **Devise** : « **Plus ça monte, moins ça descend** »
 - **Commentaire de la devise** : pléonasme contradictoire de pure veine Shadok / Pierre Dac.
 - **Paysage canon** : ville-port nordique aux quais ondulés, toits en sinusoïdes, ponts en courbes parfaites. Le grand phare de Sinusborg projette son faisceau en oscillation cyclique. Les bateaux qui montent et descendent en cadence dans le port créent un ballet permanent.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, les fonctions ne se montrent que dans la ville (quais, toits, phare, bateaux).
+  - **Relief** : côte basse de dunes de sable et de plages, longue flèche de sable avançant dans la mer (comme les dunes de Łeba et la presqu'île de Hel) ; derrière, plaine de lacs et de forêts.
+  - **Eau** : la Baltique ; le delta de la Vistule, dont les bras se ramifient avant la mer, à Sinusborg.
+  - **Végétation** : forêts de pins, herbes des dunes.
+  - **Repère sur la carte** : le phare de Sinusborg.
+  - **Couleur** : Pourpre royal `#8F2447` (la tunique de Bougrelas).
 
 - Pifométrie — _Probabilités et statistiques_
 
