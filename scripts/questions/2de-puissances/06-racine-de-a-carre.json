@@ -1,0 +1,208 @@
+{
+	"title": "Simplifier la racine carrée d'un carré",
+	"description": "√a² = |a| : a entier négatif, a = 1 − √2, 3 − π…, puis √((x − k)²) sachant x < k ou x > k",
+	"grades": ["2"],
+	"theme": "Racines carrées",
+	"domain": "Manipuler",
+	"subdomain": "Propriétés",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\sqrt{(-{{k}})^2}=?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $a$ : $\\sqrt{a^2}=|a|$. On regarde donc le **signe** de $a$ : $|a|=a$ si $a\\geqslant0$, $|a|=-a$ si $a<0$.",
+					"$$\\sqrt{(-{{k}})^2}=|-{{k}}|=\\textcolor{{{color:primary.0}}}{{{k}}}$$",
+					"Une racine carrée n'est jamais négative."
+				]
+			}
+		},
+		{
+			"statement": "Écris sans racine carrée ni valeur absolue.\n\n$$\\sqrt{\\left({{if:t==0|1-\\sqrt{2}|{{if:t==1|3-\\pi|{{if:t==2|\\sqrt{3}-2|{{if:t==3|\\sqrt{5}-3|\\sqrt{7}-2}}}}}}}}\\right)^2}=?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|\\sqrt{2}-1|{{if:t==1|\\pi-3|{{if:t==2|2-\\sqrt{3}|{{if:t==3|3-\\sqrt{5}|\\sqrt{7}-2}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $a$ : $\\sqrt{a^2}=|a|$. On regarde donc le **signe** de $a$ : $|a|=a$ si $a\\geqslant0$, $|a|=-a$ si $a<0$.",
+					"Comme ${{if:t==0|\\sqrt{2}>1|{{if:t==1|\\pi>3|{{if:t==2|\\sqrt{3}<2|{{if:t==3|\\sqrt{5}<3|\\sqrt{7}>2}}}}}}}}$, le nombre ${{if:t==0|1-\\sqrt{2}|{{if:t==1|3-\\pi|{{if:t==2|\\sqrt{3}-2|{{if:t==3|\\sqrt{5}-3|\\sqrt{7}-2}}}}}}}}$ est **{{if:t==0|négatif|{{if:t==1|négatif|{{if:t==2|négatif|{{if:t==3|négatif|positif}}}}}}}}**.",
+					"$$\\sqrt{\\left({{if:t==0|1-\\sqrt{2}|{{if:t==1|3-\\pi|{{if:t==2|\\sqrt{3}-2|{{if:t==3|\\sqrt{5}-3|\\sqrt{7}-2}}}}}}}}\\right)^2}=\\left|{{if:t==0|1-\\sqrt{2}|{{if:t==1|3-\\pi|{{if:t==2|\\sqrt{3}-2|{{if:t==3|\\sqrt{5}-3|\\sqrt{7}-2}}}}}}}}\\right|=\\textcolor{{{color:primary.0}}}{{{if:t==0|\\sqrt{2}-1|{{if:t==1|\\pi-3|{{if:t==2|2-\\sqrt{3}|{{if:t==3|3-\\sqrt{5}|\\sqrt{7}-2}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On sait que $x{{if:s==0|<|>}}{{k}}$. Écris sans racine carrée ni valeur absolue.\n\n$$\\sqrt{(x-{{k}})^2}=?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|{{k}}-x|x-{{k}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $a$ : $\\sqrt{a^2}=|a|$. On regarde donc le **signe** de $a$ : $|a|=a$ si $a\\geqslant0$, $|a|=-a$ si $a<0$.",
+					"Comme $x{{if:s==0|<|>}}{{k}}$, le nombre $x-{{k}}$ est **{{if:s==0|négatif|positif}}**.",
+					"$$\\sqrt{(x-{{k}})^2}=|x-{{k}}|=\\textcolor{{{color:primary.0}}}{{{if:s==0|-(x-{{k}})={{k}}-x|x-{{k}}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "√((−5)²) = 5",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −5",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√((1 − √2)²) = √2 − 1",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["\\sqrt{2}-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − √2 (négatif)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["1-\\sqrt{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√((√7 − 2)²) = √7 − 2",
+			"variationIndex": 1,
+			"variables": {
+				"t": "4"
+			},
+			"answers": ["\\sqrt{7}-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 − √7 (signe changé à tort)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "4"
+			},
+			"answers": ["2-\\sqrt{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x < 2 : 2 − x",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["2-x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x < 2 : −x + 2 accepté",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["-x+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x − 2 sachant x < 2",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["x-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x > 2 : x − 2",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"s": "1"
+			},
+			"answers": ["x-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 − x sachant x > 2",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"s": "1"
+			},
+			"answers": ["2-x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
