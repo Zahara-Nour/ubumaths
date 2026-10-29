@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 3 écrit (PR des fichiers)._
+_Mis à jour le 2026-10-29, après #1967._
 
-- **État** : lots 1 (5) et 2 (9) PUBLIÉS en prod le 2026-10-29. Lot 3 (vocabulaire des opérations, 6 modèles, § 7) écrit, simulation verte, essayé en base locale ; PR des fichiers ouverte.
-- **Prochaine action** : merge de la PR du lot 3, puis **David** lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-3 --publier` (brouillons) → relever les `id` → migration nœud + tag (nœuds des points = notions, § 7).
+- **État** : lots 1 (5) et 2 (9) PUBLIÉS en prod le 2026-10-29. Lot 3 (vocabulaire des opérations, 6 modèles, § 7) : fichiers mergés (#1967), pas encore en prod.
+- **Prochaine action** : **David** lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-3 --publier` (brouillons) → relever les `id` → migration nœud + tag (nœuds des points = notions, § 7).
 - **En attente de David** : confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
-- **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 (specs lues sur l'instance tirée) ; `--mettre-a-jour` en simulation refusé par le classifieur (même sans `--publier`) ; horodatage = max de la PROD + 1 min ; CI : `corrections.test.ts` « cas rare » > 5 s et `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule.
-- **Worktree / branche** : aucun (#1956 mergée, worktree retiré).
+- **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 (specs lues sur l'instance tirée) ; `--mettre-a-jour` en simulation refusé par le classifieur (même sans `--publier`) ; horodatage = max de la PROD + 1 min ; CI : `corrections.test.ts` « cas rare » > 5 s et `wrapDynamicImport` intermittents → relancer le job ; commitlint refuse un sujet en majuscule et une ligne de corps > 100 caractères ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` (`$lib` introuvable).
+- **Worktree / branche** : aucun (#1967 mergée, worktree retiré) ; la migration nœud + tag se fera dans un worktree neuf.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
