@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-28, après #1943._
+_Mis à jour le 2026-10-29, après #1947._
 
-- **État** : droite, horloge, barres (#1908), plafond de l'axe (#1915) et étiquettes à ranger (#1943) mergés, pas en prod. Secondes de l'horloge : hors chantier.
-- **Prochaine action** : l'échelle (choix de l'échelle par l'élève, CM1-CM2, § 18.4) — phase 0 à écrire ; ou autre geste au choix de David.
-- **En attente de David** : quel geste ensuite ; vérification manuelle #1943 (`verifications-manuelles.md`).
-- **Pièges en cours** : les 5 modèles « ranger » sont à réécrire en ```ranger par questions-6 (06, 07) et la session « questions » (CP, CE1, CM2), au moins 3 étiquettes ; compte prof local supprimé par une suite d'intégration interrompue → `pnpm db:dev-accounts`.
+- **État** : droite, horloge, barres (#1908), plafond de l'axe (#1915), étiquettes à ranger (#1943) et échelle choisie par l'élève (#1947, `axe: à choisir`, § 24-26) mergés, pas en prod. Secondes de l'horloge : hors chantier.
+- **Prochaine action** : geste suivant au choix de David (phase 0 à écrire), ou fin de chantier (versement dans `docs/systeme/`, journal archivé).
+- **En attente de David** : quel geste ensuite, ou clore ; vérifications manuelles #1943 et #1947 (`verifications-manuelles.md`).
+- **Pièges en cours** : les 5 modèles « ranger » sont à réécrire en ```ranger par questions-6 (06, 07) et la session « questions » (CP, CE1, CM2), au moins 3 étiquettes ; aucun modèle n'utilise encore `axe: à choisir` (CE2-082, session « questions ») ; compte prof local supprimé par une suite d'intégration interrompue → `pnpm db:dev-accounts`.
 - **Worktree / branche** : aucun.
 
 ---
