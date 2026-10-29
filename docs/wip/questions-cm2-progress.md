@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 2 publié._
+_Mis à jour le 2026-10-30, lot 3 écrit (PR à venir)._
 
-- **État** : lot 1 publié (7/8). **Lot 2 (divisibilité) publié (5/5)** : CM2-130, 009 à 012, rangés, tagués (#1985), relus 5/5 OK, publiés par David, vérifié au MCP.
-- **Prochaine action** : lot 3, à choisir parmi les points sans modèle (§ 5) : relevé MCP d'abord, puis phase 0 à faire valider par David.
-- **En attente de David** : publier 7d258acc (lot 1, ```ranger) après le prochain `deploy:prod` : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`.
-- **Pièges en cours** : d'autres sessions touchent les modèles → relever la prod avant toute écriture ; `create-questions` reconnaît un modèle à son **titre** ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente (relever `schema_migrations`) ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
-- **Worktree / branche** : aucun (retiré après #1985).
+- **État** : lots 1 (7/8) et 2 (5/5) publiés. **Lot 3 (calcul mental entiers)** : 5 modèles neufs écrits (`scripts/questions/cm2-3/`, script `lot-cm2-3.py`), specs vertes, vus dans l'appli en local ; 3 modèles de tables du CM1 à passer aussi au CM2 (migration, plus tard).
+- **Prochaine action** : PR des fichiers (revue : aucune, contenu), CI verte, merge → David `create-questions --dir scripts/questions/cm2-3 --publier` → migration : nœud + tag des 5 brouillons, CM2 ajouté aux niveaux de `8fee3492`, `f24bb468`, `50a9d91c` + tags CM2-035, 148, 036 → test, `security-auditor`, `db:migrate` → page à cocher.
+- **En attente de David** : publier 7d258acc (lot 1, ``ranger) après le prochain `deploy:prod` (v0.57.1 sortie le 2026-10-30 : vérifier si elle livre ``ranger) : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`.
+- **Pièges en cours** : relever la prod avant toute écriture ; `create-questions` reconnaît un modèle à sa clé (titre, catégorie, niveau) ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces (« 2 444 ») ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot3`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -332,3 +332,13 @@ avant la publication.
 
 **Points d'attention** : 1 à 3 touchent des modèles du CM1 → prévenir la session `questions-cm1` ;
 « Diviser / Quotient » : la session CM1 y a deux brouillons (niveaux 2 et 3), je prends 10 et 11.
+
+### 8.1 Lot 3 : décisions (David, 2026-10-30)
+
+Recommandations suivies (« je te suis ») : les tables (CM2-035, 148, 036) reprennent les modèles du CM1 `8fee3492`, `f24bb468`, `50a9d91c` (CM2 ajouté à leurs niveaux + tag), le reste du tableau tel quel. Session `questions-cm1` prévenue : elle ne touche ni ces trois modèles ni « Diviser / Quotient » (son lot 3a : fractions).
+
+### 8.2 Lot 3 : écriture (2026-10-30)
+
+- Script `lot-cm2-3.py` → `scripts/questions/cm2-3/` (5 fichiers) ; `question:specs` 300 tirages par variation, tout vert ; `create-questions` en simulation (prod) : 5 à créer.
+- Pièges : énoncé sans `?` → « Blank count mismatch » (`$$… = ?$$`) ; quotient décimal → `{{eval:n/4;d}}` (sinon `bad_form`), virgule à l'affichage et dans la correction ; specs de 4 chiffres et plus écrites avec espaces (règle de l'école, sinon `unoptimal_form`).
+- Local (port 5183, `admin@local.test`, Playwright iPhone 13) : 333 ÷ 4 → « 83,25 » juste, « 83 » faux ; 4 832 − 98 → « 4 734 » juste, « 4734 » ½ point (espaces) ; corrections relues dans le DOM (82,5 ; 4 832 − 100 = 4 732).

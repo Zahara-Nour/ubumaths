@@ -1,0 +1,162 @@
+{
+	"title": "Compléter une multiplication à trou",
+	"description": "Tables de multiplication dans l'autre sens : 7 × ? = 56, ? × 8 = 56",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "A trou",
+	"level": 21,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n$${{a}}\\times ?={{p}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				},
+				{
+					"name": "b",
+					"expression": "2..10"
+				},
+				{
+					"name": "p",
+					"expression": "eval:a*b"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le nombre qui, multiplié par ${{a}}$, donne ${{p}}$ : table de ${{a}}$.",
+					"$${{a}}\\times {{b}}={{p}}$$",
+					"Le nombre manquant est $\\textcolor{{{color:primary.0}}}{{{b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$$?\\times {{b}}={{p}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				},
+				{
+					"name": "b",
+					"expression": "2..10"
+				},
+				{
+					"name": "p",
+					"expression": "eval:a*b"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le nombre qui, multiplié par ${{b}}$, donne ${{p}}$ : table de ${{b}}$.",
+					"$${{a}}\\times {{b}}={{p}}$$",
+					"Le nombre manquant est $\\textcolor{{{color:primary.0}}}{{{a}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 × ? = 56 : 8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 × ? = 56 → 7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "8"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7 × ? = 56 → 49 (56 − 7)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "8"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 10 × ? = 100",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"b": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "? × 8 = 56 : 7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "8"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ? × 8 = 56 → 6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "8"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : ? × 2 = 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
