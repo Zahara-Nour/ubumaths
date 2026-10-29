@@ -1,0 +1,351 @@
+{
+	"title": "Calculer une longueur avec Thalès",
+	"description": "Calculer une longueur avec le théorème de Thalès : côté parallèle MN, longueur sur un côté, papillon, longueur du grand triangle, puis MB donné au lieu de AM",
+	"grades": ["3"],
+	"theme": "Géométrie",
+	"domain": "Théorème de Thalès",
+	"subdomain": "Calculer une longueur",
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les points ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$, ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$ sont alignés, ainsi que ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$, ${{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, et les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont parallèles. On donne ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = {{am}}~\\unit{cm}$, ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{ab}}~\\unit{cm}$ et ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{bc}}~\\unit{cm}$. Calcule ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.6\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}], {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}], segment [{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}].\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point(1, {{if:o==0|1|5.6}}, etiquette=\"gauche\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point(9, {{if:o==0|1.6|5.0}}, etiquette=\"droite\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point(6.2, {{if:o==0|5.6|1.0}}, etiquette=\"{{if:o==0|haut|bas}}\")\n{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x + ({{am}}/{{ab}})*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y + ({{am}}/{{ab}})*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|bas|haut}}\")\n{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x + ({{am}}/{{ab}})*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y + ({{am}}/{{ab}})*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|haut-gauche|bas-gauche}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\n```\n\n${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "ab",
+					"expression": "4..12"
+				},
+				{
+					"name": "am",
+					"expression": "2..11"
+				},
+				{
+					"name": "bc",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["am < ab", "round(100*(bc*am/ab)) == 100*(bc*am/ab)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:bc*am/ab;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$, ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$ sont alignés, ainsi que ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$, ${{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, et les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont parallèles. D'après le **théorème de Thalès** :",
+					"$$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\dfrac{{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$$",
+					"On garde les deux rapports utiles et on remplace par les longueurs connues :",
+					"$$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} \\quad\\text{donc}\\quad \\dfrac{{{am}}}{{{ab}}} = \\dfrac{{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{bc}}}$$",
+					"$${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = \\dfrac{{{bc}} \\times {{am}}}{{{ab}}} = \\textcolor{{{color:primary.0}}}{{{eval:bc*am/ab;d}}~\\unit{cm}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Les points ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$, ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$ sont alignés, ainsi que ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$, ${{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, et les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont parallèles. On donne ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = {{am}}~\\unit{cm}$, ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{ab}}~\\unit{cm}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$. Calcule ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.6\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}], {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}], segment [{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}].\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point(1, {{if:o==0|1|5.6}}, etiquette=\"gauche\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point(9, {{if:o==0|1.6|5.0}}, etiquette=\"droite\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point(6.2, {{if:o==0|5.6|1.0}}, etiquette=\"{{if:o==0|haut|bas}}\")\n{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x + ({{am}}/{{ab}})*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y + ({{am}}/{{ab}})*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|bas|haut}}\")\n{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x + ({{am}}/{{ab}})*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y + ({{am}}/{{ab}})*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|haut-gauche|bas-gauche}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\n```\n\n${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "ab",
+					"expression": "4..12"
+				},
+				{
+					"name": "am",
+					"expression": "2..11"
+				},
+				{
+					"name": "ac",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["am < ab", "round(100*(ac*am/ab)) == 100*(ac*am/ab)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ac*am/ab;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$, ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$ sont alignés, ainsi que ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$, ${{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, et les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont parallèles. D'après le **théorème de Thalès** :",
+					"$$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\dfrac{{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$$",
+					"On garde les deux rapports utiles et on remplace par les longueurs connues :",
+					"$$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} \\quad\\text{donc}\\quad \\dfrac{{{am}}}{{{ab}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{ac}}}$$",
+					"$${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = \\dfrac{{{ac}} \\times {{am}}}{{{ab}}} = \\textcolor{{{color:primary.0}}}{{{eval:ac*am/ab;d}}~\\unit{cm}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Les droites $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}})$ et $({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ sont sécantes en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, et les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont parallèles. On donne ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = {{am}}~\\unit{cm}$, ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{ab}}~\\unit{cm}$ et ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{bc}}~\\unit{cm}$. Calcule ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.6\ndescription: Papillon : droites ({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}) et ({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}) sécantes en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, segments [{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}] et [{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}].\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point(5, {{if:o==0|3.3|3.3}}, etiquette=\"haut\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point(9.2, {{if:o==0|1.2|5.4}}, etiquette=\"{{if:o==0|bas|haut}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point(8.4, {{if:o==0|5.8|0.8}}, etiquette=\"{{if:o==0|haut|bas}}\")\n{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x - ({{am}}/{{ab}})*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y - ({{am}}/{{ab}})*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|haut|bas}}\")\n{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x - ({{am}}/{{ab}})*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y - ({{am}}/{{ab}})*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|bas|haut}}\")\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\n```\n\n${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "ab",
+					"expression": "4..12"
+				},
+				{
+					"name": "am",
+					"expression": "2..11"
+				},
+				{
+					"name": "bc",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["am < ab", "round(100*(bc*am/ab)) == 100*(bc*am/ab)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:bc*am/ab;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les droites $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}})$ et $({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ sont sécantes en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, et les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont parallèles. D'après le **théorème de Thalès** :",
+					"$$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\dfrac{{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$$",
+					"On garde les deux rapports utiles et on remplace par les longueurs connues :",
+					"$$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} \\quad\\text{donc}\\quad \\dfrac{{{am}}}{{{ab}}} = \\dfrac{{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{bc}}}$$",
+					"$${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = \\dfrac{{{bc}} \\times {{am}}}{{{ab}}} = \\textcolor{{{color:primary.0}}}{{{eval:bc*am/ab;d}}~\\unit{cm}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Les points ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$, ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$ sont alignés, ainsi que ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$, ${{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, et les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont parallèles. On donne ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = {{am}}~\\unit{cm}$, ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = {{an}}~\\unit{cm}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$. Calcule ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.6\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}], {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}], segment [{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}].\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point(1, {{if:o==0|1|5.6}}, etiquette=\"gauche\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point(9, {{if:o==0|1.6|5.0}}, etiquette=\"droite\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point(6.2, {{if:o==0|5.6|1.0}}, etiquette=\"{{if:o==0|haut|bas}}\")\n{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x + ({{an}}/{{ac}})*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y + ({{an}}/{{ac}})*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|bas|haut}}\")\n{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x + ({{an}}/{{ac}})*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y + ({{an}}/{{ac}})*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|haut-gauche|bas-gauche}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\n```\n\n${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "am",
+					"expression": "2..9"
+				},
+				{
+					"name": "an",
+					"expression": "2..9"
+				},
+				{
+					"name": "ac",
+					"expression": "4..15"
+				}
+			],
+			"conditions": ["an < ac", "round(100*(am*ac/an)) == 100*(am*ac/an)", "am*ac/an > am"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:am*ac/an;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$, ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$ sont alignés, ainsi que ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$, ${{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, et les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont parallèles. D'après le **théorème de Thalès** :",
+					"$$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\dfrac{{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$$",
+					"On garde les deux rapports utiles et on remplace par les longueurs connues :",
+					"$$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} \\quad\\text{donc}\\quad \\dfrac{{{am}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{an}}}{{{ac}}}$$",
+					"$${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = \\dfrac{{{am}} \\times {{ac}}}{{{an}}} = \\textcolor{{{color:primary.0}}}{{{eval:am*ac/an;d}}~\\unit{cm}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Les points ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$, ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$ sont alignés, ainsi que ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$, ${{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, et les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont parallèles. On donne ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = {{am}}~\\unit{cm}$, ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{mb}}~\\unit{cm}$ et ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{bc}}~\\unit{cm}$. Calcule ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.6\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}], {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}], segment [{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}].\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point(1, {{if:o==0|1|5.6}}, etiquette=\"gauche\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point(9, {{if:o==0|1.6|5.0}}, etiquette=\"droite\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point(6.2, {{if:o==0|5.6|1.0}}, etiquette=\"{{if:o==0|haut|bas}}\")\n{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x + ({{am}}/({{am}}+{{mb}}))*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y + ({{am}}/({{am}}+{{mb}}))*({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|bas|haut}}\")\n{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = point({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x + ({{am}}/({{am}}+{{mb}}))*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.x - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.x), {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y + ({{am}}/({{am}}+{{mb}}))*({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}.y - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.y), etiquette=\"{{if:o==0|haut-gauche|bas-gauche}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\n```\n\n${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "am",
+					"expression": "2..8"
+				},
+				{
+					"name": "mb",
+					"expression": "1..6"
+				},
+				{
+					"name": "bc",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["round(100*(bc*am/(am+mb))) == 100*(bc*am/(am+mb))"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:bc*am/(am+mb);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$ est sur le segment [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}] : ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} + {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{am}} + {{mb}} = {{eval:am+mb}}~\\unit{cm}$.",
+					"Les points ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$, ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$ sont alignés, ainsi que ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$, ${{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, et les droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont parallèles. D'après le **théorème de Thalès** :",
+					"$$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\dfrac{{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$$",
+					"On garde les deux rapports utiles et on remplace par les longueurs connues :",
+					"$$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\dfrac{{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} \\quad\\text{donc}\\quad \\dfrac{{{am}}}{{{eval:am+mb}}} = \\dfrac{{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}}{{{bc}}}$$",
+					"$${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = \\dfrac{{{bc}} \\times {{am}}}{{{eval:am+mb}}} = \\textcolor{{{color:primary.0}}}{{{eval:bc*am/(am+mb);d}}~\\unit{cm}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AM = 3, AB = 5, BC = 7 : MN = 4,2",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"am": "3",
+				"ab": "5",
+				"bc": "7"
+			},
+			"answers": ["4{,}2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rapport renversé 11,67",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"am": "3",
+				"ab": "5",
+				"bc": "7"
+			},
+			"answers": ["11{,}67"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : soustraction BC − (AB − AM) = 5",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"am": "3",
+				"ab": "5",
+				"bc": "7"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AM = 3, AB = 4, AC = 6 : AN = 4,5",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"am": "3",
+				"ab": "4",
+				"ac": "6"
+			},
+			"answers": ["4{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Papillon AM = 2, AB = 5, BC = 8 : MN = 3,2",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"am": "2",
+				"ab": "5",
+				"bc": "8"
+			},
+			"answers": ["3{,}2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "AM = 3, AN = 4, AC = 10 : AB = 7,5",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"am": "3",
+				"an": "4",
+				"ac": "10"
+			},
+			"answers": ["7{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : produit en croix faux 13,33",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"am": "3",
+				"an": "4",
+				"ac": "10"
+			},
+			"answers": ["13{,}33"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AM = 3, MB = 2, BC = 10 : MN = 6",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"am": "3",
+				"mb": "2",
+				"bc": "10"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : MB pris pour AB, 15",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"am": "3",
+				"mb": "2",
+				"bc": "10"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
