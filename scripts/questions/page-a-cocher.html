@@ -786,7 +786,8 @@
 	/* Les maths du CP sont des nombres et des signes : rendu texte, cases dessinées, signes typographiques */
 	function maths(t, bloc = false) {
 		if (/[\\^_{}]/.test(t.replace(/\^\{\\text\{[^}]*\}\}/g, '').replace(TEXTE_SEUL, ''))) {
-			const rendu = mathsKatex(t, bloc);
+			/* Exposant sur une espace (« \,^\circ ») : refusé par la sortie MathML de KaTeX, base vide ajoutée */
+			const rendu = mathsKatex(t.replace(/(\\[,;:!]|\\quad)\s*\^/g, '$1{}^'), bloc);
 			if (rendu) return rendu;
 		}
 		return esc(t)
