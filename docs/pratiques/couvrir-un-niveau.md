@@ -118,7 +118,8 @@ coûte un chantier. Détail de chaque bloc : [ubumark.md § Blocs spéciaux](../
 - **opération posée à compléter** (saisie chiffre par chiffre du bloc `operation`) ;
 - **construire** : `construire:` dans ` ```collection ` ou ` ```monnaie ` (la valeur posée est la réponse) ;
 - **figure à compléter** (` ```figure-a-completer `, case « figure » : objets de l'élève retrouvés
-  sur les nœuds) et **figure de travail** (` ```figure-de-travail `, jamais notée), `deplacable:`.
+  sur les nœuds) et **figure de travail** (` ```figure-de-travail `, jamais notée) ; figure d'énoncé
+  à manipuler (` ```figure ` + `deplacable: oui`, rien de noté).
 
 **Hors questions, réutilisables comme briques** : le grapheur (`/grapheur`), l'Atelier,
 les constructions animées (`constructions-v2` : règle, compas, équerre, rapporteur), le champ
