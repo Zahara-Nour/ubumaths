@@ -6,16 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la publication du lot 2 bis B._
+_Mis à jour le 2026-10-29, après #1951._
 
-- **État** : lot 2 bis B (1/x, √x, x³) **publié en prod** (6/6 relus OK, `published` vérifié par MCP).
-- **Prochaine action** : correctif « accolades » (§ 17) une fois la phase 0 validée : branche
-  `fix/intervalles-accolades`, tests rouges puis verts, revue `code-reviewer` (opus), PR ; puis lot suivant.
-- **En attente de David** : la phase 0 du correctif « accolades » (§ 17, avec ou sans « x = 2 »).
+- **État** : lot 2 bis B (1/x, √x, x³) publié en prod ; correctif « accolades » mergé (#1951, § 17), pas
+  encore en prod (attend un `deploy:prod` décidé par David).
+- **Prochaine action** : lot suivant de la 2de (relire le relevé du journal pour le choisir, phase 0 à
+  proposer à David).
+- **En attente de David** : rien.
 - **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT, pas dans la PR ;
   horodatage de migration pris par une autre session ; port 5176 pris par `questions-4` (serveur sur 5177).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` · `feat/questions-2de-lecture-b-rangement`
-  (mergée).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, détaché sur `origin/main` (branches mergées supprimées).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -451,7 +451,7 @@ pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune so
   `code-reviewer` Opus : correction des réponses).
 - Phase 0 proposée : attendu = ensemble fini de nombres, réponse = nombres sans accolades → faux, message
   « Un ensemble de solutions s'écrit entre accolades : {1}. » (ses valeurs) ; attendu intervalle, ∅ ou ℝ →
-  message inchangé ; « x = 2 » hors champ sauf avis contraire. **En attente de la validation.**
+  message inchangé ; « x = 2 » hors champ sauf avis contraire. Validée par David le 2026-10-29, « x = 2 » compris ; réponse infinie exclue (revue Opus). Mergé dans #1951.
 
 ## 18. Lot 2 bis B, migration nœud + tag (2026-10-29)
 
