@@ -37,7 +37,7 @@ const PAGE_SIZE = 1000;
 /** Au-delà, la page demande de choisir un nœud plus fin (aperçus générés dans le navigateur) */
 export const MAX_SHEETS = 80;
 const SHEET_COLS =
-	'id, title, description, theme, domain, subdomain, level, status, grades, delay, variations, shared, options, default_display_options, test_specs, multiple_answers, exercise_instruction, created_at, updated_at, created_by';
+	'id, title, description, theme, domain, subdomain, level, status, grades, delay, variations, shared, options, default_display_options, test_specs, exercise_instruction, created_at, updated_at, created_by';
 
 // Functions
 

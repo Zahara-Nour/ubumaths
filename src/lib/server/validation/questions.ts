@@ -249,7 +249,6 @@ export const questionTemplateResponseSchema = z.object({
 	level: z.number().int().nonnegative(),
 	status: z.enum(['draft', 'published']),
 	delay: z.number().int().nonnegative().nullable().optional(),
-	multiple_answers: z.boolean().nullable().optional(),
 	created_by: z.string().uuid(),
 	created_at: z.string(),
 	updated_at: z.string()

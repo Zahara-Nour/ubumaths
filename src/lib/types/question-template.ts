@@ -38,7 +38,6 @@ export interface QuestionTemplateRow {
 	options: Json | null;
 	default_display_options: Json | null;
 	test_specs: Json | null;
-	multiple_answers: boolean | null;
 	exercise_instruction: string | null;
 	created_at: string | null;
 	updated_at: string | null;
