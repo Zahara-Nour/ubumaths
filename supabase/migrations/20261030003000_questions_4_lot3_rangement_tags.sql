@@ -89,8 +89,8 @@
 set local lock_timeout = '5s';
 
 -- ---- 1. Le lot, en tables temporaires (les modèles, puis leurs points) --------------
-drop table if exists pg_temp._q4l3_modeles;
 drop table if exists pg_temp._q4l3_tags;
+drop table if exists pg_temp._q4l3_modeles;
 create temporary table _q4l3_modeles (
 	id uuid primary key,
 	branche text not null,
