@@ -10,10 +10,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 0-suites vérifié (§ 6)._
+_Mis à jour le 2026-10-30, lot 0-suites vérifié, migration des niveaux écrite (§ 6, D8)._
 
 - **État** : D1-D7 validées ; lot 0-suites vérifié (17 brouillons, 1 correction), page à cocher publiée.
-- **Prochaine action** : après les verdicts : PR de l'instantané, merge, puis David lance `create-questions --dir scripts/questions/tspe-0-suites --publier --mettre-a-jour` et `publier-lot --publier` ; ensuite lot 0-limites et fonctions.
+- **Prochaine action** : PR (instantané suites + migration des niveaux D8), CI, merge, `db:migrate` depuis le dépôt principal, vérification des 14 niveaux en prod ; puis David : `create-questions --dir scripts/questions/tspe-0-suites --publier --mettre-a-jour` et `publier-lot --publier` ; ensuite lot 0-limites et fonctions.
 - **En attente de David** : verdicts de la page à cocher des suites (§ 6).
 - **Pièges en cours** : `create-questions` et `publier-lot` → David ; les vieux dossiers
   `scripts/questions/<thème>-terminale/` ne concordent peut-être plus avec la base → partir des id
@@ -301,3 +301,10 @@ Variations). Proposition : **une seule migration de niveaux** pour tout le nivea
 | a95a9c0d | Loi binomiale / Calcul de probabilités    | 2 → 1  |
 
 Le fichier `tspe-0-suites/7063979e.json` porte déjà le niveau 1.
+
+**D8 (David, 2026-10-30, « je valide » sur les recommandations)** : accès — personne ne gagne ni ne perd d'accès ;
+une seule migration pour les 14, avant toute publication ; niveaux du tableau ci-dessus. Migration
+`20261030011000_questions_tspe_niveaux.sql` (patron du CE1 lot 3), test
+`tests/integration/questions-tspe-niveaux.test.ts` : 7/7 vert, **rouge** sans l'`update` des niveaux (« lot
+incohérent : niveaux 0/14 ») et sans le fichier. Les autres thèmes s'exporteront de la base après la migration
+(niveaux à jour).
