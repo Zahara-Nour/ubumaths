@@ -8,9 +8,9 @@ status: phase 0
 
 _Mis à jour le 2026-10-29, phase 0 validée, PR 1 en cours._
 
-- **État** : phase 0 validée (§ 6) ; PR 1 (bloc ```partage affiché, `gris:`) en cours.
+- **État** : PR 1 (bloc ```partage affiché, `gris:`) codée, revue Sonnet faite (2 points corrigés : `gris: 4,` pour une seule part, teinte `--color-fig-orange` à ≥ 3:1), PR ouverte.
 - **Prochaine action** : finir la PR 1, puis PR 2 (`colorier:`), puis PR 3 (`unites:`).
-- **En attente de David** : rien.
+- **En attente de David** : nom accessible de la figure (§ 7) — le dire sans la réponse, comme l'horloge (reco), ou garder « 3 coloriées » ?
 - **Après ce chantier** : chantier `solides` (assemblages de cubes, perspective, patrons ; 6e → 3e), ordre
   validé par David le 2026-10-29.
 - **Worktree / branche** : `../ubumaths-wt-fractions-a-colorier` · `feat/fractions-a-colorier`.
@@ -124,3 +124,18 @@ Précisions de la PR 1 (choix d'exécution, dans le cadre validé) : numérotati
 droite, grille ligne par ligne depuis le coin haut gauche, disque depuis midi dans le sens des aiguilles,
 carré coupé par ses diagonales : haut, droite, bas, gauche ; `gris:` absent = figure sans part coloriée ;
 `colorier:` encore inconnu en PR 1 (clé inconnue → message), il arrive en PR 2.
+
+## 7. PR 1 — bloc ```partage affiché (2026-10-29)
+
+Agent `frontend-developer` sur le patron de l'horloge (`fa62ae0ea`) : type, parseur, scène partagée écran / PDF
+(`utils/partage-scene.ts`), `Partage.svelte`, `partage-typst.ts`, branchements (listes, fermeture, lignes
+protégées, éditeur riche, `answer-frames`, `check-ubumark`), fiche du catalogue `/aide-ecriture/blocs/partage`.
+Rendu vérifié en Playwright (serveur 5178, compte prof local) : disque, grille 10 × 10, carré, bande, à 1200 et
+360 px.
+
+Revue `code-reviewer` (Sonnet), aucun bloquant ; corrigés : une seule part isolée n'était pas exprimable →
+`gris: 4,` (virgule finale) ; contraste `--color-primary` / fond ≈ 2,3:1 → `--color-fig-orange` (≥ 3:1).
+
+**Question ouverte (David)** : le nom accessible dit « Bande partagée en 8 parts égales, 3 coloriées » — il donne la
+réponse d'une question « interpréter ». L'horloge dit seulement « Horloge à aiguilles ». Reco : même règle (« Figure
+partagée en parts égales », sans la réponse).
