@@ -388,6 +388,17 @@ Située hors des Six Provinces, **L'Isle de la Réunion Pataphysique** est un te
 - **Observatoire des solutions imaginaires** : le Père Ubu y a installé son observatoire pour noter les _« solutions imaginaires »_ (canon Jarry strict 🟢, _Faustroll_) qui se produisent dans le Royaume.
 - **Lieu transversal sans province** : L'Isle de la Réunion Pataphysique n'est **pas** une 7ᵉ province (le système des Six Provinces reste intact). C'est un **statut différent** — un territoire **outre-mer**, **transversal**, **réservé à l'expérimentation doctrinale**.
 
+#### Pour l'illustration 🟡
+
+Décision de David (2026-10-29). Sur la carte, l'Isle figure en encart.
+
+- **Relief** : île volcanique et montagneuse, volcan au sommet arrondi, pentes vertes et escarpées (le relief de la vraie Réunion, et rien d'autre : ni habitants dessinés ni caricature).
+- **Équivalence des contraires, par la nature** : comme la vraie Réunion, une côte humide et verdoyante à l'est (forêt tropicale), une côte sèche et ensoleillée à l'ouest (savane, herbes sèches) ; les deux se valent.
+- **Observatoire** : au sommet du volcan, la coupole de l'observatoire des solutions imaginaires d'Ubu, lunette pointée vers le ciel.
+- **Réunion des provinces** : un petit port où flottent six drapeaux aux couleurs des six provinces, sans texte.
+- **Repère sur la carte** : l'île entière dans son encart, la coupole au sommet.
+- **Couleur** : mer en bleu de Pile éclairci (comme la Baltique) ; terre sans couleur de province.
+
 #### Fête possible (proposition pour l'Almanach)
 
 ✅ **Adoptée le 2026-10-04** : la **Journée de L'Isle de la Réunion Pataphysique**, le **20 décembre** (16 Glaglavose), date réelle de l'abolition de l'esclavage à La Réunion — clin d'œil au principe d'équivalence : tous les Galopins y sont également libres et également étudiants. Voir Section VIII.
