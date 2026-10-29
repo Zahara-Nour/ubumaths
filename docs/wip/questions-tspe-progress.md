@@ -10,16 +10,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 0-suites vérifié, migration des niveaux écrite (§ 6, D8)._
+_Mis à jour le 2026-10-30, après #2002 et #2004 (migration des niveaux jouée en prod)._
 
-- **État** : D1-D7 validées ; lot 0-suites vérifié (17 brouillons, 1 correction), page à cocher publiée.
-- **Prochaine action** : PR (instantané suites + migration des niveaux D8), CI, merge, `db:migrate` depuis le dépôt principal, vérification des 14 niveaux en prod ; puis David : `create-questions --dir scripts/questions/tspe-0-suites --publier --mettre-a-jour` et `publier-lot --publier` ; ensuite lot 0-limites et fonctions.
-- **En attente de David** : après `db:migrate`, `create-questions --publier --mettre-a-jour` puis `publier-lot --publier` (suites).
+- **État** : lot 0-suites relu (17/17 ok) ; migration des niveaux D8 (14 brouillons) jouée en prod ; publication des suites prête.
+- **Prochaine action** : après la publication des suites par David, relire `published` (17) ; puis lot 0-limites et fonctions (continuité, ln, limites) dans un worktree neuf.
+- **En attente de David** : `create-questions --dir scripts/questions/tspe-0-suites --publier --mettre-a-jour` puis `publier-lot --dir scripts/questions/tspe-0-suites --publier` (depuis le dépôt principal).
 - **Pièges en cours** : `create-questions` et `publier-lot` → David ; les vieux dossiers
   `scripts/questions/<thème>-terminale/` ne concordent peut-être plus avec la base → partir des id
   (`export-question-templates.ts --ids`, comme en 1re spé) ; la case choix est en prod (figure-et-choix lots 1-5,
-  v0.55.0) : plus d'ancien QCM à écrire.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe`, `feat/questions-tspe-0-suites`.
+  v0.55.0) : plus d'ancien QCM à écrire ; **horodatage de migration** : prendre max + 1 min de la prod (`migration list --linked`) juste avant de créer le fichier, d'autres sessions migrent en parallèle.
+- **Worktree / branche** : aucun (retiré après #2004) ; un worktree neuf par lot.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -277,7 +277,7 @@ seul f(ℓ) = ℓ est demandé, dans 432 (l'étude de la convergence, 571, n'est
 **Page à cocher** : https://claude.ai/artifact/CRPu9Wj8MaomQe8nS6v7Jy (17 fiches, 64 exemples), collection `verdicts`
 vide à la publication.
 
-**Horodatage** : #2002 mergée ; `db:migrate` refusé (`DbPushMissingRemoteError`) : `20261030120000` (1re spé, produit scalaire) déjà jouée en prod, ma migration se retrouvait avant. Renommée en `20261030120100` (max + 1 min), sans `--include-all`.
+**Horodatage** : #2002 mergée ; `db:migrate` refusé (`DbPushMissingRemoteError`) : `20261030120000` (1re spé, produit scalaire) déjà jouée en prod, ma migration se retrouvait avant. Renommée en `20261030120100` (max + 1 min), sans `--include-all` (#2004). `db:migrate` le 2026-10-30 : 14 niveaux relus en prod, `updated_at` préservés, trigger `update_question_templates_updated_at` actif. Simulations : `create-questions` → 1 à mettre à jour (2bf6edc7), 16 identiques ; `publier-lot` → 17 brouillons passent le contrôle.
 
 **Relecture (David, page à cocher, 2026-10-30)** : 17 « ok » sur 17, aucun commentaire (lu en base).
 
