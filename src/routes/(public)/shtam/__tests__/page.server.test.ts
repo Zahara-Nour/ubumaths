@@ -32,26 +32,64 @@ function at(iso: string) {
 	vi.setSystemTime(new Date(iso));
 }
 
-describe('/shtam (la une)', () => {
+type UneData = {
+	kind: 'une';
+	edition: { number: number };
+	pageCount: number;
+	une: Record<string, unknown> | null;
+	teasers: { slug: string; page: number }[];
+};
+type InterieurData = { kind: 'interieur'; articles: { slug: string; body: string }[] };
+
+// async : la 404 est levée de façon synchrone, on la veut en promesse rejetée
+const loadPage = async (query = '') =>
+	(une.load as unknown as Load)({
+		url: new URL(`https://www.chiph.re/shtam${query}`)
+	} as never) as Promise<UneData | InterieurData>;
+
+describe('/shtam (le journal)', () => {
 	it('n’est pas prérendue : un article daté de demain paraîtrait au build', () => {
 		expect(une.prerender).toBe(false);
 	});
 
-	it('ne liste que les articles parus, sans leur corps', async () => {
+	it('met en une le dernier article paru, avec le début de son corps, et renvoie à la page 2', async () => {
 		at('2026-10-05T10:00:00Z');
-		const data = (await (une.load as unknown as Load)({} as never)) as {
-			articles: Record<string, unknown>[];
-		};
-		expect(data.articles.map((a) => a.slug)).toEqual(['paru']);
-		expect(data.articles[0]).not.toHaveProperty('body');
+		const data = (await loadPage()) as UneData;
+		expect(data.kind).toBe('une');
+		expect(data.une).toMatchObject({ slug: 'paru', excerpt: 'Corps.', image: null, page: 2 });
+		expect(data.une).not.toHaveProperty('truth');
+		expect(data.teasers).toEqual([]);
+		expect(data.edition.number).toBe(1);
+		expect(data.pageCount).toBe(2);
 	});
 
 	it('fait paraître l’article futur le jour venu, à minuit heure de Paris', async () => {
 		at('2026-10-09T22:30:00Z'); // 0 h 30 le 10 octobre à Paris
-		const data = (await (une.load as unknown as Load)({} as never)) as {
-			articles: { slug: string }[];
-		};
+		const data = (await loadPage()) as UneData;
+		expect(data.une).toMatchObject({ slug: 'futur' });
+		expect(data.teasers).toEqual([expect.objectContaining({ slug: 'paru', page: 2 })]);
+	});
+
+	it('donne les articles en entier sur les pages intérieures', async () => {
+		at('2026-10-09T22:30:00Z');
+		const data = (await loadPage('?page=2')) as InterieurData;
+		expect(data.kind).toBe('interieur');
 		expect(data.articles.map((a) => a.slug)).toEqual(['futur', 'paru']);
+		expect(data.articles[0]).toMatchObject({ body: 'Corps.', truth: 'Fait.' });
+	});
+
+	it.each(['?page=3', '?page=0', '?page=-1', '?page=1.5', '?page=abc', '?page=', '?page=99999'])(
+		'rend 404 pour « %s »',
+		async (query) => {
+			at('2026-10-05T10:00:00Z');
+			await expect(loadPage(query)).rejects.toMatchObject({ status: 404 });
+		}
+	);
+
+	it('ne montre jamais un brouillon ni un article futur, même sur les pages intérieures', async () => {
+		at('2026-10-05T10:00:00Z');
+		const data = (await loadPage('?page=2')) as InterieurData;
+		expect(data.articles.map((a) => a.slug)).toEqual(['paru']);
 	});
 });
 
