@@ -483,6 +483,13 @@ contrôle passe avant le garde de complexité : quatre solutions séparées par 
 24 472 instances) : 202 verdicts changés, tous des réponses « virgule » déjà fausses dont seul le
 message change ; 0 changement sur les specs et les réponses attendues.
 
+Ensemble fini attendu, réponse faite de nombres **sans accolades** (`1`, `-3 ; 3`, `x = 2`,
+`x = -3 ou x = 3`) : toujours faux, même avec les bonnes valeurs, mais avec le message « Un ensemble
+de solutions s'écrit entre accolades : {-3 ; 3}. » (les valeurs de l'élève, écrites comme le message
+du singleton : `1/2`, `√2`) au lieu de « Réponse illisible : écris un intervalle… » (décision de
+David, 2026-10-29). Attendu intervalle, ∅ ou ℝ : message inchangé. Seul le message change : la
+réponse était déjà fausse.
+
 Une fraction simplifiable dans un ensemble fini se traite comme une borne non simplifiée :
 `\{-\frac{10\pi}{12};\frac{\pi}{3}\}` pour `\{-\frac{5\pi}{6};\frac{\pi}{3}\}` vaut ½ (`unoptimal_form`,
 contrainte `intervalForm` : `strict` → mauvaise forme, `off` → juste), message « La fraction peut
