@@ -8,9 +8,9 @@
  * - Réponse de la case : les rangs coloriés, triés, séparés par « , » (`"1, 4, 6"`) ;
  *   `''` quand rien n'est colorié. Elle garde QUELLES parts : la correction
  *   redessine la figure de l'élève.
- * - Réponse attendue : `"3/8"` = parts à colorier / parts de la figure
+ * - Réponse attendue : `"3/8"` = parts à colorier / parts d'UNE figure
  *   (`expectedColoringAnswer`) — la fraction écrite par le prof ramenée à CETTE
- *   figure (`1/2` sur une bande de 4 : `2/4`).
+ *   figure (`1/2` sur une bande de 4 : `2/4` ; `7/4` sur trois bandes de 4 : `7/4`).
  * - Jugement : juste dès que le NOMBRE de parts coloriées est celui attendu,
  *   quelles que soient les parts (2 parts sur 4 : juste pour ½).
  *
@@ -19,7 +19,7 @@
  * @module ubumark/utils/partage-colorier
  */
 
-import { partageTotal, type PartageSpec } from '../types/partage';
+import { PARTAGE_UNITS, partageTotal, type PartageSpec } from '../types/partage';
 
 // Constantes
 
@@ -46,22 +46,26 @@ export function ranksOfAnswer(answer: string, total: number): number[] | null {
 	return ranks.sort((a, b) => a - b);
 }
 
-/** Réponse attendue d'une figure à colorier : `3/8` (parts à colorier / parts) */
+/** Réponse attendue d'une figure à colorier : `3/8` (parts à colorier / parts d'une figure) */
 export function expectedColoringAnswer(spec: PartageSpec): string {
 	return `${spec.colorier?.parts ?? 0}/${partageTotal(spec.shape)}`;
 }
 
 /** Lecture de la réponse attendue ; null si illisible */
-function readExpected(expected: string): { parts: number; total: number } | null {
+function readExpected(expected: string): { parts: number; perUnit: number } | null {
 	const match = EXPECTED_REGEX.exec(expected.trim());
-	return match ? { parts: Number(match[1]), total: Number(match[2]) } : null;
+	return match ? { parts: Number(match[1]), perUnit: Number(match[2]) } : null;
 }
 
-/** Les parts coloriées par l'élève (`answer`) valent-elles la fraction attendue (`expected`) ? */
+/**
+ * Les parts coloriées par l'élève (`answer`) valent-elles la fraction attendue
+ * (`expected`) ? La réponse attendue ne dit pas combien de figures sont dessinées :
+ * les rangs sont bornés par le plus grand nombre de figures (`unites: 5`).
+ */
 export function isColoringCorrect(answer: string, expected: string): boolean {
 	const wanted = readExpected(expected);
 	if (wanted === null) return false;
-	const ranks = ranksOfAnswer(answer, wanted.total);
+	const ranks = ranksOfAnswer(answer, wanted.perUnit * PARTAGE_UNITS.max);
 	return ranks !== null && ranks.length === wanted.parts;
 }
 
@@ -72,7 +76,13 @@ export function coloringMistakes(count: number, spec: PartageSpec): string[] {
 	if (count === 0) return [NOTHING_COLORED];
 	const { colorier } = spec;
 	if (!colorier) return [];
+	const perUnit = partageTotal(spec.shape);
+	if (spec.units > 1) {
+		return [
+			`Tu as colorié ${partsOf(count)} ; il fallait en colorier ${colorier.parts} (${colorier.num}/${colorier.den}, chaque figure a ${perUnit} parts).`
+		];
+	}
 	return [
-		`Tu as colorié ${partsOf(count)} sur ${partageTotal(spec.shape)} ; il fallait en colorier ${colorier.parts} (${colorier.num}/${colorier.den}).`
+		`Tu as colorié ${partsOf(count)} sur ${perUnit} ; il fallait en colorier ${colorier.parts} (${colorier.num}/${colorier.den}).`
 	];
 }

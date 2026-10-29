@@ -84,6 +84,17 @@ describe('figure à colorier : la case et sa réponse', () => {
 		expect(validateAnswer('1, 4', instance, '1, 4').status).toBe('correct');
 	});
 
+	it('plusieurs figures (unites:) : 7/4, sept parts quelconques des trois bandes', () => {
+		const instance = generate(
+			template({ statement: fig('forme: bande 4', 'unites: 3', 'colorier: 7/4') })
+		);
+		expect(instance.blanks?.[0].expectedAnswer).toBe('7/4');
+		expect(validateAnswer('1, 2, 3, 4, 5, 6, 9', instance, '1, 2, 3, 4, 5, 6, 9').status).toBe(
+			'correct'
+		);
+		expect(validateAnswer('1, 2, 3, 4', instance, '1, 2, 3, 4').isCorrect).toBe(false);
+	});
+
 	it('variables résolues avant le bloc', () => {
 		const instance = generate(
 			template({

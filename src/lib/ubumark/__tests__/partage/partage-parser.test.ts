@@ -22,12 +22,13 @@ describe('bloc ```partage — cas nominaux', () => {
 	it('bande de 8, 3 parts coloriées', () => {
 		const node = partageOf(doc('```partage', 'forme: bande 8', 'gris: 3', '```'));
 		expect(node.errors).toEqual([]);
-		expect(node.spec).toEqual({ shape: { kind: 'bande', parts: 8 }, gray: [1, 2, 3] });
+		expect(node.spec).toEqual({ shape: { kind: 'bande', parts: 8 }, units: 1, gray: [1, 2, 3] });
 	});
 
 	it('gris absent : aucune part coloriée', () => {
 		expect(parse('forme: disque 6').spec).toEqual({
 			shape: { kind: 'disque', parts: 6 },
+			units: 1,
 			gray: []
 		});
 	});
@@ -82,7 +83,7 @@ describe('bloc ```partage — cas nominaux', () => {
 	it('clés en majuscules, lignes vides et espaces tolérés', () => {
 		const node = parse('', '  FORME :  bande   5  ', '', 'Gris: 2');
 		expect(node.errors).toEqual([]);
-		expect(node.spec).toEqual({ shape: { kind: 'bande', parts: 5 }, gray: [1, 2] });
+		expect(node.spec).toEqual({ shape: { kind: 'bande', parts: 5 }, units: 1, gray: [1, 2] });
 	});
 
 	it('garde le texte du bloc (aller-retour de l’éditeur riche)', () => {

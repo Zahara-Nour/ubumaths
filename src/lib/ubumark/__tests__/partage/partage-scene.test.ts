@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
 import {
-	buildPartageScene,
+	buildPartageScenes,
 	partageLabel,
 	type PartagePoint
 } from '$lib/ubumark/utils/partage-scene';
@@ -16,7 +16,7 @@ function specOf(...lines: string[]): PartageSpec {
 	expect(errors).toEqual([]);
 	return spec as PartageSpec;
 }
-const scene = (...lines: string[]) => buildPartageScene(specOf(...lines));
+const scene = (...lines: string[]) => buildPartageScenes(specOf(...lines))[0];
 
 /** Aire d'un polygone (formule des lacets) */
 function area(points: PartagePoint[]): number {

@@ -64,7 +64,8 @@ function pointAt(root: Element, rank: number) {
 }
 
 function fire(root: Element, type: string, rank: number, init: PointerEventInit = {}) {
-	const svg = root.querySelector('svg.partage-figure')!;
+	// La figure qui porte la part (plusieurs figures : `unites:`)
+	const svg = parts(root)[rank - 1].closest('svg')!;
 	svg.dispatchEvent(new PointerEvent(type, { bubbles: true, ...pointAt(root, rank), ...init }));
 }
 
@@ -378,5 +379,90 @@ describe('hors question, dans une question, dans la copie corrigée', () => {
 			}
 		});
 		expect(screen.container.querySelectorAll('.partage-coloriee')).toHaveLength(3);
+	});
+});
+
+describe('PartageColorier — plusieurs figures (unites:)', () => {
+	const sevenQuarters = () => node('forme: bande 4', 'unites: 3', 'colorier: 7/4');
+
+	it('trois figures, rangs à la suite : toucher la figure 2 colorie la part 5', async () => {
+		const { probe, answer } = answerProbe();
+		const screen = await render(PartageColorier, {
+			target: mainElement(),
+			props: { node: sevenQuarters(), answer: answer() }
+		});
+		const root = screen.container;
+		expect(root.querySelectorAll('.partage-colorier svg.partage-figure')).toHaveLength(3);
+		expect(parts(root)).toHaveLength(12);
+		tap(root, 5);
+		await expect.poll(() => probe.value).toBe('5');
+		tap(root, 12);
+		await expect.poll(() => probe.value).toBe('5, 12');
+	});
+
+	it('glisser dans la figure 2 colorie ses parts', async () => {
+		const { probe, answer } = answerProbe();
+		const screen = await render(PartageColorier, {
+			target: mainElement(),
+			props: { node: sevenQuarters(), answer: answer() }
+		});
+		const root = screen.container;
+		fire(root, 'pointerdown', 5);
+		fire(root, 'pointermove', 6);
+		fire(root, 'pointermove', 8);
+		fire(root, 'pointerup', 8);
+		await expect.poll(() => probe.value).toBe('5, 6, 7, 8');
+	});
+
+	it('un glissé reste dans la figure où il commence', async () => {
+		const { probe, answer } = answerProbe();
+		const screen = await render(PartageColorier, {
+			target: mainElement(),
+			props: { node: sevenQuarters(), answer: answer() }
+		});
+		const root = screen.container;
+		// Départ part 3 (figure 1) ; les mouvements vont vers la part 6 (figure 2), sous capture de la figure 1
+		fire(root, 'pointerdown', 3);
+		const svg = parts(root)[2].closest('svg')!;
+		for (const type of ['pointermove', 'pointerup']) {
+			svg.dispatchEvent(new PointerEvent(type, { bubbles: true, ...pointAt(root, 6) }));
+		}
+		await expect.poll(() => probe.value).toMatch(/^3(, 4)?$/);
+	});
+
+	it('noms accessibles : « Figure 2, part 1 sur 4 », figures « figure 2 sur 3 »', async () => {
+		const { answer } = answerProbe('5');
+		const screen = await render(PartageColorier, {
+			target: mainElement(),
+			props: { node: sevenQuarters(), answer: answer() }
+		});
+		const root = screen.container;
+		expect(parts(root)[0].getAttribute('aria-label')).toBe('Figure 1, part 1 sur 4');
+		expect(parts(root)[4].getAttribute('aria-label')).toBe('Figure 2, part 1 sur 4, coloriée');
+		expect(parts(root)[11].getAttribute('aria-label')).toBe('Figure 3, part 4 sur 4');
+		const figures = [...root.querySelectorAll('.partage-colorier svg.partage-figure')];
+		expect(figures[1].getAttribute('aria-label')).toBe(
+			'Bande partagée en parts égales, figure 2 sur 3'
+		);
+		expect(root.innerHTML).not.toMatch(/7\/4|7 parts/);
+	});
+
+	it('faux : la phrase, et les figures justes, unités pleines d’abord', async () => {
+		const screen = await render(PartageColorier, {
+			target: mainElement(),
+			props: {
+				node: sevenQuarters(),
+				answer: { value: '1, 2, 3, 4, 5', isCorrect: false, disabled: true, onChange: () => {} }
+			}
+		});
+		const root = screen.container;
+		expect(root.textContent).toContain(
+			'Tu as colorié 5 parts ; il fallait en colorier 7 (7/4, chaque figure a 4 parts).'
+		);
+		const solution = [...root.querySelectorAll('.placer-correction svg')];
+		expect(solution).toHaveLength(3);
+		expect(solution.map((svg) => svg.querySelectorAll('.partage-coloriee').length)).toEqual([
+			4, 3, 0
+		]);
 	});
 });

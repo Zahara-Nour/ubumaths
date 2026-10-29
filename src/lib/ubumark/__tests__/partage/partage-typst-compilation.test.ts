@@ -54,6 +54,12 @@ it('un document avec des blocs ```partage compile en PDF', async () => {
 				'```',
 				'',
 				'```partage',
+				'forme: disque 4',
+				'unites: 3',
+				'gris: 7',
+				'```',
+				'',
+				'```partage',
 				'forme: bande 99',
 				'```'
 			].join('\n')

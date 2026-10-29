@@ -151,3 +151,19 @@ describe('Partage — branchée dans le rendu Markdown', () => {
 		expect(screen.container.querySelectorAll('svg[role="img"]')).toHaveLength(2);
 	});
 });
+
+describe('Partage — plusieurs figures (unites:)', () => {
+	it('gris: 7 sur deux bandes de 4 : la première pleine, 3 parts de la seconde', async () => {
+		const screen = await render(Partage, {
+			target: mainElement(),
+			props: { node: node('forme: bande 4', 'unites: 2', 'gris: 7') }
+		});
+		const svgs = [...screen.container.querySelectorAll('svg[role="img"]')];
+		expect(svgs).toHaveLength(2);
+		expect(svgs.map((svg) => svg.querySelectorAll('.partage-coloriee').length)).toEqual([4, 3]);
+		expect(svgs.map((svg) => svg.getAttribute('aria-label'))).toEqual([
+			'Bande partagée en parts égales, figure 1 sur 2',
+			'Bande partagée en parts égales, figure 2 sur 2'
+		]);
+	});
+});
