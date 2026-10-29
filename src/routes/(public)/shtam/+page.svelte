@@ -73,9 +73,11 @@
 						<MarkdownRenderer content={data.une.image} />
 					</div>
 				{/if}
-				<div class="columns-journal border-t pt-4">
-					<MarkdownRenderer content={data.une.excerpt} />
-				</div>
+				{#if data.une.excerpt}
+					<div class="columns-journal border-t pt-4">
+						<MarkdownRenderer content={data.une.excerpt} />
+					</div>
+				{/if}
 				<a
 					href="{resolve('/shtam')}{pageQuery(data.une.page)}#{data.une.slug}"
 					class="serif self-end rounded-sm font-semibold underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
@@ -195,6 +197,9 @@
 			column-rule: 1px solid var(--color-border);
 			text-align: justify;
 			hyphens: auto;
+		}
+		.columns-journal :global(img) {
+			break-inside: avoid;
 		}
 	}
 </style>

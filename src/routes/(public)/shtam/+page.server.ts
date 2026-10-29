@@ -1,4 +1,4 @@
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { allArticles, publishedArticles } from '$lib/server/shtam/articles';
 import {
@@ -18,10 +18,16 @@ import type { PageServerLoad } from './$types';
 export const prerender = false;
 
 // Page 1 = la une ; les suivantes portent les articles en entier
-const pageSchema = z.coerce.number().int().min(1).max(10_000);
+// Chiffres seuls : « 1e1 », « 0x2 » ou « 02 » ne font pas d'autres adresses pour la même page
+const pageSchema = z
+	.string()
+	.regex(/^[1-9]\d{0,3}$/)
+	.transform(Number);
 
 export const load: PageServerLoad = ({ url }) => {
 	const raw = url.searchParams.get('page');
+	// La une n'a qu'une adresse
+	if (raw === '1') throw redirect(308, '/shtam');
 	const parsed = raw === null ? { success: true as const, data: 1 } : pageSchema.safeParse(raw);
 	const today = todayIsoInParis();
 	const articles = publishedArticles(allArticles(), today);

@@ -78,13 +78,26 @@ describe('/shtam (le journal)', () => {
 		expect(data.articles[0]).toMatchObject({ body: 'Corps.', truth: 'Fait.' });
 	});
 
-	it.each(['?page=3', '?page=0', '?page=-1', '?page=1.5', '?page=abc', '?page=', '?page=99999'])(
-		'rend 404 pour « %s »',
-		async (query) => {
-			at('2026-10-05T10:00:00Z');
-			await expect(loadPage(query)).rejects.toMatchObject({ status: 404 });
-		}
-	);
+	it.each([
+		'?page=3',
+		'?page=0',
+		'?page=-1',
+		'?page=1.5',
+		'?page=abc',
+		'?page=',
+		'?page=99999',
+		'?page=1e1',
+		'?page=0x2',
+		'?page=02'
+	])('rend 404 pour « %s »', async (query) => {
+		at('2026-10-05T10:00:00Z');
+		await expect(loadPage(query)).rejects.toMatchObject({ status: 404 });
+	});
+
+	it('renvoie ?page=1 vers la une, son unique adresse', async () => {
+		at('2026-10-05T10:00:00Z');
+		await expect(loadPage('?page=1')).rejects.toMatchObject({ status: 308, location: '/shtam' });
+	});
 
 	it('ne montre jamais un brouillon ni un article futur, même sur les pages intérieures', async () => {
 		at('2026-10-05T10:00:00Z');

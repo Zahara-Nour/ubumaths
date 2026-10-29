@@ -86,7 +86,7 @@ début du corps en deux colonnes) et les trois suivants en titres. Les **pages 2
 (`?page=N`) portent **tous** les articles en entier, deux par page, avec leur vrai du faux ; la une
 y renvoie (« suite page N », ancre `#<slug>`). Image de la une : la première du corps, sinon celle du
 vrai du faux, où sont toutes les figures aujourd'hui. Extrait : les premiers paragraphes jusqu'à environ
-500 caractères, arrêté avant tout bloc (liste, tableau, code…). Page hors bornes ou mal formée → 404.
+500 caractères, arrêté avant tout bloc (liste, tableau, code…). Page hors bornes ou mal formée → 404 ; `?page=1` → 308 vers `/shtam`. Les ancres `?page=N#slug` glissent quand un article paraît (rang, pas slug) : le lien stable d'un article reste `/shtam/<slug>`.
 Pages intérieures en `noindex` : chaque article a déjà sa page indexée. Pas de `<header>` dans ces
 pages : `app.css` y force tout à 1rem ; titres du bandeau et de la une agrandis par une classe locale
 qui l'emporte sur `main h1` / `main h2`.
