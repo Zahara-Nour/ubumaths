@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #1992._
+_Mis à jour le 2026-10-30, après #1992 et le `db push --include-all` de David._
 
-- **État** : lot 4 (problèmes, 10 modèles, § 10) : brouillons en prod (2026-10-29) ; migration nœud + tag `20261030004800` mergée (#1992), **pas jouée** : `db:migrate` refusé (`DbPushMissingRemoteError`), car `20261030002300_questions_3_lot3_rangement_tags` (#1984, session questions-3) est sur `main` et pas en prod.
-- **Prochaine action** : quand 002300 est joué (ou sur go de David pour `--include-all`), `db:migrate` depuis le dépôt principal, vérifier au MCP (10 sur leur nœud, 1 tag chacun, brouillons, `updated_at` inchangé) ; puis page à cocher.
-- **En attente de David** : décider qui joue 002300 (session questions-3, ou `db:migrate --include-all` qui jouerait les deux).
+- **État** : lot 4 (problèmes, 10 modèles, § 10) : brouillons en prod, rangés et tagués (migration `20261030004800` jouée par David avec `--include-all`, qui a aussi joué 002300 et 004900 ; vérifié au MCP : 10 sur leur nœud, 1 tag chacun, brouillons, `updated_at` inchangé). Page à cocher publiée : https://claude.ai/artifact/2bUw8csLPAx4rcotvkUjjn (0 verdict au départ).
+- **Prochaine action** : lire les verdicts (ArtifactData `verdicts`), corriger les modèles signalés (`--mettre-a-jour` par David) ; puis `publier-lot --dir scripts/questions/ce1-4` en simulation, David `--publier`.
+- **En attente de David** : la relecture du lot 4 sur la page à cocher.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`).
 
