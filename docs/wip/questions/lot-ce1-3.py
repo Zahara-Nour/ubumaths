@@ -16,6 +16,8 @@ Décisions :
    comparer (06, 07) : choix < = > non mélangé, comme « Comparer » des entiers du CE1, une
    égalité de temps en temps (tirages indépendants).
 5. Jamais de variable `e` ni `i` (Euler, unité imaginaire).
+6. Relecture du 2026-10-29 : le 03 perd « un huitième plus un huitième… » (doublon de la
+   variation 3 du 08) ; le 09 perd Lucie, gardée pour le lot 4 (problèmes).
 
     python3 docs/wip/questions/lot-ce1-3.py scripts/questions/ce1-3
 """
@@ -197,19 +199,6 @@ EN_CHIFFRES = variation(
      ' et on en prend ${{n}}$.', SENS, '$$' + col(fr('{{n}}', '{{d}}')) + '$$'])
 
 
-def plus_de_parts(k):
-    return ' plus '.join(['un ' + PART_MOT] * k)
-
-
-FOIS_UN = variation(
-    '« **' + par('n', range(2, 5), plus_de_parts) + '** », c\'est la fraction :\n\n$$?$$',
-    [var('d', LISTE_SANS_DEMI), var('n', '2..4')], fr('{{n}}', '{{d}}'),
-    ['On prend ${{n}}$ fois un ' + PART_MOT + ' : cela fait ' + NUMERATEUR_MOT + ' '
-     + PARTS_MOT + '.',
-     '$$' + par('n', range(2, 5), lambda k: ' + '.join([fr('1', '{{d}}')] * k)) + ' = '
-     + col(fr('{{n}}', '{{d}}')) + '$$'],
-    ['n<d'])
-
 SPECS_CHIFFRES = [
     spec('trois huitièmes : 3/8', 0, {'d': '8', 'n': '3'}, '\\frac{3}{8}', 'correct'),
     spec('Erreur : trois huitièmes, 8/3', 0, {'d': '8', 'n': '3'}, '\\frac{8}{3}', 'incorrect'),
@@ -217,11 +206,7 @@ SPECS_CHIFFRES = [
     spec('deux quarts : 2/4', 0, {'d': '4', 'n': '2'}, '\\frac{2}{4}', 'correct'),
     spec('deux quarts : 1/2, même valeur', 0, {'d': '4', 'n': '2'}, '\\frac{1}{2}', 'correct'),
     spec('borne : neuf dixièmes, 9/10', 0, {'d': '10', 'n': '9'}, '\\frac{9}{10}', 'correct'),
-    spec('BO : 1/8 + 1/8 + 1/8 = 3/8', 1, {'d': '8', 'n': '3'}, '\\frac{3}{8}', 'correct'),
-    spec('Erreur : 3/24 (dénominateurs ajoutés)', 1, {'d': '8', 'n': '3'}, '\\frac{3}{24}',
-         'incorrect'),
-    spec('Erreur : 1/8 (une seule part)', 1, {'d': '8', 'n': '3'}, '\\frac{1}{8}', 'incorrect'),
-    spec('borne : deux tiers, 2/3', 1, {'d': '3', 'n': '2'}, '\\frac{2}{3}', 'correct'),
+    spec('borne : deux tiers, 2/3', 0, {'d': '3', 'n': '2'}, '\\frac{2}{3}', 'correct'),
 ]
 
 
@@ -418,6 +403,8 @@ UN_MOINS = variation(
     [var('d', LISTE), var('a', '1..{{eval:d-1}}')], fr(ev('d-a'), '{{d}}'),
     COMPLEMENT_CORRECTION)
 
+# Lucie (exemple du BO) : un problème, pas un calcul → retirée du 09 à la relecture du
+# 2026-10-29, gardée pour le lot 4 (problèmes). N'entre dans aucun modèle de ce lot.
 LUCIE = variation(
     'Lucie a colorié {{if:a==1|le|les}} $' + fr('{{a}}', '{{d}}') + '$ d\'une figure en bleu et le reste en'
     ' rouge.\n\nQuelle fraction de la figure est coloriée en rouge ?\n\n$$?$$',
@@ -441,6 +428,10 @@ SPECS_SOUSTRACTION = [
     spec('Erreur : 1 − 3/10, 3/10 recopié', 1, {'d': '10', 'a': '3'}, '\\frac{3}{10}',
          'incorrect'),
     spec('borne : 1 − 1/2 = 1/2', 1, {'d': '2', 'a': '1'}, '\\frac{1}{2}', 'correct'),
+]
+
+# Pour le lot 4 : variationIndex à recaler sur la place de LUCIE dans son modèle.
+SPECS_LUCIE = [
     spec('BO : Lucie, 3/10 bleu, 7/10 rouge', 2, {'d': '10', 'a': '3'}, '\\frac{7}{10}',
          'correct'),
     spec('Erreur : Lucie, la partie bleue (3/10)', 2, {'d': '10', 'a': '3'}, '\\frac{3}{10}',
@@ -459,8 +450,8 @@ MODELES = {
         'Apprivoiser', 'Ecriture', 2, [LIRE_UNITAIRE], SPECS_LIRE_UNITAIRE, 30),
     '03-ecrire-une-fraction': modele(
         'Écrire en chiffres une fraction',
-        'Trois huitièmes → 3/8 ; un huitième plus un huitième plus un huitième → 3/8',
-        'Apprivoiser', 'Ecriture', 3, [EN_CHIFFRES, FOIS_UN], SPECS_CHIFFRES, 30),
+        'Trois huitièmes → 3/8',
+        'Apprivoiser', 'Ecriture', 3, [EN_CHIFFRES], SPECS_CHIFFRES, 30),
     '04-lire-une-fraction': modele(
         'Lire une fraction',
         'Lire 3/8 : trois huitièmes (leurres : « huit tiers », « trois huit », un numérateur'
@@ -484,8 +475,8 @@ MODELES = {
         SPECS_ADDITION),
     '09-soustraire-meme-denominateur': modele(
         'Soustraire des fractions de même dénominateur',
-        '4/5 − 1/5 ; 1 − 3/10 ; Lucie colorie 3/10 en bleu, le reste en rouge (exemples du BO)',
-        'Calculer', 'Addition et Soustraction', 14, [SOUSTRACTION, UN_MOINS, LUCIE],
+        '4/5 − 1/5 ; 1 − 3/10 (exemples du BO)',
+        'Calculer', 'Addition et Soustraction', 14, [SOUSTRACTION, UN_MOINS],
         SPECS_SOUSTRACTION, 60),
 }
 
