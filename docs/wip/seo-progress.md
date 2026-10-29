@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, PR 1 (#1979) en CI, PR 2 écrite._
+_Mis à jour le 2026-10-29, PR 3 ouverte._
 
-- **État** : PR 1 `robots.txt` (#1979) en CI. PR 2 migration `slug` (branche `feat/glossaire-slug`) ouverte, test d'intégration vert en local (rouge sans la migration).
-- **Prochaine action** : PR 2 mergée → `db:migrate` (si `security-auditor` sans bloquant) → `db:types` → PR 3 : pages `/glossaire/[slug]`, liens dans `/glossaire`, sitemap.
-- **En attente de David** : rien (A1 + B1 tranchés le 2026-10-29).
-- **Pièges en cours** : données structurées toujours reportées par David. Base locale en avance sur `main` : migration `slug` appliquée à la main (psql + ligne dans `schema_migrations`).
-- **Worktree / branche** : `../ubumaths-wt-seo` · `feat/glossaire-slug`.
+- **État** : #1979 et #1980 mergées ; migration `slug` appliquée en prod par David (675 adresses, 0 doublon, aucune fausse version). PR 3 (`feat/glossaire-pages`) : pages `/glossaire/<slug>`, liens dans `/glossaire`, sitemap.
+- **Prochaine action** : revue `code-reviewer` + CI verte → merger PR 3. Rien en prod tant que David ne lance pas `deploy:prod`.
+- **En attente de David** : `deploy:prod` quand il veut (robots.txt + pages du glossaire).
+- **Pièges en cours** : les types générés exigent `slug` à l'insertion → `slug: ''` (écrasé par le trigger) dans `admin.ts` et les tests ; un `default` en base l'éviterait (migration à proposer). Données structurées toujours reportées.
+- **Worktree / branche** : `../ubumaths-wt-seo` · `feat/glossaire-pages`.
 
 ## Plan (validé par David le 2026-10-29 : « on commence avec tes recos »)
 
@@ -27,3 +27,4 @@ _Mis à jour le 2026-10-29, PR 1 (#1979) en CI, PR 2 écrite._
 ## Historique
 
 - 2026-10-29 : worktree ouvert, PR 1 écrite. Prod : 625 termes principaux visibles, 0 collision d'adresse.
+- 2026-10-29 : PR 3. Écarts à la phase 0 : les 6 renvois qui ont leur propre définition (« Thalès ») gardent leur page au lieu d'être redirigés (44 renvois nus redirigés) ; la page d'un terme montre tous les niveaux et ne suit plus le filtre de niveau de la liste.

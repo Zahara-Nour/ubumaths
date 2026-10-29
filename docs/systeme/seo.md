@@ -49,8 +49,8 @@ Props : `title`, `description`, `type` (`website` par défaut, `article` pour le
 L'URL canonique est `absoluteUrl(page.url.pathname)` : **le chemin seul**, la query string est
 ignorée (`?depuis=…` ne fait pas une autre page).
 
-Utilisé par 31 pages de `src/routes/(public)/` (accueil, Shtam, chiffrement, outils, pages
-légales, `/a-propos`, `/upsilon`…) et par `src/lib/components/kingdom-tour/AudienceView.svelte`
+Utilisé par 32 pages de `src/routes/(public)/` (accueil, Shtam, chiffrement, outils, pages
+légales, `/a-propos`, `/upsilon`, page d'un terme du glossaire `/glossaire/[slug]`…) et par `src/lib/components/kingdom-tour/AudienceView.svelte`
 (pages `/eleves`, `/parents`, `/professeurs`).
 
 ### `JsonLd.svelte`

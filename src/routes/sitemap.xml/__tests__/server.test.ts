@@ -42,6 +42,11 @@ vi.mock('$lib/server/anonymous-supabase', () => ({
 	})
 }));
 
+// Glossaire : sa lecture a son propre test (sitemap-glossary.test.ts)
+vi.mock('$lib/server/sitemap-glossary', () => ({
+	fetchGlossaryPages: async () => [{ path: '/glossaire/base-puissance', lastmod: '2026-10-11' }]
+}));
+
 const { GET } = await import('../+server');
 
 beforeEach(() => {
@@ -82,6 +87,13 @@ describe('sitemap.xml', () => {
 		const xml = await sitemapAt('2026-10-05T10:00:00Z');
 		expect(xml).not.toContain('/shtam/futur');
 		expect(xml).not.toContain('/shtam/brouillon');
+	});
+
+	it('liste les pages du glossaire, datées de leur dernière modification', async () => {
+		const xml = await sitemapAt('2026-10-29T08:00:00Z');
+		expect(xml).toMatch(
+			/<loc>https:\/\/www\.chiph\.re\/glossaire\/base-puissance<\/loc>\s*<lastmod>2026-10-11<\/lastmod>/
+		);
 	});
 
 	it('ne date pas les pages fixes du jour de la requête', async () => {

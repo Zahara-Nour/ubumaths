@@ -11,6 +11,9 @@
  * (date de dernière modification) portent un `lastmod` : dater les pages fixes
  * du jour de la requête apprend à Google à ignorer ce signal.
  *
+ * Glossaire : une page par terme visible (`/glossaire/<slug>`), datée de la dernière
+ * modification de l'entrée ; les renvois nus, qui redirigent, n'y sont pas.
+ *
  * Exercices : seuls ceux que leur auteur a cochés « Afficher sur Google »
  * (`is_public AND search_indexed`), lus avec un client ANONYME. Une panne de la
  * base sert le plan sans eux, jamais une 500.
@@ -26,6 +29,7 @@ import { allArticles, publishedArticles } from '$lib/server/shtam/articles';
 import { todayIsoInParis } from '$lib/server/shtam/present';
 import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
 import { fetchIndexedExercises } from '$lib/server/sitemap-exercises';
+import { fetchGlossaryPages } from '$lib/server/sitemap-glossary';
 import type { RequestHandler } from './$types';
 
 interface Entry {
@@ -60,9 +64,17 @@ export const GET: RequestHandler = async () => {
 		lastmod: e.lastmod
 	}));
 
+	// Termes du glossaire ; liste vide en cas de panne
+	const glossary: Entry[] = (await fetchGlossaryPages(createAnonymousSupabase())).map((g) => ({
+		path: g.path,
+		priority: 0.5,
+		changefreq: 'monthly',
+		lastmod: g.lastmod
+	}));
+
 	const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...SITEMAP_PAGES, ...articles, ...exercises].map(toXml).join('\n')}
+${[...SITEMAP_PAGES, ...articles, ...glossary, ...exercises].map(toXml).join('\n')}
 </urlset>
 `;
 

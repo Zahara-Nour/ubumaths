@@ -3,24 +3,16 @@
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { GRADES } from '$lib/types/grades';
 	import type { GradeCode } from '$lib/types/grades';
-	import {
-		gradeMetBy,
-		isTermVisibleTo,
-		resolveGradedField,
-		type GradedField,
-		type MathTerm
-	} from '$lib/dictionary/model';
+	import { gradeMetBy, isTermVisibleTo, type MathTerm } from '$lib/dictionary/model';
+	import { pageSlugFor, termKey } from '$lib/dictionary/glossary-page';
 	import { resolve } from '$app/paths';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
-	import * as Dialog from '$lib/components/ui/dialog';
 	import { Search, BookOpen, RotateCcw } from '@lucide/svelte';
-	import { findPrincipal } from '$lib/lexicon/card';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -65,8 +57,6 @@
 	let debounceTimer: ReturnType<typeof setTimeout>;
 	let selectedLevel = $state<string>('all');
 	let selectedTags = $state<string[]>([]);
-	let selectedTerm = $state<MathTerm | null>(null);
-	let showTermDialog = $state(false);
 
 	// ===== Helpers =====
 
@@ -113,30 +103,18 @@
 		selectedTags = [];
 	}
 
-	/**
-	 * « Tous les niveaux » montre tout : aucun niveau ne donne accès à la fois à la
-	 * Terminale spécialité et aux maths expertes (deux branches après la 1ʳᵉ).
-	 */
-	function resolveForLevel(field: GradedField, level: string): string[] {
-		if (level !== 'all') return resolveGradedField(field, level as GradeCode);
-		const all = field.items.map((item) => item.content);
-		return field.mode === 'discriminant' ? all.slice(-1) : all;
-	}
-
 	/** Niveau affiché : celui où le lecteur du filtre rencontre le terme, sinon celui d'origine */
 	function displayedGrade(term: MathTerm): GradeCode {
 		if (selectedLevel === 'all') return term.grade;
 		return gradeMetBy(term, selectedLevel as GradeCode) ?? term.grade;
 	}
 
-	function openTerm(term: MathTerm) {
-		selectedTerm = term;
-		showTermDialog = true;
-	}
-
-	function openTermByName(name: string) {
-		const term = findPrincipal(data.entries, name);
-		if (term) openTerm(term);
+	/** Page du terme : celle du terme cité pour un renvoi nu, sinon la sienne */
+	function termHref(term: MathTerm): string {
+		const slug = pageSlugFor(term, data.entries, data.slugs);
+		return slug
+			? resolve(`/glossaire/${slug}`)
+			: `${resolve('/glossaire')}?q=${encodeURIComponent(term.term)}`;
 	}
 
 	function scrollToLetter(letter: string) {
@@ -321,10 +299,10 @@
 				</div>
 
 				<!-- Terms in this letter group -->
-				{#each terms as term (`${term.term}|${term.sense ?? ''}`)}
-					<button
-						class="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-muted/30"
-						onclick={() => openTerm(term)}
+				{#each terms as term (termKey(term))}
+					<a
+						href={termHref(term)}
+						class="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-foreground no-underline transition-colors hover:bg-muted/30"
 					>
 						<span class="font-medium">{term.term}</span>
 						{#if term.sense}
@@ -342,117 +320,9 @@
 						<span class="ml-auto shrink-0 text-xs text-muted-foreground">
 							{GRADES[displayedGrade(term)].displayName}
 						</span>
-					</button>
+					</a>
 				{/each}
 			{/each}
 		</div>
 	{/if}
 </div>
-
-<!-- Term Detail Dialog -->
-<Dialog.Root bind:open={showTermDialog}>
-	<Dialog.Content class="sm:max-w-md">
-		{#if selectedTerm}
-			{@const definitions = selectedTerm.definitions
-				? resolveForLevel(selectedTerm.definitions, selectedLevel)
-				: []}
-			{@const exemples = selectedTerm.exemples
-				? resolveForLevel(selectedTerm.exemples, selectedLevel)
-				: []}
-
-			{@const derivedFrom = selectedTerm.derivedFrom}
-			<!-- Un renvoi sans définition propre montre celle du terme cité : l'élève lit tout de suite -->
-			{@const target = derivedFrom ? findPrincipal(data.entries, derivedFrom) : undefined}
-			{@const shownDefinitions =
-				definitions.length === 0 && target?.definitions
-					? resolveForLevel(target.definitions, selectedLevel)
-					: definitions}
-			{@const definitionTitle =
-				definitions.length === 0 && target
-					? `Définition de « ${target.term}${target.sense ? ` (${target.sense})` : ''} »`
-					: 'Définition'}
-
-			<Dialog.Header>
-				<Dialog.Title class="text-2xl font-bold">
-					{selectedTerm.term}{#if selectedTerm.sense}<span
-							class="ml-2 text-lg font-normal text-muted-foreground italic"
-							>({selectedTerm.sense})</span
-						>{/if}
-				</Dialog.Title>
-				<Dialog.Description class="sr-only">
-					Définition du terme {selectedTerm.term}
-				</Dialog.Description>
-			</Dialog.Header>
-
-			<div class="flex flex-wrap items-center gap-2 pb-2">
-				<Badge variant="secondary">{GRADES[displayedGrade(selectedTerm)].displayName}</Badge>
-				{#each selectedTerm.tags as tag (tag)}
-					<Badge variant="outline" class="text-xs">{tag}</Badge>
-				{/each}
-			</div>
-
-			<div class="space-y-4 py-4">
-				{#if derivedFrom}
-					<p class="text-muted-foreground">
-						Voir :
-						<button
-							class="font-medium text-primary underline"
-							onclick={() => openTermByName(derivedFrom)}
-						>
-							{derivedFrom}
-						</button>
-					</p>
-				{/if}
-
-				{#if shownDefinitions.length > 0}
-					<div>
-						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">{definitionTitle}</h3>
-						{#each shownDefinitions as def (def)}
-							<div class="text-sm">
-								<InlineMarkdown content={def} />
-							</div>
-						{/each}
-					</div>
-				{/if}
-
-				{#if exemples.length > 0}
-					<div>
-						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">
-							Exemple{exemples.length > 1 ? 's' : ''}
-						</h3>
-						{#each exemples as ex (ex)}
-							<div class="text-sm">
-								<InlineMarkdown content={ex} />
-							</div>
-						{/each}
-					</div>
-				{/if}
-
-				{#if selectedTerm.history}
-					<div>
-						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Histoire</h3>
-						<div class="text-sm">
-							<InlineMarkdown content={selectedTerm.history} />
-						</div>
-					</div>
-				{/if}
-
-				{#if selectedTerm.seeAlso}
-					<div>
-						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Voir aussi</h3>
-						<a href={resolve(selectedTerm.seeAlso.path)} class="text-sm text-primary underline">
-							{selectedTerm.seeAlso.label}
-						</a>
-					</div>
-				{/if}
-
-				{#if selectedTerm.synonyms && selectedTerm.synonyms.length > 0}
-					<div>
-						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Synonymes</h3>
-						<p class="text-sm">{selectedTerm.synonyms.join(', ')}</p>
-					</div>
-				{/if}
-			</div>
-		{/if}
-	</Dialog.Content>
-</Dialog.Root>
