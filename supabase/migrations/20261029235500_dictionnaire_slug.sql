@@ -24,6 +24,7 @@
 --   drop function public.dictionary_entries_set_slug();
 --   alter table public.dictionary_entries drop column slug;
 --   drop function public.dictionary_slugify(text);
+--   (les droits de la fonction partent avec elle)
 
 -- ============================================================================
 -- 1. Règle de calcul
@@ -41,6 +42,10 @@ as $$
 			'œ', 'oe'), 'æ', 'ae'),
 		'[^a-z0-9]+', '-', 'g'))
 $$;
+
+-- Fonction pure, sans lecture de table ; gardée pour authenticated : le trigger
+-- (droits de l'admin) l'appelle.
+revoke execute on function public.dictionary_slugify(text) from public, anon;
 
 comment on function public.dictionary_slugify(text) is
 	'Adresse d''une entrée du dictionnaire : minuscules, sans accents, tirets.';

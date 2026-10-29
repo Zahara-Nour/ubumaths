@@ -152,6 +152,18 @@ describe('Dictionnaire : adresse fixe de chaque entrée', () => {
 		expect(await slugOf(second[0].id)).toBe(`${TAG}-cote-2`);
 	});
 
+	it('une entrée masquée de même adresse compte : la nouvelle, créée par l’admin, reçoit -2', async () => {
+		// La boucle du trigger tourne avec les droits de l'admin : elle voit les entrées masquées
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			`insert into public.dictionary_entries (position, term, grade, hidden)
+			values ((select max(position) + 1 from public.dictionary_entries), $1, '6', true) returning id`,
+			[`${TAG} cachee ancienne`]
+		);
+		expect(await slugOf(rows[0].id)).toBe(`${TAG}-cachee-ancienne`);
+		expect(await slugOf(await create('cachée-ancienne'))).toBe(`${TAG}-cachee-ancienne-2`);
+	});
+
 	it('un visiteur lit l’adresse d’une entrée visible, pas celle d’une entrée masquée', async () => {
 		const visible = await create('visible');
 		const hidden = await create('masquee');
