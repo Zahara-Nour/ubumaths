@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1987._
+_Mis à jour le 2026-10-30, après #1992._
 
-- **État** : lot 3 clos (9/9 publiés). Lot 4 (problèmes, 10 modèles, § 10) : fichiers mergés (#1987), rien en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/ce1-4 --publier` (brouillons en prod) ; relever les `id` ; migration nœud + tag (gabarit du lot 3) et son test ; page à cocher.
-- **En attente de David** : le `create-questions --publier` du lot 4.
-- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes (deux décimales), `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`), pas `type` ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule initiale ; aucun lien de session dans une PR.
+- **État** : lot 4 (problèmes, 10 modèles, § 10) : brouillons en prod (2026-10-29) ; migration nœud + tag `20261030004800` mergée (#1992), **pas jouée** : `db:migrate` refusé (`DbPushMissingRemoteError`), car `20261030002300_questions_3_lot3_rangement_tags` (#1984, session questions-3) est sur `main` et pas en prod.
+- **Prochaine action** : quand 002300 est joué (ou sur go de David pour `--include-all`), `db:migrate` depuis le dépôt principal, vérifier au MCP (10 sur leur nœud, 1 tag chacun, brouillons, `updated_at` inchangé) ; puis page à cocher.
+- **En attente de David** : décider qui joue 002300 (session questions-3, ou `db:migrate --include-all` qui jouerait les deux).
+- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -366,3 +366,4 @@ tag ne change aucune règle.
 - 2026-10-29 : écrit (`lot-ce1-4.py`), `create-questions` en simulation 10/10 (87 specs) ; `question:specs` 200 tirages par variation, verts ; relecture des tirages : « deux gâteaux » → « deux achats », nombre hors formule, « tout le monde tient » pour l'album, monnaie rendue sur 5 € par complément (de 1,95 € à 2 €, puis à 5 €) au lieu de « 5 − 1,95 ». 10 brouillons en base locale ; aperçu admin : prix affichés « 1,10 € », 6,65 juste, corrigé lisible ; case choix oui / non juste.
   \n- 2026-10-29 : #1987 mergée (CI verte) ; brouillons en prod à créer par David.\n
 - 2026-10-29 : 10 brouillons créés en prod par David (`dfc324b1`, `c43bd203`, `23b13821`, `612eeb31`, `93d318d1`, `f9eeeffe`, `bc521c99`, `5e469f6f`, `e4815e7f`, `584dc8b3`), vérifiés au MCP (brouillons, sans nœud ni tag, niveaux voulus). Migration `20261030004800_questions_ce1_lot4_rangement_tags` (max des worktrees + 1 min) et test : rouge sans (5 échecs sur 9), vert 9/9.
+- 2026-10-30 : #1992 mergée (CI verte, `security-auditor` sans finding bloquant) ; `db:migrate` refusé (`DbPushMissingRemoteError` : 002300 du 3e lot 3 pas joué en prod) ; rien d'appliqué (MCP : dernière jouée 004700).
