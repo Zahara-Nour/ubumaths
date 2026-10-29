@@ -5,13 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la publication du lot 1._
+_Mis à jour le 2026-10-29, phase 0 du lot 2 proposée._
 
-- **État** : lot 1 **publié en prod** (5/5, `status = published` relu en base par MCP le 2026-10-29) :
-  93998734, 35f82aad, 3806ee3d, 70449b92, 77ab770d. Lots 0 et 1 terminés.
-- **Prochaine action** : phase 0 du lot 2 (calcul littéral, équations : 3-016 en (a ± b)², 3-054, 3-014,
-  3-015 ; § 4) — comportements en français, attendre la validation.
-- **En attente de David** : rien.
+- **État** : lots 0 et 1 terminés (lot 1 publié en prod, 5/5). Lot 2 (calcul littéral, équations) :
+  phase 0 écrite au § 9 (4 modèles neufs : 3-016 (a ± b)², 3-054, 3-014, 3-015), juge sondé.
+- **Prochaine action** : selon les réponses du § 9.4, écrire `lot-3-2.py` → `scripts/questions/3-lot-2/`.
+- **En attente de David** : les 4 questions du § 9.4.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation, car il lit la prod) refusés
   par le classifieur du mode auto → David les lance avec `!` ; test `forfait-palotin` qui dépasse 5 s en CI
   (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
@@ -270,3 +269,61 @@ modèles publiés de plus, ceux de 4e les perdent. Aucune règle ne change.
   `db:migrate` lancé par David ; MCP : les 7 modèles conformes à l'en-tête de la migration.
 - Page à cocher : https://claude.ai/artifact/RzBxX9RLjAtvkNnTWssq4X (alerte : 77ab770d, bloc choix non dessiné).
 - Relecture (2026-10-29) : 5 verdicts en base, 5 OK, aucun commentaire.
+
+## 9. Lot 2 (calcul littéral, équations) : phase 0 proposée (2026-10-29)
+
+Relevé MCP du jour : 3-054, 3-014, 3-015 sans modèle ; 3-016 couvert par (a + b)(a − b) seul (a6a6c491,
+32cf5766). **La 2de a des modèles proches** : 85f6e96e, 288c2bf0, 1338da34, 6909bfde ((a ± b)², 2-262),
+cf796fab (ax ⩾ b, 2-431), bb3b8e76 (produit nul, 2-267). La session 2de les a corrigés le 2026-10-27 :
+ils restent à elle. Ils ne collent pas à la 3e : réponse en intervalle (« pas un enjeu » en 3e),
+coefficients entiers seulement, pas de mélange des trois identités. Les 4e factorisent par un nombre ou
+une lettre (4-070) ; aucun modèle n'a de facteur commun entre parenthèses.
+
+### 9.1 Modèles neufs (4, un par point)
+
+| Point | Modèle (catégorie, niveau) · sous-notion                                                                                                   | Variations                                                                                                                                                                                                                                                                  | Réponse                                    |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| 3-016 | Développer (a + b)² et (a − b)² (Calcul littéral / Transformation / Identités remarquables, 10) · Calcul littéral > identités remarquables | 1) (x + n)², n de 1 à 9 ; 2) (x − n)² ; 3) (ax + b)², a de 2 à 5, b de 1 à 9 ; 4) (ax − b)² ; 5) l'une des trois identités tirée au hasard ((ax + b)², (ax − b)², (ax − b)(ax + b)) : reconnaître laquelle                                                                  | case, forme développée réduite             |
+| 3-054 | Factoriser avec un facteur commun (Transformation / Factorisation, 11) · Calcul littéral > factorisation                                   | 1) (x + a)(bx + c) + (x + a)(dx + e) ; 2) idem avec − entre les deux produits ; 3) facteur en tête puis en queue : (2x + 1)(x − 3) + (x + 4)(2x + 1) ; 4) facteur au carré : (x + a)² + (x + a)(bx + c) ; 5) facteur seul : (x + a)(bx + c) + (x + a) → (x + a)(bx + c + 1) | case, forme factorisée                     |
+| 3-014 | Résoudre une inéquation ax ⩾ b (Calcul littéral / Inéquations / ax ⩾ b, 1) · Inéquations : premier degré                                   | 1) a > 0, b multiple de a, les quatre sens (3x ⩾ 12) ; 2) a < 0, b multiple de a (−2x < 6 → x > −3) ; 3) a positif ou négatif, borne en fraction non décimale (3x ⩾ 2 → x ⩾ 2/3 ; −7x < 3 → x > −3/7)                                                                       | case « x > 4 » (inégalité, pas intervalle) |
+| 3-015 | Résoudre une équation produit nul (Calcul littéral / Equations / Produit nul, 1) · Équations : produit et quotient > produit nul           | 1) (x + a)(x + b) = 0 ; 2) (ax + b)(cx + d) = 0, solutions entières ou fractions ((2x − 3)(5x + 7)) ; 3) coefficients décimaux ((2,5x − 7)(8x − 9,6) = 0 → {2,8 ; 1,2}) ; 4) x(ax + b) = 0 ; 5) (proposée, § 9.4) factoriser d'abord : (x + 2)(3x − 1) + (x + 2)(x + 4) = 0 | case S = {… ; …} (comme 3-008)             |
+
+Consigne de 3-054 : « Factorise » ; tirages tels que le second facteur n'a pas de diviseur commun entier
+(sinon « le plus possible » attendrait 2(x + 2)(2x + 3)). Second facteur jamais constant.
+
+`testSpecs` d'erreurs typiques : 3-016 → oubli du double produit (x² + 9), double produit sans le 2
+(x² + 3x + 9), signe du double produit en (a − b)², (2x)² écrit 2x² ; 3-054 → signe non distribué au
+second facteur (v2), oubli du 1 (v5), facteur non réduit (x + 2)(3x − 1 + x + 4), forme développée ;
+3-014 → sens non changé pour a < 0, soustraction (x > 9 pour 3x > 12), inégalité large au lieu de
+stricte ; 3-015 → signes inversés, une seule solution, b/a au lieu de −b/a, 0 oublié (v4).
+
+**Le juge, mesuré** (sonde `question:specs`, 2026-10-29) :
+
+- inégalité attendue « x > 4 » : x > 4 juste ; x ⩾ 4, x < 4, x > 9 faux ; 4 < x **mauvaise forme** ;
+  x > 12/3 forme non optimale ; `\ge` accepté. Borne attendue −5/2 : −2,5 est en **mauvaise forme** (et
+  l'inverse). D'où des bornes entières (v1, v2) ou en fraction **non décimale** (v3) : aucune réponse
+  juste ne peut être refusée pour sa forme ;
+- ensemble {2,8 ; 1,2} (`answerKind: 'intervalles'`) : ordre inverse et {14/5 ; 6/5} justes, signes
+  inversés faux. « x = 3 ou x = −5/2 » n'est **pas** compris (jugé faux) : d'où l'ensemble ;
+- factorisée attendue (x + 2)(4x + 3) : ordre inverse juste, forme développée et facteur non réduit en
+  mauvaise forme, (x + 2)(4x + 5) faux ; (x + 3)² attendu x² + 6x + 9 : x² + 3x + 3x + 9 en mauvaise forme.
+
+### 9.2 Rangement
+
+Les 4 sur le nœud de leur sous-notion : identités remarquables (ad32128c), factorisation (2c0359a2),
+Inéquations : premier degré (3a3a3e35, comme cf796fab), produit nul (17987933). Tags 3-016, 3-054, 3-014,
+3-015. Aucun modèle existant déplacé.
+
+### 9.3 Question d'accès
+
+Modèles neufs en brouillon : personne ne lit rien de neuf. Rangement puis publication : les élèves et le
+prof de 3e voient 4 modèles publiés de plus. Aucune règle ne change.
+
+### 9.4 Questions à David
+
+1. Valider les 4 modèles (§ 9.1) : points, variations, catégories, niveaux, réponse en inégalité pour 3-014 ?
+2. Les 6 modèles de 2de restent à la 2de sans tag 3e (recommandé), ou les taguer aussi 3e (niveaux
+   {2, 3}) en plus des modèles neufs ?
+3. 3-015 v5 (factoriser puis produit nul, la suite que cite la borne de 3-054) : dans ce modèle, ou pas ?
+4. La borne de 3-014 cite la droite graduée avec un crochet : ` ```line ` ne trace pas de demi-droite.
+   Le noter comme outil manquant (pour plus tard), sans bloquer le lot ?
