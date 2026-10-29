@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la publication du lot 2._
+_Mis à jour le 2026-10-29, après la phase 0 du lot 3._
 
-- **État** : lot 1 « Calcul » et lot 2 « Relatifs » publiés (8/8 chacun, vérifié au MCP). Lot 2 : 8 verdicts « OK »
-  sur la page à cocher, aucun commentaire.
-- **Prochaine action** : phase 0 du lot 3 (suite des lots A, § 3 / § 5 : fractions et puissances 5-027, 029, 030,
-  032, 033), puis attendre la validation de David. Relevé du 2026-10-29 : 5-029, 5-030 et 5-032 ont désormais
-  **1 modèle chacun** (créés hors de ce chantier : les identifier et les vérifier d'abord) ; 5-027 et 5-033 aucun.
+- **État** : lots 1 et 2 publiés. Lot 3 « Fractions et puissances » (5-027 ×2, 5-033 ×2) validé en phase 0
+  (§ 12) ; 5-029, 5-030, 5-032 étaient déjà couverts par le lot 1 (le bloc précédent se trompait).
+- **Prochaine action** : écrire le lot 3 dans le worktree `ubumaths-wt-questions-5`
+  (`docs/wip/questions/lot-5-fractions-puissances.py` → `scripts/questions/5-fractions-puissances/`), simulation,
+  base locale, PR des fichiers.
 - **En attente de David** : rien.
 - **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
 --mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
   **message de commit** ; le job d'intégration est un run à part (« Nightly Integration Tests ») : l'attendre.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `ubumaths-wt-questions-5` / `feat/questions-5-lot3`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -220,3 +220,22 @@ Page à cocher, 7 verdicts : 5 OK (02, 03, 04, 05, 06), 2 à revoir. Corrections
 - Page à cocher : 8 verdicts « OK », aucun commentaire (compté en base).
 - `publier-lot.ts` en simulation : 8 brouillons passent ; David : `--publier` → 8/8 publiés ; vérifié au MCP
   (`published` pour 3b9d3ec2, fc8fb430, c52836ad, b92b4b51, d5d1f676, 469f1c9d, 0b491d0e, 7f9d7df5). Lot 2 clos.
+
+## 12. Lot 3 « Fractions et puissances » : décisions (David, 2026-10-29, « je te suis »)
+
+| #   | Point | Modèle                                           | Réponse | Catégorie, niveau                                    |
+| --- | ----- | ------------------------------------------------ | ------- | ---------------------------------------------------- |
+| 01  | 5-027 | Problèmes : ajouter ou retrancher des fractions  | case    | Fractions › Problèmes › Additionner et soustraire, 1 |
+| 02  | 5-027 | idem, dénominateurs quelconques                  | case    | idem, 2                                              |
+| 03  | 5-033 | Calculer une expression avec un carré ou un cube | case    | Calcul littéral › Calculs › Avec des puissances, 1   |
+| 04  | 5-033 | idem, valeur décimale                            | case    | idem, 2                                              |
+
+- 5-027 : v1 total (a/n + b/m), v2 ce qui reste d'une quantité (a/n − b/m), v3 le reste d'un tout
+  (1 − (a/n + b/m)). 01 : m = k × n ≤ 12 ; 02 : dénominateurs ≤ 6 quelconques, dénominateur commun ≤ 30 ; total
+  < 1, différence > 0. Fraction non simplifiée acceptée (simplifier = 4e, comme f92d63a6). Erreur typique
+  refusée : numérateurs et dénominateurs additionnés (2/3 + 1/4 → 3/7).
+- 5-033 : 03 x entier (v1 a·x², v2 a·x² − b, v3 (a·x)² − b, v4 x³ + b ; x ≤ 10, cube x ≤ 5, a ≤ 5, résultat
+  positif) ; 04 x décimal à une décimale (0,1-0,9 et 1,1-1,5), carré seulement (v1 x², v2 a·x², v3 x² + b).
+  Erreurs refusées : 3x² ↔ (3x)², 0,3² → 0,6. Catégorie neuve (reco) plutôt que « Par substitution » 5-6, après
+  un niveau 4 de 4e.
+- Accès : brouillons (admin seul) jusqu'à la publication ; la migration de rangement n'ouvre rien.
