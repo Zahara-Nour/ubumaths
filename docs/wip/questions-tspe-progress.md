@@ -307,4 +307,5 @@ une seule migration pour les 14, avant toute publication ; niveaux du tableau ci
 `20261030011000_questions_tspe_niveaux.sql` (patron du CE1 lot 3), test
 `tests/integration/questions-tspe-niveaux.test.ts` : 7/7 vert, **rouge** sans l'`update` des niveaux (« lot
 incohérent : niveaux 0/14 ») et sans le fichier. Les autres thèmes s'exporteront de la base après la migration
-(niveaux à jour).
+(niveaux à jour). `security-auditor` (2026-10-30) : aucun finding bloquant (14 id, niveaux et rollback recoupés
+avec la prod ; note : après `db:migrate`, vérifier que le trigger `update_question_templates_updated_at` est actif).
