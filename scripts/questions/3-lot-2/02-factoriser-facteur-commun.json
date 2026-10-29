@@ -1,0 +1,408 @@
+{
+	"title": "Factoriser avec un facteur commun",
+	"description": "Factoriser quand le facteur commun est une expression entre parenthèses : (x + 2)(3x − 1) + (x + 2)(x + 4), avec un −, facteur en tête puis en queue, facteur au carré, facteur seul (le 1 caché)",
+	"grades": ["3"],
+	"theme": "Calcul littéral",
+	"domain": "Transformation",
+	"subdomain": "Factorisation",
+	"level": 11,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Factorise :\n\n$$({{eval:x+(a)}})({{eval:(b)*x+(c)}})+({{eval:x+(a)}})({{eval:(d)*x+(f)}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "f",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["c+f != 0", "gcd(b+d, abs(c+f)) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:x+(a)}})({{eval:(b+d)*x+(c+f)}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Facteur commun** : $k \\times A + k \\times B = k \\times (A + B)$ et $k \\times A - k \\times B = k \\times (A - B)$. Ici, le facteur commun est $\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}$.",
+					"$$\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(b)*x+(c)}})+\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(d)*x+(f)}}) = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}\\left[({{eval:(b)*x+(c)}})+({{eval:(d)*x+(f)}})\\right]$$",
+					"On réduit le second facteur : $({{eval:(b)*x+(c)}})+({{eval:(d)*x+(f)}}) = {{eval:(b+d)*x+(c+f)}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Factorise :\n\n$$({{eval:x+(a)}})({{eval:(b)*x+(c)}})-({{eval:x+(a)}})({{eval:(d)*x+(f)}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "f",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["b > d", "c-f != 0", "gcd(b-d, abs(c-f)) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:x+(a)}})({{eval:(b-d)*x+(c-f)}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Facteur commun** : $k \\times A + k \\times B = k \\times (A + B)$ et $k \\times A - k \\times B = k \\times (A - B)$. Ici, le facteur commun est $\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}$.",
+					"$$\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(b)*x+(c)}})-\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(d)*x+(f)}}) = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}\\left[({{eval:(b)*x+(c)}})-({{eval:(d)*x+(f)}})\\right]$$",
+					"Le signe $-$ devant la parenthèse change **tous** ses signes : $({{eval:(b)*x+(c)}})-({{eval:(d)*x+(f)}}) = {{eval:(b)*x+(c)}}{{eval:-(d)*x-(f)}} = {{eval:(b-d)*x+(c-f)}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Factorise :\n\n$$({{eval:(a)*x+(b)}})({{eval:(c)*x+(d)}})+({{eval:(f)*x+(g)}})({{eval:(a)*x+(b)}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "f",
+					"expression": "1..4"
+				},
+				{
+					"name": "g",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": [
+				"gcd(a, abs(b)) == 1",
+				"d+g != 0",
+				"gcd(c+f, abs(d+g)) == 1",
+				"c+f != a || d+g != b"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:(a)*x+(b)}})({{eval:(c+f)*x+(d+g)}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Facteur commun** : $k \\times A + k \\times B = k \\times (A + B)$ et $k \\times A - k \\times B = k \\times (A - B)$. Le facteur commun $\\textcolor{{{color:primary.0}}}{({{eval:(a)*x+(b)}})}$ est placé en tête dans le premier produit, en queue dans le second : l'ordre des facteurs ne compte pas.",
+					"$$\\textcolor{{{color:primary.0}}}{({{eval:(a)*x+(b)}})}({{eval:(c)*x+(d)}})+({{eval:(f)*x+(g)}})\\textcolor{{{color:primary.0}}}{({{eval:(a)*x+(b)}})} = \\textcolor{{{color:primary.0}}}{({{eval:(a)*x+(b)}})}\\left[({{eval:(c)*x+(d)}})+({{eval:(f)*x+(g)}})\\right] = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Factorise :\n\n$$({{eval:x+(a)}})^2+({{eval:x+(a)}})({{eval:(b)*x+(c)}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a+c != 0", "gcd(b+1, abs(a+c)) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:x+(a)}})({{eval:(b+1)*x+(a+c)}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Facteur commun** : $k \\times A + k \\times B = k \\times (A + B)$ et $k \\times A - k \\times B = k \\times (A - B)$. Un carré est un produit : $({{eval:x+(a)}})^2 = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:x+(a)}})$.",
+					"$$\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:x+(a)}})+\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(b)*x+(c)}}) = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}\\left[({{eval:x+(a)}})+({{eval:(b)*x+(c)}})\\right] = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Factorise :\n\n$$({{eval:x+(a)}})({{eval:(b)*x+(c)}})+({{eval:x+(a)}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["c+1 != 0", "gcd(b, abs(c+1)) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:x+(a)}})({{eval:(b)*x+(c+1)}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Facteur commun** : $k \\times A + k \\times B = k \\times (A + B)$ et $k \\times A - k \\times B = k \\times (A - B)$. Le second terme est le facteur commun **tout seul** : $({{eval:x+(a)}}) = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})} \\times 1$.",
+					"$$\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(b)*x+(c)}})+\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})} \\times 1 = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}\\left[({{eval:(b)*x+(c)}})+1\\right] = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(x + 2)(4x + 3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-1",
+				"d": "1",
+				"f": "4"
+			},
+			"answers": ["(x+2)(4x+3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Ordre inverse (4x + 3)(x + 2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-1",
+				"d": "1",
+				"f": "4"
+			},
+			"answers": ["(4x+3)(x+2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (x + 2)(4x + 5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-1",
+				"d": "1",
+				"f": "4"
+			},
+			"answers": ["(x+2)(4x+5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Facteur non réduit",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-1",
+				"d": "1",
+				"f": "4"
+			},
+			"answers": ["(x+2)(3x-1+x+4)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Forme développée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-1",
+				"d": "1",
+				"f": "4"
+			},
+			"answers": ["4x^2+11x+6"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "(x + 2)(2x − 5)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-1",
+				"d": "1",
+				"f": "4"
+			},
+			"answers": ["(x+2)(2x-5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe du − non distribué (x + 2)(2x + 3)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-1",
+				"d": "1",
+				"f": "4"
+			},
+			"answers": ["(x+2)(2x+3)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2x + 1)(3x + 1)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "-3",
+				"f": "2",
+				"g": "4"
+			},
+			"answers": ["(2x+1)(3x+1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (2x + 1)(3x − 7)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "-3",
+				"f": "2",
+				"g": "4"
+			},
+			"answers": ["(2x+1)(3x-7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x + 3)(3x + 2)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "-1"
+			},
+			"answers": ["(x+3)(3x+2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (x + 3) du carré oublié (x + 3)(2x − 1)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "-1"
+			},
+			"answers": ["(x+3)(2x-1)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x − 4)(3x + 2)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-4",
+				"b": "3",
+				"c": "1"
+			},
+			"answers": ["(x-4)(3x+2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le 1 oublié (x − 4)(3x + 1)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-4",
+				"b": "3",
+				"c": "1"
+			},
+			"answers": ["(x-4)(3x+1)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
