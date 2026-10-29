@@ -1,0 +1,188 @@
+{
+	"title": "Calculer une expression avec un carré ou un cube",
+	"description": "Calculer la valeur d'une expression littérale avec un carré pour une valeur décimale de x (un chiffre après la virgule) : x² pour x = 0,3 ; 4x² pour x = 1,2 ; x² + 5 pour x = 0,7",
+	"grades": ["5"],
+	"theme": "Calcul littéral",
+	"domain": "Calculs",
+	"subdomain": "Avec des puissances",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule $A$ pour $x = {{x}}$.\n\n$$A = x^2$$\n\n$$A = ?$$",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "1..15"
+				},
+				{
+					"name": "x",
+					"expression": "eval:X/10;d"
+				}
+			],
+			"conditions": ["X!=10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:X*X/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Remplacer.** On remplace $x$ par sa valeur, puis on calcule en respectant les priorités : d'abord les puissances, puis les multiplications, enfin les additions et les soustractions.",
+					"$$A = \\textcolor{{{color:primary.1}}}{{{x}}^2} = {{x}} \\times {{x}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Un nombre à un chiffre après la virgule, multiplié par lui-même, en a deux."
+				]
+			}
+		},
+		{
+			"statement": "Calcule $A$ pour $x = {{x}}$.\n\n$$A = {{a}}x^2$$\n\n$$A = ?$$",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "1..15"
+				},
+				{
+					"name": "x",
+					"expression": "eval:X/10;d"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["X!=10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*X*X/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Remplacer.** On remplace $x$ par sa valeur, puis on calcule en respectant les priorités : d'abord les puissances, puis les multiplications, enfin les additions et les soustractions.",
+					"${{a}}x^2$ signifie ${{a}} \\times x^2$ : le carré porte seulement sur $x$.",
+					"$$A = {{a}} \\times \\textcolor{{{color:primary.1}}}{{{x}}^2} = {{a}} \\times {{eval:X*X/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule $A$ pour $x = {{x}}$.\n\n$$A = x^2 + {{b}}$$\n\n$$A = ?$$",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "1..15"
+				},
+				{
+					"name": "x",
+					"expression": "eval:X/10;d"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["X!=10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:X*X/100+b;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Remplacer.** On remplace $x$ par sa valeur, puis on calcule en respectant les priorités : d'abord les puissances, puis les multiplications, enfin les additions et les soustractions.",
+					"$$A = \\textcolor{{{color:primary.1}}}{{{x}}^2} + {{b}} = {{x}} \\times {{x}} + {{b}} = {{eval:X*X/100;d}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² pour x = 0,3 : 0,09",
+			"variationIndex": 0,
+			"variables": {
+				"X": "3",
+				"x": "0.3"
+			},
+			"answers": ["0,09"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,9 (virgule mal placée)",
+			"variationIndex": 0,
+			"variables": {
+				"X": "3",
+				"x": "0.3"
+			},
+			"answers": ["0,9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,6 (x² lu 2x)",
+			"variationIndex": 0,
+			"variables": {
+				"X": "3",
+				"x": "0.3"
+			},
+			"answers": ["0,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4x² pour x = 1,2 : 5,76",
+			"variationIndex": 1,
+			"variables": {
+				"X": "12",
+				"x": "1.2",
+				"a": "4"
+			},
+			"answers": ["5,76"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 23,04 (lu (4x)²)",
+			"variationIndex": 1,
+			"variables": {
+				"X": "12",
+				"x": "1.2",
+				"a": "4"
+			},
+			"answers": ["23,04"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² + 5 pour x = 0,7 : 5,49",
+			"variationIndex": 2,
+			"variables": {
+				"X": "7",
+				"x": "0.7",
+				"b": "5"
+			},
+			"answers": ["5,49"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6,4 (x² lu 2x)",
+			"variationIndex": 2,
+			"variables": {
+				"X": "7",
+				"x": "0.7",
+				"b": "5"
+			},
+			"answers": ["6,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

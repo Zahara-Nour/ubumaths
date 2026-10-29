@@ -9,9 +9,8 @@ _Mis à jour le 2026-10-29, après la phase 0 du lot 3._
 
 - **État** : lots 1 et 2 publiés. Lot 3 « Fractions et puissances » (5-027 ×2, 5-033 ×2) validé en phase 0
   (§ 12) ; 5-029, 5-030, 5-032 étaient déjà couverts par le lot 1 (le bloc précédent se trompait).
-- **Prochaine action** : écrire le lot 3 dans le worktree `ubumaths-wt-questions-5`
-  (`docs/wip/questions/lot-5-fractions-puissances.py` → `scripts/questions/5-fractions-puissances/`), simulation,
-  base locale, PR des fichiers.
+- **Prochaine action** : lot 3 écrit (simulation prod : 4 à créer, 32 specs vertes ; joué en base locale), PR des
+  fichiers à merger, puis David : `create-questions --dir scripts/questions/5-fractions-puissances --publier`.
 - **En attente de David** : rien.
 - **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
 --mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
@@ -239,3 +238,8 @@ Page à cocher, 7 verdicts : 5 OK (02, 03, 04, 05, 06), 2 à revoir. Corrections
   Erreurs refusées : 3x² ↔ (3x)², 0,3² → 0,6. Catégorie neuve (reco) plutôt que « Par substitution » 5-6, après
   un niveau 4 de 4e.
 - Accès : brouillons (admin seul) jusqu'à la publication ; la migration de rangement n'ouvre rien.
+- Script `docs/wip/questions/lot-5-fractions-puissances.py`, fichiers `scripts/questions/5-fractions-puissances/` ;
+  simulation prod : 4 à créer, 32 specs vertes (1/2 et 10/24 acceptés, 3/7, 4/12, (3x)², 0,9 refusés). Plages de
+  5-027 tirées sous le dénominateur (`1..{{eval:n-1}}`) : 3 tirages sur 150 échouaient avec des plages fixes.
+  Base locale : 4 créés, joués dans l'aperçu (énoncés, réponses, corrections) ; corrigé en route : le carré coloré
+  écrit `\textcolor{…}{3}^3` s'affichait « 3 ³ », toute la puissance est colorée.
