@@ -624,3 +624,59 @@ describe('racine simplifiable', () => {
 		).toBe('incorrect');
 	});
 });
+
+describe('ensemble fini écrit sans accolades (validé par David le 2026-10-29)', () => {
+	const HALF = '\\{0{,}5\\}';
+	const PAIR = '\\{-3;3\\}';
+
+	it.each([
+		['1', HALF, '1'],
+		['0{,}5', HALF, '0,5'],
+		['0,5', HALF, '0,5'],
+		['\\frac{1}{2}', HALF, '1/2'],
+		['\\sqrt{2}', PAIR, '√2'],
+		['-3;3', PAIR, '-3 ; 3'],
+		['2;5', PAIR, '2 ; 5'],
+		['x=2', HALF, '2'],
+		['x = -3 ; x = 3', PAIR, '-3 ; 3'],
+		['x=-3\\text{ ou }x=3', PAIR, '-3 ; 3'],
+		['x=-3 ou x=3', PAIR, '-3 ; 3'],
+		['S = 1', HALF, '1']
+	])(
+		'« %s » pour %s : faux, message des accolades avec ses valeurs',
+		(answer, expected, values) => {
+			expect(judgeIntervalAnswer(answer, expected)).toEqual({
+				status: 'incorrect',
+				feedback: INTERVAL_FEEDBACK.missingBraces(values)
+			});
+		}
+	);
+
+	it('même avec les bonnes valeurs, la réponse est fausse', () => {
+		expect(judgeIntervalAnswer('-3;3', PAIR).status).toBe('incorrect');
+	});
+
+	it.each([
+		['1', ']0;2]'],
+		['1', '\\varnothing'],
+		['1', '\\mathbb{R}'],
+		['x=2', ']-\\infty;2]'],
+		['-\\infty', '\\{0{,}5\\}'],
+		['+\\infty', '\\{-3;3\\}']
+	])(
+		'attendu intervalle, ∅ ou ℝ, ou réponse infinie : « %s » reste illisible',
+		(answer, expected) => {
+			expect(judgeIntervalAnswer(answer, expected).feedback).toBe(INTERVAL_FEEDBACK.unreadable);
+		}
+	);
+
+	it('un texte qui n’est pas fait de nombres reste illisible', () => {
+		expect(judgeIntervalAnswer('bonjour', HALF).feedback).toBe(INTERVAL_FEEDBACK.unreadable);
+	});
+
+	it('message', () => {
+		expect(INTERVAL_FEEDBACK.missingBraces('-3 ; 3')).toBe(
+			"Un ensemble de solutions s'écrit entre accolades : {-3 ; 3}."
+		);
+	});
+});

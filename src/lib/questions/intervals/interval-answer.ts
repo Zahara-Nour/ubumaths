@@ -73,6 +73,8 @@ export const INTERVAL_FEEDBACK = {
 	boundsOrder: "Écris les bornes dans l'ordre croissant : la plus petite à gauche.",
 	notASet: "Écris un ensemble (un intervalle ou une réunion d'intervalles), pas une inégalité.",
 	unreadable: "Réponse illisible : écris un intervalle comme ]2 ; 5] ou une réunion d'intervalles.",
+	missingBraces: (values: string) =>
+		`Un ensemble de solutions s'écrit entre accolades : {${values}}.`,
 	singleton: (value: string) =>
 		`Un ensemble réduit à un seul nombre s'écrit entre accolades : {${value}} plutôt que [${value} ; ${value}].`,
 	tooComplex: 'Réponse illisible : une borne est trop longue ou trop compliquée. Simplifie-la.',
@@ -99,6 +101,12 @@ const MAX_ANSWER_LENGTH = 400;
 
 /** « S = » (ou « \mathcal{S} = ») en tête de la réponse : ignoré */
 const LEADING_SET_NAME = /^\s*(?:S|\\mathcal\s*\{\s*S\s*\}|\\mathscr\s*\{\s*S\s*\})\s*=\s*/;
+
+/** Séparateurs de valeurs écrites sans accolades : « ; » ou « ou » (`-3 ; 3`, `x = -3 ou x = 3`) */
+const BARE_VALUES_SEPARATOR = /;|\\text\s*\{\s*ou\s*\}|\bou\b/;
+
+/** « x = » devant une valeur écrite sans accolades */
+const LEADING_EQUALS = /^\s*[a-z]\s*=\s*/;
 
 /** Erreurs de `detectDomainMistakes` dont le message vaut pour une inéquation */
 const BOUNDARY_MISTAKES = new Set([
@@ -158,6 +166,22 @@ function isolatedPoints(domain: Domain): string[] | undefined {
 			: undefined
 	);
 	return points.every((point) => point !== undefined) ? (points as string[]) : undefined;
+}
+
+/**
+ * Valeurs d'un ensemble fini écrit sans accolades (`1`, `-3 ; 3`, `x = 2`,
+ * `x = -3 ou x = 3`), pour le message ; undefined si la réponse n'en est pas un.
+ */
+function bareValues(written: string): string[] | undefined {
+	// Un infini n'est pas une solution : ne pas souffler {-∞}
+	if (/\\infty|∞/.test(written)) return undefined;
+	const pieces = written
+		.split(BARE_VALUES_SEPARATOR)
+		.map((piece) => piece.replace(LEADING_EQUALS, '').trim());
+	if (pieces.some((piece) => piece === '')) return undefined;
+	const parsed = parseStudentDomainPieces(`\\{${pieces.join(';')}\\}`);
+	if (!parsed.success || parsed.format === 'condition') return undefined;
+	return isolatedPoints(parsed.domain);
 }
 
 /**
@@ -393,8 +417,12 @@ function judgeWritten(
 	if (!target.ok) return incorrect();
 
 	const parsed = parseStudentDomainPieces(written);
-	if (!parsed.success) return incorrect(INTERVAL_FEEDBACK.unreadable);
-	if (parsed.format === 'condition') return incorrect(INTERVAL_FEEDBACK.notASet);
+	if (!parsed.success || parsed.format === 'condition') {
+		// Attendu = ensemble fini, réponse = ses nombres sans accolades : le dire
+		const values = isolatedPoints(target.domain) && bareValues(written);
+		if (values) return incorrect(INTERVAL_FEEDBACK.missingBraces(values.join(' ; ')));
+		return incorrect(parsed.success ? INTERVAL_FEEDBACK.notASet : INTERVAL_FEEDBACK.unreadable);
+	}
 
 	const invalid = parsed.pieces.map(pieceError).find((error) => error !== undefined);
 	if (invalid) return incorrect(invalid);
