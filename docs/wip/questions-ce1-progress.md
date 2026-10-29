@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, relecture du lot 3 tranchée (PR à merger)._
+_Mis à jour le 2026-10-29, après #1953._
 
-- **État** : lot 3 (fractions) en brouillon en prod, rangé et tagué (#1939). Réponses de David à la relecture : 03 perd la variation 2 (« un huitième plus un huitième… », doublon de 08 variation 3) ; 09 perd la variation 3 (Lucie), gardée dans `lot-ce1-3.py` (`LUCIE`, `SPECS_LUCIE`) pour le lot 4 problèmes. Branche `feat/questions-ce1-lot3-relecture` : simulation prod, seuls 03 et 09 « CONTENU DIFFÉRENT ».
-- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/ce1-3 --publier --mettre-a-jour` ; remettre à zéro les verdicts de 03 et 09 ; relecture de ces deux ; puis `publier-lot`.
+- **État** : lot 3 (fractions) en brouillon en prod, rangé et tagué (#1939). Réponses de David à la relecture : 03 perd la variation 2 (« un huitième plus un huitième… », doublon de 08 variation 3) ; 09 perd la variation 3 (Lucie), gardée dans `lot-ce1-3.py` (`LUCIE`, `SPECS_LUCIE`) pour le lot 4 problèmes. #1953 (mergée) : simulation prod, seuls 03 et 09 « CONTENU DIFFÉRENT ».
+- **Prochaine action** : #1953 mergée → David lance `create-questions --dir scripts/questions/ce1-3 --publier --mettre-a-jour` ; remettre à zéro les verdicts de 03 et 09 ; relecture de ces deux ; puis `publier-lot`.
 - **En attente de David** : le `--publier --mettre-a-jour` en prod, après le merge.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 (« 1 demi », « le 1/4 ») ; `reducedFractions: off` (simplification = CE2) ; worktree neuf : `svelte-kit sync` avant `tsx` (`$lib`) ; ports 5176-5178 pris (5179 pour ce lot) ; commitlint : sujet sans majuscule initiale ; le générateur Python écrit des JSON non formatés → `prettier --write` après.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `feat/questions-ce1-lot3-relecture`. Page à cocher : https://claude.ai/artifact/PZb69g4xfAJUS8cm5q5JsS.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `feat/questions-ce1-lot3-relecture` mergée : en partir d'une neuve sur `origin/main`). Page à cocher : https://claude.ai/artifact/PZb69g4xfAJUS8cm5q5JsS.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
