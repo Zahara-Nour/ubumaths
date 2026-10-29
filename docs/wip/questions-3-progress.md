@@ -138,6 +138,8 @@ David a répondu « je te suis » aux recommandations faites sur les cinq questi
 4. Boîte à moustaches : chantier à part après le lot de statistiques en texte (affichage, puis
    construire). Solides : un chantier commun avec la 6e, après les lots A et B.
 5. 3-032 (tableur) : classe A, case « choix » entre formules (`=MOYENNE(B2:B9)`…), dans le lot 4.
+   **Note de la session 4e (2026-10-29)** : 3-032 est couvert par le modèle tableur du lot 3 de la 4e (grades 4
+   et 3, tagué 4-045 et 3-032, décision de David) ; ne pas l'écrire au lot 4. Voir `questions-4-progress.md` § 16.
 
 ### 6.2 Lot 0 (corrections) : phase 0 validée (« je te suis »)
 

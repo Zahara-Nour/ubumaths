@@ -11,7 +11,7 @@ Décisions :
 2. Nouvelle catégorie « Fractions · Apprivoiser · Ecriture » (niveaux 1 à 5) ; « Comparer » 9 et
    10, « Addition et Soustraction » 15 et 16 (6, 7, 13 et 14 au départ ; 6, 7 et 13 pris le 2026-10-29 par
    des modèles 6e publiés, la soustraction suit l'addition : migration
-   20261029213000_questions_ce1_lot3_niveaux).
+   20261029233100_questions_ce1_lot3_niveaux).
 3. La simplification est du CE2 : `reducedFractions` coupé (4/8 juste sans ambre ; 1/2 aussi,
    même valeur) ; une somme qui fait 1 accepte « 1 » et « 5/5 ».
 4. Lire une fraction (02, 04) : case « choix » (bloc ```choix, réponse = indice d'origine) ;
