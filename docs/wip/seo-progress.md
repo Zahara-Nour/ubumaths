@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, PR 3 ouverte._
+_Mis à jour le 2026-10-29, PR 3 (#1990) en CI._
 
-- **État** : #1979 et #1980 mergées ; migration `slug` appliquée en prod par David (675 adresses, 0 doublon, aucune fausse version). PR 3 (`feat/glossaire-pages`) : pages `/glossaire/<slug>`, liens dans `/glossaire`, sitemap.
-- **Prochaine action** : revue `code-reviewer` + CI verte → merger PR 3. Rien en prod tant que David ne lance pas `deploy:prod`.
-- **En attente de David** : `deploy:prod` quand il veut (robots.txt + pages du glossaire).
-- **Pièges en cours** : les types générés exigent `slug` à l'insertion → `slug: ''` (écrasé par le trigger) dans `admin.ts` et les tests ; un `default` en base l'éviterait (migration à proposer). Données structurées toujours reportées.
-- **Worktree / branche** : `../ubumaths-wt-seo` · `feat/glossaire-pages`.
+- **État** : #1979 et #1980 mergées ; migration `slug` en prod. #1990 (pages `/glossaire/<slug>`, liens, sitemap) : revue `code-reviewer` sans bloquant (boucle de 308 hypothétique corrigée : un seul saut, `redirectTargetOf`), CI en cours.
+- **Prochaine action** : CI verte → merger #1990 → mettre à jour ce bloc → `git worktree remove` + `git branch -d`. Ensuite, le chantier seo continue selon David (Search Console, titres des outils…).
+- **En attente de David** : `deploy:prod` quand il veut (robots.txt + pages du glossaire) ; avis sur les 2 écarts à la phase 0 (6 renvois à définition gardent leur page ; page d'un terme sans filtre de niveau) ; `default` en base pour `slug` (évite `slug: ''`), oui ou non.
+- **Pièges en cours** : un nouveau fichier lu par l'intégration doit entrer dans `paths` de `nightly-integration.yml` (`pnpm check:integration-paths`). Données structurées toujours reportées.
+- **Worktree / branche** : `../ubumaths-wt-seo` · `feat/glossaire-pages` ; serveur de test sur 5176.
 
 ## Plan (validé par David le 2026-10-29 : « on commence avec tes recos »)
 
