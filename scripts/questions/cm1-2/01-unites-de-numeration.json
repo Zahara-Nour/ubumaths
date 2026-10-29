@@ -1,0 +1,264 @@
+{
+	"title": "Unités de numération (jusqu'aux centaines de mille)",
+	"description": "Relations entre les unités de numération, des unités aux centaines de mille (3 centaines de mille = 300 milliers ; 35 centaines = 3 milliers et 5 centaines)",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 21,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "${{k}}$ {{if:u==0|unités|{{if:u==1|dizaines|{{if:u==2|centaines|{{if:u==3|milliers|{{if:u==4|dizaines de mille|centaines de mille}}}}}}}}}}, c'est $?$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|centaines de mille}}}}}}}}}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "2..5"
+				},
+				{
+					"name": "w",
+					"expression": "0..4"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u-w"
+				}
+			],
+			"conditions": ["p>=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*10^p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Unités de numération.** D'un rang au rang juste à sa droite, on multiplie par $10$ : $1$ centaine de mille, c'est $10$ dizaines de mille, $1$ dizaine de mille, c'est $10$ milliers…",
+					"Des {{if:u==0|unités|{{if:u==1|dizaines|{{if:u==2|centaines|{{if:u==3|milliers|{{if:u==4|dizaines de mille|centaines de mille}}}}}}}}}} aux {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|centaines de mille}}}}}}}}}}, on descend de ${{p}}$ rang{{if:p>1|s|}} : $1$ {{if:u==0|unité|{{if:u==1|dizaine|{{if:u==2|centaine|{{if:u==3|millier|{{if:u==4|dizaine de mille|centaine de mille}}}}}}}}}}, c'est ${{eval:10^p}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|centaines de mille}}}}}}}}}}.",
+					"${{k}}$ {{if:u==0|unités|{{if:u==1|dizaines|{{if:u==2|centaines|{{if:u==3|milliers|{{if:u==4|dizaines de mille|centaines de mille}}}}}}}}}}, c'est ${{k}} \\times {{eval:10^p}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|centaines de mille}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "${{eval:k*10^p}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|centaines de mille}}}}}}}}}}, c'est $?$ {{if:u==0|unités|{{if:u==1|dizaines|{{if:u==2|centaines|{{if:u==3|milliers|{{if:u==4|dizaines de mille|centaines de mille}}}}}}}}}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..99"
+				},
+				{
+					"name": "u",
+					"expression": "2..5"
+				},
+				{
+					"name": "w",
+					"expression": "0..4"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u-w"
+				}
+			],
+			"conditions": ["p>=1", "k*10^u<=999999", "mod(k,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Unités de numération.** Il faut ${{eval:10^p}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|centaines de mille}}}}}}}}}} pour faire $1$ {{if:u==0|unité|{{if:u==1|dizaine|{{if:u==2|centaine|{{if:u==3|millier|{{if:u==4|dizaine de mille|centaine de mille}}}}}}}}}}.",
+					"On cherche combien de fois ${{eval:10^p}}$ dans ${{eval:k*10^p}}$ : ${{eval:k*10^p}} = \\textcolor{{{color:primary.0}}}{{{solution}}} \\times {{eval:10^p}}$."
+				]
+			}
+		},
+		{
+			"statement": "${{k}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|centaines de mille}}}}}}}}}}, c'est $?$ {{if:w==0|dizaines|{{if:w==1|centaines|{{if:w==2|milliers|{{if:w==3|dizaines de mille|centaines de mille}}}}}}}} et $?$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|centaines de mille}}}}}}}}}}.",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..4"
+				},
+				{
+					"name": "k",
+					"expression": "21..99"
+				}
+			],
+			"conditions": ["mod(k,10)>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(k/10)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:mod(k,10)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$10$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|centaines de mille}}}}}}}}}}, c'est $1$ {{if:w==0|dizaine|{{if:w==1|centaine|{{if:w==2|millier|{{if:w==3|dizaine de mille|centaine de mille}}}}}}}}.",
+					"Dans ${{k}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|centaines de mille}}}}}}}}}}, il y a ${{eval:floor(k/10)}}$ paquets de $10$, et il en reste ${{eval:mod(k,10)}}$ : ${{k}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|centaines de mille}}}}}}}}}}, c'est $\\textcolor{{{color:primary.0}}}{{{eval:floor(k/10)}}}$ {{if:w==0|dizaines|{{if:w==1|centaines|{{if:w==2|milliers|{{if:w==3|dizaines de mille|centaines de mille}}}}}}}} et $\\textcolor{{{color:primary.0}}}{{{eval:mod(k,10)}}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|centaines de mille}}}}}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 centaines de mille = 300 milliers",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"u": "5",
+				"w": "3",
+				"p": "2"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rapport inversé (3)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"u": "5",
+				"w": "3",
+				"p": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un zéro de trop (3 000)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"u": "5",
+				"w": "3",
+				"p": "2"
+			},
+			"answers": ["3\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 dizaines de mille = 7 000 dizaines",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"u": "4",
+				"w": "1",
+				"p": "3"
+			},
+			"answers": ["7\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Sans espaces : forme à améliorer",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"u": "4",
+				"w": "1",
+				"p": "3"
+			},
+			"answers": ["7000"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "400 dizaines = 4 milliers",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"u": "3",
+				"w": "1",
+				"p": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 40",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"u": "3",
+				"w": "1",
+				"p": "2"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 000",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"u": "3",
+				"w": "1",
+				"p": "2"
+			},
+			"answers": ["4\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "35 centaines = 3 milliers et 5 centaines",
+			"variationIndex": 2,
+			"variables": {
+				"w": "2",
+				"k": "35"
+			},
+			"answers": ["3", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres inversés",
+			"variationIndex": 2,
+			"variables": {
+				"w": "2",
+				"k": "35"
+			},
+			"answers": ["5", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 35 et 0",
+			"variationIndex": 2,
+			"variables": {
+				"w": "2",
+				"k": "35"
+			},
+			"answers": ["35", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

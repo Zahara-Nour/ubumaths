@@ -5,17 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 2 écrit (PR #1959)._
+_Mis à jour le 2026-10-29, après #1965 (rangement du lot 2 mergé)._
 
-- **État** : lots 0 et 1 terminés. Lot 2 (calcul littéral, équations) : 4 modèles écrits, specs et
-  tirages verts (§ 9.6), PR #1959 des fichiers en CI.
-- **Prochaine action** : merger #1959 ; puis David lance `create-questions --dir
-scripts/questions/3-lot-2 --publier` (brouillons en prod) ; relever les `id`, migration de rangement.
-- **En attente de David** : le `--publier` après le merge.
+- **État** : lot 2 : 4 brouillons en prod, migration de rangement mergée (#1965), PAS jouée (§ 9.7).
+- **Prochaine action** : quand la session ce1 a renommé sa migration `20261029213000_questions_ce1_lot3_niveaux`,
+  David lance `pnpm db:migrate` ; vérifier au MCP, puis page à cocher, publication.
+- **En attente de David / ce1** : le renommage de la migration ce1, puis `db:migrate`.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation, car il lit la prod) refusés
   par le classifieur du mode auto → David les lance avec `!` ; test `forfait-palotin` qui dépasse 5 s en CI
   (aléatoire, relancer le job) ; § 9 de `couvrir-un-niveau.md`.
-- **Worktree / branche** : `ubumaths-wt-questions-3`, `feat/questions-3-lot-2`.
+- **Worktree / branche** : `ubumaths-wt-questions-3` (branches mergées, à retirer en fin de lot).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -139,6 +138,8 @@ David a répondu « je te suis » aux recommandations faites sur les cinq questi
 4. Boîte à moustaches : chantier à part après le lot de statistiques en texte (affichage, puis
    construire). Solides : un chantier commun avec la 6e, après les lots A et B.
 5. 3-032 (tableur) : classe A, case « choix » entre formules (`=MOYENNE(B2:B9)`…), dans le lot 4.
+   **Note de la session 4e (2026-10-29)** : 3-032 est couvert par le modèle tableur du lot 3 de la 4e (grades 4
+   et 3, tagué 4-045 et 3-032, décision de David) ; ne pas l'écrire au lot 4. Voir `questions-4-progress.md` § 16.
 
 ### 6.2 Lot 0 (corrections) : phase 0 validée (« je te suis »)
 
@@ -346,3 +347,19 @@ prof de 3e voient 4 modèles publiés de plus. Aucune règle ne change.
 - Base locale : 4 brouillons créés (b1e9bc94, 8bf02b12, 1048f256, d4250900). Aperçu admin non joué : la
   session Chrome sur `localhost` n'était pas admin, et s'en déconnecter aurait fermé celle de David
   (cookies partagés entre ports). Énoncés et corrigés relus dans l'aperçu de `question:specs`.
+
+### 9.7 Lot 2 : en prod, rangement (2026-10-29)
+
+- Brouillons créés en prod par David : 18e2afca (Développer (a + b)² et (a − b)²), dcaabf69 (Factoriser avec un
+  facteur commun), 24aff7b0 (Résoudre une inéquation ax ⩾ b), 2ab49a6f (Résoudre une équation produit nul) ;
+  MCP : brouillons [3], sans nœud ni tag.
+- Migration `20261029233000_questions_3_lot2_rangement_tags` (`lot-rangement-3-2.py`, relevé
+  `etat-prod-2026-10-29-3e-lot2/`) : chacun sur le nœud de son point. **Écart au § 9.2** : 24aff7b0 va sur
+  « Inéquations : premier degré > ax + b < c », nœud du point 3-014 (la garde exige le nœud du point ou sa
+  notion ; la notion seule n'est pas acceptée pour un point posé sur une sous-notion).
+- Test `questions-3-lot2-rangement-tags` : 19 verts, rouge corps vidé. Cas « tag ajouté » impossible (le
+  trigger refuse de taguer un modèle sans nœud), remplacé par un commentaire. `security-auditor` : aucun
+  bloquant. #1965 mergée.
+- **`db:migrate` bloqué** : collision d'horodatage `20261029213000` (questions_5_lot3, jouée, et
+  questions_ce1_lot3_niveaux, non jouée) → `db push` refuse. `--include-all` écarté (doublon de version).
+  Session ce1 prévenue (David, 2026-10-29) : renommer sa migration, puis `db:migrate` jouera les deux.

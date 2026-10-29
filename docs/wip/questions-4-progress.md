@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 2 écrit (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-10-29, après la publication du lot 2._
 
-- **État** : lot 1 en prod (rangé, tagué). Lot 2 (proportionnalité et pourcentages, 7 modèles) écrit dans le
-  worktree : 65 specs vertes, 600 tirages par modèle, simulation verte, essai en base locale (§ 13).
-- **Prochaine action** : PR des fichiers du lot 2 → merge → David lance `create-questions --publier` → migration
-  nœud + tag (gabarit `20261029190000`).
-- **En attente de David** : publication des 7 brouillons du lot 1 (après relecture dans l'admin).
+- **État** : lot 1 en prod en brouillon, rangé et tagué ; lot 2 (proportionnalité et pourcentages, 7 modèles)
+  **publié** le 2026-10-29 (page à cocher 7/7 OK, `publier-lot --publier` par David, statut relu au MCP).
+- **Prochaine action** : écrire le lot 3 (statistiques, § 16, validé) dans le worktree.
+- **En attente de David** : publication des 7 brouillons du lot 1 (relecture dans l'admin, ou page à cocher).
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
-  `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit, corps ≤ 100 caractères par ligne
-  (commitlint) ; QCM = case choix ; worktree neuf : `svelte-kit sync` avant `create-questions` (`$lib`).
-- **Worktree / branche** : `ubumaths-wt-questions-4` · `feat/questions-4-lot-2`.
+  `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit ; QCM = case choix ; worktree neuf :
+  `svelte-kit sync` avant `create-questions` (`$lib`) ; `Client Tests` peut tomber sur `wrapDynamicImport` (lanceur) :
+  relancer le job.
+- **Worktree / branche** : aucun (retiré après #1961).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -378,3 +378,84 @@ neuves **Ratios** (Comparer, Égalités de rapports, Partage proportionnel) et *
   (parts ≥ 2) ; gain de tombola plus grand que les mises ; « Ajouter le même nombre » (non) corrigé par produits en
   croix, sans décimaux périodiques.
 - Base locale : 7 brouillons créés ; aperçu admin : case choix (sirops) jouée juste, énoncés avec € et % rendus.
+- #1955 mergée (CI verte) ; David a lancé `create-questions --publier` le 2026-10-29.
+
+## 14. Lot 2 : nœud et tag (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-2-tags`)
+
+- Relevé prod (MCP, 2026-10-29) : les 7 brouillons `[4]`, niveaux du § 12.2, sans nœud ni tag. Identifiants :
+  0c5f6039 (4-059), 21c79ea0 (4-054), 342cff76 (4-053), 4f599434 (4-056), 76f5f143 (4-080), ccb51039 (4-057),
+  d727be44 (4-058). Nœuds des points : 053, 054, 059 → Proportionnalité > Situations de proportionnalité > ratio ;
+  056 → Proportionnalité > Pourcentages > calculs de pourcentages ; 057, 058, 080 → Proportionnalité > Évolutions >
+  variations en pourcentage.
+- Migration `20261029220000` et test repris du lot 1 (`20261029190000`) ; horodatage choisi après celui du lot 3 de
+  la 5e (`20261029213000`). Test rouge sans la migration (3 échecs, suite principale sautée), vert avec (9/9).
+- Question d'accès : § 12.3 (personne ne gagne d'accès), validée avec la phase 0.
+- `security-auditor` : aucun finding (diff avec le lot 1 limité aux données, gardes et rollback justes, aucun accès
+  ouvert ni retiré).
+- #1961 mergée (CI verte au 2e passage : `Client Tests` tombé sur `wrapDynamicImport`, sans lien) ; `db:migrate` le
+  2026-10-29 ; vérifié en prod (MCP) : 7 brouillons sur leur nœud, un tag chacun, `updated_at` inchangé.
+
+## 15. Lot 2 : relecture et publication (2026-10-29)
+
+- Page à cocher : https://claude.ai/artifact/M3S2xH8YPKrLpeKB2yBR5M ; 7 verdicts lus en base, 7 « OK », aucun
+  commentaire.
+- `publier-lot.ts --dir scripts/questions/4-lot-2` : simulation et `--publier` lancées par David (le classifieur du
+  mode auto refuse même la simulation, branchée sur la prod) ; 7/7 publiés, vérifié au MCP (`published`, nœud
+  présent).
+
+## 16. Lot 3 (statistiques) : phase 0 (proposée le 2026-10-29)
+
+### 16.1 Relevé (MCP, 2026-10-29)
+
+- Points du lot, tous sans modèle : 039, 040, 077, 041, 078, 042, 043, 044, 045.
+- **Aucun modèle de statistiques au collège**, à aucun niveau : le thème « Statistiques » n'a que des modèles de CP
+  (Représenter des données) et de Terminale (deux variables). Les catégories du collège sont à ouvrir.
+- Voisins sans modèle, pris par d'autres sessions : 5e 5-080 (moyenne simple), 5-139 (l'interpréter), 5-076,
+  5-134, 5-110/111 (lire un diagramme) ; 3e 3-056 (médiane sur tableau ou diagramme), 3-028/029, 3-032 (tableur,
+  même libellé que 4-045 ; la session 3e prévoit une case choix `=MOYENNE(B2:B9)` dans son lot 4).
+- Outils : tableau markdown, ` ```barres ` (diagramme en barres), ` ```circulaire `, ` ```effectifs ` ; aucun
+  outil neuf. Règle de validation `range` (min, max en expressions) : sert à la médiane d'un effectif pair.
+
+### 16.2 Modèles proposés (9, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                 | Variations                                                                                                                                                                                                                                                                          | Réponse           |
+| ----- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| 039   | Moyenne pondérée (Statistiques / Indicateurs / Moyenne, 3)                 | 1) tableau valeurs / effectifs (4 valeurs, effectif total ≤ 20) ; 2) même série en ` ```barres ` ; 3) données brutes avec répétitions (12 ; 15 ; 12 ; 8 ; 15 ; 12) ; 4) notes à coefficients 1, 2, 3                                                                                | case              |
+| 040   | Déterminer la médiane (Statistiques / Indicateurs / Médiane, 1)            | 1) effectif impair (5 à 9), série rangée ; 2) effectif impair, non rangée ; 3) effectif pair (6 à 10), non rangée : toute valeur entre les deux valeurs centrales acceptée, bornes comprises (règle `range`)                                                                        | case              |
+| 077   | Interpréter la médiane (Statistiques / Indicateurs / Médiane, 2)           | 1) « 25 élèves, note médiane 12 : que peut-on affirmer ? » (au moins la moitié ont 12 ou plus / la moyenne vaut 12 / 12 élèves ont 12 / exactement la moitié ont moins de 12), cas tiré ; 2) « 21 élèves, taille médiane 150 cm : combien au moins mesurent 150 cm ou plus ? » (11) | case choix · case |
+| 041   | Calculer une étendue (Statistiques / Indicateurs / Étendue, 1)             | 1) données brutes, températures relatives (−4 à 15 °C) ; 2) tableau d'effectifs (piège : étendue des effectifs) ; 3) diagramme ` ```barres `                                                                                                                                        | case              |
+| 078   | Interpréter une étendue (Statistiques / Indicateurs / Étendue, 2)          | 1) deux classes, notes en données brutes, même moyenne : « laquelle a les notes les plus dispersées ? » A / B / autant (cas tiré) ; 2) « étendue 9, note la plus basse 7 : la plus haute ? »                                                                                        | case choix · case |
+| 042   | Ajouter une valeur extrême (Statistiques / Problèmes / Valeur extrême, 1)  | série de 6 valeurs, on ajoute une valeur extrême (effectif 7) : 1) nouvelle moyenne ? 2) nouvelle médiane ? 3) « laquelle change le plus : la moyenne / la médiane / aucune des deux » (case choix)                                                                                 | case · case choix |
+| 043   | Problèmes avec les indicateurs (Statistiques / Problèmes / Indicateurs, 1) | 1) moyenne de 4 notes = 12 : quelle 5e note pour avoir 13 ? 2) 24 élèves, moyenne 11,5 : somme des notes ? 3) deux groupes (10 élèves à 12, 20 à 15) : moyenne de la classe ? (14 ; erreur typique 13,5)                                                                            | case              |
+| 044   | Comparer deux séries (Statistiques / Problèmes / Comparer des séries, 1)   | 1) deux joueurs, scores bruts : lequel a la meilleure moyenne ? ; 2) tableau moyenne / médiane / étendue de deux séries : quelle affirmation est vraie ? ; 3) deux séries brutes : laquelle a la plus grande médiane ? (cas tirés)                                                  | case choix        |
+| 045   | Formules du tableur (Statistiques / Tableur / Formules, 1)                 | tableau à lettres de colonne (A, B) et lignes 1 à 8 : 1) formule de la moyenne en B9 (`=MOYENNE(B2:B8)` / `=SOMME(B2:B8)` / `=MOYENNE(B2;B8)` / `=B2+B8/7`) ; 2) médiane (`=MEDIANE`) ; 3) étendue (`=MAX(B2:B8)-MIN(B2:B8)`) ; 4) « `=MOYENNE(B2:B8)` affiche ? »                  | case choix · case |
+
+- Plages : effectif total ≤ 30 (borne 4-040, 4-077) ; valeurs entières ; moyennes tirées pour tomber juste avec au
+  plus deux décimales (tirage refusé sinon), sans arrondi demandé.
+- Corrigé de la médiane d'un effectif pair : « toute valeur entre 7 et 8 convient, par exemple 7,5 ».
+- `testSpecs` d'erreurs typiques : 039 → moyenne des valeurs sans les effectifs ; 040 → valeur du milieu de la
+  série non rangée, moyenne ; 041 → étendue des effectifs, dernière − première valeur ; 042 → moyenne inchangée ;
+  043 → 13 (sans pondérer), 13,5 ; 045 → `=SOMME`.
+- À vérifier à l'écriture : la règle `range` accepte bien une réponse différente de la valeur attendue (sinon
+  effectifs impairs seulement, alternative de la borne) ; des catégories numériques (« 8 = 3 ») dans
+  ` ```barres `.
+
+### 16.3 Question d'accès
+
+Comme les lots 1 et 2 : brouillons, puis migration nœud + tag ; **personne** ne gagne d'accès. À la publication,
+les élèves de 4e voient 9 modèles de plus.
+
+### 16.4 Questions à David
+
+1. Valider les 9 modèles du § 16.2 ?
+2. Catégories neuves : **Statistiques / Indicateurs** (Moyenne, Médiane, Étendue), **Statistiques / Problèmes**
+   (Valeur extrême, Indicateurs, Comparer des séries), **Statistiques / Tableur / Formules** ; Moyenne au niveau 3
+   pour laisser 1-2 à la 5e (5-080, 5-139), Médiane 1-2 pour laisser 3 à la 3e (3-056) ?
+3. 4-045 et 3-032 ont le même libellé : un seul modèle tagué des deux points (la 3e n'en écrit pas), ou chaque
+   niveau le sien ?
+
+**Décisions de David (2026-10-29, « je valide » mes recos)** : les 9 modèles du § 16.2 ; si la règle `range` ne sait
+pas accepter une réponse autre que l'attendue, 4-040 variation 3 retirée (effectifs impairs seulement), en le
+signalant ; catégories Statistiques / Indicateurs (Moyenne 3, Médiane 1-2, Étendue 1-2), Statistiques / Problèmes
+(Valeur extrême, Indicateurs, Comparer des séries), Statistiques / Tableur / Formules ; **un seul modèle tableur,
+grades 4 et 3, tagué 4-045 et 3-032** (note laissée dans le journal de la 3e).

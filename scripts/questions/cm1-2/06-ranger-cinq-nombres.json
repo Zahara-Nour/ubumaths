@@ -1,0 +1,254 @@
+{
+	"title": "Ranger cinq nombres (jusqu'à $999\\,999$)",
+	"description": "Ranger cinq entiers de 5 et 6 chiffres dans l'ordre croissant ou décroissant",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 13,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Range ces nombres du plus petit au plus grand.\n\n```ranger\nsigne: <\n- ${{s1}}$\n- ${{s2}}$\n- ${{s3}}$\n- ${{s4}}$\n- ${{s5}}$\n```",
+			"variables": [
+				{
+					"name": "M",
+					"expression": "10..99"
+				},
+				{
+					"name": "t",
+					"expression": "1..7"
+				},
+				{
+					"name": "u",
+					"expression": "{{eval:t+1}}..8"
+				},
+				{
+					"name": "w",
+					"expression": "0..9999"
+				},
+				{
+					"name": "R1",
+					"expression": "0..99"
+				},
+				{
+					"name": "R2",
+					"expression": "0..99"
+				},
+				{
+					"name": "R3",
+					"expression": "0..99"
+				},
+				{
+					"name": "R4",
+					"expression": "0..99"
+				},
+				{
+					"name": "s1",
+					"expression": "eval:9*10^4+w"
+				},
+				{
+					"name": "s2",
+					"expression": "eval:M*10^4+(t-1)*10^3+9*10^2+R1"
+				},
+				{
+					"name": "s3",
+					"expression": "eval:M*10^4+t*10^3+u*10^2+R2"
+				},
+				{
+					"name": "s4",
+					"expression": "eval:M*10^4+t*10^3+9*10^2+R3"
+				},
+				{
+					"name": "s5",
+					"expression": "eval:M*10^4+u*10^3+t*10^2+R4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte d'abord les chiffres : ${{s1}}$ n'en a que $5$, c'est le plus petit. Les quatre autres ont $6$ chiffres et commencent par ${{M}}$ : on compare leurs chiffres des unités de mille, puis des centaines.",
+					"$${{s1}} < {{s2}} < {{s3}} < {{s4}} < {{s5}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces nombres du plus grand au plus petit.\n\n```ranger\nsigne: >\n- ${{s5}}$\n- ${{s4}}$\n- ${{s3}}$\n- ${{s2}}$\n- ${{s1}}$\n```",
+			"variables": [
+				{
+					"name": "M",
+					"expression": "10..99"
+				},
+				{
+					"name": "t",
+					"expression": "1..7"
+				},
+				{
+					"name": "u",
+					"expression": "{{eval:t+1}}..8"
+				},
+				{
+					"name": "w",
+					"expression": "0..9999"
+				},
+				{
+					"name": "R1",
+					"expression": "0..99"
+				},
+				{
+					"name": "R2",
+					"expression": "0..99"
+				},
+				{
+					"name": "R3",
+					"expression": "0..99"
+				},
+				{
+					"name": "R4",
+					"expression": "0..99"
+				},
+				{
+					"name": "s1",
+					"expression": "eval:9*10^4+w"
+				},
+				{
+					"name": "s2",
+					"expression": "eval:M*10^4+(t-1)*10^3+9*10^2+R1"
+				},
+				{
+					"name": "s3",
+					"expression": "eval:M*10^4+t*10^3+u*10^2+R2"
+				},
+				{
+					"name": "s4",
+					"expression": "eval:M*10^4+t*10^3+9*10^2+R3"
+				},
+				{
+					"name": "s5",
+					"expression": "eval:M*10^4+u*10^3+t*10^2+R4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte d'abord les chiffres : ${{s1}}$ n'en a que $5$, c'est le plus petit. Les quatre autres ont $6$ chiffres et commencent par ${{M}}$ : on compare leurs chiffres des unités de mille, puis des centaines.",
+					"$${{s5}} > {{s4}} > {{s3}} > {{s2}} > {{s1}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "croissant",
+			"variationIndex": 0,
+			"variables": {
+				"M": "34",
+				"t": "2",
+				"u": "5",
+				"w": "8765",
+				"R1": "12",
+				"R2": "56",
+				"R3": "7",
+				"R4": "30"
+			},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 98 765 en dernier (premier chiffre lu)",
+			"variationIndex": 0,
+			"variables": {
+				"M": "34",
+				"t": "2",
+				"u": "5",
+				"w": "8765",
+				"R1": "12",
+				"R2": "56",
+				"R3": "7",
+				"R4": "30"
+			},
+			"answers": ["0", "1", "2", "3", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 342 556 et 341 912 inversés",
+			"variationIndex": 0,
+			"variables": {
+				"M": "34",
+				"t": "2",
+				"u": "5",
+				"w": "8765",
+				"R1": "12",
+				"R2": "56",
+				"R3": "7",
+				"R4": "30"
+			},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre décroissant",
+			"variationIndex": 0,
+			"variables": {
+				"M": "34",
+				"t": "2",
+				"u": "5",
+				"w": "8765",
+				"R1": "12",
+				"R2": "56",
+				"R3": "7",
+				"R4": "30"
+			},
+			"answers": ["3", "2", "1", "0", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissant",
+			"variationIndex": 1,
+			"variables": {
+				"M": "34",
+				"t": "2",
+				"u": "5",
+				"w": "8765",
+				"R1": "12",
+				"R2": "56",
+				"R3": "7",
+				"R4": "30"
+			},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre croissant",
+			"variationIndex": 1,
+			"variables": {
+				"M": "34",
+				"t": "2",
+				"u": "5",
+				"w": "8765",
+				"R1": "12",
+				"R2": "56",
+				"R3": "7",
+				"R4": "30"
+			},
+			"answers": ["3", "2", "1", "0", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

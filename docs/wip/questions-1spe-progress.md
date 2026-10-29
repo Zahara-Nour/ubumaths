@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1934 et la publication du lot 0-exponentielle._
+_Mis à jour le 2026-10-29, après #1969 (lot 0-trigo : fichiers mergés, relecture 6/6 « ok »)._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) et 0-exponentielle (17, § 10) publiés.
-- **Prochaine action** : lot 0-trigo (brouillons du thème, § 3.8), puis produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
-- **En attente de David** : rien.
-- **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation` ni `choix` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
-- **Worktree / branche** : aucun.
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) et 0-exponentielle (17, § 10) publiés ; lot 0-trigo (6, § 11) mergé (#1969), **publication en prod à faire**.
+- **Prochaine action** : vérifier en prod la publication du lot 0-trigo (6 publiés, corrigé de ee4e2ac6 v7 à jour) ; puis lot 0-produit scalaire, puis géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : depuis le dépôt principal, `create-questions --publier --mettre-a-jour` (ee4e2ac6) puis `pnpm exec tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-0-trigo --publier`.
+- **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
+- **Worktree / branche** : aucun (worktree retiré après #1969) ; le prochain lot ouvre `../ubumaths-wt-questions-1spe` sur une branche neuve.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -418,3 +418,53 @@ publiées ; aucun `updated_at` postérieur aux migrations de 08 h 35 UTC, déjà
 
 e572933c : « ok » (David, 2026-10-28, sur reco : rien à corriger, C1 déjà appliqué). Corrections mergées (#1934) ; 17/17
 validés.
+
+## 11. Lot 0-trigo : vérification des brouillons
+
+_2026-10-29. 8 brouillons : les 6 tagués d'un point de la trigonométrie (aad6c700, f7194c9d → 304 ; ee4e2ac6 → 305 ;
+679a2e3e → 307 ; 4b3c1d88 → 409 ; 5a89b292 → 410) et les 2 sans tag que D3 range en 307 (174e202b, dc4b8d08). fece187e et
+afd9b3ff (TSPE-457) restent hors du lot (D3 : `1_SPE` à retirer). Instantané `scripts/questions/1spe-0-trigo/`,
+`question:specs --apercu 3` puis un aperçu par variation (48), tirages forcés sur ee4e2ac6 (60 par variation) et
+174e202b v12 ; sorties dans le scratchpad de la session. Aucun modèle publié sur ces points._
+
+**Mécanique** : 8 / 8 verts, 247 specs, 2 400 tirages réussis.
+
+**Bornes** : réels lus ou ramenés dans ]−π ; π] parmi les valeurs remarquables et leurs associés (±x, π ± x, à 2kπ près),
+conformes à l1s-3 ; conversions degrés ↔ radians, y compris hors valeurs remarquables (π/12, π/5, π/9…), permises par 409. Deux écarts :
+
+- **Q-T1** : 174e202b (13 variations : cos(−x), sin(π − x), cos(π/2 + x), cos(x − 6π)…) et dc4b8d08 (5 variations :
+  « A = cos(π − x) + 3 cos(x + 2π) ») demandent une **simplification littérale**, que l1s-3 exclut en 1re spé (« valeurs
+  numériques seulement, pas de simplification littérale (cos(π − x) + sin(π + x)) »). D3 (tag 1SPE-307) les rangeait
+  d'après leur titre.
+- **Q-T2** : ee4e2ac6 (cos x connaissant sin x) repose sur cos² x + sin² x = 1, que le BO de 1re spé n'écrit pas ; c'est
+  Pythagore dans le cercle de rayon 1 (lien avec le triangle rectangle, 305).
+
+**Constats** :
+
+- **C1** : « on fait 1 tour(s) complet(s) » (174e202b v12, v13) : accord à faire (`{{if:k==1|…|…}}`), si le modèle reste.
+- **C2** : ee4e2ac6 v7 : « √(8/9) = (√4 × √2)/3 » saute √8/3 ; écrire « √(8/9) = √8/3 = (2√2)/3 ». Variation à un seul
+  tirage (sin x = 1/3), laissée telle.
+- Écartés : `\frac{\pi}{ 6 }` (espaces, sans effet au rendu) ; titre de 4b3c1d88 « Convertir des degrés en radians »
+  alors que v2 va des radians aux degrés (changer le titre change la clé de `publier-lot`) ; 5a89b292 à une valeur par
+  variation (voulu : une variation par angle remarquable).
+
+**Q-T3** : la page à cocher ne dessine pas les blocs ` ```trig ` (montrés par leur source) ; ils portent l'énoncé
+d'aad6c700 (le point M à lire) et les corrigés de 6 modèles.
+
+**D17 (David, 2026-10-29, « je te suis » sur les recommandations de Q-T1, Q-T2, Q-T3 et C2)** :
+
+- Q-T1 : l1s-3 prévaut. 174e202b et dc4b8d08 sortent du lot (rangés dans `scripts/questions/1spe-0-trigo-attente/`),
+  restent en brouillon ; le tag 1SPE-307 de D3 est annulé pour eux (aucun point de terminale ne leur va exactement :
+  TSPE-597 et 598 ne couvrent que −x et 2π). C1 sans objet.
+- Q-T2 : ee4e2ac6 gardé (cos² x + sin² x = 1 : Pythagore dans le cercle de rayon 1, point 305).
+- Q-T3 : la page montre les blocs `trig` par leur source ; aad6c700 à relire dans l'aperçu de l'admin.
+- C2 : ee4e2ac6 v7, « √(8/9) = √8/3 = (√4 × √2)/3 = (2√2)/3 » ; 27/27 specs vertes, tirage relu.
+
+**Page à cocher** : https://claude.ai/artifact/NASe9bJes7g6kceK3wMjaF (6 fiches, 30 exemples, 4 alertes « bloc trig non
+dessiné »), collection `verdicts` vide à la publication.
+
+**Rendu KaTeX de la page** : `\,^\circ` (4b3c1d88 v2) restait brut, la sortie MathML de KaTeX refusant un exposant posé
+sur une espace ; le gabarit `scripts/questions/page-a-cocher.html` ajoute `{}` avant le `^` (468 formules rendues, 0
+brute), page republiée à la même adresse.
+
+**Relecture (David, page à cocher, 2026-10-29)** : 6 « ok » sur 6, aucun commentaire.

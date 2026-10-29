@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1942 et la publication du lot 1._
+_Mis à jour le 2026-10-29, lot 2 en cours (avant sa PR)._
 
-- **État** : lot 0 en prod (#1893). **Lot 1 (calcul mental) CLOS** : 9/9 verdicts OK, 9 modèles publiés le 2026-10-29 (`publier-lot.ts --publier`, `published` relu au MCP) ; ×8 et ×5 allégés par #1942.
-- **Prochaine action** : lot 2 (skill `couvrir-niveau`) ; niveaux relus en base avant toute écriture.
+- **État** : lots 0 et 1 en prod et publiés. **Lot 2 (numération des entiers, 10 modèles)** : phase 0 validée (§ 8), écrit, simulation verte, brouillons en base locale.
+- **Prochaine action** : jouer les modèles dans l'aperçu admin local (port 5176), PR des fichiers, puis `create-questions --publier` en prod, migration nœud + tag, page à cocher.
 - **En attente de David** : rien.
-- **Pièges en cours** : la page signale 3 homonymes du CE2 écartés (0c9071d1, e7763a96, 32c0d191) : normal, les bons ids sont pris ; la page montre les FICHIERS, la prod garde l'ancien contenu tant que `--mettre-a-jour` n'est pas joué ; `Doc-inchangée:` va dans un message de COMMIT ; un modèle garde toujours au moins un niveau ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx` ; niveaux réservés par la session CM2 (lot 1) dans Entiers / Apprivoiser : Décomposition 15-17, Ecriture 16, Comparer 8-9, Encadrer 9-10 → notre lot 2 prend les suivants, relus en base ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
-- **Worktree / branche** : aucun (retiré après #1942).
+- **Pièges en cours** : la page à cocher montre les FICHIERS, la prod garde l'ancien contenu tant que `--mettre-a-jour` n'est pas joué ; `Doc-inchangée:` va dans un message de COMMIT ; un modèle garde toujours au moins un niveau ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx` ; niveaux à relire en base juste avant `--publier` (sessions CE2 et CM2 actives) ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot2`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -267,3 +267,44 @@ Mergé (#1913), `db:migrate` joué le 2026-10-28 (seule migration en attente : C
 déjà jouées). MCP : les 9 modèles sur leur sous-notion, un tag chacun, toujours brouillons,
 `updated_at` inchangé (07:03, création). Page à cocher :
 https://claude.ai/artifact/EXp2MvBstG6CaJP1UTnFKn.
+
+## 8. Lot 2 — numération des entiers : phase 0 (validée)
+
+Relevé MCP du 2026-10-29 : les 9 points (003, 004, 005, 007, 009, 141, 142, 012, 013) n'ont aucun
+modèle. Bornes `cycle3.json`, CM1 : entiers jusqu'à 999 999, six rangs, ranger jusqu'à cinq
+nombres, diviseur candidat ≤ 10. Jumeau du lot 1 du CM2 (relu et corrigé par David). Bloc
+
+````ranger en prod (v0.56.0). Niveaux : le CE2 a pris entre-temps Décomposition 18-20, Ecriture
+17-18, Comparer 10-11, Encadrer 11-12 → on prend la suite.
+
+| #   | Point   | Sous-notion            | Modèle                                    | Variations, plages                                                                                                         | Catégorie, niveau                             |
+| --- | ------- | ---------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| 1   | CM1-003 | décomposition          | Unités de numération                      | V1 « 3 centaines de mille, c'est ? milliers » ; V2 l'inverse ; V3 non canonique (35 centaines = 3 milliers et 5 centaines) | Entiers / Apprivoiser / Décomposition, 21     |
+| 2   | CM1-003 | décomposition          | Le nombre de centaines, de milliers…      | V1 nombre de centaines dans 342 320 ; V2 342 320 filtres en cartons de 1 000                                               | Décomposition, 22                             |
+| 3   | CM1-005 | décomposition          | La valeur d'un chiffre                    | V1 chiffre d'un rang ; V2 « le chiffre 7 représente combien d'unités ? » ; V3 case « choix » : le rang ; 5 à 6 chiffres     | Décomposition, 23                             |
+| 4   | CM1-004 | écritures              | Le nombre qui suit, le nombre qui précède | sans passage ; avec passage (suit, précède) ; 9 999 / 99 999 ↔ 10 000 / 100 000                                            | Ecriture, 19                                  |
+| 5   | CM1-007 | ordre                  | Supérieur à, inférieur à, compris entre   | les 4 variations du CE2, 5 à 6 chiffres, toute réponse juste acceptée                                                      | Comparer, 12                                  |
+| 6   | CM1-009 | ordre                  | Ranger cinq nombres                       | ```ranger, croissant / décroissant ; quatre nombres de 6 chiffres + un de 5 commençant par 9                               | Comparer, 13                                  |
+| 7   | CM1-141 | ordre                  | Encadrer un nombre                        | deux cases, à la dizaine, centaine, millier ou dizaine de mille près                                                        | Encadrer, 13                                  |
+| 8   | CM1-142 | ordre                  | Intercaler un nombre                      | écart large ; écart de 2 ; au passage (45 999 < ? < 46 001)                                                                 | Encadrer, 14                                  |
+| 9   | CM1-012 | multiples et diviseurs | Est-ce un multiple ?                      | V1 Oui / Non (« 141 est-il un multiple de 7 ? ») ; V2 le multiple parmi quatre ; 3, 4, 6, 7, 8, 9 ; n ≤ 999                 | Entiers / Diviser / Multiples et diviseurs, 2 |
+| 10  | CM1-013 | multiples et diviseurs | Est-ce un diviseur ?                      | V1 Oui / Non (« 7 est-il un diviseur de 141 ? ») ; V2 le diviseur parmi quatre                                             | Multiples et diviseurs, 3                     |
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 8 bis. Lot 2 : décisions (David, 2026-10-29)
+
+« tes recos ? » puis « go » : le tableau tel quel, CM1-003 en deux modèles ; 012 et 013 avec une
+V2 « un parmi quatre » (au hasard, une chance sur quatre au lieu de deux).
+
+### 8 ter. Lot 2 — écriture (2026-10-29)
+
+- Script `docs/wip/questions/lot-cm1-2.py` → `scripts/questions/cm1-2/` (10 JSON).
+- **Écart à la phase 0** : V2 de « Est-ce un diviseur ? » : les trois autres choix sont d − 1,
+  d + 1, d + 2 (d de 3 à 8, candidats de 2 à 10) ; tirés au hasard parmi 3, 4, 6, 7, 8, 9, ils
+  faisaient échouer 10 % des tirages.
+- `create-questions` en simulation (prod) : 10/10 verts, 79 specs ; `question:specs` 300 tirages
+  par variation : 7 800/7 800 réussis, aperçus relus.
+- Base locale : 10 brouillons créés.
+
+````

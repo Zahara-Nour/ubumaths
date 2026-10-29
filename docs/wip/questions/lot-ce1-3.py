@@ -8,8 +8,10 @@ Décisions :
 
 1. Texte seul ; 096 et 098 (partages dessinés) au lot « outils existants », après vérification
    du bloc `figure`.
-2. Nouvelle catégorie « Fractions · Apprivoiser · Ecriture » (niveaux 1 à 5) ; « Comparer » 6 et
-   7, « Addition et Soustraction » 13 et 14 (places libres relevées en prod le 2026-10-28).
+2. Nouvelle catégorie « Fractions · Apprivoiser · Ecriture » (niveaux 1 à 5) ; « Comparer » 9 et
+   10, « Addition et Soustraction » 15 et 16 (6, 7, 13 et 14 au départ ; 6, 7 et 13 pris le 2026-10-29 par
+   des modèles 6e publiés, la soustraction suit l'addition : migration
+   20261029233100_questions_ce1_lot3_niveaux).
 3. La simplification est du CE2 : `reducedFractions` coupé (4/8 juste sans ambre ; 1/2 aussi,
    même valeur) ; une somme qui fait 1 accepte « 1 » et « 5/5 ».
 4. Lire une fraction (02, 04) : case « choix » (bloc ```choix, réponse = indice d'origine) ;
@@ -463,20 +465,20 @@ MODELES = {
     '06-comparer-meme-denominateur': modele(
         'Comparer des fractions de même dénominateur',
         'Comparer 2/5 et 3/5 : le symbole <, = ou >',
-        'Apprivoiser', 'Comparer', 6, [MEME_DENOMINATEUR], SPECS_MEME_DENOMINATEUR, 30),
+        'Apprivoiser', 'Comparer', 9, [MEME_DENOMINATEUR], SPECS_MEME_DENOMINATEUR, 30),
     '07-comparer-numerateur-un': modele(
         'Comparer des fractions de numérateur 1',
         'Comparer 1/5 et 1/3 : plus on fait de parts, plus chaque part est petite',
-        'Apprivoiser', 'Comparer', 7, [NUMERATEUR_UN], SPECS_NUMERATEUR_UN, 30),
+        'Apprivoiser', 'Comparer', 10, [NUMERATEUR_UN], SPECS_NUMERATEUR_UN, 30),
     '08-additionner-meme-denominateur': modele(
         'Additionner des fractions de même dénominateur',
         '1/5 + 2/5 ; une somme qui fait le tout (2/5 + 3/5 = 1) ; 1/8 + 1/8 + 1/8',
-        'Calculer', 'Addition et Soustraction', 13, [ADDITION, LE_TOUT, TROIS_FOIS],
+        'Calculer', 'Addition et Soustraction', 15, [ADDITION, LE_TOUT, TROIS_FOIS],
         SPECS_ADDITION),
     '09-soustraire-meme-denominateur': modele(
         'Soustraire des fractions de même dénominateur',
         '4/5 − 1/5 ; 1 − 3/10 (exemples du BO)',
-        'Calculer', 'Addition et Soustraction', 14, [SOUSTRACTION, UN_MOINS],
+        'Calculer', 'Addition et Soustraction', 16, [SOUSTRACTION, UN_MOINS],
         SPECS_SOUSTRACTION, 60),
 }
 

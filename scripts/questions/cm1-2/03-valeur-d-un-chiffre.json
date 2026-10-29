@@ -1,0 +1,291 @@
+{
+	"title": "La valeur d'un chiffre (jusqu'à $999\\,999$)",
+	"description": "Chiffre d'un rang, valeur d'un chiffre selon sa position, rang d'un chiffre, dans un entier de 5 à 6 chiffres",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 23,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans le nombre ${{n}}$, quel est le chiffre des {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|unités de mille|{{if:r==4|dizaines de mille|centaines de mille}}}}}}}}}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "5..6"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "cm",
+					"expression": "eval:c-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{cm}}"
+				},
+				{
+					"name": "k",
+					"expression": "eval:floor(r/3)"
+				},
+				{
+					"name": "ch",
+					"expression": "eval:mod(floor(n/10^r),10)"
+				}
+			],
+			"conditions": ["mod(floor(n/10^(r+1)),10)!=ch", "mod(floor(n/10^(r-1)),10)!=ch"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ch}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les rangs.** On découpe le nombre en classes de trois chiffres à partir de la droite : classe des unités, classe des mille. Dans chaque classe, de droite à gauche : unités, dizaines, centaines.",
+					"Le chiffre des {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|unités de mille|{{if:r==4|dizaines de mille|centaines de mille}}}}}}}}}} est dans la classe des {{if:k==0|unités|mille}}. Dans ${{n}}$, c'est $\\textcolor{{{color:primary.0}}}{{{solution}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans le nombre ${{n}}$, le chiffre ${{ch}}$ représente combien d'unités ?\n\nIl représente $?$ unités.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "5..6"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "cm",
+					"expression": "eval:c-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{cm}}"
+				},
+				{
+					"name": "ch",
+					"expression": "eval:mod(floor(n/10^r),10)"
+				}
+			],
+			"conditions": [
+				"ch>=2",
+				"0>=c || 0==r || mod(floor(n/10^0),10)!=ch",
+				"1>=c || 1==r || mod(floor(n/10^1),10)!=ch",
+				"2>=c || 2==r || mod(floor(n/10^2),10)!=ch",
+				"3>=c || 3==r || mod(floor(n/10^3),10)!=ch",
+				"4>=c || 4==r || mod(floor(n/10^4),10)!=ch",
+				"5>=c || 5==r || mod(floor(n/10^5),10)!=ch"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ch*10^r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les rangs.** On découpe le nombre en classes de trois chiffres à partir de la droite : classe des unités, classe des mille. Dans chaque classe, de droite à gauche : unités, dizaines, centaines.",
+					"Dans ${{n}}$, le chiffre ${{ch}}$ est le chiffre des {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|unités de mille|{{if:r==4|dizaines de mille|centaines de mille}}}}}}}}}} : il représente ${{ch}}$ {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|milliers|{{if:r==4|dizaines de mille|centaines de mille}}}}}}}}}}, c'est-à-dire $\\textcolor{{{color:primary.0}}}{{{solution}}}$ unités."
+				]
+			}
+		},
+		{
+			"statement": "Dans le nombre ${{n}}$, le chiffre ${{ch}}$ est le chiffre des :\n\n```choix\n- {{if:a==0|unités|{{if:a==1|dizaines|{{if:a==2|centaines|{{if:a==3|unités de mille|{{if:a==4|dizaines de mille|centaines de mille}}}}}}}}}}\n- {{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|unités de mille|{{if:r==4|dizaines de mille|centaines de mille}}}}}}}}}}\n- {{if:b==0|unités|{{if:b==1|dizaines|{{if:b==2|centaines|{{if:b==3|unités de mille|{{if:b==4|dizaines de mille|centaines de mille}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "5..6"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "cm",
+					"expression": "eval:c-2"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{cm}}"
+				},
+				{
+					"name": "a",
+					"expression": "eval:r-1"
+				},
+				{
+					"name": "b",
+					"expression": "eval:r+1"
+				},
+				{
+					"name": "k",
+					"expression": "eval:floor(r/3)"
+				},
+				{
+					"name": "ch",
+					"expression": "eval:mod(floor(n/10^r),10)"
+				}
+			],
+			"conditions": [
+				"0>=c || 0==r || mod(floor(n/10^0),10)!=ch",
+				"1>=c || 1==r || mod(floor(n/10^1),10)!=ch",
+				"2>=c || 2==r || mod(floor(n/10^2),10)!=ch",
+				"3>=c || 3==r || mod(floor(n/10^3),10)!=ch",
+				"4>=c || 4==r || mod(floor(n/10^4),10)!=ch",
+				"5>=c || 5==r || mod(floor(n/10^5),10)!=ch"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les rangs.** On découpe le nombre en classes de trois chiffres à partir de la droite : classe des unités, classe des mille. Dans chaque classe, de droite à gauche : unités, dizaines, centaines.",
+					"Dans ${{n}}$, le chiffre ${{ch}}$ est dans la classe des {{if:k==0|unités|mille}} : c'est le chiffre des **{{if:r==0|unités|{{if:r==1|dizaines|{{if:r==2|centaines|{{if:r==3|unités de mille|{{if:r==4|dizaines de mille|centaines de mille}}}}}}}}}}**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "845 273, dizaines de mille : 4",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6",
+				"n": "845273",
+				"cm": "5",
+				"r": "4",
+				"k": "1",
+				"ch": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rang voisin (5)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6",
+				"n": "845273",
+				"cm": "5",
+				"r": "4",
+				"k": "1",
+				"ch": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rang compté depuis la gauche (7)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6",
+				"n": "845273",
+				"cm": "5",
+				"r": "4",
+				"k": "1",
+				"ch": "4"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le 7 de 471 305 représente 70 000 unités",
+			"variationIndex": 1,
+			"variables": {
+				"c": "6",
+				"n": "471305",
+				"cm": "5",
+				"r": "4",
+				"ch": "7"
+			},
+			"answers": ["70\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7",
+			"variationIndex": 1,
+			"variables": {
+				"c": "6",
+				"n": "471305",
+				"cm": "5",
+				"r": "4",
+				"ch": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rang voisin (7 000)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "6",
+				"n": "471305",
+				"cm": "5",
+				"r": "4",
+				"ch": "7"
+			},
+			"answers": ["7\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le 7 de 471 305 : dizaines de mille",
+			"variationIndex": 2,
+			"variables": {
+				"c": "6",
+				"n": "471305",
+				"cm": "4",
+				"r": "4",
+				"a": "3",
+				"b": "5",
+				"k": "1",
+				"ch": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : unités de mille",
+			"variationIndex": 2,
+			"variables": {
+				"c": "6",
+				"n": "471305",
+				"cm": "4",
+				"r": "4",
+				"a": "3",
+				"b": "5",
+				"k": "1",
+				"ch": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
