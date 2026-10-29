@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 0-trigo : D17 appliquée, page à cocher publiée (§ 11)._
+_Mis à jour le 2026-10-29, lot 0-trigo : relecture faite (6/6 « ok »), PR des fichiers ouverte (§ 11)._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) et 0-exponentielle (17, § 10) publiés ; lot 0-trigo : 6 brouillons, D17 appliquée, page à cocher publiée (§ 11).
-- **Prochaine action** : lire les verdicts de la page (https://claude.ai/artifact/NASe9bJes7g6kceK3wMjaF), corriger les « à revoir », PR des fichiers, `--mettre-a-jour` (ee4e2ac6) puis publication par David ; ensuite produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3.
-- **En attente de David** : relecture de la page à cocher (aad6c700 dans l'aperçu de l'admin : cercle non dessiné).
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) et 0-exponentielle (17, § 10) publiés ; lot 0-trigo : 6 brouillons relus, 6/6 « ok » (§ 11).
+- **Prochaine action** : PR des fichiers mergée → David lance `create-questions --publier --mettre-a-jour` (ee4e2ac6) puis `publier-lot --dir scripts/questions/1spe-0-trigo --publier` ; vérifier en prod ; ensuite produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : les deux commandes d'écriture en prod ci-dessus.
 - **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `chore/questions-1spe-trigo`.
 
@@ -462,3 +462,9 @@ d'aad6c700 (le point M à lire) et les corrigés de 6 modèles.
 
 **Page à cocher** : https://claude.ai/artifact/NASe9bJes7g6kceK3wMjaF (6 fiches, 30 exemples, 4 alertes « bloc trig non
 dessiné »), collection `verdicts` vide à la publication.
+
+**Rendu KaTeX de la page** : `\,^\circ` (4b3c1d88 v2) restait brut, la sortie MathML de KaTeX refusant un exposant posé
+sur une espace ; le gabarit `scripts/questions/page-a-cocher.html` ajoute `{}` avant le `^` (468 formules rendues, 0
+brute), page republiée à la même adresse.
+
+**Relecture (David, page à cocher, 2026-10-29)** : 6 « ok » sur 6, aucun commentaire.
