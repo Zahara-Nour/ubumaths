@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 0-trigo : relecture faite (6/6 « ok »), PR des fichiers ouverte (§ 11)._
+_Mis à jour le 2026-10-29, après #1969 (lot 0-trigo : fichiers mergés, relecture 6/6 « ok »)._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) et 0-exponentielle (17, § 10) publiés ; lot 0-trigo : 6 brouillons relus, 6/6 « ok » (§ 11).
-- **Prochaine action** : PR des fichiers mergée → David lance `create-questions --publier --mettre-a-jour` (ee4e2ac6) puis `publier-lot --dir scripts/questions/1spe-0-trigo --publier` ; vérifier en prod ; ensuite produit scalaire, géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : les deux commandes d'écriture en prod ci-dessus.
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) et 0-exponentielle (17, § 10) publiés ; lot 0-trigo (6, § 11) mergé (#1969), **publication en prod à faire**.
+- **Prochaine action** : vérifier en prod la publication du lot 0-trigo (6 publiés, corrigé de ee4e2ac6 v7 à jour) ; puis lot 0-produit scalaire, puis géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : depuis le dépôt principal, `create-questions --publier --mettre-a-jour` (ee4e2ac6) puis `pnpm exec tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-0-trigo --publier`.
 - **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `chore/questions-1spe-trigo`.
+- **Worktree / branche** : aucun (worktree retiré après #1969) ; le prochain lot ouvre `../ubumaths-wt-questions-1spe` sur une branche neuve.
 
 ## 1. Relevé (prod, 2026-10-27)
 
