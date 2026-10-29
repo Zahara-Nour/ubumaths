@@ -589,3 +589,11 @@ parmi **1, 2, 5, 10** (axe jusqu'à 10, 20, 50 ou 100 : le plafond de 100 du § 
    note (échelle fausse = tout faux) ?
 5. **Changer d'échelle** : les barres gardent leur valeur, celles qui ne rentrent plus s'effacent
    (reco) ; ou tout s'efface ?
+
+## 25. Décisions échelle (David, 2026-10-29 : « je te suis » sur les recos)
+
+1. Écriture **`axe: à choisir`**, à côté de `axe: 0 à 20, de 2 en 2`.
+2. **1, 2, 5, 10 par graduation, 10 graduations fixes** (axe jusqu'à 100 au plus).
+3. Juste = **la plus petite échelle où toutes les barres rentrent**.
+4. **Une case échelle + une case par barre**, barres jugées sur leur valeur (note partielle).
+5. Changer d'échelle : **les barres gardent leur valeur**, celles qui ne rentrent plus s'effacent.
