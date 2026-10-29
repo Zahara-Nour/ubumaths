@@ -51,7 +51,7 @@
 				"steps": [
 					"Deux vecteurs sont orthogonaux si et seulement si leur produit scalaire est nul. Dans un repère orthonormé, $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}\\cdot\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}=xx'+yy'$.",
 					"$\\vec{u}\\cdot\\vec{v}=m\\times {{b;()}}+{{a;()}}\\times {{c;()}}$, soit ${{b}}m{{eval:a*c;+}}$.",
-					"$\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si ${{b}}m{{eval:a*c;+}}=0$, c'est-à-dire {{if:b==1|$m=\\textcolor{{{color:primary.0}}}{ {{R}} }$|$m=\\dfrac{ {{eval:-a*c}} }{ {{b}} }=\\textcolor{{{color:primary.0}}}{ {{R}} }$}}."
+					"$\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si ${{b}}m{{eval:a*c;+}}=0$, c'est-à-dire $m={{if:gcd(-a*c,b)!=1 && -a*c!=0|{{if:b<0|\\dfrac{ {{eval:-(-a*c)}} }{ {{eval:-(b)}} }|\\dfrac{ {{eval:-a*c}} }{ {{eval:b}} }}}=|}}\\textcolor{{{color:primary.0}}}{ {{R}} }$."
 				]
 			}
 		},
@@ -89,7 +89,7 @@
 				"steps": [
 					"Deux vecteurs sont orthogonaux si et seulement si leur produit scalaire est nul. Dans un repère orthonormé, $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}\\cdot\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}=xx'+yy'$.",
 					"$\\vec{u}\\cdot\\vec{v}=(m{{k;+}})\\times {{b;()}}+{{a;()}}\\times m$, soit ${{b}}m{{eval:k*b;+}}{{a;+}}m$, c'est-à-dire ${{eval:a+b}}m{{eval:k*b;+}}$.",
-					"$\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si ${{eval:a+b}}m{{eval:k*b;+}}=0$, c'est-à-dire {{if:sm==1|$m=\\textcolor{{{color:primary.0}}}{ {{R}} }$|$m=\\dfrac{ {{eval:-k*b}} }{ {{eval:a+b}} }=\\textcolor{{{color:primary.0}}}{ {{R}} }$}}."
+					"$\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si ${{eval:a+b}}m{{eval:k*b;+}}=0$, c'est-à-dire $m={{if:gcd(-k*b,sm)!=1 && -k*b!=0|{{if:sm<0|\\dfrac{ {{eval:-(-k*b)}} }{ {{eval:-(sm)}} }|\\dfrac{ {{eval:-k*b}} }{ {{eval:sm}} }}}=|}}\\textcolor{{{color:primary.0}}}{ {{R}} }$."
 				]
 			}
 		},
@@ -140,7 +140,7 @@
 					"Le triangle $ABC$ est rectangle en $A$ si et seulement si $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=0$.",
 					"$\\overrightarrow{AB}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}m{{if:xa>0|-{{eval:xa}}}}{{if:xa< 0|+{{eval:-xa}}}}\\\\{{eval:yc-ya}}\\end{pmatrix}$.",
 					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=xx'+yy'$, soit ${{p}}{{if:xa==0|m|(m{{eval:-xa;+}})}}{{eval:q*(yc-ya);+}}${{if:xa!=0|, c'est-à-dire ${{p}}m{{eval:-p*xa+q*(yc-ya);+}}$}}.",
-					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=0$ si et seulement si ${{p}}m{{eval:-p*xa+q*(yc-ya);+}}=0$, c'est-à-dire {{if:p==1|$m=\\textcolor{{{color:primary.0}}}{ {{R}} }$|$m=\\dfrac{ {{eval:p*xa-q*(yc-ya)}} }{ {{p}} }=\\textcolor{{{color:primary.0}}}{ {{R}} }$}}."
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=0$ si et seulement si ${{p}}m{{eval:-p*xa+q*(yc-ya);+}}=0$, c'est-à-dire $m={{if:gcd(p*xa-q*(yc-ya),p)!=1 && p*xa-q*(yc-ya)!=0|{{if:p<0|\\dfrac{ {{eval:-(p*xa-q*(yc-ya))}} }{ {{eval:-(p)}} }|\\dfrac{ {{eval:p*xa-q*(yc-ya)}} }{ {{eval:p}} }}}=|}}\\textcolor{{{color:primary.0}}}{ {{R}} }$."
 				]
 			}
 		},

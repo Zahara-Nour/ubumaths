@@ -50,10 +50,10 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{eval:a*a}} }{2}"
+					"expectedAnswer": "{{eval:a*a/2}}"
 				},
 				{
-					"expectedAnswer": "\\frac{ {{eval:-a*a}} }{2}"
+					"expectedAnswer": "{{eval:-a*a/2}}"
 				},
 				{
 					"expectedAnswer": "0"
@@ -70,7 +70,7 @@
 				"steps": [
 					"Les angles d'un triangle équilatéral mesurent $60^\\circ$ : $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=AB\\times AC\\times\\cos(60^\\circ)={{a}}\\times {{a}}\\times\\dfrac{1}{2}=\\textcolor{{{color:primary.0}}}{ {{eval:a*a/2}} }$.",
 					"L'angle $(\\overrightarrow{AB},\\overrightarrow{BC})$ mesure $180^\\circ-60^\\circ=120^\\circ$ : $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}={{a}}\\times {{a}}\\times\\cos(120^\\circ)={{a}}\\times {{a}}\\times\\left(-\\dfrac{1}{2}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:-a*a/2}} }$.",
-					"Autre méthode : $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=-\\overrightarrow{BA}\\cdot\\overrightarrow{BC}$ et $\\overrightarrow{BA}\\cdot\\overrightarrow{BC}=\\dfrac{ {{eval:a*a}} }{2}$.",
+					"Autre méthode : $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=-\\overrightarrow{BA}\\cdot\\overrightarrow{BC}$ et $\\overrightarrow{BA}\\cdot\\overrightarrow{BC}={{eval:a*a/2}}$.",
 					"Dans un triangle équilatéral, la médiane $(AI)$ est aussi la hauteur issue de $A$ : $(AI)\\perp(BC)$, donc $\\overrightarrow{AI}\\cdot\\overrightarrow{BC}=\\textcolor{{{color:primary.0}}}{ 0 }$."
 				]
 			}
@@ -114,10 +114,10 @@
 					"expectedAnswer": "{{eval:a*a}}"
 				},
 				{
-					"expectedAnswer": "\\frac{ {{eval:a*a}} }{2}"
+					"expectedAnswer": "{{eval:a*a/2}}"
 				},
 				{
-					"expectedAnswer": "\\frac{ {{eval:3*a*a}} }{4}"
+					"expectedAnswer": "{{eval:3*a*a/4}}"
 				}
 			],
 			"statement": "$ABCD$ est un carré de côté ${{a}}$ et $I$ est le milieu de $[BC]$.\n\n```figure\nfenetre: -1.2 ; 5.4 ; -1.2 ; 5\ntaille: petite\ndescription: Carré ABCD ; I est le milieu du côté BC.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point(4, 0, etiquette=\"bas-droite\")\nC = point(4, 4, etiquette=\"haut-droite\")\nD = point(0, 4, etiquette=\"haut-gauche\")\nM = milieu(A, B, visible=faux)\npolygone(A, B, C, D)\nangle(A, B, C, marque=\"carre\")\nI = milieu(B, C, etiquette=\"droite\")\nsegment(A, I)\nsegment(D, I)\nmarque_segment(A, B)\nmarque_segment(C, D)\nmarque_segment(D, A)\nmarque_segment(B, I, traits=2)\nmarque_segment(I, C, traits=2)\ntexte(M, \"{{a}}\", dx=0, dy=-0.3, ancre=\"haut\")\n```\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AI}=?$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AI}=?$\n\n$\\overrightarrow{IA}\\cdot\\overrightarrow{ID}=?$",
@@ -133,7 +133,7 @@
 					"Le projeté orthogonal de $I$ sur $(AD)$ est le milieu $K$ de $[AD]$ : $\\overrightarrow{AD}\\cdot\\overrightarrow{AI}=AD\\times AK={{a}}\\times {{eval:a/2}}=\\textcolor{{{color:primary.0}}}{ {{eval:a*a/2}} }$.",
 					"On décompose avec la relation de Chasles : $\\overrightarrow{IA}=\\overrightarrow{IB}+\\overrightarrow{BA}$ et $\\overrightarrow{ID}=\\overrightarrow{IC}+\\overrightarrow{CD}$.",
 					"$\\overrightarrow{IB}\\cdot\\overrightarrow{IC}=-IB^2$ (sens contraires), $\\overrightarrow{BA}\\cdot\\overrightarrow{CD}=BA^2$ (même sens), et les deux autres produits sont nuls (côtés perpendiculaires).",
-					"$\\overrightarrow{IA}\\cdot\\overrightarrow{ID}=-{{if:mod(a,2)==0|{{eval:a/2}}^2|\\left({{eval:a/2}}\\right)^2}}+{{a}}^2=\\textcolor{{{color:primary.0}}}{ {{eval:3*a*a/4}} }$"
+					"$\\overrightarrow{IA}\\cdot\\overrightarrow{ID}=-IB^2+BA^2=-{{eval:a*a/4}}+{{eval:a*a}}=\\textcolor{{{color:primary.0}}}{ {{eval:3*a*a/4}} }$"
 				]
 			}
 		}

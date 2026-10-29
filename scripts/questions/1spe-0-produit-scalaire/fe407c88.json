@@ -202,7 +202,7 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{eval:x1*x2+y1*y2}} }{2}"
+					"expectedAnswer": "{{eval:(x1*x2+y1*y2)/2}}"
 				}
 			],
 			"statement": "Dans une base orthonormée, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{x1}}\\\\{{eval:y1/2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{eval:x2/2}}\\\\{{y2}}\\end{pmatrix}$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=?$",

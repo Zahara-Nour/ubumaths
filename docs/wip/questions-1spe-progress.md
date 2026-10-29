@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29 : lot 0-produit scalaire, constats écrits (§ 12)._
+_Mis à jour le 2026-10-29 : lot 0-produit scalaire, C1-C3 corrigés (D18, § 12)._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10) et 0-trigo (6, § 11) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3). Lot 0-produit scalaire : 15 brouillons, instantané `scripts/questions/1spe-0-produit-scalaire/`, 15/15 verts, constats C1-C3 (§ 12).
-- **Prochaine action** : corriger selon la réponse de David sur C1-C3, page à cocher, puis PR ; ensuite géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : go sur les recommandations C1-C3 (§ 12).
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10) et 0-trigo (6, § 11) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3). Lot 0-produit scalaire : 15 brouillons, instantané `scripts/questions/1spe-0-produit-scalaire/`, 15/15 verts, C1-C3 corrigés (D18).
+- **Prochaine action** : page à cocher (relecture de David), puis PR ; ensuite géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : relecture de la page à cocher.
 - **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-produit-scalaire`.
 
@@ -501,3 +501,12 @@ remarquables, à 2kπ près (4π/3 : l1s-3) ; arccos à la calculatrice pour les
   la fraction irréductible ; corrigé de b73923a1 v2 aligné.
 - C2 : règle de D15 : fraction écrite avec un dénominateur positif seulement si elle se simplifie, sinon résultat direct.
 - C3 : « IA·ID = −IB² + BA² = −1 + 4 = 3 » (carrés calculés).
+  **D18 (David, 2026-10-29, « je valide » sur C1-C3)** :
+
+- C1 : réponses attendues en `{{eval:…}}` (entier ou fraction irréductible) : d787d8c0 (4 variations), b73923a1 v2 et v4,
+  fe407c88 v4 ; corrigé de b73923a1 v2 (« BA·BC = a²/2 ») aligné.
+- C2 : 2bfbf2fc v1 à v3 (même défaut trouvé sur les trois) : `m = {{if:gcd(N,D)!=1 && N!=0|N/D =|}}` résultat, dénominateur
+  positif.
+- C3 : b73923a1 v4, « IA·ID = −IB² + BA² = −a²/4 + a² ».
+
+Specs des 4 modèles vertes (55 specs, 800 tirages) ; 160 tirages relus : aucune fraction réductible ni dénominateur négatif.
