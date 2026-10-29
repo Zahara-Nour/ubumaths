@@ -1,0 +1,182 @@
+{
+	"title": "Quelle équation traduit le problème ?",
+	"description": "Choisir, parmi quatre, l'équation ax = c qui traduit un problème de multiplication à trou (prix d'un cahier, longueur d'un rectangle, masse d'un sachet) ; piège : x = a × c",
+	"grades": ["5"],
+	"theme": "Calcul littéral",
+	"domain": "Equations",
+	"subdomain": "Mettre en équation",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "${{a}}$ cahiers identiques coûtent ${{c}}$ € en tout. On note $x$ le prix d'un cahier, en euros.\n\nQuelle équation traduit ce problème ?\n\n```choix\n- ${{a}}x = {{c}}$\n- $x + {{a}} = {{c}}$\n- $x = {{a}} \\times {{c}}$\n- ${{c}}x = {{a}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..8"
+				},
+				{
+					"name": "P",
+					"expression": "5..40"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*P/10;d"
+				}
+			],
+			"conditions": ["P%10!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mettre en équation.** On écrit, avec $x$, l'égalité que dit l'énoncé : on part de $x$ et on fait les opérations dans l'ordre du texte.",
+					"${{a}}$ cahiers à $x$ € : ${{a}} \\times x$, qui s'écrit ${{a}}x$ ; cela fait ${{c}}$ €.",
+					"L'équation est $\\textcolor{{{color:primary.0}}}{{{a}}x = {{c}}}$. L'équation dit ce qui se passe ; elle n'est pas le calcul qui donne $x$ (ce calcul vient ensuite, pour la résoudre)."
+				]
+			}
+		},
+		{
+			"statement": "Un rectangle a une largeur de ${{a}}$ cm et une aire de ${{c}}$ cm². On note $x$ sa longueur, en cm.\n\nQuelle équation traduit ce problème ?\n\n```choix\n- ${{a}}x = {{c}}$\n- $x + {{a}} = {{c}}$\n- $x = {{a}} \\times {{c}}$\n- ${{c}}x = {{a}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "L",
+					"expression": "3..12"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*L"
+				}
+			],
+			"conditions": ["L>a"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mettre en équation.** On écrit, avec $x$, l'égalité que dit l'énoncé : on part de $x$ et on fait les opérations dans l'ordre du texte.",
+					"L'aire est largeur $\\times$ longueur : ${{a}} \\times x$, qui s'écrit ${{a}}x$ ; elle vaut ${{c}}$ cm².",
+					"L'équation est $\\textcolor{{{color:primary.0}}}{{{a}}x = {{c}}}$. L'équation dit ce qui se passe ; elle n'est pas le calcul qui donne $x$ (ce calcul vient ensuite, pour la résoudre)."
+				]
+			}
+		},
+		{
+			"statement": "Un paquet de ${{a}}$ sachets identiques pèse ${{c}}$ g. On note $x$ la masse d'un sachet, en grammes.\n\nQuelle équation traduit ce problème ?\n\n```choix\n- ${{a}}x = {{c}}$\n- $x + {{a}} = {{c}}$\n- $x = {{a}} \\times {{c}}$\n- ${{c}}x = {{a}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..12"
+				},
+				{
+					"name": "M",
+					"expression": "15..60"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*M"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mettre en équation.** On écrit, avec $x$, l'égalité que dit l'énoncé : on part de $x$ et on fait les opérations dans l'ordre du texte.",
+					"${{a}}$ sachets de $x$ g : ${{a}}x$ g, qui font ${{c}}$ g.",
+					"L'équation est $\\textcolor{{{color:primary.0}}}{{{a}}x = {{c}}}$. L'équation dit ce qui se passe ; elle n'est pas le calcul qui donne $x$ (ce calcul vient ensuite, pour la résoudre)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cahiers : 5x = 12,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"P": "25",
+				"c": "12.5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x = 5 × 12,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"P": "25",
+				"c": "12.5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x + 5 = 12,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"P": "25",
+				"c": "12.5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle : 4x = 28",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"L": "7",
+				"c": "28"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 28x = 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"L": "7",
+				"c": "28"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sachets : 6x = 150",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"M": "25",
+				"c": "150"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
