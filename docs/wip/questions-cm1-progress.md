@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après la publication du lot 2._
+_Mis à jour le 2026-10-30, phase 0 du lot 3 écrite._
 
 - **État** : lots 0, 1 et 2 en prod et **publiés**. Lot 2 (numération des entiers, 10 modèles) : #1964, #1976, relecture 10/10 OK, `publier-lot.ts --publier` lancé par David, 10 `published` relus au MCP.
-- **Prochaine action** : lot 3 (fractions) — phase 0 à écrire (points, sous-notions, niveaux relus en prod), puis attendre la validation de David.
-- **En attente de David** : rien.
+- **Prochaine action** : lot 3a (fractions, 10 modèles, § 9) — écrire le script dès la validation de David ; puis 3b (fractions décimales), 3c (partages, bloc pas en prod).
+- **En attente de David** : validation de la phase 0 du lot 3 (§ 9, trois questions : 147 en deux cases, sous-notion « Repérage », découpage 3a / 3b / 3c).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente (relever `schema_migrations`) ; un worktree n'a pas `supabase/.temp/` (lien) : le copier du dépôt principal ; « Multiples et diviseurs » : niveaux 4-8 pris par le CM2, les nôtres partent de 9 ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
 - **Worktree / branche** : aucun (worktree du lot 2 retiré) ; au lot 3, `git worktree add -b feat/questions-cm1-lot3 ../ubumaths-wt-questions-cm1 origin/main`.
 
@@ -337,3 +337,45 @@ https://claude.ai/artifact/GZT4LQD6HnDkvrmamhWQ1o (alerte attendue : ```ranger n
 Page à cocher : 10/10 OK, sans commentaire. `publier-lot.ts --dir scripts/questions/cm1-2` en
 simulation (10 brouillons passent le contrôle), puis `--publier` lancé par David : 10/10 publiés.
 MCP : les 10 `published`. Worktree `../ubumaths-wt-questions-cm1` retiré.
+
+## 9. Lot 3 — fractions : phase 0 (à valider)
+
+Relevé MCP du 2026-10-30. Les points de fractions du CM1 sans modèle sont trop nombreux pour un seul
+lot (≤ 10 modèles). Je propose donc trois lots :
+
+- **3a, fractions** (ci-dessous, 10 modèles) : 014, 015, 016, 017, 148, 022, plus les droites
+  graduées 019, 147, 018, 146. La droite à placer (`placer:`) est en prod depuis v0.56.0.
+- **3b, fractions décimales** (8) : 023, 027, 028, 029, 152, 153, droites 151 et 025.
+- **3c, partages** (4) : 145, 150 (quelle part est coloriée ?) et 144, 149 (colorier). Le bloc
+  ```partage est mergé (#1958, #1974, #1988) mais **pas en prod** : brouillons jusqu'au `deploy:prod`.
+- 024 (unités, dixièmes, centièmes) et 156 sont rangés sous les décimaux : lot 4.
+
+Bornes `cycle3.json`, CM1 : dénominateurs ≤ 20, fractions éventuellement > 1 ; fraction d'une
+quantité **unitaire seulement** (résultat éventuellement décimal) ; soustraction de même
+dénominateur, ou l'un multiple connu de l'autre. Aucun modèle de ces points nulle part (6-fractions
+couvre les points voisins de 6e, sans tag CM1).
+
+| #   | Point   | Sous-notion              | Modèle                                  | Variations, plages                                                                                                                                                                                | Catégorie, niveau                                   |
+| --- | ------- | ------------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| 1   | CM1-014 | définition               | Lire et écrire une fraction             | V1 « cinq tiers » → case 5/3 ; V2 5/3 → case « choix » parmi quatre écritures en lettres (cinq tiers, trois cinquièmes, cinq troisièmes, trois tiers) ; dénominateur 2 à 20, numérateur 1 à 3 × d | Fractions / Apprivoiser / Ecriture, 6               |
+| 2   | CM1-015 | décomposition            | Fraction > 1 en entier + fraction       | 7/4 = ? + ?/4 (deux cases, la fraction < 1) ; d 2 à 10 puis 12, 15, 20 ; entier 1 à 5 ; jamais un entier exact                                                                                    | Fractions / Apprivoiser / Décomposition, 4          |
+| 3   | CM1-016 | décomposition            | Entier + fraction en une seule fraction | 2 + 2/3 = ?/3 (case = le numérateur) ; mêmes plages                                                                                                                                               | Décomposition, 5                                    |
+| 4   | CM1-017 | ordre                    | Encadrer une fraction par deux entiers  | ? < 21/8 < ? (deux cases, entiers consécutifs) ; d 2 à 10, entier 0 à 9                                                                                                                           | Fractions / Apprivoiser / Encadrer, 2               |
+| 5   | CM1-148 | addition et soustraction | Soustraire des fractions                | V1 même dénominateur (8/10 − 5/10) ; V2 l'un multiple de l'autre (5/6 − 1/12, 11/4 − 7/20) ; résultat ≥ 0 ; toute fraction égale acceptée                                                         | Fractions / Calculer / Addition et Soustraction, 18 |
+| 6   | CM1-022 | fraction d'une quantité  | Fraction d'une quantité                 | V1 « un tiers de 12 billes » (résultat entier) ; V2 « un quart de 10 m » (résultat décimal : 2,5) ; fractions unitaires 1/2 à 1/10, quantités et grandeurs (billes, m, kg, €)                     | Fractions / Calculer / Fraction d'une quantité, 6   |
+| 7   | CM1-019 | droite graduée           | Repérer un point par une fraction       | ```line de 0 à 3, pas 1/d (d ∈ 2, 3, 4, 5, 6, 8, 10), entiers seuls étiquetés, point A ; case fraction, toute écriture égale acceptée                                                             | Fractions / Apprivoiser / **Repérage** (neuve), 1   |
+| 8   | CM1-147 | droite graduée           | Repérer un point par entier + fraction  | même droite, A au-delà de 1 ; « A repère ? + ?/4 » (deux cases, fraction < 1)                                                                                                                     | Repérage, 2                                         |
+| 9   | CM1-018 | droite graduée           | Placer une fraction                     | ```line à placer (`placer: A=3/4`), de 0 à 2 ou 3, pas 1/d                                                                                                                                        | Repérage, 3                                         |
+| 10  | CM1-146 | droite graduée           | Placer entier + fraction                | `placer:` « place 2 + 1/4 » ; même droite, de 0 à 4                                                                                                                                               | Repérage, 4                                         |
+
+Questions :
+
+1. **CM1-147** : deux cases « ? + ?/d » (la forme du point), ou une case où 2 + 1/4, 9/4 et 3 − 3/4
+   sont tous acceptés (les bornes disent qu'une même abscisse s'écrit de plusieurs façons) ? Reco :
+   les deux cases, sinon 147 double 019.
+2. **Sous-notion « Repérage »** dans la catégorie Fractions (comme Entiers / Apprivoiser /
+   Repérage) : d'accord ?
+3. **Découpage 3a / 3b / 3c** et ordre : 3c (partages) écrit tout de suite en brouillons, ou après le
+   `deploy:prod` du bloc ```partage ? Reco : après 3b, sans attendre le déploiement.
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
