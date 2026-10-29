@@ -584,7 +584,8 @@ désormais une sphère centre-rayon comme bien formée).
   et comparées EXACTEMENT, aucun flottant : `\frac{2}{\sqrt2}` = `\sqrt2`, `1,414` ≠ `\sqrt2` ;
 - la VALEUR décide du juste / faux ; un vecteur juste voit ensuite chaque coordonnée jugée comme
   une case ordinaire (2026-10-04) : `(\frac{2}{4};1)` pour `(\frac12;1)` est juste avec « La
-  fraction peut être simplifiée » (`unoptimal_form`), `(0.5;1)` est de mauvaise forme ; en
+  fraction peut être simplifiée » (`unoptimal_form`), `(0.5;1)` est de mauvaise forme, juste avec
+  l'option `acceptDecimal` de la case, qui vaut pour chaque coordonnée (2026-10-29) ; en
   `colineaire`, seule l'écriture compte (fraction simplifiable), la valeur étant libre.
 
 | `vectorMode`     | Attendue  | Réponse                                                  | Verdict                 |
