@@ -217,6 +217,14 @@ Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustration
 - **Géographie** 🟡 (décision de David, 2026-10-06) : Sandomir est une ville **en spirale**, bâtie au point où se rejoignent les six provinces (à l'emplacement de Varsovie sur la carte, décision de David, 2026-10-29). Elle n'appartient à aucune d'elles. Le **Trône Royal** se trouve au centre de la spirale, comme le cœur d'une gidouille.
 - **Ce qu'on n'en reprend pas** : Sandomierz est aussi une vraie ville de Pologne ; on n'en garde que le nom. Le fondateur du Collège de 'Pataphysique a pris « Sandomir » pour pseudonyme (1948) : le nom vient de Jarry et reste libre, mais rien du Collège n'est repris.
 - **Usage** : « À Sandomir, au Trône Royal… » dans les articles du Shtam et les cinématiques d'Ubu. Pendant de l'Empire du Czar, gouverné depuis son palais d'Hiver.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) :
+  - **Plan** : une seule rue en spirale qui monte doucement vers le centre, bordée de maisons serrées (la spirale est la gidouille, seule forme géométrique de la ville).
+  - **Centre** : le Palais Royal, rond et ventru, coiffé d'un dôme doré surmonté d'une gidouille d'or ; le Trône Royal est dedans.
+  - **Style** : faste ubuesque, beaucoup d'or, bannières vertes de la livrée d'Ubu ; un luxe trop voyant, de mauvais goût assumé. Pas de statues d'Ubu, ni trappe ni machine à décerveler.
+  - **Eau** : la Vistule l'entoure comme des douves naturelles, franchies par quelques ponts.
+  - **Alentours** : campagne neutre, prés et routes qui partent vers les six provinces.
+  - **Repère sur la carte** : la spirale de la ville avec le dôme doré au centre.
+  - **Couleur** : aucune couleur de province ; Encre et Or pour la ville seule.
 
 #### Logique sonore et anatomique du Royaume
 
@@ -489,7 +497,7 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - **Étymologie** : **détournement de Cracovie**, ancienne capitale royale de Pologne (jusqu'au XVIIᵉ siècle), située sur la **Vistule** comme Bonneteau-sur-Vistule (les deux capitales partagent le fleuve). Fusion avec **John Venn (1834-1923)**, mathématicien britannique inventeur des **diagrammes de Venn** (1880) — c'est-à-dire **les patates** qui donnent leur nom à la province.
 - **Devise** : « **L'infini n'en finit pas d'en finir, surtout vers la fin** »
 - **Commentaire de la devise** : aphorisme original construit en deux temps. Le premier temps (_« n'en finit pas d'en finir »_) joue sur l'**allitération en F** (fi-ni-fi-ni-fi-nir) qui mime sonorement le processus qu'elle décrit ; et sur l'**auto-contradiction grammaticale** (« finir » et « ne pas finir » s'annulent), qui exprime exactement le **statut paradoxal de l'infini en théorie des ensembles** (l'infini en acte selon Cantor est à la fois achevé comme objet et inachevé comme processus). Le second temps (_« surtout vers la fin »_) détourne la formule cocasse de Woody Allen sur l'éternité (« L'éternité, c'est long, surtout vers la fin »).
-- **Paysage canon** : pays slave doux et vallonné, parsemé de collines-tubercules. Champs de patates à perte de vue. Cracovenn est bâtie en **trois enceintes rondes qui se chevauchent** (décision de David, 2026-10-29, au lieu de cinq enceintes concentriques, qui ne font pas un diagramme de Venn) : chaque zone est un quartier — la ville **est** un diagramme de Venn habitable.
+- **Paysage canon** : pays slave doux et vallonné, parsemé de collines-tubercules. Champs de patates à perte de vue. Cracovenn est bâtie en **trois enceintes rondes qui se chevauchent** (décision de David, 2026-10-29, au lieu de cinq enceintes concentriques, qui ne font pas un diagramme de Venn) : chaque zone est un quartier ; au centre, là où les trois se recoupent, la **bibliothèque de Faustroll**, où il classe les œuvres — la ville **est** un diagramme de Venn habitable.
 - **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, la logique ne se montre que dans la ville.
   - **Relief** : collines rondes et douces, pays vallonné ; pas de montagnes (les Pythagoriades restent les seules du Royaume).
   - **Eau** : la Vistule traverse Cracovenn, comme Cracovie.

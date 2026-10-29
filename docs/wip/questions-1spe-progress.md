@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1969 (lot 0-trigo : fichiers mergés, relecture 6/6 « ok »)._
+_Mis à jour le 2026-10-29, après #1969 : lot 0-trigo publié en prod (6/6)._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8) et 0-exponentielle (17, § 10) publiés ; lot 0-trigo (6, § 11) mergé (#1969), **publication en prod à faire**.
-- **Prochaine action** : vérifier en prod la publication du lot 0-trigo (6 publiés, corrigé de ee4e2ac6 v7 à jour) ; puis lot 0-produit scalaire, puis géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : depuis le dépôt principal, `create-questions --publier --mettre-a-jour` (ee4e2ac6) puis `pnpm exec tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-0-trigo --publier`.
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10) et 0-trigo (6, § 11) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
+- **Prochaine action** : lot 0-produit scalaire (relevé, instantané, specs, constats) ; puis géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : rien.
 - **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
 - **Worktree / branche** : aucun (worktree retiré après #1969) ; le prochain lot ouvre `../ubumaths-wt-questions-1spe` sur une branche neuve.
 
@@ -468,3 +468,6 @@ sur une espace ; le gabarit `scripts/questions/page-a-cocher.html` ajoute `{}` a
 brute), page republiée à la même adresse.
 
 **Relecture (David, page à cocher, 2026-10-29)** : 6 « ok » sur 6, aucun commentaire.
+
+**Publication (2026-10-29)** : #1969 mergée ; `create-questions --publier --mettre-a-jour` (ee4e2ac6 mis à jour, 5 identiques)
+puis `publier-lot --publier` lancés par David : 6/6 `published`, corrigé v7 relu en base.

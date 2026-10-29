@@ -2,7 +2,7 @@
  * Chantier « questions-ce1 », lot 3 : niveau de 4 brouillons dans leur catégorie (Supabase local requis)
  * ======================================================================================
  *
- * Migration `20261029213000_questions_ce1_lot3_niveaux` : 3 brouillons du lot 3 (fractions),
+ * Migration `20261029233100_questions_ce1_lot3_niveaux` : 3 brouillons du lot 3 (fractions),
  * refusés à la publication parce que leur niveau est déjà pris par un modèle publié de la même
  * catégorie, prennent le premier niveau libre ; le 4e (soustraction) suit l'addition. Décision de
  * David du 2026-10-29 (journal docs/wip/questions-ce1-progress.md).
@@ -35,7 +35,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261029213000_questions_ce1_lot3_niveaux.sql';
+const MIGRATION = 'supabase/migrations/20261029233100_questions_ce1_lot3_niveaux.sql';
 /** Le lot : identifiant de la prod, catégorie, niveau relevé le 2026-10-29 et niveau visé. */
 const LOT: {
 	id: string;
