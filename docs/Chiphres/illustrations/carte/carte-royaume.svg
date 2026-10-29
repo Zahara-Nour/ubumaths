@@ -16,7 +16,7 @@
 <text x="2660" y="2830" font-size="56" text-anchor="middle" class="eau" transform="rotate(-10 2660 2830)">Vistule</text>
 <text x="3080" y="1010" font-size="50" text-anchor="middle" class="voisin">Pythagoriades</text>
 <text x="3950" y="520" font-size="84" text-anchor="middle" class="voisin">Lithuanie</text>
-<text x="3880" y="3050" font-size="84" text-anchor="middle" class="voisin">Empire du Czar</text>
+<text x="3960" y="2000" font-size="84" text-anchor="middle" class="voisin">Empire du Czar</text>
 <g id="province-yoyolande"><text x="2100" y="1300" font-size="92" text-anchor="middle" class="prov">YOYOLANDE</text></g>
 <g id="province-bedonstan"><text x="3050" y="1480" font-size="92" text-anchor="middle" class="prov">BEDONSTAN</text></g>
 <g id="province-glitchistan"><text x="3150" y="2560" font-size="92" text-anchor="middle" class="prov">GLITCHISTAN</text></g>
@@ -30,6 +30,11 @@
 <g id="ville-cracovenn"><text x="2110" y="3010" font-size="60" text-anchor="end" class="cap">Cracovenn</text></g>
 <g id="ville-empoche-les-bains"><text x="1520" y="2700" font-size="60" text-anchor="middle" class="cap">Empoche-les-Bains</text></g>
 <g id="ville-bonneteau-sur-vistule"><text x="1180" y="1910" font-size="60" text-anchor="middle" class="cap">Bonneteau-sur-Vistule</text></g>
+</g>
+<g id="ile-reunion">
+<rect x="3280" y="3111" width="1002" height="669" fill="#fff" fill-opacity="0"/>
+<text x="3781" y="3010" font-size="66" text-anchor="middle" class="cap">Isle de la Réunion</text>
+<text x="3781" y="3090" font-size="66" text-anchor="middle" class="cap">Pataphysique</text>
 </g>
 <g id="cartouche">
 <text x="817" y="3395" font-size="54" text-anchor="middle" class="titre">ROYAUME DE POLOGNE</text>

@@ -100,12 +100,20 @@ o.append(text(1000, 470, 'Mer Baltique', 70, 'eau'))
 o.append(text(2660, 2830, 'Vistule', 56, 'eau', extra=' transform="rotate(-10 2660 2830)"'))
 o.append(text(3080, 1010, 'Pythagoriades', 50, 'voisin'))
 o.append(text(3950, 520, 'Lithuanie', 84, 'voisin'))
-o.append(text(3880, 3050, 'Empire du Czar', 84, 'voisin'))
+o.append(text(3960, 2000, 'Empire du Czar', 84, 'voisin'))
 for pid, name, x, y in PROVINCES:
     o.append(f'<g id="province-{pid}">{text(x, y, name.upper(), 92, "prov")}</g>')
 o.append(f'<g id="ville-sandomir">{text(*SANDOMIR, "Sandomir", 80, "capitale")}</g>')
 for cid, name, x, y, anchor in CAPITALS:
     o.append(f'<g id="ville-{cid}">{text(x, y, name, 60, "cap", anchor)}</g>')
+o.append('</g>')
+
+# encart (cadre dessiné par l'IA puis agrandi ×1,5, île dessinée à part, recollés par vignettes/recoller.sh) : nom en vrai texte au-dessus du cadre,
+# rectangle transparent = cible du clic sur le site
+o.append('<g id="ile-reunion">')
+o.append('<rect x="3280" y="3111" width="1002" height="669" fill="#fff" fill-opacity="0"/>')
+o.append(text(3781, 3010, 'Isle de la Réunion', 66, 'cap'))
+o.append(text(3781, 3090, 'Pataphysique', 66, 'cap'))
 o.append('</g>')
 
 o.append('<g id="cartouche">')

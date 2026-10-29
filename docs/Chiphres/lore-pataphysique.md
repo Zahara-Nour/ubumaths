@@ -409,6 +409,7 @@ Décision de David (2026-10-29). Sur la carte, l'Isle figure en encart.
 - **Observatoire** : au sommet du volcan, la coupole de l'observatoire des solutions imaginaires d'Ubu, lunette pointée vers le ciel.
 - **Réunion des provinces** : un petit port où flottent six drapeaux aux couleurs des six provinces, sans texte.
 - **Repère sur la carte** : l'île entière dans son encart, la coupole au sommet.
+- **Sur la grande carte** (validé par David le 2026-10-29) : encart en bas à droite, sur la neige de l'Empire du Czar, cadre du même style que le cartouche et de taille voisine ; nom « Isle de la Réunion Pataphysique » au-dessus du cadre. Image : `docs/Chiphres/illustrations/carte/vignettes/reunion-ile-ia.webp` (l'île seule, 1264×843, réutilisable pour la page secrète).
 - **Couleur** : mer en bleu de Pile éclairci (comme la Baltique) ; terre sans couleur de province.
 
 #### Fête possible (proposition pour l'Almanach)
