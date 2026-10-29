@@ -5,14 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1961 (nœud + tag du lot 2, mergé et migré)._
+_Mis à jour le 2026-10-29, après la publication du lot 2._
 
-- **État** : lots 1 et 2 en prod, en brouillon, rangés et tagués. Lot 2 (proportionnalité et pourcentages, 7 modèles) :
-  migration `20261029220000`, `db:migrate` fait le 2026-10-29, vérifié au MCP (nœud, tag, brouillon, `updated_at`
-  inchangé).
-- **Prochaine action** : page à cocher du lot 2 (`scripts/questions/page-a-cocher.ts --dir scripts/questions/4-lot-2`,
-  artefact avec capacité `db`) ; puis phase 0 du lot 3 (statistiques, § 5 bis).
-- **En attente de David** : publication des 7 brouillons du lot 1 (après relecture dans l'admin).
+- **État** : lot 1 en prod en brouillon, rangé et tagué ; lot 2 (proportionnalité et pourcentages, 7 modèles)
+  **publié** le 2026-10-29 (page à cocher 7/7 OK, `publier-lot --publier` par David, statut relu au MCP).
+- **Prochaine action** : phase 0 du lot 3 (statistiques, § 5 bis).
+- **En attente de David** : publication des 7 brouillons du lot 1 (relecture dans l'admin, ou page à cocher).
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; `Doc-inchangée:` dans un message de commit ; QCM = case choix ; worktree neuf :
   `svelte-kit sync` avant `create-questions` (`$lib`) ; `Client Tests` peut tomber sur `wrapDynamicImport` (lanceur) :
@@ -396,3 +394,11 @@ neuves **Ratios** (Comparer, Égalités de rapports, Partage proportionnel) et *
   ouvert ni retiré).
 - #1961 mergée (CI verte au 2e passage : `Client Tests` tombé sur `wrapDynamicImport`, sans lien) ; `db:migrate` le
   2026-10-29 ; vérifié en prod (MCP) : 7 brouillons sur leur nœud, un tag chacun, `updated_at` inchangé.
+
+## 15. Lot 2 : relecture et publication (2026-10-29)
+
+- Page à cocher : https://claude.ai/artifact/M3S2xH8YPKrLpeKB2yBR5M ; 7 verdicts lus en base, 7 « OK », aucun
+  commentaire.
+- `publier-lot.ts --dir scripts/questions/4-lot-2` : simulation et `--publier` lancées par David (le classifieur du
+  mode auto refuse même la simulation, branchée sur la prod) ; 7/7 publiés, vérifié au MCP (`published`, nœud
+  présent).
