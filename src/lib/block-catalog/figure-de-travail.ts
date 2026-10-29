@@ -33,7 +33,7 @@ export const figureDeTravailEntry: BlockCatalogEntry = {
 					values: 'comme pour le bloc figure',
 					defaultValue: 'comme pour le bloc figure',
 					description:
-						'L’en-tête de la figure de départ. Pas de verifier: (rien n’est noté) ni de deplacable:.'
+						'L’en-tête de la figure de départ. Pas de verifier: (rien n’est noté), ni de deplacable: ou rendu: (elle ne se déplace jamais).'
 				}
 			]
 		}

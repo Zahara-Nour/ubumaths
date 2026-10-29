@@ -153,6 +153,16 @@
 		underlay?: Snippet<[{ viewport: Viewport; width: number; height: number }]>;
 		/** Calque dessiné AU-DESSUS des objets (fantôme d'une construction en cours), en SVG. */
 		overlay?: Snippet<[{ viewport: Viewport; width: number; height: number }]>;
+		/**
+		 * Figure d'un TEXTE (bloc ```figure `deplacable:` / `rendu:`, lot 6 du
+		 * chantier figure-et-choix) : vue figée (ni molette, ni déplacement de la
+		 * vue), aucun raccourci clavier posé sur la page (espace, Ctrl+Z : l'élève
+		 * tape peut-être dans une case), pas de panneau de style ; le doigt n'est
+		 * capté que si les objets se déplacent (sinon la page défile). Défaut false.
+		 */
+		inDocument?: boolean;
+		/** Nom de la figure pour les lecteurs d'écran (description de l'auteur) */
+		ariaLabel?: string;
 	}
 
 	let {
@@ -176,7 +186,9 @@
 		viewGestures = false,
 		neutralLabels = false,
 		underlay,
-		overlay
+		overlay,
+		inDocument = false,
+		ariaLabel = 'Figure de geometrie interactive'
 	}: Props = $props();
 
 	// Langue du contenu (séparateur décimal des étiquettes), posée par MarkdownRenderer
@@ -586,8 +598,8 @@
 			}
 		}
 
-		// Middle button or space held = start panning
-		if (e.button === 1 || spaceHeld) {
+		// Middle button or space held = start panning (vue figée d'un texte : jamais)
+		if (!inDocument && (e.button === 1 || spaceHeld)) {
 			startPan(e);
 			return;
 		}
@@ -1005,7 +1017,8 @@
 	// ─── Wheel: zoom centered on cursor ─────────────────────────────
 
 	function onWheel(e: WheelEvent) {
-		if (!interactive) return;
+		// Figure d'un texte : la molette fait défiler la page
+		if (!interactive || inDocument) return;
 		e.preventDefault();
 
 		const math = getMathCoords(e);
@@ -1035,7 +1048,7 @@
 	}
 
 	function onKeyDown(e: KeyboardEvent) {
-		if (isTextInput(e)) return;
+		if (inDocument || isTextInput(e)) return;
 		if (e.code === 'Space' && !spaceHeld) {
 			spaceHeld = true;
 			e.preventDefault();
@@ -1070,7 +1083,7 @@
 	}
 
 	function onKeyUp(e: KeyboardEvent) {
-		if (isTextInput(e)) return;
+		if (inDocument || isTextInput(e)) return;
 		if (e.code === 'Space') {
 			spaceHeld = false;
 			if (isPanning) isPanning = false;
@@ -1080,7 +1093,7 @@
 	// ─── Double-click: open popover ─────────────────────────────────
 
 	function onDblClick(e: MouseEvent) {
-		if (!interactive || !objectsMovable) return;
+		if (!interactive || !objectsMovable || inDocument) return;
 		const math = getMathCoords(e as unknown as PointerEvent);
 		if (!math) return;
 
@@ -1099,6 +1112,7 @@
 
 	function openPopoverFor(elementId: string, e: MouseEvent) {
 		e.stopPropagation();
+		if (inDocument) return;
 		if (!containerRef) return;
 		const rect = containerRef.getBoundingClientRect();
 		popoverX = e.clientX - rect.left + 10;
@@ -1166,10 +1180,11 @@
 		{width}
 		{height}
 		viewBox="0 0 {width} {height}"
-		role="application"
-		aria-label="Figure de geometrie interactive"
+		role={inDocument && !(interactive && objectsMovable) ? 'img' : 'application'}
+		aria-label={ariaLabel}
 		class="geometry-canvas"
 		class:interactive
+		class:page-scroll={inDocument && !(interactive && objectsMovable)}
 		class:dragging={draggingId !== null || delegated}
 		class:panning={isPanning || spaceHeld}
 		class:tool={canvasTool !== undefined}
@@ -2579,6 +2594,11 @@
 
 	.geometry-canvas.interactive {
 		cursor: default;
+	}
+
+	/* Figure figée d'un texte : le doigt fait défiler la page */
+	.geometry-canvas.page-scroll {
+		touch-action: auto;
 	}
 
 	/* Un outil de construction (atelier) : on vise, on ne saisit pas */
