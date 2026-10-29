@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 6a publié._
+_Mis à jour le 2026-10-30, lot 6b écrit (pas de PR)._
 
-- **État** : lots 1 à 5 et lot 6a (M1-M6, 6 modèles) en prod, publiés, rangés, tagués (#1968).
-- **Prochaine action** : lot 6b (M7-M13, grandeurs et probabilités, § 13, phase 0 validée) : script
-  `lot-6-grandeurs.py` → `scripts/questions/6-grandeurs/`, specs, base locale, PR contenu.
-- **En attente de David** : passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles` (scission faite).
-  Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
-- **Pièges en cours** : 06 et 07 attendent l'outil « étiquettes à ranger » (bloc ```ranger, livré le 2026-10-28 :
-  à reprendre). 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs` dans un worktree neuf.
-  M10 : version dessinée attend l'outil « assemblages de cubes ».
-- **Worktree / branche** : aucun.
+- **État** : lots 1 à 6a en prod, publiés. Lot 6b (M7-M13) écrit : 7 JSON dans `scripts/questions/6-grandeurs/`,
+  specs vertes, simulation prod « à créer », 7 brouillons en base locale ; branche poussée, **pas de PR** (§ 13.3).
+- **Prochaine action** : David joue 09 et 12 dans l'aperçu admin local (la frappe n'atteignait pas la 1re case au
+  pilotage de Chrome) ; si OK → PR contenu, `create-questions --publier` (David), migration nœud + tags.
+- **En attente de David** : ce test à la main ; passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles`.
+- **Pièges en cours** : 06 et 07 attendent le bloc ```ranger (à reprendre). 3a7a5711 : NE PAS publier.
+  `svelte-kit sync` avant `question:specs`. M10 : version dessinée attend « assemblages de cubes ».
+  Serveur 5180 arrêté (mémoire basse) : à relancer pour le test.
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-6b`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
