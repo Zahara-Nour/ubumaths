@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 3 publié._
+_Mis à jour le 2026-10-29, phase 0 du lot 4 validée._
 
-- **État** : lot 3 (fractions, 9 modèles) **publié en prod** (9/9, vérifié au MCP). Relecture appliquée (#1953), niveaux Comparer 9-10 et Addition et Soustraction 15-16 (#1963, #1972). Lot 3 clos.
-- **Prochaine action** : lot 4 (problèmes), phase 0 à écrire ; y reprendre Lucie (`LUCIE`, `SPECS_LUCIE` dans `lot-ce1-3.py`, variationIndex à recaler).
+- **État** : lot 3 clos (9/9 publiés). Lot 4 (problèmes, 10 modèles) : phase 0 validée (§ 10), en écriture.
+- **Prochaine action** : écrire `lot-ce1-4.py` → `scripts/questions/ce1-4/`, `create-questions` en simulation, `question:specs`, base locale, PR des fichiers.
 - **En attente de David** : rien.
-- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; **niveaux : relever la catégorie juste avant la publication, d'autres sessions publient le même jour** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule initiale.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`).
+- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes (deux décimales), `zeros: off` ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule initiale.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `feat/questions-ce1-lot4`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -333,3 +333,32 @@ tag ne change aucune règle.
 - 2026-10-29 : #1963 mergée (CI verte) ; `db:migrate` refusé (`DbPushMissingRemoteError`) : collision d'horodatage, `20261029213000` déjà joué en prod par `questions_5_lot3_rangement_tags` ; rien d'appliqué (niveaux 6, 7, 13, 14 relus au MCP) ; migration renommée `20261029233100` (max des worktrees + 1 min).
 - 2026-10-29 : #1972 mergée (CI verte après relance d'un job navigateur instable) ; `db:migrate` lancé par David : 233000 (questions-3) puis 233100 ; vérifié au MCP (9, 10, 15, 16, brouillons, `updated_at` inchangé) ; `publier-lot` en simulation : 9/9 ; `create-questions` en simulation : 9 « = ».
 - 2026-10-29 : `publier-lot --publier` par David : 9/9 publiés, vérifié au MCP. Lot 3 clos.
+
+## 10. Lot 4 : problèmes — décisions (David, 2026-10-29)
+
+Exemples du BO CE1 p.17-19 ; données entières ≤ 1 000, prix à virgule en euros seulement (c2-1). Rangement sur
+les sous-notions existantes de « Problèmes arithmétiques » (parties-tout, comparaison, en deux étapes ou plus,
+multiplicatifs) ; aucun nœud à créer. Catégories `Entiers · Problèmes` : niveaux libres après ceux du CP (relevé
+MCP du 2026-10-29 : Parties-tout 1, 3 ; Deux étapes 4 ; Multiplicatifs 5 ; Comparaison neuve). Recommandations
+suivies (« ok, je valide ») :
+
+1. **Lucie** (3/10 en bleu, le reste en rouge) : modèle à part « La part qui reste », CE1-099, Fractions · Calculer ·
+   Addition et Soustraction · 17.
+2. **« Est-ce que ça tient ? »** (album de 350 photos) : modèle à part en case choix oui / non.
+3. **Partages avec reste** : les deux sens d'arrondi (189 photos → 19 pages ; 75 œufs → 12 boîtes).
+
+| Fichier                  | Point   | Catégorie · niveau            | Variations                                                                                       |
+| ------------------------ | ------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
+| `01-parties-tout`        | CE1-036 | Parties-tout · 4              | une partie (coffres), tout à 2 et 3 parties, départ inconnu, retrait, « de plus » → soustraction |
+| `02-parties-tout-prix`   | CE1-036 | Parties-tout · 5              | 3 achats (1,20 € + 90 centimes + 12 €), prix manquant, achats en euros entiers                   |
+| `03-est-ce-que-ca-tient` | CE1-036 | Parties-tout · 6              | album, car : oui / non (case choix)                                                              |
+| `04-comparaison`         | CE1-037 | Comparaison · 1               | le plus grand, l'écart, le plus petit (« de plus »), « de moins », en euros                      |
+| `05-deux-etapes`         | CE1-038 | Deux étapes · 5               | 83 + 18 − 27 ; deux achats et un billet (euros, puis centimes)                                   |
+| `06-multiplicatifs-tout` | CE1-039 | Multiplicatifs · 6            | n paquets de p (tables 2 à 5), × 10, dizaines entières (7 × 20)                                  |
+| `07-nombre-de-parts`     | CE1-039 | Multiplicatifs · 7            | sans reste ; reste → arrondi au-dessus (pages), en dessous (boîtes)                              |
+| `08-valeur-d-une-part`   | CE1-039 | Multiplicatifs · 8            | 18 images pour 3 ; 200 élèves en 40 équipes ; 9,60 € pour 3                                      |
+| `09-problemes-mixtes`    | CE1-040 | Deux étapes · 6               | litres et billet ; cahiers et protège-cahiers ; places libres du car                             |
+| `10-la-part-qui-reste`   | CE1-099 | Addition et Soustraction · 17 | Lucie                                                                                            |
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
