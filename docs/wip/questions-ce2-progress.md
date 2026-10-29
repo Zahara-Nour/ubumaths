@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1975._
+_Mis à jour le 2026-10-29, après la publication du lot 3._
 
-- **État** : lots 1 et 2 PUBLIÉS. Lot 3 (6 modèles, § 7) : migration `234500` jouée en prod (avec celle du CM1, `235500`), vérifié au MCP : 6 brouillons rangés, 1 point chacun. Page à cocher : https://claude.ai/artifact/GQKRkFMPrLg2Yt26db62gn (aucune alerte, 0 verdict).
-- **Prochaine action** : David relit la page → compter les verdicts (`ArtifactData list verdicts`) → « À revoir » à corriger (§ 7 de la démarche) → `publier-lot.ts --dir scripts/questions/ce2-3` (simulation, puis David le lance avec `!`). Ensuite : choisir le lot 4 (§ 3).
-- **En attente de David** : relecture du lot 3 ; confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
-- **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
-- **Worktree / branche** : aucun (retiré après #1975) ; prochain lot : nouveau worktree `../ubumaths-wt-questions-ce2`.
+- **État** : lots 1, 2 et 3 PUBLIÉS (lot 3 : 6/6 « OK » sur https://claude.ai/artifact/GQKRkFMPrLg2Yt26db62gn, statut relu au MCP).
+- **Prochaine action** : choisir le lot 4 parmi les points sans modèle (§ 3) et en écrire la phase 0.
+- **En attente de David** : confirmer « espaces dès 4 chiffres » (4500 sans espace = ½ point).
+- **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
+- **Worktree / branche** : aucun ; prochain lot : nouveau worktree `../ubumaths-wt-questions-ce2`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -291,3 +291,5 @@ règles (`multiple` + `range`, toute réponse juste acceptée).
   contenu) ; `db:migrate` lancé par David : `234500` et `235500` (CM1, ses 4 conditions écrites dans son journal ;
   session cm1 prévenue). MCP : les 6 modèles CE2 et les 10 CM1 ont un nœud et un seul point. Page à cocher :
   https://claude.ai/artifact/GQKRkFMPrLg2Yt26db62gn (6 fiches, aucune alerte).
+- 2026-10-29 : relecture de David, 6/6 « OK » sans commentaire ; `publier-lot.ts --publier` (David) : 6/6
+  publiés, statut relu au MCP.
