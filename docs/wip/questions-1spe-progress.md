@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29 : lot 0-produit scalaire, C1-C3 corrigés (D18), 15/15 « ok » à la relecture (§ 12)._
+_Mis à jour le 2026-10-29, après #1995._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10) et 0-trigo (6, § 11) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3). Lot 0-produit scalaire : 15 brouillons, instantané `scripts/questions/1spe-0-produit-scalaire/`, 15/15 verts, C1-C3 corrigés (D18), relecture 15/15 « ok ».
-- **Prochaine action** : PR, merge, puis publication par David (`create-questions --publier --mettre-a-jour` puis `publier-lot --publier`) ; ensuite géométrie repérée, probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : publication du lot après le merge.
-- **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file`, une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-produit-scalaire`.
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10) et 0-trigo (6, § 11) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3). Lot 0-produit scalaire (15, § 12) : C1-C3 corrigés (D18), relecture 15/15 « ok », #1995 mergée ; **publication en prod pas encore faite**.
+- **Prochaine action** : vérifier en prod que les 15 modèles du lot 0-produit scalaire sont `published` (après les deux commandes de David) ; puis lot géométrie repérée (nouveau worktree), probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : depuis le dépôt principal, `pnpm create-questions --dir scripts/questions/1spe-0-produit-scalaire --publier --mettre-a-jour`, puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-0-produit-scalaire --publier`.
+- **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file` (pas `pnpm -s`), une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
+- **Worktree / branche** : aucun (worktree retiré après #1995) ; le prochain lot : `git worktree add -b feat/questions-1spe-geometrie-reperee ../ubumaths-wt-questions-1spe origin/main`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
