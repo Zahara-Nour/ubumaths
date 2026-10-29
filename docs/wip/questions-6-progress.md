@@ -927,3 +927,21 @@ Questions à David :
 3. **Deux lots** (6a : M1-M6, 6b : M7-M13) plutôt qu'un lot de 13 ? Reco : **oui**.
 4. **Nouvelles catégories** : Pourcentages / Proportion, Situations / Définition et Relations, Périmètre d'un
    disque, Volumes / Unités, Durées / Problèmes ; M11 à la suite de Durées / Convertir (13). D'accord ?
+
+**Décisions de David (2026-10-29, « je valide »)** : phase 0 du § 13 validée avec les quatre recos : M5 v3 gardée
+(point 189) ; M6 rangé sur « Entiers : multiplication > triple et tiers » ; deux lots, 6a (M1-M6) puis 6b (M7-M13) ;
+catégories proposées, M11 au niveau 13 de Durées / Convertir. Le domaine « Situations » s'écrit en entier
+« Situations de proportionnalité » (comme « Tableaux de proportionnalité »), la catégorie de M6 « Relations
+multiplicatives ». Verdicts de `revue-modeles` (02, 03, 04 « à revoir », 08 « validé ») : leurs commentaires
+demandaient tous la scission faite au lot 5 → reco : David les passe en « validé » depuis `/dev/modeles`, sans
+nouvelle revue.
+
+### 13.1 Écriture du lot 6a (2026-10-29)
+
+- `docs/wip/questions/lot-6-proportionnalite.py scripts/questions` → 6 modèles dans `scripts/questions/6-proportionnalite/`
+  (01 à 06 = M1 à M6). Écart à la phase 0 : tirages à partir de 2 (M1 v1-v2, M2) pour éviter « $1$ font du judo » ;
+  M2 sans le cas limite partie = tout.
+- `question:specs` à 300 tirages par variation : 6 fichiers, 3 600 tirages réussis, 39 specs vertes.
+- `create-questions` en simulation contre la prod : 6 « à créer ». Base locale (`.env.local`) : 6 brouillons créés ;
+  aperçu admin joué sur 04 (case choix, « Juste ») et 02 (case `?\,\%`, « Juste ») ; liens du dictionnaire posés
+  (proportionnel, masse, pourcentage).

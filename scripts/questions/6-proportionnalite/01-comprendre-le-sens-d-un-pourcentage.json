@@ -1,0 +1,181 @@
+{
+	"title": "Comprendre le sens d'un pourcentage",
+	"description": "Lire un pourcentage comme « tant sur 100 » : 35 % des élèves, c'est 35 élèves sur 100 ; tous = 100 %, la moitié = 50 %, aucun = 0 %",
+	"grades": ["6"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Définition",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans un collège, ${{p}}\\,\\%$ des élèves {{if:c==0|sont demi-pensionnaires|{{if:c==1|pratiquent un sport en club|viennent au collège à pied}}}}.\n\nCela signifie que, sur $100$ élèves du collège, $?$ {{if:c==0|sont demi-pensionnaires|{{if:c==1|pratiquent un sport en club|viennent au collège à pied}}}}.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "p",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pourcentage.** ${{p}}\\,\\%$ signifie « ${{p}}$ sur $100$ » : ${{p}}\\,\\% = \\frac{{{p}}}{100}$.",
+					"Sur $100$ élèves, $\\textcolor{{{color:primary.0}}}{{{p}}}$ {{if:c==0|sont demi-pensionnaires|{{if:c==1|pratiquent un sport en club|viennent au collège à pied}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Sur $100$ élèves d'un collège, ${{n}}$ font du judo.\n\nQuel pourcentage des élèves font du judo ?\n\n$$?\\,\\%$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pourcentage.** « ${{n}}$ sur $100$ », c'est $\\frac{{{n}}}{100}$, c'est-à-dire ${{n}}\\,\\%$.",
+					"$\\textcolor{{{color:primary.0}}}{{{n}}\\,\\%}$ des élèves font du judo."
+				]
+			}
+		},
+		{
+			"statement": "{{if:t==0|Tous les élèves de la classe ont rendu leur devoir.|{{if:t==1|La moitié des élèves de la classe ont rendu leur devoir.|Aucun élève de la classe n'a rendu son devoir.}}}}\n\nQuel pourcentage des élèves de la classe ont rendu leur devoir ?\n\n$$?\\,\\%$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100-50*t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pourcentage.** Tous, c'est « $100$ sur $100$ » ; la moitié, « $50$ sur $100$ » ; aucun, « $0$ sur $100$ ».",
+					"{{if:t==0|Tous les élèves|{{if:t==1|La moitié des élèves|Aucun élève}}}} : $\\textcolor{{{color:primary.0}}}{{{solution}}\\,\\%}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "35 % : 35 élèves sur 100",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"p": "35"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,35",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"p": "35"
+			},
+			"answers": ["0,35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3,5",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"p": "35"
+			},
+			"answers": ["3,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "23 sur 100 : 23 %",
+			"variationIndex": 1,
+			"variables": {
+				"n": "23"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,23",
+			"variationIndex": 1,
+			"variables": {
+				"n": "23"
+			},
+			"answers": ["0,23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Tous : 100 %",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "La moitié : 50 %",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,5 pour la moitié",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Aucun : 0 %",
+			"variationIndex": 2,
+			"variables": {
+				"t": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

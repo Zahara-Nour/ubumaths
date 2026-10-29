@@ -1,0 +1,161 @@
+{
+	"title": "Repérer double, moitié, quadruple, quart et tiers",
+	"description": "Nommer la relation entre deux nombres (12 est le tiers de 36) ou retrouver le nombre (12 est le tiers de 36 : 12 × 3)",
+	"grades": ["6"],
+	"theme": "Proportionnalité",
+	"domain": "Situations de proportionnalité",
+	"subdomain": "Relations multiplicatives",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel mot manque ?\n\n$${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\text{ est } \\ldots \\text{ de } {{if:r<2|{{n}}|{{eval:r*n}}}}$$\n\n```choix\n- le double\n- le quadruple\n- la moitié\n- le tiers\n- le quart\n- le triple\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "3..25"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Relations.** Le double : $\\times 2$ ; le quadruple : $\\times 4$ ; la moitié : $\\div 2$ ; le tiers : $\\div 3$ ; le quart : $\\div 4$.",
+					"$${{if:r==0|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\times 2|{{if:r==1|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\times 4|{{if:r==2|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\div 2|{{if:r==3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\div 3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\div 4}}}}}}}}$$",
+					"${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$ est $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|le double|{{if:r==1|le quadruple|{{if:r==2|la moitié|{{if:r==3|le tiers|le quart}}}}}}}}}}$ de ${{if:r<2|{{n}}|{{eval:r*n}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\text{ est {{if:r==0|le double|{{if:r==1|le quadruple|{{if:r==2|la moitié|{{if:r==3|le tiers|le quart}}}}}}}} de } ?$$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "3..25"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:r<2|{{n}}|{{eval:r*n}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Relations.** Le double : $\\times 2$ ; le quadruple : $\\times 4$ ; la moitié : $\\div 2$ ; le tiers : $\\div 3$ ; le quart : $\\div 4$.",
+					"{{if:r==0|Le nombre cherché est $2$ fois plus petit que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|{{if:r==1|Le nombre cherché est $4$ fois plus petit que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|{{if:r==2|Le nombre cherché est $2$ fois plus grand que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|{{if:r==3|Le nombre cherché est $3$ fois plus grand que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|Le nombre cherché est $4$ fois plus grand que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.}}}}}}}}",
+					"$${{if:r==0|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\div 2|{{if:r==1|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\div 4|{{if:r==2|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\times 2|{{if:r==3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\times 3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\times 4}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12 est le tiers de 36",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"n": "12"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le triple (sens inversé)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"n": "12"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "24 est le double de 12",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0",
+				"n": "12"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la moitié (sens inversé)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0",
+				"n": "12"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "12 est le tiers de 36",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"n": "12"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (12 ÷ 3)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"n": "12"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "40 est le quadruple de 10",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"n": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 160 (40 × 4)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"n": "10"
+			},
+			"answers": ["160"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
