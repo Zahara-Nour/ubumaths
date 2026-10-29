@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1964 ; migration #1976 en CI._
+_Mis à jour le 2026-10-29, après #1976 et `db:migrate`._
 
-- **État** : lots 0 et 1 en prod et publiés. **Lot 2 (numération des entiers, 10 modèles)** : fichiers mergés (#1964), 10 brouillons en prod (§ 8 quater), migration nœud + tag en PR #1976 (`security-auditor` sans finding bloquant).
-- **Prochaine action** : #1976 verte → merge → `db:migrate` depuis le dépôt principal (seulement si aucune migration d'une autre session n'attend), vérifier au MCP ; puis page à cocher du lot 2.
-- **En attente de David** : rien.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente : relever d'abord `schema_migrations` en prod ; « Multiples et diviseurs » : la session CM2 prend les niveaux 4 à 8, nos prochains modèles partent de 9 ; `Doc-inchangée:` va dans un message de COMMIT (garde du Lint) ; la page à cocher montre les FICHIERS ; un modèle garde toujours au moins un niveau ; worktree neuf → `pnpm exec svelte-kit sync` ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot2-rangement`.
+- **État** : lots 0 et 1 en prod et publiés. **Lot 2 (numération des entiers, 10 modèles)** : fichiers (#1964), 10 brouillons en prod, rangés et tagués (#1976, migration jouée, vérifiée au MCP). Page à cocher : https://claude.ai/artifact/GZT4LQD6HnDkvrmamhWQ1o (0/10 verdicts au 2026-10-29).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, les COMPTER) ; « À revoir » → corriger (§ 7 de la doc) ; 10 OK → `publier-lot.ts --dir scripts/questions/cm1-2` en simulation, puis David `--publier`. Ensuite lot 3 (fractions).
+- **En attente de David** : la relecture du lot 2 sur la page à cocher (« Ranger cinq nombres » : bloc non dessiné sur la page, le jouer dans l'aperçu admin).
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente (relever `schema_migrations`) ; un worktree n'a pas `supabase/.temp/` (lien) : le copier du dépôt principal ; « Multiples et diviseurs » : niveaux 4-8 pris par le CM2, les nôtres partent de 9 ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS ; un modèle garde toujours au moins un niveau ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1` en tête détachée sur `origin/main` (à garder pour la publication, puis à retirer).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -324,3 +324,10 @@ Migration `20261029235500_questions_cm1_lot2_rangement_tags` (gabarit du lot 1) 
 échecs + suite principale arrêtée), puis 9/9 vert. `security-auditor` : aucun finding bloquant (ids,
 chemins et points remesurés en prod) ; non bloquant : `20261029233000_questions_3_lot2` sur `main`,
 pas encore jouée en prod → ne pas lancer `db:migrate` tant qu'elle attend. PR #1976.
+
+#1976 mergée (CI verte après merge de `main` : collision d'horodatage `20261029213000` réglée par
+#1972, et `Doc-inchangée:` ajoutée dans un commit). Migration jouée le 2026-10-29 par David, avec
+celle du CE2 (`20261029234500`), depuis le dépôt principal. MCP : les 10 modèles sur leur
+sous-notion, un point chacun (CM1-003 ×2, 004, 005, 007, 009, 012, 013, 141, 142), toujours
+brouillons, `updated_at` inchangé (09:37, création). Page à cocher :
+https://claude.ai/artifact/GZT4LQD6HnDkvrmamhWQ1o (alerte attendue : ```ranger non dessiné).
