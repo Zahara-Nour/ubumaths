@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1995._
+_Mis à jour le 2026-10-30, après #1998._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10) et 0-trigo (6, § 11) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3). Lot 0-produit scalaire (15, § 12) : C1-C3 corrigés (D18), relecture 15/15 « ok », #1995 mergée ; **publication en prod pas encore faite**.
-- **Prochaine action** : PR des niveaux (publication refusée : 9 collisions de catégorie, § 12), `db:migrate` au merge, puis `publier-lot --publier` par David et vérification en prod ; puis lot géométrie repérée (nouveau worktree), probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : après `db:migrate`, `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-0-produit-scalaire --publier` (contenu déjà à jour).
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10) et 0-trigo (6, § 11) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3). Lot 0-produit scalaire (15, § 12) : C1-C3 corrigés (D18), relecture 15/15 « ok », #1995 et #1998 (niveaux, migration jouée) mergées ; **publication en prod pas encore faite**.
+- **Prochaine action** : après `publier-lot --publier` (David), vérifier en prod les 15 `published` ; puis lot géométrie repérée (nouveau worktree), probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-0-produit-scalaire --publier` (contenu déjà à jour).
 - **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file` (pas `pnpm -s`), une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `fix/questions-1spe-niveaux-produit-scalaire`.
+- **Worktree / branche** : aucun (retiré après #1998) ; prochain lot : `git worktree add -b feat/questions-1spe-geometrie-reperee ../ubumaths-wt-questions-1spe origin/main`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -524,3 +524,6 @@ longueurs : bf5dadf6 1, 721324f9 2, f7c15433 3 ; Propriétés : f2cc01fc 1, 2bfb
 Lieux de points inchangé. Question d'accès : personne (David). Migration
 `20261030120000_questions_1spe_produit_scalaire_niveaux` + fichiers dans la même PR, test d'intégration vert (7), rouge
 sans l'`update`.
+
+#1998 mergée (CI verte), `db:migrate` joué le 2026-10-30 : niveaux conformes en prod, trigger `updated_at` réactivé (`O`) ;
+simulation `publier-lot` : 15 brouillons passent le contrôle.
