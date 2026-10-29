@@ -597,3 +597,23 @@ parmi **1, 2, 5, 10** (axe jusqu'à 10, 20, 50 ou 100 : le plafond de 100 du § 
 3. Juste = **la plus petite échelle où toutes les barres rentrent**.
 4. **Une case échelle + une case par barre**, barres jugées sur leur valeur (note partielle).
 5. Changer d'échelle : **les barres gardent leur valeur**, celles qui ne rentrent plus s'effacent.
+
+## 26. PR « échelle » — l'élève choisit l'échelle (2026-10-29)
+
+Branche `feat/barres-echelle`, worktree `ubumaths-wt-reponses-a-placer`. Tests rouges d'abord :
+`stat-chart/barres-echelle.test.ts` (parseur, scène muette, PDF, calcul pur), suite « échelle » de
+`generation-barres-placer.test.ts` et de `BarresPlacer.svelte.test.ts`.
+
+- **Contrainte ajoutée (déduite des décisions)** : `axe: à choisir` exige `placer: toutes` — sans
+  échelle, une barre dessinée n'a pas de hauteur (ni à l'écran ni sur le PDF).
+- Parseur : `spec.chooseScale`, `axis` reste null ; refus sans `placer: toutes`, données > 100.
+- Calcul pur `barres-placer.ts` : `SCALE_STEPS`, `SCALE_TICKS`, `scaleAxis`, `adaptedScale`,
+  `scaleOfAnswer`, `scaleMistake`, `barsCaseCount`, `solvedSpec`.
+- Scène : axe muet (`scaleToChoose`) ; PDF : ligne « Une graduation vaut : ____ » (compilée par
+  typst.ts à part : elle passe, un témoin cassé est refusé).
+- Générateur : case échelle d'abord (`buildAnswerOf` point 0 = `adaptedScale`), cases montrées
+  (`instance-generator`) par `barsCaseCount`.
+- Écran : boutons d'échelle, « Choisis d’abord l’échelle. », barres gardées / effacées au changement ;
+  correction et copie corrigée à l'échelle juste.
+- Vu en vrai (port 5178, `teacher@local.test`, `/aide-ecriture/blocs/statistiques`, Playwright, 1100 et
+  375 px) : 5 choisi, axe 0 → 50, Gammaville montée à 18 au doigt.
