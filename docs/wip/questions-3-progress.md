@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 3 écrit (PR à ouvrir)._
+_Mis à jour le 2026-10-29, après #1981._
 
-- **État** : lot 3 (Thalès et trigonométrie) écrit, 6 modèles, specs et tirages verts, essayé en base locale
-  (§ 10.6) ; PR des fichiers.
-- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --dir
-scripts/questions/3-lot-3 --publier` (brouillons en prod) ; relever les `id`, migration nœud + tag (§ 10.2).
-- **En attente de David** : le `--publier` des brouillons après le merge.
+- **État** : lot 3 (Thalès et trigonométrie, 6 modèles) mergé (#1981), pas encore en prod (§ 10.6).
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-3
+--publier` (brouillons en prod) ; relever les `id` au MCP ; migration nœud + tag (§ 10.2), test
+  d'intégration, `security-auditor`, `db:migrate` ; page à cocher ; publication.
+- **En attente de David** : le `--publier` des 6 brouillons ; le sort du dossier `../ubumaths-wt-questions-3`
+  (hors git, caches `.svelte-kit`, `.vite`, `node_modules` d'un ancien worktree) ; Pythagore 4e à signaler.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; une variable ne vaut jamais une lettre (relue comme variable :
-  lettres écrites par des `{{if}}` bout à bout) ; une valeur tirée dans une figure doit être décimale (`;d`).
-- **Worktree / branche** : `../ubumaths-wt-questions-3-lot-3`, `feat/questions-3-lot-3` (le dossier
-  `../ubumaths-wt-questions-3` reste, hors git : caches `.svelte-kit`, `.vite`, `node_modules` ; à retirer ?).
+  du mode auto → David les lance avec `!` ; une variable ne vaut jamais une lettre (lettres par `{{if}}` bout
+  à bout) ; valeur tirée dans une figure en décimal (`;d`) ; aperçu admin sur `127.0.0.1`, pas `localhost`.
+- **Worktree / branche** : aucun (`ubumaths-wt-questions-3-lot-3` retiré après #1981).
 
 ## 1. Relevé (prod, 2026-10-28)
 
