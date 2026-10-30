@@ -9,9 +9,9 @@ status: en cours
 _Mis à jour le 2026-10-30, après #2023 (lot 3 commencé)._
 
 - **État** : lots 1 (#2003) et 2 (#2023) **mergés**, rien en prod ; lot 3 (` ```solide ` affichage) :
-  spécification écrite (§ 8), **questions 8 à 12 posées à David**.
-- **Prochaine action** : réponses aux Q8-Q12 → tests rouges → implémentation (modèle : #2003).
-- **En attente de David** : Q8-Q12 (§ 8).
+  spécification validée (§ 8), tests puis code.
+- **Prochaine action** : tests rouges → implémentation (modèle : #2003).
+- **En attente de David** : rien.
 - **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables
   (`wrapDynamicImport`, page fermée, aussi sur `main`) → relancer par petits lots en local, relancer le shard
   en CI ; `/aide-ecriture/blocs/*` réservé au prof et Chrome n'ouvre pas `127.0.0.1` → aperçu par capture du
@@ -375,3 +375,7 @@ cotes: cm
     cavalière stricte qui les pencherait), ou cavalière stricte ? _Reco : à plat._
 12. **Prismes** du lot : triangle isocèle et triangle rectangle, base en face avant (vraie grandeur) ; les
     autres bases plus tard ? _Reco : oui._
+
+**Réponse de David (2026-10-30)** : « je te suis » — proportions, plus grand côté 4 cm (Q8) ; `cotes:` dans
+ce lot (Q9) ; ABCD la face du bas, E sur A (Q10) ; ellipses à plat (Q11) ; prismes à base triangle isocèle
+et triangle rectangle, en face avant (Q12). Spécification validée.

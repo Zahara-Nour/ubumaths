@@ -24,7 +24,7 @@
  * @module ubumark/utils/espace-scene
  */
 
-import type { EspaceSpec } from '../types/espace';
+import type { CubesSpec } from '../types/espace';
 
 // ============================================================================
 // TYPES
@@ -189,7 +189,7 @@ function columnsView(columns: number[]): EspacePolygon[] {
 }
 
 /** Le dessin d'un assemblage, dans sa vue */
-export function buildEspaceScene(spec: EspaceSpec): EspaceScene {
+export function buildEspaceScene(spec: CubesSpec): EspaceScene {
 	const { heights, view } = spec;
 	switch (view) {
 		case 'perspective':
@@ -206,7 +206,7 @@ export function buildEspaceScene(spec: EspaceSpec): EspaceScene {
 }
 
 /** Nom accessible : la vue seule, JAMAIS le nombre de cubes (ce serait la réponse) */
-export function espaceLabel(spec: EspaceSpec): string {
+export function espaceLabel(spec: CubesSpec): string {
 	switch (spec.view) {
 		case 'perspective':
 			return 'Assemblage de cubes en perspective';

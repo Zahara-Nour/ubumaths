@@ -11,8 +11,9 @@
  * ```
  *
  * Un seul nœud `espace` pour tous les blocs « d'espace » : le genre (`kind`
- * de la spécification) dit ce qu'on dessine. Au lot 1 SEUL le genre `cubes`
- * existe ; les genres `solide` et `patron` viendront ensuite.
+ * de la spécification) dit ce qu'on dessine : `cubes` (assemblage) et `solide`
+ * (cube, pavé, prisme, pyramide, cylindre, cône, boule) ; `patron` viendra
+ * ensuite.
  *
  * Le dessin (polygones) est calculé par `utils/espace-scene.ts`, partagé
  * écran / PDF.
@@ -27,7 +28,7 @@ import type { BaseNode } from './ast';
 // ============================================================================
 
 /** Les mots d'ouverture (```mot) des blocs d'espace, un par genre */
-export const ESPACE_FENCES = ['cubes'] as const;
+export const ESPACE_FENCES = ['cubes', 'solide'] as const;
 
 export type EspaceKind = (typeof ESPACE_FENCES)[number];
 
@@ -55,6 +56,34 @@ export type CubesSideView = (typeof CUBES_SIDE_VIEWS)[number];
  */
 export const CUBES_KEYS = ['hauteurs', 'vue', 'dessiner', 'retrouver', 'case'] as const;
 
+/** Les clés du bloc ```solide */
+export const SOLIDE_KEYS = ['forme', 'sommets', 'marquer', 'cotes', 'cachees'] as const;
+
+/**
+ * Les formes d'un ```solide (mot de `forme:`, puis la base s'il y a lieu) et le
+ * nombre de leurs dimensions.
+ */
+export const SOLIDE_FORMS = {
+	cube: 1,
+	pave: 3,
+	'prisme-triangle': 3,
+	'prisme-triangle-rectangle': 3,
+	'pyramide-carree': 2,
+	'pyramide-rectangle': 3,
+	'pyramide-triangle': 2,
+	cylindre: 2,
+	cone: 2,
+	boule: 1
+} as const;
+
+export type SolideForm = keyof typeof SOLIDE_FORMS;
+
+/** Unités de `cotes:` (`''` : `cotes: oui`, nombres sans unité) */
+export const SOLIDE_UNITS = ['cm', 'mm', 'm'] as const;
+
+/** Rapport le plus grand permis entre deux dimensions d'un solide */
+export const SOLIDE_MAX_RATIO = 20;
+
 /** Message à l'élève (et dans le PDF) pour un bloc en erreur */
 export const ESPACE_UNAVAILABLE = 'Solide indisponible';
 
@@ -69,13 +98,45 @@ export const ESPACE_UNAVAILABLE = 'Solide indisponible';
  * dernière rangée = DEVANT ; colonnes de gauche à droite. Les rangées et
  * colonnes vides au bord sont déjà retirées, un trou intérieur reste.
  */
-export type EspaceSpec = {
+export type EspaceSpec = CubesSpec | SolideSpec;
+
+export interface CubesSpec {
 	kind: 'cubes';
 	heights: number[][];
 	view: CubesView;
 	/** Geste de l'élève (lot 2) ; absent : affichage seul */
 	task?: CubesTask;
-};
+}
+
+/**
+ * Un solide en perspective cavalière (```solide, lot 3).
+ *
+ * Les sommets sont numérotés dans l'ordre documenté de `sommets:` (celui de
+ * `solideTopology`) : cube, pavé ABCDEFGH (ABCD en bas, E sur A) ; prisme ABC
+ * devant, DEF derrière ; pyramide S puis la base ; cône S, O ; cylindre O, O' ;
+ * boule O.
+ */
+export interface SolideSpec {
+	kind: 'solide';
+	form: SolideForm;
+	/** Dans l'ordre de `forme:` (proportions : le dessin est mis à l'échelle) */
+	dims: number[];
+	/** Nom de chaque sommet (`null` : sans nom, `-`) ; `null` : aucun nom */
+	names: (string | null)[] | null;
+	marks: SolideMark[];
+	/** Écrire les dimensions sur le dessin ; `unit: ''` : sans unité */
+	cotes: { unit: '' | (typeof SOLIDE_UNITS)[number] } | null;
+	/** Arêtes cachées en tirets (`cachees: non` : tout en plein) */
+	hidden: boolean;
+	/** Aucun geste (lot 3) : `spec.task` se lit sans savoir le genre */
+	task?: undefined;
+}
+
+/** Ce que `marquer:` désigne ; `label` : sa lecture (« face ABCD », « face du dessus ») */
+export type SolideMark =
+	| { kind: 'face'; vertices: number[]; label: string }
+	| { kind: 'arete'; vertices: [number, number]; label: string }
+	| { kind: 'sommet'; vertex: number; label: string };
 
 /**
  * Geste de l'élève sur un assemblage :

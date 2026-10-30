@@ -40,14 +40,15 @@
 	const authoring = readAuthoringErrors();
 	let errorsVisible = $derived(showErrors ?? authoring());
 
-	let scene = $derived(node.spec === null ? null : buildEspaceScene(node.spec));
+	let spec = $derived(node.spec?.kind === 'cubes' ? node.spec : null);
+	let scene = $derived(spec === null ? null : buildEspaceScene(spec));
 
 	/** Sommets d'un polygone, au format de l'attribut `points` */
 	const polygonPoints = (points: { x: number; y: number }[]) =>
 		points.map((p) => `${p.x + ESPACE_MARGIN},${p.y + ESPACE_MARGIN}`).join(' ');
 </script>
 
-{#if node.spec === null || scene === null || node.errors.length > 0}
+{#if spec === null || scene === null || node.errors.length > 0}
 	{#if errorsVisible}
 		<div
 			class="cubes-erreur rounded-md border border-destructive p-3 text-sm text-foreground {className}"
@@ -74,7 +75,7 @@
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox="0 0 {width} {height}"
 			role="img"
-			aria-label={espaceLabel(node.spec)}
+			aria-label={espaceLabel(spec)}
 			class="cubes-figure"
 			style:width="{width * ESPACE_CM_PER_UNIT}cm"
 			style:aspect-ratio="{width} / {height}"
