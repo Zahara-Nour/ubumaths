@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2003._
+_Mis à jour le 2026-10-30, lot 2 en PR._
 
-- **État** : lot 1 (` ```cubes `, affichage) **mergé** (#2003), pas en prod ; vérification manuelle notée dans `verifications-manuelles.md`.
-- **Prochaine action** : lot 2 — gestes `dessiner:` (colorier une vue) et `retrouver:` (hauteurs dans la vue de dessus, jugé « mêmes vues »). Écrire d'abord sa spécification détaillée (comme le § 6), la faire valider, puis TDD (tests rouges VUS avant le code). Modèle du geste colorier : ` ```partage ` `colorier:` (PR #1974).
+- **État** : lot 2 (gestes `dessiner:` / `retrouver:`, § 7) codé, revu (code-reviewer Opus : 1 défaut corrigé), PR ouverte sur `feat/solides-gestes` ; lot 1 mergé (#2003), rien en prod.
+- **Prochaine action** : PR du lot 2 verte → merge → vérification manuelle à noter (`verifications-manuelles.md` : colorier une vue, retrouver des hauteurs, au téléphone) ; puis lot 3, ` ```solide ` affichage — spécification d'abord, comme les § 6 et 7.
 - **En attente de David** : rien.
-- **Pièges en cours** : lancer AUSSI `src/lib/theme` (garde des variables CSS) avant de pousser — elle a fait rougir la CI de #2003 ; `ls` = alias `eza`, peut bloquer une commande.
-- **Worktree / branche** : aucun (retiré après #2003) ; lot 2 : `git worktree add -b feat/solides-gestes ../ubumaths-wt-solides origin/main`.
+- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables quand la machine est chargée (WebSocket fermée, `wrapDynamicImport`) → relancer par petits lots ; la fiche `/aide-ecriture/blocs/cubes` est réservée au prof, et Chrome n'ouvre pas `127.0.0.1` → aperçu par capture du navigateur de test ; corrigé PDF (`solved`) prêt mais pas branché (comme ```partage).
+- **Worktree / branche** : `../ubumaths-wt-solides`, `feat/solides-gestes`.
 
 ---
 
