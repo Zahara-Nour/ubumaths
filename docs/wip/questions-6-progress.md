@@ -5,14 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2035._
+_Mis à jour le 2026-10-30, après #2035 et son `db:migrate`._
 
-- **État** : lots 1 à 6a en prod, publiés. Lot 6b : 7 brouillons en prod (§ 13.5) ; migration de rangement mergée
-  (#2035, audit sans finding bloquant) mais **pas jouée** : `db:migrate --dry-run` emporterait aussi
-  `20261030162200` (ce1 lot 5 bis) et `20261030162300` (3e lot 4b), d'autres sessions.
-- **Prochaine action** : quand ces deux sont jouées (ou sur le feu vert de David), `db:migrate` depuis le dépôt
-  principal, MCP (nœuds, tags, trigger `O`) ; page à cocher ; David relit ; `publier-lot`.
-- **En attente de David** : feu vert pour `db:migrate` ; verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
+- **État** : lots 1 à 6a en prod, publiés. Lot 6b : 7 brouillons en prod, rangés et tagués (§ 13.5) ; page à
+  cocher publiée : https://claude.ai/artifact/16mNd45TJvCqg4kZBYUzaJ (0 verdict).
+- **Prochaine action** : David relit ; compter les verdicts en base ; `publier-lot --dir scripts/questions/6-grandeurs`
+  en simulation, puis David `--publier`.
+- **En attente de David** : relecture de la page ; verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
 - **Pièges en cours** : 06 et 07 attendent le bloc ```ranger (à reprendre). 3a7a5711 : NE PAS publier.
   `svelte-kit sync` avant `question:specs`. M10 : version dessinée attend « assemblages de cubes ».
   Aperçu piloté : un clic ne donne pas le focus au champ ; `focus()` + clavier + Tab (§ 13.4).
@@ -1014,3 +1013,7 @@ nouvelle revue.
 - #2035 : premier run rouge (garde « doc à jour » : la ligne `Doc-inchangée:` était dans la PR, pas dans un commit) ;
   commit vide la portant, CI verte, mergée. `db:migrate --dry-run` : trois migrations en attente, dont deux d'autres
   sessions (ce1 lot 5 bis, 3e lot 4b) → arrêt, question à David.
+- Migration jouée par une autre session (son `db push` a emporté les trois) : `--dry-run` « up to date ». MCP : les
+  7 sur le nœud de leur point, un tag juste chacun, `updated_at` inchangé (12:02 UTC, publication), trigger à `O`.
+- Page à cocher générée depuis `main` (d9ed946d6), aucune alerte, publiée (`db`, 0 verdict) :
+  https://claude.ai/artifact/16mNd45TJvCqg4kZBYUzaJ.
