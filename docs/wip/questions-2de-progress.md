@@ -6,13 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2014 et le `deploy:prod` v0.58.0 (§ 26)._
+_Mis à jour le 2026-10-30, page à cocher du lot 4 publiée (§ 27)._
 
 - **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 4 (A #2008, B #1999, correctif #1997) : 11 brouillons
   rangés et tagués en prod (#2014, migration `20261030160100` jouée par David, vérifiée au MCP).
-- **Prochaine action** : page à cocher des lots 4 A et 4 B (#1997 en prod depuis v0.58.0), puis
-  publication par David.
-- **En attente de David** : rien.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 11) ; « À revoir » → § 7 de
+  la démarche ; tout OK → `publier-lot.ts` simulé sur `2de-vecteurs-a` puis `2de-vecteurs-b`.
+- **En attente de David** : relecture de la page à cocher https://claude.ai/artifact/6WwvVGdVFZG1RUj8iWFbwo,
+  puis `publier-lot.ts --publier` (les deux dossiers).
 - **Pièges en cours** : horodatage = max + 1 min de `origin/main` ET des worktrees ; `migration list
 --linked` avant `db:migrate` (migrations d'autres sessions en file → David tranche qui le lance).
 - **Worktree / branche** : aucun (worktree et branche du lot 4 retirés).
@@ -668,3 +669,10 @@ doublée d'une variation à calcul.
   `db push`. MCP : les 11 en brouillon, chacun sur la sous-notion de son point, un tag chacun, le bon ;
   `updated_at` préservé.
 - `deploy:prod` v0.58.0 (2026-10-30, demandé par David) : #1997 en prod ; build Vercel prêt.
+
+## 27. Lot 4, page à cocher (2026-10-30)
+
+- `page-a-cocher.ts` sur les 11 fichiers des deux dossiers réunis (copie dans le scratchpad : le script ne
+  prend qu'un `--dir`) : les 11 ids du § 25 retrouvés, `draft`, aucune alerte. Page (capacité `db`,
+  collection `verdicts` vide au départ) : https://claude.ai/artifact/6WwvVGdVFZG1RUj8iWFbwo
+- Publication : `publier-lot.ts` une fois par dossier (`2de-vecteurs-a`, puis `2de-vecteurs-b`).
