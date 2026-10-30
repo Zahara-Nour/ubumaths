@@ -79,6 +79,7 @@
 	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
 	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
 	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
+	import PatronGeste from '$lib/components/markdown/nodes/PatronGeste.svelte';
 	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
 	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
@@ -509,7 +510,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled)'
+					'.construire-ajouter:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;
@@ -989,7 +990,27 @@
 						/>
 					</div>
 				{/if}
-			{:else if node.type === 'espace' && node.caseIndex !== undefined && node.spec?.task !== undefined && node.errors.length === 0}
+			{:else if node.type === 'espace' && node.genre === 'patron' && node.caseIndex !== undefined && node.spec?.task !== undefined && node.errors.length === 0}
+				<!-- Patron à geste : l'élève touche des faces, ou pose les faces manquantes -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : les faces attendues, ou le patron du prof -->
+					<BuildAnswer kind="patron" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<PatronGeste
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'espace' && node.genre === 'cubes' && node.caseIndex !== undefined && node.spec?.task !== undefined && node.errors.length === 0}
 				<!-- Assemblage de cubes à geste : l'élève colorie une vue ou écrit les hauteurs -->
 				{@const caseIndex = node.caseIndex}
 				{@const state = inputStates[caseIndex]}

@@ -89,7 +89,10 @@ export const SOLIDE_MAX_RATIO = 10;
 export const SOLIDE_MAX_DIMENSION = 1000;
 export const SOLIDE_MAX_DECIMALS = 3;
 
-/** Les clés du bloc ```patron */
+/**
+ * Les clés du bloc ```patron (`designer:`, `completer:` : gestes de l'élève,
+ * lot 5 ; `case:` posée par le générateur de questions)
+ */
 export const PATRON_KEYS = [
 	'solide',
 	'forme',
@@ -100,8 +103,14 @@ export const PATRON_KEYS = [
 	'sommets',
 	'faces',
 	'marquer',
-	'cotes'
+	'cotes',
+	'designer',
+	'completer',
+	'case'
 ] as const;
+
+/** Faces retirées par `completer:` : de 1 à 3 */
+export const PATRON_COMPLETE_MAX = 3;
 
 /** Les solides qui ont un patron (```patron, lot 4) : ceux de ```solide sans le cône ni la boule */
 export const PATRON_SOLIDS = [
@@ -208,9 +217,31 @@ export interface PatronSpec {
 	numbers: boolean;
 	marks: PatronMark[];
 	cotes: { unit: '' | (typeof SOLIDE_UNITS)[number] } | null;
-	/** Aucun geste (lot 4) */
-	task?: undefined;
+	/** Geste de l'élève (lot 5) ; absent : affichage seul */
+	task?: PatronTask;
 }
+
+/**
+ * Ce que `designer:` fait toucher, calculé par le pliage : la face opposée à la
+ * face marquée, ses voisines, les faces qui se touchent en un sommet, la face
+ * qui devient une face nommée du solide.
+ */
+export type PatronTarget =
+	| { kind: 'opposee' }
+	| { kind: 'voisines' }
+	| { kind: 'sommet'; name: string }
+	| { kind: 'face'; name: string };
+
+/**
+ * Geste de l'élève sur un patron (lot 5, § 10 du journal) :
+ * - `designer` : l'élève touche des faces ; `faces` = les faces attendues (ordre
+ *   de lecture, de 0), calculées par le pliage ;
+ * - `completer` : les cases `removed` (ordre de lecture, de 0) sont retirées du
+ *   patron du cube, l'élève pose autant de faces ; juste si tout se plie en cube.
+ */
+export type PatronTask =
+	| { kind: 'designer'; target: PatronTarget; faces: number[] }
+	| { kind: 'completer'; removed: number[] };
 
 /** Ce que `marquer:` désigne sur un patron : des faces du dessin (de 0), ou un sommet du solide */
 export type PatronMark =

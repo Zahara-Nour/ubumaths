@@ -5,7 +5,8 @@
 	Aiguillage par genre : ```cubes → `Cubes.svelte` ; assemblage à geste
 	(`dessiner:`, `retrouver:`) hors question (cours, aperçu) → `CubesGeste.svelte`,
 	le geste sans jugement ; ```solide → `Solide.svelte` ; ```patron →
-	`Patron.svelte` (chantier `solides`, ADR 0034).
+	`Patron.svelte`, ou `PatronGeste.svelte` pour un patron à geste (`designer:`,
+	`completer:`) hors question (chantier `solides`, ADR 0034).
 
 	@module components/markdown/nodes/Espace
 -->
@@ -13,6 +14,7 @@
 	import type { EspaceNode } from '$lib/ubumark/types/espace';
 	import Cubes from './Cubes.svelte';
 	import CubesGeste from './CubesGeste.svelte';
+	import PatronGeste from './PatronGeste.svelte';
 	import Solide from './Solide.svelte';
 	import Patron from './Patron.svelte';
 
@@ -28,6 +30,8 @@
 
 {#if node.genre === 'solide'}
 	<Solide {node} {showErrors} class={className} />
+{:else if node.genre === 'patron' && node.spec?.kind === 'patron' && node.spec.task && node.errors.length === 0}
+	<PatronGeste {node} class={className} />
 {:else if node.genre === 'patron'}
 	<Patron {node} {showErrors} class={className} />
 {:else if node.genre === 'cubes' && node.spec?.kind === 'cubes' && node.spec.task && node.errors.length === 0}

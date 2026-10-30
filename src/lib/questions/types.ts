@@ -680,10 +680,19 @@ export type ResolvedVariable = SharedResolvedVariable;
  * Genre d'un bloc qui porte sa case et dont la réponse est sa valeur : à construire
  * (```collection, ```monnaie, `construire:`) ou à placer (```line, ```horloge,
  * ```barres, `placer:`), des étiquettes à ranger (```ranger), ou une figure à colorier
- * (```partage, `colorier:`), ou un assemblage de cubes à geste (```cubes, `dessiner:` / `retrouver:`)
+ * (```partage, `colorier:`), ou un assemblage de cubes à geste (```cubes, `dessiner:` / `retrouver:`),
+ * ou un patron à geste (```patron, `designer:` / `completer:`)
  */
 export type BuildKind =
-	'collection' | 'monnaie' | 'line' | 'horloge' | 'barres' | 'ranger' | 'partage' | 'cubes';
+	| 'collection'
+	| 'monnaie'
+	| 'line'
+	| 'horloge'
+	| 'barres'
+	| 'ranger'
+	| 'partage'
+	| 'cubes'
+	| 'patron';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
@@ -692,6 +701,7 @@ export function buildKindName(kind: BuildKind): string {
 	if (kind === 'ranger') return 'étiquettes à ranger';
 	if (kind === 'partage') return 'figure à colorier';
 	if (kind === 'cubes') return 'assemblage de cubes';
+	if (kind === 'patron') return 'patron à geste';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 
@@ -737,7 +747,10 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * Assemblage de cubes à geste (```cubes, `dessiner: face`, `retrouver: face, droite`) :
 	 * réponse attendue = la vue (`100/111`) ou `face, droite : 2 1 / 1 2`, l'élève colorie
 	 * un quadrillage ou écrit des hauteurs, juge à part (`isCubesAnswerCorrect`) : la vue à
-	 * une translation près, ou les mêmes vues.
+	 * une translation près, ou les mêmes vues. Patron à geste (```patron, `designer: opposee`,
+	 * `completer: 4`) : réponse attendue = les faces à toucher (`2,4`) ou le quadrillage du
+	 * patron du prof (`0010/0112/0010`), juge à part (`isPatronAnswerCorrect`) : mêmes faces,
+	 * ou toute pose qui se plie en cube.
 	 */
 	construire?: BuildKind;
 	/**

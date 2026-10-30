@@ -84,6 +84,8 @@ export interface PatronScene {
 	drawingHeight: number;
 	/** Faces marquées (teintées), dessinées d'abord */
 	fills: EspacePoint[][];
+	/** Le tour de chaque face, dans l'ordre de lecture (geste `designer:`) */
+	faces: EspacePoint[][];
 	/** Plis, puis contour, puis tirets */
 	lines: PatronLine[];
 	dots: EspacePoint[];
@@ -199,7 +201,7 @@ export function trimGrid(cells: boolean[][]): boolean[][] {
 }
 
 /** La grille retournée (symétrie gauche-droite), puis tournée dans le sens des aiguilles */
-export function transformGrid(cells: boolean[][], turn: PatronTurn, mirror: boolean): boolean[][] {
+export function transformGrid<T>(cells: T[][], turn: PatronTurn, mirror: boolean): T[][] {
 	let grid = mirror ? cells.map((row) => [...row].reverse()) : cells.map((row) => [...row]);
 	for (let k = 0; k < turn / 90; k++) {
 		const rows = grid.length;
@@ -941,6 +943,7 @@ export function buildPatronScene(spec: PatronSpec): PatronScene {
 		drawingWidth: (geometry.maxX - geometry.minX) * scale,
 		drawingHeight: (geometry.maxY - geometry.minY) * scale,
 		fills: fills.map((f) => f.map(shift)),
+		faces: polygons.map((f) => f.map(shift)),
 		lines: lines.map((l) => ({ ...l, points: l.points.map(shift) })),
 		dots: dots.map(shift),
 		labels: labels.map((l) => ({ ...l, at: shift(l.at) }))

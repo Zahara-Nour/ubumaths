@@ -352,9 +352,17 @@
 		stroke: var(--color-foreground);
 	}
 
+	/*
+	 * Focus : un trait, pas un `outline` — dans un SVG, l'outline se compte en
+	 * unités du dessin (1 unité = 1 cm) et recouvrirait les carreaux voisins
+	 */
+	.cubes-carreau:focus {
+		outline: none;
+	}
+
 	.cubes-carreau:focus-visible {
-		outline: 3px solid var(--color-ring);
-		outline-offset: -2px;
+		stroke: var(--color-ring);
+		stroke-width: 0.08;
 	}
 
 	.cubes-saisie-entree:focus-visible {

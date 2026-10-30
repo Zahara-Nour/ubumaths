@@ -31,7 +31,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -358,6 +358,14 @@ vide) ; juge à part, `isCubesAnswerCorrect` (`utils/cubes-gestes.ts`, dans `val
 (`CubesGeste` verrouillé, phrases de la correction, solution dessous ; sans réponse : `solution`, la vue
 coloriée ou les hauteurs du bloc) ; vide : « Tu n'as rien colorié. » / « Tu n'as pas rempli toutes les cases. »
 (`emptyBuildText` lit le geste sur le bloc).
+Patron à geste (```patron + `designer: opposee` ou `completer: 5`, chantier `solides` § 10 ;
+`espace-parser.ts`, `findPatronsToBuild`) : même chemin, `construire: 'patron'` (« patron à geste »),
+`type: 'text'`. Réponse attendue (`expectedPatronAnswer`) : les faces calculées par le pliage (`'6'`, `'1,2,4,6'`)
+ou le quadrillage du patron du prof (`'00000/00100/01112/00100/00000'`, `2` = face retirée). L'élève répond
+les faces touchées ou son quadrillage (`2` = face posée) ; juge à part, `isPatronAnswerCorrect`
+(`utils/patron-gestes.ts`) : mêmes faces, ou toute pose qui se plie en cube. Copie corrigée : `BuildAnswer`
+(`PatronGeste` verrouillé, phrase, réponse du prof dessous, « Il y a d'autres réponses justes. » pour
+`completer:`) ; vide : « Tu n'as touché aucune face. » / « Tu n'as posé aucune face. ».
 Un bloc ``choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
    compte pour **une** case, `case: N` posé en tête du bloc (`choix-parser.ts`, lu dans
    `assignBlankIndices`) : réglages en tête (`plusieurs: oui`, `melanger: non` ; défauts : une

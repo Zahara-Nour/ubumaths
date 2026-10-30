@@ -30,6 +30,7 @@ import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
 import { expectedColoringAnswer } from '$lib/ubumark/utils/partage-colorier';
 import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
 import { expectedCubesAnswer } from '$lib/ubumark/utils/cubes-gestes';
+import { expectedPatronAnswer } from '$lib/ubumark/utils/patron-gestes';
 import { timeText } from '$lib/ubumark/utils/horloge-placer';
 import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-placer';
 import { numVal } from '$lib/ubumark/utils/number-line-render';
@@ -117,8 +118,19 @@ export function buildAnswerOf(
 		const node = parseEspaceContent(source);
 		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
 		if (node.errors.length > 0) return { errors: node.errors };
-		if (node.spec?.task === undefined) return { errors: ['dessiner: ou retrouver: absent'] };
+		if (node.spec?.kind !== 'cubes' || node.spec.task === undefined) {
+			return { errors: ['dessiner: ou retrouver: absent'] };
+		}
 		return { answer: expectedCubesAnswer(node.spec) };
+	}
+	if (kind === 'patron') {
+		const node = parseEspaceContent(source, 'patron');
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0) return { errors: node.errors };
+		if (node.spec?.kind !== 'patron' || node.spec.task === undefined) {
+			return { errors: ['designer: ou completer: absent'] };
+		}
+		return { answer: expectedPatronAnswer(node.spec) };
 	}
 	if (kind === 'horloge') {
 		const node = parseHorlogeContent(source);

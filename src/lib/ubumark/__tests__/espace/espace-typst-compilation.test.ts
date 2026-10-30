@@ -122,6 +122,19 @@ it('un document avec des blocs ```cubes, ```solide et ```patron compile en PDF',
 				'',
 				'```patron',
 				'solide: cone 2 3',
+				'```',
+				'',
+				// Gestes du patron (lot 5)
+				'```patron',
+				'solide: cube',
+				'marquer: face 1',
+				'designer: opposee',
+				'```',
+				'',
+				'```patron',
+				'solide: cube',
+				'forme: 1',
+				'completer: 2 5',
 				'```'
 			].join('\n')
 		)
@@ -132,7 +145,12 @@ it('un document avec des blocs ```cubes, ```solide et ```patron compile en PDF',
 			generateEspaceTypst(parseEspaceContent(`hauteurs: 2 1 1 / 1 0 1\n${task}`), { solved: true })
 		)
 		.join('\n\n');
-	const pdf = await $typst.pdf({ mainContent: `${source}\n\n${solved}` });
+	const solvedPatrons = ['marquer: face 1\ndesigner: voisines', 'completer: 5']
+		.map((task) =>
+			generateEspaceTypst(parseEspaceContent(`solide: cube\n${task}`, 'patron'), { solved: true })
+		)
+		.join('\n\n');
+	const pdf = await $typst.pdf({ mainContent: `${source}\n\n${solved}\n\n${solvedPatrons}` });
 	expect(pdf?.length ?? 0).toBeGreaterThan(1000);
 
 	await expect($typst.pdf({ mainContent: '#place(dx: 1cm, rect(width: ' })).rejects.toBeDefined();
