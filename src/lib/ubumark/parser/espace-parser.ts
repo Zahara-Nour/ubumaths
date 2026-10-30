@@ -76,6 +76,9 @@ const HEIGHT_HINT = `une hauteur est un nombre entier de 0 à ${CUBES_LIMITS.hei
 /** Une ligne de geste (`dessiner:` ou `retrouver:`), qui fait du bloc une case */
 const TASK_LINE_REGEX = /^(dessiner|retrouver)\s*:/i;
 
+/** Une ligne de geste d'un patron (`designer:` ou `completer:`, lot 5) */
+const PATRON_TASK_LINE_REGEX = /^(designer|completer)\s*:/i;
+
 // ============================================================================
 // DÉTECTION
 // ============================================================================
@@ -123,31 +126,35 @@ export function findEspaceBlocks(lines: string[]): EspaceBlockRange[] {
 /** Ligne vue sans retrait ni marque de citation */
 const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
 
-/**
- * Les assemblages à geste (`dessiner:`, `retrouver:`) d'un énoncé, délimités comme
- * le parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en retrait
- * ou cité (l'élève ne pourrait pas y répondre : sa case n'est pas créée)
- */
-export function findCubesToBuild(markdown: string): {
+/** Un bloc d'espace à geste, délimité comme le parseur */
+export interface EspaceToBuild {
 	startIndex: number;
 	body: string[];
 	closed: boolean;
 	nested: boolean;
-}[] {
+}
+
+/**
+ * Les blocs d'espace à geste d'un genre dans un énoncé, délimités comme le
+ * parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en retrait
+ * ou cité (l'élève ne pourrait pas y répondre : sa case n'est pas créée)
+ */
+function findEspaceToBuild(markdown: string, genre: 'cubes' | 'patron'): EspaceToBuild[] {
 	const lines = markdown.split('\n');
 	const plainLines = lines.map(unquoted);
-	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
+	const taskLine = genre === 'cubes' ? TASK_LINE_REGEX : PATRON_TASK_LINE_REGEX;
+	const found: EspaceToBuild[] = [];
 	let i = 0;
 	while (i < plainLines.length) {
-		if (espaceKindOf(plainLines[i]) === 'cubes') {
+		if (espaceKindOf(plainLines[i]) === genre) {
 			const { endIndex, closed } = specialBlockEnd(
 				plainLines,
 				i,
 				(line) => BLOCK_END_REGEX.test(line),
-				CUBES_KEYS
+				genre === 'cubes' ? CUBES_KEYS : PATRON_KEYS
 			);
 			const body = plainLines.slice(i + 1, closed ? endIndex : endIndex + 1);
-			if (body.some((line) => TASK_LINE_REGEX.test(line.trim()))) {
+			if (body.some((line) => taskLine.test(line.trim()))) {
 				found.push({ startIndex: i, body, closed, nested: lines[i] !== plainLines[i] });
 			}
 			i = endIndex;
@@ -157,9 +164,24 @@ export function findCubesToBuild(markdown: string): {
 	return found;
 }
 
+/** Les assemblages à geste (`dessiner:`, `retrouver:`) d'un énoncé */
+export function findCubesToBuild(markdown: string): EspaceToBuild[] {
+	return findEspaceToBuild(markdown, 'cubes');
+}
+
 /** L'énoncé a-t-il un assemblage à geste ? */
 export function hasCubesToBuild(markdown: string): boolean {
 	return findCubesToBuild(markdown).length > 0;
+}
+
+/** Les patrons à geste (`designer:`, `completer:`) d'un énoncé (lot 5) */
+export function findPatronsToBuild(markdown: string): EspaceToBuild[] {
+	return findEspaceToBuild(markdown, 'patron');
+}
+
+/** L'énoncé a-t-il un patron à geste ? */
+export function hasPatronsToBuild(markdown: string): boolean {
+	return findPatronsToBuild(markdown).length > 0;
 }
 
 // ============================================================================

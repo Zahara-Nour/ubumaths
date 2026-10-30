@@ -20,6 +20,11 @@
  * de l'écran). ```patron (lot 4) : contour, plis en trait fin, depuis
  * `buildPatronScene`.
  *
+ * Gestes du patron (lot 5) : `designer:` → le patron, l'élève colorie au crayon ;
+ * `completer:` → les faces données sur un quadrillage en pointillés, l'élève
+ * dessine la face manquante. `solved` : les faces attendues, ou les faces
+ * retirées du patron du prof, en gris.
+ *
  * Un bloc en erreur devient le cadre neutre « Solide indisponible » — jamais
  * une erreur de compilation (une seule erreur Typst fait échouer toute la fiche).
  *
@@ -51,6 +56,7 @@ import {
 	type SolideLabel
 } from '../utils/espace-solides';
 import { PATRON_FOLD_STROKE, buildPatronScene, type PatronLine } from '../utils/espace-patrons';
+import { expectedPatronAnswer, readCompleterAnswer } from '../utils/patron-gestes';
 
 // ============================================================================
 // CONSTANTES
@@ -202,13 +208,14 @@ function labelsTypst(labels: SolideLabel[]): string[] {
 	});
 }
 
-/** Un patron : contour, plis en trait fin, tirets */
-function patronTypst(spec: PatronSpec): string {
+/** Un patron : contour, plis en trait fin, tirets ; `solved` : faces de `designer:` en gris */
+function patronTypst(spec: PatronSpec, solved: boolean): string {
 	const scene = buildPatronScene(spec);
 	const at = (p: { x: number; y: number }) =>
 		`(${cm(p.x + ESPACE_MARGIN)}, ${cm(p.y + ESPACE_MARGIN)})`;
 	const content: string[] = [];
-	for (const fill of scene.fills) {
+	const wanted = solved && spec.task?.kind === 'designer' ? spec.task.faces : [];
+	for (const fill of [...scene.fills, ...wanted.map((i) => scene.faces[i])]) {
 		content.push(
 			`  #place(top + left, polygon(fill: luma(${MARKED_FACE_LUMA}), stroke: none, ${fill.map(at).join(', ')}))`
 		);
@@ -231,6 +238,40 @@ function patronTypst(spec: PatronSpec): string {
 	return boxTypst(scene.width, scene.height, content);
 }
 
+/** Côté d'une case du quadrillage de `completer:`, en unités (1 cm) */
+const COMPLETER_CELL = 1.2;
+
+/**
+ * Le quadrillage de `completer:` : les faces données, les autres cases en
+ * pointillés ; `solved` : les faces retirées du patron du prof, en gris
+ */
+function completerTypst(spec: PatronSpec, solved: boolean): string {
+	const frame = readCompleterAnswer(expectedPatronAnswer(spec)) ?? [];
+	const dash = `(${SOLIDE_DASH.map(cm).join(', ')})`;
+	const content: string[] = [];
+	const square = (r: number, c: number) =>
+		unitSquare(c, r).map((p) => ({ x: p.x * COMPLETER_CELL, y: p.y * COMPLETER_CELL }));
+	const pointsAt = (points: { x: number; y: number }[]) =>
+		points.map((p) => `(${cm(p.x + ESPACE_MARGIN)}, ${cm(p.y + ESPACE_MARGIN)})`).join(', ');
+	frame.forEach((row, r) =>
+		row.forEach((cell, c) => {
+			if (cell === 0 || (cell === 2 && !solved)) {
+				content.push(
+					`  #place(top + left, polygon(fill: none, stroke: (paint: luma(150), thickness: ${cm(PATRON_FOLD_STROKE)}, dash: ${dash}), ${pointsAt(square(r, c))}))`
+				);
+			}
+		})
+	);
+	frame.forEach((row, r) =>
+		row.forEach((cell, c) => {
+			if (cell === 1 || (cell === 2 && solved)) {
+				content.push(polygonTypst(square(r, c), cell === 2 ? COLORED_LUMA : ESPACE_LUMA.case));
+			}
+		})
+	);
+	return boxTypst((frame[0]?.length ?? 0) * COMPLETER_CELL, frame.length * COMPLETER_CELL, content);
+}
+
 /** Typst d'un bloc d'espace ; `solved` : corrigé d'un geste */
 export function generateEspaceTypst(node: EspaceNode, options: { solved?: boolean } = {}): string {
 	const spec = node.spec;
@@ -239,11 +280,13 @@ export function generateEspaceTypst(node: EspaceNode, options: { solved?: boolea
 	if (spec.kind === 'solide') {
 		return ['#align(center)[#block(breakable: false)[', solideTypst(spec), ']]'].join('\n');
 	}
+	const solved = options.solved ?? false;
 	if (spec.kind === 'patron') {
-		return ['#align(center)[#block(breakable: false)[', patronTypst(spec), ']]'].join('\n');
+		const figure =
+			spec.task?.kind === 'completer' ? completerTypst(spec, solved) : patronTypst(spec, solved);
+		return ['#align(center)[#block(breakable: false)[', figure, ']]'].join('\n');
 	}
 
-	const solved = options.solved ?? false;
 	const task = spec.task;
 	let figures: string[];
 	if (task?.kind === 'dessiner') {

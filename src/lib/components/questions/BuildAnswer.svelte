@@ -37,6 +37,7 @@
 	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
 	import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
 	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
+	import PatronGeste from '$lib/components/markdown/nodes/PatronGeste.svelte';
 	import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 	import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
@@ -92,6 +93,7 @@
 	let ranger = $derived(kind === 'ranger' ? parseRangerContent(source) : null);
 	let partage = $derived(kind === 'partage' ? parsePartageContent(source) : null);
 	let cubes = $derived(kind === 'cubes' ? parseEspaceContent(source) : null);
+	let patron = $derived(kind === 'patron' ? parseEspaceContent(source, 'patron') : null);
 </script>
 
 {#if collection?.spec?.build !== undefined}
@@ -167,6 +169,13 @@
 	{:else}
 		<!-- La réponse juste, sans geste : la vue coloriée, ou les hauteurs du bloc -->
 		<CubesGeste node={cubes} solution />
+	{/if}
+{:else if patron?.spec?.task !== undefined && patron.errors.length === 0}
+	{#if locked}
+		<PatronGeste node={patron} answer={locked} showControls={false} />
+	{:else}
+		<!-- La réponse juste, sans geste : les faces attendues, ou le patron du prof -->
+		<PatronGeste node={patron} solution />
 	{/if}
 {:else if horloge?.spec?.placer !== undefined}
 	{@const spec = horloge.spec}

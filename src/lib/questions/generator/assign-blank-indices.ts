@@ -35,7 +35,7 @@ import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
-import { findCubesToBuild } from '$lib/ubumark/parser/espace-parser';
+import { findCubesToBuild, findPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
 import { buildCaseCount } from './build-answer';
 import { buildKindName, type BuildKind } from '../types';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
@@ -338,7 +338,8 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	barres: 'Un diagramme en barres à construire',
 	ranger: 'Des étiquettes à ranger',
 	partage: 'Une figure à colorier',
-	cubes: 'Un assemblage de cubes à geste'
+	cubes: 'Un assemblage de cubes à geste',
+	patron: 'Un patron à geste'
 };
 
 const buildNestedMessage = (kind: BuildKind) =>
@@ -454,7 +455,8 @@ function markBuildBlocks(statement: string): {
 		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const })),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
-		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const }))
+		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
+		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
 	const marked = found.filter((b) => !b.nested);
@@ -638,12 +640,14 @@ export function assignBlankIndices(
 						counter++;
 						// Horloge : la réponse est une heure (`9 h 25`), étiquettes : une position
 						// (`2`), figure à colorier : des rangs (`1, 4`), assemblage de cubes : un
-						// quadrillage ou des hauteurs ; jamais lues comme un calcul
+						// quadrillage ou des hauteurs, patron : des faces ou un quadrillage ;
+						// jamais lues comme un calcul
 						blankTypes.push(
 							build.kind === 'horloge' ||
 								build.kind === 'ranger' ||
 								build.kind === 'partage' ||
-								build.kind === 'cubes'
+								build.kind === 'cubes' ||
+								build.kind === 'patron'
 								? 'text'
 								: 'math'
 						);

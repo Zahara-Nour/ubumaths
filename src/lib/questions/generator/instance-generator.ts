@@ -61,7 +61,7 @@ import {
 } from '$lib/ubumark/parser/ranger-parser';
 import { rangerOrder } from '$lib/ubumark/utils/ranger';
 import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
-import { hasCubesToBuild } from '$lib/ubumark/parser/espace-parser';
+import { hasCubesToBuild, hasPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
 import type { RangerSign } from '$lib/ubumark/types/ranger';
 import { buildAnswerOf } from './build-answer';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
@@ -141,6 +141,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'ranger') return 'l’étiquette à sa place (bloc ranger)';
 	if (kind === 'partage') return 'la fraction du bloc partage (colorier:)';
 	if (kind === 'cubes') return 'la vue ou les vues du bloc cubes (dessiner:, retrouver:)';
+	if (kind === 'patron') return 'les faces du bloc patron (designer:, completer:)';
 	return `la valeur du bloc ${kind} (construire:)`;
 }
 
@@ -542,7 +543,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasBarsToPlace(String(resolvedStatement)) ||
 				hasRangerToPlace(String(resolvedStatement)) ||
 				hasPartageToColorier(String(resolvedStatement)) ||
-				hasCubesToBuild(String(resolvedStatement))) &&
+				hasCubesToBuild(String(resolvedStatement)) ||
+				hasPatronsToBuild(String(resolvedStatement))) &&
 			getQuestionType({ options: template.options }) === 'fill_in_blanks';
 		if (resolvedVariation.blanks || hasOperationBlock) {
 			// 7a. Fill-in-blanks pipeline
@@ -717,7 +719,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push(
-						`${kind === 'cubes' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+						`${kind === 'cubes' || kind === 'patron' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
 					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {

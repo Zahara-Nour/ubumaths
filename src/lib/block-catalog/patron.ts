@@ -60,6 +60,7 @@ export const patronEntry: BlockCatalogEntry = {
 		'Le bloc déplie le solide de ```solide : chaque coin du patron porte le nom du sommet du solide sur lequel il vient une fois plié, si bien qu’un même nom revient plusieurs fois. Le contour est en trait plein, les plis en trait fin. Les patrons du cube et du pavé se choisissent par leur numéro (les 11 patrons et 8 faux patrons sont dessinés plus bas), ou, pour le cube, en dessinant la grille de ses faces : le bloc la plie et refuse une grille qui ne fait pas ce que tu annonces. Le dessin mesure 6 cm sur son plus grand côté, à l’écran comme sur la fiche PDF. Le lecteur d’écran ne dit jamais « patron » ni le nom du solide : ce peut être la réponse.',
 	settingGroups: [
 		{
+			title: 'Le patron',
 			settings: [
 				{
 					key: 'solide',
@@ -133,6 +134,25 @@ export const patronEntry: BlockCatalogEntry = {
 						'Écrit chaque longueur différente une fois, sur le bord du patron. Pyramide : le côté de la base. Prisme isocèle : la hauteur du triangle en tirets. Cylindre : le rayon (en tirets) et la hauteur ; la longueur du rectangle n’est jamais écrite.'
 				}
 			]
+		},
+		{
+			title: 'Gestes de l’élève',
+			settings: [
+				{
+					key: 'designer',
+					values: 'opposee | voisines | sommet A | face EFGH',
+					defaultValue: null,
+					description:
+						'L’élève touche une ou plusieurs faces ; rien ne lui dit combien. Les faces justes sont calculées en pliant le patron : opposee, la face opposée à la face marquée ; voisines, les faces qui ont une arête commune avec elle ; sommet A, les faces qui se touchent en A ; face EFGH, la face qui devient EFGH (noms de sommets:, ou ABCDEFGH par défaut, même cachés par -). opposee et voisines partent de la face marquée : marques-en exactement une. Ni faux patron, ni cylindre. Dans une question, ce bloc est la case.'
+				},
+				{
+					key: 'completer',
+					values: '1 à 3 numéros de faces',
+					defaultValue: null,
+					description:
+						'Cube seulement : les faces (ordre de lecture) retirées du patron. L’élève les repose sur les cases en pointillés qui touchent une face. Toute pose qui se plie en cube est juste, pas seulement celle du patron écrit. Les faces qui restent doivent se toucher. Sans sommets:, faces: numeros, marquer: ni cotes: (ils diraient où va la face). Dans une question, ce bloc est la case.'
+				}
+			]
 		}
 	],
 	examples: [
@@ -188,6 +208,39 @@ export const patronEntry: BlockCatalogEntry = {
 			explanation:
 				'La longueur du rectangle (le périmètre du disque) n’est pas écrite : c’est souvent la question.'
 		},
+		{
+			title: 'Toucher la face opposée (geste)',
+			source: fence('patron', 'solide: cube', 'forme: 7', 'marquer: face 2', 'designer: opposee'),
+			explanation: 'L’élève touche la face qui sera en face de la face grise une fois le cube plié.'
+		},
+		{
+			title: 'Toucher les faces qui se touchent en A (geste)',
+			source: fence(
+				'patron',
+				'solide: cube',
+				'forme: 3',
+				'sommets: A - - - - - - -',
+				'designer: sommet A'
+			),
+			explanation: 'Trois faces : seul A est nommé, les autres coins restent à imaginer.'
+		},
+		{
+			title: 'Toucher la face EFGH (geste)',
+			source: fence(
+				'patron',
+				'solide: pave 4 2 3',
+				'forme: 8',
+				'sommets: A B C D - - - -',
+				'designer: face EFGH'
+			),
+			explanation: 'Relier le patron et la perspective : la face du dessus, opposée à ABCD.'
+		},
+		{
+			title: 'Poser la face manquante (geste)',
+			source: fence('patron', 'solide: cube', 'forme: 1', 'completer: 5'),
+			explanation:
+				'Il manque une face à la croix : l’élève la pose sur une case en pointillés. Les quatre bouts de la croix sont justes.'
+		},
 		...cubeNetExamples,
 		...falseNetExamples
 	],
@@ -223,6 +276,18 @@ export const patronEntry: BlockCatalogEntry = {
 			source: fence('patron', 'solide: cube', 'sommets: A B C D'),
 			message: '8 noms attendus',
 			explanation: 'Les noms des 8 sommets du cube, - pour un sommet sans nom.'
+		},
+		{
+			title: 'Une face opposée sans face de départ',
+			source: fence('patron', 'solide: cube', 'designer: opposee'),
+			message: 'marque exactement une face',
+			explanation: 'marquer: face 3 donne la face grise d’où part la question.'
+		},
+		{
+			title: 'Retirer une face qui coupe le patron en deux',
+			source: fence('patron', 'solide: cube', 'forme: 1', 'completer: 4'),
+			message: 'doivent se toucher',
+			explanation: 'Sans la face 4, la face 5 de la croix ne tient plus à rien.'
 		},
 		{
 			title: 'Coter un cube sans son côté',

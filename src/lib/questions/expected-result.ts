@@ -37,8 +37,13 @@ import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { NOTHING_COLORED } from '$lib/ubumark/utils/partage-colorier';
-import { findCubesToBuild, parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
+import {
+	findCubesToBuild,
+	findPatronsToBuild,
+	parseEspaceContent
+} from '$lib/ubumark/parser/espace-parser';
 import { MISSING_HEIGHTS, NOTHING_COLORED_CUBES } from '$lib/ubumark/utils/cubes-gestes';
+import { NOTHING_PLACED, NOTHING_TOUCHED } from '$lib/ubumark/utils/patron-gestes';
 import { buildCaseCount } from './generator/build-answer';
 import {
 	validateAnswerDetailed,
@@ -183,6 +188,10 @@ function emptyBuildText(kind: BuildKind, source: string): string {
 			? MISSING_HEIGHTS
 			: NOTHING_COLORED_CUBES;
 	}
+	if (kind === 'patron') {
+		const spec = parseEspaceContent(source, 'patron').spec;
+		return spec?.task?.kind === 'completer' ? NOTHING_PLACED : NOTHING_TOUCHED;
+	}
 	return isPlaceKind(kind) ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
 }
 
@@ -294,7 +303,8 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const })),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
-		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const }))
+		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
+		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {

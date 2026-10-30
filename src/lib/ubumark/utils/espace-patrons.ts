@@ -84,6 +84,8 @@ export interface PatronScene {
 	drawingHeight: number;
 	/** Faces marquées (teintées), dessinées d'abord */
 	fills: EspacePoint[][];
+	/** Le tour de chaque face, dans l'ordre de lecture (geste `designer:`) */
+	faces: EspacePoint[][];
 	/** Plis, puis contour, puis tirets */
 	lines: PatronLine[];
 	dots: EspacePoint[];
@@ -941,6 +943,7 @@ export function buildPatronScene(spec: PatronSpec): PatronScene {
 		drawingWidth: (geometry.maxX - geometry.minX) * scale,
 		drawingHeight: (geometry.maxY - geometry.minY) * scale,
 		fills: fills.map((f) => f.map(shift)),
+		faces: polygons.map((f) => f.map(shift)),
 		lines: lines.map((l) => ({ ...l, points: l.points.map(shift) })),
 		dots: dots.map(shift),
 		labels: labels.map((l) => ({ ...l, at: shift(l.at) }))

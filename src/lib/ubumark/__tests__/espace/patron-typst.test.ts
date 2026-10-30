@@ -38,6 +38,27 @@ describe('bloc ```patron au PDF', () => {
 		expect(typst('solide: cone 2 3')).toContain(ESPACE_UNAVAILABLE);
 	});
 
+	it('designer: le patron seul ; corrigé : les faces attendues en gris', () => {
+		const lines = ['solide: cube', 'marquer: face 1', 'designer: voisines'];
+		expect(count(typst(...lines), 'polygon(')).toBe(1);
+		const solved = generateEspaceTypst(parseEspaceContent(lines.join('\n'), 'patron'), {
+			solved: true
+		});
+		expect(count(solved, 'polygon(')).toBe(1 + 4);
+	});
+
+	it('completer: faces données pleines, autres cases en pointillés ; corrigé : la face retirée', () => {
+		// Croix sans sa face 5 : cadre 6 × 5 = 30 cases, 5 faces données
+		const out = typst('solide: cube', 'completer: 5');
+		expect(count(out, 'fill: luma(255)')).toBe(5);
+		expect(count(out, 'dash:')).toBe(25);
+		const solved = generateEspaceTypst(parseEspaceContent('solide: cube\ncompleter: 5', 'patron'), {
+			solved: true
+		});
+		expect(count(solved, 'fill: luma(150)')).toBe(1);
+		expect(count(solved, 'dash:')).toBe(24);
+	});
+
 	it('branché dans le générateur de document', () => {
 		expect(generateTypst(parseMarkdown('```patron\nsolide: cube\n```\n'))).toContain('curve(');
 	});
