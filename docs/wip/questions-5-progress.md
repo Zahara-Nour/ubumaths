@@ -5,18 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après la publication du lot 4b._
+_Mis à jour le 2026-10-30, après #2021._
 
-- **État** : lots 1 à 3 et **4b publiés** (2f556139, 1e68327e, 1cd9dc60, d4668b2d, relus 4/4 OK, `published`
-  vérifié au MCP) ; **4a** mergé (#1977), pas créé en prod.
-- **Prochaine action** : 4a dès que `virgule-forme-exigee` est en prod (création → migration → page à cocher →
-  publication) ; sinon choisir le lot suivant dans le relevé (§ 1) avec David.
-- **En attente de David** : la session `virgule-forme-exigee`.
-- **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
---mettre-a-jour` **et même `publier-lot.ts` en simulation** (David le lance avec `!`) ; worktree neuf :
-  `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un **message de commit** ;
-  **jamais de variable `e` ni `i`** ; saisie MathLive de l'aperçu non pilotable à l'automate ; Chrome refuse
-  parfois le redimensionnement à 390 px.
+- **État** : lots 1 à 3 et **4b publiés** (2f556139, 1e68327e, 1cd9dc60, d4668b2d) ; **4a** mergé (#1977), pas créé
+  en prod ; correctif `virgule-forme-exigee` **mergé (#2021)**, pas en prod (`0,5n` nu accepté en forme exigée).
+- **Prochaine action** : lot 5 (reste des lots A du § 3 : grandeurs, données / probabilités, proportionnalité),
+  phase 0 à proposer à David ; 4a (création → migration → page à cocher → publication) après le `deploy:prod`
+  qui livre #2021.
+- **En attente de David** : le choix du lot 5 ; le `deploy:prod` (pour 4a).
+- **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ET `main` (doublon 20261030140000 vu le
+  2026-10-30) ; le classifieur refuse `create-questions --mettre-a-jour` **et même `publier-lot.ts` en simulation**
+  (David le lance avec `!`) ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ;
+  `Doc-inchangée:` dans un **message de commit** ; **jamais de variable `e` ni `i`** ; saisie MathLive de
+  l'aperçu non pilotable à l'automate ; Chrome refuse parfois le redimensionnement à 390 px.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -349,3 +350,8 @@ Deux lots :
 - Page à cocher https://claude.ai/artifact/C1ka72wJ4FC41UxmK4Rrhg : alertes = homonymes attendus seulement
   (10 → 1cd9dc60 niv. 1, 11 → d4668b2d niv. 2) ; verdicts 4/4 OK, sans commentaire.
 - `publier-lot.ts` (simulation puis `--publier`) lancé par David ; MCP : les 4 en `published`. Lot 4b clos.
+
+### 15.4 Correctif de la virgule nue (2026-10-30, #2021)
+
+- `checkRequiredForm` relit la virgule nue en décimal (`mathAST/decimal-comma`, règle de #520), sauf écriture à
+  virgule séparatrice jugée sur la réponse. Revue Opus : aucun finding bloquant ; test du couple rendu discriminant.
