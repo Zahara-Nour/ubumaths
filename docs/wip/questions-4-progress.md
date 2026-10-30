@@ -586,6 +586,16 @@ toute écriture égale acceptée (fraction non simplifiée, décimal), corrigé 
   bb4dc318-4dbc-4411-92f2-5c27a67763e0 (fréquences et probabilités) · 17a469bb-bfb8-4c3d-b11b-8e9e87929f5f
   (fluctuation des fréquences).
 
+## 23. Lot 4 : nœud et tags (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot4-rangement`)
+
+- Relevé prod (MCP, 2026-10-30) : 7 brouillons en `[4]`, sans nœud ni tag. Nœuds des points : 046, 047 →
+  Probabilités > Expériences aléatoires > événements ; 048, 079 → … > probabilité simple ; 049 → Expériences
+  aléatoires (notion) ; 050, 051 → … > fréquences.
+- Migration `20261030160000` reprise du lot 3 (horodatage après les PR ouvertes #2007, #2009, #2010). Test rouge sans
+  la migration (4 échecs, 4 sautés), vert avec (9/9) ; `types:cliquet` tenu.
+- Question d'accès : § 20.3 (personne ne gagne d'accès), validée avec la phase 0.
+- `security-auditor` : aucun finding bloquant (verrou de table hérité du gabarit, borné par `lock_timeout`).
+
 ## Note de la session 3e (2026-10-30)
 
 Pythagore (4-034, côté manquant) n'a **aucun modèle en prod** (MCP du 2026-10-30, titre « Pythagore » : 0). La 3e a
