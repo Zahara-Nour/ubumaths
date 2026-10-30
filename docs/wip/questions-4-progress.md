@@ -5,20 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, phase 0 du lot 5 proposée (§ 25)._
+_Mis à jour le 2026-10-30, après #2034._
 
-- **État** : lots 1 à 4 en prod (lot 1 en brouillon, lots 2, 3 et 4 publiés). Relevé MCP du 2026-10-30 : 34 points de
-  4e sans modèle — 017, 018, 020, 021, 023, 071 (puissances, calcul littéral) ; 060-064, 081 (programmes de calcul,
-  fonctions) ; 029-037, 072, 075, 076 (géométrie) ; 065-067 (pensée informatique) ; hors plan du § 4 : 026, 027,
-  028, 038, 068, 069, 074.
-- **Prochaine action** : lot 5 « Pythagore et triangles » (033, 034, 035, 036, 037, 072, 075) : phase 0 au § 25,
-  en attente de validation ; puis écrire `lot-4-5.py` (gabarit `lot-3-3.py`), branche `feat/questions-4-lot-5`.
-- **En attente de David** : les 3 questions du § 25.4 ; publication des 7 brouillons du lot 1.
-- **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
-  `--include-all` : réservé à David ; horodatages de migration : vérifier les PR ouvertes des autres sessions
-  (collision `20261030140000`) ; CI : « Browser connection was closed » (client, shard 2/2) = panne passagère ;
-  QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
-- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée), aucune branche en cours.
+- **État** : lots 1 à 4 en prod (lot 1 en brouillon, lots 2, 3 et 4 publiés) ; lot 5 « Pythagore et triangles »
+  (033, 034, 035, 036, 037, 072, 075) écrit et mergé (#2034, § 26), **pas encore en base prod**.
+- **Prochaine action** : David lance depuis `../ubumaths-wt-questions-4` :
+  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-5 --publier` ; puis relever les `id` (MCP),
+  migration nœud + tag (gabarit lot 4, `20261030160000`), branche `feat/questions-4-lot5-rangement`, page à cocher.
+- **En attente de David** : ce `--publier` ; garder la sonde des figures comme outil (`sonde-figures.ts`, petite PR à
+  part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication des 7
+  brouillons du lot 1.
+- **Pièges en cours** : `mtexte()` refusé dans une figure de question, invisible pour `question:specs` (§ 26) ;
+  90dca27a et acbd2280 (4-005) partiront en 3e ; `db:migrate` peut exiger `--include-all` : réservé à David ;
+  horodatages de migration : vérifier les PR ouvertes des autres sessions ; CI : « Browser connection was closed » =
+  panne passagère ; QCM = case choix.
+- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
