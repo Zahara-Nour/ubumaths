@@ -236,7 +236,7 @@ describe('hors question, dans une question, dans la copie corrigée', () => {
 						)
 					}
 				],
-				grades: ['cm1'],
+				grades: ['CM1'],
 				theme: 'Test',
 				domain: 'Test',
 				level: 1
