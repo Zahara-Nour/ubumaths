@@ -430,3 +430,42 @@ point, un point chacun, toujours brouillons, `updated_at` inchangé (création, 
   le lot). `placerText` : pas écrit en fraction (`step: 1/5`) → graduation en fraction du pas
   (`4/5`, `5/10`, `2/4`, entier `1`) ; départ hors des multiples du pas → écriture ordinaire.
   `placerAnswer` (le juge) inchangé. Test de rendu rouge sans le correctif, vert avec.
+
+## 10. Lot 3b — fractions décimales : phase 0 (à valider)
+
+Relevé MCP du 2026-10-30 : les 8 points ont 0 modèle ; tous rangés sous **Fractions : sens et
+écritures** (sous-notions ci-dessous). Rien d'approchant ailleurs : `83450f91` (CM1-026, 345/100 =
+3 + 45/100) et `160f782d` (CM1-154, 5,34 = 5 + 3/10 + 4/100) sont des points voisins, pas ceux-ci.
+Bornes `cycle3.json`, CM1 : dénominateurs **10 ou 100** partout ; 027 : numérateurs de la somme
+< 10 (4 + 1/10 + 7/100) ; 029 : jusqu'à quatre nombres, éventuellement un entier ; 152 : entre deux
+entiers consécutifs ; 153 : réponse en centièmes (14/10 < … < 15/10).
+
+Outils : tous en prod (case, `choix, `ranger v0.55.0, ```line avec `placer:`, phrase « 4/5 »
+de #2032 pas encore en prod — sans effet sur l'énoncé, seulement la phrase de correction).
+
+| #   | Point   | Sous-notion    | Modèle                                     | Variations, plages                                                                                                                                                                                                         | Catégorie, niveau                          |
+| --- | ------- | -------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| 1   | CM1-023 | définition     | Lire et écrire une fraction décimale       | V1 « vingt-trois centièmes » → case 23/100 ; V2 23/100 → ```choix (vingt-trois centièmes ; vingt-trois dixièmes ; vingt-trois centaines ; cent vingt-troisièmes) ; d 10 (n 1 à 99) ou 100 (n 1 à 999), n non multiple de d | Fractions / Apprivoiser / Ecriture, 7      |
+| 2   | CM1-027 | décomposition  | Décomposer une fraction décimale > 1       | V1 47/10 = ? + ?/10 ; V2 347/100 = ? + ?/10 + ?/100 ; entier 1 à 9, chiffres des dixièmes et centièmes 1 à 9 (jamais 0)                                                                                                    | Fractions / Apprivoiser / Décomposition, 6 |
+| 3   | CM1-028 | ordre          | Comparer deux fractions décimales          | « 7/10 … 65/100 » → ```choix < = > (`melanger: non`) ; V1 < 1, V2 > 1 (67/10 … 607/100) ; un tirage sur cinq environ donne l'égalité (7/10 et 70/100)                                                                      | Fractions / Apprivoiser / Comparer, 14     |
+| 4   | CM1-029 | ordre          | Ranger des fractions décimales             | ```ranger de 4 étiquettes : un entier, des dixièmes et des centièmes (2 ; 14/10 ; 120/100 ; 9/10), valeurs deux à deux différentes, entre 0 et 5 ; V1 croissant, V2 décroissant                                            | Fractions / Apprivoiser / Ordonner, 3      |
+| 5   | CM1-152 | ordre          | Encadrer une fraction décimale             | ? < 237/100 < ? (deux cases, entiers consécutifs) ; V1 dixièmes (n 1 à 99), V2 centièmes (n 1 à 999), n non multiple de d                                                                                                  | Fractions / Apprivoiser / Encadrer, 3      |
+| 6   | CM1-153 | ordre          | Intercaler une fraction décimale           | 14/10 < ? < 15/10 (une case) ; règle `range` stricte (comme `2e982062`, 6e) ; bornes : deux dixièmes consécutifs de 0 à 5 ; corrigé en centièmes (145/100)                                                                 | Fractions / Apprivoiser / Encadrer, 4      |
+| 7   | CM1-151 | droite graduée | Repérer un point par une fraction décimale | V1 ```line de 0 à 1 en dixièmes (0 et 1 étiquetés), point A → 7/10 ; V2 morceau de droite zoomé de 23/10 à 24/10 en centièmes (étiquettes 23/10 et 24/10), A → 237/100                                                     | Fractions / Apprivoiser / Repérage, 5      |
+| 8   | CM1-025 | droite graduée | Placer une fraction décimale               | `placer:` sur les mêmes droites : V1 0 à 1 (ou n à n + 1) en dixièmes ; V2 morceau zoomé en centièmes                                                                                                                      | Fractions / Apprivoiser / Repérage, 6      |
+
+Droites : 10 intervalles au plus (vise au doigt sur téléphone, règle du lot 3a) ; donc jamais de 0
+à 1 en centièmes, d'où le morceau de droite zoomé. `reducedFractions: off` partout (toute fraction
+égale juste, comme au lot 3a).
+
+Questions :
+
+1. **Écriture à virgule** dans les cases « fraction décimale » (023 V1, 151, 153) : refusée
+   (`requiredForm: 'fraction'`, « Écris-le sous la forme d'une fraction ») ou acceptée ? Reco :
+   refusée, c'est le point travaillé ; 0,23 viendra au lot 4 (décimaux).
+2. **153** : toute fraction strictement entre les bornes est juste (7/20 aussi, qui n'est pas
+   décimale) ? Reco : oui, la règle `range` existante ; exiger un dénominateur 10/100/1000 demande
+   une règle neuve.
+3. **Droite zoomée** de 23/10 à 24/10 pour les centièmes (151 V2, 025 V2) : d'accord ?
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
