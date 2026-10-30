@@ -5,17 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 6b en brouillons en prod, migration de rangement en PR._
+_Mis à jour le 2026-10-30, après #2035._
 
-- **État** : lots 1 à 6a en prod, publiés. Lot 6b : 7 brouillons en prod (§ 13.5), sans nœud ni tag ; migration
-  `20261030170000_questions_6_lot6b_rangement_tags.sql` + test d'intégration (14 verts, 8 rouges sans) en PR.
-- **Prochaine action** : PR mergée → `db:migrate` depuis le dépôt principal, MCP (nœuds, tags, trigger `O`) ; page à
-  cocher ; David relit ; `publier-lot`.
-- **En attente de David** : passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles`.
+- **État** : lots 1 à 6a en prod, publiés. Lot 6b : 7 brouillons en prod (§ 13.5) ; migration de rangement mergée
+  (#2035, audit sans finding bloquant) mais **pas jouée** : `db:migrate --dry-run` emporterait aussi
+  `20261030162200` (ce1 lot 5 bis) et `20261030162300` (3e lot 4b), d'autres sessions.
+- **Prochaine action** : quand ces deux sont jouées (ou sur le feu vert de David), `db:migrate` depuis le dépôt
+  principal, MCP (nœuds, tags, trigger `O`) ; page à cocher ; David relit ; `publier-lot`.
+- **En attente de David** : feu vert pour `db:migrate` ; verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
 - **Pièges en cours** : 06 et 07 attendent le bloc ```ranger (à reprendre). 3a7a5711 : NE PAS publier.
   `svelte-kit sync` avant `question:specs`. M10 : version dessinée attend « assemblages de cubes ».
   Aperçu piloté : un clic ne donne pas le focus au champ ; `focus()` + clavier + Tab (§ 13.4).
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-6b-rangement`.
+  `Doc-inchangée:` va dans un message de COMMIT (la garde CI ne lit pas la PR).
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-6b-rangement` (mergée).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1008,3 +1010,7 @@ nouvelle revue.
   158 sur « Durées > calcul de durées », 186 sur « Probabilités > Expériences aléatoires > probabilité simple ».
 - Migration `20261030170000_questions_6_lot6b_rangement_tags.sql` (générée depuis celle du lot 6a) et test
   `tests/integration/questions-6-lot6b-rangement-tags.test.ts` : 14 verts ; sans la migration, 8 rouges et 5 sautés.
+
+- #2035 : premier run rouge (garde « doc à jour » : la ligne `Doc-inchangée:` était dans la PR, pas dans un commit) ;
+  commit vide la portant, CI verte, mergée. `db:migrate --dry-run` : trois migrations en attente, dont deux d'autres
+  sessions (ce1 lot 5 bis, 3e lot 4b) → arrêt, question à David.
