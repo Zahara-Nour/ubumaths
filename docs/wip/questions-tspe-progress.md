@@ -10,16 +10,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après la publication des suites (17 modèles publiés, vérifié en base)._
+_Mis à jour le 2026-10-30, lot 0-limites et fonctions relu, page à cocher publiée._
 
-- **État** : lot 0-suites PUBLIÉ (17/17 `published`, correctif 2bf6edc7 v3 en prod) ; migration des niveaux D8 jouée.
-- **Prochaine action** : lot 0-limites et fonctions (continuité, ln, limites) dans un worktree neuf : instantané des id (`export-question-templates.ts --ids`), relecture tirage par tirage, page à cocher.
-- **En attente de David** : rien.
+- **État** : lot 0-limites (26 brouillons) vérifié, 6 corrections de texte dans `scripts/questions/tspe-0-limites/` (§ 7) ; page à cocher https://claude.ai/artifact/2D9SVXyUhRM7W7YxjNuEMA, `verdicts` vide.
+- **Prochaine action** : David lance les simulations `create-questions --mettre-a-jour` et `publier-lot` (le mode auto les refuse), relit la page ; puis `--publier --mettre-a-jour`, `publier-lot --publier`, statut relu en base.
+- **En attente de David** : simulations + relecture de la page.
 - **Pièges en cours** : `create-questions` et `publier-lot` → David ; les vieux dossiers
   `scripts/questions/<thème>-terminale/` ne concordent peut-être plus avec la base → partir des id ;
-  case choix en prod ; simulation `publier-lot` AVANT tout (collisions de niveau → migration + fichiers) ;
+  simulation `publier-lot` AVANT tout (collisions de niveau → migration + fichiers) ;
   **horodatage de migration** : max + 1 min de la prod (`migration list --linked`) juste avant de créer le fichier.
-- **Worktree / branche** : aucun (retiré après #2004) ; un worktree neuf par lot.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-0-limites`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -313,3 +313,43 @@ une seule migration pour les 14, avant toute publication ; niveaux du tableau ci
 incohérent : niveaux 0/14 ») et sans le fichier. Les autres thèmes s'exporteront de la base après la migration
 (niveaux à jour). `security-auditor` (2026-10-30) : aucun finding bloquant (14 id, niveaux et rollback recoupés
 avec la prod ; note : après `db:migrate`, vérifier que le trigger `update_question_templates_updated_at` est actif).
+
+## 7. Lot 0-limites et fonctions : vérification des brouillons
+
+_2026-10-30. Les brouillons de niveau `T_SPE` tagués d'un point des rubriques « Limites des fonctions » (hors 577-579,
+déjà au lot des suites), « Compléments sur la dérivation » hors convexité, « Continuité » et « Fonction logarithme » :
+24 modèles, plus f1963ef2 (seuil par le logarithme, TCOMP-239 seul, D3 → 447) et 8b599a53 (« Dériver g(ax + b) »,
+TSPE-408, niveau `1_SPE`). La **convexité** (37ce7759, e3e19d28, 225c8682, 08f9ad7b, c4775a3a, 98f9d4b2, e814175b,
+21840f6c, a80a780f sans tag) part au lot « convexité et intégration ». Instantané `scripts/questions/tspe-0-limites/`
+(prod), une copie par variation (82 variations, 2 tirages lus chacune), réponses des 5 cases « choix » recoupées avec
+leur option._
+
+**Mécanique** : 26 / 26 verts, 0 avertissement.
+
+**Bornes** : rien hors bornes TSPE. TCOMP (D7) : dérivées par f(ax + b), eᵘ, ln u, u² seulement (723779c8,
+50feeefd : produit, quotient, (ln x)², eᵘ, ln u, u²) ; continuité intuitive (10393ff9) ; TVI en cas strictement
+monotone (2491dd75) ; ln(√a) = ½ ln a (ffd5c051 v3) se déduit de l'équation fonctionnelle (√a × √a = a), voir C6.
+
+**Constats (tous corrigés dans les fichiers, specs vertes, tirages relus)** :
+
+- **C1** 806c10f4 v2 : « tendent vers -\infty » hors formule (LaTeX brut) → `$…$`.
+- **C2** b97dabe1 v0, v1 : coefficient 1 écrit (« 1 − 1·x⁴/eˣ », « f(x) = 1·x³/eˣ ») → `{{if:k==1||{{k}}}}`.
+- **C3** 10393ff9 v0, v1, 74b103a8 v0, 9ad36217 v0 : la réponse colorée (`\textcolor{…}{\text{…}}`) hors formule,
+  donc en LaTeX brut → `$…$`.
+- **C4** ffd5c051 v4 : « un quotient de logarithmes n'est pas ln(16 − 2) » → « n'est pas le logarithme du
+  quotient : ln 16 / ln 2 ≠ ln(16/2) ».
+- **C5** f52b93c4 v3 : « sin(1x²) » (énoncé, attendue, correction) quand a = 1 → `{{if:a==1||{{a}}}}`.
+- **C6** ffd5c051 v3 : correction par √2 = 2^{1/2} (exposant rationnel, hors programme TSPE et TCOMP) → « 2 = √2 × √2,
+  donc ln 2 = 2 ln √2 ».
+- **Niveau** : 8b599a53 passe de `1_SPE` à `T_SPE` dans son fichier (D3 de `questions-1spe`, Q3 ici) : `--mettre-a-jour`
+  écrit les niveaux (grades).
+- Écartés : « 4/(6x) » non simplifié dans une étape de 7844be9a v3 (étape intermédiaire) ; −12(−6x + 1) non développé
+  (50feeefd v3, forme acceptée).
+
+**Tags restants (migration Q3, plus tard)** : f1963ef2 → TSPE-447 ; 806c10f4 et 04ec9518 restent sur 415 (401 / 581
+« à doubler d'un modèle ou retaguer », § 3.7).
+
+**Simulations** : refusées au mode auto (« Modify Shared Resources ») → David.
+
+**Page à cocher** : https://claude.ai/artifact/2D9SVXyUhRM7W7YxjNuEMA (26 fiches), collection `verdicts` vide à la
+publication ; 2491dd75 : bloc ```variation non dessiné (le jouer dans l'aperçu).

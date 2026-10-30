@@ -1,0 +1,122 @@
+{
+	"id": "f0a6ec4e-ca55-4f43-8c4f-d7847e21578c",
+	"title": "Résoudre une inéquation avec exp",
+	"description": "eˣ > b, e⁻ˣ ⩾ k ; ensemble de solutions en intervalle (pièges : sens de l'inégalité, crochets)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions",
+	"domain": "Fonction logarithme",
+	"subdomain": "Équations et inéquations",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "]\\ln {{b}};+\\infty["
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $e^{x}>{{b}}$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|3|5|6|7|10"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln$ est strictement croissante sur $\\left]0\\,;+\\infty\\right[$ et ${{b}}>0$ : $e^{x}>{{b}}\\iff x>\\ln {{b}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left]\\ln {{b}}\\,;+\\infty\\right[}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;-\\ln {{k}}]"
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $e^{-x}\\geqslant{{k}}$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|3|5|6|7"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$e^{-x}\\geqslant{{k}}\\iff -x\\geqslant\\ln {{k}}$ ($\\ln$ est croissante).",
+					"On multiplie par $-1$ : le sens change, $x\\leqslant-\\ln {{k}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;-\\ln {{k}}\\right]}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["]\\ln 3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "3"
+			},
+			"description": "v0 : eˣ > 3 → ]ln 3;+∞[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]e^3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "3"
+			},
+			"description": "v0 : ]e³;+∞[ (ln et exp confondus)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\infty;-\\ln 2]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "v1 : e⁻ˣ ≥ 2 → ]−∞;−ln 2]",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[-\\ln 2;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "v1 : sens non changé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-\\infty;\\ln\\frac{1}{2}]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "v1 : ln(1/2) accepté",
+			"variationIndex": 1
+		}
+	]
+}

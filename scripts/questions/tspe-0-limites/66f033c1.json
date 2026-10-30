@@ -1,0 +1,145 @@
+{
+	"id": "66f033c1-32f2-4517-a38c-819fb9b32abe",
+	"title": "Résoudre une équation avec exp",
+	"description": "eˣ = b, e^(ax + b) = k ; valeur exacte (pièges : ln et exp confondus, signe)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions",
+	"domain": "Fonction logarithme",
+	"subdomain": "Équations et inéquations",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\ln {{b}}"
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{x}={{b}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|3|4|5|6|7|8|9|10|12|15"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{b}}>0$ : $e^{x}={{b}}\\iff x=\\ln {{b}}$.",
+					"$x=\\textcolor{{{color:primary.0}}}{\\ln {{b}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{\\ln {{k}}{{eval:-b;+}}}{ {{a}} }"
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{ {{a}}x{{b;+}} }={{k}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|5|6|7"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$e^{ {{a}}x{{b;+}} }={{k}}\\iff {{a}}x{{b;+}}=\\ln {{k}}$.",
+					"$x=\\textcolor{{{color:primary.0}}}{\\dfrac{\\ln {{k}}{{eval:-b;+}}}{ {{a}} }}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\ln 5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "5"
+			},
+			"description": "v0 : eˣ = 5 → ln 5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "5"
+			},
+			"description": "v0 : e⁵",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2\\ln 3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "9"
+			},
+			"description": "v0 : eˣ = 9 → 2 ln 3 accepté (#797)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\ln 9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "9"
+			},
+			"description": "v0 : eˣ = 9 → ln 9",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{9}{e}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "9"
+			},
+			"description": "v0 : ln(b) mal lu : 9/e",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{\\ln 5+2}{3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"k": "5"
+			},
+			"description": "v1 : e^{3x−2} = 5 → (ln 5 + 2)/3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{\\ln 5-2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"k": "5"
+			},
+			"description": "v1 : signe de b",
+			"variationIndex": 1
+		}
+	]
+}

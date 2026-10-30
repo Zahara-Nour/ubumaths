@@ -1,0 +1,188 @@
+{
+	"id": "b97dabe1-0c52-483e-a738-e62386d5a638",
+	"title": "Croissances comparées : exponentielle et puissances",
+	"description": "Limites de eˣ − kxⁿ et xⁿe⁻ˣ en +∞, de xⁿeˣ en −∞ (pièges : x e⁻ˣ → +∞, ∞ × 0 = 1, limite d'un seul facteur)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Limites de fonctions",
+	"subdomain": "Croissances comparées",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "+\\infty"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{x}-{{k}}x^{ {{n}} }$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Forme indéterminée « $\\infty-\\infty$ ». On factorise : $f(x)=e^{x}\\left(1-{{if:k==1||{{k}}}}\\dfrac{{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}\\right)$.",
+					"Par croissances comparées, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}=0$ : la parenthèse tend vers $1$.",
+					"Donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{+\\infty}$ : l'exponentielle l'emporte sur toute puissance."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}x^{ {{n}} }e^{-x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Forme indéterminée « $\\infty\\times0$ ». On écrit $f(x)={{if:k==1||{{k}}}}\\dfrac{{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}$.",
+					"Par croissances comparées, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{e^{x}}{{{if:n==1|x|x^{ {{n}} }}}}=+\\infty$, donc $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{{{if:n==1|x|x^{ {{n}} }}}}{e^{x}}=0$ et $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}x^{ {{n}} }e^{x}$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En $-\\infty$, ${{if:n==1|x|x^{ {{n}} }}}$ tend vers l'infini et $e^{x}$ vers $0$ : forme indéterminée « $\\infty\\times0$ ».",
+					"Par croissances comparées, $\\displaystyle\\lim_{x\\to-\\infty}{{if:n==1|x|x^{ {{n}} }}}e^{x}=0$, donc $\\displaystyle\\lim_{x\\to-\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"n": "2"
+			},
+			"description": "v0 : eˣ − 3x² → +∞",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "2"
+			},
+			"description": "v0 : −∞ (la puissance l'emporterait)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "2"
+			},
+			"description": "v0 : 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"n": "3"
+			},
+			"description": "v1 : 2x³e⁻ˣ → 0",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"n": "3"
+			},
+			"description": "v1 : +∞ (limite de x³ seule)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"n": "3"
+			},
+			"description": "v1 : k (∞ × 0 = 1)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5",
+				"n": "2"
+			},
+			"description": "v2 : 5x²eˣ en −∞ → 0",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"n": "2"
+			},
+			"description": "v2 : +∞ (limite de x² seule)",
+			"variationIndex": 2
+		}
+	]
+}

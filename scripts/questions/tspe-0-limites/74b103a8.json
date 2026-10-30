@@ -1,0 +1,81 @@
+{
+	"id": "74b103a8-2b7e-4647-b056-65a97e598659",
+	"title": "Reconnaître la courbe de ln",
+	"description": "Reconnaître la courbe de ln parmi quatre (pièges : courbe de exp, −ln x, ln(x + 1))",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions",
+	"domain": "Fonction logarithme",
+	"subdomain": "Courbe représentative",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Laquelle de ces courbes représente la fonction $\\ln$ ?\n\n````choix\n- ```courbe\n  x: -2 ; 5\n  y: -3 ; 4\n  grille: 1 ; 1\n  f(x) = ln(x)   bleu\n  taille: petite\n  description: Courbe croissante définie pour x > 0, qui passe par (1 ; 0) et plonge vers le bas près de l'axe des ordonnées.\n  ```\n- ```courbe\n  x: -2 ; 5\n  y: -3 ; 4\n  grille: 1 ; 1\n  f(x) = exp(x)   bleu\n  taille: petite\n  description: Courbe croissante définie sur tout l'axe, qui passe par (0 ; 1) et reste au-dessus de l'axe des abscisses.\n  ```\n- ```courbe\n  x: -2 ; 5\n  y: -3 ; 4\n  grille: 1 ; 1\n  f(x) = -ln(x)   bleu\n  taille: petite\n  description: Courbe décroissante définie pour x > 0, qui passe par (1 ; 0) et monte près de l'axe des ordonnées.\n  ```\n- ```courbe\n  x: -2 ; 5\n  y: -3 ; 4\n  grille: 1 ; 1\n  f(x) = ln(x+1)   bleu\n  taille: petite\n  description: Courbe croissante définie pour x > -1, qui passe par l'origine (0 ; 0).\n  ```\n````",
+			"variables": [
+				{
+					"name": "z",
+					"expression": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe de $\\ln$ passe par le point $(1\\,;0)$ ($\\ln 1=0$) et par $(e\\,;1)$.",
+					"Elle n'existe que pour $x>0$, monte (fonction croissante) et a l'axe des ordonnées pour asymptote : $\\displaystyle\\lim_{x\\to0}\\ln x=-\\infty$.",
+					"C'est la courbe $\\textcolor{{{color:primary.0}}}{\\text{croissante passant par }(1\\,;0)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v0 : courbe de ln",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v0 : courbe de exp",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v0 : −ln x",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v0 : ln(x+1)",
+			"variationIndex": 0
+		}
+	]
+}
