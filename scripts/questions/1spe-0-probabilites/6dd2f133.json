@@ -26,7 +26,7 @@
 					"expectedAnswer": "{{eval:(k*da+(10-k)*db)/1000}}"
 				}
 			],
-			"statement": "Une usine fabrique des pièces sur deux machines, A et B. {{eval:10*k}} % des pièces viennent de la machine A, les autres de la machine B. {{da}} % des pièces fabriquées par A sont défectueuses, contre {{db}} % de celles fabriquées par B.\n\nOn prend une pièce au hasard. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nConstruis un arbre pondéré qui décrit la situation, puis calcule la probabilité que la pièce soit défectueuse, en fraction irréductible.\n\n$P(D)=?$",
+			"statement": "Une usine fabrique des pièces sur deux machines, A et B. {{eval:10*k}} % des pièces viennent de la machine A, les autres de la machine B. {{da}} % des pièces fabriquées par A sont défectueuses, contre {{db}} % de celles fabriquées par B.\n\nOn prend une pièce au hasard. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nConstruis un arbre pondéré qui décrit la situation, puis calcule la probabilité que la pièce soit défectueuse. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(D)=?$",
 			"variables": [
 				{
 					"name": "k",
@@ -46,7 +46,7 @@
 				"steps": [
 					"On traduit l'énoncé : $P(A)=0.{{k}}$, $P(B)=0.{{eval:10-k}}$, $P_A(D)=0.0{{da}}$ et $P_B(D)=0.0{{db}}$. D'où l'arbre :\n\n```probtree\nA:0.{{k}}\n  D:0.0{{da}}\n  \\overline{D}:0.9{{eval:10-da}}\nB:0.{{eval:10-k}}\n  D:0.0{{db}}\n  \\overline{D}:0.9{{eval:10-db}}\n```",
 					"$A$ et $B$ forment une partition de l'univers : $P(D)=P(A\\cap D)+P(B\\cap D)$.",
-					"$P(D)=0.{{k}}\\times0.0{{da}}+0.{{eval:10-k}}\\times0.0{{db}}={{eval:k*da/1000}}+{{eval:(10-k)*db/1000}}={{eval:(k*da+(10-k)*db)/1000}}$"
+					"$P(D)=0.{{k}}\\times0.0{{da}}+0.{{eval:10-k}}\\times0.0{{db}}={{eval:k*da/1000;d}}+{{eval:(10-k)*db/1000;d}}={{eval:(k*da+(10-k)*db)/1000;d}}={{eval:(k*da+(10-k)*db)/1000}}$"
 				]
 			}
 		},
@@ -56,7 +56,7 @@
 					"expectedAnswer": "{{eval:(k*m+(10-k)*n)/100}}"
 				}
 			],
-			"statement": "Avant un contrôle, {{eval:10*k}} % des élèves d'un lycée ont révisé. Parmi ceux qui ont révisé, {{eval:10*m}} % obtiennent la moyenne ; parmi les autres, seulement {{eval:10*n}} %.\n\nOn choisit un élève au hasard. On note $R$ l'événement « l'élève a révisé » et $M$ l'événement « l'élève obtient la moyenne ».\n\nConstruis un arbre pondéré qui décrit la situation, puis calcule la probabilité que l'élève obtienne la moyenne, en fraction irréductible.\n\n$P(M)=?$",
+			"statement": "Avant un contrôle, {{eval:10*k}} % des élèves d'un lycée ont révisé. Parmi ceux qui ont révisé, {{eval:10*m}} % obtiennent la moyenne ; parmi les autres, seulement {{eval:10*n}} %.\n\nOn choisit un élève au hasard. On note $R$ l'événement « l'élève a révisé » et $M$ l'événement « l'élève obtient la moyenne ».\n\nConstruis un arbre pondéré qui décrit la situation, puis calcule la probabilité que l'élève obtienne la moyenne. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(M)=?$",
 			"variables": [
 				{
 					"name": "k",
@@ -76,7 +76,7 @@
 				"steps": [
 					"On traduit l'énoncé : $P(R)=0.{{k}}$, $P(\\overline{R})=0.{{eval:10-k}}$, $P_R(M)=0.{{m}}$ et $P_{\\overline{R}}(M)=0.{{n}}$. D'où l'arbre :\n\n```probtree\nR:0.{{k}}\n  M:0.{{m}}\n  \\overline{M}:0.{{eval:10-m}}\n\\overline{R}:0.{{eval:10-k}}\n  M:0.{{n}}\n  \\overline{M}:0.{{eval:10-n}}\n```",
 					"$R$ et $\\overline{R}$ forment une partition de l'univers : $P(M)=P(R\\cap M)+P(\\overline{R}\\cap M)$.",
-					"$P(M)=0.{{k}}\\times0.{{m}}+0.{{eval:10-k}}\\times0.{{n}}={{eval:k*m/100}}+{{eval:(10-k)*n/100}}={{eval:(k*m+(10-k)*n)/100}}$"
+					"$P(M)=0.{{k}}\\times0.{{m}}+0.{{eval:10-k}}\\times0.{{n}}={{eval:k*m/100;d}}+{{eval:(10-k)*n/100;d}}={{eval:(k*m+(10-k)*n)/100;d}}={{eval:(k*m+(10-k)*n)/100}}$"
 				]
 			}
 		}

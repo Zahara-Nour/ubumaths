@@ -45,8 +45,8 @@
 			"correction": {
 				"steps": [
 					"Par définition, $P_B(A)=\\dfrac{P(A\\cap B)}{P(B)}$. L'arbre donne $P_A(B)$, pas $P_B(A)$.",
-					"$P(A\\cap B)=0.{{a}}\\times0.{{b}}={{eval:a*b/100}}$ et $P(\\overline{A}\\cap B)=0.{{eval:10-a}}\\times0.{{c}}={{eval:(10-a)*c/100}}$, donc $P(B)={{eval:(a*b+(10-a)*c)/100}}$.",
-					"$P_B(A)={{eval:a*b/100}}\\div{{eval:(a*b+(10-a)*c)/100}}={{eval:a*b/(a*b+(10-a)*c)}}$"
+					"$P(A\\cap B)=0.{{a}}\\times0.{{b}}={{eval:a*b/100;d}}$ et $P(\\overline{A}\\cap B)=0.{{eval:10-a}}\\times0.{{c}}={{eval:(10-a)*c/100;d}}$, donc $P(B)={{eval:(a*b+(10-a)*c)/100;d}}$.",
+					"$P_B(A)={{eval:a*b/100;d}}\\div{{eval:(a*b+(10-a)*c)/100;d}}={{eval:a*b/(a*b+(10-a)*c)}}$"
 				]
 			}
 		},
@@ -75,8 +75,8 @@
 			"correction": {
 				"steps": [
 					"Par définition, $P_{\\overline{B}}(\\overline{A})=\\dfrac{P(\\overline{A}\\cap \\overline{B})}{P(\\overline{B})}$. L'arbre donne $P_{\\overline{A}}(\\overline{B})$, pas $P_{\\overline{B}}(\\overline{A})$.",
-					"$P(A\\cap \\overline{B})=0.{{a}}\\times0.{{eval:10-b}}={{eval:a*(10-b)/100}}$ et $P(\\overline{A}\\cap \\overline{B})=0.{{eval:10-a}}\\times0.{{eval:10-c}}={{eval:(10-a)*(10-c)/100}}$, donc $P(\\overline{B})={{eval:(a*(10-b)+(10-a)*(10-c))/100}}$.",
-					"$P_{\\overline{B}}(\\overline{A})={{eval:(10-a)*(10-c)/100}}\\div{{eval:(a*(10-b)+(10-a)*(10-c))/100}}={{eval:(10-a)*(10-c)/(a*(10-b)+(10-a)*(10-c))}}$"
+					"$P(A\\cap \\overline{B})=0.{{a}}\\times0.{{eval:10-b}}={{eval:a*(10-b)/100;d}}$ et $P(\\overline{A}\\cap \\overline{B})=0.{{eval:10-a}}\\times0.{{eval:10-c}}={{eval:(10-a)*(10-c)/100;d}}$, donc $P(\\overline{B})={{eval:(a*(10-b)+(10-a)*(10-c))/100;d}}$.",
+					"$P_{\\overline{B}}(\\overline{A})={{eval:(10-a)*(10-c)/100;d}}\\div{{eval:(a*(10-b)+(10-a)*(10-c))/100;d}}={{eval:(10-a)*(10-c)/(a*(10-b)+(10-a)*(10-c))}}$"
 				]
 			}
 		},

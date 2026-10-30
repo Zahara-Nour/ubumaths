@@ -26,7 +26,7 @@
 					"expectedAnswer": "{{eval:(a*b+(10-a)*c)/100}}"
 				}
 			],
-			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{b}}\n  \\overline{B}:0.{{eval:10-b}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P(B)=?$",
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{b}}\n  \\overline{B}:0.{{eval:10-b}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(B)=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -45,8 +45,8 @@
 			"correction": {
 				"steps": [
 					"$A$ et $\\overline{A}$ forment une partition de l'univers : d'après la formule des probabilités totales, $P(B)=P(A\\cap B)+P(\\overline{A}\\cap B)$.",
-					"$P(A\\cap B)=0.{{a}}\\times0.{{b}}={{eval:a*b/100}}$ et $P(\\overline{A}\\cap B)=0.{{eval:10-a}}\\times0.{{c}}={{eval:(10-a)*c/100}}$.",
-					"$P(B)={{eval:a*b/100}}+{{eval:(10-a)*c/100}}={{eval:(a*b+(10-a)*c)/100}}$"
+					"$P(A\\cap B)=0.{{a}}\\times0.{{b}}={{eval:a*b/100;d}}$ et $P(\\overline{A}\\cap B)=0.{{eval:10-a}}\\times0.{{c}}={{eval:(10-a)*c/100;d}}$.",
+					"$P(B)={{eval:a*b/100;d}}+{{eval:(10-a)*c/100;d}}={{eval:(a*b+(10-a)*c)/100;d}}={{eval:(a*b+(10-a)*c)/100}}$"
 				]
 			}
 		},
@@ -56,7 +56,7 @@
 					"expectedAnswer": "{{eval:(10*a*(10-c)+(10-a)*(100-10*t-u))/1000}}"
 				}
 			],
-			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{t}}{{u}}\n  \\overline{B}:0.{{eval:9-t}}{{eval:10-u}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P(\\overline{B})=?$",
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{t}}{{u}}\n  \\overline{B}:0.{{eval:9-t}}{{eval:10-u}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(\\overline{B})=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -79,8 +79,8 @@
 			"correction": {
 				"steps": [
 					"$A$ et $\\overline{A}$ forment une partition de l'univers : d'après la formule des probabilités totales, $P(\\overline{B})=P(A\\cap \\overline{B})+P(\\overline{A}\\cap \\overline{B})$.",
-					"$P(A\\cap \\overline{B})=0.{{a}}\\times0.{{eval:10-c}}={{eval:a*(10-c)/100}}$ et $P(\\overline{A}\\cap \\overline{B})=0.{{eval:10-a}}\\times0.{{eval:9-t}}{{eval:10-u}}={{eval:(10-a)*(100-10*t-u)/1000}}$.",
-					"$P(\\overline{B})={{eval:a*(10-c)/100}}+{{eval:(10-a)*(100-10*t-u)/1000}}={{eval:(10*a*(10-c)+(10-a)*(100-10*t-u))/1000}}$"
+					"$P(A\\cap \\overline{B})=0.{{a}}\\times0.{{eval:10-c}}={{eval:a*(10-c)/100;d}}$ et $P(\\overline{A}\\cap \\overline{B})=0.{{eval:10-a}}\\times0.{{eval:9-t}}{{eval:10-u}}={{eval:(10-a)*(100-10*t-u)/1000;d}}$.",
+					"$P(\\overline{B})={{eval:a*(10-c)/100;d}}+{{eval:(10-a)*(100-10*t-u)/1000;d}}={{eval:(10*a*(10-c)+(10-a)*(100-10*t-u))/1000;d}}={{eval:(10*a*(10-c)+(10-a)*(100-10*t-u))/1000}}$"
 				]
 			}
 		},
