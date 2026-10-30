@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #1998._
+_Mis à jour le 2026-10-30, après #1998 et la publication du lot 0-produit scalaire._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10) et 0-trigo (6, § 11) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3). Lot 0-produit scalaire (15, § 12) : C1-C3 corrigés (D18), relecture 15/15 « ok », #1995 et #1998 (niveaux, migration jouée) mergées ; **publication en prod pas encore faite**.
-- **Prochaine action** : après `publier-lot --publier` (David), vérifier en prod les 15 `published` ; puis lot géométrie repérée (nouveau worktree), probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-0-produit-scalaire --publier` (contenu déjà à jour).
+- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10), 0-trigo (6, § 11) et 0-produit scalaire (15, § 12) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
+- **Prochaine action** : lot géométrie repérée (nouveau worktree), probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : rien.
 - **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file` (pas `pnpm -s`), une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
 - **Worktree / branche** : aucun (retiré après #1998) ; prochain lot : `git worktree add -b feat/questions-1spe-geometrie-reperee ../ubumaths-wt-questions-1spe origin/main`.
 
@@ -527,3 +527,5 @@ sans l'`update`.
 
 #1998 mergée (CI verte), `db:migrate` joué le 2026-10-30 : niveaux conformes en prod, trigger `updated_at` réactivé (`O`) ;
 simulation `publier-lot` : 15 brouillons passent le contrôle.
+
+**Publié le 2026-10-30** (`publier-lot --publier`, David) : 15/15 `published` en prod (MCP).
