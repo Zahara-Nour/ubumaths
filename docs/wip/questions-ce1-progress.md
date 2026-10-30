@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2030._
+_Mis à jour le 2026-10-30, après #2030 et son `db:migrate`._
 
-- **État** : lots 0 à 5 publiés. Lot 5 bis (masses, monnaie, durées, 9 modèles, § 11) : #2028 mergée, 9 brouillons en prod (vérifiés au MCP) ; migration nœud + tag `20261030162200` mergée (#2030), **pas encore jouée**.
-- **Prochaine action** : `db:migrate` par David depuis le dépôt principal ; vérification au MCP (9/9 sur le nœud de leur point, `updated_at` inchangé) ; page à cocher ; `publier-lot` en simulation puis `--publier` par David. Ensuite, selon le § 4 bis : lots à outils existants, puis lots à QCM.
-- **En attente de David** : `cd /Users/david/Coding/js/ubumaths && pnpm db:migrate`.
+- **État** : lots 0 à 5 publiés. Lot 5 bis (masses, monnaie, durées, 9 modèles, § 11) : #2028 mergée, 9 brouillons en prod (vérifiés au MCP) ; migration nœud + tag `20261030162200` (#2030) jouée et vérifiée (9/9 sur leur nœud, un point chacun, `updated_at` inchangé) ; page à cocher publiée : https://claude.ai/artifact/4NHZwnXswUoq44aN3Vm297.
+- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; corriger les « À revoir » ; `publier-lot` en simulation puis `--publier` par David. Ensuite, selon le § 4 bis : lots à outils existants, puis lots à QCM.
+- **En attente de David** : relecture de la page à cocher (9 fiches).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
 - **Worktree / branche** : `../ubumaths-wt-questions-ce1` (sur `feat/questions-ce1-lot5bis-rangement`, mergée : en partir d'une neuve sur `origin/main`). `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
@@ -445,3 +445,5 @@ Réponse de David : les quatre recommandations (« je valide »).
   `c38c9152`, `3ed2e7d0`, `f98ca134`, `5248cab0`, `70fc062a`, `200b1e9f`, `10ec8633`), sans nœud ni tag, 87 specs.
 - 2026-10-30 : migration `20261030162200_questions_ce1_lot5bis_rangement_tags` (max des worktrees + 1 min) et test :
   rouge sans (5 échecs sur 9), vert 9/9 ; `security-auditor` sans finding ; #2030 mergée (CI verte).
+- 2026-10-30 : `db:migrate` par David (avec les migrations 3e lot 4b et 6e lot 6b d'autres sessions) ; vérifié au MCP :
+  9/9 sur le nœud de leur point, un tag chacun, `updated_at` = `created_at` ; page à cocher publiée, aucune alerte.
