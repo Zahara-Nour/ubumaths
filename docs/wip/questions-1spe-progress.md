@@ -577,7 +577,7 @@ plus composé, en gardant l'ordre actuel :
 - C4 : 49 « \,; » → « \,;\, » dans les 5 modèles de cercle.
 - Specs des 7 modèles vertes (145 specs, 1 150 tirages). Commit 7e15a6016 ; simulation `create-questions` : 7 contenus
   différents, exactement les corrigés.
-- N1 : migration `20261030140000_questions_1spe_geometrie_reperee_niveaux` (gabarit #1998), test d'intégration vert (7),
+- N1 : migration `20261030150030_questions_1spe_geometrie_reperee_niveaux` (gabarit #1998), test d'intégration vert (7),
   rouge sans l'`update` ; `security-auditor` : aucun finding bloquant (diff avec le gabarit = les 8 lignes du lot ; après
   `db:migrate`, vérifier `tgenabled = 'O'` du trigger `updated_at`). Question d'accès : personne (David).
 - Ordre : David lance `create-questions --publier --mettre-a-jour` (fichiers aux anciens niveaux), puis les niveaux des

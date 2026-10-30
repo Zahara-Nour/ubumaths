@@ -2,7 +2,7 @@
  * Chantier « questions-1spe », lot 0-géométrie repérée : niveau de 8 brouillons dans leur catégorie (Supabase local requis)
  * ======================================================================================
  *
- * Migration `20261030140000_questions_1spe_geometrie_reperee_niveaux` : 8 des 12 brouillons de
+ * Migration `20261030150030_questions_1spe_geometrie_reperee_niveaux` : 8 des 12 brouillons de
  * Géométrie / Géométrie repérée, refusés à la publication parce que plusieurs modèles de la sélection
  * partagent catégorie et niveau, sont renumérotés (chacun change de niveau). Décision de David du
  * 2026-10-30 (journal docs/wip/questions-1spe-progress.md, § 13).
@@ -35,7 +35,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261030140000_questions_1spe_geometrie_reperee_niveaux.sql';
+const MIGRATION = 'supabase/migrations/20261030150030_questions_1spe_geometrie_reperee_niveaux.sql';
 /** Le lot : identifiant de la prod, catégorie, niveau relevé le 2026-10-30 et niveau visé. */
 const LOT: { id: string; subdomain: string; avant: number; apres: number }[] = [
 	{

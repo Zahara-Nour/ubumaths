@@ -1,0 +1,175 @@
+{
+	"title": "Reconnaître une fonction linéaire",
+	"description": "Reconnaître une fonction linéaire : parmi quatre expressions, écrite autrement (x/4), ou parmi quatre tracés (droite passant par l'origine)",
+	"grades": ["3"],
+	"theme": "Fonctions",
+	"domain": "Fonctions linéaires",
+	"subdomain": "Reconnaître",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Parmi ces fonctions, laquelle est **linéaire** ?\n\n```choix\n- $x \\mapsto {{a}}x$\n- $x \\mapsto {{a}}x+{{b}}$\n- $x \\mapsto {{a}}x^2$\n- $x \\mapsto \\dfrac{ {{a}} }{x}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction **linéaire** s'écrit $x \\mapsto ax$ : on multiplie $x$ par un nombre fixe $a$, sans rien ajouter.",
+					"$\\textcolor{{{color:primary.0}}}{x \\mapsto {{a}}x}$ est linéaire, de coefficient ${{a}}$.",
+					"$x \\mapsto {{a}}x+{{b}}$ est affine, pas linéaire (on ajoute ${{b}}$) ; dans $x \\mapsto {{a}}x^2$ et $x \\mapsto \\dfrac{ {{a}} }{x}$, $x$ n'est pas multiplié par un nombre fixe."
+				]
+			}
+		},
+		{
+			"statement": "Parmi ces fonctions, laquelle est **linéaire** ?\n\n```choix\n- $x \\mapsto \\dfrac{x}{ {{a}} }$\n- $x \\mapsto x+{{a}}$\n- $x \\mapsto {{a}}$\n- $x \\mapsto {{a}}-x$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction **linéaire** s'écrit $x \\mapsto ax$ : on multiplie $x$ par un nombre fixe $a$, sans rien ajouter.",
+					"$\\dfrac{x}{ {{a}} } = \\dfrac{1}{ {{a}} } \\times x$ : $\\textcolor{{{color:primary.0}}}{x \\mapsto \\dfrac{x}{ {{a}} }}$ est linéaire, de coefficient $\\dfrac{1}{ {{a}} }$.",
+					"$x \\mapsto x+{{a}}$ et $x \\mapsto {{a}}-x$ ajoutent un nombre : elles sont affines. $x \\mapsto {{a}}$ est constante."
+				]
+			}
+		},
+		{
+			"statement": "Dans le repère ci-dessous, quel tracé représente une fonction **linéaire** ?\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = ({{m}})*x   bleu   nom={{if:p==0|d_1|}}{{if:p==1|d_2|}}{{if:p==2|d_3|}}{{if:p==3|d_4|}}\ng(x) = ({{c}})*x+({{b}})   rouge   nom={{if:p==0|d_2|}}{{if:p==1|d_3|}}{{if:p==2|d_4|}}{{if:p==3|d_1|}}\nh(x) = 0.5*x^2-3   vert   nom={{if:p==0|d_3|}}{{if:p==1|d_4|}}{{if:p==2|d_1|}}{{if:p==3|d_2|}}\nk(x) = {{h}}   orange   nom={{if:p==0|d_4|}}{{if:p==1|d_1|}}{{if:p==2|d_2|}}{{if:p==3|d_3|}}\ntaille: moyenne\ndescription: Quatre tracés : trois droites et une parabole, nommés d1 à d4.\n```\n\n\n\n```choix\n- ${{if:p==0|d_1|}}{{if:p==1|d_2|}}{{if:p==2|d_3|}}{{if:p==3|d_4|}}$\n- ${{if:p==0|d_2|}}{{if:p==1|d_3|}}{{if:p==2|d_4|}}{{if:p==3|d_1|}}$\n- ${{if:p==0|d_3|}}{{if:p==1|d_4|}}{{if:p==2|d_1|}}{{if:p==3|d_2|}}$\n- ${{if:p==0|d_4|}}{{if:p==1|d_1|}}{{if:p==2|d_2|}}{{if:p==3|d_3|}}$\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1|2|-1|-2"
+				},
+				{
+					"name": "c",
+					"expression": "1|-1|2"
+				},
+				{
+					"name": "b",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "h",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["c != m", "h != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction linéaire est représentée par une **droite qui passe par l'origine** du repère.",
+					"$\\textcolor{{{color:primary.0}}}{{{if:p==0|d_1|}}{{if:p==1|d_2|}}{{if:p==2|d_3|}}{{if:p==3|d_4|}}}$ est une droite qui passe par l'origine : c'est elle.",
+					"${{if:p==0|d_2|}}{{if:p==1|d_3|}}{{if:p==2|d_4|}}{{if:p==3|d_1|}}$ et ${{if:p==0|d_4|}}{{if:p==1|d_1|}}{{if:p==2|d_2|}}{{if:p==3|d_3|}}$ sont des droites qui ne passent pas par l'origine (fonctions affines) ; ${{if:p==0|d_3|}}{{if:p==1|d_4|}}{{if:p==2|d_1|}}{{if:p==3|d_2|}}$ n'est pas une droite."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Expressions : ax",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ax + b",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Écrite autrement : x/a",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : constante",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Graphique : la droite par l'origine",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"c": "1",
+				"b": "3",
+				"h": "-2",
+				"p": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la droite affine",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"c": "1",
+				"b": "3",
+				"h": "-2",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

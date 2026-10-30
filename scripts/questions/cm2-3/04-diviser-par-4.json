@@ -1,6 +1,6 @@
 {
 	"title": "Diviser par $4$",
-	"description": "La moitié de la moitié : 128 ÷ 4, 2 436 ÷ 4, quotient décimal 130 ÷ 4 = 32,5",
+	"description": "La moitié de la moitié : 128 ÷ 4, 2 480 ÷ 4, quotient décimal 18 ÷ 4 = 4,5",
 	"grades": ["CM2"],
 	"theme": "Entiers",
 	"domain": "Diviser",
@@ -44,8 +44,12 @@
 			"statement": "Calcule.\n\n$${{n}}\\div 4=?$$",
 			"variables": [
 				{
+					"name": "k",
+					"expression": "25..249"
+				},
+				{
 					"name": "q",
-					"expression": "250..2499"
+					"expression": "eval:10*k"
 				},
 				{
 					"name": "n",
@@ -71,7 +75,7 @@
 			"variables": [
 				{
 					"name": "q",
-					"expression": "3..249"
+					"expression": "1..12"
 				},
 				{
 					"name": "r",
@@ -132,83 +136,94 @@
 			}
 		},
 		{
-			"description": "2 436 ÷ 4 = 609",
+			"description": "2 480 ÷ 4 = 620",
 			"variationIndex": 1,
 			"variables": {
-				"q": "609"
+				"k": "62"
 			},
-			"answers": ["609"],
+			"answers": ["620"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "Erreur : 2 436 ÷ 4 → 69 (zéro oublié)",
+			"description": "Erreur : 2 480 ÷ 4 → 62 (zéro oublié)",
 			"variationIndex": 1,
 			"variables": {
-				"q": "609"
+				"k": "62"
 			},
-			"answers": ["69"],
+			"answers": ["62"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "130 ÷ 4 = 32,5",
-			"variationIndex": 2,
+			"description": "borne : 1 000 ÷ 4 = 250",
+			"variationIndex": 1,
 			"variables": {
-				"q": "32",
-				"r": "2"
+				"k": "25"
 			},
-			"answers": ["32,5"],
+			"answers": ["250"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "Erreur : 130 ÷ 4 → 32 (quotient tronqué)",
+			"description": "18 ÷ 4 = 4,5",
 			"variationIndex": 2,
 			"variables": {
-				"q": "32",
+				"q": "4",
 				"r": "2"
 			},
-			"answers": ["32"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "129 ÷ 4 = 32,25",
-			"variationIndex": 2,
-			"variables": {
-				"q": "32",
-				"r": "1"
-			},
-			"answers": ["32,25"],
+			"answers": ["4,5"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "Erreur : 129 ÷ 4 → 32,1 (reste écrit après la virgule)",
+			"description": "Erreur : 18 ÷ 4 → 4 (quotient tronqué)",
 			"variationIndex": 2,
 			"variables": {
-				"q": "32",
-				"r": "1"
+				"q": "4",
+				"r": "2"
 			},
-			"answers": ["32,1"],
+			"answers": ["4"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "15 ÷ 4 = 3,75",
+			"description": "17 ÷ 4 = 4,25",
 			"variationIndex": 2,
 			"variables": {
-				"q": "3",
+				"q": "4",
+				"r": "1"
+			},
+			"answers": ["4,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 17 ÷ 4 → 4,1 (reste écrit après la virgule)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"r": "1"
+			},
+			"answers": ["4,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 51 ÷ 4 = 12,75",
+			"variationIndex": 2,
+			"variables": {
+				"q": "12",
 				"r": "3"
 			},
-			"answers": ["3,75"],
+			"answers": ["12,75"],
 			"expected": {
 				"status": "correct"
 			}

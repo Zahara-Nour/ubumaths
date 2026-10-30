@@ -14,6 +14,8 @@ Décisions et pièges :
 - autre nombre de 2 à 4 chiffres : nombre de chiffres tiré d'abord (sinon presque toujours 4) ;
 - ÷ 4 = moitié de la moitié, ÷ 8 = trois moitiés (« Exemples de réussite CM2 2025 » p. 10) ;
   quotient décimal : dividende 4q + r (r de 1 à 3), ou 8q + r (r pair), quotient en ,25, ,5, ,75.
+  Relecture de David (2026-10-30) : V2 et V3 trop dures de tête → V2 à dividende multiple de 40
+  (÷ 4) ou de 80 (÷ 8), V3 à petit dividende (≤ 51 pour ÷ 4, ≤ 94 pour ÷ 8).
 
     python3 docs/wip/questions/lot-cm2-3.py scripts/questions/cm2-3
 """
@@ -150,10 +152,11 @@ MODELES.append(modele(
 
 # --- 4. et 5. CM2-050, CM2-151 : diviser par 4, par 8 ---------------------------------------
 
-def moities(d, nom_q, plage_q, reste=None):
+def moities(d, nom_q, plage_q, reste=None, rond=False):
     """Division de n par d (4 ou 8) en moitiés successives ; reste : plage du reste (quotient
-    décimal) ou None (quotient entier)."""
-    vars_ = [var('q', plage_q)]
+    décimal) ou None (quotient entier) ; rond : quotient multiple de 10 (dividende à 4 chiffres
+    multiple de 40 ou de 80, calculable de tête)."""
+    vars_ = [var('k', plage_q), var('q', 'eval:10*k')] if rond else [var('q', plage_q)]
     if reste:
         vars_.append(var('r', reste))
         vars_.append(var('n', 'eval:' + str(d) + '*q+r'))
@@ -175,38 +178,40 @@ def moities(d, nom_q, plage_q, reste=None):
 
 MODELES.append(modele(
     '04-diviser-par-4', 'Diviser par $4$',
-    'La moitié de la moitié : 128 ÷ 4, 2 436 ÷ 4, quotient décimal 130 ÷ 4 = 32,5',
+    'La moitié de la moitié : 128 ÷ 4, 2 480 ÷ 4, quotient décimal 18 ÷ 4 = 4,5',
     'Diviser', 'Quotient', 10,
-    [moities(4, 'q', '25..249'), moities(4, 'q', '250..2499'),
-     moities(4, 'q', '3..249', '1..3')],
+    [moities(4, 'q', '25..249'), moities(4, 'k', '25..249', rond=True),
+     moities(4, 'q', '1..12', '1..3')],
     [spec('128 ÷ 4 = 32', 0, {'q': 32}, '32', 'correct'),
      spec('Erreur : 128 ÷ 4 → 64 (une seule moitié)', 0, {'q': 32}, '64', 'incorrect'),
      spec('borne : 100 ÷ 4 = 25', 0, {'q': 25}, '25', 'correct'),
-     spec('2 436 ÷ 4 = 609', 1, {'q': 609}, '609', 'correct'),
-     spec('Erreur : 2 436 ÷ 4 → 69 (zéro oublié)', 1, {'q': 609}, '69', 'incorrect'),
-     spec('130 ÷ 4 = 32,5', 2, {'q': 32, 'r': 2}, '32,5', 'correct'),
-     spec('Erreur : 130 ÷ 4 → 32 (quotient tronqué)', 2, {'q': 32, 'r': 2}, '32', 'incorrect'),
-     spec('129 ÷ 4 = 32,25', 2, {'q': 32, 'r': 1}, '32,25', 'correct'),
-     spec('Erreur : 129 ÷ 4 → 32,1 (reste écrit après la virgule)', 2, {'q': 32, 'r': 1},
-          '32,1', 'incorrect'),
-     spec('15 ÷ 4 = 3,75', 2, {'q': 3, 'r': 3}, '3,75', 'correct')]))
+     spec('2 480 ÷ 4 = 620', 1, {'k': 62}, '620', 'correct'),
+     spec('Erreur : 2 480 ÷ 4 → 62 (zéro oublié)', 1, {'k': 62}, '62', 'incorrect'),
+     spec('borne : 1 000 ÷ 4 = 250', 1, {'k': 25}, '250', 'correct'),
+     spec('18 ÷ 4 = 4,5', 2, {'q': 4, 'r': 2}, '4,5', 'correct'),
+     spec('Erreur : 18 ÷ 4 → 4 (quotient tronqué)', 2, {'q': 4, 'r': 2}, '4', 'incorrect'),
+     spec('17 ÷ 4 = 4,25', 2, {'q': 4, 'r': 1}, '4,25', 'correct'),
+     spec('Erreur : 17 ÷ 4 → 4,1 (reste écrit après la virgule)', 2, {'q': 4, 'r': 1},
+          '4,1', 'incorrect'),
+     spec('borne : 51 ÷ 4 = 12,75', 2, {'q': 12, 'r': 3}, '12,75', 'correct')]))
 
 MODELES.append(modele(
     '05-diviser-par-8', 'Diviser par $8$',
-    'Trois moitiés successives : 128 ÷ 8, 2 432 ÷ 8, quotient décimal 260 ÷ 8 = 32,5',
+    'Trois moitiés successives : 128 ÷ 8, 2 480 ÷ 8, quotient décimal 36 ÷ 8 = 4,5',
     'Diviser', 'Quotient', 11,
-    [moities(8, 'q', '13..124'), moities(8, 'q', '125..1249'),
-     moities(8, 'q', '2..124', '2|4|6')],
+    [moities(8, 'q', '13..124'), moities(8, 'k', '13..124', rond=True),
+     moities(8, 'q', '1..11', '2|4|6')],
     [spec('128 ÷ 8 = 16', 0, {'q': 16}, '16', 'correct'),
      spec('Erreur : 128 ÷ 8 → 32 (deux moitiés seulement)', 0, {'q': 16}, '32', 'incorrect'),
      spec('borne : 104 ÷ 8 = 13', 0, {'q': 13}, '13', 'correct'),
-     spec('2 432 ÷ 8 = 304', 1, {'q': 304}, '304', 'correct'),
-     spec('Erreur : 2 432 ÷ 8 → 608 (deux moitiés seulement)', 1, {'q': 304}, '608',
+     spec('2 480 ÷ 8 = 310', 1, {'k': 31}, '310', 'correct'),
+     spec('Erreur : 2 480 ÷ 8 → 620 (deux moitiés seulement)', 1, {'k': 31}, '620',
           'incorrect'),
-     spec('260 ÷ 8 = 32,5', 2, {'q': 32, 'r': 4}, '32,5', 'correct'),
-     spec('Erreur : 260 ÷ 8 → 32 (quotient tronqué)', 2, {'q': 32, 'r': 4}, '32', 'incorrect'),
-     spec('258 ÷ 8 = 32,25', 2, {'q': 32, 'r': 2}, '32,25', 'correct'),
-     spec('22 ÷ 8 = 2,75', 2, {'q': 2, 'r': 6}, '2,75', 'correct')]))
+     spec('borne : 1 040 ÷ 8 = 130', 1, {'k': 13}, '130', 'correct'),
+     spec('36 ÷ 8 = 4,5', 2, {'q': 4, 'r': 4}, '4,5', 'correct'),
+     spec('Erreur : 36 ÷ 8 → 4 (quotient tronqué)', 2, {'q': 4, 'r': 4}, '4', 'incorrect'),
+     spec('34 ÷ 8 = 4,25', 2, {'q': 4, 'r': 2}, '4,25', 'correct'),
+     spec('borne : 94 ÷ 8 = 11,75', 2, {'q': 11, 'r': 6}, '11,75', 'correct')]))
 
 
 os.makedirs(DOSSIER, exist_ok=True)
