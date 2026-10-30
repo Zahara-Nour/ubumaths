@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2032 (phrase de la droite : « 4/5 », jamais « 0,8 »)._
+_Mis à jour le 2026-10-30, après #2043 (lot 3b écrit) et #2040 (étiquettes en fraction de la droite)._
 
-- **État** : lots 0, 1, 2 et 3a publiés (3a : 10/10 « OK » sur la page à cocher, `--publier` par David, statut relu au MCP).
-- **Prochaine action** : phase 0 du lot 3b (fractions décimales) ; puis 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage). #2032 (§ 9 sexies) mergée, pas en prod.
-- **En attente de David** : rien.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse (« Production Deploy ») : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min, sinon `DbPushMissingRemoteError` (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS ; index du dépôt principal parfois tenu par une autre session : ne pas y commiter par-dessus.
-- **Worktree / branche** : aucun (retiré après #2032) ; le lot 3b en recrée un : `git worktree add -b feat/questions-cm1-lot3b ../ubumaths-wt-questions-cm1 origin/main`.
+- **État** : lots 0, 1, 2 et 3a publiés. Lot 3b (fractions décimales, 8 modèles, § 10) : fichiers mergés (#2043), **pas encore en base prod**. #2040 et #2032 mergées, pas en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-3b --publier` (brouillons) ; puis je relève les ids au MCP et j'écris la migration de rangement (gabarit du lot 3a, § 9 quater). Ensuite lot 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
+- **En attente de David** : le `create-questions --publier` du lot 3b.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; `gh pr checks` peut rester « pending » sur des 502 : suivre le run.
+- **Worktree / branche** : aucun (retiré après #2043) ; la migration en recrée un : `git worktree add -b feat/questions-cm1-lot3b-rangement ../ubumaths-wt-questions-cm1 origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
