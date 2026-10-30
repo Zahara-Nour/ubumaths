@@ -713,5 +713,5 @@ définition, König-Huygens en « autre méthode » ; écart-type arrondi ou exa
 N1 : migration `20261030201000_questions_1spe_variables_aleatoires_niveaux` (gabarit #2012 ; prod à `20261030170000`, worktrees
 en attente à `180500` et `193500`), test d'intégration vert (7), rouge sans l'`update` ; `security-auditor` : aucun finding
 bloquant (diff avec le gabarit = les 7 lignes du lot ; prod relue : 7 brouillons au niveau « avant », aucun publié dans le domaine).
-Niveaux des 7 fichiers changés dans la même PR. **Ordre** : David lance `create-questions --publier --mettre-a-jour` depuis
+Niveaux des 7 fichiers changés dans la même PR (#2041). **Ordre** : David lance `create-questions --publier --mettre-a-jour` depuis
 `main` (fichiers aux anciens niveaux, #2039) AVANT le merge de cette PR, puis merge et `db:migrate`.
