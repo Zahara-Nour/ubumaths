@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après la publication du lot 0-probabilités._
+_Mis à jour le 2026-10-30, pendant le lot 0-variables aléatoires._
 
-- **État** : lots 0-suites, 0-second-degré, 0-dérivation, 0-variations, 0-exponentielle, 0-trigo, 0-produit scalaire, 0-géométrie repérée et 0-probabilités (§ 14, 8 modèles) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
-- **Prochaine action** : lot 0-variables aléatoires (17 brouillons du domaine « Variables aléatoires » : instantané **dans un worktree**, specs, bornes, constats, simulation `publier-lot` d'entrée). Ensuite logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : rien.
-- **Pièges en cours** : `create-questions` refusé au mode auto **même en simulation** (David le lance) ; `publier-lot` = tout le dossier ou rien ; `db:migrate` d'autres sessions → David ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` (source montrée) ; `question:specs --file`, une copie par variation pour l'aperçu ; `{{eval:…}}` rend une fraction, `;d` un décimal ; instantané jamais dans le dépôt principal (copie non suivie qui bloque `pull`) ; index du dépôt principal : celui d'autres sessions possible, ne jamais y toucher.
-- **Worktree / branche** : aucun (retiré après #2026).
+- **État** : lots 0-suites à 0-probabilités publiés ; lot 0-variables aléatoires (§ 15) : C1-C6 corrigés (D20), PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR ; David lance `create-questions --publier --mettre-a-jour` (anciens niveaux) ; migration des 7 niveaux + fichiers (N1, gabarit #2012) ; page à cocher ; publication. Ensuite logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : rien (D20 : tout validé, question d'accès : personne).
+- **Pièges en cours** : `create-questions` refusé au mode auto **même en simulation** (David le lance) ; `publier-lot` = tout le dossier ou rien ; `db:migrate` → David ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` ; une copie par variation pour l'aperçu (sans `testSpecs`) ; `export-question-templates` exige `svelte-kit sync` dans un worktree neuf ; instantané jamais dans le dépôt principal.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe` · `chore/questions-1spe-0-va`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -644,3 +644,66 @@ dessiné », arbres montrés en source). **Relecture (David, 2026-10-30)** : 8 �
 
 **Publié le 2026-10-30** (`create-questions --publier --mettre-a-jour` puis `publier-lot --publier`, David) : 8/8 `published`
 en prod (MCP) ; `;d` présent dans les 3 corrigés, consigne « nombre décimal exact » dans 5ba712bc et 6dd2f133.
+
+## 15. Lot 0-variables aléatoires : vérification des brouillons
+
+_2026-10-30. 17 brouillons du domaine « Variables aléatoires » (points 348, 349, 351, 353, 355, 356, 357, 358, un point 1SPE
+chacun, 1TECHNO en second pour 6 d'entre eux, permis par l'ADR 0020) ; instantané `scripts/questions/1spe-0-variables-aleatoires/`,
+`question:specs --apercu 3`, puis une copie par variation (54) et 30 tirages par variation fouillés (formes `n/1`, signes
+doublés, `{{`, NaN : rien), sorties dans le scratchpad de la session. Aucun modèle publié dans le domaine, aucun autre niveau
+dans ces catégories. Simulation `publier-lot` jouée d'entrée : 10 refus de niveau (voir N1)._
+
+**Mécanique** : 17 / 17 verts, 259 specs. Case `choix` (a3f92832, 0718f490) : bonne réponse en tête de la source, mélange
+à l'affichage. Consignes « nombre décimal exact » seul : réponse toujours décimale (fouillé sur les 1 620 tirages).
+
+**Bornes** : rien au-delà du BO 1re spé (p. 10-11). Lois finies ; E(aX + b) seulement (l1s-6 : affine) ; variance par la
+définition, König-Huygens en « autre méthode » ; écart-type arrondi ou exact (√a, √a / b) ; mise équitable ; arbres à deux
+épreuves (avec ou sans remise, indépendantes).
+
+**Constats** :
+
+- **C1** : 6fbc355c v0 et v2 : probabilités écrites réduites (4/7, 2/7, 1/7), puis somme sur le total non réduit
+  (« E(X) = (8 + 20)/14 ») — la ligne ne suit pas de la précédente. v1 est cohérente.
+- **C2** : bad86bec v0 et v2 (30/30 tirages) : « 1/4 × 1/2² » — un écart positif fractionnaire n'a pas de parenthèses, se lit
+  1/(2²) ; les écarts négatifs en ont (« (−5/2)² »).
+- **C3** : « 1 rouges » (eafd17a1 v1, ad555cb1 v1 : 27 tirages sur 60).
+- **C4** : 0417223e v0, a = 1 (7/30) : « E(Y) = 1 × (−4,5) + 9 » et « seul E(X) est multiplié par 1 ».
+- **C5** : 0417223e v1, bénéfice moyen négatif (6/30) : « le marchand gagne en moyenne −77,9 € par jour ».
+- **C6** (cosmétique) : fraction irréductible recopiée « = 8/15 = 8/15 » (97b3a376 v0-v3, 8354a0e7 v1, b83f1392 v1, 7e9b9b32 v2 :
+  63 tirages) ; b83f1392 v1 écrit aussi « 1/12 = 1/12 » ; 7e9b9b32 v2 « P(X = 1) = 1 p = 1 × 1/21 ».
+- Écartés : 7e9b9b32 v1 « p = 0,9/6 = 3/20 » (décimal et fraction mêlés, les deux acceptés) ; arbres `probtree` non dessinés
+  dans la page à cocher (source montrée) ; décimaux écrits avec un point dans les fichiers (rendus avec une virgule).
+
+**Recommandations** :
+
+- C1 : ligne de E(X) avec les fractions non réduites (`\dfrac{v}{N}\times gv`…), comme v1.
+- C2 : parenthèses sur tous les écarts, `\left(…\right)^2`, comme 35ad8891.
+- C3 : `{{if:r==1|rouge|rouges}}`.
+- C4 : condition `a != 1` (Y = −X + b reste).
+- C5 : condition `p*m > 100*q` (bénéfice moyen positif, plus réaliste).
+- C6 : n'écrire l'étape « = a/b » que si la fraction se réduit (`{{if:…}}`), « 1/12 = 1/12 » sauté, k = 1 → « P(X = 1) = p ».
+
+**N1 — niveaux** : 10 refus de `publier-lot`. Proposition, du plus simple au plus composé :
+
+- Espérance : 8354a0e7 depuis la loi 1 · a3f92832 interpréter 1 → 2 · 6fbc355c depuis un énoncé 2 → 3 · 0417223e linéarité
+  2 → 4.
+- Jeux et gains : eafd17a1 gain moyen 2 → 1 · 0718f490 favorable ou non 2 · ad555cb1 mise équitable 3.
+- Loi d'une variable aléatoire : 448894f3 lire 1 · 570f91d5 événement X ⩾ a 2 · 97b3a376 depuis un énoncé 2 → 3 · d683e906
+  arbre 3 → 4.
+- Variance et écart-type : 2af6296f variance 2 → 1 · 35ad8891 écart-type arrondi 2 · bad86bec écart-type exact 3.
+- Compléter une loi : inchangé (1, 2, 3).
+
+7 niveaux changés → migration (gabarit #2012), question d'accès à trancher.
+
+**D20 (David, 2026-10-30, « oui » sur C1-C6, N1 et la question d'accès : personne)** :
+
+- C1 : 6fbc355c v0 et v2, ligne de E(X) aux fractions non réduites (`\dfrac{v}{N}`), cohérente avec la somme sur N.
+- C2 : bad86bec v0 et v2, `\left(…\right)^2` sur les trois écarts.
+- C3 : eafd17a1 v1, ad555cb1 v1, `{{if:r == 1|rouge|rouges}}`.
+- C4 : 0417223e v0, condition `a != 1`. C5 : 0417223e v1, condition `p*m > 100*q` (bénéfice moyen positif).
+- C6 : étape « = a/b » écrite si `gcd > 1` (97b3a376 v0-v3, 8354a0e7 v1, b83f1392 v1, dont la liste des conversions) ;
+  7e9b9b32 v2, k = 1 → « P(X = 1) = p ».
+- Specs vertes (17 modèles, 259 specs, 10 800 tirages) ; 30 tirages par variation corrigée relus (15 variations) : aucun
+  doublon, aucun « 1 rouges », aucun a = 1, aucun bénéfice négatif, aucun `{{`.
+- N1 : niveaux des fichiers inchangés dans cette PR ; ils passent aux nouvelles valeurs avec la migration, après le
+  `create-questions --publier --mettre-a-jour` de David (comme le lot 0-géométrie repérée).
