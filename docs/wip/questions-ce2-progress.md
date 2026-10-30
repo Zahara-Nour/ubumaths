@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, brouillons du lot 4 en prod._
+_Mis à jour le 2026-10-30, migration du lot 4 écrite (PR à ouvrir)._
 
-- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions) : 10 brouillons en prod (relus au MCP), sans nœud ni tag (§ 8).
-- **Prochaine action** : migration nœud + tag du lot 4 (calquée sur le lot 3, nœuds = sous-notions) + test
-  d'intégration, dans un nouveau worktree.
+- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions) : 10 brouillons en prod ; migration nœud + tag
+  `20261030161000` + test (rouge 5/9 sans le corps, vert 9/9), branche `feat/questions-ce2-lot4-rangement` (§ 8).
+- **Prochaine action** : PR → CI verte → merge → `db:migrate` (David, `!`, `--dry-run` d'abord) → relevé MCP
+  → page à cocher.
 - **En attente de David** : rien. Correctif de la carte de correction (choix `$$…$$` en LaTeX brut,
   15 modèles publiés) : go le 2026-10-30, chantier À PART `choix-correction` (autre session, § 8).
   Publier le lot 4 APRÈS le `deploy:prod` de ce correctif (modèle 03 touché).
 - **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
-- **Worktree / branche** : aucun (retiré après #1996) ; migration : nouveau worktree `../ubumaths-wt-questions-ce2`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-lot4-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -348,3 +349,12 @@ de plus (brouillons neufs ; la migration nœud + tag ne change aucune règle).
   niveaux justes, `reducedFractions` coupé, sans nœud ni tag, aucun niveau en double) : `e0aaf18f` (01), `176b6b93`
   (02), `51b95890` (03), `788a22c7` (04), `75ec78a1` (05), `c21fe20b` (06), `b892331e` (07), `c73dfcd0` (08),
   `1f6fb2c2` (09), `de7d9cf3` (10).
+
+### Lot 4 — migration nœud + tag (2026-10-30)
+
+- Relevé MCP du 2026-10-30 : les 10 brouillons toujours sans nœud ni tag ; nœuds des points = sous-notions
+  (011 « égalité de fractions », 013 « ordre », 014 et 089 « addition et soustraction »).
+- Migration `20261030161000_questions_ce2_lot4_rangement_tags` (calquée sur le lot 3 ; horodatage après le max de
+  la prod `20261030150000` et les `160000`/`160100` réservés par les worktrees questions-4 et questions-2de) + test
+  d'intégration : rouge sans le corps (5/9), vert avec (9/9).
+- `security-auditor` : aucun finding (corps SQL identique au lot 3, gardes et rollback vérifiés, relevé MCP refait).
