@@ -202,6 +202,18 @@ describe('Droite à placer — correction', () => {
 		expect(root.querySelector('[role="status"]')?.textContent).toMatch(/réponse fausse/);
 	});
 
+	it('pas en cinquièmes : « Tu as placé le point sur 4/5. », jamais 0,8', async () => {
+		const screen = await render(NumberLine, {
+			target: mainElement(),
+			props: {
+				node: node('start: 0', 'end: 2', 'step: 1/5', 'major: 5', 'placer: 6/5'),
+				answers: [{ value: '0.8', isCorrect: false, disabled: true, onChange: () => {} }]
+			}
+		});
+		expect(screen.container.textContent).toContain('Tu as placé le point sur 4/5.');
+		expect(screen.container.textContent).not.toContain('0,8');
+	});
+
 	it('vide et fausse : « Tu n’as rien placé. »', async () => {
 		const screen = await render(NumberLine, {
 			target: mainElement(),

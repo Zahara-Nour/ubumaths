@@ -274,7 +274,8 @@ zone `role="slider"`, `aria-valuetext` « point sur 12 »). Point de l'élève *
 (`pointsOnLine`) ; jamais la valeur attendue à l'écran ni dans un attribut lu. Calcul pur
 `utils/number-line-placer.ts` : rang de graduation, réponse `placerAnswer` (entier `7`, décimal à
 point `0.75`, sinon fraction LaTeX `\frac{4}{3}`), la même pour la réponse attendue et celle de
-l'élève ; `placerText` pour l'élève (`0,3`, `4/3`). Dans une question : faux → « Tu as placé le point
+l'élève ; `placerText` pour l'élève (`0,3`, `4/3`) — pas écrit en fraction (`step: 1/5`) → graduation
+en fraction du pas (`4/5`, `5/10`, entier `1`), jamais en décimal. Dans une question : faux → « Tu as placé le point
 sur 9. » (ou « Tu n'as rien placé. ») et la droite juste à côté, point vert. Hors question : le même
 geste, rien de jugé. PDF : la droite sans point (l'enfant fait sa croix).
 

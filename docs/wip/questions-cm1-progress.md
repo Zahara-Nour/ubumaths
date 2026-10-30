@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2007 et #2017 (rangement du lot 3a joué en prod) ; page à cocher publiée._
+_Mis à jour le 2026-10-30, lot 3a publié ; PR « phrase de la droite » en cours._
 
-- **État** : lots 0, 1 et 2 publiés. Lot 3a (fractions, 10 modèles) : brouillons en prod, rangés et tagués (migration `20261030150100` jouée par David), pas encore publiés.
-- **Prochaine action** : page à cocher du lot 3a publiée le 2026-10-30 (https://claude.ai/artifact/FXw6NKvvTFs5ACRuaesB6P, collection `verdicts`, 0 verdict à la publication) ; lire et compter les verdicts de David, corriger les « À revoir » (§ 7), puis `publier-lot.ts` (simulation, `--publier` par David). Les 4 droites (019, 147, 018, 146) : bloc `line` non dessiné, à jouer dans l'aperçu. Ensuite 3b (fractions décimales), 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
-- **En attente de David** : la phrase « Tu as placé le point sur 0,8 » de la droite à placer (décimal pour une fraction, § 9 ter) : à corriger dans un chantier à part ?
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse (« Production Deploy ») : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min, sinon `DbPushMissingRemoteError` (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1` gardé jusqu'à la publication (puis retiré) ; serveur de test sur 5177.
+- **État** : lots 0, 1, 2 et 3a publiés (3a : 10/10 « OK » sur la page à cocher, `--publier` par David, statut relu au MCP).
+- **Prochaine action** : merger la PR `fix/droite-placer-forme-de-la-graduation` (droite au pas en fraction → « 4/5 », jamais « 0,8 », § 9 sexies), puis phase 0 du lot 3b (fractions décimales), puis 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
+- **En attente de David** : rien.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse (« Production Deploy ») : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min, sinon `DbPushMissingRemoteError` (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS ; index du dépôt principal parfois tenu par une autre session : ne pas y commiter par-dessus.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `fix/droite-placer-forme-de-la-graduation`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -417,3 +417,16 @@ une migration de questions-1spe : renommée `20261030150100` (#2017). Le `db:mig
 refusé par le mode auto ; David l'a lancé, avec 150030 (1spe), 160000 (questions-4) et 160100
 (questions-2de), après accord des trois sessions. MCP : les 10 modèles sur la sous-notion de leur
 point, un point chacun, toujours brouillons, `updated_at` inchangé (création, 06:03).
+
+### 9 quinquies. Lot 3a — page à cocher et publication (2026-10-30)
+
+- Page : https://claude.ai/artifact/FXw6NKvvTFs5ACRuaesB6P ; 10 verdicts « OK », sans commentaire
+  (comptés dans `verdicts`). Simulation `publier-lot` : 10 brouillons passent ; `--publier` lancé par
+  David ; 10 `published` relus au MCP. Worktree retiré puis recréé pour le § 9 sexies.
+
+### 9 sexies. Phrase de la droite à placer (2026-10-30)
+
+- Décidé par David : corriger avant le 3b (fractions décimales : « 0,7 » pour 7/10 aurait touché tout
+  le lot). `placerText` : pas écrit en fraction (`step: 1/5`) → graduation en fraction du pas
+  (`4/5`, `5/10`, `2/4`, entier `1`) ; départ hors des multiples du pas → écriture ordinaire.
+  `placerAnswer` (le juge) inchangé. Test de rendu rouge sans le correctif, vert avec.
