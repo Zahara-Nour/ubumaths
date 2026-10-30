@@ -582,7 +582,9 @@ export function checkRequiredForm(
 
 		try {
 			// Virgule nue (`0,5n`) décimale, comme pour le juge de valeur (#520),
-			// sauf dans une écriture à virgule séparatrice (couple, liste…)
+			// sauf dans une écriture à virgule séparatrice (couple, liste…). Jugé sur la
+			// réponse, pas sur l'attendue comme le juge de valeur : aucun motif ne sait
+			// écrire un couple aujourd'hui ; à aligner si un jour il en arrive un.
 			const decimalLatex = expectsSeparatorComma(latex) ? latex : bareDecimalCommaToPoint(latex);
 			const node = parseLatex(decimalLatex, {
 				genericFunctions: options.genericFunctions,

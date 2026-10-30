@@ -31,7 +31,9 @@ describe('motif : virgule nue lue comme la virgule de MathLive', () => {
 	});
 
 	it('virgule séparatrice : le couple (3,14) reste un couple', () => {
-		expect(formOk('(3,14)', 'a * n')).toBe(false);
+		// Relu `(3.14)`, il passerait le motif `a` (un nombre)
+		expect(formOk('(3,14)', 'a')).toBe(false);
+		expect(formOk('3,14', 'a')).toBe(true);
 	});
 });
 
