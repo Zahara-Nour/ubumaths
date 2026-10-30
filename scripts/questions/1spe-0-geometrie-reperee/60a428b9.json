@@ -33,7 +33,7 @@
 					"expectedAnswer": "{{r}}"
 				}
 			],
-			"statement": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{C}$ des points $M(x\\,;y)$ du plan tels que $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$.\n\n$\\mathcal{C}$ est un cercle. Détermine les coordonnées de son centre $\\Omega$ et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_\\Omega=?$\n\n$y_\\Omega=?$\n\n$r=?$",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{C}$ des points $M(x\\,;\\,y)$ du plan tels que $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$.\n\n$\\mathcal{C}$ est un cercle. Détermine les coordonnées de son centre $\\Omega$ et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_\\Omega=?$\n\n$y_\\Omega=?$\n\n$r=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -60,8 +60,8 @@
 				"steps": [
 					"On complète les carrés à l'aide de $(x-k)^2=x^2-2kx+k^2$ :\n\n$x^2{{eval:-2*a;+}}x=(x{{eval:-(a);+}})^2-{{eval:a^2}}$ et $y^2{{eval:-2*b;+}}y=(y{{eval:-(b);+}})^2-{{eval:b^2}}$.",
 					"L'équation s'écrit donc :\n\n$$\\begin{align*}(x{{eval:-(a);+}})^2-{{eval:a^2}}+(y{{eval:-(b);+}})^2-{{eval:b^2}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}&=0\\\\\\iff (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2&={{R2}}\\end{align*}$$",
-					"On reconnaît $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$, c'est-à-dire $\\Omega M^2=r^2$ avec $\\Omega(\\textcolor{{{color:primary.0}}}{ {{a}} }\\,;\\textcolor{{{color:primary.0}}}{ {{b}} })$ et $r^2={{R2}}$.",
-					"Donc $r=\\sqrt{ {{R2}} }={{r}}$ : $\\mathcal{C}$ est le cercle de centre $\\Omega({{a}}\\,;{{b}})$ et de rayon $\\textcolor{{{color:primary.0}}}{ {{r}} }$."
+					"On reconnaît $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$, c'est-à-dire $\\Omega M^2=r^2$ avec $\\Omega(\\textcolor{{{color:primary.0}}}{ {{a}} }\\,;\\,\\textcolor{{{color:primary.0}}}{ {{b}} })$ et $r^2={{R2}}$.",
+					"Donc $r=\\sqrt{ {{R2}} }={{r}}$ : $\\mathcal{C}$ est le cercle de centre $\\Omega({{a}}\\,;\\,{{b}})$ et de rayon $\\textcolor{{{color:primary.0}}}{ {{r}} }$."
 				]
 			}
 		},
@@ -77,7 +77,7 @@
 					"expectedAnswer": "\\sqrt{ {{R2}} }"
 				}
 			],
-			"statement": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{C}$ des points $M(x\\,;y)$ du plan tels que $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$.\n\n$\\mathcal{C}$ est un cercle. Détermine les coordonnées de son centre $\\Omega$ et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_\\Omega=?$\n\n$y_\\Omega=?$\n\n$r=?$",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{C}$ des points $M(x\\,;\\,y)$ du plan tels que $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$.\n\n$\\mathcal{C}$ est un cercle. Détermine les coordonnées de son centre $\\Omega$ et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_\\Omega=?$\n\n$y_\\Omega=?$\n\n$r=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -101,8 +101,8 @@
 				"steps": [
 					"On complète les carrés à l'aide de $(x-k)^2=x^2-2kx+k^2$ :\n\n$x^2{{eval:-2*a;+}}x=(x{{eval:-(a);+}})^2-{{eval:a^2}}$ et $y^2{{eval:-2*b;+}}y=(y{{eval:-(b);+}})^2-{{eval:b^2}}$.",
 					"L'équation s'écrit donc :\n\n$$\\begin{align*}(x{{eval:-(a);+}})^2-{{eval:a^2}}+(y{{eval:-(b);+}})^2-{{eval:b^2}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}&=0\\\\\\iff (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2&={{R2}}\\end{align*}$$",
-					"On reconnaît $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$, c'est-à-dire $\\Omega M^2=r^2$ avec $\\Omega(\\textcolor{{{color:primary.0}}}{ {{a}} }\\,;\\textcolor{{{color:primary.0}}}{ {{b}} })$ et $r^2={{R2}}$.",
-					"Donc $r=\\sqrt{ {{R2}} }$ : $\\mathcal{C}$ est le cercle de centre $\\Omega({{a}}\\,;{{b}})$ et de rayon $\\textcolor{{{color:primary.0}}}{ \\sqrt{ {{R2}} } }$."
+					"On reconnaît $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$, c'est-à-dire $\\Omega M^2=r^2$ avec $\\Omega(\\textcolor{{{color:primary.0}}}{ {{a}} }\\,;\\,\\textcolor{{{color:primary.0}}}{ {{b}} })$ et $r^2={{R2}}$.",
+					"Donc $r=\\sqrt{ {{R2}} }$ : $\\mathcal{C}$ est le cercle de centre $\\Omega({{a}}\\,;\\,{{b}})$ et de rayon $\\textcolor{{{color:primary.0}}}{ \\sqrt{ {{R2}} } }$."
 				]
 			}
 		},
@@ -118,7 +118,7 @@
 					"expectedAnswer": "{{r}}"
 				}
 			],
-			"statement": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{C}$ des points $M(x\\,;y)$ du plan tels que ${{k}}x^2+{{k}}y^2{{eval:-2*k*a;+}}x{{eval:-2*k*b;+}}y{{eval:k*c;+}}=0$.\n\n$\\mathcal{C}$ est un cercle. Détermine les coordonnées de son centre $\\Omega$ et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_\\Omega=?$\n\n$y_\\Omega=?$\n\n$r=?$",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{C}$ des points $M(x\\,;\\,y)$ du plan tels que ${{k}}x^2+{{k}}y^2{{eval:-2*k*a;+}}x{{eval:-2*k*b;+}}y{{eval:k*c;+}}=0$.\n\n$\\mathcal{C}$ est un cercle. Détermine les coordonnées de son centre $\\Omega$ et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_\\Omega=?$\n\n$y_\\Omega=?$\n\n$r=?$",
 			"variables": [
 				{
 					"name": "k",
@@ -150,8 +150,8 @@
 					"On divise les deux membres par ${{k}}$ pour que les coefficients de $x^2$ et de $y^2$ valent $1$ : $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$.",
 					"On complète les carrés à l'aide de $(x-k)^2=x^2-2kx+k^2$ :\n\n$x^2{{eval:-2*a;+}}x=(x{{eval:-(a);+}})^2-{{eval:a^2}}$ et $y^2{{eval:-2*b;+}}y=(y{{eval:-(b);+}})^2-{{eval:b^2}}$.",
 					"L'équation s'écrit donc :\n\n$$\\begin{align*}(x{{eval:-(a);+}})^2-{{eval:a^2}}+(y{{eval:-(b);+}})^2-{{eval:b^2}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}&=0\\\\\\iff (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2&={{R2}}\\end{align*}$$",
-					"On reconnaît $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$, c'est-à-dire $\\Omega M^2=r^2$ avec $\\Omega(\\textcolor{{{color:primary.0}}}{ {{a}} }\\,;\\textcolor{{{color:primary.0}}}{ {{b}} })$ et $r^2={{R2}}$.",
-					"Donc $r=\\sqrt{ {{R2}} }={{r}}$ : $\\mathcal{C}$ est le cercle de centre $\\Omega({{a}}\\,;{{b}})$ et de rayon $\\textcolor{{{color:primary.0}}}{ {{r}} }$."
+					"On reconnaît $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$, c'est-à-dire $\\Omega M^2=r^2$ avec $\\Omega(\\textcolor{{{color:primary.0}}}{ {{a}} }\\,;\\,\\textcolor{{{color:primary.0}}}{ {{b}} })$ et $r^2={{R2}}$.",
+					"Donc $r=\\sqrt{ {{R2}} }={{r}}$ : $\\mathcal{C}$ est le cercle de centre $\\Omega({{a}}\\,;\\,{{b}})$ et de rayon $\\textcolor{{{color:primary.0}}}{ {{r}} }$."
 				]
 			}
 		},
@@ -167,7 +167,7 @@
 					"expectedAnswer": "{{eval:m/2}}"
 				}
 			],
-			"statement": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{C}$ des points $M(x\\,;y)$ du plan tels que $x^2+y^2{{al;+}}x{{eval:-2*b;+}}y{{g;+}}=0$.\n\n$\\mathcal{C}$ est un cercle. Détermine les coordonnées de son centre $\\Omega$ et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_\\Omega=?$\n\n$y_\\Omega=?$\n\n$r=?$",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{C}$ des points $M(x\\,;\\,y)$ du plan tels que $x^2+y^2{{al;+}}x{{eval:-2*b;+}}y{{g;+}}=0$.\n\n$\\mathcal{C}$ est un cercle. Détermine les coordonnées de son centre $\\Omega$ et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_\\Omega=?$\n\n$y_\\Omega=?$\n\n$r=?$",
 			"variables": [
 				{
 					"name": "al",
@@ -191,7 +191,7 @@
 				"steps": [
 					"On complète les carrés à l'aide de $(x-k)^2=x^2-2kx+k^2$ :\n\n$x^2{{if:al==1|+x}}{{if:al==-1|-x}}{{if:al>1|+{{eval:al}}x}}{{if:al< -1|{{eval:al}}x}}=\\left(x{{eval:al/2;+}}\\right)^2-{{eval:al^2/4}}$ et $y^2{{eval:-2*b;+}}y=(y{{eval:-(b);+}})^2-{{eval:b^2}}$.",
 					"L'équation s'écrit donc :\n\n$$\\begin{align*}\\left(x{{eval:al/2;+}}\\right)^2-{{eval:al^2/4}}+(y{{eval:-(b);+}})^2-{{eval:b^2}}{{if:g>0|+{{eval:g}}}}{{if:g< 0|{{eval:g}}}}&=0\\\\\\iff \\left(x{{eval:al/2;+}}\\right)^2+(y{{eval:-(b);+}})^2&={{eval:m^2/4}}\\end{align*}$$",
-					"On reconnaît $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$ avec $\\Omega\\left(\\textcolor{{{color:primary.0}}}{ {{eval:-al/2}} }\\,;\\textcolor{{{color:primary.0}}}{ {{b}} }\\right)$ et $r^2={{eval:m^2/4}}$.",
+					"On reconnaît $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$ avec $\\Omega\\left(\\textcolor{{{color:primary.0}}}{ {{eval:-al/2}} }\\,;\\,\\textcolor{{{color:primary.0}}}{ {{b}} }\\right)$ et $r^2={{eval:m^2/4}}$.",
 					"Donc $r=\\sqrt{ {{eval:m^2/4}} }=\\textcolor{{{color:primary.0}}}{ {{eval:m/2}} }$."
 				]
 			}

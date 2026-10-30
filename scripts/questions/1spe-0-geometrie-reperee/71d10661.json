@@ -139,7 +139,7 @@
 				"steps": [
 					"$\\vec{n}$ est normal à $d$ si et seulement si $\\vec{n}$ est orthogonal au vecteur directeur $\\vec{u}$ : $\\vec{n}\\cdot\\vec{u}=0$.",
 					"Notons $y$ la coordonnée manquante : ${{eval:t*u2}}\\times{{u1;()}}+y\\times{{u2;()}}=0$, soit ${{eval:t*u2*u1}}{{if:u2==1|+y}}{{if:u2==-1|-y}}{{if:u2>1|+{{eval:u2}}y}}{{if:u2< -1|{{eval:u2}}y}}=0$.",
-					"Donc $y=\\dfrac{{{eval:-t*u2*u1}}}{{{eval:u2}}}=\\textcolor{{{color:primary.0}}}{ {{eval:-t*u1}} }$."
+					"Donc $y={{if:u2>1|\\dfrac{{{eval:-t*u2*u1}}}{{{eval:u2}}}=}}{{if:u2< -1|\\dfrac{{{eval:t*u2*u1}}}{{{eval:-u2}}}=}}\\textcolor{{{color:primary.0}}}{ {{eval:-t*u1}} }$."
 				]
 			}
 		},

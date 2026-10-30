@@ -28,7 +28,7 @@
 					"expectedAnswer": "(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}}"
 				}
 			],
-			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $\\Omega({{a}}\\,;{{b}})$ et $A({{xa}}\\,;{{ya}})$. On note $\\mathcal{C}$ le cercle de centre $\\Omega$ qui passe par $A$.\n\nDétermine une équation de $\\mathcal{C}$.\n\n$?$",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $\\Omega({{a}}\\,;\\,{{b}})$ et $A({{xa}}\\,;\\,{{ya}})$. On note $\\mathcal{C}$ le cercle de centre $\\Omega$ qui passe par $A$.\n\nDétermine une équation de $\\mathcal{C}$.\n\n$?$",
 			"variables": [
 				{
 					"name": "a",
@@ -63,7 +63,7 @@
 			"correction": {
 				"steps": [
 					"Le rayon de $\\mathcal{C}$ est $r=\\Omega A$, donc :\n\n$$\\begin{align*}r^2=\\Omega A^2&=(x_A-x_\\Omega)^2+(y_A-y_\\Omega)^2\\\\&=({{xa}}-{{a;()}})^2+({{ya}}-{{b;()}})^2\\\\&={{p;()}}^2+{{q;()}}^2={{R2}}\\end{align*}$$\n\nInutile de calculer $r$ : l'équation n'utilise que $r^2$.",
-					"Un point $M(x\\,;y)$ appartient à $\\mathcal{C}$ si et seulement si $\\Omega M^2=r^2$, soit $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$. Une équation de $\\mathcal{C}$ est donc $\\textcolor{{{color:primary.0}}}{ (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}} }$."
+					"Un point $M(x\\,;\\,y)$ appartient à $\\mathcal{C}$ si et seulement si $\\Omega M^2=r^2$, soit $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$. Une équation de $\\mathcal{C}$ est donc $\\textcolor{{{color:primary.0}}}{ (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}} }$."
 				]
 			}
 		},
@@ -74,7 +74,7 @@
 					"expectedAnswer": "(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}}"
 				}
 			],
-			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$ et $B({{xb}}\\,;{{yb}})$. On note $\\mathcal{C}$ le cercle de diamètre $[AB]$.\n\nDétermine une équation de $\\mathcal{C}$.\n\n$?$",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;\\,{{ya}})$ et $B({{xb}}\\,;\\,{{yb}})$. On note $\\mathcal{C}$ le cercle de diamètre $[AB]$.\n\nDétermine une équation de $\\mathcal{C}$.\n\n$?$",
 			"variables": [
 				{
 					"name": "a",
@@ -116,10 +116,10 @@
 			"conditions": [],
 			"correction": {
 				"steps": [
-					"Le centre $\\Omega$ de $\\mathcal{C}$ est le milieu de $[AB]$ : $x_\\Omega=\\dfrac{ {{xa}}+{{xb;()}} }{2}={{a}}$ et $y_\\Omega=\\dfrac{ {{ya}}+{{yb;()}} }{2}={{b}}$, donc $\\Omega({{a}}\\,;{{b}})$.",
+					"Le centre $\\Omega$ de $\\mathcal{C}$ est le milieu de $[AB]$ : $x_\\Omega=\\dfrac{ {{xa}}+{{xb;()}} }{2}={{a}}$ et $y_\\Omega=\\dfrac{ {{ya}}+{{yb;()}} }{2}={{b}}$, donc $\\Omega({{a}}\\,;\\,{{b}})$.",
 					"Le rayon est $r=\\dfrac{AB}{2}$, donc $r^2=\\dfrac{AB^2}{4}$ :\n\n$$\\begin{align*}AB^2&=({{xb}}-{{xa;()}})^2+({{yb}}-{{ya;()}})^2\\\\&={{eval:2*p;()}}^2+{{eval:2*q;()}}^2={{eval:4*R2}}\\end{align*}$$",
 					"$r^2=\\dfrac{ {{eval:4*R2}} }{4}={{R2}}$. Inutile de calculer $r$ : l'équation n'utilise que $r^2$.",
-					"Un point $M(x\\,;y)$ appartient à $\\mathcal{C}$ si et seulement si $\\Omega M^2=r^2$, soit $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$. Une équation de $\\mathcal{C}$ est donc $\\textcolor{{{color:primary.0}}}{ (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}} }$. On peut aussi calculer $r^2=\\Omega A^2$."
+					"Un point $M(x\\,;\\,y)$ appartient à $\\mathcal{C}$ si et seulement si $\\Omega M^2=r^2$, soit $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$. Une équation de $\\mathcal{C}$ est donc $\\textcolor{{{color:primary.0}}}{ (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}} }$. On peut aussi calculer $r^2=\\Omega A^2$."
 				]
 			}
 		},
@@ -164,9 +164,9 @@
 			"conditions": [],
 			"correction": {
 				"steps": [
-					"On lit sur la figure $\\Omega({{a}}\\,;{{b}})$ et $A({{xa}}\\,;{{ya}})$.",
+					"On lit sur la figure $\\Omega({{a}}\\,;\\,{{b}})$ et $A({{xa}}\\,;\\,{{ya}})$.",
 					"Le rayon de $\\mathcal{C}$ est $r=\\Omega A$, donc :\n\n$$\\begin{align*}r^2=\\Omega A^2&=(x_A-x_\\Omega)^2+(y_A-y_\\Omega)^2\\\\&=({{xa}}-{{a;()}})^2+({{ya}}-{{b;()}})^2\\\\&={{p;()}}^2+{{q;()}}^2={{R2}}\\end{align*}$$\n\nInutile de calculer $r$ : l'équation n'utilise que $r^2$.",
-					"Un point $M(x\\,;y)$ appartient à $\\mathcal{C}$ si et seulement si $\\Omega M^2=r^2$, soit $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$. Une équation de $\\mathcal{C}$ est donc $\\textcolor{{{color:primary.0}}}{ (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}} }$."
+					"Un point $M(x\\,;\\,y)$ appartient à $\\mathcal{C}$ si et seulement si $\\Omega M^2=r^2$, soit $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$. Une équation de $\\mathcal{C}$ est donc $\\textcolor{{{color:primary.0}}}{ (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}} }$."
 				]
 			}
 		},
@@ -178,7 +178,7 @@
 					"expectedAnswer": "x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{eval:a^2+b^2-R2;+}}=0"
 				}
 			],
-			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $\\Omega({{a}}\\,;{{b}})$ et $A({{xa}}\\,;{{ya}})$. On note $\\mathcal{C}$ le cercle de centre $\\Omega$ qui passe par $A$.\n\nDétermine une équation de $\\mathcal{C}$ sous la forme développée $x^2+y^2+\\alpha x+\\beta y+\\gamma=0$.\n\n$?$",
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $\\Omega({{a}}\\,;\\,{{b}})$ et $A({{xa}}\\,;\\,{{ya}})$. On note $\\mathcal{C}$ le cercle de centre $\\Omega$ qui passe par $A$.\n\nDétermine une équation de $\\mathcal{C}$ sous la forme développée $x^2+y^2+\\alpha x+\\beta y+\\gamma=0$.\n\n$?$",
 			"variables": [
 				{
 					"name": "a",
@@ -216,7 +216,7 @@
 			"correction": {
 				"steps": [
 					"Le rayon de $\\mathcal{C}$ est $r=\\Omega A$, donc :\n\n$$\\begin{align*}r^2=\\Omega A^2&=(x_A-x_\\Omega)^2+(y_A-y_\\Omega)^2\\\\&=({{xa}}-{{a;()}})^2+({{ya}}-{{b;()}})^2\\\\&={{p;()}}^2+{{q;()}}^2={{R2}}\\end{align*}$$\n\nInutile de calculer $r$ : l'équation n'utilise que $r^2$.",
-					"Un point $M(x\\,;y)$ appartient à $\\mathcal{C}$ si et seulement si $\\Omega M^2=r^2$, soit $(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}}$.",
+					"Un point $M(x\\,;\\,y)$ appartient à $\\mathcal{C}$ si et seulement si $\\Omega M^2=r^2$, soit $(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}}$.",
 					"On développe : $x^2{{eval:-2*a;+}}x+{{eval:a^2}}+y^2{{eval:-2*b;+}}y+{{eval:b^2}}={{R2}}$.",
 					"Une équation de $\\mathcal{C}$ est donc $\\textcolor{{{color:primary.0}}}{ x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{if:g>0|+{{eval:g}}}}{{if:g< 0|{{eval:g}}}}=0 }$."
 				]

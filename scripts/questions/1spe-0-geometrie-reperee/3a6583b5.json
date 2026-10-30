@@ -29,7 +29,7 @@
 					"expectedAnswer": "(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{eval:R2}}"
 				}
 			],
-			"statement": "Le plan est muni d'un repère orthonormé. On note $\\mathcal{C}$ le cercle de centre $\\Omega({{a}}\\,;{{b}})$ et de rayon ${{r}}$.\n\nDonne une équation de $\\mathcal{C}$ sous la forme $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$.\n\n$?$",
+			"statement": "Le plan est muni d'un repère orthonormé. On note $\\mathcal{C}$ le cercle de centre $\\Omega({{a}}\\,;\\,{{b}})$ et de rayon ${{r}}$.\n\nDonne une équation de $\\mathcal{C}$ sous la forme $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$.\n\n$?$",
 			"variables": [
 				{
 					"name": "a",
@@ -51,7 +51,7 @@
 			"conditions": [],
 			"correction": {
 				"steps": [
-					"Un point $M(x\\,;y)$ appartient au cercle $\\mathcal{C}$ de centre $\\Omega$ et de rayon $r$ si et seulement si $\\Omega M=r$, c'est-à-dire $\\Omega M^2=r^2$ (une distance est positive).",
+					"Un point $M(x\\,;\\,y)$ appartient au cercle $\\mathcal{C}$ de centre $\\Omega$ et de rayon $r$ si et seulement si $\\Omega M=r$, c'est-à-dire $\\Omega M^2=r^2$ (une distance est positive).",
 					"Dans un repère orthonormé :\n\n$$\\begin{align*}\\Omega M^2&=(x-x_\\Omega)^2+(y-y_\\Omega)^2\\\\&=(x-{{a;()}})^2+(y-{{b;()}})^2\\\\&=(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2\\end{align*}$$",
 					"$r^2={{r}}^2={{R2}}$, donc une équation de $\\mathcal{C}$ est $\\textcolor{{{color:primary.0}}}{ (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{eval:R2}} }$."
 				]
@@ -64,7 +64,7 @@
 					"expectedAnswer": "(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{eval:R2}}"
 				}
 			],
-			"statement": "Le plan est muni d'un repère orthonormé. On note $\\mathcal{C}$ le cercle de centre $\\Omega({{a}}\\,;{{b}})$ et de rayon $\\sqrt{ {{R2}} }$.\n\nDétermine une équation de $\\mathcal{C}$.\n\n$?$",
+			"statement": "Le plan est muni d'un repère orthonormé. On note $\\mathcal{C}$ le cercle de centre $\\Omega({{a}}\\,;\\,{{b}})$ et de rayon $\\sqrt{ {{R2}} }$.\n\nDétermine une équation de $\\mathcal{C}$.\n\n$?$",
 			"variables": [
 				{
 					"name": "a",
@@ -82,9 +82,9 @@
 			"conditions": ["mod(R2,4) != 0", "mod(R2,9) != 0"],
 			"correction": {
 				"steps": [
-					"Un point $M(x\\,;y)$ appartient au cercle $\\mathcal{C}$ de centre $\\Omega$ et de rayon $r$ si et seulement si $\\Omega M=r$, c'est-à-dire $\\Omega M^2=r^2$ (une distance est positive).",
+					"Un point $M(x\\,;\\,y)$ appartient au cercle $\\mathcal{C}$ de centre $\\Omega$ et de rayon $r$ si et seulement si $\\Omega M=r$, c'est-à-dire $\\Omega M^2=r^2$ (une distance est positive).",
 					"Dans un repère orthonormé :\n\n$$\\begin{align*}\\Omega M^2&=(x-x_\\Omega)^2+(y-y_\\Omega)^2\\\\&=(x-{{a;()}})^2+(y-{{b;()}})^2\\\\&=(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2\\end{align*}$$",
-					"$r^2=\\sqrt{ {{R2}} }^2={{R2}}$, donc une équation de $\\mathcal{C}$ est $\\textcolor{{{color:primary.0}}}{ (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{eval:R2}} }$.",
+					"$r^2=\\left(\\sqrt{ {{R2}} }\\right)^2={{R2}}$, donc une équation de $\\mathcal{C}$ est $\\textcolor{{{color:primary.0}}}{ (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{eval:R2}} }$.",
 					"En développant, $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{eval:a^2+b^2-R2;+}}=0$ est une autre équation de $\\mathcal{C}$ : les deux formes sont justes."
 				]
 			}
@@ -118,8 +118,8 @@
 			"conditions": [],
 			"correction": {
 				"steps": [
-					"On lit sur la figure le centre $\\Omega({{a}}\\,;{{b}})$ et le rayon $r={{r}}$ (le cercle passe par le point de coordonnées $({{eval:a+r}}\\,;{{b}})$).",
-					"Un point $M(x\\,;y)$ appartient au cercle $\\mathcal{C}$ de centre $\\Omega$ et de rayon $r$ si et seulement si $\\Omega M=r$, c'est-à-dire $\\Omega M^2=r^2$ (une distance est positive).",
+					"On lit sur la figure le centre $\\Omega({{a}}\\,;\\,{{b}})$ et le rayon $r={{r}}$ (le cercle passe par le point de coordonnées $({{eval:a+r}}\\,;\\,{{b}})$).",
+					"Un point $M(x\\,;\\,y)$ appartient au cercle $\\mathcal{C}$ de centre $\\Omega$ et de rayon $r$ si et seulement si $\\Omega M=r$, c'est-à-dire $\\Omega M^2=r^2$ (une distance est positive).",
 					"Dans un repère orthonormé :\n\n$$\\begin{align*}\\Omega M^2&=(x-x_\\Omega)^2+(y-y_\\Omega)^2\\\\&=(x-{{a;()}})^2+(y-{{b;()}})^2\\\\&=(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2\\end{align*}$$",
 					"$r^2={{r}}^2={{R2}}$, donc une équation de $\\mathcal{C}$ est $\\textcolor{{{color:primary.0}}}{ (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{eval:R2}} }$."
 				]

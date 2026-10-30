@@ -121,7 +121,7 @@
 					"Le vecteur $\\vec{u}\\begin{pmatrix}1\\\\{{eval:m}}\\end{pmatrix}$ est un vecteur directeur de $d$ (coefficient directeur ${{eval:m}}$).",
 					"$\\Delta$ est perpendiculaire à $d$, donc $\\vec{u}$ est normal à $\\Delta$ : $\\Delta$ a une équation de la forme $x{{if:m==1|+y}}{{if:m==-1|-y}}{{if:m>1|+{{eval:m}}y}}{{if:m< -1|{{eval:m}}y}}+c'=0$.",
 					"$A\\in\\Delta$ : ${{eval:x0}}+{{m;()}}\\times{{y0;()}}+c'=0$, donc $c'={{eval:cp}}$.",
-					"$x{{if:m==1|+y}}{{if:m==-1|-y}}{{if:m>1|+{{eval:m}}y}}{{if:m< -1|{{eval:m}}y}}{{if:cp>0|+{{eval:cp}}}}{{if:cp< 0|{{eval:cp}}}}=0\\iff {{if:m==1|y}}{{if:m==-1|-y}}{{if:m>1|{{eval:m}}y}}{{if:m< -1|{{eval:m}}y}}=-x{{if:mcp>0|+{{eval:mcp}}}}{{if:mcp< 0|{{eval:mcp}}}}\\iff \\textcolor{{{color:primary.0}}}{ y={{if:im==1|x}}{{if:im==-1|-x}}{{if:im>1|{{eval:im}}x}}{{if:im< -1|{{eval:im}}x}}{{if:q>0|+{{eval:q}}}}{{if:q< 0|{{eval:q}}}} }$"
+					"$x{{if:m==1|+y}}{{if:m==-1|-y}}{{if:m>1|+{{eval:m}}y}}{{if:m< -1|{{eval:m}}y}}{{if:cp>0|+{{eval:cp}}}}{{if:cp< 0|{{eval:cp}}}}=0\\iff {{if:m==1|y}}{{if:m==-1|-y}}{{if:m>1|{{eval:m}}y}}{{if:m< -1|{{eval:m}}y}}=-x{{if:mcp>0|+{{eval:mcp}}}}{{if:mcp< 0|{{eval:mcp}}}}\\iff \\textcolor{{{color:primary.0}}}{ y={{if:m==-1|x}}{{if:m==1|-x}}{{if:abs(m)>1|{{eval:-1/m}}x}}{{if:q>0|+{{eval:q}}}}{{if:q< 0|{{eval:q}}}} }$"
 				]
 			}
 		},
