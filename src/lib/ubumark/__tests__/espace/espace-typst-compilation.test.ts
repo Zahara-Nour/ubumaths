@@ -11,6 +11,8 @@ import { resolve } from 'node:path';
 import { loadFonts } from '@myriaddreamin/typst.ts/options.init';
 import { parseMarkdown } from '$lib/ubumark';
 import { generateTypst } from '$lib/ubumark/generators/typst-generator';
+import { generateEspaceTypst } from '$lib/ubumark/generators/espace-typst';
+import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
 
 it('un document avec des blocs ```cubes compile en PDF', async () => {
 	const { $typst } = await import('@myriaddreamin/typst.ts/dist/esm/contrib/snippet.mjs');
@@ -53,11 +55,27 @@ it('un document avec des blocs ```cubes compile en PDF', async () => {
 				'',
 				'```cubes',
 				'hauteurs: 9',
+				'```',
+				'',
+				'```cubes',
+				'hauteurs: 2 1 1 / 1 0 1',
+				'dessiner: face',
+				'```',
+				'',
+				'```cubes',
+				'hauteurs: 2 1 1 / 1 0 1',
+				'retrouver: face, droite, gauche',
 				'```'
 			].join('\n')
 		)
 	);
-	const pdf = await $typst.pdf({ mainContent: source });
+	// Corrigés des gestes (la vue coloriée, les hauteurs écrites)
+	const solved = ['dessiner: dessus', 'retrouver: face']
+		.map((task) =>
+			generateEspaceTypst(parseEspaceContent(`hauteurs: 2 1 1 / 1 0 1\n${task}`), { solved: true })
+		)
+		.join('\n\n');
+	const pdf = await $typst.pdf({ mainContent: `${source}\n\n${solved}` });
 	expect(pdf?.length ?? 0).toBeGreaterThan(1000);
 
 	await expect($typst.pdf({ mainContent: '#place(dx: 1cm, rect(width: ' })).rejects.toBeDefined();

@@ -9,6 +9,12 @@
  * Noir sur blanc : trois gris imprimables (dessus le plus clair, côté le plus
  * foncé), contours noirs.
  *
+ * Gestes (`dessiner:`, `retrouver:`) : les figures côte à côte, titrées.
+ * `dessiner:` → la perspective et un quadrillage vide, à colorier au crayon ;
+ * `retrouver:` → la vue de dessus vide (une hauteur à écrire par carreau) et les
+ * vues données, sans perspective. `solved` (corrigé) : la vue coloriée, ou les
+ * hauteurs du bloc.
+ *
  * Un bloc en erreur devient le cadre neutre « Solide indisponible » — jamais
  * une erreur de compilation (une seule erreur Typst fait échouer toute la fiche).
  *
@@ -22,7 +28,13 @@ import {
 	buildEspaceScene,
 	type EspaceFaceKind
 } from '../utils/espace-scene';
-import { ESPACE_UNAVAILABLE, type EspaceNode } from '../types/espace';
+import {
+	ESPACE_UNAVAILABLE,
+	type CubesView,
+	type EspaceNode,
+	type EspaceSpec
+} from '../types/espace';
+import { drawingGridSize, viewGrid } from '../utils/cubes-gestes';
 
 // ============================================================================
 // CONSTANTES
@@ -38,32 +50,120 @@ export const ESPACE_LUMA: Record<EspaceFaceKind, number> = {
 	case: 255
 };
 
+/** Gris d'un carreau colorié du quadrillage (corrigé) */
+const COLORED_LUMA = 150;
+
+const VIEW_TITLES: Record<Exclude<CubesView, 'perspective'>, string> = {
+	dessus: 'Vue de dessus',
+	face: 'Vue de face',
+	droite: 'Vue de droite',
+	gauche: 'Vue de gauche'
+};
+
 // ============================================================================
 // FONCTIONS
 // ============================================================================
 
 const cm = (units: number) => `${Number((units * ESPACE_CM_PER_UNIT).toFixed(4))}cm`;
 
-/** Typst d'un bloc d'espace */
-export function generateEspaceTypst(node: EspaceNode): string {
+const STROKE = `(paint: black, thickness: ${cm(ESPACE_STROKE)}, join: "round")`;
+
+/** Un polygone Typst, placé dans sa boîte */
+function polygonTypst(points: { x: number; y: number }[], luma: number): string {
+	const at = points
+		.map((p) => `(${cm(p.x + ESPACE_MARGIN)}, ${cm(p.y + ESPACE_MARGIN)})`)
+		.join(', ');
+	return `  #place(top + left, polygon(fill: luma(${luma}), stroke: ${STROKE}, ${at}))`;
+}
+
+/** Boîte de la taille d'un dessin de `width` × `height` unités, marge comprise */
+function boxTypst(width: number, height: number, content: string[]): string {
+	return [
+		`#box(width: ${cm(width + 2 * ESPACE_MARGIN)}, height: ${cm(height + 2 * ESPACE_MARGIN)})[`,
+		...content,
+		']'
+	].join('\n');
+}
+
+/** L'assemblage dessiné dans une vue (ou en perspective) */
+function sceneTypst(spec: EspaceSpec, view: CubesView): string {
+	const scene = buildEspaceScene({ kind: 'cubes', heights: spec.heights, view });
+	return boxTypst(
+		scene.width,
+		scene.height,
+		scene.polygons.map((polygon) => polygonTypst(polygon.points, ESPACE_LUMA[polygon.kind]))
+	);
+}
+
+/** Carré de 1 × 1 au coin (x, y) */
+const unitSquare = (x: number, y: number) => [
+	{ x, y },
+	{ x: x + 1, y },
+	{ x: x + 1, y: y + 1 },
+	{ x, y: y + 1 }
+];
+
+/** Une figure titrée */
+const titled = (title: string, figure: string) =>
+	`#stack(dir: ttb, spacing: 0.2cm, align(center)[#text(size: 0.9em)[${title}]], ${figure.replace(/^#/, '')})`;
+
+/** Quadrillage de `dessiner:` : vide, ou la vue coloriée à un carreau du bord */
+function drawingTypst(spec: EspaceSpec, view: Exclude<CubesView, 'perspective'>, solved: boolean) {
+	const { rows, cols } = drawingGridSize(spec.heights, view);
+	const wanted = viewGrid(spec.heights, view);
+	const squares: string[] = [];
+	for (let r = 0; r < rows; r++) {
+		for (let c = 0; c < cols; c++) {
+			const colored = solved && (wanted[r - 1]?.[c - 1] ?? false);
+			squares.push(polygonTypst(unitSquare(c, r), colored ? COLORED_LUMA : ESPACE_LUMA.case));
+		}
+	}
+	return boxTypst(cols, rows, squares);
+}
+
+/** Vue de dessus de `retrouver:` : une case par pile, vide ou avec sa hauteur */
+function heightsTypst(spec: EspaceSpec, solved: boolean): string {
+	const content: string[] = [];
+	spec.heights.forEach((row, r) =>
+		row.forEach((h, c) => {
+			if (h === 0) return;
+			content.push(polygonTypst(unitSquare(c, r), ESPACE_LUMA.case));
+			if (solved) {
+				content.push(
+					`  #place(top + left, dx: ${cm(c + ESPACE_MARGIN)}, dy: ${cm(r + ESPACE_MARGIN)}, box(width: ${cm(1)}, height: ${cm(1)}, align(center + horizon)[${h}]))`
+				);
+			}
+		})
+	);
+	return boxTypst(spec.heights[0].length, spec.heights.length, content);
+}
+
+/** Les figures d'un bloc, côte à côte */
+const sideBySide = (figures: string[]) =>
+	figures.length === 1
+		? figures[0]
+		: `#stack(dir: ltr, spacing: 1cm, ${figures.map((f) => f.replace(/^#/, '')).join(', ')})`;
+
+/** Typst d'un bloc d'espace ; `solved` : corrigé d'un geste */
+export function generateEspaceTypst(node: EspaceNode, options: { solved?: boolean } = {}): string {
 	const spec = node.spec;
 	if (node.errors.length > 0 || spec === null) return UNAVAILABLE_TYPST;
 
-	const scene = buildEspaceScene(spec);
-	const stroke = `(paint: black, thickness: ${cm(ESPACE_STROKE)}, join: "round")`;
-	const polygons = scene.polygons.map((polygon) => {
-		const points = polygon.points
-			.map((p) => `(${cm(p.x + ESPACE_MARGIN)}, ${cm(p.y + ESPACE_MARGIN)})`)
-			.join(', ');
-		return `  #place(top + left, polygon(fill: luma(${ESPACE_LUMA[polygon.kind]}), stroke: ${stroke}, ${points}))`;
-	});
-	const width = cm(scene.width + 2 * ESPACE_MARGIN);
-	const height = cm(scene.height + 2 * ESPACE_MARGIN);
-	return [
-		'#align(center)[#block(breakable: false)[',
-		`#box(width: ${width}, height: ${height})[`,
-		...polygons,
-		']',
-		']]'
-	].join('\n');
+	const solved = options.solved ?? false;
+	const task = spec.task;
+	let figures: string[];
+	if (task?.kind === 'dessiner') {
+		figures = [
+			sceneTypst(spec, 'perspective'),
+			titled(VIEW_TITLES[task.view], drawingTypst(spec, task.view, solved))
+		];
+	} else if (task?.kind === 'retrouver') {
+		figures = [
+			titled(VIEW_TITLES.dessus, heightsTypst(spec, solved)),
+			...task.views.map((view) => titled(VIEW_TITLES[view], sceneTypst(spec, view)))
+		];
+	} else {
+		figures = [sceneTypst(spec, spec.view)];
+	}
+	return ['#align(center)[#block(breakable: false)[', sideBySide(figures), ']]'].join('\n');
 }

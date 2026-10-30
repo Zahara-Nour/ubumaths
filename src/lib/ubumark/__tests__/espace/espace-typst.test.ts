@@ -50,3 +50,36 @@ describe('bloc ```cubes au PDF', () => {
 		expect(count(out, /polygon\(/g)).toBe(5 + 5);
 	});
 });
+
+describe('gestes au PDF (dessiner:, retrouver:)', () => {
+	const solved = (...lines: string[]) =>
+		generateEspaceTypst(parseEspaceContent(lines.join('\n')), { solved: true });
+
+	it('dessiner: la perspective et un quadrillage vide de 5 × 4, titré', () => {
+		const out = typst('hauteurs: 2 1 1 / 1 0 1', 'dessiner: face');
+		// 13 faces de la perspective + 20 carreaux
+		expect(count(out, /polygon\(/g)).toBe(13 + 20);
+		expect(out).toContain('Vue de face');
+		expect(count(out, /fill: luma\(150\)/g)).toBe(0);
+	});
+
+	it('dessiner:, corrigé : la vue coloriée dans le quadrillage', () => {
+		const out = solved('hauteurs: 2 1 1 / 1 0 1', 'dessiner: face');
+		expect(count(out, /fill: luma\(150\)/g)).toBe(4);
+	});
+
+	it('retrouver: pas de perspective ; la vue de dessus vide et les vues données', () => {
+		const out = typst('hauteurs: 2 1 1 / 1 0 1', 'retrouver: face, droite');
+		// dessus 5 carreaux + face 4 + droite 3
+		expect(count(out, /polygon\(/g)).toBe(5 + 4 + 3);
+		expect(out).toContain('Vue de dessus');
+		expect(out).toContain('Vue de face');
+		expect(out).toContain('Vue de droite');
+		expect(out).not.toMatch(/\[2\]/);
+	});
+
+	it('retrouver:, corrigé : les hauteurs du bloc dans la vue de dessus', () => {
+		const out = solved('hauteurs: 2 1 1 / 1 0 1', 'retrouver: face');
+		expect(count(out, /align\(center \+ horizon\)\[\d\]/g)).toBe(5);
+	});
+});
