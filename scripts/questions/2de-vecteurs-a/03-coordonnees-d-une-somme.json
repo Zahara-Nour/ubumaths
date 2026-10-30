@@ -1,0 +1,300 @@
+{
+	"title": "Coordonnées d'une somme de vecteurs",
+	"description": "u + v, u − v, AB + BC (Chasles) et 2u − 3v coordonnée par coordonnée (pièges : signe de v dans la différence, A − C)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Coordonnées",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{u}+\\vec{v}$.\n\n$$\\vec{u}+\\vec{v}\\,?$$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "-9..9"
+				},
+				{
+					"name": "u2",
+					"expression": "-9..9"
+				},
+				{
+					"name": "v1",
+					"expression": "-9..9"
+				},
+				{
+					"name": "v2",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["abs(u1)+abs(u2) > 0", "abs(v1)+abs(v2) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:(u1)+(v1)}};{{eval:(u2)+(v2)}})",
+					"answerKind": "vecteur"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule **coordonnée par coordonnée** : abscisse avec abscisse, ordonnée avec ordonnée.",
+					"$\\vec{u}+\\vec{v}\\begin{pmatrix}{{u1}}+{{v1;()}}\\\\{{u2}}+{{v2;()}}\\end{pmatrix}$, soit $\\vec{u}+\\vec{v}\\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{eval:(u1)+(v1)}}\\\\{{eval:(u2)+(v2)}}\\end{pmatrix}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{u}-\\vec{v}$.\n\n$$\\vec{u}-\\vec{v}\\,?$$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "-9..9"
+				},
+				{
+					"name": "u2",
+					"expression": "-9..9"
+				},
+				{
+					"name": "v1",
+					"expression": "-9..9"
+				},
+				{
+					"name": "v2",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["abs(u1)+abs(u2) > 0", "abs(v1)+abs(v2) > 0", "v1 < 0 || v2 < 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:(u1)-(v1)}};{{eval:(u2)-(v2)}})",
+					"answerKind": "vecteur"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule **coordonnée par coordonnée** : abscisse avec abscisse, ordonnée avec ordonnée. On retranche les coordonnées de $\\vec{v}$, avec leur signe.",
+					"$\\vec{u}-\\vec{v}\\begin{pmatrix}{{u1}}-{{v1;()}}\\\\{{u2}}-{{v2;()}}\\end{pmatrix}$, soit $\\vec{u}-\\vec{v}\\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{eval:(u1)-(v1)}}\\\\{{eval:(u2)-(v2)}}\\end{pmatrix}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$, $B({{bx}}\\,;\\,{{by}})$ et $C({{cx}}\\,;\\,{{cy}})$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}+\\overrightarrow{BC}$.\n\n$$\\overrightarrow{AB}+\\overrightarrow{BC}\\,?$$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-9..9"
+				},
+				{
+					"name": "ay",
+					"expression": "-9..9"
+				},
+				{
+					"name": "bx",
+					"expression": "-9..9"
+				},
+				{
+					"name": "by",
+					"expression": "-9..9"
+				},
+				{
+					"name": "cx",
+					"expression": "-9..9"
+				},
+				{
+					"name": "cy",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["cx != ax", "cy != ay", "bx != ax", "bx != cx"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:(cx)-(ax)}};{{eval:(cy)-(ay)}})",
+					"answerKind": "vecteur"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Relation de Chasles** : $\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$. (On peut aussi calculer $\\overrightarrow{AB}$ et $\\overrightarrow{BC}$, puis les additionner.)",
+					"$\\overrightarrow{AC}\\begin{pmatrix}{{cx}}-{{ax;()}}\\\\{{cy}}-{{ay;()}}\\end{pmatrix}$, soit $\\overrightarrow{AB}+\\overrightarrow{BC}\\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{eval:(cx)-(ax)}}\\\\{{eval:(cy)-(ay)}}\\end{pmatrix}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{w}={{p}}\\vec{u}{{q;+}}\\vec{v}$.\n\n$$\\vec{w}\\,?$$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "-9..9"
+				},
+				{
+					"name": "u2",
+					"expression": "-9..9"
+				},
+				{
+					"name": "v1",
+					"expression": "-9..9"
+				},
+				{
+					"name": "v2",
+					"expression": "-9..9"
+				},
+				{
+					"name": "p",
+					"expression": "2..4"
+				},
+				{
+					"name": "q",
+					"expression": "2..4;±"
+				}
+			],
+			"conditions": [
+				"abs(u1)+abs(u2) > 0",
+				"abs(v1)+abs(v2) > 0",
+				"abs(u1) <= 6",
+				"abs(u2) <= 6",
+				"abs(v1) <= 6",
+				"abs(v2) <= 6"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:(p)*(u1)+(q)*(v1)}};{{eval:(p)*(u2)+(q)*(v2)}})",
+					"answerKind": "vecteur"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule **coordonnée par coordonnée** : abscisse avec abscisse, ordonnée avec ordonnée. Chaque coordonnée est multipliée par le nombre devant le vecteur.",
+					"$\\vec{w}\\begin{pmatrix}{{p}}\\times{{u1;()}}+{{q;()}}\\times{{v1;()}}\\\\{{p}}\\times{{u2;()}}+{{q;()}}\\times{{v2;()}}\\end{pmatrix}$",
+					"$\\vec{w}\\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{eval:(p)*(u1)+(q)*(v1)}}\\\\{{eval:(p)*(u2)+(q)*(v2)}}\\end{pmatrix}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(3 ; −2) + (−5 ; 4) = (−2 ; 2)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"v1": "-5",
+				"v2": "4"
+			},
+			"answers": ["(-2;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : différence (8 ; −6)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"v1": "-5",
+				"v2": "4"
+			},
+			"answers": ["(8;-6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(3 ; −2) − (−5 ; 4) = (8 ; −6)",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"v1": "-5",
+				"v2": "4"
+			},
+			"answers": ["(8;-6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe de v oublié (−2 ; 2)",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"v1": "-5",
+				"v2": "4"
+			},
+			"answers": ["(-2;2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB + BC = AC = (3 ; −3)",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"bx": "-3",
+				"by": "5",
+				"cx": "4",
+				"cy": "-1"
+			},
+			"answers": ["(3;-3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A − C (−3 ; 3)",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"bx": "-3",
+				"by": "5",
+				"cx": "4",
+				"cy": "-1"
+			},
+			"answers": ["(-3;3)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2u − 3v = (9 ; −16)",
+			"variationIndex": 3,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"v1": "-1",
+				"v2": "4",
+				"p": "2",
+				"q": "-3"
+			},
+			"answers": ["(9;-16)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2u + 3v (3 ; 8)",
+			"variationIndex": 3,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"v1": "-1",
+				"v2": "4",
+				"p": "2",
+				"q": "-3"
+			},
+			"answers": ["(3;8)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
