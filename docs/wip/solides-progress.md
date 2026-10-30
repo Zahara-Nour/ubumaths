@@ -642,3 +642,8 @@ completer: 4
     emplacements choisis par le prof (plus facile, un QCM déguisé) ? _Reco : toutes._
 22. **`completer:` sans noms, numéros ni face marquée** (les noms des faces données diraient où va la
     manquante) ? _Reco : refusés dans ce lot._
+
+**Réponse de David (2026-10-30)** : « je valide » mes recos — les quatre cibles de `designer:` (Q19) ;
+`completer:` cube seulement, 1 à 3 faces, toute pose qui plie est juste (Q20) ; tous les emplacements
+voisins en pointillés (Q21) ; noms, numéros et face marquée refusés avec `completer:` (Q22). Bloc ouvert sur
+une ligne de liste : petit correctif `fix` du parseur à part, après le lot 5. Spécification validée.
