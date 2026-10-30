@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" font-family="Georgia, 'Times New Roman', serif">
+<style>text{fill:#1B2232;paint-order:stroke;stroke:#F1EDE4;stroke-linejoin:round}.lieu{font-weight:bold;font-style:italic;stroke-width:6px;stroke-opacity:.9}</style>
+<image href="carte-ville.png" width="1024" height="1024"/>
+<g id="lieux">
+<g id="lieu-grand-phare"><title>Le Grand Phare</title><ellipse cx="633" cy="120" rx="40" ry="75" fill="#fff" fill-opacity="0"/><text x="742" y="128" font-size="24" text-anchor="middle" class="lieu">Le Grand Phare</text></g>
+<g id="lieu-port"><title>Le Port</title><ellipse cx="512" cy="280" rx="70" ry="65" fill="#fff" fill-opacity="0"/><text x="537" y="200" font-size="24" text-anchor="middle" class="lieu">Le Port</text></g>
+<g id="lieu-grue-du-port"><title>La Grue du Port</title><ellipse cx="440" cy="230" rx="50" ry="50" fill="#fff" fill-opacity="0"/><text x="330" y="236" font-size="24" text-anchor="middle" class="lieu">La Grue</text></g>
+<g id="lieu-residence-de-bougrelas"><title>La Résidence de Bougrelas</title><ellipse cx="375" cy="320" rx="30" ry="42" fill="#fff" fill-opacity="0"/><text x="372" y="384" font-size="24" text-anchor="middle" class="lieu">La Résidence</text></g>
+<g id="lieu-ponts-du-delta"><title>Les Ponts du delta</title><ellipse cx="300" cy="478" rx="30" ry="18" fill="#fff" fill-opacity="0"/><ellipse cx="505" cy="480" rx="30" ry="18" fill="#fff" fill-opacity="0"/><ellipse cx="752" cy="478" rx="30" ry="18" fill="#fff" fill-opacity="0"/><ellipse cx="357" cy="676" rx="30" ry="18" fill="#fff" fill-opacity="0"/><ellipse cx="515" cy="676" rx="30" ry="18" fill="#fff" fill-opacity="0"/><ellipse cx="612" cy="676" rx="30" ry="18" fill="#fff" fill-opacity="0"/><text x="515" y="728" font-size="24" text-anchor="middle" class="lieu">Les Ponts du delta</text></g>
+</g>
+</svg>
