@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 2 en PR._
+_Mis à jour le 2026-10-30, après #2023._
 
-- **État** : lot 2 (gestes `dessiner:` / `retrouver:`, § 7) codé, revu (code-reviewer Opus : 1 défaut corrigé), PR ouverte sur `feat/solides-gestes` ; lot 1 mergé (#2003), rien en prod.
-- **Prochaine action** : PR du lot 2 verte → merge → vérification manuelle à noter (`verifications-manuelles.md` : colorier une vue, retrouver des hauteurs, au téléphone) ; puis lot 3, ` ```solide ` affichage — spécification d'abord, comme les § 6 et 7.
+- **État** : lots 1 (#2003, affichage) et 2 (#2023, gestes `dessiner:` / `retrouver:`) **mergés**, rien en prod ; vérifications manuelles notées dans `verifications-manuelles.md`.
+- **Prochaine action** : lot 3, ` ```solide ` affichage (7 solides, sommets, `marquer:`, PDF) — écrire d'abord sa spécification détaillée (comme les § 6 et 7), la faire valider, puis TDD.
 - **En attente de David** : rien.
-- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables quand la machine est chargée (WebSocket fermée, `wrapDynamicImport`) → relancer par petits lots ; la fiche `/aide-ecriture/blocs/cubes` est réservée au prof, et Chrome n'ouvre pas `127.0.0.1` → aperçu par capture du navigateur de test ; corrigé PDF (`solved`) prêt mais pas branché (comme ```partage).
-- **Worktree / branche** : `../ubumaths-wt-solides`, `feat/solides-gestes`.
+- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables (`wrapDynamicImport`, page fermée, aussi sur `main`) → relancer par petits lots en local, relancer le shard en CI ; `/aide-ecriture/blocs/*` réservé au prof et Chrome n'ouvre pas `127.0.0.1` → aperçu par capture du navigateur de test ; corrigé PDF `solved` prêt, pas branché (comme ```partage) ; `ls` = alias `eza`.
+- **Worktree / branche** : aucun (retiré après #2023) ; lot 3 : `git worktree add -b feat/solides-solide ../ubumaths-wt-solides origin/main`.
 
 ---
 
