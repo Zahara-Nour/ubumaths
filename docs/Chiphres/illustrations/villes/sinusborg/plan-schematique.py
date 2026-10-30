@@ -146,12 +146,24 @@ for pts in ARMS:
 
 
 def house(x, y, w, h, fill):
-    # maison vue d'en haut, faîtage en sinusoïde
-    add(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" fill="{fill}" stroke="{INK}" stroke-width="1.1"/>')
-    if IA:
-        return  # l'IA recopiait la sinusoïde comme un logo sur des carrés plats (2e essai) : blocs nus, le prompt fait les toits
-    wave = [(x + 2 + u, y + h / 2 + (h / 2 - 3) * math.sin(u / (w - 4) * 2 * math.pi)) for u in range(0, int(w - 3), 2)]
-    add(f'<path d="{path(wave)}" fill="none" stroke="{INK}" stroke-width="1"/>')
+    # toit vu d'en haut, ondulé dans sa FORME : les deux gouttières et le faîtage suivent une sinusoïde le long du
+    # grand côté (essais Nano Banana du 2026-10-30 : une sinusoïde dessinée sur un carré est recopiée comme un logo,
+    # un carré nu donne des toits droits ; il recopie fidèlement les formes)
+    horiz = w >= h
+    L, E = (w, h) if horiz else (h, w)  # longueur, épaisseur
+    amp = max(1.5, E * 0.16)
+    n = max(8, int(L / 1.5))
+
+    def pt(u, v):  # u le long du toit, v en travers (0 = gouttière, 1 = l'autre)
+        off = amp * math.sin(u / L * 2 * math.pi)
+        a, b = u, amp + v * (E - 2 * amp) + off
+        return (x + a, y + b) if horiz else (x + b, y + a)
+
+    outline = [pt(L * k / n, 0) for k in range(n + 1)] + [pt(L * k / n, 1) for k in range(n, -1, -1)]
+    add(f'<path d="{path(outline, True)}" fill="{fill}" stroke="{INK}" stroke-width="1.1" stroke-linejoin="round"/>')
+    ridge = [pt(L * k / n, 0.5) for k in range(n + 1)]
+    add(f'<path d="{path(ridge)}" fill="none" stroke="{INK}" stroke-width="0.7" '
+        f'opacity="0.55"/>')
 
 
 # 4. La Résidence de Bougrelas et 3. la Grue du Port, sur le quai principal (rive ouest du bassin)
