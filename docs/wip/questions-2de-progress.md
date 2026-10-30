@@ -6,16 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2014 (lot 4 rangé et tagué en prod, § 26)._
+_Mis à jour le 2026-10-30, après #2014 et le `deploy:prod` v0.58.0 (§ 26)._
 
 - **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 4 (A #2008, B #1999, correctif #1997) : 11 brouillons
   rangés et tagués en prod (#2014, migration `20261030160100` jouée par David, vérifiée au MCP).
-- **Prochaine action** : page à cocher du lot 4 B (ne dépend pas de #1997), puis publication par David.
-- **En attente de David** : le `deploy:prod` qui livre #1997, avant la page à cocher du lot 4 A.
+- **Prochaine action** : page à cocher des lots 4 A et 4 B (#1997 en prod depuis v0.58.0), puis
+  publication par David.
+- **En attente de David** : rien.
 - **Pièges en cours** : horodatage = max + 1 min de `origin/main` ET des worktrees ; `migration list
 --linked` avant `db:migrate` (migrations d'autres sessions en file → David tranche qui le lance).
-- **Worktree / branche** : `ubumaths-wt-questions-2de` · branche `feat/questions-2de-vecteurs-rangement`
-  mergée, à retirer.
+- **Worktree / branche** : aucun (worktree et branche du lot 4 retirés).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -667,3 +667,4 @@ doublée d'une variation à calcul.
 - `db:migrate` : en file avec 150030 (1spe), 150100 (CM1), 160000 (questions-4) ; joué par David d'un seul
   `db push`. MCP : les 11 en brouillon, chacun sur la sous-notion de son point, un tag chacun, le bon ;
   `updated_at` préservé.
+- `deploy:prod` v0.58.0 (2026-10-30, demandé par David) : #1997 en prod ; build Vercel prêt.
