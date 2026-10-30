@@ -1,0 +1,249 @@
+{
+	"title": "Comparer des masses",
+	"description": "1 kg et 900 g ; 2 kg 100 g et 950 g ; la plus lourde et la plus légère de quatre masses",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Comparaison",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Compare ces deux masses.\n\n$$1~\\unit{kg} \\quad \\ldots \\quad {{b}}~\\unit{g}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..20"
+				},
+				{
+					"name": "b",
+					"expression": "eval:50*k"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(1000-b)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux masses dans la même unité : $1~\\unit{kg} = 1\\,000~\\unit{g}$.",
+					"$$1\\,000~\\unit{g} {{if:r==0|<|{{if:r==1|=|>}}}} {{b}}~\\unit{g}$$",
+					"$$1~\\unit{kg} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{b}}~\\unit{g}$$"
+				]
+			}
+		},
+		{
+			"statement": "Compare ces deux masses.\n\n$${{a}}~\\unit{kg}~{{eval:50*p}}~\\unit{g} \\quad \\ldots \\quad {{eval:50*q}}~\\unit{g}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "1..18"
+				},
+				{
+					"name": "q",
+					"expression": "2..19"
+				}
+			],
+			"conditions": ["q>p"],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{a}}~\\unit{kg}$, c'est déjà {{if:a==1|$1\\,000~\\unit{g}$|deux fois $1\\,000~\\unit{g}$}} : plus que ${{eval:50*q}}~\\unit{g}$.",
+					"On ne compare pas seulement ${{eval:50*p}}$ et ${{eval:50*q}}$ : il faut compter les kilogrammes.",
+					"$${{a}}~\\unit{kg}~{{eval:50*p}}~\\unit{g} \\textcolor{{{color:primary.0}}}{>} {{eval:50*q}}~\\unit{g}$$"
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la masse la plus {{if:s==1|lourde|légère}} ?\n\n```choix\n- ${{n}}~\\unit{kg}$\n- $1\\,000~\\unit{g}$\n- $1~\\unit{kg}~{{eval:100*p}}~\\unit{g}$\n- $2~\\unit{kg}~{{eval:100*q}}~\\unit{g}$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..2"
+				},
+				{
+					"name": "r",
+					"expression": "eval:s-1"
+				},
+				{
+					"name": "n",
+					"expression": "3..50"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare d'abord les kilogrammes : $1\\,000~\\unit{g} = 1~\\unit{kg}$.",
+					"$1\\,000~\\unit{g}$ fait $1~\\unit{kg}$ tout juste, $1~\\unit{kg}~{{eval:100*p}}~\\unit{g}$ un peu plus, $2~\\unit{kg}~{{eval:100*q}}~\\unit{g}$ plus de $2~\\unit{kg}$, et ${{n}}~\\unit{kg}$ encore plus.",
+					"La plus {{if:s==1|lourde est **${{n}}~\\unit{kg}$**|légère est **$1\\,000~\\unit{g}$**}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 kg > 900 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "18",
+				"b": "900",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 kg < 900 g (nombres seuls)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "18",
+				"b": "900",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 kg = 1 000 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "20",
+				"b": "1000",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 kg > 500 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "10",
+				"b": "500",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 2 kg 100 g > 950 g",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"p": "2",
+				"q": "19"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 kg 100 g < 950 g (100 < 950)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"p": "2",
+				"q": "19"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : la plus lourde, 50 kg",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"r": "0",
+				"n": "50",
+				"p": "3",
+				"q": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus lourde, 2 kg 100 g",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"r": "0",
+				"n": "50",
+				"p": "3",
+				"q": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : la plus légère, 1 000 g",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"r": "1",
+				"n": "50",
+				"p": "3",
+				"q": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus légère, 1 kg 300 g",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"r": "1",
+				"n": "50",
+				"p": "3",
+				"q": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,159 @@
+{
+	"title": "Les unités de masse : g, kg",
+	"description": "Symbole du gramme et du kilogramme ; peser une pomme en grammes, un vélo en kilogrammes",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Unités",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel est le symbole du {{if:k==1|kilogramme|gramme}} ?\n\n```choix\n- kg\n- g\n- km\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le kilogramme s'écrit kg, le gramme s'écrit g ; km, c'est le kilomètre, une unité de longueur.",
+					"Le {{if:k==1|kilogramme|gramme}} s'écrit **{{if:k==1|kg|g}}**."
+				]
+			}
+		},
+		{
+			"statement": "Pour peser {{if:k==1|une pomme|{{if:k==2|une lettre|{{if:k==3|une gomme|{{if:k==4|un crayon|{{if:k==5|un sac de pommes de terre|{{if:k==6|un enfant|{{if:k==7|un vélo|un chien}}}}}}}}}}}}}}, quelle unité convient ?\n\n```choix\nmelanger: non\n- le gramme (g)\n- le kilogramme (kg)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/4)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:r==0|C'est un objet léger, qu'on tient dans la main : on le pèse en grammes.|C'est lourd, plus lourd qu'un paquet de sucre de $1~\\unit{kg}$ : on le pèse en kilogrammes.}}",
+					"On pèse {{if:k==1|une pomme|{{if:k==2|une lettre|{{if:k==3|une gomme|{{if:k==4|un crayon|{{if:k==5|un sac de pommes de terre|{{if:k==6|un enfant|{{if:k==7|un vélo|un chien}}}}}}}}}}}}}} en **{{if:r==0|grammes|kilogrammes}}**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "symbole du kilogramme : kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : kilogramme → km",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "symbole du gramme : g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : gramme → kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pomme : g",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pomme en kg",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "vélo : kg",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vélo en g",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

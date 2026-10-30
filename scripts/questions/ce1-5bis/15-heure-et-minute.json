@@ -1,0 +1,270 @@
+{
+	"title": "Heures et minutes",
+	"description": "1 h = 60 min ; demi-heure, quarts d'heure ; 2 h = 120 min ; 1 h 15 min = 75 min ; heure ou minute ?",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Unités",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n{{if:k==1|Un quart d'heure|{{if:k==2|Une demi-heure|{{if:k==3|Trois quarts d'heure|Une heure}}}}}}, c'est $?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:15*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{h} = 60~\\unit{min}$ ; une demi-heure, c'est la moitié : $30~\\unit{min}$ ; un quart d'heure, c'est le quart : $15~\\unit{min}$.",
+					"{{if:k==3|Trois quarts d'heure, c'est trois fois un quart d'heure : $15 + 15 + 15 = 45$.|}}",
+					"{{if:k==1|Un quart d'heure|{{if:k==2|Une demi-heure|{{if:k==3|Trois quarts d'heure|Une heure}}}}}}, c'est $\\textcolor{{{color:primary.0}}}{{{eval:15*k}}}~\\unit{min}$."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{h} = ?~\\text{min}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:60*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{h} = 60~\\unit{min}$ : ${{a}}~\\unit{h}$, c'est ${{a}}$ fois $60~\\unit{min}$.",
+					"$${{a}}~\\unit{h} = \\textcolor{{{color:primary.0}}}{{{eval:60*a}}}~\\unit{min}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{h}~{{b}}~\\unit{min} = ?~\\text{min}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "eval:5*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:60*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit d'abord les heures en minutes : ${{a}}~\\unit{h} = {{eval:60*a}}~\\unit{min}$.",
+					"Puis on ajoute les minutes :",
+					"$${{eval:60*a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:60*a+b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|J'ai mis $5$ … pour faire cet exercice.|{{if:k==2|Je me brosse les dents pendant $3$ …|{{if:k==3|La récréation dure $15$ …|{{if:k==4|Pour aller à l'école à pied, je mets $10$ …|{{if:k==5|Je suis resté $2$ … à la piscine.|{{if:k==6|Nous sommes restés $4$ … au musée.|{{if:k==7|La nuit, je dors $10$ …|Le voyage en train a duré $3$ …}}}}}}}}}}}}}}\n\nQuelle unité convient ?\n\n```choix\nmelanger: non\n- minutes (min)\n- heures (h)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/4)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:r==0|C'est une action courte, finie bien avant une heure : on compte en minutes.|C'est long, plus d'une heure : on compte en heures.}}",
+					"L'unité qui convient : les **{{if:r==0|minutes|heures}}**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 1 h = 60 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 h = 100 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : une demi-heure = 30 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une demi-heure = 50 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : un quart d'heure = 15 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un quart d'heure = 25 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : trois quarts d'heure = 45 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 h = 120 min",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 h = 200 min",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 h 15 min = 75 min",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"k": "3",
+				"b": "15"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 h 15 min = 115 min",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"k": "3",
+				"b": "15"
+			},
+			"answers": ["115"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : piscine, 2 heures",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : piscine, 2 minutes",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : exercice, 5 minutes",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

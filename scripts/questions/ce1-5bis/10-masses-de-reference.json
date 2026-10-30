@@ -1,0 +1,151 @@
+{
+	"title": "Des masses de référence",
+	"description": "Un paquet de sucre pèse 1 kg, un sachet de levure environ 10 g, un trombone environ 1 g",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Ordres de grandeur",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Qu'est-ce qui pèse environ {{if:k==1|$1~\\unit{g}$|{{if:k==2|$10~\\unit{g}$|$1~\\unit{kg}$}}}} ?\n\n```choix\n- {{if:k==1|un trombone|{{if:k==2|un sachet de levure|un paquet de sucre}}}}\n- {{if:k==1|un paquet de sucre|{{if:k==2|un paquet de sucre|un sachet de levure}}}}\n- {{if:k==1|un cartable|{{if:k==2|une pastèque|une voiture}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quelques masses à retenir : un trombone pèse environ $1~\\unit{g}$, un sachet de levure environ $10~\\unit{g}$ ; un paquet de sucre pèse $1~\\unit{kg}$, comme une bouteille d'eau d'un litre.",
+					"C'est {{if:k==1|un trombone|{{if:k==2|un sachet de levure|un paquet de sucre}}}} qui pèse environ {{if:k==1|$1~\\unit{g}$|{{if:k==2|$10~\\unit{g}$|$1~\\unit{kg}$}}}}."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Un trombone|{{if:k==2|Un sachet de levure|{{if:k==3|Un paquet de sucre|Une bouteille d'eau d'un litre}}}}}} pèse environ…\n\n```choix\nmelanger: non\n- ${{if:k==1|1|{{if:k==2|10|{{if:k==3|1|1}}}}}}~\\unit{g}$\n- ${{if:k==1|1|{{if:k==2|10|{{if:k==3|1|1}}}}}}~\\unit{kg}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quelques masses à retenir : un trombone pèse environ $1~\\unit{g}$, un sachet de levure environ $10~\\unit{g}$ ; un paquet de sucre pèse $1~\\unit{kg}$, comme une bouteille d'eau d'un litre.",
+					"{{if:k==1|Un trombone|{{if:k==2|Un sachet de levure|{{if:k==3|Un paquet de sucre|Une bouteille d'eau d'un litre}}}}}} pèse environ ${{if:k==1|1|{{if:k==2|10|{{if:k==3|1|1}}}}}}~\\unit{{{if:r==0|g|kg}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : environ 1 kg, le paquet de sucre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 kg, le sachet de levure",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : environ 10 g, le sachet de levure",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 g, le paquet de sucre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "levure : 10 g",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : levure de 10 kg",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sucre : 1 kg",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sucre de 1 g",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
