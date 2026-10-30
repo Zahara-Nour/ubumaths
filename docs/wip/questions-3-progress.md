@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après la publication du lot 3._
+_Mis à jour le 2026-10-30, phase 0 du lot 4 (fonctions) proposée._
 
-- **État** : lots 0, 1, 2 et 3 (Thalès et trigonométrie) publiés ; lot 3 : 6/6 `published` (§ 10.9).
-- **Prochaine action** : phase 0 du lot suivant, parmi ceux du § 4 non faits : Fonctions (3),
-  Pourcentages, probabilités, statistiques (4), Translation, vecteurs, sphère (6), Algorithmique (7).
-- **En attente de David** : quel lot ensuite ; le sort du dossier `../ubumaths-wt-questions-3` (hors git,
-  caches d'un ancien worktree) ; Pythagore 4e à signaler.
+- **État** : lots 0, 1, 2 et 3 (Thalès et trigonométrie) publiés ; lot 4 (fonctions, 13 points) : phase 0 au § 11,
+  coupée en 4a (7 modèles) et 4b (6).
+- **Prochaine action** : réponses de David au § 11.5, puis écrire le lot 4a (worktree neuf).
+- **En attente de David** : § 11.5 ; le sort du dossier `../ubumaths-wt-questions-3` (hors git, caches d'un
+  ancien worktree) ; Pythagore 4e à signaler.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; une variable ne vaut jamais une lettre (lettres par `{{if}}` bout
   à bout) ; valeur tirée dans une figure en décimal (`;d`) ; aperçu admin sur `127.0.0.1`, pas `localhost`.
-- **Worktree / branche** : aucun (prochain lot : worktree neuf).
+- **Worktree / branche** : aucun (lot 4a : worktree neuf).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -484,3 +484,65 @@ prof de 3e voient 6 modèles publiés de plus. Aucune règle ne change.
 - Relecture : 6 verdicts en base, 6 OK, aucun commentaire. 57c73be1 gardé sur la notion trigonométrie (OK de David).
 - `publier-lot.ts --dir scripts/questions/3-lot-3 --publier` lancé par David : 6/6 publiés. MCP : 16478dab,
   034e6b74, f55d07b0, 37c13d51, dbd5debf, 57c73be1 `published`, niveau 1.
+
+## 11. Lot 4 (fonctions, lot 3 du § 4) : phase 0 proposée (2026-10-30)
+
+Relevé MCP du jour : les 13 points du thème n'ont **aucun modèle**. Patrons en prod, en 2de : 17809937
+(antécédents lus sur une courbe), a55ad3b4 (inéquation f(x) < k, droite), 9c4f6b4f (x² = k) — ` ```courbe `
+à variables tirées, droite y = k en pointillé, points nommés, partie solution repassée en vert dans le corrigé.
+Réponse en inégalité « x ⩽ 3 » mesurée au lot 2 (§ 9.6) ; ` ```line ` ne trace pas de demi-droite.
+
+13 points, c'est trop pour un lot (3 à 10) : **deux lots proposés**, 4a puis 4b.
+
+Nœuds (prod) : 3-041, 3-064, 3-043, 3-042, 3-065 → Fonctions affines > fonction linéaire (144df13a) ;
+3-045, 3-067 → Fonctions affines > coefficient directeur et ordonnée à l'origine (e3f91bf9) ; 3-040 →
+Généralités > images et antécédents (233d6b1b) ; 3-039 → notion Généralités sur les fonctions (acb6a17e) ;
+3-046 → Fonction carré > définition et courbe (9f59bc2b) ; 3-053 → Fonction carré > x² = k, x² < k (b43e40ab) ;
+3-057 → Inéquations : premier degré > ax + b < c (eab18112) ; 3-037 → Proportionnalité > Situations de
+proportionnalité > caractérisation (026bc8f6).
+
+### 11.1 Lot 4a : vocabulaire, linéaire, lectures sur une droite (7 modèles, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                                | Variations                                                                                                                                                                                                                                                               | Réponse                            |
+| ----- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
+| 3-064 | Calculer une image par une fonction linéaire (Fonctions / Fonctions linéaires / Image, 1) | 1) f(x) = ax, a et x entiers (a de −9 à 9, ≠ 0, ±1) ; 2) x négatif ; 3) a décimal (1,5 ; −0,4) ; 4) notation f : x ↦ ax                                                                                                                                                  | case nombre                        |
+| 3-041 | Reconnaître une fonction linéaire (Fonctions / Fonctions linéaires / Reconnaître, 1)      | 1) quatre expressions, une linéaire (3x ; distracteurs 3x + 1, x², 3/x, x + 3) ; 2) écrite autrement (x/4, −x, 0,5x : laquelle est linéaire ?) ; 3) un repère, quatre tracés nommés d₁…d₄ (droite par l'origine, droite qui n'y passe pas, parabole, droite horizontale) | choix                              |
+| 3-043 | Linéaire et proportionnalité (Fonctions / Fonctions linéaires / Proportionnalité, 1)      | 1) tableau de proportionnalité → coefficient a ; 2) f linéaire, f(2) = 6 → a ; 3) situation (prix au kg, vitesse constante) → expression f(x) = ax                                                                                                                       | case nombre ; case expression (v3) |
+| 3-039 | Formule, tableau, graphique (Fonctions / Généralités / Représentations, 1)                | 1) formule → compléter une case d'un tableau de valeurs ; 2) graphique → valeur du tableau ; 3) tableau → quelle formule (choix entre 4). Fonctions simples : 2x − 1, x² + 1, 10 − x                                                                                     | case ; choix (v3)                  |
+| 3-040 | Image et antécédent (Fonctions / Généralités / Image et antécédent, 1)                    | 1) image lue dans un tableau ; 2) antécédent lu dans un tableau ; 3) image lue sur une courbe ; 4) antécédent(s) lus sur une courbe (un ou deux, le nombre de cases le dit) ; 5) image par une expression simple (2x + 1, x² − 3)                                        | case nombre (cases)                |
+| 3-045 | Lire l'ordonnée à l'origine (Fonctions / Fonctions affines / Lecture graphique, 1)        | droite tracée, b entier de −5 à 5 ; 1) a > 0 ; 2) a < 0 ; 3) fonction linéaire (b = 0)                                                                                                                                                                                   | case nombre                        |
+| 3-067 | Lire le coefficient directeur (Fonctions / Fonctions affines / Lecture graphique, 1)      | droite passant par des nœuds du quadrillage ; 1) a entier positif ; 2) a entier négatif ; 3) a = 1/2, 1/3, −2/3 (fraction)                                                                                                                                               | case nombre                        |
+
+Erreurs typiques (`testSpecs`) : 3-064 → a + x, signe ; 3-043 → a renversé (2/6) ; 3-040 → image et antécédent
+inversés, un seul antécédent sur deux ; 3-045 → abscisse à l'origine au lieu de l'ordonnée ; 3-067 → Δx/Δy,
+signe oublié pour a < 0.
+
+### 11.2 Lot 4b : résolutions graphiques, fonction carré, Thalès (6 modèles)
+
+| Point | Modèle (catégorie, niveau)                                                                          | Variations                                                                                                                                                                               | Réponse                  |
+| ----- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| 3-042 | Résoudre f(x) = k sur un graphique (Fonctions / Fonctions linéaires / Résolution graphique, 1)      | droite par l'origine tracée ; 1) a > 0 ; 2) a < 0 ; solution entière                                                                                                                     | case « x = ? »           |
+| 3-065 | Résoudre f(x) ⩽ k sur un graphique (même catégorie, 1)                                              | les quatre sens ; 1) a > 0 ; 2) a < 0 (le sens change)                                                                                                                                   | case inégalité « x ⩽ 3 » |
+| 3-057 | Résoudre ax ⩾ b graphiquement (Calcul littéral / Inéquations / Résolution graphique, 1)             | énoncé « 3x ⩾ 6 », droite y = 3x et y = 6 tracées ; 1) a > 0 ; 2) a < 0                                                                                                                  | case inégalité           |
+| 3-046 | La courbe de la fonction carré (Fonctions / Fonction carré / Courbe, 1)                             | 1) laquelle des quatre courbes représente x ↦ x² (distracteurs −x², x² + 2, droite) ; 2) compléter le tableau de valeurs (x de −3 à 3) ; 3) le point (a ; b) est-il sur la courbe ?      | choix ; case             |
+| 3-053 | Résoudre x² = a graphiquement (Fonctions / Fonction carré / x² = a, 1)                              | parabole et droite y = a tracées ; 1) a carré parfait (4, 9) : deux cases ; 2) a = 0 : une solution ; 3) a < 0 : aucune (choix « aucune solution »)                                      | cases ; choix (v3)       |
+| 3-037 | Proportionnalité, graphique et Thalès (Proportionnalité / Caractérisation / Graphique et Thalès, 1) | droite par l'origine, A(2 ; 3) et B d'abscisse 6 dessus, projetés sur l'axe en pointillé (triangles emboîtés) ; 1) quelle égalité de Thalès (choix) ; 2) ordonnée de B par Thalès (case) | choix ; case             |
+
+Erreurs typiques : 3-065 / 3-057 → sens non changé pour a < 0, inégalité large au lieu de stricte ; 3-053 → une
+seule solution (oubli de −√a), « −2 » pour a < 0.
+
+### 11.3 Rangement
+
+Chacun sur le nœud de son point (relevé ci-dessus), un tag par modèle.
+
+### 11.4 Question d'accès
+
+Brouillons : personne ne lit rien de neuf. Rangement puis publication : élèves et prof de 3e voient 7, puis 6
+modèles publiés de plus. Aucune règle ne change.
+
+### 11.5 Questions à David
+
+1. Deux lots (4a : 7 modèles, puis 4b : 6) plutôt qu'un seul de 13 ?
+2. Valider les modèles du § 11.1 (et du § 11.2 pour plus tard) : points, variations, formes de réponse ?
+3. 3-057 et 3-065 se ressemblent : deux modèles (« 3x ⩾ 6 » contre « f(x) ⩽ 6 »), comme proposé ?
+4. 3-037 : la forme proposée (Thalès dans le graphique d'une proportionnalité) te convient ?

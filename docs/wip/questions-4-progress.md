@@ -595,3 +595,10 @@ toute écriture égale acceptée (fraction non simplifiée, décimal), corrigé 
   la migration (4 échecs, 4 sautés), vert avec (9/9) ; `types:cliquet` tenu.
 - Question d'accès : § 20.3 (personne ne gagne d'accès), validée avec la phase 0.
 - `security-auditor` : aucun finding bloquant (verrou de table hérité du gabarit, borné par `lock_timeout`).
+
+## Note de la session 3e (2026-10-30)
+
+Pythagore (4-034, côté manquant) n'a **aucun modèle en prod** (MCP du 2026-10-30, titre « Pythagore » : 0). La 3e a
+publié Thalès et trigonométrie (lot 3 de `questions-3`, 6 modèles), qui le supposent acquis : le lot 7 « Pythagore et
+triangles » (§ ci-dessus) est le maillon manquant du cycle 4 en géométrie. Gabarit : `docs/wip/questions/lot-3-3.py`
+(figures ` ```figure ` à l'échelle, angle droit codé, lettres tirées en trois jeux, longueur arrondie au dixième en `;d`).
