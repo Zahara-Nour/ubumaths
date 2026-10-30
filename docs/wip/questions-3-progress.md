@@ -5,18 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2033._
+_Mis à jour le 2026-10-30, après #2033 et le `db:migrate` du lot 4b._
 
 - **État** : lots 0 à 3 et lot 4a publiés ; lot 4b : 6 brouillons en prod ; leur rangement (migration
-  `20261030162300`, test 19 verts / 12 rouges sans elle) mergé (#2033), PAS encore joué en prod (§ 11.15).
-- **Prochaine action** : David lance `! pnpm db:migrate` depuis le worktree (sur `origin/main`), puis
-  vérif MCP (nœuds + 6 tags), page à cocher, publication ; ensuite lot 4 du § 4 (pourcentages, probabilités, stats).
-- **En attente de David** : `db:migrate` (refusé au mode auto).
+  `20261030162300`, test 19 verts / 12 rouges sans elle) mergé (#2033) et joué en prod ; page à cocher publiée (§ 11.16).
+- **Prochaine action** : lire les verdicts de la page à cocher (collection `verdicts`), corriger ce qui est
+  « à revoir », puis `publier-lot.ts --dir scripts/questions/3-lot-4b --publier` (David, avec `!`) ; ensuite
+  lot 4 du § 4 (pourcentages, probabilités, statistiques).
+- **En attente de David** : relecture : https://claude.ai/artifact/SXKVm8GkhzwBvQZ2tbfJqd
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
   dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
   sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree
-  (`git push origin HEAD:main`).
+  (`git push origin HEAD:main`) ; le worktree n'avait pas `supabase/.temp` (lien du projet) : copié du dépôt
+  principal, et `db:migrate` se lance depuis un worktree À JOUR d'`origin/main`.
 - **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -616,7 +618,7 @@ modèles publiés de plus. Aucune règle ne change.
 
 ### 11.12 Lot 4b : écrit (2026-10-30)
 
-- `docs/wip/questions/lot-3-4b.py` → `scripts/questions/3-lot-4b/` (6 JSON, 15 variations, 44 specs) ;
+- `docs/wip/questions/lot-3-4b.py` → `scripts/questions/3-lot-4b/` (6 JSON, 14 variations, 44 specs) ;
   `create-questions` en simulation vert, `sonde-courbes` 0 problème (300 tirages par modèle),
   `audit-question-draws` ✅ partout.
 - Niveaux (relevé MCP du jour) : « Fonctions linéaires › Résolution graphique » neuve → 3-042 niveau 1,
@@ -656,3 +658,11 @@ modèles publiés de plus. Aucune règle ne change.
   (`20261030162200` pris par la branche ce1 lot 5 bis) et la fixture.
 - `questions-3-lot4b-rangement-tags.test.ts` : 12 rouges sans la migration, 19 verts avec.
 - #2033 mergée (CI verte, `security-auditor` sans finding). Attendu : `db:migrate` lancé par David.
+
+### 11.16 Lot 4b : migration jouée, page à cocher (2026-10-30)
+
+- `20261030162300` jouée en prod, emportée par le `db:migrate` d'une autre session (la simulation depuis
+  `origin/main` la disait déjà jouée). MCP : les 6 modèles à leur nœud (§ 11.14), un tag chacun (3-042,
+  3-065, 3-057, 3-046, 3-053, 3-037), `draft`, `updated_at` inchangé.
+- Page à cocher : https://claude.ai/artifact/SXKVm8GkhzwBvQZ2tbfJqd (capacité `db`, collection `verdicts`
+  vide au départ ; 14 exemples, aucune alerte sur les 6 fiches).
