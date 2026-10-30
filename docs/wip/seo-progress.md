@@ -5,8 +5,9 @@
 _Mis à jour le 2026-10-30, après la mise en prod v0.57.1._
 
 - **État** : #1979 (`robots.txt`), #1980 (colonne `slug`), #1990 (pages `/glossaire/<slug>`) EN PROD (v0.57.1), vérifié le 2026-10-30 : page 200 + titre + canonique, `/glossaire/multiplier` → `/glossaire/multiplication`, 631 pages dans `sitemap.xml`, robots IA exclus.
-- **Prochaine action** : David resoumet `sitemap.xml` dans Search Console. Pistes suivantes (David choisit) : chiffres de Search Console, titres/descriptions des outils, données structurées (reportées).
-- **En attente de David** : avis sur les 2 écarts à la phase 0 (6 renvois à définition gardent leur page ; page d'un terme sans filtre de niveau) ; `default` en base pour `slug` (évite `slug: ''`), oui ou non.
+- **Décisions du 2026-10-30** (David suit mes recos) : les 6 renvois à définition gardent leur page ; page d'un terme sans filtre de niveau ; pas de `default` en base pour `slug` (à glisser dans une future migration du dictionnaire).
+- **Prochaine action** : David resoumet `sitemap.xml` dans Search Console. Dans 2-3 semaines : analyser un export Search Console (pages indexées, requêtes, impressions sans clic). Puis titres/descriptions des outils et pages d'exercices. Données structurées : reportées, seulement sur demande.
+- **En attente de David** : l'export (ou un accès en lecture) Search Console.
 - **Pièges en cours** : un nouveau fichier lu par l'intégration doit entrer dans `paths` de `nightly-integration.yml` (`pnpm check:integration-paths`).
 - **Worktree / branche** : aucun (retirés après #1990) ; recréer `../ubumaths-wt-seo` pour la suite.
 
