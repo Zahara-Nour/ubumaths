@@ -1,0 +1,280 @@
+{
+	"id": "1a57c0a4-8992-4c3f-8ca7-f1a7ce9320dc",
+	"title": "ln et exp, fonctions réciproques : calculer sans calculatrice",
+	"description": "ln(eᵏ) = k, e^{ln k} = k, e^{n ln b} = bⁿ, ln(1/eᵏ), e^{−ln k} (pièges : signe, e^{n ln b} = nb, ln recopié)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions",
+	"domain": "Fonction logarithme",
+	"subdomain": "Réciproque de l'exponentielle",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"statement": "Calcule sans calculatrice.\n\n$\\ln\\left(e^{ {{k}} }\\right)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln$ est la réciproque de l'exponentielle : pour tout réel $x$, $\\ln\\left(e^{x}\\right)=x$.",
+					"$\\ln\\left(e^{ {{k}} }\\right)=\\textcolor{{{color:primary.0}}}{{{k}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"statement": "Calcule sans calculatrice.\n\n$e^{\\ln {{k}}}=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..20"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x>0$, $e^{\\ln x}=x$.",
+					"$e^{\\ln {{k}}}=\\textcolor{{{color:primary.0}}}{{{k}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^n}}"
+				}
+			],
+			"statement": "Calcule sans calculatrice.\n\n$e^{ {{n}}\\ln {{b}}}=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..3"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}\\ln {{b}}=\\ln\\left({{b}}^{ {{n}} }\\right)$, donc $e^{ {{n}}\\ln {{b}}}=e^{\\ln\\left({{b}}^{ {{n}} }\\right)}={{b}}^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:b^n}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-k}}"
+				}
+			],
+			"statement": "Calcule sans calculatrice.\n\n$\\ln\\left(\\dfrac{1}{e^{ {{k}} }}\\right)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{e^{ {{k}} }}=e^{-{{k}}}$, donc $\\ln\\left(\\dfrac{1}{e^{ {{k}} }}\\right)=\\ln\\left(e^{-{{k}}}\\right)=\\textcolor{{{color:primary.0}}}{{{eval:-k}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{1}{ {{k}} }"
+				}
+			],
+			"statement": "Calcule sans calculatrice.\n\n$e^{-\\ln {{k}}}=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$-\\ln {{k}}=\\ln\\dfrac{1}{ {{k}} }$, donc $e^{-\\ln {{k}}}=e^{\\ln\\frac{1}{ {{k}} }}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{ {{k}} }}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v0 : ln(e⁵) = 5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v0 : e⁵ recopié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "-3"
+			},
+			"description": "v0 : ln(e⁻³) = −3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "7"
+			},
+			"description": "v1 : e^{ln 7} = 7",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\ln 7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "7"
+			},
+			"description": "v1 : ln 7",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "3",
+				"n": "2"
+			},
+			"description": "v2 : e^{2 ln 3} = 9",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "3",
+				"n": "2"
+			},
+			"description": "v2 : 2 × 3 = 6",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3^2"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"b": "3",
+				"n": "2"
+			},
+			"description": "v2 : 3² écrit (puissance non calculée)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4"
+			},
+			"description": "v3 : ln(1/e⁴) = −4",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4"
+			},
+			"description": "v3 : signe oublié",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4"
+			},
+			"description": "v3 : 1/4",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{1}{5}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v4 : e^{−ln 5} = 1/5",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0.2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v4 : 0,2",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v4 : −5",
+			"variationIndex": 4
+		}
+	]
+}

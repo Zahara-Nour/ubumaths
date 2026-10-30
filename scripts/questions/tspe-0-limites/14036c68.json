@@ -1,0 +1,292 @@
+{
+	"id": "14036c68-6854-422b-b06d-3890b3745573",
+	"title": "Résoudre une inéquation avec ln",
+	"description": "ln x < a, ln x ⩾ a, ln(ax + b) ⩽ 0 ; ensemble de solutions en intervalle (pièges : domaine x > 0 oublié, sens de l'inégalité, crochets)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions",
+	"domain": "Fonction logarithme",
+	"subdomain": "Équations et inéquations",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "]0;{{if:a==0|1|e^{ {{a}} }}}["
+				}
+			],
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x<{{a}}$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction $\\ln$ est strictement croissante sur $\\left]0\\,;+\\infty\\right[$ : $\\ln x<{{a}}\\iff x<e^{ {{a}} }${{if:a==0| $=1$|}}.",
+					"Sans oublier $x>0$ : $S=\\textcolor{{{color:primary.0}}}{\\left]0\\,;{{if:a==0|1|e^{ {{a}} }}}\\right[}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "[{{if:a==0|1|e^{ {{a}} }}};+\\infty["
+				}
+			],
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x\\geqslant{{a}}$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln$ est strictement croissante sur $\\left]0\\,;+\\infty\\right[$ : $\\ln x\\geqslant{{a}}\\iff x\\geqslant {{if:a==0|1|e^{ {{a}} }}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left[{{if:a==0|1|e^{ {{a}} }}}\\,;+\\infty\\right[}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "]{{eval:-b/a}};{{eval:(1-b)/a}}]"
+				}
+			],
+			"statement": "Résous l'inéquation $\\ln\\left({{a}}x{{b;+}}\\right)\\leqslant0$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Domaine : ${{a}}x{{b;+}}>0\\iff x>{{eval:-b/a}}$.",
+					"$\\ln X\\leqslant0\\iff X\\leqslant1$ : ${{a}}x{{b;+}}\\leqslant1\\iff x\\leqslant{{eval:(1-b)/a}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left]{{eval:-b/a}}\\,;{{eval:(1-b)/a}}\\right]}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["]0;e^2["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v0 : ln x < 2 → ]0;e²[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\infty;e^2["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v0 : domaine oublié ]−∞;e²[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]0;e^2]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v0 : borne fermée ]0;e²]",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]0;1["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0"
+			},
+			"description": "v0 : ln x < 0 → ]0;1[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]0;e^0["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0"
+			},
+			"description": "v0 : ln x < 0, e⁰ écrit",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[e;+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1"
+			},
+			"description": "v1 : ln x ≥ 1 → [e;+∞[",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[e^{1};+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1"
+			},
+			"description": "v1 : e¹ écrit",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]e;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1"
+			},
+			"description": "v1 : borne ouverte (inéquation large)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]0;e]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1"
+			},
+			"description": "v1 : sens inversé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[e^3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v1 : ln x ≥ 3 → [e³;+∞[",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[\\ln 3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v1 : ln 3 au lieu de e³",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]\\frac{3}{2};2]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "v2 : ln(2x−3) ≤ 0 → ]3/2;2]",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]-\\infty;2]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "v2 : domaine oublié ]−∞;2]",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\frac{3}{2};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "v2 : ln X ≤ 0 lu comme « X ≥ … » (sens)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\left]0;\\frac{1}{e^2}\\right["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "v0 : a = −2, borne 1/e² au lieu de e⁻², juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\left]0;e^{-2}\\right["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "v0 : a = −2, borne e⁻², juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\left[\\frac{1}{e};+\\infty\\right["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1"
+			},
+			"description": "v1 : a = −1, borne 1/e, juste",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\left[e;+\\infty\\right["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-1"
+			},
+			"description": "v1 : a = −1, borne e au lieu de 1/e, faux",
+			"variationIndex": 1
+		}
+	]
+}

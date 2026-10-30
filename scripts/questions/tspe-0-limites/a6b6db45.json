@@ -1,0 +1,95 @@
+{
+	"id": "a6b6db45-3c42-42a3-b697-5a31f3e7f0cc",
+	"title": "Limite de b + a ln x en 0",
+	"description": "ln x → −∞ en 0, donc b + a ln x tend vers −∞ ou +∞ selon le signe de a (piège : ln 0 « = 0 »)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions",
+	"domain": "Limites de fonctions",
+	"subdomain": "Opérations sur les limites",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|-\\infty|+\\infty}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{b}}{{a;+}}\\ln x$.\n\nDétermine la limite de $f$ en $0$ (on a $x>0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to0}\\ln x=-\\infty$ (avec $x>0$).",
+					"Le coefficient ${{a}}$ est {{if:a>0|positif : ${{a}}\\ln x$ tend vers $-\\infty$|négatif : ${{a}}\\ln x$ tend vers $+\\infty$}}.",
+					"Par somme, $\\displaystyle\\lim_{x\\to0}f(x)=\\textcolor{{{color:primary.0}}}{{{if:a>0|-\\infty|+\\infty}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"description": "v0 : 1 + 3 ln x en 0 → −∞",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"description": "v0 : ln 0 = 0 → b",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "4"
+			},
+			"description": "v0 : 4 − 2 ln x en 0 → +∞",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "4"
+			},
+			"description": "v0 : signe du coefficient oublié",
+			"variationIndex": 0
+		}
+	]
+}

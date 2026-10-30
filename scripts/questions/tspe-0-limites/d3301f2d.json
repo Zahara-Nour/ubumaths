@@ -1,0 +1,211 @@
+{
+	"id": "d3301f2d-6293-4766-a789-d432cb11b489",
+	"title": "Résoudre une équation avec ln",
+	"description": "ln x = a, ln(ax + b) = c, 2 ln x = ln a ; valeur exacte (pièges : domaine x > 0 oublié, signe)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions",
+	"domain": "Fonction logarithme",
+	"subdomain": "Équations et inéquations",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{a}} }"
+				}
+			],
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'équation $\\ln x={{a}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln x={{a}}\\iff x=e^{ {{a}} }$ (on compose par l'exponentielle).",
+					"$x=\\textcolor{{{color:primary.0}}}{e^{ {{a}} }}$, qui appartient bien à $\\left]0\\,;+\\infty\\right[$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{{{if:c==1|e|e^{ {{c}} }}}{{eval:-b;+}}}{ {{a}} }"
+				}
+			],
+			"statement": "Résous l'équation $\\ln\\left({{a}}x{{b;+}}\\right)={{c}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln\\left({{a}}x{{b;+}}\\right)={{c}}\\iff {{a}}x{{b;+}}={{if:c==1|e|e^{ {{c}} }}}$ (et alors ${{a}}x{{b;+}}>0$ : la solution est dans le domaine).",
+					"$x=\\textcolor{{{color:primary.0}}}{\\dfrac{{{if:c==1|e|e^{ {{c}} }}}{{eval:-b;+}}}{ {{a}} }}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\sqrt{ {{a}} }"
+				}
+			],
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'équation $2\\ln x=\\ln {{a}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|6|7|10|11"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$2\\ln x=\\ln\\left(x^{2}\\right)$, donc l'équation équivaut à $x^{2}={{a}}$, soit $x=\\sqrt{ {{a}} }$ ou $x=-\\sqrt{ {{a}} }$.",
+					"Seule la solution positive est dans le domaine $\\left]0\\,;+\\infty\\right[$ : $x=\\textcolor{{{color:primary.0}}}{\\sqrt{ {{a}} }}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["e^3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v0 : ln x = 3 → e³",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\ln 3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v0 : ln 3 (fonction inversée)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3e"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v0 : 3e (produit)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{-2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "v0 : ln x = −2 → e⁻²",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{e^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "v0 : 1/e² pour e⁻² : même forme (décision du 2026-10-04)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{e^3-1}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"description": "v1 : ln(2x+1) = 3 → (e³−1)/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"description": "v1 : e^c oublié → (3−1)/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{\\ln 3-1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"description": "v1 : ln(2x+1) = 3 → ln 3 …",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\sqrt{5}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5"
+			},
+			"description": "v2 : 2 ln x = ln 5 → √5",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\sqrt{5}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5"
+			},
+			"description": "v2 : domaine oublié −√5",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{5}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5"
+			},
+			"description": "v2 : 5/2 (division par 2 sous le ln)",
+			"variationIndex": 2
+		}
+	]
+}

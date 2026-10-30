@@ -1,0 +1,275 @@
+{
+	"id": "723779c8-23a5-4768-9648-a19cab5558be",
+	"title": "Dérivée d'une fonction avec ln",
+	"description": "(ln x)′ = 1/x dans une somme, un produit x ln x, un quotient ln x / x et (ln x)² (pièges : (ln x)′ = ln x, (uv)′ = u′v′, (ln x)² confondu avec ln(x²))",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions",
+	"domain": "Fonction logarithme",
+	"subdomain": "Dérivée",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|\\dfrac{ {{a}} }{x}|-\\dfrac{ {{eval:-a}} }{x}}}{{b;+}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{a}}\\ln x{{b;+}}x{{c;+}}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(\\ln x)'=\\dfrac{1}{x}$ et la dérivée d'une constante est nulle.",
+					"$f'(x)=\\textcolor{{{color:primary.0}}}{{{if:a>0|\\dfrac{ {{a}} }{x}|-\\dfrac{ {{eval:-a}} }{x}}}{{b;+}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\ln x+1"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x\\ln x$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "z",
+					"expression": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=uv$ avec $u(x)=x$, $v(x)=\\ln x$ : $f'=u'v+uv'$.",
+					"$f'(x)=1\\times\\ln x+x\\times\\dfrac{1}{x}=\\textcolor{{{color:primary.0}}}{\\ln x+1}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{1-\\ln x}{x^{2}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\dfrac{\\ln x}{x}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "z",
+					"expression": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=\\dfrac{u}{v}$ avec $u(x)=\\ln x$, $v(x)=x$ : $f'=\\dfrac{u'v-uv'}{v^{2}}$.",
+					"$f'(x)=\\dfrac{\\frac{1}{x}\\times x-\\ln x\\times1}{x^{2}}=\\textcolor{{{color:primary.0}}}{\\dfrac{1-\\ln x}{x^{2}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{2\\ln x}{x}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\left(\\ln x\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "z",
+					"expression": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=u^{2}$ avec $u(x)=\\ln x$ : $f'=2u'u$.",
+					"$f'(x)=2\\times\\dfrac{1}{x}\\times\\ln x=\\textcolor{{{color:primary.0}}}{\\dfrac{2\\ln x}{x}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{3}{x}-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5"
+			},
+			"description": "v0 : 3 ln x − 2x + 5 → 3/x − 2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3\\ln x-2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5"
+			},
+			"description": "v0 : (ln x)′ = ln x",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{3}{x}-2+5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5"
+			},
+			"description": "v0 : constante gardée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{3-2x}{x}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5"
+			},
+			"description": "v0 : réduit au même dénominateur",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\ln x+1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v1 : x ln x → ln x + 1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{x}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v1 : (uv)′ = u′v′ → 1/x",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\ln x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v1 : ln x seul",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\ln(x)+1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v1 : ln(x) avec parenthèses",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1-\\ln x}{x^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v2 : ln x / x → (1 − ln x)/x²",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{\\ln x-1}{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v2 : signe du numérateur inversé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{1}{x}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v2 : (u/v)′ = u′/v′ → 1/x",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{2\\ln x}{x}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v3 : (ln x)² → 2 ln x / x",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2\\ln x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v3 : (u²)′ = 2u → 2 ln x",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{2}{x}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v3 : ln(x²) confondu → 2/x",
+			"variationIndex": 3
+		}
+	]
+}

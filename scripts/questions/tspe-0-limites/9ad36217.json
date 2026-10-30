@@ -1,0 +1,122 @@
+{
+	"id": "9ad36217-5f60-45c7-83ce-a1a870adc5da",
+	"title": "Courbes de ln et exp : symétrie par rapport à y = x",
+	"description": "Symétrie des courbes de exp et ln par rapport à y = x, point symétrique (piège : mauvaise symétrie)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions",
+	"domain": "Fonction logarithme",
+	"subdomain": "Courbe représentative",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On a tracé les courbes des fonctions $\\exp$ et $\\ln$ dans un repère orthonormé.\n\n```courbe\nx: -3 ; 5\ny: -3 ; 5\ngrille: 1 ; 1\nf(x) = exp(x)   bleu   nom=C_{exp}\ng(x) = ln(x)   rouge   nom=C_{ln}\nh(x) = x   gris pointillé\ntaille: moyenne\ndescription: Courbe de l'exponentielle (bleue) et du logarithme (rouge), symétriques par rapport à la droite y = x tracée en pointillés.\n```\n\nPar quelle transformation passe-t-on de la courbe de $\\exp$ à celle de $\\ln$ ?\n\n```choix\n- La symétrie par rapport à la droite d'équation $y=x$.\n- La symétrie par rapport à l'axe des ordonnées.\n- La symétrie par rapport à l'axe des abscisses.\n- La symétrie par rapport à l'origine du repère.\n```",
+			"variables": [
+				{
+					"name": "z",
+					"expression": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln$ est la fonction réciproque de $\\exp$ : le point $(a\\,;b)$ est sur la courbe de $\\exp$ si et seulement si $(b\\,;a)$ est sur celle de $\\ln$.",
+					"Échanger abscisse et ordonnée, c'est la $\\textcolor{{{color:primary.0}}}{\\text{symétrie par rapport à la droite d'équation }y=x}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Le point $A\\left({{a}}\\,;e^{ {{a}} }\\right)$ appartient à la courbe de la fonction $\\exp$.\n\nQuel point appartient à la courbe de la fonction $\\ln$ ?\n\n```choix\n- $\\left(e^{ {{a}} }\\,;{{a}}\\right)$\n- $\\left(-{{a}}\\,;e^{ {{a}} }\\right)$\n- $\\left({{a}}\\,;-e^{ {{a}} }\\right)$\n- $\\left(e^{-{{a}}}\\,;{{a}}\\right)$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln\\left(e^{ {{a}} }\\right)={{a}}$ : le point d'abscisse $e^{ {{a}} }$ de la courbe de $\\ln$ a pour ordonnée ${{a}}$.",
+					"C'est le symétrique de $A$ par rapport à la droite $y=x$ : $\\textcolor{{{color:primary.0}}}{\\left(e^{ {{a}} }\\,;{{a}}\\right)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v0 : y = x",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v0 : axe des ordonnées",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"z": "1"
+			},
+			"description": "v0 : axe des abscisses",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v1 : (e^a ; a)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v1 : symétrique par rapport à l'axe des ordonnées",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v1 : e^{−a} (ln(1/x) confondu)",
+			"variationIndex": 1
+		}
+	]
+}
