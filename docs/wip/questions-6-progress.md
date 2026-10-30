@@ -5,18 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2031._
+_Mis à jour le 2026-10-30, lot 6b en brouillons en prod, migration de rangement en PR._
 
-- **État** : lots 1 à 6a en prod, publiés. Lot 6b (M7-M13, `scripts/questions/6-grandeurs/`) mergé (#2031) :
-  specs vertes, 09 et 12 joués au clavier (§ 13.4) ; **pas encore en base de prod**.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-grandeurs --publier`
-  depuis le dépôt principal (écriture prod refusée au mode auto) ; je vérifie les 7 brouillons, puis migration
-  nœud + tags (nouvelle branche dans le worktree), page à cocher.
-- **En attente de David** : ce `--publier` ; passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles`.
+- **État** : lots 1 à 6a en prod, publiés. Lot 6b : 7 brouillons en prod (§ 13.5), sans nœud ni tag ; migration
+  `20261030170000_questions_6_lot6b_rangement_tags.sql` + test d'intégration (14 verts, 8 rouges sans) en PR.
+- **Prochaine action** : PR mergée → `db:migrate` depuis le dépôt principal, MCP (nœuds, tags, trigger `O`) ; page à
+  cocher ; David relit ; `publier-lot`.
+- **En attente de David** : passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles`.
 - **Pièges en cours** : 06 et 07 attendent le bloc ```ranger (à reprendre). 3a7a5711 : NE PAS publier.
   `svelte-kit sync` avant `question:specs`. M10 : version dessinée attend « assemblages de cubes ».
   Aperçu piloté : un clic ne donne pas le focus au champ ; `focus()` + clavier + Tab (§ 13.4).
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-6b` (mergée, à supprimer).
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-6b-rangement`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -996,3 +995,16 @@ nouvelle revue.
 - Séances : un tirage comme 4 × 45 min attendait « 3 h 0 min ». David (« je te suis », reco A) : condition `m>0`
   ajoutée (script du lot et JSON, contenus identiques). `question:specs` 900/900, 6 specs vertes ; brouillon local
   mis à jour (graines 7 et 8 → 1 h 30) ; simulation prod : 7 « à créer ».
+
+### 13.5 Brouillons en prod et rangement du lot 6b (2026-10-30)
+
+- #2031 mergée (CI verte). `create-questions --publier` lancé par David : 7 brouillons. Identifiants :
+  07 `4343af4c-1549-4eb3-8471-8fd3f9233c38` (6-145) · 08 `ccb4f5e5-3494-4447-9f6a-3bc3b3622eab` (6-146) ·
+  09 `cfb4c692-04d8-4cd9-9849-3b5cb94628e5` (6-147) · 10 `5db370fc-6573-4398-aaee-7014947e25b9` (6-153) ·
+  11 `ffca5b4a-cb8d-43c2-979e-fb7956046032` (6-156) · 12 `ee82f057-9b6a-46e6-9892-ca2f9578dd9d` (6-158) ·
+  13 `78dcb478-bcde-4234-99bf-4f396d1511e6` (6-186).
+- Relevé MCP : les 7 en 6e, brouillons, sans nœud ni tag ; 12 porte la condition `m>0`. Points actifs : 145-147 sur
+  « Grandeurs et mesures > Périmètres > disque », 153 sur « Volumes > conversions », 156 sur « Durées > conversions »,
+  158 sur « Durées > calcul de durées », 186 sur « Probabilités > Expériences aléatoires > probabilité simple ».
+- Migration `20261030170000_questions_6_lot6b_rangement_tags.sql` (générée depuis celle du lot 6a) et test
+  `tests/integration/questions-6-lot6b-rangement-tags.test.ts` : 14 verts ; sans la migration, 8 rouges et 5 sautés.
