@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2001 (fichiers du lot 3a mergés)._
+_Mis à jour le 2026-10-30, après #2007 et #2017 (rangement du lot 3a joué en prod)._
 
-- **État** : lots 0, 1 et 2 en prod et publiés. Lot 3a (fractions, 10 modèles) : fichiers mergés (#2001), pas encore en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-3a --publier` (dépôt principal) ; je relève les 10 ids au MCP, puis migration nœud + tag (gabarit du lot 2), page à cocher. Ensuite 3b (fractions décimales), 3c (partages).
+- **État** : lots 0, 1 et 2 publiés. Lot 3a (fractions, 10 modèles) : brouillons en prod, rangés et tagués (migration `20261030150100` jouée par David), pas encore publiés.
+- **Prochaine action** : page à cocher du lot 3a (`page-a-cocher.ts --dir scripts/questions/cm1-3a`), verdicts de David, puis `publier-lot.ts` (simulation, `--publier` par David). Ensuite 3b (fractions décimales), 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
 - **En attente de David** : la phrase « Tu as placé le point sur 0,8 » de la droite à placer (décimal pour une fraction, § 9 ter) : à corriger dans un chantier à part ?
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente (relever `schema_migrations`) ; un worktree n'a pas `supabase/.temp/` (lien) : le copier du dépôt principal ; « Multiples et diviseurs » : niveaux 4-8 pris par le CM2, les nôtres partent de 9 ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS ; `wrapDynamicImport` en tests navigateur = plantage d'infra → `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1` gardé pour la migration (nouvelle branche `feat/questions-cm1-lot3a-rangement` depuis `origin/main`) ; serveur de test sur 5177.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse (« Production Deploy ») : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min, sinon `DbPushMissingRemoteError` (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1` gardé jusqu'à la publication (puis retiré) ; serveur de test sur 5177.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -403,3 +403,17 @@ juste après 3b en brouillons, sans attendre le `deploy:prod` du bloc ```partage
 - **À signaler à David** : la droite à placer écrit la phrase de correction en décimal quand le
   dénominateur le permet (« Tu as placé le point sur 0,8. » pour une question en cinquièmes ;
   `placerText`, `src/lib/ubumark/utils/number-line-placer.ts`). Hors de ce lot (contenu seul).
+
+### 9 quater. Lot 3a — brouillons en prod, rangement et tags (2026-10-30)
+
+`create-questions --publier` lancé par David ; MCP : 10 brouillons [CM1], sans nœud ni tag. Ids :
+`a2b41659` (014), `5c5bf99a` (015), `f1a880e9` (016), `b2b5320f` (017), `884908d3` (148),
+`ef1ed0ce` (022), `c2fa5767` (019), `6d94994a` (147), `0e3f82a1` (018), `00910e5b` (146).
+
+Migration et test générés du gabarit du lot 2 : rouge sans la migration (5 échecs), 9/9 vert avec ;
+`security-auditor` sans finding bloquant. #2007 mergée (après `Doc-inchangée:` dans un commit).
+Datée `20261030140000`, elle tombait avant `150000` (CM2, déjà jouée) et entrait en collision avec
+une migration de questions-1spe : renommée `20261030150100` (#2017). Le `db:migrate` m'a été
+refusé par le mode auto ; David l'a lancé, avec 150030 (1spe), 160000 (questions-4) et 160100
+(questions-2de), après accord des trois sessions. MCP : les 10 modèles sur la sous-notion de leur
+point, un point chacun, toujours brouillons, `updated_at` inchangé (création, 06:03).
