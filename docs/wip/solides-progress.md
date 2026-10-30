@@ -6,21 +6,19 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2037._
+_Mis à jour le 2026-10-30, après #2037 ; lot 5 en spécification._
 
-- **État** : lots 1 (#2003), 2 (#2023), 3 (#2027) et 4 (#2037, ` ```patron ` affichage) **mergés**, rien en
-  prod ; vérifications manuelles notées dans `verifications-manuelles.md`.
-- **Prochaine action** : lot 5, gestes des patrons `designer:` (toucher une face) et `completer:` (poser la
-  face manquante) — écrire d'abord sa spécification (comme les § 6 à 9), la faire valider, puis TDD. Le
-  pliage (`patronNet`, `notFolding`) est prêt pour juger `completer:`.
-- **En attente de David** : faut-il un chantier pour les blocs spéciaux ouverts sur la ligne d'un élément de
-  liste (`- ```cubes` lu vide, § 9 « Trouvé en passant ») ?
+- **État** : lots 1 à 4 mergés (#2003, #2023, #2027, #2037), rien en prod ; **spécification du lot 5 écrite
+  (§ 10)**, questions 19-22 posées à David.
+- **Prochaine action** : réponse de David aux Q19-22, puis TDD du lot 5 (`utils/patron-gestes.ts` d'abord,
+  juge pur), sur le modèle de #2023.
+- **En attente de David** : Q19-22 (§ 10) ; faut-il un chantier pour les blocs spéciaux ouverts sur la ligne
+  d'un élément de liste (`- ```cubes` lu vide, § 9 « Trouvé en passant ») ?
 - **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables → relancer
   par petits lots ; aperçu d'un bloc : script tsx + capture Playwright (scratchpad), Chrome n'ouvre pas
   `127.0.0.1` ; corrigé PDF `solved` prêt, pas branché ; `EspaceSpec` = union : narrower par `kind` ; un
   patron ne doit jamais donner la réponse (faux patron sans noms, face marquée lue par son numéro).
-- **Worktree / branche** : aucun (retiré après #2037) ; lot 5 :
-  `git worktree add -b feat/solides-patron-gestes ../ubumaths-wt-solides origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-solides`, `feat/solides-patron-gestes`.
 
 ---
 
@@ -543,3 +541,104 @@ Spécification validée.
   (`- ```cubes`, aussi ` ```horloge `, ` ```partage `…) est lu vide (« bloc non fermé ») ; la forme
   « - texte » puis le bloc en retrait marche. Le test de compilation du lot 3 (`- ```solide`) passe donc
   par le cadre « Solide indisponible ». À signaler à David.
+
+## 10. Lot 5 — gestes des patrons, `designer:` et `completer:` (spécification)
+
+Modèle de code : le lot 2 (#2023), fichier pour fichier : `PatronSpec.task`, une case `case: N` posée par
+le générateur, `construire: 'patron'`, `type: 'text'`, réponse attendue calculée par le bloc, juge pur à
+part (`utils/patron-gestes.ts`, comme `cubes-gestes.ts`), copie corrigée par `BuildAnswer`, geste libre
+hors question. Le juge s'appuie sur le pliage du lot 4 (`patronNet`, `notFolding`).
+
+### `designer:` — toucher une ou plusieurs faces
+
+```patron
+solide: cube
+forme: 7
+marquer: face 2
+designer: opposee
+```
+
+- **Cibles** (calculées par le pliage, jamais écrites par le prof) :
+  - `opposee` : la face opposée à **la** face marquée (cube, pavé ; prisme : les deux triangles) ;
+  - `voisines` : les faces qui ont une arête commune avec la face marquée, une fois plié (cube : 4) ;
+  - `sommet A` : les faces qui se touchent au sommet A une fois plié (cube : 3) ;
+  - `face EFGH` : la face qui devient EFGH (5-049, avec des noms cachés par `-` ou `?`).
+- `opposee` et `voisines` exigent **exactement une face marquée** (`marquer: face N` ou par son rôle).
+  `sommet A`, `face EFGH` : noms d'après `sommets:` (sinon les noms par défaut ABCDEFGH, prisme ABCDEF,
+  pyramide SABCD — sans les afficher).
+- Dessin : le patron du lot 4 ; **toucher une face la sélectionne** (teinte d'accent, distincte du gris de
+  la face marquée), la retoucher la désélectionne. Toujours plusieurs faces possibles : rien ne dit à
+  l'élève combien en toucher. La face marquée se touche aussi (c'est faux).
+- Réponse de la case : les numéros des faces touchées (ordre de lecture du lot 4, de 1), croissants,
+  séparés par des virgules (`2,4`) ; `''` = rien. Attendue : même écriture. **Juste si mêmes faces.**
+- Correction : faces de l'élève verrouillées ; phrase selon la cible (« Ce n'est pas la face opposée à la
+  face grise. », « Ce ne sont pas les faces voisines de la face grise. », « Ce ne sont pas les faces qui
+  se touchent en A. », « Ce n'est pas la face EFGH. ») ; vide : « Tu n'as touché aucune face. » ; le
+  patron juste dessous, faces attendues teintées.
+
+### `completer:` — poser la ou les faces manquantes (CM1-116, CM2-101)
+
+```patron
+solide: cube
+forme: 1
+completer: 4
+```
+
+- **Cube seulement** _(Q20)_. `completer:` = les numéros des cases (ordre de lecture) **retirées** du
+  patron écrit (catalogue ou grille vraie), 1 à 3 cases ; il en reste au moins 3, reliées.
+- Dessin : les faces restantes, et **en pointillés toutes les cases vides qui touchent une face par un
+  côté** _(Q21)_ (posées comprises : la liste suit les gestes de l'élève). Toucher un emplacement y pose
+  une face, retoucher une face posée la retire ; les faces données ne bougent pas. Un compteur dit
+  « Faces à poser : 1 » ; on ne pose pas plus que le nombre retiré.
+- Réponse de la case : le quadrillage de travail (boîte des faces données agrandie d'autant de cases que de
+  faces retirées, de chaque côté), rangées de haut en bas séparées par `/`, `1` = face donnée, `2` = face
+  posée (`0000/0100/2111/0100/0000`) ; elle se suffit. Attendue : le patron du prof, même cadre.
+- **Juste si les 6 faces se plient en cube**, où que l'élève les pose — plusieurs réponses justes possibles
+  (comme « mêmes vues », Q3) ; le juge plie, il ne compare jamais à la case retirée.
+- Correction : « Ces faces ne se plient pas en cube : deux faces se recouvrent. » (raison du pliage, dite à
+  l'élève) ; pas assez de faces : « Il manque encore une face. » ; le patron du prof dessous, avec « Il y a
+  d'autres réponses justes. » quand c'est vrai (calculé : un autre emplacement plie aussi).
+
+### Communs aux deux gestes
+
+| Cas                                                                                       | Attendu                                                  |
+| ----------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| cube `forme: 1`, `marquer: face 1`, `designer: opposee`                                   | attendue `6` (vérifiée par le pliage sur les 11 patrons) |
+| `designer: voisines` sur le cube                                                          | 4 faces ; 3 touchées sur 4 → faux                        |
+| `designer: sommet A` sur le cube ; sur la pyramide carrée                                 | 3 faces ; pyramide : la base et 2 triangles              |
+| `designer: face EFGH`, `sommets: A B C D - - - -`                                         | la face du dessus                                        |
+| `designer: opposee` sur une pyramide, ou sur un rectangle du prisme                       | erreur au prof (« cette face n'a pas de face opposée »)  |
+| `designer: opposee` sans face marquée, ou avec deux                                       | erreur au prof                                           |
+| `completer: 4` sur la croix, élève pose la face ailleurs, plie                            | juste                                                    |
+| `completer: 4`, élève pose la face sur un emplacement qui recouvre                        | faux, raison dite                                        |
+| `completer: 2 4`, une seule face posée                                                    | faux, « Il manque encore une face. »                     |
+| `completer:` sur un pavé, un prisme, un faux patron                                       | erreur au prof (« compléter : cube seulement »)          |
+| `completer: 4 5 6 7`, `completer: 9`, faces restantes non reliées                         | erreur au prof                                           |
+| `designer:` sur un faux patron ou un cylindre                                             | erreur au prof                                           |
+| `designer:` et `completer:` ensemble ; `completer:` avec `sommets:`, `faces:`, `marquer:` | erreur au prof (Q22)                                     |
+| variables `{{n}}` dans `forme:`, `marquer:`, `completer:`                                 | réponse attendue sur l'énoncé résolu                     |
+| `case:` écrite par le prof, réponse écrite dans `blanks[]`                                | refusé (comme `colorier:`)                               |
+| bloc dans une liste, une case choix, un tableau                                           | refusé (premier niveau seulement)                        |
+
+- **Hors question** (cours, aperçu de l'éditeur) : le geste est libre, rien n'est jugé.
+- **PDF** : `designer:` → le patron, l'élève colorie au crayon ; corrigé : faces attendues teintées.
+  `completer:` → faces données sur un quadrillage pointillé (le cadre de travail), l'élève dessine la face ;
+  corrigé : le patron du prof.
+- **Accessibilité** : faces = boutons (« Face 3, touchée ») ; emplacements = boutons (« Emplacement rangée
+  2, colonne 5, vide ») ; nom du bloc inchangé (« Assemblage de polygones à plier », jamais « patron »).
+- Catalogue (`block-catalog/patron.ts`) : un exemple par cible et un `completer:` ; `docs/systeme/ubumark.md`
+  et `questions.md` mis à jour.
+- **Hors lot 5** : désigner une arête ou un coin (« quel point vient sur A ? » se pose déjà avec `?` et une
+  case texte), compléter un pavé (faces de tailles différentes), corriger un faux patron (déplacer une face).
+
+### Questions à David (lot 5)
+
+19. **Cibles de `designer:`** : `opposee`, `voisines`, `sommet A`, `face EFGH` — calculées par le pliage, le
+    prof ne peut pas écrire une réponse fausse. Assez, ou une autre question fréquente à couvrir ?
+    _Reco : ces quatre._
+20. **`completer:`** : cube seulement (le pavé demanderait de choisir aussi la taille de la face), 1 à 3 faces
+    retirées, **toute pose qui plie en cube est juste** ? _Reco : oui._
+21. **Emplacements** : toutes les cases vides qui touchent une face (l'élève cherche vraiment), ou 3-4
+    emplacements choisis par le prof (plus facile, un QCM déguisé) ? _Reco : toutes._
+22. **`completer:` sans noms, numéros ni face marquée** (les noms des faces données diraient où va la
+    manquante) ? _Reco : refusés dans ce lot._
