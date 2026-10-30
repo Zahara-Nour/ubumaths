@@ -5,21 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2029 et le `--publier` du lot 4b._
+_Mis à jour le 2026-10-30, rangement du lot 4b sur sa branche (PR à ouvrir)._
 
-- **État** : lots 0 à 3 et lot 4a publiés ; lot 4b : 6 brouillons en prod, sans nœud ni tag (§ 11.14).
-- **Prochaine action** : rangement du lot 4b sur une branche neuve `feat/questions-3-lot4b-rangement`
-  depuis `origin/main` : relevé `etat-prod-2026-10-30-3e-lot4b/` (`releve-prod-3.ts`),
-  `lot-rangement-3-4b.py` (copie de `lot-rangement-3-4a.py`, 6 modèles), migration horodatée après
-  `20261030162100` (ce1 lot 5), test copié de `questions-3-lot4a-rangement-tags`, rouge puis vert,
-  `security-auditor`, PR.
+- **État** : lots 0 à 3 et lot 4a publiés ; lot 4b : 6 brouillons en prod ; leur rangement (migration
+  `20261030162300`, test 19 verts / 12 rouges sans elle) est sur `feat/questions-3-lot4b-rangement` (§ 11.15).
+- **Prochaine action** : `security-auditor`, PR, CI verte, merge ; puis `db:migrate` (David, avec `!`),
+  page à cocher, `--publier` (statut) ; ensuite lot 4 du § 4 (pourcentages, probabilités, statistiques).
 - **En attente de David** : rien (question d'accès déjà tranchée, § 11.4).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire
-  (écrit `\dfrac`) ni virgule ; aperçu admin sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant
-  `tsx` ; le dépôt principal porte le travail d'une autre session : commits de doc depuis le worktree
+  du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
+  dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
+  sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree
   (`git push origin HEAD:main`).
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, branche `feat/questions-3-lot4b-rangement`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -650,3 +648,10 @@ modèles publiés de plus. Aucune règle ne change.
 - Nœuds d'arrivée (§ 11) : 3-042, 3-065 → Fonctions affines > fonction linéaire ; 3-057 → Inéquations :
   premier degré > ax + b < c ; 3-046 → Fonction carré > définition et courbe ; 3-053 → Fonction carré >
   x² = k, x² < k ; 3-037 → Proportionnalité > Situations de proportionnalité > caractérisation.
+
+### 11.15 Lot 4b : rangement écrit (2026-10-30)
+
+- Relevé `etat-prod-2026-10-30-3e-lot4b/` (6 modèles `draft`, grades `['3']`, sans nœud ni tag) ;
+  `lot-rangement-3-4b.py` (copie du 4a) écrit `20261030162300_questions_3_lot4b_rangement_tags.sql`
+  (`20261030162200` pris par la branche ce1 lot 5 bis) et la fixture.
+- `questions-3-lot4b-rangement-tags.test.ts` : 12 rouges sans la migration, 19 verts avec.
