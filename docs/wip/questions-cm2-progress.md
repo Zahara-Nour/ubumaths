@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 3 écrit (PR à venir)._
+_Mis à jour le 2026-10-30, après #2005._
 
-- **État** : lots 1 (7/8) et 2 (5/5) publiés. **Lot 3 (calcul mental entiers)** : 5 modèles neufs écrits (`scripts/questions/cm2-3/`, script `lot-cm2-3.py`), specs vertes, vus dans l'appli en local ; 3 modèles de tables du CM1 à passer aussi au CM2 (migration, plus tard).
-- **Prochaine action** : PR des fichiers (revue : aucune, contenu), CI verte, merge → David `create-questions --dir scripts/questions/cm2-3 --publier` → migration : nœud + tag des 5 brouillons, CM2 ajouté aux niveaux de `8fee3492`, `f24bb468`, `50a9d91c` + tags CM2-035, 148, 036 → test, `security-auditor`, `db:migrate` → page à cocher.
-- **En attente de David** : publier 7d258acc (lot 1, ``ranger) après le prochain `deploy:prod` (v0.57.1 sortie le 2026-10-30 : vérifier si elle livre ``ranger) : `publier-lot` sur un dossier qui ne contient que `06-ranger-cinq-grands-nombres.json`.
-- **Pièges en cours** : relever la prod avant toute écriture ; `create-questions` reconnaît un modèle à sa clé (titre, catégorie, niveau) ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces (« 2 444 ») ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot3`.
+- **État** : lots 1 (8/8, 7d258acc publié le 2026-10-30) et 2 (5/5) publiés. **Lot 3** mergé (#2005), 5 brouillons créés en prod (sans nœud ni tag) : `a4cf5fc5` multiplication à trou (CM2-149), `116f68ad` ajouter 9/19/99 (CM2-045), `da5fdca4` soustraire 9/19/99 (CM2-150), `1f2d5097` diviser par 4 (CM2-050), `3b691903` diviser par 8 (CM2-151).
+- **Prochaine action** : nouveau worktree `feat/questions-cm2-lot3-rangement` → migration : nœud + tag des 5 brouillons (§ 8.1), CM2 ajouté aux niveaux de `8fee3492` (tables d'addition, CM1-035 → + CM2-035), `f24bb468` (terme manquant, CM1-161 → + CM2-148), `50a9d91c` (tables de multiplication, CM1-036 → + CM2-036), tags CM1 gardés → test rouge sans, `security-auditor`, PR, `db:migrate` → page à cocher. Question d'accès déjà tranchée (phase 0).
+- **En attente de David** : rien.
+- **Pièges en cours** : `curriculum_points` n'a pas de colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
+- **Worktree / branche** : aucun (lot 3 retiré) ; à créer.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
