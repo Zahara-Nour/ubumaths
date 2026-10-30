@@ -60,7 +60,7 @@
 {#snippet content(item: Item)}
 	{#if isBlockChoice(item.content)}
 		<div
-			class="@container min-w-0 flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]"
+			class="@container min-w-0 flex-1 [--collection-taille:3cm] [--espace-taille:3cm] [--horloge-taille:3cm]"
 			style:--monnaie-taille={monnaieSize}
 		>
 			<MarkdownRenderer content={item.content} />

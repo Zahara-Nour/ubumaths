@@ -42,6 +42,7 @@ contourner en silence.
 | 0031 | [Le parseur maison est une langue interne, lue comme le BIPM](0031-parseur-maison-langue-interne-bipm.md)                                | 2026-10-20 |
 | 0032 | [La forme affichée se choisit par le but ; `tidy` enlève, ne transforme pas](0032-la-forme-affichee-se-choisit-par-le-but.md)            | 2026-10-22 |
 | 0033 | [Le QCM est une case : la case choix remplace `multiple_choice`](0033-le-qcm-est-une-case.md)                                            | 2026-10-26 |
+| 0034 | [Solides : trois blocs, un nœud, une scène cavalière](0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)                          | 2026-10-30 |
 
 ## Écrire un ADR
 

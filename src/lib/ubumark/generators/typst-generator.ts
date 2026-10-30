@@ -66,6 +66,7 @@ import { displayedLabels } from '../utils/ranger';
 import { generateQrTypst } from './qr-typst';
 import { generateHorlogeTypst } from './horloge-typst';
 import { generatePartageTypst } from './partage-typst';
+import { generateEspaceTypst } from './espace-typst';
 import { generateOperationTypst } from './operation-typst';
 import { generateCollectionTypst } from './collection-typst';
 import { generateMonnaieTypst } from './monnaie-typst';
@@ -431,6 +432,8 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 			return generateHorlogeTypst(node);
 		case 'partage':
 			return generatePartageTypst(node);
+		case 'espace':
+			return generateEspaceTypst(node);
 		case 'operation':
 			return generateOperationTypst(node);
 		case 'collection':

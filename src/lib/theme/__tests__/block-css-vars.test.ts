@@ -34,7 +34,10 @@ const HOOKS_WITH_FALLBACK = [
 	// avec un repli `light-dark(…)` quand il s'affiche hors de lui
 	'--expected-correct',
 	'--expected-incorrect',
-	'--expected-unoptimal'
+	'--expected-unoptimal',
+	// Plafond de largeur d'un assemblage de cubes dans un choix, posé par `ChoiceList` et
+	// `MultipleChoiceInput` ; `Cubes.svelte` le lit avec un repli `100%`
+	'--espace-taille'
 ];
 
 const COMPONENTS = [

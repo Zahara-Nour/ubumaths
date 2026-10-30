@@ -104,6 +104,12 @@ import {
 	isPartageBlockStart
 } from './partage-parser';
 import {
+	findEspaceBlocks,
+	parseEspace,
+	parseEspaceContent,
+	isEspaceBlockStart
+} from './espace-parser';
+import {
 	findOperationBlocks,
 	parseOperation,
 	parseOperationContent,
@@ -502,6 +508,7 @@ function parseBlocks(
 	const qrBlocks = findQrBlocks(lines);
 	const horlogeBlocks = findHorlogeBlocks(lines);
 	const partageBlocks = findPartageBlocks(lines);
+	const espaceBlocks = findEspaceBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
 	const collectionBlocks = findCollectionBlocks(lines);
 	const monnaieBlocks = findMonnaieBlocks(lines);
@@ -526,6 +533,7 @@ function parseBlocks(
 		{ ranges: qrBlocks, parse: parseQr, language: 'qr' },
 		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' },
 		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
+		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
 		{ ranges: collectionBlocks, parse: parseCollection, language: 'collection' },
 		{ ranges: monnaieBlocks, parse: parseMonnaie, language: 'monnaie' },
@@ -595,6 +603,7 @@ function parseBlocks(
 			...qrBlocks,
 			...horlogeBlocks,
 			...partageBlocks,
+			...espaceBlocks,
 			...operationBlocks,
 			...collectionBlocks,
 			...monnaieBlocks,
@@ -614,6 +623,7 @@ function parseBlocks(
 			...findQrBlocks(originalLines),
 			...findHorlogeBlocks(originalLines),
 			...findPartageBlocks(originalLines),
+			...findEspaceBlocks(originalLines),
 			...findOperationBlocks(originalLines),
 			...findCollectionBlocks(originalLines),
 			...findMonnaieBlocks(originalLines),
@@ -1699,6 +1709,12 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'partage'
 	},
 	{
+		is: isEspaceBlockStart,
+		find: findEspaceBlocks,
+		parse: parseEspace,
+		language: 'cubes'
+	},
+	{
 		is: isOperationBlockStart,
 		find: findOperationBlocks,
 		parse: parseOperation,
@@ -1933,6 +1949,9 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'partage') {
 			// Partage dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parsePartageContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'cubes') {
+			// Assemblage de cubes dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseEspaceContent(restoreMathPlaceholders(code, placeholders), 'cubes'));
 		} else if (language === 'operation') {
 			// Opération posée dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseOperationContent(restoreMathPlaceholders(code, placeholders)));
