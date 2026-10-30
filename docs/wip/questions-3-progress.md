@@ -5,19 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, rangement du lot 4b sur sa branche (PR à ouvrir)._
+_Mis à jour le 2026-10-30, après #2033._
 
 - **État** : lots 0 à 3 et lot 4a publiés ; lot 4b : 6 brouillons en prod ; leur rangement (migration
-  `20261030162300`, test 19 verts / 12 rouges sans elle) est sur `feat/questions-3-lot4b-rangement` (§ 11.15).
-- **Prochaine action** : `security-auditor`, PR, CI verte, merge ; puis `db:migrate` (David, avec `!`),
-  page à cocher, `--publier` (statut) ; ensuite lot 4 du § 4 (pourcentages, probabilités, statistiques).
-- **En attente de David** : rien (question d'accès déjà tranchée, § 11.4).
+  `20261030162300`, test 19 verts / 12 rouges sans elle) mergé (#2033), PAS encore joué en prod (§ 11.15).
+- **Prochaine action** : David lance `! pnpm db:migrate` depuis le worktree (sur `origin/main`), puis
+  vérif MCP (nœuds + 6 tags), page à cocher, publication ; ensuite lot 4 du § 4 (pourcentages, probabilités, stats).
+- **En attente de David** : `db:migrate` (refusé au mode auto).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
   dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
   sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree
   (`git push origin HEAD:main`).
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, branche `feat/questions-3-lot4b-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -655,3 +655,4 @@ modèles publiés de plus. Aucune règle ne change.
   `lot-rangement-3-4b.py` (copie du 4a) écrit `20261030162300_questions_3_lot4b_rangement_tags.sql`
   (`20261030162200` pris par la branche ce1 lot 5 bis) et la fixture.
 - `questions-3-lot4b-rangement-tags.test.ts` : 12 rouges sans la migration, 19 verts avec.
+- #2033 mergée (CI verte, `security-auditor` sans finding). Attendu : `db:migrate` lancé par David.
