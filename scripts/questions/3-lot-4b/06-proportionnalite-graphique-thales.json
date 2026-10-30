@@ -1,0 +1,166 @@
+{
+	"title": "Proportionnalité, graphique et Thalès",
+	"description": "Lire une proportionnalité sur une droite passant par l'origine avec le théorème de Thalès : choisir l'égalité, calculer l'ordonnée d'un point",
+	"grades": ["3"],
+	"theme": "Proportionnalité",
+	"domain": "Caractérisation",
+	"subdomain": "Graphique et Thalès",
+	"level": 1,
+	"delay": 75,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La droite $\\mathcal{D}$ passe par l'origine $O$ : elle représente une situation de proportionnalité. $A$ et $B$ sont deux de ses points, $A'$ et $B'$ leurs projetés sur l'axe des abscisses.\n\n```courbe\nx: -1 ; {{eval:(r)+1}}\ny: -1 ; {{eval:ceil((q)*(r)/(p))+1}}\ngrille: 1 ; 1\nf(x) = ({{q}})/({{p}})*x   bleu   nom=\\mathcal{D}\npoints: A({{p}} ; {{q}}), B({{r}} ; {{q}}*{{r}}/{{p}}), A'({{p}} ; 0), B'({{r}} ; 0)\nasymptotes: x={{p}} ; x={{r}}\ntaille: moyenne\ndescription: Droite D passant par l'origine O, ses points A et B, et leurs projetés A' et B' sur l'axe des abscisses ; verticales en pointillé.\n```\n\nQuelle égalité donne le théorème de Thalès ?\n\n```choix\n- $\\dfrac{OA'}{OB'}=\\dfrac{A'A}{B'B}$\n- $\\dfrac{OA'}{OB'}=\\dfrac{B'B}{A'A}$\n- $\\dfrac{OA'}{OB}=\\dfrac{A'A}{B'B}$\n- $\\dfrac{OA'}{A'B'}=\\dfrac{A'A}{B'B}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|4|5"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "r",
+					"expression": "3..9"
+				}
+			],
+			"conditions": ["r >= p+2", "(q)*(r)/(p) <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$O$, $A'$, $B'$ sont alignés, $O$, $A$, $B$ aussi, et les droites $(A'A)$ et $(B'B)$ sont **parallèles** (toutes deux perpendiculaires à l'axe des abscisses) : le théorème de Thalès s'applique dans les triangles $OA'A$ et $OB'B$.",
+					"Les côtés du petit triangle sont **proportionnels** à ceux du grand, dans le même ordre : $\\textcolor{{{color:primary.0}}}{\\dfrac{OA'}{OB'}=\\dfrac{A'A}{B'B}}$.",
+					"Les autres égalités mélangent un côté de $OA'A$ et un côté de $OB'B$ qui ne se correspondent pas."
+				]
+			}
+		},
+		{
+			"statement": "La droite $\\mathcal{D}$ passe par l'origine $O$ : elle représente une situation de proportionnalité. $A$ et $B$ sont deux de ses points, $A'$ et $B'$ leurs projetés sur l'axe des abscisses. $A$ a pour coordonnées $({{p}}\\,;{{q}})$ et $B$ a pour abscisse ${{r}}$.\n\n```courbe\nx: -1 ; {{eval:(r)+1}}\ny: -1 ; {{eval:ceil((q)*(r)/(p))+1}}\ngrille: 1 ; 1\nf(x) = ({{q}})/({{p}})*x   bleu   nom=\\mathcal{D}\npoints: A({{p}} ; {{q}}), B({{r}} ; {{q}}*{{r}}/{{p}}), A'({{p}} ; 0), B'({{r}} ; 0)\nasymptotes: x={{p}} ; x={{r}}\ntaille: moyenne\ndescription: Droite D passant par l'origine O, ses points A et B, et leurs projetés A' et B' sur l'axe des abscisses ; verticales en pointillé.\n```\n\nCalcule l'ordonnée de $B$ avec le théorème de Thalès.\n\n$B'B=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|4|5"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "r",
+					"expression": "3..9"
+				}
+			],
+			"conditions": ["r >= p+2", "(q)*(r)/(p) <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(q)*(r)/(p);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$O$, $A'$, $B'$ sont alignés, $O$, $A$, $B$ aussi, et les droites $(A'A)$ et $(B'B)$ sont **parallèles** (toutes deux perpendiculaires à l'axe des abscisses) : le théorème de Thalès s'applique dans les triangles $OA'A$ et $OB'B$.",
+					"$$\\dfrac{OA'}{OB'}=\\dfrac{A'A}{B'B} \\quad\\text{donc}\\quad \\dfrac{ {{p}} }{ {{r}} }=\\dfrac{ {{q}} }{B'B}$$",
+					"$$B'B = \\dfrac{ {{q}} \\times {{r}} }{ {{p}} } = \\textcolor{{{color:primary.0}}}{{{eval:(q)*(r)/(p);d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Égalité de Thalès",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rapport renversé",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : OB au lieu de OB'",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(2 ; 3), B d'abscisse 5 : 7,5",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "5"
+			},
+			"answers": ["7{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : additif, 3 + 3 = 6",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "5"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : renversé, 2 × 5 / 3",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "5"
+			},
+			"answers": ["\\frac{10}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(4 ; 2), B d'abscisse 6 : 3",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4",
+				"q": "2",
+				"r": "6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

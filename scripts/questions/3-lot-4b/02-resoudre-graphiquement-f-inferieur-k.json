@@ -1,0 +1,177 @@
+{
+	"title": "Résoudre f(x) ⩽ k sur un graphique",
+	"description": "Résoudre graphiquement une inéquation f(x) ⩽ k (les quatre sens), f linéaire tracée : a positif, a négatif (le sens change) ; réponse écrite en inégalité « x ⩽ 3 »",
+	"grades": ["3"],
+	"theme": "Fonctions",
+	"domain": "Fonctions linéaires",
+	"subdomain": "Résolution graphique",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction linéaire $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:-4*abs(m)-1}} ; {{eval:4*abs(m)+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D passant par l'origine, représentant une fonction linéaire f.\n```\n\nRésous graphiquement l'inéquation $f(x){{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(m)*(z)}}$.\n\nLes solutions sont les nombres $x$ tels que $?$.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1|2|3"
+				},
+				{
+					"name": "z",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{eval:(m)*(z)}}$ ; elle coupe $\\mathcal{D}$ au point $A$ d'abscisse ${{z}}$. On cherche les abscisses des points de $\\mathcal{D}$ situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} cette droite.",
+					"```courbe\nx: -5 ; 5\ny: {{eval:-4*abs(m)-1}} ; {{eval:4*abs(m)+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x   bleu   nom=\\mathcal{D}\ng(x) = {{eval:(m)*(z)}}   rouge   pointillé\n{{if:s==0|h(x) = ({{m}})*x sur [-10 ; {{z}}[   vert|{{if:s==1|h(x) = ({{m}})*x sur [-10 ; {{z}}]   vert|{{if:s==2|h(x) = ({{m}})*x sur ]{{z}} ; 10]   vert|h(x) = ({{m}})*x sur [{{z}} ; 10]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur [-10 ; {{z}}[   vert|{{if:s==1|t(x) = 0 sur [-10 ; {{z}}]   vert|{{if:s==2|t(x) = 0 sur ]{{z}} ; 10]   vert|t(x) = 0 sur [{{z}} ; 10]   vert}}}}}}\npoints: A({{z}} ; {{eval:(m)*(z)}})\ntaille: moyenne\ndescription: Droite D passant par l'origine, représentant une fonction linéaire f. Droite y = {{eval:(m)*(z)}} en pointillé, partie cherchée en vert, et les solutions repassées en vert sur l'axe des abscisses.\n```",
+					"La droite $\\mathcal{D}$ monte : la partie cherchée est à {{if:s==0|gauche|{{if:s==1|gauche|{{if:s==2|droite|droite}}}}}} de $A$. {{if:s==0|L'inégalité est **stricte** : ${{eval:z}}$ n'est pas solution.|{{if:s==2|L'inégalité est **stricte** : ${{eval:z}}$ n'est pas solution.|L'inégalité est **large** : ${{eval:z}}$ est solution.}}}} Les solutions sont les nombres $x$ tels que $\\textcolor{{{color:primary.0}}}{x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{z}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction linéaire $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:-4*abs(m)-1}} ; {{eval:4*abs(m)+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D passant par l'origine, représentant une fonction linéaire f.\n```\n\nRésous graphiquement l'inéquation $f(x){{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(m)*(z)}}$.\n\nLes solutions sont les nombres $x$ tels que $?$.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "-1|-2|-3"
+				},
+				{
+					"name": "z",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{eval:(m)*(z)}}$ ; elle coupe $\\mathcal{D}$ au point $A$ d'abscisse ${{z}}$. On cherche les abscisses des points de $\\mathcal{D}$ situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} cette droite.",
+					"```courbe\nx: -5 ; 5\ny: {{eval:-4*abs(m)-1}} ; {{eval:4*abs(m)+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x   bleu   nom=\\mathcal{D}\ng(x) = {{eval:(m)*(z)}}   rouge   pointillé\n{{if:s==0|h(x) = ({{m}})*x sur ]{{z}} ; 10]   vert|{{if:s==1|h(x) = ({{m}})*x sur [{{z}} ; 10]   vert|{{if:s==2|h(x) = ({{m}})*x sur [-10 ; {{z}}[   vert|h(x) = ({{m}})*x sur [-10 ; {{z}}]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur ]{{z}} ; 10]   vert|{{if:s==1|t(x) = 0 sur [{{z}} ; 10]   vert|{{if:s==2|t(x) = 0 sur [-10 ; {{z}}[   vert|t(x) = 0 sur [-10 ; {{z}}]   vert}}}}}}\npoints: A({{z}} ; {{eval:(m)*(z)}})\ntaille: moyenne\ndescription: Droite D passant par l'origine, représentant une fonction linéaire f. Droite y = {{eval:(m)*(z)}} en pointillé, partie cherchée en vert, et les solutions repassées en vert sur l'axe des abscisses.\n```",
+					"La droite $\\mathcal{D}$ descend : la partie cherchée est à {{if:s==0|droite|{{if:s==1|droite|{{if:s==2|gauche|gauche}}}}}} de $A$. {{if:s==0|L'inégalité est **stricte** : ${{eval:z}}$ n'est pas solution.|{{if:s==2|L'inégalité est **stricte** : ${{eval:z}}$ n'est pas solution.|L'inégalité est **large** : ${{eval:z}}$ est solution.}}}} Les solutions sont les nombres $x$ tels que $\\textcolor{{{color:primary.0}}}{x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{z}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(x) = 2x, f(x) ⩽ 2 : x ⩽ 1",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"z": "1",
+				"s": "1"
+			},
+			"answers": ["x\\leqslant 1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : stricte au lieu de large, x < 1",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"z": "1",
+				"s": "1"
+			},
+			"answers": ["x<1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : mauvais côté, x ⩾ 1",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"z": "1",
+				"s": "1"
+			},
+			"answers": ["x\\geqslant 1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x) = 3x, f(x) > −6 : x > −2",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"z": "-2",
+				"s": "2"
+			},
+			"answers": ["x>-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la borne k, x > −6",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"z": "-2",
+				"s": "2"
+			},
+			"answers": ["x>-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x) = −x, f(x) < −2 : x > 2",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-1",
+				"z": "2",
+				"s": "0"
+			},
+			"answers": ["x>2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens non changé, x < 2",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-1",
+				"z": "2",
+				"s": "0"
+			},
+			"answers": ["x<2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : large au lieu de stricte, x ⩾ 2",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-1",
+				"z": "2",
+				"s": "0"
+			},
+			"answers": ["x\\geqslant 2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

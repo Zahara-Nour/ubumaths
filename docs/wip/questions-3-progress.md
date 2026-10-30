@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2024 et la publication du lot 4a._
+_Mis à jour le 2026-10-30, lot 4b écrit (§ 11.12)._
 
-- **État** : lots 0 à 3 et lot 4a (fonctions, 8 modèles, § 11.11) publiés.
-- **Prochaine action** : lot 4b (§ 11.2, 6 modèles, phase 0 déjà validée au § 11.6) : écrire
-  `lot-3-4b.py` dans un worktree neuf (`content/questions-3-lot4b`), simulation, base locale, aperçu.
+- **État** : lots 0 à 3 et lot 4a publiés ; lot 4b (6 modèles) écrit, PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR du lot 4b, puis David lance `create-questions --dir
+scripts/questions/3-lot-4b --publier` ; relever les `id`, migration de rangement.
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; tableau avec une case : pas de `\hline` ; une moitié attendue
   refuse 0,5 ; aperçu admin sur `127.0.0.1` (`--host 127.0.0.1`), pas `localhost` ; worktree neuf :
   `svelte-kit sync` avant les scripts `tsx` ; `releve-prod-3.ts` sans `multiple_answers` (#2009).
-- **Worktree / branche** : aucun (retiré après la publication du lot 4a).
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, `content/questions-3-lot4b`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -611,3 +611,23 @@ modèles publiés de plus. Aucune règle ne change.
 - Relecture : 8 verdicts en base, 8 OK, aucun commentaire.
 - `publier-lot.ts --dir scripts/questions/3-lot-4a --publier` lancé par David : MCP, les 8 modèles
   `published`, niveaux 1-1-1-1-1-2-3-4 inchangés.
+
+### 11.12 Lot 4b : écrit (2026-10-30)
+
+- `docs/wip/questions/lot-3-4b.py` → `scripts/questions/3-lot-4b/` (6 JSON, 15 variations, 44 specs) ;
+  `create-questions` en simulation vert, `sonde-courbes` 0 problème (300 tirages par modèle),
+  `audit-question-draws` ✅ partout.
+- Niveaux (relevé MCP du jour) : « Fonctions linéaires › Résolution graphique » neuve → 3-042 niveau 1,
+  3-065 niveau 2 ; « Inéquations › Résolution graphique », « Fonction carré › Courbe », « Fonction carré ›
+  x² = a », « Proportionnalité › Caractérisation › Graphique et Thalès » neuves → niveau 1.
+- **Pièges trouvés** : un `{{eval}}` fractionnaire s'écrit `\dfrac` → illisible dans `points:` d'un
+  ` ```courbe ` (et une virgule décimale casserait la liste) : calcul brut `{{q}}*{{r}}/{{p}}` ; nom de tracé
+  `\Delta` refusé (formes admises : `C_f`, `\mathcal{X}`) → `\mathcal{H}` ; le bloc ne trace pas de segment :
+  projections de 3-037 en verticales `asymptotes: x=… ; x=…` ; une droite `sur [0 ; …]` porte un point plein
+  au bout → droite entière.
+- 3-053 v1 : deux cases « la plus petite d'abord » (forme validée) ; 3-046 v1 : droite y = ±x (y = 2x coupait
+  la parabole en (2 ; 4), noms C₁ et C₃ superposés) ; 3-037 : B à 2 unités au moins de A.
+- Base locale : 6 brouillons. Aperçu admin (`127.0.0.1:5176`) : 3-065 corrigé (partie verte, x ⩾ 3),
+  3-046 v1 (quatre tracés) et v2 (tableau à case), 3-053 v1 (deux cases) et v2, 3-037 v1 (figure, choix,
+  corrigé) et v2. Juge : couvert par les specs (la saisie MathLive ne passe pas par l'outil navigateur).
+- Délais : 45 s (f(x) = k), 60 s (inéquations, courbe carré, x² = a), 75 s (Thalès).
