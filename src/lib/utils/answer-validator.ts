@@ -79,6 +79,7 @@ import { expectsUnitlessValue, withoutDegreeSuffix } from '$lib/questions/answer
 import { judgeConstruction } from '$lib/questions/construction/judge';
 import { isPlacedTimeCorrect } from '$lib/ubumark/utils/horloge-placer';
 import { isColoringCorrect } from '$lib/ubumark/utils/partage-colorier';
+import { isCubesAnswerCorrect } from '$lib/ubumark/utils/cubes-gestes';
 import { constructionPositions } from '$lib/questions/construction/positions';
 import {
 	correctChoiceIndexesOf,
@@ -810,6 +811,8 @@ function validateBlankValue(
 	if (blank.construire === 'horloge') return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer);
 	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
 	if (blank.construire === 'partage') return isColoringCorrect(userAnswer, blank.expectedAnswer);
+	// Assemblage de cubes : la vue à une translation près, ou les mêmes vues
+	if (blank.construire === 'cubes') return isCubesAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
 	if (blank.construire === 'ranger') return userAnswer.trim() === blank.expectedAnswer;
 
@@ -1295,6 +1298,13 @@ function validateSingleBlank(
 	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
 	if (blank.construire === 'partage') {
 		return isColoringCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Assemblage de cubes : la vue à une translation près, ou les mêmes vues
+	if (blank.construire === 'cubes') {
+		return isCubesAnswerCorrect(userAnswer, blank.expectedAnswer)
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };
 	}

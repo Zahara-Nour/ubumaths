@@ -680,10 +680,10 @@ export type ResolvedVariable = SharedResolvedVariable;
  * Genre d'un bloc qui porte sa case et dont la réponse est sa valeur : à construire
  * (```collection, ```monnaie, `construire:`) ou à placer (```line, ```horloge,
  * ```barres, `placer:`), des étiquettes à ranger (```ranger), ou une figure à colorier
- * (```partage, `colorier:`)
+ * (```partage, `colorier:`), ou un assemblage de cubes à geste (```cubes, `dessiner:` / `retrouver:`)
  */
 export type BuildKind =
-	'collection' | 'monnaie' | 'line' | 'horloge' | 'barres' | 'ranger' | 'partage';
+	'collection' | 'monnaie' | 'line' | 'horloge' | 'barres' | 'ranger' | 'partage' | 'cubes';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
@@ -691,6 +691,7 @@ export function buildKindName(kind: BuildKind): string {
 	if (kind === 'barres') return 'diagramme en barres';
 	if (kind === 'ranger') return 'étiquettes à ranger';
 	if (kind === 'partage') return 'figure à colorier';
+	if (kind === 'cubes') return 'assemblage de cubes';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 
@@ -733,6 +734,10 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * à colorier (```partage, `colorier: 3/8`) : réponse attendue = parts à colorier /
 	 * parts de la figure (`3/8`), l'élève colorie des parts (`1, 4, 6`, ses rangs),
 	 * juge à part (`isColoringCorrect`) : le nombre de parts, quelles qu'elles soient.
+	 * Assemblage de cubes à geste (```cubes, `dessiner: face`, `retrouver: face, droite`) :
+	 * réponse attendue = la vue (`100/111`) ou `face, droite : 2 1 / 1 2`, l'élève colorie
+	 * un quadrillage ou écrit des hauteurs, juge à part (`isCubesAnswerCorrect`) : la vue à
+	 * une translation près, ou les mêmes vues.
 	 */
 	construire?: BuildKind;
 	/**
