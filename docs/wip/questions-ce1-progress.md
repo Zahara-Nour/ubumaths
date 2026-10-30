@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 5 publié._
+_Mis à jour le 2026-10-30, lot 5 bis écrit._
 
-- **État** : lots 0 à 5 faits. Lot 5 (longueurs, 6 modèles, § 11) **publié** en prod (2026-10-30, `publier-lot --publier` par David, 6 `published` au MCP), après relecture 6/6 OK sur la page à cocher (https://claude.ai/artifact/2NxcJnRpaLYW8bvydn5w4X).
-- **Prochaine action** : lot 5 bis (masses, monnaie, durées, 9 modèles, tableau du § 11, décisions déjà validées) : écrire `lot-ce1-5bis.py` → `scripts/questions/ce1-5bis/`, simulation, `question:specs`, base locale, PR sur une branche neuve depuis `origin/main`.
-- **En attente de David** : rien.
+- **État** : lots 0 à 5 faits et publiés. Lot 5 bis (masses, monnaie, durées, 9 modèles, § 11) écrit : `lot-ce1-5bis.py` → `scripts/questions/ce1-5bis/`, simulation 9/9 (87 specs), `question:specs` verts, 9 brouillons en base locale ; PR à ouvrir (branche `feat/questions-ce1-lot5bis`).
+- **Prochaine action** : CI verte → merge ; puis brouillons en prod par David (`create-questions --publier`), vérification au MCP, migration nœud + tag, page à cocher, publication. Ensuite, selon le § 4 bis : lots à outils existants, puis lots à QCM.
+- **En attente de David** : rien (brouillons en prod après le merge).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (sur `feat/questions-ce1-lot5-rangement`, mergée : en partir d'une neuve sur `origin/main`). `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `feat/questions-ce1-lot5bis`). `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -436,3 +436,7 @@ Réponse de David : les quatre recommandations (« je valide »).
   cocher publiée, aucune alerte.
 - 2026-10-30 : relecture 6/6 OK (verdicts comptés) ; `publier-lot` en simulation 6/6, puis `--publier` par David ;
   6 `published` vérifiés au MCP.
+- 2026-10-30 : lot 5 bis écrit (`lot-ce1-5bis.py`, `scripts/questions/ce1-5bis/`), niveaux re-relevés au MCP
+  (Masses · Comparaison 1, Durées · Moments de la journée 1, les quatre autres catégories vides) ;
+  `create-questions` en simulation 9/9 (87 specs), `question:specs` 200 tirages par variation, verts ; 9
+  brouillons en base locale ; aperçu admin : 8,16 € = 816 € et 0 centime refusé, corrigé 8 € et 16 centimes.
