@@ -5,19 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2000 (lot 4 écrit, mergé)._
+_Mis à jour le 2026-10-30, lot 4 en brouillons en prod (§ 22)._
 
-- **État** : lots 1 à 3 en prod (lot 1 en brouillon, lots 2 et 3 publiés) ; lot 4 (probabilités, § 20-21) : 7 fichiers
-  mergés (#2000), pas encore en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-4 --publier`
-  depuis le dépôt principal ; puis relever les 7 `id` (MCP), migration nœud + tag (gabarit lot 3, `20261030003000`),
-  test rouge puis vert, `security-auditor`, PR, `db:migrate`, page à cocher.
-- **En attente de David** : le `--publier` du lot 4 ; « fᵢ » et « graine » du bloc ` ```simulation ` (§ 21 : garder,
-  ou tableau d'effectifs écrit) ; publication des 7 brouillons du lot 1.
+- **État** : lots 1 à 3 en prod (lot 1 en brouillon, lots 2 et 3 publiés) ; lot 4 (probabilités, § 20-22) : 7
+  brouillons en prod (`--publier` du 2026-10-30, `id` au § 22), sans nœud ni tag.
+- **Prochaine action** : migration nœud + tag (gabarit lot 3, `20261030003000`) dans le worktree, branche
+  `feat/questions-4-lot4-rangement` depuis `origin/main` ; test rouge puis vert, `security-auditor`, PR,
+  `db:migrate`, page à cocher.
+- **En attente de David** : « fᵢ » et « graine » du bloc ` ```simulation ` (§ 21 : garder, ou tableau d'effectifs
+  écrit) ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
   passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
-- **Worktree / branche** : `../ubumaths-wt-questions-4`, aucune branche en cours (prochaine depuis `origin/main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée, ancienne), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -576,3 +576,12 @@ toute écriture égale acceptée (fraction non simplifiée, décimal), corrigé 
 - ⚠️ **À montrer à David** : le tableau du bloc ` ```simulation ` titre sa 1re colonne « fᵢ » (minuscule de la
   variable + indice i, notation de lycée, codée dans `StatChart.svelte`) et sa légende dit « graine 665 ». Gardé
   tel quel (phase 0) ; autre choix : un tableau d'effectifs écrit par le modèle, comme 4-050 variation 1.
+
+## 22. Lot 4 : en brouillons en prod (2026-10-30)
+
+- `create-questions --publier` lancé par David le 2026-10-30 (06:03 UTC) : 7 brouillons, aucun doublon (MCP).
+- `id` : 4d716358-ccc6-42c1-a862-f738aa134357 (expérience aléatoire) · abd1eeb7-24dd-4f51-bb29-0c85223cd553
+  (contraire, réunion, intersection) · e73b947f-b2c7-4003-97b3-32ec00ffdaf4 (probabilité d'un évènement) ·
+  247fddd1-1467-46db-888a-0871b02617c5 (évènement contraire) · b28ed4fa-8a9c-4aaa-986f-00da7fde2215 (deux épreuves) ·
+  bb4dc318-4dbc-4411-92f2-5c27a67763e0 (fréquences et probabilités) · 17a469bb-bfb8-4c3d-b11b-8e9e87929f5f
+  (fluctuation des fréquences).
