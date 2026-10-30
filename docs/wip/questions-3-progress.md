@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, phase 0 du lot 4 (fonctions) proposée._
+_Mis à jour le 2026-10-30, lot 4a écrit (§ 11.7)._
 
-- **État** : lots 0, 1, 2 et 3 (Thalès et trigonométrie) publiés ; lot 4 (fonctions, 13 points) : phase 0 au § 11,
-  coupée en 4a (7 modèles) et 4b (6).
-- **Prochaine action** : réponses de David au § 11.5, puis écrire le lot 4a (worktree neuf).
-- **En attente de David** : § 11.5 ; le sort du dossier `../ubumaths-wt-questions-3` (hors git, caches d'un
-  ancien worktree) ; Pythagore 4e à signaler.
+- **État** : lots 0 à 3 publiés ; lot 4a (fonctions, 8 modèles, § 11) écrit, essayé en local, PR des fichiers.
+- **Prochaine action** : merger la PR des fichiers ; puis David lance
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-4a --publier` (brouillons en prod) ;
+  relever les `id`, migration nœud + tag (gabarit `lot-rangement-3-3.py`, nœuds au § 11).
+- **En attente de David** : le `--publier` ci-dessus, après le merge.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; une variable ne vaut jamais une lettre (lettres par `{{if}}` bout
-  à bout) ; valeur tirée dans une figure en décimal (`;d`) ; aperçu admin sur `127.0.0.1`, pas `localhost`.
-- **Worktree / branche** : aucun (lot 4a : worktree neuf).
+  du mode auto → David les lance avec `!` ; tableau avec une case : pas de `\hline` ; une moitié attendue
+  refuse 0,5 ; aperçu admin sur `127.0.0.1` (`--host 127.0.0.1`), pas `localhost`.
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, `content/questions-3-lot4a`. Ensuite : lot 4b (§ 11.2).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -546,3 +546,31 @@ modèles publiés de plus. Aucune règle ne change.
 2. Valider les modèles du § 11.1 (et du § 11.2 pour plus tard) : points, variations, formes de réponse ?
 3. 3-057 et 3-065 se ressemblent : deux modèles (« 3x ⩾ 6 » contre « f(x) ⩽ 6 »), comme proposé ?
 4. 3-037 : la forme proposée (Thalès dans le graphique d'une proportionnalité) te convient ?
+
+### 11.6 Décisions (David, 2026-10-30, « je te suis »)
+
+- Deux lots : 4a (§ 11.1, 7 modèles) d'abord, 4b (§ 11.2, 6) ensuite.
+- 4a validé, une retouche : 3-067, le coefficient en fraction passe au **niveau 2** (variation à part des entiers).
+- 3-057 et 3-065 : deux modèles. 3-037 : forme proposée gardée.
+- Dossier `../ubumaths-wt-questions-3` (caches seuls, 36 Ko) supprimé ; worktree neuf au même nom,
+  branche `content/questions-3-lot4a`.
+- Pythagore 4e : note ajoutée en fin de `questions-4-progress.md` (commit direct sur `main`).
+- Après coup, à comparer plus tard (David) : les modèles de 2de ae0ad163 (ordonnée à l'origine) et 09f0c9ec
+  (coefficient directeur), images fixes, restent tels quels ; 3-045 et 3-067 ont leurs modèles neufs.
+- Niveau par modèle, pas par variation : 3-067 = **deux modèles** (entier, niveau 3 ; fraction, niveau 4) → lot 4a
+  = 8 modèles. « Fonctions affines › Lecture graphique » a déjà le niveau 1 (2de) → 3-045 au niveau 2.
+
+### 11.7 Lot 4a : écrit (2026-10-30)
+
+- `docs/wip/questions/lot-3-4a.py` → `scripts/questions/3-lot-4a/` (8 JSON, 27 variations, 63 specs) ;
+  `create-questions` en simulation vert, `audit-question-draws` 0 défaut (300 tirages), `sonde-courbes` 0 problème.
+- **Juge mesuré** : une moitié attendue en 1/2 refuse 0,5 (« mauvaise forme ») → 3-067 fraction en **tiers
+  seulement** (1/3, 2/3, −1/3, −2/3) ; « 2,5x » accepté pour f(x) = 2,5x, x/2,5 et 2,5 + x refusés.
+- **Pièges trouvés** : `answerKind: 'intervalles'` en `shared` s'applique à toutes les cases (nombres illisibles)
+  → sur la seule case des antécédents ; « 1x » quand b = 1 dans un choix de formule → b ⩾ 2 ; **tableau avec une
+  case** : MathLive ne connaît pas `\hline` (écrit en clair, case vide en trop) → `$\begin{array}{|l|c|…|}` sans
+  `\hline`, forme de 4b080eed.
+- Base locale : 8 brouillons. Aperçu admin sur `127.0.0.1:5176` (serveur lancé avec `--host 127.0.0.1`) :
+  3-041 v3 (quatre tracés, d₃ juste), 3-039 v2 (case dans le tableau, −11 faux, 21 attendu affiché).
+- Délais : 45 s (image, reconnaître, ordonnée), 60 s (proportionnalité, image et antécédent, coefficient
+  entier), 75 s (représentations, coefficient fraction).
