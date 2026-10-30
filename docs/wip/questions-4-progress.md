@@ -5,13 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2011 (rangement du lot 4 mergé)._
+_Mis à jour le 2026-10-30, après #2011 (rangement du lot 4 joué en prod)._
 
-- **État** : lots 1 à 3 en prod (lot 1 en brouillon, lots 2 et 3 publiés) ; lot 4 : 7 brouillons en prod, migration
-  de rangement `20261030160000` mergée (#2011, § 23) mais **pas encore jouée**.
-- **Prochaine action** : `db:migrate` quand #2017 et #2018 (collision `20261030140000` d'autres sessions,
-  renumérotées en `150100` et `150030`) seront mergées, pour que la nôtre ne bloque pas les leurs ; vérifier au MCP ;
-  puis page à cocher des 7 fiches.
+- **État** : lots 1 à 3 en prod (lot 1 en brouillon, lots 2 et 3 publiés) ; lot 4 : 7 brouillons en prod, rangés et
+  tagués (#2011, migration jouée et vérifiée, § 23).
+- **Prochaine action** : relecture des 7 fiches du lot 4 (page à cocher, ou `/dev/modeles`), puis `publier-lot.ts
+--dir scripts/questions/4-lot-4 --publier` par David.
 - **En attente de David** : « fᵢ » et « graine » du bloc ` ```simulation ` (§ 21 : garder, ou tableau d'effectifs
   écrit) ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
@@ -595,6 +594,10 @@ toute écriture égale acceptée (fraction non simplifiée, décimal), corrigé 
   la migration (4 échecs, 4 sautés), vert avec (9/9) ; `types:cliquet` tenu.
 - Question d'accès : § 20.3 (personne ne gagne d'accès), validée avec la phase 0.
 - `security-auditor` : aucun finding bloquant (verrou de table hérité du gabarit, borné par `lock_timeout`).
+
+- #2011 mergée (CI verte, après un conflit de journal avec la note de la 3e) ; `db push` refusé d'abord (collision
+  `20261030140000` de deux autres sessions, réglée par #2017 et #2018) ; joué par David le 2026-10-30 avec 150030,
+  150100 et 160100 ; vérifié en prod (MCP) : 7 brouillons sur leur nœud, un tag chacun, `updated_at` inchangé.
 
 ## Note de la session 3e (2026-10-30)
 
