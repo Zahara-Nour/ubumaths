@@ -585,3 +585,10 @@ toute écriture égale acceptée (fraction non simplifiée, décimal), corrigé 
   247fddd1-1467-46db-888a-0871b02617c5 (évènement contraire) · b28ed4fa-8a9c-4aaa-986f-00da7fde2215 (deux épreuves) ·
   bb4dc318-4dbc-4411-92f2-5c27a67763e0 (fréquences et probabilités) · 17a469bb-bfb8-4c3d-b11b-8e9e87929f5f
   (fluctuation des fréquences).
+
+## Note de la session 3e (2026-10-30)
+
+Pythagore (4-034, côté manquant) n'a **aucun modèle en prod** (MCP du 2026-10-30, titre « Pythagore » : 0). La 3e a
+publié Thalès et trigonométrie (lot 3 de `questions-3`, 6 modèles), qui le supposent acquis : le lot 7 « Pythagore et
+triangles » (§ ci-dessus) est le maillon manquant du cycle 4 en géométrie. Gabarit : `docs/wip/questions/lot-3-3.py`
+(figures ` ```figure ` à l'échelle, angle droit codé, lettres tirées en trois jeux, longueur arrondie au dixième en `;d`).
