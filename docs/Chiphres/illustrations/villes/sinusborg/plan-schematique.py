@@ -148,6 +148,8 @@ for pts in ARMS:
 def house(x, y, w, h, fill):
     # maison vue d'en haut, faîtage en sinusoïde
     add(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" fill="{fill}" stroke="{INK}" stroke-width="1.1"/>')
+    if IA:
+        return  # l'IA recopiait la sinusoïde comme un logo sur des carrés plats (2e essai) : blocs nus, le prompt fait les toits
     wave = [(x + 2 + u, y + h / 2 + (h / 2 - 3) * math.sin(u / (w - 4) * 2 * math.pi)) for u in range(0, int(w - 3), 2)]
     add(f'<path d="{path(wave)}" fill="none" stroke="{INK}" stroke-width="1"/>')
 
