@@ -3,7 +3,8 @@
 # Ville de brique et de fonte coupée du nord au sud par la Vistule canalisée ; place ronde au centre (Place du Reset),
 # que le canal contourne par l'est ; trois quartiers autour : Babbage (rive ouest), Lovelace (rive est), Tubes (nord) ;
 # la Gare au sud, terminus du chemin de fer venu de l'ouest (Sandomir) ; les Écluses sur le canal, au sud de la place,
-# avec la Pile de Charbon. Tubes pneumatiques de laiton de toit en toit, depuis la centrale du Quartier des Tubes.
+# avec la Pile de Charbon. Trois grosses conduites pneumatiques de laiton, au-dessus des rues, depuis la centrale du
+# Quartier des Tubes.
 # --reference-ia : référence pour l'IA (qui recopie tout) : aucun texte.
 # Rendu PNG : chrome-headless-shell de Playwright (--screenshot) ; magick ne trouve pas les polices.
 import math, sys
@@ -128,12 +129,24 @@ tx, ty = CX - 30, 200
 add(f'<circle cx="{tx}" cy="{ty}" r="48" fill="{mix(BRASS, 0.6)}" stroke="{INK}" stroke-width="1.8"/>')
 add(f'<circle cx="{tx}" cy="{ty}" r="18" fill="{BRASS}" stroke="{INK}" stroke-width="1.4"/>')
 block(tx + 55, ty - 30, 60, 60, mix(BRICK, 0.7))  # archives
-# tubes de laiton de la centrale vers chaque quartier
-for ex, ey in ((bx, by), (lx, ly - 60), (CX, CY - R_PLACE), (GARE[0], GARE[1] - 30), (CX + 60, 700),
-               (CX - 300, 160), (CX + 300, 250)):
-    add(f'<path d="M{tx},{ty} Q{(tx + ex) / 2 + 30},{(ty + ey) / 2 - 20} {ex},{ey}" fill="none" stroke="{INK}" '
-        f'stroke-width="6"/><path d="M{tx},{ty} Q{(tx + ex) / 2 + 30},{(ty + ey) / 2 - 20} {ex},{ey}" fill="none" '
-        f'stroke="{BRASS}" stroke-width="3.5"/>')
+# trois grosses conduites de laiton, au-dessus des rues, sur pylônes de fonte (David, 2026-10-30 : des diagonales
+# fines à travers les toits donnaient n'importe quoi) : vers Babbage, vers Lovelace, vers la place, et de la place
+# à la Gare
+TUBES = [
+    [(tx - 48, ty + 30), (CX - 170, ty + 30), (CX - 170, by - 40)],
+    [(tx + 115, ty + 30), (CX + 230, ty + 30), (CX + 230, ly - 70)],
+    [(tx, ty + 48), (tx, CY - R_PLACE)],
+    [(CX - R_PLACE, CY), (CX - 170, CY), (CX - 170, 760), (GARE[0], 760), (GARE[0], GARE[1] - 40)],
+]
+for pts in TUBES:
+    add(f'<path d="{path(pts)}" fill="none" stroke="{INK}" stroke-width="16" stroke-linejoin="round"/>')
+    add(f'<path d="{path(pts)}" fill="none" stroke="{BRASS}" stroke-width="11" stroke-linejoin="round"/>')
+    for (x1, y1), (x2, y2) in zip(pts, pts[1:]):  # pylônes réguliers le long de la conduite
+        n = max(1, int(math.hypot(x2 - x1, y2 - y1) // 60))
+        for k in range(n + 1):
+            x, y = x1 + (x2 - x1) * k / n, y1 + (y2 - y1) * k / n
+            add(f'<rect x="{x - 6:.1f}" y="{y - 6:.1f}" width="12" height="12" fill="{mix(INK, 0.8)}" stroke="{INK}" '
+                f'stroke-width="1"/>')
 
 # 6. Les Écluses (canal, sud de la place) et la Pile de Charbon
 ey = 715
