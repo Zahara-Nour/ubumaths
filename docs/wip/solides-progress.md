@@ -6,19 +6,20 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2037 ; lot 5 en spécification._
+_Mis à jour le 2026-10-30, après #2042._
 
-- **État** : lots 1 à 4 mergés (#2003, #2023, #2027, #2037), rien en prod ; **spécification du lot 5 écrite
-  (§ 10)**, questions 19-22 posées à David.
-- **Prochaine action** : réponse de David aux Q19-22, puis TDD du lot 5 (`utils/patron-gestes.ts` d'abord,
-  juge pur), sur le modèle de #2023.
-- **En attente de David** : Q19-22 (§ 10) ; faut-il un chantier pour les blocs spéciaux ouverts sur la ligne
-  d'un élément de liste (`- ```cubes` lu vide, § 9 « Trouvé en passant ») ?
-- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables → relancer
-  par petits lots ; aperçu d'un bloc : script tsx + capture Playwright (scratchpad), Chrome n'ouvre pas
-  `127.0.0.1` ; corrigé PDF `solved` prêt, pas branché ; `EspaceSpec` = union : narrower par `kind` ; un
-  patron ne doit jamais donner la réponse (faux patron sans noms, face marquée lue par son numéro).
-- **Worktree / branche** : `../ubumaths-wt-solides`, `feat/solides-patron-gestes`.
+- **État** : lots 1 à 5 mergés (#2003, #2023, #2027, #2037, #2042 : gestes `designer:` / `completer:` des
+  patrons), rien en prod ; vérifications manuelles notées dans `verifications-manuelles.md`.
+- **Prochaine action** : lot 6, `section:` sur ` ```solide ` (pavé ‖ face, cylindre ‖ ou ⊥ à l'axe, boule ;
+  3e-020) — écrire d'abord sa spécification (comme les § 6 à 10), la faire valider, puis TDD.
+- **En attente de David** : rien. Décidé : correctif `fix` du parseur pour les blocs spéciaux ouverts sur la
+  ligne d'un élément de liste (`- ```cubes` lu vide), hors chantier, après les lots.
+- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; aperçu d'un bloc : serveur sur un
+  port libre + Playwright, compte `teacher@local.test` (l'aide d'écriture est réservée au prof), attendre
+  l'hydratation avant de cliquer ; dans un SVG en cm, jamais d'`outline` (focus = `stroke`) ; un geste ne
+  doit jamais donner la réponse (noms, cadre, nom accessible) ; `EspaceSpec` = union : resserrer par `kind`.
+- **Worktree / branche** : aucun (retiré après #2042) ; lot 6 :
+  `git worktree add -b feat/solides-sections ../ubumaths-wt-solides origin/main`.
 
 ---
 
@@ -648,7 +649,7 @@ completer: 4
 voisins en pointillés (Q21) ; noms, numéros et face marquée refusés avec `completer:` (Q22). Bloc ouvert sur
 une ligne de liste : petit correctif `fix` du parseur à part, après le lot 5. Spécification validée.
 
-### Lot 5 livré (branche `feat/solides-patron-gestes`, 2026-10-30)
+### Lot 5 livré (#2042, 2026-10-30)
 
 - `designer:` (opposee, voisines, sommet A, face EFGH : faces calculées au parseur par le pliage) et
   `completer:` (cube, 1 à 3 faces, juste si tout plie) : `utils/patron-gestes.ts` (juge pur),
@@ -660,3 +661,8 @@ une ligne de liste : petit correctif `fix` du parseur à part, après le lot 5. 
 - **Trouvé en passant, corrigé** : le focus des carreaux de `CubesGeste` (lot 2) était un `outline: 3px`
   compté en unités du SVG (1 unité = 1 cm) — une tache qui couvrait les carreaux voisins ; remplacé par un
   trait (`stroke`) dans les deux composants.
+- Revue (Opus) : juge sain ; **3 fuites ou gênes corrigées** — cadre de `completer:` recadré sur les faces
+  données (un vide d'un seul côté montrait la face manquante ; 624 cadres sondés), `sommet A` / `face EFGH`
+  refusés quand les sommets visés sont écrits (leurs coins donnaient la réponse), toucher un numéro de face
+  la sélectionne (`pointer-events: none` sur traits et étiquettes) ; corrigé PDF : faces attendues plus
+  foncées que la face de départ.
