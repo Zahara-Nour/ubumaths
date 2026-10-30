@@ -5,19 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 4 en brouillons en prod (§ 22)._
+_Mis à jour le 2026-10-30, après #2011 (rangement du lot 4 mergé)._
 
-- **État** : lots 1 à 3 en prod (lot 1 en brouillon, lots 2 et 3 publiés) ; lot 4 (probabilités, § 20-22) : 7
-  brouillons en prod (`--publier` du 2026-10-30, `id` au § 22), sans nœud ni tag.
-- **Prochaine action** : migration nœud + tag (gabarit lot 3, `20261030003000`) dans le worktree, branche
-  `feat/questions-4-lot4-rangement` depuis `origin/main` ; test rouge puis vert, `security-auditor`, PR,
-  `db:migrate`, page à cocher.
+- **État** : lots 1 à 3 en prod (lot 1 en brouillon, lots 2 et 3 publiés) ; lot 4 : 7 brouillons en prod, migration
+  de rangement `20261030160000` mergée (#2011, § 23) mais **pas encore jouée**.
+- **Prochaine action** : `db:migrate` quand #2017 et #2018 (collision `20261030140000` d'autres sessions,
+  renumérotées en `150100` et `150030`) seront mergées, pour que la nôtre ne bloque pas les leurs ; vérifier au MCP ;
+  puis page à cocher des 7 fiches.
 - **En attente de David** : « fᵢ » et « graine » du bloc ` ```simulation ` (§ 21 : garder, ou tableau d'effectifs
   écrit) ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
   passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
-- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée, ancienne), aucune branche en cours.
+- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
