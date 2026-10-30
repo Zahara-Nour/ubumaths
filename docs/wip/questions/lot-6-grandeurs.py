@@ -330,7 +330,7 @@ SEANCES = variation(
      '$${{n}} \\times {{d}}~\\unit{min} = {{t}}~\\unit{min}$$',
      '$${{t}}~\\unit{min} = {{q}} \\times 60~\\unit{min} + {{m}}~\\unit{min} = '
      + col(duree('q', 'm')) + '$$'],
-    ['t>60'])
+    ['t>60', 'm>0'])  # pas de « 3 h 0 min » (David, 2026-10-30)
 
 TRAJET = variation(
     'Un car part à $' + horaire('h', 'm') + '$. Le trajet dure $' + duree('a', 'b') + '$, plus un'

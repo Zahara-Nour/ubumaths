@@ -41,7 +41,7 @@
 					"expression": "eval:t-60*q"
 				}
 			],
-			"conditions": ["t>60"],
+			"conditions": ["t>60", "m>0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{q}}"

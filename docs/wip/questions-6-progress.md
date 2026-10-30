@@ -5,16 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 6b écrit (pas de PR)._
+_Mis à jour le 2026-10-30, lot 6b joué (PR à ouvrir)._
 
-- **État** : lots 1 à 6a en prod, publiés. Lot 6b (M7-M13) écrit : 7 JSON dans `scripts/questions/6-grandeurs/`,
-  specs vertes, simulation prod « à créer », 7 brouillons en base locale ; branche poussée, **pas de PR** (§ 13.3).
-- **Prochaine action** : David joue 09 et 12 dans l'aperçu admin local (la frappe n'atteignait pas la 1re case au
-  pilotage de Chrome) ; si OK → PR contenu, `create-questions --publier` (David), migration nœud + tags.
-- **En attente de David** : ce test à la main ; passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles`.
+- **État** : lots 1 à 6a en prod, publiés. Lot 6b (M7-M13) écrit, 09 et 12 joués au clavier (Playwright, § 13.4),
+  12 corrigé (pas de « 3 h 0 min ») ; specs vertes, simulation prod « 7 à créer » ; PR contenu en cours.
+- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/6-grandeurs --publier` ;
+  puis migration nœud + tags, page à cocher.
+- **En attente de David** : passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles`.
 - **Pièges en cours** : 06 et 07 attendent le bloc ```ranger (à reprendre). 3a7a5711 : NE PAS publier.
   `svelte-kit sync` avant `question:specs`. M10 : version dessinée attend « assemblages de cubes ».
-  Serveur 5180 arrêté (mémoire basse) : à relancer pour le test.
+  Aperçu piloté : un clic ne donne pas le focus au champ ; `focus()` + clavier + Tab (§ 13.4).
 - **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-6b`.
 
 ## 1. Relevé (prod, 2026-10-26)
@@ -983,3 +983,15 @@ nouvelle revue.
 - Aperçu admin (port 5180, Chrome piloté) : énoncés bien rendus (12 : « 19 h 55 », cases h et min ; 09 : case cm),
   mais la **frappe n'atteint pas la première case** (09 et 12 ; la 2e case de 12 prend « 10 ») : outil de pilotage
   ou régression du champ sur `main` ? **À jouer à la main par David** avant la PR des brouillons en prod.
+
+### 13.4 Lot 6b joué au clavier (2026-10-30)
+
+- Playwright (script hors dépôt) sur l'aperçu admin local, port 5180 : **dans un navigateur piloté, un clic souris
+  ne donne le focus à aucun champ réponse** (09, 12, et « Coordonnées du milieu », plus ancien) — limite du
+  pilotage, pas des modèles. Contournement : `focus()` du `math-field`, frappe clavier, Tab entre les cases.
+- 09 : rayon 1 → 6,28 juste, 3,14 faux ; diamètre 11 → 34,54 juste ; diamètre 20 → 62,8 juste.
+- 12 : car 10 h 40 juste, 10 h 25 (arrêt oublié) faux, 40 h 10 (cases inversées) faux ; cinéma 2 h 30 et 1 h 35
+  justes, 2 h 40 faux ; séances 1 h 80 faux.
+- Séances : un tirage comme 4 × 45 min attendait « 3 h 0 min ». David (« je te suis », reco A) : condition `m>0`
+  ajoutée (script du lot et JSON, contenus identiques). `question:specs` 900/900, 6 specs vertes ; brouillon local
+  mis à jour (graines 7 et 8 → 1 h 30) ; simulation prod : 7 « à créer ».
