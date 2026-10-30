@@ -1,0 +1,171 @@
+{
+	"title": "Décomposer une fraction décimale",
+	"description": "Écrire une fraction décimale supérieure à 1 comme un entier plus des fractions décimales de numérateur inférieur à 10 (347/100 = 3 + 4/10 + 7/100)",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris cette fraction comme la somme d'un nombre entier et d'une fraction dont le numérateur est inférieur à $10$.\n\n$$\\frac{{{a}}}{10} = ? + \\frac{?}{10}$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*q+t"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une unité, c'est $\\frac{10}{10}$.** Dans ${{a}}$ dixièmes, il y a ${{q}}$ fois $10$ dixièmes, et il en reste ${{t}}$.",
+					"$$\\frac{{{a}}}{10} = \\frac{{{eval:10*q}}}{10} + \\frac{{{t}}}{10} = \\textcolor{{{color:primary.0}}}{{{q}}} + \\frac{\\textcolor{{{color:primary.0}}}{{{t}}}}{10}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris cette fraction comme la somme d'un nombre entier et de fractions dont le numérateur est inférieur à $10$.\n\n$$\\frac{{{a}}}{100} = ? + \\frac{?}{10} + \\frac{?}{100}$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*q+10*t+u"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				},
+				{
+					"expectedAnswer": "{{u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une unité, c'est $\\frac{100}{100}$ ; un dixième, c'est $\\frac{10}{100}$.**",
+					"$$\\frac{{{a}}}{100} = \\frac{{{eval:100*q}}}{100} + \\frac{{{eval:10*t}}}{100} + \\frac{{{u}}}{100}$$",
+					"$$\\frac{{{a}}}{100} = \\textcolor{{{color:primary.0}}}{{{q}}} + \\frac{\\textcolor{{{color:primary.0}}}{{{t}}}}{10} + \\frac{\\textcolor{{{color:primary.0}}}{{{u}}}}{100}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "47/10 = 4 + 7/10",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"t": "7",
+				"a": "47"
+			},
+			"answers": ["4", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 et 4 échangés",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"t": "7",
+				"a": "47"
+			},
+			"answers": ["7", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 + 17/10 (numérateur pas inférieur à 10)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"t": "7",
+				"a": "47"
+			},
+			"answers": ["3", "17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "347/100 = 3 + 4/10 + 7/100",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"t": "4",
+				"u": "7",
+				"a": "347"
+			},
+			"answers": ["3", "4", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 + 7/10 + 4/100 (rangs échangés)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"t": "4",
+				"u": "7",
+				"a": "347"
+			},
+			"answers": ["3", "7", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 34 + 0/10 + 7/100",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"t": "4",
+				"u": "7",
+				"a": "347"
+			},
+			"answers": ["34", "0", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

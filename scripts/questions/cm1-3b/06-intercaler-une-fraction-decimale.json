@@ -1,0 +1,129 @@
+{
+	"title": "Intercaler une fraction décimale",
+	"description": "Écrire une fraction comprise entre deux dixièmes consécutifs (14/10 < 145/100 < 15/10) ; toute fraction strictement entre les deux est juste",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris une fraction décimale comprise entre ces deux fractions.\n\n$$\\frac{{{a}}}{10} < ? < \\frac{{{eval:a+1}}}{10}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..49"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:10*a+5}}}{100}",
+					"requiredForm": "fraction",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{eval:a/10;d}}",
+							"max": "{{eval:(a+1)/10;d}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**En centièmes.** $\\frac{{{a}}}{10} = \\frac{{{eval:10*a}}}{100}$ et $\\frac{{{eval:a+1}}}{10} = \\frac{{{eval:10*a+10}}}{100}$.",
+					"Entre les deux, il y a neuf centièmes : $\\frac{{{eval:10*a+1}}}{100}$, $\\frac{{{eval:10*a+2}}}{100}$… jusqu'à $\\frac{{{eval:10*a+9}}}{100}$. Par exemple :",
+					"$$\\frac{{{a}}}{10} < \\textcolor{{{color:primary.0}}}{\\frac{{{eval:10*a+5}}}{100}} < \\frac{{{eval:a+1}}}{10}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "14/10 < 145/100 < 15/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "14"
+			},
+			"answers": ["\\frac{145}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "14/10 < 141/100 < 15/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "14"
+			},
+			"answers": ["\\frac{141}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "14/10 < 1450/1000 < 15/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "14"
+			},
+			"answers": ["\\frac{1450}{1000}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "14/10 < 29/20 < 15/10 (pas décimale, juste)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "14"
+			},
+			"answers": ["\\frac{29}{20}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 15/10 (borne)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "14"
+			},
+			"answers": ["\\frac{15}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 145/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "14"
+			},
+			"answers": ["\\frac{145}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 1,45 (écriture à virgule)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "14"
+			},
+			"answers": ["1.45"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

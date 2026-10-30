@@ -1,0 +1,162 @@
+{
+	"title": "Encadrer une fraction décimale par deux entiers",
+	"description": "Encadrer une fraction décimale par deux entiers consécutifs (2 < 237/100 < 3) ; dénominateur 10 ou 100",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Encadre cette fraction par deux nombres entiers qui se suivent.\n\n$$? < \\frac{{{a}}}{10} < ?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "0..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Combien d'unités ?** Une unité, c'est $\\frac{10}{10}$ : ${{a}} = {{q}} \\times 10 + {{r}}$.",
+					"$$\\frac{{{a}}}{10} = {{q}} + \\frac{{{r}}}{10}$$",
+					"$\\frac{{{r}}}{10}$ est entre $0$ et $1$, donc $\\textcolor{{{color:primary.0}}}{{{q}}} < \\frac{{{a}}}{10} < \\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Encadre cette fraction par deux nombres entiers qui se suivent.\n\n$$? < \\frac{{{a}}}{100} < ?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "0..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Combien d'unités ?** Une unité, c'est $\\frac{100}{100}$ : ${{a}} = {{q}} \\times 100 + {{r}}$.",
+					"$$\\frac{{{a}}}{100} = {{q}} + \\frac{{{r}}}{100}$$",
+					"$\\frac{{{r}}}{100}$ est entre $0$ et $1$, donc $\\textcolor{{{color:primary.0}}}{{{q}}} < \\frac{{{a}}}{100} < \\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 < 47/10 < 5",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"r": "7",
+				"a": "47"
+			},
+			"answers": ["4", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 47 et 48 (numérateur lu)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"r": "7",
+				"a": "47"
+			},
+			"answers": ["47", "48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 < 237/100 < 3",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"r": "37",
+				"a": "237"
+			},
+			"answers": ["2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 23 et 24 (dixièmes lus)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"r": "37",
+				"a": "237"
+			},
+			"answers": ["23", "24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 et 4",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"r": "37",
+				"a": "237"
+			},
+			"answers": ["3", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0 < 7/100 < 1",
+			"variationIndex": 1,
+			"variables": {
+				"q": "0",
+				"r": "7",
+				"a": "7"
+			},
+			"answers": ["0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

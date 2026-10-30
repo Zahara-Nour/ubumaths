@@ -1,0 +1,157 @@
+{
+	"title": "Ranger des fractions décimales",
+	"description": "Ranger dans l'ordre croissant ou décroissant quatre nombres : un entier, des dixièmes et des centièmes (9/10 ; 120/100 ; 14/10 ; 2)",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Ordonner",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Range ces nombres du plus petit au plus grand.\n\n```ranger\nsigne: <\n- $\\frac{{{a}}}{10}$\n- $\\frac{{{b}}}{100}$\n- $\\frac{{{c}}}{10}$\n- ${{m}}$\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "k",
+					"expression": "eval:m-1"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:10*k-9}}..{{eval:10*k-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:10*k+2}}..{{eval:10*m-1}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:100*k+1}}..{{eval:10*c-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tout en centièmes.** $\\frac{{{a}}}{10} = \\frac{{{eval:10*a}}}{100}$, ${{m}} = \\frac{{{eval:100*m}}}{100}$, $\\frac{{{c}}}{10} = \\frac{{{eval:10*c}}}{100}$ : on compare les numérateurs ${{eval:10*a}}$, ${{b}}$, ${{eval:10*c}}$ et ${{eval:100*m}}$.",
+					"$$\\frac{{{a}}}{10} < \\frac{{{b}}}{100} < \\frac{{{c}}}{10} < {{m}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces nombres du plus grand au plus petit.\n\n```ranger\nsigne: >\n- ${{m}}$\n- $\\frac{{{c}}}{10}$\n- $\\frac{{{b}}}{100}$\n- $\\frac{{{a}}}{10}$\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "k",
+					"expression": "eval:m-1"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:10*k-9}}..{{eval:10*k-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:10*k+2}}..{{eval:10*m-1}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:100*k+1}}..{{eval:10*c-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tout en centièmes.** $\\frac{{{a}}}{10} = \\frac{{{eval:10*a}}}{100}$, ${{m}} = \\frac{{{eval:100*m}}}{100}$, $\\frac{{{c}}}{10} = \\frac{{{eval:10*c}}}{100}$ : on compare les numérateurs ${{eval:10*a}}$, ${{b}}$, ${{eval:10*c}}$ et ${{eval:100*m}}$.",
+					"$${{m}} > \\frac{{{c}}}{10} > \\frac{{{b}}}{100} > \\frac{{{a}}}{10}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "croissant : 9/10 < 120/100 < 14/10 < 2",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"k": "1",
+				"a": "9",
+				"c": "14",
+				"b": "120"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rangés par numérateurs (2 ; 9/10 ; 14/10 ; 120/100)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"k": "1",
+				"a": "9",
+				"c": "14",
+				"b": "120"
+			},
+			"answers": ["2", "3", "1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre décroissant",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"k": "1",
+				"a": "9",
+				"c": "14",
+				"b": "120"
+			},
+			"answers": ["2", "1", "0", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissant : 2 > 14/10 > 120/100 > 9/10",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"k": "1",
+				"a": "9",
+				"c": "14",
+				"b": "120"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre croissant",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"k": "1",
+				"a": "9",
+				"c": "14",
+				"b": "120"
+			},
+			"answers": ["2", "1", "0", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

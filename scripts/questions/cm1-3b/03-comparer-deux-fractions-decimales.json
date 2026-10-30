@@ -1,0 +1,256 @@
+{
+	"title": "Comparer deux fractions décimales",
+	"description": "Comparer un nombre de dixièmes et un nombre de centièmes avec <, = ou > (7/10 … 65/100 ; 67/10 … 607/100)",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 14,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète avec le symbole qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $$<$$\n- $$=$$\n- $$>$$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "w",
+					"expression": "1..99"
+				},
+				{
+					"name": "s",
+					"expression": "0..4"
+				},
+				{
+					"name": "h",
+					"expression": "eval:{{if:s==0|10*a|w}}"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:{{if:o==0|a|h}}"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:{{if:o==0|10|100}}"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:{{if:o==0|h|a}}"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:{{if:o==0|100|10}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*100/gd-dn*100/dd)+1"
+				}
+			],
+			"conditions": ["s==0 or h!=10*a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur d'abord.** Un dixième, c'est dix centièmes : $\\frac{{{a}}}{10} = \\frac{{{eval:10*a}}}{100}$.",
+					"On compare ${{eval:10*a}}$ centièmes et ${{h}}$ centièmes.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète avec le symbole qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $$<$$\n- $$=$$\n- $$>$$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..99"
+				},
+				{
+					"name": "w",
+					"expression": "101..999"
+				},
+				{
+					"name": "s",
+					"expression": "0..4"
+				},
+				{
+					"name": "h",
+					"expression": "eval:{{if:s==0|10*a|w}}"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:{{if:o==0|a|h}}"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:{{if:o==0|10|100}}"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:{{if:o==0|h|a}}"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:{{if:o==0|100|10}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*100/gd-dn*100/dd)+1"
+				}
+			],
+			"conditions": ["s==0 or h!=10*a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur d'abord.** Un dixième, c'est dix centièmes : $\\frac{{{a}}}{10} = \\frac{{{eval:10*a}}}{100}$.",
+					"On compare ${{eval:10*a}}$ centièmes et ${{h}}$ centièmes.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7/10 > 65/100",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"w": "65",
+				"s": "1",
+				"h": "65",
+				"o": "0",
+				"gn": "7",
+				"gd": "10",
+				"dn": "65",
+				"dd": "100",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/10 < 65/100 (numérateurs comparés)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"w": "65",
+				"s": "1",
+				"h": "65",
+				"o": "0",
+				"gn": "7",
+				"gd": "10",
+				"dn": "65",
+				"dd": "100",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "70/100 = 7/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"w": "3",
+				"s": "0",
+				"h": "70",
+				"o": "1",
+				"gn": "70",
+				"gd": "100",
+				"dn": "7",
+				"dd": "10",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 70/100 > 7/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"w": "3",
+				"s": "0",
+				"h": "70",
+				"o": "1",
+				"gn": "70",
+				"gd": "100",
+				"dn": "7",
+				"dd": "10",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "67/10 > 607/100",
+			"variationIndex": 1,
+			"variables": {
+				"a": "67",
+				"w": "607",
+				"s": "2",
+				"h": "607",
+				"o": "0",
+				"gn": "67",
+				"gd": "10",
+				"dn": "607",
+				"dd": "100",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 67/10 < 607/100",
+			"variationIndex": 1,
+			"variables": {
+				"a": "67",
+				"w": "607",
+				"s": "2",
+				"h": "607",
+				"o": "0",
+				"gn": "67",
+				"gd": "10",
+				"dn": "607",
+				"dd": "100",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
