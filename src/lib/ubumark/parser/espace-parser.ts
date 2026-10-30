@@ -205,8 +205,15 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 		return { type: 'espace', genre, source, spec, errors };
 	}
 	if (genre === 'patron') {
-		const { spec, errors } = parsePatronContent(source);
-		return { type: 'espace', genre, source, spec, errors };
+		const { spec, errors, caseIndex } = parsePatronContent(source);
+		return {
+			type: 'espace',
+			genre,
+			source,
+			spec,
+			errors,
+			...(caseIndex !== undefined && { caseIndex })
+		};
 	}
 	const lines = source.split('\n');
 	const errors: string[] = [];

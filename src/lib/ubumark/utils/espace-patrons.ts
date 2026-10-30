@@ -199,7 +199,7 @@ export function trimGrid(cells: boolean[][]): boolean[][] {
 }
 
 /** La grille retournée (symétrie gauche-droite), puis tournée dans le sens des aiguilles */
-export function transformGrid(cells: boolean[][], turn: PatronTurn, mirror: boolean): boolean[][] {
+export function transformGrid<T>(cells: T[][], turn: PatronTurn, mirror: boolean): T[][] {
 	let grid = mirror ? cells.map((row) => [...row].reverse()) : cells.map((row) => [...row]);
 	for (let k = 0; k < turn / 90; k++) {
 		const rows = grid.length;

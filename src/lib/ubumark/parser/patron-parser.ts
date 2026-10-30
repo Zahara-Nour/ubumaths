@@ -22,13 +22,21 @@
  * - `sommets:` : les noms des sommets du SOLIDE (ordre de ```solide), `-` sans
  *   nom, `?` (une fois) : à trouver.
  * - `faces: numeros`, `marquer: face 3 | face dessus | sommet A`, `cotes:`.
+ * - `designer: opposee | voisines | sommet A | face EFGH` (lot 5) : geste de
+ *   l'élève, qui touche les faces que le pliage désigne ; `opposee` et `voisines`
+ *   partent de la face marquée (une seule).
+ * - `completer: 4` (lot 5, cube seulement) : les cases retirées du patron (1 à 3),
+ *   que l'élève repose ; sans noms, numéros, marque ni cotes (ils diraient où).
+ *   Les deux gestes s'excluent. `case: N` y est posée par le générateur de
+ *   questions.
  *
- * Chantier `solides`, lot 4 (§ 9 du journal), ADR 0034.
+ * Chantier `solides`, lots 4 et 5 (§ 9 et § 10 du journal), ADR 0034.
  *
  * @module ubumark/parser/patron-parser
  */
 
 import {
+	PATRON_COMPLETE_MAX,
 	PATRON_GRID_LIMITS,
 	PATRON_KEYS,
 	PATRON_TURNS,
@@ -36,6 +44,8 @@ import {
 	type PatronMark,
 	type PatronSolid,
 	type PatronSpec,
+	type PatronTarget,
+	type PatronTask,
 	type PatronTurn
 } from '../types/espace';
 import { SOLIDE_PLACES, solideTopology, type SolidePlace } from '../utils/espace-solides';
@@ -48,6 +58,7 @@ import {
 	patronNet,
 	trimGrid
 } from '../utils/espace-patrons';
+import { targetFaces } from '../utils/patron-gestes';
 import { readForm } from './solide-parser';
 
 // ============================================================================
@@ -163,6 +174,7 @@ const sameSet = (a: number[], b: number[]) =>
 export function parsePatronContent(source: string): {
 	spec: PatronSpec | null;
 	errors: string[];
+	caseIndex?: number;
 } {
 	const errors: string[] = [];
 	const fail = (line: number, message: string) => errors.push(`Ligne ${line} : ${message}`);
@@ -423,8 +435,110 @@ export function parsePatronContent(source: string): {
 		}
 	}
 
-	if (errors.length > 0) return { spec: null, errors };
-	return { spec, errors };
+	// Les gestes (lot 5)
+	const designerEntry = seen.get('designer');
+	const completerEntry = seen.get('completer');
+	const caseEntry = seen.get('case');
+	let caseIndex: number | undefined;
+	if (caseEntry !== undefined) {
+		if (/^\d+$/.test(caseEntry.value)) caseIndex = Number(caseEntry.value);
+		else fail(caseEntry.line, `case « ${caseEntry.value} » : numéro de case entier`);
+		if (designerEntry === undefined && completerEntry === undefined) {
+			fail(caseEntry.line, 'case: sans objet sans designer: ni completer:');
+		}
+	}
+	if (designerEntry !== undefined && completerEntry !== undefined) {
+		fail(
+			completerEntry.line,
+			'designer: et completer: ne vont pas ensemble (un seul geste par patron)'
+		);
+	} else if (designerEntry !== undefined && errors.length === 0) {
+		const task = readDesigner(designerEntry.value, spec, net);
+		if (typeof task === 'string') fail(designerEntry.line, task);
+		else spec.task = task;
+	} else if (completerEntry !== undefined && errors.length === 0) {
+		const task = readCompleter(completerEntry.value, spec, seen);
+		if (typeof task === 'string') fail(completerEntry.line, task);
+		else spec.task = task;
+	}
+
+	const withCase = caseIndex === undefined ? {} : { caseIndex };
+	if (errors.length > 0) return { spec: null, errors, ...withCase };
+	return { spec, errors, ...withCase };
+}
+
+/** Le geste de `designer:` et ses faces attendues ; une phrase d'erreur sinon */
+function readDesigner(
+	value: string,
+	spec: PatronSpec,
+	net: ReturnType<typeof patronNet>
+): PatronTask | string {
+	const hint = 'opposee, voisines, sommet A ou face EFGH';
+	if (spec.faux) return 'un faux patron ne se plie pas : designer: y est sans objet';
+	if (spec.solid === 'cylindre') {
+		return 'designer: les faces d’un cylindre ne se désignent pas (cube, pavé, prisme, pyramide)';
+	}
+	const match = /^(\S+)\s*(.*)$/.exec(value.trim());
+	const word = plain(match?.[1] ?? '');
+	const rest = (match?.[2] ?? '').trim();
+	let target: PatronTarget;
+	if ((word === 'opposee' || word === 'voisines') && rest === '') {
+		target = { kind: word };
+	} else if ((word === 'sommet' || word === 'face') && rest !== '' && !/\s/.test(rest)) {
+		target = { kind: word, name: rest };
+	} else {
+		return `designer « ${value} » non compris (${hint})`;
+	}
+	let marked: number | null = null;
+	if (target.kind === 'opposee' || target.kind === 'voisines') {
+		const faces = spec.marks.flatMap((m) => (m.kind === 'face' ? m.faces : []));
+		if (faces.length !== 1) {
+			return `designer: ${target.kind} part de la face marquée : marque exactement une face (marquer: face 3)`;
+		}
+		marked = faces[0];
+	}
+	const faces = targetFaces(spec, net, target, marked);
+	if (typeof faces === 'string') return faces;
+	return { kind: 'designer', target, faces };
+}
+
+/** Les cases retirées de `completer:` ; une phrase d'erreur sinon */
+function readCompleter(
+	value: string,
+	spec: PatronSpec,
+	seen: Map<string, { line: number; value: string }>
+): PatronTask | string {
+	if (spec.solid !== 'cube' || spec.faux || spec.cells === null) {
+		return 'completer: seulement pour un vrai patron du cube';
+	}
+	// Noms, numéros, marque, cotes : diraient où va la face manquante (Q22)
+	for (const key of ['sommets', 'faces', 'marquer', 'cotes']) {
+		const entry = seen.get(key);
+		const off = entry === undefined || (key === 'faces' && plain(entry.value) === 'non');
+		if (!off) {
+			return `completer: ne va pas avec ${key}: (ils diraient où va la face manquante)`;
+		}
+	}
+	const items = value.split(/[\s,]+/).filter((w) => w !== '');
+	const faceCount = spec.cells.flat().filter(Boolean).length;
+	if (items.length === 0 || items.length > PATRON_COMPLETE_MAX) {
+		return `completer: les numéros des cases à retirer, de 1 à ${PATRON_COMPLETE_MAX} cases (ex. completer: 4)`;
+	}
+	const removed: number[] = [];
+	for (const item of items) {
+		const n = Number(item);
+		if (!/^\d+$/.test(item) || n < 1 || n > faceCount) {
+			return `completer « ${item} » : un numéro de case, de 1 à ${faceCount}`;
+		}
+		if (removed.includes(n - 1)) return `completer: case ${n} donnée deux fois`;
+		removed.push(n - 1);
+	}
+	let rank = 0;
+	const left = spec.cells.map((row) => row.map((on) => on && !removed.includes(rank++)));
+	if (!gridIsConnected(left)) {
+		return 'completer: les faces qui restent doivent se toucher, de proche en proche, par un côté';
+	}
+	return { kind: 'completer', removed: removed.sort((a, b) => a - b) };
 }
 
 /** Une marque de `marquer:` ; une phrase d'erreur sinon */
