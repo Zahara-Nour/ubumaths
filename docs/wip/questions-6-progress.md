@@ -5,17 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 6b joué (PR à ouvrir)._
+_Mis à jour le 2026-10-30, après #2031._
 
-- **État** : lots 1 à 6a en prod, publiés. Lot 6b (M7-M13) écrit, 09 et 12 joués au clavier (Playwright, § 13.4),
-  12 corrigé (pas de « 3 h 0 min ») ; specs vertes, simulation prod « 7 à créer » ; PR contenu en cours.
-- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/6-grandeurs --publier` ;
-  puis migration nœud + tags, page à cocher.
-- **En attente de David** : passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles`.
+- **État** : lots 1 à 6a en prod, publiés. Lot 6b (M7-M13, `scripts/questions/6-grandeurs/`) mergé (#2031) :
+  specs vertes, 09 et 12 joués au clavier (§ 13.4) ; **pas encore en base de prod**.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-grandeurs --publier`
+  depuis le dépôt principal (écriture prod refusée au mode auto) ; je vérifie les 7 brouillons, puis migration
+  nœud + tags (nouvelle branche dans le worktree), page à cocher.
+- **En attente de David** : ce `--publier` ; passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles`.
 - **Pièges en cours** : 06 et 07 attendent le bloc ```ranger (à reprendre). 3a7a5711 : NE PAS publier.
   `svelte-kit sync` avant `question:specs`. M10 : version dessinée attend « assemblages de cubes ».
   Aperçu piloté : un clic ne donne pas le focus au champ ; `focus()` + clavier + Tab (§ 13.4).
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-6b`.
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-6b` (mergée, à supprimer).
 
 ## 1. Relevé (prod, 2026-10-26)
 
