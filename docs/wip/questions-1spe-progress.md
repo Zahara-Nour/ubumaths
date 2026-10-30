@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après la publication du lot 0-probabilités._
+_Mis à jour le 2026-10-30, pendant le lot 0-variables aléatoires._
 
-- **État** : lots 0-suites, 0-second-degré, 0-dérivation, 0-variations, 0-exponentielle, 0-trigo, 0-produit scalaire, 0-géométrie repérée et 0-probabilités (§ 14, 8 modèles) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
-- **Prochaine action** : lot 0-variables aléatoires (17 brouillons du domaine « Variables aléatoires » : instantané **dans un worktree**, specs, bornes, constats, simulation `publier-lot` d'entrée). Ensuite logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : rien.
-- **Pièges en cours** : `create-questions` refusé au mode auto **même en simulation** (David le lance) ; `publier-lot` = tout le dossier ou rien ; `db:migrate` d'autres sessions → David ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` (source montrée) ; `question:specs --file`, une copie par variation pour l'aperçu ; `{{eval:…}}` rend une fraction, `;d` un décimal ; instantané jamais dans le dépôt principal (copie non suivie qui bloque `pull`) ; index du dépôt principal : celui d'autres sessions possible, ne jamais y toucher.
-- **Worktree / branche** : aucun (retiré après #2026).
+- **État** : lots 0-suites à 0-probabilités publiés ; lot 0-variables aléatoires (§ 15, 17 brouillons) vérifié, instantané commité (c42744921), branche non poussée.
+- **Prochaine action** : après le « oui » de David : corrections C1-C6 + specs, PR des fichiers ; migration des 7 niveaux (N1, gabarit #2012) ; page à cocher ; publication. Ensuite logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : C1-C6, N1 et la question d'accès de la migration N1 (recommandation : « personne »).
+- **Pièges en cours** : `create-questions` refusé au mode auto **même en simulation** (David le lance) ; `publier-lot` = tout le dossier ou rien ; `db:migrate` → David ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` ; une copie par variation pour l'aperçu (sans `testSpecs`) ; `export-question-templates` exige `svelte-kit sync` dans un worktree neuf ; instantané jamais dans le dépôt principal.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe` · `chore/questions-1spe-0-va`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
