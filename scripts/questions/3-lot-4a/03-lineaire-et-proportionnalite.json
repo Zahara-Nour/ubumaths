@@ -1,0 +1,226 @@
+{
+	"title": "Fonction linéaire et proportionnalité",
+	"description": "Relier fonction linéaire et proportionnalité : coefficient a lu dans un tableau ou tiré de f(n) donné, expression f(x) = ax d'une situation (prix au kilogramme, vitesse constante)",
+	"grades": ["3"],
+	"theme": "Fonctions",
+	"domain": "Fonctions linéaires",
+	"subdomain": "Proportionnalité",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La fonction $f$ est linéaire, $f(x)=ax$. Voici un tableau de valeurs de $f$ :\n\n$$\\begin{array}{|c|c|c|} \\hline x & {{n}} & {{q}} \\\\ \\hline f(x) & {{eval:(a)*(n)}} & {{eval:(a)*(q)}} \\\\ \\hline \\end{array}$$\n\nQuel est le coefficient $a$ ?\n\n$a=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "6..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est linéaire : $f(x)=ax$, donc $f(x)$ est **proportionnel** à $x$ et $a$ est le coefficient de proportionnalité, $a=\\dfrac{f(x)}{x}$.",
+					"$$a = \\dfrac{{{eval:(a)*(n)}}}{ {{n}} } = \\textcolor{{{color:primary.0}}}{{{eval:a}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "$f$ est une fonction linéaire telle que $f({{n}})={{eval:(a)*(n)}}$.\n\nQuel est son coefficient $a$ ?\n\n$a=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["abs(a) != n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est linéaire : $f(x)=ax$, donc $f(x)$ est **proportionnel** à $x$ et $a$ est le coefficient de proportionnalité, $a=\\dfrac{f(x)}{x}$.",
+					"$$a = \\dfrac{f({{n}})}{ {{n}} } = \\dfrac{{{eval:(a)*(n)}}}{ {{n}} } = \\textcolor{{{color:primary.0}}}{{{eval:a}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Au marché, les pommes coûtent ${{eval:k/10;d}}~\\unit{€}$ le kilogramme. Le prix payé, en euros, est une fonction linéaire $f$ de la masse $x$ achetée, en kilogrammes.\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "15..35"
+				}
+			],
+			"conditions": ["k - 5*floor(k/5) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/10;d}}x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le prix est **proportionnel** à la masse : on multiplie la masse par le prix d'un kilogramme.",
+					"$$f(x) = \\textcolor{{{color:primary.0}}}{{{eval:k/10;d}}x}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une voiture roule à la vitesse constante de ${{v}}~\\unit{km/h}$. La distance parcourue, en kilomètres, est une fonction linéaire $f$ de la durée $x$ du trajet, en heures.\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "50|60|70|80|90|110|130"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À vitesse constante, la distance est **proportionnelle** à la durée : en $x$ heures, la voiture parcourt $x$ fois ${{v}}~\\unit{km}$.",
+					"$$f(x) = \\textcolor{{{color:primary.0}}}{{{v}}x}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Tableau : a = 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"n": "2",
+				"q": "7"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rapport renversé 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"n": "2",
+				"q": "7"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(2) = 6 : a = 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 − 2 = 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2/6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "2"
+			},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pommes à 2,5 € : f(x) = 2,5x",
+			"variationIndex": 2,
+			"variables": {
+				"k": "25"
+			},
+			"answers": ["2{,}5x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x/2,5",
+			"variationIndex": 2,
+			"variables": {
+				"k": "25"
+			},
+			"answers": ["\\frac{x}{2{,}5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,5 + x",
+			"variationIndex": 2,
+			"variables": {
+				"k": "25"
+			},
+			"answers": ["2{,}5+x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Vitesse 90 : f(x) = 90x",
+			"variationIndex": 3,
+			"variables": {
+				"v": "90"
+			},
+			"answers": ["90x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x/90",
+			"variationIndex": 3,
+			"variables": {
+				"v": "90"
+			},
+			"answers": ["\\frac{x}{90}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

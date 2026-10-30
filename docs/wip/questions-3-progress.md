@@ -546,3 +546,12 @@ modèles publiés de plus. Aucune règle ne change.
 2. Valider les modèles du § 11.1 (et du § 11.2 pour plus tard) : points, variations, formes de réponse ?
 3. 3-057 et 3-065 se ressemblent : deux modèles (« 3x ⩾ 6 » contre « f(x) ⩽ 6 »), comme proposé ?
 4. 3-037 : la forme proposée (Thalès dans le graphique d'une proportionnalité) te convient ?
+
+### 11.6 Décisions (David, 2026-10-30, « je te suis »)
+
+- Deux lots : 4a (§ 11.1, 7 modèles) d'abord, 4b (§ 11.2, 6) ensuite.
+- 4a validé, une retouche : 3-067, le coefficient en fraction passe au **niveau 2** (variation à part des entiers).
+- 3-057 et 3-065 : deux modèles. 3-037 : forme proposée gardée.
+- Dossier `../ubumaths-wt-questions-3` (caches seuls, 36 Ko) supprimé ; worktree neuf au même nom,
+  branche `content/questions-3-lot4a`.
+- Pythagore 4e : note ajoutée en fin de `questions-4-progress.md` (commit direct sur `main`).

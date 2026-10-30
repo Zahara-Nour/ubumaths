@@ -1,0 +1,336 @@
+{
+	"title": "Image et antécédent",
+	"description": "Image et antécédent : lus dans un tableau de valeurs, lus sur une courbe (deux antécédents), image calculée par une expression simple (x² − 3)",
+	"grades": ["3"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Image et antécédent",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$$\\begin{array}{|c|c|c|c|c|c|} \\hline x & -2 & -1 & 0 & 1 & 2 \\\\ \\hline f(x) & {{eval:-2*(a)+(b)}} & {{eval:-(a)+(b)}} & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} \\\\ \\hline \\end{array}$$\n\nQuelle est l'image de ${{k}}$ par $f$ ?\n\n$f({{k}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": ["b != 0", "abs(b) != abs(a)", "k != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)*(k)+(b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $f(a)=b$, on dit que $b$ est **l'image** de $a$ et que $a$ est **un antécédent** de $b$. Dans le tableau, les antécédents sont sur la ligne de $x$, les images sur celle de $f(x)$.",
+					"On lit la colonne de $x={{k}}$ : l'image de ${{k}}$ est $\\textcolor{{{color:primary.0}}}{{{eval:(a)*(k)+(b)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$$\\begin{array}{|c|c|c|c|c|c|} \\hline x & -2 & -1 & 0 & 1 & 2 \\\\ \\hline f(x) & {{eval:-2*(a)+(b)}} & {{eval:-(a)+(b)}} & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} \\\\ \\hline \\end{array}$$\n\nQuel est l'antécédent de ${{eval:(a)*(k)+(b)}}$ par $f$ dans ce tableau ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": ["b != 0", "abs(b) != abs(a)", "k != 0", "(a)*(k)+(b) != k"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $f(a)=b$, on dit que $b$ est **l'image** de $a$ et que $a$ est **un antécédent** de $b$. Dans le tableau, les antécédents sont sur la ligne de $x$, les images sur celle de $f(x)$.",
+					"On cherche ${{eval:(a)*(k)+(b)}}$ sur la ligne de $f(x)$ : il est sous $x=\\textcolor{{{color:primary.0}}}{{{k}}}$. L'antécédent est $\\textcolor{{{color:primary.0}}}{{{k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:min(-1,p-3)}} ; {{eval:max(1,p+3)}}\ny: {{eval:min(-1,q-1,q+5*(c))}} ; {{eval:max(1,q+1,q+5*(c))}}\ngrille: 1 ; 1\nf(x) = ({{c}})*(x-({{p}}))^2+({{q}}) sur [{{eval:p-2.2;d}} ; {{eval:p+2.2;d}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe en forme de parabole d'une fonction f.\n```\n\nLis l'image de ${{n}}$ par $f$.\n\n$f({{n}})=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1|-1"
+				},
+				{
+					"name": "p",
+					"expression": "-1..1"
+				},
+				{
+					"name": "q",
+					"expression": "-2..2"
+				},
+				{
+					"name": "d",
+					"expression": "-2..2"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(p)+(d)"
+				}
+			],
+			"conditions": ["d != 0", "(q)+(c)*(d)^2 != n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(q)+(c)*(d)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'image de ${{n}}$ est l'**ordonnée** du point de $\\mathcal{C}_f$ d'abscisse ${{n}}$.",
+					"```courbe\nx: {{eval:min(-1,p-3)}} ; {{eval:max(1,p+3)}}\ny: {{eval:min(-1,q-1,q+5*(c))}} ; {{eval:max(1,q+1,q+5*(c))}}\ngrille: 1 ; 1\nf(x) = ({{c}})*(x-({{p}}))^2+({{q}}) sur [{{eval:p-2.2;d}} ; {{eval:p+2.2;d}}]   bleu   nom=C_f\npoints: A({{n}} ; {{eval:(q)+(c)*(d)^2}})\ntaille: moyenne\ndescription: Courbe de f et son point A d'abscisse {{n}}.\n```",
+					"$A({{n}}\\,;{{eval:(q)+(c)*(d)^2}})$ : $f({{n}})=\\textcolor{{{color:primary.0}}}{{{eval:(q)+(c)*(d)^2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(r)+2)}}\ny: {{eval:floor(min(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))-1}} ; {{eval:ceil(max(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))+1}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{r}})) sur [{{eval:(p)-1}} ; {{eval:(r)+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe en forme de parabole d'une fonction f.\n```\n\nLis les antécédents de ${{k}}$ par $f$.\n\nL'ensemble des antécédents est $?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(p)+(d)"
+				},
+				{
+					"name": "c",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{p}} ; {{r}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : les antécédents de ${{k}}$ sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
+					"```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(r)+2)}}\ny: {{eval:floor(min(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))-1}} ; {{eval:ceil(max(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))+1}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{r}})) sur [{{eval:(p)-1}} ; {{eval:(r)+1}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{p}} ; {{k}}), B({{r}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de f et droite horizontale y = {{k}}, qui la coupe en A et B.\n```",
+					"La droite coupe $\\mathcal{C}_f$ en $A$ et $B$ : ${{k}}$ a deux antécédents, $\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{r}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)=x^2-{{b}}$.\n\nCalcule l'image de ${{n}}$ par $f$.\n\n$f({{n}})=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "-6..-2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n)^2-(b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{n}}$, **entre parenthèses** : le carré d'un nombre négatif est positif.",
+					"$$f({{n}}) = ({{n}})^2-{{b}} = {{eval:(n)^2}}-{{b}} = \\textcolor{{{color:primary.0}}}{{{eval:(n)^2-(b)}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Tableau : image de 2 = 7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"k": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : antécédent au lieu de l'image",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Tableau : antécédent de 7 = 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'image de 7 confondue",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"k": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Courbe : image de 2 = 3",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"p": "0",
+				"q": "-1",
+				"d": "2",
+				"n": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"p": "0",
+				"q": "-1",
+				"d": "2",
+				"n": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Courbe : antécédents de 1 = {−2 ; 2}",
+			"variationIndex": 3,
+			"variables": {
+				"p": "-2",
+				"d": "4",
+				"r": "2",
+				"c": "1",
+				"k": "1"
+			},
+			"answers": ["\\{-2;2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Ordre inverse",
+			"variationIndex": 3,
+			"variables": {
+				"p": "-2",
+				"d": "4",
+				"r": "2",
+				"c": "1",
+				"k": "1"
+			},
+			"answers": ["\\{2;-2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul antécédent",
+			"variationIndex": 3,
+			"variables": {
+				"p": "-2",
+				"d": "4",
+				"r": "2",
+				"c": "1",
+				"k": "1"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² − 3, image de −4 = 13",
+			"variationIndex": 4,
+			"variables": {
+				"b": "3",
+				"n": "-4"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −16 − 3 = −19",
+			"variationIndex": 4,
+			"variables": {
+				"b": "3",
+				"n": "-4"
+			},
+			"answers": ["-19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 × (−4) − 3 = −11",
+			"variationIndex": 4,
+			"variables": {
+				"b": "3",
+				"n": "-4"
+			},
+			"answers": ["-11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
