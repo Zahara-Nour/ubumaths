@@ -13,8 +13,9 @@
  * - `forme:` (obligatoire) : `cube a`, `pave l p h`, `prisme triangle b h L`,
  *   `prisme triangle-rectangle a b L`, `pyramide carree a h`,
  *   `pyramide rectangle l p h`, `pyramide triangle a h`, `cylindre r h`,
- *   `cone r h`, `boule r` ; nombres > 0 (virgule ou point), au plus 20 fois
- *   plus grands les uns que les autres. Les dimensions sont des proportions.
+ *   `cone r h`, `boule r` ; nombres > 0 (virgule ou point), au plus 1000 et
+ *   3 décimales, au plus 20 fois plus grands les uns que les autres ; cône :
+ *   hauteur > 0,5 × rayon. Les dimensions sont des proportions.
  * - `sommets:` (facultatif) : un nom par sommet, dans l'ordre documenté
  *   (`solideTopology`) ; `-` : sommet sans nom.
  * - `marquer:` (facultatif) : `face ABCD` ou `face dessus` (place, sans
@@ -31,6 +32,8 @@
 import {
 	SOLIDE_FORMS,
 	SOLIDE_KEYS,
+	SOLIDE_MAX_DECIMALS,
+	SOLIDE_MAX_DIMENSION,
 	SOLIDE_MAX_RATIO,
 	SOLIDE_UNITS,
 	type SolideForm,
@@ -38,6 +41,7 @@ import {
 	type SolideSpec
 } from '../types/espace';
 import {
+	SOLIDE_FLAT_CONE,
 	SOLIDE_PLACES,
 	solideTopology,
 	type SolidePlace,
@@ -126,7 +130,18 @@ function readForm(value: string): { form: SolideForm; dims: number[] } | string 
 	if (bad !== undefined) {
 		return `« ${bad} » : une dimension est un nombre positif (ex. 4 ou 2,5)`;
 	}
+	const tooPrecise = rest.find((w) => (w.split(/[.,]/)[1]?.length ?? 0) > SOLIDE_MAX_DECIMALS);
+	if (tooPrecise !== undefined) {
+		return `« ${tooPrecise} » : au plus ${SOLIDE_MAX_DECIMALS} chiffres après la virgule`;
+	}
 	const dims = rest.map((w) => Number(w.replace(',', '.')));
+	const tooBig = rest.find((_, i) => !(dims[i] <= SOLIDE_MAX_DIMENSION));
+	if (tooBig !== undefined) {
+		return `« ${tooBig.length > 12 ? `${tooBig.slice(0, 12)}…` : tooBig} » : une dimension vaut au plus ${SOLIDE_MAX_DIMENSION} (ce sont des proportions)`;
+	}
+	if (form === 'cone' && dims[1] <= SOLIDE_FLAT_CONE * dims[0]) {
+		return `cône trop plat : sa hauteur doit dépasser ${String(SOLIDE_FLAT_CONE).replace('.', ',')} fois son rayon (sinon son sommet ne se voit pas)`;
+	}
 	if (Math.max(...dims) / Math.min(...dims) > SOLIDE_MAX_RATIO) {
 		return `dimensions trop différentes (plus de ${SOLIDE_MAX_RATIO} fois plus grandes les unes que les autres)`;
 	}

@@ -66,6 +66,18 @@ describe('```solide — forme:', () => {
 		expect(errors('forme: cube 2 3')[0]).toMatch(/1 dimension/);
 	});
 
+	it('dimension trop grande ou trop précise : erreur (jamais Infinity ni 1e+21 au dessin)', () => {
+		expect(errors(`forme: cube ${'9'.repeat(400)}`)[0]).toMatch(/au plus 1000/);
+		expect(errors('forme: cube 1001')[0]).toMatch(/au plus 1000/);
+		expect(errors('forme: cube 2,54321')[0]).toMatch(/3 chiffres après la virgule/);
+		expect(spec('forme: cube 2,545')?.dims).toEqual([2.545]);
+	});
+
+	it('cône trop plat (le sommet tomberait dans l’ellipse) : erreur', () => {
+		expect(errors('forme: cone 10 3')[0]).toMatch(/cône trop plat/);
+		expect(errors('forme: cone 4 2,5')).toEqual([]);
+	});
+
 	it('rapport de plus de 20 entre deux dimensions : erreur ; 10 : dessiné', () => {
 		expect(errors('forme: pave 10 1 1')).toEqual([]);
 		expect(errors('forme: pave 30 1 1')[0]).toMatch(/20/);

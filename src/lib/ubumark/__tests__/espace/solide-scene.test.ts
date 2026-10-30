@@ -182,6 +182,39 @@ describe('noms, marques, cotes', () => {
 	});
 });
 
+describe('étiquettes qui ne se chevauchent pas', () => {
+	const boxes = (s: ReturnType<typeof scene>) =>
+		s.labels.map((l) => ({
+			text: l.text,
+			left: l.at.x - (l.text.length * 0.21) / 2,
+			right: l.at.x + (l.text.length * 0.21) / 2,
+			top: l.at.y - 0.18,
+			bottom: l.at.y + 0.18
+		}));
+	const overlaps = (s: ReturnType<typeof scene>) => {
+		const b = boxes(s);
+		const found: string[] = [];
+		b.forEach((p, i) =>
+			b.slice(i + 1).forEach((q) => {
+				if (p.left < q.right && q.left < p.right && p.top < q.bottom && q.top < p.bottom) {
+					found.push(`${p.text}|${q.text}`);
+				}
+			})
+		);
+		return found;
+	};
+
+	it('cylindre bas : rayon et hauteur séparés', () => {
+		expect(overlaps(scene('forme: cylindre 4 1', 'cotes: cm'))).toEqual([]);
+	});
+
+	it('pavé nommé et coté (exemple de la doc) : « 2 cm » ne touche pas C', () => {
+		expect(overlaps(scene('forme: pave 4 2 3', 'sommets: A B C D E F G H', 'cotes: cm'))).toEqual(
+			[]
+		);
+	});
+});
+
 describe('nom accessible : jamais le nom du solide', () => {
 	it('neutre, avec les marques et les cotes', () => {
 		expect(solideLabel(specOf('forme: pyramide carree 4 3'))).toBe(

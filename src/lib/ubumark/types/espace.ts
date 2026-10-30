@@ -84,6 +84,10 @@ export const SOLIDE_UNITS = ['cm', 'mm', 'm'] as const;
 /** Rapport le plus grand permis entre deux dimensions d'un solide */
 export const SOLIDE_MAX_RATIO = 20;
 
+/** Plus grande dimension écrite, et chiffres après la virgule (cotes écrites telles quelles) */
+export const SOLIDE_MAX_DIMENSION = 1000;
+export const SOLIDE_MAX_DECIMALS = 3;
+
 /** Message à l'élève (et dans le PDF) pour un bloc en erreur */
 export const ESPACE_UNAVAILABLE = 'Solide indisponible';
 

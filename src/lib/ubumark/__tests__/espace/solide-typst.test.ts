@@ -27,7 +27,7 @@ describe('bloc ```solide au PDF', () => {
 		const scene = buildSolideScene(node.spec as SolideSpec);
 		const out = generateEspaceTypst(node);
 		expect(count(out, 'curve(')).toBe(scene.lines.length);
-		for (const label of scene.labels) expect(out).toContain(`[${label.text}]`);
+		for (const label of scene.labels) expect(out).toContain(JSON.stringify(label.text));
 	});
 
 	it('face marquée : un polygone gris ; sommet marqué : un disque', () => {
@@ -41,7 +41,11 @@ describe('bloc ```solide au PDF', () => {
 	});
 
 	it('cotes à la française', () => {
-		expect(typst('forme: pave 4,5 2 3', 'cotes: cm')).toContain('[4,5 cm]');
+		expect(typst('forme: pave 4,5 2 3', 'cotes: cm')).toContain('"4,5 cm"');
+	});
+
+	it("un nom avec prime reste « O' » (chaîne Typst, pas d’apostrophe typographique)", () => {
+		expect(typst('forme: cylindre 2 5', "sommets: O O'")).toContain(`"O'"`);
 	});
 
 	it('bloc en erreur : cadre neutre, jamais une erreur de compilation', () => {

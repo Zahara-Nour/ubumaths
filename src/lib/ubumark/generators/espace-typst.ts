@@ -184,11 +184,12 @@ function solideTypst(spec: SolideSpec): string {
 		);
 	}
 	for (const label of scene.labels) {
-		// Boîte large centrée sur le point : le texte s'y centre
+		// Boîte large centrée sur le point : le texte s'y centre. Texte en chaîne :
+		// en markup, Typst ferait de `O'` une apostrophe typographique
 		const w = 2;
 		const h = 1;
 		content.push(
-			`  #place(top + left, dx: ${cm(label.at.x + ESPACE_MARGIN - w / 2)}, dy: ${cm(label.at.y + ESPACE_MARGIN - h / 2)}, box(width: ${cm(w)}, height: ${cm(h)}, align(center + horizon, text(size: ${cm(SOLIDE_LABEL_SIZE)})[${label.text}])))`
+			`  #place(top + left, dx: ${cm(label.at.x + ESPACE_MARGIN - w / 2)}, dy: ${cm(label.at.y + ESPACE_MARGIN - h / 2)}, box(width: ${cm(w)}, height: ${cm(h)}, align(center + horizon, text(size: ${cm(SOLIDE_LABEL_SIZE)}, ${JSON.stringify(label.text)}))))`
 		);
 	}
 	return boxTypst(scene.width, scene.height, content);

@@ -114,6 +114,12 @@ const TOWARD_EYE = { x: DEPTH_SHIFT, y: DEPTH_SHIFT, z: -1 };
 /** Aplatissement des ellipses « à plat » (petit axe / grand axe), celui du CP */
 const ELLIPSE_RATIO = 0.3;
 
+/**
+ * Cône le plus plat permis (hauteur / rayon) : en dessous de ELLIPSE_RATIO, le
+ * sommet tombe dans l'ellipse et le cône ne se reconnaît plus ; marge jusqu'à 0,5
+ */
+export const SOLIDE_FLAT_CONE = 0.5;
+
 /** Segments d'une ellipse ou d'un cercle complet */
 const ARC_STEPS = 72;
 
@@ -464,7 +470,8 @@ function roundDraft(spec: SolideSpec): Draft {
 				lines.push(segment({ x: 0, y: h }, { x: r, y: h }, false));
 				// Au bout du rayon, hors de l'ellipse
 				cotes.push({ at: { x: r, y: h }, value: r, side: 'droite' });
-				cotes.push({ at: { x: r, y: h / 2 }, value: h, side: 'droite' });
+				// Hauteur à gauche : à droite, elle toucherait la cote du rayon (cylindre bas)
+				cotes.push({ at: { x: -r, y: h / 2 }, value: h, side: 'gauche' });
 			}
 			return {
 				lines,
@@ -480,18 +487,13 @@ function roundDraft(spec: SolideSpec): Draft {
 		}
 		case 'cone': {
 			const apex = { x: 0, y: h };
-			if (h <= ry) {
-				// Sommet dans l'ellipse (cône très plat) : on ne voit que son contour
-				lines.push(plainArc(arc(0, 0, r, ry, 0, 2 * Math.PI)));
-			} else {
-				// Points de tangence depuis le sommet : y = ry² / h
-				const t = Math.asin(ry / h);
-				lines.push(plainArc(arc(0, 0, r, ry, t, Math.PI - t), back));
-				lines.push(plainArc(arc(0, 0, r, ry, Math.PI - t, 2 * Math.PI + t)));
-				const foot = (s: number) => ({ x: s * r * Math.cos(t), y: ry * Math.sin(t) });
-				lines.push(segment(foot(-1), apex, false));
-				lines.push(segment(foot(1), apex, false));
-			}
+			// Points de tangence depuis le sommet (h > ry : cône trop plat refusé au parseur)
+			const t = Math.asin(ry / h);
+			lines.push(plainArc(arc(0, 0, r, ry, t, Math.PI - t), back));
+			lines.push(plainArc(arc(0, 0, r, ry, Math.PI - t, 2 * Math.PI + t)));
+			const foot = (s: number) => ({ x: s * r * Math.cos(t), y: ry * Math.sin(t) });
+			lines.push(segment(foot(-1), apex, false));
+			lines.push(segment(foot(1), apex, false));
 			if (spec.cotes) {
 				lines.push(segment({ x: 0, y: 0 }, { x: r, y: 0 }, true));
 				lines.push(segment(apex, { x: 0, y: 0 }, true));
@@ -635,7 +637,8 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 			dessus: { x: 0, y: -(COTE_GAP + halfHeight) },
 			droite: { x: COTE_GAP + halfWidth, y: 0 },
 			gauche: { x: -(COTE_GAP + halfWidth), y: 0 },
-			'bas-droite': { x: COTE_GAP + halfWidth, y: COTE_GAP }
+			// Plus bas que le milieu de la fuyante : loin du nom du sommet du fond
+			'bas-droite': { x: COTE_GAP + halfWidth, y: COTE_GAP + halfHeight / 2 }
 		}[cote.side];
 		labels.push({ at: { x: p.x + shift.x, y: p.y + shift.y }, text });
 	}

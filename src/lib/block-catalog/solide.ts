@@ -26,7 +26,7 @@ export const solideEntry: BlockCatalogEntry = {
 						'cube a | pave l p h | prisme triangle b h L | prisme triangle-rectangle a b L | pyramide carree a h | pyramide rectangle l p h | pyramide triangle a h | cylindre r h | cone r h | boule r',
 					defaultValue: null,
 					description:
-						'Le solide et ses dimensions (nombres positifs, 4 ou 2,5). Pavé : longueur (devant), largeur (en fuyante), hauteur. Prisme : la base est la face de devant, un triangle isocèle de base b et de hauteur h, ou un triangle rectangle en bas à gauche de côtés a et b ; L est la longueur en fuyante. Pyramide : base horizontale, sommet au-dessus de son centre. Cylindre et cône debout. Au plus 20 fois plus grandes les unes que les autres.'
+						'Le solide et ses dimensions (nombres positifs, 4 ou 2,5). Pavé : longueur (devant), largeur (en fuyante), hauteur. Prisme : la base est la face de devant, un triangle isocèle de base b et de hauteur h, ou un triangle rectangle en bas à gauche de côtés a et b ; L est la longueur en fuyante. Pyramide : base horizontale, sommet au-dessus de son centre. Cylindre et cône debout. Au plus 1000, 3 chiffres après la virgule, et au plus 20 fois plus grandes les unes que les autres ; la hauteur d’un cône dépasse la moitié de son rayon.'
 				},
 				{
 					key: 'sommets',
