@@ -567,3 +567,18 @@ plus composé, en gardant l'ordre actuel :
 - Projeté orthogonal inchangé (9bea5ec2 2, f6c423de 3).
 
 8 niveaux changés → migration (comme #1998), question d'accès à trancher.
+
+**D19 (David, 2026-10-30, « oui » sur C1-C4, N1 et la question d'accès)** :
+
+- C1 : 518f7f0b v1, dernière ligne `y={{if:m==-1|x}}{{if:m==1|-x}}{{if:abs(m)>1|{{eval:-1/m}}x}}…` (12 tirages relus).
+- C2 : 71d10661 v3, fraction écrite si |u2| > 1 avec dénominateur positif (`\dfrac{t·u2·u1}{−u2}` si u2 < −1), résultat direct
+  si |u2| = 1.
+- C3 : 3a6583b5 v1, « r² = (√R)² ».
+- C4 : 49 « \,; » → « \,;\, » dans les 5 modèles de cercle.
+- Specs des 7 modèles vertes (145 specs, 1 150 tirages). Commit 7e15a6016 ; simulation `create-questions` : 7 contenus
+  différents, exactement les corrigés.
+- N1 : migration `20261030140000_questions_1spe_geometrie_reperee_niveaux` (gabarit #1998), test d'intégration vert (7),
+  rouge sans l'`update` ; `security-auditor` : aucun finding bloquant (diff avec le gabarit = les 8 lignes du lot ; après
+  `db:migrate`, vérifier `tgenabled = 'O'` du trigger `updated_at`). Question d'accès : personne (David).
+- Ordre : David lance `create-questions --publier --mettre-a-jour` (fichiers aux anciens niveaux), puis les niveaux des
+  fichiers passent aux nouvelles valeurs dans la même PR que la migration.
