@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, phase 0 du lot 5 proposée._
+_Mis à jour le 2026-10-30, lot 5 écrit._
 
 - **État** : lot 4 (problèmes, 10 modèles, § 10) **publié** en prod (2026-10-30, `publier-lot --publier` par David, 10 `published` au MCP), après relecture 10/10 OK sur la page à cocher (https://claude.ai/artifact/2bUw8csLPAx4rcotvkUjjn). Lots 0 à 4 faits.
-- **Prochaine action** : écrire le lot 5 (longueurs, 6 modèles) une fois la phase 0 (§ 11) validée ; le lot 5 bis (masses, monnaie, durées, 9 modèles) suit.
-- **En attente de David** : validation de la phase 0 du lot 5 (§ 11) et ses 4 questions.
+- **Prochaine action** : PR des fichiers du lot 5 (longueurs, 6 modèles, branche `feat/questions-ce1-lot5-longueurs`), merge, puis David crée les brouillons en prod ; ensuite migration nœud + tag. Le lot 5 bis (masses, monnaie, durées, 9 modèles) suit.
+- **En attente de David** : rien (phase 0 validée le 2026-10-30).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`). `!` de David : depuis le dépôt principal, pas `cd` vers le worktree (rien ne s'affiche ni ne s'écrit).
 
@@ -368,7 +368,7 @@ tag ne change aucune règle.
 - 2026-10-29 : 10 brouillons créés en prod par David (`dfc324b1`, `c43bd203`, `23b13821`, `612eeb31`, `93d318d1`, `f9eeeffe`, `bc521c99`, `5e469f6f`, `e4815e7f`, `584dc8b3`), vérifiés au MCP (brouillons, sans nœud ni tag, niveaux voulus). Migration `20261030004800_questions_ce1_lot4_rangement_tags` (max des worktrees + 1 min) et test : rouge sans (5 échecs sur 9), vert 9/9.
 - 2026-10-30 : #1992 mergée (CI verte, `security-auditor` sans finding bloquant) ; `db:migrate` refusé (`DbPushMissingRemoteError` : 002300 du 3e lot 3 pas joué en prod) ; rien d'appliqué (MCP : dernière jouée 004700).
 
-## 11. Lot 5 : grandeurs — phase 0 (proposée le 2026-10-30)
+## 11. Lot 5 : grandeurs — décisions (David, 2026-10-30)
 
 Relevé MCP du 2026-10-30 : aucun modèle CE1 en grandeurs ; le CP en a 22 (`Grandeurs · Longueurs | Masses | Monnaie |
 Durées`). Sous-notions toutes présentes (« Longueurs | Masses › unités et conversions | comparaison et mesure »,
@@ -412,6 +412,8 @@ tag ne change aucune règle.
 
 ### Questions à David
 
+Réponse de David : les quatre recommandations (« je valide »).
+
 1. **Deux lots** (5 longueurs, 5 bis le reste) plutôt qu'un lot de 15 ? Recommandation : oui (plafond de 10).
 2. **Ordonner quatre masses (051)** : la plus lourde et la plus légère en case choix, plutôt que quatre cases où
    recopier « 1 kg et 300 g » ? Recommandation : choix ; le rangement complet reste au BO, pas au modèle.
@@ -420,3 +422,7 @@ tag ne change aucune règle.
    Recommandation : catégories neuves.
 4. **2,20 € tapé « 2,2 »** (058) : juste comme au lot 4 (`zeros: off`), ou ambre puisque le point porte justement sur
    l'écriture à virgule ? Recommandation : juste (même règle qu'au lot 4), le corrigé écrit toujours 2,20 €.
+
+- 2026-10-30 : lot 5 écrit (`lot-ce1-5.py`, `scripts/questions/ce1-5/`), `create-questions` en simulation 6/6 (50 specs),
+  `question:specs` 200 tirages par variation, verts ; 6 brouillons en base locale ; aperçu admin : 300 m + 700 m = 1 km
+  juste, corrigé lisible ; comparer 7 m et 720 cm : « > » faux, bonne réponse « < » montrée, corrigé en cm.

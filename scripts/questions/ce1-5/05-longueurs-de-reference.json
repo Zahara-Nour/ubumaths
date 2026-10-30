@@ -1,0 +1,139 @@
+{
+	"title": "Des longueurs de référence",
+	"description": "Doigt 1 cm, porte 2 m, terrain de football 100 m, 1 km à pied en un quart d'heure",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Ordres de grandeur",
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Qu'est-ce qui mesure environ {{if:k==1|$1~\\unit{cm}$|{{if:k==2|$1~\\unit{m}$|{{if:k==3|$2~\\unit{m}$|{{if:k==4|$100~\\unit{m}$|$1~\\unit{km}$}}}}}}}} ?\n\n```choix\n- {{if:k==1|la largeur d'un doigt|{{if:k==2|la largeur d'une porte|{{if:k==3|la hauteur d'une porte|{{if:k==4|la longueur d'un terrain de football|le chemin qu'on fait à pied en un quart d'heure}}}}}}}}\n- {{if:k==1|la longueur d'un crayon|{{if:k==2|la largeur d'un doigt|{{if:k==3|la longueur d'une gomme|{{if:k==4|la longueur d'une voiture|le tour de la classe}}}}}}}}\n- {{if:k==1|la hauteur d'une porte|{{if:k==2|la longueur d'un terrain de football|{{if:k==3|la longueur d'un bus|{{if:k==4|la hauteur d'une porte|la longueur d'un crayon}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quelques longueurs à retenir : la largeur d'un doigt fait environ $1~\\unit{cm}$, la hauteur d'une porte environ $2~\\unit{m}$, un terrain de football environ $100~\\unit{m}$ ; à pied, on fait environ $1~\\unit{km}$ en un quart d'heure.",
+					"C'est {{if:k==1|la largeur d'un doigt|{{if:k==2|la largeur d'une porte|{{if:k==3|la hauteur d'une porte|{{if:k==4|la longueur d'un terrain de football|le chemin qu'on fait à pied en un quart d'heure}}}}}}}} qui mesure environ {{if:k==1|$1~\\unit{cm}$|{{if:k==2|$1~\\unit{m}$|{{if:k==3|$2~\\unit{m}$|{{if:k==4|$100~\\unit{m}$|$1~\\unit{km}$}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|La largeur d'un doigt|{{if:k==2|Une règle d'écolier|{{if:k==3|La hauteur d'une porte|{{if:k==4|Un terrain de football|{{if:k==5|Le chemin qu'on fait à pied en un quart d'heure|Le chemin qu'on fait à pied en une heure}}}}}}}}}} mesure environ…\n\n```choix\nmelanger: non\n- ${{if:k==1|1|{{if:k==2|20|{{if:k==3|2|{{if:k==4|100|{{if:k==5|1|4}}}}}}}}}}~\\unit{cm}$\n- ${{if:k==1|1|{{if:k==2|20|{{if:k==3|2|{{if:k==4|100|{{if:k==5|1|4}}}}}}}}}}~\\unit{m}$\n- ${{if:k==1|1|{{if:k==2|20|{{if:k==3|2|{{if:k==4|100|{{if:k==5|1|4}}}}}}}}}}~\\unit{km}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quelques longueurs à retenir : la largeur d'un doigt fait environ $1~\\unit{cm}$, la hauteur d'une porte environ $2~\\unit{m}$, un terrain de football environ $100~\\unit{m}$ ; à pied, on fait environ $1~\\unit{km}$ en un quart d'heure.",
+					"{{if:k==1|La largeur d'un doigt|{{if:k==2|Une règle d'écolier|{{if:k==3|La hauteur d'une porte|{{if:k==4|Un terrain de football|{{if:k==5|Le chemin qu'on fait à pied en un quart d'heure|Le chemin qu'on fait à pied en une heure}}}}}}}}}} mesure environ ${{if:k==1|1|{{if:k==2|20|{{if:k==3|2|{{if:k==4|100|{{if:k==5|1|4}}}}}}}}}}~\\unit{{{if:r==0|cm|{{if:r==1|m|km}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "environ 1 cm : le doigt",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 cm, le crayon",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "environ 1 km : un quart d'heure à pied",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 km, le tour de la classe",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "porte : 2 m",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : porte de 2 cm",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "une heure à pied : 4 km",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
