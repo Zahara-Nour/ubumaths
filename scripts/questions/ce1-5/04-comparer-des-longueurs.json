@@ -1,0 +1,225 @@
+{
+	"title": "Comparer des longueurs",
+	"description": "Deux longueurs dans deux unités : 2 m et 150 cm ; 1 m 20 cm et 125 cm ; 1 km et 900 m",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Comparaison et mesure",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Compare ces deux longueurs.\n\n$${{a}}~\\unit{m} \\quad \\ldots \\quad {{b}}~\\unit{cm}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "0..18"
+				},
+				{
+					"name": "b",
+					"expression": "eval:100*a+10*(k-9)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(100*a-b)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux longueurs dans la même unité : ${{a}}~\\unit{m} = {{eval:100*a}}~\\unit{cm}$.",
+					"$${{eval:100*a}}~\\unit{cm} {{if:r==0|<|{{if:r==1|=|>}}}} {{b}}~\\unit{cm}$$",
+					"$${{a}}~\\unit{m} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{b}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Compare ces deux longueurs.\n\n$${{a}}~\\unit{m}~{{b}}~\\unit{cm} \\quad \\ldots \\quad {{c}}~\\unit{cm}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				},
+				{
+					"name": "k",
+					"expression": "0..40"
+				},
+				{
+					"name": "c",
+					"expression": "eval:100*a+b+k-20"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(100*a+b-c)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux longueurs dans la même unité : ${{a}}~\\unit{m}~{{b}}~\\unit{cm} = {{eval:100*a}}~\\unit{cm} + {{b}}~\\unit{cm} = {{eval:100*a+b}}~\\unit{cm}$.",
+					"$${{eval:100*a+b}}~\\unit{cm} {{if:r==0|<|{{if:r==1|=|>}}}} {{c}}~\\unit{cm}$$",
+					"$${{a}}~\\unit{m}~{{b}}~\\unit{cm} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{c}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Compare ces deux longueurs.\n\n$$1~\\unit{km} \\quad \\ldots \\quad {{b}}~\\unit{m}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..20"
+				},
+				{
+					"name": "b",
+					"expression": "eval:50*k"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(1000-b)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux longueurs dans la même unité : $1~\\unit{km} = 1\\,000~\\unit{m}$.",
+					"$$1\\,000~\\unit{m} {{if:r==0|<|{{if:r==1|=|>}}}} {{b}}~\\unit{m}$$",
+					"$$1~\\unit{km} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{b}}~\\unit{m}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 m > 150 cm",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "4",
+				"b": "150",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 m < 150 cm (nombres seuls)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "4",
+				"b": "150",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 m = 300 cm",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "9",
+				"b": "300",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 m 20 cm < 125 cm",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "20",
+				"k": "25",
+				"c": "125",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 m 20 cm > 125 cm",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "20",
+				"k": "25",
+				"c": "125",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 km > 900 m",
+			"variationIndex": 2,
+			"variables": {
+				"k": "18",
+				"b": "900",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 km < 900 m",
+			"variationIndex": 2,
+			"variables": {
+				"k": "18",
+				"b": "900",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 km = 1 000 m",
+			"variationIndex": 2,
+			"variables": {
+				"k": "20",
+				"b": "1000",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

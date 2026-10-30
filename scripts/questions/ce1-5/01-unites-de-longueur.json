@@ -1,0 +1,183 @@
+{
+	"title": "Les unités de longueur : km, m, cm",
+	"description": "Symbole et sens de km, m, cm ; la plus grande et la plus petite des trois unités",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 5,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel est le symbole du {{if:k==1|kilomètre|{{if:k==2|mètre|centimètre}}}} ?\n\n```choix\n- km\n- m\n- cm\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le kilomètre s'écrit km, le mètre s'écrit m, le centimètre s'écrit cm.",
+					"Le {{if:k==1|kilomètre|{{if:k==2|mètre|centimètre}}}} s'écrit **{{if:k==1|km|{{if:k==2|m|cm}}}}**."
+				]
+			}
+		},
+		{
+			"statement": "Que veut dire le symbole **{{if:k==1|km|{{if:k==2|m|cm}}}}** ?\n\n```choix\n- kilomètre\n- mètre\n- centimètre\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"km veut dire kilomètre, m veut dire mètre, cm veut dire centimètre.",
+					"**{{if:k==1|km|{{if:k==2|m|cm}}}}** veut dire **{{if:k==1|kilomètre|{{if:k==2|mètre|centimètre}}}}**."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la plus {{if:s==1|grande|petite}} de ces unités de longueur ?\n\n```choix\n- le kilomètre (km)\n- le mètre (m)\n- le centimètre (cm)\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..2"
+				},
+				{
+					"name": "r",
+					"expression": "eval:2*(s-1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{km} = 1\\,000~\\unit{m}$ et $1~\\unit{m} = 100~\\unit{cm}$.",
+					"Le kilomètre est la plus grande, le centimètre la plus petite : la plus {{if:s==1|grande est le **kilomètre**|petite est le **centimètre**}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "symbole du kilomètre : km",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : kilomètre → m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "symbole du centimètre : cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "cm veut dire centimètre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cm lu kilomètre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "la plus grande : km",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "la plus petite : cm",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus petite → km",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
