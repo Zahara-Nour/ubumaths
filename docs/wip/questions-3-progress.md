@@ -5,17 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 4a écrit (§ 11.7)._
+_Mis à jour le 2026-10-30, après #2015._
 
-- **État** : lots 0 à 3 publiés ; lot 4a (fonctions, 8 modèles, § 11) écrit, essayé en local, PR des fichiers.
-- **Prochaine action** : merger la PR des fichiers ; puis David lance
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-4a --publier` (brouillons en prod) ;
-  relever les `id`, migration nœud + tag (gabarit `lot-rangement-3-3.py`, nœuds au § 11).
-- **En attente de David** : le `--publier` ci-dessus, après le merge.
+- **État** : lots 0 à 3 publiés ; lot 4a (fonctions, 8 modèles, § 11) mergé (#2015), pas encore en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-4a
+--publier` (brouillons en prod) ; relever les `id` au MCP ; migration nœud + tag (gabarit
+  `lot-rangement-3-3.py`, nœuds au § 11) dans un worktree neuf ; page à cocher ; publication. Puis lot 4b (§ 11.2).
+- **En attente de David** : le `--publier` ci-dessus.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; tableau avec une case : pas de `\hline` ; une moitié attendue
-  refuse 0,5 ; aperçu admin sur `127.0.0.1` (`--host 127.0.0.1`), pas `localhost`.
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, `content/questions-3-lot4a`. Ensuite : lot 4b (§ 11.2).
+  refuse 0,5 ; aperçu admin sur `127.0.0.1` (`--host 127.0.0.1`), pas `localhost` ; worktree neuf :
+  `svelte-kit sync` avant les scripts `tsx`.
+- **Worktree / branche** : aucun (retiré après #2015).
 
 ## 1. Relevé (prod, 2026-10-28)
 
