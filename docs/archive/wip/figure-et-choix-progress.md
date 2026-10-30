@@ -1,30 +1,31 @@
 ---
 title: Figure manipulable partout et case « choix » (QCM réécrit en cases)
 date: 2026-10-26
-status: lot 1 terminé (#1816, #1822), lot 2 à faire
+status: clos le 2026-10-30 (#2009, #2013)
 ---
 
 # Chantier « figure-et-choix »
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1973._
+_Mis à jour le 2026-10-30, après #2013. **Chantier CLOS**, journal archivé._
 
-- **État** : lots 1 à 5 EN PROD (v0.55.0). Lot 6 (`deplacable:` / `rendu:` dans tout ```figure à l'écran,
-  § 2.14) MERGÉ (#1973), pas encore en prod. Worktree retiré. Les 6 lots du § 2.5 sont faits.
-- **Prochaine action** : après le PROCHAIN `deploy:prod` (qui livre #1950 et #1973) : migration qui supprime
-  la colonne vide `question_templates.multiple_answers` (destructive : arrêt et explication), puis retirer
-  `multiple_answers: null` des faux modèles de tests ; ensuite clore le chantier (versement dans `docs/systeme/`).
-- **En attente de David** : vérif de la figure à manipuler (iPhone, cadre de la toile) dans
-  `verifications-manuelles.md` ; publication de CP-058 (`a7dfe502`, brouillon) ; avis sur les séries PDF ;
-  fiche `/aide-ecriture/blocs/figure-de-travail` (403 en admin, à voir en prof) ; vérifs restantes (série PDF,
-  verdict ½, éditeur de tests, 15 brouillons lycée).
-- **Pièges en cours** : 6 modèles `cp-b2` : `level` prod ≠ source. `corrections.test.ts` (R-PASS) instable
-  en CI. `migration_images` reste (hors champ).
+- **État** : les 6 lots du § 2.5 sont EN PROD (v0.57.1, 2026-10-30). Colonne `question_templates.multiple_answers`
+  supprimée en prod (#2009, `db:migrate`), types régénérés (#2013). Le durable vit dans l'ADR 0033,
+  `docs/systeme/ubumark.md`, `questions.md`, `geometrie/README.md` et `fiches-et-pdf.md`.
+- **Prochaine action** : aucune.
+- **Laissé à David** : vérifs de `docs/wip/verifications-manuelles.md` (figure à manipuler sur iPhone, QCM migrés,
+  CP-058 sur tablette, éditeur de case choix) ; publication de CP-058 (`a7dfe502`, brouillon) ; avis sur les
+  séries PDF ; fiche `/aide-ecriture/blocs/figure-de-travail` (403 en admin, à voir en prof).
+- **Restes connus** : 6 modèles `cp-b2` : `level` prod ≠ source. `corrections.test.ts` (R-PASS) instable en CI.
+  `migration_images` reste (hors champ).
 - **Worktree / branche** : aucun.
 
 ## Historique
 
+- 2026-10-30 — **v0.57.1 en prod** (#1950 et #1973 livrées) ; **#2009** colonne `multiple_answers` supprimée
+  (vide sur les 1 418 modèles, aucune fonction ni vue ne la lisait ; validée par David), `db:migrate` joué ;
+  **#2013** `db:types` et faux modèles de tests nettoyés. Chantier clos, journal archivé.
 - 2026-10-29 — **v0.55.0 en prod** (lots 5a + 5b) ; **#1950 mergée** et migration jouée en prod (QCM et
   import TinyMath retirés de la base) ; **#1954** types régénérés. Vérifs Chrome : rien de cassé (QCM migrés,
   éditeur de case choix, CP-058).

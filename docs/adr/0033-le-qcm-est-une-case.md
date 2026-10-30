@@ -1,7 +1,7 @@
 # 0033 — Le QCM est une case : la case choix remplace le type `multiple_choice`
 
 - **Statut** : acceptée — mise en œuvre en cours (chantier figure-et-choix ; journal :
-  `docs/wip/figure-et-choix-progress.md`)
+  `docs/archive/wip/figure-et-choix-progress.md`)
 - **Date** : 2026-10-26 · **Décidée par** : David (décision 3 et questions Q1-Q3, Q6 du chantier)
 
 ## Contexte

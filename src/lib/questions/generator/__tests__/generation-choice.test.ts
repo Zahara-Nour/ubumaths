@@ -2,7 +2,7 @@
  * Case « choix » (bloc ```choix) : numérotation, génération, validation du modèle
  * ================================================================================
  *
- * Spécification : `docs/wip/figure-et-choix-progress.md` § 2.1 et § 2.6 (validée
+ * Spécification : `docs/archive/wip/figure-et-choix-progress.md` § 2.1 et § 2.6 (validée
  * par David le 2026-10-26). La case est positionnelle (`blanks[i]`), sa bonne
  * réponse = indice(s) d'ORIGINE en chaîne (`"1"`, `"0;2"`, `{{eval:…}}`).
  */
