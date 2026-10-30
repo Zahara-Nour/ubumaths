@@ -9,8 +9,8 @@ _Mis à jour le 2026-10-30, après #2011 (rangement du lot 4 joué en prod)._
 
 - **État** : lots 1 à 3 en prod (lot 1 en brouillon, lots 2 et 3 publiés) ; lot 4 : 7 brouillons en prod, rangés et
   tagués (#2011, migration jouée et vérifiée, § 23).
-- **Prochaine action** : relecture des 7 fiches du lot 4 (page à cocher, ou `/dev/modeles`), puis `publier-lot.ts
---dir scripts/questions/4-lot-4 --publier` par David.
+- **Prochaine action** : David relit le lot 4 sur https://claude.ai/artifact/11umi3mJXCS5wjM41tcN3h ; lire et
+  compter les verdicts en base, puis `publier-lot.ts --dir scripts/questions/4-lot-4 --publier` par David.
 - **En attente de David** : « fᵢ » et « graine » du bloc ` ```simulation ` (§ 21 : garder, ou tableau d'effectifs
   écrit) ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
@@ -605,3 +605,9 @@ Pythagore (4-034, côté manquant) n'a **aucun modèle en prod** (MCP du 2026-10
 publié Thalès et trigonométrie (lot 3 de `questions-3`, 6 modèles), qui le supposent acquis : le lot 7 « Pythagore et
 triangles » (§ ci-dessus) est le maillon manquant du cycle 4 en géométrie. Gabarit : `docs/wip/questions/lot-3-3.py`
 (figures ` ```figure ` à l'échelle, angle droit codé, lettres tirées en trois jeux, longueur arrondie au dixième en `;d`).
+
+## 24. Lot 4 : relecture (2026-10-30)
+
+- Page à cocher : https://claude.ai/artifact/11umi3mJXCS5wjM41tcN3h (7 fiches, capacité `db`, base `verdicts` vide
+  à la publication) ; alertes attendues « bloc non dessiné » : `probtree` (4-049), `barres` et `simulation` (4-050),
+  `simulation` (4-051) : les jouer dans l'aperçu admin.
