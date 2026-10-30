@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après la publication du lot 0-géométrie repérée._
+_Mis à jour le 2026-10-30, après #2026 (lot 0-probabilités)._
 
-- **État** : lots 0-suites, 0-second-degré, 0-dérivation, 0-variations, 0-exponentielle, 0-trigo, 0-produit scalaire et 0-géométrie repérée (§ 13, 12 modèles) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
-- **Prochaine action** : lot 0-probabilités (brouillons tagués d'un point de probabilités conditionnelles : instantané, specs, bornes, constats, simulation `publier-lot`). Ensuite variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : rien.
-- **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; `db:migrate` qui joue les migrations d'autres sessions → refusé par le classifieur, David le lance avec `!` ; horodatage de migration : vérifier `migration list --linked` ET les worktrees avant de choisir ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file` (pas `pnpm -s`), une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main`.
-- **Worktree / branche** : aucun (retiré après #2018) ; la page à cocher se fait depuis le dépôt principal (aucun code à écrire).
+- **État** : lots 0-suites → 0-géométrie repérée publiés ; lot 0-probabilités (§ 14, 8 brouillons) : C1-C2 corrigés (#2026, mergée), page à cocher relue 8 « ok » / 8, **pas encore en prod**. 174e202b et dc4b8d08 restent en brouillon (l1s-3).
+- **Prochaine action** : vérifier en prod (MCP) que David a lancé, depuis le worktree, `create-questions --dir scripts/questions/1spe-0-probabilites --publier --mettre-a-jour` (3 modèles : `;d` et « nombre décimal exact » dans `variations`) puis `publier-lot --publier` (8 `published`) ; noter au § 14, « Reprendre ici », retirer le worktree. Ensuite lot 0-variables aléatoires (17 brouillons du domaine « Variables aléatoires »), logique, puis la migration des tags D3.
+- **En attente de David** : les deux commandes ci-dessus (`!`, depuis `/Users/david/Coding/js/ubumaths-wt-questions-1spe`).
+- **Pièges en cours** : `create-questions` refusé au mode auto **même en simulation** ; `publier-lot` = tout le dossier ou rien ; `db:migrate` d'autres sessions → David ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` (source montrée) ; `question:specs --file`, une copie par variation pour l'aperçu ; `{{eval:…}}` rend une fraction, `;d` un décimal ; instantané créé **dans le worktree**, jamais dans le dépôt principal (copie non suivie qui bloque `pull`) ; index du dépôt principal : celui d'autres sessions possible, ne jamais y toucher.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, détaché sur `origin/main` (branche `fix/questions-1spe-probabilites` mergée) ; gardé jusqu'aux deux commandes de David.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -634,3 +634,10 @@ au centième ou au millième dits dans l'énoncé.
   69a05f98 v0-v1 : « P_B(A) = 0,05 ÷ 0,86 = 5/86 ». Réponses attendues inchangées (les deux écritures restent acceptées).
 - C2 : 5ba712bc v0-v1 et 6dd2f133 v0-v1 : « Réponds par une fraction irréductible ou par un nombre décimal exact. » ;
   69a05f98 (résultat rarement décimal) et les variations à données fractionnaires gardent « fraction irréductible ».
+
+**Corrections (#2026, mergée, CI verte)** : instantané commité, puis C1 (`;d` sur produits et sommes, fraction en fin de ligne) et
+C2 (consigne) sur 5ba712bc, 69a05f98, 6dd2f133 ; specs vertes (45 specs, 400 tirages), 120 tirages relus : aucune fraction en
+cours de calcul sur données décimales. Simulation `create-questions` refusée par le classifieur du mode auto.
+
+**Page à cocher** : https://claude.ai/artifact/XR1ERELguKs1azqaCqVjA9 (8 fiches, 20 exemples ; 5 alertes « probtree non
+dessiné », arbres montrés en source). **Relecture (David, 2026-10-30)** : 8 « ok » sur 8, aucun commentaire.
