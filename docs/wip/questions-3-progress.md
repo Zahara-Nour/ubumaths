@@ -5,17 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2015._
+_Mis à jour le 2026-10-30, PR #2024 (rangement 4a) ouverte._
 
-- **État** : lots 0 à 3 publiés ; lot 4a (fonctions, 8 modèles, § 11) : 8 brouillons en prod (`id` au § 11.8).
-- **Prochaine action** : migration nœud + tag (gabarit
-  `lot-rangement-3-3.py`, nœuds au § 11) dans un worktree neuf ; page à cocher ; publication. Puis lot 4b (§ 11.2).
-- **En attente de David** : rien.
+- **État** : lots 0 à 3 publiés ; lot 4a (fonctions, 8 brouillons en prod, § 11.8) : migration de rangement
+  `20261030162000` écrite et prouvée (§ 11.9), PR #2024.
+- **Prochaine action** : merge, puis `pnpm db:migrate --include-all` (David, avec `!`) depuis le dépôt principal ;
+  vérif MCP ; page à cocher ; publication. Puis lot 4b (§ 11.2).
+- **En attente de David** : le `db:migrate` après merge.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; tableau avec une case : pas de `\hline` ; une moitié attendue
   refuse 0,5 ; aperçu admin sur `127.0.0.1` (`--host 127.0.0.1`), pas `localhost` ; worktree neuf :
   `svelte-kit sync` avant les scripts `tsx`.
-- **Worktree / branche** : aucun (retiré après #2015).
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, `feat/questions-3-lot4a-rangement`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -583,3 +584,13 @@ modèles publiés de plus. Aucune règle ne change.
   (représentations, 3-039) · d820232a-62a0-422f-9c08-33b279258af1 (image et antécédent, 3-040) ·
   c64028b0-2001-4320-a02b-5d0692089d1a (ordonnée, 3-045, niv. 2) · 0d0e88f5-3825-418f-b12b-d6e541fbecba
   (coefficient entier, 3-067, niv. 3) · b9771108-fe6a-4f37-8b49-671b5627f5d3 (coefficient fraction, 3-067, niv. 4).
+
+### 11.9 Lot 4a : rangement écrit (2026-10-30)
+
+- Relevé `etat-prod-2026-10-30-3e-lot4a/` (`releve-prod-3.ts`, colonne `multiple_answers` retirée de la
+  lecture : supprimée en #2009) : 8 brouillons, sans nœud ni tag, niveaux 1-1-1-1-1-2-3-4 conformes au § 11.8.
+- Migration `20261030162000_questions_3_lot4a_rangement_tags` (`lot-rangement-3-4a.py`) : chacun sur le nœud
+  de son point (§ 11), 8 tags posés (3-067 pour 0d0e88f5 et b9771108). Horodatage pris après `20261030161000`
+  (ce2 lot 4), le plus récent de toutes les branches.
+- Test `questions-3-lot4a-rangement-tags` : 19 verts ; corps de la migration vidé : 8 rouges.
+- PR #2024.
