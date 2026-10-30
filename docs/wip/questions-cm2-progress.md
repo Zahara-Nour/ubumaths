@@ -8,11 +8,11 @@
 
 _Mis à jour le 2026-10-30, après #2005._
 
-- **État** : lots 1 (8/8, 7d258acc publié le 2026-10-30) et 2 (5/5) publiés. **Lot 3** mergé (#2005), 5 brouillons créés en prod (sans nœud ni tag) : `a4cf5fc5` multiplication à trou (CM2-149), `116f68ad` ajouter 9/19/99 (CM2-045), `da5fdca4` soustraire 9/19/99 (CM2-150), `1f2d5097` diviser par 4 (CM2-050), `3b691903` diviser par 8 (CM2-151).
-- **Prochaine action** : nouveau worktree `feat/questions-cm2-lot3-rangement` → migration : nœud + tag des 5 brouillons (§ 8.1), CM2 ajouté aux niveaux de `8fee3492` (tables d'addition, CM1-035 → + CM2-035), `f24bb468` (terme manquant, CM1-161 → + CM2-148), `50a9d91c` (tables de multiplication, CM1-036 → + CM2-036), tags CM1 gardés → test rouge sans, `security-auditor`, PR, `db:migrate` → page à cocher. Question d'accès déjà tranchée (phase 0).
+- **État** : lots 1 et 2 publiés. Lot 3 : 5 brouillons en prod (#2005) ; migration de rangement `20261030150000` écrite et testée (§ 8.3), PR en cours.
+- **Prochaine action** : `security-auditor` → PR → CI verte → merge → `db:migrate` depuis le dépôt principal → vérifier au MCP (5 nœuds + tags, 3 modèles {CM1,CM2} + 2 tags chacun) → page à cocher du lot 3.
 - **En attente de David** : rien.
 - **Pièges en cours** : `curriculum_points` n'a pas de colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
-- **Worktree / branche** : aucun (lot 3 retiré) ; à créer.
+- **Worktree / branche** : `ubumaths-wt-questions-cm2` · `feat/questions-cm2-lot3-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -342,3 +342,9 @@ Recommandations suivies (« je te suis ») : les tables (CM2-035, 148, 036) repr
 - Script `lot-cm2-3.py` → `scripts/questions/cm2-3/` (5 fichiers) ; `question:specs` 300 tirages par variation, tout vert ; `create-questions` en simulation (prod) : 5 à créer.
 - Pièges : énoncé sans `?` → « Blank count mismatch » (`$$… = ?$$`) ; quotient décimal → `{{eval:n/4;d}}` (sinon `bad_form`), virgule à l'affichage et dans la correction ; specs de 4 chiffres et plus écrites avec espaces (règle de l'école, sinon `unoptimal_form`).
 - Local (port 5183, `admin@local.test`, Playwright iPhone 13) : 333 ÷ 4 → « 83,25 » juste, « 83 » faux ; 4 832 − 98 → « 4 734 » juste, « 4734 » ½ point (espaces) ; corrections relues dans le DOM (82,5 ; 4 832 − 100 = 4 732).
+
+### 8.3 Lot 3 : rangement (2026-10-30)
+
+- Relevé prod (MCP) : 5 brouillons [CM2] sans nœud ni tag ; `8fee3492`, `f24bb468`, `50a9d91c` publiés [CM1], chacun sur la sous-notion « tables » de ses deux points (CM1 et CM2), un seul tag CM1.
+- Migration `20261030150000_questions_cm2_lot3_rangement_tags.sql`, écrite à la main (deux familles dans une table : `code_cm1` nul = brouillon neuf) : gardes de relevé, résolution stricte, `updated_at` préservé, rollback gardé (nœud, niveaux, tags exacts). Test `questions-cm2-lot3-rangement-tags` : 14 verts ; corps remplacé par `select 1;` → 6 rouges et le premier bloc tombe au `beforeAll` (la garde du rollback refuse l'état non migré).
+- `security-auditor` : aucun finding bloquant. Pris en compte : la garde du rollback vérifie aussi le statut (un brouillon publié depuis ne serait pas laissé publié sans nœud), test ajouté. À vérifier après `db:migrate` : `tgenabled = 'O'` pour `update_question_templates_updated_at`.
