@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #1992 et le `db push --include-all` de David._
+_Mis à jour le 2026-10-30, lot 4 publié._
 
-- **État** : lot 4 (problèmes, 10 modèles, § 10) : brouillons en prod, rangés et tagués (migration `20261030004800` jouée par David avec `--include-all`, qui a aussi joué 002300 et 004900 ; vérifié au MCP : 10 sur leur nœud, 1 tag chacun, brouillons, `updated_at` inchangé). Page à cocher publiée : https://claude.ai/artifact/2bUw8csLPAx4rcotvkUjjn (0 verdict au départ).
-- **Prochaine action** : lire les verdicts (ArtifactData `verdicts`), corriger les modèles signalés (`--mettre-a-jour` par David) ; puis `publier-lot --dir scripts/questions/ce1-4` en simulation, David `--publier`.
-- **En attente de David** : la relecture du lot 4 sur la page à cocher.
+- **État** : lot 4 (problèmes, 10 modèles, § 10) **publié** en prod (2026-10-30, `publier-lot --publier` par David, 10 `published` au MCP), après relecture 10/10 OK sur la page à cocher (https://claude.ai/artifact/2bUw8csLPAx4rcotvkUjjn). Lots 0 à 4 faits.
+- **Prochaine action** : lot 5, grandeurs (§ 3 A : longueurs 041-043, 045-047 ; masses 049-052, 085 ; monnaie 053, 058 ; durées 061, 062) ; écrire sa phase 0 (nouvelle § 11) et la soumettre à David.
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`). `!` de David : depuis le dépôt principal, pas `cd` vers le worktree (rien ne s'affiche ni ne s'écrit).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
