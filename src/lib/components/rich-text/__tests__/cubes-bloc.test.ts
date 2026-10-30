@@ -33,3 +33,12 @@ describe('bloc ```cubes — aller-retour de l’éditeur riche', () => {
 		expect(out).toContain('hauteurs: 2 1');
 	});
 });
+
+describe('bloc ```solide — aller-retour de l’éditeur riche', () => {
+	it('repart en ```solide identique, en erreur aussi', () => {
+		const md = '```solide\nforme: pave 4 2 3\nsommets: A B C D E F G H\n```';
+		expect(tipTapToMarkdown(markdownToTipTap(md)).trim()).toBe(md);
+		const json = markdownToTipTap('```solide\nforme: sphere 3\n```');
+		expect(json.content?.[0]?.attrs).toEqual({ language: 'solide' });
+	});
+});

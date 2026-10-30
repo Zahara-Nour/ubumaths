@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30.
 
 ## À quoi ça sert
 
@@ -184,24 +184,24 @@ Un bloc spécial est une fence dont le langage est un mot réservé. Ouverture *
 oui, ` ```linear ` non : bloc de code ordinaire). Ils sont reconnus au premier niveau **et**
 en retrait sous un item de liste.
 
-| Fence                                                                                                                     | Nœud (`type`)               | Parseur (`src/lib/ubumark/parser/`) | Rendu écran                      | Générateur PDF                               |
-| ------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------------------- | -------------------------------- | -------------------------------------------- |
-| `variation`                                                                                                               | `variation-table`           | `variation-table-parser.ts`         | `VariationTable.svelte`          | `variation-table-typst.ts`                   |
-| `probtree`                                                                                                                | `probability-tree`          | `probability-tree-parser.ts`        | `ProbabilityTree.svelte`         | `probability-tree-typst.ts`                  |
-| `trig`                                                                                                                    | `trig-circle`               | `trig-circle-parser.ts`             | `TrigCircle.svelte`              | `trig-circle-typst.ts`                       |
-| `line`                                                                                                                    | `number-line`               | `number-line-parser.ts`             | `NumberLine.svelte`              | `number-line-typst.ts`                       |
-| `courbe`                                                                                                                  | `courbe`                    | `courbe-parser.ts`                  | `Courbe.svelte`                  | `courbe-typst.ts`                            |
-| `figure`, `figure-a-completer`, `figure-de-travail`                                                                       | `figure`                    | `figure-parser.ts`                  | `FigureBlock.svelte`             | `figure-typst.ts` (via registre)             |
-| `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`              | `StatChart.svelte`               | `stat-chart-typst.ts`                        |
-| `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                      | `QrBlock.svelte`                 | `qr-typst.ts`                                |
-| `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                 | `Horloge.svelte`                 | `horloge-typst.ts`                           |
-| `operation`                                                                                                               | `operation`                 | `operation-parser.ts`               | `Operation.svelte`               | `operation-typst.ts`                         |
-| `collection`                                                                                                              | `collection`                | `collection-parser.ts`              | `Collection.svelte`              | `collection-typst.ts`                        |
-| `monnaie`                                                                                                                 | `monnaie`                   | `monnaie-parser.ts`                 | `Monnaie.svelte`                 | `monnaie-typst.ts`                           |
-| `partage`                                                                                                                 | `partage`                   | `partage-parser.ts`                 | `Partage.svelte`                 | `partage-typst.ts`                           |
-| `cubes` (nœud `espace`, un genre par clôture)                                                                             | `espace`                    | `espace-parser.ts`                  | `Espace.svelte` + `Cubes.svelte` | `espace-typst.ts`                            |
-| `choix` (clôture ```` si un choix contient un bloc)                                                                       | `choice`                    | `choix-parser.ts`                   | `ChoiceBlock.svelte`             | `typst-generator.ts` (« A) … »)              |
-| `ranger`                                                                                                                  | `ranger`                    | `ranger-parser.ts`                  | `RangerPlacer.svelte`            | `typst-generator.ts` (`generateRangerTypst`) |
+| Fence                                                                                                                     | Nœud (`type`)               | Parseur (`src/lib/ubumark/parser/`)       | Rendu écran                                        | Générateur PDF                               |
+| ------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------------------------- | -------------------------------------------------- | -------------------------------------------- |
+| `variation`                                                                                                               | `variation-table`           | `variation-table-parser.ts`               | `VariationTable.svelte`                            | `variation-table-typst.ts`                   |
+| `probtree`                                                                                                                | `probability-tree`          | `probability-tree-parser.ts`              | `ProbabilityTree.svelte`                           | `probability-tree-typst.ts`                  |
+| `trig`                                                                                                                    | `trig-circle`               | `trig-circle-parser.ts`                   | `TrigCircle.svelte`                                | `trig-circle-typst.ts`                       |
+| `line`                                                                                                                    | `number-line`               | `number-line-parser.ts`                   | `NumberLine.svelte`                                | `number-line-typst.ts`                       |
+| `courbe`                                                                                                                  | `courbe`                    | `courbe-parser.ts`                        | `Courbe.svelte`                                    | `courbe-typst.ts`                            |
+| `figure`, `figure-a-completer`, `figure-de-travail`                                                                       | `figure`                    | `figure-parser.ts`                        | `FigureBlock.svelte`                               | `figure-typst.ts` (via registre)             |
+| `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`                    | `StatChart.svelte`                                 | `stat-chart-typst.ts`                        |
+| `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                            | `QrBlock.svelte`                                   | `qr-typst.ts`                                |
+| `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                       | `Horloge.svelte`                                   | `horloge-typst.ts`                           |
+| `operation`                                                                                                               | `operation`                 | `operation-parser.ts`                     | `Operation.svelte`                                 | `operation-typst.ts`                         |
+| `collection`                                                                                                              | `collection`                | `collection-parser.ts`                    | `Collection.svelte`                                | `collection-typst.ts`                        |
+| `monnaie`                                                                                                                 | `monnaie`                   | `monnaie-parser.ts`                       | `Monnaie.svelte`                                   | `monnaie-typst.ts`                           |
+| `partage`                                                                                                                 | `partage`                   | `partage-parser.ts`                       | `Partage.svelte`                                   | `partage-typst.ts`                           |
+| `cubes`, `solide` (nœud `espace`, un genre par clôture)                                                                   | `espace`                    | `espace-parser.ts` (+ `solide-parser.ts`) | `Espace.svelte` + `Cubes.svelte` / `Solide.svelte` | `espace-typst.ts`                            |
+| `choix` (clôture ```` si un choix contient un bloc)                                                                       | `choice`                    | `choix-parser.ts`                         | `ChoiceBlock.svelte`                               | `typst-generator.ts` (« A) … »)              |
+| `ranger`                                                                                                                  | `ranger`                    | `ranger-parser.ts`                        | `RangerPlacer.svelte`                              | `typst-generator.ts` (`generateRangerTypst`) |
 
 Bloc ```choix (case « choix » d'une question, [questions.md](questions.md)) : réglages en tête
 (`plusieurs:`, `melanger:`, `case:` posée par le générateur), un choix par ligne `- …`, suite en
@@ -559,9 +559,8 @@ vue: face
 ```
 ````
 
-Un seul nœud `espace` (`types/espace.ts`) pour les blocs d'espace : `EspaceSpec` est une union sur `kind`,
-au lot 1 seulement `cubes` (les genres `solide` et `patron` viendront ; `parser/espace-parser.ts`
-reconnaîtra leurs clôtures). `hauteurs:` (obligatoire) : rangées séparées par `/` ou une par ligne en retrait
+Un seul nœud `espace` (`types/espace.ts`) pour les blocs d'espace : `EspaceSpec` est une union sur `kind`
+(`CubesSpec | SolideSpec` ; `patron` viendra), `genre` = le mot de clôture. `hauteurs:` (obligatoire) : rangées séparées par `/` ou une par ligne en retrait
 sous la clé ; la première rangée est **au fond**, la dernière **devant** ; hauteurs entières de 0 à 6, au
 plus 6 rangées × 6 colonnes, rangées de même longueur. Les rangées et colonnes entièrement vides **au bord**
 sont retirées (une variable à 0 ne décale pas le dessin), un trou intérieur reste. `vue:` : `perspective`
@@ -600,6 +599,39 @@ droite. » (une par vue fausse) + l'assemblage du bloc, et « Il y a d'autres r�
 descendre d'un cube seule) ; vide : « Tu n'as rien colorié. » / « Tu n'as pas rempli toutes les cases. ». PDF
 (`generateEspaceTypst(node, { solved })`) : figures côte à côte, titrées ; quadrillage vide ou vue grisée,
 vue de dessus vide ou hauteurs écrites. Le corrigé (`solved`) est prêt mais **pas encore branché** dans la fiche (`typst-generator.ts` appelle sans option), comme pour ``partage.
+
+**Solide en perspective cavalière** (chantier [solides](../wip/solides-progress.md), lot 3 : affichage, § 8 du
+journal) — `src/lib/ubumark/__tests__/espace/solide-*.test.ts` :
+
+````text
+```solide
+forme: pave 4 2 3
+sommets: A B C D E F G H
+marquer: face EFGH, arete AE, sommet G
+cotes: cm
+```
+````
+
+Même nœud `espace`, genre `solide`, lu par `parser/solide-parser.ts` (`SolideSpec` : `form`, `dims`, `names`,
+`marks`, `cotes`, `hidden`). `forme:` (obligatoire) : `cube a`, `pave l p h`, `prisme triangle b h L`
+(isocèle), `prisme triangle-rectangle a b L` (base = face de devant, vraie grandeur), `pyramide carree a h`,
+`pyramide rectangle l p h`, `pyramide triangle a h` (équilatérale), `cylindre r h`, `cone r h`, `boule r` ;
+nombres > 0, virgule ou point, rapport ≤ 20 (`SOLIDE_MAX_RATIO`). Les dimensions sont des **proportions** : le
+dessin est ramené à `SOLIDE_SIZE` = 4 cm sur son plus grand côté. `sommets:` : un nom par sommet (majuscule,
+puis `'` ou un nombre ; `-` sans nom) dans l'ordre de `solideTopology` — cube, pavé ABCD en **bas** (A devant
+gauche, sens direct), EFGH au-dessus (E sur A) ; prisme ABC devant, DEF derrière ; pyramide S puis la base ;
+cône S, O ; cylindre O, O' ; boule O (un centre nommé reçoit un point). `marquer:` (virgules) : `face ABCD`
+(n'importe quel ordre) ou `face dessus` (places `devant | derriere | dessus | dessous | gauche | droite` de
+`topology.places`), `arete AE`, `sommet G` ; solides ronds : sommets seulement. `cotes: cm | mm | m | oui |
+non` ; `cachees: non` → tout en plein. Scène `utils/espace-solides.ts` (calcul pur, écran = PDF) : polyèdre →
+arête cachée (tirets) quand toutes ses faces tournent le dos à l'œil (`TOWARD_EYE`, normales sortantes) ;
+cylindre / cône / boule → ellipses **à plat** (`ELLIPSE_RATIO` 0,3, comme le CP), moitié arrière en tirets,
+génératrices du cône **tangentes** (`asin(ry / h)`) ; nom d'un sommet posé dans le plus grand angle libre
+entre ses arêtes (`freeDirection`), un centre à gauche ; cotes à la française, hauteurs (pyramide, cône,
+prisme isocèle) et rayons intérieurs en tirets. Ordre de dessin : face marquée (gris translucide), tirets,
+traits, arêtes marquées (épaisses), points, étiquettes. Nom accessible (`solideLabel`) : « Solide en
+perspective cavalière » + marques et cotes, **jamais le nom du solide** (réponse de « nommer le solide »).
+PDF : Typst natif (`curve`, `dash`, `polygon` gris). Fiche du catalogue : `src/lib/block-catalog/solide.ts`.
 
 **Opération posée en colonnes** (chantier [operations-posees](../archive/wip/operations-posees-progress.md),
 addition, soustraction, multiplication, division en potence) — `src/lib/ubumark/__tests__/operation/` :

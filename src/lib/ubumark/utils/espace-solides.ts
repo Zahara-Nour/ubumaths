@@ -357,6 +357,8 @@ interface Draft {
 	vertices: EspacePoint[];
 	/** Sommets qui sont des centres (étiquette à gauche, point si nommé) */
 	centers: number[];
+	/** Arêtes (polyèdres) : un nom se pose dans le plus grand angle libre entre elles */
+	edges: [number, number][];
 	cotes: Cote[];
 }
 
@@ -394,9 +396,14 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 	if (spec.cotes) {
 		const [d0, d1, d2] = spec.dims;
 		const v = vertices;
-		const height = (apex: EspacePoint, foot: EspacePoint, value: number) => {
+		/**
+		 * Hauteur en tirets ; sa cote à la fraction `along` du pied vers le sommet :
+		 * au milieu pour une pyramide, au tiers pour un prisme (sous l'arête cachée du fond)
+		 */
+		const height = (apex: EspacePoint, foot: EspacePoint, value: number, along = 0.5) => {
 			lines.push(segment(apex, foot, true));
-			cotes.push({ at: middle(apex, foot), value, side: 'droite' });
+			const at = { x: foot.x + (apex.x - foot.x) * along, y: foot.y + (apex.y - foot.y) * along };
+			cotes.push({ at, value, side: 'droite' });
 		};
 		switch (spec.form) {
 			case 'cube':
@@ -405,11 +412,12 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 			case 'pave':
 				cotes.push({ at: middle(v[0], v[1]), value: d0, side: 'dessous' });
 				cotes.push({ at: middle(v[1], v[2]), value: d1, side: 'bas-droite' });
-				cotes.push({ at: middle(v[1], v[5]), value: d2, side: 'droite' });
+				// Hauteur à gauche : à droite, l'arête du fond passerait dans le texte
+				cotes.push({ at: middle(v[0], v[4]), value: d2, side: 'gauche' });
 				break;
 			case 'prisme-triangle':
 				cotes.push({ at: middle(v[0], v[1]), value: d0, side: 'dessous' });
-				height(v[2], middle(v[0], v[1]), d1);
+				height(v[2], middle(v[0], v[1]), d1, 1 / 3);
 				cotes.push({ at: middle(v[1], v[4]), value: d2, side: 'bas-droite' });
 				break;
 			case 'prisme-triangle-rectangle':
@@ -431,7 +439,7 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 				break;
 		}
 	}
-	return { lines, fills, vertices, centers: [], cotes };
+	return { lines, fills, vertices, centers: [], edges: topology.edges, cotes };
 }
 
 function roundDraft(spec: SolideSpec): Draft {
@@ -454,7 +462,8 @@ function roundDraft(spec: SolideSpec): Draft {
 			lines.push(segment({ x: r, y: 0 }, { x: r, y: h }, false));
 			if (spec.cotes) {
 				lines.push(segment({ x: 0, y: h }, { x: r, y: h }, false));
-				cotes.push({ at: { x: r / 2, y: h }, value: r, side: 'dessus' });
+				// Au bout du rayon, hors de l'ellipse
+				cotes.push({ at: { x: r, y: h }, value: r, side: 'droite' });
 				cotes.push({ at: { x: r, y: h / 2 }, value: h, side: 'droite' });
 			}
 			return {
@@ -465,6 +474,7 @@ function roundDraft(spec: SolideSpec): Draft {
 					{ x: 0, y: h }
 				],
 				centers: [0, 1],
+				edges: [],
 				cotes
 			};
 		}
@@ -485,14 +495,16 @@ function roundDraft(spec: SolideSpec): Draft {
 			if (spec.cotes) {
 				lines.push(segment({ x: 0, y: 0 }, { x: r, y: 0 }, true));
 				lines.push(segment(apex, { x: 0, y: 0 }, true));
-				cotes.push({ at: { x: r / 2, y: 0 }, value: r, side: 'dessous' });
-				cotes.push({ at: { x: 0, y: h / 2 }, value: h, side: 'droite' });
+				// Rayon : au bout, hors de l'ellipse ; hauteur : au tiers, où le cône est large
+				cotes.push({ at: { x: r, y: 0 }, value: r, side: 'droite' });
+				cotes.push({ at: { x: 0, y: h / 3 }, value: h, side: 'droite' });
 			}
 			return {
 				lines,
 				fills: [],
 				vertices: [apex, { x: 0, y: 0 }],
 				centers: [1],
+				edges: [],
 				cotes
 			};
 		}
@@ -503,9 +515,17 @@ function roundDraft(spec: SolideSpec): Draft {
 			lines.push(plainArc(arc(0, 0, r, ry, Math.PI, 2 * Math.PI)));
 			if (spec.cotes) {
 				lines.push(segment({ x: 0, y: 0 }, { x: r, y: 0 }, true));
-				cotes.push({ at: { x: r / 2, y: 0 }, value: r, side: 'dessus' });
+				// Sous le rayon : au-dessus, l'équateur arrière passerait dans le texte
+				cotes.push({ at: { x: r / 2, y: 0 }, value: r, side: 'dessous' });
 			}
-			return { lines, fills: [], vertices: [{ x: 0, y: 0 }], centers: [0], cotes };
+			return {
+				lines,
+				fills: [],
+				vertices: [{ x: 0, y: 0 }],
+				centers: [0],
+				edges: [],
+				cotes
+			};
 		}
 	}
 }
@@ -526,6 +546,31 @@ const bounds = (points: EspacePoint[]) => ({
 	minY: Math.min(...points.map((p) => p.y)),
 	maxY: Math.max(...points.map((p) => p.y))
 });
+
+/**
+ * Direction du plus grand angle libre entre les arêtes d'un sommet (à l'écran) :
+ * le nom s'y pose sans toucher de trait. null : sommet sans arête.
+ */
+function freeDirection(
+	vertex: number,
+	vertices: EspacePoint[],
+	edges: [number, number][]
+): EspacePoint | null {
+	const p = vertices[vertex];
+	const angles = edges
+		.filter((e) => e.includes(vertex))
+		.map(([a, b]) => vertices[a === vertex ? b : a])
+		.filter((q) => Math.hypot(q.x - p.x, q.y - p.y) > 1e-9)
+		.map((q) => Math.atan2(q.y - p.y, q.x - p.x))
+		.sort((a, b) => a - b);
+	if (angles.length === 0) return null;
+	let best = { gap: -1, middle: 0 };
+	angles.forEach((angle, k) => {
+		const next = k + 1 < angles.length ? angles[k + 1] : angles[0] + 2 * Math.PI;
+		if (next - angle > best.gap) best = { gap: next - angle, middle: (angle + next) / 2 };
+	});
+	return { x: Math.cos(best.middle), y: Math.sin(best.middle) };
+}
 
 /** Le dessin d'un solide */
 export function buildSolideScene(spec: SolideSpec): SolideScene {
@@ -555,6 +600,11 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 		const p = vertices[i];
 		let dx = p.x - middleOfDrawing.x;
 		let dy = p.y - middleOfDrawing.y;
+		const free = freeDirection(i, vertices, draft.edges);
+		if (free) {
+			dx = free.x;
+			dy = free.y;
+		}
 		if (draft.centers.includes(i) || Math.hypot(dx, dy) < 1e-6) {
 			// Un centre : son nom à gauche, un peu plus bas
 			dx = -1;
