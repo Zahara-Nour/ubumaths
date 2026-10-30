@@ -834,29 +834,44 @@ export function buildPatronScene(spec: PatronSpec): PatronScene {
 		}
 	}
 
-	// Cotes : chaque longueur une fois, sur le côté du contour le plus à l'extérieur
+	// Cotes : chaque longueur une fois, sur un côté du contour (à défaut, sur un pli)
 	const dashed: PatronLine[] = [];
 	if (spec.cotes) {
 		const unit = spec.cotes.unit ? ` ${spec.cotes.unit}` : '';
 		const text = (value: number) => `${frenchNumber(value)}${unit}`;
 		const middleOfNet = centroid2(polygons.flat());
-		const outermost = (candidates: Side[]) =>
-			candidates.reduce((best, s) => {
-				const m = middle(s.a, s.b);
-				const bm = middle(best.a, best.b);
-				return Math.hypot(m.x - middleOfNet.x, m.y - middleOfNet.y) >
-					Math.hypot(bm.x - middleOfNet.x, bm.y - middleOfNet.y) + EPS
-					? s
-					: best;
-			});
+		const distance = (side: Side) => {
+			const m = middle(side.a, side.b);
+			return Math.hypot(m.x - middleOfNet.x, m.y - middleOfNet.y);
+		};
+		const boxesMeet = (a: SolideLabel, b: SolideLabel) => {
+			const [a0, a1] = labelBox(a);
+			const [b0, b1] = labelBox(b);
+			// Une marge : deux textes collés se lisent comme un seul (« H 3 cm »)
+			const m = 0.15;
+			return a0.x - m < b1.x && b0.x - m < a1.x && a0.y - m < b1.y && b0.y - m < a1.y;
+		};
+		/**
+		 * La cote d'une longueur sur le côté le plus à l'extérieur dont le texte ne
+		 * touche aucune autre étiquette (à défaut, le plus à l'extérieur) ; `inward` :
+		 * le texte dans la face (cote portée par un pli)
+		 */
+		const placeCote = (candidates: Side[], value: number, inward: boolean) => {
+			const labelOf = (side: Side) => {
+				const n = outward(side, faces[side.face].points);
+				return coteLabel(middle(side.a, side.b), inward ? { x: -n.x, y: -n.y } : n, text(value));
+			};
+			const ordered = [...candidates].sort((a, b) => distance(b) - distance(a)).map(labelOf);
+			labels.push(ordered.find((l) => !labels.some((o) => boxesMeet(l, o))) ?? ordered[0]);
+		};
 		if (spec.solid === 'cylindre') {
 			const [r, h] = spec.dims;
-			// Un rayon du disque O, en tirets, sa longueur au-dessus
+			// Un rayon du disque O, en tirets, sa longueur dessous (au-dessus : le numéro de la face)
 			const bottom = faces.find((f) => f.center?.vertex === 0)!;
 			const o = bottom.center!.at;
 			const end = { x: o.x + r * scale, y: o.y };
 			dashed.push({ points: [o, end], kind: 'cache' });
-			labels.push(coteLabel(middle(o, end), { x: 0, y: -1 }, text(r)));
+			labels.push(coteLabel(middle(o, end), { x: 0, y: 1 }, text(r)));
 			// La hauteur sur un côté du rectangle de longueur h
 			const rectangle = faces.findIndex((f) => !f.center);
 			const heights = contour.filter(
@@ -882,14 +897,7 @@ export function buildPatronScene(spec: PatronSpec): PatronScene {
 			for (const target of targets) {
 				const candidates = contour.filter((s) => s.vertices && target.accepts(...s.vertices));
 				if (candidates.length > 0) {
-					const side = outermost(candidates);
-					labels.push(
-						coteLabel(
-							middle(side.a, side.b),
-							outward(side, faces[side.face].points),
-							text(target.value)
-						)
-					);
+					placeCote(candidates, target.value, false);
 					continue;
 				}
 				// Longueur portée seulement par des plis (base d'une pyramide en étoile) :
@@ -898,14 +906,14 @@ export function buildPatronScene(spec: PatronSpec): PatronScene {
 					(s) => s.vertices && target.accepts(...s.vertices) && !contour.includes(s)
 				);
 				if (folded.length === 0) continue;
-				const side = outermost(
+				placeCote(
 					folded.filter((s) => {
 						const twin = folded.find((t) => t !== s && shared(s, t));
 						return !twin || area(faces[s.face].points) >= area(faces[twin.face].points);
-					})
+					}),
+					target.value,
+					true
 				);
-				const n = outward(side, faces[side.face].points);
-				labels.push(coteLabel(middle(side.a, side.b), { x: -n.x, y: -n.y }, text(target.value)));
 			}
 			// Prisme isocèle : la hauteur du triangle ABC, en tirets
 			if (spec.solid === 'prisme-triangle') {

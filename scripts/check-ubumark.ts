@@ -4,7 +4,7 @@
  * `~…~` et `$…$` au rendu écran et signale : erreur rouge, lettres découpées (un
  * nom de fonction non déclaré, `CM` lu comme `C·M`), nom grec sans antislash,
  * `\unit` résiduel. Signale aussi les blocs ```courbe et ```figure en erreur ou hors fenêtre,
- * et les blocs ```horloge, ```operation, ```collection, ```monnaie, ```partage, ```cubes et ```solide en erreur.
+ * et les blocs ```horloge, ```operation, ```collection, ```monnaie, ```partage, ```cubes, ```solide et ```patron en erreur.
  *
  * Les lettres de fonctions sont celles de `generic_functions` de l'exercice ; sans
  * elles, `C'(x)` s'affiche comme un produit.
@@ -38,7 +38,7 @@ type BlocNode =
 	| PartageNode
 	| EspaceNode;
 
-/** Blocs ```courbe, ```figure, ```horloge, ```operation, ```collection, ```monnaie, ```partage, ```cubes et ```solide d'un arbre ubumark, listes comprises. */
+/** Blocs ```courbe, ```figure, ```horloge, ```operation, ```collection, ```monnaie, ```partage, ```cubes, ```solide et ```patron d'un arbre ubumark, listes comprises. */
 function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 	if (Array.isArray(node)) {
 		for (const child of node) blocs(child, found);

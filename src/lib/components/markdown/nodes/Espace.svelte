@@ -4,8 +4,8 @@
 
 	Aiguillage par genre : ```cubes → `Cubes.svelte` ; assemblage à geste
 	(`dessiner:`, `retrouver:`) hors question (cours, aperçu) → `CubesGeste.svelte`,
-	le geste sans jugement ; ```solide → `Solide.svelte`. Le genre `patron`
-	viendra ensuite (chantier `solides`, ADR 0034).
+	le geste sans jugement ; ```solide → `Solide.svelte` ; ```patron →
+	`Patron.svelte` (chantier `solides`, ADR 0034).
 
 	@module components/markdown/nodes/Espace
 -->
@@ -14,6 +14,7 @@
 	import Cubes from './Cubes.svelte';
 	import CubesGeste from './CubesGeste.svelte';
 	import Solide from './Solide.svelte';
+	import Patron from './Patron.svelte';
 
 	interface Props {
 		node: EspaceNode;
@@ -27,6 +28,8 @@
 
 {#if node.genre === 'solide'}
 	<Solide {node} {showErrors} class={className} />
+{:else if node.genre === 'patron'}
+	<Patron {node} {showErrors} class={className} />
 {:else if node.genre === 'cubes' && node.spec?.kind === 'cubes' && node.spec.task && node.errors.length === 0}
 	<CubesGeste {node} class={className} />
 {:else if node.genre === 'cubes'}
