@@ -5,18 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2024._
+_Mis à jour le 2026-10-30, après #2024 et la publication du lot 4a._
 
-- **État** : lots 0 à 3 publiés ; lot 4a (fonctions, 8 brouillons) rangé et tagué en prod (§ 11.10), page à
-  cocher publiée : https://claude.ai/artifact/JgBMF94tqmj3AaRtu1ALhJ.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 8) ; « À revoir » → corriger ;
-  puis simulation et `publier-lot.ts --dir scripts/questions/3-lot-4a --publier` (David, avec `!`). Puis lot 4b (§ 11.2).
-- **En attente de David** : la relecture des 8 fiches.
+- **État** : lots 0 à 3 et lot 4a (fonctions, 8 modèles, § 11.11) publiés.
+- **Prochaine action** : lot 4b (§ 11.2, 6 modèles, phase 0 déjà validée au § 11.6) : écrire
+  `lot-3-4b.py` dans un worktree neuf (`content/questions-3-lot4b`), simulation, base locale, aperçu.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; tableau avec une case : pas de `\hline` ; une moitié attendue
   refuse 0,5 ; aperçu admin sur `127.0.0.1` (`--host 127.0.0.1`), pas `localhost` ; worktree neuf :
-  `svelte-kit sync` avant les scripts `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-3` (branche mergée, à retirer après la publication).
+  `svelte-kit sync` avant les scripts `tsx` ; `releve-prod-3.ts` sans `multiple_answers` (#2009).
+- **Worktree / branche** : aucun (retiré après la publication du lot 4a).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -606,3 +605,9 @@ modèles publiés de plus. Aucune règle ne change.
   coefficient directeur et ordonnée à l'origine ; tous `draft`, un tag chacun, niveaux inchangés.
 - Page à cocher : https://claude.ai/artifact/JgBMF94tqmj3AaRtu1ALhJ (capacité `db`, collection `verdicts`
   vide au départ ; aucune alerte sur les 8 fiches).
+
+### 11.11 Lot 4a : relu et publié (2026-10-30)
+
+- Relecture : 8 verdicts en base, 8 OK, aucun commentaire.
+- `publier-lot.ts --dir scripts/questions/3-lot-4a --publier` lancé par David : MCP, les 8 modèles
+  `published`, niveaux 1-1-1-1-1-2-3-4 inchangés.
