@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 3a publié ; PR « phrase de la droite » en cours._
+_Mis à jour le 2026-10-30, après #2032 (phrase de la droite : « 4/5 », jamais « 0,8 »)._
 
 - **État** : lots 0, 1, 2 et 3a publiés (3a : 10/10 « OK » sur la page à cocher, `--publier` par David, statut relu au MCP).
-- **Prochaine action** : merger la PR `fix/droite-placer-forme-de-la-graduation` (droite au pas en fraction → « 4/5 », jamais « 0,8 », § 9 sexies), puis phase 0 du lot 3b (fractions décimales), puis 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
+- **Prochaine action** : phase 0 du lot 3b (fractions décimales) ; puis 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage). #2032 (§ 9 sexies) mergée, pas en prod.
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse (« Production Deploy ») : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min, sinon `DbPushMissingRemoteError` (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS ; index du dépôt principal parfois tenu par une autre session : ne pas y commiter par-dessus.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, branche `fix/droite-placer-forme-de-la-graduation`.
+- **Worktree / branche** : aucun (retiré après #2032) ; le lot 3b en recrée un : `git worktree add -b feat/questions-cm1-lot3b ../ubumaths-wt-questions-cm1 origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
