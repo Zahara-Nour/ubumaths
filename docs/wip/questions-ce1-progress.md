@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2025._
+_Mis à jour le 2026-10-30, lot 5 publié._
 
-- **État** : lot 4 (problèmes, 10 modèles, § 10) **publié** en prod (2026-10-30, `publier-lot --publier` par David, 10 `published` au MCP), après relecture 10/10 OK sur la page à cocher (https://claude.ai/artifact/2bUw8csLPAx4rcotvkUjjn). Lots 0 à 4 faits. Lot 5 (longueurs, 6 modèles) mergé (#2022), 6 brouillons en prod, rangés et tagués (#2025, `db:migrate` joué, vérifié au MCP) ; page à cocher : https://claude.ai/artifact/2NxcJnRpaLYW8bvydn5w4X.
-- **Prochaine action** : compter les verdicts de la page à cocher (`ArtifactData list verdicts`), corriger les « À revoir », relever les niveaux, `publier-lot` en simulation puis `--publier` par David ; puis lot 5 bis (masses, monnaie, durées). Le lot 5 bis (masses, monnaie, durées, 9 modèles) suit.
-- **En attente de David** : relecture des 6 modèles sur la page à cocher.
-- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`). `!` de David : depuis le dépôt principal, pas `cd` vers le worktree (rien ne s'affiche ni ne s'écrit).
+- **État** : lots 0 à 5 faits. Lot 5 (longueurs, 6 modèles, § 11) **publié** en prod (2026-10-30, `publier-lot --publier` par David, 6 `published` au MCP), après relecture 6/6 OK sur la page à cocher (https://claude.ai/artifact/2NxcJnRpaLYW8bvydn5w4X).
+- **Prochaine action** : lot 5 bis (masses, monnaie, durées, 9 modèles, tableau du § 11, décisions déjà validées) : écrire `lot-ce1-5bis.py` → `scripts/questions/ce1-5bis/`, simulation, `question:specs`, base locale, PR sur une branche neuve depuis `origin/main`.
+- **En attente de David** : rien.
+- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (sur `feat/questions-ce1-lot5-rangement`, mergée : en partir d'une neuve sur `origin/main`). `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -434,3 +434,5 @@ Réponse de David : les quatre recommandations (« je valide »).
 - 2026-10-30 : #2025 mergée (`security-auditor` sans finding bloquant, CI verte) ; `db:migrate` par David (161000 de
   questions-ce2 avec) ; vérifié au MCP : 6/6 sur le nœud de leur point, un point chacun, `updated_at` inchangé. Page à
   cocher publiée, aucune alerte.
+- 2026-10-30 : relecture 6/6 OK (verdicts comptés) ; `publier-lot` en simulation 6/6, puis `--publier` par David ;
+  6 `published` vérifiés au MCP.
