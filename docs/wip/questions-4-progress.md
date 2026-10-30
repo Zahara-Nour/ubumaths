@@ -5,15 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 4 publié (§ 24)._
+_Mis à jour le 2026-10-30, phase 0 du lot 5 proposée (§ 25)._
 
 - **État** : lots 1 à 4 en prod (lot 1 en brouillon, lots 2, 3 et 4 publiés). Relevé MCP du 2026-10-30 : 34 points de
   4e sans modèle — 017, 018, 020, 021, 023, 071 (puissances, calcul littéral) ; 060-064, 081 (programmes de calcul,
   fonctions) ; 029-037, 072, 075, 076 (géométrie) ; 065-067 (pensée informatique) ; hors plan du § 4 : 026, 027,
   028, 038, 068, 069, 074.
-- **Prochaine action** : David choisit le lot 5 ; reco : géométrie, Pythagore et triangles d'abord (note de la 3e
-  ci-dessous : maillon manquant, gabarit `lot-3-3.py`) ; puis phase 0 (§ 25).
-- **En attente de David** : le choix du lot 5 ; publication des 7 brouillons du lot 1.
+- **Prochaine action** : lot 5 « Pythagore et triangles » (033, 034, 035, 036, 037, 072, 075) : phase 0 au § 25,
+  en attente de validation ; puis écrire `lot-4-5.py` (gabarit `lot-3-3.py`), branche `feat/questions-4-lot-5`.
+- **En attente de David** : les 3 questions du § 25.4 ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; horodatages de migration : vérifier les PR ouvertes des autres sessions
   (collision `20261030140000`) ; CI : « Browser connection was closed » (client, shard 2/2) = panne passagère ;
@@ -616,3 +616,58 @@ triangles » (§ ci-dessus) est le maillon manquant du cycle 4 en géométrie. G
 - 7 verdicts lus en base, 7 « OK », aucun commentaire (« fᵢ » et « graine » du bloc ` ```simulation ` gardés).
 - `publier-lot.ts --dir scripts/questions/4-lot-4 --publier` lancé par David ; 7/7 publiés, vérifié au MCP
   (`published`, nœud présent, un tag chacun).
+
+## 25. Lot 5 (Pythagore et triangles) : phase 0 (proposée le 2026-10-30)
+
+David a suivi la reco (« je te suis ») : le lot 5 est « Pythagore et triangles », première moitié du lot géométrie
+du § 4 (l'autre moitié, translations et volumes : 029, 030, 031, 032, 076, viendra plus tard).
+
+### 25.1 Relevé (MCP, 2026-10-30)
+
+- Points du lot, tous sans modèle : 033, 034, 035, 036, 037, 072, 075. Aucun modèle « Pythagore » en prod, à aucun
+  niveau. Voisins : 5-061 (aire d'un triangle, 2 modèles de 5e), 3-055 (réciproque et contraposée de Thalès, 1 modèle
+  publié, gabarit du 072), 2-214 et 2-411 (réciproque, contraposée en 2de, brouillons).
+- Nœuds des points : 033 → Géométrie > Théorème de Thalès > droite des milieux ; 034 → Théorème de Pythagore > calcul
+  de longueurs ; 035, 072 → Théorème de Pythagore > réciproque ; 036, 037 → Figures planes > triangles ; 075 →
+  Algèbre > Calcul littéral. Aucun nœud à créer.
+- Outils, tous existants : ` ```figure ` (angle droit `angle(…, marque="carre")`, codage `marque_segment(A, B,
+traits=n)`, `milieu`, `cercle(O, passant=P)`, `cercle_circonscrit`) ; case, case choix. Gabarit :
+  `docs/wip/questions/lot-3-3.py` (figures à l'échelle, lettres tirées en trois jeux, orientation, `;d`).
+- Bornes : 034 « un côté connaissant les deux autres ; résultat exact (√) ou approché à la calculatrice » ; 072 « le
+  mot contraposée est attendu » ; 033 les trois théorèmes de la droite des milieux ; 036 propriété démontrée en 4e ;
+  075 aire d'un triangle de base b et de hauteur h ; 035 et 037 sans borne.
+
+### 25.2 Modèles proposés (7, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                                                | Variations                                                                                                                                                                                                                                                                                                                                                                                                                              | Réponse                                                          |
+| ----- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 034   | Calculer une longueur avec Pythagore (Géométrie / Théorème de Pythagore / Calculer une longueur, 1)       | 1) hypoténuse, triplet entier (3-4-5, 5-12-13, 8-15-17, 7-24-25 et multiples) ; 2) côté de l'angle droit, triplet entier ; 3) hypoténuse arrondie au dixième ; 4) côté de l'angle droit arrondi au dixième ; 5) valeur exacte `\sqrt{n}` (n sans facteur carré) ; 6) « quelle égalité écrire ? » (case choix : BC² = AB² + AC², AB² = BC² + AC², BC = AB + AC)                                                                          | case · case choix                                                |
+| 072   | Réciproque et contraposée de Pythagore (Géométrie / Théorème de Pythagore / Réciproque et contraposée, 1) | trois longueurs données (entières ou à une décimale), figure non à l'échelle annoncée : 1) triplet → « rectangle ? » Oui ; 2) presque-triplet (6 ; 8 ; 10,1) → Non ; 3) « quel théorème prouve qu'il est rectangle : Pythagore / sa réciproque / sa contraposée » ; 4) même question pour « n'est pas rectangle » → contraposée                                                                                                         | case choix (Oui/Non non mélangé, raison au corrigé, comme 3-055) |
+| 033   | Droite des milieux (Géométrie / Triangles / Droite des milieux, 1)                                        | figure codée (`marque_segment`) : 1) I, J milieux → que dire de (IJ) et (BC) ? ; 2) I, J milieux, BC donné → IJ ; 3) IJ donné → BC ; 4) I milieu, (IJ) ∥ (BC) codé dans l'énoncé, AC donné → AJ ; 5) « quel théorème : … » (les trois énoncés en case choix)                                                                                                                                                                            | case · case choix                                                |
+| 036   | Triangle inscrit dans un demi-cercle (Géométrie / Triangles / Cercle circonscrit, 1)                      | figure : cercle de diamètre [BC], A sur le cercle : 1) « le triangle ABC est : rectangle en A / en B / isocèle / on ne peut pas savoir » ; 2) même chose, A pas sur le cercle (angle non droit à l'œil) → « on ne peut pas savoir » ; 3) diamètre et un côté donnés → troisième côté (Pythagore, triplet entier)                                                                                                                        | case choix · case                                                |
+| 037   | Centre du cercle circonscrit (Géométrie / Triangles / Cercle circonscrit, 2)                              | triangle rectangle codé : 1) « le centre du cercle circonscrit est : le milieu de [BC] / A / le milieu de [AB] » ; 2) hypoténuse donnée → rayon ; 3) côtés de l'angle droit donnés (triplet) → rayon (Pythagore puis moitié)                                                                                                                                                                                                            | case choix · case                                                |
+| 035   | Réciproque et contraposée (Géométrie / Raisonner / Réciproque et contraposée, 1)                          | banque de propriétés vraies du collège (« Si un quadrilatère est un carré, alors c'est un rectangle », « Si un nombre se termine par 0, alors il est pair », « Si un triangle est équilatéral, alors il est isocèle »…) : 1) « quelle est la réciproque ? » ; 2) « quelle est la contraposée ? » ; 3) « la réciproque est-elle vraie ? » (Oui / Non, contre-exemple au corrigé) ; 4) « la contraposée est-elle vraie ? » (toujours Oui) | case choix                                                       |
+| 075   | Formule de l'aire d'un triangle (Calcul littéral / Produire une formule / Aires, 1)                       | figure à lettres (base b, hauteur h codée par l'angle droit) : 1) triangle aigu ; 2) hauteur à l'extérieur (triangle obtus) ; 3) figure composée rectangle + triangle (côtés a, b, h) ; 4) « quelle formule est vraisemblable ? » (b × h ÷ 2, b + h, b × h × 2) ; 5) tester la formule : b = 6, h = 4 → aire                                                                                                                            | case (toute expression égale acceptée) · case choix              |
+
+- Longueurs : entiers ou une décimale, en cm, dans l'énoncé en formule (virgule) ; arrondi au dixième en `;d` ; tirages
+  loin d'un demi-dixième (piège du lot 3-3).
+- `testSpecs` d'erreurs typiques : 034 → somme des côtés sans carré (a + b), carré oublié à la fin (a² + b²), soustraction
+  au lieu de somme et l'inverse ; 033 → IJ = BC au lieu de BC/2, BC = IJ/2 ; 037 → rayon = hypoténuse (diamètre) ; 072 →
+  « Oui » au presque-triplet ; 075 → b × h sans ÷ 2.
+- À vérifier à l'écriture : la case accepte `\sqrt{41}` et refuse 6,4 en exact ; une expression littérale en b et h
+  (`b\times h\div2`, `\frac{bh}{2}`, `0{,}5bh`) est acceptée ; `cercle(O, passant=A)` et `marque_segment` rendus dans
+  la page à cocher (alerte « bloc non dessiné » attendue, à jouer dans l'aperçu admin).
+
+### 25.3 Question d'accès
+
+Comme les lots précédents : brouillons, puis migration nœud + tag ; **personne** ne gagne d'accès. À la publication,
+les élèves de 4e voient 7 modèles de plus.
+
+### 25.4 Questions à David
+
+1. Valider les 7 modèles du § 25.2 ?
+2. Catégories neuves : **Géométrie / Théorème de Pythagore** (Calculer une longueur 1, Réciproque et contraposée 1),
+   **Géométrie / Triangles** (Droite des milieux 1, Cercle circonscrit 1 et 2), **Géométrie / Raisonner**
+   (Réciproque et contraposée 1), **Calcul littéral / Produire une formule** (Aires 1) ?
+3. Pythagore : valeur exacte `\sqrt{n}` seulement avec n sans facteur carré (√50 = 5√2 est de 3e-2de), ou aussi √50
+   accepté tel quel ?
