@@ -5,10 +5,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2007 et #2017 (rangement du lot 3a joué en prod)._
+_Mis à jour le 2026-10-30, après #2007 et #2017 (rangement du lot 3a joué en prod) ; page à cocher publiée._
 
 - **État** : lots 0, 1 et 2 publiés. Lot 3a (fractions, 10 modèles) : brouillons en prod, rangés et tagués (migration `20261030150100` jouée par David), pas encore publiés.
-- **Prochaine action** : page à cocher du lot 3a (`page-a-cocher.ts --dir scripts/questions/cm1-3a`), verdicts de David, puis `publier-lot.ts` (simulation, `--publier` par David). Ensuite 3b (fractions décimales), 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
+- **Prochaine action** : page à cocher du lot 3a publiée le 2026-10-30 (https://claude.ai/artifact/FXw6NKvvTFs5ACRuaesB6P, collection `verdicts`, 0 verdict à la publication) ; lire et compter les verdicts de David, corriger les « À revoir » (§ 7), puis `publier-lot.ts` (simulation, `--publier` par David). Les 4 droites (019, 147, 018, 146) : bloc `line` non dessiné, à jouer dans l'aperçu. Ensuite 3b (fractions décimales), 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
 - **En attente de David** : la phrase « Tu as placé le point sur 0,8 » de la droite à placer (décimal pour une fraction, § 9 ter) : à corriger dans un chantier à part ?
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse (« Production Deploy ») : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min, sinon `DbPushMissingRemoteError` (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; la page à cocher montre les FICHIERS.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1` gardé jusqu'à la publication (puis retiré) ; serveur de test sur 5177.
