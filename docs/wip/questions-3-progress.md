@@ -5,17 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 4b écrit (§ 11.12)._
+_Mis à jour le 2026-10-30, après #2029 et le `--publier` du lot 4b._
 
-- **État** : lots 0 à 3 et lot 4a publiés ; lot 4b (6 modèles) écrit, PR des fichiers ouverte.
-- **Prochaine action** : merge de la PR du lot 4b, puis David lance `create-questions --dir
-scripts/questions/3-lot-4b --publier` ; relever les `id`, migration de rangement.
-- **En attente de David** : rien.
-- **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; tableau avec une case : pas de `\hline` ; une moitié attendue
-  refuse 0,5 ; aperçu admin sur `127.0.0.1` (`--host 127.0.0.1`), pas `localhost` ; worktree neuf :
-  `svelte-kit sync` avant les scripts `tsx` ; `releve-prod-3.ts` sans `multiple_answers` (#2009).
-- **Worktree / branche** : `../ubumaths-wt-questions-3` gardé (HEAD détachée), branche `content/questions-3-lot4b` mergée.
+- **État** : lots 0 à 3 et lot 4a publiés ; lot 4b : 6 brouillons en prod, sans nœud ni tag (§ 11.14).
+- **Prochaine action** : rangement du lot 4b sur une branche neuve `feat/questions-3-lot4b-rangement`
+  depuis `origin/main` : relevé `etat-prod-2026-10-30-3e-lot4b/` (`releve-prod-3.ts`),
+  `lot-rangement-3-4b.py` (copie de `lot-rangement-3-4a.py`, 6 modèles), migration horodatée après
+  `20261030162100` (ce1 lot 5), test copié de `questions-3-lot4a-rangement-tags`, rouge puis vert,
+  `security-auditor`, PR.
+- **En attente de David** : rien (question d'accès déjà tranchée, § 11.4).
+- **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
+  du mode auto → David les lance avec `!` ; dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire
+  (écrit `\dfrac`) ni virgule ; aperçu admin sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant
+  `tsx` ; le dépôt principal porte le travail d'une autre session : commits de doc depuis le worktree
+  (`git push origin HEAD:main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -635,3 +639,14 @@ modèles publiés de plus. Aucune règle ne change.
 ### 11.13 Lot 4b : fichiers mergés (2026-10-30)
 
 - #2029 mergée (CI verte). Attendu : `create-questions --publier` lancé par David.
+
+### 11.14 Lot 4b : en prod, brouillons (2026-10-30)
+
+- `create-questions --publier` lancé par David : 6 brouillons, vérifiés au MCP (`draft`, sans tag, niveaux
+  1-2-1-1-1-1) : eb04ebf7-8476-4c01-8e6b-25fc488a1acb (f(x) = k, 3-042) · 77500c81-ffb6-4404-a096-89476d219565
+  (f(x) ⩽ k, 3-065, niv. 2) · 320f5ac7-b16a-48a7-b136-704d62854138 (ax ⩾ b, 3-057) ·
+  7407f328-e770-49da-8bc8-38cdf6081b6d (courbe carré, 3-046) · 8cb2cdfd-d905-4e37-bff4-cceeb774fdc9
+  (x² = a, 3-053) · 19889310-745e-4dba-b236-38b3f813e71d (Thalès, 3-037).
+- Nœuds d'arrivée (§ 11) : 3-042, 3-065 → Fonctions affines > fonction linéaire ; 3-057 → Inéquations :
+  premier degré > ax + b < c ; 3-046 → Fonction carré > définition et courbe ; 3-053 → Fonction carré >
+  x² = k, x² < k ; 3-037 → Proportionnalité > Situations de proportionnalité > caractérisation.
