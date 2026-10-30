@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, migration du lot 4 écrite (PR à ouvrir)._
+_Mis à jour le 2026-10-30, après #2020._
 
-- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions) : 10 brouillons en prod ; migration nœud + tag
-  `20261030161000` + test (rouge 5/9 sans le corps, vert 9/9), branche `feat/questions-ce2-lot4-rangement` (§ 8).
-- **Prochaine action** : PR → CI verte → merge → `db:migrate` (David, `!`, `--dry-run` d'abord) → relevé MCP
-  → page à cocher.
+- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions) : 10 brouillons en prod, migration nœud + tag
+  `20261030161000` mergée (#2020), PAS ENCORE JOUÉE (§ 8).
+- **Prochaine action** : `db:migrate` (David, `!`, `--dry-run` d'abord : seule `161000` en attente au relevé MCP)
+  → relevé MCP (10 modèles, nœud + 1 point) → page à cocher.
 - **En attente de David** : rien. Correctif de la carte de correction (choix `$$…$$` en LaTeX brut,
   15 modèles publiés) : go le 2026-10-30, chantier À PART `choix-correction` (autre session, § 8).
   Publier le lot 4 APRÈS le `deploy:prod` de ce correctif (modèle 03 touché).
 - **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-lot4-rangement`.
+- **Worktree / branche** : aucun (retiré après #2020).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -358,3 +358,7 @@ de plus (brouillons neufs ; la migration nœud + tag ne change aucune règle).
   la prod `20261030150000` et les `160000`/`160100` réservés par les worktrees questions-4 et questions-2de) + test
   d'intégration : rouge sans le corps (5/9), vert avec (9/9).
 - `security-auditor` : aucun finding (corps SQL identique au lot 3, gardes et rollback vérifiés, relevé MCP refait).
+- 2026-10-30 : #2020 mergée (1er passage de CI rouge : collision `20261030140000` sur `main`, réglée par #2017
+  et #2018 ; branche remise à jour par merge, CI verte). Revue : `security-auditor` seul (migration de contenu).
+  Worktree retiré. Relevé MCP : seule `20261030161000` en attente en prod. Les 4 conditions du `db:migrate` sont
+  réunies (accès tranché, test vérifié rouge, audit sans finding, migration additive avec rollback).
