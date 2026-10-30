@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 4 A écrit (§ 24)._
+_Mis à jour le 2026-10-30, après #2008._
 
 - **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 3 (8 modèles) relu 8/8 OK et publié par David (§ 22).
-- **Prochaine action** : merger la PR des fichiers du 4 A ; puis David crée les 11 brouillons en prod
-  (`create-questions --publier`, dossiers `2de-vecteurs-a` et `2de-vecteurs-b`) ; migration nœud + tag (11).
+- **État** (suite) : lot 4 A (#2008) et 4 B (#1999) mergés, avec le correctif #1997 ; rien en prod.
+- **Prochaine action** : relever les `id` des 11 brouillons créés par David, puis migration nœud + tag
+  (11 modèles, nœuds § 23) dans un worktree neuf.
 - **En attente de David** : les deux `create-questions --publier` ; le `deploy:prod` qui livre #1997 avant la
   page à cocher du 4 A (le 4 B n'en dépend pas).
 - **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT ; horodatage = max + 1 min
   de `origin/main` ET des worktrees, puis `migration list --linked` avant `db:migrate`.
-- **Worktree / branche** : `ubumaths-wt-questions-2de` · `content/questions-2de-vecteurs` (lot 4 A).
+- **Worktree / branche** : aucun (retiré après #2008) ; en créer un pour la migration.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -632,3 +633,5 @@ doublée d'une variation à calcul.
 - **Lot 4 B** (§ 23, 4 modèles : 2-295, 435, 303, 437) : `questions-2de/lot-vecteurs-b-2de.py` →
   `scripts/questions/2de-vecteurs-b/` (9 variations, 26 specs), aucune case vecteur donc indépendant de #1997 ;
   base locale jouée (m faux refusé) ; PR à part #1999, mergée.
+
+- #2008 (fichiers du lot 4 A) mergé le 2026-10-30 ; worktree retiré.
