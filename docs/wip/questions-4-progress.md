@@ -5,18 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2011 (rangement du lot 4 joué en prod)._
+_Mis à jour le 2026-10-30, lot 4 publié (§ 24)._
 
-- **État** : lots 1 à 3 en prod (lot 1 en brouillon, lots 2 et 3 publiés) ; lot 4 : 7 brouillons en prod, rangés et
-  tagués (#2011, migration jouée et vérifiée, § 23).
-- **Prochaine action** : David relit le lot 4 sur https://claude.ai/artifact/11umi3mJXCS5wjM41tcN3h ; lire et
-  compter les verdicts en base, puis `publier-lot.ts --dir scripts/questions/4-lot-4 --publier` par David.
-- **En attente de David** : « fᵢ » et « graine » du bloc ` ```simulation ` (§ 21 : garder, ou tableau d'effectifs
-  écrit) ; publication des 7 brouillons du lot 1.
+- **État** : lots 1 à 4 en prod (lot 1 en brouillon, lots 2, 3 et 4 publiés). Relevé MCP du 2026-10-30 : 34 points de
+  4e sans modèle — 017, 018, 020, 021, 023, 071 (puissances, calcul littéral) ; 060-064, 081 (programmes de calcul,
+  fonctions) ; 029-037, 072, 075, 076 (géométrie) ; 065-067 (pensée informatique) ; hors plan du § 4 : 026, 027,
+  028, 038, 068, 069, 074.
+- **Prochaine action** : David choisit le lot 5 ; reco : géométrie, Pythagore et triangles d'abord (note de la 3e
+  ci-dessous : maillon manquant, gabarit `lot-3-3.py`) ; puis phase 0 (§ 25).
+- **En attente de David** : le choix du lot 5 ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
-  `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
-  passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
-- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
+  `--include-all` : réservé à David ; horodatages de migration : vérifier les PR ouvertes des autres sessions
+  (collision `20261030140000`) ; CI : « Browser connection was closed » (client, shard 2/2) = panne passagère ;
+  QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
+- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -611,3 +613,6 @@ triangles » (§ ci-dessus) est le maillon manquant du cycle 4 en géométrie. G
 - Page à cocher : https://claude.ai/artifact/11umi3mJXCS5wjM41tcN3h (7 fiches, capacité `db`, base `verdicts` vide
   à la publication) ; alertes attendues « bloc non dessiné » : `probtree` (4-049), `barres` et `simulation` (4-050),
   `simulation` (4-051) : les jouer dans l'aperçu admin.
+- 7 verdicts lus en base, 7 « OK », aucun commentaire (« fᵢ » et « graine » du bloc ` ```simulation ` gardés).
+- `publier-lot.ts --dir scripts/questions/4-lot-4 --publier` lancé par David ; 7/7 publiés, vérifié au MCP
+  (`published`, nœud présent, un tag chacun).
