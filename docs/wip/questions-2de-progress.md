@@ -9,13 +9,13 @@
 _Mis à jour le 2026-10-30, lot 4 A écrit (§ 24)._
 
 - **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 3 (8 modèles) relu 8/8 OK et publié par David (§ 22).
-- **Prochaine action** : lot 4 A (§ 24) : merger #1997 (acceptDecimal des vecteurs), rebaser, simulation
-  verte, essai en base locale, PR des fichiers ; puis lot 4 B (colinéarité).
-- **En attente de David** : rien ; le `deploy:prod` qui livre #1997 conditionne la page à cocher du 4 A.
+- **Prochaine action** : merger la PR des fichiers du 4 A ; puis David crée les 11 brouillons en prod
+  (`create-questions --publier`, dossiers `2de-vecteurs-a` et `2de-vecteurs-b`) ; migration nœud + tag (11).
+- **En attente de David** : les deux `create-questions --publier` ; le `deploy:prod` qui livre #1997 avant la
+  page à cocher du 4 A (le 4 B n'en dépend pas).
 - **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT ; horodatage = max + 1 min
   de `origin/main` ET des worktrees, puis `migration list --linked` avant `db:migrate`.
-- **Worktree / branche** : `ubumaths-wt-questions-2de` · `content/questions-2de-vecteurs` ; correctif dans
-  `ubumaths-wt-vecteur-decimal` · `fix/vecteur-accept-decimal` (#1997).
+- **Worktree / branche** : `ubumaths-wt-questions-2de` · `content/questions-2de-vecteurs` (lot 4 A).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -627,3 +627,8 @@ doublée d'une variation à calcul.
   attendent le `deploy:prod` qui livre #1997** avant la page à cocher.
 - Relecture des tirages : « −1 j⃗ » (coefficients ±1 retirés), k attendu « 3/1 » (entier si d = 1),
   conclusions colorées hors formule (en gras), B jusqu'à 21 (borné à 12).
+- #1997 mergé. Base locale : 7 brouillons ; aperçu joué (A(3,5 ; −3), B(−3 ; 5,5) : virgules affichées,
+  (−6,5 ; 8,5) « Juste »).
+- **Lot 4 B** (§ 23, 4 modèles : 2-295, 435, 303, 437) : `questions-2de/lot-vecteurs-b-2de.py` →
+  `scripts/questions/2de-vecteurs-b/` (9 variations, 26 specs), aucune case vecteur donc indépendant de #1997 ;
+  base locale jouée (m faux refusé) ; PR à part #1999, mergée.
