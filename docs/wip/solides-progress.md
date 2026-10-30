@@ -269,3 +269,6 @@ retrouver: face, droite
 7. **`retrouver:`** : la vue de dessus toujours donnée, servant de grille de saisie (l'élève écrit une
    hauteur par carreau), ou aussi le cas « sans vue de dessus » (grille 6 × 6 à remplir, bien plus dur) ?
    _Reco : dessus toujours donnée._
+
+**Réponse de David (2026-10-30)** : « je te suis » — quadrillage agrandi d'un carreau, jugé à une translation
+près (Q6) ; vue de dessus toujours donnée, grille de saisie de `retrouver:` (Q7). Spécification validée.
