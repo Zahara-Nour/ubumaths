@@ -597,3 +597,40 @@ de 1602c40d et d7ad48d8 dessinées), collection `verdicts` vide à la publicatio
 
 **Publié le 2026-10-30** (`publier-lot --publier`, David) : 12/12 `published` en prod (MCP). 174e202b et dc4b8d08 restent en
 brouillon (l1s-3).
+
+## 14. Lot 0-probabilités : vérification des brouillons
+
+_2026-10-30. 8 brouillons du domaine « Probabilités conditionnelles », tagués d'un point de probabilités (338, 340, 341,
+424), un point 1SPE chacun ; instantané `scripts/questions/1spe-0-probabilites/`, `question:specs --apercu 3`, puis un
+aperçu par variation (20) et 30 tirages par variation fouillés (formes `n/1`, signes doublés, `{{`, NaN : rien), sorties
+dans le scratchpad de la session. Aucun modèle publié dans le domaine. Simulation `publier-lot` jouée d'entrée : 8 brouillons
+passent le contrôle (aucun refus de niveau)._
+
+**Mécanique** : 8 / 8 verts, 139 specs, 950 tirages réussis. Case `choix` (ebe7e788) : réponse attendue = indice dans la
+source, le mélange se fait à l'affichage.
+
+**Bornes** : rien au-delà du BO 1re spé (p. 10). Deux événements seulement (341, 424 : P(A∩B) = P(A)P(B)) ; deux épreuves
+indépendantes (338 : tirage avec remise, deux lancers) ; probabilités totales sur une partition à deux événements
+(l1s-4 : partition finie, calcul direct), P_B(A) par la définition ; pourcentages refusés en format (`bad_format`), arrondis
+au centième ou au millième dits dans l'énoncé.
+
+**Constats** :
+
+- **C1** : arbre à données décimales, corrigé qui passe aux fractions en cours de calcul : « P(A∩B) = 0,1 × 0,5 = 1/20 et
+  P(Ā∩B) = 0,9 × 0,9 = 81/100, P(B) = 1/20 + 81/100 = 43/50 » (5ba712bc v0-v1, 69a05f98 v0-v1, 6dd2f133 v0-v1). Cause : les
+  `{{eval:…/100}}` sans `;d` rendent une fraction. Les modèles de contexte (a9c71276, 2c116f4d) font bien : produits et somme
+  en décimaux (0,015 + 0,063 = 0,078 = 39/500).
+- **C2** : consigne « Donne le résultat en fraction irréductible » alors que le décimal exact est accepté (specs « 0,32
+  accepté »), et que le résultat est **toujours** un décimal exact quand les données sont décimales (5ba712bc v0-v1,
+  6dd2f133 v0-v1) ; 36010981 et d5780995 disent « fraction irréductible ou nombre décimal exact ».
+- Écartés : catégorie « Arbres pondérés » aux niveaux 3, 4, 5 sans 1 ni 2 (aucun refus de `publier-lot`) ; « Construis un
+  arbre pondéré » (6dd2f133) sans geste pour l'arbre : seule P(D) est saisie, l'arbre est dans le corrigé ; réponse attendue
+  montrée en fraction (« 189/10 000 ») quand le corrigé écrit « 0,0189 = 189/10 000 » ; pourcentages refusés (format) dans
+  tout le lot.
+
+**Recommandations** :
+
+- C1 : produits et sommes intermédiaires en décimaux (`;d`), comme a9c71276 : « P(B) = 0,05 + 0,81 = 0,86 = 43/50 » ;
+  69a05f98 v0-v1 : « P_B(A) = 0,05 ÷ 0,86 = 5/86 ». Réponses attendues inchangées (les deux écritures restent acceptées).
+- C2 : 5ba712bc v0-v1 et 6dd2f133 v0-v1 : « Réponds par une fraction irréductible ou par un nombre décimal exact. » ;
+  69a05f98 (résultat rarement décimal) et les variations à données fractionnaires gardent « fraction irréductible ».
