@@ -56,7 +56,7 @@
 			"correction": {
 				"steps": [
 					"L'urne contient ${{N}}$ boules, toutes ont la même probabilité d'être tirées. $X$ prend les valeurs $0$, ${{gv}}$ et ${{gr}}$ avec $P(X=0)={{eval:b/N}}$, $P(X={{gv}})={{eval:v/N}}$ et $P(X={{gr}})={{eval:r/N}}$.",
-					"$E(X)=\\sum p_k x_k={{eval:b/N}}\\times 0+{{eval:v/N}}\\times {{gv}}+{{eval:r/N}}\\times {{gr}}$",
+					"$E(X)=\\sum p_k x_k=\\dfrac{ {{b}} }{ {{N}} }\\times 0+\\dfrac{ {{v}} }{ {{N}} }\\times {{gv}}+\\dfrac{ {{r}} }{ {{N}} }\\times {{gr}}$",
 					"$E(X)=\\dfrac{ {{eval:v*gv}}+{{eval:r*gr}} }{ {{N}} }=\\textcolor{{{color:primary.0}}}{ {{eval:(r*gr+v*gv)/N}} }$"
 				]
 			}
@@ -112,7 +112,7 @@
 			"correction": {
 				"steps": [
 					"Chaque carte a la probabilité $\\dfrac{1}{ {{N}} }$ d'être tirée. $X$ prend les valeurs $0$, ${{b}}$ et ${{a}}$ : $P(X=0)=\\dfrac{ {{eval:N-16}} }{ {{N}} }={{eval:(N-16)/N}}$, $P(X={{b}})=\\dfrac{12}{ {{N}} }={{eval:12/N}}$ et $P(X={{a}})=\\dfrac{4}{ {{N}} }={{eval:4/N}}$.",
-					"$E(X)=\\sum p_k x_k={{eval:(N-16)/N}}\\times 0+{{eval:12/N}}\\times {{b}}+{{eval:4/N}}\\times {{a}}$",
+					"$E(X)=\\sum p_k x_k=\\dfrac{ {{eval:N-16}} }{ {{N}} }\\times 0+\\dfrac{12}{ {{N}} }\\times {{b}}+\\dfrac{4}{ {{N}} }\\times {{a}}$",
 					"$E(X)=\\dfrac{ {{eval:12*b}}+{{eval:4*a}} }{ {{N}} }=\\textcolor{{{color:primary.0}}}{ {{eval:(4*a+12*b)/N}} }$"
 				]
 			}

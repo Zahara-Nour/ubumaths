@@ -54,7 +54,7 @@
 					"expectedAnswer": "{{eval:(r*a+v*b)/20}}"
 				}
 			],
-			"statement": "Une urne contient $20$ boules indiscernables au toucher : ${{r}}$ rouges, ${{v}}$ vertes et ${{eval:20-r-v}}$ noires. On tire une boule au hasard : une boule rouge fait recevoir ${{a}}$ €, une boule verte ${{b}}$ €, une boule noire rien. Pour jouer, il faut d'abord payer une mise de $m$ euros.\n\nQuelle mise $m$ (en euros) rend le jeu équitable ? Réponds par un nombre décimal exact.\n\n$m=?$",
+			"statement": "Une urne contient $20$ boules indiscernables au toucher : ${{r}}$ {{if:r == 1|rouge|rouges}}, ${{v}}$ vertes et ${{eval:20-r-v}}$ noires. On tire une boule au hasard : une boule rouge fait recevoir ${{a}}$ €, une boule verte ${{b}}$ €, une boule noire rien. Pour jouer, il faut d'abord payer une mise de $m$ euros.\n\nQuelle mise $m$ (en euros) rend le jeu équitable ? Réponds par un nombre décimal exact.\n\n$m=?$",
 			"variables": [
 				{
 					"name": "r",

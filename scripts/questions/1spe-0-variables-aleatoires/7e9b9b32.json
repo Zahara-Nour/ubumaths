@@ -155,7 +155,7 @@
 				"steps": [
 					"La somme des probabilités vaut $1$ : $p+2p+\\dots+{{n}}p=1$, soit $(1+2+\\dots+{{n}})\\,p={{eval:n*(n+1)/2}}\\,p=1$.",
 					"Donc $p=\\textcolor{{{color:primary.0}}}{ {{eval:2/(n*(n+1))}} }$.",
-					"{{if:hi == lo|$P(X={{lo}})={{lo}}\\,p={{lo}}\\times{{eval:2/(n*(n+1))}}=\\textcolor{{{color:primary.0}}}{ {{eval:(hi*(hi+1)-(lo-1)*lo)/(n*(n+1))}} }$.|$P({{if:t == 1|X={{lo}}}}{{if:t == 2|X\\leqslant {{hi}}}}{{if:t == 3|X\\geqslant {{lo}}}}{{if:t == 4|{{lo}}\\leqslant X\\leqslant {{hi}}}})=P(X={{lo}})+{{if:hi == lo+1||{{if:hi == lo+2|P(X={{eval:lo+1}})+|\\dots+}}}}P(X={{hi}})=({{lo}}+{{if:hi == lo+1||{{if:hi == lo+2|{{eval:lo+1}}+|\\dots+}}}}{{hi}})\\,p={{eval:(hi*(hi+1)-(lo-1)*lo)/2}}\\times{{eval:2/(n*(n+1))}}=\\textcolor{{{color:primary.0}}}{ {{eval:(hi*(hi+1)-(lo-1)*lo)/(n*(n+1))}} }$.}}"
+					"{{if:hi == lo|$P(X={{lo}})={{if:lo == 1|p=|{{lo}}\\,p={{lo}}\\times{{eval:2/(n*(n+1))}}=}}\\textcolor{{{color:primary.0}}}{ {{eval:(hi*(hi+1)-(lo-1)*lo)/(n*(n+1))}} }$.|$P({{if:t == 1|X={{lo}}}}{{if:t == 2|X\\leqslant {{hi}}}}{{if:t == 3|X\\geqslant {{lo}}}}{{if:t == 4|{{lo}}\\leqslant X\\leqslant {{hi}}}})=P(X={{lo}})+{{if:hi == lo+1||{{if:hi == lo+2|P(X={{eval:lo+1}})+|\\dots+}}}}P(X={{hi}})=({{lo}}+{{if:hi == lo+1||{{if:hi == lo+2|{{eval:lo+1}}+|\\dots+}}}}{{hi}})\\,p={{eval:(hi*(hi+1)-(lo-1)*lo)/2}}\\times{{eval:2/(n*(n+1))}}=\\textcolor{{{color:primary.0}}}{ {{eval:(hi*(hi+1)-(lo-1)*lo)/(n*(n+1))}} }$.}}"
 				]
 			}
 		}

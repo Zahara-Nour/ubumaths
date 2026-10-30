@@ -60,7 +60,7 @@
 			"correction": {
 				"steps": [
 					"L'urne contient ${{r}}+{{q}}+{{n}}={{eval:r+q+n}}$ boules, toutes ont la même probabilité d'être tirées.",
-					"$\\{X=-{{m}}\\}$ : le joueur perd ${{m}}$ euros, donc la boule est verte. $P(X=-{{m}})=\\dfrac{ {{n}} }{ {{eval:r+q+n}} }=\\textcolor{{{color:primary.0}}}{ {{eval:n/(r+q+n)}} }$.",
+					"$\\{X=-{{m}}\\}$ : le joueur perd ${{m}}$ euros, donc la boule est verte. $P(X=-{{m}})={{if:gcd(n,r+q+n) > 1|\\dfrac{ {{n}} }{ {{eval:r+q+n}} }=}}\\textcolor{{{color:primary.0}}}{ {{eval:n/(r+q+n)}} }$.",
 					"$\\{X>0\\}$ : le joueur gagne de l'argent, donc la boule est rouge ou bleue. $P(X>0)=P(X={{g}})+P(X={{h}})=\\dfrac{ {{r}} }{ {{eval:r+q+n}} }+\\dfrac{ {{q}} }{ {{eval:r+q+n}} }=\\textcolor{{{color:primary.0}}}{ {{eval:(r+q)/(r+q+n)}} }$."
 				]
 			}
@@ -97,8 +97,8 @@
 			"correction": {
 				"steps": [
 					"Le dé est équilibré : chacune des ${{f}}$ faces a la probabilité $\\dfrac{1}{ {{f}} }$ d'apparaître.",
-					"$\\{X={{g}}\\}$ : le numéro est l'un des ${{k}}$ numéros de $1$ à ${{k}}$. $P(X={{g}})=\\dfrac{ {{k}} }{ {{f}} }=\\textcolor{{{color:primary.0}}}{ {{eval:k/f}} }$.",
-					"$\\{X=-{{m}}\\}$ : le numéro est l'un des ${{f}}-{{k}}={{eval:f-k}}$ autres. $P(X=-{{m}})=\\dfrac{ {{eval:f-k}} }{ {{f}} }=\\textcolor{{{color:primary.0}}}{ {{eval:(f-k)/f}} }$ (ou $1-P(X={{g}})$)."
+					"$\\{X={{g}}\\}$ : le numéro est l'un des ${{k}}$ numéros de $1$ à ${{k}}$. $P(X={{g}})={{if:gcd(k,f) > 1|\\dfrac{ {{k}} }{ {{f}} }=}}\\textcolor{{{color:primary.0}}}{ {{eval:k/f}} }$.",
+					"$\\{X=-{{m}}\\}$ : le numéro est l'un des ${{f}}-{{k}}={{eval:f-k}}$ autres. $P(X=-{{m}})={{if:gcd(f-k,f) > 1|\\dfrac{ {{eval:f-k}} }{ {{f}} }=}}\\textcolor{{{color:primary.0}}}{ {{eval:(f-k)/f}} }$ (ou $1-P(X={{g}})$)."
 				]
 			}
 		},
@@ -140,7 +140,7 @@
 				"steps": [
 					"Les $6\\times6=36$ couples de numéros $(x\\,;y)$ sont équiprobables. Le tableau à double entrée donne le nombre de couples pour chaque somme :\n\n| Somme | $2$ | $3$ | $4$ | $5$ | $6$ | $7$ | $8$ | $9$ | $10$ | $11$ | $12$ |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n| Couples | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ | $5$ | $4$ | $3$ | $2$ | $1$ |",
 					"{{if:t == 1|La somme vaut ${{lo}}$ pour ${{eval:nb}}$ couples.|L'événement ${{if:t == 1|X={{lo}}}}{{if:t == 2|X\\leqslant {{hi}}}}{{if:t == 3|X\\geqslant {{lo}}}}{{if:t == 4|{{lo}}\\leqslant X\\leqslant {{hi}}}}{{if:t == 5|X<{{k}}}}{{if:t == 6|X>{{k}}}}$ regroupe les sommes de ${{lo}}$ à ${{hi}}$ : on additionne leurs nombres de couples, soit ${{eval:nb}}$ couples.}}",
-					"$P({{if:t == 1|X={{lo}}}}{{if:t == 2|X\\leqslant {{hi}}}}{{if:t == 3|X\\geqslant {{lo}}}}{{if:t == 4|{{lo}}\\leqslant X\\leqslant {{hi}}}}{{if:t == 5|X<{{k}}}}{{if:t == 6|X>{{k}}}})=\\dfrac{ {{eval:nb}} }{36}=\\textcolor{{{color:primary.0}}}{ {{eval:nb/36}} }$."
+					"$P({{if:t == 1|X={{lo}}}}{{if:t == 2|X\\leqslant {{hi}}}}{{if:t == 3|X\\geqslant {{lo}}}}{{if:t == 4|{{lo}}\\leqslant X\\leqslant {{hi}}}}{{if:t == 5|X<{{k}}}}{{if:t == 6|X>{{k}}}})={{if:gcd(nb,36) > 1|\\dfrac{ {{eval:nb}} }{36}=}}\\textcolor{{{color:primary.0}}}{ {{eval:nb/36}} }$."
 				]
 			}
 		},
@@ -182,7 +182,7 @@
 				"steps": [
 					"Les $4\\times6=24$ couples de numéros $(x\\,;y)$, $x$ pour le dé tétraédrique et $y$ pour le dé cubique, sont équiprobables. Le tableau à double entrée donne le nombre de couples pour chaque somme :\n\n| Somme | $2$ | $3$ | $4$ | $5$ | $6$ | $7$ | $8$ | $9$ | $10$ |\n|---|---|---|---|---|---|---|---|---|---|\n| Couples | $1$ | $2$ | $3$ | $4$ | $4$ | $4$ | $3$ | $2$ | $1$ |",
 					"{{if:t == 1|La somme vaut ${{lo}}$ pour ${{eval:nb}}$ couples.|L'événement ${{if:t == 1|X={{lo}}}}{{if:t == 2|X\\leqslant {{hi}}}}{{if:t == 3|X\\geqslant {{lo}}}}{{if:t == 4|{{lo}}\\leqslant X\\leqslant {{hi}}}}{{if:t == 5|X<{{k}}}}{{if:t == 6|X>{{k}}}}$ regroupe les sommes de ${{lo}}$ à ${{hi}}$ : on additionne leurs nombres de couples, soit ${{eval:nb}}$ couples.}}",
-					"$P({{if:t == 1|X={{lo}}}}{{if:t == 2|X\\leqslant {{hi}}}}{{if:t == 3|X\\geqslant {{lo}}}}{{if:t == 4|{{lo}}\\leqslant X\\leqslant {{hi}}}}{{if:t == 5|X<{{k}}}}{{if:t == 6|X>{{k}}}})=\\dfrac{ {{eval:nb}} }{24}=\\textcolor{{{color:primary.0}}}{ {{eval:nb/24}} }$."
+					"$P({{if:t == 1|X={{lo}}}}{{if:t == 2|X\\leqslant {{hi}}}}{{if:t == 3|X\\geqslant {{lo}}}}{{if:t == 4|{{lo}}\\leqslant X\\leqslant {{hi}}}}{{if:t == 5|X<{{k}}}}{{if:t == 6|X>{{k}}}})={{if:gcd(nb,24) > 1|\\dfrac{ {{eval:nb}} }{24}=}}\\textcolor{{{color:primary.0}}}{ {{eval:nb/24}} }$."
 				]
 			}
 		}

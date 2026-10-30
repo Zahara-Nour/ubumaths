@@ -57,7 +57,7 @@
 					"expectedAnswer": "{{eval:(r*a+v*b)/10-m}}"
 				}
 			],
-			"statement": "Une urne contient $10$ boules indiscernables au toucher : ${{r}}$ rouges, ${{v}}$ vertes et ${{eval:10-r-v}}$ noires. Pour jouer, on paie ${{m}}$ € puis on tire une boule au hasard. Une boule rouge fait recevoir ${{a}}$ €, une boule verte ${{b}}$ €, une boule noire rien. On note $G$ le gain algébrique du joueur en euros, c'est-à-dire la somme reçue moins la mise.\n\nCalcule l'espérance de $G$. Réponds par un nombre décimal exact.\n\n$E(G)=?$",
+			"statement": "Une urne contient $10$ boules indiscernables au toucher : ${{r}}$ {{if:r == 1|rouge|rouges}}, ${{v}}$ vertes et ${{eval:10-r-v}}$ noires. Pour jouer, on paie ${{m}}$ € puis on tire une boule au hasard. Une boule rouge fait recevoir ${{a}}$ €, une boule verte ${{b}}$ €, une boule noire rien. On note $G$ le gain algébrique du joueur en euros, c'est-à-dire la somme reçue moins la mise.\n\nCalcule l'espérance de $G$. Réponds par un nombre décimal exact.\n\n$E(G)=?$",
 			"variables": [
 				{
 					"name": "r",

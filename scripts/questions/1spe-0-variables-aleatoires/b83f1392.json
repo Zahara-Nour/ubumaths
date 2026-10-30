@@ -119,8 +119,8 @@
 			],
 			"correction": {
 				"steps": [
-					"La somme des probabilités vaut $1$. On écrit toutes les probabilités avec le dénominateur commun $12$ : ${{eval:a/12}}=\\dfrac{ {{a}} }{12}$, ${{eval:b/12}}=\\dfrac{ {{b}} }{12}$ et ${{eval:c/12}}=\\dfrac{ {{c}} }{12}$.",
-					"$p=1-\\dfrac{ {{a}}+{{b}}+{{c}} }{12}=\\dfrac{ {{d}} }{12}=\\textcolor{{{color:primary.0}}}{ {{eval:d/12}} }$."
+					"La somme des probabilités vaut $1$. On écrit toutes les probabilités avec le dénominateur commun $12$ : ${{if:gcd(a,12) > 1|{{eval:a/12}}=}}\\dfrac{ {{a}} }{12}$, ${{if:gcd(b,12) > 1|{{eval:b/12}}=}}\\dfrac{ {{b}} }{12}$ et ${{if:gcd(c,12) > 1|{{eval:c/12}}=}}\\dfrac{ {{c}} }{12}$.",
+					"$p=1-\\dfrac{ {{a}}+{{b}}+{{c}} }{12}={{if:gcd(d,12) > 1|\\dfrac{ {{d}} }{12}=}}\\textcolor{{{color:primary.0}}}{ {{eval:d/12}} }$."
 				]
 			}
 		},

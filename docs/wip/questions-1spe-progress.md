@@ -11,9 +11,9 @@
 
 _Mis à jour le 2026-10-30, pendant le lot 0-variables aléatoires._
 
-- **État** : lots 0-suites à 0-probabilités publiés ; lot 0-variables aléatoires (§ 15, 17 brouillons) vérifié, instantané commité (c42744921), branche non poussée.
-- **Prochaine action** : après le « oui » de David : corrections C1-C6 + specs, PR des fichiers ; migration des 7 niveaux (N1, gabarit #2012) ; page à cocher ; publication. Ensuite logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : C1-C6, N1 et la question d'accès de la migration N1 (recommandation : « personne »).
+- **État** : lots 0-suites à 0-probabilités publiés ; lot 0-variables aléatoires (§ 15) : C1-C6 corrigés (D20), PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR ; David lance `create-questions --publier --mettre-a-jour` (anciens niveaux) ; migration des 7 niveaux + fichiers (N1, gabarit #2012) ; page à cocher ; publication. Ensuite logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : rien (D20 : tout validé, question d'accès : personne).
 - **Pièges en cours** : `create-questions` refusé au mode auto **même en simulation** (David le lance) ; `publier-lot` = tout le dossier ou rien ; `db:migrate` → David ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` ; une copie par variation pour l'aperçu (sans `testSpecs`) ; `export-question-templates` exige `svelte-kit sync` dans un worktree neuf ; instantané jamais dans le dépôt principal.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe` · `chore/questions-1spe-0-va`.
 
@@ -694,3 +694,16 @@ définition, König-Huygens en « autre méthode » ; écart-type arrondi ou exa
 - Compléter une loi : inchangé (1, 2, 3).
 
 7 niveaux changés → migration (gabarit #2012), question d'accès à trancher.
+
+**D20 (David, 2026-10-30, « oui » sur C1-C6, N1 et la question d'accès : personne)** :
+
+- C1 : 6fbc355c v0 et v2, ligne de E(X) aux fractions non réduites (`\dfrac{v}{N}`), cohérente avec la somme sur N.
+- C2 : bad86bec v0 et v2, `\left(…\right)^2` sur les trois écarts.
+- C3 : eafd17a1 v1, ad555cb1 v1, `{{if:r == 1|rouge|rouges}}`.
+- C4 : 0417223e v0, condition `a != 1`. C5 : 0417223e v1, condition `p*m > 100*q` (bénéfice moyen positif).
+- C6 : étape « = a/b » écrite si `gcd > 1` (97b3a376 v0-v3, 8354a0e7 v1, b83f1392 v1, dont la liste des conversions) ;
+  7e9b9b32 v2, k = 1 → « P(X = 1) = p ».
+- Specs vertes (17 modèles, 259 specs, 10 800 tirages) ; 30 tirages par variation corrigée relus (15 variations) : aucun
+  doublon, aucun « 1 rouges », aucun a = 1, aucun bénéfice négatif, aucun `{{`.
+- N1 : niveaux des fichiers inchangés dans cette PR ; ils passent aux nouvelles valeurs avec la migration, après le
+  `create-questions --publier --mettre-a-jour` de David (comme le lot 0-géométrie repérée).

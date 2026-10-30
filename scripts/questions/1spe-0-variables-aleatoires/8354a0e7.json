@@ -145,7 +145,7 @@
 				"steps": [
 					"Par définition, $E(X)=\\sum p_k x_k$ : on multiplie chaque valeur $x_k$ par sa probabilité $p_k$, puis on additionne les produits.",
 					"$E(X)={{eval:a/12}}\\times {{x1;()}}+{{eval:b/12}}\\times {{x2;()}}+{{eval:c/12}}\\times {{x3;()}}$",
-					"On met tout au dénominateur $12$ : $E(X)=\\dfrac{ {{S}} }{12}=\\textcolor{{{color:primary.0}}}{ {{eval:S/12}} }$"
+					"On met tout au dénominateur $12$ : $E(X)={{if:gcd(abs(S),12) > 1|\\dfrac{ {{S}} }{12}=}}\\textcolor{{{color:primary.0}}}{ {{eval:S/12}} }$"
 				]
 			}
 		},

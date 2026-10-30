@@ -42,7 +42,7 @@
 					"expression": "-9..9"
 				}
 			],
-			"conditions": ["m != 0", "a != 0", "b != 0", "a*m+10*b != 0"],
+			"conditions": ["m != 0", "a != 0", "b != 0", "a*m+10*b != 0", "a != 1"],
 			"correction": {
 				"steps": [
 					"Linéarité de l'espérance : pour tous réels $a$ et $b$, $E(aX+b)=aE(X)+b$.",
@@ -77,7 +77,7 @@
 					"expression": "{{eval:10*q}}"
 				}
 			],
-			"conditions": ["mod(m,10) != 0"],
+			"conditions": ["mod(m,10) != 0", "p*m > 100*q"],
 			"correction": {
 				"steps": [
 					"Linéarité de l'espérance : pour tous réels $a$ et $b$, $E(aX+b)=aE(X)+b$.",

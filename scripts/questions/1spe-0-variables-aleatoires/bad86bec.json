@@ -107,7 +107,7 @@
 				"steps": [
 					"Espérance : $E(X)=\\sum p_k x_k={{eval:a/4}}\\times {{x1;()}}+{{eval:b/4}}\\times {{x2;()}}+{{eval:c/4}}\\times {{x3;()}}={{E}}$.",
 					"Par définition, $V(X)=\\sum p_k\\left(x_k-E(X)\\right)^2$.",
-					"$V(X)={{eval:a/4}}\\times {{eval:x1-E;()}}^2+{{eval:b/4}}\\times {{eval:x2-E;()}}^2+{{eval:c/4}}\\times {{eval:x3-E;()}}^2={{eval:N/D}}$",
+					"$V(X)={{eval:a/4}}\\times \\left({{eval:x1-E}}\\right)^2+{{eval:b/4}}\\times \\left({{eval:x2-E}}\\right)^2+{{eval:c/4}}\\times \\left({{eval:x3-E}}\\right)^2={{eval:N/D}}$",
 					"Autre méthode (formule de König-Huygens) : $V(X)=E(X^2)-E(X)^2={{eval:Q/4}}-{{E;()}}^2={{eval:N/D}}$.",
 					"L'écart-type est la racine carrée de la variance.",
 					"$\\sigma(X)=\\sqrt{V(X)}=\\sqrt{ {{eval:N/D}} }=\\dfrac{\\sqrt{ {{N}} }}{\\sqrt{ {{D}} }}=\\textcolor{{{color:primary.0}}}{ \\dfrac{\\sqrt{ {{N}} }}{ {{B}} } }$"
@@ -295,7 +295,7 @@
 				"steps": [
 					"Espérance : $E(X)=\\sum p_k x_k={{eval:a/6}}\\times {{x1;()}}+{{eval:b/6}}\\times {{x2;()}}+{{eval:c/6}}\\times {{x3;()}}={{E}}$.",
 					"Par définition, $V(X)=\\sum p_k\\left(x_k-E(X)\\right)^2$.",
-					"$V(X)={{eval:a/6}}\\times {{eval:x1-E;()}}^2+{{eval:b/6}}\\times {{eval:x2-E;()}}^2+{{eval:c/6}}\\times {{eval:x3-E;()}}^2={{eval:N/D}}$",
+					"$V(X)={{eval:a/6}}\\times \\left({{eval:x1-E}}\\right)^2+{{eval:b/6}}\\times \\left({{eval:x2-E}}\\right)^2+{{eval:c/6}}\\times \\left({{eval:x3-E}}\\right)^2={{eval:N/D}}$",
 					"Autre méthode (formule de König-Huygens) : $V(X)=E(X^2)-E(X)^2={{eval:Q/6}}-{{E;()}}^2={{eval:N/D}}$.",
 					"L'écart-type est la racine carrée de la variance.",
 					"$\\sigma(X)=\\sqrt{V(X)}=\\sqrt{ {{eval:N/D}} }=\\dfrac{\\sqrt{ {{N}} }}{\\sqrt{ {{D}} }}=\\textcolor{{{color:primary.0}}}{ \\dfrac{\\sqrt{ {{N}} }}{ {{B}} } }$"
