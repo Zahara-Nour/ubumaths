@@ -12,8 +12,8 @@
 _Mis à jour le 2026-10-30, après #2012, #2018 et le `db:migrate` du lot 0-géométrie repérée._
 
 - **État** : lots 0-suites, 0-second-degré, 0-dérivation, 0-variations, 0-exponentielle, 0-trigo, 0-produit scalaire publiés ; lot 0-géométrie repérée (§ 13) : 7 corrigés en prod (`--mettre-a-jour`), niveaux migrés (`20261030150030`, renommée après une collision avec le CM1, #2018), simulation `publier-lot` : 12 brouillons passent ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
-- **Prochaine action** : page à cocher du lot 0-géométrie repérée (`page-a-cocher.ts --dir scripts/questions/1spe-0-geometrie-reperee`, depuis le dépôt principal), relecture de David, puis `publier-lot --publier` (David). Ensuite probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : rien.
+- **Prochaine action** : relecture de David sur la page à cocher du lot 0-géométrie repérée (https://claude.ai/artifact/6QDtTH46XhaxKkp2deCfQu, verdicts à compter), puis `publier-lot --publier` (David). Ensuite probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : relecture de la page à cocher (12 fiches).
 - **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; `db:migrate` qui joue les migrations d'autres sessions → refusé par le classifieur, David le lance avec `!` ; horodatage de migration : vérifier `migration list --linked` ET les worktrees avant de choisir ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file` (pas `pnpm -s`), une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main`.
 - **Worktree / branche** : aucun (retiré après #2018) ; la page à cocher se fait depuis le dépôt principal (aucun code à écrire).
 
@@ -588,3 +588,6 @@ la prod était déjà à `20261030150000`. Renommée `20261030150030` (#2018, so
 `db:migrate` lancé par David le 2026-10-30 (4 migrations : la mienne, CM1 150100, 4e 160000, 2de 160100, chacune aux 4
 conditions selon sa session ; le classifieur du mode auto refuse ce `db:migrate` aux sessions) : niveaux conformes en prod
 (MCP), trigger `updated_at` à `O`, simulation `publier-lot` : 12 brouillons passent le contrôle.
+
+**Page à cocher** : https://claude.ai/artifact/6QDtTH46XhaxKkp2deCfQu (12 fiches, 41 exemples, aucune alerte ; cases `choix`
+de 1602c40d et d7ad48d8 dessinées), collection `verdicts` vide à la publication.
