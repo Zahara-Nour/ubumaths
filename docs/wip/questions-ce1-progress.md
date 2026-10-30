@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 5 bis écrit._
+_Mis à jour le 2026-10-30, après #2030._
 
-- **État** : lots 0 à 5 faits et publiés. Lot 5 bis (masses, monnaie, durées, 9 modèles, § 11) écrit : `lot-ce1-5bis.py` → `scripts/questions/ce1-5bis/`, simulation 9/9 (87 specs), `question:specs` verts, 9 brouillons en base locale ; PR à ouvrir (branche `feat/questions-ce1-lot5bis`).
-- **Prochaine action** : CI verte → merge ; puis brouillons en prod par David (`create-questions --publier`), vérification au MCP, migration nœud + tag, page à cocher, publication. Ensuite, selon le § 4 bis : lots à outils existants, puis lots à QCM.
-- **En attente de David** : rien (brouillons en prod après le merge).
+- **État** : lots 0 à 5 publiés. Lot 5 bis (masses, monnaie, durées, 9 modèles, § 11) : #2028 mergée, 9 brouillons en prod (vérifiés au MCP) ; migration nœud + tag `20261030162200` mergée (#2030), **pas encore jouée**.
+- **Prochaine action** : `db:migrate` par David depuis le dépôt principal ; vérification au MCP (9/9 sur le nœud de leur point, `updated_at` inchangé) ; page à cocher ; `publier-lot` en simulation puis `--publier` par David. Ensuite, selon le § 4 bis : lots à outils existants, puis lots à QCM.
+- **En attente de David** : `cd /Users/david/Coding/js/ubumaths && pnpm db:migrate`.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `feat/questions-ce1-lot5bis`). `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (sur `feat/questions-ce1-lot5bis-rangement`, mergée : en partir d'une neuve sur `origin/main`). `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -440,3 +440,8 @@ Réponse de David : les quatre recommandations (« je valide »).
   (Masses · Comparaison 1, Durées · Moments de la journée 1, les quatre autres catégories vides) ;
   `create-questions` en simulation 9/9 (87 specs), `question:specs` 200 tirages par variation, verts ; 9
   brouillons en base locale ; aperçu admin : 8,16 € = 816 € et 0 centime refusé, corrigé 8 € et 16 centimes.
+- 2026-10-30 : #2028 mergée (CI verte, revue : aucune, contenu) ; `create-questions --publier` par David (depuis le
+  dépôt principal, `--dir ../ubumaths-wt-questions-ce1/…`) ; 9 brouillons vérifiés au MCP (`27903489`, `6db56239`,
+  `c38c9152`, `3ed2e7d0`, `f98ca134`, `5248cab0`, `70fc062a`, `200b1e9f`, `10ec8633`), sans nœud ni tag, 87 specs.
+- 2026-10-30 : migration `20261030162200_questions_ce1_lot5bis_rangement_tags` (max des worktrees + 1 min) et test :
+  rouge sans (5 échecs sur 9), vert 9/9 ; `security-auditor` sans finding ; #2030 mergée (CI verte).
