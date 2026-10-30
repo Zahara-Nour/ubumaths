@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2026 (lot 0-probabilités)._
+_Mis à jour le 2026-10-30, après la publication du lot 0-probabilités._
 
-- **État** : lots 0-suites → 0-géométrie repérée publiés ; lot 0-probabilités (§ 14, 8 brouillons) : C1-C2 corrigés (#2026, mergée), page à cocher relue 8 « ok » / 8, **pas encore en prod**. 174e202b et dc4b8d08 restent en brouillon (l1s-3).
-- **Prochaine action** : vérifier en prod (MCP) que David a lancé, depuis le worktree, `create-questions --dir scripts/questions/1spe-0-probabilites --publier --mettre-a-jour` (3 modèles : `;d` et « nombre décimal exact » dans `variations`) puis `publier-lot --publier` (8 `published`) ; noter au § 14, « Reprendre ici », retirer le worktree. Ensuite lot 0-variables aléatoires (17 brouillons du domaine « Variables aléatoires »), logique, puis la migration des tags D3.
-- **En attente de David** : les deux commandes ci-dessus (`!`, depuis `/Users/david/Coding/js/ubumaths-wt-questions-1spe`).
-- **Pièges en cours** : `create-questions` refusé au mode auto **même en simulation** ; `publier-lot` = tout le dossier ou rien ; `db:migrate` d'autres sessions → David ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` (source montrée) ; `question:specs --file`, une copie par variation pour l'aperçu ; `{{eval:…}}` rend une fraction, `;d` un décimal ; instantané créé **dans le worktree**, jamais dans le dépôt principal (copie non suivie qui bloque `pull`) ; index du dépôt principal : celui d'autres sessions possible, ne jamais y toucher.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, détaché sur `origin/main` (branche `fix/questions-1spe-probabilites` mergée) ; gardé jusqu'aux deux commandes de David.
+- **État** : lots 0-suites, 0-second-degré, 0-dérivation, 0-variations, 0-exponentielle, 0-trigo, 0-produit scalaire, 0-géométrie repérée et 0-probabilités (§ 14, 8 modèles) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
+- **Prochaine action** : lot 0-variables aléatoires (17 brouillons du domaine « Variables aléatoires » : instantané **dans un worktree**, specs, bornes, constats, simulation `publier-lot` d'entrée). Ensuite logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : rien.
+- **Pièges en cours** : `create-questions` refusé au mode auto **même en simulation** (David le lance) ; `publier-lot` = tout le dossier ou rien ; `db:migrate` d'autres sessions → David ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` (source montrée) ; `question:specs --file`, une copie par variation pour l'aperçu ; `{{eval:…}}` rend une fraction, `;d` un décimal ; instantané jamais dans le dépôt principal (copie non suivie qui bloque `pull`) ; index du dépôt principal : celui d'autres sessions possible, ne jamais y toucher.
+- **Worktree / branche** : aucun (retiré après #2026).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -641,3 +641,6 @@ cours de calcul sur données décimales. Simulation `create-questions` refusée 
 
 **Page à cocher** : https://claude.ai/artifact/XR1ERELguKs1azqaCqVjA9 (8 fiches, 20 exemples ; 5 alertes « probtree non
 dessiné », arbres montrés en source). **Relecture (David, 2026-10-30)** : 8 « ok » sur 8, aucun commentaire.
+
+**Publié le 2026-10-30** (`create-questions --publier --mettre-a-jour` puis `publier-lot --publier`, David) : 8/8 `published`
+en prod (MCP) ; `;d` présent dans les 3 corrigés, consigne « nombre décimal exact » dans 5ba712bc et 6dd2f133.
