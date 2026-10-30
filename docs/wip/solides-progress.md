@@ -647,3 +647,16 @@ completer: 4
 `completer:` cube seulement, 1 à 3 faces, toute pose qui plie est juste (Q20) ; tous les emplacements
 voisins en pointillés (Q21) ; noms, numéros et face marquée refusés avec `completer:` (Q22). Bloc ouvert sur
 une ligne de liste : petit correctif `fix` du parseur à part, après le lot 5. Spécification validée.
+
+### Lot 5 livré (branche `feat/solides-patron-gestes`, 2026-10-30)
+
+- `designer:` (opposee, voisines, sommet A, face EFGH : faces calculées au parseur par le pliage) et
+  `completer:` (cube, 1 à 3 faces, juste si tout plie) : `utils/patron-gestes.ts` (juge pur),
+  `PatronGeste.svelte`, case `construire: 'patron'` dans les questions, copie corrigée, PDF (corrigé `solved`).
+- Contre-épreuve : sans le pliage dans le juge, 2 tests rouges. La croix privée d'un bout a exactement 4 poses
+  justes (les quatre bouts) : « Il y a d'autres réponses justes » est presque toujours vrai pour une face.
+- **Écarts à la spec** : `PatronScene.faces` ajouté (le tour de chaque face, pour les toucher) ;
+  `transformGrid` générique (cases 0/1/2).
+- **Trouvé en passant, corrigé** : le focus des carreaux de `CubesGeste` (lot 2) était un `outline: 3px`
+  compté en unités du SVG (1 unité = 1 cm) — une tache qui couvrait les carreaux voisins ; remplacé par un
+  trait (`stroke`) dans les deux composants.
