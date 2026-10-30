@@ -33,6 +33,9 @@ import {
 	type CubesSideView,
 	type EspaceSpec
 } from '../types/espace';
+import { sideColumns } from './espace-scene';
+
+export { sideColumns };
 
 // Constantes
 
@@ -56,21 +59,6 @@ const EXPECTED_RETROUVER_REGEX = /^([a-z, ]+):(.+)$/;
 // Functions — vues
 
 const maxOf = (values: number[]) => values.reduce((a, b) => Math.max(a, b), 0);
-
-/**
- * Hauteur de chaque colonne d'une vue de côté, de gauche à droite : face = par
- * colonne ; droite = par rangée, le devant à gauche ; gauche = le devant à droite
- */
-export function sideColumns(heights: number[][], view: CubesSideView): number[] {
-	switch (view) {
-		case 'face':
-			return heights[0].map((_, c) => maxOf(heights.map((row) => row[c])));
-		case 'droite':
-			return heights.map((row) => maxOf(row)).reverse();
-		case 'gauche':
-			return heights.map((row) => maxOf(row));
-	}
-}
 
 /** Une vue en grille de carreaux (rangée du haut d'abord), sans marge */
 export function viewGrid(heights: number[][], view: CubesDrawnView): boolean[][] {

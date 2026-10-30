@@ -106,6 +106,7 @@
 	/**
 	 * Carreaux coloriés : relus quand la valeur de la case change, réassignés à
 	 * chaque geste (dérivé modifiable) ; une réponse d'une autre taille est ignorée
+	 * à l'écran (l'interface n'en produit pas ; le juge, lui, lit la valeur telle quelle)
 	 */
 	let grid = $derived.by<boolean[][]>(() => {
 		if (size === null) return [];
@@ -148,8 +149,13 @@
 		return fits ? read.map((row, r) => row.map((h, c) => (heights[r][c] > 0 ? h : 0))) : holes;
 	});
 
-	function writeHeight(r: number, c: number, text: string) {
-		const digit = /^[1-6]$/.test(text.trim()) ? Number(text.trim()) : null;
+	/**
+	 * Une hauteur de 1 à 6, sinon la case est vide ; un caractère refusé est effacé
+	 * de la case (sinon l'élève le verrait alors qu'il compte pour une case vide)
+	 */
+	function writeHeight(r: number, c: number, input: HTMLInputElement) {
+		const digit = /^[1-6]$/.test(input.value.trim()) ? Number(input.value.trim()) : null;
+		if (digit === null) input.value = '';
 		const next = cells.map((row) => [...row]);
 		next[r][c] = digit;
 		cells = next;
@@ -198,7 +204,7 @@
 							aria-label="Nombre de cubes, {rowName(r)}, colonne {c + 1}"
 							value={values[r][c] ?? ''}
 							disabled={locked}
-							oninput={(event) => writeHeight(r, c, event.currentTarget.value)}
+							oninput={(event) => writeHeight(r, c, event.currentTarget)}
 						/>
 					{:else}
 						<div

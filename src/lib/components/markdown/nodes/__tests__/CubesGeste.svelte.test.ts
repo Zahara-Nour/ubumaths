@@ -170,6 +170,19 @@ describe('retrouver: — écrire les hauteurs', () => {
 		await expect.poll(() => probe.value).toBe('');
 	});
 
+	it('un caractère refusé (7, lettre) est effacé de la case : affiché = jugé', async () => {
+		const { probe, answer } = answerProbe();
+		const screen = await render(CubesGeste, {
+			target: mainElement(),
+			props: { node: retrouver(), answer: answer() }
+		});
+		const inputs = heightInputs(screen.container);
+		await userEvent.fill(inputs[0], '2');
+		await userEvent.fill(inputs[1], '7');
+		await expect.poll(() => probe.value).toBe('2 - - / - 0 -');
+		await expect.poll(() => inputs[1].value).toBe('');
+	});
+
 	it('cases nommées par rangée et colonne', async () => {
 		const screen = await render(CubesGeste, {
 			target: mainElement(),

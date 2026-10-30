@@ -164,6 +164,24 @@ function perspective(heights: number[][]): EspacePolygon[] {
 /** La plus haute pile de chaque colonne de la liste (hauteur 0 si vide) */
 const maxOf = (values: number[]) => values.reduce((a, b) => Math.max(a, b), 0);
 
+/**
+ * Hauteur de chaque colonne d'une vue de côté, de gauche à droite : face = par
+ * colonne ; droite = par rangée, le devant à gauche ; gauche = le devant à droite.
+ * Seule source du sens des vues : le dessin ET le juge des gestes (`cubes-gestes.ts`).
+ */
+export function sideColumns(heights: number[][], view: 'face' | 'droite' | 'gauche'): number[] {
+	switch (view) {
+		case 'face':
+			return heights[0].map((_, c) => maxOf(heights.map((row) => row[c])));
+		case 'droite':
+			// Le devant (dernière rangée) à gauche
+			return heights.map((row) => maxOf(row)).reverse();
+		case 'gauche':
+			// Le devant à droite
+			return heights.map((row) => maxOf(row));
+	}
+}
+
 /** Une vue : une colonne de carrés par entrée de `columns`, du bas vers le haut */
 function columnsView(columns: number[]): EspacePolygon[] {
 	const top = maxOf(columns);
@@ -173,7 +191,6 @@ function columnsView(columns: number[]): EspacePolygon[] {
 /** Le dessin d'un assemblage, dans sa vue */
 export function buildEspaceScene(spec: EspaceSpec): EspaceScene {
 	const { heights, view } = spec;
-	const cols = heights[0].length;
 	switch (view) {
 		case 'perspective':
 			return frame(perspective(heights));
@@ -182,15 +199,9 @@ export function buildEspaceScene(spec: EspaceSpec): EspaceScene {
 				heights.flatMap((row, r) => row.flatMap((h, c) => (h > 0 ? [square(c, r)] : [])))
 			);
 		case 'face':
-			return frame(
-				columnsView(Array.from({ length: cols }, (_, c) => maxOf(heights.map((row) => row[c]))))
-			);
 		case 'droite':
-			// Le devant (dernière rangée) à gauche
-			return frame(columnsView(heights.map((row) => maxOf(row)).reverse()));
 		case 'gauche':
-			// Le devant à droite
-			return frame(columnsView(heights.map((row) => maxOf(row))));
+			return frame(columnsView(sideColumns(heights, view)));
 	}
 }
 

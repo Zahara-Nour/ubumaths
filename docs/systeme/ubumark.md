@@ -585,7 +585,7 @@ liste vide, vue répétée → erreur) → `{ kind: 'retrouver', views }`. `case
 (`CubesGeste.svelte`, aiguillé par `Espace.svelte` aussi hors question : cours, aperçu, geste libre) :
 `dessiner:` → la perspective et un quadrillage vide **agrandi d'un carreau de chaque côté** de la vue
 (`drawingGridSize`), carreaux = boutons à bascule (« Carreau rangée 2, colonne 2, colorié », Espace / Entrée),
-couleur `--color-fig-orange` comme ```partage, bouton « Tout effacer » ; `retrouver:` → **pas de perspective**,
+couleur `--color-fig-orange` comme ``partage, bouton « Tout effacer » ; `retrouver:` → **pas de perspective**,
 la vue de dessus en grille de cases à nombre (1 à 6, « Nombre de cubes, rangée 1 (au fond), colonne 1 »,
 le trou sans case, « devant » dessous) et les vues listées, titrées. Réponses et juges (`utils/cubes-gestes.ts`,
 calcul pur) : `dessiner:` → le quadrillage, rangées de haut en bas séparées par `/`, `1` = colorié
@@ -599,7 +599,7 @@ droite. » (une par vue fausse) + l'assemblage du bloc, et « Il y a d'autres r�
 `retrouverHasOtherSolutions` (l'assemblage le plus haut permis par les vues en est un autre, ou une pile peut
 descendre d'un cube seule) ; vide : « Tu n'as rien colorié. » / « Tu n'as pas rempli toutes les cases. ». PDF
 (`generateEspaceTypst(node, { solved })`) : figures côte à côte, titrées ; quadrillage vide ou vue grisée,
-vue de dessus vide ou hauteurs écrites.
+vue de dessus vide ou hauteurs écrites. Le corrigé (`solved`) est prêt mais **pas encore branché** dans la fiche (`typst-generator.ts` appelle sans option), comme pour ``partage.
 
 **Opération posée en colonnes** (chantier [operations-posees](../archive/wip/operations-posees-progress.md),
 addition, soustraction, multiplication, division en potence) — `src/lib/ubumark/__tests__/operation/` :
