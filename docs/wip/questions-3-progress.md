@@ -8,8 +8,7 @@
 _Mis à jour le 2026-10-30, après #2015._
 
 - **État** : lots 0 à 3 publiés ; lot 4a (fonctions, 8 modèles, § 11) : 8 brouillons en prod (`id` au § 11.8).
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-4a
---publier` (brouillons en prod) ; relever les `id` au MCP ; migration nœud + tag (gabarit
+- **Prochaine action** : migration nœud + tag (gabarit
   `lot-rangement-3-3.py`, nœuds au § 11) dans un worktree neuf ; page à cocher ; publication. Puis lot 4b (§ 11.2).
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
