@@ -11,8 +11,9 @@ _Mis à jour le 2026-10-30, brouillons du lot 4 en prod._
 - **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions) : 10 brouillons en prod (relus au MCP), sans nœud ni tag (§ 8).
 - **Prochaine action** : migration nœud + tag du lot 4 (calquée sur le lot 3, nœuds = sous-notions) + test
   d'intégration, dans un nouveau worktree.
-- **En attente de David** : correctif de la carte de correction (choix `$$…$$` en LaTeX brut, 15 modèles
-  publiés) : recommandé maintenant, en PR de code à part (§ 8) — go ou plus tard ?
+- **En attente de David** : rien. Correctif de la carte de correction (choix `$$…$$` en LaTeX brut,
+  15 modèles publiés) : go le 2026-10-30, chantier À PART `choix-correction` (autre session, § 8).
+  Publier le lot 4 APRÈS le `deploy:prod` de ce correctif (modèle 03 touché).
 - **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
 - **Worktree / branche** : aucun (retiré après #1996) ; migration : nouveau worktree `../ubumaths-wt-questions-ce2`.
 
