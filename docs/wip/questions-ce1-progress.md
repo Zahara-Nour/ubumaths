@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, migration du lot 5 écrite._
+_Mis à jour le 2026-10-30, après #2025._
 
-- **État** : lot 4 (problèmes, 10 modèles, § 10) **publié** en prod (2026-10-30, `publier-lot --publier` par David, 10 `published` au MCP), après relecture 10/10 OK sur la page à cocher (https://claude.ai/artifact/2bUw8csLPAx4rcotvkUjjn). Lots 0 à 4 faits. Lot 5 (longueurs, 6 modèles) mergé (#2022), 6 brouillons en prod (vérifiés au MCP) ; migration nœud + tag `20261030162100` écrite (branche `feat/questions-ce1-lot5-rangement`).
-- **Prochaine action** : PR de la migration, merge, `db:migrate` depuis le dépôt principal, vérification au MCP, page à cocher du lot 5 ; puis lot 5 bis. Le lot 5 bis (masses, monnaie, durées, 9 modèles) suit.
-- **En attente de David** : rien.
+- **État** : lot 4 (problèmes, 10 modèles, § 10) **publié** en prod (2026-10-30, `publier-lot --publier` par David, 10 `published` au MCP), après relecture 10/10 OK sur la page à cocher (https://claude.ai/artifact/2bUw8csLPAx4rcotvkUjjn). Lots 0 à 4 faits. Lot 5 (longueurs, 6 modèles) mergé (#2022), 6 brouillons en prod, rangés et tagués (#2025, `db:migrate` joué, vérifié au MCP) ; page à cocher : https://claude.ai/artifact/2NxcJnRpaLYW8bvydn5w4X.
+- **Prochaine action** : compter les verdicts de la page à cocher (`ArtifactData list verdicts`), corriger les « À revoir », relever les niveaux, `publier-lot` en simulation puis `--publier` par David ; puis lot 5 bis (masses, monnaie, durées). Le lot 5 bis (masses, monnaie, durées, 9 modèles) suit.
+- **En attente de David** : relecture des 6 modèles sur la page à cocher.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`). `!` de David : depuis le dépôt principal, pas `cd` vers le worktree (rien ne s'affiche ni ne s'écrit).
 
@@ -431,3 +431,6 @@ Réponse de David : les quatre recommandations (« je valide »).
   `1bd819dd`), vérifiés au MCP (brouillons, sans nœud ni tag, niveaux voulus, 50 specs). Migration
   `20261030162100_questions_ce1_lot5_rangement_tags` (max des worktrees + 1 min) et test : rouge sans (5 échecs sur 9),
   vert 9/9.
+- 2026-10-30 : #2025 mergée (`security-auditor` sans finding bloquant, CI verte) ; `db:migrate` par David (161000 de
+  questions-ce2 avec) ; vérifié au MCP : 6/6 sur le nœud de leur point, un point chacun, `updated_at` inchangé. Page à
+  cocher publiée, aucune alerte.
