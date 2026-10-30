@@ -1,6 +1,6 @@
 {
 	"title": "Diviser par $8$",
-	"description": "Trois moitiés successives : 128 ÷ 8, 2 432 ÷ 8, quotient décimal 260 ÷ 8 = 32,5",
+	"description": "Trois moitiés successives : 128 ÷ 8, 2 480 ÷ 8, quotient décimal 36 ÷ 8 = 4,5",
 	"grades": ["CM2"],
 	"theme": "Entiers",
 	"domain": "Diviser",
@@ -45,8 +45,12 @@
 			"statement": "Calcule.\n\n$${{n}}\\div 8=?$$",
 			"variables": [
 				{
+					"name": "k",
+					"expression": "13..124"
+				},
+				{
 					"name": "q",
-					"expression": "125..1249"
+					"expression": "eval:10*k"
 				},
 				{
 					"name": "n",
@@ -73,7 +77,7 @@
 			"variables": [
 				{
 					"name": "q",
-					"expression": "2..124"
+					"expression": "1..11"
 				},
 				{
 					"name": "r",
@@ -135,71 +139,82 @@
 			}
 		},
 		{
-			"description": "2 432 ÷ 8 = 304",
+			"description": "2 480 ÷ 8 = 310",
 			"variationIndex": 1,
 			"variables": {
-				"q": "304"
+				"k": "31"
 			},
-			"answers": ["304"],
+			"answers": ["310"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "Erreur : 2 432 ÷ 8 → 608 (deux moitiés seulement)",
+			"description": "Erreur : 2 480 ÷ 8 → 620 (deux moitiés seulement)",
 			"variationIndex": 1,
 			"variables": {
-				"q": "304"
+				"k": "31"
 			},
-			"answers": ["608"],
+			"answers": ["620"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "260 ÷ 8 = 32,5",
-			"variationIndex": 2,
+			"description": "borne : 1 040 ÷ 8 = 130",
+			"variationIndex": 1,
 			"variables": {
-				"q": "32",
-				"r": "4"
+				"k": "13"
 			},
-			"answers": ["32,5"],
+			"answers": ["130"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "Erreur : 260 ÷ 8 → 32 (quotient tronqué)",
+			"description": "36 ÷ 8 = 4,5",
 			"variationIndex": 2,
 			"variables": {
-				"q": "32",
+				"q": "4",
 				"r": "4"
 			},
-			"answers": ["32"],
+			"answers": ["4,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 36 ÷ 8 → 4 (quotient tronqué)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"r": "4"
+			},
+			"answers": ["4"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "258 ÷ 8 = 32,25",
+			"description": "34 ÷ 8 = 4,25",
 			"variationIndex": 2,
 			"variables": {
-				"q": "32",
+				"q": "4",
 				"r": "2"
 			},
-			"answers": ["32,25"],
+			"answers": ["4,25"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "22 ÷ 8 = 2,75",
+			"description": "borne : 94 ÷ 8 = 11,75",
 			"variationIndex": 2,
 			"variables": {
-				"q": "2",
+				"q": "11",
 				"r": "6"
 			},
-			"answers": ["2,75"],
+			"answers": ["11,75"],
 			"expected": {
 				"status": "correct"
 			}
