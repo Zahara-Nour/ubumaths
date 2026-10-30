@@ -231,9 +231,9 @@ retrouver: face, droite
 - Réponse de la case : les hauteurs, écriture du bloc (`2 1 1 / 1 0 1`), `-` pour une case non remplie.
   Attendue : `face, droite : 2 1 1 / 1 0 1` (les vues jugées, puis l'assemblage du générateur).
 - **Juste si l'assemblage de l'élève a les mêmes vues** (dessus, et celles listées) que celui du bloc —
-  plusieurs réponses justes possibles (Q3). Exemple : vues face + droite de `2 1 / 1 2` acceptent aussi
-  `2 2 / 2 2`? Non : la vue de dessus est fixée, mais `1 2 / 2 1`, `2 1 / 1 2` et `2 2 / 1 2`… le juge
-  calcule, il ne compare jamais aux hauteurs du bloc.
+  plusieurs réponses justes possibles (Q3). Exemple : bloc `2 1 / 1 2`, `retrouver: face, droite` (face
+  2 2, droite 2 2) : `1 2 / 2 1` et `2 2 / 2 2` sont justes aussi ; `2 2 / 1 1` est faux (vue de droite).
+  Le juge calcule les vues, il ne compare jamais aux hauteurs du bloc.
 - Correction : une phrase par vue fausse (« Ton assemblage n'a pas la même vue de face. ») ; case vide :
   « Tu n'as pas rempli toutes les cases. » ; une solution dessous (l'assemblage du bloc), avec « Il y a
   d'autres réponses justes. » quand c'est vrai.
