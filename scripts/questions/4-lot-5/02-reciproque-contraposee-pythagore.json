@@ -1,0 +1,373 @@
+{
+	"title": "Réciproque et contraposée de Pythagore",
+	"description": "Dire si un triangle est rectangle par la réciproque ou la contraposée du théorème de Pythagore : trois longueurs données, puis le théorème qui permet de conclure",
+	"grades": ["4"],
+	"theme": "Géométrie",
+	"domain": "Théorème de Pythagore",
+	"subdomain": "Réciproque et contraposée",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{ab}}~\\unit{cm}$, ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$ et ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{eval:bc;d}}~\\unit{cm}$. Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est-il rectangle ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.5\ndescription: Croquis du triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, pas à l'échelle.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point(3, 5.5, etiquette=\"haut\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point(1, 1, etiquette=\"bas-gauche\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point(9, 1, etiquette=\"bas-droite\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\n```\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "0..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:t==0|3|}}{{if:t==1|5|}}{{if:t==2|8|}}{{if:t==3|7|}}{{if:t==4|20|}}{{if:t==5|6|}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{if:t==0|4|}}{{if:t==1|12|}}{{if:t==2|15|}}{{if:t==3|24|}}{{if:t==4|21|}}{{if:t==5|8|}}"
+				},
+				{
+					"name": "hy",
+					"expression": "{{if:t==0|5|}}{{if:t==1|13|}}{{if:t==2|17|}}{{if:t==3|25|}}{{if:t==4|29|}}{{if:t==5|10|}}"
+				},
+				{
+					"name": "ab",
+					"expression": "eval:k*p"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:k*q"
+				},
+				{
+					"name": "w",
+					"expression": "0..1"
+				},
+				{
+					"name": "h",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "bc",
+					"expression": "eval:k*hy + w*h/10;d"
+				}
+			],
+			"conditions": ["k*hy <= 25"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ est le plus long côté. On calcule séparément :",
+					"$${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{eval:bc}}^2 = {{eval:bc^2;d}}$$ $${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{ab}}^2 + {{ac}}^2 = {{eval:ab^2}} + {{eval:ac^2}} = {{eval:ab^2+ac^2}}$$",
+					"{{if:w==0|Les deux résultats sont **égaux** : d'après la **réciproque du théorème de Pythagore**, le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est **rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$**.|Les deux résultats sont **différents** : d'après la **contraposée du théorème de Pythagore**, le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ n'est **pas rectangle**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Dans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ est le plus long côté, et on a calculé : ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{eval:bc^2}}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{eval:ab^2+ac^2}}$. Quel théorème permet de conclure que le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ ?\n\n```choix\n- La réciproque du théorème de Pythagore\n- Le théorème de Pythagore\n- La contraposée du théorème de Pythagore\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "0..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:t==0|3|}}{{if:t==1|5|}}{{if:t==2|8|}}{{if:t==3|7|}}{{if:t==4|20|}}{{if:t==5|6|}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{if:t==0|4|}}{{if:t==1|12|}}{{if:t==2|15|}}{{if:t==3|24|}}{{if:t==4|21|}}{{if:t==5|8|}}"
+				},
+				{
+					"name": "hy",
+					"expression": "{{if:t==0|5|}}{{if:t==1|13|}}{{if:t==2|17|}}{{if:t==3|25|}}{{if:t==4|29|}}{{if:t==5|10|}}"
+				},
+				{
+					"name": "ab",
+					"expression": "eval:k*p"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:k*q"
+				},
+				{
+					"name": "bc",
+					"expression": "eval:k*hy"
+				},
+				{
+					"name": "h",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["k*hy <= 30"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part des longueurs (les carrés sont égaux) pour conclure sur le triangle.",
+					"C'est la **réciproque** : « si ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2$, alors le triangle est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ ». Le théorème de Pythagore fait l'inverse : il part d'un triangle rectangle.",
+					"$$\\textcolor{{{color:primary.0}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2}$$"
+				]
+			}
+		},
+		{
+			"statement": "Dans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ est le plus long côté, et on a calculé : ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{eval:bc^2}}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{eval:ab^2+ac^2+h}}$. Quel théorème permet de conclure que le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ n'est pas rectangle ?\n\n```choix\n- La contraposée du théorème de Pythagore\n- Le théorème de Pythagore\n- La réciproque du théorème de Pythagore\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "0..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:t==0|3|}}{{if:t==1|5|}}{{if:t==2|8|}}{{if:t==3|7|}}{{if:t==4|20|}}{{if:t==5|6|}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{if:t==0|4|}}{{if:t==1|12|}}{{if:t==2|15|}}{{if:t==3|24|}}{{if:t==4|21|}}{{if:t==5|8|}}"
+				},
+				{
+					"name": "hy",
+					"expression": "{{if:t==0|5|}}{{if:t==1|13|}}{{if:t==2|17|}}{{if:t==3|25|}}{{if:t==4|29|}}{{if:t==5|10|}}"
+				},
+				{
+					"name": "ab",
+					"expression": "eval:k*p"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:k*q"
+				},
+				{
+					"name": "bc",
+					"expression": "eval:k*hy"
+				},
+				{
+					"name": "h",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["k*hy <= 30"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part des longueurs (les carrés sont différents) pour conclure sur le triangle.",
+					"C'est la **contraposée** : « si ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 \\neq {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2$, alors le triangle n'est pas rectangle ». Elle est vraie parce que le théorème de Pythagore est vrai.",
+					"$$\\textcolor{{{color:primary.0}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 \\neq {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "6 ; 8 ; 10 : oui",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "2",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "6",
+				"ac": "8",
+				"bc": "10",
+				"w": "0",
+				"h": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "6 ; 8 ; 10 : « non » faux",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "2",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "6",
+				"ac": "8",
+				"bc": "10",
+				"w": "0",
+				"h": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 ; 8 ; 10,1 : non",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "2",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "6",
+				"ac": "8",
+				"bc": "10.1",
+				"w": "1",
+				"h": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « oui » au presque-triplet",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "2",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "6",
+				"ac": "8",
+				"bc": "10.1",
+				"w": "1",
+				"h": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Égalité : la réciproque",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "1",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "3",
+				"ac": "4",
+				"bc": "5",
+				"h": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « le théorème de Pythagore »",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "1",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "3",
+				"ac": "4",
+				"bc": "5",
+				"h": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Différence : la contraposée",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "1",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "3",
+				"ac": "4",
+				"bc": "5",
+				"h": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la réciproque",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "1",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "3",
+				"ac": "4",
+				"bc": "5",
+				"h": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

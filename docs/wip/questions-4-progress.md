@@ -671,3 +671,26 @@ les élèves de 4e voient 7 modèles de plus.
    (Réciproque et contraposée 1), **Calcul littéral / Produire une formule** (Aires 1) ?
 3. Pythagore : valeur exacte `\sqrt{n}` seulement avec n sans facteur carré (√50 = 5√2 est de 3e-2de), ou aussi √50
    accepté tel quel ?
+
+**Décisions de David (2026-10-30, « je te suis »)** : les 7 modèles du § 25.2 ; catégories Géométrie / Théorème de
+Pythagore (Calculer une longueur 1, Réciproque et contraposée 1), Géométrie / Triangles (Droite des milieux 1, Cercle
+circonscrit 1 et 2), Géométrie / Raisonner (Réciproque et contraposée 1), Calcul littéral / Produire une formule
+(Aires 1) ; valeur exacte de Pythagore : `\sqrt{n}` avec n sans facteur carré seulement.
+
+## 26. Lot 5 : écrit (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-5`)
+
+- Script `docs/wip/questions/lot-4-5.py` (repris de `lot-3-3.py` de la 3e) → `scripts/questions/4-lot-5/` : 7 modèles ;
+  `question:specs` : 69 specs vertes, 200 tirages par variation réussis ; `create-questions` (simulation, prod) : 7 « à
+  créer », 0 en base.
+- Base locale : 7 brouillons ; aperçu admin : triangle rectangle à l'échelle, droite des milieux codée, demi-cercle,
+  hauteur intérieure et extérieure.
+- Corrigé en écrivant :
+  - 4-075 : `b\times h` signalé « forme non optimale » (contrainte `products`, qui veut `bh`) → `products` et `form`
+    coupées pour ce modèle (toute écriture égale acceptée, phase 0) ;
+  - fenêtre de la figure de Pythagore à hauteur variable (triangle 24 × 7 perdu dans une fenêtre trop haute) ;
+  - « On donne et KL = … » avec une seule longueur ;
+  - centre du cercle nommé « W » dans un jeu de lettres → `O`, `I`, `P`.
+- ⚠️ **Piège** : `mtexte()` n'est **pas** pris en charge dans une figure de question (« figure non dessinée »), et
+  `question:specs` ne le voit pas. Sonde faite pour l'occasion (`scripts/questions/.sonde-figures-tmp.ts`, non suivie,
+  calquée sur `sonde-courbes.ts`) : 300 tirages par modèle, chaque ` ```figure ` passé à `buildFigureScene` →
+  0 problème (1 607 figures) ; elle attrape bien `mtexte()` remis exprès.

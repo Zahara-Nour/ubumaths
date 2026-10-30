@@ -1,0 +1,220 @@
+{
+	"title": "Centre du cercle circonscrit",
+	"description": "Le centre du cercle circonscrit à un triangle rectangle est le milieu de l'hypoténuse : le placer, calculer le rayon, puis le rayon après Pythagore",
+	"grades": ["4"],
+	"theme": "Géométrie",
+	"domain": "Triangles",
+	"subdomain": "Cercle circonscrit",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. Où est le centre du cercle circonscrit au triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7.5\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|8|10 - (8)}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, 6, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\n```\n\n```choix\n- Au milieu de $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$\n- En ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$\n- Au milieu de $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}]$\n- À l'intérieur du triangle, loin des côtés\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un triangle rectangle, le centre du cercle circonscrit est le **milieu de l'hypoténuse**.",
+					"L'hypoténuse est le côté opposé à l'angle droit, $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ : le centre est \\textcolor{{{color:primary.0}}}{\\text{le milieu de }[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]}."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{bc}}~\\unit{cm}$. Calcule le rayon du cercle circonscrit au triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7.5\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|8|10 - (8)}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, 6, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\n```\n\n$r = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "bc",
+					"expression": "5..19"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:bc/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un triangle rectangle, le centre du cercle circonscrit est le **milieu de l'hypoténuse**. L'hypoténuse $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ est donc un **diamètre** du cercle.",
+					"$$r = \\dfrac{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{2} = \\dfrac{{{bc}}}{2} = \\textcolor{{{color:primary.0}}}{{{eval:bc/2;d}}~\\unit{cm}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{ab}}~\\unit{cm}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$. Calcule le rayon du cercle circonscrit au triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; {{eval:round(10*(2.2 + 7*ac/max(ab, ac)))/10;d}}\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|{{eval:round(100*(1 + 7*ab/max(ab, ac)))/100;d}}|10 - ({{eval:round(100*(1 + 7*ab/max(ab, ac)))/100;d}})}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, {{eval:round(100*(1 + 7*ac/max(ab, ac)))/100;d}}, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\n```\n\n$r = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "t",
+					"expression": "0..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:t==0|3|}}{{if:t==1|5|}}{{if:t==2|8|}}{{if:t==3|7|}}{{if:t==4|20|}}{{if:t==5|6|}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{if:t==0|4|}}{{if:t==1|12|}}{{if:t==2|15|}}{{if:t==3|24|}}{{if:t==4|21|}}{{if:t==5|8|}}"
+				},
+				{
+					"name": "hy",
+					"expression": "{{if:t==0|5|}}{{if:t==1|13|}}{{if:t==2|17|}}{{if:t==3|25|}}{{if:t==4|29|}}{{if:t==5|10|}}"
+				},
+				{
+					"name": "r",
+					"expression": "0..1"
+				},
+				{
+					"name": "ab",
+					"expression": "eval:k*(r*q + (1-r)*p)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:k*(r*p + (1-r)*q)"
+				},
+				{
+					"name": "bc",
+					"expression": "eval:k*hy"
+				}
+			],
+			"conditions": ["k*hy <= 30"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:bc/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"D'après le **théorème de Pythagore** : $${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{ab}}^2 + {{ac}}^2 = {{eval:ab^2+ac^2}} \\quad\\text{donc}\\quad {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{bc}}~\\unit{cm}$$",
+					"Dans un triangle rectangle, le centre du cercle circonscrit est le **milieu de l'hypoténuse**. $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ est un diamètre : $$r = \\dfrac{{{bc}}}{2} = \\textcolor{{{color:primary.0}}}{{{eval:bc/2;d}}~\\unit{cm}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Milieu de [BC]",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : en A",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BC = 13 : r = 6,5",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"bc": "13"
+			},
+			"answers": ["6{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : r = BC = 13 (diamètre)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"bc": "13"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB = 6, AC = 8 : r = 5",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "2",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "6",
+				"ac": "8",
+				"bc": "10"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le diamètre, 10",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "2",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "6",
+				"ac": "8",
+				"bc": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
