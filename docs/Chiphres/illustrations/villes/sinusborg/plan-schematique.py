@@ -7,7 +7,7 @@
 # Côte basse de dunes et de plages, forêts de pins derrière.
 # --reference-ia : référence pour l'IA (qui recopie tout) : aucun texte.
 # Rendu PNG : chrome-headless-shell de Playwright (--screenshot) ; magick ne trouve pas les polices.
-import math, sys
+import math, random, sys
 
 W = H = 1000
 INK = '#1B2232'
@@ -79,10 +79,18 @@ for x0, y0 in ((120, 110), (820, 90), (300, 60)):  # houle
 
 # la Vistule arrive du sud et se partage en trois bras jusqu'à la mer
 trunk = [(FORK[0] + 25 * math.sin((y - FORK[1]) / 50) * min(1, (y - FORK[1]) / 60), y) for y in range(1010, FORK[1] - 1, -10)]
+
+
+def meander(pts, amp, waves):
+    # bras sinueux (David, 2026-10-30 : des bras trop parfaits) ; écart nul à la fourche et au bout
+    n = len(pts) - 1
+    return [(x + amp * math.sin(math.pi * k / n) * math.sin(waves * math.pi * k / n), y) for k, (x, y) in enumerate(pts)]
+
+
 ARMS = [
-    bezier(FORK, (420, 760), (260, 560), (230, coast_y(230) - 70)),  # bras ouest
-    bezier(FORK, (500, 700), (500, 520), (500, 330)),  # bras du milieu, jusqu'au bassin
-    bezier(FORK, (580, 760), (740, 560), (770, coast_y(770) - 70)),  # bras est
+    meander(bezier(FORK, (420, 760), (260, 560), (230, coast_y(230) - 70)), 30, 3),  # bras ouest
+    meander(bezier(FORK, (500, 700), (500, 520), (500, 330)), 22, 2.5),  # bras du milieu, jusqu'au bassin
+    meander(bezier(FORK, (580, 760), (740, 560), (770, coast_y(770) - 70)), 30, 3.5),  # bras est
 ]
 for pts in [trunk] + ARMS:
     add(f'<path d="{path(pts)}" fill="none" stroke="{INK}" stroke-width="{ARM_W + 6}" stroke-linejoin="round" '
@@ -123,8 +131,8 @@ street = mix(BROWN, 0.3)
 CROSS = (470, 660)
 for y in CROSS:
     add(f'<line x1="120" y1="{y}" x2="880" y2="{y}" stroke="{street}" stroke-width="11"/>')
-add(f'<line x1="{bx - 22}" y1="{by + 10}" x2="{bx - 22}" y2="780" stroke="{street}" stroke-width="11"/>')  # quai principal
-add(f'<line x1="{bx + bw + 22}" y1="{by + 40}" x2="{bx + bw + 22}" y2="780" stroke="{street}" stroke-width="11"/>')
+add(f'<line x1="{bx - 22}" y1="{by + 10}" x2="{bx - 22}" y2="{CROSS[1]}" stroke="{street}" stroke-width="11"/>')  # quai principal
+add(f'<line x1="{bx + bw + 22}" y1="{by + 40}" x2="{bx + bw + 22}" y2="{CROSS[1]}" stroke="{street}" stroke-width="11"/>')
 add(f'<line x1="{bx - 22}" y1="{by + bh + 8}" x2="{bx + bw + 22}" y2="{by + bh + 8}" stroke="{street}" stroke-width="11"/>')
 
 # 5. Les Ponts du delta : un pont à chaque croisement d'une rue transversale et d'un bras
@@ -149,21 +157,58 @@ CRANE = (bx - 22, by + 35)
 RESID = (bx - 70, by + 110)
 free = [(CRANE[0], CRANE[1], 50), (RESID[0], RESID[1], 48)]
 
-# maisons à toits en sinusoïdes, sur les îlots et les rives, sauf sur l'eau, les rues et les lieux
-colors = [mix(c, 0.55) for c in (PURPLE, SEA, GOLD, '#2E7D6B', BROWN)]
-for gx in range(110, 891, 30):
-    for gy in range(by + 5, 800, 26):
-        if ((gx - 500) / 400) ** 2 + ((gy - 500) / 310) ** 2 > 1 or gy < coast_y(gx) + 12:
+# quelques lieux sans nom, pour la diversité (David, 2026-10-30) : église, place du marché, entrepôts, jardins
+CHURCH = (345, 565)
+MARKET = (655, 400)
+free += [(CHURCH[0], CHURCH[1], 34), (MARKET[0], MARKET[1], 40)]
+
+
+def occupied(x, y, margin=0):
+    if ((x - 500) / 400) ** 2 + ((y - 500) / 310) ** 2 > 1 or y < coast_y(x) + 12:
+        return True
+    if any(math.hypot(x - fx, y - fy) < fr + margin for fx, fy, fr in free):
+        return True
+    if bx - 40 < x < bx + bw + 40 and y < by + bh + 25:
+        return True
+    if any(dist_to(pts, x, y) < ARM_W / 2 + 14 + margin for pts in ARMS):
+        return True
+    if any(abs(y - c) < 14 + margin for c in CROSS):
+        return True
+    return y < CROSS[1] + 10 and any(abs(x - c) < 14 + margin for c in (bx - 22, bx + bw + 22))
+
+
+# maisons à toits en sinusoïdes, de tailles et d'orientations variées, en îlots irréguliers avec cours et jardins
+rng = random.Random(7)
+colors = [mix(c, 0.55) for c in (PURPLE, SEA, GOLD, '#2E7D6B', BROWN, '#B5562F')]
+for gx in range(110, 891, 27):
+    for gy in range(by + 5, 800, 24):
+        x, y = gx + rng.uniform(-4, 4), gy + rng.uniform(-3, 3)
+        if occupied(x, y):
             continue
-        if any(math.hypot(gx - fx, gy - fy) < fr for fx, fy, fr in free):
-            continue
-        if bx - 40 < gx < bx + bw + 40 and gy < by + bh + 25:
-            continue
-        if any(dist_to(pts, gx, gy) < ARM_W / 2 + 18 for pts in ARMS):
-            continue
-        if any(abs(gy - y) < 14 for y in CROSS) or any(abs(gx - x) < 14 for x in (bx - 22, bx + bw + 22)):
-            continue
-        house(gx - 11, gy - 9, 22, 18, colors[(gx * 7 + gy * 3) // 13 % len(colors)])
+        r = rng.random()
+        if r < 0.07:  # jardin ou cour plantée
+            add(f'<rect x="{x - 13:.1f}" y="{y - 11:.1f}" width="26" height="22" rx="3" fill="{mix(GREEN, 0.4)}" '
+                f'stroke="{INK}" stroke-width="0.8"/><circle cx="{x:.1f}" cy="{y:.1f}" r="6" fill="{mix("#1F5E3A", 0.7)}" '
+                f'stroke="{INK}" stroke-width="0.8"/>')
+        elif r < 0.11:
+            continue  # petite place vide
+        elif r < 0.18 and not occupied(x + 14, y, 4) and not occupied(x - 14, y, 4):  # entrepôt long
+            house(x - 24, y - 9, 48, 18, mix(BROWN, 0.7))
+        else:
+            w, h = rng.choice([(12, 20), (16, 14), (20, 16), (22, 12), (11, 11), (18, 20)])
+            house(x - w / 2, y - h / 2, w, h, rng.choice(colors))
+
+# église au clocher de cuivre vert (îlot ouest)
+ex, ey = CHURCH
+add(f'<path d="M{ex - 12},{ey - 26} h24 v18 h14 v16 h-14 v18 h-24 v-18 h-14 v-16 h14 Z" fill="{mix(BROWN, 0.45)}" '
+    f'stroke="{INK}" stroke-width="1.4"/><circle cx="{ex}" cy="{ey - 26}" r="8" fill="{mix("#2E7D6B", 0.8)}" '
+    f'stroke="{INK}" stroke-width="1.2"/>')
+# place du marché aux poissons (îlot est) : place pavée, étals
+mx, my = MARKET
+add(f'<rect x="{mx - 34}" y="{my - 28}" width="68" height="56" fill="{mix(GOLD, 0.18)}" stroke="{INK}" stroke-width="1.4"/>')
+for dx, dy in ((-20, -14), (4, -14), (-20, 8), (4, 8)):
+    add(f'<rect x="{mx + dx}" y="{my + dy}" width="16" height="10" fill="{mix(SEA, 0.6)}" stroke="{INK}" stroke-width="0.9"/>')
+add(f'<circle cx="{mx + 26}" cy="{my}" r="4" fill="{water}" stroke="{INK}" stroke-width="0.9"/>')  # puits
 
 # la Grue du Port : grande grue de bois au bord de l'eau, flèche au-dessus du bassin
 cx, cy = CRANE
