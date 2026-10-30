@@ -1,0 +1,198 @@
+{
+	"title": "Repérer un point par une fraction décimale",
+	"description": "Lire le nombre qui repère un point d'une demi-droite graduée en dixièmes (A repère 23/10), ou d'un morceau de droite gradué en centièmes (A repère 237/100)",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 5,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel nombre repère le point $A$ ? Écris-le sous la forme d'une fraction décimale.\n\n```line\nstart: {{q}}\nend: {{eval:q+1}}\nstep: 1/10\nmajor: 10\npoints: A={{n}}/10\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "0..4"
+				},
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{10}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'unité.** De ${{q}}$ à ${{eval:q+1}}$, l'unité est partagée en $10$ parts égales : chaque petit intervalle vaut $\\frac{1}{10}$.",
+					"${{q}} = \\frac{{{eval:10*q}}}{10}$ ; le point $A$ est ${{r}}$ petit{{if:r>1|s|}} intervalle{{if:r>1|s|}} plus loin : il repère $\\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{10}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ? Écris-le sous la forme d'une fraction décimale.\n\n```line\nstart: {{t}}/10\nend: {{eval:t+1}}/10\nstep: 1/100\nmajor: 10\nlabels: {{t}}/10, {{eval:t+1}}/10\npoints: A={{n}}/100\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1..49"
+				},
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*t+r"
+				}
+			],
+			"conditions": ["mod(t,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{100}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le dixième.** De $\\frac{{{t}}}{10}$ à $\\frac{{{eval:t+1}}}{10}$, il y a un dixième, partagé en $10$ parts égales : chaque petit intervalle vaut $\\frac{1}{100}$.",
+					"$\\frac{{{t}}}{10} = \\frac{{{eval:10*t}}}{100}$ ; le point $A$ est ${{r}}$ petit{{if:r>1|s|}} intervalle{{if:r>1|s|}} plus loin : il repère $\\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{100}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A repère 23/10",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"r": "3",
+				"n": "23"
+			},
+			"answers": ["\\frac{23}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "A repère 230/100, même valeur",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"r": "3",
+				"n": "23"
+			},
+			"answers": ["\\frac{230}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/10 (unités oubliées)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"r": "3",
+				"n": "23"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 2,3 (écriture à virgule)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"r": "3",
+				"n": "23"
+			},
+			"answers": ["2.3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "A repère 237/100",
+			"variationIndex": 1,
+			"variables": {
+				"t": "23",
+				"r": "7",
+				"n": "237"
+			},
+			"answers": ["\\frac{237}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/100 (départ oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "23",
+				"r": "7",
+				"n": "237"
+			},
+			"answers": ["\\frac{7}{100}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 30/10 (dixième suivant)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "23",
+				"r": "7",
+				"n": "237"
+			},
+			"answers": ["\\frac{30}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 27/10 (centièmes lus comme des dixièmes)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "23",
+				"r": "7",
+				"n": "237"
+			},
+			"answers": ["\\frac{27}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 2,37 (écriture à virgule)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "23",
+				"r": "7",
+				"n": "237"
+			},
+			"answers": ["2.37"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

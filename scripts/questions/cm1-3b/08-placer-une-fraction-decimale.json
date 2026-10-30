@@ -1,0 +1,145 @@
+{
+	"title": "Placer une fraction décimale sur une demi-droite graduée",
+	"description": "Placer une fraction décimale sur une demi-droite graduée en dixièmes (place 23/10), ou sur un morceau de droite gradué en centièmes (place 237/100), en touchant la droite",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 6,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Place le nombre $\\frac{{{n}}}{10}$ sur la demi-droite graduée.\n\n```line\nstart: {{q}}\nend: {{eval:q+1}}\nstep: 1/10\nmajor: 10\nplacer: {{n}}/10\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "0..4"
+				},
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*q+r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'unité.** De ${{q}}$ à ${{eval:q+1}}$, l'unité est partagée en $10$ parts égales : chaque petit intervalle vaut $\\frac{1}{10}$.",
+					"$\\frac{{{n}}}{10} = {{q}} + \\frac{{{r}}}{10}$ : on part de la graduation ${{q}}$ et on avance de ${{r}}$ petit{{if:r>1|s|}} intervalle{{if:r>1|s|}}."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre $\\frac{{{n}}}{100}$ sur la demi-droite graduée.\n\n```line\nstart: {{t}}/10\nend: {{eval:t+1}}/10\nstep: 1/100\nmajor: 10\nlabels: {{t}}/10, {{eval:t+1}}/10\nplacer: {{n}}/100\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1..49"
+				},
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*t+r"
+				}
+			],
+			"conditions": ["mod(t,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Le dixième.** De $\\frac{{{t}}}{10}$ à $\\frac{{{eval:t+1}}}{10}$, il y a un dixième, partagé en $10$ parts égales : chaque petit intervalle vaut $\\frac{1}{100}$.",
+					"$\\frac{{{n}}}{100} = \\frac{{{eval:10*t}}}{100} + \\frac{{{r}}}{100}$ : on part de $\\frac{{{t}}}{10}$ et on avance de ${{r}}$ petit{{if:r>1|s|}} intervalle{{if:r>1|s|}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "23/10 placé",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"r": "3",
+				"n": "23"
+			},
+			"answers": ["2.3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/10 (unités oubliées)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"r": "3",
+				"n": "23"
+			},
+			"answers": ["0.3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,4",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"r": "3",
+				"n": "23"
+			},
+			"answers": ["2.4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "237/100 placé",
+			"variationIndex": 1,
+			"variables": {
+				"t": "23",
+				"r": "7",
+				"n": "237"
+			},
+			"answers": ["2.37"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,33 (intervalles comptés depuis la fin)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "23",
+				"r": "7",
+				"n": "237"
+			},
+			"answers": ["2.33"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,4 (dixième suivant)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "23",
+				"r": "7",
+				"n": "237"
+			},
+			"answers": ["2.4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

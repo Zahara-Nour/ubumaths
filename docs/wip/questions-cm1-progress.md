@@ -469,3 +469,25 @@ Questions :
 3. **Droite zoomée** de 23/10 à 24/10 pour les centièmes (151 V2, 025 V2) : d'accord ?
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 10 bis. Lot 3b : réponse de David (2026-10-30)
+
+« je te suis », en réponse aux trois questions du § 10 et à leurs recommandations : écriture à
+virgule refusée dans les cases « fraction décimale » (`requiredForm: 'fraction'`) ; intercaler :
+toute fraction strictement entre les bornes est juste (règle `range`) ; droite agrandie de 23/10 à
+24/10 pour les centièmes.
+
+### 10 ter. Lot 3b — écriture (2026-10-30)
+
+- Script `docs/wip/questions/lot-cm1-3b.py` → `scripts/questions/cm1-3b/` (8 JSON).
+- Nombres en lettres en orthographe rectifiée (règle du lot CE2 2) : « deux-cent-trente-sept
+  centièmes », « soixante-et-onze dixièmes » ; numérateurs pris dans une liste.
+- **Écarts à la phase 0** : ranger, toujours dans l'ordre a/10 < k < b/100 < c/10 < k + 1 (le
+  centième au grand numérateur est plus petit qu'un dixième, comme 120/100 et 14/10) ; spec
+  « 14,5/10 » retirée (accepté par la règle `range`, cas exotique).
+- `question:specs` 300 tirages par variation : tout réussi ; `create-questions` en simulation
+  (prod) : 8/8 verts, 54 specs. Base locale : 8 brouillons.
+- **Défaut trouvé à l'aperçu** : sur la droite en centièmes, les étiquettes en fraction (1/10,
+  2/10) sont coupées en bas (math-field de 42 px dans une zone de 30 px,
+  `NumberLine.svelte`). Le lot 3a n'avait que des entiers. Correctif dans une PR à part, avant
+  celle du lot.

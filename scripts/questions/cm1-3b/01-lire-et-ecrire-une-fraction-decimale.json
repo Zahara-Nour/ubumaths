@@ -1,0 +1,196 @@
+{
+	"title": "Lire et écrire une fraction décimale",
+	"description": "Vingt-trois centièmes ↔ 23/100 : écrire en chiffres une fraction décimale donnée en lettres, la lire parmi quatre écritures ; dénominateur 10 ou 100",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 7,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris en chiffres la fraction « **{{if:c==3|trois dixièmes|{{if:c==7|sept dixièmes|{{if:c==9|neuf dixièmes|{{if:c==13|treize dixièmes|{{if:c==17|dix-sept dixièmes|{{if:c==23|vingt-trois dixièmes|{{if:c==31|trente-et-un dixièmes|{{if:c==46|quarante-six dixièmes|{{if:c==58|cinquante-huit dixièmes|{{if:c==64|soixante-quatre dixièmes|{{if:c==71|soixante-et-onze dixièmes|{{if:c==85|quatre-vingt-cinq dixièmes|{{if:c==92|quatre-vingt-douze dixièmes|{{if:c==99|quatre-vingt-dix-neuf dixièmes|{{if:c==1007|sept centièmes|{{if:c==1009|neuf centièmes|{{if:c==1023|vingt-trois centièmes|{{if:c==1045|quarante-cinq centièmes|{{if:c==1060|soixante centièmes|{{if:c==1081|quatre-vingt-un centièmes|{{if:c==1099|quatre-vingt-dix-neuf centièmes|{{if:c==1105|cent-cinq centièmes|{{if:c==1237|deux-cent-trente-sept centièmes|{{if:c==1308|trois-cent-huit centièmes|{{if:c==1450|quatre-cent-cinquante centièmes|{{if:c==1512|cinq-cent-douze centièmes|{{if:c==1671|six-cent-soixante-et-onze centièmes|{{if:c==1796|sept-cent-quatre-vingt-seize centièmes|neuf-cent-quatre-vingt-dix-neuf centièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}** ».\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "3|7|9|13|17|23|31|46|58|64|71|85|92|99|1007|1009|1023|1045|1060|1081|1099|1105|1237|1308|1450|1512|1671|1796|1999"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:c>1000|100|10}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:mod(c,1000)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{{{d}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **dixième**, c'est l'unité partagée en $10$ parts égales : $\\frac{1}{10}$. Un **centième**, en $100$ parts égales : $\\frac{1}{100}$.",
+					"« {{if:c==3|trois dixièmes|{{if:c==7|sept dixièmes|{{if:c==9|neuf dixièmes|{{if:c==13|treize dixièmes|{{if:c==17|dix-sept dixièmes|{{if:c==23|vingt-trois dixièmes|{{if:c==31|trente-et-un dixièmes|{{if:c==46|quarante-six dixièmes|{{if:c==58|cinquante-huit dixièmes|{{if:c==64|soixante-quatre dixièmes|{{if:c==71|soixante-et-onze dixièmes|{{if:c==85|quatre-vingt-cinq dixièmes|{{if:c==92|quatre-vingt-douze dixièmes|{{if:c==99|quatre-vingt-dix-neuf dixièmes|{{if:c==1007|sept centièmes|{{if:c==1009|neuf centièmes|{{if:c==1023|vingt-trois centièmes|{{if:c==1045|quarante-cinq centièmes|{{if:c==1060|soixante centièmes|{{if:c==1081|quatre-vingt-un centièmes|{{if:c==1099|quatre-vingt-dix-neuf centièmes|{{if:c==1105|cent-cinq centièmes|{{if:c==1237|deux-cent-trente-sept centièmes|{{if:c==1308|trois-cent-huit centièmes|{{if:c==1450|quatre-cent-cinquante centièmes|{{if:c==1512|cinq-cent-douze centièmes|{{if:c==1671|six-cent-soixante-et-onze centièmes|{{if:c==1796|sept-cent-quatre-vingt-seize centièmes|neuf-cent-quatre-vingt-dix-neuf centièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} » : le dénominateur est ${{d}}$, le numérateur ${{n}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{{{d}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Comment lit-on la fraction $\\frac{{{n}}}{{{d}}}$ ?\n\n```choix\n- {{if:c==3|trois dixièmes|{{if:c==7|sept dixièmes|{{if:c==9|neuf dixièmes|{{if:c==13|treize dixièmes|{{if:c==17|dix-sept dixièmes|{{if:c==23|vingt-trois dixièmes|{{if:c==31|trente-et-un dixièmes|{{if:c==46|quarante-six dixièmes|{{if:c==58|cinquante-huit dixièmes|{{if:c==64|soixante-quatre dixièmes|{{if:c==71|soixante-et-onze dixièmes|{{if:c==85|quatre-vingt-cinq dixièmes|{{if:c==92|quatre-vingt-douze dixièmes|{{if:c==99|quatre-vingt-dix-neuf dixièmes|{{if:c==1007|sept centièmes|{{if:c==1009|neuf centièmes|{{if:c==1023|vingt-trois centièmes|{{if:c==1045|quarante-cinq centièmes|{{if:c==1060|soixante centièmes|{{if:c==1081|quatre-vingt-un centièmes|{{if:c==1099|quatre-vingt-dix-neuf centièmes|{{if:c==1105|cent-cinq centièmes|{{if:c==1237|deux-cent-trente-sept centièmes|{{if:c==1308|trois-cent-huit centièmes|{{if:c==1450|quatre-cent-cinquante centièmes|{{if:c==1512|cinq-cent-douze centièmes|{{if:c==1671|six-cent-soixante-et-onze centièmes|{{if:c==1796|sept-cent-quatre-vingt-seize centièmes|neuf-cent-quatre-vingt-dix-neuf centièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:c==3|trois centièmes|{{if:c==7|sept centièmes|{{if:c==9|neuf centièmes|{{if:c==13|treize centièmes|{{if:c==17|dix-sept centièmes|{{if:c==23|vingt-trois centièmes|{{if:c==31|trente-et-un centièmes|{{if:c==46|quarante-six centièmes|{{if:c==58|cinquante-huit centièmes|{{if:c==64|soixante-quatre centièmes|{{if:c==71|soixante-et-onze centièmes|{{if:c==85|quatre-vingt-cinq centièmes|{{if:c==92|quatre-vingt-douze centièmes|{{if:c==99|quatre-vingt-dix-neuf centièmes|{{if:c==1007|sept dixièmes|{{if:c==1009|neuf dixièmes|{{if:c==1023|vingt-trois dixièmes|{{if:c==1045|quarante-cinq dixièmes|{{if:c==1060|soixante dixièmes|{{if:c==1081|quatre-vingt-un dixièmes|{{if:c==1099|quatre-vingt-dix-neuf dixièmes|{{if:c==1105|cent-cinq dixièmes|{{if:c==1237|deux-cent-trente-sept dixièmes|{{if:c==1308|trois-cent-huit dixièmes|{{if:c==1450|quatre-cent-cinquante dixièmes|{{if:c==1512|cinq-cent-douze dixièmes|{{if:c==1671|six-cent-soixante-et-onze dixièmes|{{if:c==1796|sept-cent-quatre-vingt-seize dixièmes|neuf-cent-quatre-vingt-dix-neuf dixièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:c==3|trois millièmes|{{if:c==7|sept millièmes|{{if:c==9|neuf millièmes|{{if:c==13|treize millièmes|{{if:c==17|dix-sept millièmes|{{if:c==23|vingt-trois millièmes|{{if:c==31|trente-et-un millièmes|{{if:c==46|quarante-six millièmes|{{if:c==58|cinquante-huit millièmes|{{if:c==64|soixante-quatre millièmes|{{if:c==71|soixante-et-onze millièmes|{{if:c==85|quatre-vingt-cinq millièmes|{{if:c==92|quatre-vingt-douze millièmes|{{if:c==99|quatre-vingt-dix-neuf millièmes|{{if:c==1007|sept millièmes|{{if:c==1009|neuf millièmes|{{if:c==1023|vingt-trois millièmes|{{if:c==1045|quarante-cinq millièmes|{{if:c==1060|soixante millièmes|{{if:c==1081|quatre-vingt-un millièmes|{{if:c==1099|quatre-vingt-dix-neuf millièmes|{{if:c==1105|cent-cinq millièmes|{{if:c==1237|deux-cent-trente-sept millièmes|{{if:c==1308|trois-cent-huit millièmes|{{if:c==1450|quatre-cent-cinquante millièmes|{{if:c==1512|cinq-cent-douze millièmes|{{if:c==1671|six-cent-soixante-et-onze millièmes|{{if:c==1796|sept-cent-quatre-vingt-seize millièmes|neuf-cent-quatre-vingt-dix-neuf millièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:c==3|trois dizaines|{{if:c==7|sept dizaines|{{if:c==9|neuf dizaines|{{if:c==13|treize dizaines|{{if:c==17|dix-sept dizaines|{{if:c==23|vingt-trois dizaines|{{if:c==31|trente-et-un dizaines|{{if:c==46|quarante-six dizaines|{{if:c==58|cinquante-huit dizaines|{{if:c==64|soixante-quatre dizaines|{{if:c==71|soixante-et-onze dizaines|{{if:c==85|quatre-vingt-cinq dizaines|{{if:c==92|quatre-vingt-douze dizaines|{{if:c==99|quatre-vingt-dix-neuf dizaines|{{if:c==1007|sept centaines|{{if:c==1009|neuf centaines|{{if:c==1023|vingt-trois centaines|{{if:c==1045|quarante-cinq centaines|{{if:c==1060|soixante centaines|{{if:c==1081|quatre-vingt-un centaines|{{if:c==1099|quatre-vingt-dix-neuf centaines|{{if:c==1105|cent-cinq centaines|{{if:c==1237|deux-cent-trente-sept centaines|{{if:c==1308|trois-cent-huit centaines|{{if:c==1450|quatre-cent-cinquante centaines|{{if:c==1512|cinq-cent-douze centaines|{{if:c==1671|six-cent-soixante-et-onze centaines|{{if:c==1796|sept-cent-quatre-vingt-seize centaines|neuf-cent-quatre-vingt-dix-neuf centaines}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "3|7|9|13|17|23|31|46|58|64|71|85|92|99|1007|1009|1023|1045|1060|1081|1099|1105|1237|1308|1450|1512|1671|1796|1999"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:c>1000|100|10}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:mod(c,1000)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **dixième**, c'est l'unité partagée en $10$ parts égales : $\\frac{1}{10}$. Un **centième**, en $100$ parts égales : $\\frac{1}{100}$.",
+					"Ici, le dénominateur est ${{d}}$ : on compte des {{if:d==10|dixièmes|centièmes}}. $\\frac{{{n}}}{{{d}}}$ se lit **« {{if:c==3|trois dixièmes|{{if:c==7|sept dixièmes|{{if:c==9|neuf dixièmes|{{if:c==13|treize dixièmes|{{if:c==17|dix-sept dixièmes|{{if:c==23|vingt-trois dixièmes|{{if:c==31|trente-et-un dixièmes|{{if:c==46|quarante-six dixièmes|{{if:c==58|cinquante-huit dixièmes|{{if:c==64|soixante-quatre dixièmes|{{if:c==71|soixante-et-onze dixièmes|{{if:c==85|quatre-vingt-cinq dixièmes|{{if:c==92|quatre-vingt-douze dixièmes|{{if:c==99|quatre-vingt-dix-neuf dixièmes|{{if:c==1007|sept centièmes|{{if:c==1009|neuf centièmes|{{if:c==1023|vingt-trois centièmes|{{if:c==1045|quarante-cinq centièmes|{{if:c==1060|soixante centièmes|{{if:c==1081|quatre-vingt-un centièmes|{{if:c==1099|quatre-vingt-dix-neuf centièmes|{{if:c==1105|cent-cinq centièmes|{{if:c==1237|deux-cent-trente-sept centièmes|{{if:c==1308|trois-cent-huit centièmes|{{if:c==1450|quatre-cent-cinquante centièmes|{{if:c==1512|cinq-cent-douze centièmes|{{if:c==1671|six-cent-soixante-et-onze centièmes|{{if:c==1796|sept-cent-quatre-vingt-seize centièmes|neuf-cent-quatre-vingt-dix-neuf centièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} »**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "vingt-trois centièmes : 23/100",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1023",
+				"d": "100",
+				"n": "23"
+			},
+			"answers": ["\\frac{23}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "deux-cent-trente-sept centièmes : 237/100",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1237",
+				"d": "100",
+				"n": "237"
+			},
+			"answers": ["\\frac{237}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "soixante-et-onze dixièmes : 71/10",
+			"variationIndex": 0,
+			"variables": {
+				"c": "71",
+				"d": "10",
+				"n": "71"
+			},
+			"answers": ["\\frac{71}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 23/10 (dixièmes)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1023",
+				"d": "100",
+				"n": "23"
+			},
+			"answers": ["\\frac{23}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 100/23 (inversée)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1023",
+				"d": "100",
+				"n": "23"
+			},
+			"answers": ["\\frac{100}{23}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 0,23 (écriture à virgule)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1023",
+				"d": "100",
+				"n": "23"
+			},
+			"answers": ["0.23"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "23/100 : vingt-trois centièmes",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1023",
+				"d": "100",
+				"n": "23"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vingt-trois dixièmes",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1023",
+				"d": "100",
+				"n": "23"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : vingt-trois centaines",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1023",
+				"d": "100",
+				"n": "23"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
