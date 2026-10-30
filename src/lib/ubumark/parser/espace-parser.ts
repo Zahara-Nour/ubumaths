@@ -21,6 +21,12 @@
  *   longueur. Les rangées et colonnes entièrement vides AU BORD sont retirées
  *   (une variable à 0 ne décale pas le dessin) ; un trou intérieur reste.
  * - `vue:` (facultatif) : la perspective cavalière par défaut.
+ * - `dessiner: face` (`dessus`, `droite`, `gauche`) : geste de l'élève, qui colorie
+ *   la vue dans un quadrillage vide, à côté de la perspective.
+ * - `retrouver: face, droite` : geste de l'élève, qui retrouve l'assemblage d'après
+ *   ses vues (la vue de dessus, toujours donnée, sert de grille de saisie).
+ *   Les deux gestes s'excluent, et excluent `vue:`. `case: N` y est posée par le
+ *   générateur de questions (chantier `solides`, § 7).
  * - Une clé inconnue ou répétée est une erreur située. Dans un modèle de
  *   question, `{{a}}` est résolu AVANT : le bloc ne lit que des nombres.
  *
@@ -34,9 +40,14 @@
 
 import { specialBlockEnd } from './unclosed-block';
 import {
+	CUBES_DRAWN_VIEWS,
 	CUBES_KEYS,
 	CUBES_LIMITS,
+	CUBES_SIDE_VIEWS,
 	CUBES_VIEWS,
+	type CubesDrawnView,
+	type CubesSideView,
+	type CubesTask,
 	type CubesView,
 	type EspaceBlockRange,
 	type EspaceKind,
@@ -56,6 +67,9 @@ const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 const KEY_LIST = CUBES_KEYS.join(', ');
 const HEIGHT_REGEX = /^\d+$/;
 const HEIGHT_HINT = `une hauteur est un nombre entier de 0 à ${CUBES_LIMITS.height}`;
+
+/** Une ligne de geste (`dessiner:` ou `retrouver:`), qui fait du bloc une case */
+const TASK_LINE_REGEX = /^(dessiner|retrouver)\s*:/i;
 
 // ============================================================================
 // DÉTECTION
@@ -93,6 +107,48 @@ export function findEspaceBlocks(lines: string[]): EspaceBlockRange[] {
 		i++;
 	}
 	return blocks;
+}
+
+/** Ligne vue sans retrait ni marque de citation */
+const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
+
+/**
+ * Les assemblages à geste (`dessiner:`, `retrouver:`) d'un énoncé, délimités comme
+ * le parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en retrait
+ * ou cité (l'élève ne pourrait pas y répondre : sa case n'est pas créée)
+ */
+export function findCubesToBuild(markdown: string): {
+	startIndex: number;
+	body: string[];
+	closed: boolean;
+	nested: boolean;
+}[] {
+	const lines = markdown.split('\n');
+	const plainLines = lines.map(unquoted);
+	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
+	let i = 0;
+	while (i < plainLines.length) {
+		if (isEspaceBlockStart(plainLines[i])) {
+			const { endIndex, closed } = specialBlockEnd(
+				plainLines,
+				i,
+				(line) => BLOCK_END_REGEX.test(line),
+				CUBES_KEYS
+			);
+			const body = plainLines.slice(i + 1, closed ? endIndex : endIndex + 1);
+			if (body.some((line) => TASK_LINE_REGEX.test(line.trim()))) {
+				found.push({ startIndex: i, body, closed, nested: lines[i] !== plainLines[i] });
+			}
+			i = endIndex;
+		}
+		i++;
+	}
+	return found;
+}
+
+/** L'énoncé a-t-il un assemblage à geste ? */
+export function hasCubesToBuild(markdown: string): boolean {
+	return findCubesToBuild(markdown).length > 0;
 }
 
 // ============================================================================
@@ -139,6 +195,8 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 
 	const written: WrittenRow[] = [];
 	let view: CubesView = 'perspective';
+	let task: CubesTask | undefined;
+	let caseIndex: number | undefined;
 	const seen = new Map<string, number>();
 	/** Les lignes sans clé qui suivent `hauteurs:` sont des rangées */
 	let inHeights = false;
@@ -178,6 +236,23 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 			if (value !== '') {
 				for (const row of value.split('/')) written.push({ text: row.trim(), line: lineNo });
 			}
+		} else if (key === 'dessiner') {
+			const wanted = plain(value);
+			if ((CUBES_DRAWN_VIEWS as readonly string[]).includes(wanted)) {
+				task = { kind: 'dessiner', view: wanted as CubesDrawnView };
+			} else {
+				fail(
+					lineNo,
+					`dessiner « ${value} » : vue à dessiner inconnue (vues possibles : ${CUBES_DRAWN_VIEWS.join(', ')})`
+				);
+			}
+		} else if (key === 'retrouver') {
+			const views = readSideViews(value);
+			if (typeof views === 'string') fail(lineNo, views);
+			else task = { kind: 'retrouver', views };
+		} else if (key === 'case') {
+			if (/^\d+$/.test(value)) caseIndex = Number(value);
+			else fail(lineNo, `case « ${value} » : numéro de case entier`);
 		} else {
 			const wanted = plain(value);
 			if ((CUBES_VIEWS as readonly string[]).includes(wanted)) {
@@ -233,10 +308,63 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 		}
 	}
 
-	if (errors.length > 0 || heights.length === 0) {
-		return { type: 'espace', genre, source, spec: null, errors };
+	// Les gestes s'excluent, et excluent `vue:`
+	const dessinerLine = seen.get('dessiner');
+	const retrouverLine = seen.get('retrouver');
+	const vueLine = seen.get('vue');
+	if (dessinerLine !== undefined && retrouverLine !== undefined) {
+		fail(
+			retrouverLine,
+			'dessiner: et retrouver: ne vont pas ensemble (un seul geste par assemblage)'
+		);
 	}
-	return { type: 'espace', genre, source, spec: { kind: 'cubes', heights, view }, errors };
+	const taskKey = dessinerLine !== undefined ? 'dessiner' : 'retrouver';
+	const taskLine = dessinerLine ?? retrouverLine;
+	if (vueLine !== undefined && taskLine !== undefined) {
+		fail(
+			vueLine,
+			`vue: ne va pas avec ${taskKey}: (${taskKey === 'dessiner' ? 'la perspective est dessinée à côté du quadrillage' : 'les vues dessinées sont celles de retrouver:'})`
+		);
+	}
+	const caseLine = seen.get('case');
+	if (caseLine !== undefined && taskLine === undefined) {
+		fail(caseLine, 'case: sans objet sans dessiner: ni retrouver:');
+	}
+
+	const withCase = caseIndex === undefined ? {} : { caseIndex };
+	if (errors.length > 0 || heights.length === 0) {
+		return { type: 'espace', genre, source, spec: null, errors, ...withCase };
+	}
+	return {
+		type: 'espace',
+		genre,
+		source,
+		spec: { kind: 'cubes', heights, view, ...(task && { task }) },
+		errors,
+		...withCase
+	};
+}
+
+/** Les vues de `retrouver:` ; une phrase d'erreur si la liste est fausse */
+function readSideViews(value: string): CubesSideView[] | string {
+	const hint = `vues possibles : ${CUBES_SIDE_VIEWS.join(', ')}, séparées par des virgules`;
+	const items = value
+		.split(',')
+		.map((item) => plain(item.trim()))
+		.filter((item) => item !== '');
+	if (items.length === 0) return `retrouver: quelles vues donner ? (${hint})`;
+	const views: CubesSideView[] = [];
+	for (const item of items) {
+		if (item === 'dessus') {
+			return 'retrouver: la vue de dessus est toujours donnée (c’est la grille où l’élève écrit les hauteurs) : liste les autres vues';
+		}
+		if (!(CUBES_SIDE_VIEWS as readonly string[]).includes(item)) {
+			return `retrouver: vue « ${item} » inconnue (${hint})`;
+		}
+		if (views.includes(item as CubesSideView)) return `retrouver: vue « ${item} » donnée deux fois`;
+		views.push(item as CubesSideView);
+	}
+	return views;
 }
 
 /**
