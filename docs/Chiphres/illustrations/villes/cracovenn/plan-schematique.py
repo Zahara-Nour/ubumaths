@@ -126,7 +126,13 @@ ROADS = []
 for k, (gx, gy) in GATES.items():
     ux, uy = (gx - CENTER[0]) / math.hypot(gx - CENTER[0], gy - CENTER[1]), (gy - CENTER[1]) / math.hypot(gx - CENTER[0], gy - CENTER[1])
     ROADS.append([CENTER, (gx + ux * 250, gy + uy * 250)])
-for pts in ROADS:
+# boulevard circulaire autour de la bibliothèque : il passe par les six quartiers qui l'entourent et franchit les
+# murs intérieurs par des passages (essai Nano Banana du 2026-10-30 : sans passage dessiné, des quartiers fermés)
+RING_R = 118
+RING = [(CENTER[0] + RING_R * math.cos(math.radians(a)), CENTER[1] + RING_R * math.sin(math.radians(a)))
+        for a in range(0, 361, 4)]
+STREETS = ROADS + [RING]
+for pts in STREETS:
     add(f'<path d="{path(pts)}" fill="none" stroke="{street}" stroke-width="12"/>')
 # quai le long de la Vistule, dans l'enceinte C
 QUAI = [(x, river_y(x) - RIVER_W / 2 - 9) for x in range(int(WALLS['C'][0] - R + 30), int(WALLS['C'][0] + R - 29), 10)]
@@ -154,7 +160,7 @@ def occupied(x, y, margin=0):
         return True
     if abs(y - river_y(x)) < RIVER_W / 2 + 14 + margin:
         return True
-    if any(dist_to(pts, x, y) < 15 + margin for pts in ROADS):
+    if any(dist_to(pts, x, y) < 15 + margin for pts in STREETS):
         return True
     if QUAI and dist_to(QUAI, x, y) < 12 + margin:
         return True
@@ -180,6 +186,19 @@ def house(x, y, w, h, mats):
 
 
 # maisons : dans les enceintes, serrées, aux matériaux de leurs enceintes ; hors des enceintes, faubourg clairsemé
+PLACED = []
+
+
+def free_box(x, y, w, h):
+    # place libre pour une boîte (ni chevauchement, ni rue, ni mur) ; la réserve si oui
+    if occupied(x + w / 2, y + h / 2) or any(occupied(px, py, -6) for px, py in ((x, y), (x + w, y), (x, y + h), (x + w, y + h))):
+        return False
+    if any(x < bx + bw + 1.5 and bx < x + w + 1.5 and y < by + bh + 1.5 and by < y + h + 1.5 for bx, by, bw, bh in PLACED):
+        return False
+    PLACED.append((x, y, w, h))
+    return True
+
+
 THATCH = '#E9E4D6'  # faubourg : murs chaulés, ni brique, ni pierre, ni bois
 rng = random.Random(7)
 for gx in range(60, 941, 25):
@@ -189,11 +208,50 @@ for gx in range(60, 941, 25):
             continue
         ks = inside(x, y)
         if ks:
-            if rng.random() < 0.08:
-                continue  # petite cour
             mats = [mix(MATERIAL[k], 0.85) for k in ks]
-            w, h = rng.choice([(14, 18), (18, 14), (20, 14), (16, 16), (22, 12), (12, 20)])
-            house(x - w / 2, y - h / 2, w, h, mats)
+            r = rng.random()
+            if r < 0.05:
+                continue  # petite cour
+            if r < 0.10:  # jardin planté
+                if free_box(x - 11, y - 10, 22, 20):
+                    add(f'<rect x="{x - 11:.1f}" y="{y - 10:.1f}" width="22" height="20" rx="3" fill="{mix(GREEN, 0.4)}" '
+                        f'stroke="{INK}" stroke-width="0.8"/><circle cx="{x:.1f}" cy="{y:.1f}" r="6" '
+                        f'fill="{mix("#1F5E3A", 0.7)}" stroke="{INK}" stroke-width="0.8"/>')
+            elif r < 0.13:  # placette au puits
+                if free_box(x - 12, y - 10, 24, 20):
+                    add(f'<rect x="{x - 12:.1f}" y="{y - 10:.1f}" width="24" height="20" fill="{mix(GOLD, 0.35)}" '
+                        f'stroke="{INK}" stroke-width="0.8"/><circle cx="{x:.1f}" cy="{y:.1f}" r="3.5" fill="{water}" '
+                        f'stroke="{INK}" stroke-width="0.8"/>')
+            elif r < 0.21:  # maison en L
+                if free_box(x - 13, y - 11, 26, 22):
+                    house(x - 13, y - 11, 26, 9, mats)
+                    house(x - 13, y - 2, 10, 13, mats)
+            elif r < 0.27:  # maison à cour fermée
+                if free_box(x - 15, y - 13, 30, 26):
+                    house(x - 15, y - 13, 30, 7, mats)
+                    house(x - 15, y + 6, 30, 7, mats)
+                    house(x - 15, y - 6, 7, 12, mats)
+                    house(x + 8, y - 6, 7, 12, mats)
+            elif r < 0.33:  # grande halle ou maison de maître
+                w, h = rng.choice([(34, 15), (15, 32), (26, 22)])
+                if free_box(x - w / 2, y - h / 2, w, h):
+                    house(x - w / 2, y - h / 2, w, h, mats)
+            elif r < 0.37:  # tour ronde
+                if free_box(x - 9, y - 9, 18, 18):
+                    n = len(mats)
+                    for i, m in enumerate(mats):
+                        a0, a1 = 2 * math.pi * i / n, 2 * math.pi * (i + 1) / n
+                        if n == 1:
+                            add(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="8" fill="{m}"/>')
+                        else:
+                            add(f'<path d="M{x:.1f},{y:.1f} L{x + 8 * math.cos(a0):.1f},{y + 8 * math.sin(a0):.1f} '
+                                f'A8,8 0 0 1 {x + 8 * math.cos(a1):.1f},{y + 8 * math.sin(a1):.1f} Z" fill="{m}"/>')
+                    add(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="8" fill="none" stroke="{INK}" stroke-width="1.1"/>'
+                        f'<circle cx="{x:.1f}" cy="{y:.1f}" r="2" fill="{INK}"/>')
+            else:  # maisons ordinaires, de tailles variées
+                w, h = rng.choice([(10, 16), (16, 11), (20, 14), (14, 14), (24, 11), (11, 22), (8, 12), (18, 18)])
+                if free_box(x - w / 2, y - h / 2, w, h):
+                    house(x - w / 2, y - h / 2, w, h, mats)
         else:
             # faubourg : quelques maisons chaulées près des rues et de l'enceinte, pas dans les champs
             if any(fx - 6 < x < fx + fw + 6 and fy - 6 < y < fy + fh + 6 for fx, fy, fw, fh, _ in FIELDS):
@@ -203,6 +261,17 @@ for gx in range(60, 941, 25):
             if (close < 45 or near_road) and rng.random() < 0.45:
                 w, h = rng.choice([(14, 12), (12, 14), (16, 12)])
                 house(x - w / 2, y - h / 2, w, h, [THATCH])
+
+# deuxième passe : petites maisons serrées dans les vides laissés par les grandes
+for gx in range(60, 941, 9):
+    for gy in range(60, 941, 9):
+        x, y = gx + rng.uniform(-2, 2), gy + rng.uniform(-2, 2)
+        ks = inside(x, y)
+        if not ks or occupied(x, y) or rng.random() < 0.3:
+            continue
+        w, h = rng.choice([(10, 14), (14, 10), (12, 12), (16, 10), (10, 16), (9, 9)])
+        if free_box(x - w / 2, y - h / 2, w, h):
+            house(x - w / 2, y - h / 2, w, h, [mix(MATERIAL[k], 0.85) for k in ks])
 
 # les trois enceintes : brique (A), pierre (B), palissade de bois (C)
 for k, (cx, cy) in WALLS.items():
@@ -217,16 +286,44 @@ for k, (cx, cy) in WALLS.items():
     else:  # pieux de la palissade
         add(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{R}" fill="none" stroke="{BROWN}" stroke-width="12" '
             f'stroke-dasharray="1.5 4.5" opacity="0.6"/>')
-# arches de l'enceinte C au-dessus de la Vistule (l'eau passe sous la palissade)
-for k, (cx, cy) in [('C', WALLS['C'])]:
-    for sign in (-1, 1):
-        # point où la rivière croise le cercle C
-        xs = [x for x, y in RIVER if abs(math.hypot(x - cx, y - cy) - R) < 6 and (x - cx) * sign > 0]
-        if xs:
-            x = xs[0]
-            y = river_y(x)
-            add(f'<rect x="{x - 9:.1f}" y="{y - RIVER_W / 2:.1f}" width="18" height="{RIVER_W}" fill="{water}" '
-                f'stroke="{INK}" stroke-width="1.2" stroke-dasharray="3 3"/>')
+
+
+def crossings(pts, cx, cy):
+    # points où une polyligne franchit le cercle d'une enceinte
+    res = []
+    for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
+        d1, d2 = math.hypot(x1 - cx, y1 - cy) - R, math.hypot(x2 - cx, y2 - cy) - R
+        if d1 * d2 < 0:
+            t = d1 / (d1 - d2)
+            res.append((x1 + (x2 - x1) * t, y1 + (y2 - y1) * t))
+    return res
+
+
+def opening(k, x, y, length, fill, towers):
+    # trouée dans l'enceinte k, le long de la tangente, encadrée de deux piliers (ou tours rondes) du même matériau
+    cx, cy = WALLS[k]
+    ang = math.degrees(math.atan2(y - cy, x - cx)) + 90
+    g = f'<g transform="translate({x:.1f},{y:.1f}) rotate({ang:.1f})">'
+    g += f'<rect x="{-length / 2:.1f}" y="-10" width="{length:.1f}" height="20" fill="{fill}"/>'
+    for sx in (-1, 1):
+        px = sx * (length / 2 + 4)
+        if towers:
+            g += f'<circle cx="{px:.1f}" cy="0" r="10" fill="{MATERIAL[k]}" stroke="{INK}" stroke-width="1.4"/>'
+        else:
+            g += f'<rect x="{px - 5:.1f}" y="-10" width="10" height="20" fill="{MATERIAL[k]}" stroke="{INK}" stroke-width="1.3"/>'
+    add(g + '</g>')
+
+
+# la palissade de bois s'arrête aux deux rives de la Vistule, une tour de bois sur chaque rive (David, 2026-10-30 :
+# une palissade posée sur l'eau, pas terrible)
+for x, y in crossings(RIVER, *WALLS['C']):
+    opening('C', x, y, RIVER_W + 18, water, True)
+# passages là où une rue franchit un mur intérieur (les portes extérieures sont dessinées plus bas)
+for pts in STREETS:
+    for k, (cx, cy) in WALLS.items():
+        for x, y in crossings(pts, cx, cy):
+            if math.hypot(x - GATES[k][0], y - GATES[k][1]) > 5:
+                opening(k, x, y, 16, street, False)
 
 # trois portes, une par enceinte, dans le matériau de leur enceinte
 for k, (gx, gy) in GATES.items():
