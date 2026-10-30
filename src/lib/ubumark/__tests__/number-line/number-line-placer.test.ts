@@ -162,6 +162,26 @@ describe('graduations et réponse', () => {
 		expect(placerText(config('start: 0', 'end: 2', 'step: 1/3'), 4)).toBe('4/3');
 		expect(placerText(config('start: 0', 'end: 20', 'step: 1'), 12)).toBe('12');
 	});
+
+	// Droite graduée en fractions : la graduation se lit en fraction du pas, même
+	// quand elle s'écrirait en décimal (CM1, « Tu as placé le point sur 0,8 »)
+	it('pas écrit en fraction : graduation en fraction sur le dénominateur du pas', () => {
+		const fifths = config('start: 0', 'end: 2', 'step: 1/5');
+		expect(placerText(fifths, 4)).toBe('4/5');
+		expect(placerText(fifths, 7)).toBe('7/5');
+		expect(placerText(fifths, 5)).toBe('1');
+		const tenths = config('start: 0', 'end: 1', 'step: 1/10');
+		expect(placerText(tenths, 7)).toBe('7/10');
+		expect(placerText(tenths, 5)).toBe('5/10');
+		expect(placerText(config('start: 0', 'end: 2', 'step: 1/4'), 2)).toBe('2/4');
+		expect(placerText(config('start: -1', 'end: 1', 'step: 1/5'), 1)).toBe('-4/5');
+		// Départ hors des multiples du pas : écriture ordinaire
+		expect(placerText(config('start: 0.5', 'end: 2', 'step: 1/5'), 1)).toBe('0,7');
+	});
+
+	it('pas écrit en décimal : graduation en décimal', () => {
+		expect(placerText(config('start: 0', 'end: 1', 'step: 0.2'), 4)).toBe('0,8');
+	});
 });
 
 // Revue de la PR 1 : chaque graduation se relit à son rang, quel que soit le décor
