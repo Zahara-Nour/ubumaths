@@ -10,16 +10,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 0-limites et fonctions relu, page à cocher publiée._
+_Mis à jour le 2026-10-30, après #2036 (lot 0-limites et fonctions, fichiers sur `main`)._
 
-- **État** : lot 0-limites (26 brouillons) vérifié, 6 corrections de texte dans `scripts/questions/tspe-0-limites/` (§ 7) ; page à cocher https://claude.ai/artifact/2D9SVXyUhRM7W7YxjNuEMA, `verdicts` vide.
+- **État** : lot 0-limites (26 brouillons) vérifié, 6 corrections de texte dans `scripts/questions/tspe-0-limites/` (§ 7), mergé (#2036), rien d'écrit en base ; page à cocher https://claude.ai/artifact/2D9SVXyUhRM7W7YxjNuEMA, `verdicts` vide.
 - **Prochaine action** : David lance les simulations `create-questions --mettre-a-jour` et `publier-lot` (le mode auto les refuse), relit la page ; puis `--publier --mettre-a-jour`, `publier-lot --publier`, statut relu en base.
 - **En attente de David** : simulations + relecture de la page.
 - **Pièges en cours** : `create-questions` et `publier-lot` → David ; les vieux dossiers
   `scripts/questions/<thème>-terminale/` ne concordent peut-être plus avec la base → partir des id ;
   simulation `publier-lot` AVANT tout (collisions de niveau → migration + fichiers) ;
   **horodatage de migration** : max + 1 min de la prod (`migration list --linked`) juste avant de créer le fichier.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-0-limites`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` gardé jusqu'à la publication (branche mergée) ; simulations lançables aussi depuis le dépôt principal.
 
 ## 1. Relevé (prod, 2026-10-29)
 
