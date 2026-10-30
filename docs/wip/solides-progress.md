@@ -6,20 +6,17 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2027._
+_Mis à jour le 2026-10-30, après #2027 (spécification du lot 4 écrite)._
 
 - **État** : lots 1 (#2003), 2 (#2023) et 3 (#2027, ` ```solide ` affichage) **mergés**, rien en prod ;
-  vérifications manuelles notées dans `verifications-manuelles.md`.
-- **Prochaine action** : lot 4, ` ```patron ` affichage (cube : 11 patrons + faux patrons, pavé, prisme,
-  cylindre, pyramide) — écrire d'abord sa spécification détaillée (comme les § 6 à 8), la faire valider,
-  puis TDD.
-- **En attente de David** : faut-il abaisser `SOLIDE_MAX_RATIO` (20 → 10 ?) : à 20, les noms d'un pavé
-  20 × 1 × 1 se chevauchent (revue de #2027, point 4).
+  spécification du lot 4 (` ```patron ` affichage) écrite au § 9, **pas encore validée**.
+- **Prochaine action** : réponses de David aux Q13-Q18 (§ 9), puis TDD du lot 4 (pliage d'abord).
+- **En attente de David** : Q13-Q18 du § 9 (grille `X`/`.`, noms des sommets répétés, pavé, plis, cône,
+  `SOLIDE_MAX_RATIO` 20 → 10).
 - **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables → relancer
   par petits lots ; aperçu d'un bloc : script tsx + capture Playwright (scratchpad), Chrome n'ouvre pas
   `127.0.0.1` ; corrigé PDF `solved` prêt, pas branché ; `EspaceSpec` = union : narrower par `kind`.
-- **Worktree / branche** : aucun (retiré après #2027) ; lot 4 :
-  `git worktree add -b feat/solides-patron ../ubumaths-wt-solides origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-solides`, `feat/solides-patron`.
 
 ---
 
@@ -392,3 +389,127 @@ et triangle rectangle, en face avant (Q12). Spécification validée.
   en chaîne à Typst. Reste : chevauchement des noms aux rapports élevés (question à David, ci-dessus).
 - Écart à la spec : placement des noms par le plus grand angle libre entre arêtes (pas « vers l'extérieur
   du centre ») ; cote de hauteur du pavé à gauche, du cylindre à gauche.
+
+## 9. Lot 4 — ` ```patron `, affichage (spécification)
+
+Modèle de code : le lot 3 (#2027), fichier pour fichier ; nouveau genre `patron` du nœud `espace`
+(ADR 0034), aiguillé dans le parseur, `Espace.svelte` (→ `Patron.svelte`) et `espace-typst.ts`.
+Le lot 5 (gestes `designer:`, `completer:`) s'appuiera sur le **pliage** calculé ici.
+
+```patron
+solide: cube
+forme: 7
+sommets: A B C D E F G H
+faces: numeros
+```
+
+**`solide:`** (obligatoire), mêmes mots et mêmes dimensions que `forme:` de ` ```solide ` :
+`cube` (sans dimension), `pave l p h`, `prisme triangle b h L`, `prisme triangle-rectangle a b L`,
+`pyramide carree a h`, `pyramide rectangle l p h`, `pyramide triangle a h`, `cylindre r h`.
+Le cône et la boule n'ont pas de patron dans ce lot (§ Hors lot 4).
+
+**`forme:`** — la disposition des faces :
+
+| Solide         | `forme:`                                                                                                                                                         |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| cube, pavé     | `1` à `11` : les 11 patrons du cube, catalogue figé et dessiné dans l'aide (1-6 : « 1-4-1 », 7-9 : « 2-3-1 », 10 : « 2-2-2 », 11 : « 3-3 ») ; défaut `1` (croix) |
+| cube, pavé     | `faux 1` à `faux 8` : faux patrons classiques, catalogue figé (un carré 2 × 2, 5 en ligne, deux rabats du même côté qui se recouvrent, 3 + 3 alignés…)           |
+| cube seulement | une **grille** en retrait sous la clé (comme `hauteurs:`), `X` = une face, `.` = vide (ci-dessous)                                                               |
+| prisme         | `1` : les deux triangles sur le même rectangle (défaut) ; `2` : sur deux rectangles différents                                                                   |
+| pyramide       | `1` seulement (étoile : les triangles autour de la base)                                                                                                         |
+| cylindre       | `1` seulement : rectangle h × 2πr, un disque collé au milieu de chaque grand côté                                                                                |
+
+```patron
+solide: cube
+forme:
+  . X . .
+  X X X X
+  . . X .
+```
+
+- **Grille** : le bloc **plie** la grille (calcul pur). Pas de `faux:` → la grille doit être un vrai patron du
+  cube, sinon erreur (« cette grille ne se plie pas en cube : deux faces se recouvrent ») ; `faux: oui` → la
+  grille ne doit **pas** se plier en cube, sinon erreur (« cette grille est un vrai patron du cube »). Le prof
+  ne peut pas se tromper sans le savoir. 1 à 10 cases, au plus 6 × 6, cases reliées par un côté.
+- **`tourner:`** `90`, `180`, `270` (quart de tour dans le sens des aiguilles) et **`retourner: oui`** (symétrie) :
+  le même patron autrement posé (« reconnaître » ne se réduit pas à une image apprise).
+- **Pavé** : le patron numéroté du cube, chaque carré devenant le rectangle de son rôle une fois plié
+  (dessous / dessus l × p, devant / derrière l × h, côtés p × h). Le dessin est **un arbre de faces** posé
+  de proche en proche le long des arêtes communes ; deux faces qui se chevauchent → erreur.
+
+**`dessous:`** (facultatif, cube et pavé) — le numéro de la case (ordre de lecture : de gauche à droite, de haut
+en bas) qui devient la face ABCD ; défaut `1`. Sur le dessin, cette face a A en bas à gauche, B en bas à droite,
+C en haut à droite, D en haut à gauche ; le patron se plie **vers le lecteur** (faces relevées). Pour le pavé,
+ses côtés horizontaux mesurent l, ses côtés verticaux p ; tout le reste s'en déduit.
+
+**`sommets:`** (facultatif) — **les noms des sommets du solide**, dans l'ordre de ` ```solide ` (cube, pavé :
+ABCDEFGH ; prisme ABC DEF ; pyramide S puis la base ; cylindre O, O'). Chaque coin du patron porte le nom du
+sommet sur lequel il vient une fois plié : **un même nom revient plusieurs fois** (c'est l'objet de 5-049,
+« mettre en relation la perspective et le patron »). Un `.` à la place d'un nom le cache partout ; un `?`
+le remplace partout par « ? » (question « quelle lettre à la place de ? »).
+
+```patron
+solide: pave 4 2 3
+forme: 3
+sommets: A B C D E ? G H
+```
+
+**`faces:`** (facultatif) — `numeros` : chaque face porte son numéro (ordre de lecture), pour « quelle face
+est opposée à la face 2 ? ». **`marquer:`** (facultatif, plusieurs séparés par des virgules) : `face 3`
+(teintée, gris clair comme ` ```solide `), `face dessous | dessus | devant | derriere | gauche | droite`
+(cube, pavé, prisme : le rôle une fois plié), `sommet A` (point sur chaque coin nommé A).
+
+**`cotes:`** (facultatif) — `cm`, `mm`, `m`, `oui` (comme ` ```solide `) : chaque **longueur différente** écrite
+une fois, sur une arête du bord (pavé : l, p, h ; prisme : les côtés du triangle et L ; pyramide : le côté de
+la base et la hauteur du triangle **non écrite** — elle n'est pas une dimension du solide ; cylindre : r sur un
+disque et h ; **la longueur du rectangle n'est jamais écrite**, c'est la question classique 2πr).
+
+**Dessin** : contour en trait plein, plis en **trait fin plein**, pas de languettes, pas de teinte (sauf face
+marquée). **Échelle** : proportions, plus grand côté du dessin = **6 cm** (un patron du cube 4 × 3 → carrés
+de 1,5 cm) ; dans un choix de case choix, `--espace-taille: 3cm`.
+
+| Cas                                                        | Attendu                                                                     |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `cube`, `forme: 1` à `11`                                  | les 11 dessins du catalogue, tous plient en cube (test : pliage de chacun)  |
+| `cube`, `faux 1` à `faux 8`                                | aucun ne plie en cube (test : pliage refusé, raison donnée)                 |
+| grille vraie sans `faux:` ; grille fausse avec `faux: oui` | dessinées                                                                   |
+| grille fausse sans `faux:` ; vraie avec `faux: oui`        | erreur, raison dite au prof                                                 |
+| grille non reliée, 11 cases, 7 × 7                         | erreur                                                                      |
+| `cube`, `forme: 1`, `sommets: A … H`                       | 14 coins nommés, les 8 lettres présentes, chacune là où elle vient          |
+| `sommets: A B C D E ? G H`                                 | « ? » partout où vient F                                                    |
+| `pave 4 2 3`, `forme: 7`, `dessous: 2`                     | rectangles 4 × 2, 4 × 3, 2 × 3 posés sans chevauchement                     |
+| `faces: numeros`, `marquer: face 3`                        | numéros 1 à 6, face 3 grise                                                 |
+| `pyramide carree 4 3`                                      | carré + 4 triangles isocèles de hauteur √13 ; S quatre fois                 |
+| `prisme triangle 3 2 5`, `forme: 2`                        | 3 rectangles × 5, triangles sur deux rectangles différents                  |
+| `cylindre 1 3`, `cotes: cm`                                | rectangle 2π × 3 (proportions), deux disques de rayon 1, « 1 cm », « 3 cm » |
+| `tourner: 90`, `retourner: oui`                            | même patron, tourné / retourné ; noms et numéros suivent                    |
+| `solide: cone 2 3`, `forme: 12`, `faux 1` pour un prisme   | erreur, solides / formes permis listés                                      |
+| `dessous: 7`, 9 noms pour un pavé, `marquer: face 9`       | erreur                                                                      |
+| variables `{{n}}`                                          | lues sur l'énoncé résolu (comme ` ```cubes `)                               |
+
+- **Nom accessible** : « Assemblage de polygones à plier » — **jamais « patron »** ni le nom du solide (ce
+  serait la réponse de « est-ce un patron du cube ? », CM1-115, CM2-100 / 102) ; noms et numéros ajoutés.
+- **Erreur** : messages au prof, « Solide indisponible » à l'élève et au PDF.
+- **Code** : pliage et catalogue dans `utils/espace-patrons.ts` (calcul pur : faces, arêtes communes, pliage
+  → rôle de chaque face et sommet de chaque coin), parseur `parser/patron-parser.ts`, `Patron.svelte`, PDF
+  Typst natif ; fiche `block-catalog/patron.ts`, éditeur riche, `pnpm check:ubumark`, `docs/systeme/ubumark.md`.
+- **Hors lot 4** : patron du cône (secteur + disque, 3e / 4e-028, à la demande), pyramide inscrite dans un
+  cube (3e : « identifier les patrons de pyramides inscrites dans un cube »), prisme à base quelconque, faux
+  patrons des autres solides, autres dispositions de la pyramide et du cylindre ; gestes (lot 5).
+
+### Questions à David (lot 4)
+
+13. **Grille `X` / `.`** en plus des 11 numéros, avec vérification du pliage (le prof dessine n'importe quel
+    patron ou faux patron, le bloc refuse une grille qui ne dit pas ce que le prof annonce) ? _Reco : oui ; le
+    pliage sert de toute façon au lot 5._
+14. **Noms des sommets** : les 8 noms du solide, répétés sur le patron (`?` pour poser la question), ou un nom
+    différent par coin du patron (14 pour le cube, « quel point vient sur A ? ») ? _Reco : noms du solide
+    répétés — une seule convention avec ` ```solide `, et la question « quel point vient sur A » se pose avec
+    `?`._
+15. **Pavé** : les 11 dispositions du cube, faces mises aux bonnes dimensions par le pliage ? Et des faux
+    patrons du pavé « aux mauvaises dimensions » (bonne disposition, un rectangle faux) : dans ce lot ou plus
+    tard ? _Reco : 11 dispositions + `faux 1-8` dans ce lot ; mauvaises dimensions plus tard._
+16. **Plis** : trait fin plein (manuels de collège) ou tirets ? _Reco : trait fin plein._
+17. **Cône** hors lot (patron = secteur + disque, rare avant la 3e) ? _Reco : hors lot._
+18. _(reportée de #2027)_ **`SOLIDE_MAX_RATIO`** du ` ```solide ` : 20 → 10 ? À 20, les noms d'un pavé
+    20 × 1 × 1 se chevauchent. _Reco : 10 (rapport plus grand inutile en classe), correctif glissé dans ce lot._
