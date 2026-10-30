@@ -2,7 +2,7 @@
  * Figure de travail + case choix oui / non : l'écran (chantier figure-et-choix, lot 2)
  * ===================================================================================
  *
- * Comportements validés par David le 2026-10-26 (`docs/wip/figure-et-choix-progress.md`
+ * Comportements validés par David le 2026-10-26 (`docs/archive/wip/figure-et-choix-progress.md`
  * § 2.3 et § 2.9) : l'élève PEUT tracer pour vérifier ; vide, la figure ne bloque pas
  * « Valider » ; le choix seul est noté ; après Valider, ses traits restent gris, ni
  * verts ni rouges ; la carte de correction montre « Ta figure de travail » en dernier.

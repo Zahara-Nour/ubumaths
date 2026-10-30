@@ -2,7 +2,7 @@
  * Résultat attendu d'une figure de travail (bloc ```figure-de-travail, lot 2)
  * ===========================================================================
  *
- * Décision de David (2026-10-26, `docs/wip/figure-et-choix-progress.md` § 2.9, Q2) :
+ * Décision de David (2026-10-26, `docs/archive/wip/figure-et-choix-progress.md` § 2.9, Q2) :
  * une ligne à part, APRÈS les réponses notées, sur la carte de correction commune
  * (entraînement, Course, copie) : la figure de départ et les traits de l'élève en
  * gris, sans verdict ; vide → « aucun tracé ». Jamais parmi les réponses attendues.

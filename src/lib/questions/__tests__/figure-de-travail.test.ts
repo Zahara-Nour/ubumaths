@@ -1,6 +1,6 @@
 /**
  * Bloc ```figure-de-travail (chantier figure-et-choix, lot 2, phase 0 validée par
- * David le 2026-10-26, `docs/wip/figure-et-choix-progress.md` § 2.3 et § 2.9)
+ * David le 2026-10-26, `docs/archive/wip/figure-et-choix-progress.md` § 2.3 et § 2.9)
  *
  * Une figure où l'élève PEUT tracer pour vérifier ; la réponse est ailleurs (case
  * choix, texte…). Elle occupe une case (son tracé est enregistré en évaluation)

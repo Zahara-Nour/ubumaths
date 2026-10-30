@@ -2,7 +2,7 @@
  * AnswerEditor — carte « Figure de travail — non notée » (chantier figure-et-choix, lot 2)
  * =======================================================================================
  *
- * Décision de David (2026-10-26, `docs/wip/figure-et-choix-progress.md` § 2.9, Q3) :
+ * Décision de David (2026-10-26, `docs/archive/wip/figure-et-choix-progress.md` § 2.9, Q3) :
  * une carte en lecture seule, sans numéro de case, avec son outil ; ses erreurs
  * (`verifier:`, outil inconnu) y sont dites ; aucun champ de réponse attendue.
  */
