@@ -17,6 +17,7 @@ import {
 	type CapitalPairs,
 	type GenericFunctionConfig
 } from '$lib/mathAST/parser';
+import { bareDecimalCommaToPoint, expectsSeparatorComma } from '$lib/mathAST/decimal-comma';
 
 /** Lecture de la réponse : fonctions déclarées par le modèle (`C(2)`), défauts sinon */
 export interface RequiredFormOptions {
@@ -580,8 +581,10 @@ export function checkRequiredForm(
 		const latex = answersLatex[i];
 
 		try {
-			// Parse the LaTeX
-			const node = parseLatex(latex, {
+			// Virgule nue (`0,5n`) décimale, comme pour le juge de valeur (#520),
+			// sauf dans une écriture à virgule séparatrice (couple, liste…)
+			const decimalLatex = expectsSeparatorComma(latex) ? latex : bareDecimalCommaToPoint(latex);
+			const node = parseLatex(decimalLatex, {
 				genericFunctions: options.genericFunctions,
 				capitalPairs: options.capitalPairs
 			});

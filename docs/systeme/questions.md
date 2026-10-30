@@ -521,6 +521,8 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
 3. **`requiredForm`** : `product`, `sum`, `additionOnly`, `fraction`, `power`, formes d'équation,
    formes complexes (`exponentielle`, `algebrique`), ou motif `{ pattern, acceptable? }`
    (motifs `mathAST/pattern`). Violée → `bad_form` ; forme `acceptable` → `unoptimal_form`.
+   Virgule nue (`0,5n`) décimale comme `0{,}5n`, sauf écriture à virgule séparatrice
+   (`mathAST/decimal-comma`).
 4. **Forme** selon la case : texte → rien ; `requiredForm` → seulement les violations cosmétiques ;
    grandeur → la partie numérique (`studentValueLatex`, la saisie sans ses unités : `2\times3`
    pour `2\times3\,m`) doit être un nombre simple, une fraction ou une notation scientifique ; `precision` / `rulesSuffice` →
