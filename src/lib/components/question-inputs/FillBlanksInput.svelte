@@ -78,6 +78,7 @@
 	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
 	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
 	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
+	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
 	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
 	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
@@ -215,6 +216,7 @@
 		if (node.type === 'number-line') return node.caseIndex !== undefined;
 		if (node.type === 'horloge') return node.caseIndex !== undefined;
 		if (node.type === 'partage') return node.caseIndex !== undefined;
+		if (node.type === 'espace') return node.caseIndex !== undefined;
 		if (node.type === 'stat-chart') return node.caseIndex !== undefined;
 		if (node.type === 'monnaie') return node.caseIndex !== undefined;
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
@@ -507,7 +509,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"])'
+					'.construire-ajouter:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled)'
 				)
 				?.focus();
 			return;
@@ -977,6 +979,26 @@
 				{:else}
 					<div data-construire-case={caseIndex}>
 						<PartageColorier
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'espace' && node.caseIndex !== undefined && node.spec?.task !== undefined && node.errors.length === 0}
+				<!-- Assemblage de cubes à geste : l'élève colorie une vue ou écrit les hauteurs -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la vue coloriée, ou les hauteurs du bloc -->
+					<BuildAnswer kind="cubes" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<CubesGeste
 							{node}
 							answer={{
 								value: state?.value ?? '',

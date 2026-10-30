@@ -36,6 +36,8 @@
 	import Partage from '$lib/components/markdown/nodes/Partage.svelte';
 	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
 	import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
+	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
+	import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 	import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 	import { solvedSpec } from '$lib/ubumark/utils/barres-placer';
@@ -89,6 +91,7 @@
 	let barres = $derived(kind === 'barres' ? parseStatChartContent('barres', source) : null);
 	let ranger = $derived(kind === 'ranger' ? parseRangerContent(source) : null);
 	let partage = $derived(kind === 'partage' ? parsePartageContent(source) : null);
+	let cubes = $derived(kind === 'cubes' ? parseEspaceContent(source) : null);
 </script>
 
 {#if collection?.spec?.build !== undefined}
@@ -157,6 +160,13 @@
 				}
 			}}
 		/>
+	{/if}
+{:else if cubes?.spec?.task !== undefined && cubes.errors.length === 0}
+	{#if locked}
+		<CubesGeste node={cubes} answer={locked} showControls={false} />
+	{:else}
+		<!-- La réponse juste, sans geste : la vue coloriée, ou les hauteurs du bloc -->
+		<CubesGeste node={cubes} solution />
 	{/if}
 {:else if horloge?.spec?.placer !== undefined}
 	{@const spec = horloge.spec}
