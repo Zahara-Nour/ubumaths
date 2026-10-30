@@ -1,0 +1,539 @@
+{
+	"title": "Calculer une longueur avec Pythagore",
+	"description": "Calculer une longueur dans un triangle rectangle avec le théorème de Pythagore : hypoténuse, côté de l'angle droit, valeurs arrondies au dixième, valeur exacte, égalité à écrire",
+	"grades": ["4"],
+	"theme": "Géométrie",
+	"domain": "Théorème de Pythagore",
+	"subdomain": "Calculer une longueur",
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. Quelle égalité donne le théorème de Pythagore ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7.5\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|8|10 - (8)}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, 6, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\n```\n\n```choix\n- ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2$\n- ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 = {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2$\n- ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$\n- ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'**hypoténuse** est le côté opposé à l'angle droit : ici $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$.",
+					"Le carré de l'hypoténuse est égal à la somme des carrés des deux autres côtés : $$\\textcolor{{{color:primary.0}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2}$$",
+					"Les longueurs elles-mêmes ne s'additionnent pas : ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} \\neq {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{ab}}~\\unit{cm}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$. Calcule ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; {{eval:round(10*(2.2 + 7*ac/max(ab, ac)))/10;d}}\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|{{eval:round(100*(1 + 7*ab/max(ab, ac)))/100;d}}|10 - ({{eval:round(100*(1 + 7*ab/max(ab, ac)))/100;d}})}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, {{eval:round(100*(1 + 7*ac/max(ab, ac)))/100;d}}, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\n```\n\n${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "t",
+					"expression": "0..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:t==0|3|}}{{if:t==1|5|}}{{if:t==2|8|}}{{if:t==3|7|}}{{if:t==4|20|}}{{if:t==5|6|}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{if:t==0|4|}}{{if:t==1|12|}}{{if:t==2|15|}}{{if:t==3|24|}}{{if:t==4|21|}}{{if:t==5|8|}}"
+				},
+				{
+					"name": "hy",
+					"expression": "{{if:t==0|5|}}{{if:t==1|13|}}{{if:t==2|17|}}{{if:t==3|25|}}{{if:t==4|29|}}{{if:t==5|10|}}"
+				},
+				{
+					"name": "r",
+					"expression": "0..1"
+				},
+				{
+					"name": "ab",
+					"expression": "eval:k*(r*q + (1-r)*p)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:k*(r*p + (1-r)*q)"
+				},
+				{
+					"name": "bc",
+					"expression": "eval:k*hy"
+				}
+			],
+			"conditions": ["k*hy <= 30"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{bc}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ : d'après le **théorème de Pythagore**, $${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2$$",
+					"$${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{ab}}^2 + {{ac}}^2 = {{eval:ab^2}} + {{eval:ac^2}} = {{eval:ab^2+ac^2}}$$",
+					"$${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = \\sqrt{{{eval:ab^2+ac^2}}} = \\textcolor{{{color:primary.0}}}{{{bc}}~\\unit{cm}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{bc}}~\\unit{cm}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$. Calcule ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; {{eval:round(10*(2.2 + 7*ac/max(ab, ac)))/10;d}}\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|{{eval:round(100*(1 + 7*ab/max(ab, ac)))/100;d}}|10 - ({{eval:round(100*(1 + 7*ab/max(ab, ac)))/100;d}})}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, {{eval:round(100*(1 + 7*ac/max(ab, ac)))/100;d}}, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\n```\n\n${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "t",
+					"expression": "0..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:t==0|3|}}{{if:t==1|5|}}{{if:t==2|8|}}{{if:t==3|7|}}{{if:t==4|20|}}{{if:t==5|6|}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{if:t==0|4|}}{{if:t==1|12|}}{{if:t==2|15|}}{{if:t==3|24|}}{{if:t==4|21|}}{{if:t==5|8|}}"
+				},
+				{
+					"name": "hy",
+					"expression": "{{if:t==0|5|}}{{if:t==1|13|}}{{if:t==2|17|}}{{if:t==3|25|}}{{if:t==4|29|}}{{if:t==5|10|}}"
+				},
+				{
+					"name": "r",
+					"expression": "0..1"
+				},
+				{
+					"name": "ab",
+					"expression": "eval:k*(r*q + (1-r)*p)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:k*(r*p + (1-r)*q)"
+				},
+				{
+					"name": "bc",
+					"expression": "eval:k*hy"
+				}
+			],
+			"conditions": ["k*hy <= 30"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ab}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ : d'après le **théorème de Pythagore**, $${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2$$",
+					"$[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ est l'hypoténuse : on cherche un côté de l'angle droit, on **soustrait**. $${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 = {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{bc}}^2 - {{ac}}^2 = {{eval:bc^2}} - {{eval:ac^2}} = {{eval:bc^2-ac^2}}$$",
+					"$${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = \\sqrt{{{eval:bc^2-ac^2}}} = \\textcolor{{{color:primary.0}}}{{{ab}}~\\unit{cm}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{ab}}~\\unit{cm}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$. Calcule ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, arrondie au dixième.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; {{eval:round(10*(2.2 + 7*ac/max(ab, ac)))/10;d}}\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|{{eval:round(100*(1 + 7*ab/max(ab, ac)))/100;d}}|10 - ({{eval:round(100*(1 + 7*ab/max(ab, ac)))/100;d}})}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, {{eval:round(100*(1 + 7*ac/max(ab, ac)))/100;d}}, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\n```\n\n${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "ab",
+					"expression": "2..12"
+				},
+				{
+					"name": "ac",
+					"expression": "2..12"
+				}
+			],
+			"conditions": [
+				"abs((sqrt(ab^2+ac^2)) - round(sqrt(ab^2+ac^2))) > 0.01",
+				"abs(10*(sqrt(ab^2+ac^2)) - round(10*(sqrt(ab^2+ac^2)))) < 0.4"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(sqrt(ab^2+ac^2)))/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ : d'après le **théorème de Pythagore**, $${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2$$",
+					"$${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{ab}}^2 + {{ac}}^2 = {{eval:ab^2}} + {{eval:ac^2}} = {{eval:ab^2+ac^2}}$$",
+					"$${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = \\sqrt{{{eval:ab^2+ac^2}}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(sqrt(ab^2+ac^2)))/10;d}}~\\unit{cm}}$$ (à la calculatrice, arrondi au dixième)."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{bc}}~\\unit{cm}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$. Calcule ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$, arrondie au dixième.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; {{eval:round(10*(2.2 + 7*ac/max(ab, ac)))/10;d}}\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|{{eval:round(100*(1 + 7*ab/max(ab, ac)))/100;d}}|10 - ({{eval:round(100*(1 + 7*ab/max(ab, ac)))/100;d}})}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, {{eval:round(100*(1 + 7*ac/max(ab, ac)))/100;d}}, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\n```\n\n${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "bc",
+					"expression": "5..15"
+				},
+				{
+					"name": "ac",
+					"expression": "2..14"
+				},
+				{
+					"name": "ab",
+					"expression": "eval:round(1000*sqrt(bc^2-ac^2))/1000;d"
+				}
+			],
+			"conditions": [
+				"ac < bc",
+				"abs((sqrt(bc^2-ac^2)) - round(sqrt(bc^2-ac^2))) > 0.01",
+				"abs(10*(sqrt(bc^2-ac^2)) - round(10*(sqrt(bc^2-ac^2)))) < 0.4",
+				"ab >= 2"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(ab))/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ : d'après le **théorème de Pythagore**, $${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2$$",
+					"$[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ est l'hypoténuse : on cherche un côté de l'angle droit, on **soustrait**. $${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 = {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 - {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{bc}}^2 - {{ac}}^2 = {{eval:bc^2}} - {{eval:ac^2}} = {{eval:bc^2-ac^2}}$$",
+					"$${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = \\sqrt{{{eval:bc^2-ac^2}}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(ab))/10;d}}~\\unit{cm}}$$ (à la calculatrice, arrondi au dixième)."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{ab}}~\\unit{cm}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$. Calcule la valeur **exacte** de ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; {{eval:round(10*(2.2 + 7*ac/max(ab, ac)))/10;d}}\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|{{eval:round(100*(1 + 7*ab/max(ab, ac)))/100;d}}|10 - ({{eval:round(100*(1 + 7*ab/max(ab, ac)))/100;d}})}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, {{eval:round(100*(1 + 7*ac/max(ab, ac)))/100;d}}, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\n```\n\n${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "ab",
+					"expression": "1..9"
+				},
+				{
+					"name": "ac",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [
+				"abs((sqrt(ab^2+ac^2)) - round(sqrt(ab^2+ac^2))) > 0.01",
+				"abs(((ab^2+ac^2)/4) - round((ab^2+ac^2)/4)) > 0.01",
+				"abs(((ab^2+ac^2)/9) - round((ab^2+ac^2)/9)) > 0.01",
+				"abs(((ab^2+ac^2)/25) - round((ab^2+ac^2)/25)) > 0.01",
+				"abs(((ab^2+ac^2)/49) - round((ab^2+ac^2)/49)) > 0.01"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\sqrt{ {{eval:ab^2+ac^2}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ : d'après le **théorème de Pythagore**, $${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}^2 + {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2$$",
+					"$${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}^2 = {{ab}}^2 + {{ac}}^2 = {{eval:ab^2+ac^2}}$$",
+					"{{eval:ab^2+ac^2}} n'est pas un carré parfait : on garde la racine carrée. $${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = \\textcolor{{{color:primary.0}}}{\\sqrt{ {{eval:ab^2+ac^2}} }~\\unit{cm}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Égalité BC² = AB² + AC²",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : hypoténuse mal placée",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : longueurs additionnées",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB = 6, AC = 8 : BC = 10",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "2",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "6",
+				"ac": "8",
+				"bc": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AB + AC = 14",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "2",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "6",
+				"ac": "8",
+				"bc": "10"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : racine oubliée, 100",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "0",
+				"k": "2",
+				"p": "3",
+				"q": "4",
+				"hy": "5",
+				"r": "0",
+				"ab": "6",
+				"ac": "8",
+				"bc": "10"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BC = 13, AC = 12 : AB = 5",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "1",
+				"k": "1",
+				"p": "5",
+				"q": "12",
+				"hy": "13",
+				"r": "0",
+				"ab": "5",
+				"ac": "12",
+				"bc": "13"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme au lieu de différence, 17,7",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"t": "1",
+				"k": "1",
+				"p": "5",
+				"q": "12",
+				"hy": "13",
+				"r": "0",
+				"ab": "5",
+				"ac": "12",
+				"bc": "13"
+			},
+			"answers": ["17{,}7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB = 4, AC = 7 : BC ≈ 8,1",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"ab": "4",
+				"ac": "7"
+			},
+			"answers": ["8{,}1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Valeur non arrondie 8,06",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"ab": "4",
+				"ac": "7"
+			},
+			"answers": ["8{,}06"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AB + AC = 11",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"ab": "4",
+				"ac": "7"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BC = 9, AC = 5 : AB ≈ 7,5",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"bc": "9",
+				"ac": "5",
+				"ab": "7.483"
+			},
+			"answers": ["7{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme, 10,3",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"bc": "9",
+				"ac": "5",
+				"ab": "7.483"
+			},
+			"answers": ["10{,}3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB = 4, AC = 5 : BC = √41",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"ab": "4",
+				"ac": "5"
+			},
+			"answers": ["\\sqrt{41}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Valeur approchée 6,4 au lieu de la valeur exacte",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"ab": "4",
+				"ac": "5"
+			},
+			"answers": ["6{,}4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : racine oubliée, 41",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"ab": "4",
+				"ac": "5"
+			},
+			"answers": ["41"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
