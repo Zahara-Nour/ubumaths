@@ -17,7 +17,8 @@
  *
  * ```solide (lot 3) : traits pleins ou en tirets (`dash: "dashed"`), face
  * marquée en gris clair, noms et cotes, depuis `buildSolideScene` (la scène
- * de l'écran).
+ * de l'écran). ```patron (lot 4) : contour, plis en trait fin, depuis
+ * `buildPatronScene`.
  *
  * Un bloc en erreur devient le cadre neutre « Solide indisponible » — jamais
  * une erreur de compilation (une seule erreur Typst fait échouer toute la fiche).
@@ -37,6 +38,7 @@ import {
 	type CubesView,
 	type EspaceNode,
 	type CubesSpec,
+	type PatronSpec,
 	type SolideSpec
 } from '../types/espace';
 import { drawingGridSize, viewGrid } from '../utils/cubes-gestes';
@@ -45,8 +47,10 @@ import {
 	SOLIDE_DOT_RADIUS,
 	SOLIDE_LABEL_SIZE,
 	SOLIDE_THICK_STROKE,
-	buildSolideScene
+	buildSolideScene,
+	type SolideLabel
 } from '../utils/espace-solides';
+import { PATRON_FOLD_STROKE, buildPatronScene, type PatronLine } from '../utils/espace-patrons';
 
 // ============================================================================
 // CONSTANTES
@@ -183,15 +187,47 @@ function solideTypst(spec: SolideSpec): string {
 			`  #place(top + left, dx: ${cm(dot.x + ESPACE_MARGIN - SOLIDE_DOT_RADIUS)}, dy: ${cm(dot.y + ESPACE_MARGIN - SOLIDE_DOT_RADIUS)}, circle(radius: ${cm(SOLIDE_DOT_RADIUS)}, fill: black))`
 		);
 	}
-	for (const label of scene.labels) {
+	content.push(...labelsTypst(scene.labels));
+	return boxTypst(scene.width, scene.height, content);
+}
+
+/** Les étiquettes (noms, numéros, cotes) d'une scène */
+function labelsTypst(labels: SolideLabel[]): string[] {
+	return labels.map((label) => {
 		// Boîte large centrée sur le point : le texte s'y centre. Texte en chaîne :
 		// en markup, Typst ferait de `O'` une apostrophe typographique
 		const w = 2;
 		const h = 1;
+		return `  #place(top + left, dx: ${cm(label.at.x + ESPACE_MARGIN - w / 2)}, dy: ${cm(label.at.y + ESPACE_MARGIN - h / 2)}, box(width: ${cm(w)}, height: ${cm(h)}, align(center + horizon, text(size: ${cm(SOLIDE_LABEL_SIZE)}, ${JSON.stringify(label.text)}))))`;
+	});
+}
+
+/** Un patron : contour, plis en trait fin, tirets */
+function patronTypst(spec: PatronSpec): string {
+	const scene = buildPatronScene(spec);
+	const at = (p: { x: number; y: number }) =>
+		`(${cm(p.x + ESPACE_MARGIN)}, ${cm(p.y + ESPACE_MARGIN)})`;
+	const content: string[] = [];
+	for (const fill of scene.fills) {
 		content.push(
-			`  #place(top + left, dx: ${cm(label.at.x + ESPACE_MARGIN - w / 2)}, dy: ${cm(label.at.y + ESPACE_MARGIN - h / 2)}, box(width: ${cm(w)}, height: ${cm(h)}, align(center + horizon, text(size: ${cm(SOLIDE_LABEL_SIZE)}, ${JSON.stringify(label.text)}))))`
+			`  #place(top + left, polygon(fill: luma(${MARKED_FACE_LUMA}), stroke: none, ${fill.map(at).join(', ')}))`
 		);
 	}
+	const thickness = (line: PatronLine) =>
+		cm(line.kind === 'pli' ? PATRON_FOLD_STROKE : ESPACE_STROKE);
+	for (const line of scene.lines) {
+		const dash = line.kind === 'cache' ? `, dash: (${SOLIDE_DASH.map(cm).join(', ')})` : '';
+		const [first, ...rest] = line.points;
+		content.push(
+			`  #place(top + left, curve(stroke: (paint: black, thickness: ${thickness(line)}, cap: "round", join: "round"${dash}), curve.move(${at(first)}), ${rest.map((p) => `curve.line(${at(p)})`).join(', ')}))`
+		);
+	}
+	for (const dot of scene.dots) {
+		content.push(
+			`  #place(top + left, dx: ${cm(dot.x + ESPACE_MARGIN - SOLIDE_DOT_RADIUS)}, dy: ${cm(dot.y + ESPACE_MARGIN - SOLIDE_DOT_RADIUS)}, circle(radius: ${cm(SOLIDE_DOT_RADIUS)}, fill: black))`
+		);
+	}
+	content.push(...labelsTypst(scene.labels));
 	return boxTypst(scene.width, scene.height, content);
 }
 
@@ -202,6 +238,9 @@ export function generateEspaceTypst(node: EspaceNode, options: { solved?: boolea
 
 	if (spec.kind === 'solide') {
 		return ['#align(center)[#block(breakable: false)[', solideTypst(spec), ']]'].join('\n');
+	}
+	if (spec.kind === 'patron') {
+		return ['#align(center)[#block(breakable: false)[', patronTypst(spec), ']]'].join('\n');
 	}
 
 	const solved = options.solved ?? false;

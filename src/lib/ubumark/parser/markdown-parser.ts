@@ -1949,7 +1949,7 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'partage') {
 			// Partage dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parsePartageContent(restoreMathPlaceholders(code, placeholders)));
-		} else if (language === 'cubes' || language === 'solide') {
+		} else if (language === 'cubes' || language === 'solide' || language === 'patron') {
 			// Assemblage de cubes dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseEspaceContent(restoreMathPlaceholders(code, placeholders), language));
 		} else if (language === 'operation') {

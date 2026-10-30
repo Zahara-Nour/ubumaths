@@ -34,6 +34,14 @@ describe('bloc ```cubes — aller-retour de l’éditeur riche', () => {
 	});
 });
 
+describe('bloc ```patron — aller-retour de l’éditeur riche', () => {
+	it('repart en ```patron identique, grille en retrait comprise', () => {
+		const md =
+			'```patron\nsolide: cube\nforme:\n  . X . .\n  X X X X\n  . . X .\nsommets: A B C D E ? G H\n```';
+		expect(tipTapToMarkdown(markdownToTipTap(md)).trim()).toBe(md);
+	});
+});
+
 describe('bloc ```solide — aller-retour de l’éditeur riche', () => {
 	it('repart en ```solide identique, en erreur aussi', () => {
 		const md = '```solide\nforme: pave 4 2 3\nsommets: A B C D E F G H\n```';

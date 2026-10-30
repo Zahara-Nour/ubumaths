@@ -33,20 +33,22 @@
  * Une erreur ne fait pas disparaître le bloc (le nœud porte ses phrases).
  * Repérage et blocs non fermés : ceux de ```partage (Q63, Q66).
  *
- * La clôture ```solide (lot 3) est lue par `solide-parser.ts` ; ```patron viendra
- * ensuite.
+ * La clôture ```solide (lot 3) est lue par `solide-parser.ts`, ```patron (lot 4)
+ * par `patron-parser.ts`.
  *
  * @module ubumark/parser/espace-parser
  */
 
 import { specialBlockEnd } from './unclosed-block';
 import { parseSolideContent } from './solide-parser';
+import { parsePatronContent } from './patron-parser';
 import {
 	CUBES_DRAWN_VIEWS,
 	CUBES_KEYS,
 	CUBES_LIMITS,
 	CUBES_SIDE_VIEWS,
 	CUBES_VIEWS,
+	PATRON_KEYS,
 	SOLIDE_KEYS,
 	type CubesDrawnView,
 	type CubesSideView,
@@ -61,7 +63,7 @@ import {
 // CONSTANTES
 // ============================================================================
 
-const ESPACE_BLOCK_START_REGEX = /^```(cubes|solide)\s*$/;
+const ESPACE_BLOCK_START_REGEX = /^```(cubes|solide|patron)\s*$/;
 const BLOCK_END_REGEX = /^```\s*$/;
 
 /** `clé: valeur` */
@@ -89,10 +91,13 @@ export function espaceKindOf(line: string): EspaceKind | null {
 }
 
 /** Les clés d'un genre (fermeture d'un bloc non fermé) */
-const keysOf = (line: string) => (espaceKindOf(line) === 'solide' ? SOLIDE_KEYS : CUBES_KEYS);
+const keysOf = (line: string) => {
+	const kind = espaceKindOf(line);
+	return kind === 'solide' ? SOLIDE_KEYS : kind === 'patron' ? PATRON_KEYS : CUBES_KEYS;
+};
 
 /**
- * Blocs d'espace (```cubes, ```solide) d'une liste de lignes (indices inclusifs,
+ * Blocs d'espace (```cubes, ```solide, ```patron) d'une liste de lignes (indices inclusifs,
  * clôtures comprises). Fermé par un ``` qui ne fait pas lire du texte comme
  * contenu (Q66), sinon jusqu'à la première ligne vide (Q63).
  */
@@ -192,11 +197,15 @@ export function trimHeights(heights: number[][]): number[][] {
 
 /**
  * Analyser le texte d'un bloc (sans les clôtures).
- * Ligne 1 = première ligne après ```cubes (ou ```solide).
+ * Ligne 1 = première ligne après ```cubes (ou ```solide, ```patron).
  */
 export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'): EspaceNode {
 	if (genre === 'solide') {
 		const { spec, errors } = parseSolideContent(source);
+		return { type: 'espace', genre, source, spec, errors };
+	}
+	if (genre === 'patron') {
+		const { spec, errors } = parsePatronContent(source);
 		return { type: 'espace', genre, source, spec, errors };
 	}
 	const lines = source.split('\n');

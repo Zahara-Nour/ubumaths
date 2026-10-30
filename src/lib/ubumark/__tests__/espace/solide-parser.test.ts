@@ -78,9 +78,10 @@ describe('```solide — forme:', () => {
 		expect(errors('forme: cone 4 2,5')).toEqual([]);
 	});
 
-	it('rapport de plus de 20 entre deux dimensions : erreur ; 10 : dessiné', () => {
+	it('rapport de plus de 10 entre deux dimensions : erreur ; 10 : dessiné', () => {
 		expect(errors('forme: pave 10 1 1')).toEqual([]);
-		expect(errors('forme: pave 30 1 1')[0]).toMatch(/20/);
+		expect(errors('forme: pave 11 1 1')[0]).toMatch(/plus de 10 fois/);
+		expect(errors('forme: pave 20 1 1')[0]).toMatch(/plus de 10 fois/);
 	});
 
 	it('clé inconnue (vue: est une clé de ```cubes) ; clé répétée', () => {

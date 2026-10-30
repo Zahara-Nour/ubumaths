@@ -250,7 +250,7 @@ export function solideTopology(form: SolideForm): SolideTopology {
 // GÉOMÉTRIE
 // ============================================================================
 
-interface Point3 {
+export interface Point3 {
 	x: number;
 	y: number;
 	z: number;
@@ -263,7 +263,7 @@ const project = (p: Point3): EspacePoint => ({
 });
 
 /** Sommets 3D d'un polyèdre : x vers la droite, y vers le haut, z vers le fond */
-function polyhedronVertices(form: SolideForm, dims: number[]): Point3[] {
+export function polyhedronVertices(form: SolideForm, dims: number[]): Point3[] {
 	const p = (x: number, y: number, z: number): Point3 => ({ x, y, z });
 	const box = (l: number, d: number, h: number) => [
 		p(0, 0, 0),
@@ -343,7 +343,7 @@ function arc(
 }
 
 /** Nombre à la française */
-const frenchNumber = (n: number) => String(Number(n.toFixed(4))).replace('.', ',');
+export const frenchNumber = (n: number) => String(Number(n.toFixed(4))).replace('.', ',');
 
 // ============================================================================
 // SCÈNE

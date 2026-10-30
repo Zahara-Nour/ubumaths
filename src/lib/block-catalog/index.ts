@@ -14,6 +14,7 @@ import { numberLineEntry } from './number-line';
 import { partageEntry } from './partage';
 import { cubesEntry } from './cubes';
 import { solideEntry } from './solide';
+import { patronEntry } from './patron';
 import { operationEntry } from './operation';
 import { probtreeEntry } from './probtree';
 import { qrEntry } from './qr';
@@ -39,6 +40,7 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	partageEntry,
 	cubesEntry,
 	solideEntry,
+	patronEntry,
 	rangerEntry,
 	operationEntry,
 	trigEntry
