@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 1 en PR._
+_Mis à jour le 2026-10-30, après #2003._
 
-- **État** : lot 1 (` ```cubes `, affichage) en PR ; revue Sonnet sans bloquant ; rendu vérifié sur 5176 (thème sombre corrigé : dessus le plus clair).
-- **Prochaine action** : CI verte → merge ; puis lot 2 (gestes `dessiner:` et `retrouver:`, § 3), phase 0 détaillée à écrire comme le § 6.
+- **État** : lot 1 (` ```cubes `, affichage) **mergé** (#2003), pas en prod ; vérification manuelle notée dans `verifications-manuelles.md`.
+- **Prochaine action** : lot 2 — gestes `dessiner:` (colorier une vue) et `retrouver:` (hauteurs dans la vue de dessus, jugé « mêmes vues »). Écrire d'abord sa spécification détaillée (comme le § 6), la faire valider, puis TDD (tests rouges VUS avant le code). Modèle du geste colorier : ` ```partage ` `colorier:` (PR #1974).
 - **En attente de David** : rien.
-- **Pièges en cours** : `ls` est un alias `eza` qui peut bloquer un enchaînement de commandes ; tests du lot 1 écrits après le code (pas de rouge vu).
-- **Worktree / branche** : `../ubumaths-wt-solides` · `feat/solides`.
+- **Pièges en cours** : lancer AUSSI `src/lib/theme` (garde des variables CSS) avant de pousser — elle a fait rougir la CI de #2003 ; `ls` = alias `eza`, peut bloquer une commande.
+- **Worktree / branche** : aucun (retiré après #2003) ; lot 2 : `git worktree add -b feat/solides-gestes ../ubumaths-wt-solides origin/main`.
 
 ---
 
