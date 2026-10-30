@@ -6,17 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2008._
+_Mis à jour le 2026-10-30, après #2014 (lot 4 rangé et tagué en prod, § 26)._
 
-- **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 3 (8 modèles) relu 8/8 OK et publié par David (§ 22).
-- **État** (suite) : lot 4 A (#2008) et 4 B (#1999) mergés, avec le correctif #1997 ; rien en prod.
-- **Prochaine action** : relever les `id` des 11 brouillons créés par David, puis migration nœud + tag
-  (11 modèles, nœuds § 23) dans un worktree neuf.
-- **En attente de David** : les deux `create-questions --publier` ; le `deploy:prod` qui livre #1997 avant la
-  page à cocher du 4 A (le 4 B n'en dépend pas).
-- **Pièges en cours** : la ligne `Doc-inchangée:` d'une migration va dans un COMMIT ; horodatage = max + 1 min
-  de `origin/main` ET des worktrees, puis `migration list --linked` avant `db:migrate`.
-- **Worktree / branche** : aucun (retiré après #2008) ; en créer un pour la migration.
+- **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 4 (A #2008, B #1999, correctif #1997) : 11 brouillons
+  rangés et tagués en prod (#2014, migration `20261030160100` jouée par David, vérifiée au MCP).
+- **Prochaine action** : page à cocher du lot 4 B (ne dépend pas de #1997), puis publication par David.
+- **En attente de David** : le `deploy:prod` qui livre #1997, avant la page à cocher du lot 4 A.
+- **Pièges en cours** : horodatage = max + 1 min de `origin/main` ET des worktrees ; `migration list
+--linked` avant `db:migrate` (migrations d'autres sessions en file → David tranche qui le lance).
+- **Worktree / branche** : `ubumaths-wt-questions-2de` · branche `feat/questions-2de-vecteurs-rangement`
+  mergée, à retirer.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -635,3 +634,36 @@ doublée d'une variation à calcul.
   base locale jouée (m faux refusé) ; PR à part #1999, mergée.
 
 - #2008 (fichiers du lot 4 A) mergé le 2026-10-30 ; worktree retiré.
+
+## 25. Lots 4 A et 4 B, brouillons en prod (2026-10-30)
+
+- 11 brouillons créés par David (`create-questions --publier`), relevés au MCP : `draft`, `['2']`, sans nœud
+  ni tag. Nœud = celui du point (§ 23) : Géométrie › Vecteurs › coordonnées / norme / colinéarité ;
+  Géométrie › Géométrie repérée › milieu et distance.
+
+| id                                   | modèle                                 | point |
+| ------------------------------------ | -------------------------------------- | ----- |
+| 583398f7-dc30-4f9d-bf81-7ae39e6a0d91 | Coordonnées d'un vecteur dans une base | 2-434 |
+| 5a97d95a-8d28-40d6-a64c-79dbad34bc63 | Coordonnées du vecteur AB              | 2-294 |
+| b9f06686-9c65-4fe6-bb38-aa787fea30a1 | Coordonnées d'une somme de vecteurs    | 2-300 |
+| f26e24b9-abe3-45ca-84ee-dfeea372a5ef | Produit d'un vecteur par un réel       | 2-436 |
+| cf08f061-198f-4432-a312-f903ca7cd5bf | Norme d'un vecteur                     | 2-293 |
+| 576e8aed-3ea2-4bdd-8584-89d247fd3f03 | Distance entre deux points             | 2-301 |
+| 59f818c4-e3e0-460c-8635-857236c61b13 | Coordonnées du milieu d'un segment     | 2-302 |
+| 930711ec-0bb7-4cf0-bd78-c06140bc41c3 | Déterminant de deux vecteurs           | 2-295 |
+| 84227334-c406-4d8f-a25a-ca0024599ae3 | Critère de colinéarité                 | 2-435 |
+| 6514d084-b34e-4277-9e13-c1e3e65e0b78 | Trois points alignés ?                 | 2-303 |
+| f53ad892-dba0-49b4-badb-0a3b6add8973 | Deux droites parallèles ?              | 2-437 |
+
+- Migration à écrire sur le gabarit `20261030004900_questions_2de_puissances_rangement_tags.sql` et son test
+  `tests/integration/questions-2de-puissances-rangement-tags.test.ts` (8 → 11 modèles, sous-notions
+  « coordonnées », « norme », « colinéarité » sous Vecteurs, « milieu et distance » sous Géométrie repérée).
+
+## 26. Lot 4, migration nœud + tag (2026-10-30)
+
+- Migration `20261030160100_questions_2de_vecteurs_rangement_tags` + test d'intégration (rouge sans : 5 échecs ;
+  vert avec : 10/10), `security-auditor` sans finding. #2014 mergée (rebase sur `origin/main` puis merge de la
+  branche distante : le commit du journal y était déjà poussé).
+- `db:migrate` : en file avec 150030 (1spe), 150100 (CM1), 160000 (questions-4) ; joué par David d'un seul
+  `db push`. MCP : les 11 en brouillon, chacun sur la sous-notion de son point, un tag chacun, le bon ;
+  `updated_at` préservé.

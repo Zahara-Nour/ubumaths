@@ -1,0 +1,220 @@
+{
+	"title": "Calculer une image par une fonction linéaire",
+	"description": "Calculer l'image d'un nombre par une fonction linéaire f(x) = ax : a et x entiers, x négatif, a décimal, notation f : x ↦ ax",
+	"grades": ["3"],
+	"theme": "Fonctions",
+	"domain": "Fonctions linéaires",
+	"subdomain": "Image",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x$.\n\nCalcule $f({{n}})$.\n\n$f({{n}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)*(n)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour calculer l'image d'un nombre, on **remplace $x$** par ce nombre dans l'expression.",
+					"$$f({{n}}) = {{a}} \\times {{if:n<0|({{n}})|{{n}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)*(n)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x$.\n\nCalcule $f({{n}})$.\n\n$f({{n}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "-9..-2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)*(n)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour calculer l'image d'un nombre, on **remplace $x$** par ce nombre dans l'expression.",
+					"$$f({{n}}) = {{a}} \\times {{if:n<0|({{n}})|{{n}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)*(n)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{eval:k/2;d}}x$.\n\nCalcule $f({{n}})$.\n\n$f({{n}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k)*(n)/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour calculer l'image d'un nombre, on **remplace $x$** par ce nombre dans l'expression.",
+					"$$f({{n}}) = {{eval:k/2;d}} \\times {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:(k)*(n)/2;d}}}$$"
+				]
+			},
+			"conditions": ["k - 2*floor(k/2) == 1"]
+		},
+		{
+			"statement": "On considère la fonction $f : x \\mapsto {{a}}x$.\n\nQuelle est l'image de ${{n}}$ par $f$ ?\n\n$f({{n}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)*(n)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour calculer l'image d'un nombre, on **remplace $x$** par ce nombre dans l'expression.",
+					"$$f({{n}}) = {{a}} \\times {{if:n<0|({{n}})|{{n}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)*(n)}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(x) = 3x, f(4) = 12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a + x = 7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x) = −5x, f(−4) = 20",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-5",
+				"n": "-4"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur de signe : −20",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-5",
+				"n": "-4"
+			},
+			"answers": ["-20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x) = 1,5x, f(6) = 9",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"n": "6"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "f(x) = 2,5x, f(3) = 7,5",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5",
+				"n": "3"
+			},
+			"answers": ["7{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,5 + 3 = 5,5",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5",
+				"n": "3"
+			},
+			"answers": ["5{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f : x ↦ 7x, image de −2 = −14",
+			"variationIndex": 3,
+			"variables": {
+				"a": "7",
+				"n": "-2"
+			},
+			"answers": ["-14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 14",
+			"variationIndex": 3,
+			"variables": {
+				"a": "7",
+				"n": "-2"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

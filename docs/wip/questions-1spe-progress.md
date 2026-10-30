@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #1998 et la publication du lot 0-produit scalaire._
+_Mis à jour le 2026-10-30, après #2012, #2018 et le `db:migrate` du lot 0-géométrie repérée._
 
-- **État** : lots 0-suites (42), 0-second-degré (14), 0-dérivation (15), 0-variations (8), 0-exponentielle (17, § 10), 0-trigo (6, § 11) et 0-produit scalaire (15, § 12) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
-- **Prochaine action** : lot géométrie repérée (nouveau worktree), probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **État** : lots 0-suites, 0-second-degré, 0-dérivation, 0-variations, 0-exponentielle, 0-trigo, 0-produit scalaire publiés ; lot 0-géométrie repérée (§ 13) : 7 corrigés en prod (`--mettre-a-jour`), niveaux migrés (`20261030150030`, renommée après une collision avec le CM1, #2018), simulation `publier-lot` : 12 brouillons passent ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
+- **Prochaine action** : page à cocher du lot 0-géométrie repérée (`page-a-cocher.ts --dir scripts/questions/1spe-0-geometrie-reperee`, depuis le dépôt principal), relecture de David, puis `publier-lot --publier` (David). Ensuite probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
 - **En attente de David** : rien.
-- **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file` (pas `pnpm -s`), une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main` ; CI : test lent ou job navigateur instable → lire le log avant de relancer.
-- **Worktree / branche** : aucun (retiré après #1998) ; prochain lot : `git worktree add -b feat/questions-1spe-geometrie-reperee ../ubumaths-wt-questions-1spe origin/main`.
+- **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; `db:migrate` qui joue les migrations d'autres sessions → refusé par le classifieur, David le lance avec `!` ; horodatage de migration : vérifier `migration list --linked` ET les worktrees avant de choisir ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file` (pas `pnpm -s`), une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main`.
+- **Worktree / branche** : aucun (retiré après #2018) ; la page à cocher se fait depuis le dépôt principal (aucun code à écrire).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -577,8 +577,14 @@ plus composé, en gardant l'ordre actuel :
 - C4 : 49 « \,; » → « \,;\, » dans les 5 modèles de cercle.
 - Specs des 7 modèles vertes (145 specs, 1 150 tirages). Commit 7e15a6016 ; simulation `create-questions` : 7 contenus
   différents, exactement les corrigés.
-- N1 : migration `20261030140000_questions_1spe_geometrie_reperee_niveaux` (gabarit #1998), test d'intégration vert (7),
+- N1 : migration `20261030150030_questions_1spe_geometrie_reperee_niveaux` (gabarit #1998), test d'intégration vert (7),
   rouge sans l'`update` ; `security-auditor` : aucun finding bloquant (diff avec le gabarit = les 8 lignes du lot ; après
   `db:migrate`, vérifier `tgenabled = 'O'` du trigger `updated_at`). Question d'accès : personne (David).
 - Ordre : David lance `create-questions --publier --mettre-a-jour` (fichiers aux anciens niveaux), puis les niveaux des
   fichiers passent aux nouvelles valeurs dans la même PR que la migration.
+
+#2012 mergée (CI verte) ; `db push` refusé : la migration partageait la version `20261030140000` avec celle du CM1 lot 3a (#2007),
+la prod était déjà à `20261030150000`. Renommée `20261030150030` (#2018, sous les migrations en attente des autres sessions).
+`db:migrate` lancé par David le 2026-10-30 (4 migrations : la mienne, CM1 150100, 4e 160000, 2de 160100, chacune aux 4
+conditions selon sa session ; le classifieur du mode auto refuse ce `db:migrate` aux sessions) : niveaux conformes en prod
+(MCP), trigger `updated_at` à `O`, simulation `publier-lot` : 12 brouillons passent le contrôle.

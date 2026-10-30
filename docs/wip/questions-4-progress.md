@@ -5,19 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 4 en brouillons en prod (§ 22)._
+_Mis à jour le 2026-10-30, après #2011 (rangement du lot 4 joué en prod)._
 
-- **État** : lots 1 à 3 en prod (lot 1 en brouillon, lots 2 et 3 publiés) ; lot 4 (probabilités, § 20-22) : 7
-  brouillons en prod (`--publier` du 2026-10-30, `id` au § 22), sans nœud ni tag.
-- **Prochaine action** : migration nœud + tag (gabarit lot 3, `20261030003000`) dans le worktree, branche
-  `feat/questions-4-lot4-rangement` depuis `origin/main` ; test rouge puis vert, `security-auditor`, PR,
-  `db:migrate`, page à cocher.
+- **État** : lots 1 à 3 en prod (lot 1 en brouillon, lots 2 et 3 publiés) ; lot 4 : 7 brouillons en prod, rangés et
+  tagués (#2011, migration jouée et vérifiée, § 23).
+- **Prochaine action** : relecture des 7 fiches du lot 4 (page à cocher, ou `/dev/modeles`), puis `publier-lot.ts
+--dir scripts/questions/4-lot-4 --publier` par David.
 - **En attente de David** : « fᵢ » et « graine » du bloc ` ```simulation ` (§ 21 : garder, ou tableau d'effectifs
   écrit) ; publication des 7 brouillons du lot 1.
 - **Pièges en cours** : 90dca27a et acbd2280 (4-005) partiront en 3e avec un lot de la 3e ; `db:migrate` peut exiger
   `--include-all` : réservé à David ; CI : « Browser connection was closed » (client, shard 2/2) = panne
   passagère, relancer les jobs ; QCM = case choix ; pas de code en ligne dans ubumark ; `median` absente des `eval`.
-- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée, ancienne), aucune branche en cours.
+- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -585,6 +584,20 @@ toute écriture égale acceptée (fraction non simplifiée, décimal), corrigé 
   247fddd1-1467-46db-888a-0871b02617c5 (évènement contraire) · b28ed4fa-8a9c-4aaa-986f-00da7fde2215 (deux épreuves) ·
   bb4dc318-4dbc-4411-92f2-5c27a67763e0 (fréquences et probabilités) · 17a469bb-bfb8-4c3d-b11b-8e9e87929f5f
   (fluctuation des fréquences).
+
+## 23. Lot 4 : nœud et tags (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot4-rangement`)
+
+- Relevé prod (MCP, 2026-10-30) : 7 brouillons en `[4]`, sans nœud ni tag. Nœuds des points : 046, 047 →
+  Probabilités > Expériences aléatoires > événements ; 048, 079 → … > probabilité simple ; 049 → Expériences
+  aléatoires (notion) ; 050, 051 → … > fréquences.
+- Migration `20261030160000` reprise du lot 3 (horodatage après les PR ouvertes #2007, #2009, #2010). Test rouge sans
+  la migration (4 échecs, 4 sautés), vert avec (9/9) ; `types:cliquet` tenu.
+- Question d'accès : § 20.3 (personne ne gagne d'accès), validée avec la phase 0.
+- `security-auditor` : aucun finding bloquant (verrou de table hérité du gabarit, borné par `lock_timeout`).
+
+- #2011 mergée (CI verte, après un conflit de journal avec la note de la 3e) ; `db push` refusé d'abord (collision
+  `20261030140000` de deux autres sessions, réglée par #2017 et #2018) ; joué par David le 2026-10-30 avec 150030,
+  150100 et 160100 ; vérifié en prod (MCP) : 7 brouillons sur leur nœud, un tag chacun, `updated_at` inchangé.
 
 ## Note de la session 3e (2026-10-30)
 
