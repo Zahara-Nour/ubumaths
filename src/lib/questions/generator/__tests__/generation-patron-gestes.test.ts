@@ -150,12 +150,12 @@ describe('completer: — la case et sa réponse', () => {
 		);
 		expect(instance.blanks?.[0]).toMatchObject({
 			type: 'text',
-			expectedAnswer: '000000/001000/011120/001000/000000',
+			expectedAnswer: '00000/00100/01112/00100/00000',
 			construire: 'patron'
 		});
-		const left = '000000/001000/211100/001000/000000';
+		const left = '00000/00100/21110/00100/00000';
 		expect(validateAnswer(left, instance, left).status).toBe('correct');
-		const square = '000000/021000/011100/001000/000000';
+		const square = '00000/02100/01110/00100/00000';
 		expect(validateAnswer(square, instance, square).isCorrect).toBe(false);
 	});
 });

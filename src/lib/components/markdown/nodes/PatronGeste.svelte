@@ -373,6 +373,13 @@
 		stroke: var(--color-foreground);
 	}
 
+	/* Dessinés par-dessus les faces : un toucher sur un trait ou un numéro va à la face */
+	.patron-trait,
+	.patron-point,
+	.patron-etiquette {
+		pointer-events: none;
+	}
+
 	.patron-face {
 		fill: transparent;
 		stroke: none;

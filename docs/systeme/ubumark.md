@@ -681,20 +681,21 @@ l'élève touche des faces (une ou plusieurs, rien ne dit combien) ; les faces a
 lecture) sont calculées **au parseur** par le pliage (`targetFaces`, `utils/patron-gestes.ts`) : `opposee` = la
 face du solide sans sommet commun avec la face marquée (unique, sinon « pas de face opposée » : pyramide,
 rectangle du prisme), `voisines` = une arête commune, `sommet A` = les faces qui contiennent A, `face EFGH` = la
-face de ces sommets. `opposee` / `voisines` exigent **une** face marquée ; les noms se lisent dans `sommets:`, à
+face de ces sommets ; un sommet visé **écrit** sur le patron (`sommets:`) est refusé, ses coins donneraient la
+réponse. `opposee` / `voisines` exigent **une** face marquée ; les noms se lisent dans `sommets:`, à
 défaut les noms par défaut (ABCDEFGH, ABCDEF, SABCD, SABC) d'un sommet laissé sans nom ; refusé sur un faux
 patron et le cylindre. `completer: 4` (1 à `PATRON_COMPLETE_MAX` = 3 cases, cube seulement, vrai patron) : les
 cases retirées, les faces restantes reliées ; refusé avec `sommets:`, `faces: numeros`, `marquer:`, `cotes:`
 (ils diraient où va la face). Réponses (`patron-gestes.ts`, pur) : `designer:` → numéros des faces touchées,
 croissants (`'2,4'`), juste si mêmes faces (`isDesignerCorrect`) ; `completer:` → le quadrillage de travail
-(`completerFrame` : la grille **telle que dessinée**, tournée / retournée, agrandie d'autant de cases que de
-faces retirées), `1` = donnée, `2` = posée (`'000000/001000/211100/001000/000000'`), juste si les 6 faces se
+(`completerFrame` : la grille **telle que dessinée**, tournée / retournée, recadrée sur les faces **données**
+— un vide d'un seul côté montrerait la face manquante — et agrandie d'autant de cases que de faces retirées), `1` = donnée, `2` = posée (`'00000/00100/21110/00100/00000'`), juste si les 6 faces se
 **plient en cube** où qu'elles soient (`isCompleterCorrect`, `cubeCellsFold`) — le juge ne compare jamais à la
 case retirée ; `completerHasOtherSolutions` cherche une autre pose qui plie. Écran : `PatronGeste.svelte`
 (faces = boutons « Face N » à bascule ; emplacements en pointillés = `completerSpots`, cases vides qui touchent
 une face, compteur « Faces à poser » ; focus en trait, jamais `outline` dans un SVG en cm) ; `Espace.svelte` y
 aiguille un patron à geste hors question (geste libre). PDF : `designer:` → le patron, corrigé (`solved`) :
-faces attendues en gris ; `completer:` → faces données, autres cases du cadre en pointillés, corrigé : faces
+faces attendues en gris foncé (la face de départ reste gris clair) ; `completer:` → faces données, autres cases du cadre en pointillés, corrigé : faces
 retirées en gris.
 
 **Opération posée en colonnes** (chantier [operations-posees](../archive/wip/operations-posees-progress.md),

@@ -97,6 +97,28 @@ describe('designer: — toucher des faces', () => {
 		await expect.poll(() => probe.value).toBe('3');
 	});
 
+	it('toucher le numéro d’une face (dessiné par-dessus) sélectionne la face', async () => {
+		const { probe, answer } = answerProbe();
+		const screen = await render(PatronGeste, {
+			target: mainElement(),
+			props: {
+				node: node('solide: cube', 'faces: numeros', 'marquer: face 1', 'designer: opposee'),
+				answer: answer()
+			}
+		});
+		const label = [...screen.container.querySelectorAll('text.patron-etiquette')].find(
+			(t) => t.textContent === '6'
+		)!;
+		// Un clic à l'endroit du numéro, sur le dessin (le numéro lui-même ne se touche pas)
+		const svg = screen.container.querySelector<SVGSVGElement>('.patron-geste svg')!;
+		const at = label.getBoundingClientRect();
+		const box = svg.getBoundingClientRect();
+		await userEvent.click(svg, {
+			position: { x: at.x + at.width / 2 - box.x, y: at.y + at.height / 2 - box.y }
+		});
+		await expect.poll(() => probe.value).toBe('6');
+	});
+
 	it('chaque face est un bouton à bascule « Face N » ; Espace la bascule', async () => {
 		const { probe, answer } = answerProbe('2');
 		const screen = await render(PatronGeste, {
@@ -163,7 +185,7 @@ describe('completer: — poser la face manquante', () => {
 			s.getAttribute('aria-label')?.includes('rangée 3, colonne 1')
 		)!;
 		await userEvent.click(left);
-		await expect.poll(() => probe.value).toBe('000000/001000/211100/001000/000000');
+		await expect.poll(() => probe.value).toBe('00000/00100/21110/00100/00000');
 		await expect.poll(() => spots(root)).toHaveLength(0);
 		expect(root.textContent).toContain('Faces à poser : 0');
 		await userEvent.click(placedFaces(root)[0]);
@@ -173,7 +195,7 @@ describe('completer: — poser la face manquante', () => {
 	it('faux : la raison, une solution, « d’autres réponses justes »', async () => {
 		const screen = await render(PatronGeste, {
 			target: mainElement(),
-			props: { node: completer(), answer: locked('000000/021000/011100/001000/000000', false) }
+			props: { node: completer(), answer: locked('00000/02100/01110/00100/00000', false) }
 		});
 		const root = screen.container;
 		expect(root.textContent).toContain(

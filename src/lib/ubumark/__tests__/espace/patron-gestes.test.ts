@@ -87,12 +87,25 @@ describe('designer: — analyse et faces attendues', () => {
 		expect(answer.split(',')).toContain('1');
 	});
 
-	it('face EFGH : la face du dessus, même sans les noms affichés', () => {
+	it('face EFGH : la face du dessus, ses sommets cachés ; ordre des lettres libre', () => {
 		expect(expectedOf(...CROIX, 'designer: face EFGH')).toBe('6');
-		expect(expectedOf(...CROIX, 'sommets: A B C D - - - -', 'designer: face EFGH')).toBe('6');
-		expect(expectedOf(...CROIX, 'sommets: A B C D E F G H', 'designer: face GFEH')).toBe('6');
-		// Noms donnés par le prof : ce sont eux qui comptent
-		expect(expectedOf(...CROIX, 'sommets: M N O P Q R S T', 'designer: face MNOP')).toBe('1');
+		expect(expectedOf(...CROIX, 'sommets: A B C D - - - -', 'designer: face GFEH')).toBe('6');
+		expect(expectedOf(...CROIX, 'sommets: - - - - ? - - -', 'designer: face EFGH')).toBe('6');
+	});
+
+	it('un nom visé écrit sur le patron donnerait la réponse : refusé', () => {
+		expect(messages(...CROIX, 'sommets: A B C D E F G H', 'designer: face EFGH')).toMatch(
+			/E, F, G, H sont écrits sur le patron/
+		);
+		expect(messages(...CROIX, 'sommets: A B C D E - - -', 'designer: face EFGH')).toMatch(
+			/E est écrit/
+		);
+		expect(messages(...CROIX, 'sommets: A B C D E F G H', 'designer: sommet A')).toMatch(
+			/A est écrit sur le patron/
+		);
+		expect(
+			expectedOf(...CROIX, 'sommets: - B C D E F G H', 'designer: sommet A').split(',')
+		).toHaveLength(3);
 	});
 
 	it('pyramide : sommet A = la base et deux triangles ; prisme : opposee d’un triangle', () => {
@@ -174,28 +187,31 @@ describe('designer: — réponses et jugement', () => {
 });
 
 describe('completer: — analyse et quadrillage', () => {
-	it('la croix sans sa face 5 : quadrillage agrandi d’une case, la face retirée en 2', () => {
+	it('la croix sans sa face 5 : boîte des faces DONNÉES agrandie d’une case (aucun vide d’un seul côté)', () => {
 		const node = parse(...CROIX, 'completer: 5', 'case: 0');
 		expect(node.errors).toEqual([]);
 		expect(node.caseIndex).toBe(0);
 		expect(node.spec?.task).toEqual({ kind: 'completer', removed: [4] });
-		expect(expectedOf(...CROIX, 'completer: 5')).toBe('000000/001000/011120/001000/000000');
+		expect(expectedOf(...CROIX, 'completer: 5')).toBe('00000/00100/01112/00100/00000');
 	});
 
 	it('deux faces retirées : agrandi de deux cases', () => {
 		const answer = expectedOf(...CROIX, 'completer: 2, 5');
 		const rows = answer.split('/');
+		// Faces données : 3 rangées × 2 colonnes, plus 2 cases de chaque côté
 		expect(rows).toHaveLength(3 + 4);
-		expect(rows[0]).toHaveLength(4 + 4);
-		expect(rows[3]).toBe('00211200');
+		expect(rows[0]).toHaveLength(2 + 4);
+		expect(rows[3]).toBe('021120');
 	});
 
 	it('le cadre suit tourner: (le patron tel qu’il est dessiné)', () => {
 		const spec = specOf(...CROIX, 'tourner: 90', 'completer: 5');
 		const frame = completerFrame(spec, [4]);
-		expect(frame).toHaveLength(4 + 2);
+		// Tournée, la croix sans un bout : 3 × 3 de faces données, plus une case autour
+		expect(frame).toHaveLength(3 + 2);
 		expect(frame[0]).toHaveLength(3 + 2);
 		expect(frame.flat().filter((c) => c === 2)).toHaveLength(1);
+		expect(frame.flat().filter((c) => c === 1)).toHaveLength(5);
 	});
 
 	it('erreurs au prof', () => {
@@ -217,20 +233,20 @@ describe('completer: — analyse et quadrillage', () => {
 });
 
 describe('completer: — réponses et jugement', () => {
-	const EXPECTED = '000000/001000/011120/001000/000000';
+	const EXPECTED = '00000/00100/01112/00100/00000';
 
 	it('la pose du prof est juste', () => {
-		expect(isCompleterCorrect('000000/001000/011120/001000/000000', EXPECTED)).toBe(true);
-		expect(isPatronAnswerCorrect('000000/001000/011120/001000/000000', EXPECTED)).toBe(true);
+		expect(isCompleterCorrect('00000/00100/01112/00100/00000', EXPECTED)).toBe(true);
+		expect(isPatronAnswerCorrect('00000/00100/01112/00100/00000', EXPECTED)).toBe(true);
 	});
 
 	it('une autre pose qui se plie est juste (à gauche de la bande)', () => {
-		expect(isCompleterCorrect('000000/001000/211100/001000/000000', EXPECTED)).toBe(true);
+		expect(isCompleterCorrect('00000/00100/21110/00100/00000', EXPECTED)).toBe(true);
 		expect(completerHasOtherSolutions(EXPECTED)).toBe(true);
 	});
 
 	it('une pose qui ne se plie pas est fausse, raison dite', () => {
-		const square = '000000/021000/011100/001000/000000';
+		const square = '00000/02100/01110/00100/00000';
 		expect(isCompleterCorrect(square, EXPECTED)).toBe(false);
 		expect(completerMistakes(square, EXPECTED)).toEqual([NOT_FOLDING]);
 	});
@@ -239,18 +255,26 @@ describe('completer: — réponses et jugement', () => {
 		expect(isCompleterCorrect('', EXPECTED)).toBe(false);
 		expect(completerMistakes('', EXPECTED)).toEqual([NOTHING_PLACED]);
 		const two = expectedOf(...CROIX, 'completer: 2, 5');
-		const one = two.replace('00211200', '00011200');
+		const one = two.replace('021120', '001120');
 		expect(isCompleterCorrect(one, two)).toBe(false);
 		expect(completerMistakes(one, two)).toEqual(['Il manque encore une face.']);
 	});
 
 	it('une face donnée déplacée ou un cadre d’une autre taille : faux', () => {
-		expect(isCompleterCorrect('000000/000000/011120/001000/000000', EXPECTED)).toBe(false);
+		expect(isCompleterCorrect('00000/00000/01112/00100/00000', EXPECTED)).toBe(false);
 		expect(isCompleterCorrect('0010/0111/0010', EXPECTED)).toBe(false);
 	});
 
+	it('un bout de la croix retiré : le cadre est le même, quel que soit le bout', () => {
+		const top = expectedOf(...CROIX, 'completer: 1');
+		const bottom = expectedOf(...CROIX, 'completer: 6');
+		const shape = (a: string) => a.replace(/2/g, '0');
+		expect(shape(top).split('/')).toHaveLength(shape(bottom).split('/').length);
+		expect(shape(top)).toBe(shape(bottom).split('/').reverse().join('/'));
+	});
+
 	it('emplacements : les cases vides qui touchent une face', () => {
-		const frame = readCompleterAnswer('000000/001000/011100/001000/000000')!;
+		const frame = readCompleterAnswer('00000/00100/01110/00100/00000')!;
 		const spots = completerSpots(frame);
 		expect(spots).toContainEqual([2, 0]);
 		expect(spots).toContainEqual([2, 4]);

@@ -215,7 +215,13 @@ function patronTypst(spec: PatronSpec, solved: boolean): string {
 		`(${cm(p.x + ESPACE_MARGIN)}, ${cm(p.y + ESPACE_MARGIN)})`;
 	const content: string[] = [];
 	const wanted = solved && spec.task?.kind === 'designer' ? spec.task.faces : [];
-	for (const fill of [...scene.fills, ...wanted.map((i) => scene.faces[i])]) {
+	// Faces attendues plus foncées que la face marquée (d'où part la question)
+	for (const i of wanted) {
+		content.push(
+			`  #place(top + left, polygon(fill: luma(${COLORED_LUMA}), stroke: none, ${scene.faces[i].map(at).join(', ')}))`
+		);
+	}
+	for (const fill of scene.fills) {
 		content.push(
 			`  #place(top + left, polygon(fill: luma(${MARKED_FACE_LUMA}), stroke: none, ${fill.map(at).join(', ')}))`
 		);

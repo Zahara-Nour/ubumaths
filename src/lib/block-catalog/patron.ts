@@ -143,7 +143,7 @@ export const patronEntry: BlockCatalogEntry = {
 					values: 'opposee | voisines | sommet A | face EFGH',
 					defaultValue: null,
 					description:
-						'L’élève touche une ou plusieurs faces ; rien ne lui dit combien. Les faces justes sont calculées en pliant le patron : opposee, la face opposée à la face marquée ; voisines, les faces qui ont une arête commune avec elle ; sommet A, les faces qui se touchent en A ; face EFGH, la face qui devient EFGH (noms de sommets:, ou ABCDEFGH par défaut, même cachés par -). opposee et voisines partent de la face marquée : marques-en exactement une. Ni faux patron, ni cylindre. Dans une question, ce bloc est la case.'
+						'L’élève touche une ou plusieurs faces ; rien ne lui dit combien. Les faces justes sont calculées en pliant le patron : opposee, la face opposée à la face marquée ; voisines, les faces qui ont une arête commune avec elle ; sommet A, les faces qui se touchent en A ; face EFGH, la face qui devient EFGH (noms de sommets:, ou ABCDEFGH par défaut, même cachés par -). Le sommet ou les sommets de la face visés doivent être cachés (-) : écrits, leurs coins donneraient la réponse. opposee et voisines partent de la face marquée : marques-en exactement une. Ni faux patron, ni cylindre. Dans une question, ce bloc est la case.'
 				},
 				{
 					key: 'completer',
@@ -219,10 +219,11 @@ export const patronEntry: BlockCatalogEntry = {
 				'patron',
 				'solide: cube',
 				'forme: 3',
-				'sommets: A - - - - - - -',
+				'sommets: - B C D E F G H',
 				'designer: sommet A'
 			),
-			explanation: 'Trois faces : seul A est nommé, les autres coins restent à imaginer.'
+			explanation:
+				'Trois faces : A n’est pas écrit (il donnerait la réponse), l’élève le retrouve d’après B, D et E.'
 		},
 		{
 			title: 'Toucher la face EFGH (geste)',

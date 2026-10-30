@@ -128,13 +128,25 @@ export function targetFaces(
 		if (opposite.length !== 1) return 'designer: opposee : cette face n’a pas de face opposée';
 		return opposite;
 	}
+	// Un nom écrit sur le patron montrerait les faces à toucher (ses coins)
+	const shown = (vertex: number) => {
+		const name = spec.names?.[vertex] ?? null;
+		return name !== null && name !== '?';
+	};
 	if (target.kind === 'sommet') {
 		const vertex = vertexNamed(spec, target.name);
 		if (vertex === null) return `aucun sommet ne s’appelle ${target.name}`;
+		if (shown(vertex)) {
+			return `designer: sommet ${target.name} : ${target.name} est écrit sur le patron, ses coins donnent la réponse (cache-le avec - dans sommets:)`;
+		}
 		return facesWhere((face) => face.includes(vertex));
 	}
 	const vertices = verticesNamed(spec, target.name);
 	if (typeof vertices === 'string') return vertices;
+	const visible = vertices.filter(shown).map((v) => spec.names?.[v]);
+	if (visible.length > 0) {
+		return `designer: face ${target.name} : ${visible.join(', ')} ${visible.length > 1 ? 'sont écrits' : 'est écrit'} sur le patron et montre${visible.length > 1 ? 'nt' : ''} la face (cache ses sommets avec - dans sommets:)`;
+	}
 	const faces = facesWhere(
 		(face) => face.length === vertices.length && common(face, vertices) === vertices.length
 	);
@@ -185,8 +197,10 @@ export function designerMistakes(answer: string, target: PatronTarget): string[]
 
 /**
  * Quadrillage de travail de `completer:` : la grille du patron tel qu'il est
- * dessiné (tourné, retourné), `2` sur les cases retirées, agrandie d'autant de
- * cases que de faces retirées de chaque côté (une face posée y tient toujours)
+ * dessiné (tourné, retourné), `2` sur les cases retirées ; la boîte des faces
+ * DONNÉES, agrandie d'autant de cases que de faces retirées de chaque côté (une
+ * face posée y tient toujours). Jamais la boîte du patron entier : un vide d'un
+ * seul côté montrerait où manque la face.
  */
 export function completerFrame(spec: PatronSpec, removed: readonly number[]): CompleterCell[][] {
 	const cells = spec.cells ?? [];
@@ -194,19 +208,19 @@ export function completerFrame(spec: PatronSpec, removed: readonly number[]): Co
 	const marked = cells.map((row) =>
 		row.map((on): CompleterCell => (on ? (removed.includes(rank++) ? 2 : 1) : 0))
 	);
-	const drawn = transformGrid(marked, spec.turn, spec.mirror);
+	const turned = transformGrid(marked, spec.turn, spec.mirror);
+	const rows = turned.flatMap((row, r) => (row.includes(1) ? [r] : []));
+	const cols = turned[0].flatMap((_, c) => (turned.some((row) => row[c] === 1) ? [c] : []));
+	const [top, bottom] = [rows[0], rows[rows.length - 1]];
+	const [left, right] = [cols[0], cols[cols.length - 1]];
 	const margin = removed.length;
-	const width = drawn[0].length + 2 * margin;
-	const empty = (): CompleterCell[] => Array<CompleterCell>(width).fill(0);
-	return [
-		...Array.from({ length: margin }, empty),
-		...drawn.map((row) => [
-			...Array<CompleterCell>(margin).fill(0),
-			...row,
-			...Array<CompleterCell>(margin).fill(0)
-		]),
-		...Array.from({ length: margin }, empty)
-	];
+	// Les faces retirées, à au plus `margin` cases des données, restent dans le cadre
+	return Array.from({ length: bottom - top + 1 + 2 * margin }, (_, r) =>
+		Array.from(
+			{ length: right - left + 1 + 2 * margin },
+			(_, c): CompleterCell => turned[r + top - margin]?.[c + left - margin] ?? 0
+		)
+	);
 }
 
 /** Réponse de la case pour ce quadrillage ; '' quand aucune face n'est posée */

@@ -361,7 +361,7 @@ coloriée ou les hauteurs du bloc) ; vide : « Tu n'as rien colorié. » / « Tu
 Patron à geste (```patron + `designer: opposee` ou `completer: 5`, chantier `solides` § 10 ;
 `espace-parser.ts`, `findPatronsToBuild`) : même chemin, `construire: 'patron'` (« patron à geste »),
 `type: 'text'`. Réponse attendue (`expectedPatronAnswer`) : les faces calculées par le pliage (`'6'`, `'1,2,4,6'`)
-ou le quadrillage du patron du prof (`'000000/001000/011120/001000/000000'`, `2` = face retirée). L'élève répond
+ou le quadrillage du patron du prof (`'00000/00100/01112/00100/00000'`, `2` = face retirée). L'élève répond
 les faces touchées ou son quadrillage (`2` = face posée) ; juge à part, `isPatronAnswerCorrect`
 (`utils/patron-gestes.ts`) : mêmes faces, ou toute pose qui se plie en cube. Copie corrigée : `BuildAnswer`
 (`PatronGeste` verrouillé, phrase, réponse du prof dessous, « Il y a d'autres réponses justes. » pour

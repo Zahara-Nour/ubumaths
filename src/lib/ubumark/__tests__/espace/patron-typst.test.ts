@@ -45,18 +45,21 @@ describe('bloc ```patron au PDF', () => {
 			solved: true
 		});
 		expect(count(solved, 'polygon(')).toBe(1 + 4);
+		// Faces attendues plus foncées que la face de départ
+		expect(count(solved, 'fill: luma(150)')).toBe(4);
+		expect(count(solved, 'fill: luma(215)')).toBe(1);
 	});
 
 	it('completer: faces données pleines, autres cases en pointillés ; corrigé : la face retirée', () => {
-		// Croix sans sa face 5 : cadre 6 × 5 = 30 cases, 5 faces données
+		// Croix sans sa face 5 : cadre 5 × 5 = 25 cases, 5 faces données
 		const out = typst('solide: cube', 'completer: 5');
 		expect(count(out, 'fill: luma(255)')).toBe(5);
-		expect(count(out, 'dash:')).toBe(25);
+		expect(count(out, 'dash:')).toBe(20);
 		const solved = generateEspaceTypst(parseEspaceContent('solide: cube\ncompleter: 5', 'patron'), {
 			solved: true
 		});
 		expect(count(solved, 'fill: luma(150)')).toBe(1);
-		expect(count(solved, 'dash:')).toBe(24);
+		expect(count(solved, 'dash:')).toBe(19);
 	});
 
 	it('branché dans le générateur de document', () => {
