@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2022._
+_Mis à jour le 2026-10-30, migration du lot 5 écrite._
 
-- **État** : lot 4 (problèmes, 10 modèles, § 10) **publié** en prod (2026-10-30, `publier-lot --publier` par David, 10 `published` au MCP), après relecture 10/10 OK sur la page à cocher (https://claude.ai/artifact/2bUw8csLPAx4rcotvkUjjn). Lots 0 à 4 faits. Lot 5 (longueurs, 6 modèles) mergé (#2022), brouillons pas encore en prod.
-- **Prochaine action** : vérifier au MCP les 6 brouillons du lot 5 une fois créés par David, puis migration nœud + tag (branche neuve sur `origin/main`). Le lot 5 bis (masses, monnaie, durées, 9 modèles) suit.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce1-5 --publier` (brouillons en prod, depuis le dépôt principal).
+- **État** : lot 4 (problèmes, 10 modèles, § 10) **publié** en prod (2026-10-30, `publier-lot --publier` par David, 10 `published` au MCP), après relecture 10/10 OK sur la page à cocher (https://claude.ai/artifact/2bUw8csLPAx4rcotvkUjjn). Lots 0 à 4 faits. Lot 5 (longueurs, 6 modèles) mergé (#2022), 6 brouillons en prod (vérifiés au MCP) ; migration nœud + tag `20261030162100` écrite (branche `feat/questions-ce1-lot5-rangement`).
+- **Prochaine action** : PR de la migration, merge, `db:migrate` depuis le dépôt principal, vérification au MCP, page à cocher du lot 5 ; puis lot 5 bis. Le lot 5 bis (masses, monnaie, durées, 9 modèles) suit.
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`). `!` de David : depuis le dépôt principal, pas `cd` vers le worktree (rien ne s'affiche ni ne s'écrit).
 
@@ -427,3 +427,7 @@ Réponse de David : les quatre recommandations (« je valide »).
   `question:specs` 200 tirages par variation, verts ; 6 brouillons en base locale ; aperçu admin : 300 m + 700 m = 1 km
   juste, corrigé lisible ; comparer 7 m et 720 cm : « > » faux, bonne réponse « < » montrée, corrigé en cm.
 - 2026-10-30 : #2022 mergée (CI verte après relance d'un job navigateur instable) ; brouillons en prod à créer par David.
+- 2026-10-30 : 6 brouillons créés en prod par David (`ee4e61b6`, `48d19e46`, `28c90fa4`, `76908c5f`, `a709b222`,
+  `1bd819dd`), vérifiés au MCP (brouillons, sans nœud ni tag, niveaux voulus, 50 specs). Migration
+  `20261030162100_questions_ce1_lot5_rangement_tags` (max des worktrees + 1 min) et test : rouge sans (5 échecs sur 9),
+  vert 9/9.
