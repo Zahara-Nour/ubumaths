@@ -5,10 +5,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, PR du rangement 4a ouverte._
+_Mis à jour le 2026-10-30, PR #2024 (rangement 4a) ouverte._
 
 - **État** : lots 0 à 3 publiés ; lot 4a (fonctions, 8 brouillons en prod, § 11.8) : migration de rangement
-  `20261030162000` écrite et prouvée (§ 11.9), PR `feat/questions-3-lot4a-rangement`.
+  `20261030162000` écrite et prouvée (§ 11.9), PR #2024.
 - **Prochaine action** : merge, puis `pnpm db:migrate --include-all` (David, avec `!`) depuis le dépôt principal ;
   vérif MCP ; page à cocher ; publication. Puis lot 4b (§ 11.2).
 - **En attente de David** : le `db:migrate` après merge.
@@ -593,3 +593,4 @@ modèles publiés de plus. Aucune règle ne change.
   de son point (§ 11), 8 tags posés (3-067 pour 0d0e88f5 et b9771108). Horodatage pris après `20261030161000`
   (ce2 lot 4), le plus récent de toutes les branches.
 - Test `questions-3-lot4a-rangement-tags` : 19 verts ; corps de la migration vidé : 8 rouges.
+- PR #2024.
