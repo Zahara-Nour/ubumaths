@@ -1,0 +1,622 @@
+{
+	"id": "71d10661-2f62-47df-9e00-37e2a6789080",
+	"title": "Lire un vecteur normal sur une équation de droite",
+	"description": "Lire les coordonnées d'un vecteur normal sur une équation cartésienne ou réduite, ou compléter un vecteur normal (colinéarité, orthogonalité avec un vecteur directeur)",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Géométrie repérée",
+	"subdomain": "Vecteur normal et équation de droite",
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"answerKind": "vecteur",
+					"expectedAnswer": "({{eval:a}};{{eval:b}})"
+				}
+			],
+			"statement": "La droite $d$ a pour équation cartésienne ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$.\n\nDonne les coordonnées du vecteur normal $\\vec{n}$ que l'on lit directement sur cette équation.\n\n$\\vec{n}\\ ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une droite d'équation cartésienne $ax+by+c=0$ admet pour vecteur normal $\\vec{n}\\begin{pmatrix}a\\\\b\\end{pmatrix}$ : ses coordonnées sont les coefficients de $x$ et de $y$.",
+					"Ici $a={{eval:a}}$ et $b={{eval:b}}$, donc $\\vec{n}\\begin{pmatrix}\\textcolor{{{color:primary.0}}}{ {{eval:a}} }\\\\\\textcolor{{{color:primary.0}}}{ {{eval:b}} }\\end{pmatrix}$.",
+					"Attention : $\\begin{pmatrix}-b\\\\a\\end{pmatrix}$, ici $\\begin{pmatrix}{{eval:-b}}\\\\{{eval:a}}\\end{pmatrix}$, est un vecteur DIRECTEUR de $d$, pas un vecteur normal.",
+					"Tout vecteur non nul colinéaire à $\\vec{n}$, par exemple $\\begin{pmatrix}{{eval:-a}}\\\\{{eval:-b}}\\end{pmatrix}$, est aussi normal à $d$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*b}}"
+				}
+			],
+			"statement": "La droite $d$ a pour équation cartésienne ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$.\n\nComplète la coordonnée manquante pour que le vecteur $\\vec{n}$ soit normal à $d$.\n\n$\\vec{n}\\begin{pmatrix}{{eval:k*a}}\\\\?\\end{pmatrix}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..3;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur l'équation, on lit le vecteur normal $\\vec{u}\\begin{pmatrix}{{eval:a}}\\\\{{eval:b}}\\end{pmatrix}$.",
+					"$\\vec{n}$ est normal à $d$ si et seulement s'il est colinéaire à $\\vec{u}$ : $\\vec{n}=k\\vec{u}$. Première coordonnée : ${{eval:k*a}}=k\\times{{a;()}}$, donc $k={{eval:k}}$.",
+					"Deuxième coordonnée : ${{eval:k}}\\times{{b;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:k*b}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-m*q}}"
+				}
+			],
+			"statement": "La droite $d$ a pour équation réduite $y={{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}}$.\n\nComplète la coordonnée manquante pour que le vecteur $\\vec{n}$ soit normal à $d$.\n\n$\\vec{n}\\begin{pmatrix}?\\\\{{eval:q}}\\end{pmatrix}$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "p",
+					"expression": "-6..6"
+				},
+				{
+					"name": "q",
+					"expression": "1..3;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$y={{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}}\\iff {{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}-y{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}}=0$ : une équation cartésienne de $d$.",
+					"On y lit le vecteur normal $\\vec{u}\\begin{pmatrix}{{eval:m}}\\\\-1\\end{pmatrix}$.",
+					"$\\vec{n}=k\\vec{u}$ : deuxième coordonnée ${{eval:q}}=k\\times(-1)$, donc $k={{eval:-q}}$.",
+					"Première coordonnée : ${{eval:-q}}\\times{{m;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:-m*q}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-t*u1}}"
+				}
+			],
+			"statement": "La droite $d$ a pour vecteur directeur $\\vec{u}\\begin{pmatrix}{{eval:u1}}\\\\{{eval:u2}}\\end{pmatrix}$.\n\nComplète la coordonnée manquante pour que le vecteur $\\vec{n}$ soit normal à $d$.\n\n$\\vec{n}\\begin{pmatrix}{{eval:t*u2}}\\\\?\\end{pmatrix}$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "u2",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "t",
+					"expression": "1..2;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{n}$ est normal à $d$ si et seulement si $\\vec{n}$ est orthogonal au vecteur directeur $\\vec{u}$ : $\\vec{n}\\cdot\\vec{u}=0$.",
+					"Notons $y$ la coordonnée manquante : ${{eval:t*u2}}\\times{{u1;()}}+y\\times{{u2;()}}=0$, soit ${{eval:t*u2*u1}}{{if:u2==1|+y}}{{if:u2==-1|-y}}{{if:u2>1|+{{eval:u2}}y}}{{if:u2< -1|{{eval:u2}}y}}=0$.",
+					"Donc $y=\\dfrac{{{eval:-t*u2*u1}}}{{{eval:u2}}}=\\textcolor{{{color:primary.0}}}{ {{eval:-t*u1}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "vecteur",
+					"vectorMode": "colineaire",
+					"expectedAnswer": "({{eval:a}};{{eval:b}})"
+				}
+			],
+			"statement": "La droite $d$ a pour équation cartésienne ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$.\n\nDonne un vecteur normal à $d$.\n\n$\\vec{n}\\ ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une droite d'équation cartésienne $ax+by+c=0$ admet pour vecteur normal $\\vec{n}\\begin{pmatrix}a\\\\b\\end{pmatrix}$ : ses coordonnées sont les coefficients de $x$ et de $y$.",
+					"Ici $\\vec{n}\\begin{pmatrix}\\textcolor{{{color:primary.0}}}{ {{eval:a}} }\\\\\\textcolor{{{color:primary.0}}}{ {{eval:b}} }\\end{pmatrix}$ convient.",
+					"Tout vecteur non nul colinéaire à $\\vec{n}$ est aussi normal à $d$, par exemple $\\begin{pmatrix}{{eval:-a}}\\\\{{eval:-b}}\\end{pmatrix}$ ou $\\begin{pmatrix}{{eval:2*a}}\\\\{{eval:2*b}}\\end{pmatrix}$.",
+					"Attention : $\\begin{pmatrix}{{eval:-b}}\\\\{{eval:a}}\\end{pmatrix}$ est un vecteur DIRECTEUR de $d$, pas un vecteur normal."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "vecteur",
+					"vectorMode": "colineaire",
+					"expectedAnswer": "({{eval:m}};-1)"
+				}
+			],
+			"statement": "La droite $d$ a pour équation réduite $y={{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}}$.\n\nDonne un vecteur normal à $d$.\n\n$\\vec{n}\\ ?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "p",
+					"expression": "-6..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$y={{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}}\\iff {{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}-y{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}}=0$ : une équation cartésienne de $d$.",
+					"On y lit le vecteur normal $\\vec{n}\\begin{pmatrix}\\textcolor{{{color:primary.0}}}{ {{eval:m}} }\\\\\\textcolor{{{color:primary.0}}}{ -1 }\\end{pmatrix}$.",
+					"Tout vecteur non nul colinéaire convient aussi, par exemple $\\begin{pmatrix}{{eval:-m}}\\\\1\\end{pmatrix}$.",
+					"Attention : $\\begin{pmatrix}1\\\\{{eval:m}}\\end{pmatrix}$ est un vecteur DIRECTEUR de $d$ (coefficient directeur ${{eval:m}}$), pas un vecteur normal."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "vecteur",
+					"vectorMode": "colineaire",
+					"expectedAnswer": "({{eval:-u2}};{{eval:u1}})"
+				}
+			],
+			"statement": "La droite $d$ a pour vecteur directeur $\\vec{u}\\begin{pmatrix}{{eval:u1}}\\\\{{eval:u2}}\\end{pmatrix}$.\n\nDonne un vecteur normal à $d$.\n\n$\\vec{n}\\ ?$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "u2",
+					"expression": "-5..5!0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{n}\\begin{pmatrix}x\\\\y\\end{pmatrix}$ est normal à $d$ si et seulement s'il est non nul et orthogonal à $\\vec{u}$ : $\\vec{n}\\cdot\\vec{u}={{u1;()}}x+{{u2;()}}y=0$.",
+					"On échange les coordonnées de $\\vec{u}$ et on change le signe de l'une d'elles : $\\vec{n}\\begin{pmatrix}\\textcolor{{{color:primary.0}}}{ {{eval:-u2}} }\\\\\\textcolor{{{color:primary.0}}}{ {{eval:u1}} }\\end{pmatrix}$.",
+					"Vérification : ${{u1;()}}\\times{{eval:-u2;()}}+{{u2;()}}\\times{{eval:u1;()}}=0$.",
+					"Tout vecteur non nul colinéaire convient aussi, par exemple $\\begin{pmatrix}{{eval:u2}}\\\\{{eval:-u1}}\\end{pmatrix}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["(2;-3)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5"
+			},
+			"description": "v0 : vecteur lu (2 ; -3)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(3;2)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5"
+			},
+			"description": "v0 : vecteur directeur pris pour normal",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(-3;2)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5"
+			},
+			"description": "v0 : coordonnées inversées",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(-2;3)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5"
+			},
+			"description": "v0 : limite connue, opposé du vecteur lu refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(1;-1)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-1",
+				"c": "4"
+			},
+			"description": "v0 : coefficient 1 (x - y + 4)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-15"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-5",
+				"c": "1",
+				"k": "3"
+			},
+			"description": "v1 : k = 3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-5",
+				"c": "1",
+				"k": "3"
+			},
+			"description": "v1 : coefficient non multiplié",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-5",
+				"c": "1",
+				"k": "3"
+			},
+			"description": "v1 : signe faux",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "3",
+				"p": "-2",
+				"q": "2"
+			},
+			"description": "v2 : y = 3x - 2, n(? ; 2)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"p": "-2",
+				"q": "2"
+			},
+			"description": "v2 : signe oublié",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"p": "-2",
+				"q": "2"
+			},
+			"description": "v2 : vecteur directeur (1 ; m) mis à l'échelle",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "2",
+				"u1": "2",
+				"u2": "-3"
+			},
+			"description": "v3 : u(2 ; -3), n(-6 ; ?)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "2",
+				"u1": "2",
+				"u2": "-3"
+			},
+			"description": "v3 : colinéaire au lieu d'orthogonal",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "2",
+				"u1": "2",
+				"u2": "-3"
+			},
+			"description": "v3 : signe faux",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\begin{pmatrix}2\\\\-3\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5"
+			},
+			"description": "v0 : vecteur écrit en colonne",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(2,-3)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5"
+			},
+			"description": "v0 : virgule au lieu du point-virgule",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(2;-3)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5"
+			},
+			"description": "v4 : vecteur lu",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["(-2;3)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5"
+			},
+			"description": "v4 : opposé, colinéaire",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["\\begin{pmatrix}4\\\\-6\\end{pmatrix}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5"
+			},
+			"description": "v4 : multiple, en colonne",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["(3;2)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5"
+			},
+			"description": "v4 : vecteur directeur pris pour normal",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["(0;0)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5"
+			},
+			"description": "v4 : vecteur nul",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["(3;-1)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "3",
+				"p": "-2"
+			},
+			"description": "v5 : y = 3x - 2, (3;-1)",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["(-6;2)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "3",
+				"p": "-2"
+			},
+			"description": "v5 : multiple (-6;2)",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["(1;3)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"p": "-2"
+			},
+			"description": "v5 : vecteur directeur (1;3)",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["(3;1)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"p": "-2"
+			},
+			"description": "v5 : signe oublié (3;1)",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["(3;2)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"u1": "2",
+				"u2": "-3"
+			},
+			"description": "v6 : u(2;-3), n(3;2)",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["(-3;-2)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"u1": "2",
+				"u2": "-3"
+			},
+			"description": "v6 : n(-3;-2)",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["(-4;6)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"u1": "2",
+				"u2": "-3"
+			},
+			"description": "v6 : colinéaire à u au lieu d'orthogonal",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["(-3;2)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"u1": "2",
+				"u2": "-3"
+			},
+			"description": "v6 : coordonnées échangées sans changer de signe",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["\\left(\\frac{6}{2};2\\right)"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"u1": "2",
+				"u2": "-3"
+			},
+			"description": "v6 : fraction simplifiable, juste avec avertissement",
+			"variationIndex": 6
+		}
+	]
+}

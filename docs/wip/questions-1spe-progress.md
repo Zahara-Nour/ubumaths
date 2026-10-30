@@ -529,3 +529,41 @@ sans l'`update`.
 simulation `publier-lot` : 15 brouillons passent le contrôle.
 
 **Publié le 2026-10-30** (`publier-lot --publier`, David) : 15/15 `published` en prod (MCP).
+
+## 13. Lot 0-géométrie repérée : vérification des brouillons
+
+_2026-10-30. 12 brouillons tagués d'un point de géométrie repérée (327, 330, 331, 332, 333, 418, 419), un point chacun ;
+instantané `scripts/questions/1spe-0-geometrie-reperee/`, `question:specs --apercu 3` puis un aperçu par variation (42),
+sorties dans le scratchpad de la session. Aucun modèle publié dans le domaine. Simulation `publier-lot` jouée d'entrée :
+8 refus de niveau (voir N1)._
+
+**Mécanique** : 12 / 12 verts, 2 000 tirages réussis. Case `choix` (1602c40d, d7ad48d8) en prod depuis `figure-et-choix`
+lot 1 ; bonnes réponses réparties sur toutes les cases (30 tirages par variation).
+
+**Bornes** : rien au-delà du BO 1re spé (p. 9). Vecteur normal lu, point + vecteur normal, perpendiculaire, médiatrice,
+hauteur ; projeté orthogonal (et distance MH par le projeté, pas de formule de distance point-droite) ; cercle par centre
+et rayon, par centre et point, par diamètre ; appartenance et position ; complétion des carrés (coefficients 2 compris,
+centre à demi-entier en 60a428b9 v3) ; nature de l'ensemble (cercle, point, vide).
+
+**Constats** :
+
+- **C1** : 518f7f0b v1 (équation réduite de la perpendiculaire) : le corrigé finit par « y = +6 » dès que |m| ⩾ 2 — le terme
+  en x manque. Cause : le coefficient −1/m n'est écrit que si |−1/m| ⩾ 1. La réponse attendue est juste.
+- **C2** : 71d10661 v3 : « y = −4/−2 » (dénominateur négatif) et « y = 10/1 » possibles, même défaut que C2 du lot 0-produit
+  scalaire.
+- **C3** : 3a6583b5 v1 : « r² = √15² » se lit √(15²) ; écrire (√15)².
+- **C4** (cosmétique) : les 5 modèles de cercle écrivent « Ω(−6 ;6) » (`\,;` sans espace après), les 7 autres « A(5 ; 5) ».
+- Écartés : coefficients non réduits dans l'énoncé (« −6x + 6y + 9 = 0 ») ; équation attendue à premier coefficient négatif
+  (« −x − 5y − 5 = 0 », toute équation proportionnelle acceptée) ; 71d10661 v0 et v4 voisins (v0 exige le vecteur lu, v4
+  accepte tout vecteur colinéaire, voulu) ; fractions qui se simplifient en entier (« k = −5/5 = −1 »).
+
+**N1 — niveaux** : 8 refus de `publier-lot` (deux modèles au même niveau dans une catégorie). Proposition, du plus simple au
+plus composé, en gardant l'ordre actuel :
+
+- Vecteur normal et équation de droite : 71d10661 lire 1 · e710f32f point + normal 1 → 2 · 518f7f0b perpendiculaire 2 → 3 ·
+  c2add21a médiatrice 2 → 4 · 81811b59 hauteur 3 → 5.
+- Équation de cercle : 3a6583b5 centre + rayon 1 · 1602c40d appartenance 1 → 2 · a6d7b414 centre + point ou diamètre 2 → 3 ·
+  60a428b9 centre et rayon d'une équation développée 2 → 4 · d7ad48d8 est-ce un cercle 3 → 5.
+- Projeté orthogonal inchangé (9bea5ec2 2, f6c423de 3).
+
+8 niveaux changés → migration (comme #1998), question d'accès à trancher.
