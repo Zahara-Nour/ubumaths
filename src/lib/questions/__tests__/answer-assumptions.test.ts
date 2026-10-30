@@ -357,7 +357,6 @@ describe('aller-retour éditeur ↔ base', () => {
 			...baseTemplate,
 			exercise_instruction: null,
 			default_display_options: null,
-			multiple_answers: null,
 			test_specs: null,
 			options: { answerAssumptions: { x: 'positive', n: 'natural' } }
 		};

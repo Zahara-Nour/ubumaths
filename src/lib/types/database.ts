@@ -9101,7 +9101,6 @@ export type Database = {
           grades: string[]
           id: string
           level: number
-          multiple_answers: boolean | null
           options: Json | null
           precision: Json | null
           shared: Json | null
@@ -9126,7 +9125,6 @@ export type Database = {
           grades: string[]
           id?: string
           level: number
-          multiple_answers?: boolean | null
           options?: Json | null
           precision?: Json | null
           shared?: Json | null
@@ -9151,7 +9149,6 @@ export type Database = {
           grades?: string[]
           id?: string
           level?: number
-          multiple_answers?: boolean | null
           options?: Json | null
           precision?: Json | null
           shared?: Json | null

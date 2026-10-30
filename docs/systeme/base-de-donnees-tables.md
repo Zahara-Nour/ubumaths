@@ -266,7 +266,7 @@ Liens : `template_id` → `question_templates`
 
 ### `question_templates`
 
-`classification_node_id?` · `created_at?` · `created_by?` · `default_display_options?` · `delay?` · `description?` · `domain` · `exercise_instruction?` · `grades` · `id` · `level` · `multiple_answers?` · `options?` · `precision?` · `shared?` · `status` · `subdomain?` · `test_specs?` · `theme` · `title` · `type` · `updated_at?` · `variations`
+`classification_node_id?` · `created_at?` · `created_by?` · `default_display_options?` · `delay?` · `description?` · `domain` · `exercise_instruction?` · `grades` · `id` · `level` · `options?` · `precision?` · `shared?` · `status` · `subdomain?` · `test_specs?` · `theme` · `title` · `type` · `updated_at?` · `variations`
 
 Liens : `classification_node_id` → `classification_nodes` · `created_by` → `profiles`
 
