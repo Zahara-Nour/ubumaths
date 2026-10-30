@@ -39,22 +39,22 @@
 -- Aucune règle (policy) ne change.
 --
 -- Rollback (aucune donnée d'élève). Il retire les 8 tags CM2 posés, rend A sans nœud et B au seul
--- niveau CM1. Garde : il refuse si un modèle n'a plus EXACTEMENT le nœud, les niveaux et les tags
--- laissés par la migration (sinon une saisie faite depuis serait écrasée en silence). Bloc éprouvé
+-- niveau CM1. Garde : il refuse si un modèle n'a plus EXACTEMENT le nœud, les niveaux, le statut et
+-- les tags laissés par la migration (sinon une saisie faite depuis serait écrasée en silence). Bloc éprouvé
 -- par le test d'intégration, à jouer dans UNE transaction (`psql -1 -v ON_ERROR_STOP=1 -f`, ou
 -- l'éditeur SQL en un seul envoi) :
 -- ROLLBACK:BEGIN
 -- set local lock_timeout = '5s';
--- create temporary table _qcm2l3_retour (id uuid primary key, chemin text not null, grades text[] not null, tags text[] not null) on commit drop;
+-- create temporary table _qcm2l3_retour (id uuid primary key, chemin text not null, grades text[] not null, statut text not null, tags text[] not null) on commit drop;
 -- insert into _qcm2l3_retour values
--- 	('a4cf5fc5-313c-405a-8f8f-88d0c507395f', 'Nombres et calculs > Entiers : multiplication > tables', array['CM2'], array['CM2-149']),
--- 	('116f68ad-0bef-4c64-9ceb-441da5173c83', 'Nombres et calculs > Entiers : addition et soustraction > calcul astucieux', array['CM2'], array['CM2-045']),
--- 	('da5fdca4-fa2a-41d2-ae5e-e29bba2c35cc', 'Nombres et calculs > Entiers : addition et soustraction > calcul astucieux', array['CM2'], array['CM2-150']),
--- 	('1f2d5097-9ae3-4914-814a-5cfea9c568fe', 'Nombres et calculs > Entiers : division > calcul réfléchi', array['CM2'], array['CM2-050']),
--- 	('3b691903-fb8c-42e6-82d0-c643bda733ce', 'Nombres et calculs > Entiers : division > calcul réfléchi', array['CM2'], array['CM2-151']),
--- 	('8fee3492-87df-4227-a6f5-77d70a715b77', 'Nombres et calculs > Entiers : addition et soustraction > tables', array['CM1', 'CM2'], array['CM1-035', 'CM2-035']),
--- 	('f24bb468-6194-4dfa-b9b8-3eeb29086adc', 'Nombres et calculs > Entiers : addition et soustraction > tables', array['CM1', 'CM2'], array['CM1-161', 'CM2-148']),
--- 	('50a9d91c-9647-4b98-bec1-5a7b939e3180', 'Nombres et calculs > Entiers : multiplication > tables', array['CM1', 'CM2'], array['CM1-036', 'CM2-036']);
+-- 	('a4cf5fc5-313c-405a-8f8f-88d0c507395f', 'Nombres et calculs > Entiers : multiplication > tables', array['CM2'], 'draft', array['CM2-149']),
+-- 	('116f68ad-0bef-4c64-9ceb-441da5173c83', 'Nombres et calculs > Entiers : addition et soustraction > calcul astucieux', array['CM2'], 'draft', array['CM2-045']),
+-- 	('da5fdca4-fa2a-41d2-ae5e-e29bba2c35cc', 'Nombres et calculs > Entiers : addition et soustraction > calcul astucieux', array['CM2'], 'draft', array['CM2-150']),
+-- 	('1f2d5097-9ae3-4914-814a-5cfea9c568fe', 'Nombres et calculs > Entiers : division > calcul réfléchi', array['CM2'], 'draft', array['CM2-050']),
+-- 	('3b691903-fb8c-42e6-82d0-c643bda733ce', 'Nombres et calculs > Entiers : division > calcul réfléchi', array['CM2'], 'draft', array['CM2-151']),
+-- 	('8fee3492-87df-4227-a6f5-77d70a715b77', 'Nombres et calculs > Entiers : addition et soustraction > tables', array['CM1', 'CM2'], 'published', array['CM1-035', 'CM2-035']),
+-- 	('f24bb468-6194-4dfa-b9b8-3eeb29086adc', 'Nombres et calculs > Entiers : addition et soustraction > tables', array['CM1', 'CM2'], 'published', array['CM1-161', 'CM2-148']),
+-- 	('50a9d91c-9647-4b98-bec1-5a7b939e3180', 'Nombres et calculs > Entiers : multiplication > tables', array['CM1', 'CM2'], 'published', array['CM1-036', 'CM2-036']);
 -- select pg_advisory_xact_lock(hashtextextended('question_template_points:' || id::text, 0))
 --   from _qcm2l3_retour order by id;
 -- select 1 from public.question_templates where id in (select id from _qcm2l3_retour) order by id for update;
@@ -72,13 +72,14 @@
 -- 	  left join public.classification_nodes n on n.id = s.parent_id
 -- 	  left join public.classification_nodes b on b.id = n.parent_id
 -- 	 where q.grades is distinct from r.grades
+-- 	    or q.status is distinct from r.statut
 -- 	    or coalesce(b.name || ' > ' || n.name || ' > ' || s.name, '') <> r.chemin
 -- 	    or coalesce((select array_agg(p.code order by p.code)
 -- 	                   from public.question_template_points t
 -- 	                   join public.curriculum_points p on p.id = t.point_id
 -- 	                  where t.template_id = r.id), '{}') <> r.tags;
 -- 	if v_ecarts <> 0 then
--- 		raise exception 'rollback : % modèle(s) n''ont plus le nœud, les niveaux et les tags laissés par la migration', v_ecarts;
+-- 		raise exception 'rollback : % modèle(s) n''ont plus le nœud, les niveaux, le statut et les tags laissés par la migration', v_ecarts;
 -- 	end if;
 -- end $garde_retour$;
 -- delete from public.question_template_points t

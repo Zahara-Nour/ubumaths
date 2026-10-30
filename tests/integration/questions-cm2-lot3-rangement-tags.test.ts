@@ -328,7 +328,21 @@ describe('Questions CM2, lot 3 : les branches d’échec de la migration', () =>
 				[NEUFS[0].id]
 			);
 			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
-				/rollback : 1 modèle\(s\) n'ont plus le nœud, les niveaux et les tags laissés par la migration/
+				/rollback : 1 modèle\(s\) n'ont plus le nœud, les niveaux, le statut et les tags laissés par la migration/
+			);
+		});
+	});
+
+	it('le rollback refuse si un brouillon a été publié depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query(
+				`update public.question_templates set status = 'published', level = 99 where id = $1`,
+				[NEUFS[0].id]
+			);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : 1 modèle\(s\) n'ont plus le nœud, les niveaux, le statut et les tags laissés par la migration/
 			);
 		});
 	});
