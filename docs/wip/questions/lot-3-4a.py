@@ -93,9 +93,11 @@ def courbe(x, y, traces, points=None, description=''):
 
 def tableau(xs, fs):
     """Tableau de valeurs à deux lignes, x et f(x) ; une case s'écrit ?."""
-    cols = '|c|' + 'c|' * len(xs)
-    return ('\n\n$$\\begin{array}{' + cols + '} \\hline x & ' + ' & '.join(xs)
-            + ' \\\\ \\hline f(x) & ' + ' & '.join(fs) + ' \\\\ \\hline \\end{array}$$\n\n')
+    # Sans \\hline : un tableau qui porte une case passe par MathLive, qui ne le connaît pas
+    # (« \\hline » écrit en clair, case vide en trop) ; forme de 4b080eed, en prod.
+    cols = '|l|' + 'c|' * len(xs)
+    return ('\n\n$\\begin{array}{' + cols + '} x & ' + ' & '.join(xs)
+            + ' \\\\ f(x) & ' + ' & '.join(fs) + ' \\end{array}$\n\n')
 
 
 X = '\\times'

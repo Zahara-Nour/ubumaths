@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$$\\begin{array}{|c|c|c|c|c|c|} \\hline x & -2 & -1 & 0 & 1 & 2 \\\\ \\hline f(x) & {{eval:-2*(a)+(b)}} & {{eval:-(a)+(b)}} & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} \\\\ \\hline \\end{array}$$\n\nQuelle est l'image de ${{k}}$ par $f$ ?\n\n$f({{k}})=?$",
+			"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$\\begin{array}{|l|c|c|c|c|c|} x & -2 & -1 & 0 & 1 & 2 \\\\ f(x) & {{eval:-2*(a)+(b)}} & {{eval:-(a)+(b)}} & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} \\end{array}$\n\nQuelle est l'image de ${{k}}$ par $f$ ?\n\n$f({{k}})=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -39,7 +39,7 @@
 			}
 		},
 		{
-			"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$$\\begin{array}{|c|c|c|c|c|c|} \\hline x & -2 & -1 & 0 & 1 & 2 \\\\ \\hline f(x) & {{eval:-2*(a)+(b)}} & {{eval:-(a)+(b)}} & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} \\\\ \\hline \\end{array}$$\n\nQuel est l'antécédent de ${{eval:(a)*(k)+(b)}}$ par $f$ dans ce tableau ?\n\n$?$",
+			"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$\\begin{array}{|l|c|c|c|c|c|} x & -2 & -1 & 0 & 1 & 2 \\\\ f(x) & {{eval:-2*(a)+(b)}} & {{eval:-(a)+(b)}} & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} \\end{array}$\n\nQuel est l'antécédent de ${{eval:(a)*(k)+(b)}}$ par $f$ dans ce tableau ?\n\n$?$",
 			"variables": [
 				{
 					"name": "a",

@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "La fonction $f$ est linéaire, $f(x)=ax$. Voici un tableau de valeurs de $f$ :\n\n$$\\begin{array}{|c|c|c|} \\hline x & {{n}} & {{q}} \\\\ \\hline f(x) & {{eval:(a)*(n)}} & {{eval:(a)*(q)}} \\\\ \\hline \\end{array}$$\n\nQuel est le coefficient $a$ ?\n\n$a=?$",
+			"statement": "La fonction $f$ est linéaire, $f(x)=ax$. Voici un tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|} x & {{n}} & {{q}} \\\\ f(x) & {{eval:(a)*(n)}} & {{eval:(a)*(q)}} \\end{array}$\n\nQuel est le coefficient $a$ ?\n\n$a=?$",
 			"variables": [
 				{
 					"name": "a",

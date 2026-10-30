@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x{{if:b<0|{{b}}|+{{b}}}}$.\n\nComplète le tableau de valeurs de $f$ :\n\n$$\\begin{array}{|c|c|c|c|} \\hline x & 0 & 1 & {{n}} \\\\ \\hline f(x) & {{eval:b}} & {{eval:(a)+(b)}} & ? \\\\ \\hline \\end{array}$$\n\n",
+			"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x{{if:b<0|{{b}}|+{{b}}}}$.\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|c|} x & 0 & 1 & {{n}} \\\\ f(x) & {{eval:b}} & {{eval:(a)+(b)}} & ? \\end{array}$\n\n",
 			"variables": [
 				{
 					"name": "a",
@@ -38,7 +38,7 @@
 			}
 		},
 		{
-			"statement": "On considère la fonction $f$ définie par $f(x)=x^2{{if:c<0|{{c}}|+{{c}}}}$.\n\nComplète le tableau de valeurs de $f$ :\n\n$$\\begin{array}{|c|c|c|c|} \\hline x & 0 & 1 & {{n}} \\\\ \\hline f(x) & {{eval:c}} & {{eval:1+(c)}} & ? \\\\ \\hline \\end{array}$$\n\n",
+			"statement": "On considère la fonction $f$ définie par $f(x)=x^2{{if:c<0|{{c}}|+{{c}}}}$.\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|c|} x & 0 & 1 & {{n}} \\\\ f(x) & {{eval:c}} & {{eval:1+(c)}} & ? \\end{array}$\n\n",
 			"variables": [
 				{
 					"name": "c",
@@ -62,7 +62,7 @@
 			}
 		},
 		{
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:min(-1,p-3)}} ; {{eval:max(1,p+3)}}\ny: {{eval:min(-1,q-1,q+5*(c))}} ; {{eval:max(1,q+1,q+5*(c))}}\ngrille: 1 ; 1\nf(x) = ({{c}})*(x-({{p}}))^2+({{q}}) sur [{{eval:p-2.2;d}} ; {{eval:p+2.2;d}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe en forme de parabole d'une fonction f.\n```\n\nComplète le tableau de valeurs de $f$ :\n\n$$\\begin{array}{|c|c|} \\hline x & {{n}} \\\\ \\hline f(x) & ? \\\\ \\hline \\end{array}$$\n\n",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:min(-1,p-3)}} ; {{eval:max(1,p+3)}}\ny: {{eval:min(-1,q-1,q+5*(c))}} ; {{eval:max(1,q+1,q+5*(c))}}\ngrille: 1 ; 1\nf(x) = ({{c}})*(x-({{p}}))^2+({{q}}) sur [{{eval:p-2.2;d}} ; {{eval:p+2.2;d}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe en forme de parabole d'une fonction f.\n```\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|} x & {{n}} \\\\ f(x) & ? \\end{array}$\n\n",
 			"variables": [
 				{
 					"name": "c",
@@ -100,7 +100,7 @@
 			}
 		},
 		{
-			"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$$\\begin{array}{|c|c|c|c|c|} \\hline x & 0 & 1 & 2 & 3 \\\\ \\hline f(x) & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} & {{eval:3*(a)+(b)}} \\\\ \\hline \\end{array}$$\n\nQuelle formule peut définir $f$ ?\n\n```choix\n- $f(x)={{a}}x+{{b}}$\n- $f(x)={{b}}x+{{a}}$\n- $f(x)={{eval:(a)+(b)}}x$\n- $f(x)=x+{{b}}$\n```",
+			"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$\\begin{array}{|l|c|c|c|c|} x & 0 & 1 & 2 & 3 \\\\ f(x) & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} & {{eval:3*(a)+(b)}} \\end{array}$\n\nQuelle formule peut définir $f$ ?\n\n```choix\n- $f(x)={{a}}x+{{b}}$\n- $f(x)={{b}}x+{{a}}$\n- $f(x)={{eval:(a)+(b)}}x$\n- $f(x)=x+{{b}}$\n```",
 			"variables": [
 				{
 					"name": "a",
