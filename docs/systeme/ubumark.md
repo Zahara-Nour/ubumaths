@@ -657,8 +657,8 @@ se plier en cube, avec elle ne doit pas (refus situé dans les deux cas) ; prism
 rectangle du dessous) ou `2` (sur deux rectangles) ; pyramide (étoile), cylindre : `1`. `tourner: 0 | 90 | 180 |
 270` (sens des aiguilles), `retourner: oui` (miroir) : le dessin déplacé **en bloc**, noms et numéros suivent.
 `dessous: N` (cube, pavé) : la case N devient ABCD. `sommets:` : les noms des sommets **du solide** (ordre de
-``solide), `-` sans nom, `?` une fois (« ? » partout où vient ce sommet). `faces: numeros` ; `marquer:` `face N`,
-`face <place>` (la case qui devient cette face), `sommet X` (un point sur chaque coin X) ; `cotes:` comme
+``solide), `-` sans nom, `?` une fois (« ? » partout où vient ce sommet) ; refusé sur un faux patron (deux sommets au même coin trahiraient le faux). `faces: numeros` ; `marquer:` `face N`,
+`face <place>` (la case qui devient cette face, lue « face N » par le lecteur d'écran ; refusée sur un faux patron), `sommet X` (un point sur chaque coin X) ; `cotes:` comme
 ``solide. Calcul `utils/espace-patrons.ts` (pur, écran = PDF) : `patronNet` **déplie** le polyèdre de
 ``solide (`polyhedronVertices`, `solideTopology`) le long d'un arbre de faces — grille : le solide roule sur
 les cases depuis la case du dessous (face racine vue de l'intérieur : A en bas à gauche, le patron se plie vers

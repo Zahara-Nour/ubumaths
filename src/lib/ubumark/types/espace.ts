@@ -177,13 +177,13 @@ export interface SolideSpec {
  * Un patron (```patron, lot 4) : un solide déplié.
  *
  * Cube, pavé : `cells` = la grille des faces telle qu'écrite (catalogue ou
- * grille du prof), rangée 0 en haut, bords vides retirés ; `tourner:` et
- * `retourner:` s'appliquent à la grille. Prisme, pyramide, cylindre :
- * `layout` = la disposition (prisme 1 ou 2, les autres 1) ; `tourner:` et
- * `retourner:` s'appliquent au dessin.
+ * grille du prof), rangée 0 en haut, bords vides retirés. Prisme, pyramide,
+ * cylindre : `layout` = la disposition (prisme 1 ou 2, les autres 1).
+ * `tourner:` et `retourner:` déplacent le dessin en bloc.
  *
- * Les faces se numérotent dans l'ordre de lecture du DESSIN (de gauche à
- * droite, de haut en bas), de 0 ici (de 1 pour le prof).
+ * Les faces se numérotent dans l'ordre de lecture du patron AVANT `tourner:`
+ * (de gauche à droite, de haut en bas ; noms et numéros suivent le dessin
+ * tourné), de 0 ici (de 1 pour le prof).
  */
 export interface PatronSpec {
 	kind: 'patron';

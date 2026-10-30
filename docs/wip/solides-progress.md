@@ -518,3 +518,24 @@ de 1,5 cm) ; dans un choix de case choix, `--espace-taille: 3cm`.
 du solide répétés, `?` pour questionner (Q14) ; pavé : 11 dispositions + `faux 1-8`, mauvaises dimensions plus
 tard (Q15) ; plis en trait fin plein (Q16) ; cône hors lot (Q17) ; `SOLIDE_MAX_RATIO` 20 → 10 dans ce lot (Q18).
 Spécification validée.
+
+### Lot 4 livré (PR à venir, 2026-10-30)
+
+- ` ```patron ` : cube (11 patrons, 8 faux, grille `X`/`.` pliée et vérifiée), pavé, prismes (2 dispositions),
+  pyramides (étoile), cylindre ; `sommets:` (noms du solide répétés, `?`), `faces: numeros`, `marquer:`,
+  `cotes:`, `tourner:`, `retourner:`, `dessous:`. Calcul `utils/espace-patrons.ts` : **dépliage** du polyèdre
+  de ` ```solide ` (le solide roule sur la grille) ; `parser/patron-parser.ts`, `Patron.svelte`, PDF Typst,
+  fiche `block-catalog/patron.ts` (les 19 dispositions dessinées). `SOLIDE_MAX_RATIO` 20 → 10 (Q18).
+- Revue (Opus) : pliage juste (35 hexominos : exactement les 11 du catalogue se plient ; orientation de toutes
+  les faces vérifiée) ; **2 fuites de réponse corrigées** — noms sur un faux patron (« F/A » au même coin) →
+  `sommets:` refusé sur un faux ; nom accessible de `marquer: face dessus` → lu « face N », place refusée sur
+  un faux. `faux: non` accepté partout.
+- **Écarts à la spec** : `-` (et non `.`) pour un sommet sans nom, comme ` ```solide ` ; faces numérotées
+  **avant** `tourner:` (noms et numéros suivent le dessin) ; nom accessible sans les noms des sommets (comme
+  ` ```solide `) ; prisme isocèle : cotes base, L et hauteur du triangle en tirets (pas les côtés obliques,
+  qui ne sont pas des dimensions) ; une cote portée seulement par des plis (base de la pyramide) s'écrit dans
+  la plus grande face.
+- **Trouvé en passant (hors chantier)** : un bloc spécial ouvert sur la ligne d'un élément de liste
+  (`- ```cubes`, aussi ` ```horloge `, ` ```partage `…) est lu vide (« bloc non fermé ») ; la forme
+  « - texte » puis le bloc en retrait marche. Le test de compilation du lot 3 (`- ```solide`) passe donc
+  par le cadre « Solide indisponible ». À signaler à David.

@@ -274,12 +274,12 @@ export function parsePatronContent(source: string): {
 		const value = plain(fauxEntry.value);
 		if (value !== 'oui' && value !== 'non') {
 			fail(fauxEntry.line, `faux « ${fauxEntry.value} » : oui ou non`);
-		} else if (!written) {
+		} else if (!written && value === 'oui') {
 			fail(
 				fauxEntry.line,
 				'faux: sert à une grille écrite ; un faux patron du catalogue s’écrit forme: faux 3'
 			);
-		} else {
+		} else if (written) {
 			faux = value === 'oui';
 		}
 	}
@@ -335,6 +335,14 @@ export function parsePatronContent(source: string): {
 		const read = readNames(namesEntry.value, solid);
 		if (typeof read === 'string') fail(namesEntry.line, read);
 		else names = read;
+	}
+	// Un faux patron ne se plie pas : deux sommets y tombent au même coin (« F/A »),
+	// ce qui donnerait la réponse de « est-ce un patron ? »
+	if (namesEntry !== undefined && faux) {
+		fail(
+			namesEntry.line,
+			'un faux patron ne se plie pas : ses coins ne se nomment pas (retire sommets:)'
+		);
 	}
 
 	let numbers = false;
@@ -454,6 +462,9 @@ function readMark(
 	}
 	const solidFace = topology.faces.findIndex((f) => sameSet(f, vertices));
 	const faces = solidFaces.flatMap((f, i) => (f === solidFace ? [i] : []));
+	// Un faux patron : une place peut tomber sur deux cases, ou aucune (réponse donnée)
+	if (spec.faux) return 'un faux patron ne se plie pas : désigne la face par son numéro (face 3)';
 	if (faces.length === 0) return `aucune case ne devient la ${PLACE_LABELS[place as SolidePlace]}`;
-	return { kind: 'face', faces, label: PLACE_LABELS[place as SolidePlace] };
+	// Lue par son numéro : sa place une fois pliée est souvent la question
+	return { kind: 'face', faces, label: `face ${faces[0] + 1}` };
 }

@@ -109,7 +109,7 @@ export const patronEntry: BlockCatalogEntry = {
 					values: 'les noms des sommets du solide : A B C D E F G H',
 					defaultValue: null,
 					description:
-						'Les noms des sommets du SOLIDE, dans l’ordre de ```solide (cube, pavé : ABCD en bas, E sur A ; prisme ABC devant, DEF derrière ; pyramide S puis la base ; cylindre O en bas, O’ en haut). Chaque coin du patron prend le nom du sommet où il vient. - : sans nom ; ? : écrit « ? » partout où vient ce sommet (« quelle lettre à la place de ? »).'
+						'Les noms des sommets du SOLIDE, dans l’ordre de ```solide (cube, pavé : ABCD en bas, E sur A ; prisme ABC devant, DEF derrière ; pyramide S puis la base ; cylindre O en bas, O’ en haut). Chaque coin du patron prend le nom du sommet où il vient. - : sans nom ; ? : écrit « ? » partout où vient ce sommet (« quelle lettre à la place de ? »). Pas de noms sur un faux patron : il ne se plie pas.'
 				},
 				{
 					key: 'faces',
@@ -123,7 +123,7 @@ export const patronEntry: BlockCatalogEntry = {
 					values: 'face 3 | face dessus | sommet A (séparés par des virgules)',
 					defaultValue: null,
 					description:
-						'face : teintée en gris, désignée par son numéro, ou par la place qu’elle prend une fois pliée (devant, derriere, dessus, dessous, gauche, droite ; dessous pour une pyramide). sommet : un point sur chaque coin qui vient sur ce sommet.'
+						'face : teintée en gris, désignée par son numéro, ou par la place qu’elle prend une fois pliée (devant, derriere, dessus, dessous, gauche, droite ; dessous pour une pyramide ; sur un faux patron, par son numéro seulement). sommet : un point sur chaque coin qui vient sur ce sommet.'
 				},
 				{
 					key: 'cotes',

@@ -138,7 +138,8 @@ describe('```patron — réglages', () => {
 			'sommets: A B C D E F G H',
 			'marquer: face 3, face dessous, sommet G'
 		);
-		expect(s?.marks.map((m) => m.label)).toEqual(['face 3', 'face du dessous', 'sommet G']);
+		// La place est lue par son numéro : une fois pliée, c'est souvent la question
+		expect(s?.marks.map((m) => m.label)).toEqual(['face 3', 'face 1', 'sommet G']);
 		expect(errors('solide: cube', 'marquer: face 7')[0]).toMatch(/numérotées de 1 à 6/);
 		expect(errors('solide: cube', 'marquer: sommet A')[0]).toMatch(/nomme les sommets/);
 		expect(errors('solide: cube', 'sommets: A B C D E F G H', 'marquer: sommet Z')[0]).toMatch(
@@ -188,5 +189,24 @@ describe('```patron dans un document', () => {
 		const doc = parseMarkdown('```patron\nsolide: cube\nforme:\n  XXX..\n  ..XXX\n```\n');
 		expect(JSON.stringify(doc)).toContain('"genre":"patron"');
 		expect(JSON.stringify(doc)).toContain('"errors":[]');
+	});
+});
+
+describe('```patron — un faux patron ne donne pas la réponse', () => {
+	it('sommets: refusé (deux sommets au même coin s’écriraient « F/A »)', () => {
+		expect(errors('solide: cube', 'forme: faux 2', 'sommets: A B C D E F G H')[0]).toMatch(
+			/ses coins ne se nomment pas/
+		);
+	});
+
+	it('marquer: face <place> refusé, face N permis', () => {
+		expect(errors('solide: cube', 'forme: faux 2', 'marquer: face dessus')[0]).toMatch(
+			/désigne la face par son numéro/
+		);
+		expect(errors('solide: cube', 'forme: faux 2', 'marquer: face 2')).toEqual([]);
+	});
+
+	it('faux: non accepté sur une forme du catalogue (sans effet)', () => {
+		expect(spec('solide: cube', 'forme: 3', 'faux: non')?.faux).toBe(false);
 	});
 });

@@ -342,6 +342,10 @@ describe('nom accessible', () => {
 		}
 	});
 
+	it('une face marquée par sa place est lue par son numéro (sa place est la question)', () => {
+		expect(patronLabel(specOf('solide: cube', 'marquer: face dessus'))).not.toMatch(/dessus/);
+	});
+
 	it('numéros, marques et cotes lus', () => {
 		expect(
 			patronLabel(specOf('solide: pave 4 2 3', 'faces: numeros', 'marquer: face 2', 'cotes: cm'))
