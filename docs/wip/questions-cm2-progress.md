@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2010._
+_Mis à jour le 2026-10-30, après #2016._
 
-- **État** : lots 1 et 2 publiés. Lot 3 rangé en prod (#2010). Relecture : 5/5 verdicts, 3 OK (`a4cf5fc5`, `116f68ad`, `da5fdca4`), 2 « À revoir » (`1f2d5097` ÷ 4, `3b691903` ÷ 8 : V2 et V3 trop dures de tête) → simplifiées (§ 8.4), PR en cours.
-- **Prochaine action** : merge → David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-3 --publier --mettre-a-jour` (depuis le dépôt principal à jour) → relire en base le contenu des 2 modèles → remettre leurs 2 verdicts à zéro et republier la page → relecture → `publier-lot.ts`.
-- **En attente de David** : le `--publier --mettre-a-jour` (écriture en prod refusée au mode auto).
+- **État** : lots 1 et 2 publiés. Lot 3 rangé en prod (#2010) ; ÷ 4 et ÷ 8 simplifiés (#2016) et mis à jour en prod par David (`--publier --mettre-a-jour` : 2 mis à jour, vérifié au MCP). Page à cocher republiée (https://claude.ai/artifact/2A6LTY1ASbf71NZz7DQLNe) : 3 OK gardés, les 2 verdicts de `1f2d5097` / `3b691903` remis à zéro.
+- **Prochaine action** : seconde relecture de ÷ 4 et ÷ 8 → lire `verdicts` et COMPTER (5 OK attendus) → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-3` en simulation → David lance `--publier` → relire le statut. Puis lot 4 (phase 0).
+- **En attente de David** : relecture de ÷ 4 et ÷ 8 sur la page.
 - **Pièges en cours** : `curriculum_points` n'a pas de colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
-- **Worktree / branche** : `ubumaths-wt-questions-cm2` · `fix/questions-cm2-lot3-division`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -355,3 +355,4 @@ Recommandations suivies (« je te suis ») : les tables (CM2-035, 148, 036) repr
 - Page à cocher : 5 verdicts sur 5. OK : `a4cf5fc5`, `116f68ad`, `da5fdca4`. À revoir : `1f2d5097` (÷ 4) et `3b691903` (÷ 8), « les variations 2 et 3 sont trop compliquées pour faire mentalement ».
 - Décision de David (recommandation suivie) : garder 3 variations, calculables de tête. V2 : dividende à 4 chiffres multiple de 40 (÷ 4, 1 000 à 9 960) ou de 80 (÷ 8, 1 040 à 9 920), quotient multiple de 10. V3 : quotient décimal sur petit dividende (4q + r, q ≤ 12 : ≤ 51 ; 8q + r, q ≤ 11 : ≤ 94). V1 inchangée.
 - `question:specs` 300 tirages par variation : 900/900 pour chacun, specs vertes.
+- #2016 mergée ; David : `create-questions --publier --mettre-a-jour` → 2 mis à jour, 3 déjà en base ; contenu et rangement relus au MCP. Page republiée, 2 verdicts remis à zéro.
