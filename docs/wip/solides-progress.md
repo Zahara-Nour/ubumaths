@@ -6,17 +6,20 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2023 (lot 3 commencé)._
+_Mis à jour le 2026-10-30, après #2027._
 
-- **État** : lots 1 (#2003) et 2 (#2023) **mergés**, rien en prod ; lot 3 (` ```solide ` affichage) :
-  spécification validée (§ 8), tests puis code.
-- **Prochaine action** : tests rouges → implémentation (modèle : #2003).
-- **En attente de David** : rien.
-- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables
-  (`wrapDynamicImport`, page fermée, aussi sur `main`) → relancer par petits lots en local, relancer le shard
-  en CI ; `/aide-ecriture/blocs/*` réservé au prof et Chrome n'ouvre pas `127.0.0.1` → aperçu par capture du
-  navigateur de test ; corrigé PDF `solved` prêt, pas branché (comme ```partage) ; `ls` = alias `eza`.
-- **Worktree / branche** : `../ubumaths-wt-solides`, `feat/solides-solide`.
+- **État** : lots 1 (#2003), 2 (#2023) et 3 (#2027, ` ```solide ` affichage) **mergés**, rien en prod ;
+  vérifications manuelles notées dans `verifications-manuelles.md`.
+- **Prochaine action** : lot 4, ` ```patron ` affichage (cube : 11 patrons + faux patrons, pavé, prisme,
+  cylindre, pyramide) — écrire d'abord sa spécification détaillée (comme les § 6 à 8), la faire valider,
+  puis TDD.
+- **En attente de David** : faut-il abaisser `SOLIDE_MAX_RATIO` (20 → 10 ?) : à 20, les noms d'un pavé
+  20 × 1 × 1 se chevauchent (revue de #2027, point 4).
+- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables → relancer
+  par petits lots ; aperçu d'un bloc : script tsx + capture Playwright (scratchpad), Chrome n'ouvre pas
+  `127.0.0.1` ; corrigé PDF `solved` prêt, pas branché ; `EspaceSpec` = union : narrower par `kind`.
+- **Worktree / branche** : aucun (retiré après #2027) ; lot 4 :
+  `git worktree add -b feat/solides-patron ../ubumaths-wt-solides origin/main`.
 
 ---
 
@@ -379,3 +382,13 @@ cotes: cm
 **Réponse de David (2026-10-30)** : « je te suis » — proportions, plus grand côté 4 cm (Q8) ; `cotes:` dans
 ce lot (Q9) ; ABCD la face du bas, E sur A (Q10) ; ellipses à plat (Q11) ; prismes à base triangle isocèle
 et triangle rectangle, en face avant (Q12). Spécification validée.
+
+### Lot 3 livré (#2027, 2026-10-30)
+
+- ` ```solide ` : 10 formes, `sommets:`, `marquer:`, `cotes:`, `cachees:` ; scène `utils/espace-solides.ts`,
+  parseur `parser/solide-parser.ts`, `Solide.svelte`, PDF `curve` Typst ; fiche `block-catalog/solide.ts`.
+- Revue (Opus) : 6 findings, corrigés dans la PR — dimension infinie (fiche PDF cassée) → bornes 1000 et
+  3 décimales ; cône plat (h ≤ 0,5 r) refusé ; cotes du cylindre séparées ; « 2 cm » loin de C ; `O'` passé
+  en chaîne à Typst. Reste : chevauchement des noms aux rapports élevés (question à David, ci-dessus).
+- Écart à la spec : placement des noms par le plus grand angle libre entre arêtes (pas « vers l'extérieur
+  du centre ») ; cote de hauteur du pavé à gauche, du cylindre à gauche.
