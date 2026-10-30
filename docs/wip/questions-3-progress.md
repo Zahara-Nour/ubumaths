@@ -7,11 +7,11 @@
 
 _Mis à jour le 2026-10-30, après #2015._
 
-- **État** : lots 0 à 3 publiés ; lot 4a (fonctions, 8 modèles, § 11) mergé (#2015), pas encore en prod.
+- **État** : lots 0 à 3 publiés ; lot 4a (fonctions, 8 modèles, § 11) : 8 brouillons en prod (`id` au § 11.8).
 - **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-4a
 --publier` (brouillons en prod) ; relever les `id` au MCP ; migration nœud + tag (gabarit
   `lot-rangement-3-3.py`, nœuds au § 11) dans un worktree neuf ; page à cocher ; publication. Puis lot 4b (§ 11.2).
-- **En attente de David** : le `--publier` ci-dessus.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; tableau avec une case : pas de `\hline` ; une moitié attendue
   refuse 0,5 ; aperçu admin sur `127.0.0.1` (`--host 127.0.0.1`), pas `localhost` ; worktree neuf :
@@ -575,3 +575,12 @@ modèles publiés de plus. Aucune règle ne change.
   3-041 v3 (quatre tracés, d₃ juste), 3-039 v2 (case dans le tableau, −11 faux, 21 attendu affiché).
 - Délais : 45 s (image, reconnaître, ordonnée), 60 s (proportionnalité, image et antécédent, coefficient
   entier), 75 s (représentations, coefficient fraction).
+
+### 11.8 Lot 4a : en prod, brouillons (2026-10-30)
+
+- `create-questions --publier` lancé par David : 8 brouillons, vérifiés au MCP (`draft`, sans nœud ni tag) :
+  81dda1bd-cd4f-4055-9427-072d8f7f513c (image, 3-064) · 0612be84-01ce-42a3-aa33-2e2051502450 (reconnaître, 3-041) ·
+  45247528-23f3-44cc-860e-afe643abaf2b (proportionnalité, 3-043) · 6ad254b4-69c3-49db-9541-fa921964cefc
+  (représentations, 3-039) · d820232a-62a0-422f-9c08-33b279258af1 (image et antécédent, 3-040) ·
+  c64028b0-2001-4320-a02b-5d0692089d1a (ordonnée, 3-045, niv. 2) · 0d0e88f5-3825-418f-b12b-d6e541fbecba
+  (coefficient entier, 3-067, niv. 3) · b9771108-fe6a-4f37-8b49-671b5627f5d3 (coefficient fraction, 3-067, niv. 4).
