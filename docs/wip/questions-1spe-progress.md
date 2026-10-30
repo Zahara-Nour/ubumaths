@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2012, #2018 et le `db:migrate` du lot 0-géométrie repérée._
+_Mis à jour le 2026-10-30, après la publication du lot 0-géométrie repérée._
 
-- **État** : lots 0-suites, 0-second-degré, 0-dérivation, 0-variations, 0-exponentielle, 0-trigo, 0-produit scalaire publiés ; lot 0-géométrie repérée (§ 13) : 7 corrigés en prod (`--mettre-a-jour`), niveaux migrés (`20261030150030`, renommée après une collision avec le CM1, #2018), simulation `publier-lot` : 12 brouillons passent ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
-- **Prochaine action** : `publier-lot --publier` du lot 0-géométrie repérée (David ; relu 12/12 ok), puis vérifier `published` en prod. Ensuite probabilités, variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-0-geometrie-reperee --publier`.
+- **État** : lots 0-suites, 0-second-degré, 0-dérivation, 0-variations, 0-exponentielle, 0-trigo, 0-produit scalaire et 0-géométrie repérée (§ 13, 12 modèles) publiés ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
+- **Prochaine action** : lot 0-probabilités (brouillons tagués d'un point de probabilités conditionnelles : instantané, specs, bornes, constats, simulation `publier-lot`). Ensuite variables aléatoires, logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : rien.
 - **Pièges en cours** : `publier-lot` = `scripts/questions/publier-lot.ts`, tout le dossier ou rien ; `create-questions` et `publier-lot` → David ; `db:migrate` qui joue les migrations d'autres sessions → refusé par le classifieur, David le lance avec `!` ; horodatage de migration : vérifier `migration list --linked` ET les worktrees avant de choisir ; la page ne dessine ni `variation`, ni `choix`, ni `trig` ; `question:specs` prend `--file` (pas `pnpm -s`), une copie par variation pour l'aperçu ; worktree neuf → `pnpm exec svelte-kit sync` ; index vide vérifié avant tout commit sur `main`.
 - **Worktree / branche** : aucun (retiré après #2018) ; la page à cocher se fait depuis le dépôt principal (aucun code à écrire).
 
@@ -594,3 +594,6 @@ de 1602c40d et d7ad48d8 dessinées), collection `verdicts` vide à la publicatio
 
 **Relecture (David, page à cocher, 2026-10-30)** : 12 « ok » sur 12, aucun commentaire. Simulation `publier-lot` relancée :
 12 brouillons passent le contrôle.
+
+**Publié le 2026-10-30** (`publier-lot --publier`, David) : 12/12 `published` en prod (MCP). 174e202b et dc4b8d08 restent en
+brouillon (l1s-3).
