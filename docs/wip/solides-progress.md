@@ -6,17 +6,21 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2027 (spécification du lot 4 écrite)._
+_Mis à jour le 2026-10-30, après #2037._
 
-- **État** : lots 1 (#2003), 2 (#2023) et 3 (#2027, ` ```solide ` affichage) **mergés**, rien en prod ;
-  spécification du lot 4 (` ```patron ` affichage) écrite au § 9, **pas encore validée**.
-- **Prochaine action** : réponses de David aux Q13-Q18 (§ 9), puis TDD du lot 4 (pliage d'abord).
-- **En attente de David** : Q13-Q18 du § 9 (grille `X`/`.`, noms des sommets répétés, pavé, plis, cône,
-  `SOLIDE_MAX_RATIO` 20 → 10).
+- **État** : lots 1 (#2003), 2 (#2023), 3 (#2027) et 4 (#2037, ` ```patron ` affichage) **mergés**, rien en
+  prod ; vérifications manuelles notées dans `verifications-manuelles.md`.
+- **Prochaine action** : lot 5, gestes des patrons `designer:` (toucher une face) et `completer:` (poser la
+  face manquante) — écrire d'abord sa spécification (comme les § 6 à 9), la faire valider, puis TDD. Le
+  pliage (`patronNet`, `notFolding`) est prêt pour juger `completer:`.
+- **En attente de David** : faut-il un chantier pour les blocs spéciaux ouverts sur la ligne d'un élément de
+  liste (`- ```cubes` lu vide, § 9 « Trouvé en passant ») ?
 - **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables → relancer
   par petits lots ; aperçu d'un bloc : script tsx + capture Playwright (scratchpad), Chrome n'ouvre pas
-  `127.0.0.1` ; corrigé PDF `solved` prêt, pas branché ; `EspaceSpec` = union : narrower par `kind`.
-- **Worktree / branche** : `../ubumaths-wt-solides`, `feat/solides-patron`.
+  `127.0.0.1` ; corrigé PDF `solved` prêt, pas branché ; `EspaceSpec` = union : narrower par `kind` ; un
+  patron ne doit jamais donner la réponse (faux patron sans noms, face marquée lue par son numéro).
+- **Worktree / branche** : aucun (retiré après #2037) ; lot 5 :
+  `git worktree add -b feat/solides-patron-gestes ../ubumaths-wt-solides origin/main`.
 
 ---
 
@@ -519,7 +523,7 @@ du solide répétés, `?` pour questionner (Q14) ; pavé : 11 dispositions + `fa
 tard (Q15) ; plis en trait fin plein (Q16) ; cône hors lot (Q17) ; `SOLIDE_MAX_RATIO` 20 → 10 dans ce lot (Q18).
 Spécification validée.
 
-### Lot 4 livré (PR à venir, 2026-10-30)
+### Lot 4 livré (#2037, 2026-10-30)
 
 - ` ```patron ` : cube (11 patrons, 8 faux, grille `X`/`.` pliée et vérifiée), pavé, prismes (2 dispositions),
   pyramides (étoile), cylindre ; `sommets:` (noms du solide répétés, `?`), `faces: numeros`, `marquer:`,
