@@ -24,7 +24,7 @@ const supabase = createClient(url, key, {
 });
 
 const CHAMPS =
-	'id,type,options,precision,grades,delay,multiple_answers,theme,domain,subdomain,level,variations,' +
+	'id,type,options,precision,grades,delay,theme,domain,subdomain,level,variations,' +
 	'exercise_instruction,status,title,description,shared,default_display_options,test_specs,classification_node_id';
 
 async function lire<T>(requete: PromiseLike<{ data: T[] | null; error: unknown }>): Promise<T[]> {

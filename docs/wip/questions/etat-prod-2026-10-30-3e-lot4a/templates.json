@@ -1,0 +1,1710 @@
+[
+	{
+		"id": "0612be84-01ce-42a3-aa33-2e2051502450",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 45,
+		"theme": "Fonctions",
+		"domain": "Fonctions linéaires",
+		"subdomain": "Reconnaître",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Parmi ces fonctions, laquelle est **linéaire** ?\n\n```choix\n- $x \\mapsto {{a}}x$\n- $x \\mapsto {{a}}x+{{b}}$\n- $x \\mapsto {{a}}x^2$\n- $x \\mapsto \\dfrac{ {{a}} }{x}$\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une fonction **linéaire** s'écrit $x \\mapsto ax$ : on multiplie $x$ par un nombre fixe $a$, sans rien ajouter.",
+						"$\\textcolor{{{color:primary.0}}}{x \\mapsto {{a}}x}$ est linéaire, de coefficient ${{a}}$.",
+						"$x \\mapsto {{a}}x+{{b}}$ est affine, pas linéaire (on ajoute ${{b}}$) ; dans $x \\mapsto {{a}}x^2$ et $x \\mapsto \\dfrac{ {{a}} }{x}$, $x$ n'est pas multiplié par un nombre fixe."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Parmi ces fonctions, laquelle est **linéaire** ?\n\n```choix\n- $x \\mapsto \\dfrac{x}{ {{a}} }$\n- $x \\mapsto x+{{a}}$\n- $x \\mapsto {{a}}$\n- $x \\mapsto {{a}}-x$\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une fonction **linéaire** s'écrit $x \\mapsto ax$ : on multiplie $x$ par un nombre fixe $a$, sans rien ajouter.",
+						"$\\dfrac{x}{ {{a}} } = \\dfrac{1}{ {{a}} } \\times x$ : $\\textcolor{{{color:primary.0}}}{x \\mapsto \\dfrac{x}{ {{a}} }}$ est linéaire, de coefficient $\\dfrac{1}{ {{a}} }$.",
+						"$x \\mapsto x+{{a}}$ et $x \\mapsto {{a}}-x$ ajoutent un nombre : elles sont affines. $x \\mapsto {{a}}$ est constante."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Dans le repère ci-dessous, quel tracé représente une fonction **linéaire** ?\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = ({{m}})*x   bleu   nom={{if:p==0|d_1|}}{{if:p==1|d_2|}}{{if:p==2|d_3|}}{{if:p==3|d_4|}}\ng(x) = ({{c}})*x+({{b}})   rouge   nom={{if:p==0|d_2|}}{{if:p==1|d_3|}}{{if:p==2|d_4|}}{{if:p==3|d_1|}}\nh(x) = 0.5*x^2-3   vert   nom={{if:p==0|d_3|}}{{if:p==1|d_4|}}{{if:p==2|d_1|}}{{if:p==3|d_2|}}\nk(x) = {{h}}   orange   nom={{if:p==0|d_4|}}{{if:p==1|d_1|}}{{if:p==2|d_2|}}{{if:p==3|d_3|}}\ntaille: moyenne\ndescription: Quatre tracés : trois droites et une parabole, nommés d1 à d4.\n```\n\n\n\n```choix\n- ${{if:p==0|d_1|}}{{if:p==1|d_2|}}{{if:p==2|d_3|}}{{if:p==3|d_4|}}$\n- ${{if:p==0|d_2|}}{{if:p==1|d_3|}}{{if:p==2|d_4|}}{{if:p==3|d_1|}}$\n- ${{if:p==0|d_3|}}{{if:p==1|d_4|}}{{if:p==2|d_1|}}{{if:p==3|d_2|}}$\n- ${{if:p==0|d_4|}}{{if:p==1|d_1|}}{{if:p==2|d_2|}}{{if:p==3|d_3|}}$\n```",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1|2|-1|-2"
+					},
+					{
+						"name": "c",
+						"expression": "1|-1|2"
+					},
+					{
+						"name": "b",
+						"expression": "2..3;±"
+					},
+					{
+						"name": "h",
+						"expression": "2..4;±"
+					},
+					{
+						"name": "p",
+						"expression": "0..3"
+					}
+				],
+				"conditions": ["c != m", "h != b"],
+				"correction": {
+					"steps": [
+						"Une fonction linéaire est représentée par une **droite qui passe par l'origine** du repère.",
+						"$\\textcolor{{{color:primary.0}}}{{{if:p==0|d_1|}}{{if:p==1|d_2|}}{{if:p==2|d_3|}}{{if:p==3|d_4|}}}$ est une droite qui passe par l'origine : c'est elle.",
+						"${{if:p==0|d_2|}}{{if:p==1|d_3|}}{{if:p==2|d_4|}}{{if:p==3|d_1|}}$ et ${{if:p==0|d_4|}}{{if:p==1|d_1|}}{{if:p==2|d_2|}}{{if:p==3|d_3|}}$ sont des droites qui ne passent pas par l'origine (fonctions affines) ; ${{if:p==0|d_3|}}{{if:p==1|d_4|}}{{if:p==2|d_1|}}{{if:p==3|d_2|}}$ n'est pas une droite."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Reconnaître une fonction linéaire",
+		"description": "Reconnaître une fonction linéaire : parmi quatre expressions, écrite autrement (x/4), ou parmi quatre tracés (droite passant par l'origine)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "Expressions : ax",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "Erreur : ax + b",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "Écrite autrement : x/a",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "Erreur : constante",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "3",
+					"c": "1",
+					"h": "-2",
+					"m": "2",
+					"p": "1"
+				},
+				"description": "Graphique : la droite par l'origine",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "3",
+					"c": "1",
+					"h": "-2",
+					"m": "2",
+					"p": "1"
+				},
+				"description": "Erreur : la droite affine",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "0d0e88f5-3825-418f-b12b-d6e541fbecba",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Lecture graphique",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{m}}"
+					}
+				],
+				"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nQuel est le coefficient directeur de $f$ ?\n\n$a=?$",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1..3"
+					},
+					{
+						"name": "p",
+						"expression": "-2..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le coefficient directeur $a$ se lit entre deux points de la droite : quand on avance de $1$ vers la droite, $f(x)$ change de $a$ ; plus généralement $a=\\dfrac{\\text{déplacement vertical}}{\\text{déplacement horizontal}}$.",
+						"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\npoints: A(0 ; {{p}}), B(1 ; {{eval:(p)+(m)}})\ntaille: moyenne\ndescription: Droite D et deux de ses points, A et B, d'abscisses 0 et 1.\n```",
+						"De $A(0\\,;{{p}})$ à $B(1\\,;{{eval:(p)+(m)}})$ : on avance de $1$, on {{if:m>0|monte|descend}} de ${{eval:abs(m)}}$, donc $a=\\textcolor{{{color:primary.0}}}{{{m}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{m}}"
+					}
+				],
+				"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nQuel est le coefficient directeur de $f$ ?\n\n$a=?$",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "-3..-1"
+					},
+					{
+						"name": "p",
+						"expression": "-2..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le coefficient directeur $a$ se lit entre deux points de la droite : quand on avance de $1$ vers la droite, $f(x)$ change de $a$ ; plus généralement $a=\\dfrac{\\text{déplacement vertical}}{\\text{déplacement horizontal}}$.",
+						"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\npoints: A(0 ; {{p}}), B(1 ; {{eval:(p)+(m)}})\ntaille: moyenne\ndescription: Droite D et deux de ses points, A et B, d'abscisses 0 et 1.\n```",
+						"De $A(0\\,;{{p}})$ à $B(1\\,;{{eval:(p)+(m)}})$ : on avance de $1$, on {{if:m>0|monte|descend}} de ${{eval:abs(m)}}$, donc $a=\\textcolor{{{color:primary.0}}}{{{m}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Lire un coefficient directeur entier",
+		"description": "Lire graphiquement le coefficient directeur entier d'une fonction affine : droite montante, descendante",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "2",
+					"p": "1"
+				},
+				"description": "Montante, a = 2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "2",
+					"p": "1"
+				},
+				"description": "Erreur : l'ordonnée à l'origine 1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "2",
+					"p": "1"
+				},
+				"description": "Erreur : 1/2 (horizontal sur vertical)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "-3",
+					"p": "2"
+				},
+				"description": "Descendante, a = −3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "-3",
+					"p": "2"
+				},
+				"description": "Erreur : signe oublié, 3",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "45247528-23f3-44cc-860e-afe643abaf2b",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Fonctions",
+		"domain": "Fonctions linéaires",
+		"subdomain": "Proportionnalité",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a}}"
+					}
+				],
+				"statement": "La fonction $f$ est linéaire, $f(x)=ax$. Voici un tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|} x & {{n}} & {{q}} \\\\ f(x) & {{eval:(a)*(n)}} & {{eval:(a)*(q)}} \\end{array}$\n\nQuel est le coefficient $a$ ?\n\n$a=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "n",
+						"expression": "1..5"
+					},
+					{
+						"name": "q",
+						"expression": "6..10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$f$ est linéaire : $f(x)=ax$, donc $f(x)$ est **proportionnel** à $x$ et $a$ est le coefficient de proportionnalité, $a=\\dfrac{f(x)}{x}$.",
+						"$$a = \\dfrac{{{eval:(a)*(n)}}}{ {{n}} } = \\textcolor{{{color:primary.0}}}{{{eval:a}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a}}"
+					}
+				],
+				"statement": "$f$ est une fonction linéaire telle que $f({{n}})={{eval:(a)*(n)}}$.\n\nQuel est son coefficient $a$ ?\n\n$a=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "n",
+						"expression": "2..6"
+					}
+				],
+				"conditions": ["abs(a) != n"],
+				"correction": {
+					"steps": [
+						"$f$ est linéaire : $f(x)=ax$, donc $f(x)$ est **proportionnel** à $x$ et $a$ est le coefficient de proportionnalité, $a=\\dfrac{f(x)}{x}$.",
+						"$$a = \\dfrac{f({{n}})}{ {{n}} } = \\dfrac{{{eval:(a)*(n)}}}{ {{n}} } = \\textcolor{{{color:primary.0}}}{{{eval:a}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k/10;d}}x"
+					}
+				],
+				"statement": "Au marché, les pommes coûtent ${{eval:k/10;d}}~\\unit{€}$ le kilogramme. Le prix payé, en euros, est une fonction linéaire $f$ de la masse $x$ achetée, en kilogrammes.\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "15..35"
+					}
+				],
+				"conditions": ["k - 5*floor(k/5) == 0"],
+				"correction": {
+					"steps": [
+						"Le prix est **proportionnel** à la masse : on multiplie la masse par le prix d'un kilogramme.",
+						"$$f(x) = \\textcolor{{{color:primary.0}}}{{{eval:k/10;d}}x}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{v}}x"
+					}
+				],
+				"statement": "Une voiture roule à la vitesse constante de ${{v}}~\\unit{km/h}$. La distance parcourue, en kilomètres, est une fonction linéaire $f$ de la durée $x$ du trajet, en heures.\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+				"variables": [
+					{
+						"name": "v",
+						"expression": "50|60|70|80|90|110|130"
+					}
+				],
+				"correction": {
+					"steps": [
+						"À vitesse constante, la distance est **proportionnelle** à la durée : en $x$ heures, la voiture parcourt $x$ fois ${{v}}~\\unit{km}$.",
+						"$$f(x) = \\textcolor{{{color:primary.0}}}{{{v}}x}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Fonction linéaire et proportionnalité",
+		"description": "Relier fonction linéaire et proportionnalité : coefficient a lu dans un tableau ou tiré de f(n) donné, expression f(x) = ax d'une situation (prix au kilogramme, vitesse constante)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"n": "2",
+					"q": "7"
+				},
+				"description": "Tableau : a = 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{4}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"n": "2",
+					"q": "7"
+				},
+				"description": "Erreur : rapport renversé 1/4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"n": "2"
+				},
+				"description": "f(2) = 6 : a = 3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"n": "2"
+				},
+				"description": "Erreur : 6 − 2 = 4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{1}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"n": "2"
+				},
+				"description": "Erreur : 2/6",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2{,}5x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "25"
+				},
+				"description": "Pommes à 2,5 € : f(x) = 2,5x",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{x}{2{,}5}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "25"
+				},
+				"description": "Erreur : x/2,5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2{,}5+x"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "25"
+				},
+				"description": "Erreur : 2,5 + x",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["90x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"v": "90"
+				},
+				"description": "Vitesse 90 : f(x) = 90x",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["\\frac{x}{90}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"v": "90"
+				},
+				"description": "Erreur : x/90",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "6ad254b4-69c3-49db-9541-fa921964cefc",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 75,
+		"theme": "Fonctions",
+		"domain": "Généralités",
+		"subdomain": "Représentations",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a)*(n)+(b)}}"
+					}
+				],
+				"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x{{if:b<0|{{b}}|+{{b}}}}$.\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|c|} x & 0 & 1 & {{n}} \\\\ f(x) & {{eval:b}} & {{eval:(a)+(b)}} & ? \\end{array}$\n\n",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "n",
+						"expression": "-5..-2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On remplace $x$ par ${{n}}$ dans la formule.",
+						"$$f({{n}}) = {{a}} \\times ({{n}}) {{if:b<0|{{b}}|+{{b}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)*(n)+(b)}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(n)^2+(c)}}"
+					}
+				],
+				"statement": "On considère la fonction $f$ définie par $f(x)=x^2{{if:c<0|{{c}}|+{{c}}}}$.\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|c|} x & 0 & 1 & {{n}} \\\\ f(x) & {{eval:c}} & {{eval:1+(c)}} & ? \\end{array}$\n\n",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "n",
+						"expression": "-5..-2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On remplace $x$ par ${{n}}$ dans la formule, **parenthèses comprises** : le carré d'un nombre négatif est positif.",
+						"$$f({{n}}) = ({{n}})^2 {{if:c<0|{{c}}|+{{c}}}} = {{eval:(n)^2}} {{if:c<0|{{c}}|+{{c}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(n)^2+(c)}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(q)+(c)*(d)^2}}"
+					}
+				],
+				"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:min(-1,p-3)}} ; {{eval:max(1,p+3)}}\ny: {{eval:min(-1,q-1,q+5*(c))}} ; {{eval:max(1,q+1,q+5*(c))}}\ngrille: 1 ; 1\nf(x) = ({{c}})*(x-({{p}}))^2+({{q}}) sur [{{eval:p-2.2;d}} ; {{eval:p+2.2;d}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe en forme de parabole d'une fonction f.\n```\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|} x & {{n}} \\\\ f(x) & ? \\end{array}$\n\n",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1|-1"
+					},
+					{
+						"name": "p",
+						"expression": "-1..1"
+					},
+					{
+						"name": "q",
+						"expression": "-2..2"
+					},
+					{
+						"name": "d",
+						"expression": "-2..2"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(p)+(d)"
+					}
+				],
+				"conditions": ["d != 0"],
+				"correction": {
+					"steps": [
+						"On cherche le point de $\\mathcal{C}_f$ d'**abscisse** ${{n}}$ ; $f({{n}})$ est son **ordonnée**.",
+						"```courbe\nx: {{eval:min(-1,p-3)}} ; {{eval:max(1,p+3)}}\ny: {{eval:min(-1,q-1,q+5*(c))}} ; {{eval:max(1,q+1,q+5*(c))}}\ngrille: 1 ; 1\nf(x) = ({{c}})*(x-({{p}}))^2+({{q}}) sur [{{eval:p-2.2;d}} ; {{eval:p+2.2;d}}]   bleu   nom=C_f\npoints: A({{n}} ; {{eval:(q)+(c)*(d)^2}})\ntaille: moyenne\ndescription: Courbe de f et son point A d'abscisse {{n}}.\n```",
+						"$A({{n}}\\,;{{eval:(q)+(c)*(d)^2}})$ : $f({{n}})=\\textcolor{{{color:primary.0}}}{{{eval:(q)+(c)*(d)^2}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$\\begin{array}{|l|c|c|c|c|} x & 0 & 1 & 2 & 3 \\\\ f(x) & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} & {{eval:3*(a)+(b)}} \\end{array}$\n\nQuelle formule peut définir $f$ ?\n\n```choix\n- $f(x)={{a}}x+{{b}}$\n- $f(x)={{b}}x+{{a}}$\n- $f(x)={{eval:(a)+(b)}}x$\n- $f(x)=x+{{b}}$\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"conditions": ["a != b"],
+				"correction": {
+					"steps": [
+						"On vérifie chaque formule sur **toutes** les colonnes du tableau.",
+						"Avec $\\textcolor{{{color:primary.0}}}{f(x)={{a}}x+{{b}}}$ : $f(0)={{b}}$, $f(1)={{eval:(a)+(b)}}$, $f(2)={{eval:2*(a)+(b)}}$, $f(3)={{eval:3*(a)+(b)}}$ : tout correspond.",
+						"$f(x)={{eval:(a)+(b)}}x$ donne $f(0)=0$, et non ${{b}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Formule, tableau de valeurs, courbe",
+		"description": "Passer d'une représentation d'une fonction à une autre : formule → tableau (affine, x² + c en un nombre négatif), courbe → tableau, tableau → formule",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"n": "-4"
+				},
+				"description": "f(x) = 3x + 2, f(−4) = −10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"n": "-4"
+				},
+				"description": "Erreur : signe oublié, 3 × 4 + 2 = 14",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "1",
+					"n": "-3"
+				},
+				"description": "f(x) = x² + 1, f(−3) = 10",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "1",
+					"n": "-3"
+				},
+				"description": "Erreur : −3² = −9, −8",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "1",
+					"n": "-3"
+				},
+				"description": "Erreur : 2 × (−3) + 1 = −5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "1",
+					"d": "2",
+					"n": "2",
+					"p": "0",
+					"q": "-1"
+				},
+				"description": "Courbe : f(2) = 3 (sommet (0 ; −1), haut)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "1",
+					"d": "2",
+					"n": "2",
+					"p": "0",
+					"q": "-1"
+				},
+				"description": "Erreur : l'abscisse 2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"description": "Tableau : 3x + 5",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"description": "Erreur : 8x (seulement f(1))",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "81dda1bd-cd4f-4055-9427-072d8f7f513c",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 45,
+		"theme": "Fonctions",
+		"domain": "Fonctions linéaires",
+		"subdomain": "Image",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a)*(n)}}"
+					}
+				],
+				"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x$.\n\nCalcule $f({{n}})$.\n\n$f({{n}})=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "n",
+						"expression": "2..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Pour calculer l'image d'un nombre, on **remplace $x$** par ce nombre dans l'expression.",
+						"$$f({{n}}) = {{a}} \\times {{if:n<0|({{n}})|{{n}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)*(n)}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a)*(n)}}"
+					}
+				],
+				"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x$.\n\nCalcule $f({{n}})$.\n\n$f({{n}})=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "n",
+						"expression": "-9..-2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Pour calculer l'image d'un nombre, on **remplace $x$** par ce nombre dans l'expression.",
+						"$$f({{n}}) = {{a}} \\times {{if:n<0|({{n}})|{{n}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)*(n)}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(k)*(n)/2;d}}"
+					}
+				],
+				"statement": "On considère la fonction $f$ définie par $f(x)={{eval:k/2;d}}x$.\n\nCalcule $f({{n}})$.\n\n$f({{n}})=?$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "n",
+						"expression": "2..8"
+					}
+				],
+				"conditions": ["k - 2*floor(k/2) == 1"],
+				"correction": {
+					"steps": [
+						"Pour calculer l'image d'un nombre, on **remplace $x$** par ce nombre dans l'expression.",
+						"$$f({{n}}) = {{eval:k/2;d}} \\times {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:(k)*(n)/2;d}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a)*(n)}}"
+					}
+				],
+				"statement": "On considère la fonction $f : x \\mapsto {{a}}x$.\n\nQuelle est l'image de ${{n}}$ par $f$ ?\n\n$f({{n}})=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "n",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Pour calculer l'image d'un nombre, on **remplace $x$** par ce nombre dans l'expression.",
+						"$$f({{n}}) = {{a}} \\times {{if:n<0|({{n}})|{{n}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)*(n)}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Calculer une image par une fonction linéaire",
+		"description": "Calculer l'image d'un nombre par une fonction linéaire f(x) = ax : a et x entiers, x négatif, a décimal, notation f : x ↦ ax",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"n": "4"
+				},
+				"description": "f(x) = 3x, f(4) = 12",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"n": "4"
+				},
+				"description": "Erreur : a + x = 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-5",
+					"n": "-4"
+				},
+				"description": "f(x) = −5x, f(−4) = 20",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-5",
+					"n": "-4"
+				},
+				"description": "Erreur de signe : −20",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"n": "6"
+				},
+				"description": "f(x) = 1,5x, f(6) = 9",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7{,}5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "5",
+					"n": "3"
+				},
+				"description": "f(x) = 2,5x, f(3) = 7,5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5{,}5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "5",
+					"n": "3"
+				},
+				"description": "Erreur : 2,5 + 3 = 5,5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-14"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"n": "-2"
+				},
+				"description": "f : x ↦ 7x, image de −2 = −14",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"n": "-2"
+				},
+				"description": "Erreur : 14",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "b9771108-fe6a-4f37-8b49-671b5627f5d3",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 75,
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Lecture graphique",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(n)/(q)}}"
+					}
+				],
+				"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-3)-1}} ; {{eval:max(1,(p)+3)+1}}\ngrille: 1 ; 1\nf(x) = ({{n}})/({{q}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nQuel est le coefficient directeur de $f$ ?\n\n$a=?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "1..2"
+					},
+					{
+						"name": "q",
+						"expression": "3"
+					},
+					{
+						"name": "p",
+						"expression": "-2..2"
+					}
+				],
+				"conditions": ["gcd(abs(n), q) == 1"],
+				"correction": {
+					"steps": [
+						"Le coefficient directeur $a$ se lit entre deux points de la droite : quand on avance de $1$ vers la droite, $f(x)$ change de $a$ ; plus généralement $a=\\dfrac{\\text{déplacement vertical}}{\\text{déplacement horizontal}}$.",
+						"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-3)-1}} ; {{eval:max(1,(p)+3)+1}}\ngrille: 1 ; 1\nf(x) = ({{n}})/({{q}})*x+({{p}})   bleu   nom=\\mathcal{D}\npoints: A(0 ; {{p}}), B({{q}} ; {{eval:(p)+(n)}})\ntaille: moyenne\ndescription: Droite D et deux de ses points sur le quadrillage, A et B.\n```",
+						"De $A(0\\,;{{p}})$ à $B({{q}}\\,;{{eval:(p)+(n)}})$ : on avance de ${{q}}$, on {{if:n>0|monte|descend}} de ${{eval:abs(n)}}$, donc $a=\\dfrac{{{n}}}{ {{q}} }=\\textcolor{{{color:primary.0}}}{{{eval:(n)/(q)}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(n)/(q)}}"
+					}
+				],
+				"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-3)-1}} ; {{eval:max(1,(p)+3)+1}}\ngrille: 1 ; 1\nf(x) = ({{n}})/({{q}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nQuel est le coefficient directeur de $f$ ?\n\n$a=?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "-2..-1"
+					},
+					{
+						"name": "q",
+						"expression": "3"
+					},
+					{
+						"name": "p",
+						"expression": "-2..2"
+					}
+				],
+				"conditions": ["gcd(abs(n), q) == 1"],
+				"correction": {
+					"steps": [
+						"Le coefficient directeur $a$ se lit entre deux points de la droite : quand on avance de $1$ vers la droite, $f(x)$ change de $a$ ; plus généralement $a=\\dfrac{\\text{déplacement vertical}}{\\text{déplacement horizontal}}$.",
+						"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-3)-1}} ; {{eval:max(1,(p)+3)+1}}\ngrille: 1 ; 1\nf(x) = ({{n}})/({{q}})*x+({{p}})   bleu   nom=\\mathcal{D}\npoints: A(0 ; {{p}}), B({{q}} ; {{eval:(p)+(n)}})\ntaille: moyenne\ndescription: Droite D et deux de ses points sur le quadrillage, A et B.\n```",
+						"De $A(0\\,;{{p}})$ à $B({{q}}\\,;{{eval:(p)+(n)}})$ : on avance de ${{q}}$, on {{if:n>0|monte|descend}} de ${{eval:abs(n)}}$, donc $a=\\dfrac{{{n}}}{ {{q}} }=\\textcolor{{{color:primary.0}}}{{{eval:(n)/(q)}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Lire un coefficient directeur fractionnaire",
+		"description": "Lire graphiquement un coefficient directeur fractionnaire en tiers (1/3, 2/3, −1/3, −2/3) entre deux nœuds du quadrillage",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "2",
+					"p": "-1",
+					"q": "3"
+				},
+				"description": "Montante, a = 2/3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{2}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "2",
+					"p": "-1",
+					"q": "3"
+				},
+				"description": "Erreur : 3/2 (renversé)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "1",
+					"p": "0",
+					"q": "3"
+				},
+				"description": "Montante, a = 1/3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}33"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "1",
+					"p": "0",
+					"q": "3"
+				},
+				"description": "Erreur : arrondi 0,33",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-\\frac{1}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "-1",
+					"p": "2",
+					"q": "3"
+				},
+				"description": "Descendante, a = −1/3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{1}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "-1",
+					"p": "2",
+					"q": "3"
+				},
+				"description": "Erreur : signe oublié",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "c64028b0-2001-4320-a02b-5d0692089d1a",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 45,
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Lecture graphique",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}"
+					}
+				],
+				"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nQuelle est l'ordonnée à l'origine de $f$ ?\n\n$b=?$",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1|2|3"
+					},
+					{
+						"name": "p",
+						"expression": "1..4;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"L'ordonnée à l'origine $b$ de $f(x)=ax+b$ est l'**ordonnée du point** où la droite coupe l'**axe des ordonnées** (le point d'abscisse $0$) : $f(0)=b$.",
+						"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\npoints: B(0 ; {{p}})\ntaille: moyenne\ndescription: Droite D et son point B sur l'axe des ordonnées.\n```",
+						"$\\mathcal{D}$ coupe l'axe des ordonnées en $B(0\\,;{{p}})$ : $b=\\textcolor{{{color:primary.0}}}{{{p}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}"
+					}
+				],
+				"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nQuelle est l'ordonnée à l'origine de $f$ ?\n\n$b=?$",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "-1|-2|-3"
+					},
+					{
+						"name": "p",
+						"expression": "1..4;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"L'ordonnée à l'origine $b$ de $f(x)=ax+b$ est l'**ordonnée du point** où la droite coupe l'**axe des ordonnées** (le point d'abscisse $0$) : $f(0)=b$.",
+						"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\npoints: B(0 ; {{p}})\ntaille: moyenne\ndescription: Droite D et son point B sur l'axe des ordonnées.\n```",
+						"$\\mathcal{D}$ coupe l'axe des ordonnées en $B(0\\,;{{p}})$ : $b=\\textcolor{{{color:primary.0}}}{{{p}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}"
+					}
+				],
+				"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nQuelle est l'ordonnée à l'origine de $f$ ?\n\n$b=?$",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1|2|-1|-2"
+					},
+					{
+						"name": "p",
+						"expression": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"L'ordonnée à l'origine $b$ de $f(x)=ax+b$ est l'**ordonnée du point** où la droite coupe l'**axe des ordonnées** (le point d'abscisse $0$) : $f(0)=b$.",
+						"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\npoints: B(0 ; {{p}})\ntaille: moyenne\ndescription: Droite D et son point B sur l'axe des ordonnées.\n```",
+						"$\\mathcal{D}$ coupe l'axe des ordonnées en $B(0\\,;{{p}})$ : $b=\\textcolor{{{color:primary.0}}}{{{p}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Lire l'ordonnée à l'origine",
+		"description": "Lire graphiquement l'ordonnée à l'origine d'une fonction affine : droite montante, descendante, fonction linéaire (b = 0)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "2",
+					"p": "3"
+				},
+				"description": "Montante, b = 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-1{,}5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "2",
+					"p": "3"
+				},
+				"description": "Erreur : l'abscisse du point sur l'axe des abscisses (−1,5)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "-1",
+					"p": "-2"
+				},
+				"description": "Descendante, b = −2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "-1",
+					"p": "-2"
+				},
+				"description": "Erreur de signe : 2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "2",
+					"p": "0"
+				},
+				"description": "Linéaire : b = 0",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "2",
+					"p": "0"
+				},
+				"description": "Erreur : le coefficient 2",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "d820232a-62a0-422f-9c08-33b279258af1",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Fonctions",
+		"domain": "Généralités",
+		"subdomain": "Image et antécédent",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a)*(k)+(b)}}"
+					}
+				],
+				"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$\\begin{array}{|l|c|c|c|c|c|} x & -2 & -1 & 0 & 1 & 2 \\\\ f(x) & {{eval:-2*(a)+(b)}} & {{eval:-(a)+(b)}} & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} \\end{array}$\n\nQuelle est l'image de ${{k}}$ par $f$ ?\n\n$f({{k}})=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4;±"
+					},
+					{
+						"name": "b",
+						"expression": "-3..3"
+					},
+					{
+						"name": "k",
+						"expression": "-2..2"
+					}
+				],
+				"conditions": ["b != 0", "abs(b) != abs(a)", "k != 0"],
+				"correction": {
+					"steps": [
+						"Si $f(a)=b$, on dit que $b$ est **l'image** de $a$ et que $a$ est **un antécédent** de $b$. Dans le tableau, les antécédents sont sur la ligne de $x$, les images sur celle de $f(x)$.",
+						"On lit la colonne de $x={{k}}$ : l'image de ${{k}}$ est $\\textcolor{{{color:primary.0}}}{{{eval:(a)*(k)+(b)}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$\\begin{array}{|l|c|c|c|c|c|} x & -2 & -1 & 0 & 1 & 2 \\\\ f(x) & {{eval:-2*(a)+(b)}} & {{eval:-(a)+(b)}} & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} \\end{array}$\n\nQuel est l'antécédent de ${{eval:(a)*(k)+(b)}}$ par $f$ dans ce tableau ?\n\n$?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4;±"
+					},
+					{
+						"name": "b",
+						"expression": "-3..3"
+					},
+					{
+						"name": "k",
+						"expression": "-2..2"
+					}
+				],
+				"conditions": ["b != 0", "abs(b) != abs(a)", "k != 0", "(a)*(k)+(b) != k"],
+				"correction": {
+					"steps": [
+						"Si $f(a)=b$, on dit que $b$ est **l'image** de $a$ et que $a$ est **un antécédent** de $b$. Dans le tableau, les antécédents sont sur la ligne de $x$, les images sur celle de $f(x)$.",
+						"On cherche ${{eval:(a)*(k)+(b)}}$ sur la ligne de $f(x)$ : il est sous $x=\\textcolor{{{color:primary.0}}}{{{k}}}$. L'antécédent est $\\textcolor{{{color:primary.0}}}{{{k}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(q)+(c)*(d)^2}}"
+					}
+				],
+				"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:min(-1,p-3)}} ; {{eval:max(1,p+3)}}\ny: {{eval:min(-1,q-1,q+5*(c))}} ; {{eval:max(1,q+1,q+5*(c))}}\ngrille: 1 ; 1\nf(x) = ({{c}})*(x-({{p}}))^2+({{q}}) sur [{{eval:p-2.2;d}} ; {{eval:p+2.2;d}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe en forme de parabole d'une fonction f.\n```\n\nLis l'image de ${{n}}$ par $f$.\n\n$f({{n}})=?$",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1|-1"
+					},
+					{
+						"name": "p",
+						"expression": "-1..1"
+					},
+					{
+						"name": "q",
+						"expression": "-2..2"
+					},
+					{
+						"name": "d",
+						"expression": "-2..2"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(p)+(d)"
+					}
+				],
+				"conditions": ["d != 0", "(q)+(c)*(d)^2 != n"],
+				"correction": {
+					"steps": [
+						"L'image de ${{n}}$ est l'**ordonnée** du point de $\\mathcal{C}_f$ d'abscisse ${{n}}$.",
+						"```courbe\nx: {{eval:min(-1,p-3)}} ; {{eval:max(1,p+3)}}\ny: {{eval:min(-1,q-1,q+5*(c))}} ; {{eval:max(1,q+1,q+5*(c))}}\ngrille: 1 ; 1\nf(x) = ({{c}})*(x-({{p}}))^2+({{q}}) sur [{{eval:p-2.2;d}} ; {{eval:p+2.2;d}}]   bleu   nom=C_f\npoints: A({{n}} ; {{eval:(q)+(c)*(d)^2}})\ntaille: moyenne\ndescription: Courbe de f et son point A d'abscisse {{n}}.\n```",
+						"$A({{n}}\\,;{{eval:(q)+(c)*(d)^2}})$ : $f({{n}})=\\textcolor{{{color:primary.0}}}{{{eval:(q)+(c)*(d)^2}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"answerKind": "intervalles",
+						"expectedAnswer": "\\{ {{p}} ; {{r}} \\}"
+					}
+				],
+				"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(r)+2)}}\ny: {{eval:floor(min(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))-1}} ; {{eval:ceil(max(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))+1}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{r}})) sur [{{eval:(p)-1}} ; {{eval:(r)+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe en forme de parabole d'une fonction f.\n```\n\nLis les antécédents de ${{k}}$ par $f$.\n\nL'ensemble des antécédents est $?$.",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "-4..0"
+					},
+					{
+						"name": "d",
+						"expression": "2..4"
+					},
+					{
+						"name": "r",
+						"expression": "eval:(p)+(d)"
+					},
+					{
+						"name": "c",
+						"expression": "1|-1"
+					},
+					{
+						"name": "k",
+						"expression": "-3..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On trace la droite horizontale d'équation $y={{k}}$ : les antécédents de ${{k}}$ sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
+						"```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(r)+2)}}\ny: {{eval:floor(min(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))-1}} ; {{eval:ceil(max(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))+1}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{r}})) sur [{{eval:(p)-1}} ; {{eval:(r)+1}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{p}} ; {{k}}), B({{r}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de f et droite horizontale y = {{k}}, qui la coupe en A et B.\n```",
+						"La droite coupe $\\mathcal{C}_f$ en $A$ et $B$ : ${{k}}$ a deux antécédents, $\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{r}} \\}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(n)^2-(b)}}"
+					}
+				],
+				"statement": "On considère la fonction $f$ définie par $f(x)=x^2-{{b}}$.\n\nCalcule l'image de ${{n}}$ par $f$.\n\n$f({{n}})=?$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "-6..-2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On remplace $x$ par ${{n}}$, **entre parenthèses** : le carré d'un nombre négatif est positif.",
+						"$$f({{n}}) = ({{n}})^2-{{b}} = {{eval:(n)^2}}-{{b}} = \\textcolor{{{color:primary.0}}}{{{eval:(n)^2-(b)}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Image et antécédent",
+		"description": "Image et antécédent : lus dans un tableau de valeurs, lus sur une courbe (deux antécédents), image calculée par une expression simple (x² − 3)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"k": "2"
+				},
+				"description": "Tableau : image de 2 = 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"k": "2"
+				},
+				"description": "Erreur : antécédent au lieu de l'image",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"k": "2"
+				},
+				"description": "Tableau : antécédent de 7 = 2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"k": "2"
+				},
+				"description": "Erreur : l'image de 7 confondue",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "1",
+					"d": "2",
+					"n": "2",
+					"p": "0",
+					"q": "-1"
+				},
+				"description": "Courbe : image de 2 = 3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "1",
+					"d": "2",
+					"n": "2",
+					"p": "0",
+					"q": "-1"
+				},
+				"description": "Erreur : 2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\{-2;2\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "1",
+					"d": "4",
+					"k": "1",
+					"p": "-2",
+					"r": "2"
+				},
+				"description": "Courbe : antécédents de 1 = {−2 ; 2}",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["\\{2;-2\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "1",
+					"d": "4",
+					"k": "1",
+					"p": "-2",
+					"r": "2"
+				},
+				"description": "Ordre inverse",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["\\{2\\}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "1",
+					"d": "4",
+					"k": "1",
+					"p": "-2",
+					"r": "2"
+				},
+				"description": "Erreur : un seul antécédent",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["13"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "3",
+					"n": "-4"
+				},
+				"description": "x² − 3, image de −4 = 13",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["-19"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "3",
+					"n": "-4"
+				},
+				"description": "Erreur : −16 − 3 = −19",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["-11"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "3",
+					"n": "-4"
+				},
+				"description": "Erreur : 2 × (−4) − 3 = −11",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": null
+	}
+]
