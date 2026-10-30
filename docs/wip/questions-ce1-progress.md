@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, lot 4 publié._
+_Mis à jour le 2026-10-30, phase 0 du lot 5 proposée._
 
 - **État** : lot 4 (problèmes, 10 modèles, § 10) **publié** en prod (2026-10-30, `publier-lot --publier` par David, 10 `published` au MCP), après relecture 10/10 OK sur la page à cocher (https://claude.ai/artifact/2bUw8csLPAx4rcotvkUjjn). Lots 0 à 4 faits.
-- **Prochaine action** : lot 5, grandeurs (§ 3 A : longueurs 041-043, 045-047 ; masses 049-052, 085 ; monnaie 053, 058 ; durées 061, 062) ; écrire sa phase 0 (nouvelle § 11) et la soumettre à David.
-- **En attente de David** : rien.
+- **Prochaine action** : écrire le lot 5 (longueurs, 6 modèles) une fois la phase 0 (§ 11) validée ; le lot 5 bis (masses, monnaie, durées, 9 modèles) suit.
+- **En attente de David** : validation de la phase 0 du lot 5 (§ 11) et ses 4 questions.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR.
 - **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branches mergées : en partir d'une neuve sur `origin/main`). `!` de David : depuis le dépôt principal, pas `cd` vers le worktree (rien ne s'affiche ni ne s'écrit).
 
@@ -364,6 +364,59 @@ suivies (« ok, je valide ») :
 tag ne change aucune règle.
 
 - 2026-10-29 : écrit (`lot-ce1-4.py`), `create-questions` en simulation 10/10 (87 specs) ; `question:specs` 200 tirages par variation, verts ; relecture des tirages : « deux gâteaux » → « deux achats », nombre hors formule, « tout le monde tient » pour l'album, monnaie rendue sur 5 € par complément (de 1,95 € à 2 €, puis à 5 €) au lieu de « 5 − 1,95 ». 10 brouillons en base locale ; aperçu admin : prix affichés « 1,10 € », 6,65 juste, corrigé lisible ; case choix oui / non juste.
-  \n- 2026-10-29 : #1987 mergée (CI verte) ; brouillons en prod à créer par David.\n
+- 2026-10-29 : #1987 mergée (CI verte) ; brouillons en prod à créer par David.
 - 2026-10-29 : 10 brouillons créés en prod par David (`dfc324b1`, `c43bd203`, `23b13821`, `612eeb31`, `93d318d1`, `f9eeeffe`, `bc521c99`, `5e469f6f`, `e4815e7f`, `584dc8b3`), vérifiés au MCP (brouillons, sans nœud ni tag, niveaux voulus). Migration `20261030004800_questions_ce1_lot4_rangement_tags` (max des worktrees + 1 min) et test : rouge sans (5 échecs sur 9), vert 9/9.
 - 2026-10-30 : #1992 mergée (CI verte, `security-auditor` sans finding bloquant) ; `db:migrate` refusé (`DbPushMissingRemoteError` : 002300 du 3e lot 3 pas joué en prod) ; rien d'appliqué (MCP : dernière jouée 004700).
+
+## 11. Lot 5 : grandeurs — phase 0 (proposée le 2026-10-30)
+
+Relevé MCP du 2026-10-30 : aucun modèle CE1 en grandeurs ; le CP en a 22 (`Grandeurs · Longueurs | Masses | Monnaie |
+Durées`). Sous-notions toutes présentes (« Longueurs | Masses › unités et conversions | comparaison et mesure »,
+« Monnaie › euros et centimes », « Durées › lecture de l'heure | conversions ») : aucun nœud à créer. Bornes
+`cycle2.json` et BO CE1 p.27-29 : **pas d'écriture à virgule en longueurs et masses**, nombres écrits ≤ 1 000 ;
+virgule en monnaie seulement ; heures jusqu'à 24 (« 14 : 15 »).
+
+15 points, un par modèle → **deux lots** : 5 (longueurs, 6) puis 5 bis (masses, monnaie, durées, 9). Texte et case
+choix (déjà en prod au lot 4), aucun outil neuf.
+
+### Lot 5 — longueurs
+
+| Fichier                     | Point   | Sous-notion           | Catégorie · niveau                    | Variations                                                                                                                                 |
+| --------------------------- | ------- | --------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `01-unites-de-longueur`     | CE1-041 | unités et conversions | Longueurs · Unités · 5                | symbole d'une unité (km → choix km, m, cm, kg) ; sens d'un symbole ; la plus grande / petite des trois                                     |
+| `02-choisir-l-unite`        | CE1-042 | unités et conversions | Longueurs · Unités · 6                | « Un crayon mesure 15 … » : choix cm, m, km (objets, pièces, trajets : école-piscine 2 km)                                                 |
+| `03-relations-m-cm-km`      | CE1-043 | unités et conversions | Longueurs · Unités · 7                | 1 m = ? cm ; 1 km = ? m ; 3 m = ? cm ; 1 m 46 cm = ? cm ; 146 cm = ? m ? cm ; 650 m + ? m = 1 km                                           |
+| `04-comparer-des-longueurs` | CE1-045 | comparaison et mesure | Longueurs · Comparaison et mesure · 3 | choix < = > : 2 m et 150 cm ; 1 m 20 cm et 125 cm ; 1 km et 900 m ; 3 m et 300 cm (égalité)                                                |
+| `05-longueurs-de-reference` | CE1-046 | comparaison et mesure | Longueurs · Ordres de grandeur · 4    | « Qu'est-ce qui mesure environ 1 m ? » : objet ou distance → choix (doigt 1 cm, porte 2 m, terrain 100 m, 1 km à pied en un quart d'heure) |
+| `06-estimer-une-longueur`   | CE1-047 | comparaison et mesure | Longueurs · Ordres de grandeur · 5    | « Une trousse mesure plutôt… » : 2 cm, 20 cm ou 2 m (même chiffre, ×10 et autre unité)                                                     |
+
+### Lot 5 bis — masses, monnaie, durées
+
+| Fichier                    | Point   | Sous-notion           | Catégorie · niveau                      | Variations                                                                                                                                    |
+| -------------------------- | ------- | --------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `07-unites-de-masse`       | CE1-049 | unités et conversions | Masses · Unités · 1 (neuve)             | symbole (g, kg ; leurre km) ; « On pèse une pomme en … » : g ou kg                                                                            |
+| `08-un-kilo-mille-grammes` | CE1-050 | unités et conversions | Masses · Unités · 2                     | 1 kg = ? g ; 1 000 g = ? kg ; 400 g + ? g = 1 kg ; 250 g + 250 g + 500 g = ? kg                                                               |
+| `09-comparer-des-masses`   | CE1-051 | comparaison et mesure | Masses · Comparaison · 2                | choix < = > (1 kg et 900 g ; 1 kg et 1 000 g ; 2 kg et 100 g contre 950 g) ; quatre masses du BO : la plus lourde, la plus légère             |
+| `10-masses-de-reference`   | CE1-052 | comparaison et mesure | Masses · Ordres de grandeur · 1 (neuve) | « Qu'est-ce qui pèse environ 1 kg ? » (paquet de sucre) ; « … environ 10 g ? » (sachet de levure)                                             |
+| `11-estimer-une-masse`     | CE1-085 | comparaison et mesure | Masses · Ordres de grandeur · 2         | « Une pomme pèse plutôt… » : 15 g, 150 g ou 15 kg                                                                                             |
+| `12-euros-et-centimes`     | CE1-053 | euros et centimes     | Monnaie · Euros et centimes · 1 (neuve) | 1 € = ? c ; 3 € = ? c ; 300 c = ? € ; 345 c = ? € ? c ; 65 c + ? c = 1 €                                                                      |
+| `13-ecriture-a-virgule`    | CE1-058 | euros et centimes     | Monnaie · Euros et centimes · 2         | 2 € et 17 c → 2,17 € ; 2 € et 5 c → 2,05 € (et 2 € et 50 c) ; 85 c → 0,85 € ; 1 € et 120 c → 2,20 € ; 3,45 € → ? € ? c                        |
+| `14-matin-et-apres-midi`   | CE1-061 | lecture de l'heure    | Durées · Moments de la journée · 2      | « 3 heures de l'après-midi » → ? h (15) ; 14 h 15 → choix matin / après-midi ; 20 h → ? heures du soir                                        |
+| `15-heure-et-minute`       | CE1-062 | conversions           | Durées · Unités · 1 (neuve)             | 1 h = ? min ; demi-heure, quart d'heure ; 3 quarts d'heure ; 2 h = ? min ; 1 h 15 min = ? min ; h ou min (« Je suis resté 2 … à la piscine ») |
+
+Erreurs typiques dans les `testSpecs` : 1 m = 10 cm ; 1 m 46 cm = 1 046 ou 47 ; 2 € et 5 c = 2,5 € ; 85 c = 85 € ;
+1 h = 100 min ; 1 h 15 min = 115 min.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **Deux lots** (5 longueurs, 5 bis le reste) plutôt qu'un lot de 15 ? Recommandation : oui (plafond de 10).
+2. **Ordonner quatre masses (051)** : la plus lourde et la plus légère en case choix, plutôt que quatre cases où
+   recopier « 1 kg et 300 g » ? Recommandation : choix ; le rangement complet reste au BO, pas au modèle.
+3. **Catégories neuves** : « Masses · Unités », « Masses · Ordres de grandeur », « Monnaie · Euros et centimes »,
+   « Durées · Unités » (calquées sur les longueurs du CP), plutôt que « Durées · Convertir · 13 » après les 12 de 6e ?
+   Recommandation : catégories neuves.
+4. **2,20 € tapé « 2,2 »** (058) : juste comme au lot 4 (`zeros: off`), ou ambre puisque le point porte justement sur
+   l'écriture à virgule ? Recommandation : juste (même règle qu'au lot 4), le corrigé écrit toujours 2,20 €.
