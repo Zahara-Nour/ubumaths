@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, PR #2024 (rangement 4a) ouverte._
+_Mis à jour le 2026-10-30, après #2024._
 
-- **État** : lots 0 à 3 publiés ; lot 4a (fonctions, 8 brouillons en prod, § 11.8) : migration de rangement
-  `20261030162000` écrite et prouvée (§ 11.9), PR #2024.
-- **Prochaine action** : merge, puis `pnpm db:migrate --include-all` (David, avec `!`) depuis le dépôt principal ;
-  vérif MCP ; page à cocher ; publication. Puis lot 4b (§ 11.2).
-- **En attente de David** : le `db:migrate` après merge.
+- **État** : lots 0 à 3 publiés ; lot 4a (fonctions, 8 brouillons) rangé et tagué en prod (§ 11.10), page à
+  cocher publiée : https://claude.ai/artifact/JgBMF94tqmj3AaRtu1ALhJ.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 8) ; « À revoir » → corriger ;
+  puis simulation et `publier-lot.ts --dir scripts/questions/3-lot-4a --publier` (David, avec `!`). Puis lot 4b (§ 11.2).
+- **En attente de David** : la relecture des 8 fiches.
 - **Pièges en cours** : `db:migrate` ET `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; tableau avec une case : pas de `\hline` ; une moitié attendue
   refuse 0,5 ; aperçu admin sur `127.0.0.1` (`--host 127.0.0.1`), pas `localhost` ; worktree neuf :
   `svelte-kit sync` avant les scripts `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, `feat/questions-3-lot4a-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-3` (branche mergée, à retirer après la publication).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -594,3 +594,15 @@ modèles publiés de plus. Aucune règle ne change.
   (ce2 lot 4), le plus récent de toutes les branches.
 - Test `questions-3-lot4a-rangement-tags` : 19 verts ; corps de la migration vidé : 8 rouges.
 - PR #2024.
+- `security-auditor` : aucun bloquant (SQL et rollback identiques au lot 3 hors données ; prod mesurée).
+  Relevé : commentaire « admin seul » inexact (le prof lit aussi les brouillons), existant.
+
+### 11.10 Lot 4a : migration jouée, page à cocher (2026-10-30)
+
+- #2024 mergée ; `pnpm db:migrate --include-all` lancé par David. MCP : `20261030162000` inscrite ;
+  81dda1bd (3-064), 0612be84 (3-041), 45247528 (3-043) sur Fonctions affines > fonction linéaire ;
+  6ad254b4 (3-039) sur la notion Généralités sur les fonctions ; d820232a (3-040) sur Généralités >
+  images et antécédents ; c64028b0 (3-045), 0d0e88f5 et b9771108 (3-067) sur Fonctions affines >
+  coefficient directeur et ordonnée à l'origine ; tous `draft`, un tag chacun, niveaux inchangés.
+- Page à cocher : https://claude.ai/artifact/JgBMF94tqmj3AaRtu1ALhJ (capacité `db`, collection `verdicts`
+  vide au départ ; aucune alerte sur les 8 fiches).
