@@ -1,0 +1,569 @@
+{
+	"id": "81811b59-b17c-4d94-bbd4-7f5515b4dd6d",
+	"title": "Équation d'une hauteur d'un triangle",
+	"description": "Déterminer une équation de la hauteur issue d'un sommet d'un triangle : droite passant par le sommet, de vecteur normal le côté opposé",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Géométrie repérée",
+	"subdomain": "Vecteur normal et équation de droite",
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "equation",
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:dx}}x{{eval:dy;+}}y{{eval:c;+}}=0"
+				}
+			],
+			"statement": "On considère le triangle $ABC$ avec $A({{eval:xA}}\\,;\\,{{eval:yA}})$, $B({{eval:xB}}\\,;\\,{{eval:yB}})$ et $C({{eval:xC}}\\,;\\,{{eval:yC}})$.\n\n```figure\nfenetre: {{eval:min(min(min(xA,xB),xC),0)-1.5}} ; {{eval:max(max(max(xA,xB),xC),0)+1.5}} ; {{eval:min(min(min(yA,yB),yC),0)-1.5}} ; {{eval:max(max(max(yA,yB),yC),0)+1.5}}\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Repère orthonormé quadrillé ; le triangle ABC.\n---\nA = point({{xA}}, {{yA}}, etiquette=\"{{if:yA>gy|haut|bas}}-{{if:xA>gx|droite|gauche}}\")\nB = point({{xB}}, {{yB}}, etiquette=\"{{if:yB>gy|haut|bas}}-{{if:xB>gx|droite|gauche}}\")\nC = point({{xC}}, {{yC}}, etiquette=\"{{if:yC>gy|haut|bas}}-{{if:xC>gx|droite|gauche}}\")\npolygone(A, B, C)\n```\n\nDonne une équation cartésienne de la hauteur du triangle $ABC$ issue de $A$.\n\n$?$",
+			"variables": [
+				{
+					"name": "xA",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "yA",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "xB",
+					"expression": "-4..4"
+				},
+				{
+					"name": "yB",
+					"expression": "-4..4"
+				},
+				{
+					"name": "dx",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "dy",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "xC",
+					"expression": "eval:xB+dx"
+				},
+				{
+					"name": "yC",
+					"expression": "eval:yB+dy"
+				},
+				{
+					"name": "c",
+					"expression": "eval:-(dx*xA+dy*yA)"
+				},
+				{
+					"name": "mx",
+					"expression": "eval:-xA"
+				},
+				{
+					"name": "my",
+					"expression": "eval:-yA"
+				},
+				{
+					"name": "gx",
+					"expression": "eval:(xA+xB+xC)/3"
+				},
+				{
+					"name": "gy",
+					"expression": "eval:(yA+yB+yC)/3"
+				}
+			],
+			"conditions": ["abs(xC) <= 5", "abs(yC) <= 5", "abs((xB-xA)*dy-(yB-yA)*dx) >= 8"],
+			"correction": {
+				"steps": [
+					"La hauteur issue de $A$ est la droite passant par $A$ et perpendiculaire à $(BC)$ : $\\overrightarrow{BC}$ en est un vecteur normal.",
+					"$\\overrightarrow{BC}\\begin{pmatrix}{{eval:xC}}-{{xB;()}}\\\\{{eval:yC}}-{{yB;()}}\\end{pmatrix}$, soit $\\overrightarrow{BC}\\begin{pmatrix}{{eval:dx}}\\\\{{eval:dy}}\\end{pmatrix}$.",
+					"$M(x\\,;\\,y)$ appartient à la droite si et seulement si $\\overrightarrow{AM}\\cdot\\overrightarrow{BC}=0$, avec $\\overrightarrow{AM}\\begin{pmatrix}x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}}\\\\y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}}\\end{pmatrix}$.",
+					"$\\overrightarrow{AM}\\cdot\\overrightarrow{BC}={{if:dx==1|(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dx==-1|-(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dx>1|{{eval:dx}}(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dx< -1|{{eval:dx}}(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dy==1|+(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}{{if:dy==-1|-(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}{{if:dy>1|+{{eval:dy}}(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}{{if:dy< -1|{{eval:dy}}(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}={{if:dx==1|x}}{{if:dx==-1|-x}}{{if:dx>1|{{eval:dx}}x}}{{if:dx< -1|{{eval:dx}}x}}{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}$",
+					"Une équation cartésienne de la droite est donc $\\textcolor{{{color:primary.0}}}{ {{if:dx==1|x}}{{if:dx==-1|-x}}{{if:dx>1|{{eval:dx}}x}}{{if:dx< -1|{{eval:dx}}x}}{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0 }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"requiredForm": "reduite",
+					"expectedAnswer": "y={{eval:-dx/dy}}x{{q;+}}"
+				}
+			],
+			"statement": "On considère le triangle $ABC$ avec $A({{eval:xA}}\\,;\\,{{eval:yA}})$, $B({{eval:xB}}\\,;\\,{{eval:yB}})$ et $C({{eval:xC}}\\,;\\,{{eval:yC}})$.\n\nDonne l'équation réduite de la hauteur du triangle $ABC$ issue de $C$.\n\n$?$",
+			"variables": [
+				{
+					"name": "xA",
+					"expression": "-4..4"
+				},
+				{
+					"name": "yA",
+					"expression": "-4..4"
+				},
+				{
+					"name": "dx",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "dy",
+					"expression": "-1"
+				},
+				{
+					"name": "xB",
+					"expression": "eval:xA+dx"
+				},
+				{
+					"name": "yB",
+					"expression": "eval:yA+dy"
+				},
+				{
+					"name": "xC",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "yC",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "c",
+					"expression": "eval:-(dx*xC+dy*yC)"
+				},
+				{
+					"name": "mx",
+					"expression": "eval:-xC"
+				},
+				{
+					"name": "my",
+					"expression": "eval:-yC"
+				},
+				{
+					"name": "mdx",
+					"expression": "eval:-dx"
+				},
+				{
+					"name": "mc",
+					"expression": "eval:-c"
+				},
+				{
+					"name": "q",
+					"expression": "eval:-c/dy"
+				},
+				{
+					"name": "s",
+					"expression": "eval:-dx/dy"
+				}
+			],
+			"conditions": ["abs(xB) <= 5", "abs(yB) <= 5", "abs((xC-xA)*dy-(yC-yA)*dx) >= 6"],
+			"correction": {
+				"steps": [
+					"La hauteur issue de $C$ est la droite passant par $C$ et perpendiculaire à $(AB)$ : $\\overrightarrow{AB}$ en est un vecteur normal.",
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{eval:xB}}-{{xA;()}}\\\\{{eval:yB}}-{{yA;()}}\\end{pmatrix}$, soit $\\overrightarrow{AB}\\begin{pmatrix}{{eval:dx}}\\\\{{eval:dy}}\\end{pmatrix}$.",
+					"$M(x\\,;\\,y)$ appartient à la droite si et seulement si $\\overrightarrow{CM}\\cdot\\overrightarrow{AB}=0$, avec $\\overrightarrow{CM}\\begin{pmatrix}x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}}\\\\y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}}\\end{pmatrix}$.",
+					"$\\overrightarrow{CM}\\cdot\\overrightarrow{AB}={{if:dx==1|(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dx==-1|-(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dx>1|{{eval:dx}}(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dx< -1|{{eval:dx}}(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dy==1|+(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}{{if:dy==-1|-(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}{{if:dy>1|+{{eval:dy}}(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}{{if:dy< -1|{{eval:dy}}(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}={{if:dx==1|x}}{{if:dx==-1|-x}}{{if:dx>1|{{eval:dx}}x}}{{if:dx< -1|{{eval:dx}}x}}{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}$",
+					"Une équation de la hauteur est ${{eval:dx}}x{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$, soit ${{if:dy==1|y}}{{if:dy==-1|-y}}{{if:dy>1|{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}={{if:mdx==1|x}}{{if:mdx==-1|-x}}{{if:mdx>1|{{eval:mdx}}x}}{{if:mdx< -1|{{eval:mdx}}x}}{{if:mc>0|+{{eval:mc}}}}{{if:mc< 0|{{eval:mc}}}}$.",
+					"On divise par ${{eval:dy}}$ : $\\textcolor{{{color:primary.0}}}{ y={{if:s==1|x}}{{if:s==-1|-x}}{{if:s>1|{{eval:s}}x}}{{if:s< -1|{{eval:s}}x}}{{if:q>0|+{{eval:q}}}}{{if:q< 0|{{eval:q}}}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:dx}}x{{eval:dy;+}}y{{eval:c;+}}=0"
+				}
+			],
+			"statement": "On considère les points $A({{eval:xA}}\\,;\\,{{eval:yA}})$, $B({{eval:xB}}\\,;\\,{{eval:yB}})$ et $C({{eval:xC}}\\,;\\,{{eval:yC}})$.\n\nDonne une équation cartésienne de la hauteur du triangle $ABC$ issue de $B$.\n\n$?$",
+			"variables": [
+				{
+					"name": "xA",
+					"expression": "-4..4"
+				},
+				{
+					"name": "yA",
+					"expression": "-4..4"
+				},
+				{
+					"name": "dx",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "dy",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "xC",
+					"expression": "eval:xA+dx"
+				},
+				{
+					"name": "yC",
+					"expression": "eval:yA+dy"
+				},
+				{
+					"name": "xB",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "yB",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "c",
+					"expression": "eval:-(dx*xB+dy*yB)"
+				},
+				{
+					"name": "mx",
+					"expression": "eval:-xB"
+				},
+				{
+					"name": "my",
+					"expression": "eval:-yB"
+				}
+			],
+			"conditions": ["abs(xC) <= 6", "abs(yC) <= 6", "abs((xB-xA)*dy-(yB-yA)*dx) >= 6"],
+			"correction": {
+				"steps": [
+					"La hauteur issue de $B$ est la droite passant par $B$ et perpendiculaire à $(AC)$ : $\\overrightarrow{AC}$ en est un vecteur normal.",
+					"$\\overrightarrow{AC}\\begin{pmatrix}{{eval:xC}}-{{xA;()}}\\\\{{eval:yC}}-{{yA;()}}\\end{pmatrix}$, soit $\\overrightarrow{AC}\\begin{pmatrix}{{eval:dx}}\\\\{{eval:dy}}\\end{pmatrix}$.",
+					"$M(x\\,;\\,y)$ appartient à la droite si et seulement si $\\overrightarrow{BM}\\cdot\\overrightarrow{AC}=0$, avec $\\overrightarrow{BM}\\begin{pmatrix}x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}}\\\\y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}}\\end{pmatrix}$.",
+					"$\\overrightarrow{BM}\\cdot\\overrightarrow{AC}={{if:dx==1|(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dx==-1|-(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dx>1|{{eval:dx}}(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dx< -1|{{eval:dx}}(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dy==1|+(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}{{if:dy==-1|-(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}{{if:dy>1|+{{eval:dy}}(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}{{if:dy< -1|{{eval:dy}}(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}={{if:dx==1|x}}{{if:dx==-1|-x}}{{if:dx>1|{{eval:dx}}x}}{{if:dx< -1|{{eval:dx}}x}}{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}$",
+					"Une équation cartésienne de la droite est donc $\\textcolor{{{color:primary.0}}}{ {{if:dx==1|x}}{{if:dx==-1|-x}}{{if:dx>1|{{eval:dx}}x}}{{if:dx< -1|{{eval:dx}}x}}{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0 }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3x-3y+3=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"dx": "3",
+				"dy": "-3",
+				"xA": "1",
+				"xB": "-2",
+				"yA": "2",
+				"yB": "-1"
+			},
+			"description": "v0 : A(1;2), B(-2;-1), C(1;-4) : 3x - 3y + 3 = 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["y=x+1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"dx": "3",
+				"dy": "-3",
+				"xA": "1",
+				"xB": "-2",
+				"yA": "2",
+				"yB": "-1"
+			},
+			"description": "v0 : simplifiée y = x + 1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x-y-2=0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"dx": "3",
+				"dy": "-3",
+				"xA": "1",
+				"xB": "-2",
+				"yA": "2",
+				"yB": "-1"
+			},
+			"description": "v0 : médiatrice de [BC]",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x+y+3=0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"dx": "3",
+				"dy": "-3",
+				"xA": "1",
+				"xB": "-2",
+				"yA": "2",
+				"yB": "-1"
+			},
+			"description": "v0 : droite (BC)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["y=2x-6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"dx": "2",
+				"dy": "-1",
+				"xA": "0",
+				"xC": "1",
+				"yA": "0",
+				"yC": "-4"
+			},
+			"description": "v1 : hauteur issue de C : y = 2x - 6",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2x-y-6=0"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"dx": "2",
+				"dy": "-1",
+				"xA": "0",
+				"xC": "1",
+				"yA": "0",
+				"yC": "-4"
+			},
+			"description": "v1 : cartésienne",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2x-6=y"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"dx": "2",
+				"dy": "-1",
+				"xA": "0",
+				"xC": "1",
+				"yA": "0",
+				"yC": "-4"
+			},
+			"description": "v1 : membres échangés",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["y=2x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"dx": "2",
+				"dy": "-1",
+				"xA": "0",
+				"xC": "1",
+				"yA": "0",
+				"yC": "-4"
+			},
+			"description": "v1 : passe par A",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3x+2y-10=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"dx": "3",
+				"dy": "2",
+				"xA": "0",
+				"xB": "4",
+				"yA": "0",
+				"yB": "-1"
+			},
+			"description": "v2 : hauteur issue de B",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-2x+3y+11=0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"dx": "3",
+				"dy": "2",
+				"xA": "0",
+				"xB": "4",
+				"yA": "0",
+				"yB": "-1"
+			},
+			"description": "v2 : vecteur directeur pris pour normal",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["x-2y+3=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"dx": "1",
+				"dy": "-2",
+				"xA": "1",
+				"xB": "-2",
+				"yA": "2",
+				"yB": "-1"
+			},
+			"description": "v0 : BC(1 ; −2) : x − 2y + 3 = 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1x-2y+3=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"dx": "1",
+				"dy": "-2",
+				"xA": "1",
+				"xB": "-2",
+				"yA": "2",
+				"yB": "-1"
+			},
+			"description": "v0 : BC(1 ; −2) : coefficient 1 écrit (1x − 2y + 3 = 0)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["y=\\frac{1}{2}x+\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"dx": "1",
+				"dy": "-2",
+				"xA": "1",
+				"xB": "-2",
+				"yA": "2",
+				"yB": "-1"
+			},
+			"description": "v0 : BC(1 ; −2) : réduite y = ½x + 3/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2x+y-4=0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"dx": "1",
+				"dy": "-2",
+				"xA": "1",
+				"xB": "-2",
+				"yA": "2",
+				"yB": "-1"
+			},
+			"description": "v0 : BC(1 ; −2) : vecteur directeur pris pour normal (2x + y − 4 = 0)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x+2y=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"dx": "1",
+				"dy": "2",
+				"xA": "2",
+				"xB": "-3",
+				"yA": "-1",
+				"yB": "0"
+			},
+			"description": "v0 : c = 0 : x + 2y = 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["y=x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"dx": "1",
+				"dy": "-1",
+				"xA": "0",
+				"xC": "3",
+				"yA": "0",
+				"yC": "3"
+			},
+			"description": "v1 : AB(1 ; −1), C(3 ; 3) : y = x",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["y=1x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"dx": "1",
+				"dy": "-1",
+				"xA": "0",
+				"xC": "3",
+				"yA": "0",
+				"yC": "3"
+			},
+			"description": "v1 : y = 1x (coefficient 1 écrit)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["x-y=0"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"dx": "1",
+				"dy": "-1",
+				"xA": "0",
+				"xC": "3",
+				"yA": "0",
+				"yC": "3"
+			},
+			"description": "v1 : cartésienne x − y = 0",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-x+y=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"dx": "-1",
+				"dy": "1",
+				"xA": "0",
+				"xB": "3",
+				"yA": "0",
+				"yB": "3"
+			},
+			"description": "v2 : AC(−1 ; 1), c = 0 : −x + y = 0",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["y=x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"dx": "-1",
+				"dy": "1",
+				"xA": "0",
+				"xB": "3",
+				"yA": "0",
+				"yB": "3"
+			},
+			"description": "v2 : AC(−1 ; 1), c = 0 : y = x",
+			"variationIndex": 2
+		}
+	]
+}
