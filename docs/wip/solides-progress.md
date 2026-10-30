@@ -6,13 +6,17 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2023._
+_Mis à jour le 2026-10-30, après #2023 (lot 3 commencé)._
 
-- **État** : lots 1 (#2003, affichage) et 2 (#2023, gestes `dessiner:` / `retrouver:`) **mergés**, rien en prod ; vérifications manuelles notées dans `verifications-manuelles.md`.
-- **Prochaine action** : lot 3, ` ```solide ` affichage (7 solides, sommets, `marquer:`, PDF) — écrire d'abord sa spécification détaillée (comme les § 6 et 7), la faire valider, puis TDD.
-- **En attente de David** : rien.
-- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables (`wrapDynamicImport`, page fermée, aussi sur `main`) → relancer par petits lots en local, relancer le shard en CI ; `/aide-ecriture/blocs/*` réservé au prof et Chrome n'ouvre pas `127.0.0.1` → aperçu par capture du navigateur de test ; corrigé PDF `solved` prêt, pas branché (comme ```partage) ; `ls` = alias `eza`.
-- **Worktree / branche** : aucun (retiré après #2023) ; lot 3 : `git worktree add -b feat/solides-solide ../ubumaths-wt-solides origin/main`.
+- **État** : lots 1 (#2003) et 2 (#2023) **mergés**, rien en prod ; lot 3 (` ```solide ` affichage) :
+  spécification écrite (§ 8), **questions 8 à 12 posées à David**.
+- **Prochaine action** : réponses aux Q8-Q12 → tests rouges → implémentation (modèle : #2003).
+- **En attente de David** : Q8-Q12 (§ 8).
+- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables
+  (`wrapDynamicImport`, page fermée, aussi sur `main`) → relancer par petits lots en local, relancer le shard
+  en CI ; `/aide-ecriture/blocs/*` réservé au prof et Chrome n'ouvre pas `127.0.0.1` → aperçu par capture du
+  navigateur de test ; corrigé PDF `solved` prêt, pas branché (comme ```partage) ; `ls` = alias `eza`.
+- **Worktree / branche** : `../ubumaths-wt-solides`, `feat/solides-solide`.
 
 ---
 
@@ -272,3 +276,102 @@ retrouver: face, droite
 
 **Réponse de David (2026-10-30)** : « je te suis » — quadrillage agrandi d'un carreau, jugé à une translation
 près (Q6) ; vue de dessus toujours donnée, grille de saisie de `retrouver:` (Q7). Spécification validée.
+
+## 8. Lot 3 — ` ```solide `, affichage (spécification)
+
+Modèle de code : le lot 1 (#2003), fichier pour fichier ; nouveau genre `solide` du nœud `espace`
+(ADR 0034), aiguillé dans le parseur, `Espace.svelte` (→ `Solide.svelte`) et `espace-typst.ts`.
+
+```solide
+forme: pave 4 2 3
+sommets: A B C D E F G H
+marquer: face ABCD, arete AE, sommet G
+cotes: cm
+```
+
+**`forme:`** (obligatoire) — un mot puis ses dimensions (nombres > 0, virgule ou point) :
+
+| Forme                             | Dessin                                                                                 |
+| --------------------------------- | -------------------------------------------------------------------------------------- |
+| `cube a`                          | face avant a × a en vraie grandeur, fuyante a                                          |
+| `pave l p h`                      | face avant l (longueur) × h (hauteur), fuyante p (largeur)                             |
+| `prisme triangle b h L`           | base avant : triangle isocèle de base b et hauteur h, pointe en haut ; fuyante L       |
+| `prisme triangle-rectangle a b L` | base avant : triangle rectangle en bas à gauche, côtés a (horizontal) et b ; fuyante L |
+| `pyramide carree a h`             | base horizontale a × a (en fuyante), sommet au-dessus du centre, hauteur h             |
+| `pyramide rectangle l p h`        | idem, base l × p                                                                       |
+| `pyramide triangle a h`           | base horizontale : triangle équilatéral de côté a                                      |
+| `cylindre r h`                    | debout ; bases en ellipses « à plat » (horizontales), comme le CP                      |
+| `cone r h`                        | debout, base en ellipse à plat, sommet au-dessus du centre                             |
+| `boule r`                         | cercle + équateur en ellipse à plat                                                    |
+
+- **Arêtes cachées en tirets**, calculées (polyèdre convexe : une arête est cachée quand ses deux faces
+  tournent le dos à l'œil) ; cylindre, cône, boule : la moitié arrière de l'ellipse du bas en tirets
+  (cône : entre les vrais points de tangence des génératrices, pas aux bouts de l'ellipse).
+  `cachees: non` → tout en trait plein (« reconnaître la bonne perspective »).
+- **Pas de teinte** de faces (traits noirs sur blanc, comme les manuels) ; seule une face marquée est
+  teintée, en gris translucide : les arêtes cachées restent visibles à travers.
+- **`sommets:`** (facultatif) — des noms (une lettre, éventuellement `'` ou un chiffre : `A'`, `O1`), dans
+  l'ordre documenté, posés à l'extérieur du sommet :
+  - cube, pavé : ABCD la face du **bas** (A devant gauche, B devant droite, C fond droite, D fond
+    gauche), EFGH au-dessus (E sur A…) ; 8 noms.
+  - prisme : ABC la base avant (A en bas à gauche, puis sens inverse des aiguilles), DEF la base arrière
+    (D derrière A) ; 6 noms.
+  - pyramide : le sommet d'abord, puis la base comme celle du pavé (SABCD, SABC) ; 4 ou 5 noms.
+  - cône : S puis O (centre de la base) ; cylindre : O (bas) puis O' (haut) ; boule : O. Un centre nommé
+    est dessiné (point).
+- **`marquer:`** (facultatif, plusieurs séparés par des virgules) : `face ABCD` (teintée), `arete AE`
+  (épaisse), `sommet G` (point). Les faces se désignent aussi **sans noms** par leur place, pour
+  cube / pavé / prisme : `face devant | derriere | dessus | dessous | gauche | droite` (le CP le faisait
+  à la main, CP-051). Nom ou place qui n'est pas une face / arête du solide → erreur.
+- **`cotes:`** (facultatif) : `cotes: cm` (ou `mm`, `m`, `oui` sans unité) écrit les dimensions de
+  `forme:` sur le dessin — pavé : longueur sous l'arête du bas avant, hauteur à droite de l'arête
+  verticale avant droite, largeur le long de la fuyante du bas à droite ; cylindre, cône : un rayon tracé
+  sur la base (tirets s'il est caché) et la hauteur (cône : hauteur intérieure en tirets) ; boule : un
+  rayon. Nombres à la française (`4,5 cm`).
+- **Échelle** : les dimensions sont des **proportions** ; le dessin est mis à l'échelle pour que son plus
+  grand côté mesure 4 cm (à l'écran et au PDF). Un pavé 8 × 5 × 3 et un cube 2 ont la même taille ; ce
+  sont les cotes qui disent les longueurs.
+
+| Cas                                                       | Attendu                                                          |
+| --------------------------------------------------------- | ---------------------------------------------------------------- |
+| `pave 4 2 3`                                              | 9 arêtes pleines, 3 en tirets (celles qui partent de D)          |
+| `cube 2`, `sommets: A … H`, `marquer: face EFGH`          | dessus teinté, 8 noms bien placés                                |
+| `pyramide carree 4 3`                                     | 3 arêtes en tirets, celles de D (DA, DC, SD)                     |
+| `pyramide triangle 4 3`                                   | arête du fond cachée seulement si elle l'est vraiment (calculée) |
+| `cylindre 2 5`, `cotes: cm`                               | demi-ellipse arrière du bas en tirets, « 2 cm », « 5 cm »        |
+| `cone 2 4`                                                | génératrices tangentes à l'ellipse, arc arrière en tirets        |
+| `boule 3`, `sommets: O`                                   | cercle, équateur (arrière en tirets), centre O                   |
+| `cachees: non`                                            | aucun tiret                                                      |
+| `pave 10 1 1` (rapport 10)                                | dessiné ; au-delà d'un rapport 20 entre dimensions → erreur      |
+| forme inconnue, `pave 4 2`, `cube 0`, `cube -1`, `cube x` | erreur, formes ou dimensions attendues listées                   |
+| 7 noms pour un pavé ; deux fois le même nom               | erreur « un pavé a 8 sommets : 8 noms attendus »                 |
+| `marquer: face ABD` / `arete AC` (diagonale) / `sommet Z` | erreur « ABD n'est pas une face du pavé »…                       |
+| `marquer: face ABCD` sans `sommets:`                      | erreur « nomme les sommets (`sommets:`) pour marquer ABCD »      |
+| `cotes: km`                                               | erreur, unités permises listées                                  |
+| variables `{{a}}`                                         | lues sur l'énoncé résolu (comme ` ```cubes `)                    |
+
+- **Nom accessible** : « Solide en perspective cavalière », **jamais le nom du solide** (ce serait la
+  réponse de CM1-109 / 4-027) ; les noms de sommets marqués et les cotes y sont ajoutés (« face ABCD
+  marquée »), car ils sont dans l'énoncé.
+- **Erreur** : messages au prof, « Solide indisponible » à l'élève et au PDF (comme ` ```cubes `).
+- **Case choix** : `--espace-taille: 3cm` (plus grand côté), comme les assemblages.
+- **Scène** : `espace-scene.ts` gagne les traits (plein / tirets / épais), les points et les étiquettes ;
+  la géométrie des solides (sommets 3D, faces, projection, visibilité) dans `utils/espace-solides.ts`,
+  calcul pur, partagé écran / PDF. **PDF** : Typst natif (`line`, `polygon`, `dash: "dashed"`).
+- **Éditeur riche** (aller-retour ` ```solide `), catalogue `block-catalog/solide.ts`, `pnpm check:ubumark`,
+  `docs/systeme/ubumark.md`.
+- **Hors lot 3** : tracer un segment intérieur (diagonale [AG], hauteur d'une pyramide nommée) ; prisme à
+  base quelconque ; solide couché ou vu d'un autre angle ; sections (lot 6).
+
+### Questions à David (lot 3)
+
+8. **Échelle** : dimensions = proportions, dessin ramené à 4 cm de plus grand côté (les cotes disent les
+   longueurs), ou vraie grandeur en cm (un pavé 10 × 6 × 4 déborde) ? _Reco : proportions, 4 cm._
+9. **`cotes:`** dans ce lot (les volumes 5-050, 5-108, 4-029 en ont besoin), ou plus tard ? _Reco : dans ce
+   lot._
+10. **Ordre des sommets du pavé** : ABCD la face du bas, EFGH au-dessus (E sur A) — la convention la plus
+    courante des manuels et du brevet —, ou ABCD la face avant, EFGH la face arrière ? _Reco : ABCD en bas._
+11. **Cylindre, cône, boule** : ellipses « à plat » (horizontales, comme le CP et les manuels, pas la
+    cavalière stricte qui les pencherait), ou cavalière stricte ? _Reco : à plat._
+12. **Prismes** du lot : triangle isocèle et triangle rectangle, base en face avant (vraie grandeur) ; les
+    autres bases plus tard ? _Reco : oui._
