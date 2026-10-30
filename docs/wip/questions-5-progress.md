@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, après #1993 et son `db:migrate`._
+_Mis à jour le 2026-10-30, après la publication du lot 4b._
 
-- **État** : lots 1 à 3 publiés ; **4a** mergé (#1977), pas créé en prod ; **4b** : 4 brouillons en prod
-  (2f556139, 1e68327e, 1cd9dc60, d4668b2d), migration #1993 **jouée** (`db:migrate`, feu vert de David) et vérifiée au MCP
-  (nœuds, tags, grades, rangs ; `updated_at` préservé).
-- **Prochaine action** : page à cocher du 4b (`page-a-cocher.ts
---dir scripts/questions/5-litteral-b` ; alertes attendues : homonymes 1cd9dc60 / d4668b2d), capacité `db`, 390 px,
-  Chrome → compter les verdicts → `publier-lot.ts` en simulation → David `--publier`. 4a : attendre `virgule-forme-exigee`.
+- **État** : lots 1 à 3 et **4b publiés** (2f556139, 1e68327e, 1cd9dc60, d4668b2d, relus 4/4 OK, `published`
+  vérifié au MCP) ; **4a** mergé (#1977), pas créé en prod.
+- **Prochaine action** : 4a dès que `virgule-forme-exigee` est en prod (création → migration → page à cocher →
+  publication) ; sinon choisir le lot suivant dans le relevé (§ 1) avec David.
 - **En attente de David** : la session `virgule-forme-exigee`.
 - **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ; le classifieur refuse `create-questions
---mettre-a-jour` ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un
-  **message de commit** ; page à cocher à 390 px ; **jamais de variable `e` ni `i`** ; saisie MathLive de
-  l'aperçu non pilotable à l'automate.
-- **Worktree / branche** : aucun (retiré après #1993).
+--mettre-a-jour` **et même `publier-lot.ts` en simulation** (David le lance avec `!`) ; worktree neuf :
+  `pnpm exec svelte-kit sync` avant `create-questions` ; `Doc-inchangée:` dans un **message de commit** ;
+  **jamais de variable `e` ni `i`** ; saisie MathLive de l'aperçu non pilotable à l'automate ; Chrome refuse
+  parfois le redimensionnement à 390 px.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -344,3 +343,9 @@ Deux lots :
   `create-questions`) ; entre le merge et le `db:migrate`, `create-questions` sur `3-lot-2` le verrait « à créer ».
 - Test `questions-5-lot4b-rangement.test.ts` : 21/21, rouge sans la migration (15 échecs). `security-auditor` :
   aucun bloquant (gardes vérifiées sur la prod réelle ; seule rectification, la phrase d'accès ci-dessus).
+
+### 15.3 Lot 4b publié (2026-10-30)
+
+- Page à cocher https://claude.ai/artifact/C1ka72wJ4FC41UxmK4Rrhg : alertes = homonymes attendus seulement
+  (10 → 1cd9dc60 niv. 1, 11 → d4668b2d niv. 2) ; verdicts 4/4 OK, sans commentaire.
+- `publier-lot.ts` (simulation puis `--publier`) lancé par David ; MCP : les 4 en `published`. Lot 4b clos.
