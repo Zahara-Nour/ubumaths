@@ -39,8 +39,21 @@ export const CUBES_VIEWS = ['perspective', 'dessus', 'face', 'droite', 'gauche']
 
 export type CubesView = (typeof CUBES_VIEWS)[number];
 
-/** Les clés du bloc ```cubes */
-export const CUBES_KEYS = ['hauteurs', 'vue'] as const;
+/** Les vues que l'élève peut dessiner (`dessiner:`) : toutes sauf la perspective */
+export const CUBES_DRAWN_VIEWS = ['dessus', 'face', 'droite', 'gauche'] as const;
+
+export type CubesDrawnView = (typeof CUBES_DRAWN_VIEWS)[number];
+
+/** Les vues données à `retrouver:` : la vue de dessus est TOUJOURS donnée (grille de saisie) */
+export const CUBES_SIDE_VIEWS = ['face', 'droite', 'gauche'] as const;
+
+export type CubesSideView = (typeof CUBES_SIDE_VIEWS)[number];
+
+/**
+ * Les clés du bloc ```cubes (`dessiner:`, `retrouver:` : gestes de l'élève ;
+ * `case:` posée par le générateur de questions)
+ */
+export const CUBES_KEYS = ['hauteurs', 'vue', 'dessiner', 'retrouver', 'case'] as const;
 
 /** Message à l'élève (et dans le PDF) pour un bloc en erreur */
 export const ESPACE_UNAVAILABLE = 'Solide indisponible';
@@ -56,7 +69,22 @@ export const ESPACE_UNAVAILABLE = 'Solide indisponible';
  * dernière rangée = DEVANT ; colonnes de gauche à droite. Les rangées et
  * colonnes vides au bord sont déjà retirées, un trou intérieur reste.
  */
-export type EspaceSpec = { kind: 'cubes'; heights: number[][]; view: CubesView };
+export type EspaceSpec = {
+	kind: 'cubes';
+	heights: number[][];
+	view: CubesView;
+	/** Geste de l'élève (lot 2) ; absent : affichage seul */
+	task?: CubesTask;
+};
+
+/**
+ * Geste de l'élève sur un assemblage :
+ * - `dessiner` : la perspective et un quadrillage vide, l'élève colorie la vue `view` ;
+ * - `retrouver` : la vue de dessus (grille de saisie) et les vues `views`, l'élève
+ *   écrit une hauteur par carreau ; jugé « mêmes vues ».
+ */
+export type CubesTask =
+	{ kind: 'dessiner'; view: CubesDrawnView } | { kind: 'retrouver'; views: CubesSideView[] };
 
 export interface EspaceNode extends BaseNode {
 	type: 'espace';
@@ -68,6 +96,8 @@ export interface EspaceNode extends BaseNode {
 	spec: EspaceSpec | null;
 	/** Phrases pour l'AUTEUR (jamais montrées à l'élève), « Ligne N : … » */
 	errors: string[];
+	/** Geste dans une question : sa case, posée par le générateur (`case: N`) */
+	caseIndex?: number;
 }
 
 export interface EspaceBlockRange {

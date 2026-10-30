@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2003._
+_Mis à jour le 2026-10-30, lot 2 en PR._
 
-- **État** : lot 1 (` ```cubes `, affichage) **mergé** (#2003), pas en prod ; vérification manuelle notée dans `verifications-manuelles.md`.
-- **Prochaine action** : lot 2 — gestes `dessiner:` (colorier une vue) et `retrouver:` (hauteurs dans la vue de dessus, jugé « mêmes vues »). Écrire d'abord sa spécification détaillée (comme le § 6), la faire valider, puis TDD (tests rouges VUS avant le code). Modèle du geste colorier : ` ```partage ` `colorier:` (PR #1974).
+- **État** : lot 2 (gestes `dessiner:` / `retrouver:`, § 7) codé, revu (code-reviewer Opus : 1 défaut corrigé), PR ouverte sur `feat/solides-gestes` ; lot 1 mergé (#2003), rien en prod.
+- **Prochaine action** : PR du lot 2 verte → merge → vérification manuelle à noter (`verifications-manuelles.md` : colorier une vue, retrouver des hauteurs, au téléphone) ; puis lot 3, ` ```solide ` affichage — spécification d'abord, comme les § 6 et 7.
 - **En attente de David** : rien.
-- **Pièges en cours** : lancer AUSSI `src/lib/theme` (garde des variables CSS) avant de pousser — elle a fait rougir la CI de #2003 ; `ls` = alias `eza`, peut bloquer une commande.
-- **Worktree / branche** : aucun (retiré après #2003) ; lot 2 : `git worktree add -b feat/solides-gestes ../ubumaths-wt-solides origin/main`.
+- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; tests navigateur instables quand la machine est chargée (WebSocket fermée, `wrapDynamicImport`) → relancer par petits lots ; la fiche `/aide-ecriture/blocs/cubes` est réservée au prof, et Chrome n'ouvre pas `127.0.0.1` → aperçu par capture du navigateur de test ; corrigé PDF (`solved`) prêt mais pas branché (comme ```partage).
+- **Worktree / branche** : `../ubumaths-wt-solides`, `feat/solides-gestes`.
 
 ---
 
@@ -190,3 +190,85 @@ cubes**. Erreur : messages au prof, cadre neutre « Solide indisponible » à l'
 choix : `--espace-taille: 3cm` comme l'horloge. **PDF** : Typst natif, mêmes polygones, gris imprimables.
 **Éditeur riche** : aller-retour en bloc de code `cubes`. Catalogue de blocs (`block-catalog/cubes.ts`) et
 `pnpm check:ubumark` comme pour ` ```partage `.
+
+## 7. Lot 2 — gestes des cubes, `dessiner:` et `retrouver:` (spécification)
+
+Modèle de code : la PR #1974 (` ```partage ` `colorier:`), fichier pour fichier : `spec` étendue, une case
+`case: N` posée par le générateur, `construire: 'cubes'`, `type: 'text'`, réponse attendue calculée
+(`buildAnswerOf`), juge à part dans `validateSingleBlank` / `validateBlankValue`, copie corrigée par
+`BuildAnswer`, geste libre hors question (cours, aperçu).
+
+### `dessiner:` — colorier une vue
+
+```cubes
+hauteurs: 2 1 1 / 1 0 1
+dessiner: face
+```
+
+- Dessin : l'assemblage en perspective, à côté un **quadrillage vide** titré « Vue de face » (`dessus`,
+  `droite`, `gauche` de même). Toucher un carreau le colorie, le retoucher l'efface.
+- **Quadrillage** = la boîte de la vue juste **agrandie d'un carreau de chaque côté** (face de
+  `2 1 1 / 1 0 1` : 3 × 2 → 5 × 4). **Jugé à une translation près** : juste si les carreaux coloriés ont
+  exactement la forme de la vue, où qu'elle soit dans le quadrillage. _(Q6)_
+- Réponse de la case : le quadrillage, rangées de haut en bas séparées par `/`, `1` = colorié
+  (`00000/01000/01110/00000`) ; `''` = rien colorié. Elle se suffit (le juge n'a pas le bloc) et la
+  correction redessine le quadrillage de l'élève. Attendue : la vue juste, même écriture, sans marge
+  (`100/111`).
+- Correction : quadrillage de l'élève verrouillé, phrase « Ce n'est pas la vue de face de l'assemblage. »
+  (vide : « Tu n'as rien colorié. »), la vue juste dessous.
+
+### `retrouver:` — retrouver l'assemblage d'après ses vues (6-208)
+
+```cubes
+hauteurs: 2 1 1 / 1 0 1
+retrouver: face, droite
+```
+
+- Dessin : **pas de perspective** (elle donnerait la réponse). Les vues listées, titrées (« Vue de face »,
+  « Vue de droite »), et la **vue de dessus en grille de saisie** : une case à nombre (1 à 6) sur chaque
+  carreau de la vue de dessus, les cases vides de l'assemblage laissées blanches. La vue de dessus est donc
+  toujours donnée _(Q7)_ ; `retrouver:` liste les autres (une ou plusieurs parmi `face`, `droite`, `gauche`).
+- Réponse de la case : les hauteurs, écriture du bloc (`2 1 1 / 1 0 1`), `-` pour une case non remplie.
+  Attendue : `face, droite : 2 1 1 / 1 0 1` (les vues jugées, puis l'assemblage du générateur).
+- **Juste si l'assemblage de l'élève a les mêmes vues** (dessus, et celles listées) que celui du bloc —
+  plusieurs réponses justes possibles (Q3). Exemple : bloc `2 1 / 1 2`, `retrouver: face, droite` (face
+  2 2, droite 2 2) : `1 2 / 2 1` et `2 2 / 2 2` sont justes aussi ; `2 2 / 1 1` est faux (vue de droite).
+  Le juge calcule les vues, il ne compare jamais aux hauteurs du bloc.
+- Correction : une phrase par vue fausse (« Ton assemblage n'a pas la même vue de face. ») ; case vide :
+  « Tu n'as pas rempli toutes les cases. » ; une solution dessous (l'assemblage du bloc), avec « Il y a
+  d'autres réponses justes. » quand c'est vrai.
+
+### Communs aux deux gestes
+
+| Cas                                                                | Attendu                                                |
+| ------------------------------------------------------------------ | ------------------------------------------------------ |
+| `dessiner: face` sur `2 1 1 / 1 0 1`, élève colorie la vue décalée | juste (translation)                                    |
+| idem, vue de droite coloriée à la place                            | faux, « Ce n'est pas la vue de face de l'assemblage. » |
+| idem, un carreau de trop                                           | faux                                                   |
+| `retrouver: face, droite`, autre assemblage aux mêmes vues         | juste                                                  |
+| `retrouver:`, une case laissée vide                                | faux, « Tu n'as pas rempli toutes les cases. »         |
+| variables `{{a}}` dans `hauteurs:`                                 | réponse attendue sur l'énoncé résolu                   |
+| `dessiner:` et `retrouver:` ensemble ; avec `vue:`                 | erreur au prof                                         |
+| `dessiner: perspective` / `dessous` ; `retrouver: dessus` ou vide  | erreur, valeurs permises listées                       |
+| `case:` écrite par le prof, réponse écrite dans `blanks[]`         | refusé (comme `colorier:`)                             |
+| bloc dans une liste, une case choix, un tableau                    | refusé (premier niveau seulement)                      |
+
+- **Hors question** (cours, aperçu de l'éditeur) : le geste est libre, rien n'est jugé.
+- **PDF** : `dessiner:` → perspective + quadrillage vide à colorier au crayon ; corrigé : la vue
+  coloriée. `retrouver:` → vues + grille de dessus vide ; corrigé : les hauteurs du bloc.
+- **Accessibilité** : carreaux du quadrillage = boutons (« Carreau rangée 2, colonne 3, colorié ») ; cases
+  à nombre étiquetées par rangée et colonne. Toujours jamais le nombre de cubes.
+- Catalogue (`block-catalog/cubes.ts`) : deux exemples de plus ; `docs/systeme/ubumark.md` et
+  `questions.md` mis à jour.
+
+### Questions à David (lot 2)
+
+6. **Quadrillage de `dessiner:`** : agrandi d'un carreau de chaque côté et jugé à une translation près
+   (l'élève place sa vue où il veut, comme sur papier), ou quadrillage exactement à la taille de la vue
+   (plus simple, mais il donne la taille de la vue) ? _Reco : agrandi, translation._
+7. **`retrouver:`** : la vue de dessus toujours donnée, servant de grille de saisie (l'élève écrit une
+   hauteur par carreau), ou aussi le cas « sans vue de dessus » (grille 6 × 6 à remplir, bien plus dur) ?
+   _Reco : dessus toujours donnée._
+
+**Réponse de David (2026-10-30)** : « je te suis » — quadrillage agrandi d'un carreau, jugé à une translation
+près (Q6) ; vue de dessus toujours donnée, grille de saisie de `retrouver:` (Q7). Spécification validée.

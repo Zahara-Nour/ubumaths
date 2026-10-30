@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30.
 
 ## À quoi ça sert
 
@@ -549,7 +549,7 @@ _Plusieurs figures_ (`unites: N`, de 1 à 5 ; absent = 1) : N figures identiques
 > les rangs à 5 figures (la réponse attendue ne dit pas combien sont dessinées). Correction : « Tu as colorié
 > 5 parts ; il fallait en colorier 7 (7/4, chaque figure a 4 parts). », figures justes unités pleines d'abord.
 
-**Assemblage de cubes** (chantier [solides](../wip/solides-progress.md), lot 1 : affichage seul ;
+**Assemblage de cubes** (chantier [solides](../wip/solides-progress.md), lot 1 : affichage ; lot 2 : gestes ;
 [ADR 0034](../adr/0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)) — `src/lib/ubumark/__tests__/espace/` :
 
 ````text
@@ -576,6 +576,30 @@ ordre du peintre (fond → devant, gauche → droite, bas → haut). Écran : SV
 (comme `--horloge-taille`). PDF : Typst natif (`polygon`), trois gris (dessus clair, côté foncé). Bloc en
 erreur : messages pour le prof, cadre « Solide indisponible » pour l'élève. Éditeur riche : bloc de code `cubes`.
 Chat élève (rendu restreint) : jamais rendu. Fiche du catalogue : `src/lib/block-catalog/cubes.ts`.
+
+_Gestes de l'élève_ (lot 2, `spec.task`, exclusifs entre eux et avec `vue:`) : `dessiner: face` (`dessus`,
+`droite`, `gauche`) → `{ kind: 'dessiner', view }` ; `retrouver: face, droite` (une ou plusieurs parmi `face`,
+`droite`, `gauche` : la vue de dessus est **toujours** donnée, c'est la grille de saisie ; `dessus` listée,
+liste vide, vue répétée → erreur) → `{ kind: 'retrouver', views }`. `case: N` est posée par le générateur
+(`findCubesToBuild`, `hasCubesToBuild`), jamais écrite par le prof (`case:` sans geste → erreur). Écran
+(`CubesGeste.svelte`, aiguillé par `Espace.svelte` aussi hors question : cours, aperçu, geste libre) :
+`dessiner:` → la perspective et un quadrillage vide **agrandi d'un carreau de chaque côté** de la vue
+(`drawingGridSize`), carreaux = boutons à bascule (« Carreau rangée 2, colonne 2, colorié », Espace / Entrée),
+couleur `--color-fig-orange` comme ``partage, bouton « Tout effacer » ; `retrouver:` → **pas de perspective**,
+la vue de dessus en grille de cases à nombre (1 à 6, « Nombre de cubes, rangée 1 (au fond), colonne 1 »,
+le trou sans case, « devant » dessous) et les vues listées, titrées. Réponses et juges (`utils/cubes-gestes.ts`,
+calcul pur) : `dessiner:` → le quadrillage, rangées de haut en bas séparées par `/`, `1` = colorié
+(`00000/01000/01110/00000`, `''` rien colorié), attendue la vue sans marge (`100/111`), juste **à une
+translation près** (`isDrawingCorrect`, carreaux recadrés) ; `retrouver:` → les hauteurs, écriture du bloc,
+`-` case vide (`2 1 - / 1 0 1`), attendue `face, droite : 2 1 / 1 2`, juste si l'assemblage a la **même vue de
+dessus et les mêmes vues listées** (`isRetrouverCorrect` : plusieurs réponses justes, jamais comparé aux
+hauteurs du bloc). Aiguillage : `isCubesAnswerCorrect` (le `:` de l'attendue dit `retrouver:`). Correction :
+« Ce n'est pas la vue de face de l'assemblage. » + la vue juste ; « Ton assemblage n'a pas la même vue de
+droite. » (une par vue fausse) + l'assemblage du bloc, et « Il y a d'autres réponses justes. » quand
+`retrouverHasOtherSolutions` (l'assemblage le plus haut permis par les vues en est un autre, ou une pile peut
+descendre d'un cube seule) ; vide : « Tu n'as rien colorié. » / « Tu n'as pas rempli toutes les cases. ». PDF
+(`generateEspaceTypst(node, { solved })`) : figures côte à côte, titrées ; quadrillage vide ou vue grisée,
+vue de dessus vide ou hauteurs écrites. Le corrigé (`solved`) est prêt mais **pas encore branché** dans la fiche (`typst-generator.ts` appelle sans option), comme pour ``partage.
 
 **Opération posée en colonnes** (chantier [operations-posees](../archive/wip/operations-posees-progress.md),
 addition, soustraction, multiplication, division en potence) — `src/lib/ubumark/__tests__/operation/` :
