@@ -86,7 +86,6 @@ function templateRow(id: string, overrides: Row = {}): Row {
 		options: null,
 		default_display_options: null,
 		test_specs: structuredClone(FIXTURE.testSpecs ?? null),
-		multiple_answers: null,
 		exercise_instruction: null,
 		// Horodatages RÉELS : c'est leur présence qui faisait refuser tous les modèles
 		created_at: '2026-09-28T09:14:03.52+00:00',
