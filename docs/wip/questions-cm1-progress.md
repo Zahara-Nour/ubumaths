@@ -489,5 +489,6 @@ toute fraction strictement entre les bornes est juste (règle `range`) ; droite 
   (prod) : 8/8 verts, 54 specs. Base locale : 8 brouillons.
 - **Défaut trouvé à l'aperçu** : sur la droite en centièmes, les étiquettes en fraction (1/10,
   2/10) sont coupées en bas (math-field de 42 px dans une zone de 30 px,
-  `NumberLine.svelte`). Le lot 3a n'avait que des entiers. Correctif dans une PR à part, avant
-  celle du lot.
+  `NumberLine.svelte`). Le lot 3a n'avait que des entiers. Corrigé par #2040 (zone portée à
+  45 px, test de rendu rouge puis vert), mergée ; revérifié à l'aperçu : 1/10 et 2/10 entiers,
+  placer 15/100 sur 11/100 → « Tu as placé le point sur 11/100. », droite juste en vert.
