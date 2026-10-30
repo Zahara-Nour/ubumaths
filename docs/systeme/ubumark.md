@@ -616,7 +616,7 @@ Même nœud `espace`, genre `solide`, lu par `parser/solide-parser.ts` (`SolideS
 `marks`, `cotes`, `hidden`). `forme:` (obligatoire) : `cube a`, `pave l p h`, `prisme triangle b h L`
 (isocèle), `prisme triangle-rectangle a b L` (base = face de devant, vraie grandeur), `pyramide carree a h`,
 `pyramide rectangle l p h`, `pyramide triangle a h` (équilatérale), `cylindre r h`, `cone r h`, `boule r` ;
-nombres > 0, virgule ou point, au plus 1000 et 3 décimales, rapport ≤ 20 (`SOLIDE_MAX_RATIO`) ; cône : hauteur > 0,5 × rayon (`SOLIDE_FLAT_CONE`, sinon le sommet tombe dans l’ellipse). Les dimensions sont des **proportions** : le
+nombres > 0, virgule ou point, au plus 1000 et 3 décimales, rapport ≤ 10 (`SOLIDE_MAX_RATIO`) ; cône : hauteur > 0,5 × rayon (`SOLIDE_FLAT_CONE`, sinon le sommet tombe dans l’ellipse). Les dimensions sont des **proportions** : le
 dessin est ramené à `SOLIDE_SIZE` = 4 cm sur son plus grand côté. `sommets:` : un nom par sommet (majuscule,
 puis `'` ou un nombre ; `-` sans nom) dans l'ordre de `solideTopology` — cube, pavé ABCD en **bas** (A devant
 gauche, sens direct), EFGH au-dessus (E sur A) ; prisme ABC devant, DEF derrière ; pyramide S puis la base ;

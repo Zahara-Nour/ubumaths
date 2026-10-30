@@ -513,3 +513,8 @@ de 1,5 cm) ; dans un choix de case choix, `--espace-taille: 3cm`.
 17. **Cône** hors lot (patron = secteur + disque, rare avant la 3e) ? _Reco : hors lot._
 18. _(reportée de #2027)_ **`SOLIDE_MAX_RATIO`** du ` ```solide ` : 20 → 10 ? À 20, les noms d'un pavé
     20 × 1 × 1 se chevauchent. _Reco : 10 (rapport plus grand inutile en classe), correctif glissé dans ce lot._
+
+**Réponse de David (2026-10-30)** : « je suis tes recos » — grille `X` / `.` avec pliage vérifié (Q13) ; noms
+du solide répétés, `?` pour questionner (Q14) ; pavé : 11 dispositions + `faux 1-8`, mauvaises dimensions plus
+tard (Q15) ; plis en trait fin plein (Q16) ; cône hors lot (Q17) ; `SOLIDE_MAX_RATIO` 20 → 10 dans ce lot (Q18).
+Spécification validée.

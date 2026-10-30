@@ -11,12 +11,13 @@
  * ```
  *
  * Un seul nœud `espace` pour tous les blocs « d'espace » : le genre (`kind`
- * de la spécification) dit ce qu'on dessine : `cubes` (assemblage) et `solide`
- * (cube, pavé, prisme, pyramide, cylindre, cône, boule) ; `patron` viendra
- * ensuite.
+ * de la spécification) dit ce qu'on dessine : `cubes` (assemblage), `solide`
+ * (cube, pavé, prisme, pyramide, cylindre, cône, boule) et `patron` (patron
+ * d'un solide, ou faux patron).
  *
- * Le dessin (polygones) est calculé par `utils/espace-scene.ts`, partagé
- * écran / PDF.
+ * Le dessin est calculé par `utils/espace-scene.ts` (cubes),
+ * `utils/espace-solides.ts` (solide) et `utils/espace-patrons.ts` (patron),
+ * partagés écran / PDF.
  *
  * @module ubumark/types/espace
  */
@@ -28,7 +29,7 @@ import type { BaseNode } from './ast';
 // ============================================================================
 
 /** Les mots d'ouverture (```mot) des blocs d'espace, un par genre */
-export const ESPACE_FENCES = ['cubes', 'solide'] as const;
+export const ESPACE_FENCES = ['cubes', 'solide', 'patron'] as const;
 
 export type EspaceKind = (typeof ESPACE_FENCES)[number];
 
@@ -82,11 +83,47 @@ export type SolideForm = keyof typeof SOLIDE_FORMS;
 export const SOLIDE_UNITS = ['cm', 'mm', 'm'] as const;
 
 /** Rapport le plus grand permis entre deux dimensions d'un solide */
-export const SOLIDE_MAX_RATIO = 20;
+export const SOLIDE_MAX_RATIO = 10;
 
 /** Plus grande dimension écrite, et chiffres après la virgule (cotes écrites telles quelles) */
 export const SOLIDE_MAX_DIMENSION = 1000;
 export const SOLIDE_MAX_DECIMALS = 3;
+
+/** Les clés du bloc ```patron */
+export const PATRON_KEYS = [
+	'solide',
+	'forme',
+	'faux',
+	'tourner',
+	'retourner',
+	'dessous',
+	'sommets',
+	'faces',
+	'marquer',
+	'cotes'
+] as const;
+
+/** Les solides qui ont un patron (```patron, lot 4) : ceux de ```solide sans le cône ni la boule */
+export const PATRON_SOLIDS = [
+	'cube',
+	'pave',
+	'prisme-triangle',
+	'prisme-triangle-rectangle',
+	'pyramide-carree',
+	'pyramide-rectangle',
+	'pyramide-triangle',
+	'cylindre'
+] as const satisfies readonly SolideForm[];
+
+export type PatronSolid = (typeof PATRON_SOLIDS)[number];
+
+/** Bornes d'une grille de faces (`forme:` en X et .) */
+export const PATRON_GRID_LIMITS = { rows: 6, cols: 6, cells: 10 } as const;
+
+/** Quarts de tour de `tourner:`, dans le sens des aiguilles d'une montre */
+export const PATRON_TURNS = [0, 90, 180, 270] as const;
+
+export type PatronTurn = (typeof PATRON_TURNS)[number];
 
 /** Message à l'élève (et dans le PDF) pour un bloc en erreur */
 export const ESPACE_UNAVAILABLE = 'Solide indisponible';
@@ -102,7 +139,7 @@ export const ESPACE_UNAVAILABLE = 'Solide indisponible';
  * dernière rangée = DEVANT ; colonnes de gauche à droite. Les rangées et
  * colonnes vides au bord sont déjà retirées, un trou intérieur reste.
  */
-export type EspaceSpec = CubesSpec | SolideSpec;
+export type EspaceSpec = CubesSpec | SolideSpec | PatronSpec;
 
 export interface CubesSpec {
 	kind: 'cubes';
@@ -135,6 +172,50 @@ export interface SolideSpec {
 	/** Aucun geste (lot 3) : `spec.task` se lit sans savoir le genre */
 	task?: undefined;
 }
+
+/**
+ * Un patron (```patron, lot 4) : un solide déplié.
+ *
+ * Cube, pavé : `cells` = la grille des faces telle qu'écrite (catalogue ou
+ * grille du prof), rangée 0 en haut, bords vides retirés ; `tourner:` et
+ * `retourner:` s'appliquent à la grille. Prisme, pyramide, cylindre :
+ * `layout` = la disposition (prisme 1 ou 2, les autres 1) ; `tourner:` et
+ * `retourner:` s'appliquent au dessin.
+ *
+ * Les faces se numérotent dans l'ordre de lecture du DESSIN (de gauche à
+ * droite, de haut en bas), de 0 ici (de 1 pour le prof).
+ */
+export interface PatronSpec {
+	kind: 'patron';
+	solid: PatronSolid;
+	/** Dimensions du solide (proportions) ; cube sans dimension : [1] */
+	dims: number[];
+	/** Dimensions écrites par le prof (un cube peut s'en passer, mais pas pour `cotes:`) */
+	dimsWritten: boolean;
+	/** Cube, pavé : la grille ; null pour les autres solides */
+	cells: boolean[][] | null;
+	/** Prisme, pyramide, cylindre : la disposition (de 1) */
+	layout: number;
+	/** `faux: oui` ou `forme: faux N` : la grille ne se plie PAS en cube */
+	faux: boolean;
+	turn: PatronTurn;
+	mirror: boolean;
+	/** Cube, pavé : la face (ordre de lecture, de 0) qui devient la face du dessous */
+	bottom: number;
+	/** Nom de chaque sommet du SOLIDE (`null` : sans nom ; `'?'` : à trouver) ; `null` : aucun nom */
+	names: (string | null)[] | null;
+	/** `faces: numeros` : chaque face porte son numéro */
+	numbers: boolean;
+	marks: PatronMark[];
+	cotes: { unit: '' | (typeof SOLIDE_UNITS)[number] } | null;
+	/** Aucun geste (lot 4) */
+	task?: undefined;
+}
+
+/** Ce que `marquer:` désigne sur un patron : des faces du dessin (de 0), ou un sommet du solide */
+export type PatronMark =
+	| { kind: 'face'; faces: number[]; label: string }
+	| { kind: 'sommet'; vertex: number; label: string };
 
 /** Ce que `marquer:` désigne ; `label` : sa lecture (« face ABCD », « face du dessus ») */
 export type SolideMark =

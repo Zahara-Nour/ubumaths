@@ -14,7 +14,7 @@
  *   `prisme triangle-rectangle a b L`, `pyramide carree a h`,
  *   `pyramide rectangle l p h`, `pyramide triangle a h`, `cylindre r h`,
  *   `cone r h`, `boule r` ; nombres > 0 (virgule ou point), au plus 1000 et
- *   3 décimales, au plus 20 fois plus grands les uns que les autres ; cône :
+ *   3 décimales, au plus 10 fois plus grands les uns que les autres ; cône :
  *   hauteur > 0,5 × rayon. Les dimensions sont des proportions.
  * - `sommets:` (facultatif) : un nom par sommet, dans l'ordre documenté
  *   (`solideTopology`) ; `-` : sommet sans nom.
@@ -100,7 +100,7 @@ function plain(text: string): string {
 }
 
 /** La forme et ses dimensions ; une phrase d'erreur sinon */
-function readForm(value: string): { form: SolideForm; dims: number[] } | string {
+export function readForm(value: string): { form: SolideForm; dims: number[] } | string {
 	const words = value.split(/\s+/).filter((w) => w !== '');
 	const first = plain(words[0] ?? '');
 	if (!FIRST_WORDS.includes(first)) {
