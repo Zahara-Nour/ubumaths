@@ -15,7 +15,7 @@ scripts/questions/3-lot-4b --publier` ; relever les `id`, migration de rangement
   du mode auto → David les lance avec `!` ; tableau avec une case : pas de `\hline` ; une moitié attendue
   refuse 0,5 ; aperçu admin sur `127.0.0.1` (`--host 127.0.0.1`), pas `localhost` ; worktree neuf :
   `svelte-kit sync` avant les scripts `tsx` ; `releve-prod-3.ts` sans `multiple_answers` (#2009).
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, `content/questions-3-lot4b`.
+- **Worktree / branche** : `../ubumaths-wt-questions-3` gardé (HEAD détachée), branche `content/questions-3-lot4b` mergée.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -631,3 +631,7 @@ modèles publiés de plus. Aucune règle ne change.
   3-046 v1 (quatre tracés) et v2 (tableau à case), 3-053 v1 (deux cases) et v2, 3-037 v1 (figure, choix,
   corrigé) et v2. Juge : couvert par les specs (la saisie MathLive ne passe pas par l'outil navigateur).
 - Délais : 45 s (f(x) = k), 60 s (inéquations, courbe carré, x² = a), 75 s (Thalès).
+
+### 11.13 Lot 4b : fichiers mergés (2026-10-30)
+
+- #2029 mergée (CI verte). Attendu : `create-questions --publier` lancé par David.
