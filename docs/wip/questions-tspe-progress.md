@@ -10,15 +10,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2002 et #2004 (migration des niveaux jouée en prod)._
+_Mis à jour le 2026-10-30, après la publication des suites (17 modèles publiés, vérifié en base)._
 
-- **État** : lot 0-suites relu (17/17 ok) ; migration des niveaux D8 (14 brouillons) jouée en prod ; publication des suites prête.
-- **Prochaine action** : après la publication des suites par David, relire `published` (17) ; puis lot 0-limites et fonctions (continuité, ln, limites) dans un worktree neuf.
-- **En attente de David** : `create-questions --dir scripts/questions/tspe-0-suites --publier --mettre-a-jour` puis `publier-lot --dir scripts/questions/tspe-0-suites --publier` (depuis le dépôt principal).
+- **État** : lot 0-suites PUBLIÉ (17/17 `published`, correctif 2bf6edc7 v3 en prod) ; migration des niveaux D8 jouée.
+- **Prochaine action** : lot 0-limites et fonctions (continuité, ln, limites) dans un worktree neuf : instantané des id (`export-question-templates.ts --ids`), relecture tirage par tirage, page à cocher.
+- **En attente de David** : rien.
 - **Pièges en cours** : `create-questions` et `publier-lot` → David ; les vieux dossiers
-  `scripts/questions/<thème>-terminale/` ne concordent peut-être plus avec la base → partir des id
-  (`export-question-templates.ts --ids`, comme en 1re spé) ; la case choix est en prod (figure-et-choix lots 1-5,
-  v0.55.0) : plus d'ancien QCM à écrire ; **horodatage de migration** : prendre max + 1 min de la prod (`migration list --linked`) juste avant de créer le fichier, d'autres sessions migrent en parallèle.
+  `scripts/questions/<thème>-terminale/` ne concordent peut-être plus avec la base → partir des id ;
+  case choix en prod ; simulation `publier-lot` AVANT tout (collisions de niveau → migration + fichiers) ;
+  **horodatage de migration** : max + 1 min de la prod (`migration list --linked`) juste avant de créer le fichier.
 - **Worktree / branche** : aucun (retiré après #2004) ; un worktree neuf par lot.
 
 ## 1. Relevé (prod, 2026-10-29)
