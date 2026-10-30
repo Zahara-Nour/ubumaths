@@ -33,18 +33,21 @@
  * Une erreur ne fait pas disparaître le bloc (le nœud porte ses phrases).
  * Repérage et blocs non fermés : ceux de ```partage (Q63, Q66).
  *
- * Plus tard, le même analyseur reconnaîtra les clôtures `solide` et `patron`.
+ * La clôture ```solide (lot 3) est lue par `solide-parser.ts` ; ```patron viendra
+ * ensuite.
  *
  * @module ubumark/parser/espace-parser
  */
 
 import { specialBlockEnd } from './unclosed-block';
+import { parseSolideContent } from './solide-parser';
 import {
 	CUBES_DRAWN_VIEWS,
 	CUBES_KEYS,
 	CUBES_LIMITS,
 	CUBES_SIDE_VIEWS,
 	CUBES_VIEWS,
+	SOLIDE_KEYS,
 	type CubesDrawnView,
 	type CubesSideView,
 	type CubesTask,
@@ -58,7 +61,7 @@ import {
 // CONSTANTES
 // ============================================================================
 
-const ESPACE_BLOCK_START_REGEX = /^```(cubes)\s*$/;
+const ESPACE_BLOCK_START_REGEX = /^```(cubes|solide)\s*$/;
 const BLOCK_END_REGEX = /^```\s*$/;
 
 /** `clé: valeur` */
@@ -85,8 +88,11 @@ export function espaceKindOf(line: string): EspaceKind | null {
 	return match ? (match[1] as EspaceKind) : null;
 }
 
+/** Les clés d'un genre (fermeture d'un bloc non fermé) */
+const keysOf = (line: string) => (espaceKindOf(line) === 'solide' ? SOLIDE_KEYS : CUBES_KEYS);
+
 /**
- * Blocs d'espace (```cubes) d'une liste de lignes (indices inclusifs,
+ * Blocs d'espace (```cubes, ```solide) d'une liste de lignes (indices inclusifs,
  * clôtures comprises). Fermé par un ``` qui ne fait pas lire du texte comme
  * contenu (Q66), sinon jusqu'à la première ligne vide (Q63).
  */
@@ -99,7 +105,7 @@ export function findEspaceBlocks(lines: string[]): EspaceBlockRange[] {
 				lines,
 				i,
 				(line) => BLOCK_END_REGEX.test(line),
-				CUBES_KEYS
+				keysOf(lines[i])
 			);
 			blocks.push({ startIndex: i, endIndex });
 			i = endIndex;
@@ -128,7 +134,7 @@ export function findCubesToBuild(markdown: string): {
 	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
 	let i = 0;
 	while (i < plainLines.length) {
-		if (isEspaceBlockStart(plainLines[i])) {
+		if (espaceKindOf(plainLines[i]) === 'cubes') {
 			const { endIndex, closed } = specialBlockEnd(
 				plainLines,
 				i,
@@ -186,9 +192,13 @@ export function trimHeights(heights: number[][]): number[][] {
 
 /**
  * Analyser le texte d'un bloc (sans les clôtures).
- * Ligne 1 = première ligne après ```cubes.
+ * Ligne 1 = première ligne après ```cubes (ou ```solide).
  */
 export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'): EspaceNode {
+	if (genre === 'solide') {
+		const { spec, errors } = parseSolideContent(source);
+		return { type: 'espace', genre, source, spec, errors };
+	}
 	const lines = source.split('\n');
 	const errors: string[] = [];
 	const fail = (line: number, message: string) => errors.push(`Ligne ${line} : ${message}`);

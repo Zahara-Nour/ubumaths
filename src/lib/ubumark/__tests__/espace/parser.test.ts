@@ -4,11 +4,11 @@
 import { describe, expect, it } from 'vitest';
 import { parseMarkdown } from '$lib/ubumark';
 import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { EspaceNode } from '$lib/ubumark/types/espace';
+import type { CubesSpec, EspaceNode } from '$lib/ubumark/types/espace';
 
 const read = (...lines: string[]) => parseEspaceContent(lines.join('\n'));
 const heights = (...lines: string[]) => {
-	const spec = read(...lines).spec;
+	const spec = read(...lines).spec as CubesSpec | null;
 	return spec?.heights ?? null;
 };
 
@@ -49,7 +49,7 @@ describe('```cubes — hauteurs', () => {
 
 	it('les vues', () => {
 		for (const view of ['perspective', 'dessus', 'face', 'droite', 'gauche']) {
-			expect(read('hauteurs: 1', `vue: ${view}`).spec?.view).toBe(view);
+			expect((read('hauteurs: 1', `vue: ${view}`).spec as CubesSpec).view).toBe(view);
 		}
 	});
 });

@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { findCubesToBuild, parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
+import type { CubesSpec } from '$lib/ubumark/types/espace';
 import {
 	NOTHING_COLORED_CUBES,
 	MISSING_HEIGHTS,
@@ -36,7 +37,7 @@ describe('dessiner: / retrouver: — analyse', () => {
 		const node = parse('hauteurs: 2 1 1 / 1 0 1', 'dessiner: face', 'case: 3');
 		expect(node.errors).toEqual([]);
 		expect(node.spec?.task).toEqual({ kind: 'dessiner', view: 'face' });
-		expect(node.spec?.view).toBe('perspective');
+		expect(node.spec?.kind === 'cubes' && node.spec.view).toBe('perspective');
 		expect(node.caseIndex).toBe(3);
 	});
 
@@ -165,7 +166,7 @@ describe('dessiner: — quadrillage, réponse, jugement', () => {
 
 	it('réponse attendue : la vue juste, sans marge', () => {
 		const node = parse('hauteurs: 2 1 1 / 1 0 1', 'dessiner: face');
-		expect(expectedCubesAnswer(node.spec!)).toBe('100/111');
+		expect(expectedCubesAnswer(node.spec as CubesSpec)).toBe('100/111');
 	});
 
 	it('juste à une translation près', () => {
@@ -212,7 +213,7 @@ describe('retrouver: — réponse, jugement', () => {
 
 	it('réponse attendue : les vues jugées, puis l’assemblage du bloc', () => {
 		const node = parse('hauteurs: 2 1 1 / 1 0 1', 'retrouver: face, droite');
-		expect(expectedCubesAnswer(node.spec!)).toBe('face, droite : 2 1 1 / 1 0 1');
+		expect(expectedCubesAnswer(node.spec as CubesSpec)).toBe('face, droite : 2 1 1 / 1 0 1');
 	});
 
 	it('juste : l’assemblage du bloc, et un autre aux mêmes vues', () => {

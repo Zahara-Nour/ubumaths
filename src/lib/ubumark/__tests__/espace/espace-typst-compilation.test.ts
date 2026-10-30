@@ -14,7 +14,7 @@ import { generateTypst } from '$lib/ubumark/generators/typst-generator';
 import { generateEspaceTypst } from '$lib/ubumark/generators/espace-typst';
 import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
 
-it('un document avec des blocs ```cubes compile en PDF', async () => {
+it('un document avec des blocs ```cubes et ```solide compile en PDF', async () => {
 	const { $typst } = await import('@myriaddreamin/typst.ts/dist/esm/contrib/snippet.mjs');
 	const wasm = readFileSync(
 		resolve('node_modules/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm')
@@ -65,6 +65,38 @@ it('un document avec des blocs ```cubes compile en PDF', async () => {
 				'```cubes',
 				'hauteurs: 2 1 1 / 1 0 1',
 				'retrouver: face, droite, gauche',
+				'```',
+				'',
+				// ```solide (lot 3) : tirets, face marquée, noms, cotes, solides ronds
+				'```solide',
+				'forme: pave 4,5 2 3',
+				'sommets: A B C D E F G H',
+				'marquer: face EFGH, arete AE, sommet G',
+				'cotes: cm',
+				'```',
+				'',
+				'```solide',
+				'forme: cylindre 2 5',
+				"sommets: O O'",
+				'cotes: cm',
+				'```',
+				'',
+				'```solide',
+				'forme: cone 2 4',
+				'sommets: S O',
+				'cotes: oui',
+				'```',
+				'',
+				'```solide',
+				'forme: boule 3',
+				'```',
+				'',
+				'- ```solide',
+				'  forme: pyramide carree 4 3',
+				'  ```',
+				'',
+				'```solide',
+				'forme: sphere 3',
 				'```'
 			].join('\n')
 		)

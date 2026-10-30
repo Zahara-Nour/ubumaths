@@ -63,6 +63,7 @@ const SPECIAL_LANGUAGES: ReadonlySet<string> = new Set([
 	'horloge',
 	'partage',
 	'cubes',
+	'solide',
 	'operation',
 	'collection',
 	'monnaie',

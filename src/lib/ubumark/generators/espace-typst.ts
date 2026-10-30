@@ -15,6 +15,10 @@
  * vues données, sans perspective. `solved` (corrigé) : la vue coloriée, ou les
  * hauteurs du bloc.
  *
+ * ```solide (lot 3) : traits pleins ou en tirets (`dash: "dashed"`), face
+ * marquée en gris clair, noms et cotes, depuis `buildSolideScene` (la scène
+ * de l'écran).
+ *
  * Un bloc en erreur devient le cadre neutre « Solide indisponible » — jamais
  * une erreur de compilation (une seule erreur Typst fait échouer toute la fiche).
  *
@@ -32,9 +36,17 @@ import {
 	ESPACE_UNAVAILABLE,
 	type CubesView,
 	type EspaceNode,
-	type EspaceSpec
+	type CubesSpec,
+	type SolideSpec
 } from '../types/espace';
 import { drawingGridSize, viewGrid } from '../utils/cubes-gestes';
+import {
+	SOLIDE_DASH,
+	SOLIDE_DOT_RADIUS,
+	SOLIDE_LABEL_SIZE,
+	SOLIDE_THICK_STROKE,
+	buildSolideScene
+} from '../utils/espace-solides';
 
 // ============================================================================
 // CONSTANTES
@@ -86,7 +98,7 @@ function boxTypst(width: number, height: number, content: string[]): string {
 }
 
 /** L'assemblage dessiné dans une vue (ou en perspective) */
-function sceneTypst(spec: EspaceSpec, view: CubesView): string {
+function sceneTypst(spec: CubesSpec, view: CubesView): string {
 	const scene = buildEspaceScene({ kind: 'cubes', heights: spec.heights, view });
 	return boxTypst(
 		scene.width,
@@ -108,7 +120,7 @@ const titled = (title: string, figure: string) =>
 	`#stack(dir: ttb, spacing: 0.2cm, align(center)[#text(size: 0.9em)[${title}]], ${figure.replace(/^#/, '')})`;
 
 /** Quadrillage de `dessiner:` : vide, ou la vue coloriée à un carreau du bord */
-function drawingTypst(spec: EspaceSpec, view: Exclude<CubesView, 'perspective'>, solved: boolean) {
+function drawingTypst(spec: CubesSpec, view: Exclude<CubesView, 'perspective'>, solved: boolean) {
 	const { rows, cols } = drawingGridSize(spec.heights, view);
 	const wanted = viewGrid(spec.heights, view);
 	const squares: string[] = [];
@@ -122,7 +134,7 @@ function drawingTypst(spec: EspaceSpec, view: Exclude<CubesView, 'perspective'>,
 }
 
 /** Vue de dessus de `retrouver:` : une case par pile, vide ou avec sa hauteur */
-function heightsTypst(spec: EspaceSpec, solved: boolean): string {
+function heightsTypst(spec: CubesSpec, solved: boolean): string {
 	const content: string[] = [];
 	spec.heights.forEach((row, r) =>
 		row.forEach((h, c) => {
@@ -144,10 +156,53 @@ const sideBySide = (figures: string[]) =>
 		? figures[0]
 		: `#stack(dir: ltr, spacing: 1cm, ${figures.map((f) => f.replace(/^#/, '')).join(', ')})`;
 
+/** Gris d'une face marquée */
+const MARKED_FACE_LUMA = 215;
+
+/** Un solide en perspective cavalière */
+function solideTypst(spec: SolideSpec): string {
+	const scene = buildSolideScene(spec);
+	const at = (p: { x: number; y: number }) =>
+		`(${cm(p.x + ESPACE_MARGIN)}, ${cm(p.y + ESPACE_MARGIN)})`;
+	const content: string[] = [];
+	for (const fill of scene.fills) {
+		content.push(
+			`  #place(top + left, polygon(fill: luma(${MARKED_FACE_LUMA}), stroke: none, ${fill.map(at).join(', ')}))`
+		);
+	}
+	for (const line of scene.lines) {
+		const dash = line.dashed ? `, dash: (${SOLIDE_DASH.map(cm).join(', ')})` : '';
+		const thickness = cm(line.thick ? SOLIDE_THICK_STROKE : ESPACE_STROKE);
+		const [first, ...rest] = line.points;
+		content.push(
+			`  #place(top + left, curve(stroke: (paint: black, thickness: ${thickness}, cap: "round", join: "round"${dash}), curve.move(${at(first)}), ${rest.map((p) => `curve.line(${at(p)})`).join(', ')}))`
+		);
+	}
+	for (const dot of scene.dots) {
+		content.push(
+			`  #place(top + left, dx: ${cm(dot.x + ESPACE_MARGIN - SOLIDE_DOT_RADIUS)}, dy: ${cm(dot.y + ESPACE_MARGIN - SOLIDE_DOT_RADIUS)}, circle(radius: ${cm(SOLIDE_DOT_RADIUS)}, fill: black))`
+		);
+	}
+	for (const label of scene.labels) {
+		// Boîte large centrée sur le point : le texte s'y centre. Texte en chaîne :
+		// en markup, Typst ferait de `O'` une apostrophe typographique
+		const w = 2;
+		const h = 1;
+		content.push(
+			`  #place(top + left, dx: ${cm(label.at.x + ESPACE_MARGIN - w / 2)}, dy: ${cm(label.at.y + ESPACE_MARGIN - h / 2)}, box(width: ${cm(w)}, height: ${cm(h)}, align(center + horizon, text(size: ${cm(SOLIDE_LABEL_SIZE)}, ${JSON.stringify(label.text)}))))`
+		);
+	}
+	return boxTypst(scene.width, scene.height, content);
+}
+
 /** Typst d'un bloc d'espace ; `solved` : corrigé d'un geste */
 export function generateEspaceTypst(node: EspaceNode, options: { solved?: boolean } = {}): string {
 	const spec = node.spec;
 	if (node.errors.length > 0 || spec === null) return UNAVAILABLE_TYPST;
+
+	if (spec.kind === 'solide') {
+		return ['#align(center)[#block(breakable: false)[', solideTypst(spec), ']]'].join('\n');
+	}
 
 	const solved = options.solved ?? false;
 	const task = spec.task;

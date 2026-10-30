@@ -21,7 +21,7 @@
 	@module components/markdown/nodes/CubesGeste
 -->
 <script lang="ts">
-	import type { CubesView, EspaceNode } from '$lib/ubumark/types/espace';
+	import type { CubesSpec, CubesView, EspaceNode } from '$lib/ubumark/types/espace';
 	import {
 		ESPACE_CM_PER_UNIT,
 		ESPACE_MARGIN,
@@ -73,7 +73,8 @@
 		gauche: 'Vue de gauche'
 	};
 
-	let spec = $derived(node.spec!);
+	// Seul un assemblage à geste arrive ici (aiguillage d'`Espace.svelte`, des cases)
+	let spec = $derived(node.spec as CubesSpec);
 	let task = $derived(spec.task!);
 	let heights = $derived(spec.heights);
 	let locked = $derived(solution || (answer?.disabled ?? false));

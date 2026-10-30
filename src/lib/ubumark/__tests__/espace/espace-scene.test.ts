@@ -4,11 +4,11 @@
 import { describe, expect, it } from 'vitest';
 import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
 import { buildEspaceScene, espaceLabel } from '$lib/ubumark/utils/espace-scene';
-import type { CubesView, EspaceSpec } from '$lib/ubumark/types/espace';
+import type { CubesSpec, CubesView } from '$lib/ubumark/types/espace';
 
-const spec = (heights: string, view: CubesView = 'perspective'): EspaceSpec => {
+const spec = (heights: string, view: CubesView = 'perspective'): CubesSpec => {
 	const node = parseEspaceContent(`hauteurs: ${heights}\nvue: ${view}`);
-	if (node.spec === null) throw new Error(node.errors.join());
+	if (node.spec?.kind !== 'cubes') throw new Error(node.errors.join());
 	return node.spec;
 };
 const scene = (heights: string, view: CubesView = 'perspective') =>

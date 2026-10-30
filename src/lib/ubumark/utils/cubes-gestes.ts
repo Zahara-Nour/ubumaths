@@ -31,7 +31,7 @@ import {
 	CUBES_SIDE_VIEWS,
 	type CubesDrawnView,
 	type CubesSideView,
-	type EspaceSpec
+	type CubesSpec
 } from '../types/espace';
 import { sideColumns } from './espace-scene';
 
@@ -233,7 +233,7 @@ export function retrouverHasOtherSolutions(
 // Functions — les deux gestes
 
 /** Réponse attendue d'un assemblage à geste */
-export function expectedCubesAnswer(spec: EspaceSpec): string {
+export function expectedCubesAnswer(spec: CubesSpec): string {
 	const task = spec.task;
 	if (task === undefined) return '';
 	if (task.kind === 'dessiner') return drawingAnswer(viewGrid(spec.heights, task.view));
