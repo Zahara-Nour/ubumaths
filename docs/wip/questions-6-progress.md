@@ -5,17 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-29, lot 6a publié._
+_Mis à jour le 2026-10-30, lot 6b joué (PR à ouvrir)._
 
-- **État** : lots 1 à 5 et lot 6a (M1-M6, 6 modèles) en prod, publiés, rangés, tagués (#1968).
-- **Prochaine action** : lot 6b (M7-M13, grandeurs et probabilités, § 13, phase 0 validée) : script
-  `lot-6-grandeurs.py` → `scripts/questions/6-grandeurs/`, specs, base locale, PR contenu.
-- **En attente de David** : passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles` (scission faite).
-  Pour mémoire (audit #1861) : `question_template_points_read_authenticated`.
-- **Pièges en cours** : 06 et 07 attendent l'outil « étiquettes à ranger » (bloc ```ranger, livré le 2026-10-28 :
-  à reprendre). 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs` dans un worktree neuf.
-  M10 : version dessinée attend l'outil « assemblages de cubes ».
-- **Worktree / branche** : aucun.
+- **État** : lots 1 à 6a en prod, publiés. Lot 6b (M7-M13) écrit, 09 et 12 joués au clavier (Playwright, § 13.4),
+  12 corrigé (pas de « 3 h 0 min ») ; specs vertes, simulation prod « 7 à créer » ; PR contenu en cours.
+- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/6-grandeurs --publier` ;
+  puis migration nœud + tags, page à cocher.
+- **En attente de David** : passer en « validé » les verdicts de 02, 03, 04 sur `/dev/modeles`.
+- **Pièges en cours** : 06 et 07 attendent le bloc ```ranger (à reprendre). 3a7a5711 : NE PAS publier.
+  `svelte-kit sync` avant `question:specs`. M10 : version dessinée attend « assemblages de cubes ».
+  Aperçu piloté : un clic ne donne pas le focus au champ ; `focus()` + clavier + Tab (§ 13.4).
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-6b`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -972,3 +972,26 @@ nouvelle revue.
 - David a relu : 6/6 « OK », aucun commentaire (base de la page lue, 6 verdicts comptés). `publier-lot` en
   simulation : 6 brouillons passent le contrôle.
 - David a lancé `publier-lot --publier` (2026-10-29) : 6/6 publiés. MCP : `published`, rangés, un tag chacun.
+
+### 13.3 Écriture du lot 6b (2026-10-29)
+
+- `docs/wip/questions/lot-6-grandeurs.py scripts/questions` → 7 modèles dans `scripts/questions/6-grandeurs/`
+  (07 à 13 = M7 à M13). Écarts à la phase 0 : M7 v3 part d'une mesure (diamètre, périmètre ≈ 3,14 × D) et demande
+  le quotient ; M12 v3 : corrigé en deux temps (heures entières, puis minutes) ; horaires écrits « 7 h 05 ».
+- `question:specs` à 300 tirages par variation : 7 fichiers, 5 400 tirages réussis, 50 specs vertes.
+- `create-questions` en simulation contre la prod : 7 « à créer ». Base locale (`.env.local`) : 7 brouillons créés.
+- Aperçu admin (port 5180, Chrome piloté) : énoncés bien rendus (12 : « 19 h 55 », cases h et min ; 09 : case cm),
+  mais la **frappe n'atteint pas la première case** (09 et 12 ; la 2e case de 12 prend « 10 ») : outil de pilotage
+  ou régression du champ sur `main` ? **À jouer à la main par David** avant la PR des brouillons en prod.
+
+### 13.4 Lot 6b joué au clavier (2026-10-30)
+
+- Playwright (script hors dépôt) sur l'aperçu admin local, port 5180 : **dans un navigateur piloté, un clic souris
+  ne donne le focus à aucun champ réponse** (09, 12, et « Coordonnées du milieu », plus ancien) — limite du
+  pilotage, pas des modèles. Contournement : `focus()` du `math-field`, frappe clavier, Tab entre les cases.
+- 09 : rayon 1 → 6,28 juste, 3,14 faux ; diamètre 11 → 34,54 juste ; diamètre 20 → 62,8 juste.
+- 12 : car 10 h 40 juste, 10 h 25 (arrêt oublié) faux, 40 h 10 (cases inversées) faux ; cinéma 2 h 30 et 1 h 35
+  justes, 2 h 40 faux ; séances 1 h 80 faux.
+- Séances : un tirage comme 4 × 45 min attendait « 3 h 0 min ». David (« je te suis », reco A) : condition `m>0`
+  ajoutée (script du lot et JSON, contenus identiques). `question:specs` 900/900, 6 specs vertes ; brouillon local
+  mis à jour (graines 7 et 8 → 1 h 30) ; simulation prod : 7 « à créer ».
