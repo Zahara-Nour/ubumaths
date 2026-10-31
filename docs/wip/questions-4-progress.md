@@ -5,16 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, après #2038._
+_Mis à jour le 2026-10-31, après #2038 et la publication du lot 5._
 
-- **État** : lots 1 à 4 en prod (lot 1 en brouillon, lots 2, 3 et 4 publiés) ; lot 5 « Pythagore et triangles » :
-  7 brouillons en prod, rangés et tagués (#2038, `db:migrate` joué, vérifié au MCP), page à cocher publiée (§ 27).
-- **Prochaine action** : quand David a coché, lire et compter les verdicts (collection `verdicts` de
-  https://claude.ai/artifact/L1mr8cFCzDuJkFFPixyHoy) ; corriger les « À revoir » ; puis `publier-lot.ts --dir
-scripts/questions/4-lot-5` en simulation, et David le lance avec `--publier`.
-- **En attente de David** : relecture du lot 5 ; garder la sonde des figures comme outil (`sonde-figures.ts`, petite
-  PR à part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication
-  des 7 brouillons du lot 1.
+- **État** : lots 1 à 5 en prod (lot 1 en brouillon, lots 2 à 5 publiés) ; lot 5 « Pythagore et triangles » (033, 034,
+  035, 036, 037, 072, 075) : 7/7 « OK » à la relecture, publiés par David, vérifié au MCP (§ 27).
+- **Prochaine action** : choisir le lot 6 avec David ; candidat : la seconde moitié de la géométrie (translations et
+  volumes : 029, 030, 031, 032, 076, § 25), puis phase 0.
+- **En attente de David** : choix du lot 6 ; garder la sonde des figures comme outil (`sonde-figures.ts`, petite PR à
+  part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication des 7
+  brouillons du lot 1 ; revoir ou non les 14 bornes du cycle 4 qui ne reposent que sur un document 2019/2016 (§ 27).
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question, invisible pour `question:specs` (§ 26) ;
   90dca27a et acbd2280 (4-005) partiront en 3e ; `db:migrate` peut exiger `--include-all` : **réservé à David** (oublié
   au lot 5, § 27) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un COMMIT, pas dans la PR ;
@@ -712,3 +711,8 @@ circonscrit 1 et 2), Géométrie / Raisonner (Réciproque et contraposée 1), Ca
   sont couverts.
 - Page à cocher : https://claude.ai/artifact/L1mr8cFCzDuJkFFPixyHoy (7 fiches, 29 exemples, 23 figures dessinées, aucune
   alerte ; capacité `db`, base `verdicts` vide à la publication).
+- Remarque « Attendus 4e 2019 » vue par David sur la fiche du 4-034 : elle vient des bornes (`cycle4.json`), pas du
+  modèle. Mesure du 2026-10-31 : sur 314 bornes du cycle 4, 171 citent les Exemples 2026, 152 le BO, 7 une décision de
+  David ; 14 seulement reposent sur un document 2019/2016 seul (exemples ou précisions que le BO ne contredit pas).
+- Relecture : 7 verdicts lus en base, 7 « OK », aucun commentaire. `publier-lot.ts --dir scripts/questions/4-lot-5`
+  en simulation (7 passent), lancé par David avec `--publier` ; vérifié au MCP : 7 publiés, nœud et un tag chacun.
