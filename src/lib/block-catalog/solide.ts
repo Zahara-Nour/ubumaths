@@ -55,6 +55,14 @@ export const solideEntry: BlockCatalogEntry = {
 					defaultValue: 'oui',
 					description:
 						'non : les arêtes cachées en trait plein, comme si le solide était en fil de fer (pour « laquelle de ces perspectives est juste ? »).'
+				},
+				{
+					key: 'section',
+					values:
+						'parallele ABCD 2 | parallele dessus 2 IJKL (cube, pavé) | perpendiculaire 2 | parallele 1 (cylindre) | 1 (boule)',
+					defaultValue: null,
+					description:
+						'Coupe le solide par un plan ; la section est teintée, le plan n’est pas dessiné. Cube, pavé : plan parallèle à une face (par ses sommets ou sa place), à la distance donnée de cette face ; quatre noms à la fin nomment les sommets de la section (le premier sur l’arête qui part du premier sommet de la face). Cylindre : perpendiculaire à l’axe, à la hauteur donnée au-dessus de la base du bas ; ou parallèle à l’axe, plan de face à la distance donnée de l’axe (0 : par l’axe). Boule : plan horizontal à la distance donnée du centre (0 : un grand cercle). Sans distance, le plan passe au milieu. Avec cotes:, la distance est écrite ; les dimensions de la section jamais, ni sa nature au lecteur d’écran : ce sont les réponses.'
 				}
 			]
 		}
@@ -108,6 +116,34 @@ export const solideEntry: BlockCatalogEntry = {
 			explanation: 'Un cercle et son équateur, dont la moitié arrière est en tirets ; le centre O.'
 		},
 		{
+			title: 'Un pavé coupé parallèlement à une face',
+			source: fence(
+				'solide',
+				'forme: pave 6 4 3',
+				'sommets: A B C D E F G H',
+				'section: parallele ABCD 2 IJKL',
+				'cotes: cm'
+			),
+			explanation:
+				'Le plan est parallèle à la face du bas, à 2 cm ; la section IJKL est teintée, I sur [AE], J sur [BF].'
+		},
+		{
+			title: 'Un cylindre coupé perpendiculairement à son axe',
+			source: fence('solide', 'forme: cylindre 2 5', 'section: perpendiculaire 3'),
+			explanation: 'La section est un disque, dessiné en ellipse à plat à la hauteur 3.'
+		},
+		{
+			title: 'Un cylindre coupé parallèlement à son axe',
+			source: fence('solide', 'forme: cylindre 2 5', 'section: parallele 1', 'cotes: cm'),
+			explanation:
+				'Plan de face à 1 cm de l’axe : la section est un rectangle, vu en vraie grandeur.'
+		},
+		{
+			title: 'Une boule coupée par un plan',
+			source: fence('solide', 'forme: boule 3', 'sommets: O', 'section: 2', 'cotes: cm'),
+			explanation: 'Le plan est à 2 cm du centre ; section: 0 donne un grand cercle.'
+		},
+		{
 			title: 'Sans arêtes cachées',
 			source: fence('solide', 'forme: pave 4 2 3', 'cachees: non'),
 			explanation: 'Toutes les arêtes en trait plein : une perspective à corriger.'
@@ -143,6 +179,13 @@ export const solideEntry: BlockCatalogEntry = {
 			source: fence('solide', 'forme: cube 2', 'marquer: arete AE'),
 			message: 'nomme les sommets',
 			explanation: 'Sans sommets:, une face se désigne par sa place : marquer: face dessus.'
+		},
+		{
+			title: 'Un plan qui ne coupe pas le solide',
+			source: fence('solide', 'forme: pave 6 4 3', 'section: parallele dessous 3'),
+			message: 'le plan ne coupe pas',
+			explanation:
+				'La distance à la face est plus petite que la hauteur du pavé (ici, entre 0 et 3).'
 		}
 	],
 	tryIt: fence('solide', 'forme: pave 4 2 3', 'sommets: A B C D E F G H')

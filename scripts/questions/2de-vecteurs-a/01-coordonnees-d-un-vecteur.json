@@ -15,7 +15,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}={{a}}\\vec{i}{{b;+}}\\vec{j}$.\n\nDonne ses coordonnées (en colonne, ou en ligne $(x\\,;y)$).\n\n$$\\vec{u}\\,?$$",
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}={{a}}\\vec{i}{{b;+}}\\vec{j}$.\n\nDonne ses coordonnées.\n\n$$\\vec{u}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
 			"variables": [
 				{
 					"name": "a",
@@ -28,8 +28,10 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "({{a}};{{b}})",
-					"answerKind": "vecteur"
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
 				}
 			],
 			"correction": {
@@ -40,7 +42,7 @@
 			}
 		},
 		{
-			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}={{a}}{{if:t==0|\\vec{i}|\\vec{j}}}$.\n\nDonne ses coordonnées (en colonne, ou en ligne $(x\\,;y)$).\n\n$$\\vec{u}\\,?$$",
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}={{a}}{{if:t==0|\\vec{i}|\\vec{j}}}$.\n\nDonne ses coordonnées.\n\n$$\\vec{u}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
 			"variables": [
 				{
 					"name": "t",
@@ -53,8 +55,10 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "({{if:t==0|{{a}}|0}};{{if:t==0|0|{{a}}}})",
-					"answerKind": "vecteur"
+					"expectedAnswer": "{{if:t==0|{{a}}|0}}"
+				},
+				{
+					"expectedAnswer": "{{if:t==0|0|{{a}}}}"
 				}
 			],
 			"correction": {
@@ -93,7 +97,7 @@
 			}
 		},
 		{
-			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}=-\\dfrac{ {{p}} }{ {{q}} }\\vec{i}{{b;+}}\\vec{j}$.\n\nDonne ses coordonnées (en colonne, ou en ligne $(x\\,;y)$).\n\n$$\\vec{u}\\,?$$",
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}=-\\dfrac{ {{p}} }{ {{q}} }\\vec{i}{{b;+}}\\vec{j}$.\n\nDonne ses coordonnées.\n\n$$\\vec{u}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
 			"variables": [
 				{
 					"name": "p",
@@ -111,8 +115,10 @@
 			"conditions": ["p == 1 || mod(q, p) != 0"],
 			"blanks": [
 				{
-					"expectedAnswer": "(-\\frac{ {{p}} }{ {{q}} };{{b}})",
-					"answerKind": "vecteur"
+					"expectedAnswer": "-\\frac{ {{p}} }{ {{q}} }"
+				},
+				{
+					"expectedAnswer": "{{b}}"
 				}
 			],
 			"correction": {
@@ -131,19 +137,7 @@
 				"a": "3",
 				"b": "-2"
 			},
-			"answers": ["(3;-2)"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "En colonne",
-			"variationIndex": 0,
-			"variables": {
-				"a": "3",
-				"b": "-2"
-			},
-			"answers": ["\\begin{pmatrix}3\\\\-2\\end{pmatrix}"],
+			"answers": ["3", "-2"],
 			"expected": {
 				"status": "correct"
 			}
@@ -155,7 +149,7 @@
 				"a": "3",
 				"b": "-2"
 			},
-			"answers": ["(-2;3)"],
+			"answers": ["-2", "3"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -167,7 +161,7 @@
 				"a": "3",
 				"b": "-2"
 			},
-			"answers": ["(3;2)"],
+			"answers": ["3", "2"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -179,7 +173,7 @@
 				"t": "1",
 				"a": "4"
 			},
-			"answers": ["(0;4)"],
+			"answers": ["0", "4"],
 			"expected": {
 				"status": "correct"
 			}
@@ -191,7 +185,7 @@
 				"t": "1",
 				"a": "4"
 			},
-			"answers": ["(4;0)"],
+			"answers": ["4", "0"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -228,7 +222,7 @@
 				"q": "2",
 				"b": "3"
 			},
-			"answers": ["(-\\frac{1}{2};3)"],
+			"answers": ["-\\frac{1}{2}", "3"],
 			"expected": {
 				"status": "correct"
 			}
@@ -241,7 +235,7 @@
 				"q": "2",
 				"b": "3"
 			},
-			"answers": ["(-0.5;3)"],
+			"answers": ["-0.5", "3"],
 			"expected": {
 				"status": "correct"
 			}
@@ -254,7 +248,7 @@
 				"q": "2",
 				"b": "3"
 			},
-			"answers": ["(\\frac{1}{2};3)"],
+			"answers": ["\\frac{1}{2}", "3"],
 			"expected": {
 				"status": "incorrect"
 			}

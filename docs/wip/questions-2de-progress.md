@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, page à cocher du lot 4 publiée (§ 27)._
+_Mis à jour le 2026-11-01, après #2048 (vecteurs en deux trous, § 28)._
 
 - **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 4 (A #2008, B #1999, correctif #1997) : 11 brouillons
   rangés et tagués en prod (#2014, migration `20261030160100` jouée par David, vérifiée au MCP).
 - **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 11) ; « À revoir » → § 7 de
   la démarche ; tout OK → `publier-lot.ts` simulé sur `2de-vecteurs-a` puis `2de-vecteurs-b`.
-- **En attente de David** : relecture de la page à cocher https://claude.ai/artifact/6WwvVGdVFZG1RUj8iWFbwo,
+- **En attente de David** : relecture de la page à cocher (01 à 04 refaits, à relire) https://claude.ai/artifact/6WwvVGdVFZG1RUj8iWFbwo,
   puis `publier-lot.ts --publier` (les deux dossiers).
 - **Pièges en cours** : horodatage = max + 1 min de `origin/main` ET des worktrees ; `migration list
 --linked` avant `db:migrate` (migrations d'autres sessions en file → David tranche qui le lance).
-- **Worktree / branche** : aucun (worktree et branche du lot 4 retirés).
+- **Worktree / branche** : `ubumaths-wt-questions-2de` gardé (détaché sur `main`) pour `publier-lot.ts`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -676,3 +676,17 @@ doublée d'une variation à calcul.
   prend qu'un `--dir`) : les 11 ids du § 25 retrouvés, `draft`, aucune alerte. Page (capacité `db`,
   collection `verdicts` vide au départ) : https://claude.ai/artifact/6WwvVGdVFZG1RUj8iWFbwo
 - Publication : `publier-lot.ts` une fois par dossier (`2de-vecteurs-a`, puis `2de-vecteurs-b`).
+
+## 28. Lot 4 A, vecteurs en deux trous (2026-10-31)
+
+- Relecture de David (01 et 02, « À revoir ») : demander les coordonnées d'un vecteur avec deux trous,
+  comme pour un point. La case `answerKind: "vecteur"` (choix de la phase 0, pas une décision de David)
+  faisait écrire la colonne ou le couple. Passés en deux trous dans la colonne,
+  $\vec{u}\begin{pmatrix}?\\?\end{pmatrix}$ : modèles 01 à 04 (11 cases), consigne réduite à « Donne
+  ses coordonnées. », specs en deux réponses (spec « En colonne » retirée, sans objet).
+- `create-questions` en simulation : 4 modèles « contenu différent », specs vertes. Base locale mise à jour ;
+  aperçu joué (01, u⃗ = −7j⃗ : deux cases dans la colonne, (0 ; −7) « Juste »).
+- #2048 mergée (shard client 1/2 relancé : navigateur de test fermé, sans lien). David a lancé
+  `create-questions --publier --mettre-a-jour` : 4 mis à jour ; relecture : 7 « déjà en base » identiques,
+  MCP : brouillons, nœud « coordonnées » et tag gardés. Page à cocher régénérée (même lien, version 2),
+  verdicts de 01 et 02 supprimés.

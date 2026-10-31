@@ -1,0 +1,365 @@
+{
+	"title": "Médiane d'une série à effectifs",
+	"description": "Donner la médiane d'une série donnée par un tableau d'effectifs ou un diagramme en barres, par les effectifs cumulés",
+	"grades": ["3"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Médiane à effectifs",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici les notes sur $10$ obtenues par les élèves d'une classe à un contrôle.\n\n```effectifs\ntitre: Note\n4 = {{n0}}\n5 = {{n1}}\n6 = {{n2}}\n7 = {{n3}}\n8 = {{n4}}\n9 = {{n5}}\nlignes: effectifs\n```\n\nQuelle est la médiane de cette série ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n0",
+					"expression": "1..9"
+				},
+				{
+					"name": "n1",
+					"expression": "1..9"
+				},
+				{
+					"name": "n2",
+					"expression": "1..9"
+				},
+				{
+					"name": "n3",
+					"expression": "1..9"
+				},
+				{
+					"name": "n4",
+					"expression": "1..9"
+				},
+				{
+					"name": "n5",
+					"expression": "1..9"
+				},
+				{
+					"name": "C0",
+					"expression": "eval:n0"
+				},
+				{
+					"name": "C1",
+					"expression": "eval:n0+n1"
+				},
+				{
+					"name": "C2",
+					"expression": "eval:n0+n1+n2"
+				},
+				{
+					"name": "C3",
+					"expression": "eval:n0+n1+n2+n3"
+				},
+				{
+					"name": "C4",
+					"expression": "eval:n0+n1+n2+n3+n4"
+				},
+				{
+					"name": "C5",
+					"expression": "eval:n0+n1+n2+n3+n4+n5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:C5"
+				},
+				{
+					"name": "M",
+					"expression": "{{if:2*C0>=N+1|0|{{if:2*C1>=N+1|1|{{if:2*C2>=N+1|2|{{if:2*C3>=N+1|3|{{if:2*C4>=N+1|4|5}}}}}}}}}}"
+				}
+			],
+			"conditions": ["N-2*floor(N/2)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4+M}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'effectif total est ${{N}}$, impair : la médiane est la ${{eval:(N+1)/2}}^{\\text{e}}$ valeur de la série rangée, car $\\dfrac{ {{N}} + 1}{2} = {{eval:(N+1)/2}}$.",
+					"Effectifs cumulés croissants : $4$ → ${{C0}}$ ; $5$ → ${{C1}}$ ; $6$ → ${{C2}}$ ; $7$ → ${{C3}}$ ; $8$ → ${{C4}}$ ; $9$ → ${{C5}}$.",
+					"Le premier effectif cumulé qui atteint ${{eval:(N+1)/2}}$ est celui de $\\textcolor{{{color:primary.0}}}{{{eval:4+M}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le diagramme donne le nombre de buts marqués à chaque match d'un championnat.\n\n```barres\ntitre: Buts par match\naxes: Nombre de buts ; Nombre de matchs\naxe: 0 à 10, de 1 en 1\n0 = {{n0}}\n1 = {{n1}}\n2 = {{n2}}\n3 = {{n3}}\n4 = {{n4}}\n5 = {{n5}}\ndescription: Diagramme en barres des effectifs de chaque valeur, de 0 à 5.\n```\n\nQuelle est la médiane du nombre de buts par match ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n0",
+					"expression": "1..9"
+				},
+				{
+					"name": "n1",
+					"expression": "1..9"
+				},
+				{
+					"name": "n2",
+					"expression": "1..9"
+				},
+				{
+					"name": "n3",
+					"expression": "1..9"
+				},
+				{
+					"name": "n4",
+					"expression": "1..9"
+				},
+				{
+					"name": "n5",
+					"expression": "1..9"
+				},
+				{
+					"name": "C0",
+					"expression": "eval:n0"
+				},
+				{
+					"name": "C1",
+					"expression": "eval:n0+n1"
+				},
+				{
+					"name": "C2",
+					"expression": "eval:n0+n1+n2"
+				},
+				{
+					"name": "C3",
+					"expression": "eval:n0+n1+n2+n3"
+				},
+				{
+					"name": "C4",
+					"expression": "eval:n0+n1+n2+n3+n4"
+				},
+				{
+					"name": "C5",
+					"expression": "eval:n0+n1+n2+n3+n4+n5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:C5"
+				},
+				{
+					"name": "M",
+					"expression": "{{if:2*C0>=N+1|0|{{if:2*C1>=N+1|1|{{if:2*C2>=N+1|2|{{if:2*C3>=N+1|3|{{if:2*C4>=N+1|4|5}}}}}}}}}}"
+				}
+			],
+			"conditions": ["N-2*floor(N/2)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{M}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'effectif total est ${{N}}$, impair : la médiane est la ${{eval:(N+1)/2}}^{\\text{e}}$ valeur de la série rangée, car $\\dfrac{ {{N}} + 1}{2} = {{eval:(N+1)/2}}$.",
+					"Effectifs cumulés croissants : $0$ → ${{C0}}$ ; $1$ → ${{C1}}$ ; $2$ → ${{C2}}$ ; $3$ → ${{C3}}$ ; $4$ → ${{C4}}$ ; $5$ → ${{C5}}$.",
+					"Le premier effectif cumulé qui atteint ${{eval:(N+1)/2}}$ est celui de $\\textcolor{{{color:primary.0}}}{{{eval:0+M}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici l'âge des adhérents d'un club de théâtre.\n\n```effectifs\ntitre: Âge (ans)\n12 = {{n0}}\n13 = {{n1}}\n14 = {{n2}}\n15 = {{n3}}\n16 = {{n4}}\n17 = {{n5}}\nlignes: effectifs\n```\n\nQuelle est la médiane de cette série ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n0",
+					"expression": "1..9"
+				},
+				{
+					"name": "n1",
+					"expression": "1..9"
+				},
+				{
+					"name": "n2",
+					"expression": "1..9"
+				},
+				{
+					"name": "n3",
+					"expression": "1..9"
+				},
+				{
+					"name": "n4",
+					"expression": "1..9"
+				},
+				{
+					"name": "n5",
+					"expression": "1..9"
+				},
+				{
+					"name": "C0",
+					"expression": "eval:n0"
+				},
+				{
+					"name": "C1",
+					"expression": "eval:n0+n1"
+				},
+				{
+					"name": "C2",
+					"expression": "eval:n0+n1+n2"
+				},
+				{
+					"name": "C3",
+					"expression": "eval:n0+n1+n2+n3"
+				},
+				{
+					"name": "C4",
+					"expression": "eval:n0+n1+n2+n3+n4"
+				},
+				{
+					"name": "C5",
+					"expression": "eval:n0+n1+n2+n3+n4+n5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:C5"
+				},
+				{
+					"name": "M",
+					"expression": "{{if:2*C0>=N+1|0|{{if:2*C1>=N+1|1|{{if:2*C2>=N+1|2|{{if:2*C3>=N+1|3|{{if:2*C4>=N+1|4|5}}}}}}}}}}"
+				}
+			],
+			"conditions": ["N-2*floor(N/2)==0", "C0!=N/2", "C1!=N/2", "C2!=N/2", "C3!=N/2", "C4!=N/2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:12+M}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'effectif total est ${{N}}$, pair : la médiane est entre la ${{eval:N/2}}^{\\text{e}}$ et la ${{eval:N/2+1}}^{\\text{e}}$ valeur de la série rangée.",
+					"Effectifs cumulés croissants : $12$ → ${{C0}}$ ; $13$ → ${{C1}}$ ; $14$ → ${{C2}}$ ; $15$ → ${{C3}}$ ; $16$ → ${{C4}}$ ; $17$ → ${{C5}}$.",
+					"Les deux valeurs centrales sont égales : la médiane est $\\textcolor{{{color:primary.0}}}{{{eval:12+M}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "N = 21, rang 11 : note 6",
+			"variationIndex": 0,
+			"variables": {
+				"n0": "2",
+				"n1": "3",
+				"n2": "6",
+				"n3": "5",
+				"n4": "4",
+				"n5": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "N = 15, rang 8 : note 6",
+			"variationIndex": 0,
+			"variables": {
+				"n0": "5",
+				"n1": "1",
+				"n2": "2",
+				"n3": "3",
+				"n4": "2",
+				"n5": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la note la plus fréquente, 4",
+			"variationIndex": 0,
+			"variables": {
+				"n0": "5",
+				"n1": "1",
+				"n2": "2",
+				"n3": "3",
+				"n4": "2",
+				"n5": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le milieu des valeurs, 6,5",
+			"variationIndex": 0,
+			"variables": {
+				"n0": "2",
+				"n1": "3",
+				"n2": "6",
+				"n3": "5",
+				"n4": "4",
+				"n5": "1"
+			},
+			"answers": ["6{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Barres, N = 21 : 2 buts",
+			"variationIndex": 1,
+			"variables": {
+				"n0": "2",
+				"n1": "3",
+				"n2": "6",
+				"n3": "5",
+				"n4": "4",
+				"n5": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'effectif le plus grand, 6",
+			"variationIndex": 1,
+			"variables": {
+				"n0": "2",
+				"n1": "3",
+				"n2": "6",
+				"n3": "5",
+				"n4": "4",
+				"n5": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "N = 20, rangs 10 et 11 : 15 ans",
+			"variationIndex": 2,
+			"variables": {
+				"n0": "1",
+				"n1": "4",
+				"n2": "3",
+				"n3": "6",
+				"n4": "5",
+				"n5": "1"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rang 10 lu comme 14 ans",
+			"variationIndex": 2,
+			"variables": {
+				"n0": "1",
+				"n1": "4",
+				"n2": "3",
+				"n3": "6",
+				"n4": "5",
+				"n5": "1"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

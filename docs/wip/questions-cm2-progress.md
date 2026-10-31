@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2016._
+_Mis à jour le 2026-11-01, phase 0 du lot 4 proposée._
 
-- **État** : lots 1 et 2 publiés. Lot 3 rangé en prod (#2010) ; ÷ 4 et ÷ 8 simplifiés (#2016) et mis à jour en prod par David (`--publier --mettre-a-jour` : 2 mis à jour, vérifié au MCP). Page à cocher republiée (https://claude.ai/artifact/2A6LTY1ASbf71NZz7DQLNe) : 3 OK gardés, les 2 verdicts de `1f2d5097` / `3b691903` remis à zéro.
-- **Prochaine action** : seconde relecture de ÷ 4 et ÷ 8 → lire `verdicts` et COMPTER (5 OK attendus) → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-3` en simulation → David lance `--publier` → relire le statut. Puis lot 4 (phase 0).
-- **En attente de David** : relecture de ÷ 4 et ÷ 8 sur la page.
+- **État** : lots 1, 2 et 3 publiés (lot 3 : seconde relecture de ÷ 4 et ÷ 8 OK, 5 verdicts OK comptés ; `publier-lot --publier` lancé par David le 2026-11-01, 5 `published` vérifiés au MCP).
+- **Prochaine action** : lot 4 (calcul mental sur les décimaux, 7 modèles) — phase 0 proposée (§ 9), en attente de David.
+- **En attente de David** : validation de la phase 0 du lot 4 (§ 9).
 - **Pièges en cours** : `curriculum_points` n'a pas de colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
 - **Worktree / branche** : aucun.
 
@@ -356,3 +356,51 @@ Recommandations suivies (« je te suis ») : les tables (CM2-035, 148, 036) repr
 - Décision de David (recommandation suivie) : garder 3 variations, calculables de tête. V2 : dividende à 4 chiffres multiple de 40 (÷ 4, 1 000 à 9 960) ou de 80 (÷ 8, 1 040 à 9 920), quotient multiple de 10. V3 : quotient décimal sur petit dividende (4q + r, q ≤ 12 : ≤ 51 ; 8q + r, q ≤ 11 : ≤ 94). V1 inchangée.
 - `question:specs` 300 tirages par variation : 900/900 pour chacun, specs vertes.
 - #2016 mergée ; David : `create-questions --publier --mettre-a-jour` → 2 mis à jour, 3 déjà en base ; contenu et rangement relus au MCP. Page republiée, 2 verdicts remis à zéro.
+
+### 8.5 Lot 3 : publication (2026-11-01)
+
+- Seconde relecture : 5 verdicts OK sur 5. Simulation `publier-lot` : 5 brouillons passent le contrôle. David : `--publier` ; 5 `published` relus au MCP.
+
+## 9. Lot 4 — calcul mental sur les décimaux : phase 0 (proposée le 2026-11-01)
+
+Relevé MCP du 2026-11-01 sur les 9 points prévus (§ 4.6) : **CM2-037** a déjà `edc5d7d4` (moitié des
+impairs, lot 0) et **CM2-044** a `a0241952` et `ff3ee576` (deux décimaux < 10, une décimale, avec
+retenue ; dans les bornes) → rien à faire. Restent **7 points sans modèle** : 040, 118, 041, 048, 049,
+051, 052. Nœuds (ceux des points) : « Décimaux : calculs » > addition (040, 041), soustraction (118),
+multiplication (048, 051, 052), division (049).
+
+Existant voisin, non repris : `3bbe92f2`, `f1a392f5` (CM1-039) et `b100ddb2`, `b9a9048a` (CM1-133)
+ajoutent ou retirent des unités, dixièmes, centièmes à un nombre de 1 à 9 ; les bornes du CM2
+(c3-2) vont jusqu'aux **millièmes** et aux milliers (0,457 + 7/1 000 ; 47 530 + 6 000) → modèles
+CM2 propres (décision 4 bis). « Produit particulier » (6e) : × 0,5, × 1,5, × 2,5 ; rien pour × 2,
+× 5, × 50.
+
+Bornes `cycle3.json` : 040, 118, 041 → nombre ajouté ou retiré = k unités d'**un seul rang** (k de 1
+à 9, des millièmes aux milliers), sans retenue (040, 118) ou avec **une** retenue (041) ; 048 → une
+ou deux décimales (13,6 → 27,2 ; 4,35 → 8,7) ; 049 → résultat à trois décimales au plus (13,6 → 6,8 ;
+1,22 → 0,61) ; 051 → décimal d'au plus trois chiffres (5 × 1,46) ; 052 → nombre < 20, au plus trois
+chiffres, dernier chiffre pair (50 × 12,4).
+
+| #   | Point   | Modèle                                                                                                                                                                                                | Catégorie, niveau                                         |
+| --- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| 1   | CM2-040 | « Ajouter des unités d'un rang » : V1 dixièmes, centièmes ou millièmes à un décimal à 3 décimales (4,452 + 0,03) ; V2 unités à milliers à un décimal (1 462,5 + 3 000) ; aucune retenue               | Décimaux > Additionner > Somme, 6                         |
+| 2   | CM2-118 | « Retirer des unités d'un rang » : mêmes variations, sans retenue (0,457 − 0,003 ; 5 846,3 − 400)                                                                                                     | Décimaux > Soustraire > Différence, 6                     |
+| 3   | CM2-041 | « Ajouter avec une retenue » : V1 rangs décimaux (4,45 + 0,8 = 5,25 ; 0,457 + 0,007) ; V2 rangs entiers (7 530,4 + 600) ; une seule retenue (rang suivant ≤ 8)                                        | Décimaux > Additionner > Somme, 7                         |
+| 4   | CM2-048 | « Calculer le double » : V1 une décimale, de 1 à 49 (13,6 → 27,2) ; V2 deux décimales, partie entière 1 à 9 (4,35 → 8,7)                                                                              | Décimaux > Multiplier > Produit particulier, 5            |
+| 5   | CM2-049 | « Calculer la moitié » : V1 une décimale paire (13,6 → 6,8) ; V2 deux décimales, centièmes pairs (1,22 → 0,61) ; V3 dernier chiffre impair, résultat à une décimale de plus (2,5 → 1,25 ; 0,7 → 0,35) | Décimaux > Additionner > Moitié, 2 (à côté de `edc5d7d4`) |
+| 6   | CM2-051 | « Multiplier par 5 » : V1 deux chiffres (5 × 3,4 = 17) ; V2 trois chiffres (5 × 1,46 = 7,3 ; 5 × 24,8 = 124)                                                                                          | Produit particulier, 6                                    |
+| 7   | CM2-052 | « Multiplier par 50 » : V1 une décimale (50 × 12,4 = 620) ; V2 deux décimales (50 × 1,24 = 62) ; < 20, trois chiffres au plus, dernier chiffre pair                                                   | Produit particulier, 7                                    |
+
+Corrigés : 1-3 → on repère le rang du nombre ajouté, seul ce chiffre change (plus la retenue au 3) ;
+4 → double des unités + double des dixièmes ; 5 → moitié de la partie entière + moitié de la partie
+décimale (13,6 = 12 + 1,6) ; 6 → × 10 puis moitié ; 7 → × 100 puis moitié (« Exemples de réussite
+CM2 2025 » p. 8-10). Erreurs typiques en `testSpecs` : mauvais rang (4,452 + 0,03 = 4,455), retenue
+oubliée (4,45 + 0,8 = 4,125), double sans retenue des dixièmes (26,12), × 10 sans la moitié (146 au lieu
+de 7,3), virgule oubliée.
+
+**Question d'accès** : 7 brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la
+publication.
+
+**Points d'attention** : niveaux 6 et 7 de « Somme », 6 de « Différence » viennent après le niveau 5
+de 6e (comme au lot 3) ; la session `questions-cm1` prépare son lot 4 (décimaux) : la prévenir des
+niveaux pris ici.

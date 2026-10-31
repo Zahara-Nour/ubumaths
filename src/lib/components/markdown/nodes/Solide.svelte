@@ -4,11 +4,12 @@
 
 	Solide en perspective cavalière (cube, pavé, prisme, pyramide, cylindre,
 	cône, boule) : arêtes cachées en tirets, face marquée teintée, noms des
-	sommets et cotes. Affichage seul. Dessiné depuis `buildSolideScene`, la
-	même scène que le PDF.
+	sommets et cotes, section (`section:`, lot 6). Affichage seul. Dessiné
+	depuis `buildSolideScene`, la même scène que le PDF.
 
 	- Traits `var(--color-foreground)`, face marquée en gris translucide (les
-	  tirets restent visibles à travers) ; aucune couleur d'accent.
+	  tirets restent visibles à travers) ; la section seule en couleur d'accent
+	  (orange des figures, translucide).
 	- Nom accessible : jamais le nom du solide (ce serait la réponse).
 	- Plus grand côté du solide : 4 cm, à l'écran comme au PDF ; jamais plus
 	  large que le conteneur ; `--espace-taille` (3 cm dans un choix) plafonne
@@ -88,6 +89,9 @@
 			{#each scene.fills as fill, i (i)}
 				<polygon class="solide-face-marquee" points={pointsOf(fill)} />
 			{/each}
+			{#if scene.section}
+				<polygon class="solide-section" points={pointsOf(scene.section)} />
+			{/if}
 			{#each scene.lines as line, i (i)}
 				<polyline
 					class="solide-trait"
@@ -132,6 +136,12 @@
 	/* Face marquée : translucide, les arêtes cachées restent visibles à travers */
 	.solide-face-marquee {
 		fill: color-mix(in srgb, var(--color-foreground) 18%, transparent);
+		stroke: none;
+	}
+
+	/* Section : la seule couleur, translucide comme la face marquée */
+	.solide-section {
+		fill: color-mix(in srgb, var(--color-fig-orange) 40%, transparent);
 		stroke: none;
 	}
 

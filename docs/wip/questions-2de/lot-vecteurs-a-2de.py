@@ -11,8 +11,9 @@ Décisions et pièges :
 - L4-b : norme 2√10 attendue, √40 juste mais « à améliorer » (contrainte `reducedRadicals`) ;
 - L4-c : 2u⃗ − 3v⃗ en dernière variation de 2-300 ;
 - L4-d : « isocèle en A ? » en case choix (2-301), le modèle garde ses variations à calcul ;
-- vecteur répondu dans une case `answerKind: "vecteur"` (en ligne ou en colonne) ; point répondu
-  dans deux cases (abscisse, ordonnée) ;
+- vecteur répondu dans deux cases placées dans la colonne, comme le point dans deux cases (abscisse,
+  ordonnée) : relecture de David du 2026-10-31 (la case `answerKind: "vecteur"` d'abord retenue
+  demandait d'écrire la colonne ou le couple) ;
 - les variables sont substituées telles quelles dans les `eval` : toujours `(a)`, `-(a)` ;
 - normes et distances tirées dans des listes : valeur entière, √n irréductible, ou k√m ;
 - variables `e` et `i` interdites.
@@ -62,8 +63,8 @@ def case(attendu):
     return {'expectedAnswer': attendu}
 
 
-def case_vecteur(x, y):
-    return {'expectedAnswer': '(' + x + ';' + y + ')', 'answerKind': 'vecteur'}
+def cases_vecteur(x, y):
+    return [case(x), case(y)]
 
 
 def selon(nom, valeurs, debut=0):
@@ -90,7 +91,8 @@ MODELES = []
 VECTEURS = 'Vecteurs du plan'
 REPERE = 'Dans un repère $(O\\,;\\vec{i},\\vec{j})$'
 REPERE_ON = 'Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$'
-DONNE_VECTEUR = 'Donne ses coordonnées (en colonne, ou en ligne $(x\\,;y)$).'
+DONNE_VECTEUR = 'Donne ses coordonnées.'
+TROUS = '\\begin{pmatrix}?\\\\?\\end{pmatrix}'
 
 # --- 1. 2-434 : coordonnées d'un vecteur dans une base --------------------------------------
 
@@ -99,18 +101,18 @@ DEFINITION = ('Les coordonnées de $\\vec{u}$ sont les nombres $x$ et $y$ tels q
 
 BASE_LIRE = variation(
     REPERE + ', on considère le vecteur $\\vec{u}={{a}}\\vec{i}{{b;+}}\\vec{j}$.\n\n'
-    + DONNE_VECTEUR + '\n\n$$\\vec{u}\\,?$$',
+    + DONNE_VECTEUR + '\n\n$$\\vec{u}' + TROUS + '$$',
     [var('a', '2..9;±'), var('b', '2..9;±')],
-    [case_vecteur('{{a}}', '{{b}}')],
+    cases_vecteur('{{a}}', '{{b}}'),
     [DEFINITION,
      '$\\vec{u}=' + col('{{a}}') + '\\,\\vec{i}' + '{{if:b>0|+|}}' + col('{{b}}', 1)
      + '\\,\\vec{j}$, donc $\\vec{u}' + colonne(col('{{a}}'), col('{{b}}', 1)) + '$.'])
 
 BASE_ZERO = variation(
     REPERE + ', on considère le vecteur $\\vec{u}={{a}}' + selon('t', ['\\vec{i}', '\\vec{j}'])
-    + '$.\n\n' + DONNE_VECTEUR + '\n\n$$\\vec{u}\\,?$$',
+    + '$.\n\n' + DONNE_VECTEUR + '\n\n$$\\vec{u}' + TROUS + '$$',
     [var('t', '0|1'), var('a', '2..9;±')],
-    [case_vecteur('{{if:t==0|{{a}}|0}}', '{{if:t==0|0|{{a}}}}')],
+    cases_vecteur('{{if:t==0|{{a}}|0}}', '{{if:t==0|0|{{a}}}}'),
     [DEFINITION,
      '$\\vec{u}=' + selon('t', ['{{a}}\\,\\vec{i}+' + col('0', 1) + '\\,\\vec{j}',
                                col('0') + '\\,\\vec{i}+{{a}}\\,\\vec{j}'])
@@ -130,9 +132,9 @@ BASE_ECRIRE = variation(
 
 BASE_FRACTION = variation(
     REPERE + ', on considère le vecteur $\\vec{u}=-\\dfrac{ {{p}} }{ {{q}} }\\vec{i}{{b;+}}\\vec{j}$.\n\n'
-    + DONNE_VECTEUR + '\n\n$$\\vec{u}\\,?$$',
+    + DONNE_VECTEUR + '\n\n$$\\vec{u}' + TROUS + '$$',
     [var('p', '1|2|3'), var('q', '2|3|4|5'), var('b', '2..9;±')],
-    [case_vecteur('-\\frac{ {{p}} }{ {{q}} }', '{{b}}')],
+    cases_vecteur('-\\frac{ {{p}} }{ {{q}} }', '{{b}}'),
     [DEFINITION + ' Une coordonnée peut être une fraction.',
      '$\\vec{u}' + colonne(col('-\\dfrac{ {{p}} }{ {{q}} }'), col('{{b}}', 1)) + '$.'],
     ['p == 1 || mod(q, p) != 0'])
@@ -147,17 +149,16 @@ MODELES.append(modele(
     ' de ses coordonnées (pièges : coordonnées échangées, 0 oublié, signe)',
     ('Géométrie', VECTEURS, 'Coordonnées'), 1,
     [BASE_LIRE, BASE_ZERO, BASE_ECRIRE, BASE_FRACTION],
-    [spec('3i − 2j → (3 ; −2)', 0, SP_BL, '(3;-2)', 'correct'),
-     spec('En colonne', 0, SP_BL, '\\begin{pmatrix}3\\\\-2\\end{pmatrix}', 'correct'),
-     spec('Erreur : coordonnées échangées', 0, SP_BL, '(-2;3)', 'incorrect'),
-     spec('Erreur : signe perdu', 0, SP_BL, '(3;2)', 'incorrect'),
-     spec('4j → (0 ; 4)', 1, SP_BZ, '(0;4)', 'correct'),
-     spec('Erreur : (4 ; 0)', 1, SP_BZ, '(4;0)', 'incorrect'),
+    [spec('3i − 2j → (3 ; −2)', 0, SP_BL, ['3', '-2'], 'correct'),
+     spec('Erreur : coordonnées échangées', 0, SP_BL, ['-2', '3'], 'incorrect'),
+     spec('Erreur : signe perdu', 0, SP_BL, ['3', '2'], 'incorrect'),
+     spec('4j → (0 ; 4)', 1, SP_BZ, ['0', '4'], 'correct'),
+     spec('Erreur : (4 ; 0)', 1, SP_BZ, ['4', '0'], 'incorrect'),
      spec('u(−1 ; 4) → −1 et 4', 2, SP_BE, ['-1', '4'], 'correct'),
      spec('Erreur : cases échangées', 2, SP_BE, ['4', '-1'], 'incorrect'),
-     spec('−½ i + 3 j → (−1/2 ; 3)', 3, SP_BF, '(-\\frac{1}{2};3)', 'correct'),
-     spec('En décimal (−0,5 ; 3)', 3, SP_BF, '(-0.5;3)', 'correct'),
-     spec('Erreur : signe de la fraction perdu', 3, SP_BF, '(\\frac{1}{2};3)', 'incorrect')]))
+     spec('−½ i + 3 j → (−1/2 ; 3)', 3, SP_BF, ['-\\frac{1}{2}', '3'], 'correct'),
+     spec('En décimal (−0,5 ; 3)', 3, SP_BF, ['-0.5', '3'], 'correct'),
+     spec('Erreur : signe de la fraction perdu', 3, SP_BF, ['\\frac{1}{2}', '3'], 'incorrect')]))
 
 # --- 2. 2-294 : coordonnées de AB à partir de A et B ----------------------------------------
 
@@ -167,9 +168,9 @@ FORMULE_AB = ('$\\overrightarrow{AB}' + colonne('x_B-x_A', 'y_B-y_A') + '$ : on 
 AB_ENTIERS = variation(
     REPERE + ', on considère les points $' + point('A', '{{ax}}', '{{ay}}') + '$ et $'
     + point('B', '{{bx}}', '{{by}}') + '$.\n\nDonne les coordonnées du vecteur'
-    ' $\\overrightarrow{AB}$.\n\n$$\\overrightarrow{AB}\\,?$$',
+    ' $\\overrightarrow{AB}$.\n\n$$\\overrightarrow{AB}' + TROUS + '$$',
     [var('ax', '-9..9'), var('ay', '-9..9'), var('bx', '-9..9'), var('by', '-9..9')],
-    [case_vecteur('{{eval:(bx)-(ax)}}', '{{eval:(by)-(ay)}}')],
+    cases_vecteur('{{eval:(bx)-(ax)}}', '{{eval:(by)-(ay)}}'),
     [FORMULE_AB,
      '$\\overrightarrow{AB}' + colonne('{{bx}}-{{ax;()}}', '{{by}}-{{ay;()}}') + '$, soit $'
      '\\overrightarrow{AB}' + col(colonne('{{eval:(bx)-(ax)}}', '{{eval:(by)-(ay)}}')) + '$.'],
@@ -191,9 +192,9 @@ AB_EXTREMITE = variation(
 AB_DECIMAUX = variation(
     REPERE + ', on considère les points $' + point('A', '{{eval:(ax)/2;d}}', '{{ay}}') + '$ et $'
     + point('B', '{{eval:(bx)/2;d}}', '{{eval:(by)/2;d}}') + '$.\n\nDonne les coordonnées du vecteur'
-    ' $\\overrightarrow{AB}$.\n\n$$\\overrightarrow{AB}\\,?$$',
+    ' $\\overrightarrow{AB}$.\n\n$$\\overrightarrow{AB}' + TROUS + '$$',
     [var('ax', '-9..9'), var('ay', '-6..6'), var('bx', '-9..9'), var('by', '-13..13')],
-    [case_vecteur('{{eval:((bx)-(ax))/2}}', '{{eval:(by)/2-(ay)}}')],
+    cases_vecteur('{{eval:((bx)-(ax))/2}}', '{{eval:(by)/2-(ay)}}'),
     [FORMULE_AB,
      '$\\overrightarrow{AB}' + colonne('{{eval:(bx)/2;d}}-{{eval:(ax)/2;d;()}}',
                                         '{{eval:(by)/2;d}}-{{ay;()}}') + '$, soit $'
@@ -210,14 +211,14 @@ MODELES.append(modele(
     ' (pièges : A − B, soustraire au lieu d\'ajouter)',
     ('Géométrie', VECTEURS, 'Coordonnées'), 2,
     [AB_ENTIERS, AB_EXTREMITE, AB_DECIMAUX],
-    [spec('A(2 ; −1), B(−3 ; 4) → (−5 ; 5)', 0, SP_AE, '(-5;5)', 'correct'),
-     spec('Erreur : A − B (5 ; −5)', 0, SP_AE, '(5;-5)', 'incorrect'),
-     spec('Erreur : somme (−1 ; 3)', 0, SP_AE, '(-1;3)', 'incorrect'),
+    [spec('A(2 ; −1), B(−3 ; 4) → (−5 ; 5)', 0, SP_AE, ['-5', '5'], 'correct'),
+     spec('Erreur : A − B (5 ; −5)', 0, SP_AE, ['5', '-5'], 'incorrect'),
+     spec('Erreur : somme (−1 ; 3)', 0, SP_AE, ['-1', '3'], 'incorrect'),
      spec('A(2 ; −1), AB(3 ; −5) → B(5 ; −6)', 1, SP_AX, ['5', '-6'], 'correct'),
      spec('Erreur : soustraction, B(−1 ; 4)', 1, SP_AX, ['-1', '4'], 'incorrect'),
-     spec('A(1,5 ; 2), B(−0,5 ; 2,5) → (−2 ; 0,5)', 2, SP_AD, '(-2;0.5)', 'correct'),
-     spec('En fractions', 2, SP_AD, '(-2;\\frac{1}{2})', 'correct'),
-     spec('Erreur : A − B', 2, SP_AD, '(2;-0.5)', 'incorrect')]))
+     spec('A(1,5 ; 2), B(−0,5 ; 2,5) → (−2 ; 0,5)', 2, SP_AD, ['-2', '0.5'], 'correct'),
+     spec('En fractions', 2, SP_AD, ['-2', '\\frac{1}{2}'], 'correct'),
+     spec('Erreur : A − B', 2, SP_AD, ['2', '-0.5'], 'incorrect')]))
 
 # --- 3. 2-300 : coordonnées d'une somme -----------------------------------------------------
 
@@ -228,18 +229,18 @@ NON_NULS = ['abs(u1)+abs(u2) > 0', 'abs(v1)+abs(v2) > 0']
 COORD_PAR_COORD = 'On calcule **coordonnée par coordonnée** : abscisse avec abscisse, ordonnée avec ordonnée.'
 
 SOMME = variation(
-    DEUX_VECTEURS + 'Donne les coordonnées du vecteur $\\vec{u}+\\vec{v}$.\n\n$$\\vec{u}+\\vec{v}\\,?$$',
+    DEUX_VECTEURS + 'Donne les coordonnées du vecteur $\\vec{u}+\\vec{v}$.\n\n$$\\vec{u}+\\vec{v}' + TROUS + '$$',
     VARS_UV,
-    [case_vecteur('{{eval:(u1)+(v1)}}', '{{eval:(u2)+(v2)}}')],
+    cases_vecteur('{{eval:(u1)+(v1)}}', '{{eval:(u2)+(v2)}}'),
     [COORD_PAR_COORD,
      '$\\vec{u}+\\vec{v}' + colonne('{{u1}}+{{v1;()}}', '{{u2}}+{{v2;()}}') + '$, soit $\\vec{u}+\\vec{v}'
      + col(colonne('{{eval:(u1)+(v1)}}', '{{eval:(u2)+(v2)}}')) + '$.'],
     NON_NULS)
 
 DIFFERENCE = variation(
-    DEUX_VECTEURS + 'Donne les coordonnées du vecteur $\\vec{u}-\\vec{v}$.\n\n$$\\vec{u}-\\vec{v}\\,?$$',
+    DEUX_VECTEURS + 'Donne les coordonnées du vecteur $\\vec{u}-\\vec{v}$.\n\n$$\\vec{u}-\\vec{v}' + TROUS + '$$',
     VARS_UV,
-    [case_vecteur('{{eval:(u1)-(v1)}}', '{{eval:(u2)-(v2)}}')],
+    cases_vecteur('{{eval:(u1)-(v1)}}', '{{eval:(u2)-(v2)}}'),
     [COORD_PAR_COORD + ' On retranche les coordonnées de $\\vec{v}$, avec leur signe.',
      '$\\vec{u}-\\vec{v}' + colonne('{{u1}}-{{v1;()}}', '{{u2}}-{{v2;()}}') + '$, soit $\\vec{u}-\\vec{v}'
      + col(colonne('{{eval:(u1)-(v1)}}', '{{eval:(u2)-(v2)}}')) + '$.'],
@@ -249,10 +250,10 @@ CHASLES = variation(
     REPERE + ', on considère les points $' + point('A', '{{ax}}', '{{ay}}') + '$, $'
     + point('B', '{{bx}}', '{{by}}') + '$ et $' + point('C', '{{cx}}', '{{cy}}') + '$.\n\n'
     'Donne les coordonnées du vecteur $\\overrightarrow{AB}+\\overrightarrow{BC}$.\n\n'
-    '$$\\overrightarrow{AB}+\\overrightarrow{BC}\\,?$$',
+    '$$\\overrightarrow{AB}+\\overrightarrow{BC}' + TROUS + '$$',
     [var('ax', '-9..9'), var('ay', '-9..9'), var('bx', '-9..9'), var('by', '-9..9'),
      var('cx', '-9..9'), var('cy', '-9..9')],
-    [case_vecteur('{{eval:(cx)-(ax)}}', '{{eval:(cy)-(ay)}}')],
+    cases_vecteur('{{eval:(cx)-(ax)}}', '{{eval:(cy)-(ay)}}'),
     ['**Relation de Chasles** : $\\overrightarrow{AB}+\\overrightarrow{BC}=\\overrightarrow{AC}$.'
      ' (On peut aussi calculer $\\overrightarrow{AB}$ et $\\overrightarrow{BC}$, puis les additionner.)',
      '$\\overrightarrow{AC}' + colonne('{{cx}}-{{ax;()}}', '{{cy}}-{{ay;()}}') + '$, soit $'
@@ -262,9 +263,9 @@ CHASLES = variation(
 
 COMBINAISON = variation(
     DEUX_VECTEURS + 'Donne les coordonnées du vecteur $\\vec{w}={{p}}\\vec{u}{{q;+}}\\vec{v}$.\n\n'
-    '$$\\vec{w}\\,?$$',
+    '$$\\vec{w}' + TROUS + '$$',
     VARS_UV + [var('p', '2..4'), var('q', '2..4;±')],
-    [case_vecteur('{{eval:(p)*(u1)+(q)*(v1)}}', '{{eval:(p)*(u2)+(q)*(v2)}}')],
+    cases_vecteur('{{eval:(p)*(u1)+(q)*(v1)}}', '{{eval:(p)*(u2)+(q)*(v2)}}'),
     [COORD_PAR_COORD + ' Chaque coordonnée est multipliée par le nombre devant le vecteur.',
      '$\\vec{w}' + colonne('{{p}}\\times{{u1;()}}+{{q;()}}\\times{{v1;()}}',
                            '{{p}}\\times{{u2;()}}+{{q;()}}\\times{{v2;()}}') + '$',
@@ -280,14 +281,14 @@ MODELES.append(modele(
     ' dans la différence, A − C)',
     ('Géométrie', VECTEURS, 'Coordonnées'), 3,
     [SOMME, DIFFERENCE, CHASLES, COMBINAISON],
-    [spec('(3 ; −2) + (−5 ; 4) = (−2 ; 2)', 0, SP_S, '(-2;2)', 'correct'),
-     spec('Erreur : différence (8 ; −6)', 0, SP_S, '(8;-6)', 'incorrect'),
-     spec('(3 ; −2) − (−5 ; 4) = (8 ; −6)', 1, SP_S, '(8;-6)', 'correct'),
-     spec('Erreur : signe de v oublié (−2 ; 2)', 1, SP_S, '(-2;2)', 'incorrect'),
-     spec('AB + BC = AC = (3 ; −3)', 2, SP_C, '(3;-3)', 'correct'),
-     spec('Erreur : A − C (−3 ; 3)', 2, SP_C, '(-3;3)', 'incorrect'),
-     spec('2u − 3v = (9 ; −16)', 3, SP_W, '(9;-16)', 'correct'),
-     spec('Erreur : 2u + 3v (3 ; 8)', 3, SP_W, '(3;8)', 'incorrect')]))
+    [spec('(3 ; −2) + (−5 ; 4) = (−2 ; 2)', 0, SP_S, ['-2', '2'], 'correct'),
+     spec('Erreur : différence (8 ; −6)', 0, SP_S, ['8', '-6'], 'incorrect'),
+     spec('(3 ; −2) − (−5 ; 4) = (8 ; −6)', 1, SP_S, ['8', '-6'], 'correct'),
+     spec('Erreur : signe de v oublié (−2 ; 2)', 1, SP_S, ['-2', '2'], 'incorrect'),
+     spec('AB + BC = AC = (3 ; −3)', 2, SP_C, ['3', '-3'], 'correct'),
+     spec('Erreur : A − C (−3 ; 3)', 2, SP_C, ['-3', '3'], 'incorrect'),
+     spec('2u − 3v = (9 ; −16)', 3, SP_W, ['9', '-16'], 'correct'),
+     spec('Erreur : 2u + 3v (3 ; 8)', 3, SP_W, ['3', '8'], 'incorrect')]))
 
 # --- 4. 2-436 : produit par un réel ---------------------------------------------------------
 
@@ -296,9 +297,9 @@ PRODUIT_REGLE = ('$k\\,\\vec{u}' + colonne('k\\,x', 'k\\,y') + '$ : **chaque** c
                  ' multipliée par $k$.')
 
 PRODUIT_ENTIER = variation(
-    UN_VECTEUR + 'Donne les coordonnées du vecteur ${{k}}\\vec{u}$.\n\n$${{k}}\\vec{u}\\,?$$',
+    UN_VECTEUR + 'Donne les coordonnées du vecteur ${{k}}\\vec{u}$.\n\n$${{k}}\\vec{u}' + TROUS + '$$',
     [var('u1', '1..9;±'), var('u2', '-9..9'), var('k', '2..5;±')],
-    [case_vecteur('{{eval:(k)*(u1)}}', '{{eval:(k)*(u2)}}')],
+    cases_vecteur('{{eval:(k)*(u1)}}', '{{eval:(k)*(u2)}}'),
     [PRODUIT_REGLE,
      '${{k}}\\vec{u}' + colonne('{{k}}\\times{{u1;()}}', '{{k}}\\times{{u2;()}}') + '$, soit ${{k}}\\vec{u}'
      + col(colonne('{{eval:(k)*(u1)}}', '{{eval:(k)*(u2)}}')) + '$.'],
@@ -307,9 +308,9 @@ PRODUIT_ENTIER = variation(
 PRODUIT_FRACTION = variation(
     REPERE + ', on considère le vecteur $\\vec{u}' + colonne('{{eval:(q)*(r1)}}', '{{eval:(q)*(r2)}}')
     + '$.\n\nDonne les coordonnées du vecteur ${{if:s==1||-}}\\dfrac{ {{p}} }{ {{q}} }\\vec{u}$.\n\n'
-    '$${{if:s==1||-}}\\dfrac{ {{p}} }{ {{q}} }\\vec{u}\\,?$$',
+    '$${{if:s==1||-}}\\dfrac{ {{p}} }{ {{q}} }\\vec{u}' + TROUS + '$$',
     [var('s', '1|-1'), var('p', '1|2|3'), var('q', '2|3|4|5'), var('r1', '1..4;±'), var('r2', '1..4;±')],
-    [case_vecteur('{{eval:(s)*(p)*(r1)}}', '{{eval:(s)*(p)*(r2)}}')],
+    cases_vecteur('{{eval:(s)*(p)*(r1)}}', '{{eval:(s)*(p)*(r2)}}'),
     [PRODUIT_REGLE + ' Diviser par ${{q}}$ d\'abord rend le calcul simple.',
      '${{if:s==1||-}}\\dfrac{ {{p}} }{ {{q}} }\\times{{eval:(q)*(r1);()}}={{if:s==1||-}}{{p}}\\times{{r1;()}}='
      + col('{{eval:(s)*(p)*(r1)}}') + '$ et ${{if:s==1||-}}\\dfrac{ {{p}} }{ {{q}} }\\times{{eval:(q)*(r2);()}}'
@@ -339,11 +340,11 @@ MODELES.append(modele(
     ' seule coordonnée multipliée, k inversé)',
     ('Géométrie', VECTEURS, 'Coordonnées'), 4,
     [PRODUIT_ENTIER, PRODUIT_FRACTION, TROUVER_K],
-    [spec('−4 × (3 ; −2) = (−12 ; 8)', 0, SP_PE, '(-12;8)', 'correct'),
-     spec('Erreur : seule l\'abscisse multipliée', 0, SP_PE, '(-12;-2)', 'incorrect'),
-     spec('Erreur : signe (−12 ; −8)', 0, SP_PE, '(-12;-8)', 'incorrect'),
-     spec('−⅔ × (6 ; −3) = (−4 ; 2)', 1, SP_PF, '(-4;2)', 'correct'),
-     spec('Erreur : signe de k oublié', 1, SP_PF, '(4;-2)', 'incorrect'),
+    [spec('−4 × (3 ; −2) = (−12 ; 8)', 0, SP_PE, ['-12', '8'], 'correct'),
+     spec('Erreur : seule l\'abscisse multipliée', 0, SP_PE, ['-12', '-2'], 'incorrect'),
+     spec('Erreur : signe (−12 ; −8)', 0, SP_PE, ['-12', '-8'], 'incorrect'),
+     spec('−⅔ × (6 ; −3) = (−4 ; 2)', 1, SP_PF, ['-4', '2'], 'correct'),
+     spec('Erreur : signe de k oublié', 1, SP_PF, ['4', '-2'], 'incorrect'),
      spec('u(4 ; −2), v(−6 ; 3) → k = −3/2', 2, SP_PK, '-\\frac{3}{2}', 'correct'),
      spec('En décimal', 2, SP_PK, '-1.5', 'correct'),
      spec('Erreur : k inversé (−2/3)', 2, SP_PK, '-\\frac{2}{3}', 'incorrect')]))

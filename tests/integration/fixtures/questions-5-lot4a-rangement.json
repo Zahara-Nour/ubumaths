@@ -1,0 +1,79 @@
+[
+	{
+		"id": "13d31ece-3fe2-4db3-b860-e13caccebe10",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Calcul littéral > substitution",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-036"]
+	},
+	{
+		"id": "61ffb696-de5f-4c8f-a09d-7298682b5a0c",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Calcul littéral",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-124"]
+	},
+	{
+		"id": "8263693b-e6a9-49a1-b2b3-4462d0a64acd",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Calcul littéral > substitution",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-036"]
+	},
+	{
+		"id": "9815bed5-0680-42da-8e41-5840cfae89f8",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Calcul littéral",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-034"]
+	},
+	{
+		"id": "c18da717-bf32-4034-8ab4-5558ef1511b9",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Calcul littéral",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-041"]
+	},
+	{
+		"id": "eca43ba8-85bd-4a8e-8434-67490428e3ee",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Calcul littéral",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-034"]
+	},
+	{
+		"id": "ee9256c0-476f-47e9-a217-8e58821ea6ec",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Calcul littéral",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-037"]
+	}
+]

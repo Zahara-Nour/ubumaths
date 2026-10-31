@@ -790,25 +790,31 @@
 			const rendu = mathsKatex(t.replace(/(\\[,;:!]|\\quad)\s*\^/g, '$1{}^'), bloc);
 			if (rendu) return rendu;
 		}
-		return esc(t)
-			.replace(/\\placeholder\[\d+\]\{\}/g, '<span class="case">?</span>')
-			.replace(/\{,\}/g, ',')
-			.replace(/\\,/g, '\u202f')
-			.replace(/\\ /g, ' ')
-			.replace(/\\rightarrow/g, '→')
-			.replace(/\\leftarrow/g, '←')
-			.replace(/\\uparrow/g, '↑')
-			.replace(/\\downarrow/g, '↓')
-			.replace(/\\ldots/g, ' … ')
-			.replace(/\\quad/g, ' ')
-			.replace(/ - /g, ' − ')
-			.replace(/^-$/, '−')
-			.replace(/\^\{\\text\{([^}]*)\}\}/g, '<sup>$1</sup>')
-			.replace(/~?\\unit\{([^}]*)\}/g, '\u00a0$1')
-			.replace(/~/g, '\u00a0')
-			.replace(/=/g, ' = ')
-			.replace(/ {2,}/g, ' ')
-			.trim();
+		return (
+			esc(t)
+				.replace(/\\placeholder\[\d+\]\{\}/g, '<span class="case">?</span>')
+				.replace(/\{,\}/g, ',')
+				.replace(/\\,/g, '\u202f')
+				.replace(/\\ /g, ' ')
+				.replace(/\\rightarrow/g, '→')
+				.replace(/\\leftarrow/g, '←')
+				.replace(/\\uparrow/g, '↑')
+				.replace(/\\downarrow/g, '↓')
+				.replace(/\\ldots/g, ' … ')
+				.replace(/\\quad/g, ' ')
+				.replace(/ - /g, ' − ')
+				.replace(/^-$/, '−')
+				.replace(/\^\{\\text\{([^}]*)\}\}/g, '<sup>$1</sup>')
+				// unité après une case : cm^2 et cm^3 écrits cm² et cm³
+				.replace(
+					/~?\\unit\{([^}]*)\}/g,
+					(_, u) => '\u00a0' + u.replace(/\^2/g, '²').replace(/\^3/g, '³')
+				)
+				.replace(/~/g, '\u00a0')
+				.replace(/=/g, ' = ')
+				.replace(/ {2,}/g, ' ')
+				.trim()
+		);
 	}
 	function enLigne(t) {
 		return t

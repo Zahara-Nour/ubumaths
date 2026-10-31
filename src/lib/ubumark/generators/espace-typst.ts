@@ -17,7 +17,7 @@
  *
  * ```solide (lot 3) : traits pleins ou en tirets (`dash: "dashed"`), face
  * marquée en gris clair, noms et cotes, depuis `buildSolideScene` (la scène
- * de l'écran). ```patron (lot 4) : contour, plis en trait fin, depuis
+ * de l'écran) ; section (lot 6) en orange clair. ```patron (lot 4) : contour, plis en trait fin, depuis
  * `buildPatronScene`.
  *
  * Gestes du patron (lot 5) : `designer:` → le patron, l'élève colorie au crayon ;
@@ -169,6 +169,9 @@ const sideBySide = (figures: string[]) =>
 /** Gris d'une face marquée */
 const MARKED_FACE_LUMA = 215;
 
+/** Section (`section:`) : l'orange des figures, clair (lisible en noir et blanc) */
+const SECTION_FILL = 'rgb(248, 200, 150)';
+
 /** Un solide en perspective cavalière */
 function solideTypst(spec: SolideSpec): string {
 	const scene = buildSolideScene(spec);
@@ -178,6 +181,11 @@ function solideTypst(spec: SolideSpec): string {
 	for (const fill of scene.fills) {
 		content.push(
 			`  #place(top + left, polygon(fill: luma(${MARKED_FACE_LUMA}), stroke: none, ${fill.map(at).join(', ')}))`
+		);
+	}
+	if (scene.section) {
+		content.push(
+			`  #place(top + left, polygon(fill: ${SECTION_FILL}, stroke: none, ${scene.section.map(at).join(', ')}))`
 		);
 	}
 	for (const line of scene.lines) {

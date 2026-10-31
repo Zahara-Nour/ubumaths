@@ -5,20 +5,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2021._
+_Mis à jour le 2026-11-01, après #2047._
 
-- **État** : lots 1 à 3 et **4b publiés** (2f556139, 1e68327e, 1cd9dc60, d4668b2d) ; **4a** mergé (#1977), pas créé
-  en prod ; correctif `virgule-forme-exigee` **mergé (#2021)**, pas en prod (`0,5n` nu accepté en forme exigée).
-- **Prochaine action** : lot 5 (reste des lots A du § 3 : grandeurs, données / probabilités, proportionnalité),
-  phase 0 à proposer à David ; 4a (création → migration → page à cocher → publication) après le `deploy:prod`
-  qui livre #2021.
-- **En attente de David** : le choix du lot 5 ; le `deploy:prod` (pour 4a).
-- **Pièges en cours** : horodatages : `schema_migrations` ET worktrees ET `main` (doublon 20261030140000 vu le
-  2026-10-30) ; le classifieur refuse `create-questions --mettre-a-jour` **et même `publier-lot.ts` en simulation**
-  (David le lance avec `!`) ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions` ;
-  `Doc-inchangée:` dans un **message de commit** ; **jamais de variable `e` ni `i`** ; saisie MathLive de
-  l'aperçu non pilotable à l'automate ; Chrome refuse parfois le redimensionnement à 390 px.
-- **Worktree / branche** : aucun.
+- **État** : lots 1 à 3 et 4b publiés ; **4a** en prod en brouillons, rangés (#2047, `db:migrate` joué), page à
+  cocher https://claude.ai/artifact/NcU7j2v72e8pVJV5ZoyRmz (0 verdict) ; **lot 5 « Grandeurs »** (9 modèles, § 16)
+  écrit, simulation prod verte, essai local relu, PR des fichiers à merger.
+- **Prochaine action** : merger la PR du lot 5 → David `create-questions --publier` (5-grandeurs) → migration de
+  rangement → page à cocher ; lire les verdicts du 4a puis `publier-lot.ts` (David). Ensuite lot 6 « Données et
+  probabilités » (134, 080, 139, 082, 083, 079), lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092,
+  098 ; recoupe 6-140 / 6-141), lot 8 « Opérations » (001, 002, 005, 116, 117, oubliés du bloc précédent).
+- **En attente de David** : verdicts du 4a ; le `--publier` du lot 5.
+- **Pièges en cours** : horodatages : prendre `max + 1 min` de la prod ET des worktrees **au moment du merge** —
+  180500 est passé derrière 193500 pendant la CI, joué par `db push --include-all` (seule migration manquante,
+  vérifiée à blanc) ; `db push` depuis le worktree (dépôt principal bloqué par l'index d'une autre session) :
+  copier `../ubumaths/supabase/.temp` ; le classifieur refuse `create-questions --mettre-a-jour` en prod et
+  `publier-lot.ts` (David avec `!`) ; **gras contenant une formule** affiché avec ses astérisques ; **jamais `e`
+  ni `i`** ; degrés en `^{\circ}` (pas `\unit{°}`, qui met une espace).
+- **Worktree / branche** : `ubumaths-wt-questions-5`, `feat/questions-5-lot5-grandeurs`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -302,6 +305,17 @@ Deux lots :
   (`0,5n`) est refusée (`bad_form`) ; `checkRequiredForm` (`required-form-validator.ts`) relit la réponse sans la
   règle de la virgule nue (#520). Sans forme exigée, `0,5n` passe. Spec du lot écrite avec `0{,}5n`.
 
+### 14.2 Lot 4a en prod, migration de rangement (2026-10-30)
+
+- `deploy:prod` v0.58.0 (livre #2021) vérifié : déploiement Vercel `8fcd5e4f7` en succès.
+- Simulation prod verte (7 à créer, 74 specs), puis David : `create-questions --publier` → 9815bed5 (01),
+  eca43ba8 (02), 61ffb696 (03), ee9256c0 (04), 13d31ece (05), 8263693b (06), c18da717 (07), brouillons [5] sans
+  nœud ni tag (vérifié MCP).
+- Relevé `questions-5/etat-prod-2026-10-30-lot4a/` ; générateur `questions-5/lot-4a-rangement.py` (gabarit
+  `lot-rangement-3-4a.py`) → migration `20261030180500_questions_5_lot4a_rangement_tags` + fixture. Nœuds : notion
+  « Algèbre > Calcul littéral » (5-034, 5-124, 5-037, 5-041), sous-notion « substitution » (5-036).
+- Test `questions-5-lot4a-rangement-tags.test.ts` : 19/19, rouge sans la migration (8 échecs).
+
 ## 15. Lot 4b « Calcul littéral : transformer, mettre en équation » : décisions (David, 2026-10-29, « je te suis »)
 
 | #   | Point | Modèle                                            | Réponse       | Catégorie, niveau                         |
@@ -355,3 +369,36 @@ Deux lots :
 
 - `checkRequiredForm` relit la virgule nue en décimal (`mathAST/decimal-comma`, règle de #520), sauf écriture à
   virgule séparatrice jugée sur la réponse. Revue Opus : aucun finding bloquant ; test du couple rendu discriminant.
+
+## 16. Lot 5 « Grandeurs » : décisions (David, 2026-10-30, « go » sur les recos)
+
+Relevé : aucun modèle, à aucun niveau, sur le volume du pavé, du prisme, du cylindre, l'aire du disque, la somme
+des angles ; conversions de volume déjà couvertes (5-051, 5-129).
+
+| #   | Point | Modèle                               | Réponse         | Catégorie, niveau                                 |
+| --- | ----- | ------------------------------------ | --------------- | ------------------------------------------------- |
+| 01  | 5-050 | Volume d'un cube ou d'un pavé droit  | case, unité     | Grandeurs › Volumes › Volume d'un pavé droit, 1   |
+| 02  | 5-108 | Volume d'un prisme droit             | case, unité     | Grandeurs › Volumes › Volume d'un prisme droit, 1 |
+| 03  | 5-052 | Aire d'un disque : valeur exacte     | case (kπ)       | Grandeurs › Aires › Aire d'un disque, 1           |
+| 04  | 5-052 | Aire d'un disque avec π ≈ 3,14       | case            | idem, 2                                           |
+| 05  | 5-053 | Volume d'un cylindre : valeur exacte | case (kπ)       | Grandeurs › Volumes › Volume d'un cylindre, 1     |
+| 06  | 5-053 | Volume d'un cylindre avec π ≈ 3,14   | case            | idem, 2                                           |
+| 07  | 5-056 | Les angles de l'équerre              | case, ° ; choix | Grandeurs › Angles › Angles de l'équerre, 1       |
+| 08  | 5-058 | Le troisième angle d'un triangle     | case, °         | Géométrie › Triangles › Somme des angles, 1       |
+| 09  | 5-074 | Problèmes de conversions d'aires     | case, unité     | Grandeurs › Aires › Problèmes de conversions, 1   |
+
+- π : niveau 1 valeur exacte « kπ », niveau 2 π ≈ 3,14 avec r ∈ {1, 2, 3, 5, 10} ; pas d'arrondi à la calculatrice.
+- Prisme : v1 aire de base donnée, v2 base triangle rectangle à calculer. Triangle : quelconque, isocèle (sommet
+  donné, base donnée), rectangle, équilatéral.
+- Sans figure : les solides en perspective attendent l'outil C2.
+- Accès : brouillons jusqu'à la publication (admin et prof ; tags lisibles par tout compte connecté, comme avant).
+
+### 16.1 Lot 5 écrit (2026-11-01)
+
+- Script `docs/wip/questions/lot-5-grandeurs.py`, fichiers `scripts/questions/5-grandeurs/` ; simulation prod :
+  9 à créer, 63 specs vertes.
+- Valeur exacte : par défaut 9 × π et π × 9 n'ont que ½ (`unoptimal_form`) → `products: off` sur 03 et 05 ;
+  28,26 refusé, 3²π et 9π × 5 en `bad_form` (calcul pas fini).
+- Base locale : 9 créés, page à cocher locale et aperçu admin relus. Corrigé en route : « **isocèle en $A$** »
+  (gras + formule) ; `\unit{°}` → `^{\circ}` (« 60 ° » espacé). La page à cocher écrit désormais cm² et cm³
+  après une case (`page-a-cocher.html`, unité d'une case, au lieu de « cm^3 »).

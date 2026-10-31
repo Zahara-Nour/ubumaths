@@ -10,16 +10,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2036 (lot 0-limites et fonctions, fichiers sur `main`)._
+_Mis à jour le 2026-11-01, après #2036 et la publication du lot 0-limites._
 
-- **État** : lot 0-limites (26 brouillons) vérifié, 6 corrections de texte dans `scripts/questions/tspe-0-limites/` (§ 7), mergé (#2036), rien d'écrit en base ; page à cocher https://claude.ai/artifact/2D9SVXyUhRM7W7YxjNuEMA, `verdicts` vide.
-- **Prochaine action** : David lance les simulations `create-questions --mettre-a-jour` et `publier-lot` (le mode auto les refuse), relit la page ; puis `--publier --mettre-a-jour`, `publier-lot --publier`, statut relu en base.
-- **En attente de David** : simulations + relecture de la page.
+- **État** : lots 0-suites et 0-limites et fonctions (26 modèles, § 7) **publiés** en prod, relecture validée en bloc par David, statut et niveaux relus en base (26 `published`, tous `T_SPE`).
+- **Prochaine action** : lot « convexité et intégration » (convexité : 37ce7759, e3e19d28, 225c8682, 08f9ad7b, c4775a3a, 98f9d4b2, e814175b, 21840f6c, a80a780f, sans tag) dans un nouveau worktree : export des id, relecture tirage par tirage, page à cocher. Plus tard : migration des tags Q3 (f1963ef2 → TSPE-447, 806c10f4/04ec9518 sur 415).
+- **En attente de David** : rien.
 - **Pièges en cours** : `create-questions` et `publier-lot` → David ; les vieux dossiers
   `scripts/questions/<thème>-terminale/` ne concordent peut-être plus avec la base → partir des id ;
   simulation `publier-lot` AVANT tout (collisions de niveau → migration + fichiers) ;
   **horodatage de migration** : max + 1 min de la prod (`migration list --linked`) juste avant de créer le fichier.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` gardé jusqu'à la publication (branche mergée) ; simulations lançables aussi depuis le dépôt principal.
+- **Worktree / branche** : aucun (worktree du lot 0-limites retiré).
 
 ## 1. Relevé (prod, 2026-10-29)
 

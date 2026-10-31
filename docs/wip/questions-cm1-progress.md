@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, page à cocher du lot 3b publiée._
+_Mis à jour le 2026-11-01, après la publication du lot 3b._
 
-- **État** : lots 0, 1, 2 et 3a publiés. Lot 3b (fractions décimales, 8 modèles) : 8 brouillons en prod (§ 10 quater) ; rangés et tagués (#2045, migration jouée), page à cocher publiée (§ 10 sexies). #2040 et #2032 mergées, pas en prod.
-- **Prochaine action** : lire `verdicts` de la page (compter 8 réponses) ; « À revoir » → corriger (§ 7 de la démarche) ; puis simulation `publier-lot --dir scripts/questions/cm1-3b`, `--publier` par David, statut relu au MCP. Ensuite lot 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
-- **En attente de David** : relecture de la page à cocher.
+- **État** : lots 0, 1, 2, 3a et **3b publiés** (3b : 8 modèles, § 10 à 10 septies). #2040 et #2032 mergées, pas en prod.
+- **Prochaine action** : phase 0 détaillée du lot 3c (partages, 4 points : 145, 150 « quelle part est coloriée ? », 144, 149 « colorier » ; découpage décidé au § 9 bis), sur le modèle du § 10, à faire valider ; brouillons sans attendre le `deploy:prod` du bloc ```partage (pas encore en prod), publication après.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; `gh pr checks` peut rester « pending » sur des 502 : suivre le run.
 - **Worktree / branche** : aucun (retiré après #2045).
 
@@ -520,3 +520,8 @@ Ids : `36507fc9-df87-46a4-865d-aec7935580c3` (lire et écrire), `6faa64d0-6b77-4
   chacun, toujours brouillons, `updated_at` inchangé (création, 08:57).
 - Page : https://claude.ai/artifact/TuwevKXLAmaT9Qs837E7Xe (alertes attendues : `ranger et `line
   non dessinés, à jouer dans l’aperçu) ; `verdicts` vide à la publication.
+
+### 10 septies. Lot 3b — publication (2026-11-01)
+
+- Page à cocher : 8 verdicts « OK », sans commentaire (comptés dans `verdicts`). Simulation
+  `publier-lot` : 8 brouillons passent ; `--publier` lancé par David ; 8 `published` relus au MCP.

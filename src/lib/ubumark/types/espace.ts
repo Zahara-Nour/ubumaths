@@ -58,7 +58,7 @@ export type CubesSideView = (typeof CUBES_SIDE_VIEWS)[number];
 export const CUBES_KEYS = ['hauteurs', 'vue', 'dessiner', 'retrouver', 'case'] as const;
 
 /** Les clés du bloc ```solide */
-export const SOLIDE_KEYS = ['forme', 'sommets', 'marquer', 'cotes', 'cachees'] as const;
+export const SOLIDE_KEYS = ['forme', 'sommets', 'marquer', 'cotes', 'cachees', 'section'] as const;
 
 /**
  * Les formes d'un ```solide (mot de `forme:`, puis la base s'il y a lieu) et le
@@ -178,6 +178,8 @@ export interface SolideSpec {
 	cotes: { unit: '' | (typeof SOLIDE_UNITS)[number] } | null;
 	/** Arêtes cachées en tirets (`cachees: non` : tout en plein) */
 	hidden: boolean;
+	/** Plan de coupe (`section:`, lot 6) ; null : aucun */
+	section: SolideSection | null;
 	/** Aucun geste (lot 3) : `spec.task` se lit sans savoir le genre */
 	task?: undefined;
 }
@@ -247,6 +249,19 @@ export type PatronTask =
 export type PatronMark =
 	| { kind: 'face'; faces: number[]; label: string }
 	| { kind: 'sommet'; vertex: number; label: string };
+
+/**
+ * Plan de coupe d'un ```solide (lot 6), distance dans les unités de `forme:` :
+ * - `face` (cube, pavé) : parallèle à la face `face` (sommets dans l'ordre écrit),
+ *   à `distance` de cette face ; `names` : noms des sommets de la section, le
+ *   i-ème sur l'arête qui part de `face[i]` ; `label` : « face ABCD », « face du dessus » ;
+ * - `perpendiculaire` (cylindre) : ⊥ à l'axe, à `distance` au-dessus de la base du bas ;
+ * - `parallele` (cylindre) : plan de face, à `distance` de l'axe, côté de l'œil ;
+ * - `boule` : horizontal, à `distance` au-dessus du centre.
+ */
+export type SolideSection =
+	| { kind: 'face'; face: number[]; distance: number; names: string[] | null; label: string }
+	| { kind: 'perpendiculaire' | 'parallele' | 'boule'; distance: number };
 
 /** Ce que `marquer:` désigne ; `label` : sa lecture (« face ABCD », « face du dessus ») */
 export type SolideMark =

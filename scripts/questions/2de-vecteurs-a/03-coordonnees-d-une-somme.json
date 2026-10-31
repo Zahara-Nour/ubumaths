@@ -15,7 +15,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{u}+\\vec{v}$.\n\n$$\\vec{u}+\\vec{v}\\,?$$",
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{u}+\\vec{v}$.\n\n$$\\vec{u}+\\vec{v}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
 			"variables": [
 				{
 					"name": "u1",
@@ -37,8 +37,10 @@
 			"conditions": ["abs(u1)+abs(u2) > 0", "abs(v1)+abs(v2) > 0"],
 			"blanks": [
 				{
-					"expectedAnswer": "({{eval:(u1)+(v1)}};{{eval:(u2)+(v2)}})",
-					"answerKind": "vecteur"
+					"expectedAnswer": "{{eval:(u1)+(v1)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(u2)+(v2)}}"
 				}
 			],
 			"correction": {
@@ -49,7 +51,7 @@
 			}
 		},
 		{
-			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{u}-\\vec{v}$.\n\n$$\\vec{u}-\\vec{v}\\,?$$",
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{u}-\\vec{v}$.\n\n$$\\vec{u}-\\vec{v}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
 			"variables": [
 				{
 					"name": "u1",
@@ -71,8 +73,10 @@
 			"conditions": ["abs(u1)+abs(u2) > 0", "abs(v1)+abs(v2) > 0", "v1 < 0 || v2 < 0"],
 			"blanks": [
 				{
-					"expectedAnswer": "({{eval:(u1)-(v1)}};{{eval:(u2)-(v2)}})",
-					"answerKind": "vecteur"
+					"expectedAnswer": "{{eval:(u1)-(v1)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(u2)-(v2)}}"
 				}
 			],
 			"correction": {
@@ -83,7 +87,7 @@
 			}
 		},
 		{
-			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$, $B({{bx}}\\,;\\,{{by}})$ et $C({{cx}}\\,;\\,{{cy}})$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}+\\overrightarrow{BC}$.\n\n$$\\overrightarrow{AB}+\\overrightarrow{BC}\\,?$$",
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$, $B({{bx}}\\,;\\,{{by}})$ et $C({{cx}}\\,;\\,{{cy}})$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}+\\overrightarrow{BC}$.\n\n$$\\overrightarrow{AB}+\\overrightarrow{BC}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
 			"variables": [
 				{
 					"name": "ax",
@@ -113,8 +117,10 @@
 			"conditions": ["cx != ax", "cy != ay", "bx != ax", "bx != cx"],
 			"blanks": [
 				{
-					"expectedAnswer": "({{eval:(cx)-(ax)}};{{eval:(cy)-(ay)}})",
-					"answerKind": "vecteur"
+					"expectedAnswer": "{{eval:(cx)-(ax)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(cy)-(ay)}}"
 				}
 			],
 			"correction": {
@@ -125,7 +131,7 @@
 			}
 		},
 		{
-			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{w}={{p}}\\vec{u}{{q;+}}\\vec{v}$.\n\n$$\\vec{w}\\,?$$",
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{w}={{p}}\\vec{u}{{q;+}}\\vec{v}$.\n\n$$\\vec{w}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
 			"variables": [
 				{
 					"name": "u1",
@@ -162,8 +168,10 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "({{eval:(p)*(u1)+(q)*(v1)}};{{eval:(p)*(u2)+(q)*(v2)}})",
-					"answerKind": "vecteur"
+					"expectedAnswer": "{{eval:(p)*(u1)+(q)*(v1)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(p)*(u2)+(q)*(v2)}}"
 				}
 			],
 			"correction": {
@@ -185,7 +193,7 @@
 				"v1": "-5",
 				"v2": "4"
 			},
-			"answers": ["(-2;2)"],
+			"answers": ["-2", "2"],
 			"expected": {
 				"status": "correct"
 			}
@@ -199,7 +207,7 @@
 				"v1": "-5",
 				"v2": "4"
 			},
-			"answers": ["(8;-6)"],
+			"answers": ["8", "-6"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -213,7 +221,7 @@
 				"v1": "-5",
 				"v2": "4"
 			},
-			"answers": ["(8;-6)"],
+			"answers": ["8", "-6"],
 			"expected": {
 				"status": "correct"
 			}
@@ -227,7 +235,7 @@
 				"v1": "-5",
 				"v2": "4"
 			},
-			"answers": ["(-2;2)"],
+			"answers": ["-2", "2"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -243,7 +251,7 @@
 				"cx": "4",
 				"cy": "-1"
 			},
-			"answers": ["(3;-3)"],
+			"answers": ["3", "-3"],
 			"expected": {
 				"status": "correct"
 			}
@@ -259,7 +267,7 @@
 				"cx": "4",
 				"cy": "-1"
 			},
-			"answers": ["(-3;3)"],
+			"answers": ["-3", "3"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -275,7 +283,7 @@
 				"p": "2",
 				"q": "-3"
 			},
-			"answers": ["(9;-16)"],
+			"answers": ["9", "-16"],
 			"expected": {
 				"status": "correct"
 			}
@@ -291,7 +299,7 @@
 				"p": "2",
 				"q": "-3"
 			},
-			"answers": ["(3;8)"],
+			"answers": ["3", "8"],
 			"expected": {
 				"status": "incorrect"
 			}

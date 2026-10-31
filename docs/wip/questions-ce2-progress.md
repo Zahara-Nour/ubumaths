@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2020._
+_Mis à jour le 2026-11-01, migration des niveaux du lot 4 écrite (PR ouverte)._
 
-- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions) : 10 brouillons en prod, migration nœud + tag
-  `20261030161000` mergée (#2020), PAS ENCORE JOUÉE (§ 8).
-- **Prochaine action** : `db:migrate` (David, `!`, `--dry-run` d'abord : seule `161000` en attente au relevé MCP)
-  → relevé MCP (10 modèles, nœud + 1 point) → page à cocher.
-- **En attente de David** : rien. Correctif de la carte de correction (choix `$$…$$` en LaTeX brut,
-  15 modèles publiés) : go le 2026-10-30, chantier À PART `choix-correction` (autre session, § 8).
-  Publier le lot 4 APRÈS le `deploy:prod` de ce correctif (modèle 03 touché).
+- **État** : lot 4 (fractions) relu 10/10 OK ; `publier-lot` refusait 08 (niveau 18 pris par `884908d3` CM1).
+  Migration `20261101090000_questions_ce2_lot4_niveaux` (08 18→19, 09 19→20, 10 20→21) + fichiers + script,
+  branche `content/questions-ce2-lot4-niveaux`, PR #2051 ouverte (§ 8).
+- **Prochaine action** : CI verte → merge → `db:migrate` (David, `!`, `--dry-run` d'abord) → relevé MCP →
+  `publier-lot` (simulation), puis `--publier` (David) → relevé du statut.
+- **En attente de David** : rien. Décidé le 2026-11-01 : publier SANS attendre `choix-correction` (chantier
+  jamais lancé ; à ouvrir dans une session à part après ce lot).
 - **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
-- **Worktree / branche** : aucun (retiré après #2020).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `content/questions-ce2-lot4-niveaux`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -362,3 +362,18 @@ de plus (brouillons neufs ; la migration nœud + tag ne change aucune règle).
   et #2018 ; branche remise à jour par merge, CI verte). Revue : `security-auditor` seul (migration de contenu).
   Worktree retiré. Relevé MCP : seule `20261030161000` en attente en prod. Les 4 conditions du `db:migrate` sont
   réunies (accès tranché, test vérifié rouge, audit sans finding, migration additive avec rollback).
+- 2026-10-30 : `20261030161000` jouée en prod par le `db:migrate` d'une autre session (dry-run de David : « up to
+  date »). Relevé MCP : les 10 modèles sur leur sous-notion, un point chacun, `updated_at` inchangé, draft.
+- Page à cocher : https://claude.ai/artifact/Qs3HjpvSQV2MUMt631y9oJ (10 fiches ; alertes « homonyme d'un autre
+  niveau écarté » sur 04, 07, 09 : les fiches gardées sont bien les ids du lot).
+- 2026-10-31 : relecture de David, 10/10 « OK » sans commentaire (base `verdicts` comptée). `publier-lot`
+  (simulation) : ⛔ 08, niveau 18 de « Fractions › Calculer › Addition et Soustraction » occupé par `884908d3`
+  (CM1, publié après la création du lot) ; niveaux 1-20 tous pris, 21 libre. `choix-correction` : aucune trace
+  (branche, PR, journal, worktree) ; `ChoiceList.svelte` passe toujours le choix à `InlineMarkdown`.
+- 2026-11-01 : recos de David validées : niveaux 08 → 19, 09 → 20, 10 → 21 (ordre de la phase 0 gardé) ; publier sans
+  attendre `choix-correction`. ⚠️ `create-questions --mettre-a-jour` ne peut PAS changer un niveau (la clé contient
+  le niveau : il créerait des doublons) → migration `20261101090000_questions_ce2_lot4_niveaux` (calquée sur
+  1spe géométrie repérée). Accès : personne (David, 2026-11-01). Test d'intégration : vert 7/7, rouge sans le
+  corps (3 échecs, 3 sautés). `security-auditor` : aucun finding (index d'unicité partiel sur `published` : les
+  brouillons peuvent se croiser). Fichiers `scripts/questions/ce2-4/` et `docs/wip/questions/lot-ce2-4.py` aux
+  mêmes niveaux (régénération identique).

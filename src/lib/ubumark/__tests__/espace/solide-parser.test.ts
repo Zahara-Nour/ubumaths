@@ -22,7 +22,8 @@ describe('```solide — forme:', () => {
 			names: null,
 			marks: [],
 			cotes: null,
-			hidden: true
+			hidden: true,
+			section: null
 		});
 	});
 

@@ -1,0 +1,356 @@
+{
+	"title": "Quartiles d'une série à effectifs",
+	"description": "Donner les quartiles d'une série donnée par un tableau d'effectifs ou un diagramme en barres, par les effectifs cumulés (convention du programme)",
+	"grades": ["3"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Quartiles",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici le nombre de jours d'absence des élèves d'un collège sur un trimestre.\n\n```effectifs\ntitre: Jours d'absence\n0 = {{n0}}\n1 = {{n1}}\n2 = {{n2}}\n3 = {{n3}}\n4 = {{n4}}\n5 = {{n5}}\nlignes: effectifs\n```\n\nDétermine le premier quartile $Q_1$ de cette série.\n\n$Q_1=?$",
+			"variables": [
+				{
+					"name": "n0",
+					"expression": "2..12"
+				},
+				{
+					"name": "n1",
+					"expression": "2..12"
+				},
+				{
+					"name": "n2",
+					"expression": "2..12"
+				},
+				{
+					"name": "n3",
+					"expression": "2..12"
+				},
+				{
+					"name": "n4",
+					"expression": "2..12"
+				},
+				{
+					"name": "n5",
+					"expression": "2..12"
+				},
+				{
+					"name": "C0",
+					"expression": "eval:n0"
+				},
+				{
+					"name": "C1",
+					"expression": "eval:n0+n1"
+				},
+				{
+					"name": "C2",
+					"expression": "eval:n0+n1+n2"
+				},
+				{
+					"name": "C3",
+					"expression": "eval:n0+n1+n2+n3"
+				},
+				{
+					"name": "C4",
+					"expression": "eval:n0+n1+n2+n3+n4"
+				},
+				{
+					"name": "C5",
+					"expression": "eval:n0+n1+n2+n3+n4+n5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:C5"
+				},
+				{
+					"name": "Q",
+					"expression": "{{if:4*C0>=N|0|{{if:4*C1>=N|1|{{if:4*C2>=N|2|{{if:4*C3>=N|3|{{if:4*C4>=N|4|5}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{Q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$Q_1$ est la plus petite valeur dont l'effectif cumulé atteint 25 % de l'effectif total.",
+					"Effectif total : ${{N}}$ ; 25 % de ${{N}}$ : $\\dfrac{ {{N}} }{4} = {{eval:floor(1*N/4)}}{{if:(1*N-4*floor(1*N/4))==1|{,}25|{{if:(1*N-4*floor(1*N/4))==2|{,}5|{{if:(1*N-4*floor(1*N/4))==3|{,}75|}}}}}}$.",
+					"Effectifs cumulés croissants : $0$ → ${{C0}}$ ; $1$ → ${{C1}}$ ; $2$ → ${{C2}}$ ; $3$ → ${{C3}}$ ; $4$ → ${{C4}}$ ; $5$ → ${{C5}}$.",
+					"$Q_1 = \\textcolor{{{color:primary.0}}}{{{eval:0+Q}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici les notes sur $20$ obtenues par les élèves à un devoir commun.\n\n```effectifs\ntitre: Note\n10 = {{n0}}\n11 = {{n1}}\n12 = {{n2}}\n13 = {{n3}}\n14 = {{n4}}\n15 = {{n5}}\nlignes: effectifs\n```\n\nDétermine le troisième quartile $Q_3$ de cette série.\n\n$Q_3=?$",
+			"variables": [
+				{
+					"name": "n0",
+					"expression": "2..12"
+				},
+				{
+					"name": "n1",
+					"expression": "2..12"
+				},
+				{
+					"name": "n2",
+					"expression": "2..12"
+				},
+				{
+					"name": "n3",
+					"expression": "2..12"
+				},
+				{
+					"name": "n4",
+					"expression": "2..12"
+				},
+				{
+					"name": "n5",
+					"expression": "2..12"
+				},
+				{
+					"name": "C0",
+					"expression": "eval:n0"
+				},
+				{
+					"name": "C1",
+					"expression": "eval:n0+n1"
+				},
+				{
+					"name": "C2",
+					"expression": "eval:n0+n1+n2"
+				},
+				{
+					"name": "C3",
+					"expression": "eval:n0+n1+n2+n3"
+				},
+				{
+					"name": "C4",
+					"expression": "eval:n0+n1+n2+n3+n4"
+				},
+				{
+					"name": "C5",
+					"expression": "eval:n0+n1+n2+n3+n4+n5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:C5"
+				},
+				{
+					"name": "Q",
+					"expression": "{{if:4*C0>=3*N|0|{{if:4*C1>=3*N|1|{{if:4*C2>=3*N|2|{{if:4*C3>=3*N|3|{{if:4*C4>=3*N|4|5}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10+Q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$Q_3$ est la plus petite valeur dont l'effectif cumulé atteint 75 % de l'effectif total.",
+					"Effectif total : ${{N}}$ ; 75 % de ${{N}}$ : $\\dfrac{3 \\times {{N}} }{4} = {{eval:floor(3*N/4)}}{{if:(3*N-4*floor(3*N/4))==1|{,}25|{{if:(3*N-4*floor(3*N/4))==2|{,}5|{{if:(3*N-4*floor(3*N/4))==3|{,}75|}}}}}}$.",
+					"Effectifs cumulés croissants : $10$ → ${{C0}}$ ; $11$ → ${{C1}}$ ; $12$ → ${{C2}}$ ; $13$ → ${{C3}}$ ; $14$ → ${{C4}}$ ; $15$ → ${{C5}}$.",
+					"$Q_3 = \\textcolor{{{color:primary.0}}}{{{eval:10+Q}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le diagramme donne le nombre de passagers dans les voitures passées à un péage.\n\n```barres\ntitre: Passagers par voiture\naxes: Nombre de personnes ; Nombre de voitures\naxe: 0 à 12, de 1 en 1\n1 = {{n0}}\n2 = {{n1}}\n3 = {{n2}}\n4 = {{n3}}\n5 = {{n4}}\n6 = {{n5}}\ndescription: Diagramme en barres des effectifs de chaque valeur, de 1 à 6.\n```\n\nDétermine le premier quartile $Q_1$ et le troisième quartile $Q_3$ de cette série.\n\n$Q_1=?$ et $Q_3=?$",
+			"variables": [
+				{
+					"name": "n0",
+					"expression": "2..12"
+				},
+				{
+					"name": "n1",
+					"expression": "2..12"
+				},
+				{
+					"name": "n2",
+					"expression": "2..12"
+				},
+				{
+					"name": "n3",
+					"expression": "2..12"
+				},
+				{
+					"name": "n4",
+					"expression": "2..12"
+				},
+				{
+					"name": "n5",
+					"expression": "2..12"
+				},
+				{
+					"name": "C0",
+					"expression": "eval:n0"
+				},
+				{
+					"name": "C1",
+					"expression": "eval:n0+n1"
+				},
+				{
+					"name": "C2",
+					"expression": "eval:n0+n1+n2"
+				},
+				{
+					"name": "C3",
+					"expression": "eval:n0+n1+n2+n3"
+				},
+				{
+					"name": "C4",
+					"expression": "eval:n0+n1+n2+n3+n4"
+				},
+				{
+					"name": "C5",
+					"expression": "eval:n0+n1+n2+n3+n4+n5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:C5"
+				},
+				{
+					"name": "Q",
+					"expression": "{{if:4*C0>=N|0|{{if:4*C1>=N|1|{{if:4*C2>=N|2|{{if:4*C3>=N|3|{{if:4*C4>=N|4|5}}}}}}}}}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{if:4*C0>=3*N|0|{{if:4*C1>=3*N|1|{{if:4*C2>=3*N|2|{{if:4*C3>=3*N|3|{{if:4*C4>=3*N|4|5}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1+Q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1+R}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$Q_1$ (et $Q_3$) est la plus petite valeur dont l'effectif cumulé atteint $25~\\%$ ($75~\\%$) de l'effectif total.",
+					"Effectif total : ${{N}}$ ; $\\dfrac{ {{N}} }{4} = {{eval:floor(1*N/4)}}{{if:(1*N-4*floor(1*N/4))==1|{,}25|{{if:(1*N-4*floor(1*N/4))==2|{,}5|{{if:(1*N-4*floor(1*N/4))==3|{,}75|}}}}}}$ et $\\dfrac{3 \\times {{N}} }{4} = {{eval:floor(3*N/4)}}{{if:(3*N-4*floor(3*N/4))==1|{,}25|{{if:(3*N-4*floor(3*N/4))==2|{,}5|{{if:(3*N-4*floor(3*N/4))==3|{,}75|}}}}}}$.",
+					"Effectifs cumulés croissants : $1$ → ${{C0}}$ ; $2$ → ${{C1}}$ ; $3$ → ${{C2}}$ ; $4$ → ${{C3}}$ ; $5$ → ${{C4}}$ ; $6$ → ${{C5}}$.",
+					"$Q_1 = \\textcolor{{{color:primary.0}}}{{{eval:1+Q}}}$ et $Q_3 = \\textcolor{{{color:primary.1}}}{{{eval:1+R}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "N = 20, 25 % = 5 : Q1 = 1",
+			"variationIndex": 0,
+			"variables": {
+				"n0": "3",
+				"n1": "2",
+				"n2": "2",
+				"n3": "5",
+				"n4": "4",
+				"n5": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : convention de calculatrice, 1,5",
+			"variationIndex": 0,
+			"variables": {
+				"n0": "3",
+				"n1": "2",
+				"n2": "2",
+				"n3": "5",
+				"n4": "4",
+				"n5": "4"
+			},
+			"answers": ["1{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la médiane, 3",
+			"variationIndex": 0,
+			"variables": {
+				"n0": "3",
+				"n1": "2",
+				"n2": "2",
+				"n3": "5",
+				"n4": "4",
+				"n5": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "N = 20, 75 % = 15 : Q3 = 14",
+			"variationIndex": 1,
+			"variables": {
+				"n0": "2",
+				"n1": "3",
+				"n2": "4",
+				"n3": "2",
+				"n4": "6",
+				"n5": "3"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la médiane, 13",
+			"variationIndex": 1,
+			"variables": {
+				"n0": "2",
+				"n1": "3",
+				"n2": "4",
+				"n3": "2",
+				"n4": "6",
+				"n5": "3"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Barres : Q1 = 2, Q3 = 5",
+			"variationIndex": 2,
+			"variables": {
+				"n0": "3",
+				"n1": "2",
+				"n2": "2",
+				"n3": "5",
+				"n4": "4",
+				"n5": "4"
+			},
+			"answers": ["2", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Q1 et Q3 inversés",
+			"variationIndex": 2,
+			"variables": {
+				"n0": "3",
+				"n1": "2",
+				"n2": "2",
+				"n3": "5",
+				"n4": "4",
+				"n5": "4"
+			},
+			"answers": ["5", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -6,20 +6,18 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2042._
+_Mis à jour le 2026-11-01, après #2046._
 
-- **État** : lots 1 à 5 mergés (#2003, #2023, #2027, #2037, #2042 : gestes `designer:` / `completer:` des
-  patrons), rien en prod ; vérifications manuelles notées dans `verifications-manuelles.md`.
-- **Prochaine action** : lot 6, `section:` sur ` ```solide ` (pavé ‖ face, cylindre ‖ ou ⊥ à l'axe, boule ;
-  3e-020) — écrire d'abord sa spécification (comme les § 6 à 10), la faire valider, puis TDD.
-- **En attente de David** : rien. Décidé : correctif `fix` du parseur pour les blocs spéciaux ouverts sur la
-  ligne d'un élément de liste (`- ```cubes` lu vide), hors chantier, après les lots.
-- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; aperçu d'un bloc : serveur sur un
-  port libre + Playwright, compte `teacher@local.test` (l'aide d'écriture est réservée au prof), attendre
-  l'hydratation avant de cliquer ; dans un SVG en cm, jamais d'`outline` (focus = `stroke`) ; un geste ne
-  doit jamais donner la réponse (noms, cadre, nom accessible) ; `EspaceSpec` = union : resserrer par `kind`.
-- **Worktree / branche** : aucun (retiré après #2042) ; lot 6 :
-  `git worktree add -b feat/solides-sections ../ubumaths-wt-solides origin/main`.
+- **État** : les 6 lots sont mergés (#2003, #2023, #2027, #2037, #2042, #2046 : `section:` du ` ```solide `).
+  Rien n'est en prod. Les vérifications manuelles sont notées dans `verifications-manuelles.md`.
+- **Prochaine action** : le correctif `fix` du parseur pour les blocs spéciaux ouverts sur la ligne d'un
+  élément de liste (`- ```cubes` lu vide), hors chantier ; puis clore le chantier par le versement (durable →
+  `docs/systeme/`, journal archivé).
+- **En attente de David** : rien.
+- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; aperçu d'une scène sans serveur : un
+  script `tsx` qui écrit un SVG, puis une capture Playwright ; un geste ne doit jamais donner la réponse ;
+  la CI « Client Tests » peut tomber pour l'infra (navigateur fermé, `playwright install` bloqué) : relancer.
+- **Worktree / branche** : aucun (retiré après #2046).
 
 ---
 
@@ -666,3 +664,101 @@ une ligne de liste : petit correctif `fix` du parseur à part, après le lot 5. 
   refusés quand les sommets visés sont écrits (leurs coins donnaient la réponse), toucher un numéro de face
   la sélectionne (`pointer-events: none` sur traits et étiquettes) ; corrigé PDF : faces attendues plus
   foncées que la face de départ.
+
+## 11. Lot 6 — sections, `section:` sur ` ```solide ` (spécification)
+
+Point visé : 3e-020, « visualiser et réaliser des sections de pavé parallèlement à une face, de cylindre
+parallèlement ou perpendiculairement à son axe, d'une boule » (BO cycle 4, `3-espace.md`). Modèle de code :
+le lot 3 (#2027) ; une clé de plus dans `solide-parser.ts`, `SolideSpec.section`, la section calculée dans
+`espace-solides.ts` (calcul pur, partagé écran / PDF). **Aucun geste** : la question porte sur la nature de
+la section (case choix) ou ses dimensions (case nombre), qui existent.
+
+```solide
+forme: pave 6 4 3
+sommets: A B C D E F G H
+section: parallele ABCD 2
+cotes: cm
+```
+
+**`section:`** (facultatif, une seule) — le plan de coupe, et à quelle distance :
+
+| Solide     | Écriture                                    | Plan                                                                                            | Section dessinée                                                                                           |
+| ---------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| cube, pavé | `parallele ABCD 2` ou `parallele dessous 2` | parallèle à la face, à la distance 2 de cette face, vers l'intérieur                            | rectangle (vraie forme selon la face : parallélogramme à l'écran pour dessus / dessous et gauche / droite) |
+| cylindre   | `perpendiculaire 2`                         | ⊥ à l'axe, à la hauteur 2 au-dessus de la base du bas                                           | disque (ellipse à plat)                                                                                    |
+| cylindre   | `parallele 1`                               | ‖ à l'axe, **plan frontal** à la distance 1 de l'axe, côté de l'œil (`parallele 0` : par l'axe) | rectangle de face, vraie grandeur                                                                          |
+| boule      | `section: 1`                                | horizontal, à la distance 1 au-dessus du centre (`0` : grand cercle)                            | disque (ellipse à plat)                                                                                    |
+
+- **Distance facultative** : sans elle, le plan passe au milieu (pavé : mi-hauteur de la dimension coupée ;
+  cylindre ⊥ : mi-hauteur ; cylindre ‖ et boule : par l'axe / le centre). Mêmes unités que `forme:`
+  (des proportions ; avec `cotes:`, ce sont des longueurs) ; virgule ou point ; variables `{{d}}`.
+- **Face du pavé** par ses noms (`sommets:` exigé, comme `marquer:`) ou par sa place (`dessus`, `devant`…).
+  `parallele dessus 1` = à 1 sous la face du dessus.
+- **Noms des sommets de la section** (pavé seulement, facultatif) : `section: parallele ABCD 2 IJKL` — dans
+  l'ordre des sommets de la face nommée (I sur l'arête qui part de A, J de B…), posés comme ceux du lot 3.
+- **Dessin** : la section teintée (couleur d'accent, translucide, distincte du gris d'une face marquée),
+  contour en trait plein épais ; **le plan de coupe n'est pas dessiné** (Q24). Les arêtes du solide gardent
+  leurs tirets ; la partie du contour de la section cachée par le solide reste en plein (convention des
+  manuels : la section se montre). Boule : l'équateur n'est plus dessiné quand une section est posée (sinon
+  deux ellipses se confondent à `section: 0`). Cylindre ⊥ : la section remplace l'ellipse à cette hauteur.
+- **Cote de la section** (avec `cotes:`) : la distance au plan, écrite le long de l'arête (pavé) ou de la
+  hauteur (cylindre ⊥) ; cylindre ‖ et boule : la distance tracée en tirets depuis l'axe / le centre. Les
+  dimensions de la section **ne sont jamais écrites** (ce serait la réponse).
+
+| Cas                                                                                                                         | Attendu                                                                  |
+| --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `pave 6 4 3`, `section: parallele ABCD 2`                                                                                   | parallélogramme horizontal 6 × 4 à hauteur 2, teinté                     |
+| `pave 6 4 3`, `section: parallele devant 1`                                                                                 | rectangle 6 × 3 de face, enfoncé de 1 (déport des fuyantes)              |
+| `cube 4`, `section: parallele gauche`                                                                                       | carré de profil au milieu                                                |
+| `cylindre 2 5`, `section: perpendiculaire 3`                                                                                | ellipse à plat à hauteur 3, teintée                                      |
+| `cylindre 2 5`, `section: parallele 1`                                                                                      | rectangle de face, largeur 2√3, hauteur 5                                |
+| `boule 3`, `section: 0` / `section: 2`                                                                                      | grand cercle / petit cercle de rayon √5 au-dessus du centre              |
+| `section: parallele ABCD 2 IJKL`, `sommets:` donnés                                                                         | I, J, K, L posés sur AE, BF, CG, DH                                      |
+| distance hors du solide (`parallele ABCD 3` sur `pave 6 4 3`, `parallele 2` sur `cylindre 2 5`, `section: 3` sur `boule 3`) | erreur « le plan ne coupe pas le pavé : distance entre 0 et 3 (exclus) » |
+| distance 0 sur le pavé ou le cylindre ⊥                                                                                     | erreur (le plan est la face elle-même)                                   |
+| `section:` sur un prisme, une pyramide, un cône                                                                             | erreur « section : cube, pavé, cylindre ou boule » (Q25)                 |
+| `parallele ABD`, `parallele ABCD` sans `sommets:`, `perpendiculaire` sur un pavé                                            | erreur, écritures permises listées                                       |
+| `IJKL` sur un cylindre ; 3 noms ; nom déjà pris par un sommet                                                               | erreur                                                                   |
+| deux lignes `section:`                                                                                                      | erreur « une seule section »                                             |
+| `section:` avec `marquer:` et `cachees: non`                                                                                | permis                                                                   |
+
+- **Nom accessible** : « Solide en perspective cavalière, coupé par un plan » — **jamais la nature de la
+  section** (rectangle, disque : la réponse de 3e-020), ni le nom du solide ; les noms IJKL et la cote de la
+  distance y sont ajoutés (ils sont dans l'énoncé).
+- **PDF** : même scène, `polygon` / `curve` Typst remplis.
+- Catalogue (`block-catalog/solide.ts`) : un exemple par ligne du premier tableau ; `docs/systeme/ubumark.md`.
+- **Hors lot 6** : pavé coupé parallèlement à une arête (ancien programme de 3e, fréquent au brevet) ;
+  pyramide et cône coupés parallèlement à la base (réduction) ; dessiner le plan de coupe ; plan de boule
+  non horizontal ; solide coupé en deux morceaux écartés.
+
+### Questions à David (lot 6)
+
+23. **Écriture** : `parallele ABCD 2` (pavé : face + distance à cette face), `perpendiculaire h` /
+    `parallele d` (cylindre), `section: d` (boule), distance au milieu par défaut ? _Reco : oui._
+24. **Plan de coupe** : section teintée seule (manuels et brevet), ou aussi le plan dessiné en
+    parallélogramme qui déborde du solide ? _Reco : section seule ; le plan plus tard s'il manque._
+25. **Périmètre** : le BO seul (pavé ‖ face, cylindre ‖ / ⊥, boule), ou aussi pavé ‖ à une arête et
+    pyramide / cône ‖ à la base (hors BO actuel, encore au brevet) ? _Reco : le BO seul._
+26. **Cylindre ‖ à l'axe** : plan frontal seulement (rectangle vu en vraie grandeur, facile à lire), ou
+    aussi de profil (parallélogramme dans les fuyantes) ? _Reco : frontal seulement._
+27. **Noms IJKL** des sommets de la section du pavé dans ce lot (brevet : « IJKL est la section… ») ?
+    _Reco : oui._
+
+**Réponse de David (2026-10-31)** : « oui, les cinq recos » — écriture du § 11 avec plan au milieu par défaut
+(Q23) ; section teintée seule, plan non dessiné (Q24) ; le BO seul (Q25) ; cylindre ‖ à l'axe en plan de face
+seulement (Q26) ; noms IJKL dans ce lot (Q27). Spécification validée.
+
+### Lot 6 livré (branche `feat/solides-sections`, 2026-10-31)
+
+- `section:` sur ` ```solide ` : `SolideSection` (`face` / `perpendiculaire` / `parallele` / `boule`), lue dans
+  `solide-parser.ts` (`readSection`, `readFace` partagé avec `marquer:`) ; scène : `boxSection` (pavé),
+  cylindre et boule dans `roundDraft`, `SolideScene.section` ; `Solide.svelte` (orange translucide) ;
+  Typst `rgb(248, 200, 150)` ; 23 tests (`solide-section.test.ts`, rouges avant le code), compilation PDF.
+- **Écarts à la spec** : cote de distance du pavé coupé ‖ dessous / dessus **dans la face avant**, contre
+  [BF] (à droite, elle touchait C et la cote « 4 cm ») ; noms IJKL posés en tournant autour du point
+  jusqu'à ne toucher aucune étiquette (sur le cube coupé ‖ gauche, I tombait sur la cote « 4 cm ») ;
+  `marquer: face` garde l'ordre de la topologie, `section:` l'ordre écrit (pour les noms).
+- Revue (Sonnet) : 1 bug corrigé — face écrite hors de l'ordre du tour (`parallele ACBD`) → section croisée,
+  désormais refusée ; mineurs corrigés : distance à 3 décimales au plus, section de boule raccourcie de
+  cos (vue inclinée) pour rester dans le cercle près du pôle, message de `section:` vide. Laissés : cote du
+  cylindre ‖ posée sous la base (loin de son court trait quand d est petit).

@@ -5,13 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, phase 0 du lot 5 proposée._
+_Mis à jour le 2026-11-01, après #2049._
 
-- **État** : lots 0 à 4 (4a et 4b) publiés (§ 11.18) ; phase 0 du lot 5 (lot 4 du § 4 : pourcentages,
-  probabilités, statistiques) écrite au § 12.
-- **Prochaine action** : réponses de David au § 12.5, puis écrire le lot 5 sur une branche
-  `content/questions-3-lot5`.
-- **En attente de David** : les 4 questions du § 12.5.
+- **État** : lot 5 écrit (§ 12.7), fichiers mergés (#2049, CI verte).
+- **Prochaine action** : après le `--publier` de David, relever les 6 ids en prod (MCP), puis migration de
+  rangement : 6 nœuds + tags (§ 12), et ccb51039 / 76f5f143 en grades `['4', '3']` + tags 3-036 / 3-063.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-5 --publier`.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
   dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
@@ -732,3 +731,32 @@ publiés de plus, et 2 de 4e (§ 12.1) ; la 4e ne perd rien. Aucune règle ne ch
    l'intervalle comme en 4e (4-040) ?
 4. 3-034 et 3-035 sur le nœud « fréquences » (collège), plutôt que 3-034 sur « Probabilités conditionnelles
    > épreuves indépendantes successives » (celui de la 1re) ?
+
+### 12.6 Décisions (David, 2026-10-31, « je valide » les recommandations)
+
+- § 12.1 : ccb51039 et 76f5f143 partagés avec la 3e (grades `['4', '3']`, tags 3-036 / 3-063 en plus),
+  dans la migration de rangement ; pas de modèle neuf.
+- § 12.2 validé ; 3-033 en probabilités décimales à deux chiffres.
+- 3-056 v3 : effectif pair, aucun effectif cumulé égal à N/2 (médiane unique).
+- 3-034 et 3-035 sur Expériences aléatoires > fréquences.
+
+### 12.7 Lot 5 : écrit (2026-11-01)
+
+- `docs/wip/questions/lot-3-5.py` → `scripts/questions/3-lot-5/` (6 JSON, 19 variations, 50 specs) ;
+  `create-questions` en simulation vert. Branche `content/questions-3-lot5`.
+- **Écarts au § 12.2** (outil) : ` ```simulation ` en mode `moyenne` écrit « espérance » (1re) et donne la
+  valeur cherchée → 3-035 lit un **tableau de fréquences** (10 à 10 000 lancers, tirées autour de p) ;
+  3-034 v2 et v3 donnent l'effectif simulé dans l'énoncé (choix : 1/4 contre 1/3, m/36 contre 1/11).
+- **Juge mesuré** : réponse attendue décimale (`0{,}{{u}}`) → la fraction juste est refusée (`bad_form`) ;
+  attendue en fraction + `acceptDecimal` → les deux acceptées. Corrigé écrit en décimal, comme l'énoncé.
+- `audit-question-draws` : « nombres juxtaposés » sur chaque tirage des blocs ` ```effectifs ` / ` ```barres `
+  = **faux positif** (son motif lit le saut de ligne entre `= 2` et `1 = 7`). Remplacé par une sonde
+  (scratchpad) : 300 tirages par variation, blocs parsés, réponse attendue contre `summarizeTable`
+  (médiane, Q1, Q3 du module) et contre les cumulés : 0 défaut.
+- Base locale : 6 brouillons. Aperçu admin (`127.0.0.1:5178`) : 3-028 v1 (case masquée), 3-029 v2 (corrigé,
+  quarts écrits 29,25 et non 117/4), 3-035 v2 (tableau, choix), 3-034 v3 (choix, corrigé). Saisie MathLive
+  hors de portée de l'outil navigateur : le juge est couvert par les specs.
+
+### 12.8 Lot 5 : fichiers mergés (2026-11-01)
+
+- #2049 mergée (CI verte). Attendu : `create-questions --publier` lancé par David.
