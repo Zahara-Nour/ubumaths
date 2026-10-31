@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 5 écrit._
+_Mis à jour le 2026-11-01, après #2049._
 
-- **État** : phase 0 du lot 5 validée (§ 12.6) ; 6 modèles écrits (§ 12.7), PR des fichiers ouverte.
-- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/3-lot-5
---publier` ; puis migration de rangement (6 nœuds + tags, et ccb51039 / 76f5f143 en 4e et 3e, tags
-  3-036 / 3-063).
-- **En attente de David** : le `--publier` en prod après le merge.
+- **État** : lot 5 écrit (§ 12.7), fichiers mergés (#2049, CI verte).
+- **Prochaine action** : après le `--publier` de David, relever les 6 ids en prod (MCP), puis migration de
+  rangement : 6 nœuds + tags (§ 12), et ccb51039 / 76f5f143 en grades `['4', '3']` + tags 3-036 / 3-063.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-5 --publier`.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
   dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
   sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree
   (`git push origin HEAD:main`) ; le worktree n'avait pas `supabase/.temp` (lien du projet) : copié du dépôt
   principal, et `db:migrate` se lance depuis un worktree À JOUR d'`origin/main`.
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, branche `content/questions-3-lot5`.
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -757,3 +756,7 @@ publiés de plus, et 2 de 4e (§ 12.1) ; la 4e ne perd rien. Aucune règle ne ch
 - Base locale : 6 brouillons. Aperçu admin (`127.0.0.1:5178`) : 3-028 v1 (case masquée), 3-029 v2 (corrigé,
   quarts écrits 29,25 et non 117/4), 3-035 v2 (tableau, choix), 3-034 v3 (choix, corrigé). Saisie MathLive
   hors de portée de l'outil navigateur : le juge est couvert par les specs.
+
+### 12.8 Lot 5 : fichiers mergés (2026-11-01)
+
+- #2049 mergée (CI verte). Attendu : `create-questions --publier` lancé par David.
