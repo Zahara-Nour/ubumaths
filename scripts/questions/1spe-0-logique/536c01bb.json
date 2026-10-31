@@ -1,0 +1,205 @@
+{
+	"id": "536c01bb-8401-4f53-b8ca-faf9bf4c243d",
+	"title": "Identité ou équation : reconnaître une identité",
+	"description": "Reconnaître une identité (égalité vraie pour tout x) : la développer, ou la réfuter par un contre-exemple",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Logique et raisonnement",
+	"subdomain": "Quantificateurs et négation",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(k,2)}}"
+				}
+			],
+			"statement": "On considère l'égalité ${{if:k=0|(x+{{a}})^2=x^2+{{eval:2*a}}x+{{eval:a^2}}}}{{if:k=1|(x+{{a}})^2=x^2+{{eval:a^2}}}}{{if:k=2|(x-{{a}})(x+{{a}})=x^2-{{eval:a^2}}}}{{if:k=3|(x-{{a}})^2=x^2-{{eval:a^2}}}}{{if:k=4|{{a}}(x+{{b}})={{a}}x+{{eval:a*b}}}}{{if:k=5|{{a}}(x+{{b}})={{a}}x+{{b}}}}$.\n\nCette égalité est-elle vraie pour tout réel $x$ ?\n\n```choix\nmelanger: non\n- Oui : elle est vraie pour tout réel $x$, c'est une identité.\n- Non : elle n'est pas vraie pour tout réel $x$.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une **identité** est une égalité vraie pour **toutes** les valeurs de la variable. Pour montrer qu'une égalité n'en est pas une, une seule valeur de $x$ qui la rend fausse suffit (un contre-exemple).",
+					"{{if:k=0|En développant, $(x+{{a}})^2=x^2+2\\times{{a}}\\times x+{{a}}^2=x^2+{{eval:2*a}}x+{{eval:a^2}}$ pour tout réel $x$ : **c'est une identité**.}}{{if:k=1|En développant, $(x+{{a}})^2=x^2+{{eval:2*a}}x+{{eval:a^2}}$. L'égalité équivaut donc à ${{eval:2*a}}x=0$, c'est-à-dire $x=0$ : elle n'est vraie **que pour $x=0$**. Par exemple, pour $x=1$ : $(1+{{a}})^2={{eval:(1+a)^2}}$ mais $1+{{eval:a^2}}={{eval:1+a^2}}$. **Ce n'est pas une identité.**}}{{if:k=2|En développant, $(x-{{a}})(x+{{a}})=x^2+{{a}}x-{{a}}x-{{eval:a^2}}=x^2-{{eval:a^2}}$ pour tout réel $x$ : **c'est une identité**.}}{{if:k=3|En développant, $(x-{{a}})^2=x^2-{{eval:2*a}}x+{{eval:a^2}}$. L'égalité équivaut donc à ${{eval:2*a^2}}={{eval:2*a}}x$, c'est-à-dire $x={{a}}$ : elle n'est vraie **que pour $x={{a}}$**. Par exemple, pour $x=0$ : $(0-{{a}})^2={{eval:a^2}}$ mais $0^2-{{eval:a^2}}=-{{eval:a^2}}$. **Ce n'est pas une identité.**}}{{if:k=4|En développant, ${{a}}(x+{{b}})={{a}}x+{{a}}\\times{{b}}={{a}}x+{{eval:a*b}}$ pour tout réel $x$ : **c'est une identité**.}}{{if:k=5|En développant, ${{a}}(x+{{b}})={{a}}x+{{eval:a*b}}$. L'égalité équivaut donc à ${{eval:a*b}}={{b}}$, ce qui est faux : elle n'est vraie **pour aucun réel $x$**. **Ce n'est pas une identité.**}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "0"
+			},
+			"description": "égalité 0 : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "0"
+			},
+			"description": "égalité 0 : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "1"
+			},
+			"description": "égalité 1 : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "1"
+			},
+			"description": "égalité 1 : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "2"
+			},
+			"description": "égalité 2 : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "2"
+			},
+			"description": "égalité 2 : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "3"
+			},
+			"description": "égalité 3 : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "3"
+			},
+			"description": "égalité 3 : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "4"
+			},
+			"description": "égalité 4 : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "4"
+			},
+			"description": "égalité 4 : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "5"
+			},
+			"description": "égalité 5 : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "5"
+			},
+			"description": "égalité 5 : autre choix refusé",
+			"variationIndex": 0
+		}
+	]
+}
