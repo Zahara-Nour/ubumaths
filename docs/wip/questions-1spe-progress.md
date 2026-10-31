@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, après la publication du lot 0-variables aléatoires._
+_Mis à jour le 2026-11-01, après #2053._
 
-- **État** : lots 0-suites à 0-variables aléatoires publiés (variables aléatoires : 17 modèles, 17 « ok » sur la page à cocher, `published` en base le 2026-10-31) ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
-- **Prochaine action** : lot 0-logique (même démarche : instantané dans un worktree, specs, bornes, constats, simulation `publier-lot` d'abord) ; ensuite la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : rien.
-- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto **même en simulation pour `create-questions`** (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` ; une copie par variation pour l'aperçu (sans `testSpecs`) ; `export-question-templates` exige `svelte-kit sync` dans un worktree neuf ; instantané jamais dans le dépôt principal.
-- **Worktree / branche** : aucun ; nouveau worktree `../ubumaths-wt-questions-1spe` pour le lot logique.
+- **État** : lot 0-logique (5 brouillons) corrigé (#2053) et mis à jour en prod ; page à cocher publiée (https://claude.ai/artifact/5FCW8NuvR1gZZ6UhbYr2XX), verdicts de David attendus.
+- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`), puis `publier-lot --publier` par David (`--dir scripts/questions/1spe-0-logique`) ; ensuite la migration des tags D3 (sans 174e202b ni dc4b8d08 ; 93f9ecdf sans tag).
+- **En attente de David** : relecture de la page à cocher (5 fiches).
+- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` ; `export-question-templates` exige `svelte-kit sync` dans un worktree neuf ; instantané jamais dans le dépôt principal ; les 5 brouillons de logique tagués de seconde restent à questions-2de.
+- **Worktree / branche** : aucun (worktree du lot logique retiré).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -761,3 +761,7 @@ tous les cas relus (les 7 cas de e5205176 v1, les 4 de v2, les 3 issues de v0, l
 - Specs vertes (3 modèles corrigés, 1 200 tirages), 180 tirages relus : aucun `{{`. Niveaux inchangés : pas de migration.
 - Suite : PR des fichiers, puis David lance `create-questions --publier --mettre-a-jour` depuis `main` ; page à cocher ;
   `publier-lot --publier` (David).
+
+#2053 mergée (CI verte). Mise à jour en prod par David le 2026-11-01 (C1 et C2 relus en base : `{{eval:b/a}}` dans fb3b536c,
+« avec $k$ entier » 2 fois dans e5205176 et 4 fois dans 93f9ecdf). **Page à cocher** :
+https://claude.ai/artifact/5FCW8NuvR1gZZ6UhbYr2XX (5 fiches ; 1 alerte attendue : 93f9ecdf sans point).
