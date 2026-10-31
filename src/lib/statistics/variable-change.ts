@@ -50,7 +50,7 @@ export interface DecimalFit {
  * en Infinity, et une valeur finie comme e^41 ≈ 6,4 × 10^17 donnerait un cadre
  * qui écrase le nuage (revue) — même borne que les nombres écrits (15 chiffres).
  */
-export const MAX_COMPUTED_VALUE = 1e15;
+const MAX_COMPUTED_VALUE = 1e15;
 
 /**
  * Changements de variable (Q170), tels que l'auteur les écrit, et leurs

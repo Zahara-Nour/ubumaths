@@ -294,7 +294,7 @@ exacts, jamais les arrondis affichés). Variance de population : 2026-09-16.
   `Fraction` : l'appelant convertit.
 - La binomiale n'a pas d'échantillonneur propre : la scène la tire comme loi finie, avec les
   probabilités exactes de `binomialDistribution`.
-- `atMost`, `findThreshold` et `MAX_COMPUTED_VALUE` ne servent qu'à l'intérieur du module,
-  bien qu'exportés.
+- `atMost` et `findThreshold` ne servent qu'à l'intérieur du module (`binomial.ts`, `geometric.ts`),
+  bien qu'exportés ; `MAX_COMPUTED_VALUE` n'est plus exporté.
 
 Vérifié contre le code le 2026-10-10.
