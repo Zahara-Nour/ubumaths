@@ -753,3 +753,11 @@ tous les cas relus (les 7 cas de e5205176 v1, les 4 de v2, les 3 issues de v0, l
 
 - C1 : `t={{eval:b/a}}` (fraction réduite, entier quand $a$ divise $b$).
 - C2 : « avec $k$ entier » à la première apparition de $k$ dans chacun de ces cas.
+
+**D21 (David, 2026-11-01, « je suis tes recos » sur C1 et C2)** :
+
+- C1 : fb3b536c, `t={{eval:b/a}}` (relu : « t = 1/3 », « t = 2 », « t = 1 »).
+- C2 : « avec $k$ entier » dans e5205176 v2 (cas 0 et 1, corrigé) et 93f9ecdf v0 (cas 2 et 3) et v1 (cas 3) (énoncés).
+- Specs vertes (3 modèles corrigés, 1 200 tirages), 180 tirages relus : aucun `{{`. Niveaux inchangés : pas de migration.
+- Suite : PR des fichiers, puis David lance `create-questions --publier --mettre-a-jour` depuis `main` ; page à cocher ;
+  `publier-lot --publier` (David).
