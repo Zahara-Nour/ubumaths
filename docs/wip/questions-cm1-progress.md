@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2043 (lot 3b écrit) et #2040 (étiquettes en fraction de la droite)._
+_Mis à jour le 2026-10-31, après le `create-questions --publier` du lot 3b._
 
-- **État** : lots 0, 1, 2 et 3a publiés. Lot 3b (fractions décimales, 8 modèles, § 10) : fichiers mergés (#2043), **pas encore en base prod**. #2040 et #2032 mergées, pas en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-3b --publier` (brouillons) ; puis je relève les ids au MCP et j'écris la migration de rangement (gabarit du lot 3a, § 9 quater). Ensuite lot 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
-- **En attente de David** : le `create-questions --publier` du lot 3b.
+- **État** : lots 0, 1, 2 et 3a publiés. Lot 3b (fractions décimales, 8 modèles, § 10) : **8 brouillons en prod** (ids au § 10 quater), sans nœud ni tag. #2040 et #2032 mergées, pas en prod.
+- **Prochaine action** : écrire la migration de rangement du lot 3b (gabarit `20261030150100_questions_cm1_lot3a_rangement_tags.sql` + son test d'intégration ; points et sous-notions au § 10) ; puis page à cocher, publication. Ensuite lot 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; `gh pr checks` peut rester « pending » sur des 502 : suivre le run.
 - **Worktree / branche** : aucun (retiré après #2043) ; la migration en recrée un : `git worktree add -b feat/questions-cm1-lot3b-rangement ../ubumaths-wt-questions-cm1 origin/main`.
 
@@ -492,3 +492,13 @@ toute fraction strictement entre les bornes est juste (règle `range`) ; droite 
   `NumberLine.svelte`). Le lot 3a n'avait que des entiers. Corrigé par #2040 (zone portée à
   45 px, test de rendu rouge puis vert), mergée ; revérifié à l'aperçu : 1/10 et 2/10 entiers,
   placer 15/100 sur 11/100 → « Tu as placé le point sur 11/100. », droite juste en vert.
+
+### 10 quater. Lot 3b — brouillons en prod (2026-10-31)
+
+`create-questions --publier` lancé par David (premier essai mort : son shell était dans le worktree
+retiré, relancé avec `cd` devant). MCP : 8 brouillons [CM1], sans nœud ni tag, créés à 08:57 UTC.
+Ids : `36507fc9-df87-46a4-865d-aec7935580c3` (lire et écrire), `6faa64d0-6b77-41f6-930d-f12549e69e2c`
+(décomposer), `53031438-c180-484b-834c-a29913b25a0f` (comparer), `85e4d251-8685-461e-9dff-255580999725`
+(ranger), `34c58018-b588-4c93-85fb-40eb94879cfb` (encadrer), `7ed61c5f-dd82-4a78-8251-621e01138ebb`
+(intercaler), `6de4ad5b-49a4-44a5-9b3f-062797fbefab` (repérer), `5b038fc8-226f-4307-8609-27d87e5f7608`
+(placer).
