@@ -506,3 +506,41 @@ describe('Domain filtering in solve()', () => {
 		});
 	});
 });
+
+/**
+ * V45 : quand `computeDomain` ne résout pas une contrainte (x⁵ − x + 1 > 0),
+ * le domaine est trop grand et le filtrage par domaine ne voit rien. Chaque
+ * solution est alors vérifiée sur l'équation elle-même : hors de l'ensemble
+ * de définition, elle est écartée.
+ */
+describe('Contrainte de domaine non résolue : solution vérifiée (V45)', () => {
+	function solveX(latex: string) {
+		return solve(parseLatex(latex) as RelationNode, { variable: 'x' });
+	}
+
+	it.each([
+		// x = −2 : x⁵ − x + 1 = −29 < 0
+		'\\frac{2\\sqrt{x^5-x+1}}{\\sqrt{x^5-x+1}}=x+4',
+		// x = −2 : x⁵ − x + 3 = −27 < 0
+		'\\frac{2\\ln(x^5-x+3)}{\\ln(x^5-x+3)}=x+4'
+	])('%s : solution hors domaine écartée', (latex) => {
+		const result = solveX(latex);
+		expect(result.domainUnresolved).toBeDefined();
+		expect(result.solutions).toHaveLength(0);
+		expect(result.status).toBe('no-solution');
+	});
+
+	it('x² √(x⁵−x+1) / √(x⁵−x+1) = 4 : garde 2, écarte −2', () => {
+		const result = solveX('\\frac{x^2\\sqrt{x^5-x+1}}{\\sqrt{x^5-x+1}}=4');
+		expect(result.solutions.map((s) => s.approximate)).toEqual([2]);
+		expect(result.status).toBe('unique');
+	});
+
+	it.each([
+		['\\frac{3\\sqrt{x^5-x+1}}{\\sqrt{x^5-x+1}}=x+4', -1],
+		['\\frac{2\\ln(x^5-x+3)}{\\ln(x^5-x+3)}=x', 2]
+	])('%s : solution dans le domaine gardée', (latex, value) => {
+		const result = solveX(latex);
+		expect(result.solutions.map((s) => s.approximate)).toEqual([value]);
+	});
+});

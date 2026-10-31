@@ -1835,6 +1835,77 @@ function filterSolutionsByDomain(
 	return { ...result, solutions: kept, status: newStatus, domain };
 }
 
+/**
+ * Écarte les solutions où l'expression n'est pas définie, quand le domaine
+ * calculé est TROP GRAND (contrainte non résolue : `x^5 − x + 1 > 0`). Le
+ * filtrage par domaine ne les voit pas : x = −2 pour
+ * `2√(x⁵−x+1)/√(x⁵−x+1) = x + 4` (V45).
+ *
+ * L'expression est évaluée en la solution. Non définie (NaN) au point ET de
+ * part et d'autre, la solution est hors de l'ensemble de définition ; une
+ * borne (radicande nul arrondi en −10⁻¹⁷) reste gardée. Une valeur infinie
+ * au point est un pôle : écartée. Solutions paramétrées, équation à
+ * plusieurs lettres ou expression non compilable : rien n'est écarté.
+ */
+function filterSolutionsByDefinition(
+	result: SolveResult,
+	expr: MathNode,
+	variable: string,
+	recorder: import('./types').SolveStepRecorder
+): SolveResult {
+	if (result.status === 'infinite' || result.solutions.length === 0) return result;
+	const letters = getVariables(expr);
+	if (letters.size !== 1 || !letters.has(variable)) return result;
+	let at: (x: number) => number;
+	try {
+		const compiled = compile(expr);
+		at = (x) => compiled({ [variable]: x });
+	} catch {
+		return result;
+	}
+	// undefined : évaluation impossible, on ne conclut pas
+	const valueAt = (x: number): number | undefined => {
+		try {
+			return at(x);
+		} catch {
+			return undefined;
+		}
+	};
+	const defined = (x: number): boolean => {
+		const value = valueAt(x);
+		return value === undefined || Number.isFinite(value);
+	};
+
+	const kept: Solution[] = [];
+	for (const sol of result.solutions) {
+		const x = sol.approximate;
+		if (x === undefined || !Number.isFinite(x) || getVariables(sol.value).size > 0) {
+			kept.push(sol);
+			continue;
+		}
+		const delta = 1e-9 * Math.max(1, Math.abs(x));
+		const value = valueAt(x);
+		const pole = value !== undefined && Math.abs(value) === Infinity;
+		const outside = !defined(x) && !defined(x - delta) && !defined(x + delta);
+		if (pole || outside) {
+			recorder.recordStep(
+				'domain-exclusion',
+				`${variable} = ${x.toPrecision(6)} est exclu du domaine`,
+				sol.value,
+				sol.value,
+				'summarized'
+			);
+		} else {
+			kept.push(sol);
+		}
+	}
+	if (kept.length === result.solutions.length) return result;
+
+	const status: import('./types').SolutionStatus =
+		kept.length === 0 ? 'no-solution' : kept.length === 1 ? 'unique' : result.status;
+	return { ...result, solutions: kept, status };
+}
+
 // =============================================================================
 // Longueurs de segments
 // =============================================================================
@@ -2421,8 +2492,12 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	}
 
 	result = filterSolutionsByDomain(result, domain, variable, domainRecorder);
-	// Domaine incomplet : le dire, jamais le présenter comme exact (V45)
-	if (domainUnresolved !== undefined) result = { ...result, domainUnresolved };
+	// Domaine incomplet : le dire, jamais le présenter comme exact, et vérifier
+	// chaque solution sur l'équation elle-même (V45)
+	if (domainUnresolved !== undefined) {
+		result = filterSolutionsByDefinition(result, expr, variable, domainRecorder);
+		result = { ...result, domainUnresolved };
+	}
 
 	// Append any exclusion steps
 	const exclusionSteps = domainRecorder
