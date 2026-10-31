@@ -1,0 +1,138 @@
+{
+	"title": "Les angles de l'équerre",
+	"description": "Connaître les angles des équerres : 90°, 30° et 60°, ou 90°, 45° et 45°",
+	"grades": ["5"],
+	"theme": "Grandeurs",
+	"domain": "Angles",
+	"subdomain": "Angles de l'équerre",
+	"level": 1,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une équerre a un angle droit et deux autres angles **égaux**.\n\nCombien mesure chacun de ces deux angles ?\n\n$?^{\\circ}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "45"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les équerres.** Une équerre a toujours un angle droit ($90^\\circ$). Les deux autres angles mesurent $30^\\circ$ et $60^\\circ$, ou $45^\\circ$ et $45^\\circ$.",
+					"Les deux angles égaux mesurent $\\textcolor{{{color:primary.0}}}{45^{\\circ}}$ chacun : $90 + 45 + 45 = 180$."
+				]
+			}
+		},
+		{
+			"statement": "Une équerre a un angle droit et un angle de ${{a}}^{\\circ}$.\n\nCombien mesure son troisième angle ?\n\n$?^{\\circ}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30|60"
+				},
+				{
+					"name": "b",
+					"expression": "eval:90-a"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les équerres.** Une équerre a toujours un angle droit ($90^\\circ$). Les deux autres angles mesurent $30^\\circ$ et $60^\\circ$, ou $45^\\circ$ et $45^\\circ$.",
+					"L'équerre est celle à $30^\\circ$ et $60^\\circ$ : le troisième angle mesure $\\textcolor{{{color:primary.0}}}{{{b}}^{\\circ}}$."
+				]
+			}
+		},
+		{
+			"statement": "Avec laquelle de ces équerres peut-on tracer **directement** un angle de ${{a}}^{\\circ}$ ?\n\n```choix\nmelanger: non\n- l'équerre à $45^\\circ$ et $45^\\circ$\n- l'équerre à $30^\\circ$ et $60^\\circ$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30|60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les équerres.** Une équerre a toujours un angle droit ($90^\\circ$). Les deux autres angles mesurent $30^\\circ$ et $60^\\circ$, ou $45^\\circ$ et $45^\\circ$.",
+					"L'angle de ${{a}}^{\\circ}$ est sur $\\textcolor{{{color:primary.0}}}{\\text{l'équerre à } 30^\\circ \\text{ et } 60^\\circ}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Équerre isocèle : 45",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 90",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["90"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Angle de 30 : 60",
+			"variationIndex": 1,
+			"variables": {
+				"a": "30",
+				"b": "60"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 150 (180 − 30)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "30",
+				"b": "60"
+			},
+			"answers": ["150"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Angle de 60 : l'équerre 30-60",
+			"variationIndex": 2,
+			"variables": {
+				"a": "60"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'équerre 45-45",
+			"variationIndex": 2,
+			"variables": {
+				"a": "60"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

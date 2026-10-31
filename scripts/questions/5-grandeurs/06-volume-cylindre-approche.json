@@ -1,0 +1,88 @@
+{
+	"title": "Volume d'un cylindre avec π ≈ 3,14",
+	"description": "Calculer le volume d'un cylindre en prenant π ≈ 3,14 (rayon 10 cm, hauteur 2 cm : 628 cm³)",
+	"grades": ["5"],
+	"theme": "Grandeurs",
+	"domain": "Volumes",
+	"subdomain": "Volume d'un cylindre",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule le volume d'un cylindre de rayon ${{r}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$, en prenant $\\pi \\approx 3{,}14$.\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1|2|3|5|10"
+				},
+				{
+					"name": "h",
+					"expression": "2..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:314*r^2*h/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'un cylindre.** $\\text{Volume} = \\text{aire de la base} \\times \\text{hauteur} = \\pi r^2 \\times h$. On prend $\\pi \\approx 3{,}14$.",
+					"Aire de la base : $3{,}14 \\times {{r}} \\times {{r}} = {{eval:314*r^2/100;d}}~\\unit{cm^2}$.",
+					"Volume : ${{eval:314*r^2/100;d}}~\\unit{cm^2} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:314*r^2*h/100;d}}~\\unit{cm^3}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rayon 10, hauteur 2 : 628",
+			"variationIndex": 0,
+			"variables": {
+				"r": "10",
+				"h": "2"
+			},
+			"answers": ["628"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 314 (aire de la base)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "10",
+				"h": "2"
+			},
+			"answers": ["314"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 125,6 (2πrh)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "10",
+				"h": "2"
+			},
+			"answers": ["125,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rayon 3, hauteur 4 : 113,04",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"h": "4"
+			},
+			"answers": ["113,04"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

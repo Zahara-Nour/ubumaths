@@ -1,0 +1,117 @@
+{
+	"title": "Aire d'un disque avec π ≈ 3,14",
+	"description": "Calculer l'aire d'un disque en prenant π ≈ 3,14 (rayon 5 cm : 78,5 cm²), à partir du rayon ou du diamètre",
+	"grades": ["5"],
+	"theme": "Grandeurs",
+	"domain": "Aires",
+	"subdomain": "Aire d'un disque",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule l'aire d'un disque de rayon ${{r}}~\\unit{cm}$, en prenant $\\pi \\approx 3{,}14$.\n\n$?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1|2|3|5|10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:314*r^2/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Aire d'un disque.** $\\text{Aire} = \\pi \\times \\text{rayon} \\times \\text{rayon} = \\pi r^2$. Le rayon est la moitié du diamètre. On prend $\\pi \\approx 3{,}14$.",
+					"$3{,}14 \\times {{r}} \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:314*r^2/100;d}}~\\unit{cm^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule l'aire d'un disque de diamètre ${{d}}~\\unit{cm}$, en prenant $\\pi \\approx 3{,}14$.\n\n$?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1|2|3|5|10"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:314*r^2/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Aire d'un disque.** $\\text{Aire} = \\pi \\times \\text{rayon} \\times \\text{rayon} = \\pi r^2$. Le rayon est la moitié du diamètre. On prend $\\pi \\approx 3{,}14$.",
+					"Le rayon est ${{d}}~\\unit{cm} \\div 2 = {{r}}~\\unit{cm}$.",
+					"$3{,}14 \\times {{r}} \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:314*r^2/100;d}}~\\unit{cm^2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rayon 5 : 78,5",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5"
+			},
+			"answers": ["78,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 31,4 (périmètre)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5"
+			},
+			"answers": ["31,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 15,7",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5"
+			},
+			"answers": ["15,7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diamètre 6 : 28,26",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"d": "6"
+			},
+			"answers": ["28,26"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 113,04 (diamètre au carré)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"d": "6"
+			},
+			"answers": ["113,04"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
