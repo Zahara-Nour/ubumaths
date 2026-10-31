@@ -5,20 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2034._
+_Mis à jour le 2026-10-31, après #2038._
 
-- **État** : lots 1 à 4 en prod (lot 1 en brouillon, lots 2, 3 et 4 publiés) ; lot 5 « Pythagore et triangles »
-  (033, 034, 035, 036, 037, 072, 075) écrit et mergé (#2034, § 26), **pas encore en base prod**.
-- **Prochaine action** : David lance depuis `../ubumaths-wt-questions-4` :
-  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-5 --publier` ; puis relever les `id` (MCP),
-  migration nœud + tag (gabarit lot 4, `20261030160000`), branche `feat/questions-4-lot5-rangement`, page à cocher.
-- **En attente de David** : ce `--publier` ; garder la sonde des figures comme outil (`sonde-figures.ts`, petite PR à
-  part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication des 7
-  brouillons du lot 1.
+- **État** : lots 1 à 4 en prod (lot 1 en brouillon, lots 2, 3 et 4 publiés) ; lot 5 « Pythagore et triangles » :
+  7 brouillons en prod, rangés et tagués (#2038, `db:migrate` joué, vérifié au MCP), page à cocher publiée (§ 27).
+- **Prochaine action** : quand David a coché, lire et compter les verdicts (collection `verdicts` de
+  https://claude.ai/artifact/L1mr8cFCzDuJkFFPixyHoy) ; corriger les « À revoir » ; puis `publier-lot.ts --dir
+scripts/questions/4-lot-5` en simulation, et David le lance avec `--publier`.
+- **En attente de David** : relecture du lot 5 ; garder la sonde des figures comme outil (`sonde-figures.ts`, petite
+  PR à part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication
+  des 7 brouillons du lot 1.
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question, invisible pour `question:specs` (§ 26) ;
-  90dca27a et acbd2280 (4-005) partiront en 3e ; `db:migrate` peut exiger `--include-all` : réservé à David ;
-  horodatages de migration : vérifier les PR ouvertes des autres sessions ; CI : « Browser connection was closed » =
-  panne passagère ; QCM = case choix.
+  90dca27a et acbd2280 (4-005) partiront en 3e ; `db:migrate` peut exiger `--include-all` : **réservé à David** (oublié
+  au lot 5, § 27) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un COMMIT, pas dans la PR ;
+  horodatages de migration : vérifier les PR ouvertes des autres sessions ; QCM = case choix.
 - **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
@@ -695,3 +695,20 @@ circonscrit 1 et 2), Géométrie / Raisonner (Réciproque et contraposée 1), Ca
   `question:specs` ne le voit pas. Sonde faite pour l'occasion (`scripts/questions/.sonde-figures-tmp.ts`, non suivie,
   calquée sur `sonde-courbes.ts`) : 300 tirages par modèle, chaque ` ```figure ` passé à `buildFigureScene` →
   0 problème (1 607 figures) ; elle attrape bien `mtexte()` remis exprès.
+
+## 27. Lot 5 : en prod, rangé, en relecture (2026-10-30 → 31)
+
+- `create-questions --dir scripts/questions/4-lot-5 --publier` lancé par David : 7 brouillons (22d947f4 4-034,
+  5e85f283 4-072, bdcc75c5 4-033, 75713f0c 4-036, f7d802ae 4-037, 03f891f6 4-035, 050c8807 4-075).
+- Migration `20261030193500_questions_4_lot5_rangement_tags` (gabarit lot 4) + test d'intégration : rouge sans la
+  migration (3 échecs, 4 sautés), 9/9 vert avec ; `security-auditor` : aucun finding bloquant. #2038 : Lint rouge
+  d'abord (garde de doc : `Doc-inchangée:` mise dans la PR au lieu d'un commit → commit d'exemption), puis job
+  « Integration paths filter » annulé, relancé ; CI verte, mergée.
+- `db:migrate` refusé (20261030201000, d'une autre session, déjà jouée après la nôtre) ; seule la nôtre manquait
+  (`migration list`) → ⚠️ **lancé par moi avec `--include-all`**, alors que ce journal le réserve à David : erreur de
+  ma part, signalée à David. Effet vérifié au MCP : 7 brouillons, chacun sur le nœud de son point, un tag, `updated_at`
+  inchangé.
+- 072 : 3 variations, pas 4 (« Oui » et « Non » réunis en une variation par le tirage `w`) ; les 4 cas de la phase 0
+  sont couverts.
+- Page à cocher : https://claude.ai/artifact/L1mr8cFCzDuJkFFPixyHoy (7 fiches, 29 exemples, 23 figures dessinées, aucune
+  alerte ; capacité `db`, base `verdicts` vide à la publication).
