@@ -6,10 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, page à cocher du lot 4 publiée (§ 27)._
+_Mis à jour le 2026-10-31, vecteurs en deux trous (§ 28)._
 
 - **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 4 (A #2008, B #1999, correctif #1997) : 11 brouillons
   rangés et tagués en prod (#2014, migration `20261030160100` jouée par David, vérifiée au MCP).
+- **En cours** : modèles 01 à 04 du lot 4 A passés en deux trous (§ 28) ; après le merge, David lance
+  `create-questions --dir scripts/questions/2de-vecteurs-a --publier --mettre-a-jour`, puis page régénérée
+  et verdicts des 4 remis à zéro.
 - **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 11) ; « À revoir » → § 7 de
   la démarche ; tout OK → `publier-lot.ts` simulé sur `2de-vecteurs-a` puis `2de-vecteurs-b`.
 - **En attente de David** : relecture de la page à cocher https://claude.ai/artifact/6WwvVGdVFZG1RUj8iWFbwo,
@@ -676,3 +679,13 @@ doublée d'une variation à calcul.
   prend qu'un `--dir`) : les 11 ids du § 25 retrouvés, `draft`, aucune alerte. Page (capacité `db`,
   collection `verdicts` vide au départ) : https://claude.ai/artifact/6WwvVGdVFZG1RUj8iWFbwo
 - Publication : `publier-lot.ts` une fois par dossier (`2de-vecteurs-a`, puis `2de-vecteurs-b`).
+
+## 28. Lot 4 A, vecteurs en deux trous (2026-10-31)
+
+- Relecture de David (01 et 02, « À revoir ») : demander les coordonnées d'un vecteur avec deux trous,
+  comme pour un point. La case `answerKind: "vecteur"` (choix de la phase 0, pas une décision de David)
+  faisait écrire la colonne ou le couple. Passés en deux trous dans la colonne,
+  $\vec{u}\begin{pmatrix}?\\?\end{pmatrix}$ : modèles 01 à 04 (11 cases), consigne réduite à « Donne
+  ses coordonnées. », specs en deux réponses (spec « En colonne » retirée, sans objet).
+- `create-questions` en simulation : 4 modèles « contenu différent », specs vertes. Base locale mise à jour ;
+  aperçu joué (01, u⃗ = −7j⃗ : deux cases dans la colonne, (0 ; −7) « Juste »).
