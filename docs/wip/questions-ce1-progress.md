@@ -449,3 +449,28 @@ Réponse de David : les quatre recommandations (« je valide »).
   rouge sans (5 échecs sur 9), vert 9/9 ; `security-auditor` sans finding ; #2030 mergée (CI verte).
 - 2026-10-30 : `db:migrate` par David (avec les migrations 3e lot 4b et 6e lot 6b d'autres sessions) ; vérifié au MCP :
   9/9 sur le nœud de leur point, un tag chacun, `updated_at` = `created_at` ; page à cocher publiée, aucune alerte.
+
+## 12. Lots à outils existants — découpage (David, 2026-11-01)
+
+Relevé des outils le 2026-11-01 (`ubumark.md`, en-tête « Vérifié contre le code ») : depuis le § 3, plusieurs outils C
+existent — horloge à placer (060), `barres` à construire (088), ` ```partage ` + `colorier:` (095, 097), ` ```cubes `
+avec `dessiner:` / `retrouver:` (079), ` ```solide `, ` ```patron `. Seul manque `centaines:` de `collection` (001-003).
+
+Recommandations suivies (« je suis tes recos ») :
+
+1. Lots à outils existants, 10 points au plus : **6** calcul posé et monnaie → **7** heure et données → **8** fractions
+   dessinées et géométrie → **9** espace et mesure.
+2. 079 (assemblages de cubes, classé D) repris au lot 9 avec ` ```cubes `.
+3. `centaines:` de `collection` (001, 002) : petit chantier à part, plus tard.
+
+⚠️ **Monnaie : centimes indisponibles.** ` ```monnaie ` n'a ni centimes (`50c` : « pas encore disponible (CE1, plus
+tard) », `monnaie-parser.ts`) ni billets de 200 / 500 € ; `construire:` va de 1 à 100 € entiers. Or 054, 055, 056,
+057 et 086 ont tous pour borne « euros et centimes, ou écriture à virgule » (BO c2 p.28 ; 056 : « pas de pièce de
+1 € »). Ils passent en **C** (outil à prolonger) ; le lot 6 tel quel ne se fait pas → question à David.
+
+| Lot | Thème                            | Points                                              |
+| --- | -------------------------------- | --------------------------------------------------- |
+| 6   | calcul posé (+ monnaie ?)        | 022, 100 ; 054, 055, 056, 057, 086 si centimes      |
+| 7   | heure et données                 | 059, 060, 063, 104 ; 082, 106, 088 ; 089, 107, 081  |
+| 8   | fractions dessinées et géométrie | 096, 098, 095, 097 ; 069, 070, 105 ; 075, 087 ; 073 |
+| 9   | espace et mesure                 | 044 ; 064, 065 ; 079 ; 076, 077 ; 080               |
