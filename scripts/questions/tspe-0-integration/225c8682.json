@@ -1,0 +1,85 @@
+{
+	"id": "225c8682-ad81-44c1-b821-e94af0530958",
+	"title": "Convexité : lecture sur la courbe de f″",
+	"description": "Lire l'intervalle où f est convexe sur la courbe de f″ (f″ ⩾ 0)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions convexes",
+	"domain": "Convexité",
+	"subdomain": "Lecture graphique",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée seconde** $f''$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(x-{{h}})   violet\ntaille: moyenne\ndescription: Courbe de la dérivée seconde f″ : une droite qui coupe l'axe des abscisses.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\mathbb{R}$\n- $\\left[0\\,;+\\infty\\right[$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "h",
+					"expression": "-3..3"
+				}
+			],
+			"conditions": ["h != 0"],
+			"correction": {
+				"steps": [
+					"$f$ est convexe là où $f''(x)\\geqslant 0$, c'est-à-dire là où la courbe de $f''$ est **au-dessus** de l'axe des abscisses.",
+					"$f''$ s'annule en ${{h}}$ et est positive {{if:s>0|à droite|à gauche}} : $f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$. (Que $f''$ soit {{if:s>0|croissante|décroissante}} ne dit rien de la convexité de $f$.)"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "2",
+				"s": "1"
+			},
+			"description": "v0 : f″ ≥ 0 à droite",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "2",
+				"s": "1"
+			},
+			"description": "v0 : f″ croissante ≠ f convexe",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "-2",
+				"s": "-1"
+			},
+			"description": "v0 : s=−1",
+			"variationIndex": 0
+		}
+	]
+}

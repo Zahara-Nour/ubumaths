@@ -1,0 +1,90 @@
+{
+	"id": "7a0b795c-b802-44c2-b06c-e3631610908c",
+	"title": "Encadrer une valeur moyenne",
+	"description": "f croissante sur [a ; b] : f(a) ⩽ μ ⩽ f(b) pour sa valeur moyenne μ",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Intégration",
+	"domain": "Valeur moyenne",
+	"subdomain": "Encadrement",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"statement": "$f$ est une fonction continue et croissante sur $\\left[{{a}}\\,;{{b}}\\right]$, avec $f({{a}})={{p}}$ et $f({{b}})={{q}}$. On note $\\mu$ sa valeur moyenne sur cet intervalle.\n\nComplète l'encadrement le plus précis que l'on peut en déduire :\n\n$?\\leqslant\\mu\\leqslant ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2..1"
+				},
+				{
+					"name": "b",
+					"expression": "3..6"
+				},
+				{
+					"name": "p",
+					"expression": "-4..2"
+				},
+				{
+					"name": "q",
+					"expression": "3..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est croissante : pour tout $x$ de $\\left[{{a}}\\,;{{b}}\\right]$, ${{p}}\\leqslant f(x)\\leqslant {{q}}$.",
+					"La valeur moyenne est comprise entre les bornes de $f$ : $\\textcolor{{{color:primary.0}}}{{{p}}}\\leqslant\\mu\\leqslant\\textcolor{{{color:primary.0}}}{{{q}}}$. (C'est l'**intégrale** qui vaut entre ${{eval:p*(b-a)}}$ et ${{eval:q*(b-a)}}$.)"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2", "7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0",
+				"b": "4",
+				"p": "2",
+				"q": "7"
+			},
+			"description": "v0 : 2 ≤ μ ≤ 7",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8", "28"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "0",
+				"b": "4",
+				"p": "2",
+				"q": "7"
+			},
+			"description": "v0 : bornes de l'intégrale au lieu de μ",
+			"variationIndex": 0
+		}
+	]
+}

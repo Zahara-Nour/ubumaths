@@ -1,0 +1,105 @@
+{
+	"id": "37ce7759-c2fa-4353-a726-f0c942284053",
+	"title": "Convexité : lecture sur la courbe de f",
+	"description": "Lire l'intervalle où f est convexe sur sa courbe (courbe au-dessus de ses tangentes)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions convexes",
+	"domain": "Convexité",
+	"subdomain": "Lecture graphique",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\left[{{eval:h-1}}\\,;{{eval:h+1}}\\right]$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "h",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est convexe là où sa courbe est « tournée vers le haut » (au-dessus de ses tangentes), concave là où elle est « tournée vers le bas ».",
+					"La courbure change au point d'abscisse ${{h}}$ (point d'inflexion) : $f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$.",
+					"Attention : l'intervalle $\\left[{{eval:h-1}}\\,;{{eval:h+1}}\\right]$ est celui où $f$ est {{if:s>0|décroissante|croissante}}, ce n'est pas une question de convexité."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "1",
+				"k": "0",
+				"s": "1"
+			},
+			"description": "v0 : s=1, bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "1",
+				"k": "0",
+				"s": "1"
+			},
+			"description": "v0 : intervalle de concavité",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "1",
+				"k": "0",
+				"s": "1"
+			},
+			"description": "v0 : intervalle de décroissance",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "-1",
+				"k": "1",
+				"s": "-1"
+			},
+			"description": "v0 : s=−1",
+			"variationIndex": 0
+		}
+	]
+}

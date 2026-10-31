@@ -1,0 +1,186 @@
+{
+	"id": "95ee8348-8d34-4cf4-a798-544ee0622aa7",
+	"title": "Dérivée de x ↦ ∫ₐˣ f(t) dt",
+	"description": "F(x) = ∫ₐˣ g(t) dt est la primitive de g qui s'annule en a : F′ = g, F′(2) = g(2) (pièges : F′ = g′, F′(x) = g(x) − g(a))",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Intégration",
+	"domain": "Fonction intégrale",
+	"subdomain": "Dérivée",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}e^{-x^{2}}"
+				}
+			],
+			"statement": "Soit $F$ la fonction définie sur $\\mathbb{R}$ par\n\n$$F(x)=\\displaystyle\\int_{ {{a}} }^{x}{{k}}e^{-t^{2}}\\,\\mathrm{d}t.$$\n\nDétermine $F'(x)$ (on ne cherche pas à calculer l'intégrale).\n\n$F'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-1..2"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction $t\\mapsto {{k}}e^{-t^{2}}$ est continue sur $\\mathbb{R}$. D'après le théorème fondamental, $F:x\\mapsto\\displaystyle\\int_{ {{a}} }^{x}{{k}}e^{-t^{2}}\\,\\mathrm{d}t$ est **la primitive** de cette fonction qui s'annule en ${{a}}$.",
+					"Sa dérivée est donc la fonction intégrée, écrite en $x$ : $F'(x)=\\textcolor{{{color:primary.0}}}{ {{k}}e^{-x^{2}} }$.",
+					"Attention : on ne dérive pas la fonction intégrée (ce serait $F''$), et on ne retranche pas sa valeur en ${{a}}$ : la borne ${{a}}$ fixe seulement la constante, $F({{a}})=0$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{ {{eval:4+c}} }"
+				}
+			],
+			"statement": "Soit $F$ la fonction définie sur $\\mathbb{R}$ par\n\n$$F(x)=\\displaystyle\\int_{1}^{x}\\dfrac{1}{t^{2}+{{c}}}\\,\\mathrm{d}t.$$\n\nCalcule $F'(2)$.\n\n$F'(2)=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "5|12|21|32"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction $g:t\\mapsto\\dfrac{1}{t^{2}+{{c}}}$ est continue sur $\\mathbb{R}$ (son dénominateur ne s'annule pas), donc $F$ est dérivable et $F'(x)=g(x)=\\dfrac{1}{x^{2}+{{c}}}$.",
+					"$F'(2)=\\dfrac{1}{2^{2}+{{c}}}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{ {{eval:4+c}} }}$.",
+					"Inutile (et ici impossible avec les fonctions du programme) de calculer l'intégrale : on ne calcule pas $F(2)$, ni $g(2)-g(1)$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3e^{-x^{2}}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"k": "3"
+			},
+			"description": "v0 : k=3 → 3e^{−x²}",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-6xe^{-x^{2}}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"k": "3"
+			},
+			"description": "v0 : F′ = g′ (fonction intégrée dérivée)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3e^{-x^{2}}-3e^{-1}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"k": "3"
+			},
+			"description": "v0 : F′(x) = g(x) − g(a)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3e^{-t^{2}}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"k": "3"
+			},
+			"description": "v0 : réponse écrite en t",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2e^{-x^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0",
+				"k": "2"
+			},
+			"description": "v0 : a=0, k=2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{9}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "5"
+			},
+			"description": "v1 : c=5 → 1/9",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{2}{18}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"c": "5"
+			},
+			"description": "v1 : 2/18 non simplifié",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{1}{18}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "5"
+			},
+			"description": "v1 : g(2) − g(1)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{4}{81}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "5"
+			},
+			"description": "v1 : F′ = g′ : g′(2) = −4/81",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{36}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "32"
+			},
+			"description": "v1 : c=32 → 1/36",
+			"variationIndex": 1
+		}
+	]
+}
