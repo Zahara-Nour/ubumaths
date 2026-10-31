@@ -302,6 +302,17 @@ Deux lots :
   (`0,5n`) est refusée (`bad_form`) ; `checkRequiredForm` (`required-form-validator.ts`) relit la réponse sans la
   règle de la virgule nue (#520). Sans forme exigée, `0,5n` passe. Spec du lot écrite avec `0{,}5n`.
 
+### 14.2 Lot 4a en prod, migration de rangement (2026-10-30)
+
+- `deploy:prod` v0.58.0 (livre #2021) vérifié : déploiement Vercel `8fcd5e4f7` en succès.
+- Simulation prod verte (7 à créer, 74 specs), puis David : `create-questions --publier` → 9815bed5 (01),
+  eca43ba8 (02), 61ffb696 (03), ee9256c0 (04), 13d31ece (05), 8263693b (06), c18da717 (07), brouillons [5] sans
+  nœud ni tag (vérifié MCP).
+- Relevé `questions-5/etat-prod-2026-10-30-lot4a/` ; générateur `questions-5/lot-4a-rangement.py` (gabarit
+  `lot-rangement-3-4a.py`) → migration `20261030180500_questions_5_lot4a_rangement_tags` + fixture. Nœuds : notion
+  « Algèbre > Calcul littéral » (5-034, 5-124, 5-037, 5-041), sous-notion « substitution » (5-036).
+- Test `questions-5-lot4a-rangement-tags.test.ts` : 19/19, rouge sans la migration (8 échecs).
+
 ## 15. Lot 4b « Calcul littéral : transformer, mettre en équation » : décisions (David, 2026-10-29, « je te suis »)
 
 | #   | Point | Modèle                                            | Réponse       | Catégorie, niveau                         |
