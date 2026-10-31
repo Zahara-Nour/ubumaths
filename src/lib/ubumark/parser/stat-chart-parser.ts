@@ -35,6 +35,7 @@
  * @module ubumark/parser/stat-chart-parser
  */
 
+import { unnestedLine } from './nested-line';
 import { bodyOpensParagraph } from './block-closure';
 import { groupNumberText } from '$lib/mathAST/digit-grouping';
 import {
@@ -507,9 +508,6 @@ export function findStatChartBlocks(lines: string[]): StatChartBlockRange[] {
 	return blocks;
 }
 
-/** Ligne vue sans retrait ni marque de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /** `axe: à choisir` : l'élève choisit l'échelle */
 const CHOOSE_SCALE = 'à choisir';
 
@@ -528,7 +526,7 @@ export function findBarsToPlace(markdown: string): {
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
-	const plain = lines.map(unquoted);
+	const plain = lines.map(unnestedLine);
 	return findStatChartBlocks(plain)
 		.filter((block) => block.kind === 'barres')
 		.map((block) => {

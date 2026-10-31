@@ -99,3 +99,63 @@ describe('ce qui ne change pas dans une liste', () => {
 		expect(nodes.map((n) => n.type)).toEqual(['paragraph', 'probability-tree', 'code-block']);
 	});
 });
+
+/**
+ * Bloc ouvert sur la ligne même de l'item (`- ```cubes`, `1. ```horloge`) :
+ * l'ouverture et le corps finissaient dans deux paragraphes séparés, le bloc
+ * était lu vide (« bloc non fermé »). La forme « - texte » puis le bloc en
+ * retrait marchait déjà.
+ */
+describe('bloc ouvert sur la ligne de l’item', () => {
+	const itemNodes = (md: string) => (parseMarkdown(md).children[0] as ListNode).items[0].children;
+
+	it.each([
+		['cubes', 'espace', ['- ```cubes', '  hauteurs: 2 1', '  ```']],
+		['horloge', 'horloge', ['- ```horloge', '  heure: 9 h', '  ```']],
+		['partage', 'partage', ['1. ```partage', '   forme: bande 8', '   ```']],
+		['solide', 'espace', ['- ```solide', '  forme: pyramide carree 4 3', '  ```']],
+		['python', 'code-block', ['- ```python', '  print(1)', '  ```']]
+	])('%s : un seul nœud, sans erreur', (_, type, lines) => {
+		const nodes = itemNodes(lines.join('\n'));
+
+		expect(nodes.map((n) => n.type)).toEqual([type]);
+		expect(JSON.stringify(nodes)).not.toContain('non fermé');
+		expect(JSON.stringify(nodes)).not.toContain('```');
+	});
+
+	it('ligne vide dans le bloc, texte en retrait après, item suivant', () => {
+		const md = [
+			'- ```variation',
+			'  variable: x',
+			'  domain: -inf, 0, +inf',
+			'',
+			'  sign: f(x)',
+			'    -inf,0: +',
+			'    0: z',
+			'    0,+inf: -',
+			'  ```',
+			'',
+			'  Voici la suite',
+			'- Second item'
+		].join('\n');
+		const list = parseMarkdown(md).children[0] as ListNode;
+
+		expect(list.items).toHaveLength(2);
+		expect(list.items[0].children.map((n) => n.type)).toEqual(['variation-table', 'paragraph']);
+		expect(paragraphWith(list.items[0].children as BlockNode[], 'Voici la suite')).toBeDefined();
+	});
+
+	it('vraiment non fermé : un seul bloc en erreur, le texte de l’item suivant intact', () => {
+		const md = ['- ```horloge', '  heure: 9 h', '- Second item'].join('\n');
+		const list = parseMarkdown(md).children[0] as ListNode;
+
+		expect(list.items).toHaveLength(2);
+		expect(paragraphWith(list.items[1].children as BlockNode[], 'Second item')).toBeDefined();
+	});
+
+	it('code en ligne ```x``` sur la ligne de l’item : reste du texte', () => {
+		const nodes = itemNodes('- le code ```x``` ici');
+
+		expect(nodes.map((n) => n.type)).toEqual(['paragraph']);
+	});
+});
