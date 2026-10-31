@@ -5,16 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, après la publication du lot 6b._
+_Mis à jour le 2026-10-31, relevé après le lot 6b et phase 0 du lot 7._
 
-- **État** : lots 1 à 6b en prod, publiés (lot 6b : 7/7, § 13.6).
-- **Prochaine action** : nouveau relevé MCP des points de 6e encore sans modèle, puis phase 0 du lot 7.
-- **En attente de David** : verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
-- **Pièges en cours** : 06 et 07 attendent le bloc ```ranger (à reprendre). 3a7a5711 : NE PAS publier.
-  `svelte-kit sync` avant `question:specs`. M10 : version dessinée attend « assemblages de cubes ».
-  Aperçu piloté : un clic ne donne pas le focus au champ ; `focus()` + clavier + Tab (§ 13.4).
-  `Doc-inchangée:` va dans un message de COMMIT (la garde CI ne lit pas la PR).
-- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-6b-rangement` (mergée).
+- **État** : lots 1 à 6b en prod, publiés. 46 points sans modèle publié, reclassés (§ 14). Phase 0 du lot 7
+  « Droite graduée et ordre » écrite (§ 15).
+- **Prochaine action** : réponses de David → worktree `../ubumaths-wt-questions-6`, script `lot-7`, brouillons.
+- **En attente de David** : valider la phase 0 du lot 7 (§ 15) ; verdicts de 02, 03, 04 en « validé » sur
+  `/dev/modeles`.
+- **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs`. Aperçu piloté : un clic
+  ne donne pas le focus au champ ; `focus()` + clavier + Tab (§ 13.4). `Doc-inchangée:` va dans un message de
+  COMMIT. Droite à placer : 16 intervalles au plus (alerte téléphone).
+- **Worktree / branche** : aucun (retiré après #2035) ; à recréer pour le lot 7.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1021,3 +1022,56 @@ nouvelle revue.
 - David a relu : 7/7 « OK », aucun commentaire (base de la page lue, 7 verdicts comptés). `publier-lot` en
   simulation : 7 brouillons passent le contrôle.
 - David a lancé `publier-lot --publier` : 7/7 publiés. MCP : `published`, rangés, un tag chacun.
+
+## 14. Relevé après le lot 6b (2026-10-31)
+
+Relevé MCP prod : **46 points de 6e sans modèle publié** (85 au départ). Depuis le classement du § 3, des outils sont
+arrivés en prod (v0.58.0) : droite à placer à plusieurs points (#1853), case choix et figure de travail
+(`figure-et-choix`, clos), `ranger, `cubes avec `dessiner:` / `retrouver:`. `solide et `patron existent sur
+`main`, pas encore en prod. Nouveau classement des 46 :
+
+- **B, outil en prod (33)** :
+  - droite graduée et ordre : 107, 128 (placer), 108 (repérer), 110 (```ranger) ;
+  - assemblages de cubes : 154, 155, 181, 208, 209 (```cubes) ;
+  - tableaux et programmes : 184, 185, 192, 143 ; 194, 195, 196 (programmes écrits en texte) ;
+  - géométrie dessinée (```figure, case ou choix) : 148, 160 à 168, 171, 174 à 179.
+- **C, outil neuf (2)** : rapporteur posé sur une figure (169) ; schéma en barres (142) ; ordre déjà décidé
+  (§ 5, question 6).
+- **Figure à compléter, contrôles manquants (5)** : 170, 172, 173, 180, 207 (constructions).
+- **D (6)** : 129, 138, 182, 183 non évaluables ; 197, 210 en attente de Blockly.
+
+Lots restants proposés : **7** droite graduée et ordre · **8** assemblages de cubes · **9** tableaux et programmes ·
+**10, 11** géométrie dessinée en deux lots (distances, cercle, médiatrice : 160-167 ; angles, triangles, symétrie :
+148, 168, 171, 174-179).
+
+## 15. Lot 7 « Droite graduée et ordre » : phase 0 (proposée le 2026-10-31, à valider)
+
+Patrons : CM1 0e3f82a1 (placer une fraction), c2fa5767 (repérer), d7df43c4 (```ranger). Bornes : « graduation
+adaptée », fractions « cas simples » ; droite pensée pour un téléphone, 16 intervalles au plus (alerte à 20 px).
+
+| #   | Point | Sous-notion                               | Modèle                               | Niveau        |
+| --- | ----- | ----------------------------------------- | ------------------------------------ | ------------- |
+| 1   | 108   | Décimaux : numération / droite graduée    | Repérer un nombre décimal            | 1 (nœud vide) |
+| 2   | 107   | Décimaux : numération / droite graduée    | Placer un nombre décimal             | 2             |
+| 3   | 128   | Fractions : sens et écritures / droite g. | Placer une fraction (graduation ≠ d) | 7 (CM1 1-6)   |
+| 4   | 110   | Décimaux : numération / ordre             | Ranger des nombres décimaux          | 4 (après 3)   |
+
+1. **Repérer un nombre décimal** (case `A : ?`) — v1 dixièmes : droite de n à n + 1,5, pas 0,1, entiers écrits ;
+   v2 centièmes (loupe) : de 2,3 à 2,45 par exemple, pas 0,01, dixièmes écrits ; v3 graduation de 0,5 ou 0,25, de 0
+   à 4. Corrigé : ce que vaut un petit intervalle, puis le compte.
+2. **Placer un nombre décimal** (`placer:`) — les trois mêmes droites ; v4 deux points `A` et `B` sur la même
+   droite (dixièmes).
+3. **Placer une fraction** (6e : au-delà du CM1, qui place déjà n/d sur une droite graduée en d) — v1 la graduation
+   n'est pas en d : placer 1/2, 2/3, 3/4 sur une droite en sixièmes, huitièmes ou douzièmes (fraction égale, cas
+   simples) ; v2 deux points `A` (n/d) et `B` (fraction égale à écrire autrement) sur la même droite. Corrigé : la
+   fraction égale avec le dénominateur de la graduation.
+4. **Ranger des nombres décimaux** (```ranger, cinq étiquettes comme le CM1) — v1 croissant, même partie entière,
+   nombres de décimales différents (le piège « plus de chiffres, plus grand ») ; v2 décroissant (`signe: >`),
+   parties entières proches, un entier parmi eux ; v3 zéros intercalés (3,05 ; 3,5 ; 3,055…). Jamais deux écritures
+   d'un même nombre (3,5 et 3,50 n'auraient pas d'ordre).
+5. **Reprise de 06 et 07 du lot 4** (83c835bb « Ranger des fractions », c360d588 « Ranger des nombres mixtes »,
+   publiés, trois cases) : réponse passée en ```ranger, variations inchangées. Modèles publiés : instantané d'abord
+   (§ 7 de la démarche), `create-questions --mettre-a-jour` lancé par David ; pas de migration.
+
+**Question d'accès** (migration nœud + tag des 4 neufs) : personne ne lit rien de plus. Les brouillons restent
+visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migration ne fait que ranger et taguer.
