@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 4 proposée._
+_Mis à jour le 2026-11-01, lot 4 écrit (PR des fichiers)._
 
 - **État** : lots 1, 2 et 3 publiés (lot 3 : seconde relecture de ÷ 4 et ÷ 8 OK, 5 verdicts OK comptés ; `publier-lot --publier` lancé par David le 2026-11-01, 5 `published` vérifiés au MCP).
-- **Prochaine action** : lot 4 (calcul mental sur les décimaux, 7 modèles) — phase 0 proposée (§ 9), en attente de David.
-- **En attente de David** : validation de la phase 0 du lot 4 (§ 9).
-- **Pièges en cours** : `curriculum_points` n'a pas de colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
-- **Worktree / branche** : aucun.
+- **Prochaine action** : lot 4 (calcul mental sur les décimaux, 7 modèles, § 9) — merger la PR des fichiers, puis David : `create-questions --dir scripts/questions/cm2-4 --publier` (brouillons), puis migration nœud + tag.
+- **En attente de David** : après le merge, `create-questions --publier` du lot 4.
+- **Pièges en cours** : `curriculum_points` n'a pas de colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces ; variable `e` = Euler ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `content/questions-cm2-lot4`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -404,3 +404,13 @@ publication.
 **Points d'attention** : niveaux 6 et 7 de « Somme », 6 de « Différence » viennent après le niveau 5
 de 6e (comme au lot 3) ; la session `questions-cm1` prépare son lot 4 (décimaux) : la prévenir des
 niveaux pris ici.
+
+### 9.1 Lot 4 : décisions (David, 2026-11-01)
+
+Recommandations suivies (« tes recos ? » puis « je te suis ») : tableau du § 9 tel quel ; V3 de la moitié gardée (dernier chiffre impair, deux chiffres au plus : 2,5 ; 0,7 ; 3,9) ; double, × 5, × 50 dans « Décimaux > Multiplier > Produit particulier » (5, 6, 7), moitié dans « Décimaux > Additionner > Moitié » (2).
+
+### 9.2 Lot 4 : écriture (2026-11-01)
+
+- Script `lot-cm2-4.py` → `scripts/questions/cm2-4/` (7 fichiers) ; `question:specs` 1 000 tirages par variation, tout vert ; `create-questions` en simulation (prod) : 7 à créer.
+- Pièges : variable **`e` = Euler** (partie entière renommée `w`) ; nom à deux lettres (`nc`) évité ; nombres tirés en entiers (millièmes, centièmes) et affichés par `{{eval:…;d}}` ; rang nommé par `{{if:}}` imbriqués ; « 2, c'est 2 unités » retiré du corrigé quand on ajoute des unités ; condition `N>=10^j` (pas « le chiffre des milliers de 12,3 est 0 »).
+- Local (port 5183, `admin@local.test`, Playwright iPhone 13) : énoncés à virgule, espaces dès 4 chiffres (9 820,9 − 5 000) ; corrigés relus dans le rendu (retenue 6 865,7 + 200 ; moitié 7,9 = 7,8 + 0,1).
