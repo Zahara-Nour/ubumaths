@@ -43,6 +43,12 @@ const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
 	[/Expected '\|' to close absolute value/, 'Valeur absolue non fermée : il manque une barre |'],
 	[/Expected \\right to close delimiter/, 'Il manque \\right pour fermer la parenthèse'],
 	[/Expected \\to in limit subscript/, 'Il manque \\to sous la limite : \\lim_{x \\to 0}'],
+	// V44 : la fin « , got ] » restait en anglais derrière « Il manque « ) » »
+	[/Expected '([^']+)' after \\right, got (\S+)/, 'Il manque « $1 » après \\right : « $2 » trouvé'],
+	[
+		/Expected delimiter after \\left, got (\S+)/,
+		'Il manque une parenthèse après \\left : « $1 » trouvé'
+	],
 	[/Expected '([^']+)' after [\w \\]+/, 'Il manque « $1 »'],
 	[/Expected subscript operand/, 'Il manque l’indice après _'],
 	[/Expected exponent/, 'Il manque l’exposant après ^'],
@@ -64,6 +70,7 @@ const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
 	[/Unknown function: (\w+)/, 'Fonction inconnue : $1'],
 	[/Unknown symbol: (\S+)/, 'Symbole inconnu : $1'],
 	[/Unknown environment: (\S+)/, 'Environnement inconnu : $1'],
+	[/Mismatched environments: (\S+) closed by (\S+)/, 'Environnements différents : $1 fermé par $2'],
 	[
 		/Unknown \\text content: "([^"]*)"\. Expected "vrai" or "faux"/,
 		'Texte « $1 » non reconnu : seuls « vrai » et « faux » se lisent'
@@ -133,7 +140,7 @@ const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
 
 /** Une ligne qui commence par un mot anglais, après la table. */
 const ENGLISH_LINE =
-	/^(?:Unexpected|Expected|Unknown|Missing|Invalid|Cannot|Empty|Failed|Could not|Too many|Not enough|No |Indeterminate|Consecutive)\b/;
+	/^(?:Unexpected|Expected|Unknown|Missing|Invalid|Cannot|Empty|Failed|Could not|Too many|Not enough|No |Indeterminate|Consecutive|Mismatched)\b/;
 
 /** Une consigne d'usage en fin de message : gardée (c'est de la syntaxe), annoncée en français. */
 const USAGE = /^(.*?)[.:]?\s*\b(?:Use|Usage):\s*(.*)$/;

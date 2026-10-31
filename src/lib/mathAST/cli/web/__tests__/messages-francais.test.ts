@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { WebReplEngine } from '../web-repl-engine';
 
 const ENGLISH =
-	/\b(Unexpected|Expected|Unknown|Missing|Invalid|Cannot|Empty|Failed|Could not|Division by|Indeterminate|Consecutive|Parse error|Error \[)/;
+	/\b(Unexpected|Expected|Unknown|Missing|Invalid|Cannot|Empty|Failed|Could not|Division by|Indeterminate|Consecutive|Parse error|Error \[|Mismatched|got)\b/;
 
 function run(input: string) {
 	return new WebReplEngine().execute(input);
@@ -38,7 +38,14 @@ describe('les erreurs de lecture courantes, en français', () => {
 		['\\begin{foo}', /Environnement inconnu : foo/],
 		["f'(2)", /f'/],
 		['2|x', /Valeur absolue non fermée/],
-		['| 2 + 3', /Valeur absolue non fermée/]
+		['| 2 + 3', /Valeur absolue non fermée/],
+		// V44 : restaient en anglais (2026-10-13)
+		[
+			'\\begin{matrix}1\\end{pmatrix}',
+			/Environnements différents : \\begin\{matrix\} fermé par \\end\{pmatrix\}/
+		],
+		['\\left(2\\right]', /Il manque « \) » après \\right : « \] » trouvé/],
+		['\\left 2', /\\left/]
 	])('%s', (input, expected) => {
 		const line = run(input);
 
