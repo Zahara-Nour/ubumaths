@@ -6,20 +6,18 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2042._
+_Mis à jour le 2026-11-01, après #2046._
 
-- **État** : lots 1 à 5 mergés (#2003, #2023, #2027, #2037, #2042 : gestes `designer:` / `completer:` des
-  patrons), rien en prod ; vérifications manuelles notées dans `verifications-manuelles.md`.
-- **Prochaine action** : lot 6, `section:` sur ` ```solide ` (pavé ‖ face, cylindre ‖ ou ⊥ à l'axe, boule ;
-  3e-020) — écrire d'abord sa spécification (comme les § 6 à 10), la faire valider, puis TDD.
-- **En attente de David** : rien. Décidé : correctif `fix` du parseur pour les blocs spéciaux ouverts sur la
-  ligne d'un élément de liste (`- ```cubes` lu vide), hors chantier, après les lots.
-- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; aperçu d'un bloc : serveur sur un
-  port libre + Playwright, compte `teacher@local.test` (l'aide d'écriture est réservée au prof), attendre
-  l'hydratation avant de cliquer ; dans un SVG en cm, jamais d'`outline` (focus = `stroke`) ; un geste ne
-  doit jamais donner la réponse (noms, cadre, nom accessible) ; `EspaceSpec` = union : resserrer par `kind`.
-- **Worktree / branche** : aucun (retiré après #2042) ; lot 6 :
-  `git worktree add -b feat/solides-sections ../ubumaths-wt-solides origin/main`.
+- **État** : les 6 lots sont mergés (#2003, #2023, #2027, #2037, #2042, #2046 : `section:` du ` ```solide `).
+  Rien n'est en prod. Les vérifications manuelles sont notées dans `verifications-manuelles.md`.
+- **Prochaine action** : le correctif `fix` du parseur pour les blocs spéciaux ouverts sur la ligne d'un
+  élément de liste (`- ```cubes` lu vide), hors chantier ; puis clore le chantier par le versement (durable →
+  `docs/systeme/`, journal archivé).
+- **En attente de David** : rien.
+- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; aperçu d'une scène sans serveur : un
+  script `tsx` qui écrit un SVG, puis une capture Playwright ; un geste ne doit jamais donner la réponse ;
+  la CI « Client Tests » peut tomber pour l'infra (navigateur fermé, `playwright install` bloqué) : relancer.
+- **Worktree / branche** : aucun (retiré après #2046).
 
 ---
 
