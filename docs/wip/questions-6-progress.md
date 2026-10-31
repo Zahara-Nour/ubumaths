@@ -5,17 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, relevé après le lot 6b et phase 0 du lot 7._
+_Mis à jour le 2026-11-01, lot 7 écrit, PR des fichiers à ouvrir._
 
-- **État** : lots 1 à 6b en prod, publiés. 46 points sans modèle publié, reclassés (§ 14). Phase 0 du lot 7
-  « Droite graduée et ordre » écrite (§ 15).
-- **Prochaine action** : réponses de David → worktree `../ubumaths-wt-questions-6`, script `lot-7`, brouillons.
-- **En attente de David** : valider la phase 0 du lot 7 (§ 15) ; verdicts de 02, 03, 04 en « validé » sur
-  `/dev/modeles`.
-- **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs`. Aperçu piloté : un clic
-  ne donne pas le focus au champ ; `focus()` + clavier + Tab (§ 13.4). `Doc-inchangée:` va dans un message de
-  COMMIT. Droite à placer : 16 intervalles au plus (alerte téléphone).
-- **Worktree / branche** : aucun (retiré après #2035) ; à recréer pour le lot 7.
+- **État** : lots 1 à 6b publiés. Lot 7 « Droite graduée et ordre » écrit (§ 16) : 4 modèles + correctif de la
+  virgule des graduations du bloc ```line ; PR à ouvrir.
+- **Prochaine action** : PR mergée → `deploy:prod` (David) pour le correctif → David lance `create-questions
+--publier` → migration nœud + tag → page à cocher → publication. En parallèle : PR de contenu de 06 et 07
+  (```ranger), patron § 12.5.
+- **En attente de David** : verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
+- **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs`. Jamais de variable
+  `e`. Aperçu piloté : `math-field.math-prompt-block` + `setPromptValue`, boutons par rôle (copies cachées).
+  `Doc-inchangée:` va dans un message de COMMIT.
+- **Worktree / branche** : `../ubumaths-wt-questions-6`, `feat/questions-6-lot-7-droite-ordre`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1075,3 +1076,27 @@ adaptée », fractions « cas simples » ; droite pensée pour un téléphone, 1
 
 **Question d'accès** (migration nœud + tag des 4 neufs) : personne ne lit rien de plus. Les brouillons restent
 visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migration ne fait que ranger et taguer.
+
+**Réponses de David (2026-10-31)** : lot 7 = « Droite graduée et ordre » (recommandé) ; reprise de 06 et 07 en
+
+````ranger dans ce lot : oui ; phase 0 : « je valide ».
+
+### 16. Écriture du lot 7 (2026-11-01)
+
+- `docs/wip/questions/lot-7-droite-ordre.py scripts/questions` → 4 modèles dans `scripts/questions/6-droite-ordre/`.
+  `question:specs` à 300 tirages par variation : 38 specs vertes, 3 600 tirages réussis ; `create-questions` en
+  simulation contre la prod : 4 « à créer ».
+- Pièges : variable `e` (= Euler : « 1,927… ») renommée `r` ; positions affichées des ```ranger relevées avec le
+  générateur (variables des specs : mélange `4 0 1 2 3` à cinq étiquettes, `2 0 1` à trois).
+- **Défaut du bloc ```line trouvé** : une graduation décimale s'écrivait avec un point (« 1.4 ») à l'écran et dans
+  le PDF ; une graduation calculée non entière s'écrit en fraction (1,4 → 7/5). Correctif dans la même PR
+  (`toLocaleDecimal` dans `NumberLine.svelte` et `number-line-typst.ts`, tests rouges puis verts) ; la loupe des
+  centièmes donne ses graduations par `labels:`. **`deploy:prod` nécessaire avant la publication du lot.**
+- Base locale : 4 brouillons ; aperçu admin à 390 px (Playwright hors dépôt, champ visé par
+  `math-field.math-prompt-block` + `setPromptValue`, boutons par rôle et nom : la page porte des copies cachées) :
+  01 juste 1,54 / faux 2,4 ; 02 juste 1,64 / faux 1,63 (« Tu as placé le point sur 1,63 ») ; 03 1/2 en douzièmes
+  juste / 1/12 faux ; 04 rangement juste / 1,6 et 1,457 inversés faux, correction juste dessous.
+- Reprise de 06 et 07 : `--mettre-a-jour` ne touche pas un modèle publié → migration de contenu (patron § 12.5),
+  PR à part après celle-ci ; script `lot-6-fractions.py` réécrit (```ranger, positions `2 0 1`, specs vertes),
+  mis de côté dans un patch.
+````
