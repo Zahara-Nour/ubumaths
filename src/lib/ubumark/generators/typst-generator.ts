@@ -498,10 +498,11 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 			// qu'un `]` d'intervalle (`]2 ; 3[`) fermerait trop tôt
 			let text = escapeTypstBrackets(unescapedContent);
 			if (node.bold) text = `*${text}*`;
+			// `;` final : sans lui, un `(`, `[` ou `.lettre` collé après serait lu comme la suite de l'appel
 			// Use #emph[] instead of _..._ for italic - more reliable in content blocks
-			if (node.italic) text = `#emph[${text}]`;
-			if (node.strikethrough) text = `#strike[${text}]`;
-			if (node.highlight) text = `#highlight[${text}]`;
+			if (node.italic) text = `#emph[${text}];`;
+			if (node.strikethrough) text = `#strike[${text}];`;
+			if (node.highlight) text = `#highlight[${text}];`;
 			return wrapInlineDetail(text, node.detail);
 		}
 
