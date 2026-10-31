@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 3b._
+_Mis à jour le 2026-11-01, phase 0 du lot 3c écrite (§ 11)._
 
 - **État** : lots 0, 1, 2, 3a et **3b publiés** (3b : 8 modèles, § 10 à 10 septies). #2040 et #2032 mergées, pas en prod.
-- **Prochaine action** : phase 0 détaillée du lot 3c (partages, 4 points : 145, 150 « quelle part est coloriée ? », 144, 149 « colorier » ; découpage décidé au § 9 bis), sur le modèle du § 10, à faire valider ; brouillons sans attendre le `deploy:prod` du bloc ```partage (pas encore en prod), publication après.
-- **En attente de David** : rien.
+- **Prochaine action** : après la réponse de David au § 11, écrire le lot 3c (script `docs/wip/questions/lot-cm1-3c.py`, comme le 3b), brouillons sans attendre le `deploy:prod` du bloc ```partage, publication après.
+- **En attente de David** : les 3 questions du § 11 (sous-domaine « Partage », parts d'affilée ou éparpillées, « 1 + 3/4 »).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; `gh pr checks` peut rester « pending » sur des 502 : suivre le run.
 - **Worktree / branche** : aucun (retiré après #2045).
 
@@ -525,3 +525,36 @@ Ids : `36507fc9-df87-46a4-865d-aec7935580c3` (lire et écrire), `6faa64d0-6b77-4
 
 - Page à cocher : 8 verdicts « OK », sans commentaire (comptés dans `verdicts`). Simulation
   `publier-lot` : 8 brouillons passent ; `--publier` lancé par David ; 8 `published` relus au MCP.
+
+## 11. Lot 3c — partages : phase 0 (à valider)
+
+Relevé MCP du 2026-11-01 : les 4 points ont 0 modèle ; tous sous « Nombres et calculs > Fractions :
+sens et écritures > définition ». Aucun modèle de la prod n'utilise ```partage (bloc pas encore en
+prod) ; la session CE1 prévoit le sien (lot 8, CE1-095 et 097). Bornes `cycle3.json` : 144, 145
+dénominateur ≤ 20 ; 149, 150 dixièmes ou centièmes.
+
+Outil : ```partage (`gris:` pour lire, `colorier:` pour représenter, `unites:` pour les fractions
+plus grandes que 1), variables permises dans `forme:` et `colorier:`. Juge de `colorier:` : le
+NOMBRE de parts coloriées, quelles qu'elles soient (décidé au chantier fractions-a-colorier). Bande
+et disque : 2 à 12 parts ; grille : au plus 20 parts ici (2×5, 3×4, 4×5…), 10×10 pour les centièmes.
+
+| #   | Point   | Modèle                                               | Variations, plages                                                                                                                                                                                                                         | Catégorie, niveau                                |
+| --- | ------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------ |
+| 1   | CM1-145 | Quelle fraction de la figure est coloriée ?          | case fraction ; V1 bande ou disque de d parts (2 à 12), g coloriées (1 à d − 1) ; V2 grille (6 à 20 parts) ; V3 > 1 : 2 ou 3 bandes de d parts, « chaque bande est une unité », g > d non multiple de d (7/4) ; toute fraction égale juste | Fractions / Apprivoiser / **Partage** (neuve), 1 |
+| 2   | CM1-144 | Colorier une fraction                                | ```partage `colorier:` ; V1 figure de d parts, n/d (n < d) ; V2 figure de k × d parts (3/4 sur une bande de 8, 2/5 sur une grille 2×5) ; V3 > 1 : `unites:` = juste ce qu'il faut (7/4 sur 2 bandes de 4)                                  | Partage, 2                                       |
+| 3   | CM1-150 | Quelle fraction décimale de la figure est coloriée ? | case fraction, `requiredForm: 'fraction'` (virgule refusée, comme au 3b) ; V1 bande ou disque de 10, g/10 ; V2 grille 10×10, g/100 (g 1 à 99)                                                                                              | Partage, 3                                       |
+| 4   | CM1-149 | Colorier une fraction décimale                       | `colorier:` ; V1 bande de 10, n/10 ; V2 grille 10×10, n/100 (n 1 à 99, glisser pour colorier) ; V3 grille 10×10, n/10 (3/10 = 30 cases : dixièmes et centièmes)                                                                            | Partage, 4                                       |
+
+`reducedFractions: off` partout (4/8 ou 1/2 sur une bande de 8 à moitié coloriée : juste).
+
+Questions :
+
+1. **Sous-domaine neuf « Partage »** (Fractions / Apprivoiser, niveaux 1 à 4) : d'accord ? Reco :
+   oui, et le signaler à la session CE1 pour son lot 8.
+2. **Parts coloriées à lire (145, 150)** : d'affilée (`gris: g`, les g premières) ou éparpillées
+   (rangs tirés au hasard) ? Reco : d'affilée ; éparpillées dans une variation de plus seulement si
+   le tirage de rangs distincts se fait sans outil neuf (vérifié à l'écriture, signalé sinon).
+3. **145 V3 (> 1)** : « 1 + 3/4 » accepté à côté de 7/4, ou refusé (`requiredForm: 'fraction'`,
+   « Écris-le sous la forme d'une fraction ») ? Reco : refusé ; entier + fraction est le point 147.
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
