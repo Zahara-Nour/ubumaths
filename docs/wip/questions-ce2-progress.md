@@ -6,15 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2020._
+_Mis à jour le 2026-10-31, lot 4 relu (10/10 OK)._
 
-- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions) : 10 brouillons en prod, migration nœud + tag
-  `20261030161000` mergée (#2020), PAS ENCORE JOUÉE (§ 8).
-- **Prochaine action** : `db:migrate` (David, `!`, `--dry-run` d'abord : seule `161000` en attente au relevé MCP)
-  → relevé MCP (10 modèles, nœud + 1 point) → page à cocher.
-- **En attente de David** : rien. Correctif de la carte de correction (choix `$$…$$` en LaTeX brut,
-  15 modèles publiés) : go le 2026-10-30, chantier À PART `choix-correction` (autre session, § 8).
-  Publier le lot 4 APRÈS le `deploy:prod` de ce correctif (modèle 03 touché).
+- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions) : 10 brouillons rangés et tagués en prod, relus 10/10 OK sur
+  https://claude.ai/artifact/Qs3HjpvSQV2MUMt631y9oJ ; `publier-lot` en simulation REFUSE 08 (niveau 18 pris
+  par « Soustraire des fractions » CM1 `884908d3`, publié depuis) (§ 8).
+- **Prochaine action** : selon la réponse de David — 08 au niveau 21 (fichier + `--mettre-a-jour`), puis
+  `publier-lot` (simulation, puis `--publier` par David).
+- **En attente de David** : (1) niveau de 08 (21 proposé) ; (2) le chantier `choix-correction` n'existe pas
+  (ni branche, ni PR, ni journal ; `ChoiceList.svelte` inchangé) : le lancer, ou publier sans l'attendre ?
 - **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
 - **Worktree / branche** : aucun (retiré après #2020).
 
@@ -362,3 +362,11 @@ de plus (brouillons neufs ; la migration nœud + tag ne change aucune règle).
   et #2018 ; branche remise à jour par merge, CI verte). Revue : `security-auditor` seul (migration de contenu).
   Worktree retiré. Relevé MCP : seule `20261030161000` en attente en prod. Les 4 conditions du `db:migrate` sont
   réunies (accès tranché, test vérifié rouge, audit sans finding, migration additive avec rollback).
+- 2026-10-30 : `20261030161000` jouée en prod par le `db:migrate` d'une autre session (dry-run de David : « up to
+  date »). Relevé MCP : les 10 modèles sur leur sous-notion, un point chacun, `updated_at` inchangé, draft.
+- Page à cocher : https://claude.ai/artifact/Qs3HjpvSQV2MUMt631y9oJ (10 fiches ; alertes « homonyme d'un autre
+  niveau écarté » sur 04, 07, 09 : les fiches gardées sont bien les ids du lot).
+- 2026-10-31 : relecture de David, 10/10 « OK » sans commentaire (base `verdicts` comptée). `publier-lot`
+  (simulation) : ⛔ 08, niveau 18 de « Fractions › Calculer › Addition et Soustraction » occupé par `884908d3`
+  (CM1, publié après la création du lot) ; niveaux 1-20 tous pris, 21 libre. `choix-correction` : aucune trace
+  (branche, PR, journal, worktree) ; `ChoiceList.svelte` passe toujours le choix à `InlineMarkdown`.

@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, après #2045._
+_Mis à jour le 2026-10-31, page à cocher du lot 3b publiée._
 
-- **État** : lots 0, 1, 2 et 3a publiés. Lot 3b (fractions décimales, 8 modèles) : 8 brouillons en prod (§ 10 quater) ; migration de rangement `20261030201100` mergée (#2045), **pas encore jouée**. #2040 et #2032 mergées, pas en prod.
-- **Prochaine action** : après le `db:migrate` de David, relevé MCP (8 modèles sur leur sous-notion, un point chacun, `updated_at` inchangé) ; page à cocher, simulation `publier-lot`, publication. Ensuite lot 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
-- **En attente de David** : `pnpm db:migrate` depuis le dépôt principal (seule migration en attente au 2026-10-31 : `20261030201100`).
+- **État** : lots 0, 1, 2 et 3a publiés. Lot 3b (fractions décimales, 8 modèles) : 8 brouillons en prod (§ 10 quater) ; rangés et tagués (#2045, migration jouée), page à cocher publiée (§ 10 sexies). #2040 et #2032 mergées, pas en prod.
+- **Prochaine action** : lire `verdicts` de la page (compter 8 réponses) ; « À revoir » → corriger (§ 7 de la démarche) ; puis simulation `publier-lot --dir scripts/questions/cm1-3b`, `--publier` par David, statut relu au MCP. Ensuite lot 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
+- **En attente de David** : relecture de la page à cocher.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; `gh pr checks` peut rester « pending » sur des 502 : suivre le run.
 - **Worktree / branche** : aucun (retiré après #2045).
 
@@ -513,3 +513,10 @@ Ids : `36507fc9-df87-46a4-865d-aec7935580c3` (lire et écrire), `6faa64d0-6b77-4
 - Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
 - `security-auditor` : aucun finding (diff au gabarit 3a : seuls ids, codes, comptes et commentaires changent).
 - #2045 mergée (CI relancée une fois : tests navigateur en échec sur `wrapDynamicImport`, sans lien avec la migration). Prod au 2026-10-31 : aucune autre migration de `main` en attente.
+
+### 10 sexies. Lot 3b — rangement vérifié, page à cocher (2026-10-31)
+
+- `db:migrate` lancé par David. MCP : les 8 modèles sur la sous-notion de leur point, un point CM1
+  chacun, toujours brouillons, `updated_at` inchangé (création, 08:57).
+- Page : https://claude.ai/artifact/TuwevKXLAmaT9Qs837E7Xe (alertes attendues : `ranger et `line
+  non dessinés, à jouer dans l’aperçu) ; `verdicts` vide à la publication.
