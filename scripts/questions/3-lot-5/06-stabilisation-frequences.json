@@ -1,0 +1,260 @@
+{
+	"title": "Stabilisation des fréquences",
+	"description": "Observer la stabilisation des fréquences quand le nombre de répétitions augmente ; estimer une probabilité par une fréquence",
+	"grades": ["3"],
+	"theme": "Probabilités",
+	"domain": "Simulation",
+	"subdomain": "Stabilisation",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On lance une punaise et on note si elle tombe **pointe en haut**. Voici la fréquence de « pointe en haut » selon le nombre de lancers.\n\n| Nombre de lancers | $10$ | $100$ | $1\\,000$ | $10\\,000$ |\n|---|---|---|---|---|\n| Fréquence | $0{,}{{F}}$ | $0{,}{{G}}$ | $0{,}{{H}}$ | $0{,}{{K}}$ |\n\nVers quelle valeur la fréquence semble-t-elle se stabiliser ?\n\n```choix\n- $0{,}{{P}}$\n- $0{,}{{F}}$\n- $0{,}5$\n- Elle ne se stabilise pas.\n```",
+			"variables": [
+				{
+					"name": "P",
+					"expression": "3|4|6|7"
+				},
+				{
+					"name": "a",
+					"expression": "-2|2"
+				},
+				{
+					"name": "b",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "3..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "4..19;±"
+				},
+				{
+					"name": "F",
+					"expression": "eval:P+a"
+				},
+				{
+					"name": "G",
+					"expression": "eval:10*P+b"
+				},
+				{
+					"name": "H",
+					"expression": "eval:100*P+c"
+				},
+				{
+					"name": "K",
+					"expression": "eval:1000*P+d"
+				}
+			],
+			"conditions": ["F!=5", "abs(d)!=10"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand le nombre de lancers augmente, la fréquence varie de moins en moins : $0{,}{{G}}$, puis $0{,}{{H}}$, puis $0{,}{{K}}$.",
+					"Elle se stabilise autour de $\\textcolor{{{color:primary.0}}}{0{,}{{P}}}$ : c'est une estimation de la probabilité que la punaise tombe pointe en haut.",
+					"Sur $10$ lancers seulement, la fréquence ($0{,}{{F}}$) fluctue trop pour conclure."
+				]
+			}
+		},
+		{
+			"statement": "On lance une punaise et on note si elle tombe **pointe en haut**. Voici la fréquence de « pointe en haut » selon le nombre de lancers.\n\n| Nombre de lancers | $10$ | $100$ | $1\\,000$ | $10\\,000$ |\n|---|---|---|---|---|\n| Fréquence | $0{,}{{F}}$ | $0{,}{{G}}$ | $0{,}{{H}}$ | $0{,}{{K}}$ |\n\nQuelle fréquence donne la meilleure estimation de la probabilité que la punaise tombe pointe en haut ?\n\n```choix\n- Celle obtenue pour $10\\,000$ lancers.\n- Celle obtenue pour $10$ lancers.\n- Celle obtenue pour $100$ lancers.\n- Toutes se valent.\n```",
+			"variables": [
+				{
+					"name": "P",
+					"expression": "3|4|6|7"
+				},
+				{
+					"name": "a",
+					"expression": "-2|2"
+				},
+				{
+					"name": "b",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "3..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "4..19;±"
+				},
+				{
+					"name": "F",
+					"expression": "eval:P+a"
+				},
+				{
+					"name": "G",
+					"expression": "eval:10*P+b"
+				},
+				{
+					"name": "H",
+					"expression": "eval:100*P+c"
+				},
+				{
+					"name": "K",
+					"expression": "eval:1000*P+d"
+				}
+			],
+			"conditions": ["F!=5", "abs(d)!=10"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Plus on répète l'expérience, plus la fréquence observée se rapproche de la probabilité.",
+					"La meilleure estimation est donc la fréquence sur le plus grand nombre de lancers : \\textcolor{{{color:primary.0}}}{$0{,}{{K}}$}, pour $10\\,000$ lancers."
+				]
+			}
+		},
+		{
+			"statement": "On a lancé une punaise $5\\,000$ fois : elle est tombée ${{k}}$ fois pointe en haut.\n\nDonne une estimation de la probabilité qu'elle tombe pointe en haut.\n\n$?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "30..70"
+				},
+				{
+					"name": "k",
+					"expression": "eval:50*m"
+				}
+			],
+			"conditions": ["m-10*floor(m/10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur un grand nombre de lancers, la fréquence observée est une bonne estimation de la probabilité.",
+					"Fréquence de « pointe en haut » : $\\dfrac{ {{k}} }{5\\,000} = \\textcolor{{{color:primary.0}}}{0{,}{{m}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Stabilisation vers 0,4",
+			"variationIndex": 0,
+			"variables": {
+				"P": "4",
+				"a": "2",
+				"b": "3",
+				"c": "-4",
+				"d": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la fréquence sur 10 lancers",
+			"variationIndex": 0,
+			"variables": {
+				"P": "4",
+				"a": "2",
+				"b": "3",
+				"c": "-4",
+				"d": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,5 (« une chance sur deux »)",
+			"variationIndex": 0,
+			"variables": {
+				"P": "4",
+				"a": "2",
+				"b": "3",
+				"c": "-4",
+				"d": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Meilleure estimation : 10 000 lancers",
+			"variationIndex": 1,
+			"variables": {
+				"P": "6",
+				"a": "-2",
+				"b": "-3",
+				"c": "7",
+				"d": "-8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 lancers",
+			"variationIndex": 1,
+			"variables": {
+				"P": "6",
+				"a": "-2",
+				"b": "-3",
+				"c": "7",
+				"d": "-8"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 350 sur 5 000 : 0,47",
+			"variationIndex": 2,
+			"variables": {
+				"m": "47"
+			},
+			"answers": ["0{,}47"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction : 47/100",
+			"variationIndex": 2,
+			"variables": {
+				"m": "47"
+			},
+			"answers": ["\\frac{47}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 350 / 1 000",
+			"variationIndex": 2,
+			"variables": {
+				"m": "47"
+			},
+			"answers": ["2{,}35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

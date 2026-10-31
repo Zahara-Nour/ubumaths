@@ -1,0 +1,325 @@
+{
+	"title": "Probabilité de A ou B, de A et B",
+	"description": "Appliquer la relation P(A ∪ B) + P(A ∩ B) = P(A) + P(B) : réunion, intersection, « ou » exclusif, en équiprobabilité",
+	"grades": ["3"],
+	"theme": "Probabilités",
+	"domain": "Évènements",
+	"subdomain": "Réunion et intersection",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Lors d'une expérience aléatoire, $A$ et $B$ sont deux évènements tels que $P(A)=0{,}{{a}}$, $P(B)=0{,}{{b}}$ et $P(A \\cap B)=0{,}{{c}}$.\n\nCalcule $P(A \\cup B)$.\n\n$P(A \\cup B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "25..60"
+				},
+				{
+					"name": "b",
+					"expression": "25..60"
+				},
+				{
+					"name": "c",
+					"expression": "11..19"
+				},
+				{
+					"name": "u",
+					"expression": "eval:a+b-c"
+				}
+			],
+			"conditions": [
+				"c<a",
+				"c<b",
+				"u<=95",
+				"u>=20",
+				"a!=b",
+				"a-10*floor(a/10)!=0",
+				"b-10*floor(b/10)!=0",
+				"u-10*floor(u/10)!=0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On utilise la relation $P(A \\cup B) + P(A \\cap B) = P(A) + P(B)$, soit $P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$.",
+					"$P(A \\cup B) = 0{,}{{a}} + 0{,}{{b}} - 0{,}{{c}} = \\textcolor{{{color:primary.0}}}{0{,}{{u}}}$.",
+					"Les issues de $A \\cap B$ sont dans $A$ **et** dans $B$ : sans la soustraction, elles seraient comptées deux fois."
+				]
+			}
+		},
+		{
+			"statement": "Lors d'une expérience aléatoire, $A$ et $B$ sont deux évènements tels que $P(A)=0{,}{{a}}$, $P(B)=0{,}{{b}}$ et $P(A \\cup B)=0{,}{{u}}$.\n\nCalcule $P(A \\cap B)$.\n\n$P(A \\cap B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "25..60"
+				},
+				{
+					"name": "b",
+					"expression": "25..60"
+				},
+				{
+					"name": "c",
+					"expression": "11..19"
+				},
+				{
+					"name": "u",
+					"expression": "eval:a+b-c"
+				}
+			],
+			"conditions": [
+				"c<a",
+				"c<b",
+				"u<=95",
+				"u>=20",
+				"a!=b",
+				"a-10*floor(a/10)!=0",
+				"b-10*floor(b/10)!=0",
+				"u-10*floor(u/10)!=0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On utilise la relation $P(A \\cup B) + P(A \\cap B) = P(A) + P(B)$.",
+					"Donc $P(A \\cap B) = P(A) + P(B) - P(A \\cup B) = 0{,}{{a}} + 0{,}{{b}} - 0{,}{{u}} = \\textcolor{{{color:primary.0}}}{0{,}{{c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à douze faces, numérotées de $1$ à $12$. On note $A$ l'évènement « {{if:j==0|obtenir un nombre pair|{{if:j==1|obtenir un multiple de $4$|{{if:j==2|obtenir un nombre inférieur ou égal à $5$|obtenir un nombre premier}}}}}} » et $B$ l'évènement « {{if:j==0|obtenir un multiple de $3$|{{if:j==1|obtenir un multiple de $3$|{{if:j==2|obtenir un nombre pair|obtenir un nombre impair}}}}}} ».\n\nCalcule la probabilité de l'évènement « $A$ ou $B$ ».\n\n$P(A \\cup B)=?$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:({{if:j==0|6|{{if:j==1|3|{{if:j==2|5|5}}}}}}+{{if:j==0|4|{{if:j==1|4|{{if:j==2|6|6}}}}}}-{{if:j==0|2|{{if:j==1|1|{{if:j==2|2|4}}}}}})/12}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les $12$ issues sont équiprobables.",
+					"$A$ : {{if:j==0|2, 4, 6, 8, 10, 12|{{if:j==1|4, 8, 12|{{if:j==2|1, 2, 3, 4, 5|2, 3, 5, 7, 11}}}}}}, donc $P(A)=\\dfrac{{{if:j==0|6|{{if:j==1|3|{{if:j==2|5|5}}}}}}}{12}$ ; $B$ : {{if:j==0|3, 6, 9, 12|{{if:j==1|3, 6, 9, 12|{{if:j==2|2, 4, 6, 8, 10, 12|1, 3, 5, 7, 9, 11}}}}}}, donc $P(B)=\\dfrac{{{if:j==0|4|{{if:j==1|4|{{if:j==2|6|6}}}}}}}{12}$.",
+					"$A \\cap B$ : {{if:j==0|6, 12|{{if:j==1|12|{{if:j==2|2, 4|3, 5, 7, 11}}}}}}, donc $P(A \\cap B)=\\dfrac{{{if:j==0|2|{{if:j==1|1|{{if:j==2|2|4}}}}}}}{12}$.",
+					"$P(A \\cup B) = P(A) + P(B) - P(A \\cap B) = \\dfrac{{{if:j==0|6|{{if:j==1|3|{{if:j==2|5|5}}}}}}+{{if:j==0|4|{{if:j==1|4|{{if:j==2|6|6}}}}}}-{{if:j==0|2|{{if:j==1|1|{{if:j==2|2|4}}}}}}}{12} = \\textcolor{{{color:primary.0}}}{{{solution}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Lors d'une expérience aléatoire, $A$ et $B$ sont deux évènements tels que $P(A)=0{,}{{a}}$, $P(B)=0{,}{{b}}$ et $P(A \\cap B)=0{,}{{c}}$.\n\nCalcule la probabilité que $A$ **ou** $B$ soit réalisé, **mais pas les deux**.\n\n$P=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "25..60"
+				},
+				{
+					"name": "b",
+					"expression": "25..60"
+				},
+				{
+					"name": "c",
+					"expression": "11..19"
+				},
+				{
+					"name": "u",
+					"expression": "eval:a+b-c"
+				},
+				{
+					"name": "w",
+					"expression": "eval:u-c"
+				}
+			],
+			"conditions": [
+				"c<a",
+				"c<b",
+				"u<=95",
+				"u>=20",
+				"a!=b",
+				"a-10*floor(a/10)!=0",
+				"b-10*floor(b/10)!=0",
+				"u-10*floor(u/10)!=0",
+				"w>=11",
+				"w-10*floor(w/10)!=0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:w/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« $A$ ou $B$, mais pas les deux » : on retire $A \\cap B$ de $A \\cup B$.",
+					"$P(A \\cup B) = 0{,}{{a}} + 0{,}{{b}} - 0{,}{{c}} = 0{,}{{u}}$.",
+					"$P = P(A \\cup B) - P(A \\cap B) = 0{,}{{u}} - 0{,}{{c}} = \\textcolor{{{color:primary.0}}}{0{,}{{w}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,45 + 0,35 − 0,15 = 0,65",
+			"variationIndex": 0,
+			"variables": {
+				"a": "45",
+				"b": "35",
+				"c": "15"
+			},
+			"answers": ["0{,}65"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction : 13/20",
+			"variationIndex": 0,
+			"variables": {
+				"a": "45",
+				"b": "35",
+				"c": "15"
+			},
+			"answers": ["\\frac{13}{20}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(A) + P(B) = 0,8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "45",
+				"b": "35",
+				"c": "15"
+			},
+			"answers": ["0{,}8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,45 + 0,35 − 0,65 = 0,15",
+			"variationIndex": 1,
+			"variables": {
+				"a": "45",
+				"b": "35",
+				"c": "15"
+			},
+			"answers": ["0{,}15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(A ∪ B) − P(A) = 0,2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "45",
+				"b": "35",
+				"c": "15"
+			},
+			"answers": ["0{,}2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pair ou multiple de 3 : 8/12 = 2/3",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "8/12 non réduite (ambre)",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\frac{8}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : 10/12 (sans retirer 6 et 12)",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\frac{5}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Premier ou impair : 7/12",
+			"variationIndex": 2,
+			"variables": {
+				"j": "3"
+			},
+			"answers": ["\\frac{7}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "« Ou » exclusif : 0,71 − 0,15 = 0,56",
+			"variationIndex": 3,
+			"variables": {
+				"a": "45",
+				"b": "41",
+				"c": "15"
+			},
+			"answers": ["0{,}56"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(A ∪ B) = 0,71",
+			"variationIndex": 3,
+			"variables": {
+				"a": "45",
+				"b": "41",
+				"c": "15"
+			},
+			"answers": ["0{,}71"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "En fraction : 14/25",
+			"variationIndex": 3,
+			"variables": {
+				"a": "45",
+				"b": "41",
+				"c": "15"
+			},
+			"answers": ["\\frac{14}{25}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
