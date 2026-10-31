@@ -722,3 +722,34 @@ le 2026-10-31 : 17 modèles, un par (sous-notion, niveau), trigger `updated_at` 
 
 **Verdicts** : 17 « ok » sur 17, aucun commentaire. `publier-lot --publier` lancé par David le 2026-10-31 : les 17 modèles du
 domaine sont `published` en base. **Lot 0-variables aléatoires clos.**
+
+## 16. Lot 0-logique : vérification des brouillons
+
+_2026-11-01. 5 brouillons de 1re spé du thème « Logique » (e5205176 → 1SPE-201, 536c01bb → 1SPE-202, 0ab3faa5 → 1SPE-204,
+fb3b536c → 1SPE-366, 93f9ecdf sans point, D3) ; instantané `scripts/questions/1spe-0-logique/`, `question:specs --apercu 60
+--instances 200` sur chacun, sorties dans le scratchpad de la session. Les 5 autres brouillons du thème (5b20321f, 5062197a,
+db8b5dc8, 8c31675a, f98164b1), tagués d'un point de seconde, `grades = ['2', '1_SPE']`, restent au chantier questions-2de
+(leurs sous-notions sont partagées avec 12 brouillons de seconde). Aucun modèle publié dans ces sous-notions. Simulation
+`publier-lot` jouée d'entrée : 5 brouillons passent (aucun refus de niveau)._
+
+**Mécanique** : 5 / 5 verts, 89 specs, 2 000 tirages réussis ; tout en case `choix` (`melanger: non` pour les listes de
+vocabulaire : CN/CS, oui/non, variable/inconnue/paramètre, types de raisonnement). 300 tirages relus (formes `1x`, `+0`,
+`+-`, `{{`, NaN : rien).
+
+**Bornes** : rien au-delà du BO 1re spé (p. 4). Négations en langage naturel (∀, ∃ non exigés) ; CN/CS sur des propositions
+du programme (demi-droites, carrés, multiples) ; identité ou équation ; variable, inconnue, paramètre. Réponses justes dans
+tous les cas relus (les 7 cas de e5205176 v1, les 4 de v2, les 3 issues de v0, les 6 de 536c01bb, fb3b536c, les 10 de 93f9ecdf).
+
+**Constats** :
+
+- **C1** : fb3b536c, cas « Résous ${{a}}t-{{b}}=0$ » : « ici $t = \dfrac{4}{2}$ », « $\dfrac{7}{7}$ », « $\dfrac{2}{6}$ » — fraction non
+  réduite dans le corrigé.
+- **C2** (cosmétique) : lettre $k$ non introduite : e5205176 v2 (« si $n=6k$, alors… », cas 0 et 1), 93f9ecdf v0 (« si $n=2k$ »,
+  cas 2 et 3) et v1 cas 3 ; 93f9ecdf v1 cas 0 dit bien « avec $k$ entier ».
+- Écartés : 93f9ecdf sans point (D3 : 1SPE-205 est un point-compétence), l'alerte « sans point » de la page à cocher est
+  attendue ; sous-notion « Raisonnements » au seul niveau 2 ; e5205176 au niveau 3 entre deux brouillons de seconde (2, 4, 5).
+
+**Recommandations** :
+
+- C1 : `t={{eval:b/a}}` (fraction réduite, entier quand $a$ divise $b$).
+- C2 : « avec $k$ entier » à la première apparition de $k$ dans chacun de ces cas.

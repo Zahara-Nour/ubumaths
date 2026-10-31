@@ -1,0 +1,313 @@
+{
+	"id": "0ab3faa5-a660-4841-9a5f-6563458d2489",
+	"title": "Nier une proposition",
+	"description": "Choisir la négation d'une proposition quantifiée (« pour tout », « il existe »), implication comprise",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Logique et raisonnement",
+	"subdomain": "Quantificateurs et négation",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Quelle est la négation de la proposition « pour tout réel $x$, $x^2{{b;+}}x{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|< }}{{if:r=3|\\leqslant}}{{c}}$ » ?\n\n```choix\n- Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$.\n- Pour tout réel $x$, $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$.\n- Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|< }}{{if:r=3|\\leqslant}}{{c}}$.\n- Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|< }}{{if:r=1|\\leqslant}}{{if:r=2|>}}{{if:r=3|\\geqslant}}{{c}}$.\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				},
+				{
+					"name": "r",
+					"expression": "0..3"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour nier une proposition quantifiée, on **change le quantificateur** (« pour tout » devient « il existe », et inversement) **et** on **nie la propriété**.",
+					"« Pour tout réel $x$ » devient « il existe un réel $x$ tel que ».",
+					"La négation de « $>$ » est « $\\leqslant$ », celle de « $\\geqslant$ » est « $<$ » (et inversement) : une seule des deux relations est vraie pour chaque réel.",
+					"La négation est donc : « il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$ »."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Quelle est la négation de la proposition « il existe un réel $x$ tel que ${{m}}x{{p;+}}{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|< }}{{if:r=3|\\leqslant}}{{c}}$ » ?\n\n```choix\n- Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$.\n- Il existe un réel $x$ tel que ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$.\n- Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|< }}{{if:r=3|\\leqslant}}{{c}}$.\n- Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|< }}{{if:r=1|\\leqslant}}{{if:r=2|>}}{{if:r=3|\\geqslant}}{{c}}$.\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "-6..6"
+				},
+				{
+					"name": "p",
+					"expression": "-9..9"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				},
+				{
+					"name": "r",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["m != 0", "p != c"],
+			"correction": {
+				"steps": [
+					"Pour nier une proposition quantifiée, on **change le quantificateur** (« pour tout » devient « il existe », et inversement) **et** on **nie la propriété**.",
+					"« Il existe un réel $x$ tel que » devient « pour tout réel $x$ ».",
+					"La négation de « $>$ » est « $\\leqslant$ », celle de « $\\geqslant$ » est « $<$ » (et inversement) : une seule des deux relations est vraie pour chaque réel.",
+					"La négation est donc : « pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$ »."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Quelle est la négation de la proposition « pour tout réel $x$, si $x>{{a}}$, alors $x^2>{{c}}$ » ?\n\n```choix\n- Il existe un réel $x$ tel que $x>{{a}}$ et $x^2\\leqslant{{c}}$.\n- Il existe un réel $x$ tel que, si $x>{{a}}$, alors $x^2\\leqslant{{c}}$.\n- Pour tout réel $x$, si $x>{{a}}$, alors $x^2\\leqslant{{c}}$.\n- Il existe un réel $x$ tel que $x\\leqslant{{a}}$ et $x^2\\leqslant{{c}}$.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6"
+				},
+				{
+					"name": "c",
+					"expression": "0..40"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La proposition affirme que **tout** réel $x$ qui vérifie $x>{{a}}$ vérifie aussi $x^2>{{c}}$.",
+					"Elle est fausse s'il existe **au moins un** réel $x$ qui vérifie l'hypothèse $x>{{a}}$ **sans** vérifier la conclusion, c'est-à-dire avec $x^2\\leqslant{{c}}$.",
+					"La négation est donc : « il existe un réel $x$ tel que $x>{{a}}$ et $x^2\\leqslant{{c}}$ ». La négation de « si $P$, alors $Q$ » est « $P$ et non $Q$ » : ce n'est pas une implication."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "2",
+				"c": "3",
+				"r": "0"
+			},
+			"description": "pour tout > : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "2",
+				"c": "3",
+				"r": "0"
+			},
+			"description": "pour tout > : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "-1",
+				"c": "-4",
+				"r": "3"
+			},
+			"description": "pour tout ≤ : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "-1",
+				"c": "-4",
+				"r": "3"
+			},
+			"description": "pour tout ≤ : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "5",
+				"m": "2",
+				"p": "1",
+				"r": "1"
+			},
+			"description": "il existe ≥ : bonne réponse",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "5",
+				"m": "2",
+				"p": "1",
+				"r": "1"
+			},
+			"description": "il existe ≥ : autre choix refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"c": "9"
+			},
+			"description": "implication : bonne réponse",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"c": "9"
+			},
+			"description": "implication : autre choix refusé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "1",
+				"c": "2",
+				"r": "0"
+			},
+			"description": "pour tout x²+x > 2 (b = 1) : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "1",
+				"c": "2",
+				"r": "0"
+			},
+			"description": "pour tout x²+x > 2 (b = 1) : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "0",
+				"c": "-4",
+				"r": "2"
+			},
+			"description": "pour tout x² < -4 (b = 0) : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "0",
+				"c": "-4",
+				"r": "2"
+			},
+			"description": "pour tout x² < -4 (b = 0) : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "-2",
+				"m": "-1",
+				"p": "3",
+				"r": "2"
+			},
+			"description": "il existe -x+3 < -2 (m = -1) : bonne réponse",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "-2",
+				"m": "-1",
+				"p": "3",
+				"r": "2"
+			},
+			"description": "il existe -x+3 < -2 (m = -1) : autre choix refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "5",
+				"m": "3",
+				"p": "0",
+				"r": "3"
+			},
+			"description": "il existe 3x ≤ 5 (p = 0) : bonne réponse",
+			"variationIndex": 1
+		}
+	]
+}

@@ -1,0 +1,205 @@
+{
+	"id": "fb3b536c-1ead-4863-85b2-a6104d949d50",
+	"title": "Statut d'une lettre : variable, inconnue ou paramètre",
+	"description": "Dans une définition, une équation ou une famille d'expressions, dire si une lettre est une variable, une inconnue ou un paramètre",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Logique et raisonnement",
+	"subdomain": "Quantificateurs et négation",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(k,3)}}"
+				}
+			],
+			"statement": "{{if:k=0|On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}x^2+{{b}}$.\n\nDans cette définition, quel est le statut de la lettre $x$ ?}}{{if:k=1|On cherche tous les réels $x$ tels que $x^2-{{a}}x+{{b}}=0$.\n\nQuel est le statut de la lettre $x$ ?}}{{if:k=2|Soit $m$ un nombre réel. On considère l'équation $x^2+mx+{{b}}=0$, d'inconnue $x$.\n\nQuel est le statut de la lettre $m$ ?}}{{if:k=3|Soit $k$ un nombre réel. On note $f_k$ la fonction définie sur $\\mathbb{R}$ par $f_k(x)=kx+{{b}}$.\n\nDans cette définition, quel est le statut de la lettre $x$ ?}}{{if:k=4|Résous dans $\\mathbb{R}$ l'équation ${{a}}t-{{b}}=0$.\n\nQuel est le statut de la lettre $t$ ?}}{{if:k=5|Soit $k$ un nombre réel. On note $f_k$ la fonction définie sur $\\mathbb{R}$ par $f_k(x)=kx+{{b}}$.\n\nDans cette définition, quel est le statut de la lettre $k$ ?}}\n\n```choix\nmelanger: non\n- Une variable.\n- Une inconnue.\n- Un paramètre.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une **inconnue** est un nombre que l'on cherche (dans une équation). Une **variable** peut prendre toutes les valeurs d'un ensemble (comme $x$ dans $f(x)$). Un **paramètre** est un nombre fixé mais quelconque, dont dépend l'objet étudié.",
+					"{{if:k=0|$x$ désigne un réel **quelconque** de l'ensemble de définition : la formule donne $f(x)$ pour toutes les valeurs de $x$ à la fois. $x$ est une **variable**.}}{{if:k=1|On cherche les valeurs de $x$ qui rendent l'égalité vraie : $x$ est une **inconnue** de l'équation.}}{{if:k=2|$m$ est un nombre fixé, mais quelconque, dont dépend l'équation ; l'inconnue est $x$. $m$ est un **paramètre**.}}{{if:k=3|$x$ parcourt $\\mathbb{R}$ : c'est la **variable** de la fonction $f_k$ (la lettre $k$, elle, est un paramètre).}}{{if:k=4|On cherche la valeur de $t$ qui rend l'égalité vraie : $t$ est une **inconnue** (ici $t=\\dfrac{ {{b}} }{ {{a}} }$).}}{{if:k=5|$k$ est un nombre fixé, mais quelconque : chaque valeur de $k$ donne une fonction $f_k$ différente. $k$ est un **paramètre** (la variable est $x$).}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "0"
+			},
+			"description": "lettre 0 : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "0"
+			},
+			"description": "lettre 0 : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "1"
+			},
+			"description": "lettre 1 : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "1"
+			},
+			"description": "lettre 1 : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "2"
+			},
+			"description": "lettre 2 : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "2"
+			},
+			"description": "lettre 2 : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "3"
+			},
+			"description": "lettre 3 : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "3"
+			},
+			"description": "lettre 3 : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "4"
+			},
+			"description": "lettre 4 : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "4"
+			},
+			"description": "lettre 4 : autre choix refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "5"
+			},
+			"description": "lettre 5 : bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"k": "5"
+			},
+			"description": "lettre 5 : autre choix refusé",
+			"variationIndex": 0
+		}
+	]
+}
