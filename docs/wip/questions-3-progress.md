@@ -774,3 +774,7 @@ publiés de plus, et 2 de 4e (§ 12.1) ; la 4e ne perd rien. Aucune règle ne ch
   récent de toutes les branches) et la fixture : 6 rangés, 2 niveaux (3e ajoutée), 8 tags posés, 2 gardés.
 - `questions-3-lot5-rangement-tags.test.ts` : 20 verts ; corps de la migration vidé : 9 rouges et la suite
   principale en échec. Cas neuf : tag d'avant (4-057) retiré depuis le relevé.
+- `security-auditor` : aucun bloquant, rien à corriger (diff avec le gabarit 4b : données seules ; gardes,
+  ordre des écritures et trigger des tags vérifiés). R1 prise : le commentaire du rollback dit de mesurer
+  les usages en 3e de ccb51039 / 76f5f143 avant de les rendre à la seule 4e. R2 (pas de test d'accès par
+  de vrais clients) et R3 (verrou du `disable trigger`, déjà au gabarit) : remarques, rien à faire.

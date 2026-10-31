@@ -35,7 +35,9 @@
 -- prof de 3e voient 2 modèles publiés de plus (ccb51039, 76f5f143) ; la 4e ne perd rien ; les
 -- brouillons restent hors de la vue des élèves. Aucune règle (policy) ne change.
 --
--- Rollback (aucune donnée d'élève). Il retire les 8 tags posés, repose les 0 retirés, rend aux
+-- Rollback : il ne touche aucune donnée d'élève, mais rendre ccb51039 et 76f5f143 à la seule 4e les
+-- retire aux élèves de 3e qui les auraient reçus depuis : mesurer d'abord (lecture seule) leurs usages
+-- en 3e. Il retire les 8 tags posés, repose les 0 retirés, rend aux
 -- modèles leur nœud (ou aucun), leurs niveaux et leur statut d'avant. Garde : il refuse si un modèle n'a plus EXACTEMENT le nœud, les
 -- niveaux, le statut et les tags laissés par la migration (sinon une saisie faite depuis serait
 -- écrasée en silence). Bloc éprouvé par le test d'intégration, à jouer dans UNE transaction
