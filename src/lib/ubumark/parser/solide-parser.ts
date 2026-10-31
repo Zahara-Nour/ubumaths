@@ -23,8 +23,13 @@
  *   sommets seulement.
  * - `cotes:` : `cm`, `mm`, `m`, `oui` (sans unité), `non` ;
  *   `cachees: non` : tout en trait plein.
+ * - `section:` (facultatif, lot 6) : cube, pavé `parallele ABCD 2` ou
+ *   `parallele dessus 2` (distance à la face), puis `IJKL` pour nommer la
+ *   section ; cylindre `perpendiculaire 2` (hauteur) ou `parallele 1`
+ *   (distance à l'axe) ; boule `1` (distance au centre). Sans distance : au
+ *   milieu (pavé, cylindre ⊥), par l'axe ou le centre (cylindre ‖, boule).
  *
- * Chantier `solides`, lot 3 (§ 8 du journal), ADR 0034.
+ * Chantier `solides`, lots 3 et 6 (§ 8 et 11 du journal), ADR 0034.
  *
  * @module ubumark/parser/solide-parser
  */
@@ -38,11 +43,13 @@ import {
 	SOLIDE_UNITS,
 	type SolideForm,
 	type SolideMark,
+	type SolideSection,
 	type SolideSpec
 } from '../types/espace';
 import {
 	SOLIDE_FLAT_CONE,
 	SOLIDE_PLACES,
+	polyhedronVertices,
 	solideTopology,
 	type SolidePlace,
 	type SolideTopology
@@ -80,6 +87,16 @@ const DIMENSION_HINTS: Record<SolideForm, string> = {
 	cone: 'rayon hauteur',
 	boule: 'rayon'
 };
+
+/** Écritures de `section:` permises, pour les messages */
+const SECTION_USAGES = {
+	box: 'section: parallele ABCD 2, ou parallele dessus 2 ; IJKL à la fin nomme la section',
+	cylindre: 'section: perpendiculaire 2 (hauteur) ou section: parallele 1 (distance à l’axe)',
+	boule: 'section: 1 (distance au centre)'
+};
+
+/** Sommets de la section d'un pavé : ceux d'une face */
+const SECTION_VERTEX_COUNT = 4;
 
 const PLACE_LABELS: Record<SolidePlace, string> = {
 	devant: 'face de devant',
@@ -208,13 +225,12 @@ function readMark(
 	if (topology.curved && kind !== 'sommet') {
 		return `sur ${topology.indefinite}, seuls les sommets nommés se marquent (ex. marquer: sommet O)`;
 	}
-	if (kind === 'face' && (SOLIDE_PLACES as readonly string[]).includes(plain(what))) {
-		const place = plain(what) as SolidePlace;
-		const face = topology.places[place];
-		if (face === undefined) {
-			return `${topology.indefinite} n’a pas de ${PLACE_LABELS[place]} (désigne-la par ses sommets)`;
-		}
-		return { kind: 'face', vertices: face, label: PLACE_LABELS[place] };
+	if (kind === 'face') {
+		const face = readFace(what, topology, names);
+		if (typeof face === 'string') return face;
+		// La face dans l'ordre de la topologie (le tour du polygone), pas l'ordre écrit
+		const vertices = topology.faces.find((f) => sameSet(f, face.vertices)) ?? face.vertices;
+		return { kind: 'face', vertices, label: face.label };
 	}
 	const vertices = verticesOf(what, names);
 	if (typeof vertices === 'string') return vertices;
@@ -228,9 +244,163 @@ function readMark(
 		if (edge === undefined) return `[${written}] n’est pas une arête ${topology.ofThe}`;
 		return { kind: 'arete', vertices: edge, label: `arête [${written}]` };
 	}
+	return `marquer « ${item.trim()} » non compris`;
+}
+
+/**
+ * Une face désignée par sa place (`dessus`) ou ses noms (`ABCD`) ; sommets dans
+ * l'ordre écrit (ordre de la topologie pour une place) ; une phrase d'erreur sinon
+ */
+function readFace(
+	what: string,
+	topology: SolideTopology,
+	names: (string | null)[] | null
+): { vertices: number[]; label: string } | string {
+	if ((SOLIDE_PLACES as readonly string[]).includes(plain(what))) {
+		const place = plain(what) as SolidePlace;
+		const face = topology.places[place];
+		if (face === undefined) {
+			return `${topology.indefinite} n’a pas de ${PLACE_LABELS[place]} (désigne-la par ses sommets)`;
+		}
+		return { vertices: face, label: PLACE_LABELS[place] };
+	}
+	const vertices = verticesOf(what, names);
+	if (typeof vertices === 'string') return vertices;
+	const written = what.replace(/[[\]()\s]/g, '');
+	if (!topology.faces.some((f) => sameSet(f, vertices))) {
+		return `${written} n’est pas une face ${topology.ofThe}`;
+	}
+	return { vertices, label: `face ${written}` };
+}
+
+/** « du pavé » → « le pavé », « de la boule » → « la boule » */
+const theOf = (topology: SolideTopology) =>
+	topology.ofThe.replace(/^du /, 'le ').replace(/^de la /, 'la ');
+
+const readDistance = (word: string | undefined) =>
+	word !== undefined &&
+	DIMENSION_REGEX.test(word) &&
+	(word.split(/[.,]/)[1]?.length ?? 0) <= SOLIDE_MAX_DECIMALS
+		? Number(word.replace(',', '.'))
+		: null;
+
+/**
+ * La face dans l'ordre de son tour (sens direct ou inverse, à partir de n'importe
+ * quel sommet) : `ACBD` n'en est pas un, la section serait croisée
+ */
+function inTourOrder(vertices: number[], topology: SolideTopology): boolean {
 	const face = topology.faces.find((f) => sameSet(f, vertices));
-	if (face === undefined) return `${written} n’est pas une face ${topology.ofThe}`;
-	return { kind: 'face', vertices: face, label: `face ${written}` };
+	if (face === undefined) return false;
+	const n = face.length;
+	const start = face.indexOf(vertices[0]);
+	const forward = vertices.every((v, i) => face[(start + i) % n] === v);
+	const backward = vertices.every((v, i) => face[(start - i + n) % n] === v);
+	return forward || backward;
+}
+
+/** Les noms des sommets de la section d'un pavé (« IJKL ») ; une phrase d'erreur sinon */
+function readSectionNames(text: string, names: (string | null)[] | null): string[] | string {
+	const written = text.match(NAMES_IN_TEXT_REGEX) ?? [];
+	if (written.join('') !== text) return `« ${text} » non compris (${SECTION_USAGES.box})`;
+	if (written.length !== SECTION_VERTEX_COUNT) {
+		return `la section a ${SECTION_VERTEX_COUNT} sommets : ${SECTION_VERTEX_COUNT} noms attendus (ex. IJKL)`;
+	}
+	for (const [i, name] of written.entries()) {
+		if (written.indexOf(name) !== i) return `« ${name} » deux fois : chaque sommet a son nom`;
+		if (names?.includes(name)) return `« ${name} » est déjà le nom d’un sommet du solide`;
+	}
+	return written;
+}
+
+/** Le plan de `section:` ; une phrase d'erreur sinon */
+function readSection(
+	value: string,
+	shape: { form: SolideForm; dims: number[] },
+	topology: SolideTopology,
+	names: (string | null)[] | null
+): SolideSection | string {
+	const words = value.split(/\s+/).filter((w) => w !== '');
+	const the = theOf(topology);
+	const shown = value === '' ? 'vide' : `« ${value} »`;
+	const outside = (max: number) =>
+		`le plan ne coupe pas ${the} : distance entre 0 et ${String(max).replace('.', ',')} (exclus)`;
+
+	if (shape.form === 'cube' || shape.form === 'pave') {
+		if (plain(words[0] ?? '') !== 'parallele' || words[1] === undefined || words.length > 4) {
+			return `section ${shown} non comprise (${SECTION_USAGES.box})`;
+		}
+		const face = readFace(words[1], topology, names);
+		if (typeof face === 'string') return face;
+		if (!inTourOrder(face.vertices, topology)) {
+			return `${words[1]} : écris les sommets de la face dans l’ordre du tour (ex. ABCD, pas ACBD)`;
+		}
+		// Profondeur : longueur de l'arête qui part de la face vers la face opposée
+		const points = polyhedronVertices(shape.form, shape.dims);
+		const [v] = face.vertices;
+		const edge = topology.edges.find(
+			(e) => e.includes(v) && !face.vertices.includes(e[0] === v ? e[1] : e[0])
+		);
+		const w = edge === undefined ? v : edge[0] === v ? edge[1] : edge[0];
+		const depth = Math.hypot(
+			points[w].x - points[v].x,
+			points[w].y - points[v].y,
+			points[w].z - points[v].z
+		);
+		let rest = words.slice(2);
+		let distance = depth / 2;
+		const read = readDistance(rest[0]);
+		if (read !== null) {
+			distance = read;
+			rest = rest.slice(1);
+		}
+		if (!(distance > 0 && distance < depth)) return outside(depth);
+		let sectionNames: string[] | null = null;
+		if (rest.length > 1) return `section ${shown} non comprise (${SECTION_USAGES.box})`;
+		if (rest.length === 1) {
+			const read = readSectionNames(rest[0], names);
+			if (typeof read === 'string') return read;
+			sectionNames = read;
+		}
+		return { kind: 'face', face: face.vertices, distance, names: sectionNames, label: face.label };
+	}
+
+	if (shape.form === 'cylindre') {
+		const kind = plain(words[0] ?? '');
+		const distance = words[1] === undefined ? null : readDistance(words[1]);
+		if (
+			(kind !== 'perpendiculaire' && kind !== 'parallele') ||
+			words.length > 2 ||
+			(words[1] !== undefined && distance === null)
+		) {
+			return `section ${shown} non comprise (${SECTION_USAGES.cylindre})`;
+		}
+		const [r, h] = shape.dims;
+		if (kind === 'perpendiculaire') {
+			const d = distance ?? h / 2;
+			if (!(d > 0 && d < h)) return outside(h);
+			return { kind, distance: d };
+		}
+		const d = distance ?? 0;
+		if (d >= r) {
+			const max = String(r).replace('.', ',');
+			return `le plan ne coupe pas ${the} : distance à l’axe de 0 à ${max} (${max} exclu)`;
+		}
+		return { kind, distance: d };
+	}
+
+	if (shape.form === 'boule') {
+		const [r] = shape.dims;
+		const plainValue = plain(value);
+		const distance = plainValue === '' || plainValue === 'oui' ? 0 : readDistance(value);
+		if (distance === null) return `section ${shown} non comprise (${SECTION_USAGES.boule})`;
+		if (distance >= r) {
+			const max = String(r).replace('.', ',');
+			return `le plan ne coupe pas ${the} : distance au centre de 0 à ${max} (${max} exclu)`;
+		}
+		return { kind: 'boule', distance };
+	}
+
+	return `section : cube, pavé, cylindre ou boule (pas ${topology.indefinite})`;
 }
 
 /**
@@ -323,9 +493,26 @@ export function parseSolideContent(source: string): {
 			fail(hiddenEntry.line, `cachees « ${hiddenEntry.value} » : oui ou non`);
 	}
 
+	let section: SolideSection | null = null;
+	const sectionEntry = seen.get('section');
+	if (sectionEntry !== undefined && (namesEntry === undefined || names !== null)) {
+		const read = readSection(sectionEntry.value, shape, topology, names);
+		if (typeof read === 'string') fail(sectionEntry.line, read);
+		else section = read;
+	}
+
 	if (errors.length > 0) return { spec: null, errors };
 	return {
-		spec: { kind: 'solide', form: shape.form, dims: shape.dims, names, marks, cotes, hidden },
+		spec: {
+			kind: 'solide',
+			form: shape.form,
+			dims: shape.dims,
+			names,
+			marks,
+			cotes,
+			hidden,
+			section
+		},
 		errors
 	};
 }

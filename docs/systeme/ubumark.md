@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31.
 
 ## À quoi ça sert
 
@@ -633,6 +633,20 @@ prisme isocèle) et rayons intérieurs en tirets. Ordre de dessin : face marqué
 traits, arêtes marquées (épaisses), points, étiquettes. Nom accessible (`solideLabel`) : « Solide en
 perspective cavalière » + marques et cotes, **jamais le nom du solide** (réponse de « nommer le solide »).
 PDF : Typst natif (`curve`, `dash`, `polygon` gris). Fiche du catalogue : `src/lib/block-catalog/solide.ts`.
+
+**Sections** (lot 6, § 11 du journal, `solide-section.test.ts`) — `section:` (une seule, `SolideSpec.section`,
+type `SolideSection`) : cube, pavé `parallele ABCD 2` ou `parallele dessus 2` (plan ‖ à la face, à la distance
+donnée de cette face, vers l'intérieur), puis `IJKL` facultatif (le i-ème nom sur l'arête qui part du i-ème
+sommet **écrit** de la face, écrite dans l'ordre du tour) ; cylindre `perpendiculaire h` (hauteur au-dessus de la base du bas) ou
+`parallele d` (plan **de face**, à `d` de l'axe, côté de l'œil : rectangle vu en vraie grandeur) ; boule `d`
+(plan horizontal à `d` du centre, `0` ou `oui` : grand cercle). Sans distance : au milieu (pavé, cylindre ⊥),
+par l'axe ou le centre (cylindre ‖, boule). Distance hors du solide, prisme / pyramide / cône, noms de section
+hors pavé ou déjà pris → erreur au prof. Scène : `SolideScene.section` (polygone teinté en orange translucide
+`--color-fig-orange`, PDF `rgb(248, 200, 150)`), contour en trait plein épais ; le **plan n'est pas dessiné** ;
+boule coupée : sans équateur. `cotes:` écrit la **distance du plan** (pavé : sur l'arête choisie par
+`SECTION_COTE`, dans la face avant pour dessus / dessous), jamais les dimensions de la section ; noms IJKL
+posés en tournant autour du point jusqu'à ne toucher aucune étiquette (`overlaps`). Nom accessible : « coupé
+par un plan », noms de la section et distance — **jamais la nature de la section** (réponse de 3e-020).
 
 **Patron d'un solide** (chantier [solides](../wip/solides-progress.md), lot 4 : affichage, § 9 du journal) —
 `src/lib/ubumark/__tests__/espace/patron-*.test.ts` :
