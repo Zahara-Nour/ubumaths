@@ -1,0 +1,528 @@
+diff --git a/docs/wip/questions/lot-6-fractions.py b/docs/wip/questions/lot-6-fractions.py
+index 1d13167ed..b30ac2671 100644
+--- a/docs/wip/questions/lot-6-fractions.py
++++ b/docs/wip/questions/lot-6-fractions.py
+@@ -110,16 +110,6 @@ def reduite_ou_entier(n, d):
+             + fr(ev('(' + n + ')/' + g), ev('(' + d + ')/' + g)) + '}}')
+ 
+ 
+-# Permutations de trois nombres (ordre d'affichage) ; la 0 (déjà rangés) n'est jamais tirée
+-PERMUTATIONS = [(0, 1, 2), (0, 2, 1), (1, 0, 2), (1, 2, 0), (2, 0, 1), (2, 1, 0)]
+-
+-
+-def melange(nombres):
+-    """Les trois nombres (rangés) dans l'ordre d'affichage tiré par `p` (1 à 5)."""
+-    return selon('p', [' \\quad ; \\quad '.join(nombres[k] for k in perm)
+-                       for perm in PERMUTATIONS])
+-
+-
+ PARTS_A = ['à la moitié', 'au tiers', 'au quart', 'au cinquième', 'au sixième', 'au septième',
+            'au huitième', 'au neuvième', 'au dixième', 'au onzième', 'au douzième']
+ PARTS = ['la moitié', 'le tiers', 'le quart', 'le cinquième', 'le sixième', 'le septième',
+@@ -484,13 +474,24 @@ MODELES.append(modele(
+ 
+ # --- 6. 6-134 : ranger des fractions -------------------------------------------------------
+ 
+-RANGE = ('Range ces nombres dans l\'ordre croissant.\n\n$$NOMBRES$$\n\n$$? < ? < ?$$')
++# Bloc ```ranger (lot 7, 2026-10-31 ; trois cases avant) : étiquettes écrites dans le bon ordre,
++# mélangées au tirage ; la réponse d'une place est la position AFFICHÉE de l'étiquette
+ 
+ 
+ def range3(nombres, variables, steps, conditions):
+-    """`nombres` : les trois nombres déjà rangés ; affichés dans l'ordre tiré par `p`."""
+-    return variation(RANGE.replace('NOMBRES', melange(nombres)), [var('p', '1..5')] + variables,
+-                     nombres, steps + ['$$' + col(' < '.join(nombres)) + '$$'], conditions)
++    """`nombres` : les trois nombres déjà rangés, du plus petit au plus grand."""
++    return variation('Range ces nombres dans l\'ordre croissant.\n\n```ranger\nsigne: <\n'
++                     + ''.join('- $' + n + '$\n' for n in nombres) + '```', variables, None,
++                     steps + ['$$' + col(' < '.join(nombres)) + '$$'], conditions)
++
++
++# Positions affichées, relevées avec le générateur (variables des specs) : l'étiquette écrite au
++# rang i est affichée en POS3[i]
++POS3 = ['2', '0', '1']
++
++
++def rang3(ordre):
++    return [POS3[i] for i in ordre]
+ 
+ 
+ RANGER_DENOMINATEUR = range3(
+@@ -528,19 +529,16 @@ MODELES.append(modele(
+     ' (1/2 ; 5/8 ; 3/4), autour de 1 (99/100 ; 1 ; 7/6)',
+     'Fractions', 'Apprivoiser', 'Ordonner', 1,
+     [RANGER_DENOMINATEUR, RANGER_MULTIPLES, RANGER_AUTOUR_DE_UN],
+-    [spec('2/7 < 3/7 < 6/7', 0, {'p': 3, 'b': 7, 'x': 2, 'y': 3, 'z': 6},
+-          ['\\frac{2}{7}', '\\frac{3}{7}', '\\frac{6}{7}'], 'correct'),
+-     spec('Erreur : ordre décroissant', 0, {'p': 3, 'b': 7, 'x': 2, 'y': 3, 'z': 6},
+-          ['\\frac{6}{7}', '\\frac{3}{7}', '\\frac{2}{7}'], 'incorrect'),
+-     spec('1/2 < 5/8 < 3/4', 1, {'p': 5, 'D': 8, 'x': 4, 'y': 5, 'z': 6},
+-          ['\\frac{1}{2}', '\\frac{5}{8}', '\\frac{3}{4}'], 'correct'),
++    [spec('2/7 < 3/7 < 6/7', 0, {'b': 7, 'x': 2, 'y': 3, 'z': 6}, rang3([0, 1, 2]), 'correct'),
++     spec('Erreur : ordre décroissant', 0, {'b': 7, 'x': 2, 'y': 3, 'z': 6}, rang3([2, 1, 0]),
++          'incorrect'),
++     spec('1/2 < 5/8 < 3/4', 1, {'D': 8, 'x': 4, 'y': 5, 'z': 6}, rang3([0, 1, 2]), 'correct'),
+      spec('Erreur : rangées par numérateurs (1/2 ; 3/4 ; 5/8)', 1,
+-          {'p': 5, 'D': 8, 'x': 4, 'y': 5, 'z': 6},
+-          ['\\frac{1}{2}', '\\frac{3}{4}', '\\frac{5}{8}'], 'incorrect'),
+-     spec('99/100 < 1 < 7/6', 2, {'p': 4, 'b': 100, 'a': 99, 'd': 6, 'c': 7},
+-          ['\\frac{99}{100}', '1', '\\frac{7}{6}'], 'correct'),
+-     spec('Erreur : 1 < 99/100 < 7/6', 2, {'p': 4, 'b': 100, 'a': 99, 'd': 6, 'c': 7},
+-          ['1', '\\frac{99}{100}', '\\frac{7}{6}'], 'incorrect')],
++          {'D': 8, 'x': 4, 'y': 5, 'z': 6}, rang3([0, 2, 1]), 'incorrect'),
++     spec('99/100 < 1 < 7/6', 2, {'b': 100, 'a': 99, 'd': 6, 'c': 7}, rang3([0, 1, 2]),
++          'correct'),
++     spec('Erreur : 1 < 99/100 < 7/6', 2, {'b': 100, 'a': 99, 'd': 6, 'c': 7}, rang3([1, 0, 2]),
++          'incorrect')],
+     delay=60))
+ 
+ # --- 7. 6-204 : ranger des nombres mixtes --------------------------------------------------
+@@ -576,9 +574,6 @@ RANGER_AVEC_FRACTION = range3(
+      + fr('1', '{{b}}') + ' < ' + fr('1', '{{v}}') + '$.'],
+     ['gcd(x,y)==1'])
+ 
+-MI_1 = ['2 + \\frac{3}{5}', '3 + \\frac{1}{2}', '4 + \\frac{1}{4}']
+-MI_2 = ['1 + \\frac{3}{4}', '2 + \\frac{1}{4}', '2 + \\frac{1}{3}']
+-MI_3 = ['1 + \\frac{3}{4}', '\\frac{9}{4}', '2 + \\frac{1}{3}']
+ MODELES.append(modele(
+     '07-ranger-des-nombres-mixtes', 'Ranger des nombres mixtes',
+     'Ranger trois nombres mixtes dans l\'ordre croissant : parties entières différentes, même'
+@@ -586,22 +581,17 @@ MODELES.append(modele(
+     'Fractions', 'Apprivoiser', 'Ordonner', 2,
+     [RANGER_PARTIES_ENTIERES, RANGER_MEME_PARTIE, RANGER_AVEC_FRACTION],
+     [spec('2 + 3/5 < 3 + 1/2 < 4 + 1/4', 0,
+-          {'p': 2, 'q': 2, 'y': 5, 'x': 3, 'v': 2, 'u': 1, 't': 4, 's': 1}, MI_1, 'correct'),
++          {'q': 2, 'y': 5, 'x': 3, 'v': 2, 'u': 1, 't': 4, 's': 1}, rang3([0, 1, 2]), 'correct'),
+      spec('Erreur : rangés par fractions', 0,
+-          {'p': 2, 'q': 2, 'y': 5, 'x': 3, 'v': 2, 'u': 1, 't': 4, 's': 1},
+-          ['4 + \\frac{1}{4}', '3 + \\frac{1}{2}', '2 + \\frac{3}{5}'], 'incorrect'),
+-     spec('1 + 3/4 < 2 + 1/4 < 2 + 1/3', 1, {'p': 4, 'q': 2, 'y': 4, 'x': 3, 'm': 4, 'n': 3},
+-          MI_2, 'correct'),
+-     spec('Erreur : 2 + 1/3 < 2 + 1/4 (« 4 > 3 »)', 1,
+-          {'p': 4, 'q': 2, 'y': 4, 'x': 3, 'm': 4, 'n': 3},
+-          ['1 + \\frac{3}{4}', '2 + \\frac{1}{3}', '2 + \\frac{1}{4}'], 'incorrect'),
+-     spec('1 + 3/4 < 9/4 < 2 + 1/3', 2, {'p': 1, 'q': 2, 'y': 4, 'x': 3, 'b': 4, 'v': 3}, MI_3,
+-          'correct'),
+-     spec('7/4 au lieu de 1 + 3/4 : les nombres donnés sont à recopier', 2,
+-          {'p': 1, 'q': 2, 'y': 4, 'x': 3, 'b': 4, 'v': 3},
+-          ['\\frac{7}{4}', '\\frac{9}{4}', '2 + \\frac{1}{3}'], 'bad_form', ['form']),
+-     spec('Erreur : 9/4 le plus grand', 2, {'p': 1, 'q': 2, 'y': 4, 'x': 3, 'b': 4, 'v': 3},
+-          ['1 + \\frac{3}{4}', '2 + \\frac{1}{3}', '\\frac{9}{4}'], 'incorrect')],
++          {'q': 2, 'y': 5, 'x': 3, 'v': 2, 'u': 1, 't': 4, 's': 1}, rang3([2, 1, 0]), 'incorrect'),
++     spec('1 + 3/4 < 2 + 1/4 < 2 + 1/3', 1, {'q': 2, 'y': 4, 'x': 3, 'm': 4, 'n': 3},
++          rang3([0, 1, 2]), 'correct'),
++     spec('Erreur : 2 + 1/3 < 2 + 1/4 (« 4 > 3 »)', 1, {'q': 2, 'y': 4, 'x': 3, 'm': 4, 'n': 3},
++          rang3([0, 2, 1]), 'incorrect'),
++     spec('1 + 3/4 < 9/4 < 2 + 1/3', 2, {'q': 2, 'y': 4, 'x': 3, 'b': 4, 'v': 3},
++          rang3([0, 1, 2]), 'correct'),
++     spec('Erreur : 9/4 le plus grand', 2, {'q': 2, 'y': 4, 'x': 3, 'b': 4, 'v': 3},
++          rang3([0, 2, 1]), 'incorrect')],
+     delay=60))
+ 
+ # --- 8. 6-205 : soustraire des fractions ---------------------------------------------------
+diff --git a/scripts/questions/6-fractions/06-ranger-des-fractions.json b/scripts/questions/6-fractions/06-ranger-des-fractions.json
+index 907b88173..6925d379b 100644
+--- a/scripts/questions/6-fractions/06-ranger-des-fractions.json
++++ b/scripts/questions/6-fractions/06-ranger-des-fractions.json
+@@ -10,12 +10,8 @@
+ 	"status": "draft",
+ 	"variations": [
+ 		{
+-			"statement": "Range ces nombres dans l'ordre croissant.\n\n$${{if:p==0|\\frac{{{x}}}{{{b}}} \\quad ; \\quad \\frac{{{y}}}{{{b}}} \\quad ; \\quad \\frac{{{z}}}{{{b}}}|{{if:p==1|\\frac{{{x}}}{{{b}}} \\quad ; \\quad \\frac{{{z}}}{{{b}}} \\quad ; \\quad \\frac{{{y}}}{{{b}}}|{{if:p==2|\\frac{{{y}}}{{{b}}} \\quad ; \\quad \\frac{{{x}}}{{{b}}} \\quad ; \\quad \\frac{{{z}}}{{{b}}}|{{if:p==3|\\frac{{{y}}}{{{b}}} \\quad ; \\quad \\frac{{{z}}}{{{b}}} \\quad ; \\quad \\frac{{{x}}}{{{b}}}|{{if:p==4|\\frac{{{z}}}{{{b}}} \\quad ; \\quad \\frac{{{x}}}{{{b}}} \\quad ; \\quad \\frac{{{y}}}{{{b}}}|\\frac{{{z}}}{{{b}}} \\quad ; \\quad \\frac{{{y}}}{{{b}}} \\quad ; \\quad \\frac{{{x}}}{{{b}}}}}}}}}}}}}$$\n\n$$? < ? < ?$$",
++			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\frac{{{x}}}{{{b}}}$\n- $\\frac{{{y}}}{{{b}}}$\n- $\\frac{{{z}}}{{{b}}}$\n```",
+ 			"variables": [
+-				{
+-					"name": "p",
+-					"expression": "1..5"
+-				},
+ 				{
+ 					"name": "b",
+ 					"expression": "3..12"
+@@ -34,17 +30,6 @@
+ 				}
+ 			],
+ 			"conditions": ["mod(x,b)!=0", "mod(y,b)!=0", "mod(z,b)!=0"],
+-			"blanks": [
+-				{
+-					"expectedAnswer": "\\frac{{{x}}}{{{b}}}"
+-				},
+-				{
+-					"expectedAnswer": "\\frac{{{y}}}{{{b}}}"
+-				},
+-				{
+-					"expectedAnswer": "\\frac{{{z}}}{{{b}}}"
+-				}
+-			],
+ 			"correction": {
+ 				"steps": [
+ 					"**Même dénominateur.** Toutes les parts ont la même taille, $\\frac{1}{{{b}}}$ : on range les numérateurs, ${{x}} < {{y}} < {{z}}$.",
+@@ -53,12 +38,8 @@
+ 			}
+ 		},
+ 		{
+-			"statement": "Range ces nombres dans l'ordre croissant.\n\n$${{if:p==0|\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}} \\quad ; \\quad \\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}} \\quad ; \\quad \\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}}|{{if:p==1|\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}} \\quad ; \\quad \\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}} \\quad ; \\quad \\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}}|{{if:p==2|\\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}} \\quad ; \\quad \\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}} \\quad ; \\quad \\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}}|{{if:p==3|\\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}} \\quad ; \\quad \\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}} \\quad ; \\quad \\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}}|{{if:p==4|\\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}} \\quad ; \\quad \\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}} \\quad ; \\quad \\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}}|\\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}} \\quad ; \\quad \\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}} \\quad ; \\quad \\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}}}}}}}}}}}}$$\n\n$$? < ? < ?$$",
++			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}}$\n- $\\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}}$\n- $\\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}}$\n```",
+ 			"variables": [
+-				{
+-					"name": "p",
+-					"expression": "1..5"
+-				},
+ 				{
+ 					"name": "D",
+ 					"expression": "6|8|10|12"
+@@ -77,17 +58,6 @@
+ 				}
+ 			],
+ 			"conditions": ["gcd(x,D)>1", "gcd(z,D)>1", "gcd(x,D)!=gcd(z,D)"],
+-			"blanks": [
+-				{
+-					"expectedAnswer": "\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}}"
+-				},
+-				{
+-					"expectedAnswer": "\\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}}"
+-				},
+-				{
+-					"expectedAnswer": "\\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}}"
+-				}
+-			],
+ 			"correction": {
+ 				"steps": [
+ 					"**Même dénominateur.** On écrit les trois fractions avec le dénominateur ${{D}}$ : $\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}} = \\frac{{{x}}}{{{D}}}$, {{if:gcd(y,D)>1|$\\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}} = \\frac{{{y}}}{{{D}}}$|$\\frac{{{y}}}{{{D}}}$}}, $\\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}} = \\frac{{{z}}}{{{D}}}$. On range les numérateurs : ${{x}} < {{y}} < {{z}}$.",
+@@ -96,12 +66,8 @@
+ 			}
+ 		},
+ 		{
+-			"statement": "Range ces nombres dans l'ordre croissant.\n\n$${{if:p==0|\\frac{{{a}}}{{{b}}} \\quad ; \\quad 1 \\quad ; \\quad \\frac{{{c}}}{{{d}}}|{{if:p==1|\\frac{{{a}}}{{{b}}} \\quad ; \\quad \\frac{{{c}}}{{{d}}} \\quad ; \\quad 1|{{if:p==2|1 \\quad ; \\quad \\frac{{{a}}}{{{b}}} \\quad ; \\quad \\frac{{{c}}}{{{d}}}|{{if:p==3|1 \\quad ; \\quad \\frac{{{c}}}{{{d}}} \\quad ; \\quad \\frac{{{a}}}{{{b}}}|{{if:p==4|\\frac{{{c}}}{{{d}}} \\quad ; \\quad \\frac{{{a}}}{{{b}}} \\quad ; \\quad 1|\\frac{{{c}}}{{{d}}} \\quad ; \\quad 1 \\quad ; \\quad \\frac{{{a}}}{{{b}}}}}}}}}}}}}$$\n\n$$? < ? < ?$$",
++			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\frac{{{a}}}{{{b}}}$\n- $1$\n- $\\frac{{{c}}}{{{d}}}$\n```",
+ 			"variables": [
+-				{
+-					"name": "p",
+-					"expression": "1..5"
+-				},
+ 				{
+ 					"name": "b",
+ 					"expression": "3|4|5|6|8|10|100"
+@@ -120,17 +86,6 @@
+ 				}
+ 			],
+ 			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1"],
+-			"blanks": [
+-				{
+-					"expectedAnswer": "\\frac{{{a}}}{{{b}}}"
+-				},
+-				{
+-					"expectedAnswer": "1"
+-				},
+-				{
+-					"expectedAnswer": "\\frac{{{c}}}{{{d}}}"
+-				}
+-			],
+ 			"correction": {
+ 				"steps": [
+ 					"**Comparer à 1.** $\\frac{{{a}}}{{{b}}} < 1$ car ${{a}} < {{b}}$, et $\\frac{{{c}}}{{{d}}} > 1$ car ${{c}} > {{d}}$.",
+@@ -144,13 +99,12 @@
+ 			"description": "2/7 < 3/7 < 6/7",
+ 			"variationIndex": 0,
+ 			"variables": {
+-				"p": "3",
+ 				"b": "7",
+ 				"x": "2",
+ 				"y": "3",
+ 				"z": "6"
+ 			},
+-			"answers": ["\\frac{2}{7}", "\\frac{3}{7}", "\\frac{6}{7}"],
++			"answers": ["2", "0", "1"],
+ 			"expected": {
+ 				"status": "correct"
+ 			}
+@@ -159,13 +113,12 @@
+ 			"description": "Erreur : ordre décroissant",
+ 			"variationIndex": 0,
+ 			"variables": {
+-				"p": "3",
+ 				"b": "7",
+ 				"x": "2",
+ 				"y": "3",
+ 				"z": "6"
+ 			},
+-			"answers": ["\\frac{6}{7}", "\\frac{3}{7}", "\\frac{2}{7}"],
++			"answers": ["1", "0", "2"],
+ 			"expected": {
+ 				"status": "incorrect"
+ 			}
+@@ -174,13 +127,12 @@
+ 			"description": "1/2 < 5/8 < 3/4",
+ 			"variationIndex": 1,
+ 			"variables": {
+-				"p": "5",
+ 				"D": "8",
+ 				"x": "4",
+ 				"y": "5",
+ 				"z": "6"
+ 			},
+-			"answers": ["\\frac{1}{2}", "\\frac{5}{8}", "\\frac{3}{4}"],
++			"answers": ["2", "0", "1"],
+ 			"expected": {
+ 				"status": "correct"
+ 			}
+@@ -189,13 +141,12 @@
+ 			"description": "Erreur : rangées par numérateurs (1/2 ; 3/4 ; 5/8)",
+ 			"variationIndex": 1,
+ 			"variables": {
+-				"p": "5",
+ 				"D": "8",
+ 				"x": "4",
+ 				"y": "5",
+ 				"z": "6"
+ 			},
+-			"answers": ["\\frac{1}{2}", "\\frac{3}{4}", "\\frac{5}{8}"],
++			"answers": ["2", "1", "0"],
+ 			"expected": {
+ 				"status": "incorrect"
+ 			}
+@@ -204,13 +155,12 @@
+ 			"description": "99/100 < 1 < 7/6",
+ 			"variationIndex": 2,
+ 			"variables": {
+-				"p": "4",
+ 				"b": "100",
+ 				"a": "99",
+ 				"d": "6",
+ 				"c": "7"
+ 			},
+-			"answers": ["\\frac{99}{100}", "1", "\\frac{7}{6}"],
++			"answers": ["2", "0", "1"],
+ 			"expected": {
+ 				"status": "correct"
+ 			}
+@@ -219,13 +169,12 @@
+ 			"description": "Erreur : 1 < 99/100 < 7/6",
+ 			"variationIndex": 2,
+ 			"variables": {
+-				"p": "4",
+ 				"b": "100",
+ 				"a": "99",
+ 				"d": "6",
+ 				"c": "7"
+ 			},
+-			"answers": ["1", "\\frac{99}{100}", "\\frac{7}{6}"],
++			"answers": ["0", "2", "1"],
+ 			"expected": {
+ 				"status": "incorrect"
+ 			}
+diff --git a/scripts/questions/6-fractions/07-ranger-des-nombres-mixtes.json b/scripts/questions/6-fractions/07-ranger-des-nombres-mixtes.json
+index 7fd808201..42c7edb32 100644
+--- a/scripts/questions/6-fractions/07-ranger-des-nombres-mixtes.json
++++ b/scripts/questions/6-fractions/07-ranger-des-nombres-mixtes.json
+@@ -10,12 +10,8 @@
+ 	"status": "draft",
+ 	"variations": [
+ 		{
+-			"statement": "Range ces nombres dans l'ordre croissant.\n\n$${{if:p==0|{{q}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{eval:q+1}} + \\frac{{{u}}}{{{v}}} \\quad ; \\quad {{eval:q+2}} + \\frac{{{s}}}{{{t}}}|{{if:p==1|{{q}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{eval:q+2}} + \\frac{{{s}}}{{{t}}} \\quad ; \\quad {{eval:q+1}} + \\frac{{{u}}}{{{v}}}|{{if:p==2|{{eval:q+1}} + \\frac{{{u}}}{{{v}}} \\quad ; \\quad {{q}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{eval:q+2}} + \\frac{{{s}}}{{{t}}}|{{if:p==3|{{eval:q+1}} + \\frac{{{u}}}{{{v}}} \\quad ; \\quad {{eval:q+2}} + \\frac{{{s}}}{{{t}}} \\quad ; \\quad {{q}} + \\frac{{{x}}}{{{y}}}|{{if:p==4|{{eval:q+2}} + \\frac{{{s}}}{{{t}}} \\quad ; \\quad {{q}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{eval:q+1}} + \\frac{{{u}}}{{{v}}}|{{eval:q+2}} + \\frac{{{s}}}{{{t}}} \\quad ; \\quad {{eval:q+1}} + \\frac{{{u}}}{{{v}}} \\quad ; \\quad {{q}} + \\frac{{{x}}}{{{y}}}}}}}}}}}}}$$\n\n$$? < ? < ?$$",
++			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- ${{q}} + \\frac{{{x}}}{{{y}}}$\n- ${{eval:q+1}} + \\frac{{{u}}}{{{v}}}$\n- ${{eval:q+2}} + \\frac{{{s}}}{{{t}}}$\n```",
+ 			"variables": [
+-				{
+-					"name": "p",
+-					"expression": "1..5"
+-				},
+ 				{
+ 					"name": "q",
+ 					"expression": "1..5"
+@@ -46,17 +42,6 @@
+ 				}
+ 			],
+ 			"conditions": ["gcd(x,y)==1", "gcd(u,v)==1", "gcd(s,t)==1"],
+-			"blanks": [
+-				{
+-					"expectedAnswer": "{{q}} + \\frac{{{x}}}{{{y}}}"
+-				},
+-				{
+-					"expectedAnswer": "{{eval:q+1}} + \\frac{{{u}}}{{{v}}}"
+-				},
+-				{
+-					"expectedAnswer": "{{eval:q+2}} + \\frac{{{s}}}{{{t}}}"
+-				}
+-			],
+ 			"correction": {
+ 				"steps": [
+ 					"**Nombres mixtes.** Chaque fraction est plus petite que $1$ : on range d'abord les parties entières, ${{q}} < {{eval:q+1}} < {{eval:q+2}}$.",
+@@ -65,12 +50,8 @@
+ 			}
+ 		},
+ 		{
+-			"statement": "Range ces nombres dans l'ordre croissant.\n\n$${{if:p==0|{{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{q}} + \\frac{1}{{{m}}} \\quad ; \\quad {{q}} + \\frac{1}{{{n}}}|{{if:p==1|{{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{q}} + \\frac{1}{{{n}}} \\quad ; \\quad {{q}} + \\frac{1}{{{m}}}|{{if:p==2|{{q}} + \\frac{1}{{{m}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{q}} + \\frac{1}{{{n}}}|{{if:p==3|{{q}} + \\frac{1}{{{m}}} \\quad ; \\quad {{q}} + \\frac{1}{{{n}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}}|{{if:p==4|{{q}} + \\frac{1}{{{n}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{q}} + \\frac{1}{{{m}}}|{{q}} + \\frac{1}{{{n}}} \\quad ; \\quad {{q}} + \\frac{1}{{{m}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}}}}}}}}}}}}$$\n\n$$? < ? < ?$$",
++			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- ${{eval:q-1}} + \\frac{{{x}}}{{{y}}}$\n- ${{q}} + \\frac{1}{{{m}}}$\n- ${{q}} + \\frac{1}{{{n}}}$\n```",
+ 			"variables": [
+-				{
+-					"name": "p",
+-					"expression": "1..5"
+-				},
+ 				{
+ 					"name": "q",
+ 					"expression": "2..5"
+@@ -93,17 +74,6 @@
+ 				}
+ 			],
+ 			"conditions": ["gcd(x,y)==1"],
+-			"blanks": [
+-				{
+-					"expectedAnswer": "{{eval:q-1}} + \\frac{{{x}}}{{{y}}}"
+-				},
+-				{
+-					"expectedAnswer": "{{q}} + \\frac{1}{{{m}}}"
+-				},
+-				{
+-					"expectedAnswer": "{{q}} + \\frac{1}{{{n}}}"
+-				}
+-			],
+ 			"correction": {
+ 				"steps": [
+ 					"**Nombres mixtes.** On range d'abord les parties entières : ${{eval:q-1}} < {{q}}$.",
+@@ -113,12 +83,8 @@
+ 			}
+ 		},
+ 		{
+-			"statement": "Range ces nombres dans l'ordre croissant.\n\n$${{if:p==0|{{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad \\frac{{{eval:q*b+1}}}{{{b}}} \\quad ; \\quad {{q}} + \\frac{1}{{{v}}}|{{if:p==1|{{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{q}} + \\frac{1}{{{v}}} \\quad ; \\quad \\frac{{{eval:q*b+1}}}{{{b}}}|{{if:p==2|\\frac{{{eval:q*b+1}}}{{{b}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{q}} + \\frac{1}{{{v}}}|{{if:p==3|\\frac{{{eval:q*b+1}}}{{{b}}} \\quad ; \\quad {{q}} + \\frac{1}{{{v}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}}|{{if:p==4|{{q}} + \\frac{1}{{{v}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad \\frac{{{eval:q*b+1}}}{{{b}}}|{{q}} + \\frac{1}{{{v}}} \\quad ; \\quad \\frac{{{eval:q*b+1}}}{{{b}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}}}}}}}}}}}}$$\n\n$$? < ? < ?$$",
++			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- ${{eval:q-1}} + \\frac{{{x}}}{{{y}}}$\n- $\\frac{{{eval:q*b+1}}}{{{b}}}$\n- ${{q}} + \\frac{1}{{{v}}}$\n```",
+ 			"variables": [
+-				{
+-					"name": "p",
+-					"expression": "1..5"
+-				},
+ 				{
+ 					"name": "q",
+ 					"expression": "2..4"
+@@ -141,17 +107,6 @@
+ 				}
+ 			],
+ 			"conditions": ["gcd(x,y)==1"],
+-			"blanks": [
+-				{
+-					"expectedAnswer": "{{eval:q-1}} + \\frac{{{x}}}{{{y}}}"
+-				},
+-				{
+-					"expectedAnswer": "\\frac{{{eval:q*b+1}}}{{{b}}}"
+-				},
+-				{
+-					"expectedAnswer": "{{q}} + \\frac{1}{{{v}}}"
+-				}
+-			],
+ 			"correction": {
+ 				"steps": [
+ 					"**Nombre mixte.** On écrit la fraction comme un nombre mixte : $\\frac{{{eval:q*b+1}}}{{{b}}} = \\frac{{{eval:q*b}}}{{{b}}} + \\frac{1}{{{b}}} = {{q}} + \\frac{1}{{{b}}}$.",
+@@ -166,7 +121,6 @@
+ 			"description": "2 + 3/5 < 3 + 1/2 < 4 + 1/4",
+ 			"variationIndex": 0,
+ 			"variables": {
+-				"p": "2",
+ 				"q": "2",
+ 				"y": "5",
+ 				"x": "3",
+@@ -175,7 +129,7 @@
+ 				"t": "4",
+ 				"s": "1"
+ 			},
+-			"answers": ["2 + \\frac{3}{5}", "3 + \\frac{1}{2}", "4 + \\frac{1}{4}"],
++			"answers": ["2", "0", "1"],
+ 			"expected": {
+ 				"status": "correct"
+ 			}
+@@ -184,7 +138,6 @@
+ 			"description": "Erreur : rangés par fractions",
+ 			"variationIndex": 0,
+ 			"variables": {
+-				"p": "2",
+ 				"q": "2",
+ 				"y": "5",
+ 				"x": "3",
+@@ -193,7 +146,7 @@
+ 				"t": "4",
+ 				"s": "1"
+ 			},
+-			"answers": ["4 + \\frac{1}{4}", "3 + \\frac{1}{2}", "2 + \\frac{3}{5}"],
++			"answers": ["1", "0", "2"],
+ 			"expected": {
+ 				"status": "incorrect"
+ 			}
+@@ -202,14 +155,13 @@
+ 			"description": "1 + 3/4 < 2 + 1/4 < 2 + 1/3",
+ 			"variationIndex": 1,
+ 			"variables": {
+-				"p": "4",
+ 				"q": "2",
+ 				"y": "4",
+ 				"x": "3",
+ 				"m": "4",
+ 				"n": "3"
+ 			},
+-			"answers": ["1 + \\frac{3}{4}", "2 + \\frac{1}{4}", "2 + \\frac{1}{3}"],
++			"answers": ["2", "0", "1"],
+ 			"expected": {
+ 				"status": "correct"
+ 			}
+@@ -218,14 +170,13 @@
+ 			"description": "Erreur : 2 + 1/3 < 2 + 1/4 (« 4 > 3 »)",
+ 			"variationIndex": 1,
+ 			"variables": {
+-				"p": "4",
+ 				"q": "2",
+ 				"y": "4",
+ 				"x": "3",
+ 				"m": "4",
+ 				"n": "3"
+ 			},
+-			"answers": ["1 + \\frac{3}{4}", "2 + \\frac{1}{3}", "2 + \\frac{1}{4}"],
++			"answers": ["2", "1", "0"],
+ 			"expected": {
+ 				"status": "incorrect"
+ 			}
+@@ -234,47 +185,28 @@
+ 			"description": "1 + 3/4 < 9/4 < 2 + 1/3",
+ 			"variationIndex": 2,
+ 			"variables": {
+-				"p": "1",
+ 				"q": "2",
+ 				"y": "4",
+ 				"x": "3",
+ 				"b": "4",
+ 				"v": "3"
+ 			},
+-			"answers": ["1 + \\frac{3}{4}", "\\frac{9}{4}", "2 + \\frac{1}{3}"],
++			"answers": ["2", "0", "1"],
+ 			"expected": {
+ 				"status": "correct"
+ 			}
+ 		},
+-		{
+-			"description": "7/4 au lieu de 1 + 3/4 : les nombres donnés sont à recopier",
+-			"variationIndex": 2,
+-			"variables": {
+-				"p": "1",
+-				"q": "2",
+-				"y": "4",
+-				"x": "3",
+-				"b": "4",
+-				"v": "3"
+-			},
+-			"answers": ["\\frac{7}{4}", "\\frac{9}{4}", "2 + \\frac{1}{3}"],
+-			"expected": {
+-				"status": "bad_form",
+-				"constraintViolations": ["form"]
+-			}
+-		},
+ 		{
+ 			"description": "Erreur : 9/4 le plus grand",
+ 			"variationIndex": 2,
+ 			"variables": {
+-				"p": "1",
+ 				"q": "2",
+ 				"y": "4",
+ 				"x": "3",
+ 				"b": "4",
+ 				"v": "3"
+ 			},
+-			"answers": ["1 + \\frac{3}{4}", "2 + \\frac{1}{3}", "\\frac{9}{4}"],
++			"answers": ["2", "1", "0"],
+ 			"expected": {
+ 				"status": "incorrect"
+ 			}
