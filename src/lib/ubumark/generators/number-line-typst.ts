@@ -26,6 +26,7 @@ import {
 } from '../utils/number-line-render';
 import { authorColorTypst, resolveAuthorColor } from '$lib/theme/author-color';
 import { convertLatexToTypstMath } from './typst-generator';
+import { toLocaleDecimal } from '$lib/utils/french-math';
 
 // ============================================================================
 // CONFIGURATION
@@ -50,6 +51,8 @@ export interface NumberLineTypstOptions {
 	pointRadius?: number;
 	/** Segment endpoint radius (default: 0.07) */
 	endpointRadius?: number;
+	/** Langue du document : virgule décimale en français (défaut), point en anglais */
+	language?: string;
 }
 
 const DEFAULT_OPTIONS: Required<NumberLineTypstOptions> = {
@@ -61,7 +64,8 @@ const DEFAULT_OPTIONS: Required<NumberLineTypstOptions> = {
 	pointLabelOffset: 0.7,
 	segmentOffset: -0.9,
 	pointRadius: 0.08,
-	endpointRadius: 0.07
+	endpointRadius: 0.07,
+	language: 'fr'
 };
 
 // ============================================================================
@@ -170,7 +174,7 @@ function generateGraduations(
 
 		// Label
 		if (grad.label !== null) {
-			const displayLabel = grad.hidden ? '?' : labelToTypst(grad.label);
+			const displayLabel = grad.hidden ? '?' : labelToTypst(grad.label, opts.language);
 			lines.push(`  content((${fmt(x)}, ${fmt(opts.labelOffset)}), [$${displayLabel}$])`);
 		}
 	}
@@ -182,12 +186,13 @@ function generateGraduations(
 /**
  * Convert a LaTeX label string to Typst math.
  */
-function labelToTypst(label: string): string {
-	// Pure integers/decimals don't need conversion
-	if (/^-?\d+(\.\d+)?$/.test(label)) {
+function labelToTypst(label: string, language: string): string {
+	// Pure integers don't need conversion
+	if (/^-?\d+$/.test(label)) {
 		return label;
 	}
-	return convertLatexToTypstMath(label);
+	// 1.4 → 1{,}4 en français (le convertisseur en fait `1","4`), 1.4 en anglais
+	return convertLatexToTypstMath(toLocaleDecimal(label, language));
 }
 
 // ============================================================================

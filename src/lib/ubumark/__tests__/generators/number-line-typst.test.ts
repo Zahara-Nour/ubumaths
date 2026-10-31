@@ -102,6 +102,24 @@ describe('generateNumberLineTypst', () => {
 		expect(typst).toContain('$3$');
 	});
 
+	it('écrit une graduation décimale avec une virgule en français, un point en anglais', () => {
+		const node = createNode([
+			'start: 1.4',
+			'end: 1.55',
+			'step: 0.01',
+			'major: 10',
+			'labels: 1.4, 1.5'
+		]);
+
+		const fr = generateNumberLineTypst(node);
+		expect(fr).toContain('[$1","4$]');
+		expect(fr).toContain('[$1","5$]');
+		expect(fr).not.toContain('1.4');
+
+		const en = generateNumberLineTypst(node, { language: 'en' });
+		expect(en).toContain('[$1.4$]');
+	});
+
 	it('should generate fraction labels with Typst syntax', () => {
 		const node = createNode(['start: 0', 'end: 1', 'step: 1/2', 'labels: 0, 1/2, 1']);
 		const typst = generateNumberLineTypst(node);

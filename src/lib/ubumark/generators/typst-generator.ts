@@ -415,7 +415,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 			return generateTrigCircleTypst(node as unknown as TrigCircleNode);
 
 		case 'number-line':
-			return generateNumberLineTypst(node as unknown as NumberLineNode);
+			return generateNumberLineTypst(node as unknown as NumberLineNode, {
+				language: options.language
+			});
 
 		case 'courbe':
 			return generateCourbeTypst(node, { language: options.language });

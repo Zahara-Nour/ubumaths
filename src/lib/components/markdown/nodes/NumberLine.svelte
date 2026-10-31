@@ -43,6 +43,8 @@
 		resolveNumberLineColors
 	} from '$lib/ubumark/utils/number-line-render';
 	import { readAuthoringErrors } from '../authoring-errors';
+	import { readContentLocale } from '../content-locale';
+	import { toLocaleDecimal } from '$lib/utils/french-math';
 	import NumberLinePlacer from './NumberLinePlacer.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
@@ -65,6 +67,8 @@
 	const SHARED_LABEL_GAP = 14;
 
 	const authoring = readAuthoringErrors();
+	// Langue du contenu (séparateur décimal des graduations), posée par MarkdownRenderer
+	const contentLocale = readContentLocale();
 	let errorsVisible = $derived(showErrors ?? authoring());
 
 	const {
@@ -215,7 +219,7 @@
 									read-only
 									style="font-size: 0.75rem; display: inline-block; border: none; background: transparent; min-width: 0; padding: 0;"
 								>
-									{grad.label}
+									{toLocaleDecimal(grad.label, contentLocale())}
 								</math-field>
 							{/if}
 						</div>

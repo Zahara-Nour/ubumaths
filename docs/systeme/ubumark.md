@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30.
 
 ## À quoi ça sert
 
@@ -304,6 +304,13 @@ Droite à placer : le prof (aperçu, éditeur) est averti quand, sur un téléph
 (`phoneGapWarning`, plus petit écart, échelle log comprise) : une droite de 0 à 20 au pas de 1 en
 donne 12. Une droite d'affichage (sans `placer:`) n'est pas avertie : ses graduations fines se
 lisent, on ne les vise pas. L'élève ne voit jamais l'avertissement ; la correction ne le répète pas.
+
+**Graduations décimales** (`NumberLine-etiquettes-decimales.svelte.test.ts`, `number-line-typst.test.ts`)
+— une graduation écrite (`labels: 1.4, 1.5`) passe par `toLocaleDecimal` : `1{,}4` à l'écran (langue
+du contenu, `readContentLocale`), `1","4` dans le PDF (option `language` de `generateNumberLineTypst`,
+français par défaut) ; en anglais, le point reste. Une graduation **calculée** non entière s'écrit en
+fraction (`formatAutoLabel` : 1,4 → 7/5) : une droite qui ne part pas d'un entier donne ses
+graduations écrites en décimal par `labels:`.
 
 **Courbe** — `src/lib/ubumark/__tests__/courbe/courbe-markdown.test.ts` :
 
