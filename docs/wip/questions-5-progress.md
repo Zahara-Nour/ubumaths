@@ -402,3 +402,11 @@ des angles ; conversions de volume déjà couvertes (5-051, 5-129).
 - Base locale : 9 créés, page à cocher locale et aperçu admin relus. Corrigé en route : « **isocèle en $A$** »
   (gras + formule) ; `\unit{°}` → `^{\circ}` (« 60 ° » espacé). La page à cocher écrit désormais cm² et cm³
   après une case (`page-a-cocher.html`, unité d'une case, au lieu de « cm^3 »).
+
+### 16.2 Lot 4a publié, lot 5 en prod et rangé (2026-11-01)
+
+- 4a : page à cocher 7/7 OK sans commentaire ; `publier-lot.ts` (David) → 7 `published` (vérifié MCP).
+- Lot 5 : David `create-questions --publier` → 0761124d (01), 9dea9199 (02), 8db109a5 (03), 28d7ad74 (04), 47971d3d
+  (05), 55b26d32 (06), ddf4a07c (07), 6bf0a792 (08), f628c809 (09), brouillons sans nœud ni tag.
+- Relevé `questions-5/etat-prod-2026-11-01-lot5/` ; générateur `questions-5/lot-5-rangement.py` → migration
+  `20261101120100_questions_5_lot5_rangement_tags` + fixture ; test 19/19, rouge sans la migration (8 échecs).
