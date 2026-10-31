@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, après la publication du lot 4b._
+_Mis à jour le 2026-10-31, phase 0 du lot 5 proposée._
 
-- **État** : lots 0 à 4 (4a et 4b) publiés (§ 11.18) ; le lot 4 du § 4 (pourcentages, probabilités,
-  statistiques) n'est pas commencé.
-- **Prochaine action** : phase 0 du lot 4 du § 4 (3-036, 3-063, 3-033, 3-028, 3-029, 3-056, 3-034, 3-035) :
-  comportements en français, à faire valider par David avant d'écrire.
-- **En attente de David** : rien.
+- **État** : lots 0 à 4 (4a et 4b) publiés (§ 11.18) ; phase 0 du lot 5 (lot 4 du § 4 : pourcentages,
+  probabilités, statistiques) écrite au § 12.
+- **Prochaine action** : réponses de David au § 12.5, puis écrire le lot 5 sur une branche
+  `content/questions-3-lot5`.
+- **En attente de David** : les 4 questions du § 12.5.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
   dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
@@ -674,3 +674,61 @@ modèles publiés de plus. Aucune règle ne change.
 
 - `publier-lot.ts --dir scripts/questions/3-lot-4b --publier` lancé par David : MCP, les 6 modèles
   `published`, niveaux 1-2-1-1-1-1 et grades `['3']` inchangés. Lot 4 (fonctions) clos.
+
+## 12. Lot 5 (pourcentages, probabilités, statistiques, lot 4 du § 4) : phase 0 proposée (2026-10-31)
+
+Relevé MCP du jour : les 8 points n'ont **aucun modèle**. Proches, en 4e (publiés) : ccb51039
+« Augmentation et coefficient multiplicateur » (4-057) et 76f5f143 « Diminution et coefficient
+multiplicateur » (4-080) — même contenu que 3-036 / 3-063 (t % ↔ × (1 ± t/100), nouveau prix par le
+coefficient) ; b2908d52 médiane en série brute (4-040) ; b28ed4fa deux épreuves, calcul (4-049, sans nœud) ;
+17a469bb fluctuation, bb4dc318 fréquences et probabilités (` ```simulation `) ; abd1eeb7 contraire, réunion,
+intersection (4-047). Convention des quartiles (3-029, décision c4-2) = celle du module (`statistics/`,
+Q1 = plus petite valeur dont l'effectif cumulé atteint 25 %). Outils : ` ```effectifs ` (`lignes: effectifs ;
+effectifs cumulés`, `masquer:` une case), ` ```barres `, ` ```simulation ` (modes `tirages`, `moyenne`),
+` ```probtree `.
+
+Nœuds (prod) : 3-036, 3-063 → Proportionnalité > Évolutions > variations en pourcentage (4eb20dcf) ;
+3-033 → Probabilités > Expériences aléatoires > événements (bf76cfc3) ; 3-028 → Statistiques > Représenter
+des données > fréquences cumulées (765e86f9) ; 3-056 → Indicateurs > médiane (97ed51ec) ; 3-029 →
+Indicateurs > quartiles (afbcd648) ; 3-034, 3-035 → Expériences aléatoires > fréquences (fee494e2).
+
+### 12.1 Pourcentages : 3-036, 3-063
+
+**Recommandé : aucun modèle neuf.** ccb51039 et 76f5f143 passent en grades `['4', '3']` et reçoivent le tag
+3-036 / 3-063 en plus de 4-057 / 4-080 (précédent : 5c092e43, tableur, 4-045 et 3-032). Variante si refusé :
+deux modèles de 3e (même forme, taux décimaux 2,5 % et taux > 100 %, retrouver le taux depuis × 0,85).
+
+### 12.2 Modèles neufs (6, un par point)
+
+| Point | Modèle (catégorie)                                                                    | Variations                                                                                                                                                                                                                                                                                                                                                                        | Réponse                           |
+| ----- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| 3-033 | P(A ∪ B) et P(A ∩ B) (Probabilités / Évènements / Réunion et intersection)            | 1) P(A), P(B), P(A ∩ B) donnés → P(A ∪ B) ; 2) P(A ∪ B), P(A), P(B) donnés → P(A ∩ B) ; 3) équiprobabilité : dé à 12 faces ou urne, A et B décrits (« pair », « multiple de 3 ») → P(A ou B) en comptant les cas ; 4) « ou exclusif » : P(A ou B, mais pas les deux) = P(A ∪ B) − P(A ∩ B)                                                                                        | case nombre (fraction ou décimal) |
+| 3-028 | Effectifs cumulés croissants (Statistiques / Effectifs cumulés / Calculer, 1)         | ` ```effectifs ` (notes, pointures…, 5 à 7 valeurs) ; 1) une case de la ligne des cumulés masquée ; 2) « combien ont au plus k ? » ; 3) « combien ont au moins k ? » (total − cumulé précédent)                                                                                                                                                                                   | case nombre                       |
+| 3-056 | Médiane d'une série à effectifs (Statistiques / Indicateurs / Médiane à effectifs, 1) | 1) tableau d'effectifs, effectif total impair ; 2) diagramme en barres, total impair ; 3) total pair, les deux valeurs centrales égales (médiane unique, pas d'intervalle à accepter)                                                                                                                                                                                             | case nombre                       |
+| 3-029 | Quartiles d'une série à effectifs (Statistiques / Indicateurs / Quartiles, 1)         | 1) tableau d'effectifs → Q1 ; 2) tableau → Q3 ; 3) diagramme en barres → Q1 et Q3 (deux cases) ; effectif total tiré pour que N/4 tombe juste ou non                                                                                                                                                                                                                              | case(s) nombre                    |
+| 3-034 | Simuler deux épreuves indépendantes (Probabilités / Simulation / Deux épreuves, 1)    | 1) quelle simulation pour la somme de deux dés (choix : « deux nombres entre 1 et 6, additionnés » contre « un nombre entre 2 et 12 ») ; 2) somme de deux dés simulée (` ```simulation `, 1 000 tirages) + tableau à double entrée → probabilité de la somme k (case) ; 3) deux pièces, arbre (` ```probtree `) et fréquence simulée de « deux Pile » : 1/4, 1/3 ou 1/2 ? (choix) | choix ; case                      |
+| 3-035 | Stabilisation des fréquences (Probabilités / Simulation / Stabilisation, 1)           | 1) ` ```simulation ` en mode `moyenne` (fréquence de Pile au fil des lancers) → vers quelle valeur elle se stabilise (choix) ; 2) tableau des fréquences pour 10, 100, 1 000, 10 000 lancers → laquelle estime le mieux la probabilité (choix) ; 3) punaise lancée 5 000 fois, effectif donné → estimation de la probabilité (case)                                               | choix ; case                      |
+
+Erreurs typiques (`testSpecs`) : 3-033 → P(A) + P(B) sans retrancher P(A ∩ B) ; 3-028 → l'effectif au lieu du
+cumulé, « au moins k » lu comme « au plus k » ; 3-056 → la valeur la plus fréquente, la valeur du milieu du
+tableau (sans les effectifs), la moyenne ; 3-029 → la médiane de la demi-série (convention de calculatrice) ;
+3-034 → 1/11 (sommes tenues pour équiprobables) ; 3-035 → la fréquence des 10 premiers lancers.
+
+### 12.3 Rangement
+
+Chacun sur le nœud de son point (relevé ci-dessus), un tag par modèle ; ccb51039 / 76f5f143 (si § 12.1) :
+grades et tag dans la même migration.
+
+### 12.4 Question d'accès
+
+Brouillons : personne ne lit rien de neuf. Rangement puis publication : élèves et prof de 3e voient 6 modèles
+publiés de plus, et 2 de 4e (§ 12.1) ; la 4e ne perd rien. Aucune règle ne change.
+
+### 12.5 Questions à David
+
+1. § 12.1 : ccb51039 et 76f5f143 partagés avec la 3e (grades 4 et 3, deux tags), plutôt que deux modèles neufs ?
+2. Valider les modèles du § 12.2 : points, variations, formes de réponse ?
+3. 3-056 v3 : effectif pair avec valeurs centrales égales (médiane unique), plutôt que d'accepter tout
+   l'intervalle comme en 4e (4-040) ?
+4. 3-034 et 3-035 sur le nœud « fréquences » (collège), plutôt que 3-034 sur « Probabilités conditionnelles
+   > épreuves indépendantes successives » (celui de la 1re) ?
