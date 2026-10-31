@@ -1,0 +1,243 @@
+{
+	"title": "Ajouter des unités d'un seul rang, avec une retenue",
+	"description": "Une retenue : 4,457 + 0,8 ; 0,457 + 0,007 ; 7 530,4 + 600",
+	"grades": ["CM2"],
+	"theme": "Décimaux",
+	"domain": "Additionner",
+	"subdomain": "Somme",
+	"level": 7,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{eval:N/1000;d}}+{{eval:k*10^j/1000;d}}=?$$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..49"
+				},
+				{
+					"name": "d1",
+					"expression": "0..9"
+				},
+				{
+					"name": "d2",
+					"expression": "0..9"
+				},
+				{
+					"name": "d3",
+					"expression": "1..9"
+				},
+				{
+					"name": "N",
+					"expression": "eval:1000*w+100*d1+10*d2+d3"
+				},
+				{
+					"name": "j",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:mod(floor(N/10^j),10)"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:mod(floor(N/10^(j+1)),10)"
+				},
+				{
+					"name": "R",
+					"expression": "eval:N+k*10^j"
+				}
+			],
+			"conditions": ["c+k>=10", "c2<=8", "N>=10^j"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:R/1000;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:j==3||${{eval:k*10^j/1000;d}}$, c'est $\\textcolor{{{color:primary.0}}}{{{k}}}$ {{if:j==0|millième|{{if:j==1|centième|{{if:j==2|dixième|{{if:j==3|unité|{{if:j==4|dizaine|{{if:j==5|centaine|{{if:j==6|millier|dizaine de mille}}}}}}}}}}}}}}{{if:k>1|s|}}. }}On regarde le chiffre des {{if:j==0|millièmes|{{if:j==1|centièmes|{{if:j==2|dixièmes|{{if:j==3|unités|{{if:j==4|dizaines|{{if:j==5|centaines|{{if:j==6|milliers|dizaines de mille}}}}}}}}}}}}}} de ${{eval:N/1000;d}}$ : c'est ${{c}}$.",
+					"${{c}}+\\textcolor{{{color:primary.0}}}{{{k}}}={{eval:c+k}}$ : on écrit ${{eval:c+k-10}}$ au rang des {{if:j==0|millièmes|{{if:j==1|centièmes|{{if:j==2|dixièmes|{{if:j==3|unités|{{if:j==4|dizaines|{{if:j==5|centaines|{{if:j==6|milliers|dizaines de mille}}}}}}}}}}}}}} et on retient $1$ {{if:j==0|centième|{{if:j==1|dixième|{{if:j==2|unité|{{if:j==3|dizaine|{{if:j==4|centaine|{{if:j==5|millier|dizaine de mille}}}}}}}}}}}}.",
+					"Le chiffre des {{if:j==0|centièmes|{{if:j==1|dixièmes|{{if:j==2|unités|{{if:j==3|dizaines|{{if:j==4|centaines|{{if:j==5|milliers|dizaines de mille}}}}}}}}}}}} passe de ${{c2}}$ à ${{eval:c2+1}}$ ; les autres chiffres ne changent pas.",
+					"$${{eval:N/1000;d}}+{{eval:k*10^j/1000;d}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{eval:N/1000;d}}+{{eval:k*10^j/1000;d}}=?$$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "2..4"
+				},
+				{
+					"name": "w",
+					"expression": "{{eval:10^(h-1)}}..{{eval:10^h-1}}"
+				},
+				{
+					"name": "d1",
+					"expression": "1..9"
+				},
+				{
+					"name": "N",
+					"expression": "eval:1000*w+100*d1"
+				},
+				{
+					"name": "j",
+					"expression": "3..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:mod(floor(N/10^j),10)"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:mod(floor(N/10^(j+1)),10)"
+				},
+				{
+					"name": "R",
+					"expression": "eval:N+k*10^j"
+				}
+			],
+			"conditions": ["c+k>=10", "c2<=8", "N>=10^j"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:R/1000;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:j==3||${{eval:k*10^j/1000;d}}$, c'est $\\textcolor{{{color:primary.0}}}{{{k}}}$ {{if:j==0|millième|{{if:j==1|centième|{{if:j==2|dixième|{{if:j==3|unité|{{if:j==4|dizaine|{{if:j==5|centaine|{{if:j==6|millier|dizaine de mille}}}}}}}}}}}}}}{{if:k>1|s|}}. }}On regarde le chiffre des {{if:j==0|millièmes|{{if:j==1|centièmes|{{if:j==2|dixièmes|{{if:j==3|unités|{{if:j==4|dizaines|{{if:j==5|centaines|{{if:j==6|milliers|dizaines de mille}}}}}}}}}}}}}} de ${{eval:N/1000;d}}$ : c'est ${{c}}$.",
+					"${{c}}+\\textcolor{{{color:primary.0}}}{{{k}}}={{eval:c+k}}$ : on écrit ${{eval:c+k-10}}$ au rang des {{if:j==0|millièmes|{{if:j==1|centièmes|{{if:j==2|dixièmes|{{if:j==3|unités|{{if:j==4|dizaines|{{if:j==5|centaines|{{if:j==6|milliers|dizaines de mille}}}}}}}}}}}}}} et on retient $1$ {{if:j==0|centième|{{if:j==1|dixième|{{if:j==2|unité|{{if:j==3|dizaine|{{if:j==4|centaine|{{if:j==5|millier|dizaine de mille}}}}}}}}}}}}.",
+					"Le chiffre des {{if:j==0|centièmes|{{if:j==1|dixièmes|{{if:j==2|unités|{{if:j==3|dizaines|{{if:j==4|centaines|{{if:j==5|milliers|dizaines de mille}}}}}}}}}}}} passe de ${{c2}}$ à ${{eval:c2+1}}$ ; les autres chiffres ne changent pas.",
+					"$${{eval:N/1000;d}}+{{eval:k*10^j/1000;d}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4,457 + 0,8 = 5,257",
+			"variationIndex": 0,
+			"variables": {
+				"w": "4",
+				"d1": "4",
+				"d2": "5",
+				"d3": "7",
+				"j": "2",
+				"k": "8"
+			},
+			"answers": ["5,257"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4,457 + 0,8 → 4,257 (retenue oubliée)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "4",
+				"d1": "4",
+				"d2": "5",
+				"d3": "7",
+				"j": "2",
+				"k": "8"
+			},
+			"answers": ["4,257"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4,457 + 0,8 → 4,1257 (12 dixièmes écrits)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "4",
+				"d1": "4",
+				"d2": "5",
+				"d3": "7",
+				"j": "2",
+				"k": "8"
+			},
+			"answers": ["4,1257"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,457 + 0,007 = 0,464",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"d1": "4",
+				"d2": "5",
+				"d3": "7",
+				"j": "0",
+				"k": "7"
+			},
+			"answers": ["0,464"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7 530,4 + 600 = 8 130,4",
+			"variationIndex": 1,
+			"variables": {
+				"h": "4",
+				"w": "7530",
+				"d1": "4",
+				"j": "5",
+				"k": "6"
+			},
+			"answers": ["8 130,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 530,4 + 600 → 7 130,4 (retenue oubliée)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "4",
+				"w": "7530",
+				"d1": "4",
+				"j": "5",
+				"k": "6"
+			},
+			"answers": ["7 130,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 9 530,4 + 6 000 = 15 530,4",
+			"variationIndex": 1,
+			"variables": {
+				"h": "4",
+				"w": "9530",
+				"d1": "4",
+				"j": "6",
+				"k": "6"
+			},
+			"answers": ["15 530,4"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

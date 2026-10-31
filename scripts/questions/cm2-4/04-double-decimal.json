@@ -1,0 +1,155 @@
+{
+	"title": "Calculer le double d'un nombre décimal",
+	"description": "Une décimale (13,6 → 27,2) ; deux décimales (4,35 → 8,7)",
+	"grades": ["CM2"],
+	"theme": "Décimaux",
+	"domain": "Multiplier",
+	"subdomain": "Produit particulier",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule le double de ${{eval:(10*w+t)/10;d}}$.\n\nLe double de ${{eval:(10*w+t)/10;d}}$ est $?$.",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "1..49"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(10*w+t)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On double la partie entière, puis la partie décimale : ${{eval:(10*w+t)/10;d}}={{w}}+{{eval:t/10;d}}$.",
+					"Double de ${{w}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:2*w}}}$. Double de ${{eval:t/10;d}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:2*t/10;d}}}$.",
+					"$${{eval:2*w}}+{{eval:2*t/10;d}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule le double de ${{eval:(100*w+t)/100;d}}$.\n\nLe double de ${{eval:(100*w+t)/100;d}}$ est $?$.",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..99"
+				}
+			],
+			"conditions": ["mod(t,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(100*w+t)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On double la partie entière, puis la partie décimale : ${{eval:(100*w+t)/100;d}}={{w}}+{{eval:t/100;d}}$.",
+					"Double de ${{w}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:2*w}}}$. Double de ${{eval:t/100;d}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:2*t/100;d}}}$.",
+					"$${{eval:2*w}}+{{eval:2*t/100;d}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "double de 13,6 = 27,2",
+			"variationIndex": 0,
+			"variables": {
+				"w": "13",
+				"t": "6"
+			},
+			"answers": ["27,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : double de 13,6 → 26,12 (dixièmes sans retenue)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "13",
+				"t": "6"
+			},
+			"answers": ["26,12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : double de 13,6 → 26,6 (partie décimale oubliée)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "13",
+				"t": "6"
+			},
+			"answers": ["26,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : double de 49,9 = 99,8",
+			"variationIndex": 0,
+			"variables": {
+				"w": "49",
+				"t": "9"
+			},
+			"answers": ["99,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "double de 4,35 = 8,7",
+			"variationIndex": 1,
+			"variables": {
+				"w": "4",
+				"t": "35"
+			},
+			"answers": ["8,7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : double de 4,35 → 8,610",
+			"variationIndex": 1,
+			"variables": {
+				"w": "4",
+				"t": "35"
+			},
+			"answers": ["8,610"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "double de 9,05 = 18,1",
+			"variationIndex": 1,
+			"variables": {
+				"w": "9",
+				"t": "5"
+			},
+			"answers": ["18,1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
