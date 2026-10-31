@@ -1,0 +1,189 @@
+{
+	"id": "dd0ee69a-2203-47a3-b2b8-af70a77281d3",
+	"title": "Encadrer une intégrale",
+	"description": "m ⩽ f ⩽ M sur [a ; b] donne m(b − a) ⩽ ∫ₐᵇ f ⩽ M(b − a) ; lecture sur une courbe (piège : oubli de la longueur b − a)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Intégration",
+	"domain": "Valeur moyenne",
+	"subdomain": "Encadrement",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*(b-a)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:M*(b-a)}}"
+				}
+			],
+			"statement": "$f$ est une fonction continue sur $\\left[{{a}}\\,;{{b}}\\right]$ telle que, pour tout $x$ de cet intervalle, ${{m}}\\leqslant f(x)\\leqslant {{M}}$.\n\nComplète l'encadrement le plus précis que l'on peut en déduire :\n\n$?\\leqslant\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x\\leqslant ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2..1"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "-3..3"
+				},
+				{
+					"name": "M",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["m < M"],
+			"correction": {
+				"steps": [
+					"On intègre l'encadrement sur $\\left[{{a}}\\,;{{b}}\\right]$, intervalle de longueur ${{b}}-{{a;()}}={{eval:b-a}}$ (bornes dans le bon ordre).",
+					"$\\displaystyle\\int_{{{a}}}^{{{b}}}{{m}}\\,\\mathrm{d}x\\leqslant\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x\\leqslant\\displaystyle\\int_{{{a}}}^{{{b}}}{{M}}\\,\\mathrm{d}x$, soit $\\textcolor{{{color:primary.0}}}{{{eval:m*(b-a)}}}\\leqslant\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x\\leqslant\\textcolor{{{color:primary.0}}}{{{eval:M*(b-a)}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*c/4}}"
+				},
+				{
+					"expectedAnswer": "{{eval:3*c}}"
+				}
+			],
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ de la fonction $f:x\\mapsto\\dfrac{ {{c}} }{x+1}$, décroissante sur $\\left[0\\,;3\\right]$.\n\n```courbe\nx: -0.5 ; 4\ny: -0.5 ; {{eval:c+1}}\ngrille: 1 ; 1\nf(x) = {{c}}/(x+1) sur [0 ; 3]   bleu   nom=C_f\npoints: A(0 ; {{c}}), B(3 ; {{eval:c/4}})\naire: f ; 0 ; 3\ntaille: moyenne\ndescription: Courbe décroissante d'une fonction inverse décalée sur [0 ; 3], aire sous la courbe coloriée.\n```\n\nComplète l'encadrement le plus précis que l'on peut déduire des valeurs $f(0)$ et $f(3)$ :\n\n$?\\leqslant\\displaystyle\\int_{0}^{3}f(x)\\,\\mathrm{d}x\\leqslant ?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4|8"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est décroissante sur $\\left[0\\,;3\\right]$ : $f(3)={{eval:c/4}}\\leqslant f(x)\\leqslant f(0)={{c}}$.",
+					"L'aire coloriée est entre celles des rectangles de largeur $3$ et de hauteurs ${{eval:c/4}}$ et ${{c}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:3*c/4}}}\\leqslant\\displaystyle\\int_{0}^{3}f(x)\\,\\mathrm{d}x\\leqslant\\textcolor{{{color:primary.0}}}{{{eval:3*c}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3", "12"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"M": "4",
+				"a": "0",
+				"b": "3",
+				"m": "1"
+			},
+			"description": "v0 : 1 ≤ f ≤ 4 sur [0;3] → 3 et 12",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1", "4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"M": "4",
+				"a": "0",
+				"b": "3",
+				"m": "1"
+			},
+			"description": "v0 : longueur oubliée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3", "12"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"M": "4",
+				"a": "-1",
+				"b": "3",
+				"m": "1"
+			},
+			"description": "v0 : largeur b au lieu de b−a",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4", "16"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"M": "4",
+				"a": "-1",
+				"b": "3",
+				"m": "1"
+			},
+			"description": "v0 : a=−1 → 4 et 16",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-6", "10"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"M": "5",
+				"a": "0",
+				"b": "2",
+				"m": "-3"
+			},
+			"description": "v0 : m<0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3", "12"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "4"
+			},
+			"description": "v1 : c=4 → 3 et 12",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["12", "3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "4"
+			},
+			"description": "v1 : bornes inversées",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1", "4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "4"
+			},
+			"description": "v1 : valeurs de f sans la largeur",
+			"variationIndex": 1
+		}
+	]
+}

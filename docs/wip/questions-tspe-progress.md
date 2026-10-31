@@ -10,16 +10,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2036 et la publication du lot 0-limites._
+_Mis à jour le 2026-11-01, lot 0-intégration (§ 8) en relecture._
 
-- **État** : lots 0-suites et 0-limites et fonctions (26 modèles, § 7) **publiés** en prod, relecture validée en bloc par David, statut et niveaux relus en base (26 `published`, tous `T_SPE`).
-- **Prochaine action** : lot « convexité et intégration » (convexité : 37ce7759, e3e19d28, 225c8682, 08f9ad7b, c4775a3a, 98f9d4b2, e814175b, 21840f6c, a80a780f, sans tag) dans un nouveau worktree : export des id, relecture tirage par tirage, page à cocher. Plus tard : migration des tags Q3 (f1963ef2 → TSPE-447, 806c10f4/04ec9518 sur 415).
-- **En attente de David** : rien.
-- **Pièges en cours** : `create-questions` et `publier-lot` → David ; les vieux dossiers
-  `scripts/questions/<thème>-terminale/` ne concordent peut-être plus avec la base → partir des id ;
-  simulation `publier-lot` AVANT tout (collisions de niveau → migration + fichiers) ;
-  **horodatage de migration** : max + 1 min de la prod (`migration list --linked`) juste avant de créer le fichier.
-- **Worktree / branche** : aucun (worktree du lot 0-limites retiré).
+- **État** : lots 0-suites, 0-limites et fonctions publiés (43 modèles). Lot 0-intégration (23 brouillons : convexité + calcul intégral, § 8) vérifié, 3 retouches de texte dans `scripts/questions/tspe-0-integration/`, page à cocher publiée : https://claude.ai/artifact/CnJQhSYtdKHkJ3Yak7qSZH.
+- **Prochaine action** : PR des fichiers (branche `content/questions-tspe-integration`) ; puis David : `create-questions --mettre-a-jour` (3 modèles : b52c53d8, 822d0318, 21840f6c) et relecture de la page ; compter les verdicts ; simulation `publier-lot`, puis `--publier` par David.
+- **En attente de David** : relecture de la page à cocher.
+- **Pièges en cours** : `create-questions` et `publier-lot` → David ; partir des id, pas des vieux dossiers `<thème>-terminale/` ;
+  simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ;
+  **horodatage de migration** : max + 1 min de la prod juste avant de créer le fichier. Migration Q3 (tags) plus tard, avec la nuance 5e702745 (§ 8).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `content/questions-tspe-integration`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -353,3 +352,35 @@ monotone (2491dd75) ; ln(√a) = ½ ln a (ffd5c051 v3) se déduit de l'équation
 
 **Page à cocher** : https://claude.ai/artifact/2D9SVXyUhRM7W7YxjNuEMA (26 fiches), collection `verdicts` vide à la
 publication ; 2491dd75 : bloc ```variation non dessiné (le jouer dans l'aperçu).
+
+## 8. Lot 0-intégration (convexité et calcul intégral) : vérification des brouillons
+
+_2026-11-01. Les 9 brouillons de convexité écartés du § 7 (37ce7759, e3e19d28, 225c8682, 98f9d4b2, 08f9ad7b,
+c4775a3a, e814175b, 21840f6c, a80a780f sans tag) et les 14 de la rubrique « Calcul intégral » : b52c53d8, fc2ea212,
+822d0318, 95ee8348, 5e702745 (TCOMP-272 seul), a32e6d38, 164edf6b, 6ed907d7, 3b396d9c, 76843d15, dd0ee69a, 7a0b795c
+(TCOMP-269 seul), f26151ff, 298e2335. Instantané `scripts/questions/tspe-0-integration/` (prod), une copie par
+variation (61 variations, 2 tirages lus chacune, plus des tirages ciblés pour les branches de signe), choix corrects
+recoupés avec leur option (première du fichier) et les branches `{{if:s>0|…}}` lues dans les fichiers._
+
+**Mécanique** : 23 / 23 verts, 0 avertissement.
+
+**Bornes** : rien hors bornes TSPE. TCOMP (D7) : primitives 2uu′, u′/u et eᵘu′ permises (TCOMP-276, 277, 279) ;
+intégration par parties (fc2ea212) en `T_SPE` seul ; a32e6d38 (signe quelconque) : TCOMP-271 dit « présentation
+seulement », le modèle reste une lecture d'aires de triangles, gardé.
+
+**Constats (corrigés dans les fichiers, specs vertes, tirages relus)** :
+
+- **C1** b52c53d8 v3 (m = 1) : toute la ligne « ln 2 − ln 1 = ln 2 » en couleur → seul « ln 2 » en couleur.
+- **C2** 822d0318 v2 : « 0.5 ; 1.5 » écrits en dur à l'anglaise → `0{,}5`, `1{,}5`.
+- **C3** 21840f6c v1 : « Pour ces quatre informations (sens de variation, abscisses et valeurs des extremums) » (trois
+  dans la liste) → « Il faut **tout** vérifier (sens de variation, abscisses et valeurs des extremums) ».
+
+**Niveaux** : aucune collision dans les 11 catégories du lot (relevé MCP, 2026-11-01).
+
+**Pour la migration Q3** : 5e702745 intègre (t − 3)e^(−t²) ou t² − 3, de signe quelconque, alors que la borne de
+TSPE-476 dit « continue positive » → TSPE-479 (signe quelconque) plutôt que 476 ? À trancher avec la migration.
+a80a780f : ses 5 variations couvrent 586 (v0, v4 : f″), 585 (v1 : f′ croissante), 411 (v2 : tangentes ; 410 pour les sécantes), 412 (v3) ; 7a0b795c → 609 ; dd0ee69a : 481 → 608.
+
+**Page à cocher** : https://claude.ai/artifact/CnJQhSYtdKHkJ3Yak7qSZH (23 fiches), collection `verdicts` vide à la
+publication ; alertes : a80a780f sans point, 21840f6c bloc ```variation non dessiné (le jouer dans l'aperçu). Les
+3 retouches ne sont pas encore en base : la page montre déjà les fichiers corrigés.

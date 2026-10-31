@@ -1,0 +1,94 @@
+{
+	"id": "298e2335-130a-4121-ab16-51c800b2edb0",
+	"title": "Interpréter une valeur moyenne en contexte : vitesse moyenne",
+	"description": "(1/T) ∫ v(t) dt = vitesse moyenne (piège : confondre distance et vitesse moyenne)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Intégration",
+	"domain": "Valeur moyenne",
+	"subdomain": "Interprétation",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*T/2+b}}"
+				}
+			],
+			"statement": "Un mobile se déplace en ligne droite. Sa vitesse, en mètres par seconde, à l'instant $t$ (en secondes) est $v(t)={{a}}t+{{b}}$ pour $t\\in\\left[0\\,;{{T}}\\right]$.\n\nCalcule sa **vitesse moyenne** entre les instants $0$ et ${{T}}$, en mètres par seconde.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "0..6"
+				},
+				{
+					"name": "T",
+					"expression": "2..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La vitesse moyenne est la valeur moyenne de $v$ : $\\dfrac{1}{ {{T}}-0}\\displaystyle\\int_{0}^{{{T}}}v(t)\\,\\mathrm{d}t$.",
+					"$\\displaystyle\\int_{0}^{{{T}}}v(t)\\,\\mathrm{d}t={{eval:a*T^2/2+b*T}}$ (distance parcourue, en m), donc vitesse moyenne $=\\dfrac{ {{eval:a*T^2/2+b*T}} }{ {{T}} }=\\textcolor{{{color:primary.0}}}{{{eval:a*T/2+b}}}$ m/s."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"T": "4",
+				"a": "2",
+				"b": "1"
+			},
+			"description": "v0 : 2t+1 sur [0;4] → 5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"T": "4",
+				"a": "2",
+				"b": "1"
+			},
+			"description": "v0 : distance au lieu de vitesse moyenne",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"T": "3",
+				"a": "1",
+				"b": "0"
+			},
+			"description": "v0 : moyenne de v(0) et v(T) ≠ ? (ici égale : affine)",
+			"variationIndex": 0
+		}
+	]
+}

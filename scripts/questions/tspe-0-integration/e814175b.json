@@ -1,0 +1,181 @@
+{
+	"id": "e814175b-95f0-4a2d-8689-e76c01ea91e6",
+	"title": "Inégalité déduite de la convexité (tangente)",
+	"description": "Courbe convexe au-dessus de sa tangente, concave en dessous : eˣ ≥ x + 1, ln x ≤ x − 1, x² ≥ 2ax − a², √x ≤ (x + 1)/2 (spécialité seulement)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions convexes",
+	"domain": "Convexité",
+	"subdomain": "Inégalités de convexité",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La fonction exponentielle est convexe sur $\\mathbb{R}$ et sa tangente au point d'abscisse $0$ a pour équation $y=x+1$.\n\nQue peut-on en déduire ?\n\n```choix\n- Pour tout réel $x$, $e^{x}\\geqslant x+1$\n- Pour tout réel $x$, $e^{x}\\leqslant x+1$\n- $e^{x}\\geqslant x+1$ seulement pour $x\\geqslant 0$\n- Rien : il faut étudier la fonction $x\\mapsto e^{x}-x-1$\n```",
+			"correction": {
+				"steps": [
+					"La courbe d'une fonction convexe est **au-dessus** de chacune de ses tangentes, sur tout l'intervalle.",
+					"Donc pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{e^{x}\\geqslant x+1}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La fonction $\\ln$ est concave sur $]0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y=x-1$.\n\nQue peut-on en déduire ?\n\n```choix\n- Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$\n- Pour tout réel $x>0$, $\\ln(x)\\geqslant x-1$\n- $\\ln(x)\\leqslant x-1$ seulement pour $x\\geqslant 1$\n- Pour tout réel $x>0$, $\\ln(x)=x-1$\n```",
+			"correction": {
+				"steps": [
+					"La courbe d'une fonction concave est **en dessous** de chacune de ses tangentes.",
+					"Donc pour tout réel $x>0$, $\\textcolor{{{color:primary.0}}}{\\ln(x)\\leqslant x-1}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La fonction carré est convexe sur $\\mathbb{R}$. Sa tangente au point d'abscisse ${{a}}$ a pour équation $y={{eval:2*a}}x{{eval:-a^2;+}}$.\n\nQue peut-on en déduire ?\n\n```choix\n- Pour tout réel $x$, $x^2\\geqslant {{eval:2*a}}x{{eval:-a^2;+}}$\n- Pour tout réel $x$, $x^2\\leqslant {{eval:2*a}}x{{eval:-a^2;+}}$\n- $x^2\\geqslant {{eval:2*a}}x{{eval:-a^2;+}}$ seulement pour $x\\geqslant {{a}}$\n- Pour tout réel $x$, $x^2\\geqslant {{eval:2*a}}x$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Convexe : la courbe est au-dessus de sa tangente, donc pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{x^2\\geqslant {{eval:2*a}}x{{eval:-a^2;+}}}$.",
+					"Vérification : $x^2-({{eval:2*a}}x{{eval:-a^2;+}})=(x{{eval:-a;+}})^2\\geqslant 0$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La fonction racine carrée est concave sur $[0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y=\\dfrac{1}{2}x+\\dfrac{1}{2}$.\n\nQue peut-on en déduire ?\n\n```choix\n- Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$\n- Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\geqslant\\dfrac{x+1}{2}$\n- $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$ seulement pour $x\\geqslant 1$\n- Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x}{2}$\n```",
+			"correction": {
+				"steps": [
+					"Concave : la courbe est en dessous de sa tangente, donc pour tout $x\\geqslant 0$, $\\textcolor{{{color:primary.0}}}{\\sqrt{x}\\leqslant\\dfrac{x+1}{2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v0 bonne",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v0 sens inversé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v0 restreint à x ≥ 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v1 bonne",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v1 sens inversé (convexe/concave)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v2 a=3 bonne",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v2 a=3 sens inversé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "v2 a=−2 bonne",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v3 bonne",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v3 sens inversé",
+			"variationIndex": 3
+		}
+	]
+}
