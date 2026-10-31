@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, après la relecture du lot 4b._
+_Mis à jour le 2026-10-31, après la publication du lot 4b._
 
-- **État** : lots 0 à 3 et lot 4a publiés ; lot 4b : 6 brouillons en prod ; leur rangement (migration
-  `20261030162300`, test 19 verts / 12 rouges sans elle) mergé (#2033) et joué en prod ; relu, 6 OK (§ 11.17).
-- **Prochaine action** : `publier-lot.ts --dir scripts/questions/3-lot-4b` en simulation puis `--publier`
-  (David, avec `!`, depuis le worktree), vérif MCP ; ensuite lot 4 du § 4 (pourcentages, probabilités, stats).
-- **En attente de David** : `publier-lot.ts` (refusé au mode auto).
+- **État** : lots 0 à 4 (4a et 4b) publiés (§ 11.18) ; le lot 4 du § 4 (pourcentages, probabilités,
+  statistiques) n'est pas commencé.
+- **Prochaine action** : phase 0 du lot 4 du § 4 (3-036, 3-063, 3-033, 3-028, 3-029, 3-056, 3-034, 3-035) :
+  comportements en français, à faire valider par David avant d'écrire.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
   dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
@@ -669,3 +669,8 @@ modèles publiés de plus. Aucune règle ne change.
 ### 11.17 Lot 4b : relu (2026-10-31)
 
 - Relecture : 6 verdicts en base, 6 OK, aucun commentaire. Attendu : `publier-lot.ts --publier` lancé par David.
+
+### 11.18 Lot 4b : publié (2026-10-31)
+
+- `publier-lot.ts --dir scripts/questions/3-lot-4b --publier` lancé par David : MCP, les 6 modèles
+  `published`, niveaux 1-2-1-1-1-1 et grades `['3']` inchangés. Lot 4 (fonctions) clos.
