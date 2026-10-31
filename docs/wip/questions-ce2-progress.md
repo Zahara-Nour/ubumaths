@@ -10,7 +10,7 @@ _Mis à jour le 2026-11-01, migration des niveaux du lot 4 écrite (PR ouverte).
 
 - **État** : lot 4 (fractions) relu 10/10 OK ; `publier-lot` refusait 08 (niveau 18 pris par `884908d3` CM1).
   Migration `20261101090000_questions_ce2_lot4_niveaux` (08 18→19, 09 19→20, 10 20→21) + fichiers + script,
-  branche `content/questions-ce2-lot4-niveaux`, PR ouverte (§ 8).
+  branche `content/questions-ce2-lot4-niveaux`, PR #2051 ouverte (§ 8).
 - **Prochaine action** : CI verte → merge → `db:migrate` (David, `!`, `--dry-run` d'abord) → relevé MCP →
   `publier-lot` (simulation), puis `--publier` (David) → relevé du statut.
 - **En attente de David** : rien. Décidé le 2026-11-01 : publier SANS attendre `choix-correction` (chantier
