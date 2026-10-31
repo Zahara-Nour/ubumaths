@@ -1199,6 +1199,7 @@ function handleCubicThreeReal(
 			// Check if this is close to an integer
 			const rounded = Math.round(x);
 			let solutionNode: MathNode;
+			let exact = true;
 
 			if (Math.abs(x - rounded) < 1e-9) {
 				solutionNode = numericNode(rounded);
@@ -1208,13 +1209,14 @@ function handleCubicThreeReal(
 				if (fractionResult) {
 					solutionNode = fraction(numericNode(fractionResult.n), numericNode(fractionResult.d));
 				} else {
-					// Keep as symbolic (approximate)
+					// Valeur arrondie à 10 décimales : approchée, pas exacte (L27)
 					solutionNode = numericNode(x.toFixed(10));
+					exact = false;
 				}
 			}
 
 			const solutionSimplified = canonicalForm(solutionNode);
-			solutions.push({ value: solutionSimplified, exact: true, approximate: x });
+			solutions.push({ value: solutionSimplified, exact, approximate: x });
 		}
 
 		// Sort solutions by value
