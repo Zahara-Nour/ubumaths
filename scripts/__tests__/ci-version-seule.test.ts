@@ -39,6 +39,13 @@ function env(): NodeJS.ProcessEnv {
 		HOME: racine,
 		XDG_CONFIG_HOME: racine,
 		GIT_CONFIG_NOSYSTEM: '1',
+		// Pas d'entretien détaché (`gc --auto`, `maintenance run --auto`) lancé par
+		// `git commit` : il écrit encore dans `.git` pendant le nettoyage (ENOTEMPTY)
+		GIT_CONFIG_COUNT: '2',
+		GIT_CONFIG_KEY_0: 'gc.auto',
+		GIT_CONFIG_VALUE_0: '0',
+		GIT_CONFIG_KEY_1: 'maintenance.auto',
+		GIT_CONFIG_VALUE_1: 'false',
 		GIT_CEILING_DIRECTORIES: dirname(racine),
 		GIT_AUTHOR_NAME: 'test',
 		GIT_AUTHOR_EMAIL: 'test@example.com',
@@ -120,7 +127,9 @@ echo "\${etat:-absent}"
 });
 
 afterEach(() => {
-	rmSync(racine, { recursive: true, force: true });
+	// Filet : si un processus git écrit encore dans le dépôt, `rmdir` voit un dossier
+	// non vide (ENOTEMPTY) ; Node retente après un court délai
+	rmSync(racine, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
 });
 
 describe('ci-version-seule.sh — oui, jobs lourds sautés', () => {
