@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, après #2038 et la publication du lot 5._
+_Mis à jour le 2026-10-31, phase 0 du lot 6 proposée._
 
 - **État** : lots 1 à 5 en prod (lot 1 en brouillon, lots 2 à 5 publiés) ; lot 5 « Pythagore et triangles » (033, 034,
   035, 036, 037, 072, 075) : 7/7 « OK » à la relecture, publiés par David, vérifié au MCP (§ 27).
-- **Prochaine action** : choisir le lot 6 avec David ; candidat : la seconde moitié de la géométrie (translations et
-  volumes : 029, 030, 031, 032, 076, § 25), puis phase 0.
-- **En attente de David** : choix du lot 6 ; garder la sonde des figures comme outil (`sonde-figures.ts`, petite PR à
+- **Prochaine action** : lot 6 (translations et volumes : 029, 030, 031, 032, 076), phase 0 proposée (§ 28) ; écrire
+  le lot après validation.
+- **En attente de David** : les 4 questions du § 28.4 ; garder la sonde des figures comme outil (`sonde-figures.ts`, petite PR à
   part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication des 7
   brouillons du lot 1 ; revoir ou non les 14 bornes du cycle 4 qui ne reposent que sur un document 2019/2016 (§ 27).
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question, invisible pour `question:specs` (§ 26) ;
@@ -716,3 +716,55 @@ circonscrit 1 et 2), Géométrie / Raisonner (Réciproque et contraposée 1), Ca
   David ; 14 seulement reposent sur un document 2019/2016 seul (exemples ou précisions que le BO ne contredit pas).
 - Relecture : 7 verdicts lus en base, 7 « OK », aucun commentaire. `publier-lot.ts --dir scripts/questions/4-lot-5`
   en simulation (7 passent), lancé par David avec `--publier` ; vérifié au MCP : 7 publiés, nœud et un tag chacun.
+
+## 28. Lot 6 (translations et volumes) : phase 0 (proposée le 2026-10-31)
+
+David a suivi le candidat (« go ») : le lot 6 est la seconde moitié de la géométrie, translations et volumes.
+
+### 28.1 Relevé (MCP, 2026-10-31)
+
+- Points du lot, tous sans modèle : 029, 076 (nœud Grandeurs et mesures > Volumes > pyramide et cône), 030, 031, 032
+  (nœud Géométrie > Translations, notion sans sous-notion). Aucun nœud à créer.
+- Aucun modèle de volume (hors conversions 5-051 / 5-129) ni de translation en prod, à aucun niveau. Voisins sans
+  modèle : 5-050, 5-053, 5-108 (volumes du pavé, cylindre, prisme), 3-021 (boule), 3-024, 3-026 (translation ponctuelle,
+  somme de vecteurs).
+- Bornes (Exemples 2026 p. 27-28) : volume = 1/3 × aire de base × hauteur, lien avec le pavé ou le cylindre de même base
+  et même hauteur (transvasement) ; translation : transformer une figure, frises et pavages, **lien avec le
+  parallélogramme**, conservation des distances et des angles (et parallélisme, aires, 2019) ; **la définition
+  ponctuelle n'est pas au programme de 4e** (elle est en 3e) : ni vecteur noté, ni « ABB'A' parallélogramme » pris comme
+  définition.
+- Outils : ` ```figure ` (`grille:`, `translation(M, vecteur=(A, B))`, `vecteur(A, B)` pour la flèche, polygones) ;
+  ` ```solide ` (`pyramide carree a h`, `pyramide rectangle l p h`, `cone r h`, `cotes: cm`) **mergé mais pas en prod**
+  (chantier `solides`, lots 1-5) ; case, case choix.
+
+### 28.2 Modèles proposés (5, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                   | Variations                                                                                                                                                                                                                                                                                                                                                                                                                             | Réponse                                   |
+| ----- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| 029   | Volume d'une pyramide (Grandeurs et mesures / Volumes / Pyramide et cône, 1) | 1) base carrée (côté a, hauteur h) ; 2) base rectangulaire (l × p, h) ; 3) aire de la base B donnée, h ; 4) base triangle rectangle (a, b, h) ; 5) pavé de même base et même hauteur de volume V → pyramide ; 6) « quelle formule ? » (B × h ÷ 3, B × h, B × h ÷ 2, (B + h) ÷ 3). Volumes entiers (B × h multiple de 3), en cm³                                                                                                        | case · case choix                         |
+| 076   | Volume d'un cône (… / Pyramide et cône, 2)                                   | 1) r, h → valeur exacte en π (r²h multiple de 3 : `12\pi`) ; 2) r, h → arrondi à l'unité (`;d`, loin d'un demi) ; 3) diamètre donné ; 4) cylindre de même base et même hauteur de volume V → cône ; 5) « quelle formule ? » (π r² h ÷ 3, π r² h, π r h ÷ 3, 2 π r h ÷ 3)                                                                                                                                                               | case · case choix                         |
+| 030   | Effet d'une translation (Géométrie / Translations / Image d'une figure, 1)   | quadrillage, figure F, flèche de A vers B : 1) « la translation qui transforme A en B transforme F en : figure 1 / 2 / 3 / 4 » (une translatée, une symétrique axiale, un demi-tour, une translatée d'une autre flèche) ; 2) même chose, flèche oblique ; 3) « quel point est l'image de C ? » (points nommés sur le quadrillage) ; 4) « par quelle transformation passe-t-on de F à G ? » (translation / symétrie axiale / demi-tour) | case choix                                |
+| 031   | Translation et parallélogramme (… / Translations / Parallélogramme, 1)       | 1) D image de C par la translation qui transforme A en B → « ABDC est : un parallélogramme / un trapèze qui n'est pas un parallélogramme / on ne peut pas savoir » ; 2) ABDC parallélogramme codé → « l'image de C par la translation qui transforme A en B est : D / B / A » ; 3) frise de parallélogrammes numérotés → « l'image de la figure 1 par la translation qui transforme A en B est : 2 / 3 / 4 »                           | case choix                                |
+| 032   | Ce que conserve une translation (… / Translations / Conservations, 1)        | triangle ABC et son image A'B'C' (figure non à l'échelle, données dans l'énoncé) : 1) AB donné → A'B' ; 2) angle ABC donné → angle A'B'C' ; 3) aire de ABC donnée → aire de A'B'C' ; 4) « l'image d'une droite (d) est : une droite parallèle à (d) / perpendiculaire à (d) / qui coupe (d) » ; 5) « une translation conserve : » (longueurs, angles, aires, plusieurs réponses justes)                                                | case · case choix (`plusieurs: oui` en 5) |
+
+- `testSpecs` d'erreurs typiques : 029 → B × h sans ÷ 3, ÷ 2 au lieu de ÷ 3, côté au lieu de l'aire de la base ; 076 →
+  r au lieu de r², oubli du ÷ 3, diamètre pris pour rayon ; 030 → la symétrique choisie ; 032 → longueur doublée ou
+  augmentée de la longueur de la flèche.
+- À vérifier à l'écriture : la case accepte `12\pi` et refuse 37,7 en exact ; `translation(…)` et la flèche rendues sur
+  `grille:` dans l'aperçu admin ; ` ```solide ` avec `cotes:` lisible pour la hauteur d'une pyramide et d'un cône.
+
+### 28.3 Question d'accès
+
+Comme les lots précédents : brouillons, puis migration nœud + tag ; **personne** ne gagne d'accès. À la publication,
+les élèves de 4e voient 5 modèles de plus.
+
+### 28.4 Questions à David
+
+1. Valider les 5 modèles du § 28.2 ?
+2. Volumes : dessin ` ```solide ` avec cotes (mieux, mais pas en prod : les 2 modèles restent en brouillon jusqu'à un
+   `deploy:prod`) ou texte seul (publiable tout de suite) ? Reco : le dessin.
+3. Translation : flèche dessinée de A vers B et « la translation qui transforme A en B », sans notation de vecteur ;
+   le 031 (« D image de C → ABDC parallélogramme ») tenu pour le **lien** du programme de 4e, pas pour la définition
+   ponctuelle de 3e. D'accord ?
+4. Catégories neuves : Géométrie / Translations (Image d'une figure 1, Parallélogramme 1, Conservations 1),
+   Grandeurs et mesures / Volumes (Pyramide et cône 1 et 2) ?
