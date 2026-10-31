@@ -14,7 +14,8 @@
 -->
 <script lang="ts">
 	import type { BlockNode, CalloutKind, InlineNode, ListItemNode } from '$lib/ubumark';
-	import { DETAIL_KIND_LABELS } from '$lib/ubumark';
+	import { detailKindLabel } from '$lib/ubumark';
+	import { readContentLocale } from '../content-locale';
 	import { CALLOUT_CLASSES, CALLOUT_LABEL_CLASSES } from '../detail-styles';
 	import ParagraphNode from './ParagraphNode.svelte';
 	import HeadingNode from './HeadingNode.svelte';
@@ -35,6 +36,9 @@
 	}
 
 	let { children, callout, class: className = '' }: Props = $props();
+
+	// Langue du contenu : même source que le PDF (`detailKindLabel`)
+	const locale = readContentLocale();
 
 	/**
 	 * Type guards for different block node types
@@ -149,14 +153,14 @@
 {#if callout}
 	<div
 		role="note"
-		aria-label={DETAIL_KIND_LABELS[callout]}
+		aria-label={detailKindLabel(callout, locale())}
 		data-callout={callout}
 		class="callout callout-{callout} my-4 rounded-md border-l-4 px-4 py-2 text-foreground {CALLOUT_CLASSES[
 			callout
 		]} {className}"
 	>
 		<p class="mb-1 text-sm font-semibold {CALLOUT_LABEL_CLASSES[callout]}">
-			{DETAIL_KIND_LABELS[callout]}
+			{detailKindLabel(callout, locale())}
 		</p>
 		{@render content()}
 	</div>
