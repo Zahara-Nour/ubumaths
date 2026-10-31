@@ -10,15 +10,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 0-intégration (§ 8) en relecture._
+_Mis à jour le 2026-11-01, après #2055 et la publication du lot 0-intégration._
 
-- **État** : lots 0-suites, 0-limites et fonctions publiés (43 modèles). Lot 0-intégration (23 brouillons : convexité + calcul intégral, § 8) vérifié, 3 retouches de texte dans `scripts/questions/tspe-0-integration/`, page à cocher publiée : https://claude.ai/artifact/CnJQhSYtdKHkJ3Yak7qSZH.
-- **Prochaine action** : PR des fichiers (branche `content/questions-tspe-integration`) ; puis David : `create-questions --mettre-a-jour` (3 modèles : b52c53d8, 822d0318, 21840f6c) et relecture de la page ; compter les verdicts ; simulation `publier-lot`, puis `--publier` par David.
-- **En attente de David** : relecture de la page à cocher.
-- **Pièges en cours** : `create-questions` et `publier-lot` → David ; partir des id, pas des vieux dossiers `<thème>-terminale/` ;
-  simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ;
-  **horodatage de migration** : max + 1 min de la prod juste avant de créer le fichier. Migration Q3 (tags) plus tard, avec la nuance 5e702745 (§ 8).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `content/questions-tspe-integration`.
+- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration (convexité + calcul intégral, § 8) **publiés** en prod : 66 modèles. Relecture du lot 0-intégration validée en bloc par David ; statut (23 `published`) et 3 retouches relus en base.
+- **Prochaine action** : lot 0 « primitives et équations différentielles » dans un nouveau worktree : relevé des brouillons par id (MCP), export, relecture tirage par tirage, page à cocher. Plus tard : migration des tags Q3 (§ 1, § 7, § 8 : f1963ef2 → 447 ; a80a780f → 585/586/411/412 ; 5e702745 → 479 plutôt que 476 ?).
+- **En attente de David** : rien.
+- **Pièges en cours** : `create-questions` et `publier-lot`, même en simulation → David (le mode auto les refuse) ;
+  partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
+  worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ;
+  **horodatage de migration** : max + 1 min de la prod juste avant de créer le fichier.
+- **Worktree / branche** : aucun (worktree du lot 0-intégration retiré).
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -384,3 +385,8 @@ a80a780f : ses 5 variations couvrent 586 (v0, v4 : f″), 585 (v1 : f′ croissa
 **Page à cocher** : https://claude.ai/artifact/CnJQhSYtdKHkJ3Yak7qSZH (23 fiches), collection `verdicts` vide à la
 publication ; alertes : a80a780f sans point, 21840f6c bloc ```variation non dessiné (le jouer dans l'aperçu). Les
 3 retouches ne sont pas encore en base : la page montre déjà les fichiers corrigés.
+
+**Relecture (David, 2026-11-01)** : « je valide toute la relecture » (validation en bloc, aucun « À revoir »).
+**Publication** : PR #2055 mergée (CI : deux jobs relancés, échecs sans lien — test `vercel-maintenance` sorti en
+141, installation de Playwright coupée à 15 min) ; David a lancé `create-questions --publier --mettre-a-jour` et
+`publier-lot --publier`. Relu en base : 23 / 23 `published`, les 3 retouches présentes.
