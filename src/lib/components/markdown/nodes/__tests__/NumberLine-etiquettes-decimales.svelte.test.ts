@@ -37,4 +37,11 @@ describe('Droite graduée — étiquettes décimales', () => {
 		});
 		expect(await labelsOf(screen.container, 3)).toEqual(['0', '\\dfrac{1}{2}', '1']);
 	});
+
+	it('une graduation entière de 5 chiffres est groupée, comme dans le PDF', async () => {
+		const screen = await render(NumberLine, {
+			props: { node: node('start: 0', 'end: 20000', 'step: 10000', 'labels: 0, 10000, 20000') }
+		});
+		expect(await labelsOf(screen.container, 3)).toEqual(['0', '10\\,000', '20\\,000']);
+	});
 });

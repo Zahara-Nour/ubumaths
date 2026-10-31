@@ -120,6 +120,11 @@ describe('generateNumberLineTypst', () => {
 		expect(en).toContain('[$1.4$]');
 	});
 
+	it("groupe les chiffres d'une graduation entière de 5 chiffres, comme à l'écran", () => {
+		const node = createNode(['start: 0', 'end: 20000', 'step: 10000', 'labels: 0, 10000, 20000']);
+		expect(generateNumberLineTypst(node)).toContain('[$10 thin 000$]');
+	});
+
 	it('should generate fraction labels with Typst syntax', () => {
 		const node = createNode(['start: 0', 'end: 1', 'step: 1/2', 'labels: 0, 1/2, 1']);
 		const typst = generateNumberLineTypst(node);

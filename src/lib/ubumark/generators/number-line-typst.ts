@@ -187,11 +187,8 @@ function generateGraduations(
  * Convert a LaTeX label string to Typst math.
  */
 function labelToTypst(label: string, language: string): string {
-	// Pure integers don't need conversion
-	if (/^-?\d+$/.test(label)) {
-		return label;
-	}
-	// 1.4 → 1{,}4 en français (le convertisseur en fait `1","4`), 1.4 en anglais
+	// Comme à l'écran : 1.4 → 1{,}4 en français (le convertisseur en fait `1","4`), 1.4 en
+	// anglais ; 10000 → 10\,000 (`10 thin 000`) dans les deux langues
 	return convertLatexToTypstMath(toLocaleDecimal(label, language));
 }
 

@@ -308,7 +308,8 @@ lisent, on ne les vise pas. L'élève ne voit jamais l'avertissement ; la correc
 **Graduations décimales** (`NumberLine-etiquettes-decimales.svelte.test.ts`, `number-line-typst.test.ts`)
 — une graduation écrite (`labels: 1.4, 1.5`) passe par `toLocaleDecimal` : `1{,}4` à l'écran (langue
 du contenu, `readContentLocale`), `1","4` dans le PDF (option `language` de `generateNumberLineTypst`,
-français par défaut) ; en anglais, le point reste. Une graduation **calculée** non entière s'écrit en
+français par défaut) ; en anglais, le point reste. Les entiers de 5 chiffres ou plus sont groupés aux deux
+(`10\,000`, `10 thin 000`). Une graduation **calculée** non entière s'écrit en
 fraction (`formatAutoLabel` : 1,4 → 7/5) : une droite qui ne part pas d'un entier donne ses
 graduations écrites en décimal par `labels:`.
 
