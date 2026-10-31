@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, lot 4 relu (10/10 OK)._
+_Mis à jour le 2026-11-01, migration des niveaux du lot 4 écrite (PR ouverte)._
 
-- **État** : lots 1-3 PUBLIÉS ; lot 4 (fractions) : 10 brouillons rangés et tagués en prod, relus 10/10 OK sur
-  https://claude.ai/artifact/Qs3HjpvSQV2MUMt631y9oJ ; `publier-lot` en simulation REFUSE 08 (niveau 18 pris
-  par « Soustraire des fractions » CM1 `884908d3`, publié depuis) (§ 8).
-- **Prochaine action** : selon la réponse de David — 08 au niveau 21 (fichier + `--mettre-a-jour`), puis
-  `publier-lot` (simulation, puis `--publier` par David).
-- **En attente de David** : (1) niveau de 08 (21 proposé) ; (2) le chantier `choix-correction` n'existe pas
-  (ni branche, ni PR, ni journal ; `ChoiceList.svelte` inchangé) : le lancer, ou publier sans l'attendre ?
+- **État** : lot 4 (fractions) relu 10/10 OK ; `publier-lot` refusait 08 (niveau 18 pris par `884908d3` CM1).
+  Migration `20261101090000_questions_ce2_lot4_niveaux` (08 18→19, 09 19→20, 10 20→21) + fichiers + script,
+  branche `content/questions-ce2-lot4-niveaux`, PR #2051 ouverte (§ 8).
+- **Prochaine action** : CI verte → merge → `db:migrate` (David, `!`, `--dry-run` d'abord) → relevé MCP →
+  `publier-lot` (simulation), puis `--publier` (David) → relevé du statut.
+- **En attente de David** : rien. Décidé le 2026-11-01 : publier SANS attendre `choix-correction` (chantier
+  jamais lancé ; à ouvrir dans une session à part après ce lot).
 - **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
-- **Worktree / branche** : aucun (retiré après #2020).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `content/questions-ce2-lot4-niveaux`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -370,3 +370,10 @@ de plus (brouillons neufs ; la migration nœud + tag ne change aucune règle).
   (simulation) : ⛔ 08, niveau 18 de « Fractions › Calculer › Addition et Soustraction » occupé par `884908d3`
   (CM1, publié après la création du lot) ; niveaux 1-20 tous pris, 21 libre. `choix-correction` : aucune trace
   (branche, PR, journal, worktree) ; `ChoiceList.svelte` passe toujours le choix à `InlineMarkdown`.
+- 2026-11-01 : recos de David validées : niveaux 08 → 19, 09 → 20, 10 → 21 (ordre de la phase 0 gardé) ; publier sans
+  attendre `choix-correction`. ⚠️ `create-questions --mettre-a-jour` ne peut PAS changer un niveau (la clé contient
+  le niveau : il créerait des doublons) → migration `20261101090000_questions_ce2_lot4_niveaux` (calquée sur
+  1spe géométrie repérée). Accès : personne (David, 2026-11-01). Test d'intégration : vert 7/7, rouge sans le
+  corps (3 échecs, 3 sautés). `security-auditor` : aucun finding (index d'unicité partiel sur `published` : les
+  brouillons peuvent se croiser). Fichiers `scripts/questions/ce2-4/` et `docs/wip/questions/lot-ce2-4.py` aux
+  mêmes niveaux (régénération identique).
