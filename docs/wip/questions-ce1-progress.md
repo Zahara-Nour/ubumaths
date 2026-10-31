@@ -474,3 +474,47 @@ tard) », `monnaie-parser.ts`) ni billets de 200 / 500 € ; `construire:` va de
 | 7   | heure et données                 | 059, 060, 063, 104 ; 082, 106, 088 ; 089, 107, 081  |
 | 8   | fractions dessinées et géométrie | 096, 098, 095, 097 ; 069, 070, 105 ; 075, 087 ; 073 |
 | 9   | espace et mesure                 | 044 ; 064, 065 ; 079 ; 076, 077 ; 080               |
+
+David (2026-11-01, « tes recos ? » puis « go ») : **A** — lot 6 resserré sur le calcul posé et l'heure, lot 7 les
+données (082, 106, 088, 089, 107, 081), chantier `monnaie-centimes` à part puis lot monnaie (054, 055, 056, 057, 086),
+puis lots 8 et 9.
+
+## 13. Lot 6 : calcul posé et heure — phase 0 (2026-11-01)
+
+Relevé MCP du 2026-11-01 : `Addition · Calcul posé · 1` (CP, `0f7381e6`) ; aucune soustraction posée ; `Durées · Lire
+l'heure · 1, 2` (CP) ; `Durées · Calculer · 1-8` (6e). Nœuds des 6 points présents : « Entiers : addition et
+soustraction › calcul posé » (022, 100), « Durées › lecture de l'heure » (059, 060), « Durées › calcul de durées »
+(063, 104). Outils : ` ```operation ` (cases du résultat, `retenues:`, `méthode: cassage | compensation`),
+` ```horloge ` (`heure:` 1 à 4 cadrans avec `légendes:`, `placer:` = aiguilles à poser, déjà prévu pour CE1-060).
+Bornes : somme ≤ 1 000, 2 ou 3 termes (245 + 437 ; 218 + 48 ; 76 + 7 + 568) ; soustraction ≤ 1 000 ; heures entières,
+demies, quarts, < 24 (« 2 heures et quart » = 14 h 15) ; durées dans la même journée (8 h 30 → 8 h 45 ; 15 h 45 →
+16 h 15 ; midi → 20 h ; 2 heures et 130 minutes).
+
+| Fichier                              | Point   | Catégorie · niveau                     | Variations                                                                                                                                                          |
+| ------------------------------------ | ------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-addition-posee`                  | CE1-022 | Addition · Calcul posé · 2             | 3 + 3 chiffres (245 + 437) ; 3 + 2 (218 + 48) ; 3 termes (76 + 7 + 568) ; retenue aux centaines (somme 1 000 au plus) ; `retenues: oui`                             |
+| `02-soustraction-posee-cassage`      | CE1-100 | Soustraction · Calcul posé · 1 (neuve) | 3 − 2 chiffres, un échange (352 − 27) ; 3 − 3, deux échanges (532 − 178) ; zéro au milieu (504 − 37) ; `méthode: cassage`                                           |
+| `03-soustraction-posee-compensation` | CE1-100 | Soustraction · Calcul posé · 2         | mêmes nombres, `méthode: compensation`                                                                                                                              |
+| `04-lire-l-heure`                    | CE1-059 | Durées · Lire l'heure · 3              | « Il est [_] h [_]. » : et demie (8 h 30), et quart (3 h 15), moins le quart (8 h 45, petite aiguille presque sur le 9) ; « C'est l'après-midi » → 14 h 15, 16 h 30 |
+| `05-placer-les-aiguilles`            | CE1-060 | Durées · Lire l'heure · 4              | `placer:` : heure juste, et demie, et quart, moins le quart (« 9 h moins le quart » → 8 h 45), après-midi (15 h 30 se place sur le 3)                               |
+| `06-duree-ecoulee`                   | CE1-063 | Durées · Durée écoulée · 1 (neuve)     | deux cadrans `Début ; Fin` : 8 h 30 → 8 h 45 ([_] min) ; 15 h 45 → 16 h 15 (passage de l'heure) ; midi → 20 h ([_] h) ; 9 h 15 → 11 h 45 ([_] h [_] min)            |
+| `07-comparer-des-durees`             | CE1-104 | Durées · Durée écoulée · 2             | quatre cadrans (film, match) → choix « le film / le match / autant » ; 2 heures ou 130 minutes : la plus longue ; 1 h 30 ou 90 min (égalité)                        |
+
+Erreurs typiques dans les `testSpecs` : retenue oubliée (245 + 437 = 672) ; plus petit chiffre ôté du plus grand
+(352 − 27 = 335) ; zéro mal échangé (504 − 37 = 577) ; 8 h 45 lu 9 h 45 ; aiguilles inversées (3 h 15 lu 3 h) ;
+14 h 15 répondu 2 h 15 ; 15 h 45 → 16 h 15 = 70 min (soustraction décimale) ; 2 h = 200 min.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **Soustraction : deux modèles** (cassage, compensation), le prof choisit la méthode de sa classe, plutôt qu'un seul
+   qui mêlerait les deux ? Recommandation : deux (sept modèles au lot).
+2. **Après-midi sur un cadran de 12** : l'énoncé dit « c'est l'après-midi », la réponse est 14 h 15 (exemple du BO),
+   et 2 h 15 est ambre avec le message « l'après-midi, on compte après 12 » ? Recommandation : oui ; le cadran
+   `cadran: 24` reste pour plus tard.
+3. **Catégorie neuve « Durées · Durée écoulée »** plutôt que `Durées · Calculer · 9-10` après la 6e ? Recommandation :
+   neuve (même règle qu'au lot 5 bis).
+4. **Durée : unité de la réponse selon la variation** ([_] min sous l'heure, [_] h [_] min au-delà) plutôt que toujours
+   en minutes ? Recommandation : selon la variation, comme on le dit à l'oral.
