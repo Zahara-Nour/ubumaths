@@ -760,3 +760,17 @@ publiés de plus, et 2 de 4e (§ 12.1) ; la 4e ne perd rien. Aucune règle ne ch
 ### 12.8 Lot 5 : fichiers mergés (2026-11-01)
 
 - #2049 mergée (CI verte). Attendu : `create-questions --publier` lancé par David.
+
+### 12.9 Lot 5 : en prod, rangement écrit (2026-11-01)
+
+- `create-questions --publier` lancé par David (depuis le dépôt principal, après un `pull` : le premier essai
+  n'y trouvait pas le dossier) : 6 brouillons, vérifiés au MCP (`draft`, grades `['3']`, niveau 1, sans nœud
+  ni tag) : cd2ffd9b-287b-4409-9384-9060b5ad3fe0 (3-033) · 6acde723-b599-40ec-99b5-eb22f3c578a4 (3-028) ·
+  96992ea8-a78f-433d-90e4-5824ed7afb45 (3-056) · acaa7317-3003-4b1a-bde4-ac95bcd3016c (3-029) ·
+  c7928fc7-836c-4422-9972-ec3d0b567af1 (3-034) · 302655b9-3be3-485c-9d68-0a5fcf49dad4 (3-035).
+- Relevé `etat-prod-2026-11-01-3e-lot5/` (8 modèles : les 6 + ccb51039, 76f5f143, publiés, grades `['4']`,
+  tags 4-057 / 4-080) ; `lot-rangement-3-5.py` (copie du 4b) écrit
+  `20261101130000_questions_3_lot5_rangement_tags.sql` (après `20261101120000`, questions-4 lot 6, le plus
+  récent de toutes les branches) et la fixture : 6 rangés, 2 niveaux (3e ajoutée), 8 tags posés, 2 gardés.
+- `questions-3-lot5-rangement-tags.test.ts` : 20 verts ; corps de la migration vidé : 9 rouges et la suite
+  principale en échec. Cas neuf : tag d'avant (4-057) retiré depuis le relevé.

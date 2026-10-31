@@ -1,0 +1,90 @@
+[
+	{
+		"id": "302655b9-3be3-485c-9d68-0a5fcf49dad4",
+		"noeudAvant": null,
+		"noeudApres": "Probabilités > Expériences aléatoires > fréquences",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-035"]
+	},
+	{
+		"id": "6acde723-b599-40ec-99b5-eb22f3c578a4",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > fréquences cumulées",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-028"]
+	},
+	{
+		"id": "76f5f143-14c0-4181-8e8c-525aa4f99292",
+		"noeudAvant": "Proportionnalité > Évolutions > variations en pourcentage",
+		"noeudApres": "Proportionnalité > Évolutions > variations en pourcentage",
+		"gradesAvant": ["4"],
+		"gradesApres": ["4", "3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": ["4§4-080"],
+		"tagsApres": ["4§4-080", "3§3-063"]
+	},
+	{
+		"id": "96992ea8-a78f-433d-90e4-5824ed7afb45",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Indicateurs > médiane",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-056"]
+	},
+	{
+		"id": "acaa7317-3003-4b1a-bde4-ac95bcd3016c",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Indicateurs > quartiles",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-029"]
+	},
+	{
+		"id": "c7928fc7-836c-4422-9972-ec3d0b567af1",
+		"noeudAvant": null,
+		"noeudApres": "Probabilités > Expériences aléatoires > fréquences",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-034"]
+	},
+	{
+		"id": "ccb51039-cf8d-4edf-8d8e-9288e8fa11e2",
+		"noeudAvant": "Proportionnalité > Évolutions > variations en pourcentage",
+		"noeudApres": "Proportionnalité > Évolutions > variations en pourcentage",
+		"gradesAvant": ["4"],
+		"gradesApres": ["4", "3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": ["4§4-057"],
+		"tagsApres": ["4§4-057", "3§3-036"]
+	},
+	{
+		"id": "cd2ffd9b-287b-4409-9384-9060b5ad3fe0",
+		"noeudAvant": null,
+		"noeudApres": "Probabilités > Expériences aléatoires > événements",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-033"]
+	}
+]
