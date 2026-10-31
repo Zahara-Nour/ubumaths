@@ -1,0 +1,101 @@
+[
+	{
+		"id": "0761124d-6ca7-47bd-bd16-eaa31d47025f",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Volumes > cube et pavé",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-050"]
+	},
+	{
+		"id": "28d7ad74-09ae-4e39-a4da-1a2ab2261af6",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Aires > disque",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-052"]
+	},
+	{
+		"id": "47971d3d-cc14-4880-8b1b-09f80f703d2a",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Volumes > prisme et cylindre",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-053"]
+	},
+	{
+		"id": "55b26d32-b3dd-40cc-b294-a63938cc5325",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Volumes > prisme et cylindre",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-053"]
+	},
+	{
+		"id": "6bf0a792-4b71-4117-af9d-1fcbce1ca65c",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > triangles",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-058"]
+	},
+	{
+		"id": "8db109a5-ea7a-41e6-9a6d-62caed1160de",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Aires > disque",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-052"]
+	},
+	{
+		"id": "9dea9199-078b-4458-8ef5-2f160174d5e1",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Volumes > prisme et cylindre",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-108"]
+	},
+	{
+		"id": "ddf4a07c-1a2b-43a9-9a31-83e797e0efbd",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Angles",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-056"]
+	},
+	{
+		"id": "f628c809-526e-4a24-bbb2-2f1c28a3b5fc",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Aires > unités et conversions",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-074"]
+	}
+]
