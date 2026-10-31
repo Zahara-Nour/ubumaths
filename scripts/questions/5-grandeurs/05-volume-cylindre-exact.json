@@ -1,0 +1,164 @@
+{
+	"title": "Volume d'un cylindre : valeur exacte",
+	"description": "Donner le volume exact d'un cylindre en fonction de π (rayon 3 cm, hauteur 5 cm : 45π cm³), à partir du rayon ou du diamètre",
+	"grades": ["5"],
+	"theme": "Grandeurs",
+	"domain": "Volumes",
+	"subdomain": "Volume d'un cylindre",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Donne la valeur **exacte** du volume d'un cylindre de rayon ${{r}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..6"
+				},
+				{
+					"name": "h",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["r!=h", "r>=2 || h>=3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r^2*h}}\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'un cylindre.** $\\text{Volume} = \\text{aire de la base} \\times \\text{hauteur} = \\pi r^2 \\times h$.",
+					"Aire de la base : $\\pi \\times {{r}} \\times {{r}} = {{eval:r^2}}\\pi~\\unit{cm^2}$.",
+					"Volume : ${{eval:r^2}}\\pi~\\unit{cm^2} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:r^2*h}}\\pi~\\unit{cm^3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Donne la valeur **exacte** du volume d'un cylindre de diamètre ${{d}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..6"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*r"
+				},
+				{
+					"name": "h",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["d!=h"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r^2*h}}\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'un cylindre.** $\\text{Volume} = \\text{aire de la base} \\times \\text{hauteur} = \\pi r^2 \\times h$.",
+					"Le rayon est ${{d}}~\\unit{cm} \\div 2 = {{r}}~\\unit{cm}$.",
+					"Aire de la base : $\\pi \\times {{r}} \\times {{r}} = {{eval:r^2}}\\pi~\\unit{cm^2}$.",
+					"Volume : ${{eval:r^2}}\\pi~\\unit{cm^2} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:r^2*h}}\\pi~\\unit{cm^3}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rayon 3, hauteur 5 : 45π",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"h": "5"
+			},
+			"answers": ["45\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30π (2 × 3 × 5)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"h": "5"
+			},
+			"answers": ["30\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9π (aire de la base)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"h": "5"
+			},
+			"answers": ["9\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "45 × π accepté",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"h": "5"
+			},
+			"answers": ["45\\times\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "9π × 5 : calcul pas fini",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"h": "5"
+			},
+			"answers": ["9\\pi\\times5"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Diamètre 4, hauteur 7 : 28π",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"d": "4",
+				"h": "7"
+			},
+			"answers": ["28\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 112π (diamètre au carré)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"d": "4",
+				"h": "7"
+			},
+			"answers": ["112\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,132 @@
+{
+	"title": "Volume d'un prisme droit",
+	"description": "Calculer le volume d'un prisme droit : aire de la base × hauteur (base 12 cm², hauteur 5 cm : 60 cm³), la base pouvant être un triangle rectangle à calculer",
+	"grades": ["5"],
+	"theme": "Grandeurs",
+	"domain": "Volumes",
+	"subdomain": "Volume d'un prisme droit",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un **prisme droit** a une base d'aire ${{B}}~\\unit{cm^2}$ et une hauteur de ${{h}}~\\unit{cm}$.\n\nQuel est son volume ?\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "B",
+					"expression": "5..60"
+				},
+				{
+					"name": "h",
+					"expression": "2..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:B*h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'un prisme droit.** $\\text{Volume} = \\text{aire de la base} \\times \\text{hauteur}$.",
+					"${{B}}~\\unit{cm^2} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:B*h}}~\\unit{cm^3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un **prisme droit** a pour base un **triangle rectangle** dont les côtés de l'angle droit mesurent ${{a}}~\\unit{cm}$ et ${{b}}~\\unit{cm}$. Sa hauteur est ${{h}}~\\unit{cm}$.\n\nQuel est son volume ?\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..12"
+				},
+				{
+					"name": "h",
+					"expression": "2..12"
+				}
+			],
+			"conditions": ["mod(a*b,2)==0", "a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b/2*h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'un prisme droit.** $\\text{Volume} = \\text{aire de la base} \\times \\text{hauteur}$.",
+					"Aire de la base : $\\dfrac{{{a}}~\\unit{cm} \\times {{b}}~\\unit{cm}}{2} = {{eval:a*b/2}}~\\unit{cm^2}$.",
+					"Volume : ${{eval:a*b/2}}~\\unit{cm^2} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:a*b/2*h}}~\\unit{cm^3}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Base 12, hauteur 5 : 60",
+			"variationIndex": 0,
+			"variables": {
+				"B": "12",
+				"h": "5"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 17 (12 + 5)",
+			"variationIndex": 0,
+			"variables": {
+				"B": "12",
+				"h": "5"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle 3 et 4, hauteur 10 : 60",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"h": "10"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 120 (oubli de la moitié)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"h": "10"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 (aire de la base)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"h": "10"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
