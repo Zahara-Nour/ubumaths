@@ -6,17 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, migration des niveaux du lot 4 écrite (PR ouverte)._
+_Mis à jour le 2026-11-01, après #2051 : lot 4 (fractions) publié en prod._
 
-- **État** : lot 4 (fractions) relu 10/10 OK ; `publier-lot` refusait 08 (niveau 18 pris par `884908d3` CM1).
-  Migration `20261101090000_questions_ce2_lot4_niveaux` (08 18→19, 09 19→20, 10 20→21) + fichiers + script,
-  branche `content/questions-ce2-lot4-niveaux`, PR #2051 ouverte (§ 8).
-- **Prochaine action** : CI verte → merge → `db:migrate` (David, `!`, `--dry-run` d'abord) → relevé MCP →
-  `publier-lot` (simulation), puis `--publier` (David) → relevé du statut.
-- **En attente de David** : rien. Décidé le 2026-11-01 : publier SANS attendre `choix-correction` (chantier
-  jamais lancé ; à ouvrir dans une session à part après ce lot).
-- **Pièges en cours** : ```ranger : réponse d'une place = position AFFICHÉE, comptée depuis 0 ; `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage = max de la PROD ET du dépôt + 1 min ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; worktree neuf : `pnpm exec svelte-kit sync` avant `create-questions`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `content/questions-ce2-lot4-niveaux`.
+- **État** : lots 1 à 4 publiés en prod (lot 4 : 10 modèles, niveaux 08-10 décalés en 19-21 par #2051).
+  Aucun worktree en cours.
+- **Prochaine action** : lot 5 — problèmes (029, 079, 030, 031, 032, 033, 034), phase 0 à écrire et faire
+  valider (§ 4 bis, 7). En parallèle, dans des sessions à part : `choix-correction` (`$$…$$` brut sur la
+  carte de correction, § 8), puis outils neufs `centaines:` + milliers de `collection` et barres à monter.
+- **En attente de David** : rien.
+- **Pièges en cours** : `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les
+  lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage =
+  max de la PROD ET du dépôt + 1 min ; niveaux relevés dans la catégorie JUSTE avant la publication (un lot
+  d'un autre niveau peut les prendre entre-temps) ; commitlint : sujet sans majuscule, corps ≤ 100 car.
+- **Worktree / branche** : aucun (prochain : `../ubumaths-wt-questions-ce2`, branche du lot 5).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -377,3 +379,7 @@ de plus (brouillons neufs ; la migration nœud + tag ne change aucune règle).
   corps (3 échecs, 3 sautés). `security-auditor` : aucun finding (index d'unicité partiel sur `published` : les
   brouillons peuvent se croiser). Fichiers `scripts/questions/ce2-4/` et `docs/wip/questions/lot-ce2-4.py` aux
   mêmes niveaux (régénération identique).
+- 2026-11-01 : #2051 mergée (CI verte ; revue : `security-auditor` seul, contenu). `db:migrate` (David) :
+  `20261101090000` jouée (avec `20261101120100` d'une session questions-5). Relevé MCP : 08/09/10 en 19/20/21,
+  draft, `updated_at` inchangé. `publier-lot` simulation : 10/10 ; `--publier` (David) : **10 modèles
+  `published`** relus au MCP. Worktree retiré.
