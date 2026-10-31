@@ -512,15 +512,15 @@ MODELES = {
     '08-additionner-denominateur-multiple': modele(
         'Additionner des fractions dont un dénominateur est multiple de l\'autre',
         '1/2 + 1/4 ; 1/3 + 1/6 : on écrit les deux fractions avec le même dénominateur',
-        'Calculer', 'Addition et Soustraction', 18, [SOMME_1, SOMME_2], SPECS_SOMME_MULTIPLE, 60),
+        'Calculer', 'Addition et Soustraction', 19, [SOMME_1, SOMME_2], SPECS_SOMME_MULTIPLE, 60),
     '09-soustraire-meme-denominateur': modele(
         'Soustraire des fractions de même dénominateur',
         '3/4 − 1/4 (exemple du BO) ; 1 − 5/9',
-        'Calculer', 'Addition et Soustraction', 19, [SOUSTRACTION, UN_MOINS], SPECS_SOUSTRACTION),
+        'Calculer', 'Addition et Soustraction', 20, [SOUSTRACTION, UN_MOINS], SPECS_SOUSTRACTION),
     '10-soustraire-denominateur-multiple': modele(
         'Soustraire des fractions dont un dénominateur est multiple de l\'autre',
         '3/4 − 1/2 ; 2/3 − 1/6 : on écrit les deux fractions avec le même dénominateur',
-        'Calculer', 'Addition et Soustraction', 20, [DIFF_1, DIFF_2], SPECS_DIFF_MULTIPLE, 60),
+        'Calculer', 'Addition et Soustraction', 21, [DIFF_1, DIFF_2], SPECS_DIFF_MULTIPLE, 60),
 }
 
 for nom, m in MODELES.items():
