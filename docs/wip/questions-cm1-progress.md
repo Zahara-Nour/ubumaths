@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, après le `create-questions --publier` du lot 3b._
+_Mis à jour le 2026-10-31, migration de rangement du lot 3b écrite (PR à ouvrir)._
 
 - **État** : lots 0, 1, 2 et 3a publiés. Lot 3b (fractions décimales, 8 modèles, § 10) : **8 brouillons en prod** (ids au § 10 quater), sans nœud ni tag. #2040 et #2032 mergées, pas en prod.
-- **Prochaine action** : écrire la migration de rangement du lot 3b (gabarit `20261030150100_questions_cm1_lot3a_rangement_tags.sql` + son test d'intégration ; points et sous-notions au § 10) ; puis page à cocher, publication. Ensuite lot 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
+- **Prochaine action** : PR de la migration `20261030201100_questions_cm1_lot3b_rangement_tags` (§ 10 quinquies), CI, merge ; puis `db:migrate` (David) ; relevé MCP ; page à cocher, publication. Ensuite lot 3c (partages, brouillons jusqu'au `deploy:prod` du bloc ```partage).
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; `gh pr checks` peut rester « pending » sur des 502 : suivre le run.
-- **Worktree / branche** : aucun (retiré après #2043) ; la migration en recrée un : `git worktree add -b feat/questions-cm1-lot3b-rangement ../ubumaths-wt-questions-cm1 origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot3b-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -502,3 +502,12 @@ Ids : `36507fc9-df87-46a4-865d-aec7935580c3` (lire et écrire), `6faa64d0-6b77-4
 (ranger), `34c58018-b588-4c93-85fb-40eb94879cfb` (encadrer), `7ed61c5f-dd82-4a78-8251-621e01138ebb`
 (intercaler), `6de4ad5b-49a4-44a5-9b3f-062797fbefab` (repérer), `5b038fc8-226f-4307-8609-27d87e5f7608`
 (placer).
+
+### 10 quinquies. Lot 3b — rangement et tags (2026-10-31)
+
+- Relevé MCP du 2026-10-31 : les 8 brouillons toujours sans nœud ni tag ; les 8 points sous
+  « Nombres et calculs > Fractions : sens et écritures » (sous-notions du § 10).
+- Migration `20261030201100_questions_cm1_lot3b_rangement_tags` et son test générés du gabarit du
+  lot 3a (script en scratchpad, remplacements vérifiés) ; horodatage = max des worktrees et
+  branches distantes (`20261030201000`, 1spe) + 1 min.
+- Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
