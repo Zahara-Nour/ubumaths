@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2030 et son `db:migrate`._
+_Mis à jour le 2026-11-01, après la publication du lot 5 bis._
 
-- **État** : lots 0 à 5 publiés. Lot 5 bis (masses, monnaie, durées, 9 modèles, § 11) : #2028 mergée, 9 brouillons en prod (vérifiés au MCP) ; migration nœud + tag `20261030162200` (#2030) jouée et vérifiée (9/9 sur leur nœud, un point chacun, `updated_at` inchangé) ; page à cocher publiée : https://claude.ai/artifact/4NHZwnXswUoq44aN3Vm297.
-- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; corriger les « À revoir » ; `publier-lot` en simulation puis `--publier` par David. Ensuite, selon le § 4 bis : lots à outils existants, puis lots à QCM.
-- **En attente de David** : relecture de la page à cocher (9 fiches).
+- **État** : lots 0 à 5 bis publiés. Lot 5 bis (masses, monnaie, durées) : 9 modèles publiés le 2026-11-01, rangés et tagués (#2028, #2030), page à cocher relue 9/9 OK.
+- **Prochaine action** : selon le § 4 bis, lots à outils existants, puis lots à QCM.
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (sur `feat/questions-ce1-lot5bis-rangement`, mergée : en partir d'une neuve sur `origin/main`). `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (sur `feat/questions-ce1-lot5bis-rangement`, mergée : en partir d'une neuve sur `origin/main` ; supprimer `feat/questions-ce1-lot5bis` et `-rangement` avec `branch -d`). `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -327,6 +327,8 @@ tag ne change aucune règle.
   Vu en passant (pas du lot) : dans la carte de correction, le cadre vert de la réponse attendue coupe le bas d'une
   fraction.
 - 2026-10-28 : #1936 mergée ; 9 brouillons créés en prod par David ; #1939 (nœud + tag, test rouge 5/9 sans, vert 9/9, `security-auditor` sans finding bloquant) mergée, `db:migrate` joué, vérifié (9/9 sur leur nœud, un point chacun) ; page à cocher publiée, aucune alerte.
+- 2026-11-01 : page à cocher relue, 9/9 OK (verdicts comptés en base) ; `publier-lot` simulé (9 passent), `--publier`
+  par David ; vérifié au MCP : 9/9 publiés et rangés.
 - 2026-10-29 : relecture tranchée par David (ses réponses aux deux questions : les deux recommandations) : 03 sans la variation 2, 09 sans Lucie (gardée pour le lot 4) ; `question:specs` 200 tirages verts sur 03 et 09 ; simulation en prod : 7 « = », 03 et 09 « CONTENU DIFFÉRENT ».
 - 2026-10-29 : #1953 mergée ; `create-questions --publier --mettre-a-jour` par David : 03 et 09 mis à jour, 7 « = » ; vérifié au MCP (03 : 1 variation, 7 specs ; 09 : 2 variations, 10 specs) ; page à cocher régénérée et republiée, verdicts de 03 et 09 remis à zéro.
 - 2026-10-29 : relecture 9/9 OK ; `publier-lot` (simulation) refuse 06, 07, 08 : Comparer 6 et 7, Addition et Soustraction 13 pris le jour même par des modèles 6e publiés. David : « le résultat le plus propre » → 06 → 9, 07 → 10, 08 → 15, 09 → 16 (la soustraction suit l'addition), aucun publié touché ; question d'accès : personne. Migration `20261029233100_questions_ce1_lot3_niveaux` + fichiers, test rouge sans (3 échecs, rollback refusé), vert 7/7. PR #1963 ; `security-auditor` : aucun finding bloquant ; niveaux visés libres en prod, brouillons compris (MCP).
