@@ -15,7 +15,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{bx}}\\,;\\,{{by}})$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}$.\n\n$$\\overrightarrow{AB}\\,?$$",
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{bx}}\\,;\\,{{by}})$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}$.\n\n$$\\overrightarrow{AB}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
 			"variables": [
 				{
 					"name": "ax",
@@ -37,8 +37,10 @@
 			"conditions": ["bx != ax", "by != ay"],
 			"blanks": [
 				{
-					"expectedAnswer": "({{eval:(bx)-(ax)}};{{eval:(by)-(ay)}})",
-					"answerKind": "vecteur"
+					"expectedAnswer": "{{eval:(bx)-(ax)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(by)-(ay)}}"
 				}
 			],
 			"correction": {
@@ -85,7 +87,7 @@
 			}
 		},
 		{
-			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{eval:(ax)/2;d}}\\,;\\,{{ay}})$ et $B({{eval:(bx)/2;d}}\\,;\\,{{eval:(by)/2;d}})$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}$.\n\n$$\\overrightarrow{AB}\\,?$$",
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{eval:(ax)/2;d}}\\,;\\,{{ay}})$ et $B({{eval:(bx)/2;d}}\\,;\\,{{eval:(by)/2;d}})$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}$.\n\n$$\\overrightarrow{AB}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
 			"variables": [
 				{
 					"name": "ax",
@@ -107,8 +109,10 @@
 			"conditions": ["mod(ax, 2) != 0", "mod(by, 2) != 0", "bx != ax"],
 			"blanks": [
 				{
-					"expectedAnswer": "({{eval:((bx)-(ax))/2}};{{eval:(by)/2-(ay)}})",
-					"answerKind": "vecteur"
+					"expectedAnswer": "{{eval:((bx)-(ax))/2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(by)/2-(ay)}}"
 				}
 			],
 			"correction": {
@@ -129,7 +133,7 @@
 				"bx": "-3",
 				"by": "4"
 			},
-			"answers": ["(-5;5)"],
+			"answers": ["-5", "5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -143,7 +147,7 @@
 				"bx": "-3",
 				"by": "4"
 			},
-			"answers": ["(5;-5)"],
+			"answers": ["5", "-5"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -157,7 +161,7 @@
 				"bx": "-3",
 				"by": "4"
 			},
-			"answers": ["(-1;3)"],
+			"answers": ["-1", "3"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -199,7 +203,7 @@
 				"bx": "-1",
 				"by": "5"
 			},
-			"answers": ["(-2;0.5)"],
+			"answers": ["-2", "0.5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -213,7 +217,7 @@
 				"bx": "-1",
 				"by": "5"
 			},
-			"answers": ["(-2;\\frac{1}{2})"],
+			"answers": ["-2", "\\frac{1}{2}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -227,7 +231,7 @@
 				"bx": "-1",
 				"by": "5"
 			},
-			"answers": ["(2;-0.5)"],
+			"answers": ["2", "-0.5"],
 			"expected": {
 				"status": "incorrect"
 			}
