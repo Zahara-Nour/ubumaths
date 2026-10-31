@@ -637,7 +637,7 @@ PDF : Typst natif (`curve`, `dash`, `polygon` gris). Fiche du catalogue : `src/l
 **Sections** (lot 6, § 11 du journal, `solide-section.test.ts`) — `section:` (une seule, `SolideSpec.section`,
 type `SolideSection`) : cube, pavé `parallele ABCD 2` ou `parallele dessus 2` (plan ‖ à la face, à la distance
 donnée de cette face, vers l'intérieur), puis `IJKL` facultatif (le i-ème nom sur l'arête qui part du i-ème
-sommet **écrit** de la face) ; cylindre `perpendiculaire h` (hauteur au-dessus de la base du bas) ou
+sommet **écrit** de la face, écrite dans l'ordre du tour) ; cylindre `perpendiculaire h` (hauteur au-dessus de la base du bas) ou
 `parallele d` (plan **de face**, à `d` de l'axe, côté de l'œil : rectangle vu en vraie grandeur) ; boule `d`
 (plan horizontal à `d` du centre, `0` ou `oui` : grand cercle). Sans distance : au milieu (pavé, cylindre ⊥),
 par l'axe ou le centre (cylindre ‖, boule). Distance hors du solide, prisme / pyramide / cône, noms de section

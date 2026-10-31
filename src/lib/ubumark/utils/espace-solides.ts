@@ -647,12 +647,15 @@ function roundDraft(spec: SolideSpec): Draft {
 			}
 			let section: EspacePoint[] | null = null;
 			if (cut !== null) {
+				// Vue inclinée dont l'ellipse à plat est l'ombre (sin = ELLIPSE_RATIO) : la hauteur
+				// se raccourcit de cos ; l'ellipse reste alors dans le cercle, même près du pôle
 				const radius = Math.sqrt(r * r - cut.distance * cut.distance);
-				section = arc(0, cut.distance, radius, radius * ELLIPSE_RATIO, 0, 2 * Math.PI);
+				const y = cut.distance * Math.sqrt(1 - ELLIPSE_RATIO ** 2);
+				section = arc(0, y, radius, radius * ELLIPSE_RATIO, 0, 2 * Math.PI);
 				lines.push(sectionOutline(section));
 				if (spec.cotes && cut.distance > 0) {
-					lines.push(segment({ x: 0, y: 0 }, { x: 0, y: cut.distance }, true));
-					cotes.push({ at: { x: 0, y: cut.distance / 2 }, value: cut.distance, side: 'gauche' });
+					lines.push(segment({ x: 0, y: 0 }, { x: 0, y }, true));
+					cotes.push({ at: { x: 0, y: y / 2 }, value: cut.distance, side: 'gauche' });
 				}
 			}
 			return {

@@ -278,7 +278,25 @@ const theOf = (topology: SolideTopology) =>
 	topology.ofThe.replace(/^du /, 'le ').replace(/^de la /, 'la ');
 
 const readDistance = (word: string | undefined) =>
-	word !== undefined && DIMENSION_REGEX.test(word) ? Number(word.replace(',', '.')) : null;
+	word !== undefined &&
+	DIMENSION_REGEX.test(word) &&
+	(word.split(/[.,]/)[1]?.length ?? 0) <= SOLIDE_MAX_DECIMALS
+		? Number(word.replace(',', '.'))
+		: null;
+
+/**
+ * La face dans l'ordre de son tour (sens direct ou inverse, à partir de n'importe
+ * quel sommet) : `ACBD` n'en est pas un, la section serait croisée
+ */
+function inTourOrder(vertices: number[], topology: SolideTopology): boolean {
+	const face = topology.faces.find((f) => sameSet(f, vertices));
+	if (face === undefined) return false;
+	const n = face.length;
+	const start = face.indexOf(vertices[0]);
+	const forward = vertices.every((v, i) => face[(start + i) % n] === v);
+	const backward = vertices.every((v, i) => face[(start - i + n) % n] === v);
+	return forward || backward;
+}
 
 /** Les noms des sommets de la section d'un pavé (« IJKL ») ; une phrase d'erreur sinon */
 function readSectionNames(text: string, names: (string | null)[] | null): string[] | string {
@@ -303,15 +321,19 @@ function readSection(
 ): SolideSection | string {
 	const words = value.split(/\s+/).filter((w) => w !== '');
 	const the = theOf(topology);
+	const shown = value === '' ? 'vide' : `« ${value} »`;
 	const outside = (max: number) =>
 		`le plan ne coupe pas ${the} : distance entre 0 et ${String(max).replace('.', ',')} (exclus)`;
 
 	if (shape.form === 'cube' || shape.form === 'pave') {
 		if (plain(words[0] ?? '') !== 'parallele' || words[1] === undefined || words.length > 4) {
-			return `section « ${value} » non comprise (${SECTION_USAGES.box})`;
+			return `section ${shown} non comprise (${SECTION_USAGES.box})`;
 		}
 		const face = readFace(words[1], topology, names);
 		if (typeof face === 'string') return face;
+		if (!inTourOrder(face.vertices, topology)) {
+			return `${words[1]} : écris les sommets de la face dans l’ordre du tour (ex. ABCD, pas ACBD)`;
+		}
 		// Profondeur : longueur de l'arête qui part de la face vers la face opposée
 		const points = polyhedronVertices(shape.form, shape.dims);
 		const [v] = face.vertices;
@@ -333,7 +355,7 @@ function readSection(
 		}
 		if (!(distance > 0 && distance < depth)) return outside(depth);
 		let sectionNames: string[] | null = null;
-		if (rest.length > 1) return `section « ${value} » non comprise (${SECTION_USAGES.box})`;
+		if (rest.length > 1) return `section ${shown} non comprise (${SECTION_USAGES.box})`;
 		if (rest.length === 1) {
 			const read = readSectionNames(rest[0], names);
 			if (typeof read === 'string') return read;
@@ -350,7 +372,7 @@ function readSection(
 			words.length > 2 ||
 			(words[1] !== undefined && distance === null)
 		) {
-			return `section « ${value} » non comprise (${SECTION_USAGES.cylindre})`;
+			return `section ${shown} non comprise (${SECTION_USAGES.cylindre})`;
 		}
 		const [r, h] = shape.dims;
 		if (kind === 'perpendiculaire') {
@@ -370,7 +392,7 @@ function readSection(
 		const [r] = shape.dims;
 		const plainValue = plain(value);
 		const distance = plainValue === '' || plainValue === 'oui' ? 0 : readDistance(value);
-		if (distance === null) return `section « ${value} » non comprise (${SECTION_USAGES.boule})`;
+		if (distance === null) return `section ${shown} non comprise (${SECTION_USAGES.boule})`;
 		if (distance >= r) {
 			const max = String(r).replace('.', ',');
 			return `le plan ne coupe pas ${the} : distance au centre de 0 à ${max} (${max} exclu)`;

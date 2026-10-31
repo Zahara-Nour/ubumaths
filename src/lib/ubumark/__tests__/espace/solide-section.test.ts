@@ -136,6 +136,26 @@ describe('section: — erreurs au prof', () => {
 		expect(errors('forme: pave 6 4 3', 'section: parallele dessus -1').join()).not.toEqual('');
 	});
 
+	it('face écrite hors de l’ordre du tour : refusée (section croisée)', () => {
+		expect(errors('forme: pave 6 4 3', NAMES, 'section: parallele ACBD 2 IJKL').join()).toContain(
+			'dans l’ordre du tour'
+		);
+		expect(errors('forme: pave 6 4 3', NAMES, 'section: parallele DCBA 2')).toEqual([]);
+		expect(errors('forme: pave 6 4 3', NAMES, 'section: parallele CDAB 2')).toEqual([]);
+	});
+
+	it('distance : au plus 3 décimales ; section vide sur un cylindre', () => {
+		expect(errors('forme: pave 6 4 3', 'section: parallele dessus 1.23456').join()).not.toEqual('');
+		expect(errors('forme: cylindre 2 5', 'section:').join()).toContain('section vide non comprise');
+	});
+
+	it('boule coupée près du pôle : la section reste dans le cercle', () => {
+		const s = scene('forme: boule 3', 'section: 2.9');
+		const top = Math.min(...(s.section ?? []).map((p) => p.y));
+		const ballTop = Math.min(...s.lines.flatMap((l) => (l.thick ? [] : l.points.map((p) => p.y))));
+		expect(top).toBeGreaterThanOrEqual(ballTop - 1e-9);
+	});
+
 	it('noms de la section', () => {
 		expect(errors('forme: cylindre 2 5', 'section: parallele 1 IJKL').join()).toContain(
 			'section: parallele 1'

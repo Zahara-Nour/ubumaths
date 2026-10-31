@@ -760,3 +760,7 @@ seulement (Q26) ; noms IJKL dans ce lot (Q27). Spécification validée.
   [BF] (à droite, elle touchait C et la cote « 4 cm ») ; noms IJKL posés en tournant autour du point
   jusqu'à ne toucher aucune étiquette (sur le cube coupé ‖ gauche, I tombait sur la cote « 4 cm ») ;
   `marquer: face` garde l'ordre de la topologie, `section:` l'ordre écrit (pour les noms).
+- Revue (Sonnet) : 1 bug corrigé — face écrite hors de l'ordre du tour (`parallele ACBD`) → section croisée,
+  désormais refusée ; mineurs corrigés : distance à 3 décimales au plus, section de boule raccourcie de
+  cos (vue inclinée) pour rester dans le cercle près du pôle, message de `section:` vide. Laissés : cote du
+  cylindre ‖ posée sous la base (loin de son court trait quand d est petit).
