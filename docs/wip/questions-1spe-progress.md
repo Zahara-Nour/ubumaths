@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, après #2041._
+_Mis à jour le 2026-10-31, après la publication du lot 0-variables aléatoires._
 
-- **État** : lots 0-suites à 0-probabilités publiés ; lot 0-variables aléatoires (§ 15) : C1-C6 en prod (`--mettre-a-jour` du 2026-10-31), #2041 mergée, migration N1 jouée (niveaux conformes, trigger `O`), simulation `publier-lot` : 17 passent. Page à cocher : https://claude.ai/artifact/UUSbSXQAvSyR2HrbfwSGJ9.
-- **Prochaine action** : compter les verdicts de la page (collection `verdicts`) ; corriger les « à revoir » ; puis David lance `publier-lot --publier` sur `scripts/questions/1spe-0-variables-aleatoires` ; vérifier `published` en base. Ensuite logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : la relecture de la page à cocher (d683e906 : `probtree` non dessiné, à jouer dans l'aperçu).
-- **Pièges en cours** : `create-questions` refusé au mode auto **même en simulation** (David le lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` ; une copie par variation pour l'aperçu (sans `testSpecs`) ; `export-question-templates` exige `svelte-kit sync` dans un worktree neuf ; instantané jamais dans le dépôt principal.
-- **Worktree / branche** : aucun (retiré après #2041) ; nouveau worktree `../ubumaths-wt-questions-1spe` pour le lot logique.
+- **État** : lots 0-suites à 0-variables aléatoires publiés (variables aléatoires : 17 modèles, 17 « ok » sur la page à cocher, `published` en base le 2026-10-31) ; 174e202b et dc4b8d08 restent en brouillon (l1s-3).
+- **Prochaine action** : lot 0-logique (même démarche : instantané dans un worktree, specs, bornes, constats, simulation `publier-lot` d'abord) ; ensuite la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : rien.
+- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto **même en simulation pour `create-questions`** (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` ; une copie par variation pour l'aperçu (sans `testSpecs`) ; `export-question-templates` exige `svelte-kit sync` dans un worktree neuf ; instantané jamais dans le dépôt principal.
+- **Worktree / branche** : aucun ; nouveau worktree `../ubumaths-wt-questions-1spe` pour le lot logique.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -719,3 +719,6 @@ Niveaux des 7 fichiers changés dans la même PR (#2041). **Ordre** : David lanc
 #2041 mergée (CI verte). Mise à jour en prod par David le 2026-10-31 (9 brouillons, C1-C6 relus en base) ; `db:migrate` joué
 le 2026-10-31 : 17 modèles, un par (sous-notion, niveau), trigger `updated_at` à `O` ; simulation `publier-lot` : 17 passent.
 **Page à cocher** : https://claude.ai/artifact/UUSbSXQAvSyR2HrbfwSGJ9 (17 fiches ; 1 alerte : d683e906, `probtree` non dessiné).
+
+**Verdicts** : 17 « ok » sur 17, aucun commentaire. `publier-lot --publier` lancé par David le 2026-10-31 : les 17 modèles du
+domaine sont `published` en base. **Lot 0-variables aléatoires clos.**
