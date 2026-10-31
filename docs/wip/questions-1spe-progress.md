@@ -11,11 +11,11 @@
 
 _Mis à jour le 2026-10-30, pendant le lot 0-variables aléatoires._
 
-- **État** : lots 0-suites à 0-probabilités publiés ; lot 0-variables aléatoires (§ 15) : C1-C6 corrigés (D20), PR des fichiers ouverte.
-- **Prochaine action** : merge de la PR ; David lance `create-questions --publier --mettre-a-jour` (anciens niveaux) ; migration des 7 niveaux + fichiers (N1, gabarit #2012) ; page à cocher ; publication. Ensuite logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
-- **En attente de David** : rien (D20 : tout validé, question d'accès : personne).
+- **État** : lots 0-suites à 0-probabilités publiés ; lot 0-variables aléatoires (§ 15) : C1-C6 corrigés, #2039 mergée ; PR de la migration N1 (7 niveaux + fichiers) ouverte, **à ne pas merger** avant la mise à jour en prod.
+- **Prochaine action** : David lance depuis `main` `create-questions --publier --mettre-a-jour` sur `scripts/questions/1spe-0-variables-aleatoires` ; je vérifie en base ; merge de la PR N1, `db:migrate` (David), vérif niveaux + trigger `O` ; page à cocher ; publication. Ensuite logique, puis la migration des tags D3.
+- **En attente de David** : le `create-questions --mettre-a-jour` ci-dessus.
 - **Pièges en cours** : `create-questions` refusé au mode auto **même en simulation** (David le lance) ; `publier-lot` = tout le dossier ou rien ; `db:migrate` → David ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` ; une copie par variation pour l'aperçu (sans `testSpecs`) ; `export-question-templates` exige `svelte-kit sync` dans un worktree neuf ; instantané jamais dans le dépôt principal.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe` · `chore/questions-1spe-0-va`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe` · `chore/questions-1spe-va-niveaux`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -707,3 +707,11 @@ définition, König-Huygens en « autre méthode » ; écart-type arrondi ou exa
   doublon, aucun « 1 rouges », aucun a = 1, aucun bénéfice négatif, aucun `{{`.
 - N1 : niveaux des fichiers inchangés dans cette PR ; ils passent aux nouvelles valeurs avec la migration, après le
   `create-questions --publier --mettre-a-jour` de David (comme le lot 0-géométrie repérée).
+
+#2039 mergée (CI verte) : instantané + C1-C6.
+
+N1 : migration `20261030201000_questions_1spe_variables_aleatoires_niveaux` (gabarit #2012 ; prod à `20261030170000`, worktrees
+en attente à `180500` et `193500`), test d'intégration vert (7), rouge sans l'`update` ; `security-auditor` : aucun finding
+bloquant (diff avec le gabarit = les 7 lignes du lot ; prod relue : 7 brouillons au niveau « avant », aucun publié dans le domaine).
+Niveaux des 7 fichiers changés dans la même PR (#2041). **Ordre** : David lance `create-questions --publier --mettre-a-jour` depuis
+`main` (fichiers aux anciens niveaux, #2039) AVANT le merge de cette PR, puis merge et `db:migrate`.
