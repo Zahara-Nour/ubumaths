@@ -14,6 +14,9 @@
  * manuels), moitié arrière en tirets ; les génératrices du cône sont
  * tangentes à l'ellipse.
  *
+ * Section (`section:`, lot 6) : le polygone de coupe, teinté, contour en
+ * trait plein épais ; le plan n'est pas dessiné ; boule coupée : sans équateur.
+ *
  * Échelle : les dimensions sont des proportions ; le dessin est ramené à
  * `SOLIDE_SIZE` cm sur son plus grand côté. Repère : y vers le BAS (SVG), une
  * unité = 1 cm, étiquettes comprises dans la boîte.
@@ -51,6 +54,8 @@ export interface SolideScene {
 	drawingHeight: number;
 	/** Faces marquées (teintées), dessinées d'abord */
 	fills: EspacePoint[][];
+	/** Section (`section:`), teintée d'accent après les faces marquées ; null : aucune */
+	section: EspacePoint[] | null;
 	/** Tirets d'abord, puis traits pleins, puis arêtes marquées */
 	lines: SolideLine[];
 	dots: EspacePoint[];
@@ -353,7 +358,7 @@ export const frenchNumber = (n: number) => String(Number(n.toFixed(4))).replace(
 interface Cote {
 	at: EspacePoint;
 	value: number;
-	side: 'dessous' | 'droite' | 'gauche' | 'dessus' | 'bas-droite';
+	side: 'dessous' | 'droite' | 'gauche' | 'dessus' | 'bas-droite' | 'haut-gauche';
 }
 
 /** Ce que la géométrie d'une forme donne, avant mise à l'échelle (repère de calcul) */
@@ -366,6 +371,10 @@ interface Draft {
 	/** Arêtes (polyèdres) : un nom se pose dans le plus grand angle libre entre elles */
 	edges: [number, number][];
 	cotes: Cote[];
+	/** Polygone de la section ; null : aucune */
+	section: EspacePoint[] | null;
+	/** Noms des sommets de la section : point et direction (vers l'extérieur) */
+	sectionLabels: { at: EspacePoint; away: EspacePoint; text: string }[];
 }
 
 const segment = (a: EspacePoint, b: EspacePoint, dashed: boolean): SolideLine => ({
@@ -445,8 +454,92 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 				break;
 		}
 	}
-	return { lines, fills, vertices, centers: [], edges: topology.edges, cotes };
+	const { section, sectionLabels } = boxSection(spec, topology, points3, lines, cotes);
+	return {
+		lines,
+		fills,
+		vertices,
+		centers: [],
+		edges: topology.edges,
+		cotes,
+		section,
+		sectionLabels
+	};
 }
+
+/**
+ * Pour chaque face d'un pavé, l'arête où écrire la distance du plan (une arête
+ * qui part de la face, ni sous une cote du pavé ni cachée), son sommet sur la
+ * face et le côté du texte
+ */
+const SECTION_COTE: Record<string, { from: number; to: number; side: Cote['side'] }> = {
+	// Dans la face avant, contre [BF] : à droite, le texte toucherait C et sa cote
+	'0,1,2,3': { from: 1, to: 5, side: 'gauche' },
+	'4,5,6,7': { from: 5, to: 1, side: 'gauche' },
+	'0,1,4,5': { from: 4, to: 7, side: 'haut-gauche' },
+	'2,3,6,7': { from: 7, to: 4, side: 'haut-gauche' },
+	'0,3,4,7': { from: 7, to: 6, side: 'dessus' },
+	'1,2,5,6': { from: 6, to: 7, side: 'dessus' }
+};
+
+/** Section d'un cube ou d'un pavé parallèlement à une face */
+function boxSection(
+	spec: SolideSpec,
+	topology: SolideTopology,
+	points3: Point3[],
+	lines: SolideLine[],
+	cotes: Cote[]
+): Pick<Draft, 'section' | 'sectionLabels'> {
+	const cut = spec.section;
+	if (cut?.kind !== 'face') return { section: null, sectionLabels: [] };
+	const across = (v: number) => {
+		const edge = topology.edges.find(
+			(e) => e.includes(v) && !cut.face.includes(e[0] === v ? e[1] : e[0])
+		);
+		return edge === undefined ? v : edge[0] === v ? edge[1] : edge[0];
+	};
+	const toward = (from: number, to: number, distance: number): Point3 => {
+		const a = points3[from];
+		const b = points3[to];
+		const k = distance / Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
+		return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k, z: a.z + (b.z - a.z) * k };
+	};
+	const section3 = cut.face.map((v) => toward(v, across(v), cut.distance));
+	const section = section3.map(project);
+	section.forEach((p, i) => {
+		lines.push({ ...segment(p, section[(i + 1) % section.length], false), thick: true });
+	});
+	if (spec.cotes) {
+		const key = [...cut.face].sort((a, b) => a - b).join(',');
+		const where = SECTION_COTE[key];
+		const foot = project(points3[where.from]);
+		const end = project(toward(where.from, where.to, cut.distance));
+		cotes.push({ at: middle(foot, end), value: cut.distance, side: where.side });
+	}
+	// Noms : en s'écartant de l'arête qui porte le point, vers l'extérieur du solide
+	const center = project(centroid(points3));
+	const sectionLabels = (cut.names ?? []).map((text, i) => {
+		const p = section[i];
+		const a = project(points3[cut.face[i]]);
+		const b = project(points3[across(cut.face[i])]);
+		const along = { x: b.x - a.x, y: b.y - a.y };
+		const length = Math.hypot(along.x, along.y) || 1;
+		const u = { x: along.x / length, y: along.y / length };
+		const out = { x: p.x - center.x, y: p.y - center.y };
+		const k = out.x * u.x + out.y * u.y;
+		let away = { x: out.x - k * u.x, y: out.y - k * u.y };
+		if (Math.hypot(away.x, away.y) < 1e-9) away = { x: -u.y, y: u.x };
+		return { at: p, away, text };
+	});
+	return { section, sectionLabels };
+}
+
+/** Contour d'une section : trait plein épais, fermé */
+const sectionOutline = (points: EspacePoint[]): SolideLine => ({
+	points: [...points, points[0]],
+	dashed: false,
+	thick: true
+});
 
 function roundDraft(spec: SolideSpec): Draft {
 	const [r, h] = spec.dims;
@@ -473,7 +566,34 @@ function roundDraft(spec: SolideSpec): Draft {
 				// Hauteur à gauche : à droite, elle toucherait la cote du rayon (cylindre bas)
 				cotes.push({ at: { x: -r, y: h / 2 }, value: h, side: 'gauche' });
 			}
+			let section: EspacePoint[] | null = null;
+			const cut = spec.section;
+			if (cut?.kind === 'perpendiculaire') {
+				section = arc(0, cut.distance, r, ry, 0, 2 * Math.PI);
+				// Distance le long de la génératrice de droite (la hauteur est à gauche)
+				if (spec.cotes) {
+					cotes.push({ at: { x: r, y: cut.distance / 2 }, value: cut.distance, side: 'droite' });
+				}
+			} else if (cut?.kind === 'parallele') {
+				// Plan de face, côté de l'œil : sur l'ellipse à plat, la profondeur −d monte de −d × ry / r
+				const half = Math.sqrt(r * r - cut.distance * cut.distance);
+				const low = (-cut.distance * ry) / r;
+				section = [
+					{ x: -half, y: low },
+					{ x: half, y: low },
+					{ x: half, y: h + low },
+					{ x: -half, y: h + low }
+				];
+				// Distance à l'axe : en tirets, du centre de la base du bas au bord de la section
+				if (spec.cotes && cut.distance > 0) {
+					lines.push(segment({ x: 0, y: 0 }, { x: 0, y: low }, true));
+					cotes.push({ at: { x: 0, y: -ry }, value: cut.distance, side: 'dessous' });
+				}
+			}
+			if (section !== null) lines.push(sectionOutline(section));
 			return {
+				section,
+				sectionLabels: [],
 				lines,
 				fills: [],
 				vertices: [
@@ -502,6 +622,8 @@ function roundDraft(spec: SolideSpec): Draft {
 				cotes.push({ at: { x: 0, y: h / 3 }, value: h, side: 'droite' });
 			}
 			return {
+				section: null,
+				sectionLabels: [],
 				lines,
 				fills: [],
 				vertices: [apex, { x: 0, y: 0 }],
@@ -511,16 +633,31 @@ function roundDraft(spec: SolideSpec): Draft {
 			};
 		}
 		default: {
-			// Boule
+			// Boule ; coupée, sans équateur (il se confondrait avec la section à `section: 0`)
+			const cut = spec.section?.kind === 'boule' ? spec.section : null;
 			lines.push(plainArc(arc(0, 0, r, r, 0, 2 * Math.PI)));
-			lines.push(plainArc(arc(0, 0, r, ry, 0, Math.PI), back));
-			lines.push(plainArc(arc(0, 0, r, ry, Math.PI, 2 * Math.PI)));
+			if (cut === null) {
+				lines.push(plainArc(arc(0, 0, r, ry, 0, Math.PI), back));
+				lines.push(plainArc(arc(0, 0, r, ry, Math.PI, 2 * Math.PI)));
+			}
 			if (spec.cotes) {
 				lines.push(segment({ x: 0, y: 0 }, { x: r, y: 0 }, true));
 				// Sous le rayon : au-dessus, l'équateur arrière passerait dans le texte
 				cotes.push({ at: { x: r / 2, y: 0 }, value: r, side: 'dessous' });
 			}
+			let section: EspacePoint[] | null = null;
+			if (cut !== null) {
+				const radius = Math.sqrt(r * r - cut.distance * cut.distance);
+				section = arc(0, cut.distance, radius, radius * ELLIPSE_RATIO, 0, 2 * Math.PI);
+				lines.push(sectionOutline(section));
+				if (spec.cotes && cut.distance > 0) {
+					lines.push(segment({ x: 0, y: 0 }, { x: 0, y: cut.distance }, true));
+					cotes.push({ at: { x: 0, y: cut.distance / 2 }, value: cut.distance, side: 'gauche' });
+				}
+			}
 			return {
+				section,
+				sectionLabels: [],
 				lines,
 				fills: [],
 				vertices: [{ x: 0, y: 0 }],
@@ -540,6 +677,13 @@ const labelBox = (label: SolideLabel) => {
 		{ x: label.at.x - halfWidth, y: label.at.y - halfHeight },
 		{ x: label.at.x + halfWidth, y: label.at.y + halfHeight }
 	];
+};
+
+/** Deux étiquettes se touchent-elles ? */
+const overlaps = (a: SolideLabel, b: SolideLabel) => {
+	const [a0, a1] = labelBox(a);
+	const [b0, b1] = labelBox(b);
+	return a0.x < b1.x && b0.x < a1.x && a0.y < b1.y && b0.y < a1.y;
 };
 
 const bounds = (points: EspacePoint[]) => ({
@@ -588,6 +732,7 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 	});
 	const lines = draft.lines.map((l) => ({ ...l, points: l.points.map(toScreen) }));
 	const fills = draft.fills.map((f) => f.map(toScreen));
+	const section = draft.section?.map(toScreen) ?? null;
 	const vertices = draft.vertices.map(toScreen);
 
 	// Noms des sommets : à l'extérieur, en s'éloignant du centre du dessin
@@ -638,9 +783,26 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 			droite: { x: COTE_GAP + halfWidth, y: 0 },
 			gauche: { x: -(COTE_GAP + halfWidth), y: 0 },
 			// Plus bas que le milieu de la fuyante : loin du nom du sommet du fond
-			'bas-droite': { x: COTE_GAP + halfWidth, y: COTE_GAP + halfHeight / 2 }
+			'bas-droite': { x: COTE_GAP + halfWidth, y: COTE_GAP + halfHeight / 2 },
+			// Au-dessus d'une fuyante du haut à gauche : hors du dessin
+			'haut-gauche': { x: -(COTE_GAP + halfWidth / 2), y: -(COTE_GAP + halfHeight) }
 		}[cote.side];
 		labels.push({ at: { x: p.x + shift.x, y: p.y + shift.y }, text });
+	}
+
+	// Noms des sommets de la section : vers l'extérieur, sinon en tournant, sans
+	// toucher une étiquette déjà posée (noms des sommets, cotes)
+	for (const name of draft.sectionLabels) {
+		const p = toScreen(name.at);
+		// `away` en repère de calcul (y vers le haut) → écran
+		const base = Math.atan2(-name.away.y, name.away.x);
+		const turns = [0, 1, -1, 2, -2, 3, -3, 4].map((k) => base + (k * Math.PI) / 4);
+		const candidates = turns.map((t) => ({
+			at: { x: p.x + Math.cos(t) * LABEL_GAP, y: p.y + Math.sin(t) * LABEL_GAP },
+			text: name.text
+		}));
+		const free = candidates.find((c) => !labels.some((l) => overlaps(c, l)));
+		labels.push(free ?? candidates[0]);
 	}
 
 	// Cadrage : tout dans la boîte, étiquettes comprises
@@ -653,6 +815,7 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 		drawingWidth: (geometry.maxX - geometry.minX) * scale,
 		drawingHeight: (geometry.maxY - geometry.minY) * scale,
 		fills: fills.map((f) => f.map(shift)),
+		section: section?.map(shift) ?? null,
 		lines: lines
 			.map((l) => ({ ...l, points: l.points.map(shift) }))
 			.sort((a, b) => order(a) - order(b)),
@@ -675,6 +838,16 @@ export function solideLabel(spec: SolideSpec): string {
 		const unit = spec.cotes.unit ? ` ${spec.cotes.unit}` : '';
 		const values = spec.dims.map((d) => `${frenchNumber(d)}${unit}`);
 		parts.push(`${values.length > 1 ? 'longueurs' : 'longueur'} ${values.join(', ')}`);
+	}
+	// Jamais la nature de la section (rectangle, disque) : la réponse de 3e-020
+	const cut = spec.section;
+	if (cut) {
+		parts.push('coupé par un plan');
+		if (cut.kind === 'face' && cut.names) parts.push(`section ${cut.names.join('')}`);
+		if (spec.cotes && cut.distance > 0) {
+			const unit = spec.cotes.unit ? ` ${spec.cotes.unit}` : '';
+			parts.push(`plan à ${frenchNumber(cut.distance)}${unit}`);
+		}
 	}
 	return parts.join(', ');
 }

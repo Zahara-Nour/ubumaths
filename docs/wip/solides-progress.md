@@ -745,3 +745,18 @@ cotes: cm
     aussi de profil (parallélogramme dans les fuyantes) ? _Reco : frontal seulement._
 27. **Noms IJKL** des sommets de la section du pavé dans ce lot (brevet : « IJKL est la section… ») ?
     _Reco : oui._
+
+**Réponse de David (2026-10-31)** : « oui, les cinq recos » — écriture du § 11 avec plan au milieu par défaut
+(Q23) ; section teintée seule, plan non dessiné (Q24) ; le BO seul (Q25) ; cylindre ‖ à l'axe en plan de face
+seulement (Q26) ; noms IJKL dans ce lot (Q27). Spécification validée.
+
+### Lot 6 livré (branche `feat/solides-sections`, 2026-10-31)
+
+- `section:` sur ` ```solide ` : `SolideSection` (`face` / `perpendiculaire` / `parallele` / `boule`), lue dans
+  `solide-parser.ts` (`readSection`, `readFace` partagé avec `marquer:`) ; scène : `boxSection` (pavé),
+  cylindre et boule dans `roundDraft`, `SolideScene.section` ; `Solide.svelte` (orange translucide) ;
+  Typst `rgb(248, 200, 150)` ; 23 tests (`solide-section.test.ts`, rouges avant le code), compilation PDF.
+- **Écarts à la spec** : cote de distance du pavé coupé ‖ dessous / dessus **dans la face avant**, contre
+  [BF] (à droite, elle touchait C et la cote « 4 cm ») ; noms IJKL posés en tournant autour du point
+  jusqu'à ne toucher aucune étiquette (sur le cube coupé ‖ gauche, I tombait sur la cote « 4 cm ») ;
+  `marquer: face` garde l'ordre de la topologie, `section:` l'ordre écrit (pour les noms).
