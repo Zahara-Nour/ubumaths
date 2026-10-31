@@ -88,6 +88,7 @@ import { containsDecimal, solveConstantBaseExponential } from './constant-base-e
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { computeNumericValue } from '../eval/numeric-value';
 import { compile } from '../eval/compile';
+import { hasIndexedVariables, indexVariables } from '../eval/index-variables';
 import { findFirst } from '../transforms';
 import {
 	normalize,
@@ -1911,6 +1912,45 @@ function filterSolutionsByDefinition(
 // =============================================================================
 
 /**
+ * Le résultat d'une résolution menée sur des inconnues indicées aplaties
+ * (`indexVariables`) : chaque variable `x_1` redevient l'indice écrit, dans
+ * les solutions, les conditions, les familles périodiques et les étapes. Le
+ * nom de l'inconnue reste `x_1`, celui qu'un appelant passe en `variable`.
+ */
+function withIndexedRestored(
+	result: SolveResult,
+	restore: (node: MathNode) => MathNode
+): SolveResult {
+	const restoreSolution = (solution: Solution): Solution => ({
+		...solution,
+		value: restore(solution.value),
+		...(solution.condition && { condition: restore(solution.condition) })
+	});
+	const restoreFamily = (family: PeriodicSolutionFamily): PeriodicSolutionFamily => ({
+		...family,
+		baseSolutions: family.baseSolutions.map(restoreSolution),
+		period: restore(family.period)
+	});
+	return {
+		...result,
+		solutions: result.solutions.map(restoreSolution),
+		steps: result.steps.map((step) => ({
+			...step,
+			before: restore(step.before),
+			after: restore(step.after),
+			...(step.operand && { operand: restore(step.operand) })
+		})),
+		...(result.periodicSolutions && {
+			periodicSolutions: restoreFamily(result.periodicSolutions)
+		}),
+		...(result.droppedPeriodicSolutions && {
+			droppedPeriodicSolutions: restoreFamily(result.droppedPeriodicSolutions)
+		}),
+		...(result.displayFamilies && { displayFamilies: result.displayFamilies.map(restoreFamily) })
+	};
+}
+
+/**
  * Le résultat d'une résolution menée sur des longueurs devenues variables
  * (`segmentsAsVariables`) : chaque variable `AB` redevient la longueur, écrite comme
  * l'élève (`BA` reste `BA`), dans les solutions et les étapes ; l'inconnue garde le nom
@@ -2185,6 +2225,23 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 			return restored;
 		}
 		return keepPositiveLength(restored, lengths.node, result.variable, lengths.segments, opts);
+	}
+
+	// Inconnues indicées (`x_1`, `u_n`) : chacune devient UNE variable, nommée
+	// par son LaTeX (`x_1`), comme dans la console ; on résout, puis on rend
+	// l'indice tel qu'écrit. Sans ça, le parseur lit `x_1` comme un indice de
+	// base `x` : `x_1 + 1 = 3` répondait « non supporte » (V13). Une variable
+	// demandée qui disparaîtrait à l'aplatissement (`x` pour `x_1 = 2`) garde
+	// l'arbre d'origine.
+	if (hasIndexedVariables(equation)) {
+		const indexed = indexVariables(equation);
+		const flatVariables = getVariables(indexed.node);
+		if (
+			isRelation(indexed.node) &&
+			(opts.variable === undefined || flatVariables.has(opts.variable))
+		) {
+			return withIndexedRestored(solve(indexed.node, options), indexed.restore);
+		}
 	}
 
 	const refusal = reservedVariableRefusal(opts.variable, equation);
