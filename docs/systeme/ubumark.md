@@ -1118,9 +1118,11 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
 
 ## Doutes et écarts connus
 
-- **Titres des encadrés toujours en français à l'écran** (`Blockquote.svelte` lit
-  `DETAIL_KIND_LABELS`) : une correction en anglais affiche « Méthode », là où le PDF écrit
-  « Method » (`detailKindLabel`, 2026-10-11).
+- ~~Titres des encadrés toujours en français à l'écran~~ : **corrigé** (L18, 2026-11-01) :
+  `Blockquote.svelte` lit la langue du contenu (`readContentLocale`) et appelle `detailKindLabel`,
+  comme le PDF. Test : `components/markdown/__tests__/encadre-langue.svelte.test.ts`.
+- Typst : `#emph[…]`, `#strike[…]`, `#highlight[…]` d'un texte en ligne se terminent par `;`
+  (L19, 2026-11-01), pour qu'un `(`, `[` ou `.lettre` collé après ne soit pas lu comme leur suite.
 - `latex-generator.ts` (export `.tex`) et ses générateurs `*-latex.ts` n'ont pas d'appelant hors
   du module ni de leurs tests (grep du 2026-10-10) : export en sommeil ou mort, à trancher.
 - `src/lib/components/markdown/nodes/MathInlineOld.svelte` et `MathBlockOld.svelte` ne sont

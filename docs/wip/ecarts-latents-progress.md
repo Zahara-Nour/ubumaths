@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, avant la première PR._
+_Mis à jour le 2026-11-01, avant la PR._
 
-- **État** : démarrage · **Prochaine action** : L17, L18, L19, L23 (un commit chacun) · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `ubumaths-wt-ecarts-latents` / `fix/ecarts-latents`
+- **État** : L17, L18, L19, L23 corrigés (4 commits), PR à ouvrir · **Prochaine action** : CI puis merge · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `ubumaths-wt-ecarts-latents` / `fix/ecarts-latents`
 
 ## Journal
 
