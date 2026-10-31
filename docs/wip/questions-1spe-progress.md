@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, pendant le lot 0-variables aléatoires._
+_Mis à jour le 2026-10-31, après #2041._
 
-- **État** : lots 0-suites à 0-probabilités publiés ; lot 0-variables aléatoires (§ 15) : C1-C6 corrigés, #2039 mergée ; PR de la migration N1 (7 niveaux + fichiers) ouverte, **à ne pas merger** avant la mise à jour en prod.
-- **Prochaine action** : David lance depuis `main` `create-questions --publier --mettre-a-jour` sur `scripts/questions/1spe-0-variables-aleatoires` ; je vérifie en base ; merge de la PR N1, `db:migrate` (David), vérif niveaux + trigger `O` ; page à cocher ; publication. Ensuite logique, puis la migration des tags D3.
-- **En attente de David** : le `create-questions --mettre-a-jour` ci-dessus.
-- **Pièges en cours** : `create-questions` refusé au mode auto **même en simulation** (David le lance) ; `publier-lot` = tout le dossier ou rien ; `db:migrate` → David ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` ; une copie par variation pour l'aperçu (sans `testSpecs`) ; `export-question-templates` exige `svelte-kit sync` dans un worktree neuf ; instantané jamais dans le dépôt principal.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe` · `chore/questions-1spe-va-niveaux`.
+- **État** : lots 0-suites à 0-probabilités publiés ; lot 0-variables aléatoires (§ 15) : C1-C6 en prod (`--mettre-a-jour` du 2026-10-31), #2041 mergée, migration N1 jouée (niveaux conformes, trigger `O`), simulation `publier-lot` : 17 passent. Page à cocher : https://claude.ai/artifact/UUSbSXQAvSyR2HrbfwSGJ9.
+- **Prochaine action** : compter les verdicts de la page (collection `verdicts`) ; corriger les « à revoir » ; puis David lance `publier-lot --publier` sur `scripts/questions/1spe-0-variables-aleatoires` ; vérifier `published` en base. Ensuite logique, puis la migration des tags D3 (sans 174e202b ni dc4b8d08).
+- **En attente de David** : la relecture de la page à cocher (d683e906 : `probtree` non dessiné, à jouer dans l'aperçu).
+- **Pièges en cours** : `create-questions` refusé au mode auto **même en simulation** (David le lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` ; une copie par variation pour l'aperçu (sans `testSpecs`) ; `export-question-templates` exige `svelte-kit sync` dans un worktree neuf ; instantané jamais dans le dépôt principal.
+- **Worktree / branche** : aucun (retiré après #2041) ; nouveau worktree `../ubumaths-wt-questions-1spe` pour le lot logique.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -715,3 +715,7 @@ en attente à `180500` et `193500`), test d'intégration vert (7), rouge sans l'
 bloquant (diff avec le gabarit = les 7 lignes du lot ; prod relue : 7 brouillons au niveau « avant », aucun publié dans le domaine).
 Niveaux des 7 fichiers changés dans la même PR (#2041). **Ordre** : David lance `create-questions --publier --mettre-a-jour` depuis
 `main` (fichiers aux anciens niveaux, #2039) AVANT le merge de cette PR, puis merge et `db:migrate`.
+
+#2041 mergée (CI verte). Mise à jour en prod par David le 2026-10-31 (9 brouillons, C1-C6 relus en base) ; `db:migrate` joué
+le 2026-10-31 : 17 modèles, un par (sous-notion, niveau), trigger `updated_at` à `O` ; simulation `publier-lot` : 17 passent.
+**Page à cocher** : https://claude.ai/artifact/UUSbSXQAvSyR2HrbfwSGJ9 (17 fiches ; 1 alerte : d683e906, `probtree` non dessiné).
