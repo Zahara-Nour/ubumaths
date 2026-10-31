@@ -1,0 +1,196 @@
+{
+	"title": "Placer une fraction en passant par une fraction égale",
+	"description": "Placer une fraction sur une demi-droite graduée dans un autre dénominateur (2/3 sur une droite en sixièmes) : passer par la fraction égale ; puis deux points sur la même droite",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 7,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Place le nombre $\\frac{{{n}}}{{{d}}}$ sur la demi-droite graduée.\n\n```line\nstart: 0\nend: {{u}}\nstep: 1/{{D}}\nmajor: {{D}}\nplacer: {{n}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "k",
+					"expression": "2..{{eval:floor(12/d)}}"
+				},
+				{
+					"name": "D",
+					"expression": "eval:k*d"
+				},
+				{
+					"name": "u",
+					"expression": "eval:min(3,floor(16/D))"
+				},
+				{
+					"name": "n",
+					"expression": "1..{{eval:u*d-1}}"
+				}
+			],
+			"conditions": ["gcd(n,d)==1"],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De $0$ à $1$, l'unité est partagée en ${{D}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{D}}}$.",
+					"**Une fraction égale.** $\\frac{{{n}}}{{{d}}} = \\frac{{{n}} \\times {{k}}}{{{d}} \\times {{k}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:n*k}}}{{{D}}}}$ : on compte ${{eval:n*k}}$ petits intervalles à partir de $0$."
+				]
+			}
+		},
+		{
+			"statement": "Place les points $A\\left(\\frac{{{a}}}{{{D}}}\\right)$ et $B\\left(\\frac{{{n}}}{{{d}}}\\right)$ sur la demi-droite graduée.\n\n```line\nstart: 0\nend: {{u}}\nstep: 1/{{D}}\nmajor: {{D}}\nplacer: A={{a}}/{{D}} ; B={{n}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "k",
+					"expression": "2..{{eval:floor(12/d)}}"
+				},
+				{
+					"name": "D",
+					"expression": "eval:k*d"
+				},
+				{
+					"name": "u",
+					"expression": "eval:min(3,floor(16/D))"
+				},
+				{
+					"name": "n",
+					"expression": "1..{{eval:u*d-1}}"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:u*D-1}}"
+				}
+			],
+			"conditions": ["gcd(n,d)==1", "mod(a,D)!=0", "abs(a-n*k)>=2"],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De $0$ à $1$, l'unité est partagée en ${{D}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{D}}}$.",
+					"$A$ : ${{a}}$ petits intervalles à partir de $0$.",
+					"$B$ : $\\frac{{{n}}}{{{d}}} = \\frac{{{n}} \\times {{k}}}{{{d}} \\times {{k}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:n*k}}}{{{D}}}}$ : on compte ${{eval:n*k}}$ petits intervalles à partir de $0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2/3 sur une droite en sixièmes",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"k": "2",
+				"D": "6",
+				"u": "2",
+				"n": "2"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2/6 (numérateur gardé)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"k": "2",
+				"D": "6",
+				"u": "2",
+				"n": "2"
+			},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/2 sur une droite en dixièmes",
+			"variationIndex": 0,
+			"variables": {
+				"d": "2",
+				"k": "5",
+				"D": "10",
+				"u": "1",
+				"n": "1"
+			},
+			"answers": ["0.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/10 (numérateur gardé)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "2",
+				"k": "5",
+				"D": "10",
+				"u": "1",
+				"n": "1"
+			},
+			"answers": ["0.1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5/4 sur une droite en huitièmes",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"k": "2",
+				"D": "8",
+				"u": "2",
+				"n": "5"
+			},
+			"answers": ["1.25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Deux points : A 5/12, B 3/4 (9/12)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"k": "3",
+				"D": "12",
+				"u": "1",
+				"n": "3",
+				"a": "5"
+			},
+			"answers": ["\\frac{5}{12}", "0.75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B à 3/12",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"k": "3",
+				"D": "12",
+				"u": "1",
+				"n": "3",
+				"a": "5"
+			},
+			"answers": ["\\frac{5}{12}", "0.25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
