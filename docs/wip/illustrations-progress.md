@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, plan de Cracovenn VALIDÉ ; pas de PR : chantier 100 % doc._
+_Mis à jour le 2026-10-31, 2e essai de Cracovenn GARDÉ ; pas de PR : chantier 100 % doc._
 
 - **État** : casting, gouverneurs et Palotins versés au Compendium (§ XI) ; plans des sept capitales au Compendium. **Grande carte terminée**, fond FIGÉ `carte/fond-carte-hd.webp` (PNG maître chez David, `~/Downloads/fond-carte-hd-2026-10-29.png`). **Cartes de Sandomir, Turingrad et Sinusborg VALIDÉES.** **Cracovenn : plan schématique validé**, prompt Nano Banana écrit (§ Cartes des capitales), référence `~/Downloads/cracovenn-plan-reference-ia.png`.
-- **Prochaine action** : David lance Nano Banana pour Cracovenn (nouvelle conversation, la référence seule en pièce jointe) ; puis retouches ciblées vérifiées par différence avec l'original → `carte-ville.png` → surcouche `carte-cracovenn.py` (modèle : `villes/sinusborg/carte-sinusborg.py`) → WebP. Restent ensuite Lobatchevsk, Empoche-les-Bains, Bonneteau. Méthode : plan schématique `villes/<ville>/plan-schematique.py` ; rendu SVG → PNG par `chrome-headless-shell` de Playwright, puis `magick -quality 92` → WebP.
-- **En attente de David** : le résultat Nano Banana de Cracovenn, prompt v2 (plan corrigé après le 1er essai : passages, maisons variées, palissade aux rives).
+- **Prochaine action** : Cracovenn : retouche de la bibliothèque (prompt au § Cartes des capitales) → vérifier par différence avec l'original, coller la seule zone → recadrer le cadre de parchemin déchiré → `carte-ville.png` → surcouche `carte-cracovenn.py` (modèle : `villes/sinusborg/carte-sinusborg.py`) → WebP. Restent ensuite Lobatchevsk, Empoche-les-Bains, Bonneteau. Méthode : plan schématique `villes/<ville>/plan-schematique.py` ; rendu SVG → PNG par `chrome-headless-shell` de Playwright, puis `magick -quality 92` → WebP.
+- **En attente de David** : le résultat de la retouche « bibliothèque » de Cracovenn (2e essai gardé, `villes/cracovenn/carte-ia-original.jpeg`).
 - **Pièges en cours** : **ce qui doit se voir doit être dans la FORME de la référence** (un symbole est recopié comme un logo, le texte seul est ignoré) ; **fichiers pour l'IA copiés dans `~/Downloads`** ; une retouche Nano Banana redessine parfois toute l'image : vérifier par différence avec l'original, coller la seule zone ; image de style en 2e pièce jointe = copiée telle quelle, ne pas la joindre. **Pas de formes géométriques plaquées sur le paysage** : la discipline de chaque province ne se montre que dans sa ville. Ubu sans chapeau pointu ni longue robe blanche ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée. Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 
@@ -200,4 +200,10 @@ Outside the walls: a scattered suburb of small whitewashed cottages with straw r
 Life everywhere: tiny scholars in gowns carrying books, peasants with baskets of potatoes, carts on the roads and passing through the archways, market stalls in the small squares, laundry between houses, smoke from chimneys, ducks on the river, small rowing boats moored along the quay.
 Style: an antique storybook map, like an early 20th-century fairy-tale map or an old sea chart: fine ink outlines, soft watercolor washes on aged cream parchment. Colors: navy ink, cream parchment, brick red, slate grey, pale honey wood, sea green accents, soft blue water, meadows in soft greens, warm brown fields.
 No text, no labels, no letters, no numbers, no compass rose, no frame, no border.
+```
+
+**Cracovenn, 2e essai (prompt v2) GARDÉ par David (2026-10-31)** → `villes/cracovenn/carte-ia-original.jpeg`. Passages voûtés dans les murs intérieurs, boulevard circulaire, palissade arrêtée aux rives par deux tours de bois, maisons plus variées (encore un peu répétitives côté pierre), bateaux-passoires. Défauts : **cadre de parchemin déchiré** sur les bords (à recadrer à la main, après la retouche) ; **bibliothèque** : rotonde mi-brique mi-pierre, sans tiers de bois. Retouche Nano Banana décidée par David (nouvelle conversation, l'original seul en pièce jointe, `~/Downloads/cracovenn-carte-ia-original.jpeg`), à vérifier par différence avec l'original :
+
+```
+In the attached map, change only the round library with the golden dome at the very center. Its round wall below the dome must be divided into three equal parts, like three slices: the left third in red brick, the right third in grey stone, and the front third, facing the bottom of the map, in pale honey-colored timber planks with wooden beams. Keep the golden dome, the two side wings, the size and the position of the library exactly as they are. Keep everything else exactly as it is: same colors, same lines, same sharpness, nothing moved, nothing added, no frame.
 ```
