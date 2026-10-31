@@ -6,17 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2048 (vecteurs en deux trous, § 28)._
+_Mis à jour le 2026-11-01, après la publication du lot 4 (§ 29)._
 
-- **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 4 (A #2008, B #1999, correctif #1997) : 11 brouillons
-  rangés et tagués en prod (#2014, migration `20261030160100` jouée par David, vérifiée au MCP).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 11) ; « À revoir » → § 7 de
-  la démarche ; tout OK → `publier-lot.ts` simulé sur `2de-vecteurs-a` puis `2de-vecteurs-b`.
-- **En attente de David** : relecture de la page à cocher (01 à 04 refaits, à relire) https://claude.ai/artifact/6WwvVGdVFZG1RUj8iWFbwo,
-  puis `publier-lot.ts --publier` (les deux dossiers).
+- **État** : lots 1, 2, 2 bis A et B, 3 et 4 (A et B, 11 modèles) publiés.
+- **Prochaine action** : lot 5 « Droites » (§ 4 : 311 à 319 en A, 315 et 444 en B) : relevé et phase 0,
+  à faire valider par David avant d'écrire.
+- **En attente de David** : rien.
 - **Pièges en cours** : horodatage = max + 1 min de `origin/main` ET des worktrees ; `migration list
---linked` avant `db:migrate` (migrations d'autres sessions en file → David tranche qui le lance).
-- **Worktree / branche** : `ubumaths-wt-questions-2de` gardé (détaché sur `main`) pour `publier-lot.ts`.
+--linked` avant `db:migrate` (migrations d'autres sessions en file → David tranche qui le lance) ;
+  `page-a-cocher.ts` ne prend qu'un `--dir` (réunir les dossiers d'un lot dans le scratchpad).
+- **Worktree / branche** : aucun (worktree retiré).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -690,3 +689,10 @@ doublée d'une variation à calcul.
   `create-questions --publier --mettre-a-jour` : 4 mis à jour ; relecture : 7 « déjà en base » identiques,
   MCP : brouillons, nœud « coordonnées » et tag gardés. Page à cocher régénérée (même lien, version 2),
   verdicts de 01 et 02 supprimés.
+
+## 29. Lot 4 publié (2026-11-01)
+
+- Page à cocher : 11/11 OK, sans commentaire (01 à 04 relus dans leur version à deux trous).
+- `publier-lot.ts` simulé vert sur `2de-vecteurs-a` (7) et `2de-vecteurs-b` (4), puis lancé par David avec
+  `--publier` : MCP, les 11 `published`.
+- Worktree `ubumaths-wt-questions-2de` retiré.
