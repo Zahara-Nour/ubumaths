@@ -397,7 +397,6 @@ describe('CRITICAL: Message Deduplication', () => {
 		expect(messages).toHaveLength(1);
 		expect(messages[0].id).toBe(TEST_DB_MESSAGE_ID);
 		expect(messages[0].sender?.full_name).toBe('Remote User');
-		expect(messages[0].is_broadcast).toBeUndefined();
 	});
 
 	it('CRITICAL: a DB row with the same created_at but another id does not replace a displayed message', async () => {

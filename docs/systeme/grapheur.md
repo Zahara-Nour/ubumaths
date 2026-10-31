@@ -370,7 +370,6 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
 
 ## Écarts connus
 
-- **`src/lib/components/grapheur/index.ts`** (barillet) n'a aucun importeur.
 - Les ré-exports `viewport.ts`, `bezier.ts`, `colors.ts` de `src/lib/grapheur/` sont des
   survivances « rétrocompatibilité » ; le code importe tantôt eux, tantôt `geometry-core`.
 - Une somme de pôles périodiques et isolés (tan(x) + 1/(x − 3)) : `getAllDiscontinuities` ne

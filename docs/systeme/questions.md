@@ -872,9 +872,8 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
   une copie commencée avant un changement de sens est corrigée avec le sens nouveau (aucune
   réponse attendue à majuscules collées en base au 2026-10-12 : aucun verdict ne change).
 - **Case graphique (droite graduée)** : `InstanceBlank.type` admet `'graphical'` et
-  `graphicalConfig`, mais aucun générateur ne la produit et `NumberLineInput.svelte` n'est importé
-  par aucun composant (la droite à placer passe par `NumberLinePlacer.svelte` et `construire: 'line'`).
-- Composants sans appelant : `question-inputs/MathInput.svelte`, `question-inputs/OrderingInput.svelte`.
+  `graphicalConfig`, mais aucun générateur ne la produit (la droite à placer passe par
+  `NumberLinePlacer.svelte` et `construire: 'line'`) ; `NumberLineInput.svelte` a été retiré.
 - **Réponses à placer, restes du chantier** (clos le 2026-10-29, journal
   `docs/archive/wip/reponses-a-placer-progress.md`) : pas de trotteuse sur l'horloge (secondes de
   CM2-083 non plaçables) ; au doigt, le glisser qui suit la pose d'un point absent sur une droite attend un

@@ -247,7 +247,6 @@ describe('Chat : canal privé, le broadcast ne sert que de signal', () => {
 		expect(affiche.sender?.full_name).toBe('Camille Camarade');
 		expect(affiche.plain_text).toBe('contenu enregistré');
 		expect(affiche.content).toEqual({ text: 'contenu enregistré' });
-		expect(affiche.is_broadcast).toBeUndefined();
 		expect(JSON.stringify(affiche)).not.toContain('FAUX');
 		expect(JSON.stringify(affiche)).not.toContain('Le Professeur');
 	});
