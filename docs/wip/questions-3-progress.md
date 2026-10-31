@@ -5,14 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2033 et le `db:migrate` du lot 4b._
+_Mis à jour le 2026-10-31, après la relecture du lot 4b._
 
 - **État** : lots 0 à 3 et lot 4a publiés ; lot 4b : 6 brouillons en prod ; leur rangement (migration
-  `20261030162300`, test 19 verts / 12 rouges sans elle) mergé (#2033) et joué en prod ; page à cocher publiée (§ 11.16).
-- **Prochaine action** : lire les verdicts de la page à cocher (collection `verdicts`), corriger ce qui est
-  « à revoir », puis `publier-lot.ts --dir scripts/questions/3-lot-4b --publier` (David, avec `!`) ; ensuite
-  lot 4 du § 4 (pourcentages, probabilités, statistiques).
-- **En attente de David** : relecture : https://claude.ai/artifact/SXKVm8GkhzwBvQZ2tbfJqd
+  `20261030162300`, test 19 verts / 12 rouges sans elle) mergé (#2033) et joué en prod ; relu, 6 OK (§ 11.17).
+- **Prochaine action** : `publier-lot.ts --dir scripts/questions/3-lot-4b` en simulation puis `--publier`
+  (David, avec `!`, depuis le worktree), vérif MCP ; ensuite lot 4 du § 4 (pourcentages, probabilités, stats).
+- **En attente de David** : `publier-lot.ts` (refusé au mode auto).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
   dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
@@ -666,3 +665,7 @@ modèles publiés de plus. Aucune règle ne change.
   3-065, 3-057, 3-046, 3-053, 3-037), `draft`, `updated_at` inchangé.
 - Page à cocher : https://claude.ai/artifact/SXKVm8GkhzwBvQZ2tbfJqd (capacité `db`, collection `verdicts`
   vide au départ ; 14 exemples, aucune alerte sur les 6 fiches).
+
+### 11.17 Lot 4b : relu (2026-10-31)
+
+- Relecture : 6 verdicts en base, 6 OK, aucun commentaire. Attendu : `publier-lot.ts --publier` lancé par David.
