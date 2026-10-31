@@ -511,3 +511,4 @@ Ids : `36507fc9-df87-46a4-865d-aec7935580c3` (lire et écrire), `6faa64d0-6b77-4
   lot 3a (script en scratchpad, remplacements vérifiés) ; horodatage = max des worktrees et
   branches distantes (`20261030201000`, 1spe) + 1 min.
 - Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
+- `security-auditor` : aucun finding (diff au gabarit 3a : seuls ids, codes, comptes et commentaires changent).
