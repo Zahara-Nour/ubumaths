@@ -778,3 +778,6 @@ publiés de plus, et 2 de 4e (§ 12.1) ; la 4e ne perd rien. Aucune règle ne ch
   ordre des écritures et trigger des tags vérifiés). R1 prise : le commentaire du rollback dit de mesurer
   les usages en 3e de ccb51039 / 76f5f143 avant de les rendre à la seule 4e. R2 (pas de test d'accès par
   de vrais clients) et R3 (verrou du `disable trigger`, déjà au gabarit) : remarques, rien à faire.
+- PR #2059. Premier passage de la CI : Lint rouge (garde « doc à jour » : `base-de-donnees.md` couvre les
+  migrations ; la ligne `Doc-inchangée:` doit être dans un **commit**, pas dans la description de la PR) ;
+  Client Tests shard 1 rouge (`wrapDynamicImport` indéfini, aucun fichier client dans la PR).
