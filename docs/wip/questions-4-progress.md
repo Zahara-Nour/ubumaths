@@ -5,20 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-31, phase 0 du lot 6 proposée._
+_Mis à jour le 2026-11-01, lot 6 écrit, en PR._
 
 - **État** : lots 1 à 5 en prod (lot 1 en brouillon, lots 2 à 5 publiés) ; lot 5 « Pythagore et triangles » (033, 034,
   035, 036, 037, 072, 075) : 7/7 « OK » à la relecture, publiés par David, vérifié au MCP (§ 27).
-- **Prochaine action** : lot 6 (translations et volumes : 029, 030, 031, 032, 076), phase 0 proposée (§ 28) ; écrire
-  le lot après validation.
-- **En attente de David** : les 4 questions du § 28.4 ; garder la sonde des figures comme outil (`sonde-figures.ts`, petite PR à
+- **Prochaine action** : lot 6 (translations et volumes) écrit (§ 29), PR des fichiers à merger ; ensuite David lance
+  `create-questions --publier` (brouillons), puis migration nœud + tag. Les 2 modèles de volume attendent un `deploy:prod`
+  (bloc ` ```solide `) pour être publiés.
+- **En attente de David** : garder la sonde des figures comme outil (`sonde-figures.ts`, petite PR à
   part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication des 7
   brouillons du lot 1 ; revoir ou non les 14 bornes du cycle 4 qui ne reposent que sur un document 2019/2016 (§ 27).
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question, invisible pour `question:specs` (§ 26) ;
   90dca27a et acbd2280 (4-005) partiront en 3e ; `db:migrate` peut exiger `--include-all` : **réservé à David** (oublié
   au lot 5, § 27) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un COMMIT, pas dans la PR ;
   horodatages de migration : vérifier les PR ouvertes des autres sessions ; QCM = case choix.
-- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
+- **Worktree / branche** : `../ubumaths-wt-questions-4`, branche `feat/questions-4-lot-6`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -768,3 +769,21 @@ les élèves de 4e voient 5 modèles de plus.
    ponctuelle de 3e. D'accord ?
 4. Catégories neuves : Géométrie / Translations (Image d'une figure 1, Parallélogramme 1, Conservations 1),
    Grandeurs et mesures / Volumes (Pyramide et cône 1 et 2) ?
+
+**Décisions de David (2026-10-31, « je suis tes recos »)** : les 5 modèles du § 28.2 ; volumes dessinés avec
+` ```solide ` (brouillons jusqu'au `deploy:prod` qui livre le bloc) ; « la translation qui transforme A en B » et une
+flèche, sans vecteur noté ; 031 tenu pour le lien de 4e ; catégories Géométrie / Translations (Image d'une figure 1,
+Parallélogramme 1, Conservations 1) et **Grandeurs** / Volumes / Pyramide et cône 1 et 2 (thème « Grandeurs », celui
+des modèles de volume déjà en base ; aucun niveau pris dans ces catégories, relevé MCP du 2026-10-31).
+
+## 29. Lot 6 : écrit (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-6`)
+
+- Script `docs/wip/questions/lot-4-6.py` → `scripts/questions/4-lot-6/` (5 fichiers). `create-questions` en simulation
+  : 5 « à créer », 55 specs vertes ; `question:specs` : tous les tirages réussis ; sonde des figures (300 tirages par
+  modèle) : 0 problème.
+- Base locale : 5 brouillons, une instance par variation capturée dans l'aperçu admin à 390 px (quadrillages, flèches,
+  pyramides et cône cotés, frise, triangles) : rendu correct.
+- Ajustements à l'écriture : le DSL de figure refuse `A'` → l'image de ABC s'appelle DEF ; `polygone` ne prend que des
+  points (sommets masqués) ; figures du 030 placées par le script (quadrillage 18 × 11, cas vérifiés : dans la fenêtre,
+  disjoints, flèche à part) ; flèche A → D retirée du 032 (elle traversait le triangle) ; « π × 12 » rendu
+  `unoptimal_form` (contrainte `products`), spec ajustée ; π s'écrit `\pi` dans un eval.

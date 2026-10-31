@@ -1,0 +1,263 @@
+{
+	"title": "Translation et parallélogramme",
+	"description": "Faire le lien entre la translation qui transforme A en B et le parallélogramme ABDC : nature du quadrilatère, image d'un point, frise de parallélogrammes",
+	"grades": ["4"],
+	"theme": "Géométrie",
+	"domain": "Translations",
+	"subdomain": "Parallélogramme",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le point $D$ est l'image du point $C$ par la translation qui transforme $A$ en $B$. Quelle est la nature du quadrilatère $ABDC$ ?\n\n```figure\nfenetre: 0 ; 13 ; 0 ; 8\ngrille: 1\ndescription: Quadrillage : les points A, B, C, D et les flèches de A vers B et de C vers D.\n---\nA = point({{eval:xa}}, {{eval:ya}}, etiquette=\"bas-gauche\")\nB = point({{eval:xb}}, {{eval:yb}}, etiquette=\"bas-droite\")\nC = point({{eval:xc}}, {{eval:yc}}, etiquette=\"haut-gauche\")\nD = point({{eval:xd}}, {{eval:yd}}, etiquette=\"haut-droite\")\nvecteur(A, B)\nvecteur(C, D, trait=\"tirets\")\n```\n\n```choix\n- un parallélogramme\n- un trapèze qui n'est pas un parallélogramme\n- on ne peut pas savoir\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "xa",
+					"expression": "{{if:c==0|1|}}{{if:c==1|2|}}{{if:c==2|1|}}{{if:c==3|3|}}"
+				},
+				{
+					"name": "ya",
+					"expression": "{{if:c==0|1|}}{{if:c==1|5|}}{{if:c==2|2|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "xb",
+					"expression": "{{if:c==0|7|}}{{if:c==1|8|}}{{if:c==2|6|}}{{if:c==3|9|}}"
+				},
+				{
+					"name": "yb",
+					"expression": "{{if:c==0|2|}}{{if:c==1|4|}}{{if:c==2|5|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "xc",
+					"expression": "{{if:c==0|3|}}{{if:c==1|1|}}{{if:c==2|6|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "yc",
+					"expression": "{{if:c==0|5|}}{{if:c==1|2|}}{{if:c==2|1|}}{{if:c==3|5|}}"
+				},
+				{
+					"name": "xd",
+					"expression": "{{if:c==0|9|}}{{if:c==1|7|}}{{if:c==2|11|}}{{if:c==3|7|}}"
+				},
+				{
+					"name": "yd",
+					"expression": "{{if:c==0|6|}}{{if:c==1|1|}}{{if:c==2|4|}}{{if:c==3|5|}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$C$ glisse comme $A$ glisse vers $B$ : $(CD)$ est parallèle à $(AB)$, et $CD = AB$.",
+					"Si $D$ est l'image de $C$ par la translation qui transforme $A$ en $B$, alors $ABDC$ est \\textcolor{{{color:primary.0}}}{\\text{un parallélogramme}} (attention à l'ordre des lettres : $A$, $B$, puis $D$, $C$)."
+				]
+			}
+		},
+		{
+			"statement": "Le quadrilatère $ABDC$ est un parallélogramme. {{if:q==0|Quelle est l'image du point $C$ par la translation qui transforme $A$ en $B$ ?|}}{{if:q==1|Quelle est l'image du point $A$ par la translation qui transforme $C$ en $D$ ?|}}\n\n```figure\nfenetre: 0 ; 13 ; 0 ; 8\ndescription: Parallélogramme ABDC.\n---\nA = point({{eval:xa}}, {{eval:ya}}, etiquette=\"bas-gauche\")\nB = point({{eval:xb}}, {{eval:yb}}, etiquette=\"bas-droite\")\nC = point({{eval:xc}}, {{eval:yc}}, etiquette=\"haut-gauche\")\nD = point({{eval:xd}}, {{eval:yd}}, etiquette=\"haut-droite\")\npolygone(A, B, D, C)\n```\n\n```choix\n- le point ${{if:q==0|D|}}{{if:q==1|B|}}$\n- le point ${{if:q==0|B|}}{{if:q==1|D|}}$\n- le point ${{if:q==0|A|}}{{if:q==1|C|}}$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "xa",
+					"expression": "{{if:c==0|1|}}{{if:c==1|2|}}{{if:c==2|1|}}{{if:c==3|3|}}"
+				},
+				{
+					"name": "ya",
+					"expression": "{{if:c==0|1|}}{{if:c==1|5|}}{{if:c==2|2|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "xb",
+					"expression": "{{if:c==0|7|}}{{if:c==1|8|}}{{if:c==2|6|}}{{if:c==3|9|}}"
+				},
+				{
+					"name": "yb",
+					"expression": "{{if:c==0|2|}}{{if:c==1|4|}}{{if:c==2|5|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "xc",
+					"expression": "{{if:c==0|3|}}{{if:c==1|1|}}{{if:c==2|6|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "yc",
+					"expression": "{{if:c==0|5|}}{{if:c==1|2|}}{{if:c==2|1|}}{{if:c==3|5|}}"
+				},
+				{
+					"name": "xd",
+					"expression": "{{if:c==0|9|}}{{if:c==1|7|}}{{if:c==2|11|}}{{if:c==3|7|}}"
+				},
+				{
+					"name": "yd",
+					"expression": "{{if:c==0|6|}}{{if:c==1|1|}}{{if:c==2|4|}}{{if:c==3|5|}}"
+				},
+				{
+					"name": "q",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$ABDC$ est un parallélogramme : {{if:q==0|$C$ glisse vers $D$ comme $A$ glisse vers $B$|}}{{if:q==1|$A$ glisse vers $B$ comme $C$ glisse vers $D$|}} (côtés opposés $[AB]$ et $[CD]$ parallèles et de même longueur).",
+					"L'image est \\textcolor{{{color:primary.0}}}{\\text{le point }{{if:q==0|D|}}{{if:q==1|B|}}}."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est l'image de la figure 1 par la translation qui transforme $A$ en $B$ ?\n\n```figure\nfenetre: 0 ; 17 ; 0 ; 7\ngrille: 1\ndescription: Quadrillage : une frise de cinq parallélogrammes numérotés et une flèche de A vers B.\n---\nQ00 = point(1, 1, visible=faux)\nQ01 = point(3, 1, visible=faux)\nQ02 = point(4, 3, visible=faux)\nQ03 = point(2, 3, visible=faux)\npolygone(Q00, Q01, Q02, Q03, remplissage=\"bleu\")\ntexte(2.5, 2, \"1\")\nQ10 = point(4, 1, visible=faux)\nQ11 = point(6, 1, visible=faux)\nQ12 = point(7, 3, visible=faux)\nQ13 = point(5, 3, visible=faux)\npolygone(Q10, Q11, Q12, Q13, remplissage=\"bleu\")\ntexte(5.5, 2, \"2\")\nQ20 = point(7, 1, visible=faux)\nQ21 = point(9, 1, visible=faux)\nQ22 = point(10, 3, visible=faux)\nQ23 = point(8, 3, visible=faux)\npolygone(Q20, Q21, Q22, Q23, remplissage=\"bleu\")\ntexte(8.5, 2, \"3\")\nQ30 = point(10, 1, visible=faux)\nQ31 = point(12, 1, visible=faux)\nQ32 = point(13, 3, visible=faux)\nQ33 = point(11, 3, visible=faux)\npolygone(Q30, Q31, Q32, Q33, remplissage=\"bleu\")\ntexte(11.5, 2, \"4\")\nQ40 = point(13, 1, visible=faux)\nQ41 = point(15, 1, visible=faux)\nQ42 = point(16, 3, visible=faux)\nQ43 = point(14, 3, visible=faux)\npolygone(Q40, Q41, Q42, Q43, remplissage=\"bleu\")\ntexte(14.5, 2, \"5\")\nA = point(1, 5, etiquette=\"gauche\")\nB = point({{eval:1 + 3*k}}, 5, etiquette=\"droite\")\nvecteur(A, B)\n```\n\n```choix\n- la figure {{eval:1 + k}}\n- la figure {{if:k==0||}}{{if:k==1|3|}}{{if:k==2|2|}}{{if:k==3|2|}}\n- la figure {{if:k==0||}}{{if:k==1|4|}}{{if:k==2|4|}}{{if:k==3|3|}}\n- la figure {{if:k==0||}}{{if:k==1|5|}}{{if:k==2|5|}}{{if:k==3|5|}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La flèche mesure {{eval:3*k}} carreaux vers la droite : la figure 1 glisse de {{eval:3*k}} carreaux.",
+					"Son image est \\textcolor{{{color:primary.0}}}{\\text{la figure }{{eval:1 + k}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "ABDC parallélogramme",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "1",
+				"xb": "7",
+				"yb": "2",
+				"xc": "3",
+				"yc": "5",
+				"xd": "9",
+				"yd": "6",
+				"c": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : on ne peut pas savoir",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "1",
+				"xb": "7",
+				"yb": "2",
+				"xc": "3",
+				"yc": "5",
+				"xd": "9",
+				"yd": "6",
+				"c": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Image de C : D",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "1",
+				"ya": "1",
+				"xb": "7",
+				"yb": "2",
+				"xc": "3",
+				"yc": "5",
+				"xd": "9",
+				"yd": "6",
+				"c": "0",
+				"q": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "1",
+				"ya": "1",
+				"xb": "7",
+				"yb": "2",
+				"xc": "3",
+				"yc": "5",
+				"xd": "9",
+				"yd": "6",
+				"c": "0",
+				"q": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Image de A : B",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "1",
+				"ya": "1",
+				"xb": "7",
+				"yb": "2",
+				"xc": "3",
+				"yc": "5",
+				"xd": "9",
+				"yd": "6",
+				"c": "0",
+				"q": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Frise k = 2 : figure 3",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : figure voisine",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

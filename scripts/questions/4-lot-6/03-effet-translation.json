@@ -1,0 +1,460 @@
+{
+	"title": "Effet d'une translation",
+	"description": "Reconnaître l'image d'une figure ou d'un point par la translation qui transforme A en B (flèche sur quadrillage), et distinguer translation, symétrie axiale et demi-tour",
+	"grades": ["4"],
+	"theme": "Géométrie",
+	"domain": "Translations",
+	"subdomain": "Image d'une figure",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La translation qui transforme $A$ en $B$ transforme la figure F en l'une des figures numérotées. Laquelle ?\n\n```figure\nfenetre: 0 ; 18 ; 0 ; 11\ngrille: 1\ndescription: Quadrillage : une flèche de A vers B, la figure F et quatre figures numérotées.\n---\nA = point({{eval:ax}}, {{eval:ay}}, etiquette=\"gauche\")\nB = point({{eval:ax + dx}}, {{eval:ay + dy}}, etiquette=\"droite\")\nvecteur(A, B)\nF0 = point({{eval:fx + 0}}, {{eval:fy + 0}}, visible=faux)\nF1 = point({{eval:fx + 2}}, {{eval:fy + 0}}, visible=faux)\nF2 = point({{eval:fx + 2}}, {{eval:fy + 1}}, visible=faux)\nF3 = point({{eval:fx + 1}}, {{eval:fy + 1}}, visible=faux)\nF4 = point({{eval:fx + 1}}, {{eval:fy + 3}}, visible=faux)\nF5 = point({{eval:fx + 0}}, {{eval:fy + 3}}, visible=faux)\nF = polygone(F0, F1, F2, F3, F4, F5, remplissage=\"bleu\")\ntexte({{eval:fx + 0.5}}, {{eval:fy + 0.5}}, \"F\")\nG0 = point({{eval:tx + 0}}, {{eval:ty + 0}}, visible=faux)\nG1 = point({{eval:tx + 2}}, {{eval:ty + 0}}, visible=faux)\nG2 = point({{eval:tx + 2}}, {{eval:ty + 1}}, visible=faux)\nG3 = point({{eval:tx + 1}}, {{eval:ty + 1}}, visible=faux)\nG4 = point({{eval:tx + 1}}, {{eval:ty + 3}}, visible=faux)\nG5 = point({{eval:tx + 0}}, {{eval:ty + 3}}, visible=faux)\nG = polygone(G0, G1, G2, G3, G4, G5, remplissage=\"bleu\")\ntexte({{eval:tx + 0.5}}, {{eval:ty + 0.5}}, \"{{if:p==0|1|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|4|}}\")\nH0 = point({{eval:wx + 0}}, {{eval:wy + 0}}, visible=faux)\nH1 = point({{eval:wx + 2}}, {{eval:wy + 0}}, visible=faux)\nH2 = point({{eval:wx + 2}}, {{eval:wy + 1}}, visible=faux)\nH3 = point({{eval:wx + 1}}, {{eval:wy + 1}}, visible=faux)\nH4 = point({{eval:wx + 1}}, {{eval:wy + 3}}, visible=faux)\nH5 = point({{eval:wx + 0}}, {{eval:wy + 3}}, visible=faux)\nH = polygone(H0, H1, H2, H3, H4, H5, remplissage=\"bleu\")\ntexte({{eval:wx + 0.5}}, {{eval:wy + 0.5}}, \"{{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|4|}}{{if:p==3|3|}}\")\nK0 = point({{eval:mx + 2}}, {{eval:my + 0}}, visible=faux)\nK1 = point({{eval:mx + 0}}, {{eval:my + 0}}, visible=faux)\nK2 = point({{eval:mx + 0}}, {{eval:my + 1}}, visible=faux)\nK3 = point({{eval:mx + 1}}, {{eval:my + 1}}, visible=faux)\nK4 = point({{eval:mx + 1}}, {{eval:my + 3}}, visible=faux)\nK5 = point({{eval:mx + 2}}, {{eval:my + 3}}, visible=faux)\nK = polygone(K0, K1, K2, K3, K4, K5, remplissage=\"bleu\")\ntexte({{eval:mx + 1.5}}, {{eval:my + 0.5}}, \"{{if:p==0|3|}}{{if:p==1|4|}}{{if:p==2|1|}}{{if:p==3|2|}}\")\nM0 = point({{eval:rx + 2}}, {{eval:ry + 3}}, visible=faux)\nM1 = point({{eval:rx + 0}}, {{eval:ry + 3}}, visible=faux)\nM2 = point({{eval:rx + 0}}, {{eval:ry + 2}}, visible=faux)\nM3 = point({{eval:rx + 1}}, {{eval:ry + 2}}, visible=faux)\nM4 = point({{eval:rx + 1}}, {{eval:ry + 0}}, visible=faux)\nM5 = point({{eval:rx + 2}}, {{eval:ry + 0}}, visible=faux)\nM = polygone(M0, M1, M2, M3, M4, M5, remplissage=\"bleu\")\ntexte({{eval:rx + 1.5}}, {{eval:ry + 2.5}}, \"{{if:p==0|4|}}{{if:p==1|2|}}{{if:p==2|3|}}{{if:p==3|1|}}\")\n```\n\n```choix\n- la figure {{if:p==0|1|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|4|}}\n- la figure {{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|4|}}{{if:p==3|3|}}\n- la figure {{if:p==0|3|}}{{if:p==1|4|}}{{if:p==2|1|}}{{if:p==3|2|}}\n- la figure {{if:p==0|4|}}{{if:p==1|2|}}{{if:p==2|3|}}{{if:p==3|1|}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "fx",
+					"expression": "{{if:c==0|7|}}{{if:c==1|6|}}{{if:c==2|1|}}{{if:c==3|6|}}"
+				},
+				{
+					"name": "fy",
+					"expression": "{{if:c==0|1|}}{{if:c==1|1|}}{{if:c==2|1|}}{{if:c==3|6|}}"
+				},
+				{
+					"name": "dx",
+					"expression": "{{if:c==0|6|}}{{if:c==1|-5|}}{{if:c==2|0|}}{{if:c==3|0|}}"
+				},
+				{
+					"name": "dy",
+					"expression": "{{if:c==0|0|}}{{if:c==1|0|}}{{if:c==2|4|}}{{if:c==3|-5|}}"
+				},
+				{
+					"name": "tx",
+					"expression": "{{if:c==0|13|}}{{if:c==1|1|}}{{if:c==2|1|}}{{if:c==3|6|}}"
+				},
+				{
+					"name": "ty",
+					"expression": "{{if:c==0|1|}}{{if:c==1|1|}}{{if:c==2|5|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "wx",
+					"expression": "{{if:c==0|1|}}{{if:c==1|11|}}{{if:c==2|5|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "wy",
+					"expression": "{{if:c==0|1|}}{{if:c==1|1|}}{{if:c==2|1|}}{{if:c==3|6|}}"
+				},
+				{
+					"name": "mx",
+					"expression": "{{if:c==0|4|}}{{if:c==1|14|}}{{if:c==2|8|}}{{if:c==3|9|}}"
+				},
+				{
+					"name": "my",
+					"expression": "{{if:c==0|1|}}{{if:c==1|1|}}{{if:c==2|1|}}{{if:c==3|6|}}"
+				},
+				{
+					"name": "rx",
+					"expression": "{{if:c==0|1|}}{{if:c==1|1|}}{{if:c==2|4|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "ry",
+					"expression": "{{if:c==0|5|}}{{if:c==1|5|}}{{if:c==2|5|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "ax",
+					"expression": "{{if:c==0|1|}}{{if:c==1|6|}}{{if:c==2|7|}}{{if:c==3|4|}}"
+				},
+				{
+					"name": "ay",
+					"expression": "{{if:c==0|9|}}{{if:c==1|9|}}{{if:c==2|5|}}{{if:c==3|6|}}"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La translation qui transforme $A$ en $B$ fait **glisser** toute la figure comme la flèche : {{if:c==0|6 carreaux vers la droite|}}{{if:c==1|5 carreaux vers la gauche|}}{{if:c==2|4 carreaux vers le haut|}}{{if:c==3|5 carreaux vers le bas|}}.",
+					"La figure F glisse sans tourner ni se retourner : son image est \\textcolor{{{color:primary.0}}}{\\text{la figure {{if:p==0|1|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|4|}}}}.",
+					"La figure {{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|4|}}{{if:p==3|3|}} a glissé dans une autre direction ; la figure {{if:p==0|3|}}{{if:p==1|4|}}{{if:p==2|1|}}{{if:p==3|2|}} est retournée (symétrie axiale) ; la figure {{if:p==0|4|}}{{if:p==1|2|}}{{if:p==2|3|}}{{if:p==3|1|}} a fait un demi-tour."
+				]
+			}
+		},
+		{
+			"statement": "La translation qui transforme $A$ en $B$ transforme la figure F en l'une des figures numérotées. Laquelle ?\n\n```figure\nfenetre: 0 ; 18 ; 0 ; 11\ngrille: 1\ndescription: Quadrillage : une flèche de A vers B, la figure F et quatre figures numérotées.\n---\nA = point({{eval:ax}}, {{eval:ay}}, etiquette=\"gauche\")\nB = point({{eval:ax + dx}}, {{eval:ay + dy}}, etiquette=\"droite\")\nvecteur(A, B)\nF0 = point({{eval:fx + 0}}, {{eval:fy + 0}}, visible=faux)\nF1 = point({{eval:fx + 2}}, {{eval:fy + 0}}, visible=faux)\nF2 = point({{eval:fx + 2}}, {{eval:fy + 1}}, visible=faux)\nF3 = point({{eval:fx + 1}}, {{eval:fy + 1}}, visible=faux)\nF4 = point({{eval:fx + 1}}, {{eval:fy + 3}}, visible=faux)\nF5 = point({{eval:fx + 0}}, {{eval:fy + 3}}, visible=faux)\nF = polygone(F0, F1, F2, F3, F4, F5, remplissage=\"bleu\")\ntexte({{eval:fx + 0.5}}, {{eval:fy + 0.5}}, \"F\")\nG0 = point({{eval:tx + 0}}, {{eval:ty + 0}}, visible=faux)\nG1 = point({{eval:tx + 2}}, {{eval:ty + 0}}, visible=faux)\nG2 = point({{eval:tx + 2}}, {{eval:ty + 1}}, visible=faux)\nG3 = point({{eval:tx + 1}}, {{eval:ty + 1}}, visible=faux)\nG4 = point({{eval:tx + 1}}, {{eval:ty + 3}}, visible=faux)\nG5 = point({{eval:tx + 0}}, {{eval:ty + 3}}, visible=faux)\nG = polygone(G0, G1, G2, G3, G4, G5, remplissage=\"bleu\")\ntexte({{eval:tx + 0.5}}, {{eval:ty + 0.5}}, \"{{if:p==0|1|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|4|}}\")\nH0 = point({{eval:wx + 0}}, {{eval:wy + 0}}, visible=faux)\nH1 = point({{eval:wx + 2}}, {{eval:wy + 0}}, visible=faux)\nH2 = point({{eval:wx + 2}}, {{eval:wy + 1}}, visible=faux)\nH3 = point({{eval:wx + 1}}, {{eval:wy + 1}}, visible=faux)\nH4 = point({{eval:wx + 1}}, {{eval:wy + 3}}, visible=faux)\nH5 = point({{eval:wx + 0}}, {{eval:wy + 3}}, visible=faux)\nH = polygone(H0, H1, H2, H3, H4, H5, remplissage=\"bleu\")\ntexte({{eval:wx + 0.5}}, {{eval:wy + 0.5}}, \"{{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|4|}}{{if:p==3|3|}}\")\nK0 = point({{eval:mx + 2}}, {{eval:my + 0}}, visible=faux)\nK1 = point({{eval:mx + 0}}, {{eval:my + 0}}, visible=faux)\nK2 = point({{eval:mx + 0}}, {{eval:my + 1}}, visible=faux)\nK3 = point({{eval:mx + 1}}, {{eval:my + 1}}, visible=faux)\nK4 = point({{eval:mx + 1}}, {{eval:my + 3}}, visible=faux)\nK5 = point({{eval:mx + 2}}, {{eval:my + 3}}, visible=faux)\nK = polygone(K0, K1, K2, K3, K4, K5, remplissage=\"bleu\")\ntexte({{eval:mx + 1.5}}, {{eval:my + 0.5}}, \"{{if:p==0|3|}}{{if:p==1|4|}}{{if:p==2|1|}}{{if:p==3|2|}}\")\nM0 = point({{eval:rx + 2}}, {{eval:ry + 3}}, visible=faux)\nM1 = point({{eval:rx + 0}}, {{eval:ry + 3}}, visible=faux)\nM2 = point({{eval:rx + 0}}, {{eval:ry + 2}}, visible=faux)\nM3 = point({{eval:rx + 1}}, {{eval:ry + 2}}, visible=faux)\nM4 = point({{eval:rx + 1}}, {{eval:ry + 0}}, visible=faux)\nM5 = point({{eval:rx + 2}}, {{eval:ry + 0}}, visible=faux)\nM = polygone(M0, M1, M2, M3, M4, M5, remplissage=\"bleu\")\ntexte({{eval:rx + 1.5}}, {{eval:ry + 2.5}}, \"{{if:p==0|4|}}{{if:p==1|2|}}{{if:p==2|3|}}{{if:p==3|1|}}\")\n```\n\n```choix\n- la figure {{if:p==0|1|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|4|}}\n- la figure {{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|4|}}{{if:p==3|3|}}\n- la figure {{if:p==0|3|}}{{if:p==1|4|}}{{if:p==2|1|}}{{if:p==3|2|}}\n- la figure {{if:p==0|4|}}{{if:p==1|2|}}{{if:p==2|3|}}{{if:p==3|1|}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "fx",
+					"expression": "{{if:c==0|7|}}{{if:c==1|6|}}{{if:c==2|5|}}{{if:c==3|8|}}"
+				},
+				{
+					"name": "fy",
+					"expression": "{{if:c==0|4|}}{{if:c==1|3|}}{{if:c==2|4|}}{{if:c==3|3|}}"
+				},
+				{
+					"name": "dx",
+					"expression": "{{if:c==0|6|}}{{if:c==1|5|}}{{if:c==2|-4|}}{{if:c==3|7|}}"
+				},
+				{
+					"name": "dy",
+					"expression": "{{if:c==0|3|}}{{if:c==1|-2|}}{{if:c==2|3|}}{{if:c==3|2|}}"
+				},
+				{
+					"name": "tx",
+					"expression": "{{if:c==0|13|}}{{if:c==1|11|}}{{if:c==2|1|}}{{if:c==3|15|}}"
+				},
+				{
+					"name": "ty",
+					"expression": "{{if:c==0|7|}}{{if:c==1|1|}}{{if:c==2|7|}}{{if:c==3|5|}}"
+				},
+				{
+					"name": "wx",
+					"expression": "{{if:c==0|1|}}{{if:c==1|1|}}{{if:c==2|9|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "wy",
+					"expression": "{{if:c==0|1|}}{{if:c==1|5|}}{{if:c==2|1|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "mx",
+					"expression": "{{if:c==0|4|}}{{if:c==1|14|}}{{if:c==2|13|}}{{if:c==3|4|}}"
+				},
+				{
+					"name": "my",
+					"expression": "{{if:c==0|4|}}{{if:c==1|3|}}{{if:c==2|4|}}{{if:c==3|3|}}"
+				},
+				{
+					"name": "rx",
+					"expression": "{{if:c==0|1|}}{{if:c==1|1|}}{{if:c==2|1|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "ry",
+					"expression": "{{if:c==0|5|}}{{if:c==1|1|}}{{if:c==2|1|}}{{if:c==3|5|}}"
+				},
+				{
+					"name": "ax",
+					"expression": "{{if:c==0|10|}}{{if:c==1|4|}}{{if:c==2|12|}}{{if:c==3|4|}}"
+				},
+				{
+					"name": "ay",
+					"expression": "{{if:c==0|1|}}{{if:c==1|9|}}{{if:c==2|5|}}{{if:c==3|7|}}"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La translation qui transforme $A$ en $B$ fait **glisser** toute la figure comme la flèche : {{if:c==0|6 carreaux vers la droite et 3 carreaux vers le haut|}}{{if:c==1|5 carreaux vers la droite et 2 carreaux vers le bas|}}{{if:c==2|4 carreaux vers la gauche et 3 carreaux vers le haut|}}{{if:c==3|7 carreaux vers la droite et 2 carreaux vers le haut|}}.",
+					"La figure F glisse sans tourner ni se retourner : son image est \\textcolor{{{color:primary.0}}}{\\text{la figure {{if:p==0|1|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|4|}}}}.",
+					"La figure {{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|4|}}{{if:p==3|3|}} a glissé dans une autre direction ; la figure {{if:p==0|3|}}{{if:p==1|4|}}{{if:p==2|1|}}{{if:p==3|2|}} est retournée (symétrie axiale) ; la figure {{if:p==0|4|}}{{if:p==1|2|}}{{if:p==2|3|}}{{if:p==3|1|}} a fait un demi-tour."
+				]
+			}
+		},
+		{
+			"statement": "Quel point est l'image du point $C$ par la translation qui transforme $A$ en $B$ ?\n\n```figure\nfenetre: 0 ; 18 ; 0 ; 11\ngrille: 1\ndescription: Quadrillage : une flèche de A vers B, le point C et quatre points nommés.\n---\nA = point({{eval:ax}}, {{eval:ay}}, etiquette=\"gauche\")\nB = point({{eval:ax + dx}}, {{eval:ay + dy}}, etiquette=\"droite\")\nvecteur(A, B)\nC = point({{eval:cx}}, {{eval:cy}}, etiquette=\"haut-gauche\")\n{{if:p==0|R|}}{{if:p==1|T|}}{{if:p==2|S|}}{{if:p==3|U|}} = point({{eval:x0}}, {{eval:y0}}, etiquette=\"haut-droite\")\n{{if:p==0|S|}}{{if:p==1|R|}}{{if:p==2|U|}}{{if:p==3|T|}} = point({{eval:x1}}, {{eval:y1}}, etiquette=\"haut-droite\")\n{{if:p==0|T|}}{{if:p==1|U|}}{{if:p==2|R|}}{{if:p==3|S|}} = point({{eval:x2}}, {{eval:y2}}, etiquette=\"haut-droite\")\n{{if:p==0|U|}}{{if:p==1|S|}}{{if:p==2|T|}}{{if:p==3|R|}} = point({{eval:x3}}, {{eval:y3}}, etiquette=\"haut-droite\")\n```\n\n```choix\n- le point ${{if:p==0|R|}}{{if:p==1|T|}}{{if:p==2|S|}}{{if:p==3|U|}}$\n- le point ${{if:p==0|S|}}{{if:p==1|R|}}{{if:p==2|U|}}{{if:p==3|T|}}$\n- le point ${{if:p==0|T|}}{{if:p==1|U|}}{{if:p==2|R|}}{{if:p==3|S|}}$\n- le point ${{if:p==0|U|}}{{if:p==1|S|}}{{if:p==2|T|}}{{if:p==3|R|}}$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "cx",
+					"expression": "{{if:c==0|6|}}{{if:c==1|7|}}{{if:c==2|5|}}{{if:c==3|5|}}"
+				},
+				{
+					"name": "cy",
+					"expression": "{{if:c==0|4|}}{{if:c==1|3|}}{{if:c==2|5|}}{{if:c==3|5|}}"
+				},
+				{
+					"name": "dx",
+					"expression": "{{if:c==0|5|}}{{if:c==1|6|}}{{if:c==2|-4|}}{{if:c==3|3|}}"
+				},
+				{
+					"name": "dy",
+					"expression": "{{if:c==0|3|}}{{if:c==1|-2|}}{{if:c==2|3|}}{{if:c==3|-4|}}"
+				},
+				{
+					"name": "ax",
+					"expression": "{{if:c==0|1|}}{{if:c==1|3|}}{{if:c==2|15|}}{{if:c==3|10|}}"
+				},
+				{
+					"name": "ay",
+					"expression": "{{if:c==0|6|}}{{if:c==1|7|}}{{if:c==2|1|}}{{if:c==3|5|}}"
+				},
+				{
+					"name": "x0",
+					"expression": "{{if:c==0|11|}}{{if:c==1|13|}}{{if:c==2|1|}}{{if:c==3|8|}}"
+				},
+				{
+					"name": "y0",
+					"expression": "{{if:c==0|7|}}{{if:c==1|1|}}{{if:c==2|8|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "x1",
+					"expression": "{{if:c==0|1|}}{{if:c==1|1|}}{{if:c==2|9|}}{{if:c==3|2|}}"
+				},
+				{
+					"name": "y1",
+					"expression": "{{if:c==0|1|}}{{if:c==1|5|}}{{if:c==2|2|}}{{if:c==3|9|}}"
+				},
+				{
+					"name": "x2",
+					"expression": "{{if:c==0|9|}}{{if:c==1|5|}}{{if:c==2|8|}}{{if:c==3|1|}}"
+				},
+				{
+					"name": "y2",
+					"expression": "{{if:c==0|9|}}{{if:c==1|9|}}{{if:c==2|1|}}{{if:c==3|8|}}"
+				},
+				{
+					"name": "x3",
+					"expression": "{{if:c==0|11|}}{{if:c==1|13|}}{{if:c==2|1|}}{{if:c==3|8|}}"
+				},
+				{
+					"name": "y3",
+					"expression": "{{if:c==0|4|}}{{if:c==1|3|}}{{if:c==2|5|}}{{if:c==3|5|}}"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On fait glisser $C$ comme la flèche de $A$ vers $B$ : {{if:c==0|5 carreaux vers la droite et 3 carreaux vers le haut|}}{{if:c==1|6 carreaux vers la droite et 2 carreaux vers le bas|}}{{if:c==2|4 carreaux vers la gauche et 3 carreaux vers le haut|}}{{if:c==3|3 carreaux vers la droite et 4 carreaux vers le bas|}}.",
+					"L'image de $C$ est \\textcolor{{{color:primary.0}}}{\\text{le point }{{if:p==0|R|}}{{if:p==1|T|}}{{if:p==2|S|}}{{if:p==3|U|}}}."
+				]
+			}
+		},
+		{
+			"statement": "Par quelle transformation passe-t-on de la figure F à la figure G ?\n\n```figure\nfenetre: 0 ; 18 ; 0 ; 11\ngrille: 1\ndescription: Quadrillage : la figure F et la figure G.\n---\nF0 = point({{eval:2 + 0}}, {{eval:fy + 0}}, visible=faux)\nF1 = point({{eval:2 + 2}}, {{eval:fy + 0}}, visible=faux)\nF2 = point({{eval:2 + 2}}, {{eval:fy + 1}}, visible=faux)\nF3 = point({{eval:2 + 1}}, {{eval:fy + 1}}, visible=faux)\nF4 = point({{eval:2 + 1}}, {{eval:fy + 3}}, visible=faux)\nF5 = point({{eval:2 + 0}}, {{eval:fy + 3}}, visible=faux)\nF = polygone(F0, F1, F2, F3, F4, F5, remplissage=\"bleu\")\ntexte({{eval:2 + 0.5}}, {{eval:fy + 0.5}}, \"F\")\n{{if:w==0|G0 = point({{eval:gx + 0}}, {{eval:gy + 0}}, visible=faux)|}}{{if:w==1|G0 = point({{eval:gx + 2}}, {{eval:fy + 0}}, visible=faux)|}}{{if:w==2|G0 = point({{eval:gx + 2}}, {{eval:gy + 3}}, visible=faux)|}}\n{{if:w==0|G1 = point({{eval:gx + 2}}, {{eval:gy + 0}}, visible=faux)|}}{{if:w==1|G1 = point({{eval:gx + 0}}, {{eval:fy + 0}}, visible=faux)|}}{{if:w==2|G1 = point({{eval:gx + 0}}, {{eval:gy + 3}}, visible=faux)|}}\n{{if:w==0|G2 = point({{eval:gx + 2}}, {{eval:gy + 1}}, visible=faux)|}}{{if:w==1|G2 = point({{eval:gx + 0}}, {{eval:fy + 1}}, visible=faux)|}}{{if:w==2|G2 = point({{eval:gx + 0}}, {{eval:gy + 2}}, visible=faux)|}}\n{{if:w==0|G3 = point({{eval:gx + 1}}, {{eval:gy + 1}}, visible=faux)|}}{{if:w==1|G3 = point({{eval:gx + 1}}, {{eval:fy + 1}}, visible=faux)|}}{{if:w==2|G3 = point({{eval:gx + 1}}, {{eval:gy + 2}}, visible=faux)|}}\n{{if:w==0|G4 = point({{eval:gx + 1}}, {{eval:gy + 3}}, visible=faux)|}}{{if:w==1|G4 = point({{eval:gx + 1}}, {{eval:fy + 3}}, visible=faux)|}}{{if:w==2|G4 = point({{eval:gx + 1}}, {{eval:gy + 0}}, visible=faux)|}}\n{{if:w==0|G5 = point({{eval:gx + 0}}, {{eval:gy + 3}}, visible=faux)|}}{{if:w==1|G5 = point({{eval:gx + 2}}, {{eval:fy + 3}}, visible=faux)|}}{{if:w==2|G5 = point({{eval:gx + 2}}, {{eval:gy + 0}}, visible=faux)|}}\n{{if:w==0|G = polygone(G0, G1, G2, G3, G4, G5, remplissage=\"bleu\")|}}{{if:w==1|G = polygone(G0, G1, G2, G3, G4, G5, remplissage=\"bleu\")|}}{{if:w==2|G = polygone(G0, G1, G2, G3, G4, G5, remplissage=\"bleu\")|}}\n{{if:w==0|texte({{eval:gx + 0.5}}, {{eval:gy + 0.5}}, \"G\")|}}{{if:w==1|texte({{eval:gx + 1.5}}, {{eval:fy + 0.5}}, \"G\")|}}{{if:w==2|texte({{eval:gx + 1.5}}, {{eval:gy + 2.5}}, \"G\")|}}\n{{if:w==0||}}{{if:w==1||}}{{if:w==2||}}```\n\n```choix\n- {{if:w==0|une translation|}}{{if:w==1|une symétrie axiale|}}{{if:w==2|un demi-tour|}}\n- {{if:w==0|une symétrie axiale|}}{{if:w==1|un demi-tour|}}{{if:w==2|une translation|}}\n- {{if:w==0|un demi-tour|}}{{if:w==1|une translation|}}{{if:w==2|une symétrie axiale|}}\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "fy",
+					"expression": "1..6"
+				},
+				{
+					"name": "gx",
+					"expression": "8..12"
+				},
+				{
+					"name": "gy",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:w==0|G est F qui a **glissé**, sans tourner ni se retourner : c'est|}}{{if:w==1|G est F **retournée**, comme dans un miroir vertical : c'est|}}{{if:w==2|G est F qui a **tourné d'un demi-tour** (la tête en bas) : c'est|}} \\textcolor{{{color:primary.0}}}{\\text{{{if:w==0|une translation|}}{{if:w==1|une symétrie axiale|}}{{if:w==2|un demi-tour|}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Figure juste (droite)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"fx": "7",
+				"fy": "1",
+				"dx": "6",
+				"dy": "0",
+				"tx": "13",
+				"ty": "1",
+				"wx": "1",
+				"wy": "1",
+				"mx": "4",
+				"my": "1",
+				"rx": "1",
+				"ry": "5",
+				"ax": "1",
+				"ay": "9",
+				"p": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la figure retournée",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"fx": "7",
+				"fy": "1",
+				"dx": "6",
+				"dy": "0",
+				"tx": "13",
+				"ty": "1",
+				"wx": "1",
+				"wy": "1",
+				"mx": "4",
+				"my": "1",
+				"rx": "1",
+				"ry": "5",
+				"ax": "1",
+				"ay": "9",
+				"p": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Figure juste (oblique)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"fx": "6",
+				"fy": "3",
+				"dx": "5",
+				"dy": "-2",
+				"tx": "11",
+				"ty": "1",
+				"wx": "1",
+				"wy": "5",
+				"mx": "14",
+				"my": "3",
+				"rx": "1",
+				"ry": "1",
+				"ax": "4",
+				"ay": "9",
+				"p": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Point juste",
+			"variationIndex": 2,
+			"variables": {
+				"cx": "6",
+				"cy": "4",
+				"dx": "5",
+				"dy": "3",
+				"ax": "1",
+				"ay": "6",
+				"x0": "11",
+				"y0": "7",
+				"x1": "1",
+				"y1": "1",
+				"x2": "9",
+				"y2": "9",
+				"x3": "11",
+				"y3": "4",
+				"c": "0",
+				"p": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens contraire",
+			"variationIndex": 2,
+			"variables": {
+				"cx": "6",
+				"cy": "4",
+				"dx": "5",
+				"dy": "3",
+				"ax": "1",
+				"ay": "6",
+				"x0": "11",
+				"y0": "7",
+				"x1": "1",
+				"y1": "1",
+				"x2": "9",
+				"y2": "9",
+				"x3": "11",
+				"y3": "4",
+				"c": "0",
+				"p": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Translation",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"fy": "2",
+				"gx": "9",
+				"gy": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Symétrie axiale",
+			"variationIndex": 3,
+			"variables": {
+				"w": "1",
+				"fy": "2",
+				"gx": "9",
+				"gy": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : demi-tour pris pour une translation",
+			"variationIndex": 3,
+			"variables": {
+				"w": "2",
+				"fy": "2",
+				"gx": "9",
+				"gy": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
