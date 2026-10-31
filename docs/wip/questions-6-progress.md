@@ -5,13 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-30, après #2035 et son `db:migrate`._
+_Mis à jour le 2026-10-31, après la publication du lot 6b._
 
-- **État** : lots 1 à 6a en prod, publiés. Lot 6b : 7 brouillons en prod, rangés et tagués (§ 13.5) ; page à
-  cocher publiée : https://claude.ai/artifact/16mNd45TJvCqg4kZBYUzaJ (0 verdict).
-- **Prochaine action** : David relit ; compter les verdicts en base ; `publier-lot --dir scripts/questions/6-grandeurs`
-  en simulation, puis David `--publier`.
-- **En attente de David** : relecture de la page ; verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
+- **État** : lots 1 à 6b en prod, publiés (lot 6b : 7/7, § 13.6).
+- **Prochaine action** : nouveau relevé MCP des points de 6e encore sans modèle, puis phase 0 du lot 7.
+- **En attente de David** : verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
 - **Pièges en cours** : 06 et 07 attendent le bloc ```ranger (à reprendre). 3a7a5711 : NE PAS publier.
   `svelte-kit sync` avant `question:specs`. M10 : version dessinée attend « assemblages de cubes ».
   Aperçu piloté : un clic ne donne pas le focus au champ ; `focus()` + clavier + Tab (§ 13.4).
@@ -1017,3 +1015,9 @@ nouvelle revue.
   7 sur le nœud de leur point, un tag juste chacun, `updated_at` inchangé (12:02 UTC, publication), trigger à `O`.
 - Page à cocher générée depuis `main` (d9ed946d6), aucune alerte, publiée (`db`, 0 verdict) :
   https://claude.ai/artifact/16mNd45TJvCqg4kZBYUzaJ.
+
+### 13.6 Relecture et publication du lot 6b (2026-10-31)
+
+- David a relu : 7/7 « OK », aucun commentaire (base de la page lue, 7 verdicts comptés). `publier-lot` en
+  simulation : 7 brouillons passent le contrôle.
+- David a lancé `publier-lot --publier` : 7/7 publiés. MCP : `published`, rangés, un tag chacun.
