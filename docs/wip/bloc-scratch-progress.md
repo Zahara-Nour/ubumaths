@@ -145,3 +145,11 @@ riche (une PR).
   réduit à sa colonne (300 px : pas de débordement). **Écart au § 4.8** : deux scripts l'un sous l'autre
   (la bibliothèque ne les met pas côte à côte). Thème clair non vu (bascule non trouvée) : à regarder.
 - Hors palier : la vitrine `/demo/blocs` (sélection validée, pas touchée).
+
+## 8. Revue `code-reviewer` (2026-11-01) : 3 findings, corrigés
+
+1. (Important) Lignes des messages décalées par un commentaire `//` ou un `Fin` / `Sinon` en majuscules
+   (la bibliothèque les accepte) → comparaison sans commentaire et sans casse ; test rouge puis vert.
+2. (Mineur) Une exception de la bibliothèque cassait le rendu → repli sur le programme en texte.
+3. (Mineur) Des ``` au milieu d'une ligne fermaient le texte brut du PDF → clôture plus longue que la plus
+   longue suite d'accents graves ; test rouge puis vert.

@@ -21,6 +21,11 @@ describe('bloc ```scratch au PDF (palier 1)', () => {
 		expect(out).toContain('```\nmettre [a v] à (5)\nsi <(a) > [3]> alors\ndire (a)\nfin\n```');
 	});
 
+	it('des accents graves dans une ligne ne ferment pas le texte brut (revue #2122)', () => {
+		const out = typst('```scratch', 'dire [```]', '```');
+		expect(out).toContain('````\ndire [```]\n````');
+	});
+
 	it('bloc en erreur : « Programme indisponible »', () => {
 		const out = typst('```scratch', '```');
 		expect(out).toContain('Programme indisponible');

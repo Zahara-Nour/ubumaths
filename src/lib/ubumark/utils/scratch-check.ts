@@ -64,6 +64,11 @@ function normalizeLine(text: string): string {
 		.trim();
 }
 
+/** Une ligne sans son commentaire `// …` (ignoré par la bibliothèque) */
+function stripComment(line: string): string {
+	return line.replace(/(^|\s)\/\/.*$/, '');
+}
+
 /** Ce qui ne va pas dans une instruction, ou null */
 function problemOf(block: ScratchBlock, text: string): string | null {
 	if (block.info.id === STRAY_END_ID) return '« fin » en trop (aucune boucle ni « si » à fermer)';
@@ -84,7 +89,8 @@ function problemOf(block: ScratchBlock, text: string): string | null {
  */
 export function checkScratchProgram(source: string): ScratchIssue[] {
 	if (source.trim() === '') return [];
-	const lines = source.split('\n').map(normalizeLine);
+	// Lignes comparées comme les lit la bibliothèque : commentaire `//` retiré, casse ignorée
+	const lines = source.split('\n').map((line) => normalizeLine(stripComment(line)).toLowerCase());
 	const issues: ScratchIssue[] = [];
 	let cursor = 0;
 

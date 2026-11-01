@@ -20,8 +20,13 @@ const UNAVAILABLE_TYPST = `#block(stroke: 0.5pt + luma(160), inset: 6pt, radius:
 // FONCTIONS
 // ============================================================================
 
-/** Le programme en bloc de texte brut (le corps ne contient jamais ``` : il fermerait le bloc) */
+/**
+ * Le programme en bloc de texte brut, clôturé par plus d'accents graves que la
+ * plus longue suite du programme (`dire [```]` ne le ferme pas : revue #2122)
+ */
 export function generateScratchTypst(node: ScratchNode): string {
 	if (node.errors.length > 0) return UNAVAILABLE_TYPST;
-	return '```\n' + node.source + '\n```';
+	const longest = Math.max(0, ...(node.source.match(/`+/g) ?? []).map((run) => run.length));
+	const fence = '`'.repeat(Math.max(3, longest + 1));
+	return `${fence}\n${node.source}\n${fence}`;
 }

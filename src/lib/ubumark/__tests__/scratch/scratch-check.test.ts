@@ -109,6 +109,21 @@ describe('erreurs de l’auteur, situées', () => {
 		]);
 	});
 
+	it('commentaires // et majuscules à Fin / Sinon : les lignes restent justes (revue #2122)', () => {
+		expect(messages('quand le drapeau vert pressé\n// un commentaire\nbidule\ndire (a)')).toEqual([
+			'Ligne 3 : instruction « bidule » non reconnue'
+		]);
+		expect(messages('répéter (10) fois\nFin\nbidule')).toEqual([
+			'Ligne 3 : instruction « bidule » non reconnue'
+		]);
+		expect(
+			messages('si <(a) > [1]> alors\ndire [x]\nSinon // autrement\nbof\nFIN\nbof bis')
+		).toEqual([
+			'Ligne 4 : instruction « bof » non reconnue',
+			'Ligne 6 : instruction « bof bis » non reconnue'
+		]);
+	});
+
 	it('instruction inconnue dans une boucle : la bonne ligne', () => {
 		expect(messages('répéter (3) fois\ndire [a]\nsauter très haut\nfin')).toEqual([
 			'Ligne 3 : instruction « sauter très haut » non reconnue'

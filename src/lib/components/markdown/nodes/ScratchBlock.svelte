@@ -18,7 +18,7 @@
 -->
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import type { ScratchNode } from '$lib/ubumark/types/scratch';
+	import type { ScratchIssue, ScratchNode } from '$lib/ubumark/types/scratch';
 	import { SCRATCH_UNAVAILABLE } from '$lib/ubumark/types/scratch';
 	import { readAuthoringErrors } from '../authoring-errors';
 
@@ -51,13 +51,33 @@
 			])
 		: null;
 
-	/** Poser le dessin dans son cadre */
+	/**
+	 * Vérifier sans jamais casser la page : si la bibliothèque lève une
+	 * exception, `null` (le programme reste en texte, revue #2122)
+	 */
+	function safeCheck(check: (source: string) => ScratchIssue[], source: string) {
+		try {
+			return check(source);
+		} catch {
+			return null;
+		}
+	}
+
+	/** Poser le dessin dans son cadre ; en cas d'exception, le programme en texte */
 	function drawing(source: string, render: (source: string) => SVGSVGElement) {
 		return (element: HTMLElement) => {
-			const svg = render(source);
-			svg.setAttribute('aria-hidden', 'true');
-			svg.classList.add('max-w-full', 'h-auto');
-			element.replaceChildren(svg);
+			try {
+				const svg = render(source);
+				svg.setAttribute('aria-hidden', 'true');
+				svg.classList.add('max-w-full', 'h-auto');
+				element.replaceChildren(svg);
+			} catch {
+				const pre = document.createElement('pre');
+				pre.className =
+					'scratch-texte overflow-x-auto rounded-md bg-muted/40 p-3 font-mono text-sm';
+				pre.textContent = source;
+				element.replaceChildren(pre);
+			}
 			return () => element.replaceChildren();
 		};
 	}
@@ -98,8 +118,10 @@
 	{#await modules}
 		{@render text()}
 	{:then [{ checkScratchProgram }, { renderScratch }]}
-		{@const issues = checkScratchProgram(node.source)}
-		{#if issues.length > 0}
+		{@const issues = safeCheck(checkScratchProgram, node.source)}
+		{#if issues === null}
+			{@render text()}
+		{:else if issues.length > 0}
 			{@render failure(issues.map((e) => e.message))}
 		{:else}
 			<figure
