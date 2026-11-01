@@ -5,12 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 6 en phase 0 (§ 13)._
+_Mis à jour le 2026-11-01, après #2091._
 
-- **État** : lot 5 clos (§ 12.12) ; **lot 6 (translation, vecteurs, sphère) : phase 0 écrite (§ 13)**.
-- **Prochaine action** : réponses de David au § 13.4, puis script `lot-6.py` et JSON.
-- **En attente de David** : § 13.4 (c8306505 partagé pour 3-024 ; 3-020 sections dans le lot ; variations ;
-  forme exacte du volume de la boule).
+- **État** : lot 6 (translation, vecteurs, sphère, sections) **mergé** (#2091, § 13.8), 7 modèles, pas encore en prod.
+- **Prochaine action** : après le `--publier` de David, relever les 7 `id` au MCP, relevé `etat-prod-…-3e-lot6`,
+  migration de rangement (7 nœuds + tags, c8306505 en grades `['4', '3']` + tag 3-024), page à cocher.
+- **En attente de David** : `git pull` dans le dépôt principal, puis
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-6 --publier`.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; ` ```solide ` pas en prod (modèles qui s'en servent : brouillon
   jusqu'au `deploy:prod`) ; étiquette d'un vecteur libre (`vecteur(dx, dy, ancre=…)`) : vérifier qu'un
@@ -867,3 +868,29 @@ la même migration.
 
 Brouillons : personne ne lit rien de neuf. Rangement puis publication : élèves et prof de 3e voient 6 (ou 7)
 modèles publiés de plus, et c8306505 de 4e ; la 4e ne perd rien. Aucune règle ne change.
+
+### 13.6 Décisions (David, 2026-11-01, « je te suis » sur les recommandations)
+
+- § 13.1 : c8306505 partagé (grades `['4', '3']`, tag 3-024 en plus de 4-031), dans la migration de rangement.
+- § 13.2 validé ; **3-020 ajouté au lot** (7 modèles) ; vecteurs toujours en choix.
+- 3-021 : exact (r multiple de 3 → coefficient entier ; une variation en fraction, 32/3 π) et arrondi au cm³.
+- Hors lot : la PR `fix` qui refuse une option à geste dans un ` ```choix ` (question restée ouverte du
+  chantier `solides`) — recommandée, à faire à part.
+
+### 13.7 Lot 6 : écrit (2026-11-01)
+
+- `docs/wip/questions/lot-3-6.py` → `scripts/questions/3-lot-6/` (7 JSON, 25 variations, 65 specs) ;
+  `create-questions` en simulation vert. Branche `content/questions-3-lot6`.
+- **Pièges mesurés** : `%` refusé dans l'`eval` d'une variable (« Unexpected token ») — admis dans les
+  conditions ; la case de chaque vecteur est donc choisie par `{{if}}` sur p. Choix à plusieurs réponses : une
+  partie seulement des bonnes = `unoptimal_form` (incomplet), pas `incorrect`.
+- Sonde (scratchpad, supprimée) : 300 tirages par variation, blocs ` ```figure ` (scène construite, ni erreur
+  ni avertissement), ` ```solide ` (parseur + scène), choix sans doublon, gabarits résolus : **0 défaut**.
+- Base locale : 7 brouillons. Aperçu admin (`127.0.0.1:5176`) : 3-025 v2 (quadrillage, GH = u, KL = −u),
+  3-026 v1 (points, R = A + u + v), 3-020 v2 (cylindre ⊥, disque teinté) et v4 (boule, R = 10, d = 6).
+  Retouche : choix « un disque de rayon r cm, comme la base » (la parenthèse coupait la ligne).
+
+### 13.8 Lot 6 : fichiers mergés (2026-11-01)
+
+- #2091 mergée (CI verte). Attendu : `create-questions --dir scripts/questions/3-lot-6 --publier` lancé par
+  David depuis le dépôt principal à jour (`git pull` d'abord).

@@ -1,0 +1,219 @@
+{
+	"title": "Expérience aléatoire, issue, évènement",
+	"description": "Reconnaître une expérience aléatoire, compter ses issues, trouver les issues qui réalisent un évènement (pair au dé : 2, 4, 6)",
+	"grades": ["5"],
+	"theme": "Probabilités",
+	"domain": "Expériences aléatoires",
+	"subdomain": "événements",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Lesquelles de ces expériences sont aléatoires ?\n\n```choix\nplusieurs: oui\n- Lancer un dé et noter le nombre obtenu.\n- Tirer une carte au hasard dans un jeu.\n- Mesurer la longueur de sa table avec une règle.\n- Lancer une pièce et noter le côté visible.\n- Calculer $7 \\times 8$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1;3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Vocabulaire.** Une **expérience aléatoire** a plusieurs résultats possibles, et on ne peut pas savoir à l'avance lequel sortira. Chaque résultat possible est une **issue**. Un **évènement** est un ensemble d'issues ; il est réalisé si l'issue obtenue en fait partie.",
+					"Le dé, la carte tirée au hasard et la pièce ont plusieurs résultats possibles qu'on ne peut pas prévoir : ce sont des expériences aléatoires.",
+					"La mesure de la table et le calcul donnent toujours le même résultat : elles ne sont pas aléatoires."
+				]
+			}
+		},
+		{
+			"statement": "On fait tourner une roue partagée en secteurs numérotés de $1$ à ${{n}}$ et on note le numéro obtenu.\n\nCombien cette expérience a-t-elle d'**issues** ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Vocabulaire.** Une **expérience aléatoire** a plusieurs résultats possibles, et on ne peut pas savoir à l'avance lequel sortira. Chaque résultat possible est une **issue**. Un **évènement** est un ensemble d'issues ; il est réalisé si l'issue obtenue en fait partie.",
+					"Les issues sont $1$, $2$, …, ${{n}}$ : il y en a $\\textcolor{{{color:primary.0}}}{{{n}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé à six faces, numérotées de $1$ à $6$. On considère l'évènement « {{if:k==0|obtenir un nombre pair|{{if:k==1|obtenir un nombre supérieur ou égal à $4$|obtenir un multiple de $3$}}}} ».\n\nQuelles issues réalisent cet évènement ?\n\n```choix\nmelanger: non\nplusieurs: oui\n- $1$\n- $2$\n- $3$\n- $4$\n- $5$\n- $6$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==0|1;3;5|{{if:k==1|3;4;5|2;5}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Vocabulaire.** Une **expérience aléatoire** a plusieurs résultats possibles, et on ne peut pas savoir à l'avance lequel sortira. Chaque résultat possible est une **issue**. Un **évènement** est un ensemble d'issues ; il est réalisé si l'issue obtenue en fait partie.",
+					"L'évènement est réalisé par les issues $\\textcolor{{{color:primary.0}}}{{{if:k==0|2 ; 4 ; 6|{{if:k==1|4 ; 5 ; 6|3 ; 6}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On tire une carte au hasard parmi des cartes numérotées de $1$ à $10$. On obtient la carte ${{x}}$.\n\nL'évènement « obtenir un nombre pair » est-il réalisé ?\n\n```choix\nmelanger: non\n- oui\n- non\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:x%2==0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Vocabulaire.** Une **expérience aléatoire** a plusieurs résultats possibles, et on ne peut pas savoir à l'avance lequel sortira. Chaque résultat possible est une **issue**. Un **évènement** est un ensemble d'issues ; il est réalisé si l'issue obtenue en fait partie.",
+					"${{x}}$ {{if:x%2==0|est pair : l'évènement est $\\textcolor{{{color:primary.0}}}{\\text{réalisé}}$|n'est pas pair : l'évènement n'est $\\textcolor{{{color:primary.0}}}{\\text{pas réalisé}}$}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Aléatoires : 0, 1, 3",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0;1;3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la mesure",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0;1;2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Roue à 8 : 8 issues",
+			"variationIndex": 1,
+			"variables": {
+				"n": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {
+				"n": "8"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pair : 2, 4, 6",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["1;3;5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1, 3, 5",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0;2;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "≥ 4 : 4, 5, 6",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["3;4;5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Oubli du 4 (strict) : partiel",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["4;5"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Multiple de 3 : 3, 6",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["2;5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Carte 4 : oui",
+			"variationIndex": 3,
+			"variables": {
+				"x": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Carte 7 : non",
+			"variationIndex": 3,
+			"variables": {
+				"x": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carte 7, oui",
+			"variationIndex": 3,
+			"variables": {
+				"x": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
