@@ -5,20 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2127 (monnaie-centimes)._
+_Mis à jour le 2026-11-01, lot 8 écrit (PR des fichiers à ouvrir)._
 
 - **État** : lots 0 à 7 publiés (lot 7 : données, 6 modèles, § 14, clos le 2026-11-01).
-- **Prochaine action** : lot 8 monnaie (054, 055, 056, 057, 086) — phase 0 écrite (§ 15), réponses de David attendues ; le bloc ` ```monnaie ` a ses
-  centimes et ses billets de 200 / 500 € (#2127, pas en prod : `construire: 3,45`, réponse `3,45` / `2,2`) ; puis lots
-  8 et 9 (§ 12).
-- **En attente de David** : les 5 questions du § 15.
+- **Prochaine action** : lot 8 monnaie (054, 055, 056, 057, 086, § 15) écrit, PR des fichiers à merger, puis brouillons en prod (David), migration nœud + tag ; page à cocher et publication **après le `deploy:prod`** qui livre #2127 ; puis lots 9 et 10 (ex-8 et 9 du § 12).
+- **En attente de David** : rien (phase 0 validée).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
   posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
   de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
   de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot7-rangement`, mergée : en partir une neuve sur `origin/main`). `!` de David :
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot8-monnaie`). `!` de David :
   toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -661,3 +659,11 @@ tag ne change aucune règle.
    et ranger le lot maintenant, publier après ton prochain `deploy:prod`.
 5. **Numéro du lot** : « lot 8 » pour la monnaie, les lots « 8 » et « 9 » du § 12 deviennent 9 et 10. Recommandation :
    oui (les fichiers suivent : `lot-ce1-8.py`, `scripts/questions/ce1-8/`).
+
+Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les cinq recommandations.
+
+- 2026-11-01 : lot 8 écrit (`lot-ce1-8.py`, `scripts/questions/ce1-8/`), `question:specs` 51/51 (4 400 tirages),
+  simulation 6/6 ; 6 brouillons en base locale. Aperçu admin : rendu de 2,20 € posé (2 € + 20 c) jugé juste ; deux
+  porte-monnaie de centimes lisibles, mais petits quand l'un a 11 pièces (même échelle que CP-042). `construire: {{p}}c`
+  (le bloc lit `345c`). Corrigé du rendu en une seule étape (une étape `{{if:}}` vide restait affichée) ; objets à la
+  mesure du billet (sucette pour 1 €, cahier pour 5 €).
