@@ -5,18 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2108 (sonde des figures) et #2109 (niveau du lot 1)._
+_Mis à jour le 2026-11-01, après #2108, #2109 et la publication du lot 1._
 
-- **État** : lots 1 à 7 en prod ; publiés : lots 2 à 5, les 3 translations du lot 6, le lot 7 ; en brouillon : les 7
-  du lot 1 (relus : 7/7 OK, § 37), les 2 volumes du lot 6. Sonde des figures livrée (#2108). Migration
-  `20261101193000_questions_4_lot1_niveau` (a635df43, niveau 5 → 7) mergée (#2109), **pas jouée** (§ 38).
-- **Prochaine action** : `db:migrate` (dépôt principal) une fois la collision `20261101190200` levée ; vérifier au MCP
-  a635df43 au niveau 7 ; `publier-lot --dir scripts/questions/4-lot-1` en simulation (7 passent) ; **David**
-  `--publier`. Puis phase 0 du lot 8 « programmes de calcul et fonctions » (060, 081, 061, 062, 063, 064).
-- **En attente de David** : la collision `20261101190200` (`questions_6_lot7_rangement_tags`, session questions-6,
-  même version que `questions_5_lot6`, déjà jouée) : à renommer par sa session ; supprimer
-  `scripts/questions/.sonde-figures-tmp.ts` (worktree ; `rm` refusé au classifieur). Volumes du lot 6 : après le
-  `deploy:prod` qui livre ` ```solide `.
+- **État** : lots 1 à 7 en prod ; tous publiés sauf les 2 volumes du lot 6 (brouillons). Lot 1 publié 7/7 (§ 38).
+  Sonde des figures livrée (#2108).
+- **Prochaine action** : phase 0 du lot 8 « programmes de calcul et fonctions » (060, 081, 061, 062, 063, 064 ; ordre
+  du § 5 bis), puis lot 9 « pensée informatique » (065-067). Volumes du lot 6 : après le `deploy:prod` qui livre
+  ` ```solide `, `publier-lot` sur un dossier qui ne contient que 01 et 02 du lot 6.
+- **En attente de David** : supprimer `scripts/questions/.sonde-figures-tmp.ts` (worktree ; `rm` refusé au
+  classifieur).
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
   David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
   `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
@@ -939,3 +936,7 @@ Equations / Mettre en équation 3 ; 017 : forme puissance exigée quand la consi
   (MCP : dernière version 20261101190200 = 5_lot6 ; a635df43 encore au niveau 5). Signalé à David.
 - Sonde des figures : `scripts/questions/sonde-figures.ts` + ligne au § 5 de `couvrir-un-niveau.md` (#2108, mergée,
   sans revue) ; lot 6 : 0 problème (787 blocs) ; copie cassée : 1 problème, sortie 1.
+- Collision réglée par la session questions-6 (#2114, migration renommée `20261101200700`) ; son `db:migrate` a joué
+  aussi la nôtre (`20261101193000`). Vérifié au MCP : a635df43 au niveau 7, brouillon, `updated_at` inchangé
+  (2026-10-28), les 3 triggers actifs. `publier-lot` en simulation : 7 brouillons passent.
+- `publier-lot --publier` lancé par David : 7/7 publiés ; vérifié au MCP (7 `published`, a635df43 au niveau 7).
