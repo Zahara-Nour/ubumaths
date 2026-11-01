@@ -5,13 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2100 et `db:migrate`._
+_Mis à jour le 2026-11-01, page à cocher du lot 6 publiée._
 
-- **État** : lot 6 : 7 brouillons rangés et tagués en prod, c8306505 partagé (migration jouée, § 13.10).
-- **Prochaine action** : page à cocher des 7 brouillons (`page-a-cocher.ts`, artefact avec capacité `db`), relecture
-  par David, puis `publier-lot.ts`. 3-019 et 3-020 (` ```solide `) : publiables seulement après le `deploy:prod`
-  qui livre le bloc (à demander à David) ; sinon publier les 5 autres d'abord.
-- **En attente de David** : rien pour l'instant (la page à cocher vient d'abord).
+- **État** : lot 6 : 7 brouillons rangés et tagués en prod ; page à cocher publiée
+  (https://claude.ai/artifact/KtNscSpDBynm4Baw36Vftn, § 13.11), 0 verdict pour l'instant.
+- **Prochaine action** : relecture par David ; compter les verdicts (`ArtifactData list verdicts`), corriger
+  les « À revoir » (§ 7 de la démarche), puis `publier-lot.ts` (simulation, puis David avec `--publier`).
+  3-019 et 3-020 (` ```solide `) : publiables seulement après le `deploy:prod` qui livre le bloc (à demander
+  à David) ; sinon publier les 5 autres d'abord.
+- **En attente de David** : la relecture de la page à cocher.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; ` ```solide ` pas en prod (modèles qui s'en servent : brouillon
   jusqu'au `deploy:prod`) ; étiquette d'un vecteur libre (`vecteur(dx, dy, ancre=…)`) : vérifier qu'un
@@ -920,3 +922,10 @@ modèles publiés de plus, et c8306505 de 4e ; la 4e ne perd rien. Aucune règle
   (170000 questions-4, 183000 la nôtre, 190000 1re spé, 190100 ce1, jouées ensemble).
 - MCP : `20261101183000` inscrite ; les 7 brouillons à leur nœud (§ 13), un tag chacun ; c8306505 en grades
   `['4', '3']`, tags 3-024,4-031, `published` ; `updated_at` inchangé partout.
+
+### 13.11 Lot 6 : page à cocher publiée (2026-11-01)
+
+- `page-a-cocher.ts --dir scripts/questions/3-lot-6` (lecture prod) : 7 fiches, 25 exemples ; artefact
+  https://claude.ai/artifact/KtNscSpDBynm4Baw36Vftn (capacité `db`, collection `verdicts` vide au départ).
+- Alertes : 3-019 et 3-020, bloc ` ```solide ` non dessiné par la page (montré en source) → les jouer dans
+  l'aperçu admin **local** (le bloc n'est pas en prod).
