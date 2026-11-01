@@ -5,21 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2089 et #2098 (lot 7 relu et publié)._
+_Mis à jour le 2026-11-01, après #2089 et #2098 (lot 7 publié ; décisions du § 36)._
 
-- **État** : lots 1 à 7 en prod ; publiés : lots 2 à 5, les 3 translations du lot 6, le lot 7 (6/6, § 35) ; en
-  brouillon : les 7 du lot 1, les 2 volumes du lot 6.
-- **Prochaine action** : phase 0 du lot 8 « programmes de calcul et fonctions » (060, 081, 061, 062, 063, 064 ; ordre
-  du § 5 bis), puis lot 9 « pensée informatique » (065-067). Volumes du lot 6 : après le `deploy:prod` qui livre
-  ` ```solide `, `publier-lot` sur un dossier qui ne contient que 01 et 02 du lot 6.
-- **En attente de David** : garder ou supprimer la sonde des figures (`scripts/questions/.sonde-figures-tmp.ts`, non
-  suivie, dans le worktree) ; publication des 7 brouillons du lot 1 ; revoir ou non les 14 bornes du cycle 4 sur un
-  document 2019/2016 (§ 27).
+- **État** : lots 1 à 7 en prod ; publiés : lots 2 à 5, les 3 translations du lot 6, le lot 7 ; en brouillon : les 7
+  du lot 1 (jamais relus sur une page), les 2 volumes du lot 6.
+- **Prochaine action** (ordre validé, § 36) : 1) page à cocher du lot 1 (`page-a-cocher.ts --dir
+scripts/questions/4-lot-1`), verdicts comptés, `publier-lot` en simulation, **David** `--publier` ; 2) petite PR
+  « sonde des figures » : `.sonde-figures-tmp.ts` (non suivi, dans le worktree) → `scripts/questions/sonde-figures.ts`
+  (`--dir`, `--montre`) + une ligne dans `docs/pratiques/couvrir-un-niveau.md` § 5, sans revue ; 3) phase 0 du lot 8
+  « programmes de calcul et fonctions » (060, 081, 061, 062, 063, 064).
+- **En attente de David** : rien. Volumes du lot 6 : après le `deploy:prod` qui livre ` ```solide `.
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
   David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
   `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
   COMMIT ; QCM = case choix ; un grand nombre s'écrit `10\,000` dans une spec ; tests navigateur de la CI parfois
-  tombés (`wrapDynamicImport`) : relancer le job.
+  tombés (`wrapDynamicImport`) : relancer le job ; une borne qui ne repose que sur 2019/2016 : la signaler dans la
+  phase 0 du lot qui s'en sert (§ 36).
 - **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
@@ -901,3 +902,14 @@ Equations / Mettre en équation 3 ; 017 : forme puissance exigée quand la consi
 
 - Verdicts lus en base : 6 documents, 6 « OK », aucun commentaire.
 - `publier-lot` en simulation (6 passent), lancé par David avec `--publier` : 6/6 publiés ; vérifié au MCP.
+
+## 36. Décisions de David (2026-11-01, « je suis tes recos »)
+
+1. **Sonde des figures** : gardée comme outil → `scripts/questions/sonde-figures.ts` (calquée sur `sonde-courbes.ts`),
+   ligne dans la démarche (`couvrir-un-niveau.md` § 5 : lot qui dessine des figures → sonde, 0 problème avant la page à
+   cocher) ; petite PR sans revue.
+2. **Lot 1** : page à cocher d'abord (jamais relu sur une page : elle n'existait pas au lot 1), puis publication par
+   `publier-lot`.
+3. **14 bornes 2019/2016 seules** : pas de revue en bloc ; chacune est signalée dans la phase 0 du lot qui s'en sert,
+   David tranche alors. Question retirée de « En attente ».
+4. Ordre : page à cocher du lot 1, PR de la sonde, phase 0 du lot 8.
