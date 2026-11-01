@@ -8,7 +8,7 @@
 _Mis à jour le 2026-11-01, migration de rangement du lot 7 écrite (PR à ouvrir)._
 
 - **État** : lots 1 à 6 publiés. **Lot 7** : 6 brouillons en prod (§ 18.2) ; migration nœud + tag
-  `20261101220100_questions_5_lot7_rangement_tags` écrite, test vert, preuve rouge faite (§ 18.3).
+  `20261101224000_questions_5_lot7_rangement_tags` écrite, test vert, preuve rouge faite (§ 18.3).
 - **Prochaine action** : PR → CI → merge → `db:migrate` (dry-run d'abord) → vérifier au MCP ; puis page à cocher,
   puis `publier-lot`. Ensuite lot 8 « Opérations » (001, 002, 005, 116, 117).
 - **En attente de David** : 02 (deux cases sur deux lignes) à essayer à la main dans l'aperçu : au pilotage
@@ -542,5 +542,5 @@ Calcul littéral › Écrire › Formules 1-3, nœud = notion Algèbre › Calcu
   en #2009). 6 brouillons sans nœud ni tag, niveaux 8, 1, 3, 3, 4, 5.
 - Écart avec le tableau du § 18 : 5-092 et 5-098 sont sur la notion **Fonctions › Généralités sur les fonctions**,
   pas Algèbre › Calcul littéral. **David : choix A** — 05 et 06 sur le nœud de leur point ; aucun point déplacé.
-- `lot-7-rangement.py` (gabarit lot 5) → migration `20261101220100_questions_5_lot7_rangement_tags` + fixture ;
+- `lot-7-rangement.py` (gabarit lot 5) → migration `20261101224000_questions_5_lot7_rangement_tags` + fixture ;
   test `questions-5-lot7-rangement-tags.test.ts` : 19 verts ; preuve rouge (migration vidée) : 12 échecs.
