@@ -1,0 +1,261 @@
+{
+	"title": "Sections de solides",
+	"description": "Reconnaître la section d'un pavé (parallèle à une face), d'un cylindre (parallèle ou perpendiculaire à l'axe) ; rayon de la section d'une boule par Pythagore",
+	"grades": ["3"],
+	"theme": "Géométrie",
+	"domain": "Solides",
+	"subdomain": "Sections",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le pavé droit $ABCDEFGH$ ci-dessous ($AB = {{l}}~\\unit{cm}$, $BC = {{p}}~\\unit{cm}$, $AE = {{h}}~\\unit{cm}$) est coupé par un plan parallèle à la face $EFGH$. Quelle est la section ?\n\n```solide\nforme: pave {{l}} {{p}} {{h}}\nsommets: A B C D E F G H\nsection: parallele dessus {{k}}\n```\n\n```choix\n- un rectangle de ${{l}}~\\unit{cm}$ sur ${{p}}~\\unit{cm}$\n- un rectangle de ${{l}}~\\unit{cm}$ sur ${{h}}~\\unit{cm}$\n- un rectangle de ${{p}}~\\unit{cm}$ sur ${{h}}~\\unit{cm}$\n- un triangle\n```",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "3..8"
+				},
+				{
+					"name": "p",
+					"expression": "2..6"
+				},
+				{
+					"name": "h",
+					"expression": "3..7"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				}
+			],
+			"conditions": ["l!=p", "l!=h", "p!=h", "k<h"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La section d'un pavé droit par un plan parallèle à une face est un **rectangle** de mêmes dimensions que cette face.",
+					"La face $EFGH$ mesure $EF = AB = {{l}}~\\unit{cm}$ sur $FG = BC = {{p}}~\\unit{cm}$ : la section est \\textcolor{{{color:primary.0}}}{\\text{un rectangle de {{l}} cm sur {{p}} cm}}."
+				]
+			}
+		},
+		{
+			"statement": "Un cylindre de révolution de rayon ${{r}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$ est coupé par un plan perpendiculaire à son axe. Quelle est la section ?\n\n```solide\nforme: cylindre {{r}} {{h}}\nsommets: O O'\nsection: perpendiculaire {{k}}\n```\n\n```choix\n- un disque de rayon ${{r}}~\\unit{cm}$, comme la base\n- une ellipse\n- un rectangle\n- un disque plus petit que la base\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..5"
+				},
+				{
+					"name": "h",
+					"expression": "4..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["k<h", "r!=h"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La section d'un cylindre de révolution par un plan **perpendiculaire à son axe** est un disque de même rayon que la base : \\textcolor{{{color:primary.0}}}{\\text{un disque de rayon {{r}} cm}}.",
+					"Sur le dessin en perspective, ce disque est **vu** comme une ellipse, mais c'est bien un disque."
+				]
+			}
+		},
+		{
+			"statement": "Un cylindre de révolution de rayon ${{r}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$ est coupé par un plan parallèle à son axe. Quelle est la section ?\n\n```solide\nforme: cylindre {{r}} {{h}}\nsommets: O O'\nsection: parallele {{k}}\n```\n\n```choix\n- un rectangle dont un côté mesure ${{h}}~\\unit{cm}$ (la hauteur)\n- un disque de rayon ${{r}}~\\unit{cm}$\n- une ellipse\n- un carré de côté ${{r}}~\\unit{cm}$\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..6"
+				},
+				{
+					"name": "h",
+					"expression": "4..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				}
+			],
+			"conditions": ["k<r", "r!=h"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La section d'un cylindre de révolution par un plan **parallèle à son axe** est un rectangle.",
+					"Deux de ses côtés sont des génératrices du cylindre : ils mesurent la hauteur. C'est \\textcolor{{{color:primary.0}}}{\\text{un rectangle dont un côté mesure {{h}} cm}}."
+				]
+			}
+		},
+		{
+			"statement": "Une boule de centre $O$ et de rayon ${{R}}~\\unit{cm}$ est coupée par un plan situé à ${{d}}~\\unit{cm}$ de son centre. La section est un disque : quel est son rayon ?\n\n```solide\nforme: boule {{R}}\nsommets: O\nsection: {{d}}\n```\n\n$?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..7"
+				},
+				{
+					"name": "R",
+					"expression": "{{if:t==0|5|}}{{if:t==1|5|}}{{if:t==2|10|}}{{if:t==3|10|}}{{if:t==4|13|}}{{if:t==5|13|}}{{if:t==6|15|}}{{if:t==7|17|}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:t==0|3|}}{{if:t==1|4|}}{{if:t==2|6|}}{{if:t==3|8|}}{{if:t==4|5|}}{{if:t==5|12|}}{{if:t==6|9|}}{{if:t==7|8|}}"
+				},
+				{
+					"name": "rho",
+					"expression": "{{if:t==0|4|}}{{if:t==1|3|}}{{if:t==2|8|}}{{if:t==3|6|}}{{if:t==4|12|}}{{if:t==5|5|}}{{if:t==6|12|}}{{if:t==7|15|}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rho}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $H$ le centre de la section et $M$ un point de son bord : $OH = {{d}}~\\unit{cm}$ et $OM = {{R}}~\\unit{cm}$ (rayon de la boule). Le triangle $OHM$ est rectangle en $H$.",
+					"Théorème de Pythagore : $HM^2 = OM^2 - OH^2 = {{R}}^2 - {{d}}^2 = {{eval:R^2-d^2}}$.",
+					"Donc $HM = \\sqrt{{{eval:R^2-d^2}}} = \\textcolor{{{color:primary.0}}}{{{rho}}~\\unit{cm}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Pavé : rectangle l × p",
+			"variationIndex": 0,
+			"variables": {
+				"l": "6",
+				"p": "4",
+				"h": "5",
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l × h",
+			"variationIndex": 0,
+			"variables": {
+				"l": "6",
+				"p": "4",
+				"h": "5",
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cylindre ⊥ : disque",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"h": "7",
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une ellipse (le dessin)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"h": "7",
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cylindre ‖ : rectangle",
+			"variationIndex": 2,
+			"variables": {
+				"r": "4",
+				"h": "6",
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un disque",
+			"variationIndex": 2,
+			"variables": {
+				"r": "4",
+				"h": "6",
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "R = 5, d = 3 : 4",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"R": "5",
+				"d": "3",
+				"rho": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le rayon de la boule",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"R": "5",
+				"d": "3",
+				"rho": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : R − d",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"R": "5",
+				"d": "3",
+				"rho": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
