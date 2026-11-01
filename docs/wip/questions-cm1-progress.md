@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2159 renumérotée (224741), CI relancée._
+_Mis à jour le 2026-11-01, après #2159._
 
-- **État** : lot 4b (calcul posé, 6 modèles) en brouillons en prod (§ 13 quater, ids notés) ; migration de rangement renumérotée `20261101224741_questions_cm1_lot4b_rangement_tags` (`224100` dépassée par `224700` de main, puis `224701` prise par la 1re spé probas, `224702` par la terminale spé lot 2 ; `224741` tiré par le script de #2177, aléa 1-59 s) dans la PR #2159 : test 10/10 vert (6 rouges sans le corps), `security-auditor` sans finding bloquant.
-- **Prochaine action** : CI verte → `pnpm check:migrations --pr 2159` → merge → David lance `db:migrate` depuis le dépôt principal → vérif MCP (nœuds, tags) → page à cocher → publication. Puis lot 5 grandeurs.
-- **En attente de David** : `db:migrate` après le merge.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** (main avance vite : 224100 dépassé par 224700 pendant la CI de #2159) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») et le type `content` (prendre `feat`) ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot4b-rangement` (PR #2159). Branche locale `sauvegarde/questions-cm1-lot4b-rebase` (rebase abandonné, contenu identique) : à supprimer avec l’accord de David (`-D`).
+- **État** : lot 4b (calcul posé, 6 modèles) en brouillons en prod (§ 13 quater, ids notés) ; migration de rangement `20261101224741_questions_cm1_lot4b_rangement_tags` MERGÉE (#2159), pas encore jouée en prod.
+- **Prochaine action** : David lance `pnpm db:migrate` depuis le dépôt principal → vérif MCP (nœuds, tags des 6 modèles) → page à cocher → publication. Puis lot 5 grandeurs (nouveau worktree, nouvelle branche).
+- **En attente de David** : `pnpm db:migrate` ; accord pour supprimer la branche locale `sauvegarde/questions-cm1-lot4b-rebase` (rebase abandonné, contenu identique, `-D`).
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** (main avance vite : #2159 renumérotée 3 fois, 224100 → 224701 → 224702 → 224741 ; tant que #2177 n'est pas mergée, `--prochain` donne « max + 1 s » à toutes les sessions en même temps) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») et le type `content` (prendre `feat`) ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
+- **Worktree / branche** : aucun (worktree de #2159 retiré) ; recréer `../ubumaths-wt-questions-cm1` pour le lot 5.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
