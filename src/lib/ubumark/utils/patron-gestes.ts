@@ -2,7 +2,7 @@
  * Bloc ```patron — gestes de l'élève : réponses, réponses attendues, jugement
  * ===========================================================================
  *
- * Chantier `solides`, lot 5 (`docs/wip/solides-progress.md` § 10).
+ * Chantier `solides`, lot 5 (`docs/archive/wip/solides-progress.md` § 10).
  *
  * `designer: opposee` (`voisines`, `sommet A`, `face EFGH`) — l'élève touche
  * une ou plusieurs faces :

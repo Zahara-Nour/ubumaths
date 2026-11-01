@@ -1,6 +1,6 @@
 /**
  * Assemblage de cubes à geste à l'écran (```cubes + `dessiner:` / `retrouver:`,
- * chantier `solides`, `docs/wip/solides-progress.md` § 7) : colorier une vue,
+ * chantier `solides`, `docs/archive/wip/solides-progress.md` § 7) : colorier une vue,
  * écrire les hauteurs, noms accessibles, correction.
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).

@@ -1,23 +1,21 @@
 ---
-status: en cours
+status: clos
 ---
 
 # Chantier `solides` — assemblages de cubes, perspective cavalière, patrons, sections
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2065._
+_Mis à jour le 2026-11-01 : chantier CLOS, journal archivé._
 
-- **État** : les 6 lots sont mergés (#2003→#2046), plus le correctif hors chantier #2065 (bloc ouvert sur la
-  ligne d'un item de liste lu en entier ; bloc à case sous cette forme refusé, règle `nested-line.ts`).
-  Rien n'est en prod. Les vérifications manuelles sont notées dans `verifications-manuelles.md`.
-- **Prochaine action** : clore le chantier par le versement (durable → `docs/systeme/`, journal archivé).
-- **En attente de David** : faut-il une petite PR `fix` pour refuser une option à geste dans un ` ````choix `
-  (aujourd'hui acceptée sans case, la spec § 7 et § 10 dit « refusé ») ? Voir § 11.
-- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; un geste ne doit jamais donner la
-  réponse ; la CI « Client Tests » peut tomber pour l'infra : relancer ; garde de doc : `statistiques.md`
-  couvre `stat-chart-parser.ts` (la garde locale ne voit que les commits).
-- **Worktree / branche** : aucun (`ubumaths-wt-blocs-dans-liste` retiré après #2065).
+- **État** : clos. 6 lots mergés (#2003→#2046) et le correctif hors chantier #2065. Rien n'est en prod.
+  Le durable est dans `docs/systeme/ubumark.md` (blocs `cubes`, `solide`, `patron`) et `questions.md`
+  (cases à geste), ainsi que dans l'ADR 0034 ; les trous connus sont dans § « Doutes et écarts connus »
+  de `ubumark.md`.
+- **Restes hors chantier** : perspective à compléter à la main (avec `figure-a-completer`) ; patron du cône ;
+  pyramide inscrite dans un cube ; prisme à base quelconque ; faux patrons du pavé aux mauvaises
+  dimensions ; sections hors BO (pavé ‖ arête, pyramide et cône ‖ base) ; modèles de questions (sessions
+  « questions »).
 
 ---
 
@@ -146,7 +144,7 @@ forme: 7
 5. **Ordre des lots** (§ 3) : d'accord, ou les patrons du cube (cours moyen, 4 points) avant le ` ```solide ` ?
 
 **Réponse de David (2026-10-30)** : « je te suis » — les cinq recommandations sont retenues : cavalière
-partout (Q1), trois mots / un nœud `espace` / un ADR (Q2, [ADR 0034](../adr/0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)),
+partout (Q1), trois mots / un nœud `espace` / un ADR (Q2, [ADR 0034](../../adr/0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)),
 « mêmes vues » (Q3), perspective à compléter hors chantier (Q4), ordre des lots du § 3 (Q5).
 
 ## 6. Lot 1 — ` ```cubes `, affichage (spécification)
