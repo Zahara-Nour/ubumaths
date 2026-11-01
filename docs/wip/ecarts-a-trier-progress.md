@@ -8,13 +8,13 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; V62
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2144._
+_Mis à jour le 2026-11-01, après #2144 (#2155 ouverte)._
 
-- **État** : liste A finie, hors restes décidés : lots A, 2b, 3, 4, 5 mergés (#2062→#2068, #2097, #2118, #2131, #2144 = L8 clos) ; ménage #2142 (7 tests « deux profs » retirés, agent `mathast-expert` corrigé) ; #2061 (deps) et #1850 (SIGPIPE) mergés, #1802 fermée. Rien en prod.
-- **Prochaine action** : la liste A est vide (M19 en passant seulement, L12 sur demande, L15/L25/V34/V17 → `fusion-moteurs`). Reste la **liste B** d'[ecarts-a-trier.md](ecarts-a-trier.md) (décisions de David) ; proposer de la trier par lots, ou clore le chantier (versement des restes dans les Points ouverts).
-- **En attente de David** : trigger `log_achievements_to_events` qui lit `NEW.metadata` (colonne absente de `student_achievements`) : tout INSERT y échoue (42703) — migration à décider (test sauté `mono-teacher-rpc-param-cleanup.test.ts:61`).
-- **Pièges en cours** : `charger-repartir-annuler.svelte.test.ts` (client, shard 2/2) instable : rouge puis vert à la relance (#2061) ; « Code Quality » parfois non déclenchée → `gh workflow run quality.yml --ref <branche>`.
-- **Worktree / branche** : aucun.
+- **État** : liste A finie — lots A, 2b, 3, 4, 5 mergés (#2062→#2068, #2097, #2118, #2131, #2144 = L8 clos) ; ménage #2142 ; #2061, #1850 mergés, #1802 fermée. Rien en prod. #2155 OUVERTE (`test/reactive-award-achievement`) : réactive le test `award_achievement_manual` (le trigger `log_achievements_to_events` est corrigé en prod depuis le 2026-06-20, vérifié) ; CI rouge avant à cause de la migration en double `20261101215000` (corrigée par #2154, mergée), puis relancée → **vérifier sa CI et la merger**.
+- **Prochaine action** : (1) merger #2155 si CI verte, puis retirer `../ubumaths-wt-award-achievement` ; (2) lire les réponses de la **page à cocher du lot RGPD** (liste B, T1-T15) : https://claude.ai/artifact/2qkUgP9ygUJ3J9ocggY6fe (`ArtifactData list`, collection `reponses`, une fiche par id `T1`…`T15`) ; puis lots : doc seule (T9, T12, T13, T14 si infos données), technique (T2 d'abord, puis T1, T6, T7, T8, T15), ensuite les lots B « destructif » et « spécification ».
+- **En attente de David** : cocher la page RGPD (0/11 au 2026-11-01) ; T14 = infos des mentions légales dans le commentaire.
+- **Pièges en cours** : nouvelles règles de migration (#2165) : `pnpm migration:horodatage`, `pnpm check:migrations --pr <n>` avant merge ; `charger-repartir-annuler.svelte.test.ts` (client) instable ; file de runners saturée.
+- **Worktree / branche** : `../ubumaths-wt-award-achievement` (`test/reactive-award-achievement`, #2155).
 
 ---
 
