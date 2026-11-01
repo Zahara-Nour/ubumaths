@@ -1,0 +1,223 @@
+{
+	"title": "Poser une addition de nombres décimaux",
+	"description": "Addition posée de décimaux (deux décimales au plus) : 45,78 + 26,57 ; 34,5 + 2,58 ; 234 + 5,68 ; 56,75 + 234 + 0,8",
+	"grades": ["CM1"],
+	"theme": "Décimaux",
+	"domain": "Additionner",
+	"subdomain": "Calcul posé",
+	"level": 1,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{eval:C/100;d}} + {{eval:D/100;d}}\n```",
+			"variables": [
+				{
+					"name": "C",
+					"expression": "1001..9999"
+				},
+				{
+					"name": "D",
+					"expression": "1001..9999"
+				}
+			],
+			"conditions": ["mod(C,10) != 0", "mod(D,10) != 0", "mod(C,10) + mod(D,10) >= 10", "C >= D"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centièmes sous centièmes, dixièmes sous dixièmes, unités sous unités.",
+					"Centièmes : ${{eval:mod(C,10)}} + {{eval:mod(D,10)}} = {{eval:mod(C,10)+mod(D,10)}}${{if:mod(C,10)+mod(D,10)>=10| : on écrit ${{eval:mod(C,10)+mod(D,10)-10}}$ et on retient $1$ aux dixièmes.|.}}",
+					"On calcule comme avec des nombres entiers, colonne par colonne, en partant de la droite ; la virgule du résultat se place sous les autres virgules.",
+					"$${{eval:C/100;d}} + {{eval:D/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(C+D)/100;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{eval:T/10;d}} + {{eval:D/100;d}}\n```",
+			"variables": [
+				{
+					"name": "T",
+					"expression": "11..999"
+				},
+				{
+					"name": "D",
+					"expression": "101..9999"
+				}
+			],
+			"conditions": ["mod(T,10) != 0", "mod(D,10) != 0", "10*T > D"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centièmes sous centièmes, dixièmes sous dixièmes, unités sous unités.",
+					"${{eval:T/10;d}}$ n'a pas de centièmes : sa case des centièmes reste vide, elle compte pour $0$ (on peut penser ${{eval:T/10;d}}0$).",
+					"Centièmes : $0 + {{eval:mod(D,10)}} = {{eval:mod(D,10)}}$.",
+					"On calcule comme avec des nombres entiers, colonne par colonne, en partant de la droite ; la virgule du résultat se place sous les autres virgules.",
+					"$${{eval:T/10;d}} + {{eval:D/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(10*T+D)/100;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{n}} + {{eval:D/100;d}}\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "101..999"
+				},
+				{
+					"name": "D",
+					"expression": "101..9999"
+				}
+			],
+			"conditions": ["mod(D,10) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centièmes sous centièmes, dixièmes sous dixièmes, unités sous unités.",
+					"${{n}}$ est un nombre entier : sa virgule, qu'on n'écrit pas, est juste après le chiffre des unités. Ses chiffres se posent sous les unités, les dizaines, les centaines (on peut penser ${{n}}{,}00$).",
+					"On calcule comme avec des nombres entiers, colonne par colonne, en partant de la droite ; la virgule du résultat se place sous les autres virgules.",
+					"$${{n}} + {{eval:D/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(100*n+D)/100;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{eval:C/100;d}} + {{n}} + 0,{{t}}\n```",
+			"variables": [
+				{
+					"name": "C",
+					"expression": "1001..9999"
+				},
+				{
+					"name": "n",
+					"expression": "101..999"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["mod(C,10) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centièmes sous centièmes, dixièmes sous dixièmes, unités sous unités. ${{n}}$ est entier : sa virgule est juste après son chiffre des unités.",
+					"Centièmes : seul ${{eval:C/100;d}}$ en a : ${{eval:mod(C,10)}}$.",
+					"Dixièmes : ${{eval:mod(floor(C/10),10)}} + {{t}} = {{eval:mod(floor(C/10),10)+t}}${{if:mod(floor(C/10),10)+t>=10| : on écrit ${{eval:mod(floor(C/10),10)+t-10}}$ et on retient $1$ aux unités.|.}}",
+					"On calcule comme avec des nombres entiers, colonne par colonne, en partant de la droite ; la virgule du résultat se place sous les autres virgules.",
+					"$${{eval:C/100;d}} + {{n}} + {{eval:t/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(C+100*n+10*t)/100;d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "45,78 + 26,57 = 72,35",
+			"variationIndex": 0,
+			"variables": {
+				"C": "4578",
+				"D": "2657"
+			},
+			"answers": ["72,35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retenues oubliées, 45,78 + 26,57 = 61,25",
+			"variationIndex": 0,
+			"variables": {
+				"C": "4578",
+				"D": "2657"
+			},
+			"answers": ["61,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 34,5 + 2,58 = 37,08",
+			"variationIndex": 1,
+			"variables": {
+				"T": "345",
+				"D": "258"
+			},
+			"answers": ["37,08"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres alignés à droite, 345 + 258 → 6,03",
+			"variationIndex": 1,
+			"variables": {
+				"T": "345",
+				"D": "258"
+			},
+			"answers": ["6,03"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 34,5 + 2,58 = 36,13 (5 + 58 dans les décimales)",
+			"variationIndex": 1,
+			"variables": {
+				"T": "345",
+				"D": "258"
+			},
+			"answers": ["36,13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "234 + 5,68 = 239,68",
+			"variationIndex": 2,
+			"variables": {
+				"n": "234",
+				"D": "568"
+			},
+			"answers": ["239,68"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 234 posé sous les décimales, 2,34 + 5,68 = 8,02",
+			"variationIndex": 2,
+			"variables": {
+				"n": "234",
+				"D": "568"
+			},
+			"answers": ["8,02"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 56,75 + 234 + 0,8 = 291,55",
+			"variationIndex": 3,
+			"variables": {
+				"C": "5675",
+				"n": "234",
+				"t": "8"
+			},
+			"answers": ["291,55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,8 pris pour 0,08, 56,75 + 234 + 0,08 = 290,83",
+			"variationIndex": 3,
+			"variables": {
+				"C": "5675",
+				"n": "234",
+				"t": "8"
+			},
+			"answers": ["290,83"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

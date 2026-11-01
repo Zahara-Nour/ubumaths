@@ -1,0 +1,196 @@
+{
+	"title": "Poser une multiplication de deux nombres entiers",
+	"description": "Multiplication posée : 48 × 37 ; 347 × 26 ; 876 × 208 (un 0 au milieu, sa ligne sautée)",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Calcul posé",
+	"level": 1,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} × {{b}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "12..99"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*d+u"
+				}
+			],
+			"conditions": ["mod(a,10) != 0", "b >= 12"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On multiplie ${{a}}$ par chaque chiffre de ${{b}}$, en commençant par les unités.",
+					"Unités : ${{a}} \\times {{u}} = {{eval:a*u}}$.",
+					"Dizaines : ${{a}} \\times {{d}} = {{eval:a*d}}$ dizaines : on l'écrit avec un $0$ de décalage, ${{eval:10*a*d}}$.",
+					"On additionne : ${{eval:a*u}} + {{eval:10*a*d}} = {{eval:a*b}}$.",
+					"$${{a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} × {{b}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "102..999"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*d+u"
+				}
+			],
+			"conditions": ["mod(a,10) != 0", "b >= 12"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On multiplie ${{a}}$ par chaque chiffre de ${{b}}$, en commençant par les unités.",
+					"Unités : ${{a}} \\times {{u}} = {{eval:a*u}}$.",
+					"Dizaines : ${{a}} \\times {{d}} = {{eval:a*d}}$ dizaines : on l'écrit avec un $0$ de décalage, ${{eval:10*a*d}}$.",
+					"On additionne : ${{eval:a*u}} + {{eval:10*a*d}} = {{eval:a*b}}$.",
+					"$${{a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} × {{b}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "102..999"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:100*c+u"
+				}
+			],
+			"conditions": ["mod(a,10) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On multiplie ${{a}}$ par chaque chiffre de ${{b}}$, en commençant par les unités.",
+					"Unités : ${{a}} \\times {{u}} = {{eval:a*u}}$.",
+					"Dizaines : le chiffre est $0$, la ligne vaudrait $0$ : on la saute.",
+					"Centaines : ${{a}} \\times {{c}} = {{eval:a*c}}$ centaines : on l'écrit avec deux $0$ de décalage, ${{eval:100*a*c}}$.",
+					"On additionne : ${{eval:a*u}} + {{eval:100*a*c}} = {{eval:a*b}}$.",
+					"$${{a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "48 × 37 = 1 776",
+			"variationIndex": 0,
+			"variables": {
+				"a": "48",
+				"u": "7",
+				"d": "3",
+				"b": "37"
+			},
+			"answers": ["1 776"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décalage oublié, 48 × 7 + 48 × 3 = 480",
+			"variationIndex": 0,
+			"variables": {
+				"a": "48",
+				"u": "7",
+				"d": "3",
+				"b": "37"
+			},
+			"answers": ["480"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "347 × 26 = 9 022",
+			"variationIndex": 1,
+			"variables": {
+				"a": "347",
+				"u": "6",
+				"d": "2",
+				"b": "26"
+			},
+			"answers": ["9 022"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décalage oublié, 2 082 + 694 = 2 776",
+			"variationIndex": 1,
+			"variables": {
+				"a": "347",
+				"u": "6",
+				"d": "2",
+				"b": "26"
+			},
+			"answers": ["2 776"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 876 × 208 = 182 208",
+			"variationIndex": 2,
+			"variables": {
+				"a": "876",
+				"u": "8",
+				"c": "2",
+				"b": "208"
+			},
+			"answers": ["182 208"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul 0 de décalage, 7 008 + 17 520 = 24 528",
+			"variationIndex": 2,
+			"variables": {
+				"a": "876",
+				"u": "8",
+				"c": "2",
+				"b": "208"
+			},
+			"answers": ["24 528"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
