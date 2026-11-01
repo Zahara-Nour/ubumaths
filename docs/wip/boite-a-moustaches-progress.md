@@ -190,6 +190,6 @@ Notes = 4 ; 8 ; 11 ; 14 ; 19
   re-poser ne change pas de trait) ; une seule boîte à construire : toute la hauteur du dessin la
   vise ; plusieurs : sa bande, et des boutons de boîte. Phrases : « Ta médiane est à 12. », « Tu n’as
   pas placé le maximum. », « (boîte Nautic) » quand il y a plusieurs boîtes à construire.
-- Tests : `boite-a-moustaches-construire.test.ts` 25, `generation-boite-a-moustaches-placer.test.ts` 13,
+- Tests : `boite-a-moustaches-construire.test.ts` 22, `generation-boite-a-moustaches-placer.test.ts` 13,
   `BoxPlotPlacer.svelte.test.ts` 11 ; suites questions + stat-chart 6 464 verts, composants voisins 98.
   `check:incremental` 0, `types:cliquet` 0.
