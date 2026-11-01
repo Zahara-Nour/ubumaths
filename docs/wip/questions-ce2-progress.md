@@ -6,18 +6,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 5 validée._
+_Mis à jour le 2026-11-01, après #2081._
 
-- **État** : lots 1 à 4 publiés en prod ; lot 5 (problèmes, 12 modèles) écrit, PR ouverte (§ 9).
-- **Prochaine action** : CI verte → merger ; David crée les 12 brouillons en prod (`create-questions --publier`) ;
-  puis migration nœud + tag (calquée sur le lot 4) ; page à cocher ; `--publier`. En parallèle, dans des sessions à
-  part : `choix-correction` (`$$…$$` brut, § 8), puis `centaines:` + milliers de `collection` et barres à monter.
-- **En attente de David** : rien.
+- **État** : lots 1 à 4 publiés en prod ; lot 5 (problèmes, 12 modèles) mergé (#2081), brouillons pas encore
+  créés en prod. Aucun worktree en cours.
+- **Prochaine action** : David crée les 12 brouillons (`pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/ce2-5 --publier`, avec `!`) ; puis migration nœud + tag (calquée sur le lot 4, niveaux relevés
+  au MCP juste avant ; 03 → Fractions · Calculer · Addition et Soustraction · 22) ; page à cocher ; `--publier`.
+  En parallèle, dans des sessions à part : `choix-correction` (§ 8), puis `centaines:` + milliers de `collection`
+  et barres à monter.
+- **En attente de David** : lancer `create-questions --publier` ; dire si la correction du produit cartésien en
+  phrases suffit (sinon outil neuf) ; veut-il voir les 12 brouillons dans l'aperçu admin avant publication.
 - **Pièges en cours** : `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les
   lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage =
-  max de la PROD ET du dépôt + 1 min ; niveaux relevés dans la catégorie JUSTE avant la publication (un lot
-  d'un autre niveau peut les prendre entre-temps) ; commitlint : sujet sans majuscule, corps ≤ 100 car.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot5`.
+  max de la PROD ET du dépôt + 1 min ; niveaux relevés dans la catégorie JUSTE avant la publication ; commitlint :
+  sujet sans majuscule (même « CE2 »), corps ≤ 100 car. ; worktree neuf : `pnpm exec svelte-kit sync` avant
+  `question:specs` ; pnpm 12 : pas de `-s`.
+- **Worktree / branche** : aucun (prochain : `../ubumaths-wt-questions-ce2`, branche de la migration du lot 5).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
