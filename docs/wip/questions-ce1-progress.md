@@ -5,15 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 6 écrit._
+_Mis à jour le 2026-11-01, après #2071._
 
 - **État** : lots 0 à 5 bis publiés. Lot 6 (calcul posé et heure, 7 modèles, § 13) écrit : `lot-ce1-6.py` →
-  `scripts/questions/ce1-6/`, simulation 7/7 (66 specs), 7 brouillons en base locale ; PR à merger (branche
-  `feat/questions-ce1-lot6`).
-- **Prochaine action** : CI verte → merge ; puis brouillons en prod par David (`create-questions --publier`), vérification
+  `scripts/questions/ce1-6/`, simulation 7/7 (66 specs), 7 brouillons en base locale ; **#2071 mergée** (CI verte après deux relances du
+  shard navigateur 2/2, instable aussi sur `main`).
+- **Prochaine action** : brouillons en prod par David (`create-questions --publier`), vérification
   au MCP, migration nœud + tag, page à cocher, publication. Ensuite lot 7 (données : 082, 106, 088, 089, 107, 081), puis
   chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : confirmer que 2 h 15 l'après-midi est **faux avec message** (pas d'ambre possible sans code,
+- **En attente de David** : `create-questions --dir scripts/questions/ce1-6 --publier` en prod ; confirmer que 2 h 15 l'après-midi est **faux avec message** (pas d'ambre possible sans code,
   § 13).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
@@ -21,7 +21,8 @@ _Mis à jour le 2026-11-01, lot 6 écrit._
   posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
   de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
   de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `feat/questions-ce1-lot6`). `!` de David : toujours
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (sur `feat/questions-ce1-lot6`, mergée : partir d'une
+  branche neuve sur `origin/main` pour le rangement, puis `branch -d feat/questions-ce1-lot6`). `!` de David : toujours
   préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -543,3 +544,5 @@ David ; un vrai ambre demanderait du code.
   résolu** (« heure: if:0==0 ») et les specs restent vertes → relire les blocs rendus (`--apercu`) ; dans `placer:`,
   écrire `9 h 0`. Aperçu admin : aiguilles 11 h 45 jugées justes ; 710 − 246 = 464 juste, cases d'échange au-dessus ;
   quatre cadrans du film et du match lisibles.
+- 2026-11-01 : #2071 mergée (CI verte après deux relances du shard navigateur 2/2 : installation de Chromium
+  bloquée, puis `page-demo-lexique` en échec, sans lien avec le lot) ; brouillons en prod à créer par David.
