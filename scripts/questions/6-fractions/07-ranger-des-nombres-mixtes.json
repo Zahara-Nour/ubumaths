@@ -10,12 +10,8 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Range ces nombres dans l'ordre croissant.\n\n$${{if:p==0|{{q}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{eval:q+1}} + \\frac{{{u}}}{{{v}}} \\quad ; \\quad {{eval:q+2}} + \\frac{{{s}}}{{{t}}}|{{if:p==1|{{q}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{eval:q+2}} + \\frac{{{s}}}{{{t}}} \\quad ; \\quad {{eval:q+1}} + \\frac{{{u}}}{{{v}}}|{{if:p==2|{{eval:q+1}} + \\frac{{{u}}}{{{v}}} \\quad ; \\quad {{q}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{eval:q+2}} + \\frac{{{s}}}{{{t}}}|{{if:p==3|{{eval:q+1}} + \\frac{{{u}}}{{{v}}} \\quad ; \\quad {{eval:q+2}} + \\frac{{{s}}}{{{t}}} \\quad ; \\quad {{q}} + \\frac{{{x}}}{{{y}}}|{{if:p==4|{{eval:q+2}} + \\frac{{{s}}}{{{t}}} \\quad ; \\quad {{q}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{eval:q+1}} + \\frac{{{u}}}{{{v}}}|{{eval:q+2}} + \\frac{{{s}}}{{{t}}} \\quad ; \\quad {{eval:q+1}} + \\frac{{{u}}}{{{v}}} \\quad ; \\quad {{q}} + \\frac{{{x}}}{{{y}}}}}}}}}}}}}$$\n\n$$? < ? < ?$$",
+			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- ${{q}} + \\frac{{{x}}}{{{y}}}$\n- ${{eval:q+1}} + \\frac{{{u}}}{{{v}}}$\n- ${{eval:q+2}} + \\frac{{{s}}}{{{t}}}$\n```",
 			"variables": [
-				{
-					"name": "p",
-					"expression": "1..5"
-				},
 				{
 					"name": "q",
 					"expression": "1..5"
@@ -46,17 +42,6 @@
 				}
 			],
 			"conditions": ["gcd(x,y)==1", "gcd(u,v)==1", "gcd(s,t)==1"],
-			"blanks": [
-				{
-					"expectedAnswer": "{{q}} + \\frac{{{x}}}{{{y}}}"
-				},
-				{
-					"expectedAnswer": "{{eval:q+1}} + \\frac{{{u}}}{{{v}}}"
-				},
-				{
-					"expectedAnswer": "{{eval:q+2}} + \\frac{{{s}}}{{{t}}}"
-				}
-			],
 			"correction": {
 				"steps": [
 					"**Nombres mixtes.** Chaque fraction est plus petite que $1$ : on range d'abord les parties entières, ${{q}} < {{eval:q+1}} < {{eval:q+2}}$.",
@@ -65,12 +50,8 @@
 			}
 		},
 		{
-			"statement": "Range ces nombres dans l'ordre croissant.\n\n$${{if:p==0|{{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{q}} + \\frac{1}{{{m}}} \\quad ; \\quad {{q}} + \\frac{1}{{{n}}}|{{if:p==1|{{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{q}} + \\frac{1}{{{n}}} \\quad ; \\quad {{q}} + \\frac{1}{{{m}}}|{{if:p==2|{{q}} + \\frac{1}{{{m}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{q}} + \\frac{1}{{{n}}}|{{if:p==3|{{q}} + \\frac{1}{{{m}}} \\quad ; \\quad {{q}} + \\frac{1}{{{n}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}}|{{if:p==4|{{q}} + \\frac{1}{{{n}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{q}} + \\frac{1}{{{m}}}|{{q}} + \\frac{1}{{{n}}} \\quad ; \\quad {{q}} + \\frac{1}{{{m}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}}}}}}}}}}}}$$\n\n$$? < ? < ?$$",
+			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- ${{eval:q-1}} + \\frac{{{x}}}{{{y}}}$\n- ${{q}} + \\frac{1}{{{m}}}$\n- ${{q}} + \\frac{1}{{{n}}}$\n```",
 			"variables": [
-				{
-					"name": "p",
-					"expression": "1..5"
-				},
 				{
 					"name": "q",
 					"expression": "2..5"
@@ -93,17 +74,6 @@
 				}
 			],
 			"conditions": ["gcd(x,y)==1"],
-			"blanks": [
-				{
-					"expectedAnswer": "{{eval:q-1}} + \\frac{{{x}}}{{{y}}}"
-				},
-				{
-					"expectedAnswer": "{{q}} + \\frac{1}{{{m}}}"
-				},
-				{
-					"expectedAnswer": "{{q}} + \\frac{1}{{{n}}}"
-				}
-			],
 			"correction": {
 				"steps": [
 					"**Nombres mixtes.** On range d'abord les parties entières : ${{eval:q-1}} < {{q}}$.",
@@ -113,12 +83,8 @@
 			}
 		},
 		{
-			"statement": "Range ces nombres dans l'ordre croissant.\n\n$${{if:p==0|{{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad \\frac{{{eval:q*b+1}}}{{{b}}} \\quad ; \\quad {{q}} + \\frac{1}{{{v}}}|{{if:p==1|{{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{q}} + \\frac{1}{{{v}}} \\quad ; \\quad \\frac{{{eval:q*b+1}}}{{{b}}}|{{if:p==2|\\frac{{{eval:q*b+1}}}{{{b}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad {{q}} + \\frac{1}{{{v}}}|{{if:p==3|\\frac{{{eval:q*b+1}}}{{{b}}} \\quad ; \\quad {{q}} + \\frac{1}{{{v}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}}|{{if:p==4|{{q}} + \\frac{1}{{{v}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}} \\quad ; \\quad \\frac{{{eval:q*b+1}}}{{{b}}}|{{q}} + \\frac{1}{{{v}}} \\quad ; \\quad \\frac{{{eval:q*b+1}}}{{{b}}} \\quad ; \\quad {{eval:q-1}} + \\frac{{{x}}}{{{y}}}}}}}}}}}}}$$\n\n$$? < ? < ?$$",
+			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- ${{eval:q-1}} + \\frac{{{x}}}{{{y}}}$\n- $\\frac{{{eval:q*b+1}}}{{{b}}}$\n- ${{q}} + \\frac{1}{{{v}}}$\n```",
 			"variables": [
-				{
-					"name": "p",
-					"expression": "1..5"
-				},
 				{
 					"name": "q",
 					"expression": "2..4"
@@ -141,17 +107,6 @@
 				}
 			],
 			"conditions": ["gcd(x,y)==1"],
-			"blanks": [
-				{
-					"expectedAnswer": "{{eval:q-1}} + \\frac{{{x}}}{{{y}}}"
-				},
-				{
-					"expectedAnswer": "\\frac{{{eval:q*b+1}}}{{{b}}}"
-				},
-				{
-					"expectedAnswer": "{{q}} + \\frac{1}{{{v}}}"
-				}
-			],
 			"correction": {
 				"steps": [
 					"**Nombre mixte.** On écrit la fraction comme un nombre mixte : $\\frac{{{eval:q*b+1}}}{{{b}}} = \\frac{{{eval:q*b}}}{{{b}}} + \\frac{1}{{{b}}} = {{q}} + \\frac{1}{{{b}}}$.",
@@ -166,7 +121,6 @@
 			"description": "2 + 3/5 < 3 + 1/2 < 4 + 1/4",
 			"variationIndex": 0,
 			"variables": {
-				"p": "2",
 				"q": "2",
 				"y": "5",
 				"x": "3",
@@ -175,7 +129,7 @@
 				"t": "4",
 				"s": "1"
 			},
-			"answers": ["2 + \\frac{3}{5}", "3 + \\frac{1}{2}", "4 + \\frac{1}{4}"],
+			"answers": ["2", "0", "1"],
 			"expected": {
 				"status": "correct"
 			}
@@ -184,7 +138,6 @@
 			"description": "Erreur : rangés par fractions",
 			"variationIndex": 0,
 			"variables": {
-				"p": "2",
 				"q": "2",
 				"y": "5",
 				"x": "3",
@@ -193,7 +146,7 @@
 				"t": "4",
 				"s": "1"
 			},
-			"answers": ["4 + \\frac{1}{4}", "3 + \\frac{1}{2}", "2 + \\frac{3}{5}"],
+			"answers": ["1", "0", "2"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -202,14 +155,13 @@
 			"description": "1 + 3/4 < 2 + 1/4 < 2 + 1/3",
 			"variationIndex": 1,
 			"variables": {
-				"p": "4",
 				"q": "2",
 				"y": "4",
 				"x": "3",
 				"m": "4",
 				"n": "3"
 			},
-			"answers": ["1 + \\frac{3}{4}", "2 + \\frac{1}{4}", "2 + \\frac{1}{3}"],
+			"answers": ["2", "0", "1"],
 			"expected": {
 				"status": "correct"
 			}
@@ -218,14 +170,13 @@
 			"description": "Erreur : 2 + 1/3 < 2 + 1/4 (« 4 > 3 »)",
 			"variationIndex": 1,
 			"variables": {
-				"p": "4",
 				"q": "2",
 				"y": "4",
 				"x": "3",
 				"m": "4",
 				"n": "3"
 			},
-			"answers": ["1 + \\frac{3}{4}", "2 + \\frac{1}{3}", "2 + \\frac{1}{4}"],
+			"answers": ["2", "1", "0"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -234,47 +185,28 @@
 			"description": "1 + 3/4 < 9/4 < 2 + 1/3",
 			"variationIndex": 2,
 			"variables": {
-				"p": "1",
 				"q": "2",
 				"y": "4",
 				"x": "3",
 				"b": "4",
 				"v": "3"
 			},
-			"answers": ["1 + \\frac{3}{4}", "\\frac{9}{4}", "2 + \\frac{1}{3}"],
+			"answers": ["2", "0", "1"],
 			"expected": {
 				"status": "correct"
-			}
-		},
-		{
-			"description": "7/4 au lieu de 1 + 3/4 : les nombres donnés sont à recopier",
-			"variationIndex": 2,
-			"variables": {
-				"p": "1",
-				"q": "2",
-				"y": "4",
-				"x": "3",
-				"b": "4",
-				"v": "3"
-			},
-			"answers": ["\\frac{7}{4}", "\\frac{9}{4}", "2 + \\frac{1}{3}"],
-			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
 			}
 		},
 		{
 			"description": "Erreur : 9/4 le plus grand",
 			"variationIndex": 2,
 			"variables": {
-				"p": "1",
 				"q": "2",
 				"y": "4",
 				"x": "3",
 				"b": "4",
 				"v": "3"
 			},
-			"answers": ["1 + \\frac{3}{4}", "2 + \\frac{1}{3}", "\\frac{9}{4}"],
+			"answers": ["2", "1", "0"],
 			"expected": {
 				"status": "incorrect"
 			}

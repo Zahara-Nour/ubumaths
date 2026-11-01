@@ -10,12 +10,8 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Range ces nombres dans l'ordre croissant.\n\n$${{if:p==0|\\frac{{{x}}}{{{b}}} \\quad ; \\quad \\frac{{{y}}}{{{b}}} \\quad ; \\quad \\frac{{{z}}}{{{b}}}|{{if:p==1|\\frac{{{x}}}{{{b}}} \\quad ; \\quad \\frac{{{z}}}{{{b}}} \\quad ; \\quad \\frac{{{y}}}{{{b}}}|{{if:p==2|\\frac{{{y}}}{{{b}}} \\quad ; \\quad \\frac{{{x}}}{{{b}}} \\quad ; \\quad \\frac{{{z}}}{{{b}}}|{{if:p==3|\\frac{{{y}}}{{{b}}} \\quad ; \\quad \\frac{{{z}}}{{{b}}} \\quad ; \\quad \\frac{{{x}}}{{{b}}}|{{if:p==4|\\frac{{{z}}}{{{b}}} \\quad ; \\quad \\frac{{{x}}}{{{b}}} \\quad ; \\quad \\frac{{{y}}}{{{b}}}|\\frac{{{z}}}{{{b}}} \\quad ; \\quad \\frac{{{y}}}{{{b}}} \\quad ; \\quad \\frac{{{x}}}{{{b}}}}}}}}}}}}}$$\n\n$$? < ? < ?$$",
+			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\frac{{{x}}}{{{b}}}$\n- $\\frac{{{y}}}{{{b}}}$\n- $\\frac{{{z}}}{{{b}}}$\n```",
 			"variables": [
-				{
-					"name": "p",
-					"expression": "1..5"
-				},
 				{
 					"name": "b",
 					"expression": "3..12"
@@ -34,17 +30,6 @@
 				}
 			],
 			"conditions": ["mod(x,b)!=0", "mod(y,b)!=0", "mod(z,b)!=0"],
-			"blanks": [
-				{
-					"expectedAnswer": "\\frac{{{x}}}{{{b}}}"
-				},
-				{
-					"expectedAnswer": "\\frac{{{y}}}{{{b}}}"
-				},
-				{
-					"expectedAnswer": "\\frac{{{z}}}{{{b}}}"
-				}
-			],
 			"correction": {
 				"steps": [
 					"**Même dénominateur.** Toutes les parts ont la même taille, $\\frac{1}{{{b}}}$ : on range les numérateurs, ${{x}} < {{y}} < {{z}}$.",
@@ -53,12 +38,8 @@
 			}
 		},
 		{
-			"statement": "Range ces nombres dans l'ordre croissant.\n\n$${{if:p==0|\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}} \\quad ; \\quad \\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}} \\quad ; \\quad \\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}}|{{if:p==1|\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}} \\quad ; \\quad \\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}} \\quad ; \\quad \\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}}|{{if:p==2|\\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}} \\quad ; \\quad \\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}} \\quad ; \\quad \\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}}|{{if:p==3|\\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}} \\quad ; \\quad \\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}} \\quad ; \\quad \\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}}|{{if:p==4|\\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}} \\quad ; \\quad \\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}} \\quad ; \\quad \\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}}|\\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}} \\quad ; \\quad \\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}} \\quad ; \\quad \\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}}}}}}}}}}}}$$\n\n$$? < ? < ?$$",
+			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}}$\n- $\\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}}$\n- $\\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}}$\n```",
 			"variables": [
-				{
-					"name": "p",
-					"expression": "1..5"
-				},
 				{
 					"name": "D",
 					"expression": "6|8|10|12"
@@ -77,17 +58,6 @@
 				}
 			],
 			"conditions": ["gcd(x,D)>1", "gcd(z,D)>1", "gcd(x,D)!=gcd(z,D)"],
-			"blanks": [
-				{
-					"expectedAnswer": "\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}}"
-				},
-				{
-					"expectedAnswer": "\\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}}"
-				},
-				{
-					"expectedAnswer": "\\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}}"
-				}
-			],
 			"correction": {
 				"steps": [
 					"**Même dénominateur.** On écrit les trois fractions avec le dénominateur ${{D}}$ : $\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}} = \\frac{{{x}}}{{{D}}}$, {{if:gcd(y,D)>1|$\\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}} = \\frac{{{y}}}{{{D}}}$|$\\frac{{{y}}}{{{D}}}$}}, $\\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}} = \\frac{{{z}}}{{{D}}}$. On range les numérateurs : ${{x}} < {{y}} < {{z}}$.",
@@ -96,12 +66,8 @@
 			}
 		},
 		{
-			"statement": "Range ces nombres dans l'ordre croissant.\n\n$${{if:p==0|\\frac{{{a}}}{{{b}}} \\quad ; \\quad 1 \\quad ; \\quad \\frac{{{c}}}{{{d}}}|{{if:p==1|\\frac{{{a}}}{{{b}}} \\quad ; \\quad \\frac{{{c}}}{{{d}}} \\quad ; \\quad 1|{{if:p==2|1 \\quad ; \\quad \\frac{{{a}}}{{{b}}} \\quad ; \\quad \\frac{{{c}}}{{{d}}}|{{if:p==3|1 \\quad ; \\quad \\frac{{{c}}}{{{d}}} \\quad ; \\quad \\frac{{{a}}}{{{b}}}|{{if:p==4|\\frac{{{c}}}{{{d}}} \\quad ; \\quad \\frac{{{a}}}{{{b}}} \\quad ; \\quad 1|\\frac{{{c}}}{{{d}}} \\quad ; \\quad 1 \\quad ; \\quad \\frac{{{a}}}{{{b}}}}}}}}}}}}}$$\n\n$$? < ? < ?$$",
+			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\frac{{{a}}}{{{b}}}$\n- $1$\n- $\\frac{{{c}}}{{{d}}}$\n```",
 			"variables": [
-				{
-					"name": "p",
-					"expression": "1..5"
-				},
 				{
 					"name": "b",
 					"expression": "3|4|5|6|8|10|100"
@@ -120,17 +86,6 @@
 				}
 			],
 			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1"],
-			"blanks": [
-				{
-					"expectedAnswer": "\\frac{{{a}}}{{{b}}}"
-				},
-				{
-					"expectedAnswer": "1"
-				},
-				{
-					"expectedAnswer": "\\frac{{{c}}}{{{d}}}"
-				}
-			],
 			"correction": {
 				"steps": [
 					"**Comparer à 1.** $\\frac{{{a}}}{{{b}}} < 1$ car ${{a}} < {{b}}$, et $\\frac{{{c}}}{{{d}}} > 1$ car ${{c}} > {{d}}$.",
@@ -144,13 +99,12 @@
 			"description": "2/7 < 3/7 < 6/7",
 			"variationIndex": 0,
 			"variables": {
-				"p": "3",
 				"b": "7",
 				"x": "2",
 				"y": "3",
 				"z": "6"
 			},
-			"answers": ["\\frac{2}{7}", "\\frac{3}{7}", "\\frac{6}{7}"],
+			"answers": ["2", "0", "1"],
 			"expected": {
 				"status": "correct"
 			}
@@ -159,13 +113,12 @@
 			"description": "Erreur : ordre décroissant",
 			"variationIndex": 0,
 			"variables": {
-				"p": "3",
 				"b": "7",
 				"x": "2",
 				"y": "3",
 				"z": "6"
 			},
-			"answers": ["\\frac{6}{7}", "\\frac{3}{7}", "\\frac{2}{7}"],
+			"answers": ["1", "0", "2"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -174,13 +127,12 @@
 			"description": "1/2 < 5/8 < 3/4",
 			"variationIndex": 1,
 			"variables": {
-				"p": "5",
 				"D": "8",
 				"x": "4",
 				"y": "5",
 				"z": "6"
 			},
-			"answers": ["\\frac{1}{2}", "\\frac{5}{8}", "\\frac{3}{4}"],
+			"answers": ["2", "0", "1"],
 			"expected": {
 				"status": "correct"
 			}
@@ -189,13 +141,12 @@
 			"description": "Erreur : rangées par numérateurs (1/2 ; 3/4 ; 5/8)",
 			"variationIndex": 1,
 			"variables": {
-				"p": "5",
 				"D": "8",
 				"x": "4",
 				"y": "5",
 				"z": "6"
 			},
-			"answers": ["\\frac{1}{2}", "\\frac{3}{4}", "\\frac{5}{8}"],
+			"answers": ["2", "1", "0"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -204,13 +155,12 @@
 			"description": "99/100 < 1 < 7/6",
 			"variationIndex": 2,
 			"variables": {
-				"p": "4",
 				"b": "100",
 				"a": "99",
 				"d": "6",
 				"c": "7"
 			},
-			"answers": ["\\frac{99}{100}", "1", "\\frac{7}{6}"],
+			"answers": ["2", "0", "1"],
 			"expected": {
 				"status": "correct"
 			}
@@ -219,13 +169,12 @@
 			"description": "Erreur : 1 < 99/100 < 7/6",
 			"variationIndex": 2,
 			"variables": {
-				"p": "4",
 				"b": "100",
 				"a": "99",
 				"d": "6",
 				"c": "7"
 			},
-			"answers": ["1", "\\frac{99}{100}", "\\frac{7}{6}"],
+			"answers": ["0", "2", "1"],
 			"expected": {
 				"status": "incorrect"
 			}
