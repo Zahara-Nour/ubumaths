@@ -10,16 +10,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 0-primitives validé par David (§ 9)._
+_Mis à jour le 2026-11-01, après #2084._
 
-- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration **publiés** (66 modèles). Lot 0-primitives (18 brouillons, § 9) **validé en bloc par David** le 2026-11-01 ; PR de l'instantané ouverte.
-- **Prochaine action** : merger la PR ; puis David lance `create-questions --mettre-a-jour` (3 retouches C1-C3) et `publier-lot` (simulation puis `--publier`) ; relire le statut en base. Lot suivant : trigonométrie. Plus tard : migration des tags Q3 (§ 1, § 7, § 8, § 9).
-- **En attente de David** : `create-questions --mettre-a-jour` puis `publier-lot` du lot 0-primitives.
+- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration **publiés** (66 modèles). Lot 0-primitives (18 brouillons, § 9) validé par David, instantané mergé (#2084), **pas encore publié**.
+- **Prochaine action** : David lance `create-questions --mettre-a-jour` (retouches C1-C3) puis `publier-lot` (simulation, puis `--publier`) sur `scripts/questions/tspe-0-primitives/` ; relire le statut en base (18 publiés). Ensuite, lot trigonométrie (branche `feat/questions-tspe-lot0-trigo`, déjà créée). Plus tard : migration des tags Q3 (§ 1, § 7, § 8, § 9).
+- **En attente de David** : ces deux commandes pour le lot 0-primitives.
 - **Pièges en cours** : `create-questions` et `publier-lot`, même en simulation → David (le mode auto les refuse) ;
   partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
   worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ;
   **horodatage de migration** : max + 1 min de la prod juste avant de créer le fichier.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot0-primitives`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot0-trigo` (partie de `main` après #2084).
 
 ## 1. Relevé (prod, 2026-10-29)
 
