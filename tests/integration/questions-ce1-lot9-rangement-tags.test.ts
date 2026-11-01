@@ -2,7 +2,7 @@
  * Chantier « questions-ce1 », lot 9 : nœud et tag de 9 modèles neufs (Supabase local requis)
  * =====================================================================================
  *
- * Migration `20261101224703_questions_ce1_lot9_rangement_tags` : les 9 brouillons « fractions dessinées et géométrie »
+ * Migration `20261101224820_questions_ce1_lot9_rangement_tags` : les 9 brouillons « fractions dessinées et géométrie »
  * créés le 2026-11-01 par scripts/create-questions.ts (sans nœud ni tag) vont sur le nœud de
  * leur point (définition des fractions, propriétés, angles droits) et reçoivent
  * ce point, un seul (ADR 0020). Décision de David (journal
@@ -39,7 +39,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101224703_questions_ce1_lot9_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101224820_questions_ce1_lot9_rangement_tags.sql';
 const DEFINITION = 'Nombres et calculs > Fractions : sens et écritures > définition';
 const PROPRIETES = 'Géométrie > Figures planes > propriétés';
 const ANGLES = 'Géométrie > Figures planes > angles droits';
