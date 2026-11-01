@@ -1,0 +1,79 @@
+{
+	"id": "76b4061b-1b1a-4513-9aeb-c991ca3d5334",
+	"title": "Loi géométrique : nombre moyen de tentatives",
+	"description": "Rang moyen du premier succès : E(X) = 1/p (piège : E = p)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi géométrique",
+	"subdomain": "Calcul de probabilités",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100/t}}"
+				}
+			],
+			"statement": "À chaque tentative, un joueur réussit un exercice d'adresse avec la probabilité ${{eval:t/100;d}}$, indépendamment des autres tentatives. Il recommence jusqu'à la première réussite.\n\nCombien de tentatives lui faut-il en moyenne ?\n\n$?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2|4|5|8|10|20|25|40|50"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le rang $X$ de la première réussite suit la loi géométrique de paramètre $p={{eval:t/100;d}}$, d'espérance $E(X)=\\dfrac{1}{p}$.",
+					"$E(X)=\\dfrac{1}{ {{eval:t/100;d}} }=\\textcolor{{{color:primary.0}}}{{{eval:100/t;d}}}$ tentatives en moyenne."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "5"
+			},
+			"description": "v0 : p = 0,05 → 20",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,05"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "5"
+			},
+			"description": "v0 : E = p",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["12,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "8"
+			},
+			"description": "v0 : p = 0,08 → 12,5",
+			"variationIndex": 0
+		}
+	]
+}

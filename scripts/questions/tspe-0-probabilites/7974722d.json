@@ -1,0 +1,86 @@
+{
+	"id": "7974722d-6328-4388-a4fd-418cc0e25600",
+	"title": "Espérance de aX + bY : linéarité",
+	"description": "E(aX + bY) = aE(X) + bE(Y)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Sommes de variables aléatoires",
+	"subdomain": "Espérance et variance",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*u+b*w}}"
+				}
+			],
+			"statement": "Deux variables aléatoires $X$ et $Y$ vérifient $E(X)={{u}}$ et $E(Y)={{w}}$.\n\nCalcule $E({{a}}X+{{b}}Y)$.\n\n$E({{a}}X+{{b}}Y)=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "w",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Linéarité de l'espérance (vraie même si $X$ et $Y$ ne sont pas indépendantes) : $E(aX+bY)=aE(X)+bE(Y)$.",
+					"$E({{a}}X+{{b}}Y)={{a}}\\times{{u;()}}+{{b}}\\times{{w;()}}=\\textcolor{{{color:primary.0}}}{{{eval:a*u+b*w}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "4",
+				"w": "-1"
+			},
+			"description": "v0 : E(2X + 3Y), 4 et −1 → 5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "4",
+				"w": "-1"
+			},
+			"description": "v0 : a + b oubliés : 3",
+			"variationIndex": 0
+		}
+	]
+}

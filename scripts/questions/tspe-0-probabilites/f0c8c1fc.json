@@ -1,0 +1,87 @@
+{
+	"id": "f0c8c1fc-d499-4358-aee2-3becbc099f37",
+	"title": "Loi binomiale : P(X > k) avec une table",
+	"description": "Extrait de table des probabilités cumulées fourni : P(X > k) = 1 − P(X ⩽ k) (piège : 1 − P(X ⩽ k − 1))",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Calcul de probabilités",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "$X$ suit la loi binomiale $\\mathcal{B}(20\\,;0.3)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $2$ | $0.0355$ |\n| $3$ | $0.1071$ |\n| $4$ | $0.2375$ |\n| $5$ | $0.4164$ |\n| $6$ | $0.608$ |\n| $7$ | $0.7723$ |\n| $8$ | $0.8867$ |\n| $9$ | $0.952$ |\n| $10$ | $0.9829$ |\n\nEn utilisant uniquement cette table, calcule $P(X>{{k}})$.\n\n$P(X>{{k}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..9"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:k==3|0.1071|{{if:k==4|0.2375|{{if:k==5|0.4164|{{if:k==6|0.608|{{if:k==7|0.7723|{{if:k==8|0.8867|0.952}}}}}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==3|0.8929|{{if:k==4|0.7625|{{if:k==5|0.5836|{{if:k==6|0.392|{{if:k==7|0.2277|{{if:k==8|0.1133|0.048}}}}}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X>{{k}}$ est l'événement contraire de $X\\leqslant {{k}}$.",
+					"$P(X>{{k}})=1-P(X\\leqslant {{k}})=1-{{f}}=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0,5836"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v0 : P(X > 5) = 0,5836",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,4164"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v0 : P(X ⩽ 5) lu tel quel",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,7625"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v0 : 1 − P(X ⩽ 4)",
+			"variationIndex": 0
+		}
+	]
+}

@@ -1,0 +1,134 @@
+{
+	"id": "dbee4649-3ab6-49f0-8a5e-5814ce15ba43",
+	"title": "Loi binomiale : espérance",
+	"description": "E(X) = np, nombre moyen de succès (piège : np(1 − p) au lieu de np)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Espérance et variance",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*t/100}}"
+				}
+			],
+			"statement": "La variable aléatoire $X$ suit la loi binomiale $\\mathcal{B}\\left({{n}}\\,;{{eval:t/100;d}}\\right)$.\n\nCalcule son espérance (nombre entier ou décimal).\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20|40|50|60|80|100|150|200"
+				},
+				{
+					"name": "t",
+					"expression": "1..40"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $X\\sim\\mathcal{B}(n\\,;p)$ : $E(X)=np$.",
+					"$E(X)={{n}}\\times{{eval:t/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:n*t/100;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/q}}"
+				}
+			],
+			"statement": "Un questionnaire comporte ${{n}}$ questions ; pour chacune, ${{q}}$ réponses sont proposées, dont une seule est juste. Un élève répond au hasard à chaque question, indépendamment.\n\nCombien de bonnes réponses peut-il espérer en moyenne ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10|12|15|20|24|30|40"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre $X$ de bonnes réponses suit la loi $\\mathcal{B}\\left({{n}}\\,;\\dfrac{1}{ {{q}} }\\right)$.",
+					"$E(X)=np={{n}}\\times\\dfrac{1}{ {{q}} }=\\textcolor{{{color:primary.0}}}{{{eval:n/q}}}$ bonnes réponses en moyenne."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "50",
+				"t": "30"
+			},
+			"description": "v0 : B(50 ; 0,3) → 15",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["10,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "50",
+				"t": "30"
+			},
+			"description": "v0 : variance 10,5 au lieu de E",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2,8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "40",
+				"t": "7"
+			},
+			"description": "v0 : B(40 ; 0,07) → 2,8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "20",
+				"q": "4"
+			},
+			"description": "v1 : 20 questions, 4 réponses → 5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "20",
+				"q": "4"
+			},
+			"description": "v1 : n(1 − p) = 15",
+			"variationIndex": 1
+		}
+	]
+}
