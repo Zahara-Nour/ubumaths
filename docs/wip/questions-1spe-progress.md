@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 1-dérivation écrit (§ 18)._
+_Mis à jour le 2026-11-01, après #2092 (lot 1-dérivation, § 18)._
 
-- **État** : lots 0 publiés, D3 joué. **Lot 1-dérivation** (10 modèles neufs, points 259 à 397 du § 3.5) écrit, vert en simulation, PR des fichiers en cours. Brouillons de 1re spé restants (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
-- **Prochaine action** : après le merge, David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-derivation --publier` ; puis migration de rangement (nœuds + tags), page à cocher, `publier-lot`.
-- **En attente de David** : le `--publier` du lot, après le merge.
+- **État** : lots 0 publiés, D3 joué. **Lot 1-dérivation** (10 modèles neufs, points 259 à 397 du § 3.5) mergé (#2092), fichiers dans `scripts/questions/1spe-derivation/`, pas encore en base. Brouillons de 1re spé restants (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
+- **Prochaine action** : David lance, depuis le dépôt principal, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-derivation --publier` ; puis relire les ids en base, migration de rangement (nœuds + tags, worktree neuf), page à cocher, `publier-lot`.
+- **En attente de David** : le `--publier` du lot.
 - **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères (commitlint).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe` · `feat/questions-1spe-derivation`.
+- **Worktree / branche** : aucun (retiré après #2092).
 
 ## 1. Relevé (prod, 2026-10-27)
 
