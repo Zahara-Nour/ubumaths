@@ -10,21 +10,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 0-probabilités en cours (§ 13)._
+_Mis à jour le 2026-11-01, après #2132 (§ 13)._
 
 - **État** : lots 0-suites → 0-géométrie dans l'espace **publiés** (161 modèles). Lot 0-probabilités (22 brouillons,
-  dernier thème) : instantané, 4 retouches (C1-C4), PR des fichiers ouverte. 1cfc575d sort du lot (modèle de seconde).
-- **Prochaine action** : CI verte → merge ; page à cocher ; David relit, puis `create-questions --publier
---mettre-a-jour` et `publier-lot` (lui). Ensuite migration Q3 (tags + échange de niveaux D-D1, niveaux provisoires
+  dernier thème) : 4 retouches (C1-C4), PR #2132 mergée, **validé par David** ; 1cfc575d sort du lot (seconde).
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/tspe-0-probabilites --publier
+--mettre-a-jour` (attendu : 3 mis à jour, 19 identiques), puis `publier-lot` en simulation et `--publier` ; je relis
+  en base (22 `published`, C1-C4 présentes). Ensuite migration Q3 (tags + échange de niveaux D-D1, niveaux provisoires
   à cause de l'index unique).
-- **En attente de David** : la relecture du lot 0-probabilités.
+- **En attente de David** : les deux commandes de publication.
 - **Pièges en cours** : le **niveau est dans la clé** de `create-questions` : changer `level` dans un fichier = doublon
   créé ; index unique de niveau par catégorie sur les **publiés** seulement. `create-questions` et `publier-lot`, même
   en simulation → David (avec `!`) ; simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync`,
-  et `pnpm exec tsx --env-file=../ubumaths/.env …` (pas de `.env` dans le worktree) ; l'aperçu mélange les options d'une
-  case choix : recouper avec la SOURCE ; `!=` dans une formule s'affiche ≠, `i` seul devient l'unité imaginaire ;
-  en-tête de commit ≤ 100 caractères (refus de commitlint).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe`, `content/questions-tspe-lot0-probas`.
+  et `pnpm exec tsx --env-file=../ubumaths/.env …` ; l'aperçu mélange les options d'une case choix : recouper avec la
+  SOURCE ; `!=` dans une formule s'affiche ≠, `i` seul devient l'unité imaginaire ; en-tête de commit ≤ 100 caractères.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` gardé jusqu'à la publication (les commandes y pointent),
+  puis retiré.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -666,6 +667,6 @@ binomiaux » (publiés, D-D1) n'est pas touchée.
 **Page à cocher** : https://claude.ai/artifact/MTvXa1SvG8zJrsmihMawSz (22 fiches, aucune alerte), collection `verdicts`
 vide à la publication.
 
-**PR** : #2132.
+**PR** : #2132 mergée le 2026-11-01 (CI verte).
 
 **Relecture** : David valide les 22 fiches en bloc (2026-11-01, « je valide tout le lot », C1-C4 comprises).
