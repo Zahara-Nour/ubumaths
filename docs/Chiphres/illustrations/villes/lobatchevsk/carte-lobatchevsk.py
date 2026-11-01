@@ -1,6 +1,6 @@
 # Carte de Lobatchevsk : surcouche SVG (noms des lieux, cibles de clic) posée sur carte-ville.png.
 # Usage : python3 carte-lobatchevsk.py carte-lobatchevsk.svg [--controle]  (--controle : cibles de clic en rouge)
-# Coordonnées = pixels de carte-ville.png (1024×1024), relevées sur carte-ville.png (original de l’IA, 2e essai, sans retouche ni recadrage). Modèle : ../cracovenn/carte-cracovenn.py.
+# Coordonnées = pixels de carte-ville.png (1024×1024), relevées sur carte-ville.png (original de l’IA, 2e essai, quatre quartiers retouchés et recollés par coller-quartiers.sh). Modèle : ../cracovenn/carte-cracovenn.py.
 # Rendu PNG : Chrome sans tête (le fond est référencé par chemin relatif, rendre depuis ce dossier).
 import sys
 
