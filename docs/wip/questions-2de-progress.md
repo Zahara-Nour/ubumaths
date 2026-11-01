@@ -6,15 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 6 A écrit (§ 38)._
+_Mis à jour le 2026-11-01, après #2106._
 
-- **État** : lots 1 à 5 publiés ; lot 6 : phase 0 validée (§ 37), 6 A écrit, PR des fichiers ouverte (§ 38).
-- **Prochaine action** : merger la PR 6 A, puis écrire 6 B (affine, |x|, carré, inverse : 6 modèles).
+- **État** : lots 1 à 5 publiés ; lot 6 : phase 0 validée (§ 37), fichiers du 6 A mergés (#2106, § 38), pas encore en prod.
+- **Prochaine action** : écrire 6 B (affine, |x|, carré, inverse : 6 modèles, § 37) dans un worktree neuf ; puis 6 C ;
+  brouillons, migration et page à cocher pour les 20 ensuite.
 - **En attente de David** : rien.
 - **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ; `page-a-cocher.ts`
   ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une copie) ; `db:migrate` et `--publier` refusés par le
   classifieur → David les lance avec `!`.
-- **Worktree / branche** : `ubumaths-wt-questions-2de`, `feat/questions-2de-lot6a`.
+- **Worktree / branche** : aucun (6 A retiré).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -967,3 +968,4 @@ une page à cocher.
   incorrecte », puis [−3 ; 2[ « Juste ») ; 05 (ℝ\{−5} tapé avec `\backslash`, « Juste ») ; 08 (quatre courbes
   dessinées et mélangées, hyperbole cochée « Juste », corrigé avec la courbe). **Défaut vu à l'aperçu** :
   l'étiquette 𝒞_f se pose près d'une extrémité et ressemble à un disque vide → retirée des courbes de 01.
+- #2106 mergée (CI : `/demo/lexique` en échec sur le runner, `wrapDynamicImport`, vert à la relance).
