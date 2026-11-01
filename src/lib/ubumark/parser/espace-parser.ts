@@ -39,6 +39,7 @@
  * @module ubumark/parser/espace-parser
  */
 
+import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
 import { parseSolideContent } from './solide-parser';
 import { parsePatronContent } from './patron-parser';
@@ -123,9 +124,6 @@ export function findEspaceBlocks(lines: string[]): EspaceBlockRange[] {
 	return blocks;
 }
 
-/** Ligne vue sans retrait ni marque de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /** Un bloc d'espace à geste, délimité comme le parseur */
 export interface EspaceToBuild {
 	startIndex: number;
@@ -141,7 +139,7 @@ export interface EspaceToBuild {
  */
 function findEspaceToBuild(markdown: string, genre: 'cubes' | 'patron'): EspaceToBuild[] {
 	const lines = markdown.split('\n');
-	const plainLines = lines.map(unquoted);
+	const plainLines = lines.map(unnestedLine);
 	const taskLine = genre === 'cubes' ? TASK_LINE_REGEX : PATRON_TASK_LINE_REGEX;
 	const found: EspaceToBuild[] = [];
 	let i = 0;

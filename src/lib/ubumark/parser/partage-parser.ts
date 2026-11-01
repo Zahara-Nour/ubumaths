@@ -29,6 +29,7 @@
  * @module ubumark/parser/partage-parser
  */
 
+import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
 import {
 	PARTAGE_GRID,
@@ -96,9 +97,6 @@ export function findPartageBlocks(lines: string[]): PartageBlockRange[] {
 	return blocks;
 }
 
-/** Ligne vue sans retrait ni marque de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /**
  * Les figures à colorier (`colorier:`) d'un énoncé, délimitées comme le parseur :
  * corps sans clôtures, fermeture, et `nested` pour un bloc en retrait ou cité
@@ -111,7 +109,7 @@ export function findPartagesToColorier(markdown: string): {
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
-	const plain = lines.map(unquoted);
+	const plain = lines.map(unnestedLine);
 	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
 	let i = 0;
 	while (i < plain.length) {

@@ -182,7 +182,10 @@ Le marqueur `<<expr:…>>` est posé par le générateur de questions, pas par l
 
 Un bloc spécial est une fence dont le langage est un mot réservé. Ouverture **exacte** (` ```line `
 oui, ` ```linear ` non : bloc de code ordinaire). Ils sont reconnus au premier niveau **et**
-en retrait sous un item de liste.
+dans un item de liste : en retrait sous l'item, ou ouverts sur la ligne même de l'item
+(`- ```cubes`, corps en retrait). Cette seconde forme vaut pour tout bloc de code : `parseList`
+y joint l'ouverture à son corps (avant le correctif de 2026-11, le bloc était lu vide, « bloc non
+fermé »). Test : `__tests__/blocs-speciaux-listes.test.ts`.
 
 | Fence                                                                                                                     | Nœud (`type`)               | Parseur (`src/lib/ubumark/parser/`)                           | Rendu écran                                                                                                       | Générateur PDF                               |
 | ------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |

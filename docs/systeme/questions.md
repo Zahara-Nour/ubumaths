@@ -280,7 +280,11 @@ les fait différer). Une expression (`<<expr:…>>`) n'est jamais réalignée : 
    `?` dans une formule → `\placeholder[N]{}` ; `[_]` dans le texte → `{{blank:N}}` ;
    `<<expr:NAME>>` réserve les cases de `answerFormats[NAME]`. `NAME` doit commencer par
    `expression` (sinon le marqueur passe en silence au `?` ordinaire) ; le lien case →
-   `answerFormats` est porté par `InstanceBlank.expressionName`. Un bloc ``operation à remplir
+   `answerFormats` est porté par `InstanceBlank.expressionName`. **« En liste ou cité »**, pour
+   tous les blocs à case ci-dessous (geste, opération, choix, figure à compléter ou de travail) :
+   en retrait, derrière un `>`, ou ouvert sur la ligne même d'un item (`- ```cubes`) — une seule
+   règle, `unnestedLine` / `NESTED_PREFIX` (`ubumark/parser/nested-line.ts`) ; test :
+   `generator/__tests__/blocs-sur-ligne-item.test.ts`. Un bloc ``operation à remplir
 (au premier niveau de l'énoncé ; en liste ou cité → échec de génération) compte pour **une**
 case, son numéro écrit dans le bloc (`case: N`) ; une division euclidienne pour **deux** (quotient
 N, reste N + 1, seul N écrit ; `operationBlanks` les liste toutes deux). Sa réponse attendue vient du calcul du bloc

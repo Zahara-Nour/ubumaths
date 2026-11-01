@@ -28,6 +28,7 @@
  * @module ubumark/parser/number-line-parser
  */
 
+import { unnestedLine } from './nested-line';
 import type {
 	NumberLineNode,
 	NumberLineConfig,
@@ -633,9 +634,6 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 // DROITES À PLACER D'UN ÉNONCÉ
 // ============================================================================
 
-/** Ligne vue sans retrait ni marque de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /**
  * Les droites à placer (`placer:`) d'un énoncé, délimitées comme le parseur :
  * corps sans clôtures, fermeture, et `nested` pour un bloc en retrait ou cité
@@ -648,7 +646,7 @@ export function findLinesToPlace(markdown: string): {
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
-	const plain = lines.map(unquoted);
+	const plain = lines.map(unnestedLine);
 	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
 	let i = 0;
 	while (i < plain.length) {

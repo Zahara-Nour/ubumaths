@@ -36,6 +36,7 @@ import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { findCubesToBuild, findPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
+import { NESTED_PREFIX } from '$lib/ubumark/parser/nested-line';
 import { buildCaseCount } from './build-answer';
 import { buildKindName, type BuildKind } from '../types';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
@@ -245,9 +246,10 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 /** Fence d'ouverture d'un bloc ```figure-a-completer ou ```figure-de-travail, au premier niveau seulement */
 const CONSTRUCTION_FENCE_REGEX = /^```(figure-a-completer|figure-de-travail)\s*$/;
 
-/** La même, en retrait (liste) ou citée : le bloc ne peut pas porter de case */
-const NESTED_CONSTRUCTION_FENCE_REGEX =
-	/^(?:\s+|\s*>\s*)```(figure-a-completer|figure-de-travail)\s*$/;
+/** La même, en retrait (liste), sur la ligne d'un item ou citée : le bloc ne peut pas porter de case */
+const NESTED_CONSTRUCTION_FENCE_REGEX = new RegExp(
+	`^${NESTED_PREFIX}\`\`\`(figure-a-completer|figure-de-travail)\\s*$`
+);
 
 /** Marque d'un bloc ```figure-a-completer ou ```figure-de-travail mis à l'abri : début, rang du bloc, fin */
 const CONSTRUCTION_MARK_START = '\u0000construction:';
@@ -318,8 +320,8 @@ function restoreConstructionBlock(block: ConstructionBlock, caseIndex: number): 
 /** Fence d'ouverture d'un bloc ```operation, au premier niveau seulement */
 const OPERATION_FENCE_REGEX = /^```operation\s*$/;
 
-/** La même, en retrait (liste) ou citée : le bloc ne peut pas porter de case */
-const NESTED_OPERATION_FENCE_REGEX = /^(?:\s+|\s*>\s*)```operation\s*$/;
+/** La même, en retrait (liste), sur la ligne d'un item ou citée : le bloc ne peut pas porter de case */
+const NESTED_OPERATION_FENCE_REGEX = new RegExp(`^${NESTED_PREFIX}\`\`\`operation\\s*$`);
 
 /** Marque provisoire de la case d'un bloc, remplacée par `case: N` à son rang */
 const OPERATION_CASE_MARK = '\u0000operation-case\u0000';

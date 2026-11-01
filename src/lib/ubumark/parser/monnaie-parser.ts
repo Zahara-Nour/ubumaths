@@ -35,6 +35,7 @@
  * @module ubumark/parser/monnaie-parser
  */
 
+import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
 import { DEFAULT_RESERVE, fewestObjects } from '../utils/monnaie-construire';
 import {
@@ -579,9 +580,6 @@ export function hasMonnaieToBuild(markdown: string): boolean {
 	return findBuildMonnaies(markdown).length > 0;
 }
 
-/** Une ligne sans son retrait ni ses `>` de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /**
  * Blocs ```monnaie à construire d'un texte, délimités comme le parseur (une
  * ligne vide suivie d'une clé reste dans un bloc fermé, Q66) ; en retrait ou
@@ -594,7 +592,7 @@ export function findBuildMonnaies(markdown: string): {
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
-	const plain = lines.map(unquoted);
+	const plain = lines.map(unnestedLine);
 	return findMonnaieBlockSpans(plain).flatMap(({ startIndex, endIndex, closed }) => {
 		const body = plain.slice(startIndex + 1, closed ? endIndex : endIndex + 1);
 		if (!body.some((line) => /^construire\s*:/i.test(line))) return [];

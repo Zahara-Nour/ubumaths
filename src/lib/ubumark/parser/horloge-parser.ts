@@ -30,6 +30,7 @@
  * @module ubumark/parser/horloge-parser
  */
 
+import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
 import {
 	HORLOGE_CAPTION_MAX,
@@ -133,9 +134,6 @@ export function findHorlogeBlocks(lines: string[]): HorlogeBlockRange[] {
 	return blocks;
 }
 
-/** Ligne vue sans retrait ni marque de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /**
  * Les horloges à placer (`placer:`) d'un énoncé, délimitées comme le parseur :
  * corps sans clôtures, fermeture, et `nested` pour un bloc en retrait ou cité
@@ -148,7 +146,7 @@ export function findHorlogesToPlace(markdown: string): {
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
-	const plain = lines.map(unquoted);
+	const plain = lines.map(unnestedLine);
 	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
 	let i = 0;
 	while (i < plain.length) {
