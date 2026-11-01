@@ -5,17 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2078 et la v0.59.0._
+_Mis à jour le 2026-11-01, lot 7 en brouillons en prod, PR de rangement ouverte._
 
-- **État** : lots 1 à 6b publiés ; 06 et 07 en ```ranger en prod (#2078, migration jouée) ; verdicts 02-04 validés.
-  Lot 7 « Droite graduée et ordre » (#2057) livré en prod avec la v0.59.0 (`deploy:prod` du 2026-11-01).
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/6-droite-ordre --publier` → relever
-  les `id` → migration nœud + tag → page à cocher → publication.
-- **En attente de David** : le `--publier` ci-dessus ; décision sur le verrou de `deploy:prod` (attendre la CI sous
-  verrou au lieu de s'arrêter, cf. § 17) — hors chantier.
+- **État** : lots 1 à 6b publiés ; 06-07 en ```ranger en prod (#2078) ; v0.59.0 en prod. Lot 7 : 4 brouillons créés
+  par David (8adac6d1, 0ce253ea, 5f9ba34d, 92db5823) ; migration `20261101190200_questions_6_lot7_rangement_tags` (§ 18).
+- **Prochaine action** : CI verte + `security-auditor` → merge → `db:migrate` depuis le dépôt principal → MCP (nœuds,
+  tags, `updated_at`) → page à cocher → relecture de David → `publier-lot` en simulation → publication.
+- **En attente de David** : décision sur le verrou de `deploy:prod` (attendre la CI sous verrou) — hors chantier.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
-- **Worktree / branche** : aucun (retiré après #2078).
+- **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-lot7-rangement`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1131,3 +1130,14 @@ visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migratio
 
 - `deploy:prod` → v0.59.0 (8a0d772e8). Une heure d'attente : chaque merge d'une autre session relançait la CI de
   `main`, et le script s'arrête (verrou rendu) au lieu d'attendre. Proposé à David : attendre la CI sous le verrou.
+
+## 18. Lot 7 : brouillons en prod et rangement (2026-11-01)
+
+- Simulation `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-droite-ordre` : 4 « à créer » ; David
+  lance `--publier` : 01 8adac6d1, 02 0ce253ea, 03 5f9ba34d, 04 92db5823, en brouillon. (Le script n'est pas dans
+  `package.json` : `pnpm create-questions` échoue.)
+- MCP : 4 brouillons, `['6']`, niveaux 1, 2, 7, 4 ; sans nœud ni tag. Points : 6-108, 6-107 → « Nombres et calculs >
+  Décimaux : numération > droite graduée » ; 6-128 → « … > Fractions : sens et écritures > droite graduée » ; 6-110
+  → « … > Décimaux : numération > ordre ».
+- Migration `20261101190200_questions_6_lot7_rangement_tags` (patron du lot 6b, horodatage = dernière de `main` +
+  1 min) ; test `questions-6-lot7-rangement-tags` : 8 rouges contre une migration vide, 14 verts avec.
