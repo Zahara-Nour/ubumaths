@@ -1,18 +1,17 @@
 ---
-status: en cours
+status: clos
 ---
 
 # Chantier `fuite-enonce` — l'énoncé public d'une évaluation notée ne dit plus la réponse
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2130 (lot 2 mergé, pas encore en prod)._
+_Mis à jour le 2026-11-01, après #2145. Chantier CLOS, journal archivé._
 
-- **État** : lots 1 (#2120) et 2 (#2130) mergés : tous les blocs à geste partent masqués en évaluation notée (cubes `retrouver:`, patron `completer:`, figure à compléter compris). Pas en prod avant le prochain `deploy:prod`.
-- **Prochaine action** : clôture du chantier : versement (le durable est déjà dans `docs/systeme/questions.md` et `ubumark.md`), archivage du journal.
-- **En attente de David** : garde au générateur proposée par l'auditeur : refuser un point invisible (`visible=faux`) posé sur la réponse d'une figure à compléter ? (ma reco : non, 0 modèle publié ; à faire quand un modèle en aura besoin).
-- **Pièges en cours** : un masque qui ne lit pas son bloc le laisse tel quel ; forme masquée dans une option de ```choix non refusée (§ 8).
-- **Worktree / branche** : aucun (`ubumaths-wt-fuite-enonce` retiré après #2130).
+- **État** : lots 1 (#2120), 2 (#2130) et garde (#2145) mergés, pas encore en prod (au prochain `deploy:prod`). Durable versé dans `docs/systeme/questions.md` (§ masquage) et `docs/systeme/ubumark.md` (valeur masquée `?`).
+- **Prochaine action** : aucune. Vérification à l'œil notée dans `docs/wip/verifications-manuelles.md`.
+- **En attente de David** : rien.
+- **À reprendre si ça arrive** : une reprise dont le masque casserait après coup rend 500 (§ 9, a) ; un point invisible posé sur la réponse d'une figure à compléter fuirait (limite documentée).
 
 ---
 
@@ -181,3 +180,29 @@ plus). Non bloquants, laissés : (a) point invisible posé sur la réponse (limi
 une garde au générateur — **à poser à David**) ; (b) un masque qui ne lit pas son bloc le laisse tel quel
 (pas provoqué) ; (c) forme masquée dans une option de ```choix non refusée (rendu seul, exotique) ;
 (d) `ownBlocks` : un bloc en retrait est déjà refusé par le générateur, filtre gardé en défense.
+
+## 9. Garde contre un masque cassé (2026-11-01, après #2130)
+
+Recos données à David après #2130, « go » : garde point invisible **non** (0 modèle) ; option de ```choix
+**non** ; garde contre un masque qui laisserait son bloc **oui** ; clôture ensuite.
+
+- `findUnmaskedAnswers` (`masked-statement.ts`) : relit l'énoncé à envoyer, texte seul (pas les parseurs, pour
+  voir un bloc illisible), et nomme chaque genre dont un bloc à geste dit encore sa réponse (ligne de réponse
+  pas toute en `?`, barres de `placer:` sans `= ?`, hauteurs chiffrées d'un `retrouver:`, `completer:`
+  numérique, `verifier:` autre que `?`). Blocs dans une option de ```choix ignorés ; cubes et patron en retrait
+  aussi (pas de case).
+- Tirage (`startEvaluationAttempt`) : `gestureAnswerLeaks` écarte la question, journalisée comme une génération
+  impossible, AVANT d'enregistrer la tentative (elle ne se perd pas) ; `toPublicQuestion` lève une erreur en
+  dernier filet (reprise d'une tentative déjà enregistrée).
+- Tests : `masked-statement-garde.test.ts` (11 genres nommés non masqués, rien une fois masqués, bloc
+  illisible nommé, choix et gestes sans réponse ignorés), `public-question-garde.test.ts` (masque remplacé par
+  l'identité : erreur qui nomme le bloc ; rouge sans la garde).
+
+**Revues de #2145 (2026-11-01).** security-auditor (Opus) : aucun bloquant ; erreur de `toPublicQuestion` =
+500 générique (pas de `handleError`), rien ne sort. code-reviewer (Opus) : aucun faux positif (14 exemples du
+catalogue, 300 instances de la base locale, variantes) ; **faux négatif corrigé** : `Compléter:` accentué,
+accepté par le parseur, échappait au repérage (`PATRON_TASK_LINE_REGEX`) → ni case ni masque ; repérage accentué
+
+- test. Laissés : (a) une reprise dont le masque casserait après coup rend 500 à chaque fois (tentative bloquée,
+  pas de fuite ; 0 tentative d'évaluation en prod) — à reprendre si ça arrive : écarter la question à la reprise ;
+  (b) l'écart au tirage n'a pas de test d'intégration (5 lignes, relues par les deux revues).

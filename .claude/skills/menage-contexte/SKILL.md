@@ -45,6 +45,7 @@ Chercher, dans cet ordre :
 4. **Doublons dans la mémoire** — deux fichiers qui disent la même chose → fusion.
 5. **Mémoires périmées** — un symbole, un fichier, un script qui n'existe plus (étape 1) → vérifier dans le code avant de proposer quoi que ce soit.
 6. **Mémoires non indexées** → les indexer, les fusionner, ou proposer de les retirer.
+7. **Mémoires de chantier qui portent un état** (lots faits, PR en cours, « prochaine étape », décompte) — dans le fichier ou dans sa ligne d'index → proposer de les réduire à l'existence du chantier, au chemin de son journal `docs/wip/` (qui fait foi) et aux pièges ou décisions durables. Une copie de l'état vieillit à chaque lot et contredit le journal (`project_questions-1spe.md`, 2026-11-01).
 
 ## 3. Proposer, sans rien toucher
 
