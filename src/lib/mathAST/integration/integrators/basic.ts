@@ -14,7 +14,9 @@ import type {
 	ResolvedIntegrateOptions
 } from '../types';
 import { isNumber, isVariable, isEulerConstant } from '../../guards';
-import { number } from '../../factory';
+import { add, func, multiply, number, superscript } from '../../factory';
+import { simplifiedDivide, simplifiedMultiply } from '../../common/simplify';
+import { nodesEqual } from '../../normal/hash';
 import { numericNode, extractExactRational } from '../../common/numeric';
 import {
 	powerRule,
@@ -226,102 +228,124 @@ function isTangent(expr: MathNode, variable: string): { arg: MathNode } | null {
 }
 
 /**
- * Check if expression matches 1/(a²+x²) pattern for arctan integration.
+ * k/(x² + c) → k·arctan(x/a)/a, où a² = c (règle arctan).
  *
- * Matches:
- * - 1/(1+x²) → { a: null } (a=1)
- * - 1/(a²+x²) → { a: MathNode }
- * - 1/(x²+a²) → { a: MathNode }
+ * - k : tout facteur sans la variable (`1`, `2`, `a`) — V64, revue de V61 :
+ *   seul k = 1 était lu.
+ * - c : un nombre carré parfait (`4` → a = 2 ; un autre nombre passe par les
+ *   éléments simples), une puissance paire d'un paramètre (`a^2` → a,
+ *   `a^4` → a², avec un carré parfait devant : `4a^2` → 2a). Un c de signe
+ *   inconnu (`b`, `a^2 - 1`) n'est pas lu : arctan ne vaut que pour c > 0
+ *   (refus honnête). `a^2 + 1` non plus : a = √(a² + 1) serait juste, mais la
+ *   ligne la rationalise en une écriture illisible (mesuré le 2026-11-01).
+ *
+ * Convention de `isConstantBaseExponential` : un paramètre est GÉNÉRIQUE
+ * (a ≠ 0 dans `a^2`, la condition que l'atelier lit sur le dénominateur).
  */
 function isArctanPattern(
 	expr: MathNode,
 	variable: string
-): { a: MathNode | null; varNode: MathNode } | null {
-	// Must be a division with numerator = 1
+): { a: MathNode | null; varNode: MathNode; k: MathNode | null } | null {
 	if (expr.type !== 'division') return null;
-	if (!isNumber(expr.numerator) || expr.numerator.value !== '1') return null;
+	const numerator = expr.numerator;
+	if (containsVariable(numerator, variable)) return null;
+	const k = isNumber(numerator) && numerator.value === '1' ? null : numerator;
 
 	// `1/(x^2+a^2)` tapé en notation maison : le dénominateur arrive entre
 	// parenthèses (un `delimiter`, frontière d'aplatissement). Sans ce
 	// déballage, l'atelier ne trouvait pas la primitive (V61, 2026-10-14)
-	let denom = expr.denominator;
-	while (denom.type === 'delimiter' && (denom.semantic ?? 'grouping') === 'grouping') {
-		denom = denom.content;
-	}
+	const denom = ungrouped(expr.denominator);
+	if (denom.type !== 'addition') return null;
 
-	// Check for (1 + x²) or (x² + 1)
-	if (denom.type === 'addition') {
-		const { left, right } = denom;
-
-		// Pattern: 1 + x²
-		if (isNumber(left) && left.value === '1') {
-			if (right.type === 'superscript') {
-				if (isVariable(right.base) && right.base.name === variable) {
-					if (isNumber(right.superscript) && right.superscript.value === '2') {
-						return { a: null, varNode: right.base };
-					}
-				}
-			}
-		}
-
-		// Pattern: x² + 1
-		if (isNumber(right) && right.value === '1') {
-			if (left.type === 'superscript') {
-				if (isVariable(left.base) && left.base.name === variable) {
-					if (isNumber(left.superscript) && left.superscript.value === '2') {
-						return { a: null, varNode: left.base };
-					}
-				}
-			}
-		}
-
-		// Pattern: a² + x² or x² + a²
-		// Check if one term is x² and other is constant²
-		let xSquared: MathNode | null = null;
-		let aSquared: MathNode | null = null;
-
-		for (const term of [left, right]) {
-			if (term.type === 'superscript') {
-				if (isVariable(term.base) && term.base.name === variable) {
-					if (isNumber(term.superscript) && term.superscript.value === '2') {
-						xSquared = term;
-					}
-				} else if (!containsVariable(term.base, variable)) {
-					if (isNumber(term.superscript) && term.superscript.value === '2') {
-						aSquared = term;
-					}
-				}
-			} else if (!containsVariable(term, variable)) {
-				// Could be just a number (like 4 = 2²)
-				const val = literalNumberValue(term);
-				if (val !== null && val > 0) {
-					// Treat as a² where a = √val
-					aSquared = term;
-				}
-			}
-		}
-
-		if (xSquared && aSquared) {
-			// Extract 'a' from a²
-			if (aSquared.type === 'superscript') {
-				return { a: aSquared.base, varNode: (xSquared as { base: MathNode }).base };
-			} else {
-				// It's a number, so a = √number
-				const val = literalNumberValue(aSquared);
-				if (val !== null) {
-					const sqrtVal = Math.sqrt(val);
-					if (Number.isInteger(sqrtVal)) {
-						return {
-							a: numericNode(sqrtVal),
-							varNode: (xSquared as { base: MathNode }).base
-						};
-					}
-				}
-			}
+	// x² et les termes constants, dans n'importe quel ordre (`a^2 + x^2 + 1`)
+	let varNode: MathNode | null = null;
+	const constants: MathNode[] = [];
+	for (const term of additionTerms(denom)) {
+		if (isVariableSquared(term, variable)) {
+			if (varNode !== null) return null;
+			varNode = (term as { base: MathNode }).base;
+		} else if (containsVariable(term, variable)) {
+			return null;
+		} else {
+			constants.push(term);
 		}
 	}
+	if (varNode === null || constants.length === 0) return null;
+	const c = constants.reduce((sum, term) => add(sum, term));
+	const a = arctanScale(c);
+	if (a === undefined) return null;
+	return { a, varNode, k };
+}
 
-	return null;
+function ungrouped(node: MathNode): MathNode {
+	let inner = node;
+	while (inner.type === 'delimiter' && (inner.semantic ?? 'grouping') === 'grouping') {
+		inner = inner.content;
+	}
+	return inner;
+}
+
+/** Les termes d'une somme sans soustraction (`x^2 + a^2 + 1` → trois termes). */
+function additionTerms(node: MathNode): MathNode[] {
+	if (node.type === 'addition') return [...additionTerms(node.left), ...additionTerms(node.right)];
+	return [ungrouped(node)];
+}
+
+function isVariableSquared(term: MathNode, variable: string): boolean {
+	return (
+		term.type === 'superscript' &&
+		isVariable(term.base) &&
+		term.base.name === variable &&
+		isNumber(term.superscript) &&
+		term.superscript.value === '2'
+	);
+}
+
+/**
+ * a > 0 tel que a² = c, `null` pour a = 1, `undefined` si c n'est pas lu
+ * (voir `isArctanPattern`).
+ */
+function arctanScale(c: MathNode): MathNode | null | undefined {
+	const square = literalNumberValue(c);
+	if (square !== null) {
+		const root = Math.sqrt(square);
+		if (square <= 0 || !Number.isInteger(root)) return undefined;
+		return root === 1 ? null : numericNode(root);
+	}
+	const even = evenPowerRoot(c);
+	if (even !== null) return even;
+	if (c.type === 'multiplication' && isNumber(c.left)) {
+		const n = literalNumberValue(c.left);
+		const root = n === null ? NaN : Math.sqrt(n);
+		const inner = evenPowerRoot(ungrouped(c.right));
+		if (n !== null && n > 0 && Number.isInteger(root) && inner !== null) {
+			return root === 1 ? inner : multiply(numericNode(root), inner, 'implicit');
+		}
+	}
+	return undefined;
+}
+
+/** `b^{2m}` (b sans la variable) → b^m ; sinon `null`. */
+function evenPowerRoot(node: MathNode): MathNode | null {
+	if (node.type !== 'superscript') return null;
+	const exponent = literalNumberValue(node.superscript);
+	if (exponent === null || exponent < 2 || !Number.isInteger(exponent) || exponent % 2 !== 0) {
+		return null;
+	}
+	const m = exponent / 2;
+	return m === 1 ? node.base : superscript(node.base, numericNode(m));
+}
+
+/** k·arctan(x/a)/a, écrit coefficient devant : `\\dfrac{2}{a}\\arctan(x/a)` ; k = a se simplifie. */
+function arctanWithCoefficient(
+	varNode: MathNode,
+	a: MathNode | null,
+	k: MathNode | null
+): MathNode {
+	if (k === null) return arctanRule(varNode, a);
+	if (a === null) return simplifiedMultiply(k, arctanRule(varNode, null));
+	const arctan = func('arctan', [simplifiedDivide(varNode, a)]);
+	return nodesEqual(k, a) ? arctan : simplifiedMultiply(simplifiedDivide(k, a), arctan);
 }
 
 /**
@@ -662,9 +686,9 @@ export const basicIntegrator: Integrator = {
 		// Case 9: 1/(a²+x²) → arctan
 		const arctanMatch = isArctanPattern(expr, variable);
 		if (arctanMatch) {
-			const { a, varNode } = arctanMatch;
+			const { a, varNode, k } = arctanMatch;
 			recorder.recordStepByRule('arctan-rule', expr, expr, 'detailed');
-			antiderivative = arctanRule(varNode, a);
+			antiderivative = arctanWithCoefficient(varNode, a, k);
 			recorder.recordStepByRule('arctan-rule', expr, antiderivative, 'summarized');
 
 			return {
