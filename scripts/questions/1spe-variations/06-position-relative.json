@@ -1,0 +1,221 @@
+{
+	"title": "Position relative de deux courbes",
+	"description": "Position relative par le signe de f(x) − g(x) : parabole et droite, deux paraboles (f − g affine), x³ et a²x sur [0 ; +∞[",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Position relative",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f(x)=x^2$ et $g(x)={{eval:(r+t)*x-r*t}}$, de courbes $\\mathcal{C}_f$ et $\\mathcal{C}_g$.\n\nSur quel intervalle $\\mathcal{C}_f$ est-elle strictement au-dessous de $\\mathcal{C}_g$ ?\n\n$x\\in ?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "-4..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				},
+				{
+					"name": "t",
+					"expression": "eval:r+d"
+				}
+			],
+			"conditions": ["r != 0", "t != 0", "r + t != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "]{{r}};{{t}}["
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathcal{C}_f$ est au-dessus de $\\mathcal{C}_g$ là où $f(x)-g(x)>0$, au-dessous là où $f(x)-g(x)<0$.",
+					"$f(x)-g(x)={{eval:x^2-(r+t)*x+r*t}}=(x{{eval:-r;+}})(x{{eval:-t;+}})$, de racines ${{r}}$ et ${{t}}$.",
+					"Ce trinôme est négatif entre ses racines : $\\mathcal{C}_f$ est au-dessous de $\\mathcal{C}_g$ pour $x\\in\\textcolor{{{color:primary.0}}}{]{{r}}\\,;{{t}}[}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f(x)={{eval:x^2+(b+k)*x+c-k*z}}$ et $g(x)={{eval:x^2+b*x+c}}$, de courbes $\\mathcal{C}_f$ et $\\mathcal{C}_g$.\n\nSur quel intervalle $\\mathcal{C}_f$ est-elle strictement au-dessus de $\\mathcal{C}_g$ ?\n\n$x\\in ?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "z",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["b + k != 0", "c - k*z != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k>0|]{{z}};+\\infty[|]-\\infty;{{z}}[}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathcal{C}_f$ est au-dessus de $\\mathcal{C}_g$ là où $f(x)-g(x)>0$, au-dessous là où $f(x)-g(x)<0$.",
+					"$f(x)-g(x)={{eval:k*x-k*z}}$ : une fonction affine qui s'annule en $x={{z}}$, de coefficient directeur ${{k}}$ {{if:k>0|positif : elle est positive pour $x>{{z}}$|négatif : elle est positive pour $x<{{z}}$}}.",
+					"$\\mathcal{C}_f$ est au-dessus de $\\mathcal{C}_g$ pour $x\\in\\textcolor{{{color:primary.0}}}{{{if:k>0|]{{z}}\\,;+\\infty[|]-\\infty\\,;{{z}}[}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f(x)=x^3$ et $g(x)={{eval:a^2*x}}$, de courbes $\\mathcal{C}_f$ et $\\mathcal{C}_g$.\n\nSur $[0\\,;+\\infty[$, sur quel intervalle $\\mathcal{C}_f$ est-elle strictement au-dessus de $\\mathcal{C}_g$ ?\n\n$x\\in ?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "]{{a}};+\\infty["
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathcal{C}_f$ est au-dessus de $\\mathcal{C}_g$ là où $f(x)-g(x)>0$, au-dessous là où $f(x)-g(x)<0$.",
+					"$f(x)-g(x)=x^3-{{eval:a^2*x}}=x(x-{{a}})(x+{{a}})$. Sur $[0\\,;+\\infty[$, $x\\geqslant0$ et $x+{{a}}>0$ : le signe est celui de $x-{{a}}$.",
+					"$\\mathcal{C}_f$ est au-dessus de $\\mathcal{C}_g$ pour $x\\in\\textcolor{{{color:primary.0}}}{]{{a}}\\,;+\\infty[}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² et 4x − 3 : ]1 ; 3[",
+			"variationIndex": 0,
+			"variables": {
+				"r": "1",
+				"d": "2",
+				"t": "3"
+			},
+			"answers": ["]1;3["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochets fermés",
+			"variationIndex": 0,
+			"variables": {
+				"r": "1",
+				"d": "2",
+				"t": "3"
+			},
+			"answers": ["[1;3]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : au-dessus, ]3 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"r": "1",
+				"d": "2",
+				"t": "3"
+			},
+			"answers": ["]3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k = 2, z = 1 : ]1 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"b": "1",
+				"c": "2",
+				"k": "2",
+				"z": "1"
+			},
+			"answers": ["]1;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "k = −2, z = 1 : ]−∞ ; 1[",
+			"variationIndex": 1,
+			"variables": {
+				"b": "1",
+				"c": "2",
+				"k": "-2",
+				"z": "1"
+			},
+			"answers": ["]-\\infty;1["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "k = −2, erreur : ]1 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"b": "1",
+				"c": "2",
+				"k": "-2",
+				"z": "1"
+			},
+			"answers": ["]1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x³ et 4x : ]2 ; +∞[",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["]2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]4 ; +∞[",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["]4;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
