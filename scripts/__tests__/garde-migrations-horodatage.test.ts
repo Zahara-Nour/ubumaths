@@ -8,7 +8,7 @@
  * sur un main périmé, main cassée pour toutes les PR). Gardé ici :
  * - aucune migration neuve, ou une plus récente que main → passe ;
  * - horodatage déjà pris sur origin/main (poussé par une autre session) → refusé ;
- * - plus ancienne que la dernière de main → passe (`db:migrate` = `db push --include-all`) ;
+ * - plus ancienne que la dernière de main → passe (`db:migrate --include-all` l'acceptera) ;
  * - deux migrations neuves au même horodatage → refusé ;
  * - doublon déjà sur main, sans rapport avec la branche → passe ;
  * - `--pr <n>` : lit la tête de la PR sur origin (refs/pull/<n>/head) ;
@@ -132,7 +132,7 @@ describe('garde-migrations-horodatage', () => {
 		expect(r.stderr).toMatch(/pnpm migration:horodatage/);
 	});
 
-	it('plus ancienne que la dernière migration de main : passe (db push --include-all)', () => {
+	it('plus ancienne que la dernière migration de main : passe (db:migrate --include-all l’acceptera)', () => {
 		migration(moi, '20261101120000_lot_a.sql');
 		migration(autre, '20261101130000_lot_b.sql');
 		git(autre, 'push', '-q', 'origin', 'main');

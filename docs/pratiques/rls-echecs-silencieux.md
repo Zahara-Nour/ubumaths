@@ -187,10 +187,10 @@ Rencontré trois fois dans la même session. Un test peut contourner
 (`const F = 'ma_fonction' as never`), du code de production ne devrait pas.
 
 ⚠️ Si une migration doit partir AVANT d'autres déjà écrites, `pnpm db:migrate`
-(`supabase db push --include-all`) les pousse toutes. Les déplacer temporairement hors de `supabase/migrations/`
+(`supabase db push`) les pousse toutes. Les déplacer temporairement hors de `supabase/migrations/`
 fonctionne, mais **compter les fichiers avant et après** : un oubli de
 restauration ne serait signalé par rien. Et les migrations suivantes hériteront
-d'un ordre non chronologique, ce qui exige `--include-all` (passé par `pnpm db:migrate` depuis le 2026-11-01).
+d'un ordre non chronologique, ce qui exige `--include-all`.
 
 ## Ce qui a réellement empêché la récidive
 

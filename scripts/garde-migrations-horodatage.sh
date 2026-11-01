@@ -22,11 +22,12 @@
 # Refuse (exit 1) :
 #   - une migration neuve dont l'horodatage est déjà pris sur origin/main ;
 #   - deux migrations de la branche au même horodatage.
-# Une migration plus ancienne que la dernière de main PASSE : `pnpm db:migrate` joue
-# `supabase db push --include-all`, qui l'accepte (sans cette option, db push la refuse,
-# « inserted before the last migration »). Les migrations de lots, chacune sur ses propres
-# lignes, ne dépendent pas de leur ordre ; une migration qui dépend d'une autre le dit dans son
-# en-tête et attend son merge.
+# Une migration plus ancienne que la dernière de main PASSE : `pnpm db:migrate` (`db push`)
+# la refuse alors (« inserted before the last migration ») ; on lit la liste avec
+# `pnpm db:migrate --dry-run --include-all`, puis on relance avec `--include-all`. Pas d'option
+# par défaut : le refus signale une migration ancienne inattendue. Les migrations de lots,
+# chacune sur ses propres lignes, ne dépendent pas de leur ordre ; une migration qui dépend
+# d'une autre le dit dans son en-tête et attend son merge.
 # Hors ligne, ou sans origin : passe, avec un avertissement (le garde-fou
 # n'empêche pas de travailler ; la CI reste le filet). En CI (CI=true) : refuse,
 # car la garde y est la porte de la CI (quality.yml, job `version`).

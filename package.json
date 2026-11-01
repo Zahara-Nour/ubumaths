@@ -72,7 +72,7 @@
 		"migration:horodatage": "bash scripts/garde-migrations-horodatage.sh --prochain",
 		"check:ubumark": "tsx scripts/check-ubumark.ts",
 		"fiche:verifier": "bash scripts/fiches/verifier-fiche.sh",
-		"db:migrate": "supabase db push --include-all",
+		"db:migrate": "supabase db push",
 		"db:start": "bash scripts/with-db-lock.sh supabase start",
 		"db:stop": "bash scripts/with-db-lock.sh supabase stop",
 		"db:reset": "bash scripts/with-db-lock.sh supabase db reset",
