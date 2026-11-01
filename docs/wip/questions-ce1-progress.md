@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 7 rangé en prod, page à cocher publiée._
+_Mis à jour le 2026-11-01, lot 7 publié._
 
-- **État** : lots 0 à 6 publiés (lot 6 : calcul posé et heure, 7 modèles, § 13, clos le 2026-11-01).
-- **Prochaine action** : lot 7 rangé en prod (#2105), page à cocher publiée
-  (https://claude.ai/artifact/C4GhFJ83yChjuhs9KCYu64) → compter les verdicts en base → `publier-lot` simulé → David
-  `--publier`. Ensuite chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : la relecture du lot 7 (page à cocher ; diagrammes et tableaux croisés à jouer par les liens de l'aperçu admin).
+- **État** : lots 0 à 7 publiés (lot 7 : données, 6 modèles, § 14, clos le 2026-11-01).
+- **Prochaine action** : chantier `monnaie-centimes` (à part : ` ```monnaie ` sans centimes ni billets de 200 / 500 €,
+  § 12), puis lot monnaie (054, 055, 056, 057, 086), puis lots 8 et 9 (§ 12) — phase 0 à écrire.
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
   posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
   de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
   de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot7-rangement`). `!` de David :
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot7-rangement`, mergée : en partir une neuve sur `origin/main`). `!` de David :
   toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -616,3 +615,6 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre rec
   point, un tag chacun, brouillons, `updated_at` intact. Page à cocher publiée
   (https://claude.ai/artifact/C4GhFJ83yChjuhs9KCYu64) ; alertes : 5 modèles à blocs `barres` / `tableau-croise` non
   dessinés par le script → liens vers l'aperçu admin en prod dans l'intro.
+- 2026-11-01 : relecture 6/6 OK (verdicts comptés en base, aucun commentaire) ; catégories relevées avant publication,
+  sans collision ; `publier-lot` simulé (6 passent), puis `--publier` par David : 6/6 publiés, vérifié au MCP (publiés,
+  rangés, tagués). Lot 7 clos. Reste signalé : une barre non construite parmi d'autres jugée « forme non optimale ».
