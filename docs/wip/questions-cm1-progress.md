@@ -593,3 +593,5 @@ sans outil neuf ; « 1 + 3/4 » refusé (`requiredForm: 'fraction'`).
   lot 3b (script en scratchpad, remplacements comptés) ; horodatage = max (`20261101141500`,
   cm2 lot 4) + 1 min.
 - Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
+- `security-auditor` : aucun finding bloquant (diff au gabarit 3b : seuls ids, codes, sous-notions, comptes
+  et commentaires changent) ; l'en-tête du test qui disait « 8 modèles » est corrigé.

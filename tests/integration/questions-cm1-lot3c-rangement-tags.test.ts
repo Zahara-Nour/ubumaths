@@ -1,5 +1,5 @@
 /**
- * Chantier « questions-cm1 », lot 3c : nœud et tag de 8 modèles neufs (Supabase local requis)
+ * Chantier « questions-cm1 », lot 3c : nœud et tag de 4 modèles neufs (Supabase local requis)
  * ======================================================================================
  *
  * Migration `20261101141600_questions_cm1_lot3c_rangement_tags` : les 4 brouillons de
