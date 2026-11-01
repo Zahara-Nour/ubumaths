@@ -16,6 +16,9 @@ import {
 } from '$lib/server/validation/documents';
 import { deleteDocument, disableDocument, enableDocument } from '$lib/server/rag';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/documents/+server');
 
 /**
  * GET /api/documents - List documents for the current teacher
@@ -74,7 +77,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const { data: documents, error: queryError, count } = await query;
 
 		if (queryError) {
-			console.error('Error fetching documents:', queryError);
+			logger.error('Error fetching documents:', queryError);
 			throw error(500, { message: 'Erreur lors de la récupération des documents' });
 		}
 
@@ -91,7 +94,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 			// laisse une trace.
 			if (chunksError) {
-				console.error('Enrichissement illisible :', chunksError);
+				logger.error('Enrichissement illisible :', chunksError);
 			}
 
 			if (chunks) {
@@ -132,7 +135,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('Documents list error:', err);
+		logger.error('Documents list error:', err);
 		throw error(500, { message: 'Erreur serveur' });
 	}
 };
@@ -168,7 +171,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (docError && docError.code !== 'PGRST116') {
-				console.error('Contrôle d’accès impossible :', docError);
+				logger.error('Contrôle d’accès impossible :', docError);
 				throw error(500, 'Impossible de vérifier l’accès');
 			}
 
@@ -189,7 +192,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('Document delete error:', err);
+		logger.error('Document delete error:', err);
 		throw error(500, { message: 'Erreur serveur' });
 	}
 };
@@ -229,7 +232,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (docError && docError.code !== 'PGRST116') {
-				console.error('Contrôle d’accès impossible :', docError);
+				logger.error('Contrôle d’accès impossible :', docError);
 				throw error(500, 'Impossible de vérifier l’accès');
 			}
 
@@ -271,7 +274,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('Document update error:', err);
+		logger.error('Document update error:', err);
 		throw error(500, { message: 'Erreur serveur' });
 	}
 };

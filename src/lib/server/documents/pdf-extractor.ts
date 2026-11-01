@@ -1,3 +1,6 @@
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/documents/pdf-extractor');
 /**
  * PDF Text Extraction Service
  *
@@ -84,7 +87,7 @@ export async function extractTextFromPdf(buffer: Buffer): Promise<PdfExtractionR
 			}
 		};
 	} catch (error) {
-		console.error('PDF extraction failed:', error);
+		logger.error('PDF extraction failed:', error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : 'Failed to extract PDF text'

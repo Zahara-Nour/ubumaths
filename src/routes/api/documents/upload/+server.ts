@@ -15,6 +15,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { documentUploadSchema, fileValidationSchema } from '$lib/server/validation/documents';
 import { extractText } from '$lib/server/documents/pdf-extractor';
 import { indexDocument } from '$lib/server/rag';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/documents/upload/+server');
 
 // Maximum file size: 10MB
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -150,7 +153,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			message: `Document "${metadata.title}" indexé avec succès (${result.chunksCreated} segments créés)`
 		});
 	} catch (err) {
-		console.error('Document upload error:', err);
+		logger.error('Document upload error:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
