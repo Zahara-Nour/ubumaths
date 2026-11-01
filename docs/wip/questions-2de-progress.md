@@ -838,3 +838,5 @@ David a lancé `create-questions --publier` sur `2de-droites-a` puis `2de-droite
 - Migration `20261101160100_questions_2de_droites_rangement_tags` et
   `tests/integration/questions-2de-droites-rangement-tags.test.ts`, générés depuis ceux du lot 4 (seul le lot
   change). Rouge sans la migration (fichier vidé : 3 échecs, 5 sautés) ; vert avec : 10/10.
+- `security-auditor` : aucun finding (même code exécutable que le lot 4, gardes et rollback vérifiés, état prod
+  relu par MCP). PR #2087.
