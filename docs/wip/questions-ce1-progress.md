@@ -5,14 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2168._
+_Mis à jour le 2026-11-01 vers 23 h, pendant un `deploy:prod` (lancé à la demande de David)._
 
-- **État** : lots 0 à 7 publiés ; lot 8 (monnaie) : 6 brouillons en prod, rangés et tagués ; lot 9 (fractions
-  dessinées et géométrie, § 16) : fichiers mergés (#2168), brouillons pas encore en prod.
-- **Prochaine action** : David crée les 9 brouillons du lot 9 en prod ; relever les `id` ; migration nœud + tag
-  (+ `a7dfe502` passé au CE1, « Tracés · Droites · 2 », instantané d'abord) ; page à cocher (ajouter le dessin de
-  ` ```partage ` au script) ; lot 8 après le `deploy:prod` des centimes.
-- **En attente de David** : `create-questions --publier` du lot 9 ; `deploy:prod` pour les centimes (lot 8).
+- **⚠️ D'abord** : `git log -1 origin/production`. Si le déploiement est fait (version > 0.59.0) ou abandonné :
+  **envoyer « go » (fin de la PAUSE MERGES) aux sessions** (`ListAgents`, toutes les interactives) — c'est cette
+  session qui l'a demandée. Échecs de la soirée : CI de version instable (« Browser connection was closed », rejouer
+  le job : `gh run rerun <id> --failed`) et merges qui annulaient la CI de version (d'où la pause).
+- **État** : lot 9 : 9 brouillons en prod (#2168) ; **#2176** (migrations nœud + tag du lot 9, et `a7dfe502` au CP
+  ET au CE1, tags CP-058 + CE1-073 — décision de David) : CI verte, `security-auditor` sans finding bloquant (×2),
+  **à merger après le déploiement**, puis `db:migrate` depuis le dépôt principal (4 conditions réunies), vérifier au MCP.
+- **Prochaine action** : après `db:migrate` : page à cocher du lot 9 (ajouter le dessin de ` ```partage ` au script) ;
+  lot 8 (centimes en prod si le déploiement passe) : catégories, page à cocher, `publier-lot`.
+- **En attente de David** : rien (le déploiement a été demandé). Chantier `verrou-deploy` à ouvrir à part (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
@@ -744,3 +748,7 @@ Réponse de David (« je suis tes recos », 2026-11-01) : les six recommandation
 - 2026-11-01 : PAUSE CI demandée par David (session migrations-collision, relayée par questions-1spe) : rien poussé ;
   au « go » : `git merge origin/main`, push, PR.
 - 2026-11-01 : fin de la pause CI ; #2168 mergée (CI verte, Type Check / Build sautés : PR de contenu) ; brouillons en prod à créer par David.
+- 2026-11-01 : #2176 ouverte (2 migrations ; horodatages 224703 et 224704 après collision avec 1re spé) ; tests rouges
+  sans, verts avec (9/9, 10/10). `deploy:prod` demandé par David : v0.60.0 et v0.61.0 créées, CI de version rouge par
+  instabilité navigateur puis annulée par des merges ; PAUSE MERGES demandée aux sessions (accord de David) ; nouveau
+  lancement en cours. Diagnostic du verrou : mémoire `project_chantier-verrou-deploy`.
