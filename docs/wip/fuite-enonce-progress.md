@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 1 codé (§ 5), PR ouverte._
+_Mis à jour le 2026-11-01, après #2120 (lot 1 mergé, pas encore en prod)._
 
-- **État** : lot 1 codé, PR #2120 ; revues faites (aucun bloquant, mineurs corrigés, § 6), CI en cours.
-- **Prochaine action** : revues, CI, merge ; puis lot 2 (une question par cas à David).
-- **En attente de David** : valider les recos du lot 2 (§ 6) ; garde-fou d'ici là (§ 6).
-- **Pièges en cours** : `construire` (genre du bloc) passe désormais dans la version publique (garde de `generation-ranger.test.ts` précisée) ; branche fusionnée avec `origin/main` (103 commits, #2096 compris).
-- **Worktree / branche** : `ubumaths-wt-fuite-enonce` · `fix/fuite-enonce`.
+- **État** : lot 1 mergé (#2120) : line, courbe, horloge, collection, monnaie, partage, barres (`axe: à choisir` compris) partent masqués (`?`). Pas en prod avant le prochain `deploy:prod`.
+- **Prochaine action** : lot 2 dans un nouveau worktree (`git worktree add -b fix/fuite-enonce-lot2 ../ubumaths-wt-fuite-enonce origin/main`) : lire le code de `cubes, `patron `completer:`, ```figure-a-completer, puis une question par cas à David.
+- **En attente de David** : valider les recos du lot 2 (§ 6) ; garde-fou d'ici là, ma reco : non (0 modèle publié de ces blocs).
+- **Pièges en cours** : `construire` (genre du bloc) passe dans la version publique ; un bloc dans une option de ```choix n'est pas masqué (voulu) ; la valeur de remplacement ne doit jamais servir avant un verdict.
+- **Worktree / branche** : aucun (`ubumaths-wt-fuite-enonce` retiré après #2120).
 
 ---
 
