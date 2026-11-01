@@ -181,3 +181,10 @@ refus?, note? }`). Juge : `src/lib/mathAST/cli/__tests__/registre-corpus/compare
   l'ordre du calcul — déjà la règle de `solve-latex.ts`, `absolute-value.ts`,
   `quadratic-renderer.ts`. Exception à corriger en PR 2 : le chemin « produit nul » de l'Atelier
   (`(x−1)(x+2)=0 → {1 ; −2}`). À verser dans la doc système avec cette PR.
+- **Juge du corpus = règle E1, inchangé (David, 2026-11-01)** : `checkForm` sans remarque, comme
+  `tidy-passe-le-juge.test.ts` ; une écriture que le juge reprocherait à un élève (`brackets`,
+  `signs`, `reducedFractions`, `factorOne`…) sort en `forme`. Juge « strict » (égalité
+  d'écriture) proposé puis écarté : une seconde définition de « bien écrit », contraire à l'ADR 0032
+  § 4. `ln(|x|)` et `0.75` du registre passent le juge : acceptés ; la virgule se pose à
+  l'affichage (`toFrenchDecimal`) — à retenir pour la calculatrice. Dérivées `1 + 1/x`,
+  `1/x + 2x` (ordre de la règle) non ajoutées : le juge ignore l'ordre.
