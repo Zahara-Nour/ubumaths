@@ -85,7 +85,10 @@ describe('aˣ : base constante évaluée, refus si ≤ 0 ou = 1', () => {
 
 describe('écriture réduite des primitives en ln', () => {
 	it.each([
-		['\\frac{x}{x^2+1}\\ln(x^2+1)', '\\dfrac{1}{4} \\ln\\left( x^2 + 1 \\right)^2'],
+		[
+			'\\frac{x}{x^2+1}\\ln(x^2+1)',
+			'\\dfrac{1}{4} \\left( \\ln\\left( x^2 + 1 \\right) \\right)^2'
+		],
 		['\\frac{2^x}{2^x+1}', '\\dfrac{\\ln\\left( 2^x + 1 \\right)}{\\ln\\left( 2 \\right)}'],
 		['\\frac{1}{2x}', '\\dfrac{1}{2} \\ln\\left( \\left| x \\right| \\right)'],
 		[

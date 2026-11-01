@@ -1,0 +1,74 @@
+{
+	"id": "de8fa591-56a6-4766-8799-0cb72b9f0073",
+	"title": "Échantillon de taille n : espérance de Sₙ",
+	"description": "E(Sₙ) = nμ",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Sommes de variables aléatoires",
+	"subdomain": "Échantillons",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*m/10}}"
+				}
+			],
+			"statement": "$(X_1, \\ldots, X_{ {{n}} })$ est un échantillon de taille ${{n}}$ d'une loi d'espérance $\\mu={{eval:m/10;d}}$. On pose $S=X_1+\\cdots+X_{ {{n}} }$.\n\nCalcule $E(S)$.\n\n$E(S)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10|20|25|50|100"
+				},
+				{
+					"name": "m",
+					"expression": "5..80"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par linéarité, $E(S)=E(X_1)+\\cdots+E(X_{ {{n}} })=n\\mu$.",
+					"$E(S)={{n}}\\times{{eval:m/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:n*m/10;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["70"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "35",
+				"n": "20"
+			},
+			"description": "v0 : n = 20, μ = 3,5 → 70",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "35",
+				"n": "20"
+			},
+			"description": "v0 : μ seul",
+			"variationIndex": 0
+		}
+	]
+}

@@ -1,0 +1,87 @@
+{
+	"id": "1043c29e-4d7c-4128-a5d8-f35ec390900e",
+	"title": "Loi de Bernoulli : variance",
+	"description": "V(X) = p(1 − p) (piège : p)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Espérance et variance",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*(q-c)/q^2}}"
+				}
+			],
+			"statement": "La variable aléatoire $X$ suit la loi de Bernoulli de paramètre $p=\\dfrac{ {{c}} }{ {{q}} }$.\n\nCalcule sa variance.\n\n$V(X)=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3..8"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:q-1}}"
+				}
+			],
+			"conditions": ["gcd(c, q) == 1"],
+			"correction": {
+				"steps": [
+					"Pour une loi de Bernoulli : $E(X)=p$ et $V(X)=p(1-p)$.",
+					"$V(X)=\\dfrac{ {{c}} }{ {{q}} }\\times\\dfrac{ {{eval:q-c}} }{ {{q}} }=\\textcolor{{{color:primary.0}}}{{{eval:c*(q-c)/q^2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{3}{16}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "1",
+				"q": "4"
+			},
+			"description": "v0 : p = 1/4 → 3/16",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1",
+				"q": "4"
+			},
+			"description": "v0 : E = p",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{16}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1",
+				"q": "4"
+			},
+			"description": "v0 : p²",
+			"variationIndex": 0
+		}
+	]
+}

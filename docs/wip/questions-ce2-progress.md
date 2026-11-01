@@ -6,19 +6,25 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2051 : lot 4 (fractions) publié en prod._
+_Mis à jour le 2026-11-01, phase 0 du lot 6a validée._
 
-- **État** : lots 1 à 4 publiés en prod (lot 4 : 10 modèles, niveaux 08-10 décalés en 19-21 par #2051).
-  Aucun worktree en cours.
-- **Prochaine action** : lot 5 — problèmes (029, 079, 030, 031, 032, 033, 034), phase 0 à écrire et faire
-  valider (§ 4 bis, 7). En parallèle, dans des sessions à part : `choix-correction` (`$$…$$` brut sur la
-  carte de correction, § 8), puis outils neufs `centaines:` + milliers de `collection` et barres à monter.
-- **En attente de David** : rien.
+- **État** : lots 1 à 5 publiés en prod (lot 5 : 12 modèles de problèmes, relus 12/12 « OK » par David, `published`
+  relus au MCP, nœuds et points intacts). Aucun worktree en cours.
+- **Prochaine action** : lot 6a — longueurs et masses (9 modèles, § 10) : phase 0 validée, créer le worktree
+  `../ubumaths-wt-questions-ce2`, écrire `docs/wip/questions/lot-6a.py` → `scripts/questions/ce2-6a/`, tests rouges
+  puis verts, simulation. Puis lot 6b (contenances + durées). En parallèle, dans des sessions à
+  part : `choix-correction` (`$$…$$` brut sur la carte de correction, § 8), puis `centaines:` + milliers de
+  `collection` et barres à monter.
+- **En attente de David** : rien. (Question restée ouverte : le tableau / l'arbre du produit cartésien n'est
+  expliqué qu'en phrases ; un vrai dessin = outil neuf, seulement s'il le demande.)
 - **Pièges en cours** : `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les
-  lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage =
-  max de la PROD ET du dépôt + 1 min ; niveaux relevés dans la catégorie JUSTE avant la publication (un lot
-  d'un autre niveau peut les prendre entre-temps) ; commitlint : sujet sans majuscule, corps ≤ 100 car.
-- **Worktree / branche** : aucun (prochain : `../ubumaths-wt-questions-ce2`, branche du lot 5).
+  lance avec `!`, collé au début de la ligne) ; `db:migrate` pousse TOUTES les migrations en attente ; horodatage =
+  max de la PROD, de `main`, des worktrees ET des branches distantes + 1 min ; niveaux relevés dans la catégorie
+  JUSTE avant la publication ; commitlint : sujet sans majuscule (même « CE2 »), corps ≤ 100 car. ;
+  `Doc-inchangée:` va dans un COMMIT, pas dans la PR ; après un rebase, pas de `--force` ; la page à cocher se
+  publie en artefact avec `capabilities: {db: {}}` (fichier local = « Base indisponible »).
+- **Worktree / branche** : aucun (prochain : `../ubumaths-wt-questions-ce2`).
+  `feat/questions-ce2-lot5-rangement` (`-d` refuse, sans intérêt) : à supprimer par David si besoin.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -383,3 +389,100 @@ de plus (brouillons neufs ; la migration nœud + tag ne change aucune règle).
   `20261101090000` jouée (avec `20261101120100` d'une session questions-5). Relevé MCP : 08/09/10 en 19/20/21,
   draft, `updated_at` inchangé. `publier-lot` simulation : 10/10 ; `--publier` (David) : **10 modèles
   `published`** relus au MCP. Worktree retiré.
+
+## 9. Lot 5 — problèmes (phase 0 validée le 2026-11-01)
+
+Points CE2-029, 079, 030, 031, 032, 033, 034, sans modèle au relevé MCP du 2026-11-01. Nœuds existants sous
+« Problèmes arithmétiques » (parties-tout, comparaison, en deux étapes ou plus, multiplicatifs, produits
+cartésiens) : aucun à créer. Niveaux libres relevés : Parties-tout 7+, Deux étapes 7+, Multiplicatifs 9+,
+Comparaison 2+, Produits cartésiens neuve. Nombres jusqu'à 10 000 ; plus de deux étapes : < 100 ; quantité
+totale ≤ 1 000 pour le nombre de parts. Question d'accès : personne ne lit rien de plus (brouillons neufs).
+
+**Décisions (David, « tes recos ? » puis « je te suis », 2026-11-01)** :
+
+1. Produit cartésien : on demande le nombre de façons ; tableau ou arbre montré dans la correction.
+2. « Fois plus / fois moins » rangé dans « comparaison » (niveau 3) ; le modèle mêle « de plus » et « fois plus ».
+3. Un seul modèle en fractions de même dénominateur (029), `reducedFractions` coupé.
+4. Un seul lot de 12 modèles.
+5. Régulation (« ce résultat est-il possible ? ») en case choix dans quelques variations de 01 et 05.
+
+| Fichier                      | Point | Catégorie · niveau                                   | Variations                                                          |
+| ---------------------------- | ----- | ---------------------------------------------------- | ------------------------------------------------------------------- |
+| `01-parties-tout`            | 029   | Parties-tout · 7                                     | tout, partie ou départ inconnu, 1 000 à 10 000 ; régulation         |
+| `02-parties-tout-prix`       | 029   | Parties-tout · 8                                     | prix à virgule : achats, prix manquant, monnaie                     |
+| `03-parties-tout-fractions`  | 029   | Addition et Soustraction · 22 (Fractions · Calculer) | fraction qui reste, même dénominateur                               |
+| `04-comparaison`             | 079   | Comparaison · 2                                      | plus grand, plus petit, écart ; entiers ≤ 10 000 et prix            |
+| `05-deux-etapes`             | 030   | Deux étapes · 7                                      | ajouts et retraits enchaînés ≤ 10 000 ; achats ; régulation         |
+| `06-comparaison-deux-etapes` | 030   | Deux étapes · 8                                      | Léo 188 billes, Lucie 75 de plus, en tout                           |
+| `07-multiplicatifs-tout`     | 031   | Multiplicatifs · 9                                   | valeur du tout, champ étendu (8 paquets de 125, 6 × 1,50 €)         |
+| `08-nombre-de-parts`         | 031   | Multiplicatifs · 10                                  | total ≤ 1 000 ; reste → arrondi au-dessus ou en dessous             |
+| `09-valeur-d-une-part`       | 031   | Multiplicatifs · 11                                  | 72 € pour 6 dictionnaires (tables)                                  |
+| `10-fois-plus-fois-moins`    | 033   | Comparaison · 3                                      | trottinette 4 fois plus chère que le casque à 32 € ; « fois moins » |
+| `11-problemes-mixtes`        | 032   | Deux étapes · 9                                      | 4 tables de 6 + 7 tables de 4 ; plus de deux étapes : nombres < 100 |
+| `12-produit-cartesien`       | 034   | Produits cartésiens · 1                              | tableau (3 × 7) ; arbre à trois ensembles (2 × 3 × 2)               |
+
+### Lot 5 — écriture (2026-11-01)
+
+- Script `docs/wip/questions/lot-ce2-5.py` → `scripts/questions/ce2-5/` (12 JSON, 117 specs : justes, erreurs
+  typiques — « de plus » lu addition, « fois moins » lu soustraction, dénominateurs ajoutés, reste oublié, une
+  partie plus grande que le tout acceptée). `question:specs --instances 300` : 117/117 specs, 13 500 tirages
+  réussis. `create-questions` en simulation (prod) : 12 « à créer ».
+- **Écart à la phase 0** : le modèle 03 (fractions) est rangé en `Fractions · Calculer · Addition et Soustraction · 22`
+  (comme « Lucie », CE1), non en `Parties-tout · 9` : c'est une catégorie `Entiers`. Niveaux relevés au MCP le
+  2026-11-01 : Fractions › Addition et Soustraction jusqu'à 21.
+- **Réponses sous 10 000** : « 10000 » sans espace est jugé non optimal (comme en numération) ; toutes les sommes
+  sont donc tirées < 10 000.
+- **Défauts trouvés à la relecture des tirages** (invisibles aux specs) : billet de 10 € pour 11,26 d'achats (monnaie
+  négative, condition ajoutée) ; « il reste 1 œufs » ; phrase commençant par une espace.
+- **Produit cartésien** : le tableau / l'arbre n'est dessiné que par des phrases (sa taille change à chaque tirage) ;
+  si David veut un vrai dessin, c'est un outil neuf.
+
+### Lot 5 — brouillons en prod et migration (2026-11-01)
+
+- 12 brouillons créés en prod par David (`08cac7de`, `a2bee082`, `4f47f8d6`, `10f05004`, `28988062`, `4948acaf`,
+  `fe26e846`, `37a715c4`, `059b8bba`, `0f5d9ad8`, `43b40fc7`, `837d027b`), relus au MCP : `draft`, niveaux voulus,
+  sans nœud ni tag, 117 specs enregistrées.
+- Migration `20261101180100_questions_ce2_lot5_rangement_tags` (max de la prod, de `main`, des worktrees et des branches distantes `180000` + 1 min ; renumérotée depuis `160300`, qui passait avant la `160400` de `main`) et son test :
+  rouge sans (5 échecs sur 9), vert 9/9. Nœuds relevés : 029 → parties-tout (y compris le modèle des fractions,
+  `4f47f8d6`), 079 et 033 → comparaison, 030 et 032 → en deux étapes ou plus, 031 → multiplicatifs, 034 → produits
+  cartésiens. `check:incremental` 0 erreur, cliquet tenu.
+- 2026-11-01 : #2090 mergée (CI verte au 3e passage : garde « doc à jour » → `Doc-inchangée` dans un commit ;
+  horodatage `160300` → `180100`, la `160400` de `main` passait avant). `db:migrate` (David) : `180100` seule jouée.
+  Relevé MCP : 12 modèles `draft`, nœuds et points voulus, `updated_at` inchangé. Page à cocher générée (3 alertes
+  « homonyme » = les modèles CE1 de même titre, écartés à raison).
+- 2026-11-01 : page à cocher publiée en artefact (`claude.ai/artifact/L87bEJ4MzgAjWAQfbmaRZ1`, capacité `db`), 12
+  verdicts « OK » lus en base et comptés. `publier-lot` simulation : 12/12, sans collision de niveau ; `--publier`
+  (David) : **12 modèles `published`** relus au MCP (nœuds et points intacts). **Lot 5 clos.**
+
+## 10. Lot 6 — grandeurs (phase 0 validée le 2026-11-01)
+
+Points CE2-035, 036, 037, 038 (longueurs), 045, 046, 047, 048 (masses), 052, 053 (contenances), 060 (durées), sans
+modèle au relevé MCP du 2026-11-01 (la base n'a que du CP, du CE1 et de la 6e sur les grandeurs). Nœuds existants,
+aucun à créer : Longueurs et Masses « unités et conversions » (occupés par CP/CE1, niveaux 2, 4-7 et 1-2),
+Contenances « unités et conversions » (vide), Durées « calcul de durées » (11 modèles de 6e, niveaux 1 à 8).
+Niveaux libres relevés juste avant la publication. Question d'accès : personne ne lit rien de plus (brouillons neufs).
+
+**Décisions (David, « tes recos ? » puis « ok », 2026-11-01)** :
+
+1. Deux lots : **6a** longueurs et masses (modèles 01-09), **6b** contenances et durées (modèles 10-13).
+2. Durées CE2 rangées dans le nœud existant « calcul de durées », aux niveaux libres (pas de nœud neuf).
+3. Références / estimations (040, 041, 049, 050) et périmètre (042) hors lot, dans le lot des QCM.
+
+| #   | Point | Modèle                                 | Variations                                                                 |
+| --- | ----- | -------------------------------------- | -------------------------------------------------------------------------- |
+| 01  | 035   | Unités de longueur : m, dm, cm, mm, km | symbole ↔ unité, ranger de la plus grande à la plus petite                 |
+| 02  | 036   | Relations m · dm · cm · mm             | 16 m = ? cm = ? dm ; 1 600 cm = ? dm ; 1 cm = ? mm ; entiers, sans tableau |
+| 03  | 036   | Relations km · m                       | 5 km + 750 m = ? m ; 5 750 m = ? km + ? m                                  |
+| 04  | 037   | Quelle unité pour mesurer… ?           | choix parmi m, dm, cm, mm, km (case choix)                                 |
+| 05  | 038   | Comparer des longueurs                 | unités différentes (2 m / 185 cm), ranger 3 ou 4 longueurs                 |
+| 06  | 045   | Unités de masse : g, kg, t             | symbole ↔ unité, ordre                                                     |
+| 07  | 046   | Quelle unité pour peser… ?             | choix parmi g, kg, t (case choix)                                          |
+| 08  | 047   | Relations g · kg · t                   | 5 462 g = 5 kg + 462 g ; 5 350 kg = 5 t + 350 kg ; pas de g–t              |
+| 09  | 048   | Comparer des masses                    | 3 ou 4 objets, en g, kg ou t                                               |
+| 10  | 052   | Unités de contenance : L, dL, cL       | (lot 6b)                                                                   |
+| 11  | 053   | 1 L = 10 dL = 100 cL                   | (lot 6b) 780 cL = 7 L + 80 cL                                              |
+| 12  | 060   | Durées à une étape                     | (lot 6b) axe chronologique                                                 |
+| 13  | 060   | Durées à deux étapes                   | (lot 6b) 7 h 10 + 1 h 30 + 40 min                                          |
+
+Réponses en case de saisie, sauf 04 et 07 (case choix, en prod). Le niveau monte avec la difficulté (un type de
+conversion, puis le mélange, puis l'unité à déduire).

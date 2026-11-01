@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2053._
+_Mis à jour le 2026-11-01, après #2136 (fichiers du lot 3-suites mergés)._
 
-- **État** : lot 0-logique (5 brouillons) corrigé (#2053) et mis à jour en prod ; page à cocher publiée (https://claude.ai/artifact/5FCW8NuvR1gZZ6UhbYr2XX), verdicts de David attendus.
-- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`), puis `publier-lot --publier` par David (`--dir scripts/questions/1spe-0-logique`) ; ensuite la migration des tags D3 (sans 174e202b ni dc4b8d08 ; 93f9ecdf sans tag).
-- **En attente de David** : relecture de la page à cocher (5 fiches).
-- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` ; `export-question-templates` exige `svelte-kit sync` dans un worktree neuf ; instantané jamais dans le dépôt principal ; les 5 brouillons de logique tagués de seconde restent à questions-2de.
-- **Worktree / branche** : aucun (worktree du lot logique retiré).
+- **État** : lots 0, 1-dérivation, 2-variations publiés. **Lot 3-suites** (10 modèles, points 214, 217, 372, 374, 375, 378, 369, 370, 222, 376) écrit : simulation 10 / 10 (90 specs), `sonde-figures` 0 problème, joué en base locale.
+- **Prochaine action** : relire en base (MCP) les 10 brouillons créés par David, puis migration nœud + tags (gabarit : lot 2-variations) → page à cocher → publication.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-suites --publier` (brouillons en prod).
+- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` lancés par David ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET de tous les worktrees ; corps de commit : lignes ≤ 100 caractères ; PR de migration : ligne `Doc-inchangée:` dans un commit (garde de `base-de-donnees.md`) ; intégration = workflow à part, attendre son run ; dépôt principal souvent encombré par d'autres sessions (ne commiter que ses fichiers).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (branche `feat/questions-1spe-suites` mergée ; la migration partira d'une branche neuve).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -723,7 +723,7 @@ le 2026-10-31 : 17 modèles, un par (sous-notion, niveau), trigger `updated_at` 
 **Verdicts** : 17 « ok » sur 17, aucun commentaire. `publier-lot --publier` lancé par David le 2026-10-31 : les 17 modèles du
 domaine sont `published` en base. **Lot 0-variables aléatoires clos.**
 
-## 16. Lot 0-logique : vérification des brouillons
+## 16. Lot 0-logique : vérification des brouillons (CLOS : 5 publiés le 2026-11-01, #2053)
 
 _2026-11-01. 5 brouillons de 1re spé du thème « Logique » (e5205176 → 1SPE-201, 536c01bb → 1SPE-202, 0ab3faa5 → 1SPE-204,
 fb3b536c → 1SPE-366, 93f9ecdf sans point, D3) ; instantané `scripts/questions/1spe-0-logique/`, `question:specs --apercu 60
@@ -765,3 +765,210 @@ tous les cas relus (les 7 cas de e5205176 v1, les 4 de v2, les 3 issues de v0, l
 #2053 mergée (CI verte). Mise à jour en prod par David le 2026-11-01 (C1 et C2 relus en base : `{{eval:b/a}}` dans fb3b536c,
 « avec $k$ entier » 2 fois dans e5205176 et 4 fois dans 93f9ecdf). **Page à cocher** :
 https://claude.ai/artifact/5FCW8NuvR1gZZ6UhbYr2XX (5 fiches ; 1 alerte attendue : 93f9ecdf sans point).
+
+**Verdicts** : 5 « ok » sur 5, aucun commentaire. `publier-lot --publier` lancé par David le 2026-11-01 : les 5 modèles sont
+`published` en base (MCP). **Lot 0-logique clos.**
+
+## 17. Migration des tags D3 (relevé de la prod du 2026-11-01)
+
+D3 (§ 5, 2026-10-27) relu contre la prod (MCP) et contre les décisions d'avant et d'après :
+
+| Modèle                            | D3              | Constat                                                                                                             | Suite                                                  |
+| --------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| 174e202b, dc4b8d08                | → 1SPE-307      | annulé par D17 (l1s-3), brouillons en attente                                                                       | rien                                                   |
+| 8b599a53                          | retirer `1_SPE` | déjà `[T_SPE]` (questions-tspe, par fichier)                                                                        | rien                                                   |
+| fece187e, afd9b3ff                | retirer `1_SPE` | brouillons `[1_SPE]`, TSPE-457 ; Q3 de questions-tspe prévoit `[T_SPE]`                                             | **laissés à questions-tspe**, lot 0-trigo, par fichier |
+| f1440b52 (publié)                 | 274 → 396       | 396 sur son nœud, sans modèle ; 274 garde cffdd283, 496f958d                                                        | **migration**                                          |
+| 318ea542 (publié, carte de cours) | → 283           | sans tag par décision du 2026-10-23 ; sœurs 03b3d9b3, bb554c62 en 283, même nœud                                    | **migration**                                          |
+| eae2ff6a (publié)                 | → 386           | contredit l'option A du 2026-10-24 (racines LUES sur une parabole, hors programme ; 386 = discriminant, autre nœud) | **sans point**                                         |
+| f8ccc8b6 (publié)                 | à lire          | 12 vrai/faux sur 6 points ou plus (courbe, racines, formes, axe, signe, extremum)                                   | **sans tag**                                           |
+
+**D22 (David, 2026-11-01, « je valide » sur ces recommandations)**. Question d'accès : personne ne gagne ni ne perd
+d'accès. Données d'élèves sur f1440b52 et 318ea542 : aucune (0 carte SRS, tentative, évaluation, journal, test, série).
+
+Migration `20261101160000_questions_1spe_tags_d3.sql` + `tests/integration/questions-1spe-tags-d3.test.ts` : rouge sans le
+corps de la migration (suite principale tombée au `beforeAll`, 5 branches d'échec), 11 / 11 verts avec.
+
+`security-auditor` (Opus) : aucun finding bloquant ; deux faibles, hérités du gabarit cm2 lot 4 (comportement sous
+`db push` non prouvé par le test ; un retrait de tag concurrent ne prend pas le verrou, effet nul).
+
+#2085 mergée (CI verte). `db:migrate` le 2026-11-01 : seule cette migration en attente (dry-run), jouée ; relu en base (MCP) :
+f1440b52 = 1SPE-396, 318ea542 = 1SPE-283, statut, niveaux et `updated_at` inchangés. **D3 clos.**
+
+## 18. Lot 1-dérivation : taux, sécantes, approximation (CLOS : 10 publiés le 2026-11-01, #2092, #2101, #2104)
+
+_Relevé prod du 2026-11-01 (MCP) : 396 déjà couvert (f1440b52, D3) ; 10 points sans modèle, aucun titre voisin dans
+les autres niveaux. Case choix en prod depuis v0.57.1 (#2019) : D6 levée pour ce lot._
+
+**Phase 0 (D23, David, 2026-11-01)** : un modèle par point, Fonctions › Dérivation :
+
+| #   | Point | Modèle                                       | Sous-notion, niveau         | Variations                                                        | Réponse                    |
+| --- | ----- | -------------------------------------------- | --------------------------- | ----------------------------------------------------------------- | -------------------------- |
+| 1   | 259   | Utiliser la définition du taux de variation  | Taux de variation, 1        | f(b) cherché ; b cherché (tableau de valeurs)                     | case                       |
+| 2   | 268   | Calculer un taux de variation                | Taux de variation, 2        | second degré ; 1/x ; √x entre deux carrés                         | case                       |
+| 3   | 397   | Calculer la pente d'une sécante              | Taux de variation, 3        | x³ + nx ; x² + nx + c puis équation réduite de (AB)               | case ; 2 cases             |
+| 4   | 388   | Lire la pente d'une sécante sur un graphique | Taux de variation, 4        | sécante tracée ; points seuls (` ```courbe `, nœuds de la grille) | case                       |
+| 5   | 262   | Fonction affine tangente                     | Approximation affine, 1     | carré ; cube ; inverse ; racine                                   | case                       |
+| 6   | 390   | Approximation affine de f(a + h)             | Approximation affine, 2     | (1+h)² ; 1/(1+h) ; √(1+h) ; (a+h)²                                | case (forme libre)         |
+| 7   | 273   | Valeur approchée de f(a + h)                 | Approximation affine, 3     | f(a), f′(a) donnés ; √4,02 ; 1/0,98 ; 1,003²                      | case décimale              |
+| 8   | 263   | Ensemble de dérivabilité                     | Fonctions dérivées, 6       | 1/x ; √x ; x³ ; 1/x²                                              | case choix                 |
+| 9   | 267   | Dérivabilité de la valeur absolue en 0       | Dérivabilité en un point, 1 | h numérique ; h en lettre                                         | 2 cases + Oui / Non (fixe) |
+| 10  | 269   | Interpréter le nombre dérivé en contexte     | Nombre dérivé, 4            | vitesse instantanée ; coût marginal ; sens de f′(a) (case choix)  | case ; case choix          |
+
+Q1 (262 voisin de 272) : modèle distinct, en langage de fonction. Q2 (269, variation 3) : case choix. Question
+d'accès : personne ne lit rien de neuf (modèles neufs en brouillon ; la migration ne pose que nœud et tags).
+
+**Écriture** : `docs/wip/questions/lot-1spe-derivation.py` → `scripts/questions/1spe-derivation/`. Simulation
+`create-questions` : 10 / 10 importables (66 specs) ; `sonde-courbes` : 0 problème ; aperçus relus (scratchpad).
+Retouches après aperçu : couleur de conclusion hors `$` (09, 10), Oui / Non non mélangé, « 1/5 = 1/5 » quand d = 1,
+1/1 évité (inverse à partir de 2), ligne de substitution au 262.
+
+**Pièges du lot** : `(−1)/6` = `unoptimal_form` (règle de superflu ordinaire, spec retirée) ; `1 + 0,5h` refusé
+(`bad_form`) tant que `form` est stricte, `acceptDecimal` ne vaut que pour un nombre seul → `form: off` sur le
+modèle 06 (les fausses valeurs restent fausses : `1 + 2h + h²`, `1 + h`).
+
+**Suite** : PR des fichiers → David lance `create-questions --dir scripts/questions/1spe-derivation --publier` →
+migration de rangement (nœuds + tags, ids relus en base) → page à cocher → `publier-lot`.
+
+**Création en prod (2026-11-01)** : `create-questions --publier` lancé par David après #2092 : 10 brouillons
+(de73e71d 259, 286a68a8 268, 9f072622 397, 8a384698 388, be57bd36 262, 5be4ac71 390, 2067f7a4 273, d2bca2d8 263,
+b359cd25 267, e9fe1a28 269), relus en base (MCP) : `draft`, `1_SPE`, niveaux écrits, sans nœud ni tag.
+
+**Rangement** : migration `20261101180000_questions_1spe_derivation_rangement_tags.sql` (gabarit : 2de, droites) +
+`tests/integration/questions-1spe-derivation-rangement-tags.test.ts` : 10 / 10 verts ; rouge sans le corps de la
+migration (5 / 10, restauré d'une copie, identique). Nœuds relus en prod : Fonctions › Dérivation › taux de variation
+(259, 268, 397, 388), approximation affine (262, 390, 273), fonctions dérivées (263), dérivabilité en un point (267),
+nombre dérivé (269).
+
+`security-auditor` (Opus) : aucun finding bloquant (écart au gabarit limité aux données, `1_SPE` et au compte ; gardes
+mesurées en prod, MCP) ; un faible hérité du gabarit (trigger `updated_at` à relire, `tgenabled = 'O'`, après
+application).
+
+#2101 mergée (CI verte). `db:migrate` le 2026-11-01 : seule cette migration en attente (dry-run), jouée ; relu en base
+(MCP) : 10 modèles sur leur nœud, un point chacun, `draft`, `updated_at` inchangé, trigger actif (`O`).
+
+Page à cocher : https://claude.ai/artifact/Q4kLqL6qnRz5DA18ivqkJP (10 fiches, aucune alerte ; collection `verdicts` vide
+à la publication).
+
+**Verdicts (2026-11-01)** : 10 « ok » sur 10, aucun commentaire (lus en base de la page, comptés).
+
+**Simulation `publier-lot`** : 1 refus, d2bca2d8 (Ensemble de dérivabilité) : Fonctions / Dérivation / Fonctions
+dérivées, niveau 6, déjà occupé par 8b599a53 « Dériver g(ax + b) » (publié, `T_SPE` : mon relevé des niveaux ne
+regardait que `1_SPE`). **D24 (David, 2026-11-01, « oui »)** : niveau 6 → 7 (premier libre) ; question d'accès :
+personne. Migration `20261101190000_questions_1spe_derivation_niveau.sql` + `tests/integration/
+questions-1spe-derivation-niveau.test.ts` : 6 / 6 verts, rouge sans le corps (2 échecs, 3 sautés), restauré d'une copie.
+Fichier du lot au niveau 7 (clé de `publier-lot`). **Piège** : relever les niveaux de la catégorie **tous niveaux
+scolaires confondus** (l'index d'unicité ignore `grades`).
+
+`security-auditor` (Opus) : aucun finding bloquant. #2104 mergée (CI verte après une relance : connexion au navigateur fermée
+pendant `RichTextEditor`, sans lien). `db push --dry-run` : `DbPushMissingRemoteError`, bloquée derrière
+`20261101170000_questions_4_lot7_rangement_tags.sql` (session questions-4, pas encore jouée) ; précédent du 2026-10-27 :
+la session propriétaire joue son `--include-all` ; questions-4 le réserve à David (son journal) et lui a donné la commande.
+
+`db push --include-all` lancé par David le 2026-11-01 (170000, 183000, 190000, 190100). Relu en base (MCP) : d2bca2d8 au
+niveau 7, `draft`, `updated_at` inchangé, trigger actif, version 20261101190000 enregistrée. Simulation `publier-lot` :
+**10 brouillons passent le contrôle**.
+
+**Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 10 / 10 publiés, statuts relus en base (MCP).
+**Lot 1-dérivation clos.**
+
+## 19. Lot 2-variations : variations et courbes (D7)
+
+_Relevé prod du 2026-11-01 (MCP) : les 7 points du § 3.6 toujours sans modèle ; voisins sans doublon : 80489c90
+« Lire le signe de a et de Δ sur une parabole » (sens inverse du 403), parité trigonométrique de T_SPE (18855802,
+4c4d43dc, gabarit de la case choix). Nœuds des points : Généralités › parité (399, 280), Dérivation › variations
+et extremums (400, 282, 285), Dérivation › position relative de deux courbes (286), Second degré › parabole (403).
+Niveaux pris (tous niveaux scolaires) : Dérivation › Variations 1 à 5, Polynôme du second degré › Variations 1._
+
+**Phase 0 (D25, David, 2026-11-01, « go » sur les recos)** : un modèle par point :
+
+| #   | Point | Modèle                                    | Catégorie (Fonctions › …), niveau         | Variations                                                                           | Réponse                    |
+| --- | ----- | ----------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------- |
+| 1   | 399   | Lire la parité sur une courbe             | Généralités › Parité (neuve), 1           | paire ; impaire ; axe x = h ; centre (0 ; c) ; f(−a) par la parité                   | case choix fixe ; case     |
+| 2   | 280   | Étudier la parité d'une fonction          | Généralités › Parité, 2                   | x⁴ − kx² + c ; x³ + kx ; x² + kx ; x/(x² + k) ; domaine non symétrique               | case f(−x) + case choix    |
+| 3   | 400   | Fonction de dérivée nulle                 | Dérivation › Variations, 6                | f(p) connaissant f(m) ; (x + a)² − x² − 2ax ; équation de la courbe                  | case ; 2 cases             |
+| 4   | 282   | Extrémum et tangente horizontale          | Dérivation › Variations, 7                | tangente en un extrémum ; k de x³ + kx ; abscisses (f′ = 6(x − r)(x − t)) ; (x − a)³ | 2 cases ; case ; Oui / Non |
+| 5   | 285   | Établir une inégalité par les variations  | Dérivation › Variations, 8                | x³ + 2a³ ≥ 3a²x ; eˣ ≥ 1 + x ; x + a²/x ≥ 2a                                         | 2 cases (x₀, minimum)      |
+| 6   | 286   | Position relative de deux courbes         | Dérivation › Position relative (neuve), 1 | x² et droite ; deux paraboles (f − g affine) ; x³ et a²x sur [0 ; +∞[                | case intervalle            |
+| 7   | 403   | Allure de la parabole selon le signe de a | Polynôme du second degré › Variations, 2  | 4 courbes (case choix) ; sens de variation ; k(u − x)(x + v)                         | case choix                 |
+
+Q1 (sous-catégories neuves) : oui. Q2 (case f(−x) avant le choix) : oui. Q3 (domaine non symétrique) : gardé.
+Question d'accès : personne ne lit rien de neuf (modèles neufs en brouillon ; la migration ne pose que nœud et tags).
+284 (optimisation) et 288 (Newton) hors lot (D4).
+
+**Écriture** : `docs/wip/questions/lot-1spe-variations.py` → `scripts/questions/1spe-variations/`. Simulation
+`create-questions` : 7 / 7 importables (61 specs) ; `sonde-courbes` : 0 problème (elle ne voit pas les courbes
+dans une case choix : celles du 07 vérifiées à l'aperçu) ; aperçus relus (scratchpad). Essai en base **locale** :
+07 joué (courbe juste après mélange : « Juste », corrigé affiché), tableaux du 05 rendus.
+
+**Pièges du lot** : intervalle en réponse = `blankDefaults.answerKind: intervalles` (sinon `bad_form`) ;
+(−x)/(x² + k) = `unoptimal_form` avec `constraintViolations: ['signs']` (la spec doit nommer la contrainte) ;
+tableau de variations à borne ouverte : `domain: ]0, [a, [+inf[` (le parseur ne coupe une virgule qu'avant un
+crochet : `]0, a, +inf[` donne un seul point, vu à l'aperçu) ; `pnpm exec svelte-kit sync` dans un worktree neuf
+avant `tsx` (sinon `$lib` introuvable).
+
+PR #2119 mergée (CI verte après deux relances du shard navigateur 1/2 : « Browser connection was closed », sans
+lien ; une première CI rouge venait d'une collision d'horodatage de migrations d'autres sessions, réglée sur `main`).
+
+**Création en prod (2026-11-01)** : `create-questions --publier` lancé par David après #2119 : 7 brouillons (707aa89d
+399, 655d06ff 280, 75b2aa08 400, 47843e39 282, 3fa3af6c 285, 1e097d3d 286, 8a7e39b7 403), relus en base (MCP) :
+`draft`, `1_SPE`, niveaux écrits, sans nœud ni tag.
+
+**Rangement** : migration `20261101212000_questions_1spe_variations_rangement_tags.sql` (gabarit : lot 1-dérivation) +
+`tests/integration/questions-1spe-variations-rangement-tags.test.ts` : 10 / 10 verts ; rouge sans le corps de la
+migration (3 échecs, 5 sautés), restauré d'une copie, identique. `security-auditor` (Opus) : aucun finding (écart au
+gabarit limité aux données ; 7 identifiants, chemins et points relus en prod, MCP).
+
+#2126 mergée (CI verte, intégration comprise). `db:migrate` le 2026-11-01 : seule cette migration en attente (dry-run),
+jouée ; relu en base (MCP) : 7 modèles sur le nœud de leur point, un point chacun, `draft`, `updated_at` inchangé,
+trigger actif (`O`), version 20261101212000 enregistrée.
+
+Page à cocher : https://claude.ai/artifact/8NHxAarnojjKMkiodNmioo (7 fiches ; alerte : bloc `variation` non dessiné
+sur 3fa3af6c, à jouer dans l'aperçu ; collection `verdicts` vide à la publication).
+
+**Verdicts (2026-11-01)** : 7 « ok » sur 7, aucun commentaire (lus en base de la page, comptés). Simulation
+`publier-lot` : **7 brouillons passent le contrôle**.
+
+**Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 7 / 7 publiés, statuts relus en base (MCP).
+**Lot 2-variations clos.**
+
+## 20. Lot 3-suites : modélisation, algorithmes, motifs (D7)
+
+_Relevé prod du 2026-11-01 (MCP) : les 10 points toujours sans modèle. Voisins à ne pas répéter : aeb1389d
+(pourcentage → raison, uₙ ; 379), 31a77ba9 (`terme(n)` Python, u ← au + b ; 236), ca8f40c2 (f(x + 1)/f(x) pour
+e^{ax} ; 293). Niveaux pris (tous niveaux scolaires) : Suites › Seuil et algorithmes › Algorithmes 1 et 2 ;
+Fonctions › Fonction exponentielle › Suites et modélisation 1 et 2. **Aucun modèle de la prod n'attend uₙ dans
+une réponse.**_
+
+**Phase 0 (D26, David, 2026-11-01, « je valide » sur les recos)** : un modèle par point.
+
+| #   | Point | Modèle                                        | Catégorie, niveau                                              | Réponse                       |
+| --- | ----- | --------------------------------------------- | -------------------------------------------------------------- | ----------------------------- |
+| 1   | 214   | Évolution à accroissement constant            | Suites › Modélisation › Évolutions successives (neuve), 1      | case                          |
+| 2   | 217   | Évolution à taux constant                     | Suites › Modélisation › Évolutions successives, 2              | case « ? % »                  |
+| 3   | 372   | Suite arithmétique et fonction affine         | Suites › Suites arithmétiques › Fonction affine (neuve), 1     | 2 cases ; case y =            |
+| 4   | 374   | Évolution exponentielle et suite géométrique  | Fonctions › Fonction exponentielle › Suites et modélisation, 3 | case arrondie ; case exacte   |
+| 5   | 375   | De l'énoncé à l'expression de la suite        | Suites › Modélisation › De l'énoncé à la suite (neuve), 1      | case uₙ ; 2 cases récurrence  |
+| 6   | 378   | Termes d'une suite donnée par un algorithme   | Suites › Seuil et algorithmes › Algorithmes, 3                 | case                          |
+| 7   | 369   | Reconnaître la suite que génère un algorithme | Suites › Seuil et algorithmes › Algorithmes, 4                 | case ; 2 cases ; choix + case |
+| 8   | 370   | Motif : nombre d'éléments à une étape         | Suites › Apprivoiser › Motifs (neuve), 1                       | case                          |
+| 9   | 222   | Motif : relation explicite                    | Suites › Apprivoiser › Motifs, 2                               | case en n (toute écriture)    |
+| 10  | 376   | Motif : relation de récurrence                | Suites › Apprivoiser › Motifs, 3                               | case « uₙ + ? »               |
+
+Q1 (récurrence en réponse) : deux cases « uₙ₊₁ = ? × uₙ + ? » ; le 10 garde « uₙ + ? » (une case en n). Q2 (motifs) :
+` ```figure `, étapes 1 à 3 dessinées fixes, seules l'étape demandée et la numérotation (dès 0 ou dès 1) varient. Q3
+(quatre catégories neuves) : oui. Question d'accès : personne ne lit rien de neuf (brouillons ; la migration ne pose
+que nœud et tags).
+
+**Écriture** : `docs/wip/questions/lot-1spe-suites.py` → `scripts/questions/1spe-suites/`. Simulation
+`create-questions` : 10 / 10 importables (90 specs) ; `sonde-figures` : 0 problème ; aperçus relus (scratchpad). Essai
+en base **locale** : 09 (carré dès 0, « (n+1)^2 » : Juste) et 07 (langage naturel, choix + raison : Juste) joués ;
+08 (allumettes, croix), 04 (virgule dans l'exposant) regardés.
+
+**Pièges du lot** : forme « u₁ + (n − 1)r » et « (n² + n)/2 » refusées en `bad_form` → `requiredForm: {pattern: 'u'}`
+(toute écriture) sur ces cases ; décimaux : les formules passent en virgule au rendu, **pas un bloc de code** (langage
+naturel en entiers, décimaux en Python) ; points du DSL de taille fixe, minuscules dans une grande fenêtre → jetons
+`cercle(Q, 0.3)` + `style(…)` (`cercle(O, r)` refuse les arguments de style) ; fenêtre de figure : rapport ≤ 4
+(marge ajoutée) ; serveur de dev d'un worktree : `localhost`, pas `127.0.0.1`.
+
+PR #2136 mergée (CI verte du premier coup).

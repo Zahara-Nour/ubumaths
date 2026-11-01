@@ -1,6 +1,6 @@
 /**
  * Bloc ```cubes + `dessiner:` / `retrouver:` — analyse, réponses et jugement
- * (spécification : `docs/wip/solides-progress.md` § 7)
+ * (spécification : `docs/archive/wip/solides-progress.md` § 7)
  */
 
 import { describe, expect, it } from 'vitest';

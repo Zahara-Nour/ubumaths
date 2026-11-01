@@ -105,11 +105,11 @@ describe('facteur exponentiel en évidence', () => {
 	it.each([
 		[
 			'x\\cdot2^x',
-			'2^x \\left( \\dfrac{x}{\\ln\\left( 2 \\right)} - \\dfrac{1}{\\ln\\left( 2 \\right)^2} \\right)'
+			'2^x \\left( \\dfrac{x}{\\ln\\left( 2 \\right)} - \\dfrac{1}{\\left( \\ln\\left( 2 \\right) \\right)^2} \\right)'
 		],
 		[
 			'x\\cdot3^x',
-			'3^x \\left( \\dfrac{x}{\\ln\\left( 3 \\right)} - \\dfrac{1}{\\ln\\left( 3 \\right)^2} \\right)'
+			'3^x \\left( \\dfrac{x}{\\ln\\left( 3 \\right)} - \\dfrac{1}{\\left( \\ln\\left( 3 \\right) \\right)^2} \\right)'
 		],
 		['x\\exponentialE^{x}', '\\left( x - 1 \\right) \\exponentialE^x'],
 		['(2x-1)\\exponentialE^{x}', '\\left( 2 x - 3 \\right) \\exponentialE^x'],

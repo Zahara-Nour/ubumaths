@@ -1,0 +1,197 @@
+{
+	"id": "5e702745-c4ba-4d75-9188-902ac7373531",
+	"title": "Fonction x ↦ ∫ₐˣ f(t) dt : sens de variation et valeur en a",
+	"description": "F(x) = ∫ₐˣ g(t) dt : sens de variation par le signe de g, F(a) = 0 (pièges : F′ = g′, F(a) ≠ 0)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Intégration",
+	"domain": "Fonction intégrale",
+	"subdomain": "Dérivée",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"answerKind": "intervalles",
+					"expectedAnswer": "{{if:s>0|[{{a}};+\\infty[|]-\\infty;{{a}}]}}",
+					"openableBounds": true
+				}
+			],
+			"statement": "Soit $F$ la fonction définie sur $\\mathbb{R}$ par\n\n$$F(x)=\\displaystyle\\int_{0}^{x}{{if:s>0|(t{{eval:-a;+}})|({{a}}-t)}}e^{-t^{2}}\\,\\mathrm{d}t.$$\n\nDétermine le plus grand intervalle sur lequel $F$ est **croissante**.\n\n$I=?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "a",
+					"expression": "-3..3"
+				}
+			],
+			"conditions": ["a != 0"],
+			"correction": {
+				"steps": [
+					"$F$ est la primitive de $g:t\\mapsto {{if:s>0|(t{{eval:-a;+}})|({{a}}-t)}}e^{-t^{2}}$ qui s'annule en $0$ : $F'(x)=g(x)={{if:s>0|(x{{eval:-a;+}})|({{a}}-x)}}e^{-x^{2}}$.",
+					"Comme $e^{-x^{2}}>0$, $F'(x)$ a le signe de ${{if:s>0|x{{eval:-a;+}}|{{a}}-x}}$ : positif pour $x{{if:s>0|\\geqslant|\\leqslant}}{{a}}$.",
+					"$F$ est croissante sur $\\textcolor{{{color:primary.0}}}{ {{if:s>0|\\left[{{a}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{a}}\\right]}} }$. On lit le signe de la **fonction intégrée**, pas celui de $F$, et la borne $0$ de l'intégrale ne joue aucun rôle."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $F$ la fonction définie sur $\\mathbb{R}$ par\n\n$$F(x)=\\displaystyle\\int_{ {{a}} }^{x}\\left(t^{2}{{c;+}}\\right)\\mathrm{d}t.$$\n\nCalcule $F({{a}})$.\n\n$F({{a}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["a != 0"],
+			"correction": {
+				"steps": [
+					"$F({{a}})=\\displaystyle\\int_{ {{a}} }^{ {{a}} }\\left(t^{2}{{c;+}}\\right)\\mathrm{d}t$ : les deux bornes sont égales, l'intégrale est nulle.",
+					"$F({{a}})=\\textcolor{{{color:primary.0}}}{0}$ : $F$ est la primitive de $t\\mapsto t^{2}{{c;+}}$ qui **s'annule** en ${{a}}$. (La valeur ${{eval:a^2+c}}$ est celle de la fonction intégrée en ${{a}}$, pas celle de $F$.)"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["[2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"s": "1"
+			},
+			"description": "v0 : s=1, a=2 → [2;+∞[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"s": "1"
+			},
+			"description": "v0 : borne ouverte acceptée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\infty;2]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"s": "1"
+			},
+			"description": "v0 : intervalle de décroissance",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[0;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"s": "1"
+			},
+			"description": "v0 : part de la borne 0 de l'intégrale",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\infty;-1]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1",
+				"s": "-1"
+			},
+			"description": "v0 : s=−1, a=−1 → ]−∞;−1]",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[-1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-1",
+				"s": "-1"
+			},
+			"description": "v0 : s=−1, signe de t − a pris au lieu de a − t",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"c": "3"
+			},
+			"description": "v1 : F(a) = 0",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"c": "3"
+			},
+			"description": "v1 : F(a) ≠ 0 : g(a) donné",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{26}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"c": "3"
+			},
+			"description": "v1 : primitive en a (a³/3 + ca)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"c": "3"
+			},
+			"description": "v1 : borne donnée",
+			"variationIndex": 1
+		}
+	]
+}

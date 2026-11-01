@@ -1,0 +1,247 @@
+{
+	"title": "Écrire un entier plus une fraction comme une fraction",
+	"description": "Écrire la somme d'un entier et d'une fraction inférieure à 1 comme une seule fraction (5 + 3/4 = 23/4 ; 3 + 7/25 = 82/25) ; dénominateur au plus 60",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 7,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris cette somme sous la forme d'une seule fraction.\n\n$${{q}} + \\frac{{{r}}}{{{d}}} = \\frac{?}{{{d}}}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..10"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "a",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"conditions": ["gcd(r,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une unité, c'est $\\frac{{{d}}}{{{d}}}$.** Donc ${{q}}$ unités, c'est ${{q}} \\times {{d}} = {{eval:q*d}}$ {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|{{if:d==20|vingtièmes|{{if:d==21|vingt et unièmes|{{if:d==22|vingt-deuxièmes|{{if:d==23|vingt-troisièmes|{{if:d==24|vingt-quatrièmes|{{if:d==25|vingt-cinquièmes|{{if:d==26|vingt-sixièmes|{{if:d==27|vingt-septièmes|{{if:d==28|vingt-huitièmes|{{if:d==29|vingt-neuvièmes|{{if:d==30|trentièmes|{{if:d==31|trente et unièmes|{{if:d==32|trente-deuxièmes|{{if:d==33|trente-troisièmes|{{if:d==34|trente-quatrièmes|{{if:d==35|trente-cinquièmes|{{if:d==36|trente-sixièmes|{{if:d==37|trente-septièmes|{{if:d==38|trente-huitièmes|{{if:d==39|trente-neuvièmes|{{if:d==40|quarantièmes|{{if:d==41|quarante et unièmes|{{if:d==42|quarante-deuxièmes|{{if:d==43|quarante-troisièmes|{{if:d==44|quarante-quatrièmes|{{if:d==45|quarante-cinquièmes|{{if:d==46|quarante-sixièmes|{{if:d==47|quarante-septièmes|{{if:d==48|quarante-huitièmes|{{if:d==49|quarante-neuvièmes|{{if:d==50|cinquantièmes|{{if:d==51|cinquante et unièmes|{{if:d==52|cinquante-deuxièmes|{{if:d==53|cinquante-troisièmes|{{if:d==54|cinquante-quatrièmes|{{if:d==55|cinquante-cinquièmes|{{if:d==56|cinquante-sixièmes|{{if:d==57|cinquante-septièmes|{{if:d==58|cinquante-huitièmes|{{if:d==59|cinquante-neuvièmes|soixantièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} : ${{q}} = \\frac{{{eval:q*d}}}{{{d}}}$.",
+					"$${{q}} + \\frac{{{r}}}{{{d}}} = \\frac{{{eval:q*d}}}{{{d}}} + \\frac{{{r}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{a}}}{{{d}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris cette somme sous la forme d'une seule fraction.\n\n$${{q}} + \\frac{{{r}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "12|15|20|25|30|40|50|60"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "a",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"conditions": ["gcd(r,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{a}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une unité, c'est $\\frac{{{d}}}{{{d}}}$.** Donc ${{q}}$ unités, c'est ${{q}} \\times {{d}} = {{eval:q*d}}$ {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|{{if:d==20|vingtièmes|{{if:d==21|vingt et unièmes|{{if:d==22|vingt-deuxièmes|{{if:d==23|vingt-troisièmes|{{if:d==24|vingt-quatrièmes|{{if:d==25|vingt-cinquièmes|{{if:d==26|vingt-sixièmes|{{if:d==27|vingt-septièmes|{{if:d==28|vingt-huitièmes|{{if:d==29|vingt-neuvièmes|{{if:d==30|trentièmes|{{if:d==31|trente et unièmes|{{if:d==32|trente-deuxièmes|{{if:d==33|trente-troisièmes|{{if:d==34|trente-quatrièmes|{{if:d==35|trente-cinquièmes|{{if:d==36|trente-sixièmes|{{if:d==37|trente-septièmes|{{if:d==38|trente-huitièmes|{{if:d==39|trente-neuvièmes|{{if:d==40|quarantièmes|{{if:d==41|quarante et unièmes|{{if:d==42|quarante-deuxièmes|{{if:d==43|quarante-troisièmes|{{if:d==44|quarante-quatrièmes|{{if:d==45|quarante-cinquièmes|{{if:d==46|quarante-sixièmes|{{if:d==47|quarante-septièmes|{{if:d==48|quarante-huitièmes|{{if:d==49|quarante-neuvièmes|{{if:d==50|cinquantièmes|{{if:d==51|cinquante et unièmes|{{if:d==52|cinquante-deuxièmes|{{if:d==53|cinquante-troisièmes|{{if:d==54|cinquante-quatrièmes|{{if:d==55|cinquante-cinquièmes|{{if:d==56|cinquante-sixièmes|{{if:d==57|cinquante-septièmes|{{if:d==58|cinquante-huitièmes|{{if:d==59|cinquante-neuvièmes|soixantièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} : ${{q}} = \\frac{{{eval:q*d}}}{{{d}}}$.",
+					"$${{q}} + \\frac{{{r}}}{{{d}}} = \\frac{{{eval:q*d}}}{{{d}}} + \\frac{{{r}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{a}}}{{{d}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5 + 3/4 = 23/4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"q": "5",
+				"dm": "3",
+				"r": "3",
+				"a": "23"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 (5 + 3)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"q": "5",
+				"dm": "3",
+				"r": "3",
+				"a": "23"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 20 (fraction oubliée)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"q": "5",
+				"dm": "3",
+				"r": "3",
+				"a": "23"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 19 (5 × 3 + 4)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"q": "5",
+				"dm": "3",
+				"r": "3",
+				"a": "23"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 + 7/25 = 82/25",
+			"variationIndex": 1,
+			"variables": {
+				"d": "25",
+				"q": "3",
+				"dm": "24",
+				"r": "7",
+				"a": "82"
+			},
+			"answers": ["\\frac{82}{25}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10/25 (3 + 7)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "25",
+				"q": "3",
+				"dm": "24",
+				"r": "7",
+				"a": "82"
+			},
+			"answers": ["\\frac{10}{25}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3,28 (écriture décimale)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "25",
+				"q": "3",
+				"dm": "24",
+				"r": "7",
+				"a": "82"
+			},
+			"answers": ["3,28"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : 3 + 7/25 recopiée",
+			"variationIndex": 1,
+			"variables": {
+				"d": "25",
+				"q": "3",
+				"dm": "24",
+				"r": "7",
+				"a": "82"
+			},
+			"answers": ["3+\\frac{7}{25}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "164/50 : fraction égale, acceptée",
+			"variationIndex": 1,
+			"variables": {
+				"d": "25",
+				"q": "3",
+				"dm": "24",
+				"r": "7",
+				"a": "82"
+			},
+			"answers": ["\\frac{164}{50}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 22/25 (3 × 5 + 7)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "25",
+				"q": "3",
+				"dm": "24",
+				"r": "7",
+				"a": "82"
+			},
+			"answers": ["\\frac{22}{25}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

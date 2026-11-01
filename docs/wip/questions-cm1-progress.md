@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 3c écrite (§ 11)._
+_Mis à jour le 2026-11-01, phase 0 du lot 4b validée._
 
-- **État** : lots 0, 1, 2, 3a et **3b publiés** (3b : 8 modèles, § 10 à 10 septies). #2040 et #2032 mergées, pas en prod.
-- **Prochaine action** : après la réponse de David au § 11, écrire le lot 3c (script `docs/wip/questions/lot-cm1-3c.py`, comme le 3b), brouillons sans attendre le `deploy:prod` du bloc ```partage, publication après.
-- **En attente de David** : les 3 questions du § 11 (sous-domaine « Partage », parts d'affilée ou éparpillées, « 1 + 3/4 »).
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; `gh pr checks` peut rester « pending » sur des 502 : suivre le run.
-- **Worktree / branche** : aucun (retiré après #2045).
+- **État** : lot 4 (décimaux) FINI — 8 modèles publiés en prod (8/8 « OK » sur la page à cocher, 8 `published` relus au MCP, rangés et tagués).
+- **Prochaine action** : écrire le lot 4b — calcul posé (6 modèles, § 13 et 13 bis), worktree `ubumaths-wt-questions-cm1`, branche `content/questions-cm1-lot4b`.
+- **En attente de David** : rien.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `content/questions-cm1-lot4b`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -558,3 +558,237 @@ Questions :
    « Écris-le sous la forme d'une fraction ») ? Reco : refusé ; entier + fraction est le point 147.
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 11 bis. Lot 3c : réponse de David (2026-11-01)
+
+« je te suis », en réponse aux trois questions du § 11 et à leurs recommandations : sous-domaine
+neuf « Partage » ; parts d'affilée, éparpillées dans une variation de plus si le tirage se fait
+sans outil neuf ; « 1 + 3/4 » refusé (`requiredForm: 'fraction'`).
+
+### 11 ter. Lot 3c — écriture (2026-11-01)
+
+- Script `docs/wip/questions/lot-cm1-3c.py` → `scripts/questions/cm1-3c/` (4 JSON),
+  `reducedFractions: off` partout.
+- **Éparpillées faites sans outil neuf** (145 V4) : rangs (s + i × p) mod N + 1, p premier avec N
+  (condition `gcd(p,N)==1`), sur des bandes et grilles de 5 à 12 parts.
+- **Écarts à la phase 0** : `requiredForm: 'fraction'` sur toutes les cases du 145, pas seulement
+  la V3 (0,5 refusé comme au 3b) ; énoncés « Colorie 3/8 de la figure » (et non « les 3/8 », faux
+  pour 1/100) ; 150 V2 sans multiple de 10 (ligne entière : déjà la V1 en dixièmes).
+- `question:specs` 300 tirages par variation : tout réussi (33 specs) ; « rien colorié » rend
+  `empty`, pas `incorrect`. `create-questions` en simulation (prod) : 4/4 verts.
+- Base locale : 4 brouillons. Aperçu admin (port 5178, largeur téléphone) : 145 éparpillées sur une
+  grille 3×4 (11/12) ; 144 « 6/5 » colorié en glissant sur deux bandes → juste ; 149 « 26/100 »,
+  une ligne coloriée → « Tu as colorié 10 parts sur 100 ; il fallait en colorier 26 (26/100). »,
+  figure juste dessinée.
+- **CI rouge, corrigée** : le test `answer-complexity-corpus` mesure aussi les réponses des specs de
+  coloriage (« 1, 2, …, 73 » : 281 caractères, marge ×3 sur 400 dépassée), alors que la garde Q58 ne
+  s'applique pas aux figures à colorier. Specs de grille ramenées à 23 et 32 cases (≤ 34 rangs).
+
+### 11 quater. Lot 3c — brouillons en prod, rangement et tags (2026-11-01)
+
+- `--publier` lancé par David : 4 brouillons créés — `092b310c` (CM1-145), `14a2d26f` (CM1-144),
+  `60ce79bb` (CM1-150), `fe91cbd9` (CM1-149). Relevé MCP : `draft`, [CM1], sans nœud ni point ;
+  les 4 points sur le nœud de CM1-023 (« définition »), sans aucun modèle.
+- Migration (d'abord `20261101141600_…`) et son test générés du gabarit du lot 3b (script en
+  scratchpad, remplacements comptés) ; horodatage = max (`20261101141500`, cm2 lot 4) + 1 min.
+- Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
+- `security-auditor` : aucun finding bloquant (diff au gabarit 3b : seuls ids, codes, sous-notions, comptes
+  et commentaires changent) ; l'en-tête du test qui disait « 8 modèles » est corrigé.
+- #2082, CI 1 : garde de doc rouge (`Doc-inchangée:` mise dans la PR au lieu d'un commit, corrigé) ;
+  tests navigateur en échec sur `wrapDynamicImport` (comme au 3b, sans lien), relancés.
+- #2082 mergée (CI verte au 2e passage). **Collision d'horodatage vue juste après** :
+  `20261101141600` pris aussi par `questions_ce1_lot6_rangement_tags`, mergée et déjà jouée en
+  prod pendant que #2082 tournait → `db:migrate` aurait tenu la mienne pour jouée. Renommée
+  `20261101160400` (max de `main`, des worktrees et des branches distantes : `160300`, ce2 lot 5,
+  - 1 min) dans une PR de correction, AVANT tout `db:migrate`. Leçon : refaire le relevé des
+    horodatages juste avant de merger, pas seulement à l'écriture.
+- #2093 mergée (CI verte) : plus aucun doublon de version sur `main`.
+
+### 11 quinquies. Lot 3c — rangement vérifié, page à cocher (2026-11-01)
+
+- `db:migrate` lancé par David (joue aussi `20261101160100`, 2de droites). MCP : les 4 modèles sur
+  « Fractions : sens et écritures > définition », un point CM1 chacun (145, 144, 150, 149),
+  toujours brouillons, `updated_at` inchangé (création, 11:25).
+- Page : https://claude.ai/artifact/DzyRsxgghCRtKQBQcgNZ5w (4 alertes attendues : ```partage non
+  dessiné, à jouer dans l'aperçu) ; `verdicts` vide à la publication.
+- Sessions prévenues : questions-2de (collision levée, sa migration jouée) ; questions-ce2 (sa
+  `20261101160300`, pas mergée, passera sous `160400` : à renuméroter).
+
+### 11 sexies. Lot 3c — publication (2026-11-01)
+
+- Le bloc ```partage était déjà en prod (v0.58.0, 2026-10-30) : relecture faite dans l'aperçu de la prod.
+- Page à cocher : 4 verdicts « ok », sans commentaire (comptés dans `verdicts`). Simulation
+  `publier-lot --dir scripts/questions/cm1-3c` : 4 brouillons passent ; `--publier` lancé par David ;
+  4 `published` relus au MCP (`092b310c`, `14a2d26f`, `60ce79bb`, `fe91cbd9`). Lot 3 fini.
+
+## 12. Lot 4 — décimaux : phase 0 (à valider)
+
+Relevé MCP du 2026-11-01 : les 8 points ci-dessous ont 0 modèle ; tous sous « Nombres et calculs >
+Décimaux : numération » (sous-notion de chaque ligne). Points voisins déjà couverts : 030 (7), 154,
+155 (3), 034, 132 (2). Bornes `cycle3.json`, CM1 : **au plus deux décimales** partout ; 032 :
+dixièmes, ou zooms pour les centièmes (2,8 ; 339,16) ; 158 : 3,5 s'arrondit à 4 ; 159 : jusqu'à
+**trois** nombres, l'un éventuellement en fraction décimale (2,12 ; 209/100 ; 2,6) ; 160 : 1,9 < … < 2,
+2,9 < … < 3.
+
+Outils : tous en prod (case, `choix, `ranger, ``line avec `placer:`, ``partage avec
+`colorier:` et `unites:`). Patrons : `6-droite-ordre` (repérer, placer, ranger des décimaux, 6e),
+lots 3b et 3c.
+
+Niveaux : ajoutés après ceux qui existent ou qui sont écrits (la 6e attend la création de
+`6-droite-ordre` : Repérage 1-2, Comparer 4 ; aucun autre lot en cours n'écrit dans Décimaux /
+Apprivoiser).
+
+| #   | Point   | Sous-notion                    | Modèle                                 | Variations, plages                                                                                                                                                                                                                                                                                                                                                     | Catégorie, niveau                     |
+| --- | ------- | ------------------------------ | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| 1   | CM1-031 | écritures                      | Lire et écrire un nombre décimal       | V1 lettres → case : « trois unités et vingt-cinq centièmes », « quatre et dix-sept centièmes », « quatre unités, un dixième et sept centièmes » → 3,25 ; V2 3,25 → ```choix (trois unités et vingt-cinq centièmes ; trois unités et vingt-cinq dixièmes ; trois-cent-vingt-cinq ; vingt-cinq unités et trois centièmes) ; partie entière 1 à 99, une ou deux décimales | Décimaux / Apprivoiser / Ecriture, 12 |
+| 2   | CM1-156 | écritures                      | Colorier un nombre décimal             | ```partage `colorier:` ; V1 bande de 10, 0,n (n 1 à 9) ; V2 grille 10×10, 0,nn (11 à 99, non multiple de 10) ; V3 > 1 : `unites: 2`, deux grilles, 1,nn (1,37 du BO). Juge : le nombre de parts coloriées                                                                                                                                                              | Décimaux / Apprivoiser / Partage, 1   |
+| 3   | CM1-157 | droite graduée                 | Repérer un point par un nombre décimal | V1 ```line de n à n + 1 en dixièmes (n 0 à 99, étiquettes n et n + 1), A → n,k ; V2 morceau agrandi de a,b à a,(b+1) en centièmes (a 1 à 999), A → a,bk                                                                                                                                                                                                                | Décimaux / Apprivoiser / Repérage, 3  |
+| 4   | CM1-032 | droite graduée                 | Placer un nombre décimal               | `placer:` sur les mêmes droites : V1 dixièmes (2,8) ; V2 morceau agrandi en centièmes (339,16)                                                                                                                                                                                                                                                                         | Décimaux / Apprivoiser / Repérage, 4  |
+| 5   | CM1-033 | arrondis et ordres de grandeur | Donner la partie entière               | case ; V1 une décimale (3,7), V2 deux décimales (135,78) ; partie entière 0 à 999 ; erreur typique en spec : l'arrondi (4 pour 3,7)                                                                                                                                                                                                                                    | Décimaux / Apprivoiser / Arrondir, 4  |
+| 6   | CM1-158 | arrondis et ordres de grandeur | Arrondir à l'unité                     | case ; V1 une décimale (3,2 → 3 ; 3,7 → 4 ; 3,5 → 4) ; V2 deux décimales (5,78 → 6 ; 5,49 → 5) ; erreurs typiques en spec : la partie entière, l'arrondi au dixième                                                                                                                                                                                                    | Décimaux / Apprivoiser / Arrondir, 5  |
+| 7   | CM1-159 | ordre                          | Ranger des nombres décimaux            | ```ranger de 3 étiquettes, même partie entière, nombres de décimales différents (2,12 ; 2,6 ; 2,09 : piège « plus de chiffres, plus grand ») ; V1 croissant, V2 décroissant, V3 une étiquette en fraction décimale (209/100)                                                                                                                                           | Décimaux / Apprivoiser / Comparer, 5  |
+| 8   | CM1-160 | encadrement                    | Intercaler un nombre décimal           | 3,4 < ? < 3,5 (une case) ; règle `range` stricte (comme `2e982062`, 6e) ; V1 deux dixièmes consécutifs (corrigé en centièmes : 3,45) ; V2 un dixième et l'entier suivant (1,9 < ? < 2) ; partie entière 0 à 20                                                                                                                                                         | Décimaux / Apprivoiser / Encadrer, 6  |
+
+Droites : 10 intervalles au plus (règle des lots 3a, 3b), d'où le morceau agrandi pour les centièmes.
+
+Questions :
+
+1. **031 V1 : 325/100 ou « 3 + 25/100 »** dans la case : refusés (« Écris-le avec une virgule ») ou
+   acceptés ? Reco : refusés, l'écriture à virgule est le point. Il n'existe pas de forme exigée
+   « décimal » toute faite : je l'écris par un motif, vérifié à l'écriture, et je le signale si le
+   motif ne suffit pas.
+2. **156 : un seul modèle, « colorier »** (représenter), sans « quel nombre la figure montre-t-elle ? »
+   (aucun point du CM1 ne le demande, le 150 le fait en fraction) ? Reco : oui.
+3. **Droites (157, 032) : modèles CM1 propres** (10 intervalles, bornes CM1) plutôt que d'ajouter le
+   CM1 aux modèles 6e de `6-droite-ordre` (15 intervalles, pas encore créés en prod) ? Reco : propres.
+4. **160 : toute réponse strictement entre les bornes est juste**, 3,456 compris (trois décimales,
+   au-delà des bornes du CM1) ? Reco : oui, la règle `range` existante, comme au 3b.
+5. **Calcul posé des décimaux** (165, 052), avec 050, 051, 053 (entiers, division euclidienne), tous
+   au bloc ```operation : ils ne sont dans aucun lot de l'ordre du § 4 bis. Reco : un **lot 4b
+   « calcul posé »** juste après celui-ci.
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 12 bis. Lot 4 : réponse de David (2026-11-01)
+
+« go », après mes recommandations sur les cinq questions du § 12 : 031, virgule exigée (325/100 et
+« 3 + 25/100 » refusés, par un motif, signalé s'il ne suffit pas) ; 156, un seul modèle
+« colorier » ; 157 et 032, modèles CM1 propres (10 intervalles) ; 160, toute réponse strictement
+entre les bornes est juste (règle `range`) ; **lot 4b « calcul posé »** (165, 052, 050, 051, 053)
+juste après le lot 4.
+
+### 12 ter. Lot 4 — écriture (2026-11-01)
+
+- Script `docs/wip/questions/lot-cm1-4.py` → `scripts/questions/cm1-4/` (8 JSON), patrons
+  `6-droite-ordre`, `6-nombres`, lots 3b et 3c.
+- 031 : virgule exigée par `requiredForm: { pattern: 'a:number' }`, sondé avant d'écrire : 3,25
+  passe ; 325/100, 3 + 25/100, 3 + 0,25 refusés (`bad_form`).
+- **Écart à la phase 0** : 156 a une variation de plus, « deux bandes » (1,3), à côté des deux
+  grilles (1,37).
+- **Test du corpus aligné sur la prod** : `answer-complexity-corpus` mesurait aussi les specs de
+  coloriage (d'où l'ancienne règle « 34 rangs au plus »), alors qu'en prod `validateSingleBlank` juge
+  un coloriage AVANT la garde de complexité. 1,37 (137 rangs) ne pouvait donc pas avoir de spec
+  juste, et `question:specs` en exige une par variation. Le test saute désormais les specs des
+  variations à colorier.
+- `question:specs` 300 tirages par variation : tout réussi ; `create-questions` en simulation
+  (prod) : 8/8 verts, 68 specs ; test du corpus vert.
+- Base locale : 8 brouillons, aperçus vus à 390 px (Playwright, port 5178) : énoncés à virgule,
+  droites de 10 intervalles aux étiquettes à virgule (532,5 à 532,6 ; 804,9 à 805), `ranger` de
+  trois étiquettes, deux grilles 10 × 10 l'une sous l'autre.
+
+### 12 quater. Lot 4 — PR (2026-11-01)
+
+- #2115 mergée. Premier passage de la CI rouge sans lien avec le lot : collision d'horodatage
+  `20261101190200` sur `main`, réparée par #2114 ; `origin/main` fusionnée, CI 100 % verte.
+- Revue du test du corpus (code-reviewer, Sonnet) : aucun finding bloquant. Limite notée : un
+  modèle à colorier qui activerait `orderIndependent` passerait par la garde de complexité avant le
+  jugement (`validateBlanksOrderIndependent`) ; aucun ne le fait.
+
+### 12 quinquies. Lot 4 — brouillons en prod, rangement et tags (2026-11-01)
+
+- `create-questions --publier` lancé par David. MCP : 8 brouillons [CM1], sans nœud ni tag, créés à
+  15:40 UTC ; les 8 points sous « Nombres et calculs > Décimaux : numération », sans modèle.
+  Ids : `2cff4ef5-a463-4bce-85ff-b0fec81dce08` (lire et écrire), `b832dfdf-f1eb-4f4c-8469-66d89a9db899`
+  (colorier), `06f246e4-eda1-44f5-a65f-9f55c360833d` (repérer), `3560dded-0565-4f15-a6e0-44e7e2adc834`
+  (placer), `10aae729-4a29-4dac-9578-21ef655d60d1` (partie entière), `ca08432a-cfcc-4372-809e-f5d0d9895eff`
+  (arrondir), `2af5f9fe-de36-4b1c-adf9-dec60f759910` (ranger), `2cb242e0-fa40-458b-abb0-819e4720c731`
+  (intercaler).
+- Migration `20261101212100_questions_cm1_lot4_rangement_tags` et son test générés du gabarit du lot
+  3c (script, remplacements vérifiés au `diff`) ; horodatage d'abord `20261101200800`, pris aussi par
+  `questions_5_lot6_niveau` (branche `fix/questions-5-lot6-niveau`), vu au contrôle d'avant merge :
+  renuméroté `20261101212100` (max `20261101212000`, 1spe, + 1 min).
+- Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
+- `security-auditor` : aucun finding. #2124 mergée (CI verte, horodatage revérifié juste avant).
+- `db:migrate` refusé : `20261101200800_questions_5_lot6_niveau` (#2116), mergée APRÈS que la prod
+  eut joué `20261101212000`, tombait « avant la dernière ». David a lancé
+  `supabase db push --include-all` : les deux migrations jouées (5e puis CM1).
+- MCP : les 8 modèles sur la sous-notion de leur point, un point CM1 chacun, toujours brouillons,
+  `updated_at` = création (15:40).
+
+### 12 sexies. Lot 4 — page à cocher (2026-11-01)
+
+- Page : https://claude.ai/artifact/PQr3Cp4yAANDfJxAyTBFuN (capacité `db`), rendu vu à 390 px
+  (8 fiches, pas de défilement horizontal) ; `verdicts` vide à la publication. Alertes attendues :
+  `partage, `line et ```ranger non dessinés (à jouer dans l'aperçu) ; homonymes 6e
+  `92db5823` (ranger) et `2e982062` (intercaler) écartés, les ids retenus sont bien ceux du lot.
+
+### 12 septies. Lot 4 — publication (2026-11-01)
+
+- Page à cocher : 8 verdicts « OK », sans commentaire (comptés dans `verdicts`). Simulation
+  `publier-lot --dir scripts/questions/cm1-4` : 8 brouillons passent ; `--publier` lancé par David ;
+  8 `published` relus au MCP, toujours rangés et tagués. Lot 4 fini.
+
+## 13. Lot 4b — calcul posé : phase 0 (à valider)
+
+Relevé MCP du 2026-11-01 : les 5 points ont 0 modèle. Nœuds des points : 050 et 165 sur la **notion**
+« Nombres et calculs > Décimaux : calculs » ; 052 sur « Décimaux : calculs › multiplication » (26 modèles,
+niveaux 1 à 9) ; 051 sur « Entiers : multiplication › calcul posé » (vide) ; 053 sur « Entiers : division ›
+calcul posé » (vide ; la division posée de 6e `3c9284c5` est rangée sous « division euclidienne »). Modèles
+posés en prod : CP-016, CE1-022, CE1-100 (deux méthodes), 6-123 ; aucune multiplication posée nulle part.
+Le CE2 (019, multiplication posée) n'est pas encore écrit.
+
+Bornes `cycle3.json`, CM1 : 050 décimaux à deux décimales au plus, entiers mêlés, trois termes au plus
+(56,75 + 234 + 0,8) ; 165 deux décimales au plus (34,5 − 2,58) ; 051 trois chiffres × trois chiffres
+(876 × 208), produit ≤ 999 999 ; 052 facteur entier 2 à 9, décimal à deux décimales au plus (7 × 46,55 ;
+8 × 17,3) ; 053 diviseur 2 à 9, dividende entier de cinq chiffres au plus (9 456 ÷ 7).
+
+Outil : ` ```operation ` (en prod), tout ce qu'il faut y est : trois termes et virgules alignées
+(addition), `méthode: compensation | cassage` (soustraction), virgule du produit posée par l'élève et
+« virgule oubliée » signalée (multiplication), potence à deux cases quotient + reste (division
+euclidienne). Retenues à remplir par défaut (aide, jamais jugée). Réponse = cases du résultat seules ;
+énoncé « Pose et calcule. » (CE1) ou « Pose et effectue la division euclidienne. » (6e).
+
+| #   | Point   | Nœud (sous-notion)                     | Modèle                                                | Variations, plages                                                                                                                                                                                                                                                                                    | Niveau |
+| --- | ------- | -------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1   | CM1-050 | Décimaux : calculs › addition          | Poser une addition de nombres décimaux                | V1 deux termes à deux décimales, retenues (45,78 + 26,57) ; V2 décimales en nombre différent (34,5 + 2,58) ; V3 entier + décimal (234 + 5,68) ; V4 trois termes, entier mêlé (56,75 + 234 + 0,8) ; parties entières ≤ 999. Specs : retenue oubliée, chiffres alignés à droite (6,03 pour 34,5 + 2,58) | 8      |
+| 2   | CM1-165 | Décimaux : calculs › soustraction      | Poser une soustraction de décimaux (par compensation) | V1 mêmes décimales, une ou deux retenues (52,34 − 17,58) ; V2 le premier a moins de décimales (34,5 − 2,58) ; V3 entier − décimal (25 − 3,46) ; premier ≤ 999,99. Specs : plus petit chiffre ôté du plus grand (32,08 pour 34,5 − 2,58)                                                               | 7      |
+| 3   | CM1-165 | Décimaux : calculs › soustraction      | Poser une soustraction de décimaux (par cassage)      | mêmes variations, `méthode: cassage`                                                                                                                                                                                                                                                                  | 8      |
+| 4   | CM1-051 | Entiers : multiplication › calcul posé | Poser une multiplication de deux entiers              | V1 2 chiffres × 2 chiffres (48 × 37) ; V2 3 × 2 (347 × 26) ; V3 3 × 3 avec un 0 au milieu du multiplicateur (876 × 208 : ligne du 0 sautée). Specs : décalage oublié (2 776 pour 347 × 26), retenue oubliée                                                                                           | 1      |
+| 5   | CM1-052 | Décimaux : calculs › multiplication    | Poser la multiplication d'un décimal par un entier    | V1 une décimale (8 × 17,3) ; V2 deux décimales (7 × 46,55) ; V3 produit terminé par 0 (4 × 12,35 = 49,40, « 49,4 » juste) ; entier 2 à 9, partie entière 1 à 99. Specs : virgule oubliée (32 585), virgule mal placée (3 258,5)                                                                       | 10     |
+| 6   | CM1-053 | Entiers : division › calcul posé       | Poser une division euclidienne                        | V1 3 chiffres, quotient à 2 chiffres (157 ÷ 6) ; V2 4 chiffres (9 456 ÷ 7) ; V3 un 0 au quotient (2 418 ÷ 4 = 604 reste 2) ; V4 5 chiffres (23 875 ÷ 6) ; diviseur 2 à 9. Specs : reste ≥ diviseur, 0 oublié au quotient (64)                                                                         | 1      |
+
+Corrigés : étapes colonne par colonne (retenues, compensation ou cassage), produits partiels écrits pour
+la multiplication, « on compte les décimales » pour 052, égalité `N = (d × q) + r` pour 053.
+
+Questions :
+
+1. **« Poser »** : le bloc pose l'opération lui-même (virgules alignées) ; l'élève effectue. Aligner les
+   virgules, la vraie difficulté de 050 et 165, n'est donc pas évalué (même limite qu'au CE1 et en 6e).
+   Reco : l'accepter, le corrigé commence par « on aligne les virgules ». Un geste « poser soi-même »
+   serait un outil neuf (classe C, chantier à part).
+2. **Soustraction : un modèle par méthode** (compensation, cassage), comme au CE1, le prof choisit celle de
+   sa classe ? Ou un seul (compensation, défaut du bloc) ? Reco : deux, comme au CE1.
+3. **050 et 165 rangés sous « addition » / « soustraction »** de « Décimaux : calculs » plutôt que sur la
+   notion nue : leur point est sur la notion, la règle des tags l'admet (point sur le nœud du modèle ou sa
+   notion, vérifié dans `question_template_points_check_rules` en prod). Reco : sous-notions.
+
+À noter : « Entiers : multiplication › calcul posé » est vide ; le CM1 y prend le niveau 1, la
+multiplication posée du CE2 (019) devra s'insérer avant (renumérotation par sa propre migration).
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 13 bis. Lot 4b : réponse de David (2026-11-01)
+
+« tes recos ? », puis « go » après mes trois recommandations : 1. le bloc pose l'opération, limite acceptée
+(corrigé « on aligne les virgules ») ; 2. soustraction : deux modèles, compensation et cassage, comme au
+CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « › soustraction ».

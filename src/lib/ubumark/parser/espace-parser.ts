@@ -39,6 +39,8 @@
  * @module ubumark/parser/espace-parser
  */
 
+import { unnestedLine } from './nested-line';
+import { MASKED_VALUE } from '../utils/masked-value';
 import { specialBlockEnd } from './unclosed-block';
 import { parseSolideContent } from './solide-parser';
 import { parsePatronContent } from './patron-parser';
@@ -71,7 +73,14 @@ const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 
 const KEY_LIST = CUBES_KEYS.join(', ');
 const HEIGHT_REGEX = /^\d+$/;
+/** `?` dans les hauteurs, `vues:` : forme de l'énoncé masqué d'une évaluation, jamais écrite */
+export const MASKED_CUBES_MESSAGE =
+	'« ? » dans les hauteurs et vues: sont réservés à l’énoncé envoyé pendant une évaluation : écris les hauteurs';
+
 const HEIGHT_HINT = `une hauteur est un nombre entier de 0 à ${CUBES_LIMITS.height}`;
+
+/** `face 2 1 1 ; droite 1 2` : une vue donnée par entrée (énoncé masqué) */
+const GIVEN_VIEW_REGEX = /^([a-zà-ÿ]+)\s+(\d+(?:\s+\d+)*)$/i;
 
 /** Une ligne de geste (`dessiner:` ou `retrouver:`), qui fait du bloc une case */
 const TASK_LINE_REGEX = /^(dessiner|retrouver)\s*:/i;
@@ -123,9 +132,6 @@ export function findEspaceBlocks(lines: string[]): EspaceBlockRange[] {
 	return blocks;
 }
 
-/** Ligne vue sans retrait ni marque de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /** Un bloc d'espace à geste, délimité comme le parseur */
 export interface EspaceToBuild {
 	startIndex: number;
@@ -141,7 +147,7 @@ export interface EspaceToBuild {
  */
 function findEspaceToBuild(markdown: string, genre: 'cubes' | 'patron'): EspaceToBuild[] {
 	const lines = markdown.split('\n');
-	const plainLines = lines.map(unquoted);
+	const plainLines = lines.map(unnestedLine);
 	const taskLine = genre === 'cubes' ? TASK_LINE_REGEX : PATRON_TASK_LINE_REGEX;
 	const found: EspaceToBuild[] = [];
 	let i = 0;
@@ -245,6 +251,7 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 	let view: CubesView = 'perspective';
 	let task: CubesTask | undefined;
 	let caseIndex: number | undefined;
+	let givenViews: Partial<Record<CubesSideView, number[]>> | undefined;
 	const seen = new Map<string, number>();
 	/** Les lignes sans clé qui suivent `hauteurs:` sont des rangées */
 	let inHeights = false;
@@ -301,6 +308,10 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 		} else if (key === 'case') {
 			if (/^\d+$/.test(value)) caseIndex = Number(value);
 			else fail(lineNo, `case « ${value} » : numéro de case entier`);
+		} else if (key === 'vues') {
+			const views = readGivenViews(value);
+			if (typeof views === 'string') fail(lineNo, views);
+			else givenViews = views;
 		} else {
 			const wanted = plain(value);
 			if ((CUBES_VIEWS as readonly string[]).includes(wanted)) {
@@ -311,8 +322,9 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 		}
 	});
 
-	// Les hauteurs
+	// Les hauteurs ; `?` : énoncé masqué d'une évaluation (un carreau occupé)
 	let heights: number[][] = [];
+	let masked = false;
 	if (written.length === 0) {
 		fail(1, 'il manque les hauteurs (ex. hauteurs: 2 1 1 / 1 0 1)');
 	} else {
@@ -326,14 +338,16 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 				continue;
 			}
 			const bad = cells.find(
-				(cell) => !HEIGHT_REGEX.test(cell) || Number(cell) > CUBES_LIMITS.height
+				(cell) =>
+					cell !== MASKED_VALUE && (!HEIGHT_REGEX.test(cell) || Number(cell) > CUBES_LIMITS.height)
 			);
 			if (bad !== undefined) {
 				fail(row.line, `« ${bad} » : ${HEIGHT_HINT}`);
 				readable = false;
 				continue;
 			}
-			parsed.push(cells.map(Number));
+			if (cells.includes(MASKED_VALUE)) masked = true;
+			parsed.push(cells.map((cell) => (cell === MASKED_VALUE ? 1 : Number(cell))));
 		}
 		if (readable) {
 			if (parsed.some((row) => row.length !== parsed[0].length)) {
@@ -379,6 +393,24 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 		fail(caseLine, 'case: sans objet sans dessiner: ni retrouver:');
 	}
 
+	// Énoncé masqué : `?` et `vues:` vont ensemble, avec retrouver: et ses vues
+	const vuesLine = seen.get('vues');
+	if (masked || vuesLine !== undefined) {
+		const line = vuesLine ?? seen.get('hauteurs') ?? 1;
+		const listed = task?.kind === 'retrouver' ? task.views : null;
+		if (!masked || givenViews === undefined || listed === null) {
+			if (errors.length === 0) fail(line, MASKED_CUBES_MESSAGE);
+		} else if (heights.length > 0) {
+			const given = givenViews;
+			const sameViews =
+				Object.keys(given).length === listed.length && listed.every((v) => given[v] !== undefined);
+			const width = (view: CubesSideView) => (view === 'face' ? heights[0].length : heights.length);
+			if (!sameViews || listed.some((view) => given[view]!.length !== width(view))) {
+				fail(line, MASKED_CUBES_MESSAGE);
+			}
+		}
+	}
+
 	const withCase = caseIndex === undefined ? {} : { caseIndex };
 	if (errors.length > 0 || heights.length === 0) {
 		return { type: 'espace', genre, source, spec: null, errors, ...withCase };
@@ -387,10 +419,30 @@ export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'):
 		type: 'espace',
 		genre,
 		source,
-		spec: { kind: 'cubes', heights, view, ...(task && { task }) },
+		spec: {
+			kind: 'cubes',
+			heights,
+			view,
+			...(task && { task }),
+			...(givenViews && masked && { givenViews })
+		},
 		errors,
 		...withCase
 	};
+}
+
+/** `vues: face 2 1 1 ; droite 1 2` (énoncé masqué) ; une phrase d'erreur sinon */
+function readGivenViews(value: string): Partial<Record<CubesSideView, number[]>> | string {
+	const views: Partial<Record<CubesSideView, number[]>> = {};
+	for (const item of value.split(';').map((part) => part.trim())) {
+		const match = GIVEN_VIEW_REGEX.exec(item);
+		const view = match ? plain(match[1]) : '';
+		if (!match || !(CUBES_SIDE_VIEWS as readonly string[]).includes(view)) {
+			return MASKED_CUBES_MESSAGE;
+		}
+		views[view as CubesSideView] = match[2].split(/\s+/).map(Number);
+	}
+	return views;
 }
 
 /** Les vues de `retrouver:` ; une phrase d'erreur si la liste est fausse */

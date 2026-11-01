@@ -1,0 +1,281 @@
+{
+	"id": "34b03dee-865d-405c-a284-abfac4248997",
+	"title": "Espace : intersection d'une sphère et d'un plan",
+	"description": "Cercle d'intersection d'une sphère et d'un plan : centre et rayon, par Pythagore avec la distance du centre au plan (pièges : ρ² au lieu de ρ, centre Ω au lieu de H)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Sphère",
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				},
+				{
+					"expectedAnswer": "{{h}}"
+				},
+				{
+					"expectedAnswer": "{{rho}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la sphère $\\mathcal{S}$ d'équation $(x-({{a}}))^2+(y-({{b}}))^2+(z-({{c}}))^2={{R2}}$ et le plan $\\mathcal{P}$ d'équation $z={{h}}$.\n\nL'intersection de $\\mathcal{S}$ et de $\\mathcal{P}$ est un cercle. Détermine son centre $H$ et son rayon $\\rho$.\n\n$H(?\\,;\\,?\\,;\\,?)$ et $\\rho=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..4"
+				},
+				{
+					"name": "b",
+					"expression": "-4..4"
+				},
+				{
+					"name": "c",
+					"expression": "-4..4"
+				},
+				{
+					"name": "s",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "rho",
+					"expression": "1..6"
+				},
+				{
+					"name": "h",
+					"expression": "{{eval:c+s}}"
+				},
+				{
+					"name": "R2",
+					"expression": "{{eval:s^2+rho^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le centre du cercle est le projeté orthogonal $H$ de $\\Omega({{a}}\\,;\\,{{b}}\\,;\\,{{c}})$ sur $\\mathcal{P}$ : $H({{a}}\\,;\\,{{b}}\\,;\\,{{h}})$.",
+					"Les points de l'intersection vérifient $z={{h}}$ et ${{R2}}-({{h}}-{{c;()}})^2={{eval:rho^2}}$, donc $(x-({{a}}))^2+(y-({{b}}))^2={{eval:rho^2}}$.",
+					"C'est le cercle de centre $H$ et de rayon $\\textcolor{{{color:primary.0}}}{ \\rho=\\sqrt{ {{eval:rho^2}} }={{rho}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{delta}}"
+				},
+				{
+					"expectedAnswer": "{{rho}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la sphère $\\mathcal{S}$ d'équation $(x-({{a}}))^2+(y-({{b}}))^2+(z-({{c}}))^2={{R2}}$ et le plan $\\mathcal{P}$ d'équation $x+({{n2}})y+({{n3}})z+({{d}})=0$.\n\nCalcule la distance $\\delta$ du centre $\\Omega$ de $\\mathcal{S}$ au plan $\\mathcal{P}$, puis le rayon $\\rho$ du cercle d'intersection de $\\mathcal{S}$ et de $\\mathcal{P}$.\n\n$\\delta=?$ et $\\rho=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..4"
+				},
+				{
+					"name": "b",
+					"expression": "-4..4"
+				},
+				{
+					"name": "c",
+					"expression": "-4..4"
+				},
+				{
+					"name": "s2",
+					"expression": "1..1;±"
+				},
+				{
+					"name": "s3",
+					"expression": "1..1;±"
+				},
+				{
+					"name": "n2",
+					"expression": "{{eval:2*s2}}"
+				},
+				{
+					"name": "n3",
+					"expression": "{{eval:2*s3}}"
+				},
+				{
+					"name": "delta",
+					"expression": "1..2"
+				},
+				{
+					"name": "rho",
+					"expression": "1..5"
+				},
+				{
+					"name": "R2",
+					"expression": "{{eval:delta^2+rho^2}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:3*delta-(a+n2*b+n3*c)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\Omega({{a}}\\,;\\,{{b}}\\,;\\,{{c}})$ et $\\vec{n}\\begin{pmatrix}1\\\\{{n2}}\\\\{{n3}}\\end{pmatrix}$ normal à $\\mathcal{P}$, avec $\\|\\vec{n}\\|=\\sqrt{1+4+4}=3$. Le projeté orthogonal $H$ de $\\Omega$ sur $\\mathcal{P}$ est sur la droite passant par $\\Omega$ de vecteur directeur $\\vec{n}$ : $H({{a}}+t\\,;\\,{{b}}{{n2;+}}t\\,;\\,{{c}}{{n3;+}}t)$ pour un réel $t$.",
+					"En reportant dans l'équation de $\\mathcal{P}$ : $9t{{eval:3*delta;+}}=0$, donc $t=-\\dfrac{ {{delta}} }{3}$ et $\\delta=\\Omega H=|t|\\times\\|\\vec{n}\\|=\\dfrac{ {{delta}} }{3}\\times3=\\textcolor{{{color:primary.0}}}{ {{delta}} }$.",
+					"Le rayon de la sphère vérifie $R^2={{R2}}$. Pour un point $M$ du cercle, le triangle $\\Omega HM$ est rectangle en $H$ : $\\rho^2=R^2-\\delta^2={{R2}}-{{eval:delta^2}}={{eval:rho^2}}$, donc $\\textcolor{{{color:primary.0}}}{ \\rho={{rho}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1", "-2", "0", "4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"s": "-3",
+				"rho": "4"
+			},
+			"description": "v0 : centre et rayon",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1", "-2", "3", "4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"s": "-3",
+				"rho": "4"
+			},
+			"description": "v0 : centre Ω au lieu de H",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1", "-2", "0", "16"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"s": "-3",
+				"rho": "4"
+			},
+			"description": "v0 : ρ² au lieu de ρ",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1", "-2", "0", "\\sqrt{16}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
+			},
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"s": "-3",
+				"rho": "4"
+			},
+			"description": "v0 : ρ = √16 non calculé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1", "-2", "0", "5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"s": "-3",
+				"rho": "4"
+			},
+			"description": "v0 : R au lieu de ρ",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2", "4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "0",
+				"c": "-1",
+				"s2": "1",
+				"s3": "-1",
+				"rho": "4",
+				"delta": "2"
+			},
+			"description": "v1 : δ = 2, ρ = 4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6", "4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "0",
+				"c": "-1",
+				"s2": "1",
+				"s3": "-1",
+				"rho": "4",
+				"delta": "2"
+			},
+			"description": "v1 : division par ‖n‖ oubliée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2", "16"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "0",
+				"c": "-1",
+				"s2": "1",
+				"s3": "-1",
+				"rho": "4",
+				"delta": "2"
+			},
+			"description": "v1 : ρ² au lieu de ρ",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2", "\\sqrt{24}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "0",
+				"c": "-1",
+				"s2": "1",
+				"s3": "-1",
+				"rho": "4",
+				"delta": "2"
+			},
+			"description": "v1 : R² + δ² au lieu de R² − δ²",
+			"variationIndex": 1
+		}
+	]
+}

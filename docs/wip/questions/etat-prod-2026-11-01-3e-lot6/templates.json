@@ -1,0 +1,2623 @@
+[
+	{
+		"id": "6bcb3535-6632-4659-9a83-23a740b8e685",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Géométrie",
+		"domain": "Solides",
+		"subdomain": "Sphère et boule",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Une sphère a pour centre $O$ et pour rayon ${{r}}~\\unit{cm}$. Un point $M$ de l'espace est tel que $OM = {{d}}~\\unit{cm}$. Où se trouve le point $M$ ?\n\n```choix\n- {{if:t==0|à l'intérieur de la boule, mais pas sur la sphère|}}{{if:t==1|sur la sphère|}}{{if:t==2|à l'extérieur de la boule|}}\n- {{if:t==0|sur la sphère|}}{{if:t==1|à l'intérieur de la boule, mais pas sur la sphère|}}{{if:t==2|à l'intérieur de la boule, mais pas sur la sphère|}}\n- {{if:t==0|à l'extérieur de la boule|}}{{if:t==1|à l'extérieur de la boule|}}{{if:t==2|sur la sphère|}}\n```",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "3..9"
+					},
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "t",
+						"expression": "0..2"
+					},
+					{
+						"name": "d",
+						"expression": "eval:r+(t-1)*k"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La **sphère** de centre $O$ et de rayon $r$ est formée des points $M$ de l'espace tels que $OM = r$ ; la **boule** de centre $O$ et de rayon $r$, des points tels que $OM \\leqslant r$ (la sphère et son intérieur).",
+						"Ici $OM = {{d}}~\\unit{cm}$ et $r = {{r}}~\\unit{cm}$ : $OM {{if:t==0|<|}}{{if:t==1|=|}}{{if:t==2|>|}} r$, donc $M$ est \\textcolor{{{color:primary.0}}}{\\text{{{if:t==0|à l'intérieur de la boule|}}{{if:t==1|sur la sphère|}}{{if:t==2|à l'extérieur de la boule|}}}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "$O$ est un point de l'espace et $r$ un nombre positif. L'ensemble des points $M$ de l'espace tels que $OM {{if:w==0|=|}}{{if:w==1|\\leqslant|}} r$ est :\n\n```choix\n- {{if:w==0|la sphère de centre $O$ et de rayon $r$|}}{{if:w==1|la boule de centre $O$ et de rayon $r$|}}\n- {{if:w==0|la boule de centre $O$ et de rayon $r$|}}{{if:w==1|la sphère de centre $O$ et de rayon $r$|}}\n- le cercle de centre $O$ et de rayon $r$\n- le disque de centre $O$ et de rayon $r$\n```",
+				"variables": [
+					{
+						"name": "w",
+						"expression": "0..1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La **sphère** de centre $O$ et de rayon $r$ est formée des points $M$ de l'espace tels que $OM = r$ ; la **boule** de centre $O$ et de rayon $r$, des points tels que $OM \\leqslant r$ (la sphère et son intérieur).",
+						"Dans l'espace, $OM {{if:w==0|=|}}{{if:w==1|\\leqslant|}} r$ décrit \\textcolor{{{color:primary.0}}}{\\text{{{if:w==0|la sphère|}}{{if:w==1|la boule|}}}} ; le cercle et le disque sont des figures **planes**."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Boule ou sphère ?",
+		"description": "Connaître la définition de la sphère (OM = r) et de la boule (OM ⩽ r) ; situer un point par rapport à une sphère",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "3",
+					"k": "2",
+					"r": "5",
+					"t": "0"
+				},
+				"description": "OM = 3 < 5 : à l'intérieur",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "3",
+					"k": "2",
+					"r": "5",
+					"t": "0"
+				},
+				"description": "Erreur : sur la sphère",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "7",
+					"k": "1",
+					"r": "7",
+					"t": "1"
+				},
+				"description": "OM = r : sur la sphère",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "5",
+					"k": "1",
+					"r": "4",
+					"t": "2"
+				},
+				"description": "OM > r : à l'extérieur",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"w": "0"
+				},
+				"description": "OM = r : la sphère",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"w": "0"
+				},
+				"description": "Erreur : la boule",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"w": "0"
+				},
+				"description": "Erreur : le cercle",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"w": "1"
+				},
+				"description": "OM ⩽ r : la boule",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "787cc937-5bc7-435f-9a63-7d4d0f102ea1",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Géométrie",
+		"domain": "Vecteurs",
+		"subdomain": "Somme",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "On applique au point $A$ la translation de vecteur $\\vec{u}$, puis la translation de vecteur $\\vec{v}$. Quel point obtient-on ?\n\n```figure\nfenetre: 0 ; 25 ; 0 ; 14\ngrille: 1\ndescription: Quadrillage : les vecteurs u et v, le point A et quatre points M, N, P et R.\n---\nvecteur({{eval:ux}}, {{eval:uy}}, ancre=(4, 10))\ntexte({{eval:round(100*(4+(ux)/2-0.7*(uy)/sqrt((ux)^2+(uy)^2)))/100;d}}, {{eval:round(100*(10+(uy)/2+0.7*(ux)/sqrt((ux)^2+(uy)^2)))/100;d}}, \"u⃗\")\nvecteur({{eval:vx}}, {{eval:vy}}, ancre=(4, 4))\ntexte({{eval:round(100*(4+(vx)/2-0.7*(vy)/sqrt((vx)^2+(vy)^2)))/100;d}}, {{eval:round(100*(4+(vy)/2+0.7*(vx)/sqrt((vx)^2+(vy)^2)))/100;d}}, \"v⃗\")\nA = point({{ax}}, {{ay}}, etiquette=\"bas\")\nM = point({{eval:x0}}, {{eval:y0}}, etiquette=\"haut\")\nN = point({{eval:x1}}, {{eval:y1}}, etiquette=\"haut\")\nP = point({{eval:x2}}, {{eval:y2}}, etiquette=\"haut\")\nR = point({{eval:x3}}, {{eval:y3}}, etiquette=\"haut\")\n```\n\n```choix\n- le point ${{if:p==0|M|}}{{if:p==1|N|}}{{if:p==2|P|}}{{if:p==3|R|}}$\n- le point ${{if:p==0|N|}}{{if:p==1|P|}}{{if:p==2|R|}}{{if:p==3|M|}}$\n- le point ${{if:p==0|P|}}{{if:p==1|R|}}{{if:p==2|M|}}{{if:p==3|N|}}$\n- le point ${{if:p==0|R|}}{{if:p==1|M|}}{{if:p==2|N|}}{{if:p==3|P|}}$\n```",
+				"variables": [
+					{
+						"name": "ux",
+						"expression": "-3..3"
+					},
+					{
+						"name": "uy",
+						"expression": "-3..3"
+					},
+					{
+						"name": "vx",
+						"expression": "-3..3"
+					},
+					{
+						"name": "vy",
+						"expression": "-3..3"
+					},
+					{
+						"name": "ax",
+						"expression": "14..18"
+					},
+					{
+						"name": "ay",
+						"expression": "5..9"
+					},
+					{
+						"name": "p",
+						"expression": "0..3"
+					},
+					{
+						"name": "k0",
+						"expression": "{{if:p==0|0|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|1|}}"
+					},
+					{
+						"name": "cu0",
+						"expression": "{{if:k0==0|1|}}{{if:k0==1|1|}}{{if:k0==2|-1|}}{{if:k0==3|1|}}"
+					},
+					{
+						"name": "cv0",
+						"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|1|}}{{if:k0==3|0|}}"
+					},
+					{
+						"name": "x0",
+						"expression": "eval:ax+cu0*ux+cv0*vx"
+					},
+					{
+						"name": "y0",
+						"expression": "eval:ay+cu0*uy+cv0*vy"
+					},
+					{
+						"name": "k1",
+						"expression": "{{if:p==0|1|}}{{if:p==1|0|}}{{if:p==2|3|}}{{if:p==3|2|}}"
+					},
+					{
+						"name": "cu1",
+						"expression": "{{if:k1==0|1|}}{{if:k1==1|1|}}{{if:k1==2|-1|}}{{if:k1==3|1|}}"
+					},
+					{
+						"name": "cv1",
+						"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|1|}}{{if:k1==3|0|}}"
+					},
+					{
+						"name": "x1",
+						"expression": "eval:ax+cu1*ux+cv1*vx"
+					},
+					{
+						"name": "y1",
+						"expression": "eval:ay+cu1*uy+cv1*vy"
+					},
+					{
+						"name": "k2",
+						"expression": "{{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|0|}}{{if:p==3|3|}}"
+					},
+					{
+						"name": "cu2",
+						"expression": "{{if:k2==0|1|}}{{if:k2==1|1|}}{{if:k2==2|-1|}}{{if:k2==3|1|}}"
+					},
+					{
+						"name": "cv2",
+						"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|1|}}{{if:k2==3|0|}}"
+					},
+					{
+						"name": "x2",
+						"expression": "eval:ax+cu2*ux+cv2*vx"
+					},
+					{
+						"name": "y2",
+						"expression": "eval:ay+cu2*uy+cv2*vy"
+					},
+					{
+						"name": "k3",
+						"expression": "{{if:p==0|3|}}{{if:p==1|2|}}{{if:p==2|1|}}{{if:p==3|0|}}"
+					},
+					{
+						"name": "cu3",
+						"expression": "{{if:k3==0|1|}}{{if:k3==1|1|}}{{if:k3==2|-1|}}{{if:k3==3|1|}}"
+					},
+					{
+						"name": "cv3",
+						"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|1|}}{{if:k3==3|0|}}"
+					},
+					{
+						"name": "x3",
+						"expression": "eval:ax+cu3*ux+cv3*vx"
+					},
+					{
+						"name": "y3",
+						"expression": "eval:ay+cu3*uy+cv3*vy"
+					}
+				],
+				"conditions": [
+					"ux*ux+uy*uy>=2",
+					"vx*vx+vy*vy>=2",
+					"ux*vy-uy*vx!=0",
+					"x0>=9",
+					"x0<=24",
+					"y0>=1",
+					"y0<=13",
+					"x1>=9",
+					"x1<=24",
+					"y1>=1",
+					"y1<=13",
+					"x2>=9",
+					"x2<=24",
+					"y2>=1",
+					"y2<=13",
+					"x3>=9",
+					"x3<=24",
+					"y3>=1",
+					"y3<=13",
+					"abs(x0-x1)+abs(y0-y1)>=2",
+					"abs(x0-x2)+abs(y0-y2)>=2",
+					"abs(x0-x3)+abs(y0-y3)>=2",
+					"abs(x1-x2)+abs(y1-y2)>=2",
+					"abs(x1-x3)+abs(y1-y3)>=2",
+					"abs(x2-x3)+abs(y2-y3)>=2",
+					"ax+ux>=9",
+					"ax+ux<=24",
+					"ay+uy>=1",
+					"ay+uy<=13"
+				],
+				"correction": {
+					"steps": [
+						"Enchaîner la translation de vecteur $\\vec{u}$ et celle de vecteur $\\vec{v}$, c'est appliquer la translation de vecteur $\\vec{u} + \\vec{v}$.",
+						"Depuis $A$ : $\\vec{u}$ fait {{eval:abs(ux)}} carreau(x) vers la {{if:ux>0|droite|gauche}} et {{eval:abs(uy)}} vers le {{if:uy>0|haut|bas}}, puis $\\vec{v}$ fait {{eval:abs(vx)}} carreau(x) vers la {{if:vx>0|droite|gauche}} et {{eval:abs(vy)}} vers le {{if:vy>0|haut|bas}}.",
+						"On arrive au point \\textcolor{{{color:primary.0}}}{{{if:p==0|M|}}{{if:p==1|N|}}{{if:p==2|P|}}{{if:p==3|R|}}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Lequel de ces vecteurs est égal à $\\vec{u} + \\vec{v}$ ?\n\n```figure\nfenetre: 0 ; 22 ; 0 ; 15\ngrille: 1\ndescription: Quadrillage : les vecteurs u et v et quatre vecteurs CD, EF, GH et KL.\n---\nvecteur({{eval:ux}}, {{eval:uy}}, ancre=(4, 11))\ntexte({{eval:round(100*(4+(ux)/2-0.7*(uy)/sqrt((ux)^2+(uy)^2)))/100;d}}, {{eval:round(100*(11+(uy)/2+0.7*(ux)/sqrt((ux)^2+(uy)^2)))/100;d}}, \"u⃗\")\nvecteur({{eval:vx}}, {{eval:vy}}, ancre=(4, 4))\ntexte({{eval:round(100*(4+(vx)/2-0.7*(vy)/sqrt((vx)^2+(vy)^2)))/100;d}}, {{eval:round(100*(4+(vy)/2+0.7*(vx)/sqrt((vx)^2+(vy)^2)))/100;d}}, \"v⃗\")\nC = point(11, 11, etiquette=\"{{if:d0y>0|bas|haut}}\")\nD = point({{eval:11+d0x}}, {{eval:11+d0y}}, etiquette=\"{{if:d0y>0|haut|bas}}\")\nvecteur(C, D)\nE = point(18, 11, etiquette=\"{{if:d1y>0|bas|haut}}\")\nF = point({{eval:18+d1x}}, {{eval:11+d1y}}, etiquette=\"{{if:d1y>0|haut|bas}}\")\nvecteur(E, F)\nG = point(11, 4, etiquette=\"{{if:d2y>0|bas|haut}}\")\nH = point({{eval:11+d2x}}, {{eval:4+d2y}}, etiquette=\"{{if:d2y>0|haut|bas}}\")\nvecteur(G, H)\nK = point(18, 4, etiquette=\"{{if:d3y>0|bas|haut}}\")\nL = point({{eval:18+d3x}}, {{eval:4+d3y}}, etiquette=\"{{if:d3y>0|haut|bas}}\")\nvecteur(K, L)\n```\n\n```choix\n- ${{if:p==0|\\overrightarrow{CD}|}}{{if:p==1|\\overrightarrow{EF}|}}{{if:p==2|\\overrightarrow{GH}|}}{{if:p==3|\\overrightarrow{KL}|}}$\n- ${{if:p==0|\\overrightarrow{EF}|}}{{if:p==1|\\overrightarrow{GH}|}}{{if:p==2|\\overrightarrow{KL}|}}{{if:p==3|\\overrightarrow{CD}|}}$\n- ${{if:p==0|\\overrightarrow{GH}|}}{{if:p==1|\\overrightarrow{KL}|}}{{if:p==2|\\overrightarrow{CD}|}}{{if:p==3|\\overrightarrow{EF}|}}$\n- ${{if:p==0|\\overrightarrow{KL}|}}{{if:p==1|\\overrightarrow{CD}|}}{{if:p==2|\\overrightarrow{EF}|}}{{if:p==3|\\overrightarrow{GH}|}}$\n```",
+				"variables": [
+					{
+						"name": "ux",
+						"expression": "-3..3"
+					},
+					{
+						"name": "uy",
+						"expression": "-3..3"
+					},
+					{
+						"name": "vx",
+						"expression": "-3..3"
+					},
+					{
+						"name": "vy",
+						"expression": "-3..3"
+					},
+					{
+						"name": "p",
+						"expression": "0..3"
+					},
+					{
+						"name": "k0",
+						"expression": "{{if:p==0|0|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|1|}}"
+					},
+					{
+						"name": "ax0",
+						"expression": "{{if:k0==0|1|}}{{if:k0==1|1|}}{{if:k0==2|-1|}}{{if:k0==3|-1|}}"
+					},
+					{
+						"name": "bx0",
+						"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|1|}}{{if:k0==3|-1|}}"
+					},
+					{
+						"name": "ay0",
+						"expression": "{{if:k0==0|1|}}{{if:k0==1|1|}}{{if:k0==2|-1|}}{{if:k0==3|-1|}}"
+					},
+					{
+						"name": "by0",
+						"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|1|}}{{if:k0==3|-1|}}"
+					},
+					{
+						"name": "d0x",
+						"expression": "eval:ax0*ux+bx0*vx"
+					},
+					{
+						"name": "d0y",
+						"expression": "eval:ay0*uy+by0*vy"
+					},
+					{
+						"name": "k1",
+						"expression": "{{if:p==0|1|}}{{if:p==1|0|}}{{if:p==2|3|}}{{if:p==3|2|}}"
+					},
+					{
+						"name": "ax1",
+						"expression": "{{if:k1==0|1|}}{{if:k1==1|1|}}{{if:k1==2|-1|}}{{if:k1==3|-1|}}"
+					},
+					{
+						"name": "bx1",
+						"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|1|}}{{if:k1==3|-1|}}"
+					},
+					{
+						"name": "ay1",
+						"expression": "{{if:k1==0|1|}}{{if:k1==1|1|}}{{if:k1==2|-1|}}{{if:k1==3|-1|}}"
+					},
+					{
+						"name": "by1",
+						"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|1|}}{{if:k1==3|-1|}}"
+					},
+					{
+						"name": "d1x",
+						"expression": "eval:ax1*ux+bx1*vx"
+					},
+					{
+						"name": "d1y",
+						"expression": "eval:ay1*uy+by1*vy"
+					},
+					{
+						"name": "k2",
+						"expression": "{{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|0|}}{{if:p==3|3|}}"
+					},
+					{
+						"name": "ax2",
+						"expression": "{{if:k2==0|1|}}{{if:k2==1|1|}}{{if:k2==2|-1|}}{{if:k2==3|-1|}}"
+					},
+					{
+						"name": "bx2",
+						"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|1|}}{{if:k2==3|-1|}}"
+					},
+					{
+						"name": "ay2",
+						"expression": "{{if:k2==0|1|}}{{if:k2==1|1|}}{{if:k2==2|-1|}}{{if:k2==3|-1|}}"
+					},
+					{
+						"name": "by2",
+						"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|1|}}{{if:k2==3|-1|}}"
+					},
+					{
+						"name": "d2x",
+						"expression": "eval:ax2*ux+bx2*vx"
+					},
+					{
+						"name": "d2y",
+						"expression": "eval:ay2*uy+by2*vy"
+					},
+					{
+						"name": "k3",
+						"expression": "{{if:p==0|3|}}{{if:p==1|2|}}{{if:p==2|1|}}{{if:p==3|0|}}"
+					},
+					{
+						"name": "ax3",
+						"expression": "{{if:k3==0|1|}}{{if:k3==1|1|}}{{if:k3==2|-1|}}{{if:k3==3|-1|}}"
+					},
+					{
+						"name": "bx3",
+						"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|1|}}{{if:k3==3|-1|}}"
+					},
+					{
+						"name": "ay3",
+						"expression": "{{if:k3==0|1|}}{{if:k3==1|1|}}{{if:k3==2|-1|}}{{if:k3==3|-1|}}"
+					},
+					{
+						"name": "by3",
+						"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|1|}}{{if:k3==3|-1|}}"
+					},
+					{
+						"name": "d3x",
+						"expression": "eval:ax3*ux+bx3*vx"
+					},
+					{
+						"name": "d3y",
+						"expression": "eval:ay3*uy+by3*vy"
+					}
+				],
+				"conditions": [
+					"ux*ux+uy*uy>=2",
+					"vx*vx+vy*vy>=2",
+					"ux*vy-uy*vx!=0",
+					"abs(ux+vx)<=3",
+					"abs(uy+vy)<=3",
+					"abs(ux-vx)<=3",
+					"abs(uy-vy)<=3",
+					"uy+vy!=0",
+					"uy-vy!=0",
+					"ux+vx!=0"
+				],
+				"correction": {
+					"steps": [
+						"$\\vec{u} + \\vec{v}$ est le vecteur de la translation qui enchaîne celle de vecteur $\\vec{u}$ et celle de vecteur $\\vec{v}$ : on met les deux déplacements bout à bout.",
+						"$\\vec{u}$ fait {{eval:abs(ux)}} carreau(x) vers la {{if:ux>0|droite|gauche}} et {{eval:abs(uy)}} vers le {{if:uy>0|haut|bas}} ; $\\vec{v}$ fait {{eval:abs(vx)}} carreau(x) vers la {{if:vx>0|droite|gauche}} et {{eval:abs(vy)}} vers le {{if:vy>0|haut|bas}}.",
+						"Bout à bout : $\\vec{u} + \\vec{v}$ fait {{eval:abs((ux+vx))}} carreau(x) vers la {{if:(ux+vx)>0|droite|gauche}} et {{eval:abs((uy+vy))}} vers le {{if:(uy+vy)>0|haut|bas}}, comme $\\textcolor{{{color:primary.0}}}{{{if:p==0|\\overrightarrow{CD}|}}{{if:p==1|\\overrightarrow{EF}|}}{{if:p==2|\\overrightarrow{GH}|}}{{if:p==3|\\overrightarrow{KL}|}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "On applique la translation de vecteur $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$, puis la translation de vecteur $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$. Par quelle translation unique peut-on les remplacer ?\n\n```choix\n- la translation de vecteur $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$\n- la translation de vecteur $\\overrightarrow{{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$\n- la translation de vecteur $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n- la translation de vecteur $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n```",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "0..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La première translation envoie ${{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}$ sur ${{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}$, la seconde envoie ${{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}$ sur ${{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}$.",
+						"Les deux enchaînées envoient ${{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}$ sur ${{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}$ : c'est la translation de vecteur $\\textcolor{{{color:primary.0}}}{\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}}$, et $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} = \\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Somme de deux vecteurs",
+		"description": "Construire la somme de deux vecteurs en enchaînant deux translations, sur un quadrillage",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "1",
+					"ax": "15",
+					"ay": "7",
+					"k0": "3",
+					"k1": "0",
+					"k2": "1",
+					"k3": "2",
+					"ux": "2",
+					"uy": "1",
+					"vx": "1",
+					"vy": "-3",
+					"x0": "17",
+					"x1": "18",
+					"x2": "16",
+					"x3": "14",
+					"y0": "8",
+					"y1": "5",
+					"y2": "11",
+					"y3": "3",
+					"cu0": "1",
+					"cu1": "1",
+					"cu2": "1",
+					"cu3": "-1",
+					"cv0": "0",
+					"cv1": "1",
+					"cv2": "-1",
+					"cv3": "1"
+				},
+				"description": "Image par u puis v",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "1",
+					"ax": "15",
+					"ay": "7",
+					"k0": "3",
+					"k1": "0",
+					"k2": "1",
+					"k3": "2",
+					"ux": "2",
+					"uy": "1",
+					"vx": "1",
+					"vy": "-3",
+					"x0": "17",
+					"x1": "18",
+					"x2": "16",
+					"x3": "14",
+					"y0": "8",
+					"y1": "5",
+					"y2": "11",
+					"y3": "3",
+					"cu0": "1",
+					"cu1": "1",
+					"cu2": "1",
+					"cu3": "-1",
+					"cv0": "0",
+					"cv1": "1",
+					"cv2": "-1",
+					"cv3": "1"
+				},
+				"description": "Erreur : u − v",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "1",
+					"ax": "15",
+					"ay": "7",
+					"k0": "3",
+					"k1": "0",
+					"k2": "1",
+					"k3": "2",
+					"ux": "2",
+					"uy": "1",
+					"vx": "1",
+					"vy": "-3",
+					"x0": "17",
+					"x1": "18",
+					"x2": "16",
+					"x3": "14",
+					"y0": "8",
+					"y1": "5",
+					"y2": "11",
+					"y3": "3",
+					"cu0": "1",
+					"cu1": "1",
+					"cu2": "1",
+					"cu3": "-1",
+					"cv0": "0",
+					"cv1": "1",
+					"cv2": "-1",
+					"cv3": "1"
+				},
+				"description": "Erreur : u seul",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "3",
+					"k0": "1",
+					"k1": "2",
+					"k2": "3",
+					"k3": "0",
+					"ux": "1",
+					"uy": "2",
+					"vx": "2",
+					"vy": "-1",
+					"ax0": "1",
+					"ax1": "-1",
+					"ax2": "-1",
+					"ax3": "1",
+					"ay0": "1",
+					"ay1": "-1",
+					"ay2": "-1",
+					"ay3": "1",
+					"bx0": "-1",
+					"bx1": "1",
+					"bx2": "-1",
+					"bx3": "1",
+					"by0": "-1",
+					"by1": "1",
+					"by2": "-1",
+					"by3": "1",
+					"d0x": "-1",
+					"d0y": "3",
+					"d1x": "1",
+					"d1y": "-3",
+					"d2x": "-3",
+					"d2y": "-1",
+					"d3x": "3",
+					"d3y": "1"
+				},
+				"description": "u + v : bonne case",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "3",
+					"k0": "1",
+					"k1": "2",
+					"k2": "3",
+					"k3": "0",
+					"ux": "1",
+					"uy": "2",
+					"vx": "2",
+					"vy": "-1",
+					"ax0": "1",
+					"ax1": "-1",
+					"ax2": "-1",
+					"ax3": "1",
+					"ay0": "1",
+					"ay1": "-1",
+					"ay2": "-1",
+					"ay3": "1",
+					"bx0": "-1",
+					"bx1": "1",
+					"bx2": "-1",
+					"bx3": "1",
+					"by0": "-1",
+					"by1": "1",
+					"by2": "-1",
+					"by3": "1",
+					"d0x": "-1",
+					"d0y": "3",
+					"d1x": "1",
+					"d1y": "-3",
+					"d2x": "-3",
+					"d2y": "-1",
+					"d3x": "3",
+					"d3y": "1"
+				},
+				"description": "Erreur : u − v",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "0"
+				},
+				"description": "AB puis BC : AC",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "0"
+				},
+				"description": "Erreur : CA",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "7bb95104-9256-4bdb-a481-bdd2aae66a67",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Géométrie",
+		"domain": "Solides",
+		"subdomain": "Sections",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Le pavé droit $ABCDEFGH$ ci-dessous ($AB = {{l}}~\\unit{cm}$, $BC = {{p}}~\\unit{cm}$, $AE = {{h}}~\\unit{cm}$) est coupé par un plan parallèle à la face $EFGH$. Quelle est la section ?\n\n```solide\nforme: pave {{l}} {{p}} {{h}}\nsommets: A B C D E F G H\nsection: parallele dessus {{k}}\n```\n\n```choix\n- un rectangle de ${{l}}~\\unit{cm}$ sur ${{p}}~\\unit{cm}$\n- un rectangle de ${{l}}~\\unit{cm}$ sur ${{h}}~\\unit{cm}$\n- un rectangle de ${{p}}~\\unit{cm}$ sur ${{h}}~\\unit{cm}$\n- un triangle\n```",
+				"variables": [
+					{
+						"name": "l",
+						"expression": "3..8"
+					},
+					{
+						"name": "p",
+						"expression": "2..6"
+					},
+					{
+						"name": "h",
+						"expression": "3..7"
+					},
+					{
+						"name": "k",
+						"expression": "1..2"
+					}
+				],
+				"conditions": ["l!=p", "l!=h", "p!=h", "k<h"],
+				"correction": {
+					"steps": [
+						"La section d'un pavé droit par un plan parallèle à une face est un **rectangle** de mêmes dimensions que cette face.",
+						"La face $EFGH$ mesure $EF = AB = {{l}}~\\unit{cm}$ sur $FG = BC = {{p}}~\\unit{cm}$ : la section est \\textcolor{{{color:primary.0}}}{\\text{un rectangle de {{l}} cm sur {{p}} cm}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Un cylindre de révolution de rayon ${{r}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$ est coupé par un plan perpendiculaire à son axe. Quelle est la section ?\n\n```solide\nforme: cylindre {{r}} {{h}}\nsommets: O O'\nsection: perpendiculaire {{k}}\n```\n\n```choix\n- un disque de rayon ${{r}}~\\unit{cm}$, comme la base\n- une ellipse\n- un rectangle\n- un disque plus petit que la base\n```",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "2..5"
+					},
+					{
+						"name": "h",
+						"expression": "4..9"
+					},
+					{
+						"name": "k",
+						"expression": "1..3"
+					}
+				],
+				"conditions": ["k<h", "r!=h"],
+				"correction": {
+					"steps": [
+						"La section d'un cylindre de révolution par un plan **perpendiculaire à son axe** est un disque de même rayon que la base : \\textcolor{{{color:primary.0}}}{\\text{un disque de rayon {{r}} cm}}.",
+						"Sur le dessin en perspective, ce disque est **vu** comme une ellipse, mais c'est bien un disque."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Un cylindre de révolution de rayon ${{r}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$ est coupé par un plan parallèle à son axe. Quelle est la section ?\n\n```solide\nforme: cylindre {{r}} {{h}}\nsommets: O O'\nsection: parallele {{k}}\n```\n\n```choix\n- un rectangle dont un côté mesure ${{h}}~\\unit{cm}$ (la hauteur)\n- un disque de rayon ${{r}}~\\unit{cm}$\n- une ellipse\n- un carré de côté ${{r}}~\\unit{cm}$\n```",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "3..6"
+					},
+					{
+						"name": "h",
+						"expression": "4..9"
+					},
+					{
+						"name": "k",
+						"expression": "1..2"
+					}
+				],
+				"conditions": ["k<r", "r!=h"],
+				"correction": {
+					"steps": [
+						"La section d'un cylindre de révolution par un plan **parallèle à son axe** est un rectangle.",
+						"Deux de ses côtés sont des génératrices du cylindre : ils mesurent la hauteur. C'est \\textcolor{{{color:primary.0}}}{\\text{un rectangle dont un côté mesure {{h}} cm}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{rho}}"
+					}
+				],
+				"statement": "Une boule de centre $O$ et de rayon ${{R}}~\\unit{cm}$ est coupée par un plan situé à ${{d}}~\\unit{cm}$ de son centre. La section est un disque : quel est son rayon ?\n\n```solide\nforme: boule {{R}}\nsommets: O\nsection: {{d}}\n```\n\n$?~\\unit{cm}$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "0..7"
+					},
+					{
+						"name": "R",
+						"expression": "{{if:t==0|5|}}{{if:t==1|5|}}{{if:t==2|10|}}{{if:t==3|10|}}{{if:t==4|13|}}{{if:t==5|13|}}{{if:t==6|15|}}{{if:t==7|17|}}"
+					},
+					{
+						"name": "d",
+						"expression": "{{if:t==0|3|}}{{if:t==1|4|}}{{if:t==2|6|}}{{if:t==3|8|}}{{if:t==4|5|}}{{if:t==5|12|}}{{if:t==6|9|}}{{if:t==7|8|}}"
+					},
+					{
+						"name": "rho",
+						"expression": "{{if:t==0|4|}}{{if:t==1|3|}}{{if:t==2|8|}}{{if:t==3|6|}}{{if:t==4|12|}}{{if:t==5|5|}}{{if:t==6|12|}}{{if:t==7|15|}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On note $H$ le centre de la section et $M$ un point de son bord : $OH = {{d}}~\\unit{cm}$ et $OM = {{R}}~\\unit{cm}$ (rayon de la boule). Le triangle $OHM$ est rectangle en $H$.",
+						"Théorème de Pythagore : $HM^2 = OM^2 - OH^2 = {{R}}^2 - {{d}}^2 = {{eval:R^2-d^2}}$.",
+						"Donc $HM = \\sqrt{{{eval:R^2-d^2}}} = \\textcolor{{{color:primary.0}}}{{{rho}}~\\unit{cm}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Sections de solides",
+		"description": "Reconnaître la section d'un pavé (parallèle à une face), d'un cylindre (parallèle ou perpendiculaire à l'axe) ; rayon de la section d'une boule par Pythagore",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "5",
+					"k": "2",
+					"l": "6",
+					"p": "4"
+				},
+				"description": "Pavé : rectangle l × p",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "5",
+					"k": "2",
+					"l": "6",
+					"p": "4"
+				},
+				"description": "Erreur : l × h",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "7",
+					"k": "2",
+					"r": "3"
+				},
+				"description": "Cylindre ⊥ : disque",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "7",
+					"k": "2",
+					"r": "3"
+				},
+				"description": "Erreur : une ellipse (le dessin)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "6",
+					"k": "1",
+					"r": "4"
+				},
+				"description": "Cylindre ‖ : rectangle",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "6",
+					"k": "1",
+					"r": "4"
+				},
+				"description": "Erreur : un disque",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"R": "5",
+					"d": "3",
+					"t": "0",
+					"rho": "4"
+				},
+				"description": "R = 5, d = 3 : 4",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"R": "5",
+					"d": "3",
+					"t": "0",
+					"rho": "4"
+				},
+				"description": "Erreur : le rayon de la boule",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"R": "5",
+					"d": "3",
+					"t": "0",
+					"rho": "4"
+				},
+				"description": "Erreur : R − d",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "87f79961-03c8-44af-98b5-438165d2f689",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"products": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["3"],
+		"delay": 90,
+		"theme": "Grandeurs",
+		"domain": "Volumes",
+		"subdomain": "Volume d'une boule",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4*r^3/3}}\\pi"
+					}
+				],
+				"statement": "Donne la valeur **exacte** du volume d'une boule de rayon ${{r}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "3..9"
+					}
+				],
+				"conditions": ["r%3==0"],
+				"correction": {
+					"steps": [
+						"**Volume d'une boule** de rayon $r$ : $V = \\dfrac{4}{3} \\pi r^3$ (formule admise).",
+						"$V = \\dfrac{4}{3} \\times \\pi \\times {{r}}^3 = \\dfrac{4 \\times {{eval:r^3}}}{3}\\pi = \\textcolor{{{color:primary.0}}}{{{eval:4*r^3/3}}\\pi~\\unit{cm^3}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{eval:4*r^3}}}{3}\\pi"
+					}
+				],
+				"statement": "Donne la valeur **exacte** du volume d'une boule de rayon ${{r}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "1..8"
+					}
+				],
+				"conditions": ["r%3!=0"],
+				"correction": {
+					"steps": [
+						"**Volume d'une boule** de rayon $r$ : $V = \\dfrac{4}{3} \\pi r^3$ (formule admise).",
+						"$V = \\dfrac{4}{3} \\times \\pi \\times {{r}}^3 = \\dfrac{4 \\times {{eval:r^3}}}{3}\\pi = \\textcolor{{{color:primary.0}}}{\\dfrac{{{eval:4*r^3}}}{3}\\pi~\\unit{cm^3}}$.",
+						"${{eval:4*r^3}}$ n'est pas divisible par $3$ : la fraction reste écrite."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:round(4*\\pi*r^3/3);d}}"
+					}
+				],
+				"statement": "Un ballon a la forme d'une boule de rayon ${{r}}~\\unit{cm}$. Calcule son volume, arrondi au $\\unit{cm^3}$.\n\n$V \\approx ?~\\unit{cm^3}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "4..15"
+					}
+				],
+				"conditions": ["abs(4*\\pi*r^3/3 - round(4*\\pi*r^3/3)) < 0.4"],
+				"correction": {
+					"steps": [
+						"**Volume d'une boule** de rayon $r$ : $V = \\dfrac{4}{3} \\pi r^3$ (formule admise).",
+						"$V = \\dfrac{4}{3} \\times \\pi \\times {{r}}^3 \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(4*\\pi*r^3/3);d}}~\\unit{cm^3}}$ (à la calculatrice, arrondi à l'unité)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4*r^3/3}}\\pi"
+					}
+				],
+				"statement": "Donne la valeur **exacte** du volume d'une boule de diamètre ${{d}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "3..9"
+					},
+					{
+						"name": "d",
+						"expression": "eval:2*r"
+					}
+				],
+				"conditions": ["r%3==0"],
+				"correction": {
+					"steps": [
+						"Le rayon est la moitié du diamètre : $r = {{d}} \\div 2 = {{r}}~\\unit{cm}$.",
+						"**Volume d'une boule** de rayon $r$ : $V = \\dfrac{4}{3} \\pi r^3$ (formule admise).",
+						"$V = \\dfrac{4}{3} \\times \\pi \\times {{r}}^3 = \\textcolor{{{color:primary.0}}}{{{eval:4*r^3/3}}\\pi~\\unit{cm^3}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2*r^3/3}}\\pi"
+					}
+				],
+				"statement": "Un bol a la forme d'une demi-boule de rayon ${{r}}~\\unit{cm}$. Donne la valeur **exacte** de son volume (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "3..9"
+					}
+				],
+				"conditions": ["r%3==0"],
+				"correction": {
+					"steps": [
+						"**Volume d'une boule** de rayon $r$ : $V = \\dfrac{4}{3} \\pi r^3$ (formule admise).",
+						"Boule entière : $\\dfrac{4}{3} \\times \\pi \\times {{r}}^3 = {{eval:4*r^3/3}}\\pi~\\unit{cm^3}$.",
+						"Demi-boule : ${{eval:4*r^3/3}}\\pi \\div 2 = \\textcolor{{{color:primary.0}}}{{{eval:2*r^3/3}}\\pi~\\unit{cm^3}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Volume d'une boule",
+		"description": "Calculer le volume d'une boule avec V = 4/3 π r³ : valeur exacte en fonction de π, valeur arrondie, à partir du diamètre, demi-boule",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["36\\pi"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Rayon 3 : 36π",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["36\\times\\pi"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "36 × π accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12\\pi"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Erreur : 4/3 π r² = 12π",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["27\\pi"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Erreur : π r³ = 27π",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{32}{3}\\pi"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "2"
+				},
+				"description": "Rayon 2 : 32/3 π",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{32\\pi}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "2"
+				},
+				"description": "32π/3 accepté",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{16}{3}\\pi"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "2"
+				},
+				"description": "Erreur : 16/3 π (r²)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4189"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "10"
+				},
+				"description": "Rayon 10 : 4 189",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4188"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "10"
+				},
+				"description": "Erreur : 4 188 (troncature)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["419"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "10"
+				},
+				"description": "Erreur : 419 (r²)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["288\\pi"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "12",
+					"r": "6"
+				},
+				"description": "Diamètre 12 : 288π",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2304\\pi"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "12",
+					"r": "6"
+				},
+				"description": "Erreur : le diamètre pris pour rayon (2 304π)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["18\\pi"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Demi-boule de rayon 3 : 18π",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["36\\pi"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Erreur : la boule entière",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "c8306505-e030-4d65-8a56-3271669f28b5",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 60,
+		"theme": "Géométrie",
+		"domain": "Translations",
+		"subdomain": "Parallélogramme",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Le point $D$ est l'image du point $C$ par la translation qui transforme $A$ en $B$. Quelle est la nature du quadrilatère $ABDC$ ?\n\n```figure\nfenetre: 0 ; 13 ; 0 ; 8\ngrille: 1\ndescription: Quadrillage : les points A, B, C, D et les flèches de A vers B et de C vers D.\n---\nA = point({{eval:xa}}, {{eval:ya}}, etiquette=\"bas-gauche\")\nB = point({{eval:xb}}, {{eval:yb}}, etiquette=\"bas-droite\")\nC = point({{eval:xc}}, {{eval:yc}}, etiquette=\"haut-gauche\")\nD = point({{eval:xd}}, {{eval:yd}}, etiquette=\"haut-droite\")\nvecteur(A, B)\nvecteur(C, D, trait=\"tirets\")\n```\n\n```choix\n- un parallélogramme\n- un trapèze qui n'est pas un parallélogramme\n- on ne peut pas savoir\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "0..3"
+					},
+					{
+						"name": "xa",
+						"expression": "{{if:c==0|1|}}{{if:c==1|2|}}{{if:c==2|1|}}{{if:c==3|3|}}"
+					},
+					{
+						"name": "ya",
+						"expression": "{{if:c==0|1|}}{{if:c==1|5|}}{{if:c==2|2|}}{{if:c==3|1|}}"
+					},
+					{
+						"name": "xb",
+						"expression": "{{if:c==0|7|}}{{if:c==1|8|}}{{if:c==2|6|}}{{if:c==3|9|}}"
+					},
+					{
+						"name": "yb",
+						"expression": "{{if:c==0|2|}}{{if:c==1|4|}}{{if:c==2|5|}}{{if:c==3|1|}}"
+					},
+					{
+						"name": "xc",
+						"expression": "{{if:c==0|3|}}{{if:c==1|1|}}{{if:c==2|6|}}{{if:c==3|1|}}"
+					},
+					{
+						"name": "yc",
+						"expression": "{{if:c==0|5|}}{{if:c==1|2|}}{{if:c==2|1|}}{{if:c==3|5|}}"
+					},
+					{
+						"name": "xd",
+						"expression": "{{if:c==0|9|}}{{if:c==1|7|}}{{if:c==2|11|}}{{if:c==3|7|}}"
+					},
+					{
+						"name": "yd",
+						"expression": "{{if:c==0|6|}}{{if:c==1|1|}}{{if:c==2|4|}}{{if:c==3|5|}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$C$ glisse comme $A$ glisse vers $B$ : $(CD)$ est parallèle à $(AB)$, et $CD = AB$.",
+						"Si $D$ est l'image de $C$ par la translation qui transforme $A$ en $B$, alors $ABDC$ est \\textcolor{{{color:primary.0}}}{\\text{un parallélogramme}} (attention à l'ordre des lettres : $A$, $B$, puis $D$, $C$)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Le quadrilatère $ABDC$ est un parallélogramme. {{if:q==0|Quelle est l'image du point $C$ par la translation qui transforme $A$ en $B$ ?|}}{{if:q==1|Quelle est l'image du point $A$ par la translation qui transforme $C$ en $D$ ?|}}\n\n```figure\nfenetre: 0 ; 13 ; 0 ; 8\ndescription: Parallélogramme ABDC.\n---\nA = point({{eval:xa}}, {{eval:ya}}, etiquette=\"bas-gauche\")\nB = point({{eval:xb}}, {{eval:yb}}, etiquette=\"bas-droite\")\nC = point({{eval:xc}}, {{eval:yc}}, etiquette=\"haut-gauche\")\nD = point({{eval:xd}}, {{eval:yd}}, etiquette=\"haut-droite\")\npolygone(A, B, D, C)\n```\n\n```choix\n- le point ${{if:q==0|D|}}{{if:q==1|B|}}$\n- le point ${{if:q==0|B|}}{{if:q==1|D|}}$\n- le point ${{if:q==0|A|}}{{if:q==1|C|}}$\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "0..3"
+					},
+					{
+						"name": "xa",
+						"expression": "{{if:c==0|1|}}{{if:c==1|2|}}{{if:c==2|1|}}{{if:c==3|3|}}"
+					},
+					{
+						"name": "ya",
+						"expression": "{{if:c==0|1|}}{{if:c==1|5|}}{{if:c==2|2|}}{{if:c==3|1|}}"
+					},
+					{
+						"name": "xb",
+						"expression": "{{if:c==0|7|}}{{if:c==1|8|}}{{if:c==2|6|}}{{if:c==3|9|}}"
+					},
+					{
+						"name": "yb",
+						"expression": "{{if:c==0|2|}}{{if:c==1|4|}}{{if:c==2|5|}}{{if:c==3|1|}}"
+					},
+					{
+						"name": "xc",
+						"expression": "{{if:c==0|3|}}{{if:c==1|1|}}{{if:c==2|6|}}{{if:c==3|1|}}"
+					},
+					{
+						"name": "yc",
+						"expression": "{{if:c==0|5|}}{{if:c==1|2|}}{{if:c==2|1|}}{{if:c==3|5|}}"
+					},
+					{
+						"name": "xd",
+						"expression": "{{if:c==0|9|}}{{if:c==1|7|}}{{if:c==2|11|}}{{if:c==3|7|}}"
+					},
+					{
+						"name": "yd",
+						"expression": "{{if:c==0|6|}}{{if:c==1|1|}}{{if:c==2|4|}}{{if:c==3|5|}}"
+					},
+					{
+						"name": "q",
+						"expression": "0..1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$ABDC$ est un parallélogramme : {{if:q==0|$C$ glisse vers $D$ comme $A$ glisse vers $B$|}}{{if:q==1|$A$ glisse vers $B$ comme $C$ glisse vers $D$|}} (côtés opposés $[AB]$ et $[CD]$ parallèles et de même longueur).",
+						"L'image est \\textcolor{{{color:primary.0}}}{\\text{le point }{{if:q==0|D|}}{{if:q==1|B|}}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quelle est l'image de la figure 1 par la translation qui transforme $A$ en $B$ ?\n\n```figure\nfenetre: 0 ; 17 ; 0 ; 7\ngrille: 1\ndescription: Quadrillage : une frise de cinq parallélogrammes numérotés et une flèche de A vers B.\n---\nQ00 = point(1, 1, visible=faux)\nQ01 = point(3, 1, visible=faux)\nQ02 = point(4, 3, visible=faux)\nQ03 = point(2, 3, visible=faux)\npolygone(Q00, Q01, Q02, Q03, remplissage=\"bleu\")\ntexte(2.5, 2, \"1\")\nQ10 = point(4, 1, visible=faux)\nQ11 = point(6, 1, visible=faux)\nQ12 = point(7, 3, visible=faux)\nQ13 = point(5, 3, visible=faux)\npolygone(Q10, Q11, Q12, Q13, remplissage=\"bleu\")\ntexte(5.5, 2, \"2\")\nQ20 = point(7, 1, visible=faux)\nQ21 = point(9, 1, visible=faux)\nQ22 = point(10, 3, visible=faux)\nQ23 = point(8, 3, visible=faux)\npolygone(Q20, Q21, Q22, Q23, remplissage=\"bleu\")\ntexte(8.5, 2, \"3\")\nQ30 = point(10, 1, visible=faux)\nQ31 = point(12, 1, visible=faux)\nQ32 = point(13, 3, visible=faux)\nQ33 = point(11, 3, visible=faux)\npolygone(Q30, Q31, Q32, Q33, remplissage=\"bleu\")\ntexte(11.5, 2, \"4\")\nQ40 = point(13, 1, visible=faux)\nQ41 = point(15, 1, visible=faux)\nQ42 = point(16, 3, visible=faux)\nQ43 = point(14, 3, visible=faux)\npolygone(Q40, Q41, Q42, Q43, remplissage=\"bleu\")\ntexte(14.5, 2, \"5\")\nA = point(1, 5, etiquette=\"gauche\")\nB = point({{eval:1 + 3*k}}, 5, etiquette=\"droite\")\nvecteur(A, B)\n```\n\n```choix\n- la figure {{eval:1 + k}}\n- la figure {{if:k==0||}}{{if:k==1|3|}}{{if:k==2|2|}}{{if:k==3|2|}}\n- la figure {{if:k==0||}}{{if:k==1|4|}}{{if:k==2|4|}}{{if:k==3|3|}}\n- la figure {{if:k==0||}}{{if:k==1|5|}}{{if:k==2|5|}}{{if:k==3|5|}}\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La flèche mesure {{eval:3*k}} carreaux vers la droite : la figure 1 glisse de {{eval:3*k}} carreaux.",
+						"Son image est \\textcolor{{{color:primary.0}}}{\\text{la figure }{{eval:1 + k}}}."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Translation et parallélogramme",
+		"description": "Faire le lien entre la translation qui transforme A en B et le parallélogramme ABDC : nature du quadrilatère, image d'un point, frise de parallélogrammes",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "0",
+					"xa": "1",
+					"xb": "7",
+					"xc": "3",
+					"xd": "9",
+					"ya": "1",
+					"yb": "2",
+					"yc": "5",
+					"yd": "6"
+				},
+				"description": "ABDC parallélogramme",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "0",
+					"xa": "1",
+					"xb": "7",
+					"xc": "3",
+					"xd": "9",
+					"ya": "1",
+					"yb": "2",
+					"yc": "5",
+					"yd": "6"
+				},
+				"description": "Erreur : on ne peut pas savoir",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "0",
+					"q": "0",
+					"xa": "1",
+					"xb": "7",
+					"xc": "3",
+					"xd": "9",
+					"ya": "1",
+					"yb": "2",
+					"yc": "5",
+					"yd": "6"
+				},
+				"description": "Image de C : D",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "0",
+					"q": "0",
+					"xa": "1",
+					"xb": "7",
+					"xc": "3",
+					"xd": "9",
+					"ya": "1",
+					"yb": "2",
+					"yc": "5",
+					"yd": "6"
+				},
+				"description": "Erreur : B",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "0",
+					"q": "1",
+					"xa": "1",
+					"xb": "7",
+					"xc": "3",
+					"xd": "9",
+					"ya": "1",
+					"yb": "2",
+					"yc": "5",
+					"yd": "6"
+				},
+				"description": "Image de A : B",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Frise k = 2 : figure 3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Erreur : figure voisine",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "34971ab0-5b2c-4dfd-bb9c-674a2877d9a3"
+	},
+	{
+		"id": "cd756e21-af71-4922-8106-8387658a45e1",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Géométrie",
+		"domain": "Solides",
+		"subdomain": "Grands cercles",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:w==0|{{d}}|}}{{if:w==1|{{r}}|}}"
+					}
+				],
+				"statement": "Une sphère a pour {{if:w==0|rayon|}}{{if:w==1|diamètre|}} ${{if:w==0|{{r}}|}}{{if:w==1|{{d}}|}}~\\unit{cm}$. Quel est son {{if:w==0|diamètre|}}{{if:w==1|rayon|}} ?\n\n$?~\\unit{cm}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "2..15"
+					},
+					{
+						"name": "d",
+						"expression": "eval:2*r"
+					},
+					{
+						"name": "w",
+						"expression": "0..1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un **diamètre** de la sphère est un segment qui joint deux de ses points en passant par le centre : sa longueur est le double du rayon.",
+						"{{if:w==0|Diamètre : $2 \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{d}}~\\unit{cm}}$.|}}{{if:w==1|Rayon : ${{d}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{r}}~\\unit{cm}}$.|}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Une boule de centre $O$ et de rayon ${{r}}~\\unit{cm}$ est coupée par un plan qui passe par son centre. Quel est le rayon du cercle obtenu ?\n\n```solide\nforme: boule 3\nsommets: O\nsection: 0\n```\n\n$?~\\unit{cm}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "2..12"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un plan qui passe par le centre de la sphère la coupe suivant un **grand cercle** : même centre et même rayon que la sphère.",
+						"Son rayon est donc \\textcolor{{{color:primary.0}}}{{{r}}~\\unit{cm}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0;1"
+					}
+				],
+				"statement": "On assimile la Terre à une sphère. Parmi ces cercles tracés sur sa surface, lesquels sont des **grands cercles** ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\n- l'équateur\n- un cercle qui passe par les deux pôles\n- le parallèle de latitude $45^{\\circ}$ Nord\n- le cercle polaire arctique\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"Un **grand cercle** est un cercle de la sphère dont le centre est celui de la sphère : son plan passe par le centre de la Terre.",
+						"C'est le cas de \\textcolor{{{color:primary.0}}}{\\text{l'équateur}} et d'\\textcolor{{{color:primary.0}}}{\\text{un cercle qui passe par les deux pôles}} (deux méridiens opposés).",
+						"Les autres parallèles (le $45^{\\circ}$ Nord, le cercle polaire) ont leur centre sur l'axe des pôles, hors du centre : leur rayon est plus petit."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Grands cercles et diamètre d'une sphère",
+		"description": "Relier rayon et diamètre d'une sphère ; reconnaître un grand cercle (section par un plan passant par le centre, équateur et méridiens)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "14",
+					"r": "7",
+					"w": "0"
+				},
+				"description": "Rayon 7 : diamètre 14",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3{,}5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "14",
+					"r": "7",
+					"w": "0"
+				},
+				"description": "Erreur : 3,5 (divisé)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "18",
+					"r": "9",
+					"w": "1"
+				},
+				"description": "Diamètre 18 : rayon 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["36"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "18",
+					"r": "9",
+					"w": "1"
+				},
+				"description": "Erreur : 36 (doublé)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "5"
+				},
+				"description": "Grand cercle : rayon 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "5"
+				},
+				"description": "Erreur : 10 (le diamètre)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0;1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Équateur et méridiens",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0;1;2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : le parallèle en plus",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "unoptimal_form"
+				},
+				"variables": {},
+				"description": "Incomplet : l'équateur seul",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "d157dfb2-3666-484d-93f9-9fe46a0e2fcf",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Géométrie",
+		"domain": "Vecteurs",
+		"subdomain": "Chasles",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Simplifie : $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$.\n\n```choix\n- $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$\n- $\\overrightarrow{{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$\n- $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n- $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n```",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "0..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Relation de Chasles** : pour tous points $X$, $Y$, $Z$, $\\overrightarrow{XY} + \\overrightarrow{YZ} = \\overrightarrow{XZ}$ (l'extrémité du premier est l'origine du second).",
+						"$\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} = \\textcolor{{{color:primary.0}}}{\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Simplifie : $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} + \\overrightarrow{{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}{{if:j==0|D|}}{{if:j==1|Q|}}{{if:j==2|H|}}{{if:j==3|U|}}}$.\n\n```choix\n- $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|D|}}{{if:j==1|Q|}}{{if:j==2|H|}}{{if:j==3|U|}}}$\n- $\\overrightarrow{{{if:j==0|D|}}{{if:j==1|Q|}}{{if:j==2|H|}}{{if:j==3|U|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$\n- $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$\n- $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|D|}}{{if:j==1|Q|}}{{if:j==2|H|}}{{if:j==3|U|}}}$\n```",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "0..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Relation de Chasles** : pour tous points $X$, $Y$, $Z$, $\\overrightarrow{XY} + \\overrightarrow{YZ} = \\overrightarrow{XZ}$ (l'extrémité du premier est l'origine du second).",
+						"$\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} = \\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$, donc la somme vaut $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} + \\overrightarrow{{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}{{if:j==0|D|}}{{if:j==1|Q|}}{{if:j==2|H|}}{{if:j==3|U|}}} = \\textcolor{{{color:primary.0}}}{\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|D|}}{{if:j==1|Q|}}{{if:j==2|H|}}{{if:j==3|U|}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Simplifie : $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$.\n\n```choix\n- $\\vec{0}$\n- $2\\,\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n- $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n- $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$\n```",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "0..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Relation de Chasles** : pour tous points $X$, $Y$, $Z$, $\\overrightarrow{XY} + \\overrightarrow{YZ} = \\overrightarrow{XZ}$ (l'extrémité du premier est l'origine du second).",
+						"$\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}} = \\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}} = \\textcolor{{{color:primary.0}}}{\\vec{0}}$ : aller de ${{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}$ à ${{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}$ puis revenir, c'est ne pas bouger. $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$ est l'opposé de $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Simplifie : $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} + \\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$.\n\n```choix\n- $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$\n- $\\overrightarrow{{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$\n- $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n- $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$\n```",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "0..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On peut changer l'ordre des termes d'une somme : $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} + \\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} = \\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$.",
+						"**Relation de Chasles** : pour tous points $X$, $Y$, $Z$, $\\overrightarrow{XY} + \\overrightarrow{YZ} = \\overrightarrow{XZ}$ (l'extrémité du premier est l'origine du second).",
+						"Donc la somme vaut $\\textcolor{{{color:primary.0}}}{\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Relation de Chasles",
+		"description": "Simplifier une somme de vecteurs avec la relation de Chasles (deux ou trois termes, aller et retour, termes dans le désordre)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "0"
+				},
+				"description": "AB + BC = AC",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "0"
+				},
+				"description": "Erreur : CA",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1"
+				},
+				"description": "MN + NP + PQ = MQ",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1"
+				},
+				"description": "Erreur : MP (un terme oublié)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "2"
+				},
+				"description": "EF + FE = 0",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "2"
+				},
+				"description": "Erreur : 2 EF",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "3"
+				},
+				"description": "ST + RS = RT",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "3"
+				},
+				"description": "Erreur : TR",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "ff3bd841-6d22-40f6-a4e3-4ddc7e017905",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Géométrie",
+		"domain": "Vecteurs",
+		"subdomain": "Égalité",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Lequel de ces vecteurs est égal au vecteur $\\vec{u}$ ?\n\n```figure\nfenetre: 0 ; 22 ; 0 ; 15\ngrille: 1\ndescription: Quadrillage : le vecteur u et quatre vecteurs CD, EF, GH et KL, de même longueur.\n---\nvecteur({{eval:ux}}, {{eval:uy}}, ancre=(4, 11))\ntexte({{eval:round(100*(4+(ux)/2-0.7*(uy)/sqrt((ux)^2+(uy)^2)))/100;d}}, {{eval:round(100*(11+(uy)/2+0.7*(ux)/sqrt((ux)^2+(uy)^2)))/100;d}}, \"u⃗\")\nC = point(11, 11, etiquette=\"{{if:d0y>0|bas|haut}}\")\nD = point({{eval:11+d0x}}, {{eval:11+d0y}}, etiquette=\"{{if:d0y>0|haut|bas}}\")\nvecteur(C, D)\nE = point(18, 11, etiquette=\"{{if:d1y>0|bas|haut}}\")\nF = point({{eval:18+d1x}}, {{eval:11+d1y}}, etiquette=\"{{if:d1y>0|haut|bas}}\")\nvecteur(E, F)\nG = point(11, 4, etiquette=\"{{if:d2y>0|bas|haut}}\")\nH = point({{eval:11+d2x}}, {{eval:4+d2y}}, etiquette=\"{{if:d2y>0|haut|bas}}\")\nvecteur(G, H)\nK = point(18, 4, etiquette=\"{{if:d3y>0|bas|haut}}\")\nL = point({{eval:18+d3x}}, {{eval:4+d3y}}, etiquette=\"{{if:d3y>0|haut|bas}}\")\nvecteur(K, L)\n```\n\n```choix\n- ${{if:p==0|\\overrightarrow{CD}|}}{{if:p==1|\\overrightarrow{EF}|}}{{if:p==2|\\overrightarrow{GH}|}}{{if:p==3|\\overrightarrow{KL}|}}$\n- ${{if:p==0|\\overrightarrow{EF}|}}{{if:p==1|\\overrightarrow{GH}|}}{{if:p==2|\\overrightarrow{KL}|}}{{if:p==3|\\overrightarrow{CD}|}}$\n- ${{if:p==0|\\overrightarrow{GH}|}}{{if:p==1|\\overrightarrow{KL}|}}{{if:p==2|\\overrightarrow{CD}|}}{{if:p==3|\\overrightarrow{EF}|}}$\n- ${{if:p==0|\\overrightarrow{KL}|}}{{if:p==1|\\overrightarrow{CD}|}}{{if:p==2|\\overrightarrow{EF}|}}{{if:p==3|\\overrightarrow{GH}|}}$\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "sg",
+						"expression": "0..1"
+					},
+					{
+						"name": "ux",
+						"expression": "eval:(2*sg-1)*a"
+					},
+					{
+						"name": "uy",
+						"expression": "-3..3"
+					},
+					{
+						"name": "vx",
+						"expression": "0"
+					},
+					{
+						"name": "vy",
+						"expression": "0"
+					},
+					{
+						"name": "p",
+						"expression": "0..3"
+					},
+					{
+						"name": "k0",
+						"expression": "{{if:p==0|0|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|1|}}"
+					},
+					{
+						"name": "ax0",
+						"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|1|}}{{if:k0==3|-1|}}"
+					},
+					{
+						"name": "bx0",
+						"expression": "{{if:k0==0|0|}}{{if:k0==1|0|}}{{if:k0==2|0|}}{{if:k0==3|0|}}"
+					},
+					{
+						"name": "ay0",
+						"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|-1|}}{{if:k0==3|1|}}"
+					},
+					{
+						"name": "by0",
+						"expression": "{{if:k0==0|0|}}{{if:k0==1|0|}}{{if:k0==2|0|}}{{if:k0==3|0|}}"
+					},
+					{
+						"name": "d0x",
+						"expression": "eval:ax0*ux+bx0*vx"
+					},
+					{
+						"name": "d0y",
+						"expression": "eval:ay0*uy+by0*vy"
+					},
+					{
+						"name": "k1",
+						"expression": "{{if:p==0|1|}}{{if:p==1|0|}}{{if:p==2|3|}}{{if:p==3|2|}}"
+					},
+					{
+						"name": "ax1",
+						"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|1|}}{{if:k1==3|-1|}}"
+					},
+					{
+						"name": "bx1",
+						"expression": "{{if:k1==0|0|}}{{if:k1==1|0|}}{{if:k1==2|0|}}{{if:k1==3|0|}}"
+					},
+					{
+						"name": "ay1",
+						"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|-1|}}{{if:k1==3|1|}}"
+					},
+					{
+						"name": "by1",
+						"expression": "{{if:k1==0|0|}}{{if:k1==1|0|}}{{if:k1==2|0|}}{{if:k1==3|0|}}"
+					},
+					{
+						"name": "d1x",
+						"expression": "eval:ax1*ux+bx1*vx"
+					},
+					{
+						"name": "d1y",
+						"expression": "eval:ay1*uy+by1*vy"
+					},
+					{
+						"name": "k2",
+						"expression": "{{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|0|}}{{if:p==3|3|}}"
+					},
+					{
+						"name": "ax2",
+						"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|1|}}{{if:k2==3|-1|}}"
+					},
+					{
+						"name": "bx2",
+						"expression": "{{if:k2==0|0|}}{{if:k2==1|0|}}{{if:k2==2|0|}}{{if:k2==3|0|}}"
+					},
+					{
+						"name": "ay2",
+						"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|-1|}}{{if:k2==3|1|}}"
+					},
+					{
+						"name": "by2",
+						"expression": "{{if:k2==0|0|}}{{if:k2==1|0|}}{{if:k2==2|0|}}{{if:k2==3|0|}}"
+					},
+					{
+						"name": "d2x",
+						"expression": "eval:ax2*ux+bx2*vx"
+					},
+					{
+						"name": "d2y",
+						"expression": "eval:ay2*uy+by2*vy"
+					},
+					{
+						"name": "k3",
+						"expression": "{{if:p==0|3|}}{{if:p==1|2|}}{{if:p==2|1|}}{{if:p==3|0|}}"
+					},
+					{
+						"name": "ax3",
+						"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|1|}}{{if:k3==3|-1|}}"
+					},
+					{
+						"name": "bx3",
+						"expression": "{{if:k3==0|0|}}{{if:k3==1|0|}}{{if:k3==2|0|}}{{if:k3==3|0|}}"
+					},
+					{
+						"name": "ay3",
+						"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|-1|}}{{if:k3==3|1|}}"
+					},
+					{
+						"name": "by3",
+						"expression": "{{if:k3==0|0|}}{{if:k3==1|0|}}{{if:k3==2|0|}}{{if:k3==3|0|}}"
+					},
+					{
+						"name": "d3x",
+						"expression": "eval:ax3*ux+bx3*vx"
+					},
+					{
+						"name": "d3y",
+						"expression": "eval:ay3*uy+by3*vy"
+					}
+				],
+				"conditions": ["uy!=0", "abs(ux)!=abs(uy)"],
+				"correction": {
+					"steps": [
+						"Deux vecteurs sont **égaux** quand ils ont la même direction, le même sens et la même longueur : ils font le même déplacement sur le quadrillage.",
+						"$\\vec{u}$ fait {{eval:abs(ux)}} carreau(x) vers la {{if:ux>0|droite|gauche}} et {{eval:abs(uy)}} vers le {{if:uy>0|haut|bas}}.",
+						"Seul ${{if:p==0|\\overrightarrow{CD}|}}{{if:p==1|\\overrightarrow{EF}|}}{{if:p==2|\\overrightarrow{GH}|}}{{if:p==3|\\overrightarrow{KL}|}}$ fait le même déplacement : $\\vec{u} = \\textcolor{{{color:primary.0}}}{{{if:p==0|\\overrightarrow{CD}|}}{{if:p==1|\\overrightarrow{EF}|}}{{if:p==2|\\overrightarrow{GH}|}}{{if:p==3|\\overrightarrow{KL}|}}}$.",
+						"${{if:p==0|\\overrightarrow{EF}|}}{{if:p==1|\\overrightarrow{GH}|}}{{if:p==2|\\overrightarrow{KL}|}}{{if:p==3|\\overrightarrow{CD}|}}$ a la même direction et la même longueur, mais pas le même sens : c'est l'**opposé** de $\\vec{u}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Lequel de ces vecteurs est l'opposé du vecteur $\\vec{u}$ ?\n\n```figure\nfenetre: 0 ; 22 ; 0 ; 15\ngrille: 1\ndescription: Quadrillage : le vecteur u et quatre vecteurs CD, EF, GH et KL, de même longueur.\n---\nvecteur({{eval:ux}}, {{eval:uy}}, ancre=(4, 11))\ntexte({{eval:round(100*(4+(ux)/2-0.7*(uy)/sqrt((ux)^2+(uy)^2)))/100;d}}, {{eval:round(100*(11+(uy)/2+0.7*(ux)/sqrt((ux)^2+(uy)^2)))/100;d}}, \"u⃗\")\nC = point(11, 11, etiquette=\"{{if:d0y>0|bas|haut}}\")\nD = point({{eval:11+d0x}}, {{eval:11+d0y}}, etiquette=\"{{if:d0y>0|haut|bas}}\")\nvecteur(C, D)\nE = point(18, 11, etiquette=\"{{if:d1y>0|bas|haut}}\")\nF = point({{eval:18+d1x}}, {{eval:11+d1y}}, etiquette=\"{{if:d1y>0|haut|bas}}\")\nvecteur(E, F)\nG = point(11, 4, etiquette=\"{{if:d2y>0|bas|haut}}\")\nH = point({{eval:11+d2x}}, {{eval:4+d2y}}, etiquette=\"{{if:d2y>0|haut|bas}}\")\nvecteur(G, H)\nK = point(18, 4, etiquette=\"{{if:d3y>0|bas|haut}}\")\nL = point({{eval:18+d3x}}, {{eval:4+d3y}}, etiquette=\"{{if:d3y>0|haut|bas}}\")\nvecteur(K, L)\n```\n\n```choix\n- ${{if:p==0|\\overrightarrow{EF}|}}{{if:p==1|\\overrightarrow{GH}|}}{{if:p==2|\\overrightarrow{KL}|}}{{if:p==3|\\overrightarrow{CD}|}}$\n- ${{if:p==0|\\overrightarrow{CD}|}}{{if:p==1|\\overrightarrow{EF}|}}{{if:p==2|\\overrightarrow{GH}|}}{{if:p==3|\\overrightarrow{KL}|}}$\n- ${{if:p==0|\\overrightarrow{GH}|}}{{if:p==1|\\overrightarrow{KL}|}}{{if:p==2|\\overrightarrow{CD}|}}{{if:p==3|\\overrightarrow{EF}|}}$\n- ${{if:p==0|\\overrightarrow{KL}|}}{{if:p==1|\\overrightarrow{CD}|}}{{if:p==2|\\overrightarrow{EF}|}}{{if:p==3|\\overrightarrow{GH}|}}$\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "sg",
+						"expression": "0..1"
+					},
+					{
+						"name": "ux",
+						"expression": "eval:(2*sg-1)*a"
+					},
+					{
+						"name": "uy",
+						"expression": "-3..3"
+					},
+					{
+						"name": "vx",
+						"expression": "0"
+					},
+					{
+						"name": "vy",
+						"expression": "0"
+					},
+					{
+						"name": "p",
+						"expression": "0..3"
+					},
+					{
+						"name": "k0",
+						"expression": "{{if:p==0|0|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|1|}}"
+					},
+					{
+						"name": "ax0",
+						"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|1|}}{{if:k0==3|-1|}}"
+					},
+					{
+						"name": "bx0",
+						"expression": "{{if:k0==0|0|}}{{if:k0==1|0|}}{{if:k0==2|0|}}{{if:k0==3|0|}}"
+					},
+					{
+						"name": "ay0",
+						"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|-1|}}{{if:k0==3|1|}}"
+					},
+					{
+						"name": "by0",
+						"expression": "{{if:k0==0|0|}}{{if:k0==1|0|}}{{if:k0==2|0|}}{{if:k0==3|0|}}"
+					},
+					{
+						"name": "d0x",
+						"expression": "eval:ax0*ux+bx0*vx"
+					},
+					{
+						"name": "d0y",
+						"expression": "eval:ay0*uy+by0*vy"
+					},
+					{
+						"name": "k1",
+						"expression": "{{if:p==0|1|}}{{if:p==1|0|}}{{if:p==2|3|}}{{if:p==3|2|}}"
+					},
+					{
+						"name": "ax1",
+						"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|1|}}{{if:k1==3|-1|}}"
+					},
+					{
+						"name": "bx1",
+						"expression": "{{if:k1==0|0|}}{{if:k1==1|0|}}{{if:k1==2|0|}}{{if:k1==3|0|}}"
+					},
+					{
+						"name": "ay1",
+						"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|-1|}}{{if:k1==3|1|}}"
+					},
+					{
+						"name": "by1",
+						"expression": "{{if:k1==0|0|}}{{if:k1==1|0|}}{{if:k1==2|0|}}{{if:k1==3|0|}}"
+					},
+					{
+						"name": "d1x",
+						"expression": "eval:ax1*ux+bx1*vx"
+					},
+					{
+						"name": "d1y",
+						"expression": "eval:ay1*uy+by1*vy"
+					},
+					{
+						"name": "k2",
+						"expression": "{{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|0|}}{{if:p==3|3|}}"
+					},
+					{
+						"name": "ax2",
+						"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|1|}}{{if:k2==3|-1|}}"
+					},
+					{
+						"name": "bx2",
+						"expression": "{{if:k2==0|0|}}{{if:k2==1|0|}}{{if:k2==2|0|}}{{if:k2==3|0|}}"
+					},
+					{
+						"name": "ay2",
+						"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|-1|}}{{if:k2==3|1|}}"
+					},
+					{
+						"name": "by2",
+						"expression": "{{if:k2==0|0|}}{{if:k2==1|0|}}{{if:k2==2|0|}}{{if:k2==3|0|}}"
+					},
+					{
+						"name": "d2x",
+						"expression": "eval:ax2*ux+bx2*vx"
+					},
+					{
+						"name": "d2y",
+						"expression": "eval:ay2*uy+by2*vy"
+					},
+					{
+						"name": "k3",
+						"expression": "{{if:p==0|3|}}{{if:p==1|2|}}{{if:p==2|1|}}{{if:p==3|0|}}"
+					},
+					{
+						"name": "ax3",
+						"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|1|}}{{if:k3==3|-1|}}"
+					},
+					{
+						"name": "bx3",
+						"expression": "{{if:k3==0|0|}}{{if:k3==1|0|}}{{if:k3==2|0|}}{{if:k3==3|0|}}"
+					},
+					{
+						"name": "ay3",
+						"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|-1|}}{{if:k3==3|1|}}"
+					},
+					{
+						"name": "by3",
+						"expression": "{{if:k3==0|0|}}{{if:k3==1|0|}}{{if:k3==2|0|}}{{if:k3==3|0|}}"
+					},
+					{
+						"name": "d3x",
+						"expression": "eval:ax3*ux+bx3*vx"
+					},
+					{
+						"name": "d3y",
+						"expression": "eval:ay3*uy+by3*vy"
+					}
+				],
+				"conditions": ["uy!=0", "abs(ux)!=abs(uy)"],
+				"correction": {
+					"steps": [
+						"L'**opposé** de $\\vec{u}$, noté $-\\vec{u}$, a la même direction et la même longueur que $\\vec{u}$, mais le sens contraire.",
+						"$\\vec{u}$ fait {{eval:abs(ux)}} carreau(x) vers la {{if:ux>0|droite|gauche}} et {{eval:abs(uy)}} vers le {{if:uy>0|haut|bas}} : son opposé fait le déplacement inverse.",
+						"$-\\vec{u} = \\textcolor{{{color:primary.0}}}{{{if:p==0|\\overrightarrow{EF}|}}{{if:p==1|\\overrightarrow{GH}|}}{{if:p==2|\\overrightarrow{KL}|}}{{if:p==3|\\overrightarrow{CD}|}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "$ABCD$ est un parallélogramme. Quel vecteur est égal au vecteur $\\overrightarrow{{{if:q==0|AB|}}{{if:q==1|AD|}}{{if:q==2|BA|}}{{if:q==3|CB|}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Parallélogramme ABCD.\n---\nA = point(1, 1, etiquette=\"bas-gauche\")\nB = point(6, 1, etiquette=\"bas-droite\")\nC = point(8.5, 5, etiquette=\"haut-droite\")\nD = point(3.5, 5, etiquette=\"haut-gauche\")\npolygone(A, B, C, D)\n```\n\n```choix\n- $\\overrightarrow{{{if:q==0|DC|}}{{if:q==1|BC|}}{{if:q==2|CD|}}{{if:q==3|DA|}}}$\n- $\\overrightarrow{{{if:q==0|CD|}}{{if:q==1|CB|}}{{if:q==2|DC|}}{{if:q==3|AD|}}}$\n- $\\overrightarrow{{{if:q==0|AD|}}{{if:q==1|AB|}}{{if:q==2|BC|}}{{if:q==3|AB|}}}$\n- $\\overrightarrow{{{if:q==0|BC|}}{{if:q==1|DC|}}{{if:q==2|AD|}}{{if:q==3|DC|}}}$\n```",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "0..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$ABCD$ est un parallélogramme : $\\overrightarrow{AB} = \\overrightarrow{DC}$ et $\\overrightarrow{AD} = \\overrightarrow{BC}$ (côtés opposés parallèles, de même longueur, parcourus dans le même sens).",
+						"$\\overrightarrow{{{if:q==0|AB|}}{{if:q==1|AD|}}{{if:q==2|BA|}}{{if:q==3|CB|}}} = \\textcolor{{{color:primary.0}}}{\\overrightarrow{{{if:q==0|DC|}}{{if:q==1|BC|}}{{if:q==2|CD|}}{{if:q==3|DA|}}}}$.",
+						"Attention à l'ordre des lettres : $\\overrightarrow{{{if:q==0|CD|}}{{if:q==1|CB|}}{{if:q==2|DC|}}{{if:q==3|AD|}}}$ est l'opposé."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "On sait que $\\overrightarrow{AB} = \\vec{0}$. Que peut-on dire des points $A$ et $B$ ?\n\n```choix\n- $A$ et $B$ sont confondus.\n- $A$ et $B$ sont à $1$ unité l'un de l'autre.\n- La droite $(AB)$ est horizontale.\n- On ne peut rien dire.\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"Le **vecteur nul** $\\vec{0}$ est le vecteur de longueur $0$ : il ne déplace aucun point.",
+						"$\\overrightarrow{AB} = \\vec{0}$ signifie que $AB = 0$ : \\textcolor{{{color:primary.0}}}{\\text{A et B sont confondus}}."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Vecteurs égaux, opposés, nul",
+		"description": "Reconnaître sur un quadrillage un vecteur égal ou opposé à un vecteur donné ; égalités de vecteurs dans un parallélogramme ; vecteur nul",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"p": "2",
+					"k0": "2",
+					"k1": "3",
+					"k2": "0",
+					"k3": "1",
+					"sg": "1",
+					"ux": "2",
+					"uy": "-3",
+					"vx": "0",
+					"vy": "0",
+					"ax0": "1",
+					"ax1": "-1",
+					"ax2": "1",
+					"ax3": "-1",
+					"ay0": "-1",
+					"ay1": "1",
+					"ay2": "1",
+					"ay3": "-1",
+					"bx0": "0",
+					"bx1": "0",
+					"bx2": "0",
+					"bx3": "0",
+					"by0": "0",
+					"by1": "0",
+					"by2": "0",
+					"by3": "0",
+					"d0x": "2",
+					"d0y": "3",
+					"d1x": "-2",
+					"d1y": "-3",
+					"d2x": "2",
+					"d2y": "-3",
+					"d3x": "-2",
+					"d3y": "3"
+				},
+				"description": "Égal : bonne case",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"p": "2",
+					"k0": "2",
+					"k1": "3",
+					"k2": "0",
+					"k3": "1",
+					"sg": "1",
+					"ux": "2",
+					"uy": "-3",
+					"vx": "0",
+					"vy": "0",
+					"ax0": "1",
+					"ax1": "-1",
+					"ax2": "1",
+					"ax3": "-1",
+					"ay0": "-1",
+					"ay1": "1",
+					"ay2": "1",
+					"ay3": "-1",
+					"bx0": "0",
+					"bx1": "0",
+					"bx2": "0",
+					"bx3": "0",
+					"by0": "0",
+					"by1": "0",
+					"by2": "0",
+					"by3": "0",
+					"d0x": "2",
+					"d0y": "3",
+					"d1x": "-2",
+					"d1y": "-3",
+					"d2x": "2",
+					"d2y": "-3",
+					"d3x": "-2",
+					"d3y": "3"
+				},
+				"description": "Erreur : l'opposé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"p": "2",
+					"k0": "2",
+					"k1": "3",
+					"k2": "0",
+					"k3": "1",
+					"sg": "1",
+					"ux": "2",
+					"uy": "-3",
+					"vx": "0",
+					"vy": "0",
+					"ax0": "1",
+					"ax1": "-1",
+					"ax2": "1",
+					"ax3": "-1",
+					"ay0": "-1",
+					"ay1": "1",
+					"ay2": "1",
+					"ay3": "-1",
+					"bx0": "0",
+					"bx1": "0",
+					"bx2": "0",
+					"bx3": "0",
+					"by0": "0",
+					"by1": "0",
+					"by2": "0",
+					"by3": "0",
+					"d0x": "2",
+					"d0y": "3",
+					"d1x": "-2",
+					"d1y": "-3",
+					"d2x": "2",
+					"d2y": "-3",
+					"d3x": "-2",
+					"d3y": "3"
+				},
+				"description": "Erreur : même longueur, autre direction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"p": "1",
+					"k0": "3",
+					"k1": "0",
+					"k2": "1",
+					"k3": "2",
+					"sg": "0",
+					"ux": "-3",
+					"uy": "1",
+					"vx": "0",
+					"vy": "0",
+					"ax0": "-1",
+					"ax1": "1",
+					"ax2": "-1",
+					"ax3": "1",
+					"ay0": "1",
+					"ay1": "1",
+					"ay2": "-1",
+					"ay3": "-1",
+					"bx0": "0",
+					"bx1": "0",
+					"bx2": "0",
+					"bx3": "0",
+					"by0": "0",
+					"by1": "0",
+					"by2": "0",
+					"by3": "0",
+					"d0x": "3",
+					"d0y": "1",
+					"d1x": "-3",
+					"d1y": "1",
+					"d2x": "3",
+					"d2y": "-1",
+					"d3x": "-3",
+					"d3y": "-1"
+				},
+				"description": "Opposé : bonne case",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"p": "1",
+					"k0": "3",
+					"k1": "0",
+					"k2": "1",
+					"k3": "2",
+					"sg": "0",
+					"ux": "-3",
+					"uy": "1",
+					"vx": "0",
+					"vy": "0",
+					"ax0": "-1",
+					"ax1": "1",
+					"ax2": "-1",
+					"ax3": "1",
+					"ay0": "1",
+					"ay1": "1",
+					"ay2": "-1",
+					"ay3": "-1",
+					"bx0": "0",
+					"bx1": "0",
+					"bx2": "0",
+					"bx3": "0",
+					"by0": "0",
+					"by1": "0",
+					"by2": "0",
+					"by3": "0",
+					"d0x": "3",
+					"d0y": "1",
+					"d1x": "-3",
+					"d1y": "1",
+					"d2x": "3",
+					"d2y": "-1",
+					"d3x": "-3",
+					"d3y": "-1"
+				},
+				"description": "Erreur : le vecteur égal",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"q": "0"
+				},
+				"description": "AB = DC",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"q": "0"
+				},
+				"description": "Erreur : CD (lettres inversées)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"q": "3"
+				},
+				"description": "CB = DA",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Vecteur nul : A et B confondus",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : on ne peut rien dire",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	}
+]

@@ -29,7 +29,9 @@
  * @module ubumark/parser/partage-parser
  */
 
+import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
+import { isMaskedValue } from '../utils/masked-value';
 import {
 	PARTAGE_GRID,
 	PARTAGE_KEYS,
@@ -96,9 +98,6 @@ export function findPartageBlocks(lines: string[]): PartageBlockRange[] {
 	return blocks;
 }
 
-/** Ligne vue sans retrait ni marque de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /**
  * Les figures à colorier (`colorier:`) d'un énoncé, délimitées comme le parseur :
  * corps sans clôtures, fermeture, et `nested` pour un bloc en retrait ou cité
@@ -111,7 +110,7 @@ export function findPartagesToColorier(markdown: string): {
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
-	const plain = lines.map(unquoted);
+	const plain = lines.map(unnestedLine);
 	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
 	let i = 0;
 	while (i < plain.length) {
@@ -362,7 +361,8 @@ export function parsePartageContent(source: string): PartageNode {
 		try {
 			if (key === 'forme') shape = parseShape(value);
 			else if (key === 'colorier') {
-				fraction = parseFraction(value);
+				// Énoncé d'une évaluation notée : fraction de remplacement (`masked-value.ts`)
+				fraction = isMaskedValue(value) ? { num: 1, den: 1 } : parseFraction(value);
 				colorierLine = lineNo;
 			} else if (key === 'unites') {
 				unitsFailed = true;

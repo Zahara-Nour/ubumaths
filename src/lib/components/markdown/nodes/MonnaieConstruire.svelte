@@ -11,7 +11,7 @@
 	- Coupures rangées d'office (Q2) : la scène de la monnaie, en `rangé`.
 	- La somme n'est JAMAIS affichée pendant la construction (Q3), ni dans un nom
 	  accessible (la valeur de chaque coupure, elle, est écrite : l'enfant la lit).
-	- Plafonds du bloc : 100 € et 30 objets ; au-delà, le bouton se grise.
+	- Plafonds du bloc : 1 000 € et 30 objets ; au-delà, le bouton se grise.
 	- Dans une question (`answer`) : la somme posée est la réponse de la case
 	  ('' plan vide, Q6), jugée par le juge ordinaire. Faux : la construction de
 	  l'élève, sa somme et une construction juste à côté (Q8).
@@ -40,6 +40,7 @@
 	} from '$lib/ubumark/utils/monnaie-construire';
 	import { scenePointOf } from './scene-marks.svelte';
 	import MonnaieObjets from './MonnaieObjets.svelte';
+	import { amountWords, denominationName, toCents } from '$lib/ubumark/utils/monnaie-valeurs';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
@@ -116,7 +117,7 @@
 
 	/** « un billet de 10 € », « une pièce de 2 € » */
 	function nameOf(item: MonnaieItem): string {
-		return item.kind === 'billet' ? `un billet de ${item.value} €` : `une pièce de ${item.value} €`;
+		return denominationName(item.value);
 	}
 
 	/** Combien de coupures de cette valeur sont posées */
@@ -212,7 +213,7 @@
 
 	{#if answer?.isCorrect === false}
 		<p class="text-sm">
-			{value === 0 ? 'Tu n’as rien posé.' : `Tu as posé ${value} €.`}
+			{value === 0 ? 'Tu n’as rien posé.' : `Tu as posé ${amountWords(toCents(value))}.`}
 		</p>
 		{#if solution !== null}
 			<div class="construire-correction flex flex-col items-center gap-1">

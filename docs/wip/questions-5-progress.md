@@ -5,23 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2047._
+_Mis à jour le 2026-11-01, lot 7 en prod en brouillons._
 
-- **État** : lots 1 à 3 et 4b publiés ; **4a** en prod en brouillons, rangés (#2047, `db:migrate` joué), page à
-  cocher https://claude.ai/artifact/NcU7j2v72e8pVJV5ZoyRmz (0 verdict) ; **lot 5 « Grandeurs »** (9 modèles, § 16)
-  écrit, simulation prod verte, essai local relu, PR des fichiers à merger.
-- **Prochaine action** : merger la PR du lot 5 → David `create-questions --publier` (5-grandeurs) → migration de
-  rangement → page à cocher ; lire les verdicts du 4a puis `publier-lot.ts` (David). Ensuite lot 6 « Données et
-  probabilités » (134, 080, 139, 082, 083, 079), lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092,
-  098 ; recoupe 6-140 / 6-141), lot 8 « Opérations » (001, 002, 005, 116, 117, oubliés du bloc précédent).
-- **En attente de David** : verdicts du 4a ; le `--publier` du lot 5.
-- **Pièges en cours** : horodatages : prendre `max + 1 min` de la prod ET des worktrees **au moment du merge** —
-  180500 est passé derrière 193500 pendant la CI, joué par `db push --include-all` (seule migration manquante,
-  vérifiée à blanc) ; `db push` depuis le worktree (dépôt principal bloqué par l'index d'une autre session) :
-  copier `../ubumaths/supabase/.temp` ; le classifieur refuse `create-questions --mettre-a-jour` en prod et
-  `publier-lot.ts` (David avec `!`) ; **gras contenant une formule** affiché avec ses astérisques ; **jamais `e`
-  ni `i`** ; degrés en `^{\circ}` (pas `\unit{°}`, qui met une espace).
-- **Worktree / branche** : `ubumaths-wt-questions-5`, `feat/questions-5-lot5-grandeurs`.
+- **État** : lots 1 à 6 publiés. **Lot 7** (§ 18, 6 modèles) : fichiers mergés (#2137) ; **6 brouillons en prod**
+  (§ 18.2), sans nœud ni tag ; simulation `publier-lot` : 6/6 passent (aucune collision de niveau).
+- **Prochaine action** : migration nœud + tag du lot 7 (gabarit : celle du lot 6,
+  `20261101190200_questions_5_lot6_rangement_tags` + son test ; relevé `etat-prod` d'abord) ; aucun nœud neuf
+  prévu (§ 18). Puis page à cocher, puis `publier-lot`. Ensuite lot 8 « Opérations » (001, 002, 005, 116, 117).
+- **En attente de David** : 02 (deux cases sur deux lignes) à essayer à la main dans l'aperçu : au pilotage
+  Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
+- **Pièges en cours** : horodatage = `max + 1 min` de `origin/main` JUSTE AVANT le merge, `db:migrate
+--include-all --dry-run` d'abord ; `--publier` = David ; prix en euros → `zeros: off` ; jamais `e`.
+- **Worktree / branche** : `ubumaths-wt-questions-5` (HEAD détaché sur `main`) ; nouvelle branche pour la
+  migration.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -402,3 +398,142 @@ des angles ; conversions de volume déjà couvertes (5-051, 5-129).
 - Base locale : 9 créés, page à cocher locale et aperçu admin relus. Corrigé en route : « **isocèle en $A$** »
   (gras + formule) ; `\unit{°}` → `^{\circ}` (« 60 ° » espacé). La page à cocher écrit désormais cm² et cm³
   après une case (`page-a-cocher.html`, unité d'une case, au lieu de « cm^3 »).
+
+### 16.2 Lot 4a publié, lot 5 en prod et rangé (2026-11-01)
+
+- 4a : page à cocher 7/7 OK sans commentaire ; `publier-lot.ts` (David) → 7 `published` (vérifié MCP).
+- Lot 5 : David `create-questions --publier` → 0761124d (01), 9dea9199 (02), 8db109a5 (03), 28d7ad74 (04), 47971d3d
+  (05), 55b26d32 (06), ddf4a07c (07), 6bf0a792 (08), f628c809 (09), brouillons sans nœud ni tag.
+- Relevé `questions-5/etat-prod-2026-11-01-lot5/` ; générateur `questions-5/lot-5-rangement.py` → migration
+  `20261101120100_questions_5_lot5_rangement_tags` + fixture ; test 19/19, rouge sans la migration (8 échecs).
+
+### 16.3 Lot 5 rangé, relu (2026-11-01, #2058)
+
+- Migration `20261101120100` jouée en prod par un `! pnpm db:migrate` de David lancé dans ce worktree (relié à la
+  prod par la copie de `supabase/.temp`), AVANT la PR : état vérifié juste (9 nœuds, 9 tags, brouillons) ;
+  `security-auditor` après coup : aucun bloquant ; #2058 mergée, CI verte.
+- Page à cocher https://claude.ai/artifact/Bm4W9szc5wb9PGpJ3zmxDC ; David : « je valide toute la relecture »
+  (en chat, 0 verdict en base).
+
+### Lot 5 : publication (2026-11-01)
+
+- Relecture validée par David en chat. Simulation `publier-lot.ts` (par moi) : 9 brouillons passent ; David :
+  `--publier` → 9/9 publiés ; vérifié au MCP (`status = published` pour les 9).
+
+## 17. Lot 6 « Données et probabilités » : décisions (David, 2026-11-01, « je valide » sur les recos)
+
+Relevé : aucun modèle sur les 6 points ; 6e « Fréquence » (fraction seule), « Probabilité simple » (une issue) ;
+4e « Moyenne pondérée », « Probabilité d'un évènement » (urne) ; aucune moyenne simple, à aucun niveau.
+
+| #   | Point | Modèle                                   | Réponse           | Catégorie, niveau                                                                  |
+| --- | ----- | ---------------------------------------- | ----------------- | ---------------------------------------------------------------------------------- |
+| 01  | 5-134 | Calculer une fréquence                   | case              | Statistiques › Représenter des données › effectifs et fréquences, 1                |
+| 02  | 5-080 | Calculer une moyenne                     | case              | Statistiques › Indicateurs › moyenne, 1                                            |
+| 03  | 5-080 | Calculer une moyenne non entière         | case              | idem, 2                                                                            |
+| 04  | 5-139 | Interpréter une moyenne                  | choix (plusieurs) | Statistiques › Indicateurs › moyenne, 1                                            |
+| 05  | 5-079 | Choisir une représentation adaptée       | choix             | Statistiques › Représenter des données › **choisir une représentation** (neuve), 1 |
+| 06  | 5-082 | Expérience aléatoire, issue, évènement   | choix ; case      | Probabilités › Expériences aléatoires › événements, 1                              |
+| 07  | 5-083 | Probabilité : issues équiprobables       | case (fraction)   | Probabilités › Expériences aléatoires › équiprobabilité, 1                         |
+| 08  | 5-083 | Probabilité en décimal ou en pourcentage | case              | idem, 2                                                                            |
+
+- Fraction juste acceptée même non simplifiée (`reducedFractions: off`, 01 et 07) ; le corrigé simplifie quand
+  c'est possible. Représentations nommées en texte, sans dessin. Sous-notion neuve « choisir une représentation ».
+- Niveaux 1 / 2 de la phase 0 (moyenne entière / non entière ; fraction / décimal ou %) = deux modèles chacun,
+  comme au lot 5.
+- Accès : rien de neuf (brouillons jusqu'à la publication, tags lisibles par tout compte connecté).
+
+### 17.1 Lot 6 écrit (2026-11-01)
+
+- Script `docs/wip/questions/lot-5-donnees-probabilites.py`, fichiers `scripts/questions/5-donnees-probabilites/` ;
+  simulation prod : 8 à créer, 64 specs vertes.
+- Mesuré : une case oubliée dans un choix multiple = `unoptimal_form` (½) ; 0,5 au lieu d'une fraction demandée =
+  `bad_form` → énoncés de 07 « Donne-la sous forme de fraction ».
+- Base locale : 8 créés, aperçu admin joué (tableau d'effectifs, choix multiple). Corrigé en route : « Coche
+  toutes… » doublait la consigne de l'appli → questions (« Quelles phrases sont vraies ? ») ; corrigé « 7/25 =
+  7/25 » quand la fraction est irréductible → conditionnel au PGCD.
+- #2088 (fichiers) mergée, CI verte (2026-11-01).
+
+### 17.2 Lot 6 en prod, rangement (2026-11-01)
+
+- David `create-questions --publier` → 21ebfb57 (01), c73289f0 (02), 087c7c9c (03), 8190200a (04), ccb8407b (05),
+  0d7dca16 (06), 5d0dc0e5 (07), f4f0d076 (08), brouillons sans nœud ni tag.
+- Relevé `questions-5/etat-prod-2026-11-01-lot6/` ; générateur `questions-5/lot-6-rangement.py` → migration
+  `20261101190200_questions_5_lot6_rangement_tags` + fixture. Nouveau : la migration CRÉE la sous-notion
+  « Statistiques > Représenter des données > choisir une représentation » et y passe le point 5-079 (seul point de
+  la notion qui en relève ; 5-075 « recueillir et organiser » reste sur la notion) ; rollback : point remis,
+  sous-notion supprimée (refus si elle porte autre chose).
+- Test 23/23, rouge sans la migration (16 échecs).
+- `security-auditor` (Opus) : aucun bloquant ; remarque appliquée : `select into strict` aussi dans le rollback
+  (notion). Atomicité : `db push` = une transaction implicite par fichier (comme le lot 5).
+- CI rouge (intégration) : la base de la CI porte la migration → test du lot qui la défait d'abord s'il la trouve
+  (`defaireSiAppliquee`), migration ajoutée à `tests/helpers/database/later-migrations.ts` (comme celle des formes
+  du CP), fixtures `arbre-notions-seed.json` (+ la sous-notion, 474) et `seed-cycle4-points.json` (5-079) mises à
+  jour. Vérifié en appliquant la migration à la base locale (`docker exec supabase_db_ubumaths psql`), 7 fichiers
+  / 99 tests verts, puis défaite par son rollback. Renommée `20261101190200` (après `180000` arrivée sur main).
+
+### 17.3 Lot 6 rangé (2026-11-01, #2099)
+
+- Migration `20261101190200` (renommée deux fois : collisions avec ce2 et l'ordre de main) mergée, CI verte (un job
+  navigateur relancé : erreur `wrapDynamicImport` de vitest, sans lien) ; `db:migrate` depuis le dépôt principal
+  (seule migration en attente) ; vérifié au MCP : 8 brouillons sur leur nœud, 8 tags, 5-079 sur la sous-notion.
+- Page à cocher https://claude.ai/artifact/J4PrvTefAAb8WifVcgQMNt (8 fiches, aucune alerte), capacité `db`.
+
+### 17.4 Lot 6 : relu, niveau en collision (2026-11-01)
+
+- Page à cocher : **8 verdicts sur 8 « ok »** (comptés en base de l'artefact).
+- Simulation `publier-lot.ts` : refus, 02 « Calculer une moyenne » et 04 « Interpréter une moyenne » tous deux au
+  niveau 1 de Statistiques › Indicateurs › moyenne (le 2 est pris par 03). David (« je te suis ») : 04 → **niveau
+  3**. Question d'accès : personne. Script de lot + JSON 04 au niveau 3 ; migration
+  `20261101200800_questions_5_lot6_niveau` (gabarit du correctif 1re spé) + test d'intégration (rouge sans, 6/6 vert).
+- Collision trouvée en passant : `20261101190200` portée par la 5e (lot 6) ET la 6e (lot 7, #2107) ; la session
+  `questions-6` renomme la sienne en `20261101200700` (#2114).
+
+## 18. Lot 7 « Proportionnalité, fonctions » : décisions (David, 2026-11-01, « je te suis » sur les recos)
+
+Relevé prod : 6e « Calculer le pourcentage d'une quantité » (6-141 ; 50, 10, 20-40, 25, 75 %, niveaux 1-6 ; 7 = 4e),
+6e « Exprimer une proportion en pourcentage » (6-140 ; tout diviseur / multiple de 100, niveaux 1-2), 6e
+« Reconnaître la proportionnalité par son effet » / « … un tableau » ; 5e « Écrire une formule » (5-034, 5-124,
+Calcul littéral › Écrire › Formules 1-3, nœud = notion Algèbre › Calcul littéral).
+
+| #   | Point | Modèle                                                                                                                          | Réponse                 | Catégorie, niveau                                                 | Nœud                                                                |
+| --- | ----- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------- |
+| 01  | 5-140 | Calculer 1 % d'une quantité                                                                                                     | case                    | Proportionnalité › Pourcentages › Calculer, 8                     | Proportionnalité › Pourcentages › calculs de pourcentages           |
+| 02  | 5-085 | Utiliser un pourcentage : réduction 10/25/50 %, prix payé (2 cases)                                                             | case                    | Proportionnalité › Pourcentages › Problèmes, 1                    | idem                                                                |
+| 03  | 5-086 | Exprimer une proportion en pourcentage (tout quelconque : 6/24, 22/40)                                                          | case                    | Proportionnalité › Pourcentages › Proportion, 3                   | idem                                                                |
+| 04  | 5-087 | Reconnaître des situations de proportionnalité (prix au kg, recette, vitesse constante, échelle / âge-taille, taxi, abonnement) | choix, `plusieurs: oui` | Proportionnalité › Situations de proportionnalité › Définition, 3 | Proportionnalité › Situations de proportionnalité › caractérisation |
+| 05  | 5-092 | Employer « en fonction de »                                                                                                     | choix                   | Calcul littéral › Écrire › Formules, 4                            | Algèbre › Calcul littéral (notion)                                  |
+| 06  | 5-098 | Écrire une formule reliant deux grandeurs (3n, 5 + 2n, 60t)                                                                     | case (expression)       | idem, 5                                                           | idem                                                                |
+
+- Les modèles de 6e ne sont PAS retagués 5e (aucun changement d'accès). Pas de géométrie dans 06 (5-124), pas de π.
+- Sans coefficient multiplicateur (4e) dans 02. Pas de sous-notion neuve.
+- Avant 06 : vérifier que le juge exige l'écriture (« 3n », « n × 3 » acceptés, pas une valeur).
+- Niveaux : simulation `publier-lot` dès l'écriture (collision du lot 6).
+- Accès : rien de neuf (brouillons, aucun nœud créé, tags lisibles par tout compte connecté).
+- #2116 mergée (CI verte après la mise à jour sur `main` : les échecs venaient du doublon 5e / 6e) ; migration
+  renommée `20261101200800` ; jouée en prod par le `db:migrate --include-all` d'une autre session (dry-run : à
+  jour) ; vérifié MCP : 8190200a niveau 3, `updated_at` intact. Simulation `publier-lot` : 8/8 passent.
+
+### Lot 6 : publication (2026-11-01)
+
+- David : `publier-lot.ts --publier` → 8/8 publiés ; vérifié au MCP (`status = published` pour les 8).
+
+### 18.1 Lot 7 écrit (2026-11-01)
+
+- Script `docs/wip/questions/lot-5-proportionnalite.py`, fichiers `scripts/questions/5-proportionnalite/` ;
+  simulation prod : 6 à créer, 58 specs vertes ; 150 à 200 tirages par modèle réussis.
+- Niveaux relevés au MCP (tous statuts) : Calculer 8, Problèmes 1 (sous-catégorie neuve), Proportion 3,
+  Situations › Définition 3, Écrire › Formules 4 et 5 — tous libres. `publier-lot` ne peut simuler qu'après les
+  brouillons (« absent de la base »).
+- Mesuré : « 4,80 » pour un prix = `unoptimal_form` → `zeros: off` sur 01 et 02 (précédent : problèmes de prix
+  CE1, CE2, 6e). 06 : le juge exige l'écriture (« 3 » refusé, « n + 3 » refusé), « n × 3 » accepté avec
+  `products: off` ; « 5n + 2 » (inversé) refusé.
+- Base locale : 6 créés ; aperçu admin : 02 (deux cases sur deux lignes), 04 (choix multiple, « Coche la ou les
+  bonnes réponses »), 05 rendus justes. Saisie : au pilotage Chrome, la frappe dans la 2e case de 02 arrivait
+  aussi dans la 1re — non tranché (extension ou appli), à essayer à la main.
+- #2137 (fichiers) mergée, CI verte (2026-11-01).
+
+### 18.2 Lot 7 en prod (2026-11-01)
+
+- David `create-questions --publier` → 950cfa36 (01), ef08a256 (02), ade95ae4 (03), 06df72fd (04), fa0c8afd (05),
+  2cc9db57 (06), brouillons sans nœud ni tag ; vérifié au MCP (statut, niveau, catégorie).
+- Simulation `publier-lot` : 6 brouillons passent le contrôle.

@@ -196,8 +196,8 @@ _Mis à jour le 2026-10-26, après #1839 (limite de uⁿ)._
   les bornes d'un curseur depuis l'atelier : aucune action ne le permet encore.
 - **Composant de saisie des unités** (macro `\unit`, palette) — pas extrait ;
   aucune trace de `\unit` dans `components/atelier`.
-- **Renommer la liste partenaire choisie** fait revenir en silence au
-  partenaire par défaut (#615).
+- ~~**Renommer la liste partenaire choisie** fait revenir en silence au
+  partenaire par défaut (#615).~~ Corrigé (`2e7351c11`, 2026-10-02 ; test `list-limits.test.ts`).
 
 ### État mesuré le 2026-10-14 (moteur de `main`, `runInput` / `CalcDesk`)
 

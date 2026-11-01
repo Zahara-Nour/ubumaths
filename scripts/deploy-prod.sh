@@ -3,7 +3,8 @@
 #
 # Vercel ne déploie que la branche `production`. Ce script :
 #   1. choisit le dernier commit de main vérifié par la CI (« CI Summary » vert),
-#      en enjambant les commits de doc qui le suivent ;
+#      en enjambant les commits de doc qui le suivent ; CI en cours → l'attend,
+#      sous le verrou « deploy » (au plus DEPLOY_PROD_ATTENTE_MAX s) ;
 #   2. crée la version (`pnpm release` : numéro, CHANGELOG, tag) et la pousse
 #      sur main, sauf si ce commit est déjà une version ;
 #   3. attend que la CI de ce commit de version soit verte ;
@@ -86,25 +87,52 @@ arreter() {
 [ "$(git branch --show-current)" = "main" ] || arreter "⛔ À lancer sur main (branche actuelle : $(git branch --show-current))."
 [ -z "$(git status --porcelain --untracked-files=no)" ] || arreter "⛔ main a des modifications non commitées."
 git fetch -q origin main
-[ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] ||
-	arreter "⛔ main local diffère de origin/main." "git pull --ff-only, puis relancer."
+if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+	# Nommer les commits en cause : sous le verrou, une autre session ne peut plus pousser le sien.
+	git log --format='   non poussé : %h %s' origin/main..HEAD
+	git log --format='   à tirer    : %h %s' HEAD..origin/main
+	arreter "⛔ main local diffère de origin/main." "git pull --ff-only (ou laisser l'autre session pousser), puis relancer."
+fi
 
 # --- 1. le dernier commit vérifié -------------------------------------------
-cible=""
-for c in $(git rev-list --first-parent -n "$PROFONDEUR" origin/main); do
-	etat="$(etat_ci "$c")"
-	case "$etat" in
-	success)
-		cible="$c"
-		break
-		;;
-	absent)
-		sans_ci "$c" || arreter "⛔ Commit de code sans « $CHECK » : $(decrire "$c")" "La CI ne l'a pas vérifié. Rien n'est créé."
-		echo "↷ enjambé (doc seule, sans CI) : $(decrire "$c")"
-		;;
-	pending) arreter "⏳ CI en cours sur $(decrire "$c")" "Relancer quand « $CHECK » sera vert. Rien n'est créé." ;;
-	*) arreter "⛔ « $CHECK » = $etat sur $(decrire "$c")" "Rien n'est créé." ;;
-	esac
+# CI en cours : sous le verrou, personne ne merge, la CI ne repart donc pas de
+# zéro ; on l'attend (au plus ATTENTE_MAX s) au lieu de rendre le verrou
+# (2026-11-01 : une heure de relances, chaque merge relançait la CI). `--essai`
+# ne tient pas le verrou : il n'attend pas.
+pointe="$(git rev-parse origin/main)"
+attendu_main=0
+while :; do
+	cible=""
+	en_cours=""
+	for c in $(git rev-list --first-parent -n "$PROFONDEUR" origin/main); do
+		etat="$(etat_ci "$c")"
+		case "$etat" in
+		success)
+			cible="$c"
+			break
+			;;
+		absent)
+			sans_ci "$c" || arreter "⛔ Commit de code sans « $CHECK » : $(decrire "$c")" "La CI ne l'a pas vérifié. Rien n'est créé."
+			[ "$attendu_main" -gt 0 ] || echo "↷ enjambé (doc seule, sans CI) : $(decrire "$c")"
+			;;
+		pending)
+			en_cours="$c"
+			break
+			;;
+		*) arreter "⛔ « $CHECK » = $etat sur $(decrire "$c")" "Rien n'est créé." ;;
+		esac
+	done
+	[ -z "$en_cours" ] && break
+	[ "$essai" = 0 ] && [ "$attendu_main" -lt "$ATTENTE_MAX" ] ||
+		arreter "⏳ CI en cours sur $(decrire "$en_cours")" "Relancer quand « $CHECK » sera vert. Rien n'est créé."
+	echo "⏳ CI en cours sur $(decrire "$en_cours") : attente sous le verrou… (${attendu_main} s)"
+	sleep "$PAUSE"
+	# Au moins 1 par tour : avec DEPLOY_PROD_PAUSE=0 (tests), l'attente reste bornée
+	attendu_main=$((attendu_main + (PAUSE > 0 ? PAUSE : 1)))
+	# Un humain peut encore pousser (le verrou ne retient que les sessions Claude)
+	git fetch -q origin main
+	[ "$(git rev-parse origin/main)" = "$pointe" ] ||
+		arreter "⛔ origin/main a bougé pendant l'attente." "git pull --ff-only, puis relancer. Rien n'est créé."
 done
 [ -n "$cible" ] || arreter "⛔ Aucun commit vérifié par la CI dans les $PROFONDEUR derniers de main."
 

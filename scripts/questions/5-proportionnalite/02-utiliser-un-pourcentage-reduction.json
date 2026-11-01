@@ -1,0 +1,193 @@
+{
+	"title": "Utiliser un pourcentage : réduction",
+	"description": "Calculer une réduction de 10 %, 25 % ou 50 % et le prix payé (25 % de 60 € = 15 € ; prix payé 45 €), sans coefficient multiplicateur",
+	"grades": ["5"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Problèmes",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un pantalon coûte ${{x}}~\\unit{€}$. Pendant les soldes, son prix baisse de $10~\\%$.\n\nMontant de la réduction : $?~\\unit{€}$\n\nPrix payé : $?~\\unit{€}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "20..90"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*x/100;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:x-10*x/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Réduction.** La réduction est le pourcentage du prix de départ ; le prix payé est le prix de départ moins la réduction.",
+					"Réduction : $10~\\%$ de ${{x}}$, c'est ${{x}} \\div 10 = \\textcolor{{{color:primary.0}}}{{{eval:10*x/100;d}}}~\\unit{€}$.",
+					"Prix payé : ${{x}} - {{eval:10*x/100;d}} = \\textcolor{{{color:primary.1}}}{{{eval:x-10*x/100;d}}}~\\unit{€}$."
+				]
+			},
+			"conditions": ["x%5==0"]
+		},
+		{
+			"statement": "Une paire de chaussures coûte ${{x}}~\\unit{€}$. Pendant les soldes, son prix baisse de $25~\\%$.\n\nMontant de la réduction : $?~\\unit{€}$\n\nPrix payé : $?~\\unit{€}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "40..120"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:25*x/100;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:x-25*x/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Réduction.** La réduction est le pourcentage du prix de départ ; le prix payé est le prix de départ moins la réduction.",
+					"Réduction : $25~\\%$, c'est le quart : ${{x}} \\div 4 = \\textcolor{{{color:primary.0}}}{{{eval:25*x/100;d}}}~\\unit{€}$.",
+					"Prix payé : ${{x}} - {{eval:25*x/100;d}} = \\textcolor{{{color:primary.1}}}{{{eval:x-25*x/100;d}}}~\\unit{€}$."
+				]
+			},
+			"conditions": ["x%4==0"]
+		},
+		{
+			"statement": "Un jeu vidéo coûte ${{x}}~\\unit{€}$. Pendant les soldes, son prix baisse de $50~\\%$.\n\nMontant de la réduction : $?~\\unit{€}$\n\nPrix payé : $?~\\unit{€}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "20..80"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:50*x/100;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:x-50*x/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Réduction.** La réduction est le pourcentage du prix de départ ; le prix payé est le prix de départ moins la réduction.",
+					"Réduction : $50~\\%$, c'est la moitié : ${{x}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{eval:50*x/100;d}}}~\\unit{€}$.",
+					"Prix payé : ${{x}} - {{eval:50*x/100;d}} = \\textcolor{{{color:primary.1}}}{{{eval:x-50*x/100;d}}}~\\unit{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "10 % de 45 € : 4,5 et 40,5",
+			"variationIndex": 0,
+			"variables": {
+				"x": "45"
+			},
+			"answers": ["4,5", "40,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : réduction de 10 €",
+			"variationIndex": 0,
+			"variables": {
+				"x": "45"
+			},
+			"answers": ["10", "35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : prix payé = la réduction",
+			"variationIndex": 0,
+			"variables": {
+				"x": "45"
+			},
+			"answers": ["4,5", "4,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "25 % de 60 € : 15 et 45",
+			"variationIndex": 1,
+			"variables": {
+				"x": "60"
+			},
+			"answers": ["15", "45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 25 € de réduction",
+			"variationIndex": 1,
+			"variables": {
+				"x": "60"
+			},
+			"answers": ["25", "35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : prix payé 75 (ajouté)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "60"
+			},
+			"answers": ["15", "75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "50 % de 35 € : 17,5 et 17,5",
+			"variationIndex": 2,
+			"variables": {
+				"x": "35"
+			},
+			"answers": ["17,5", "17,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 50 % = 50 €",
+			"variationIndex": 2,
+			"variables": {
+				"x": "35"
+			},
+			"answers": ["50", "35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10 % de 45 € : 4,50 et 40,50",
+			"variationIndex": 0,
+			"variables": {
+				"x": "45"
+			},
+			"answers": ["4,50", "40,50"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

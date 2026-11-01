@@ -217,11 +217,6 @@ Historique : [canal privé du chat](../archive/wip/realtime-chat-prive-progress.
   `postgres_changes` de `presenceManager` ne reçoit donc rien : le statut des amis n'est que celui
   lu au démarrage du suivi, et le bandeau « connecté » de la page amis reflète l'abonnement, pas
   la réception.
-- L'en-tête de `chatStore` (`src/lib/stores/chat.svelte.ts`) décrit encore l'ancien flux
-  (broadcast avant l'insertion, affichage immédiat puis remplacement) ; le champ `is_broadcast`
-  de `Message` n'est plus posé par personne.
-- L'en-tête de `src/lib/stores/multiplayer.svelte.ts` renvoie vers une ancienne doc (`refs/realtime/stores.md`)
-  qui n'existe plus : la doc est celle-ci.
 - Les canaux `match:<id>`, présence, notifications et succès restent publics : ils ne portent que
   des `postgres_changes`, filtrés par la RLS des tables.
 - Un canal privé déjà joint le reste jusqu'à la reconnexion ou au rafraîchissement du JWT (~1 h).

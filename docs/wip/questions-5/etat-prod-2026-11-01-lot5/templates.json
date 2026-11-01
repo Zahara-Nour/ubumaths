@@ -1,0 +1,1549 @@
+[
+	{
+		"id": "0761124d-6ca7-47bd-bd16-eaa31d47025f",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 60,
+		"theme": "Grandeurs",
+		"domain": "Volumes",
+		"subdomain": "Volume d'un pavé droit",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a^3}}"
+					}
+				],
+				"statement": "Quel est le volume d'un **cube** d'arête ${{a}}~\\unit{cm}$ ?\n\n$?~\\unit{cm^3}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..12"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Volume d'un pavé droit.** $\\text{Volume} = \\text{longueur} \\times \\text{largeur} \\times \\text{hauteur}$. Pour un cube d'arête $a$ : $\\text{Volume} = a \\times a \\times a = a^3$.",
+						"${{a}}~\\unit{cm} \\times {{a}}~\\unit{cm} \\times {{a}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:a^3}}~\\unit{cm^3}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:L*l*h}}"
+					}
+				],
+				"statement": "Quel est le volume d'un **pavé droit** de longueur ${{L}}~\\unit{cm}$, de largeur ${{l}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$ ?\n\n$?~\\unit{cm^3}$",
+				"variables": [
+					{
+						"name": "L",
+						"expression": "4..15"
+					},
+					{
+						"name": "l",
+						"expression": "2..10"
+					},
+					{
+						"name": "h",
+						"expression": "2..12"
+					}
+				],
+				"conditions": ["l<L"],
+				"correction": {
+					"steps": [
+						"**Volume d'un pavé droit.** $\\text{Volume} = \\text{longueur} \\times \\text{largeur} \\times \\text{hauteur}$. Pour un cube d'arête $a$ : $\\text{Volume} = a \\times a \\times a = a^3$.",
+						"${{L}}~\\unit{cm} \\times {{l}}~\\unit{cm} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:L*l*h}}~\\unit{cm^3}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:L*l*h}}"
+					}
+				],
+				"statement": "Une piscine a la forme d'un **pavé droit** : ${{L}}~\\unit{m}$ de long, ${{l}}~\\unit{m}$ de large et ${{h}}~\\unit{m}$ de profondeur.\n\nQuel est son volume ?\n\n$?~\\unit{m^3}$",
+				"variables": [
+					{
+						"name": "L",
+						"expression": "6..25"
+					},
+					{
+						"name": "l",
+						"expression": "3..12"
+					},
+					{
+						"name": "h",
+						"expression": "1..3"
+					}
+				],
+				"conditions": ["l<L"],
+				"correction": {
+					"steps": [
+						"**Volume d'un pavé droit.** $\\text{Volume} = \\text{longueur} \\times \\text{largeur} \\times \\text{hauteur}$. Pour un cube d'arête $a$ : $\\text{Volume} = a \\times a \\times a = a^3$.",
+						"${{L}}~\\unit{m} \\times {{l}}~\\unit{m} \\times {{h}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{eval:L*l*h}}~\\unit{m^3}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Volume d'un cube ou d'un pavé droit",
+		"description": "Calculer le volume d'un cube (arête 4 cm : 64 cm³) ou d'un pavé droit (5 cm, 3 cm, 2 cm : 30 cm³)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["64"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "Cube d'arête 4 : 64",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "Erreur : 12 (4 × 3)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "Erreur : 16 (une face)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"L": "5",
+					"h": "2",
+					"l": "3"
+				},
+				"description": "Pavé 5 × 3 × 2 : 30",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "5",
+					"h": "2",
+					"l": "3"
+				},
+				"description": "Erreur : 10 (5 + 3 + 2)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "5",
+					"h": "2",
+					"l": "3"
+				},
+				"description": "Erreur : 15 (aire de la base)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"L": "10",
+					"h": "2",
+					"l": "4"
+				},
+				"description": "Piscine 10 × 4 × 2 : 80",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "10",
+					"h": "2",
+					"l": "4"
+				},
+				"description": "Erreur : 16",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "28d7ad74-09ae-4e39-a4da-1a2ab2261af6",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 90,
+		"theme": "Grandeurs",
+		"domain": "Aires",
+		"subdomain": "Aire d'un disque",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:314*r^2/100;d}}"
+					}
+				],
+				"statement": "Calcule l'aire d'un disque de rayon ${{r}}~\\unit{cm}$, en prenant $\\pi \\approx 3{,}14$.\n\n$?~\\unit{cm^2}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "1|2|3|5|10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Aire d'un disque.** $\\text{Aire} = \\pi \\times \\text{rayon} \\times \\text{rayon} = \\pi r^2$. Le rayon est la moitié du diamètre. On prend $\\pi \\approx 3{,}14$.",
+						"$3{,}14 \\times {{r}} \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:314*r^2/100;d}}~\\unit{cm^2}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:314*r^2/100;d}}"
+					}
+				],
+				"statement": "Calcule l'aire d'un disque de diamètre ${{d}}~\\unit{cm}$, en prenant $\\pi \\approx 3{,}14$.\n\n$?~\\unit{cm^2}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "1|2|3|5|10"
+					},
+					{
+						"name": "d",
+						"expression": "eval:2*r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Aire d'un disque.** $\\text{Aire} = \\pi \\times \\text{rayon} \\times \\text{rayon} = \\pi r^2$. Le rayon est la moitié du diamètre. On prend $\\pi \\approx 3{,}14$.",
+						"Le rayon est ${{d}}~\\unit{cm} \\div 2 = {{r}}~\\unit{cm}$.",
+						"$3{,}14 \\times {{r}} \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:314*r^2/100;d}}~\\unit{cm^2}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Aire d'un disque avec π ≈ 3,14",
+		"description": "Calculer l'aire d'un disque en prenant π ≈ 3,14 (rayon 5 cm : 78,5 cm²), à partir du rayon ou du diamètre",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["78,5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "5"
+				},
+				"description": "Rayon 5 : 78,5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["31,4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "5"
+				},
+				"description": "Erreur : 31,4 (périmètre)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["15,7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "5"
+				},
+				"description": "Erreur : 15,7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["28,26"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "6",
+					"r": "3"
+				},
+				"description": "Diamètre 6 : 28,26",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["113,04"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "6",
+					"r": "3"
+				},
+				"description": "Erreur : 113,04 (diamètre au carré)",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "47971d3d-cc14-4880-8b1b-09f80f703d2a",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"products": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["5"],
+		"delay": 90,
+		"theme": "Grandeurs",
+		"domain": "Volumes",
+		"subdomain": "Volume d'un cylindre",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:r^2*h}}\\pi"
+					}
+				],
+				"statement": "Donne la valeur **exacte** du volume d'un cylindre de rayon ${{r}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "1..6"
+					},
+					{
+						"name": "h",
+						"expression": "2..10"
+					}
+				],
+				"conditions": ["r!=h", "r>=2 || h>=3"],
+				"correction": {
+					"steps": [
+						"**Volume d'un cylindre.** $\\text{Volume} = \\text{aire de la base} \\times \\text{hauteur} = \\pi r^2 \\times h$.",
+						"Aire de la base : $\\pi \\times {{r}} \\times {{r}} = {{eval:r^2}}\\pi~\\unit{cm^2}$.",
+						"Volume : ${{eval:r^2}}\\pi~\\unit{cm^2} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:r^2*h}}\\pi~\\unit{cm^3}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:r^2*h}}\\pi"
+					}
+				],
+				"statement": "Donne la valeur **exacte** du volume d'un cylindre de diamètre ${{d}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "2..6"
+					},
+					{
+						"name": "d",
+						"expression": "eval:2*r"
+					},
+					{
+						"name": "h",
+						"expression": "2..10"
+					}
+				],
+				"conditions": ["d!=h"],
+				"correction": {
+					"steps": [
+						"**Volume d'un cylindre.** $\\text{Volume} = \\text{aire de la base} \\times \\text{hauteur} = \\pi r^2 \\times h$.",
+						"Le rayon est ${{d}}~\\unit{cm} \\div 2 = {{r}}~\\unit{cm}$.",
+						"Aire de la base : $\\pi \\times {{r}} \\times {{r}} = {{eval:r^2}}\\pi~\\unit{cm^2}$.",
+						"Volume : ${{eval:r^2}}\\pi~\\unit{cm^2} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:r^2*h}}\\pi~\\unit{cm^3}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Volume d'un cylindre : valeur exacte",
+		"description": "Donner le volume exact d'un cylindre en fonction de π (rayon 3 cm, hauteur 5 cm : 45π cm³), à partir du rayon ou du diamètre",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["45\\pi"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "5",
+					"r": "3"
+				},
+				"description": "Rayon 3, hauteur 5 : 45π",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["30\\pi"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "5",
+					"r": "3"
+				},
+				"description": "Erreur : 30π (2 × 3 × 5)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\pi"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "5",
+					"r": "3"
+				},
+				"description": "Erreur : 9π (aire de la base)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["45\\times\\pi"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "5",
+					"r": "3"
+				},
+				"description": "45 × π accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\pi\\times5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"h": "5",
+					"r": "3"
+				},
+				"description": "9π × 5 : calcul pas fini",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["28\\pi"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "4",
+					"h": "7",
+					"r": "2"
+				},
+				"description": "Diamètre 4, hauteur 7 : 28π",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["112\\pi"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "4",
+					"h": "7",
+					"r": "2"
+				},
+				"description": "Erreur : 112π (diamètre au carré)",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "55b26d32-b3dd-40cc-b294-a63938cc5325",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 120,
+		"theme": "Grandeurs",
+		"domain": "Volumes",
+		"subdomain": "Volume d'un cylindre",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:314*r^2*h/100;d}}"
+					}
+				],
+				"statement": "Calcule le volume d'un cylindre de rayon ${{r}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$, en prenant $\\pi \\approx 3{,}14$.\n\n$?~\\unit{cm^3}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "1|2|3|5|10"
+					},
+					{
+						"name": "h",
+						"expression": "2..10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Volume d'un cylindre.** $\\text{Volume} = \\text{aire de la base} \\times \\text{hauteur} = \\pi r^2 \\times h$. On prend $\\pi \\approx 3{,}14$.",
+						"Aire de la base : $3{,}14 \\times {{r}} \\times {{r}} = {{eval:314*r^2/100;d}}~\\unit{cm^2}$.",
+						"Volume : ${{eval:314*r^2/100;d}}~\\unit{cm^2} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:314*r^2*h/100;d}}~\\unit{cm^3}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Volume d'un cylindre avec π ≈ 3,14",
+		"description": "Calculer le volume d'un cylindre en prenant π ≈ 3,14 (rayon 10 cm, hauteur 2 cm : 628 cm³)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["628"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "2",
+					"r": "10"
+				},
+				"description": "Rayon 10, hauteur 2 : 628",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["314"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "2",
+					"r": "10"
+				},
+				"description": "Erreur : 314 (aire de la base)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["125,6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "2",
+					"r": "10"
+				},
+				"description": "Erreur : 125,6 (2πrh)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["113,04"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "4",
+					"r": "3"
+				},
+				"description": "Rayon 3, hauteur 4 : 113,04",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "6bf0a792-4b71-4117-af9d-1fcbce1ca65c",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 45,
+		"theme": "Géométrie",
+		"domain": "Triangles",
+		"subdomain": "Somme des angles",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Dans un triangle $ABC$, $\\widehat{A} = {{a}}^{\\circ}$ et $\\widehat{B} = {{b}}^{\\circ}$.\n\nCombien mesure $\\widehat{C}$ ?\n\n$\\widehat{C} = ?^{\\circ}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "20..110"
+					},
+					{
+						"name": "b",
+						"expression": "15..100"
+					},
+					{
+						"name": "c",
+						"expression": "eval:180-a-b"
+					}
+				],
+				"conditions": ["c>=10", "a!=b", "b!=c", "a!=c"],
+				"correction": {
+					"steps": [
+						"**Somme des angles.** Dans un triangle, la somme des trois angles vaut $180^\\circ$.",
+						"$\\widehat{C} = 180 - {{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{c}}^{\\circ}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Le triangle $ABC$ est **isocèle** en $A$, et $\\widehat{A} = {{s}}^{\\circ}$.\n\nCombien mesure $\\widehat{B}$ ?\n\n$\\widehat{B} = ?^{\\circ}$",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "20..140"
+					},
+					{
+						"name": "b",
+						"expression": "eval:(180-s)/2"
+					}
+				],
+				"conditions": ["mod(s,2)==0", "s!=60"],
+				"correction": {
+					"steps": [
+						"**Somme des angles.** Dans un triangle, la somme des trois angles vaut $180^\\circ$.",
+						"Le triangle est isocèle en $A$ : ses angles $\\widehat{B}$ et $\\widehat{C}$ sont égaux.",
+						"Ensemble, ils mesurent $180 - {{s}} = {{eval:180-s}}$, donc $\\widehat{B} = {{eval:180-s}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{b}}^{\\circ}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{s}}"
+					}
+				],
+				"statement": "Le triangle $ABC$ est **isocèle** en $A$, et $\\widehat{B} = {{b}}^{\\circ}$.\n\nCombien mesure $\\widehat{A}$ ?\n\n$\\widehat{A} = ?^{\\circ}$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "20..80"
+					},
+					{
+						"name": "s",
+						"expression": "eval:180-2*b"
+					}
+				],
+				"conditions": ["b!=60"],
+				"correction": {
+					"steps": [
+						"**Somme des angles.** Dans un triangle, la somme des trois angles vaut $180^\\circ$.",
+						"Le triangle est isocèle en $A$ : $\\widehat{C} = \\widehat{B} = {{b}}^{\\circ}$.",
+						"$\\widehat{A} = 180 - {{b}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{s}}^{\\circ}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Le triangle $ABC$ est **rectangle** en $A$, et $\\widehat{B} = {{b}}^{\\circ}$.\n\nCombien mesure $\\widehat{C}$ ?\n\n$\\widehat{C} = ?^{\\circ}$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "10..80"
+					},
+					{
+						"name": "c",
+						"expression": "eval:90-b"
+					}
+				],
+				"conditions": ["b!=45"],
+				"correction": {
+					"steps": [
+						"**Somme des angles.** Dans un triangle, la somme des trois angles vaut $180^\\circ$.",
+						"Rectangle en $A$ : $\\widehat{A} = 90^\\circ$.",
+						"$\\widehat{C} = 180 - 90 - {{b}} = \\textcolor{{{color:primary.0}}}{{{c}}^{\\circ}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "60"
+					}
+				],
+				"statement": "Le triangle $ABC$ est **équilatéral**.\n\nCombien mesure $\\widehat{A}$ ?\n\n$\\widehat{A} = ?^{\\circ}$",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Somme des angles.** Dans un triangle, la somme des trois angles vaut $180^\\circ$.",
+						"Ses trois angles sont égaux : $\\widehat{A} = 180 \\div 3 = \\textcolor{{{color:primary.0}}}{60^{\\circ}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Le troisième angle d'un triangle",
+		"description": "Utiliser la somme des angles d'un triangle (180°) : deux angles de 40° et 65°, le troisième mesure 75° ; cas du triangle isocèle, rectangle, équilatéral",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["75"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "40",
+					"b": "65",
+					"c": "75"
+				},
+				"description": "40 et 65 : 75",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["105"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "40",
+					"b": "65",
+					"c": "75"
+				},
+				"description": "Erreur : 105 (40 + 65)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "70",
+					"s": "40"
+				},
+				"description": "Isocèle, sommet 40 : 70",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["140"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "70",
+					"s": "40"
+				},
+				"description": "Erreur : 140 (sans diviser par 2)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["40"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "70",
+					"s": "40"
+				},
+				"description": "Erreur : 40 (l'angle recopié)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "50",
+					"s": "80"
+				},
+				"description": "Isocèle, base 50 : 80",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["130"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "50",
+					"s": "80"
+				},
+				"description": "Erreur : 130 (180 − 50)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["55"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "35",
+					"c": "55"
+				},
+				"description": "Rectangle, 35 : 55",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["145"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "35",
+					"c": "55"
+				},
+				"description": "Erreur : 145 (180 − 35)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Équilatéral : 60",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["180"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : 180",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "8db109a5-ea7a-41e6-9a6d-62caed1160de",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"products": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["5"],
+		"delay": 60,
+		"theme": "Grandeurs",
+		"domain": "Aires",
+		"subdomain": "Aire d'un disque",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:r^2}}\\pi"
+					}
+				],
+				"statement": "Donne la valeur **exacte** de l'aire d'un disque de rayon ${{r}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^2}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "2..10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Aire d'un disque.** $\\text{Aire} = \\pi \\times \\text{rayon} \\times \\text{rayon} = \\pi r^2$. Le rayon est la moitié du diamètre.",
+						"$\\pi \\times {{r}} \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:r^2}}\\pi~\\unit{cm^2}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:r^2}}\\pi"
+					}
+				],
+				"statement": "Donne la valeur **exacte** de l'aire d'un disque de diamètre ${{d}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^2}$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "2..10"
+					},
+					{
+						"name": "d",
+						"expression": "eval:2*r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Aire d'un disque.** $\\text{Aire} = \\pi \\times \\text{rayon} \\times \\text{rayon} = \\pi r^2$. Le rayon est la moitié du diamètre.",
+						"Le rayon est ${{d}}~\\unit{cm} \\div 2 = {{r}}~\\unit{cm}$.",
+						"$\\pi \\times {{r}} \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:r^2}}\\pi~\\unit{cm^2}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Aire d'un disque : valeur exacte",
+		"description": "Donner l'aire exacte d'un disque en fonction de π, à partir du rayon (3 cm : 9π cm²) ou du diamètre",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9\\pi"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Rayon 3 : 9π",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6\\pi"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Erreur : 6π (périmètre)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Erreur : 9 (π oublié)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\times\\pi"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "9 × π accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\pi\\times9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "π × 9 accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["28,26"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Valeur approchée 28,26 refusée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3^2\\pi"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "3²π : calcul pas fini",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["25\\pi"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "10",
+					"r": "5"
+				},
+				"description": "Diamètre 10 : 25π",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["100\\pi"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "10",
+					"r": "5"
+				},
+				"description": "Erreur : 100π (diamètre au carré)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["10\\pi"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "10",
+					"r": "5"
+				},
+				"description": "Erreur : 10π",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "9dea9199-078b-4458-8ef5-2f160174d5e1",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 90,
+		"theme": "Grandeurs",
+		"domain": "Volumes",
+		"subdomain": "Volume d'un prisme droit",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:B*h}}"
+					}
+				],
+				"statement": "Un **prisme droit** a une base d'aire ${{B}}~\\unit{cm^2}$ et une hauteur de ${{h}}~\\unit{cm}$.\n\nQuel est son volume ?\n\n$?~\\unit{cm^3}$",
+				"variables": [
+					{
+						"name": "B",
+						"expression": "5..60"
+					},
+					{
+						"name": "h",
+						"expression": "2..15"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Volume d'un prisme droit.** $\\text{Volume} = \\text{aire de la base} \\times \\text{hauteur}$.",
+						"${{B}}~\\unit{cm^2} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:B*h}}~\\unit{cm^3}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*b/2*h}}"
+					}
+				],
+				"statement": "Un **prisme droit** a pour base un **triangle rectangle** dont les côtés de l'angle droit mesurent ${{a}}~\\unit{cm}$ et ${{b}}~\\unit{cm}$. Sa hauteur est ${{h}}~\\unit{cm}$.\n\nQuel est son volume ?\n\n$?~\\unit{cm^3}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..12"
+					},
+					{
+						"name": "b",
+						"expression": "2..12"
+					},
+					{
+						"name": "h",
+						"expression": "2..12"
+					}
+				],
+				"conditions": ["mod(a*b,2)==0", "a!=b"],
+				"correction": {
+					"steps": [
+						"**Volume d'un prisme droit.** $\\text{Volume} = \\text{aire de la base} \\times \\text{hauteur}$.",
+						"Aire de la base : $\\dfrac{{{a}}~\\unit{cm} \\times {{b}}~\\unit{cm}}{2} = {{eval:a*b/2}}~\\unit{cm^2}$.",
+						"Volume : ${{eval:a*b/2}}~\\unit{cm^2} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:a*b/2*h}}~\\unit{cm^3}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Volume d'un prisme droit",
+		"description": "Calculer le volume d'un prisme droit : aire de la base × hauteur (base 12 cm², hauteur 5 cm : 60 cm³), la base pouvant être un triangle rectangle à calculer",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "12",
+					"h": "5"
+				},
+				"description": "Base 12, hauteur 5 : 60",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["17"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"B": "12",
+					"h": "5"
+				},
+				"description": "Erreur : 17 (12 + 5)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"h": "10"
+				},
+				"description": "Triangle 3 et 4, hauteur 10 : 60",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["120"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"h": "10"
+				},
+				"description": "Erreur : 120 (oubli de la moitié)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"h": "10"
+				},
+				"description": "Erreur : 6 (aire de la base)",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "ddf4a07c-1a2b-43a9-9a31-83e797e0efbd",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 20,
+		"theme": "Grandeurs",
+		"domain": "Angles",
+		"subdomain": "Angles de l'équerre",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "45"
+					}
+				],
+				"statement": "Une équerre a un angle droit et deux autres angles **égaux**.\n\nCombien mesure chacun de ces deux angles ?\n\n$?^{\\circ}$",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Les équerres.** Une équerre a toujours un angle droit ($90^\\circ$). Les deux autres angles mesurent $30^\\circ$ et $60^\\circ$, ou $45^\\circ$ et $45^\\circ$.",
+						"Les deux angles égaux mesurent $\\textcolor{{{color:primary.0}}}{45^{\\circ}}$ chacun : $90 + 45 + 45 = 180$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Une équerre a un angle droit et un angle de ${{a}}^{\\circ}$.\n\nCombien mesure son troisième angle ?\n\n$?^{\\circ}$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "30|60"
+					},
+					{
+						"name": "b",
+						"expression": "eval:90-a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Les équerres.** Une équerre a toujours un angle droit ($90^\\circ$). Les deux autres angles mesurent $30^\\circ$ et $60^\\circ$, ou $45^\\circ$ et $45^\\circ$.",
+						"L'équerre est celle à $30^\\circ$ et $60^\\circ$ : le troisième angle mesure $\\textcolor{{{color:primary.0}}}{{{b}}^{\\circ}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"statement": "Avec laquelle de ces équerres peut-on tracer **directement** un angle de ${{a}}^{\\circ}$ ?\n\n```choix\nmelanger: non\n- l'équerre à $45^\\circ$ et $45^\\circ$\n- l'équerre à $30^\\circ$ et $60^\\circ$\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "30|60"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Les équerres.** Une équerre a toujours un angle droit ($90^\\circ$). Les deux autres angles mesurent $30^\\circ$ et $60^\\circ$, ou $45^\\circ$ et $45^\\circ$.",
+						"L'angle de ${{a}}^{\\circ}$ est sur $\\textcolor{{{color:primary.0}}}{\\text{l'équerre à } 30^\\circ \\text{ et } 60^\\circ}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Les angles de l'équerre",
+		"description": "Connaître les angles des équerres : 90°, 30° et 60°, ou 90°, 45° et 45°",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["45"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Équerre isocèle : 45",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : 90",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "30",
+					"b": "60"
+				},
+				"description": "Angle de 30 : 60",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["150"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "30",
+					"b": "60"
+				},
+				"description": "Erreur : 150 (180 − 30)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "60"
+				},
+				"description": "Angle de 60 : l'équerre 30-60",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "60"
+				},
+				"description": "Erreur : l'équerre 45-45",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "f628c809-526e-4a24-bbb2-2f1c28a3b5fc",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 120,
+		"theme": "Grandeurs",
+		"domain": "Aires",
+		"subdomain": "Problèmes de conversions",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Une pièce rectangulaire mesure ${{L}}~\\unit{m}$ sur ${{l}}~\\unit{m}$. Un carreau est un carré de ${{c}}~\\unit{cm}$ de côté.\n\nCombien de carreaux faut-il pour couvrir le sol ?\n\n$?$ carreaux",
+				"variables": [
+					{
+						"name": "L",
+						"expression": "2..8"
+					},
+					{
+						"name": "l",
+						"expression": "2..6"
+					},
+					{
+						"name": "c",
+						"expression": "20|25|50"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(100*L/c)*(100*l/c)"
+					}
+				],
+				"conditions": ["l<L", "mod(100*L,c)==0", "mod(100*l,c)==0"],
+				"correction": {
+					"steps": [
+						"**Conversions d'aires.** $1~\\unit{m^2} = 100~\\unit{dm^2} = 10\\,000~\\unit{cm^2}$ ; $1~\\unit{ha} = 10\\,000~\\unit{m^2}$. On convertit les longueurs **avant** de calculer l'aire.",
+						"En centimètres, la pièce mesure ${{eval:100*L}}~\\unit{cm}$ sur ${{eval:100*l}}~\\unit{cm}$.",
+						"Dans la longueur : ${{eval:100*L}} \\div {{c}} = {{eval:100*L/c}}$ carreaux ; dans la largeur : ${{eval:100*l}} \\div {{c}} = {{eval:100*l/c}}$ carreaux.",
+						"Il faut ${{eval:100*L/c}} \\times {{eval:100*l/c}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ carreaux."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{A}}"
+					}
+				],
+				"statement": "Un champ rectangulaire mesure ${{L}}~\\unit{m}$ sur ${{l}}~\\unit{m}$.\n\nQuelle est son aire en hectares ?\n\n$?~\\unit{ha}$",
+				"variables": [
+					{
+						"name": "L",
+						"expression": "100|200|250|400|500"
+					},
+					{
+						"name": "l",
+						"expression": "50|100|200"
+					},
+					{
+						"name": "A",
+						"expression": "eval:L*l/10000;d"
+					}
+				],
+				"conditions": ["l<L"],
+				"correction": {
+					"steps": [
+						"**Conversions d'aires.** $1~\\unit{m^2} = 100~\\unit{dm^2} = 10\\,000~\\unit{cm^2}$ ; $1~\\unit{ha} = 10\\,000~\\unit{m^2}$. On convertit les longueurs **avant** de calculer l'aire.",
+						"Aire : ${{L}}~\\unit{m} \\times {{l}}~\\unit{m} = {{eval:L*l}}~\\unit{m^2}$.",
+						"${{eval:L*l}}~\\unit{m^2} = \\textcolor{{{color:primary.0}}}{{{A}}~\\unit{ha}}$ (on divise par $10\\,000$)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{A}}"
+					}
+				],
+				"statement": "Une affiche rectangulaire mesure ${{L}}~\\unit{cm}$ sur ${{l}}~\\unit{cm}$.\n\nQuelle est son aire en mètres carrés ?\n\n$?~\\unit{m^2}$",
+				"variables": [
+					{
+						"name": "L",
+						"expression": "50|60|80|100|120|150"
+					},
+					{
+						"name": "l",
+						"expression": "20|40|50|60"
+					},
+					{
+						"name": "A",
+						"expression": "eval:L*l/10000;d"
+					}
+				],
+				"conditions": ["l<L"],
+				"correction": {
+					"steps": [
+						"**Conversions d'aires.** $1~\\unit{m^2} = 100~\\unit{dm^2} = 10\\,000~\\unit{cm^2}$ ; $1~\\unit{ha} = 10\\,000~\\unit{m^2}$. On convertit les longueurs **avant** de calculer l'aire.",
+						"En mètres : ${{L}}~\\unit{cm} = {{eval:L/100;d}}~\\unit{m}$ et ${{l}}~\\unit{cm} = {{eval:l/100;d}}~\\unit{m}$.",
+						"${{eval:L/100;d}}~\\unit{m} \\times {{eval:l/100;d}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{A}}~\\unit{m^2}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes de conversions d'aires",
+		"description": "Résoudre un problème qui demande de convertir des longueurs ou des aires : carreaux pour un sol, aire d'un champ en hectares, d'une affiche en m²",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["48"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"L": "4",
+					"c": "50",
+					"l": "3",
+					"n": "48"
+				},
+				"description": "Pièce 4 × 3, carreaux de 50 : 48",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"L": "4",
+					"c": "50",
+					"l": "3",
+					"n": "48"
+				},
+				"description": "Erreur : 12 (aire en m² seule)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"A": "2",
+					"L": "200",
+					"l": "100"
+				},
+				"description": "Champ 200 × 100 : 2 ha",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["20000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "2",
+					"L": "200",
+					"l": "100"
+				},
+				"description": "Erreur : 20 000 (en m²)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["200"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "2",
+					"L": "200",
+					"l": "100"
+				},
+				"description": "Erreur : 200 (÷ 100)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0,4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"A": "0.4",
+					"L": "80",
+					"l": "50"
+				},
+				"description": "Affiche 80 × 50 : 0,4 m²",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["40"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "0.4",
+					"L": "80",
+					"l": "50"
+				},
+				"description": "Erreur : 40 (÷ 100)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	}
+]

@@ -80,8 +80,6 @@
 		isLoading = true;
 
 		try {
-			// TODO: Replace with actual API call to fetch published templates
-			// For now, simulate with empty array
 			const response = await fetch('/api/questions/templates?status=published');
 
 			if (response.ok) {

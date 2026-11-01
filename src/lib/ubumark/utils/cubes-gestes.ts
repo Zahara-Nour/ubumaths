@@ -2,7 +2,7 @@
  * Bloc ```cubes — gestes de l'élève : réponses, réponses attendues, jugement
  * ==========================================================================
  *
- * Chantier `solides`, lot 2 (`docs/wip/solides-progress.md` § 7).
+ * Chantier `solides`, lot 2 (`docs/archive/wip/solides-progress.md` § 7).
  *
  * `dessiner: face` — l'élève colorie la vue dans un quadrillage vide, plus grand
  * que la vue d'un carreau de chaque côté :

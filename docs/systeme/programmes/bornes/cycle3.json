@@ -3105,19 +3105,19 @@
 				"bornes": [
 					{
 						"aspect": "operandes",
-						"borne": "Nombre ajouté = k unités de numération (k de 1 à 9), dixièmes, centièmes et millièmes compris, comme au CM1 (4,452 + 0,03 ; 21 462 + 3 000) ; pas un décimal quelconque (2,37) ; sans retenue.",
+						"borne": "Nombre ajouté = nombre entier, k unités d'un seul rang (k de 1 à 9, des unités aux milliers), à un décimal ayant jusqu'à trois décimales (4,452 + 3 ; 1 462,5 + 3 000) ; pas de dixièmes, centièmes ni millièmes ajoutés (ils sont au CM1, CM1-039) ; sans retenue.",
 						"detail": {
 							"min": 1,
 							"max": 9,
 							"decimales": 3,
-							"liste": ["k × 10ⁿ", "k/10", "k/100", "k/1000"],
+							"liste": ["k × 10ⁿ"],
 							"retenue": false
 						},
-						"source": "Décision de David, 2026-10-18 (question c3-2) ; d'après Exemples de réussite CM2 2025 p.8",
+						"source": "Décision de David, 2026-11-01 (lecture littérale du BO, cohérence titre / questions) ; remplace la décision c3-2 du 2026-10-18",
 						"force": "décision"
 					}
 				],
-				"remarque": "Le BO dit « un nombre entier » ; ses exemples de réussite (0,03 ; 0,8 ; 3/1 000) sont suivis."
+				"remarque": "Le BO de CM2 dit « un nombre entier », là où celui de CM1 écrit « un nombre entier … d'unités, de dizaines, de centaines, de dixièmes ou de centièmes » : lu au pied de la lettre. « decimales » = décimales du nombre de départ."
 			},
 			"CM2-041": {
 				"libelle": "Ajouter un nombre entier à un nombre décimal lorsqu'il y a une retenue",
@@ -3125,19 +3125,19 @@
 				"bornes": [
 					{
 						"aspect": "operandes",
-						"borne": "Une retenue ; nombre ajouté = k unités de numération (k de 1 à 9), dixièmes, centièmes et millièmes compris (4,45 + 0,8 ; 0,457 + 7/1 000 ; 47 530 + 6 000) ; pas un décimal quelconque.",
+						"borne": "Une retenue ; nombre ajouté = nombre entier, k unités d'un seul rang (k de 1 à 9, des unités aux milliers) (8,45 + 3 ; 7 530,4 + 600 ; 9 530,4 + 6 000) ; pas de dixièmes, centièmes ni millièmes ajoutés.",
 						"detail": {
 							"min": 1,
 							"max": 9,
 							"decimales": 3,
-							"liste": ["k × 10ⁿ", "k/10", "k/100", "k/1000"],
+							"liste": ["k × 10ⁿ"],
 							"retenue": true
 						},
-						"source": "Décision de David, 2026-10-18 (question c3-2) ; d'après Exemples de réussite CM2 2025 p.8",
+						"source": "Décision de David, 2026-11-01 (lecture littérale du BO, cohérence titre / questions) ; remplace la décision c3-2 du 2026-10-18",
 						"force": "décision"
 					}
 				],
-				"remarque": "Même lecture que CM2-040 : k unités d'un seul rang."
+				"remarque": "Même lecture que CM2-040 : un nombre entier, k unités d'un seul rang."
 			},
 			"CM2-042": {
 				"libelle": "Multiplier un nombre décimal par 10, 100 ou 1 000",
@@ -4082,19 +4082,19 @@
 				"bornes": [
 					{
 						"aspect": "operandes",
-						"borne": "Nombre soustrait = k unités de numération (k de 1 à 9), dixièmes, centièmes et millièmes compris (0,457 − 3/1 000) ; pas un décimal quelconque ; sans retenue.",
+						"borne": "Nombre soustrait = nombre entier, k unités d'un seul rang (k de 1 à 9, des unités aux milliers) (8,694 − 6 ; 5 846,3 − 400) ; pas de dixièmes, centièmes ni millièmes retirés (ils sont au CM1, CM1-133) ; sans retenue.",
 						"detail": {
 							"min": 1,
 							"max": 9,
 							"decimales": 3,
-							"liste": ["k × 10ⁿ", "k/10", "k/100", "k/1000"],
+							"liste": ["k × 10ⁿ"],
 							"retenue": false
 						},
-						"source": "Décision de David, 2026-10-18 (question c3-2) ; d'après Exemples de réussite CM2 2025 p.8",
+						"source": "Décision de David, 2026-11-01 (lecture littérale du BO, cohérence titre / questions) ; remplace la décision c3-2 du 2026-10-18",
 						"force": "décision"
 					}
 				],
-				"remarque": "Même lecture que CM2-040 : k unités d'un seul rang."
+				"remarque": "Même lecture que CM2-040 : un nombre entier, k unités d'un seul rang."
 			},
 			"CM2-119": {
 				"libelle": "Résoudre des problèmes additifs en plusieurs étapes",

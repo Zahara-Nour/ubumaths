@@ -1,0 +1,417 @@
+{
+	"title": "Problèmes parties-tout (jusqu'à 10 000)",
+	"description": "Chercher le tout ou une partie avec des nombres jusqu'à 10 000 : 1 800 billes dont 1 250 dans le carton vert ; « de plus » qui se calcule par une soustraction ; une partie ne peut pas dépasser le tout",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Parties-tout",
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans mes deux cartons, j'ai ${{t}}$ billes. J'en ai ${{a}}$ dans le carton vert.\n\nCombien en ai-je dans le carton rouge ?\n\nIl y a $?$ billes dans le carton rouge.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1500..9990"
+				},
+				{
+					"name": "a",
+					"expression": "300..9000"
+				}
+			],
+			"conditions": ["t - a >= 300"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux cartons ensemble, c'est **le tout** : ${{t}}$ billes. On connaît une partie, le carton vert ; on cherche l'autre partie : on enlève.",
+					"$${{t}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:t-a}}}$$",
+					"Il y a ${{eval:t-a}}$ billes dans le carton rouge."
+				]
+			}
+		},
+		{
+			"statement": "Une ville compte ${{a}}$ habitants dans le centre et ${{b}}$ habitants dans les quartiers autour.\n\nCombien d'habitants cette ville compte-t-elle en tout ?\n\nElle compte $?$ habitants.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1100..7900"
+				},
+				{
+					"name": "b",
+					"expression": "1100..7900"
+				}
+			],
+			"conditions": ["a + b < 10000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le centre et les quartiers sont les deux parties ; on cherche **le tout** : on ajoute.",
+					"$${{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b}}}$$",
+					"La ville compte ${{eval:a+b}}$ habitants."
+				]
+			}
+		},
+		{
+			"statement": "Trois classes vont visiter le château. Il y a ${{a}}$ élèves dans la première, ${{b}}$ dans la deuxième et ${{c}}$ dans la troisième.\n\nCombien d'élèves vont visiter le château ?\n\n$?$ élèves vont visiter le château.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "500..3300"
+				},
+				{
+					"name": "b",
+					"expression": "500..3300"
+				},
+				{
+					"name": "c",
+					"expression": "500..3300"
+				}
+			],
+			"conditions": ["a + b + c < 10000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les trois classes sont les parties ; on cherche **le tout** : on ajoute les trois parties.",
+					"$${{a}} + {{b}} + {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b+c}}}$$",
+					"${{eval:a+b+c}}$ élèves vont visiter le château."
+				]
+			}
+		},
+		{
+			"statement": "Dans mon stock, il y avait des timbres. J'en ai vendu ${{a}}$ et il m'en reste encore ${{b}}$.\n\nCombien y avait-il de timbres dans mon stock avant la vente ?\n\nIl y avait $?$ timbres.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1200..5000"
+				},
+				{
+					"name": "b",
+					"expression": "800..5000"
+				}
+			],
+			"conditions": ["a + b < 10000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les timbres du début, c'est **le tout** : les timbres vendus et les timbres qui restent. On cherche le tout : on ajoute les deux parties.",
+					"$${{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b}}}$$",
+					"Il y avait ${{eval:a+b}}$ timbres dans mon stock."
+				]
+			}
+		},
+		{
+			"statement": "Un stade peut accueillir ${{t}}$ spectateurs. Il y en a déjà ${{a}}$ dans les gradins.\n\nCombien de places libres reste-t-il ?\n\nIl reste $?$ places libres.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2000..9990"
+				},
+				{
+					"name": "a",
+					"expression": "400..9000"
+				}
+			],
+			"conditions": ["t - a >= 300"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les ${{t}}$ places du stade, c'est **le tout** : les places occupées et les places libres. On cherche une partie : on enlève.",
+					"$${{t}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:t-a}}}$$",
+					"Il reste ${{eval:t-a}}$ places libres."
+				]
+			}
+		},
+		{
+			"statement": "Léo a ${{a}}$ cartes. Il voudrait en avoir ${{t}}$ pour finir sa collection.\n\nCombien de cartes lui faut-il **de plus** ?\n\nIl lui faut $?$ cartes de plus.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1500..9990"
+				},
+				{
+					"name": "a",
+					"expression": "300..9000"
+				}
+			],
+			"conditions": ["t - a >= 300"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les ${{t}}$ cartes que Léo voudrait, c'est **le tout** : les cartes qu'il a et celles qui lui manquent. On cherche une partie : ce qu'il faut ajouter à ${{a}}$ pour arriver à ${{t}}$.",
+					"$${{a}} + {{eval:t-a}} = {{t}}$$",
+					"C'est une soustraction, même si l'énoncé dit « de plus » :",
+					"$${{t}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:t-a}}}$$",
+					"Il faut ${{eval:t-a}}$ cartes de plus à Léo."
+				]
+			}
+		},
+		{
+			"statement": "Dans un sac de ${{t}}$ billes, certaines sont rouges et les autres sont bleues. Léo dit qu'il y a ${{r}}$ billes rouges.\n\nLéo peut-il avoir raison ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "500..9000"
+				},
+				{
+					"name": "r",
+					"expression": "100..9999"
+				},
+				{
+					"name": "z",
+					"expression": "eval:(sign(r-t)+1)/2"
+				}
+			],
+			"conditions": ["abs(r - t) >= 50"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les billes rouges sont **une partie** des ${{t}}$ billes ; le sac est **le tout**. Une partie ne peut pas être plus grande que le tout.",
+					"{{if:z==0|${{r}}$ est plus petit que ${{t}}$ : c'est possible.|${{r}}$ est plus grand que ${{t}}$ : c'est impossible.}}",
+					"{{if:z==0|**Oui**, Léo peut avoir raison.|**Non**, Léo se trompe : il ne peut pas y avoir plus de billes rouges que de billes dans le sac.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 800 billes, 1 250 dans le vert → 550",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1800",
+				"a": "1250"
+			},
+			"answers": ["550"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cartons, les deux ajoutés (3050)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1800",
+				"a": "1250"
+			},
+			"answers": ["3050"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "tout : 4 365 + 2 578 = 6 943",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4365",
+				"b": "2578"
+			},
+			"answers": ["6943"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout, retenue oubliée (6 833)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4365",
+				"b": "2578"
+			},
+			"answers": ["6833"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "trois parties : 1 250 + 2 400 + 3 180 = 6 830",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1250",
+				"b": "2400",
+				"c": "3180"
+			},
+			"answers": ["6830"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : trois parties, la troisième oubliée (3 650)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1250",
+				"b": "2400",
+				"c": "3180"
+			},
+			"answers": ["3650"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "départ : 2 560 vendus, 1 740 restent → 4 300",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2560",
+				"b": "1740"
+			},
+			"answers": ["4300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : départ inconnu, « reste » lu soustraction (820)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2560",
+				"b": "1740"
+			},
+			"answers": ["820"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "retrait : 7 320 − 4 590 = 2 730",
+			"variationIndex": 4,
+			"variables": {
+				"t": "7320",
+				"a": "4590"
+			},
+			"answers": ["2730"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retrait, les deux ajoutés (11 910)",
+			"variationIndex": 4,
+			"variables": {
+				"t": "7320",
+				"a": "4590"
+			},
+			"answers": ["11910"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "« de plus » : 5 000 − 3 480 = 1 520",
+			"variationIndex": 5,
+			"variables": {
+				"t": "5000",
+				"a": "3480"
+			},
+			"answers": ["1520"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « de plus » lu addition (8 480)",
+			"variationIndex": 5,
+			"variables": {
+				"t": "5000",
+				"a": "3480"
+			},
+			"answers": ["8480"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "régulation : 4 200 billes, 3 100 rouges, oui",
+			"variationIndex": 6,
+			"variables": {
+				"t": "4200",
+				"r": "3100",
+				"z": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "régulation : 4 200 billes, 5 100 rouges, non",
+			"variationIndex": 6,
+			"variables": {
+				"t": "4200",
+				"r": "5100",
+				"z": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : régulation, une partie plus grande que le tout acceptée",
+			"variationIndex": 6,
+			"variables": {
+				"t": "4200",
+				"r": "5100",
+				"z": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 4 000 + 5 999 = 9 999",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4000",
+				"b": "5999"
+			},
+			"answers": ["9999"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Zéro inutile",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1800",
+				"a": "1250"
+			},
+			"answers": ["0550"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		}
+	]
+}

@@ -1,0 +1,188 @@
+{
+	"id": "68db64b0-95a8-4173-9bae-1125a1e36ea3",
+	"title": "Lire une image sur une courbe",
+	"description": "f(π/2) ou f(π), lus sur une courbe tracée de −π à 2π",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Fonctions cosinus et sinus",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: {{eval:-abs(a)-abs(b)-1}} ; {{eval:abs(a)+abs(b)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique la valeur de $f\\left(\\dfrac{\\pi}{2}\\right)$.\n\n$f\\left(\\dfrac{\\pi}{2}\\right)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-2..2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On se place en $x=\\dfrac{\\pi}{2}$ sur l'axe des abscisses, on monte (ou on descend) jusqu'à la courbe, puis on lit l'ordonnée du point $A$ obtenu.",
+					"```courbe\nx: -pi ; 2*pi\ny: {{eval:-abs(a)-abs(b)-1}} ; {{eval:abs(a)+abs(b)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\npoints: A(pi/2 ; f(pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"$\\textcolor{{{color:primary.0}}}{f\\left(\\dfrac{\\pi}{2}\\right)={{eval:a+b}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b-a}}"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: {{eval:-abs(a)-abs(b)-1}} ; {{eval:abs(a)+abs(b)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique la valeur de $f(\\pi)$.\n\n$f(\\pi)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-2..2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On se place en $x=\\pi$ sur l'axe des abscisses, on monte (ou on descend) jusqu'à la courbe, puis on lit l'ordonnée du point $A$ obtenu.",
+					"```courbe\nx: -pi ; 2*pi\ny: {{eval:-abs(a)-abs(b)-1}} ; {{eval:abs(a)+abs(b)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\npoints: A(pi ; f(pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"$\\textcolor{{{color:primary.0}}}{f(\\pi)={{eval:b-a}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"description": "variation 0 : f(x)=2sin x+1 : f(π/2)=3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"description": "variation 0 : lecture en 0 au lieu de π/2 : 1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"description": "variation 0 : lecture en −π/2 : −1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2+1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"description": "variation 0 : calcul non terminé : 2+1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "-2"
+			},
+			"description": "variation 0 : f(x)=−3sin x−2 : f(π/2)=−5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "-2"
+			},
+			"description": "variation 0 : signe oublié : 5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-1"
+			},
+			"description": "variation 1 : f(x)=3cos x−1 : f(π)=−4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-1"
+			},
+			"description": "variation 1 : lecture en 0 : 2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3.14"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-1"
+			},
+			"description": "variation 1 : abscisse lue pour l'ordonnée : 3,14",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-3-1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "-1"
+			},
+			"description": "variation 1 : calcul non terminé : −3−1",
+			"variationIndex": 1
+		}
+	]
+}

@@ -69,8 +69,8 @@ Trois boucles distinctes :
 - `src/lib/utils/errors.ts` sert à **afficher** une erreur, pas à la remonter :
   - `readApiErrorMessage(response)` lit le message d'une réponse d'API en échec :
     `{ message }` (erreur SvelteKit) ou `{ error }` (`json({ error })`), sinon
-    « Erreur <statut> ». Jamais le corps brut. Appelée par
-    `src/lib/components/worksheets/VariantPreview.svelte` ;
+    « Erreur <statut> ». Jamais le corps brut. Sans appelant depuis le
+    retrait de `VariantPreview.svelte` (testée seule) ;
   - `formatUserError(error)` : message lisible d'une exception (champ `details` de
     Supabase s'il existe) ;
   - `logNonCriticalError(contexte, error)` : un `console.warn`, rien d'envoyé.

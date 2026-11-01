@@ -1,0 +1,683 @@
+{
+	"id": "d192da3e-534d-4c3e-b30e-68c9f166b8a9",
+	"title": "Espace : équation cartésienne d'un plan (calculer d)",
+	"description": "Plan passant par un point, de vecteur normal donné (aussi plan médiateur, plan parallèle) : a, b, c imposés, l'élève calcule d (pièges : signe de d, z oublié, A au lieu du milieu)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Représentations paramétriques et équations cartésiennes",
+	"subdomain": "Équation cartésienne d'un plan",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(a*ax+b*ay+c*az)}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le vecteur $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$ a une équation de la forme ${{a}}x+({{b}})y+({{c}})z+d=0$. Détermine $d$.\n\n$d=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "dd",
+					"expression": "{{eval:-(a*ax+b*ay+c*az)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A\\in\\mathcal{P}$ : ses coordonnées vérifient l'équation, donc ${{a}}\\times{{ax;()}}+{{b;()}}\\times{{ay;()}}+{{c;()}}\\times{{az;()}}+d=0$, soit ${{eval:a*ax+b*ay+c*az}}+d=0$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{ d={{eval:-(a*ax+b*ay+c*az)}} }$ et $\\mathcal{P} : {{a}}x+({{b}})y+({{c}})z+({{dd}})=0$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(n1*ix+n2*iy+n3*iz)}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$.\n\nLe plan médiateur de $[AB]$ a une équation de la forme ${{n1}}x+({{n2}})y+({{n3}})z+d=0$. Détermine $d$.\n\n$d=?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-4..4"
+				},
+				{
+					"name": "ay",
+					"expression": "-4..4"
+				},
+				{
+					"name": "az",
+					"expression": "-4..4"
+				},
+				{
+					"name": "w1",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "w2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "w3",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "n1",
+					"expression": "{{eval:2*w1}}"
+				},
+				{
+					"name": "n2",
+					"expression": "{{eval:2*w2}}"
+				},
+				{
+					"name": "n3",
+					"expression": "{{eval:2*w3}}"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+n1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+n2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+n3}}"
+				},
+				{
+					"name": "ix",
+					"expression": "{{eval:ax+w1}}"
+				},
+				{
+					"name": "iy",
+					"expression": "{{eval:ay+w2}}"
+				},
+				{
+					"name": "iz",
+					"expression": "{{eval:az+w3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le plan médiateur de $[AB]$ passe par le milieu $I({{ix}}\\,;\\,{{iy}}\\,;\\,{{iz}})$ et admet $\\overrightarrow{AB}\\begin{pmatrix}{{n1}}\\\\{{n2}}\\\\{{n3}}\\end{pmatrix}$ pour vecteur normal.",
+					"$I$ appartient au plan : ${{n1}}\\times{{ix;()}}+{{n2;()}}\\times{{iy;()}}+{{n3;()}}\\times{{iz;()}}+d=0$, donc $\\textcolor{{{color:primary.0}}}{ d={{eval:-(n1*ix+n2*iy+n3*iz)}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(a*ax+b*ay+c*az)}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le plan $\\mathcal{Q}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{q}})=0$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et parallèle à $\\mathcal{Q}$ a une équation de la forme ${{a}}x+({{b}})y+({{c}})z+d=0$. Détermine $d$.\n\n$d=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a*ax+b*ay+c*az+q != 0"],
+			"correction": {
+				"steps": [
+					"$\\mathcal{P}$ est parallèle à $\\mathcal{Q}$ : il a le même vecteur normal $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$, mais pas le même $d$ ($A\\notin\\mathcal{Q}$).",
+					"$A\\in\\mathcal{P}$ : ${{a}}\\times{{ax;()}}+{{b;()}}\\times{{ay;()}}+{{c;()}}\\times{{az;()}}+d=0$, donc $\\textcolor{{{color:primary.0}}}{ d={{eval:-(a*ax+b*ay+c*az)}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "equation",
+					"expectedAnswer": "{{a}}x+({{b}})y+({{c}})z+({{dd}})=0"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le vecteur $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$.\n\nDonne une équation cartésienne du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "dd",
+					"expression": "{{eval:-(a*ax+b*ay+c*az)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un plan de vecteur normal $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$ a une équation de la forme ${{a}}x+({{b}})y+({{c}})z+d=0$.",
+					"$A\\in\\mathcal{P}$ : ${{a}}\\times{{ax;()}}+{{b;()}}\\times{{ay;()}}+{{c;()}}\\times{{az;()}}+d=0$, donc $d={{dd}}$.",
+					"Une équation cartésienne : $\\mathcal{P} : {{a}}x+({{b}})y+({{c}})z+({{dd}})=0$ (toute équation proportionnelle convient)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "equation",
+					"requiredForm": "cartesienne",
+					"expectedAnswer": "{{a}}x+({{b}})y+({{c}})z+({{dd}})=0"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le vecteur $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$.\n\nDonne une équation cartésienne, sous la forme $ax+by+cz+d=0$, du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "dd",
+					"expression": "{{eval:-(a*ax+b*ay+c*az)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un plan de vecteur normal $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$ a une équation de la forme ${{a}}x+({{b}})y+({{c}})z+d=0$.",
+					"$A\\in\\mathcal{P}$ : ${{a}}\\times{{ax;()}}+{{b;()}}\\times{{ay;()}}+{{c;()}}\\times{{az;()}}+d=0$, donc $d={{dd}}$.",
+					"Sous la forme demandée : $\\mathcal{P} : {{a}}x+({{b}})y+({{c}})z+({{dd}})=0$ (membre de droite nul ; tout multiple convient)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "equation",
+					"expectedAnswer": "{{a}}x+({{b}})y+({{c}})z+({{dd}})=0"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $\\begin{cases}x={{x0}}{{if:b==1|+t}}{{if:b==-1|-t}}{{if:b>1|+{{b}}t}}{{if:b< -1|{{b}}t}}\\\\y={{y0}}{{if:na==1|+t}}{{if:na==-1|-t}}{{if:na>1|+{{na}}t}}{{if:na< -1|{{na}}t}}\\\\z={{z0}}\\end{cases}$ ($t\\in\\mathbb{R}$) et le vecteur $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ contient la droite $d$ et admet $\\vec{n}$ pour vecteur normal. Donne une équation cartésienne de $\\mathcal{P}$.\n\n$\\mathcal{P}$ : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "na",
+					"expression": "{{eval:-a}}"
+				},
+				{
+					"name": "x0",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "y0",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "z0",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "dd",
+					"expression": "{{eval:-(a*x0+b*y0+c*z0)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le vecteur directeur $\\vec{u}\\begin{pmatrix}{{b}}\\\\{{na}}\\\\0\\end{pmatrix}$ de $d$ est orthogonal à $\\vec{n}$ : ce n'est pas un vecteur normal du plan. Le point $B({{x0}}\\,;\\,{{y0}}\\,;\\,{{z0}})$ (obtenu pour $t=0$) appartient à $d$, donc à $\\mathcal{P}$.",
+					"$\\mathcal{P}$ a une équation ${{a}}x+({{b}})y+({{c}})z+d=0$ et $B\\in\\mathcal{P}$ : ${{a}}\\times{{x0;()}}+{{b;()}}\\times{{y0;()}}+{{c;()}}\\times{{z0;()}}+d=0$, donc $d={{dd}}$.",
+					"Une équation cartésienne : $\\mathcal{P} : {{a}}x+({{b}})y+({{c}})z+({{dd}})=0$ (toute équation proportionnelle convient)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"description": "v0 : d = 8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"description": "v0 : signe de d (-8)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"description": "v0 : z oublié (d = 2)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-10"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "-1",
+				"w3": "2"
+			},
+			"description": "v1 : d = -10",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "-1",
+				"w3": "2"
+			},
+			"description": "v1 : A au lieu du milieu (d = 2)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "-1",
+				"w3": "2"
+			},
+			"description": "v1 : signe",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"q": "5",
+				"ax": "3",
+				"ay": "0",
+				"az": "1"
+			},
+			"description": "v2 : d = -2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"q": "5",
+				"ax": "3",
+				"ay": "0",
+				"az": "1"
+			},
+			"description": "v2 : d de Q recopié (5)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"q": "5",
+				"ax": "3",
+				"ay": "0",
+				"az": "1"
+			},
+			"description": "v2 : signe",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2x-y+3z+8=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"description": "v3 : équation attendue",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-4x+2y-6z-16=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"description": "v3 : multiple (×−2) juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2x-y+3z=-8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"description": "v3 : membre de droite non nul, juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2x-y+3z-8=0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"description": "v3 : signe de d",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2x-y+3z+2=0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"description": "v3 : z oublié dans d (d = 2)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2x-y+3z+8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"description": "v3 : pas une équation",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2x-y+3z+8=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"description": "v4 : forme ax+by+cz+d=0",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["4x-2y+6z+16=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"description": "v4 : multiple sous la forme demandée",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2x-y+3z=-8"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"ax": "1",
+				"ay": "4",
+				"az": "-2"
+			},
+			"description": "v4 : membre de droite non nul → mauvaise forme",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2x+y-z+3=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "3"
+			},
+			"description": "v5 : équation attendue",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["-2x-y+z-3=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "3"
+			},
+			"description": "v5 : multiple juste",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["x-2y-5=0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "3"
+			},
+			"description": "v5 : vecteur directeur pris pour normal",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["x-2y+0z-5=0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "-1",
+				"x0": "1",
+				"y0": "-2",
+				"z0": "3"
+			},
+			"description": "v5 : vecteur directeur pris pour normal (avec z)",
+			"variationIndex": 5
+		}
+	]
+}

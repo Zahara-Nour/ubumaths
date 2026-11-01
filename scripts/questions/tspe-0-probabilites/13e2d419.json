@@ -1,0 +1,210 @@
+{
+	"id": "13e2d419-770b-4e97-a2f8-972d467cf2fc",
+	"title": "Loi géométrique : P(X = k), P(X ⩽ k), P(X > k)",
+	"description": "X ~ G(p) : P(X = k) = (1 − p)ᵏ⁻¹p, P(X > k) = (1 − p)ᵏ, P(X ⩽ k) = 1 − (1 − p)ᵏ (piège : exposant k au lieu de k − 1)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi géométrique",
+	"subdomain": "Calcul de probabilités",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-1/q)^h/q}}"
+				}
+			],
+			"statement": "La variable aléatoire $X$ suit la loi géométrique $\\mathcal{G}\\left(\\dfrac{1}{ {{q}} }\\right)$.\n\nCalcule $P(X={{k}})$.\n\n$P(X={{k}})=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..6"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				},
+				{
+					"name": "h",
+					"expression": "{{eval:k-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(X=k)=(1-p)^{k-1}p$ : ${{eval:k-1}}$ échec{{if:k>2|s|}}, puis le premier succès.",
+					"$P(X={{k}})=\\left(\\dfrac{ {{eval:q-1}} }{ {{q}} }\\right)^{ {{eval:k-1}} }\\times\\dfrac{1}{ {{q}} }=\\textcolor{{{color:primary.0}}}{{{eval:(1-1/q)^h/q}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(1-1/q)^k}}"
+				}
+			],
+			"statement": "La variable aléatoire $X$ suit la loi géométrique $\\mathcal{G}\\left(\\dfrac{1}{ {{q}} }\\right)$.\n\nCalcule $P(X\\leqslant {{k}})$.\n\n$P(X\\leqslant {{k}})=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..6"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X>{{k}}$ signifie que les ${{k}}$ premières épreuves sont des échecs : $P(X>{{k}})=\\left(\\dfrac{ {{eval:q-1}} }{ {{q}} }\\right)^{ {{k}} }$.",
+					"$P(X\\leqslant {{k}})=1-P(X>{{k}})=1-{{eval:(1-1/q)^k}}=\\textcolor{{{color:primary.0}}}{{{eval:1-(1-1/q)^k}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-t/10)^k;d}}"
+				}
+			],
+			"statement": "La variable aléatoire $X$ suit la loi géométrique de paramètre $p={{eval:t/10;d}}$.\n\nCalcule $P(X>{{k}})$ (nombre décimal).\n\n$P(X>{{k}})=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X>{{k}}$ : les ${{k}}$ premières épreuves sont des échecs.",
+					"$P(X>{{k}})=(1-p)^{ {{k}} }={{eval:1-t/10;d}}^{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:(1-t/10)^k;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{9}{64}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"q": "4"
+			},
+			"description": "v0 : G(1/4), P(X = 3) = 9/64",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{27}{256}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"q": "4"
+			},
+			"description": "v0 : exposant k : 27/256",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{3}{64}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"q": "4"
+			},
+			"description": "v0 : p et 1 − p échangés : 3/64",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{5}{9}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"q": "3"
+			},
+			"description": "v1 : G(1/3), P(X ⩽ 2) = 5/9",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{4}{9}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"q": "3"
+			},
+			"description": "v1 : P(X > 2) = 4/9",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{2}{9}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"q": "3"
+			},
+			"description": "v1 : P(X = 2) = 2/9",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0,512"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"t": "2"
+			},
+			"description": "v2 : p = 0,2, P(X > 3) = 0,512",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0,488"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"t": "2"
+			},
+			"description": "v2 : 1 − 0,512",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0,64"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"t": "2"
+			},
+			"description": "v2 : P(X ⩾ 3) = 0,64",
+			"variationIndex": 2
+		}
+	]
+}

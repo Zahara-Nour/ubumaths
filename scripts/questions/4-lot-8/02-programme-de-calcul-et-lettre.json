@@ -1,0 +1,277 @@
+{
+	"title": "Programme de calcul et lettre",
+	"description": "Appliquer un programme de calcul à plusieurs étapes à une lettre : écrire l'expression obtenue en fonction de x, puis la développer et la réduire",
+	"grades": ["4"],
+	"theme": "Fonctions",
+	"domain": "Programmes de calcul",
+	"subdomain": "Appliquer",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"form": "off",
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre $x$ ;\n- le multiplier par ${{a}}$ ;\n- ajouter ${{b}}$ ;\n- multiplier le résultat par ${{c}}$.\n\nÉcris le résultat en fonction de $x$.\n\nRésultat : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}({{a}}x+{{b}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Programme de calcul et lettre.** On part de $x$ et on écrit chaque étape comme une expression ; une multiplication qui suit une addition demande des **parenthèses**.",
+					"$x$ → ${{a}}x$ → ${{a}}x + {{b}}$ → ${{c}}({{a}}x + {{b}})$",
+					"Résultat : $\\textcolor{{{color:primary.0}}}{{{c}}({{a}}x + {{b}})}$, qu'on peut aussi écrire ${{eval:a*c}}x + {{eval:b*c}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre $x$ ;\n- le multiplier par ${{a}}$ ;\n- ajouter ${{b}}$ ;\n- multiplier le résultat par ${{c}}$.\n\nÉcris le résultat en fonction de $x$, sous forme **développée et réduite**.\n\nRésultat : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c}}x+{{eval:b*c}}",
+					"requiredForm": "sum"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Programme de calcul et lettre.** On part de $x$ et on écrit chaque étape comme une expression ; une multiplication qui suit une addition demande des **parenthèses**.",
+					"$x$ → ${{a}}x$ → ${{a}}x + {{b}}$ → ${{c}}({{a}}x + {{b}})$",
+					"On développe (distributivité) :",
+					"$${{c}}({{a}}x + {{b}}) = {{c}} \\times {{a}}x + {{c}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*c}}x + {{eval:b*c}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre $x$ ;\n- le multiplier par ${{a}}$ ;\n- ajouter ${{b}}$ ;\n- multiplier le résultat par ${{c}}$.\n\nQuelle expression donne le résultat quand on choisit le nombre $x$ ?\n\n```choix\n- ${{c}}({{a}}x + {{b}})$\n- ${{eval:c*a}}x + {{b}}$\n- ${{a}}x + {{eval:b*c}}$\n- ${{a}}(x + {{b}}) \\times {{c}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Programme de calcul et lettre.** On part de $x$ et on écrit chaque étape comme une expression ; une multiplication qui suit une addition demande des **parenthèses**.",
+					"$x$ → ${{a}}x$ → ${{a}}x + {{b}}$ → ${{c}}({{a}}x + {{b}})$",
+					"La dernière étape multiplie **tout** le résultat ${{a}}x + {{b}}$ par ${{c}}$ : $\\textcolor{{{color:primary.0}}}{{{c}}({{a}}x + {{b}})}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre $x$ ;\n- ajouter ${{a}}$ ;\n- multiplier le résultat par ${{b}}$ ;\n- soustraire le nombre choisi au départ.\n\nÉcris le résultat en fonction de $x$, sous forme **développée et réduite**.\n\nRésultat : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "3..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b-1}}x+{{eval:a*b}}",
+					"requiredForm": "sum"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Programme de calcul et lettre.** On part de $x$ et on écrit chaque étape comme une expression ; une multiplication qui suit une addition demande des **parenthèses**.",
+					"$x$ → $x + {{a}}$ → ${{b}}(x + {{a}})$ → ${{b}}(x + {{a}}) - x$",
+					"$${{b}}(x + {{a}}) - x = {{b}}x + {{eval:a*b}} - x = \\textcolor{{{color:primary.0}}}{{{eval:b-1}}x + {{eval:a*b}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3(2x + 5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["3(2x+5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Développée : 6x + 15",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["6x+15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6x + 5 (parenthèses oubliées)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["6x+5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6x + 15",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["6x+15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme refusée : 3(2x + 5)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["3(2x+5)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : 6x + 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["6x+5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c(ax + b)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cax + b",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3(x + 4) − x = 2x + 12",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["2x+12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2x + 4 (a × b oublié)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["2x+4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3x + 12",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["3x+12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

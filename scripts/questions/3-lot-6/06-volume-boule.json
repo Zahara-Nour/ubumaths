@@ -1,0 +1,288 @@
+{
+	"title": "Volume d'une boule",
+	"description": "Calculer le volume d'une boule avec V = 4/3 π r³ : valeur exacte en fonction de π, valeur arrondie, à partir du diamètre, demi-boule",
+	"grades": ["3"],
+	"theme": "Grandeurs",
+	"domain": "Volumes",
+	"subdomain": "Volume d'une boule",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Donne la valeur **exacte** du volume d'une boule de rayon ${{r}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..9"
+				}
+			],
+			"conditions": ["r%3==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*r^3/3}}\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'une boule** de rayon $r$ : $V = \\dfrac{4}{3} \\pi r^3$ (formule admise).",
+					"$V = \\dfrac{4}{3} \\times \\pi \\times {{r}}^3 = \\dfrac{4 \\times {{eval:r^3}}}{3}\\pi = \\textcolor{{{color:primary.0}}}{{{eval:4*r^3/3}}\\pi~\\unit{cm^3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Donne la valeur **exacte** du volume d'une boule de rayon ${{r}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..8"
+				}
+			],
+			"conditions": ["r%3!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{{{eval:4*r^3}}}{3}\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'une boule** de rayon $r$ : $V = \\dfrac{4}{3} \\pi r^3$ (formule admise).",
+					"$V = \\dfrac{4}{3} \\times \\pi \\times {{r}}^3 = \\dfrac{4 \\times {{eval:r^3}}}{3}\\pi = \\textcolor{{{color:primary.0}}}{\\dfrac{{{eval:4*r^3}}}{3}\\pi~\\unit{cm^3}}$.",
+					"${{eval:4*r^3}}$ n'est pas divisible par $3$ : la fraction reste écrite."
+				]
+			}
+		},
+		{
+			"statement": "Un ballon a la forme d'une boule de rayon ${{r}}~\\unit{cm}$. Calcule son volume, arrondi au $\\unit{cm^3}$.\n\n$V \\approx ?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "4..15"
+				}
+			],
+			"conditions": ["abs(4*\\pi*r^3/3 - round(4*\\pi*r^3/3)) < 0.4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(4*\\pi*r^3/3);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'une boule** de rayon $r$ : $V = \\dfrac{4}{3} \\pi r^3$ (formule admise).",
+					"$V = \\dfrac{4}{3} \\times \\pi \\times {{r}}^3 \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(4*\\pi*r^3/3);d}}~\\unit{cm^3}}$ (à la calculatrice, arrondi à l'unité)."
+				]
+			}
+		},
+		{
+			"statement": "Donne la valeur **exacte** du volume d'une boule de diamètre ${{d}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*r"
+				}
+			],
+			"conditions": ["r%3==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*r^3/3}}\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le rayon est la moitié du diamètre : $r = {{d}} \\div 2 = {{r}}~\\unit{cm}$.",
+					"**Volume d'une boule** de rayon $r$ : $V = \\dfrac{4}{3} \\pi r^3$ (formule admise).",
+					"$V = \\dfrac{4}{3} \\times \\pi \\times {{r}}^3 = \\textcolor{{{color:primary.0}}}{{{eval:4*r^3/3}}\\pi~\\unit{cm^3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un bol a la forme d'une demi-boule de rayon ${{r}}~\\unit{cm}$. Donne la valeur **exacte** de son volume (en fonction de $\\pi$).\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..9"
+				}
+			],
+			"conditions": ["r%3==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*r^3/3}}\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'une boule** de rayon $r$ : $V = \\dfrac{4}{3} \\pi r^3$ (formule admise).",
+					"Boule entière : $\\dfrac{4}{3} \\times \\pi \\times {{r}}^3 = {{eval:4*r^3/3}}\\pi~\\unit{cm^3}$.",
+					"Demi-boule : ${{eval:4*r^3/3}}\\pi \\div 2 = \\textcolor{{{color:primary.0}}}{{{eval:2*r^3/3}}\\pi~\\unit{cm^3}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rayon 3 : 36π",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["36\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "36 × π accepté",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["36\\times\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4/3 π r² = 12π",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["12\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : π r³ = 27π",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["27\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rayon 2 : 32/3 π",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2"
+			},
+			"answers": ["\\frac{32}{3}\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "32π/3 accepté",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2"
+			},
+			"answers": ["\\frac{32\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 16/3 π (r²)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2"
+			},
+			"answers": ["\\frac{16}{3}\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rayon 10 : 4 189",
+			"variationIndex": 2,
+			"variables": {
+				"r": "10"
+			},
+			"answers": ["4189"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 188 (troncature)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "10"
+			},
+			"answers": ["4188"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 419 (r²)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "10"
+			},
+			"answers": ["419"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diamètre 12 : 288π",
+			"variationIndex": 3,
+			"variables": {
+				"r": "6",
+				"d": "12"
+			},
+			"answers": ["288\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le diamètre pris pour rayon (2 304π)",
+			"variationIndex": 3,
+			"variables": {
+				"r": "6",
+				"d": "12"
+			},
+			"answers": ["2304\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Demi-boule de rayon 3 : 18π",
+			"variationIndex": 4,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["18\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la boule entière",
+			"variationIndex": 4,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["36\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

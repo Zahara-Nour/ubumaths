@@ -1,0 +1,155 @@
+{
+	"title": "Employer « en fonction de »",
+	"description": "Comprendre « exprimer A en fonction de B » : la formule p = 2n exprime p en fonction de n ; choisir la formule qui exprime le prix en fonction de la masse",
+	"grades": ["5"],
+	"theme": "Calcul littéral",
+	"domain": "Écrire",
+	"subdomain": "Formules",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La formule ${{if:k==0|p = 2n|{{if:k==1|d = 60t|{{if:k==2|A = c \\times c|m = 250x}}}}}}$ exprime :\n\n```choix\nmelanger: non\n- ${{if:k==0|p|{{if:k==1|d|{{if:k==2|A|m}}}}}}$ en fonction de ${{if:k==0|n|{{if:k==1|t|{{if:k==2|c|x}}}}}}$\n- ${{if:k==0|n|{{if:k==1|t|{{if:k==2|c|x}}}}}}$ en fonction de ${{if:k==0|p|{{if:k==1|d|{{if:k==2|A|m}}}}}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**« En fonction de ».** Exprimer une grandeur $A$ en fonction d'une grandeur $B$, c'est écrire une formule qui donne $A$ quand on connaît $B$ : $A$ est seule d'un côté du signe $=$, et $B$ est dans le calcul.",
+					"Dans ${{if:k==0|p = 2n|{{if:k==1|d = 60t|{{if:k==2|A = c \\times c|m = 250x}}}}}}$, on calcule ${{if:k==0|p|{{if:k==1|d|{{if:k==2|A|m}}}}}}$ à partir de ${{if:k==0|n|{{if:k==1|t|{{if:k==2|c|x}}}}}}$ : la formule exprime $\\textcolor{{{color:primary.0}}}{{{if:k==0|p|{{if:k==1|d|{{if:k==2|A|m}}}}}}\\text{ en fonction de }{{if:k==0|n|{{if:k==1|t|{{if:k==2|c|x}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Les pommes coûtent ${{k}}~\\unit{€}$ le kilogramme. On veut exprimer le prix $p$ à payer, en euros, **en fonction de** la masse $m$ achetée, en kilogrammes.\n\nQuelle formule convient ?\n\n```choix\n- $p = {{k}}m$\n- $m = {{k}}p$\n- $m = \\dfrac{p}{{{k}}}$\n- $p = m + {{k}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**« En fonction de ».** Exprimer une grandeur $A$ en fonction d'une grandeur $B$, c'est écrire une formule qui donne $A$ quand on connaît $B$ : $A$ est seule d'un côté du signe $=$, et $B$ est dans le calcul.",
+					"Le prix, c'est ${{k}}$ fois la masse : $p = {{k}} \\times m$, qui s'écrit $\\textcolor{{{color:primary.0}}}{p = {{k}}m}$.",
+					"$m = \\dfrac{p}{{{k}}}$ est juste aussi, mais elle exprime $m$ en fonction de $p$ : ce n'est pas ce qu'on demande."
+				]
+			}
+		},
+		{
+			"statement": "On veut calculer le prix à payer **en fonction du** nombre de places de cinéma achetées.\n\nQue calcule-t-on, et à partir de quoi ?\n\n```choix\nmelanger: non\n- On calcule le prix à partir du nombre de places.\n- On calcule le nombre de places à partir du prix.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**« En fonction de ».** Exprimer une grandeur $A$ en fonction d'une grandeur $B$, c'est écrire une formule qui donne $A$ quand on connaît $B$ : $A$ est seule d'un côté du signe $=$, et $B$ est dans le calcul.",
+					"Le prix est exprimé en fonction du nombre de places : $\\textcolor{{{color:primary.0}}}{\\text{on calcule le prix à partir du nombre de places}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p = 2n : p en fonction de n",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n en fonction de p",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A = c × c : A en fonction de c",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pommes 3 € : p = 3m",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : m = p/3 (à l'envers)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p = m + 3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cinéma : le prix",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le nombre de places",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

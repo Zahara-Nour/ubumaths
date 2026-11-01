@@ -1,0 +1,243 @@
+{
+	"id": "264b9c11-e171-4a2c-9b6e-d5151b309e99",
+	"title": "Primitive de cos(ωx) et sin(ωx)",
+	"description": "Primitives de cos(ωx) et sin(ωx), quelconques ou nulles en 0 (pièges : facteur 1/ω oublié ou multiplié, signe)",
+	"grades": ["T_SPE"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Primitives de sinus et cosinus",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{{{eval:w}}}\\sin({{eval:w}}x)"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos({{eval:w}}x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)=0$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "2..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x\\mapsto\\sin({{eval:w}}x)$ est $x\\mapsto {{eval:w}}\\cos({{eval:w}}x)$ : il faut donc diviser par ${{eval:w}}$.",
+					"$F(x)=\\dfrac{1}{{{eval:w}}}\\sin({{eval:w}}x)+k$ et $F(0)=k=0$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{{{eval:w}}}\\sin({{eval:w}}x)}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{1}{{{eval:w}}}\\cos({{eval:w}}x)+\\frac{1}{{{eval:w}}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin({{eval:w}}x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)=0$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "2..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x\\mapsto\\cos({{eval:w}}x)$ est $x\\mapsto -{{eval:w}}\\sin({{eval:w}}x)$ : une primitive de $f$ est $x\\mapsto -\\dfrac{1}{{{eval:w}}}\\cos({{eval:w}}x)$.",
+					"$F(x)=-\\dfrac{1}{{{eval:w}}}\\cos({{eval:w}}x)+k$ et $F(0)=-\\dfrac{1}{{{eval:w}}}+k=0$, donc $k=\\dfrac{1}{{{eval:w}}}$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{-\\dfrac{1}{{{eval:w}}}\\cos({{eval:w}}x)+\\dfrac{1}{{{eval:w}}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"integrand": "\\cos({{eval:w}}x)",
+					"answerKind": "primitive",
+					"expectedAnswer": "\\frac{1}{{{eval:w}}}\\sin({{eval:w}}x)"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos({{eval:w}}x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "2..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $\\sin({{eval:w}}x)$ est ${{eval:w}}\\cos({{eval:w}}x)$ : on divise par ${{eval:w}}$.",
+					"Une primitive de $f$ est $F(x)=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{{{eval:w}}}\\sin({{eval:w}}x)}$ (à une constante près)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{1}{3}\\sin(3x)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"w": "3"
+			},
+			"description": "v0 : cos(3x) → sin(3x)/3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{\\sin(3x)}{3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"w": "3"
+			},
+			"description": "v0 : écrit en fraction",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3\\sin(3x)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"w": "3"
+			},
+			"description": "v0 : multiplié par 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\sin(3x)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"w": "3"
+			},
+			"description": "v0 : sans le facteur",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{1}{2}\\cos(2x)+\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"w": "2"
+			},
+			"description": "v1 : sin(2x) → −cos(2x)/2 + 1/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1-\\cos(2x)}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"w": "2"
+			},
+			"description": "v1 : forme factorisée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{1}{2}\\cos(2x)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"w": "2"
+			},
+			"description": "v1 : condition oubliée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{2}\\cos(2x)-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"w": "2"
+			},
+			"description": "v1 : signe oublié",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{3}\\sin(3x)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"w": "3"
+			},
+			"description": "v2 (ouverte) f=cos(3x) : primitive modèle",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{\\sin(3x)}{3}+1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"w": "3"
+			},
+			"description": "v2 (ouverte) f=cos(3x) : autre constante",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{1}{3}\\sin(3x)+C"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"w": "3"
+			},
+			"description": "v2 (ouverte) f=cos(3x) : avec +C",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-3\\sin(3x)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"w": "3"
+			},
+			"description": "v2 (ouverte) f=cos(3x) : dérivée au lieu de primitive (message)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\sin(3x)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"w": "3"
+			},
+			"description": "v2 (ouverte) f=cos(3x) : division oubliée",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3\\sin(3x)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"w": "3"
+			},
+			"description": "v2 (ouverte) f=cos(3x) : multiplié au lieu de divisé",
+			"variationIndex": 2
+		}
+	]
+}

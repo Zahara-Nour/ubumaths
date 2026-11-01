@@ -1,0 +1,263 @@
+{
+	"title": "Résoudre √x = k",
+	"description": "Équation √x = k par la croissance de la fonction racine carrée : k entier, décimal (√x = 1,2), fraction ; k < 0 → ∅ (pièges : √k au lieu de k², solution négative ajoutée, 2k, k² pour k < 0)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction racine carrée",
+	"subdomain": "Résolution algébrique",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On note $f$ la fonction racine carrée : $f(x)=\\sqrt{x}$, définie sur $\\left[0\\,;+\\infty\\right[$.\n\nRésous dans $\\mathbb{R}$ l'équation $\\sqrt{x}={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:(k)^2}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction racine carrée est **strictement croissante** sur $\\left[0\\,;+\\infty\\right[$ : un nombre positif ou nul a **un seul** antécédent. Pour $k\\geqslant 0$, $\\sqrt{x}=k\\iff x=k^2$.",
+					"$$\\sqrt{x}={{k}}\\iff x={{k}}^2={{eval:(k)^2}}$$",
+					"```courbe\nx: -1 ; {{eval:(k)^2+3}}\ny: -1 ; {{eval:(k)+2}}\nf(x) = sqrt(x)   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{k}}^2 ; {{k}})\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée et droite horizontale y = k en pointillé, qui la coupe en un seul point A.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:(k)^2}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction racine carrée : $f(x)=\\sqrt{x}$, définie sur $\\left[0\\,;+\\infty\\right[$.\n\nRésous dans $\\mathbb{R}$ l'équation $\\sqrt{x}={{eval:(n)/10;d}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..19!10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:(n)^2/100;d}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction racine carrée est **strictement croissante** sur $\\left[0\\,;+\\infty\\right[$ : un nombre positif ou nul a **un seul** antécédent. Pour $k\\geqslant 0$, $\\sqrt{x}=k\\iff x=k^2$.",
+					"$$\\sqrt{x}={{eval:(n)/10;d}}\\iff x={{eval:(n)/10;d}}^2={{eval:(n)^2/100;d}}$$",
+					"(Le carré a deux fois plus de chiffres après la virgule.)",
+					"```courbe\nx: -0.5 ; 4.5\ny: -0.5 ; 2.5\nf(x) = sqrt(x)   bleu   nom=C_f\ng(x) = {{n}}/10   rouge   pointillé\npoints: A(({{n}}/10)^2 ; {{n}}/10)\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée et droite horizontale y = k en pointillé, qui la coupe en un seul point A.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:(n)^2/100;d}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction racine carrée : $f(x)=\\sqrt{x}$, définie sur $\\left[0\\,;+\\infty\\right[$.\n\nRésous dans $\\mathbb{R}$ l'équation $\\sqrt{x}=\\dfrac{ {{p}} }{ {{q}} }$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["gcd(p, q) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:(p)^2/(q)^2}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction racine carrée est **strictement croissante** sur $\\left[0\\,;+\\infty\\right[$ : un nombre positif ou nul a **un seul** antécédent. Pour $k\\geqslant 0$, $\\sqrt{x}=k\\iff x=k^2$.",
+					"$$\\sqrt{x}=\\dfrac{ {{p}} }{ {{q}} }\\iff x=\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^2=\\dfrac{ {{eval:(p)^2}} }{ {{eval:(q)^2}} }$$",
+					"```courbe\nx: -0.5 ; 7\ny: -0.5 ; 3\nf(x) = sqrt(x)   bleu   nom=C_f\ng(x) = {{p}}/{{q}}   rouge   pointillé\npoints: A(({{p}}/{{q}})^2 ; {{p}}/{{q}})\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée et droite horizontale y = k en pointillé, qui la coupe en un seul point A.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{ \\dfrac{ {{eval:(p)^2}} }{ {{eval:(q)^2}} } \\right\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction racine carrée : $f(x)=\\sqrt{x}$, définie sur $\\left[0\\,;+\\infty\\right[$.\n\nRésous dans $\\mathbb{R}$ l'équation $\\sqrt{x}={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "-9..-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\varnothing",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une racine carrée n'est **jamais négative** : pour tout $x\\geqslant 0$, $\\sqrt{x}\\geqslant 0>{{k}}$. La courbe de la fonction racine carrée ne coupe pas la droite $y={{k}}$.",
+					"Aucun réel n'est solution. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "√x = 3 : S = {9}",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["\\{9\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["\\{\\sqrt{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {−9 ; 9}",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["\\{-9;9\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2k {6}",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["\\{6\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans accolades",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x = 1,2 : S = {1,44}",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12"
+			},
+			"answers": ["\\{1{,}44\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : virgule {0,144}",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12"
+			},
+			"answers": ["\\{0{,}144\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {1,4}",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12"
+			},
+			"answers": ["\\{1{,}4\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x = 2/3 : S = {4/9}",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"answers": ["\\{\\frac{4}{9}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {4/3}",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"answers": ["\\{\\frac{4}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {2/9}",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"answers": ["\\{\\frac{2}{9}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x = −4 : S = ∅",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-4"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {16}",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-4"
+			},
+			"answers": ["\\{16\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

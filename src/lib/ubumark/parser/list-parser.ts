@@ -58,6 +58,12 @@ const UNORDERED_LIST_REGEX = /^(\s*)([-*+])(?:\s+(.*))?$/;
 const LIST_ITEM_REGEX = /^(\s*)(?:(\d+|[a-z])[.)]|([-*+]))(?:\s+(.*))?$/;
 
 /**
+ * Ouverture de bloc (``` ou ~~~, langue facultative) seule sur la ligne de l'item.
+ * Un ```x``` en ligne ou un `~~~ texte` n'en sont pas : rien qu'un nom de langue après.
+ */
+const FENCE_OPENING_REGEX = /^(`{3,}|~{3,})[\w-]*\s*$/;
+
+/**
  * Marqueur `:colonnes N` (N de 1 à 4) sur sa propre ligne, avant une liste.
  * N hors de 1..4 ou non numérique : pas un marqueur, la ligne reste du texte.
  */
@@ -231,7 +237,15 @@ export function parseList(lines: string[]): ListNode[] {
 	for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
 		const line = lines[lineIndex];
 		const isBlank = line.trim() === '';
-		const parsed = parseListItemLine(line);
+		// Bloc ouvert : une ligne `- …` au retrait de son corps est une ligne du bloc
+		// (```ranger, ```choix), pas un sous-item ; à la marge de l'item, c'est un
+		// nouvel item (bloc non fermé)
+		const fenceBodyIndent: number = currentItem
+			? (currentItem.indent + 1) * (currentItem.ordered ? 3 : 2)
+			: 0;
+		const inFenceBody: boolean =
+			inCodeFence && (line.match(/^ */)?.[0].length ?? 0) >= fenceBodyIndent;
+		const parsed: RawListItem | null = inFenceBody ? null : parseListItemLine(line);
 
 		// `:colonnes N` en retrait : ne vaut que s'il annonce une NOUVELLE sous-liste du
 		// dernier item (lignes vides tolérées). Sinon, aucun traitement particulier : il
@@ -271,6 +285,16 @@ export function parseList(lines: string[]): ListNode[] {
 			inCodeFence = false;
 			codeFenceChar = '';
 			inLateContination = false;
+			// Bloc ouvert sur la ligne même de l'item (`- ```cubes`) : l'ouverture rejoint
+			// son corps dans la continuation, sinon les deux finissent dans deux
+			// paragraphes et le bloc est lu vide (« bloc non fermé »)
+			const openingFence = parsed.content.match(FENCE_OPENING_REGEX);
+			if (openingFence) {
+				pendingContinuation.push(parsed.content);
+				parsed.content = '';
+				inCodeFence = true;
+				codeFenceChar = openingFence[1][0];
+			}
 		} else if (currentItem && !isBlank) {
 			// This is a continuation line (indented content after a list item)
 			// Remove the list continuation indent based on current item's indent level and type

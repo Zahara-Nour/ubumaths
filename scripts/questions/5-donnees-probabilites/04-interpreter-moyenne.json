@@ -1,0 +1,188 @@
+{
+	"title": "Interpréter une moyenne",
+	"description": "Dire ce qu'une moyenne apprend sur une série : une moyenne de 12 ne veut pas dire que chacun a 12 ; somme = moyenne × effectif ; une valeur au moins atteint la moyenne",
+	"grades": ["5"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "moyenne",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans une classe de ${{n}}$ élèves, la moyenne au dernier contrôle est de ${{k}}$ sur $20$.\n\nQuelles phrases sont vraies ?\n\n```choix\nplusieurs: oui\n- Tous les élèves ont eu ${{k}}$.\n- La somme des notes de la classe est ${{eval:n*k}}$.\n- Au moins un élève a eu ${{k}}$ ou plus.\n- Au moins un élève a eu ${{k}}$ ou moins.\n- La moitié des élèves a eu plus de ${{k}}$.\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20..30"
+				},
+				{
+					"name": "k",
+					"expression": "9..14"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1;2;3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que dit une moyenne.** Si on remplaçait toutes les valeurs par la moyenne, la somme ne changerait pas : $\\text{somme} = \\text{moyenne} \\times \\text{nombre de valeurs}$. Cela ne veut pas dire que chaque valeur est égale à la moyenne.",
+					"Somme des notes : ${{n}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:n*k}}}$.",
+					"Si toutes les notes étaient sous ${{k}}$, la moyenne serait sous ${{k}}$ : au moins une note est donc ${{k}}$ ou plus ; de même, au moins une est ${{k}}$ ou moins.",
+					"On ne sait rien des notes une à une : peut-être que personne n'a eu ${{k}}$, et la moyenne ne dit pas combien d'élèves sont au-dessus."
+				]
+			}
+		},
+		{
+			"statement": "Pendant une semaine ($7$ jours), la température moyenne à midi a été de ${{k}}$ °C.\n\nQuelles phrases sont vraies ?\n\n```choix\nplusieurs: oui\n- Il a fait ${{k}}$ °C à midi chaque jour.\n- Un jour au moins, il a fait ${{k}}$ °C ou plus à midi.\n- La somme des sept températures est ${{eval:7*k}}$.\n- Il a fait plus de ${{k}}$ °C au moins quatre jours.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "12..26"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1;2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que dit une moyenne.** Si on remplaçait toutes les valeurs par la moyenne, la somme ne changerait pas : $\\text{somme} = \\text{moyenne} \\times \\text{nombre de valeurs}$. Cela ne veut pas dire que chaque valeur est égale à la moyenne.",
+					"Somme des températures : $7 \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:7*k}}}$.",
+					"Si tous les jours étaient sous ${{k}}$ °C, la moyenne serait sous ${{k}}$ °C : un jour au moins a atteint ${{k}}$ °C.",
+					"La moyenne ne dit ni la température de chaque jour, ni combien de jours ont dépassé ${{k}}$ °C."
+				]
+			}
+		},
+		{
+			"statement": "Hugo a eu $\\text{{{k}} ; {{k}} ; {{k}} ; {{k}}}$ et Nora $\\text{{{a}} ; {{b}} ; {{c}} ; {{d}}}$.\n\nQuelles phrases sont vraies ?\n\n```choix\nplusieurs: oui\n- Hugo et Nora ont la même moyenne.\n- Nora a une meilleure moyenne que Hugo, car elle a eu ${{eval:max(a,b,c,d)}}$.\n- Nora a eu au moins une note sous sa moyenne.\n- Une moyenne de ${{k}}$ veut dire que toutes les notes valent ${{k}}$.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "10..14"
+				},
+				{
+					"name": "a",
+					"expression": "eval:k-6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:k+6"
+				},
+				{
+					"name": "c",
+					"expression": "eval:k-2"
+				},
+				{
+					"name": "d",
+					"expression": "eval:k+2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que dit une moyenne.** Si on remplaçait toutes les valeurs par la moyenne, la somme ne changerait pas : $\\text{somme} = \\text{moyenne} \\times \\text{nombre de valeurs}$. Cela ne veut pas dire que chaque valeur est égale à la moyenne.",
+					"Hugo : $\\dfrac{4 \\times {{k}}}{4} = {{k}}$ ; Nora : $\\dfrac{{{a}} + {{b}} + {{c}} + {{d}}}{4} = \\dfrac{{{eval:4*k}}}{4} = {{k}}$ : $\\textcolor{{{color:primary.0}}}{\\text{même moyenne}}$.",
+					"Nora a eu ${{a}}$, sous sa moyenne : une moyenne de ${{k}}$ ne veut pas dire que toutes les notes valent ${{k}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Classe : 1, 2, 3",
+			"variationIndex": 0,
+			"variables": {
+				"n": "25",
+				"k": "12"
+			},
+			"answers": ["1;2;3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tous ont eu 12",
+			"variationIndex": 0,
+			"variables": {
+				"n": "25",
+				"k": "12"
+			},
+			"answers": ["0;1;2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la moitié au-dessus",
+			"variationIndex": 0,
+			"variables": {
+				"n": "25",
+				"k": "12"
+			},
+			"answers": ["1;2;3;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Températures : 1, 2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "18"
+			},
+			"answers": ["1;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chaque jour 18",
+			"variationIndex": 1,
+			"variables": {
+				"k": "18"
+			},
+			"answers": ["0;2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Comparer : 0, 2",
+			"variationIndex": 2,
+			"variables": {
+				"k": "12",
+				"a": "6",
+				"b": "18",
+				"c": "10",
+				"d": "14"
+			},
+			"answers": ["0;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la meilleure note",
+			"variationIndex": 2,
+			"variables": {
+				"k": "12",
+				"a": "6",
+				"b": "18",
+				"c": "10",
+				"d": "14"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

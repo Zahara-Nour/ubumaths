@@ -1,0 +1,102 @@
+{
+	"id": "7c8bd127-d67e-47ba-a4ad-1277833ab12f",
+	"title": "Espace : produit scalaire par polarisation",
+	"description": "u·v à partir de ‖u‖, ‖v‖ et ‖u + v‖ (piège : division par 2 oubliée)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Produit scalaire",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(c^2-a^2-b^2)/2}}"
+				}
+			],
+			"statement": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\|\\vec{u}+\\vec{v}\\|={{c}}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "2..12"
+				}
+			],
+			"conditions": ["c <= a + b", "c >= a - b", "c >= b - a"],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}+\\vec{v}\\|^2=\\|\\vec{u}\\|^2+2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$, donc $\\vec{u}\\cdot\\vec{v}=\\dfrac{1}{2}\\left(\\|\\vec{u}+\\vec{v}\\|^2-\\|\\vec{u}\\|^2-\\|\\vec{v}\\|^2\\right)$.",
+					"$\\vec{u}\\cdot\\vec{v}=\\dfrac{1}{2}\\left({{c}}^2-{{a}}^2-{{b}}^2\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:(c^2-a^2-b^2)/2}} }$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{11}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"description": "v0 : 11/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5.5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"description": "v0 : 5,5 accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"description": "v0 : division par 2 oubliée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"description": "v0 : normes non élevées au carré",
+			"variationIndex": 0
+		}
+	]
+}

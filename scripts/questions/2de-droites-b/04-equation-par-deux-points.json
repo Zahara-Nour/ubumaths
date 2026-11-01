@@ -1,0 +1,278 @@
+{
+	"title": "Équation d'une droite passant par deux points",
+	"description": "Équation de (AB) : pente puis ordonnée à l'origine, pente fractionnaire (par le déterminant), droite x = c quand x_A = x_B ; forme libre (pièges : droite par un seul des deux points, pente Δx/Δy)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Équations de droites",
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère du plan, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{eval:(ax)+(dx)}}\\,;\\,{{eval:(ay)+(dy)}})$.\n\nDonne une équation de la droite $(AB)$.\n\n$?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "dx",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "dy",
+					"expression": "eval:(k)*(dx)"
+				},
+				{
+					"name": "p0",
+					"expression": "eval:(ay)-(k)*(ax)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "y={{k}}x{{eval:(ay)-(k)*(ax);+}}",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x_A\\neq x_B$ : la droite $(AB)$ a une équation de la forme $y=mx+p$, de pente :",
+					"$$m=\\dfrac{y_B-y_A}{x_B-x_A}=\\dfrac{ {{dy}} }{ {{dx}} }={{k}}$$",
+					"Elle passe par $A$ : ${{ay}}={{k}}\\times{{ax;()}}+p$, donc $p={{eval:(ay)-(k)*(ax)}}$.",
+					"Une équation de $(AB)$ est $\\textcolor{{{color:primary.0}}}{y={{if:k==1|x}}{{if:k==-1|-x}}{{if:k>1|{{k}}x}}{{if:k< -1|{{k}}x}}{{if:p0>0|+{{p0}}}}{{if:p0< 0|{{p0}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{eval:(ax)+(dx)}}\\,;\\,{{eval:(ay)+(dy)}})$.\n\nDonne une équation de la droite $(AB)$.\n\n$?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "dx",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "dy",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "mdx",
+					"expression": "eval:-(dx)"
+				},
+				{
+					"name": "c0",
+					"expression": "eval:(dx)*(ay)-(dy)*(ax)"
+				}
+			],
+			"conditions": ["mod(dy, dx) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{dy}}x{{eval:-(dx);+}}y{{eval:(dx)*(ay)-(dy)*(ax);+}}=0",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{dx}}\\\\{{dy}}\\end{pmatrix}$ dirige $(AB)$. Le point $M(x\\,;\\,y)$ est sur $(AB)$ si et seulement si $\\overrightarrow{AM}\\begin{pmatrix}x{{eval:-(ax);+}}\\\\y{{eval:-(ay);+}}\\end{pmatrix}$ et $\\overrightarrow{AB}$ sont colinéaires :",
+					"$$\\det\\left(\\overrightarrow{AM},\\overrightarrow{AB}\\right)={{dy;()}}(x{{eval:-(ax);+}})-{{dx;()}}(y{{eval:-(ay);+}})=0$$",
+					"Une équation de $(AB)$ est $\\textcolor{{{color:primary.0}}}{{{if:dy==1|x}}{{if:dy==-1|-x}}{{if:dy>1|{{dy}}x}}{{if:dy< -1|{{dy}}x}}{{if:mdx==1|+y}}{{if:mdx==-1|-y}}{{if:mdx>1|+{{mdx}}y}}{{if:mdx< -1|{{mdx}}y}}{{if:c0>0|+{{c0}}}}{{if:c0< 0|{{c0}}}}=0}$, soit $y={{eval:(dy)/(dx)}}x{{eval:(ay)-(dy)*(ax)/(dx);+}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{ax}}\\,;\\,{{eval:(ay)+(dy)}})$.\n\nDonne une équation de la droite $(AB)$.\n\n$?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "dy",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "x={{ax}}",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ et $B$ ont la même abscisse ${{ax}}$ : la droite $(AB)$ est parallèle à l'axe des ordonnées, elle n'a pas de pente.",
+					"Une équation de $(AB)$ est $\\textcolor{{{color:primary.0}}}{x={{ax}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A(1 ; 2), B(3 ; 8) → y = 3x − 1",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"dx": "2",
+				"k": "3",
+				"dy": "6"
+			},
+			"answers": ["y=3x-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cartésienne 3x − y − 1 = 0",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"dx": "2",
+				"k": "3",
+				"dy": "6"
+			},
+			"answers": ["3x-y-1=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p = y_A (y = 3x + 2)",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"dx": "2",
+				"k": "3",
+				"dy": "6"
+			},
+			"answers": ["y=3x+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pente Δx/Δy",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"dx": "2",
+				"k": "3",
+				"dy": "6"
+			},
+			"answers": ["y=\\frac{1}{3}x+\\frac{5}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(−1 ; 3), B(3 ; −3) → −6x − 4y + 6 = 0",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "-1",
+				"ay": "3",
+				"dx": "4",
+				"dy": "-6"
+			},
+			"answers": ["-6x-4y+6=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Réduite y = −3/2 x + 3/2",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "-1",
+				"ay": "3",
+				"dx": "4",
+				"dy": "-6"
+			},
+			"answers": ["y=-\\frac{3}{2}x+\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Simplifiée 3x + 2y − 3 = 0",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "-1",
+				"ay": "3",
+				"dx": "4",
+				"dy": "-6"
+			},
+			"answers": ["3x+2y-3=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : c faux (3x + 2y − 4 = 0)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "-1",
+				"ay": "3",
+				"dx": "4",
+				"dy": "-6"
+			},
+			"answers": ["3x+2y-4=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x_A = x_B = 2 → x = 2",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "2",
+				"ay": "-1",
+				"dy": "4"
+			},
+			"answers": ["x=2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y = 2",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "2",
+				"ay": "-1",
+				"dy": "4"
+			},
+			"answers": ["y=2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

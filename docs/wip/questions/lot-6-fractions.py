@@ -110,16 +110,6 @@ def reduite_ou_entier(n, d):
             + fr(ev('(' + n + ')/' + g), ev('(' + d + ')/' + g)) + '}}')
 
 
-# Permutations de trois nombres (ordre d'affichage) ; la 0 (déjà rangés) n'est jamais tirée
-PERMUTATIONS = [(0, 1, 2), (0, 2, 1), (1, 0, 2), (1, 2, 0), (2, 0, 1), (2, 1, 0)]
-
-
-def melange(nombres):
-    """Les trois nombres (rangés) dans l'ordre d'affichage tiré par `p` (1 à 5)."""
-    return selon('p', [' \\quad ; \\quad '.join(nombres[k] for k in perm)
-                       for perm in PERMUTATIONS])
-
-
 PARTS_A = ['à la moitié', 'au tiers', 'au quart', 'au cinquième', 'au sixième', 'au septième',
            'au huitième', 'au neuvième', 'au dixième', 'au onzième', 'au douzième']
 PARTS = ['la moitié', 'le tiers', 'le quart', 'le cinquième', 'le sixième', 'le septième',
@@ -484,13 +474,24 @@ MODELES.append(modele(
 
 # --- 6. 6-134 : ranger des fractions -------------------------------------------------------
 
-RANGE = ('Range ces nombres dans l\'ordre croissant.\n\n$$NOMBRES$$\n\n$$? < ? < ?$$')
+# Bloc ```ranger (lot 7, 2026-10-31 ; trois cases avant) : étiquettes écrites dans le bon ordre,
+# mélangées au tirage ; la réponse d'une place est la position AFFICHÉE de l'étiquette
 
 
 def range3(nombres, variables, steps, conditions):
-    """`nombres` : les trois nombres déjà rangés ; affichés dans l'ordre tiré par `p`."""
-    return variation(RANGE.replace('NOMBRES', melange(nombres)), [var('p', '1..5')] + variables,
-                     nombres, steps + ['$$' + col(' < '.join(nombres)) + '$$'], conditions)
+    """`nombres` : les trois nombres déjà rangés, du plus petit au plus grand."""
+    return variation('Range ces nombres dans l\'ordre croissant.\n\n```ranger\nsigne: <\n'
+                     + ''.join('- $' + n + '$\n' for n in nombres) + '```', variables, None,
+                     steps + ['$$' + col(' < '.join(nombres)) + '$$'], conditions)
+
+
+# Positions affichées, relevées avec le générateur (variables des specs) : l'étiquette écrite au
+# rang i est affichée en POS3[i]
+POS3 = ['2', '0', '1']
+
+
+def rang3(ordre):
+    return [POS3[i] for i in ordre]
 
 
 RANGER_DENOMINATEUR = range3(
@@ -528,19 +529,16 @@ MODELES.append(modele(
     ' (1/2 ; 5/8 ; 3/4), autour de 1 (99/100 ; 1 ; 7/6)',
     'Fractions', 'Apprivoiser', 'Ordonner', 1,
     [RANGER_DENOMINATEUR, RANGER_MULTIPLES, RANGER_AUTOUR_DE_UN],
-    [spec('2/7 < 3/7 < 6/7', 0, {'p': 3, 'b': 7, 'x': 2, 'y': 3, 'z': 6},
-          ['\\frac{2}{7}', '\\frac{3}{7}', '\\frac{6}{7}'], 'correct'),
-     spec('Erreur : ordre décroissant', 0, {'p': 3, 'b': 7, 'x': 2, 'y': 3, 'z': 6},
-          ['\\frac{6}{7}', '\\frac{3}{7}', '\\frac{2}{7}'], 'incorrect'),
-     spec('1/2 < 5/8 < 3/4', 1, {'p': 5, 'D': 8, 'x': 4, 'y': 5, 'z': 6},
-          ['\\frac{1}{2}', '\\frac{5}{8}', '\\frac{3}{4}'], 'correct'),
+    [spec('2/7 < 3/7 < 6/7', 0, {'b': 7, 'x': 2, 'y': 3, 'z': 6}, rang3([0, 1, 2]), 'correct'),
+     spec('Erreur : ordre décroissant', 0, {'b': 7, 'x': 2, 'y': 3, 'z': 6}, rang3([2, 1, 0]),
+          'incorrect'),
+     spec('1/2 < 5/8 < 3/4', 1, {'D': 8, 'x': 4, 'y': 5, 'z': 6}, rang3([0, 1, 2]), 'correct'),
      spec('Erreur : rangées par numérateurs (1/2 ; 3/4 ; 5/8)', 1,
-          {'p': 5, 'D': 8, 'x': 4, 'y': 5, 'z': 6},
-          ['\\frac{1}{2}', '\\frac{3}{4}', '\\frac{5}{8}'], 'incorrect'),
-     spec('99/100 < 1 < 7/6', 2, {'p': 4, 'b': 100, 'a': 99, 'd': 6, 'c': 7},
-          ['\\frac{99}{100}', '1', '\\frac{7}{6}'], 'correct'),
-     spec('Erreur : 1 < 99/100 < 7/6', 2, {'p': 4, 'b': 100, 'a': 99, 'd': 6, 'c': 7},
-          ['1', '\\frac{99}{100}', '\\frac{7}{6}'], 'incorrect')],
+          {'D': 8, 'x': 4, 'y': 5, 'z': 6}, rang3([0, 2, 1]), 'incorrect'),
+     spec('99/100 < 1 < 7/6', 2, {'b': 100, 'a': 99, 'd': 6, 'c': 7}, rang3([0, 1, 2]),
+          'correct'),
+     spec('Erreur : 1 < 99/100 < 7/6', 2, {'b': 100, 'a': 99, 'd': 6, 'c': 7}, rang3([1, 0, 2]),
+          'incorrect')],
     delay=60))
 
 # --- 7. 6-204 : ranger des nombres mixtes --------------------------------------------------
@@ -576,9 +574,6 @@ RANGER_AVEC_FRACTION = range3(
      + fr('1', '{{b}}') + ' < ' + fr('1', '{{v}}') + '$.'],
     ['gcd(x,y)==1'])
 
-MI_1 = ['2 + \\frac{3}{5}', '3 + \\frac{1}{2}', '4 + \\frac{1}{4}']
-MI_2 = ['1 + \\frac{3}{4}', '2 + \\frac{1}{4}', '2 + \\frac{1}{3}']
-MI_3 = ['1 + \\frac{3}{4}', '\\frac{9}{4}', '2 + \\frac{1}{3}']
 MODELES.append(modele(
     '07-ranger-des-nombres-mixtes', 'Ranger des nombres mixtes',
     'Ranger trois nombres mixtes dans l\'ordre croissant : parties entières différentes, même'
@@ -586,22 +581,17 @@ MODELES.append(modele(
     'Fractions', 'Apprivoiser', 'Ordonner', 2,
     [RANGER_PARTIES_ENTIERES, RANGER_MEME_PARTIE, RANGER_AVEC_FRACTION],
     [spec('2 + 3/5 < 3 + 1/2 < 4 + 1/4', 0,
-          {'p': 2, 'q': 2, 'y': 5, 'x': 3, 'v': 2, 'u': 1, 't': 4, 's': 1}, MI_1, 'correct'),
+          {'q': 2, 'y': 5, 'x': 3, 'v': 2, 'u': 1, 't': 4, 's': 1}, rang3([0, 1, 2]), 'correct'),
      spec('Erreur : rangés par fractions', 0,
-          {'p': 2, 'q': 2, 'y': 5, 'x': 3, 'v': 2, 'u': 1, 't': 4, 's': 1},
-          ['4 + \\frac{1}{4}', '3 + \\frac{1}{2}', '2 + \\frac{3}{5}'], 'incorrect'),
-     spec('1 + 3/4 < 2 + 1/4 < 2 + 1/3', 1, {'p': 4, 'q': 2, 'y': 4, 'x': 3, 'm': 4, 'n': 3},
-          MI_2, 'correct'),
-     spec('Erreur : 2 + 1/3 < 2 + 1/4 (« 4 > 3 »)', 1,
-          {'p': 4, 'q': 2, 'y': 4, 'x': 3, 'm': 4, 'n': 3},
-          ['1 + \\frac{3}{4}', '2 + \\frac{1}{3}', '2 + \\frac{1}{4}'], 'incorrect'),
-     spec('1 + 3/4 < 9/4 < 2 + 1/3', 2, {'p': 1, 'q': 2, 'y': 4, 'x': 3, 'b': 4, 'v': 3}, MI_3,
-          'correct'),
-     spec('7/4 au lieu de 1 + 3/4 : les nombres donnés sont à recopier', 2,
-          {'p': 1, 'q': 2, 'y': 4, 'x': 3, 'b': 4, 'v': 3},
-          ['\\frac{7}{4}', '\\frac{9}{4}', '2 + \\frac{1}{3}'], 'bad_form', ['form']),
-     spec('Erreur : 9/4 le plus grand', 2, {'p': 1, 'q': 2, 'y': 4, 'x': 3, 'b': 4, 'v': 3},
-          ['1 + \\frac{3}{4}', '2 + \\frac{1}{3}', '\\frac{9}{4}'], 'incorrect')],
+          {'q': 2, 'y': 5, 'x': 3, 'v': 2, 'u': 1, 't': 4, 's': 1}, rang3([2, 1, 0]), 'incorrect'),
+     spec('1 + 3/4 < 2 + 1/4 < 2 + 1/3', 1, {'q': 2, 'y': 4, 'x': 3, 'm': 4, 'n': 3},
+          rang3([0, 1, 2]), 'correct'),
+     spec('Erreur : 2 + 1/3 < 2 + 1/4 (« 4 > 3 »)', 1, {'q': 2, 'y': 4, 'x': 3, 'm': 4, 'n': 3},
+          rang3([0, 2, 1]), 'incorrect'),
+     spec('1 + 3/4 < 9/4 < 2 + 1/3', 2, {'q': 2, 'y': 4, 'x': 3, 'b': 4, 'v': 3},
+          rang3([0, 1, 2]), 'correct'),
+     spec('Erreur : 9/4 le plus grand', 2, {'q': 2, 'y': 4, 'x': 3, 'b': 4, 'v': 3},
+          rang3([0, 2, 1]), 'incorrect')],
     delay=60))
 
 # --- 8. 6-205 : soustraire des fractions ---------------------------------------------------

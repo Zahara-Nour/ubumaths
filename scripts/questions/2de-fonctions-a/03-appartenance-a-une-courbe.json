@@ -1,0 +1,304 @@
+{
+	"title": "Un point est-il sur la courbe ? (par le calcul)",
+	"description": "Calculer f(x_A) puis dire si A est sur C_f : polynôme du second degré, produit, quotient k/(x − c) (pièges : (−2)² calculé −4, coordonnées échangées, conclusion sans calcul)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Définition et courbe",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}x^2{{b;+}}x{{c;+}}$, et sa courbe représentative $\\mathcal{C}_f$.\n\nCalcule $f({{xa}})$.\n\n$f({{xa}})=?$\n\nLe point $A({{xa}}\\,;\\,{{ya}})$ appartient-il à $\\mathcal{C}_f$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "xa",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ya",
+					"expression": "eval:(a)*(xa)^2+(b)*(xa)+(c)+(1-(w))*(s)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)*(xa)^2+(b)*(xa)+(c)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1-(w)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ appartient à $\\mathcal{C}_f$ si et seulement si son ordonnée est l'image de son abscisse : $y_A=f(x_A)$.",
+					"$$f({{xa}})={{a}}\\times{{xa;()}}^2{{b;+}}\\times{{xa;()}}{{c;+}}=\\textcolor{{{color:primary.0}}}{{{eval:(a)*(xa)^2+(b)*(xa)+(c)}}}$$",
+					"{{if:w==1|$f({{xa}})={{ya}}$, l'ordonnée de $A$ : **$A$ appartient à $\\mathcal{C}_f$**.|$f({{xa}})={{eval:(a)*(xa)^2+(b)*(xa)+(c)}}\\neq{{ya}}$ : **$A$ n'appartient pas à $\\mathcal{C}_f$**.}}"
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)=(x{{p;+}})(x{{q;+}})$, et sa courbe représentative $\\mathcal{C}_f$.\n\nCalcule $f({{xa}})$.\n\n$f({{xa}})=?$\n\nLe point $A({{xa}}\\,;\\,{{ya}})$ appartient-il à $\\mathcal{C}_f$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "xa",
+					"expression": "-5..5"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ya",
+					"expression": "eval:((xa)+(p))*((xa)+(q))+(1-(w))*(s)"
+				}
+			],
+			"conditions": ["p != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((xa)+(p))*((xa)+(q))}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1-(w)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ appartient à $\\mathcal{C}_f$ si et seulement si son ordonnée est l'image de son abscisse : $y_A=f(x_A)$.",
+					"$$f({{xa}})=({{xa}}{{p;+}})({{xa}}{{q;+}})={{eval:(xa)+(p);()}}\\times{{eval:(xa)+(q);()}}=\\textcolor{{{color:primary.0}}}{{{eval:((xa)+(p))*((xa)+(q))}}}$$",
+					"{{if:w==1|$f({{xa}})={{ya}}$, l'ordonnée de $A$ : **$A$ appartient à $\\mathcal{C}_f$**.|$f({{xa}})={{eval:((xa)+(p))*((xa)+(q))}}\\neq{{ya}}$ : **$A$ n'appartient pas à $\\mathcal{C}_f$**.}}"
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}\\setminus\\{ {{c}} \\}$ par $f(x)=\\dfrac{ {{k}} }{x{{eval:-(c);+}}}$, et sa courbe représentative $\\mathcal{C}_f$.\n\nCalcule $f({{xa}})$.\n\n$f({{xa}})=?$\n\nLe point $A({{xa}}\\,;\\,{{ya}})$ appartient-il à $\\mathcal{C}_f$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "d",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(d)*(r)"
+				},
+				{
+					"name": "xa",
+					"expression": "eval:(c)+(d)"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ya",
+					"expression": "eval:(r)+(1-(w))*(s)"
+				}
+			],
+			"conditions": ["xa != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1-(w)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ appartient à $\\mathcal{C}_f$ si et seulement si son ordonnée est l'image de son abscisse : $y_A=f(x_A)$.",
+					"$$f({{xa}})=\\dfrac{ {{k}} }{ {{xa}}{{eval:-(c);+}} }=\\dfrac{ {{k}} }{ {{d}} }=\\textcolor{{{color:primary.0}}}{{{r}}}$$",
+					"{{if:w==1|$f({{xa}})={{ya}}$, l'ordonnée de $A$ : **$A$ appartient à $\\mathcal{C}_f$**.|$f({{xa}})={{r}}\\neq{{ya}}$ : **$A$ n'appartient pas à $\\mathcal{C}_f$**.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(x) = 2x² − 3x + 1, f(2) = 3, A(2 ; 3) : « Oui »",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"xa": "2",
+				"w": "1",
+				"s": "1",
+				"ya": "3"
+			},
+			"answers": ["3", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "A(2 ; 5) : « Non »",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"xa": "2",
+				"w": "0",
+				"s": "2",
+				"ya": "5"
+			},
+			"answers": ["3", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « Oui » pour A(2 ; 5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"xa": "2",
+				"w": "0",
+				"s": "2",
+				"ya": "5"
+			},
+			"answers": ["3", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−x² + 2x + 3, f(−2) = −5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"b": "2",
+				"c": "3",
+				"xa": "-2",
+				"w": "1",
+				"s": "1",
+				"ya": "-5"
+			},
+			"answers": ["-5", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (−2)² = −4 → f(−2) = 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"b": "2",
+				"c": "3",
+				"xa": "-2",
+				"w": "1",
+				"s": "1",
+				"ya": "-5"
+			},
+			"answers": ["3", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x − 1)(x + 2), f(3) = 10 : « Oui »",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-1",
+				"q": "2",
+				"xa": "3",
+				"w": "1",
+				"s": "1",
+				"ya": "10"
+			},
+			"answers": ["10", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−6/(x − 1), f(−1) = 3, A(−1 ; 4) : « Non »",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"d": "-2",
+				"r": "3",
+				"k": "-6",
+				"xa": "-1",
+				"w": "0",
+				"s": "1",
+				"ya": "4"
+			},
+			"answers": ["3", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe (f(−1) = −3)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"d": "-2",
+				"r": "3",
+				"k": "-6",
+				"xa": "-1",
+				"w": "0",
+				"s": "1",
+				"ya": "4"
+			},
+			"answers": ["-3", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

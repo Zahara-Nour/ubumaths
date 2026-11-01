@@ -1,0 +1,133 @@
+{
+	"title": "Reconnaître des vecteurs directeurs d'une droite",
+	"description": "Parmi des vecteurs, lesquels dirigent (AB) ou une droite de vecteur directeur u (case choix à plusieurs réponses) (pièges : coordonnées du point B, coordonnées échangées, u + (1 ; 1))",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Pente et vecteur directeur",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère du plan, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{eval:(ax)+(dx)}}\\,;\\,{{eval:(ay)+(dy)}})$.\n\nQuels vecteurs sont des vecteurs directeurs de la droite $(AB)$ ?\n\n```choix\nplusieurs: oui\n- $\\begin{pmatrix}{{dx}}\\\\{{dy}}\\end{pmatrix}$\n- $\\begin{pmatrix}{{eval:(ax)+(dx)}}\\\\{{eval:(ay)+(dy)}}\\end{pmatrix}$\n- $\\begin{pmatrix}{{eval:-(dx)}}\\\\{{eval:-(dy)}}\\end{pmatrix}$\n- $\\begin{pmatrix}{{dy}}\\\\{{dx}}\\end{pmatrix}$\n- $\\begin{pmatrix}{{eval:2*(dx)}}\\\\{{eval:2*(dy)}}\\end{pmatrix}$\n- $\\begin{pmatrix}{{dx}}\\\\{{eval:-(dy)}}\\end{pmatrix}$\n```",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "dx",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "dy",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["abs(dx) != abs(dy)", "(dx)*((ay)+(dy)) - (dy)*((ax)+(dx)) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0;2;4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **vecteur directeur** de la droite $d$ est un vecteur non nul dont la direction est celle de $d$ : tout vecteur non nul **colinéaire** à $\\overrightarrow{AB}$, si $A$ et $B$ sont deux points distincts de $d$.",
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{dx}}\\\\{{dy}}\\end{pmatrix}$ est un vecteur directeur, comme ses multiples non nuls : $\\overrightarrow{BA}=-\\overrightarrow{AB}\\begin{pmatrix}{{eval:-(dx)}}\\\\{{eval:-(dy)}}\\end{pmatrix}$ et $2\\overrightarrow{AB}\\begin{pmatrix}{{eval:2*(dx)}}\\\\{{eval:2*(dy)}}\\end{pmatrix}$.",
+					"Les autres ne sont pas colinéaires à $\\overrightarrow{AB}$ (déterminant non nul) ; $\\begin{pmatrix}{{eval:(ax)+(dx)}}\\\\{{eval:(ay)+(dy)}}\\end{pmatrix}$ donne les coordonnées du **point** $B$, pas une direction."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, la droite $d$ a pour vecteur directeur $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$.\n\nQuels vecteurs sont aussi des vecteurs directeurs de $d$ ?\n\n```choix\nplusieurs: oui\n- $\\begin{pmatrix}{{eval:-(u1)}}\\\\{{eval:-(u2)}}\\end{pmatrix}$\n- $\\begin{pmatrix}{{u2}}\\\\{{u1}}\\end{pmatrix}$\n- $\\begin{pmatrix}{{eval:3*(u1)}}\\\\{{eval:3*(u2)}}\\end{pmatrix}$\n- $\\begin{pmatrix}{{eval:-(u2)}}\\\\{{u1}}\\end{pmatrix}$\n- $\\begin{pmatrix}{{eval:(u1)+1}}\\\\{{eval:(u2)+1}}\\end{pmatrix}$\n```",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "u2",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["abs(u1) != abs(u2)", "u1 != u2 + 1", "u2 != u1 + 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "0;2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **vecteur directeur** de la droite $d$ est un vecteur non nul dont la direction est celle de $d$ : tout vecteur non nul **colinéaire** à $\\overrightarrow{AB}$, si $A$ et $B$ sont deux points distincts de $d$.",
+					"$-\\vec{u}\\begin{pmatrix}{{eval:-(u1)}}\\\\{{eval:-(u2)}}\\end{pmatrix}$ et $3\\vec{u}\\begin{pmatrix}{{eval:3*(u1)}}\\\\{{eval:3*(u2)}}\\end{pmatrix}$ sont colinéaires à $\\vec{u}$ : ce sont des vecteurs directeurs de $d$.",
+					"Les autres ne le sont pas : échanger les coordonnées, ou ajouter $1$ à chacune, change la direction."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AB, BA, 2AB",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"dx": "2",
+				"dy": "3"
+			},
+			"answers": ["0;2;4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Avec le point B",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"dx": "2",
+				"dy": "3"
+			},
+			"answers": ["0;1;2;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−u et 3u",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "2",
+				"u2": "-3"
+			},
+			"answers": ["0;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Avec (u2 ; u1)",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "2",
+				"u2": "-3"
+			},
+			"answers": ["0;1;2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

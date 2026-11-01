@@ -66,3 +66,36 @@ describe('marquage du lexique', () => {
 		expect(versions.concise).toContain('[aire]{.def}');
 	});
 });
+
+// L16 : un marquage au milieu d'une mise en forme ne la coupe plus.
+describe('marquage au milieu d’une mise en forme (L16)', () => {
+	it('**gras avec un [mot]{.def}** : tout est en gras, le mot est marqué', () => {
+		const nodes = textNodes('Un **nombre [pair]{.def} positif** ici.');
+		expect(nodes.map((n) => n.content).join('')).toBe('Un nombre pair positif ici.');
+		expect(nodes.filter((n) => n.content.includes('**'))).toEqual([]);
+		const marked = nodes.find((n) => n.content === 'pair');
+		expect(marked).toMatchObject({ bold: true, lexicon: { mode: 'force' } });
+		expect(nodes.find((n) => n.content === 'nombre ')?.bold).toBe(true);
+		expect(nodes.find((n) => n.content === ' positif')?.bold).toBe(true);
+		expect(nodes.find((n) => n.content === 'Un ')?.bold).toBeUndefined();
+	});
+
+	it('*italique* et ==surligné== autour d’un [mot]{.nodef}', () => {
+		const italic = textNodes('*une [aire]{.nodef} de jeux*');
+		expect(italic.every((n) => n.italic)).toBe(true);
+		expect(italic.find((n) => n.content === 'aire')?.lexicon).toEqual({ mode: 'block' });
+		const highlight = textNodes('==une [aire]{.def} ici==');
+		expect(highlight.every((n) => n.highlight)).toBe(true);
+	});
+
+	it('marquage dans un lien : le texte du lien ne garde aucun caractère interne', () => {
+		const children = paragraphChildren('[un [mot]{.def} lié](https://chiph.re)');
+		const all = JSON.stringify(children);
+		expect(all).not.toMatch(/[\uE000-\uF8FF]/u);
+	});
+
+	it('un caractère de la zone privée tapé dans le texte n’ouvre pas de marquage', () => {
+		const nodes = textNodes('[a]{.def} et \uE801 x');
+		expect(nodes.find((n) => n.content.includes('x'))?.lexicon).toBeUndefined();
+	});
+});

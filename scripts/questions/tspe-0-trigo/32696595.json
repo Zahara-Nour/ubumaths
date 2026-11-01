@@ -1,0 +1,84 @@
+{
+	"id": "32696595-493b-4d81-bee2-d611e1abf84f",
+	"title": "Reconnaître une équation sur le cercle trigonométrique",
+	"description": "Points du cercle (mesures principales) : retrouver sin x = a (pièges : cosinus et sinus confondus, signe)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Équations et inéquations",
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Sur le cercle trigonométrique ci-dessous, les points marqués représentent les solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une équation.\n\n```trig\npreset: custom\nangles: -{{n}}*pi/12, -{{eval:12-n}}*pi/12\nequation: sin(x) = sin(-{{n}}*pi/12)\nmode: points\nmesures: principales\n```\n\nDe quelle équation s'agit-il ?\n\n```choix\n- $\\sin x={{eval:-sin(n*\\pi/12)}}$\n- $\\sin x={{eval:sin(n*\\pi/12)}}$\n- $\\cos x={{eval:-sin(n*\\pi/12)}}$\n- $\\cos x={{eval:sin(n*\\pi/12)}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux points ont la même **ordonnée**, négative (ils sont sous l'axe des abscisses) : $\\sin\\left(-{{a}}\\right)=-\\sin{{a}}={{eval:-sin(n*\\pi/12)}}$.",
+					"Il s'agit de $\\textcolor{{{color:primary.0}}}{\\sin x={{eval:-sin(n*\\pi/12)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "v0 : sin = −k → correct",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "v0 : sin = k (signe) → incorrect",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "v0 : cos = −k (cos/sin) → incorrect",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "v0 : cos = k → incorrect",
+			"variationIndex": 0
+		}
+	]
+}

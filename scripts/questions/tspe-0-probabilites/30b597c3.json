@@ -1,0 +1,123 @@
+{
+	"id": "30b597c3-a350-4027-8c6f-b6678ab0868f",
+	"title": "Loi binomiale ou non : identifier la loi",
+	"description": "Nombre de succès dans des épreuves indépendantes (binomiale), tirages sans remise (aucune loi usuelle)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Reconnaître une loi",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On lance ${{n}}$ fois un dé équilibré à six faces et on note $X$ le nombre de $6$ obtenus.\n\nQuelle est la loi de $X$ ?\n\n```choix\n- $\\mathcal{B}\\left({{n}}\\,;\\dfrac{1}{6}\\right)$\n- $\\mathcal{G}\\left(\\dfrac{1}{6}\\right)$\n- $\\mathcal{B}\\left({{n}}\\,;\\dfrac{5}{6}\\right)$\n- $\\mathcal{B}\\left(6\\,;\\dfrac{1}{ {{n}} }\\right)$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..15"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte le **nombre de succès** (« obtenir $6$ », probabilité $\\dfrac{1}{6}$) dans ${{n}}$ épreuves identiques et indépendantes.",
+					"$X$ suit la loi $\\textcolor{{{color:primary.0}}}{\\mathcal{B}\\left({{n}}\\,;\\dfrac{1}{6}\\right)}$."
+				]
+			},
+			"conditions": ["n != 6"]
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Une urne contient ${{r}}$ boules rouges et ${{b}}$ boules blanches. On tire successivement **et sans remise** trois boules, et on note $X$ le nombre de boules rouges obtenues.\n\nQuelle est la loi de $X$ ?\n\n```choix\n- Aucune de ces lois : les tirages ne sont pas indépendants\n- $\\mathcal{B}\\left(3\\,;{{eval:r/(r+b)}}\\right)$\n- $\\mathcal{G}\\left({{eval:r/(r+b)}}\\right)$\n- La loi de Bernoulli de paramètre ${{eval:r/(r+b)}}$\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "3..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sans remise, la composition de l'urne change à chaque tirage : les épreuves ne sont **pas indépendantes** et la probabilité de « rouge » n'est pas la même à chaque tirage.",
+					"Ce n'est donc **ni une loi binomiale, ni une loi géométrique, ni une loi de Bernoulli**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : binomiale",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : géométrique",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : p et 1 − p",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "5",
+				"r": "4"
+			},
+			"description": "v1 : sans remise → aucune",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "5",
+				"r": "4"
+			},
+			"description": "v1 : binomiale à tort",
+			"variationIndex": 1
+		}
+	]
+}

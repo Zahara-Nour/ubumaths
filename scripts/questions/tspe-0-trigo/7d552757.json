@@ -1,0 +1,152 @@
+{
+	"id": "7d552757-61db-493a-a846-7d2cdc0ec631",
+	"title": "Reconnaître une inéquation sur le cercle trigonométrique",
+	"description": "Arc du cercle (mesures principales) : retrouver cos x ⩾ a ou sin x ⩾ a (pièges : cosinus = abscisse et sinus = ordonnée confondus, sens)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Équations et inéquations",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) >= cos({{n}}*pi/12)\nmode: arc\nmesures: principales\n```\n\nDe quelle inéquation s'agit-il ?\n\n```choix\n- $\\cos x\\geqslant{{eval:cos(n*\\pi/12)}}$\n- $\\cos x\\leqslant{{eval:cos(n*\\pi/12)}}$\n- $\\sin x\\geqslant{{eval:cos(n*\\pi/12)}}$\n- $\\sin x\\leqslant{{eval:cos(n*\\pi/12)}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'arc est symétrique par rapport à l'axe des abscisses et va de $-{{a}}$ à ${{a}}$ : ce sont les points d'**abscisse** (cosinus) supérieure ou égale à $\\cos{{a}}={{eval:cos(n*\\pi/12)}}$.",
+					"Il s'agit de $\\textcolor{{{color:primary.0}}}{\\cos x\\geqslant{{eval:cos(n*\\pi/12)}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n```trig\npreset: custom\nangles: {{n}}*pi/12, {{eval:12-n}}*pi/12\nequation: sin(x) >= sin({{n}}*pi/12)\nmode: arc\nmesures: principales\n```\n\nDe quelle inéquation s'agit-il ?\n\n```choix\n- $\\sin x\\geqslant{{eval:sin(n*\\pi/12)}}$\n- $\\sin x\\leqslant{{eval:sin(n*\\pi/12)}}$\n- $\\cos x\\geqslant{{eval:sin(n*\\pi/12)}}$\n- $\\cos x\\leqslant{{eval:sin(n*\\pi/12)}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'arc est symétrique par rapport à l'axe des ordonnées, en haut du cercle : ce sont les points d'**ordonnée** (sinus) supérieure ou égale à $\\sin{{a}}={{eval:sin(n*\\pi/12)}}$.",
+					"Il s'agit de $\\textcolor{{{color:primary.0}}}{\\sin x\\geqslant{{eval:sin(n*\\pi/12)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "v0 : cos ≥ → correct",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "v0 : cos ≤ (sens) → incorrect",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "v0 : sin ≥ (cos/sin) → incorrect",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "v0 : sin ≤ → incorrect",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "v1 : sin ≥ → correct",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "v1 : sin ≤ (sens) → incorrect",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "v1 : cos ≥ (cos/sin) → incorrect",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "v1 : cos ≤ → incorrect",
+			"variationIndex": 1
+		}
+	]
+}

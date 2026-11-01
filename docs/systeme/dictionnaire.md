@@ -220,4 +220,3 @@ Copies figées des lots validés par David : `tests/fixtures/lexique/` (aucun te
   (`db:reset`) contient la reprise (la référence), puis les entrées ajoutées par migration, chacune
   avec sa copie figée sous `tests/fixtures/lexique/` (2026-10-11 : `mots-lecture-2026-10-11.ts`) ;
   `dictionnaire-lecture.test.ts` et `dictionnaire-en-base.test.ts` comparent la base à cette suite.
-- Un marquage `[mot]{.def}` au milieu de `**gras**` casse le gras (même limite que `{.rappel}`).

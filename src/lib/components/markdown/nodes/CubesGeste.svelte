@@ -2,7 +2,7 @@
 	CubesGeste — assemblage de cubes à geste (```cubes + `dessiner:` / `retrouver:`)
 	===============================================================================
 
-	Chantier `solides`, lot 2 (`docs/wip/solides-progress.md` § 7).
+	Chantier `solides`, lot 2 (`docs/archive/wip/solides-progress.md` § 7).
 
 	- `dessiner: face` : la perspective, et à côté un quadrillage vide plus grand
 	  que la vue d'un carreau de chaque côté. Toucher un carreau le colorie, le
@@ -81,12 +81,25 @@
 	let verdict = $derived<boolean | null>(solution ? null : (answer?.isCorrect ?? null));
 	let value = $derived(answer?.value ?? '');
 
+	/**
+	 * Énoncé masqué d'une évaluation (`vues:`) : un assemblage d'une rangée (ou
+	 * d'une colonne) qui a cette vue, et seulement elle — dessin identique
+	 */
+	function viewHeights(view: CubesView): number[][] {
+		const columns =
+			view === 'perspective' || view === 'dessus' ? undefined : spec.givenViews?.[view];
+		if (columns === undefined) return heights;
+		if (view === 'face') return [[...columns]];
+		const rows = view === 'droite' ? [...columns].reverse() : columns;
+		return rows.map((h) => [h]);
+	}
+
 	/** Le même assemblage, dessiné seul dans une vue (sans geste) */
 	const shown = (view: CubesView): EspaceNode => ({
 		type: 'espace',
 		genre: node.genre,
 		source: node.source,
-		spec: { kind: 'cubes', heights, view },
+		spec: { kind: 'cubes', heights: viewHeights(view), view },
 		errors: []
 	});
 

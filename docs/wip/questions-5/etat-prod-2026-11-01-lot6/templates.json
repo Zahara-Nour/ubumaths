@@ -1,0 +1,1652 @@
+[
+	{
+		"id": "087c7c9c-e359-4f9a-8ef8-7cf7b29c1730",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 90,
+		"theme": "Statistiques",
+		"domain": "Indicateurs",
+		"subdomain": "moyenne",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a+b+c+d)/4;d}}"
+					}
+				],
+				"statement": "Léa a compté ses messages pendant quatre jours : $\\text{{{a}} ; {{b}} ; {{c}} ; {{d}}}$.\n\nCombien de messages a-t-elle envoyés en moyenne par jour ?\n\n$?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..40"
+					},
+					{
+						"name": "b",
+						"expression": "5..40"
+					},
+					{
+						"name": "c",
+						"expression": "5..40"
+					},
+					{
+						"name": "d",
+						"expression": "5..40"
+					}
+				],
+				"conditions": ["(a+b+c+d)%4!=0", "a!=b", "c!=d"],
+				"correction": {
+					"steps": [
+						"**Moyenne.** On additionne toutes les valeurs, puis on divise par le nombre de valeurs.",
+						"$\\dfrac{{{a}} + {{b}} + {{c}} + {{d}}}{4} = \\dfrac{{{eval:a+b+c+d}}}{4} = \\textcolor{{{color:primary.0}}}{{{eval:(a+b+c+d)/4;d}}}$.",
+						"Une moyenne peut ne pas être un nombre entier, même si toutes les valeurs le sont."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a+b+c+d+f)/5;d}}"
+					}
+				],
+				"statement": "Voici les notes d'Inès sur 20 : $\\text{{{a}} ; {{b}} ; {{c}} ; {{d}} ; {{f}}}$.\n\nQuelle est la moyenne de ses notes ?\n\n$?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..20"
+					},
+					{
+						"name": "b",
+						"expression": "4..20"
+					},
+					{
+						"name": "c",
+						"expression": "4..20"
+					},
+					{
+						"name": "d",
+						"expression": "4..20"
+					},
+					{
+						"name": "f",
+						"expression": "4..20"
+					}
+				],
+				"conditions": ["(a+b+c+d+f)%5!=0", "a!=b", "c!=d"],
+				"correction": {
+					"steps": [
+						"**Moyenne.** On additionne toutes les valeurs, puis on divise par le nombre de valeurs.",
+						"$\\dfrac{{{a}} + {{b}} + {{c}} + {{d}} + {{f}}}{5} = \\dfrac{{{eval:a+b+c+d+f}}}{5} = \\textcolor{{{color:primary.0}}}{{{eval:(a+b+c+d+f)/5;d}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Calculer une moyenne non entière",
+		"description": "Calculer la moyenne simple d'une série d'entiers quand elle n'est pas entière (12, 15, 9, 14 → 12,5)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["12,5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "12",
+					"b": "15",
+					"c": "9",
+					"d": "14"
+				},
+				"description": "12, 15, 9, 14 → 12,5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "12",
+					"b": "15",
+					"c": "9",
+					"d": "14"
+				},
+				"description": "Erreur : 12 (arrondi)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["50"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "12",
+					"b": "15",
+					"c": "9",
+					"d": "14"
+				},
+				"description": "Erreur : 50 (la somme)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["11,4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "12",
+					"c": "15",
+					"d": "10",
+					"f": "12"
+				},
+				"description": "Notes → 11,4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["14,25"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "12",
+					"c": "15",
+					"d": "10",
+					"f": "12"
+				},
+				"description": "Erreur : 14,25 (divisé par 4)",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "0d7dca16-40f1-4718-8e94-af13433dcf4f",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 45,
+		"theme": "Probabilités",
+		"domain": "Expériences aléatoires",
+		"subdomain": "événements",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0;1;3"
+					}
+				],
+				"statement": "Lesquelles de ces expériences sont aléatoires ?\n\n```choix\nplusieurs: oui\n- Lancer un dé et noter le nombre obtenu.\n- Tirer une carte au hasard dans un jeu.\n- Mesurer la longueur de sa table avec une règle.\n- Lancer une pièce et noter le côté visible.\n- Calculer $7 \\times 8$.\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Vocabulaire.** Une **expérience aléatoire** a plusieurs résultats possibles, et on ne peut pas savoir à l'avance lequel sortira. Chaque résultat possible est une **issue**. Un **évènement** est un ensemble d'issues ; il est réalisé si l'issue obtenue en fait partie.",
+						"Le dé, la carte tirée au hasard et la pièce ont plusieurs résultats possibles qu'on ne peut pas prévoir : ce sont des expériences aléatoires.",
+						"La mesure de la table et le calcul donnent toujours le même résultat : elles ne sont pas aléatoires."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "On fait tourner une roue partagée en secteurs numérotés de $1$ à ${{n}}$ et on note le numéro obtenu.\n\nCombien cette expérience a-t-elle d'**issues** ?\n\n$?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "5..12"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Vocabulaire.** Une **expérience aléatoire** a plusieurs résultats possibles, et on ne peut pas savoir à l'avance lequel sortira. Chaque résultat possible est une **issue**. Un **évènement** est un ensemble d'issues ; il est réalisé si l'issue obtenue en fait partie.",
+						"Les issues sont $1$, $2$, …, ${{n}}$ : il y en a $\\textcolor{{{color:primary.0}}}{{{n}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:k==0|1;3;5|{{if:k==1|3;4;5|2;5}}}}"
+					}
+				],
+				"statement": "On lance un dé à six faces, numérotées de $1$ à $6$. On considère l'évènement « {{if:k==0|obtenir un nombre pair|{{if:k==1|obtenir un nombre supérieur ou égal à $4$|obtenir un multiple de $3$}}}} ».\n\nQuelles issues réalisent cet évènement ?\n\n```choix\nmelanger: non\nplusieurs: oui\n- $1$\n- $2$\n- $3$\n- $4$\n- $5$\n- $6$\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "0..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Vocabulaire.** Une **expérience aléatoire** a plusieurs résultats possibles, et on ne peut pas savoir à l'avance lequel sortira. Chaque résultat possible est une **issue**. Un **évènement** est un ensemble d'issues ; il est réalisé si l'issue obtenue en fait partie.",
+						"L'évènement est réalisé par les issues $\\textcolor{{{color:primary.0}}}{{{if:k==0|2 ; 4 ; 6|{{if:k==1|4 ; 5 ; 6|3 ; 6}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:x%2==0|0|1}}"
+					}
+				],
+				"statement": "On tire une carte au hasard parmi des cartes numérotées de $1$ à $10$. On obtient la carte ${{x}}$.\n\nL'évènement « obtenir un nombre pair » est-il réalisé ?\n\n```choix\nmelanger: non\n- oui\n- non\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "1..10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Vocabulaire.** Une **expérience aléatoire** a plusieurs résultats possibles, et on ne peut pas savoir à l'avance lequel sortira. Chaque résultat possible est une **issue**. Un **évènement** est un ensemble d'issues ; il est réalisé si l'issue obtenue en fait partie.",
+						"${{x}}$ {{if:x%2==0|est pair : l'évènement est $\\textcolor{{{color:primary.0}}}{\\text{réalisé}}$|n'est pas pair : l'évènement n'est $\\textcolor{{{color:primary.0}}}{\\text{pas réalisé}}$}}."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Expérience aléatoire, issue, évènement",
+		"description": "Reconnaître une expérience aléatoire, compter ses issues, trouver les issues qui réalisent un évènement (pair au dé : 2, 4, 6)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0;1;3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Aléatoires : 0, 1, 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0;1;2;3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : la mesure",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "8"
+				},
+				"description": "Roue à 8 : 8 issues",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "8"
+				},
+				"description": "Erreur : 1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1;3;5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "0"
+				},
+				"description": "Pair : 2, 4, 6",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0;2;4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "0"
+				},
+				"description": "Erreur : 1, 3, 5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3;4;5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "≥ 4 : 4, 5, 6",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4;5"],
+				"expected": {
+					"status": "unoptimal_form"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Oubli du 4 (strict) : partiel",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2;5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Multiple de 3 : 3, 6",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"x": "4"
+				},
+				"description": "Carte 4 : oui",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"x": "7"
+				},
+				"description": "Carte 7 : non",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"x": "7"
+				},
+				"description": "Erreur : carte 7, oui",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "21ebfb57-d44b-4be7-878e-d159fefda924",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["5"],
+		"delay": 90,
+		"theme": "Statistiques",
+		"domain": "Représenter des données",
+		"subdomain": "effectifs et fréquences",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{a}}}{{{n}}}"
+					}
+				],
+				"statement": "On a demandé aux ${{n}}$ élèves d'une classe comment ils viennent au collège.\n\n| Moyen de transport | À pied | Vélo | Bus | Voiture | Total |\n| --- | --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ | ${{n}}$ |\n\nQuelle est la fréquence des élèves qui viennent **à pied** ? Donne-la sous forme de fraction.\n\n$?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "20|25|50"
+					},
+					{
+						"name": "a",
+						"expression": "2..12"
+					},
+					{
+						"name": "b",
+						"expression": "2..12"
+					},
+					{
+						"name": "c",
+						"expression": "2..12"
+					},
+					{
+						"name": "d",
+						"expression": "eval:n-a-b-c"
+					}
+				],
+				"conditions": ["d>=2", "a!=b", "a!=c"],
+				"correction": {
+					"steps": [
+						"**Fréquence.** $\\text{fréquence} = \\dfrac{\\text{effectif de la catégorie}}{\\text{effectif total}}$. Elle s'écrit en fraction, en nombre décimal ou en pourcentage.",
+						"Fréquence : {{if:gcd(a,n)!=1|$\\dfrac{{{a}}}{{{n}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)/(n)}}}$ (la fraction $\\dfrac{{{a}}}{{{n}}}$ est juste aussi)|$\\textcolor{{{color:primary.0}}}{\\dfrac{{{a}}}{{{n}}}}$}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c/n;d}}"
+					}
+				],
+				"statement": "On a demandé aux ${{n}}$ élèves d'une classe comment ils viennent au collège.\n\n| Moyen de transport | À pied | Vélo | Bus | Voiture | Total |\n| --- | --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ | ${{n}}$ |\n\nQuelle est la fréquence des élèves qui viennent **en bus** ? Donne-la sous forme de nombre décimal.\n\n$?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "20|25|50"
+					},
+					{
+						"name": "a",
+						"expression": "2..12"
+					},
+					{
+						"name": "b",
+						"expression": "2..12"
+					},
+					{
+						"name": "c",
+						"expression": "2..12"
+					},
+					{
+						"name": "d",
+						"expression": "eval:n-a-b-c"
+					}
+				],
+				"conditions": ["d>=2", "a!=b", "a!=c"],
+				"correction": {
+					"steps": [
+						"**Fréquence.** $\\text{fréquence} = \\dfrac{\\text{effectif de la catégorie}}{\\text{effectif total}}$. Elle s'écrit en fraction, en nombre décimal ou en pourcentage.",
+						"$\\dfrac{{{c}}}{{{n}}} = {{c}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:c/n;d}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100*b/n;d}}"
+					}
+				],
+				"statement": "On a demandé aux ${{n}}$ élèves d'une classe comment ils viennent au collège.\n\n| Moyen de transport | À pied | Vélo | Bus | Voiture | Total |\n| --- | --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ | ${{n}}$ |\n\nQuel **pourcentage** des élèves vient **à vélo** ?\n\n$?~\\%$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "20|25|50"
+					},
+					{
+						"name": "a",
+						"expression": "2..12"
+					},
+					{
+						"name": "b",
+						"expression": "2..12"
+					},
+					{
+						"name": "c",
+						"expression": "2..12"
+					},
+					{
+						"name": "d",
+						"expression": "eval:n-a-b-c"
+					}
+				],
+				"conditions": ["d>=2", "a!=b", "a!=c"],
+				"correction": {
+					"steps": [
+						"**Fréquence.** $\\text{fréquence} = \\dfrac{\\text{effectif de la catégorie}}{\\text{effectif total}}$. Elle s'écrit en fraction, en nombre décimal ou en pourcentage.",
+						"$\\dfrac{{{b}}}{{{n}}} = {{eval:b/n;d}} = \\dfrac{{{eval:100*b/n;d}}}{100}$ : cela fait $\\textcolor{{{color:primary.0}}}{{{eval:100*b/n;d}}~\\%}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Calculer une fréquence",
+		"description": "Calculer la fréquence d'une catégorie dans un tableau d'effectifs, en fraction, en nombre décimal ou en pourcentage (8 élèves sur 20 : 8/20 = 0,4 = 40 %)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{8}{20}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5",
+					"c": "4",
+					"d": "3",
+					"n": "20"
+				},
+				"description": "8 sur 20 : 8/20",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{2}{5}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5",
+					"c": "4",
+					"d": "3",
+					"n": "20"
+				},
+				"description": "8 sur 20 : 2/5 simplifiée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{8}{12}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5",
+					"c": "4",
+					"d": "3",
+					"n": "20"
+				},
+				"description": "Erreur : 8/12 (sur le reste)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{20}{8}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5",
+					"c": "4",
+					"d": "3",
+					"n": "20"
+				},
+				"description": "Erreur : 20/8 (à l'envers)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0,24"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5",
+					"c": "6",
+					"d": "6",
+					"n": "25"
+				},
+				"description": "Bus 6 sur 25 : 0,24",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5",
+					"c": "6",
+					"d": "6",
+					"n": "25"
+				},
+				"description": "Erreur : 6 (l'effectif)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "5",
+					"c": "6",
+					"d": "6",
+					"n": "25"
+				},
+				"description": "Erreur : 24 (le pourcentage)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "12",
+					"b": "9",
+					"c": "10",
+					"d": "19",
+					"n": "50"
+				},
+				"description": "Vélo 9 sur 50 : 18 %",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0,18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "12",
+					"b": "9",
+					"c": "10",
+					"d": "19",
+					"n": "50"
+				},
+				"description": "Erreur : 0,18 (la fréquence)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "12",
+					"b": "9",
+					"c": "10",
+					"d": "19",
+					"n": "50"
+				},
+				"description": "Erreur : 9 (l'effectif)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "5d0dc0e5-2de4-4528-abd3-a6627f076af1",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["5"],
+		"delay": 60,
+		"theme": "Probabilités",
+		"domain": "Expériences aléatoires",
+		"subdomain": "équiprobabilité",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{f}}}{{{n}}}"
+					}
+				],
+				"statement": "On lance un dé équilibré à ${{n}}$ faces, numérotées de $1$ à ${{n}}$.\n\nQuelle est la probabilité d'obtenir {{if:k==0|un nombre pair|un multiple de $3$}} ? Donne-la sous forme de fraction.\n\n$?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "6|8|10|12"
+					},
+					{
+						"name": "k",
+						"expression": "0..1"
+					},
+					{
+						"name": "f",
+						"expression": "eval:{{if:k==0|n/2|floor(n/3)}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Issues équiprobables.** Quand toutes les issues ont la même chance de sortir : $P = \\dfrac{\\text{nombre d'issues favorables}}{\\text{nombre total d'issues}}$.",
+						"Le dé est équilibré : les ${{n}}$ issues sont équiprobables. {{if:k==0|Il y a ${{f}}$ nombres pairs|Il y a ${{f}}$ multiples de $3$}} entre $1$ et ${{n}}$.",
+						"{{if:gcd(f,n)!=1|$P = \\dfrac{{{f}}}{{{n}}} = \\textcolor{{{color:primary.0}}}{{{eval:(f)/(n)}}}$ (la fraction $\\dfrac{{{f}}}{{{n}}}$ est juste aussi)|$P = \\textcolor{{{color:primary.0}}}{\\dfrac{{{f}}}{{{n}}}}$}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{x}}}{{{t}}}"
+					}
+				],
+				"statement": "Un sac contient ${{r}}$ jetons rouges, ${{v}}$ jetons verts et ${{j}}$ jetons jaunes, indiscernables au toucher. On tire un jeton au hasard.\n\nQuelle est la probabilité de tirer un jeton **{{if:k==0|rouge|vert}}** ? Donne-la sous forme de fraction.\n\n$?$",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "1..9"
+					},
+					{
+						"name": "v",
+						"expression": "1..9"
+					},
+					{
+						"name": "j",
+						"expression": "1..9"
+					},
+					{
+						"name": "k",
+						"expression": "0..1"
+					},
+					{
+						"name": "x",
+						"expression": "eval:{{if:k==0|r|v}}"
+					},
+					{
+						"name": "t",
+						"expression": "eval:r+v+j"
+					}
+				],
+				"conditions": ["r!=v", "v!=j", "r!=j"],
+				"correction": {
+					"steps": [
+						"**Issues équiprobables.** Quand toutes les issues ont la même chance de sortir : $P = \\dfrac{\\text{nombre d'issues favorables}}{\\text{nombre total d'issues}}$.",
+						"Il y a ${{t}}$ jetons en tout, dont ${{x}}$ {{if:k==0|rouges|verts}}.",
+						"{{if:gcd(x,t)!=1|$P = \\dfrac{{{x}}}{{{t}}} = \\textcolor{{{color:primary.0}}}{{{eval:(x)/(t)}}}$ (la fraction $\\dfrac{{{x}}}{{{t}}}$ est juste aussi)|$P = \\textcolor{{{color:primary.0}}}{\\dfrac{{{x}}}{{{t}}}}$}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{f}}}{{{t}}}"
+					}
+				],
+				"statement": "On écrit les lettres du mot **{{if:k==0|MATHEMATIQUES|{{if:k==1|PROBABILITE|EXERCICE}}}}** sur des cartons identiques, un carton par lettre, et on en tire un au hasard.\n\nQuelle est la probabilité de tirer une **voyelle** ? Donne-la sous forme de fraction.\n\n$?$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "0..2"
+					},
+					{
+						"name": "t",
+						"expression": "{{if:k==0|13|{{if:k==1|11|8}}}}"
+					},
+					{
+						"name": "f",
+						"expression": "{{if:k==0|6|{{if:k==1|5|4}}}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Issues équiprobables.** Quand toutes les issues ont la même chance de sortir : $P = \\dfrac{\\text{nombre d'issues favorables}}{\\text{nombre total d'issues}}$.",
+						"Il y a ${{t}}$ cartons, dont ${{f}}$ portent une voyelle.",
+						"{{if:gcd(f,t)!=1|$P = \\dfrac{{{f}}}{{{t}}} = \\textcolor{{{color:primary.0}}}{{{eval:(f)/(t)}}}$ (la fraction $\\dfrac{{{f}}}{{{t}}}$ est juste aussi)|$P = \\textcolor{{{color:primary.0}}}{\\dfrac{{{f}}}{{{t}}}}$}}."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Probabilité : issues équiprobables",
+		"description": "Calculer la probabilité d'un évènement à plusieurs issues quand elles sont équiprobables : nombre pair au dé (3/6), jeton d'une couleur, voyelle d'un mot",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{3}{6}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "3",
+					"k": "0",
+					"n": "6"
+				},
+				"description": "Dé 6, pair : 3/6",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "3",
+					"k": "0",
+					"n": "6"
+				},
+				"description": "Dé 6, pair : 1/2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0,5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"f": "3",
+					"k": "0",
+					"n": "6"
+				},
+				"description": "Forme : 0,5 au lieu d'une fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{6}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "3",
+					"k": "0",
+					"n": "6"
+				},
+				"description": "Erreur : 1/6 (une issue)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "3",
+					"k": "0",
+					"n": "6"
+				},
+				"description": "Erreur : 3 (le nombre d'issues)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "3",
+					"k": "1",
+					"n": "10"
+				},
+				"description": "Dé 10, multiple de 3 : 3/10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "2",
+					"k": "0",
+					"r": "3",
+					"t": "10",
+					"v": "5",
+					"x": "3"
+				},
+				"description": "Sac 3 rouges, 5 verts, 2 jaunes : 3/10",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{3}{7}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "2",
+					"k": "0",
+					"r": "3",
+					"t": "10",
+					"v": "5",
+					"x": "3"
+				},
+				"description": "Erreur : 3/7 (sur les autres)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{1}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "2",
+					"k": "0",
+					"r": "3",
+					"t": "10",
+					"v": "5",
+					"x": "3"
+				},
+				"description": "Erreur : 1/3 (une couleur sur trois)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{4}{8}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "4",
+					"k": "2",
+					"t": "8"
+				},
+				"description": "EXERCICE : 4/8",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{2}{8}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "4",
+					"k": "2",
+					"t": "8"
+				},
+				"description": "Erreur : 2/8 (voyelles différentes)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "8190200a-4e24-41b2-b53d-e317a1fb1d7e",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 90,
+		"theme": "Statistiques",
+		"domain": "Indicateurs",
+		"subdomain": "moyenne",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1;2;3"
+					}
+				],
+				"statement": "Dans une classe de ${{n}}$ élèves, la moyenne au dernier contrôle est de ${{k}}$ sur $20$.\n\nQuelles phrases sont vraies ?\n\n```choix\nplusieurs: oui\n- Tous les élèves ont eu ${{k}}$.\n- La somme des notes de la classe est ${{eval:n*k}}$.\n- Au moins un élève a eu ${{k}}$ ou plus.\n- Au moins un élève a eu ${{k}}$ ou moins.\n- La moitié des élèves a eu plus de ${{k}}$.\n```",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "20..30"
+					},
+					{
+						"name": "k",
+						"expression": "9..14"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Ce que dit une moyenne.** Si on remplaçait toutes les valeurs par la moyenne, la somme ne changerait pas : $\\text{somme} = \\text{moyenne} \\times \\text{nombre de valeurs}$. Cela ne veut pas dire que chaque valeur est égale à la moyenne.",
+						"Somme des notes : ${{n}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:n*k}}}$.",
+						"Si toutes les notes étaient sous ${{k}}$, la moyenne serait sous ${{k}}$ : au moins une note est donc ${{k}}$ ou plus ; de même, au moins une est ${{k}}$ ou moins.",
+						"On ne sait rien des notes une à une : peut-être que personne n'a eu ${{k}}$, et la moyenne ne dit pas combien d'élèves sont au-dessus."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1;2"
+					}
+				],
+				"statement": "Pendant une semaine ($7$ jours), la température moyenne à midi a été de ${{k}}$ °C.\n\nQuelles phrases sont vraies ?\n\n```choix\nplusieurs: oui\n- Il a fait ${{k}}$ °C à midi chaque jour.\n- Un jour au moins, il a fait ${{k}}$ °C ou plus à midi.\n- La somme des sept températures est ${{eval:7*k}}$.\n- Il a fait plus de ${{k}}$ °C au moins quatre jours.\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "12..26"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Ce que dit une moyenne.** Si on remplaçait toutes les valeurs par la moyenne, la somme ne changerait pas : $\\text{somme} = \\text{moyenne} \\times \\text{nombre de valeurs}$. Cela ne veut pas dire que chaque valeur est égale à la moyenne.",
+						"Somme des températures : $7 \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:7*k}}}$.",
+						"Si tous les jours étaient sous ${{k}}$ °C, la moyenne serait sous ${{k}}$ °C : un jour au moins a atteint ${{k}}$ °C.",
+						"La moyenne ne dit ni la température de chaque jour, ni combien de jours ont dépassé ${{k}}$ °C."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0;2"
+					}
+				],
+				"statement": "Hugo a eu $\\text{{{k}} ; {{k}} ; {{k}} ; {{k}}}$ et Nora $\\text{{{a}} ; {{b}} ; {{c}} ; {{d}}}$.\n\nQuelles phrases sont vraies ?\n\n```choix\nplusieurs: oui\n- Hugo et Nora ont la même moyenne.\n- Nora a une meilleure moyenne que Hugo, car elle a eu ${{eval:max(a,b,c,d)}}$.\n- Nora a eu au moins une note sous sa moyenne.\n- Une moyenne de ${{k}}$ veut dire que toutes les notes valent ${{k}}$.\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "10..14"
+					},
+					{
+						"name": "a",
+						"expression": "eval:k-6"
+					},
+					{
+						"name": "b",
+						"expression": "eval:k+6"
+					},
+					{
+						"name": "c",
+						"expression": "eval:k-2"
+					},
+					{
+						"name": "d",
+						"expression": "eval:k+2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Ce que dit une moyenne.** Si on remplaçait toutes les valeurs par la moyenne, la somme ne changerait pas : $\\text{somme} = \\text{moyenne} \\times \\text{nombre de valeurs}$. Cela ne veut pas dire que chaque valeur est égale à la moyenne.",
+						"Hugo : $\\dfrac{4 \\times {{k}}}{4} = {{k}}$ ; Nora : $\\dfrac{{{a}} + {{b}} + {{c}} + {{d}}}{4} = \\dfrac{{{eval:4*k}}}{4} = {{k}}$ : $\\textcolor{{{color:primary.0}}}{\\text{même moyenne}}$.",
+						"Nora a eu ${{a}}$, sous sa moyenne : une moyenne de ${{k}}$ ne veut pas dire que toutes les notes valent ${{k}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Interpréter une moyenne",
+		"description": "Dire ce qu'une moyenne apprend sur une série : une moyenne de 12 ne veut pas dire que chacun a 12 ; somme = moyenne × effectif ; une valeur au moins atteint la moyenne",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1;2;3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "12",
+					"n": "25"
+				},
+				"description": "Classe : 1, 2, 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0;1;2;3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "12",
+					"n": "25"
+				},
+				"description": "Erreur : tous ont eu 12",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1;2;3;4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "12",
+					"n": "25"
+				},
+				"description": "Erreur : la moitié au-dessus",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1;2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "18"
+				},
+				"description": "Températures : 1, 2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0;2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "18"
+				},
+				"description": "Erreur : chaque jour 18",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0;2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "18",
+					"c": "10",
+					"d": "14",
+					"k": "12"
+				},
+				"description": "Comparer : 0, 2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "18",
+					"c": "10",
+					"d": "14",
+					"k": "12"
+				},
+				"description": "Erreur : la meilleure note",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "c73289f0-0dbc-44d4-b66b-f88afb4960d4",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 60,
+		"theme": "Statistiques",
+		"domain": "Indicateurs",
+		"subdomain": "moyenne",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Voici les notes de Sami à ses quatre derniers contrôles : $\\text{{{a}} ; {{b}} ; {{c}} ; {{d}}}$.\n\nQuelle est la moyenne de ses notes ?\n\n$?$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "9..15"
+					},
+					{
+						"name": "a",
+						"expression": "6..18"
+					},
+					{
+						"name": "b",
+						"expression": "6..18"
+					},
+					{
+						"name": "c",
+						"expression": "6..18"
+					},
+					{
+						"name": "d",
+						"expression": "eval:4*k-a-b-c"
+					}
+				],
+				"conditions": ["d>=4", "d<=20", "a!=b", "c!=d"],
+				"correction": {
+					"steps": [
+						"**Moyenne.** On additionne toutes les valeurs, puis on divise par le nombre de valeurs.",
+						"$\\dfrac{{{a}} + {{b}} + {{c}} + {{d}}}{4} = \\dfrac{{{eval:4*k}}}{4} = \\textcolor{{{color:primary.0}}}{{{k}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Voici les températures relevées à midi pendant cinq jours, en degrés Celsius : $\\text{{{a}} ; {{b}} ; {{c}} ; {{d}} ; {{f}}}$.\n\nQuelle est la température moyenne ?\n\n$?~\\unit{°C}$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "12..25"
+					},
+					{
+						"name": "a",
+						"expression": "8..30"
+					},
+					{
+						"name": "b",
+						"expression": "8..30"
+					},
+					{
+						"name": "c",
+						"expression": "8..30"
+					},
+					{
+						"name": "d",
+						"expression": "8..30"
+					},
+					{
+						"name": "f",
+						"expression": "eval:5*k-a-b-c-d"
+					}
+				],
+				"conditions": ["f>=8", "f<=30", "a!=b", "c!=d"],
+				"correction": {
+					"steps": [
+						"**Moyenne.** On additionne toutes les valeurs, puis on divise par le nombre de valeurs.",
+						"$\\dfrac{{{a}} + {{b}} + {{c}} + {{d}} + {{f}}}{5} = \\dfrac{{{eval:5*k}}}{5} = \\textcolor{{{color:primary.0}}}{{{k}}}$ °C."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Calculer une moyenne",
+		"description": "Calculer la moyenne simple d'une série de 4 ou 5 nombres entiers, quand elle tombe juste (12, 15, 9, 14 → 12,5 au niveau suivant)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "12",
+					"b": "16",
+					"c": "9",
+					"d": "11",
+					"k": "12"
+				},
+				"description": "12, 16, 9, 11 → 12",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["48"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "12",
+					"b": "16",
+					"c": "9",
+					"d": "11",
+					"k": "12"
+				},
+				"description": "Erreur : 48 (la somme)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12,5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "12",
+					"b": "16",
+					"c": "9",
+					"d": "11",
+					"k": "12"
+				},
+				"description": "Erreur : 12,5 (milieu de 9 et 16)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "15",
+					"b": "20",
+					"c": "17",
+					"d": "22",
+					"f": "16",
+					"k": "18"
+				},
+				"description": "Températures → 18",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "15",
+					"b": "20",
+					"c": "17",
+					"d": "22",
+					"f": "16",
+					"k": "18"
+				},
+				"description": "Erreur : 90 (la somme)",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "ccb8407b-ca23-4329-af89-513b613361ce",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 30,
+		"theme": "Statistiques",
+		"domain": "Représenter des données",
+		"subdomain": "choisir une représentation",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "On veut montrer **quelle part du budget** d'une famille va au logement, à la nourriture, aux transports et aux loisirs.\n\nQuelle représentation choisir ?\n\n```choix\nmelanger: non\n- un diagramme circulaire\n- un diagramme en barres\n- un graphique (une courbe dans un repère)\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Choisir sa représentation.** Le **diagramme circulaire** montre la part de chaque catégorie dans un tout ; le **diagramme en barres** compare des effectifs ; le **graphique** montre comment une grandeur évolue dans le temps.",
+						"On veut voir la part de chaque poste dans le budget entier : $\\textcolor{{{color:primary.0}}}{\\text{un diagramme circulaire}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"statement": "On veut **comparer le nombre** de livres empruntés au CDI par chacune des six classes de 5e.\n\nQuelle représentation choisir ?\n\n```choix\nmelanger: non\n- un diagramme circulaire\n- un diagramme en barres\n- un graphique (une courbe dans un repère)\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Choisir sa représentation.** Le **diagramme circulaire** montre la part de chaque catégorie dans un tout ; le **diagramme en barres** compare des effectifs ; le **graphique** montre comment une grandeur évolue dans le temps.",
+						"On compare six effectifs entre eux : $\\textcolor{{{color:primary.0}}}{\\text{un diagramme en barres}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				],
+				"statement": "On veut montrer **comment la taille** d'un enfant **a évolué** de sa naissance à ses dix ans.\n\nQuelle représentation choisir ?\n\n```choix\nmelanger: non\n- un diagramme circulaire\n- un diagramme en barres\n- un graphique (une courbe dans un repère)\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Choisir sa représentation.** Le **diagramme circulaire** montre la part de chaque catégorie dans un tout ; le **diagramme en barres** compare des effectifs ; le **graphique** montre comment une grandeur évolue dans le temps.",
+						"On suit une grandeur au fil du temps : $\\textcolor{{{color:primary.0}}}{\\text{un graphique}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Un sondage demande aux élèves leur sport préféré. On veut montrer **quelle part des élèves** a choisi chaque sport.\n\nQuelle représentation choisir ?\n\n```choix\nmelanger: non\n- un diagramme circulaire\n- un diagramme en barres\n- un graphique (une courbe dans un repère)\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Choisir sa représentation.** Le **diagramme circulaire** montre la part de chaque catégorie dans un tout ; le **diagramme en barres** compare des effectifs ; le **graphique** montre comment une grandeur évolue dans le temps.",
+						"On veut la part de chaque sport parmi tous les élèves : $\\textcolor{{{color:primary.0}}}{\\text{un diagramme circulaire}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				],
+				"statement": "On a relevé la température chaque heure pendant une journée. On veut montrer **comment elle a varié** au cours de la journée.\n\nQuelle représentation choisir ?\n\n```choix\nmelanger: non\n- un diagramme circulaire\n- un diagramme en barres\n- un graphique (une courbe dans un repère)\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Choisir sa représentation.** Le **diagramme circulaire** montre la part de chaque catégorie dans un tout ; le **diagramme en barres** compare des effectifs ; le **graphique** montre comment une grandeur évolue dans le temps.",
+						"On suit la température heure après heure : $\\textcolor{{{color:primary.0}}}{\\text{un graphique}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Choisir une représentation adaptée",
+		"description": "Choisir entre diagramme circulaire (part d'un tout), diagramme en barres (comparer des effectifs) et graphique (évolution dans le temps) selon ce qu'on veut montrer",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Budget : circulaire",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : barres",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "CDI : barres",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : graphique",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Taille : graphique",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : circulaire",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Sondage : circulaire",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Températures : graphique",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "f4f0d076-e95e-4662-b0a4-d04b0b5416c9",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 60,
+		"theme": "Probabilités",
+		"domain": "Expériences aléatoires",
+		"subdomain": "équiprobabilité",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:r/n;d}}"
+					}
+				],
+				"statement": "Un sac contient ${{n}}$ billes indiscernables au toucher, dont ${{r}}$ rouges. On tire une bille au hasard.\n\nQuelle est la probabilité de tirer une bille rouge ? Donne-la sous forme de nombre décimal.\n\n$?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "10|20|25|50"
+					},
+					{
+						"name": "r",
+						"expression": "1..n"
+					}
+				],
+				"conditions": ["r<n"],
+				"correction": {
+					"steps": [
+						"**Issues équiprobables.** Quand toutes les issues ont la même chance de sortir : $P = \\dfrac{\\text{nombre d'issues favorables}}{\\text{nombre total d'issues}}$.",
+						"$P = \\dfrac{{{r}}}{{{n}}} = {{r}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:r/n;d}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100*g/n;d}}"
+					}
+				],
+				"statement": "Une roue est partagée en ${{n}}$ secteurs égaux, dont ${{g}}$ sont gagnants. On la fait tourner.\n\nQuelle est la probabilité de gagner, **en pourcentage** ?\n\n$?~\\%$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "4|5|10|20|25"
+					},
+					{
+						"name": "g",
+						"expression": "1..n"
+					}
+				],
+				"conditions": ["g<n"],
+				"correction": {
+					"steps": [
+						"**Issues équiprobables.** Quand toutes les issues ont la même chance de sortir : $P = \\dfrac{\\text{nombre d'issues favorables}}{\\text{nombre total d'issues}}$.",
+						"$P = \\dfrac{{{g}}}{{{n}}} = {{eval:g/n;d}}$, soit $\\textcolor{{{color:primary.0}}}{{{eval:100*g/n;d}}~\\%}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Probabilité en décimal ou en pourcentage",
+		"description": "Donner une probabilité sous forme décimale ou de pourcentage (7 billes rouges sur 20 : 0,35 ; 3 secteurs gagnants sur 5 : 60 %)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0,35"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "20",
+					"r": "7"
+				},
+				"description": "7 sur 20 : 0,35",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["35"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "20",
+					"r": "7"
+				},
+				"description": "Erreur : 35 (pourcentage)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0,7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "20",
+					"r": "7"
+				},
+				"description": "Erreur : 0,7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "3",
+					"n": "5"
+				},
+				"description": "3 sur 5 : 60 %",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0,6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "3",
+					"n": "5"
+				},
+				"description": "Erreur : 0,6 (la fréquence)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "3",
+					"n": "5"
+				},
+				"description": "Erreur : 3",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	}
+]

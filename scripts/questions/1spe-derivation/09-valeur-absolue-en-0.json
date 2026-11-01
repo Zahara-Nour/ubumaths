@@ -1,0 +1,126 @@
+{
+	"title": "Dérivabilité de la valeur absolue en 0",
+	"description": "Taux de variation de |x| entre 0 et h (h > 0, h < 0), puis dérivabilité en 0 (case choix)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Dérivabilité en un point",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction valeur absolue : $f(x)=|x|$.\n\nCalcule le taux de variation de $f$ entre $0$ et $h$, pour $h={{eval:u/10;d}}$ puis pour $h={{eval:-w/100;d}}$.\n\nPour $h={{eval:u/10;d}}$ : $\\dfrac{f(h)-f(0)}{h}=?$\n\nPour $h={{eval:-w/100;d}}$ : $\\dfrac{f(h)-f(0)}{h}=?$\n\nLa fonction $f$ est-elle dérivable en $0$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "w",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "-1"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $h={{eval:u/10;d}}$ : $\\dfrac{|{{eval:u/10;d}}|}{{{eval:u/10;d}}}=1$.",
+					"Pour $h={{eval:-w/100;d}}$ : $\\dfrac{|{{eval:-w/100;d}}|}{{{eval:-w/100;d}}}=\\dfrac{{{eval:w/100;d}}}{{{eval:-w/100;d}}}=-1$.",
+					"À droite de $0$, le taux vaut $1$ ; à gauche, il vaut $-1$ : quand $h$ tend vers $0$, il ne s'approche pas d'un **seul** nombre.",
+					"Conclusion : la fonction valeur absolue $\\textcolor{{{color:primary.0}}}{\\text{n'est pas dérivable}}$ en $0$ (sa courbe y fait une pointe)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction valeur absolue : $f(x)=|x|$. Pour $h\\neq0$, le taux de variation de $f$ entre $0$ et $h$ est $\\dfrac{f(h)-f(0)}{h}=\\dfrac{|h|}{h}$.\n\nSi $h>0$ : $\\dfrac{|h|}{h}=?$\n\nSi $h<0$ : $\\dfrac{|h|}{h}=?$\n\nLa fonction $f$ est-elle dérivable en $0$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "-1"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $h>0$, $|h|=h$ et $\\dfrac{|h|}{h}=1$. Si $h<0$, $|h|=-h$ et $\\dfrac{|h|}{h}=\\dfrac{-h}{h}=-1$.",
+					"À droite de $0$, le taux vaut $1$ ; à gauche, il vaut $-1$ : quand $h$ tend vers $0$, il ne s'approche pas d'un **seul** nombre.",
+					"Conclusion : la fonction valeur absolue $\\textcolor{{{color:primary.0}}}{\\text{n'est pas dérivable}}$ en $0$ (sa courbe y fait une pointe)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1, −1, non",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"w": "5"
+			},
+			"answers": ["1", "-1", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1, 1 (valeur absolue oubliée au dénominateur)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"w": "5"
+			},
+			"answers": ["1", "1", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : « oui »",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"w": "5"
+			},
+			"answers": ["1", "-1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Lettres : 1, −1, non",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1", "-1", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Lettres, erreur : « oui »",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1", "-1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

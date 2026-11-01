@@ -1,0 +1,228 @@
+{
+	"id": "a80a780f-bed5-404c-b5fe-db4211437ac8",
+	"title": "Caractérisations de la convexité et du point d'inflexion",
+	"description": "QCM : f convexe ⟺ f′ croissante ⟺ f″ ≥ 0 ⟺ courbe au-dessus de ses tangentes ; point d'inflexion = la courbe traverse sa tangente",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions convexes",
+	"domain": "Convexité",
+	"subdomain": "Caractérisations",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est **convexe** sur $I$ si et seulement si :\n\n```choix\n- $f''(x)\\geqslant 0$ pour tout $x$ de $I$\n- $f'(x)\\geqslant 0$ pour tout $x$ de $I$\n- $f(x)\\geqslant 0$ pour tout $x$ de $I$\n- $f''$ est croissante sur $I$\n```",
+			"correction": {
+				"steps": [
+					"Caractérisation admise : $f$ convexe sur $I$ $\\iff$ $f'$ croissante sur $I$ $\\iff$ $\\textcolor{{{color:primary.0}}}{f''\\geqslant 0}$ sur $I$.",
+					"$f'\\geqslant 0$ dit que $f$ est croissante : c'est une autre propriété."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ une fonction dérivable sur un intervalle $I$.\n\n$f$ est **convexe** sur $I$ si et seulement si :\n\n```choix\n- $f'$ est croissante sur $I$\n- $f$ est croissante sur $I$\n- $f'$ est positive sur $I$\n- $f'$ est décroissante sur $I$\n```",
+			"correction": {
+				"steps": [
+					"$f$ est convexe sur $I$ si et seulement si $\\textcolor{{{color:primary.0}}}{f'\\text{ est croissante}}$ sur $I$ : les pentes des tangentes augmentent.",
+					"$f'$ décroissante caractérise une fonction **concave**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ une fonction dérivable et **convexe** sur un intervalle $I$, de courbe $\\mathcal{C}_f$.\n\nSur $I$, la courbe $\\mathcal{C}_f$ est :\n\n```choix\n- au-dessus de chacune de ses tangentes\n- en dessous de chacune de ses tangentes\n- au-dessus de chacune de ses sécantes, entre les deux points d'intersection\n- au-dessus de l'axe des abscisses\n```",
+			"correction": {
+				"steps": [
+					"Pour une fonction convexe, la courbe est **au-dessus de ses tangentes** et **en dessous de ses sécantes** (entre les deux points).",
+					"Être au-dessus de l'axe des abscisses, c'est $f\\geqslant 0$ : rien à voir avec la convexité."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$ et $a$ un réel de $I$.\n\nLe point $A(a\\,;f(a))$ est un **point d'inflexion** de la courbe $\\mathcal{C}_f$ lorsque :\n\n```choix\n- la courbe $\\mathcal{C}_f$ traverse sa tangente en $A$\n- $f'(a)=0$\n- $f$ admet un extremum en $a$\n- $f''(a)=0$, sans autre condition\n```",
+			"correction": {
+				"steps": [
+					"Un point d'inflexion est un point où la courbe **traverse sa tangente** : la convexité change.",
+					"Cela se produit quand $f''$ s'annule **en changeant de signe**. $f''(a)=0$ ne suffit pas : pour $f(x)=x^4$, $f''(0)=0$ mais $f''\\geqslant 0$, pas d'inflexion en $0$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est **concave** sur $I$ si et seulement si :\n\n```choix\n- $f''(x)\\leqslant 0$ pour tout $x$ de $I$\n- $f'$ est croissante sur $I$\n- $f(x)\\leqslant 0$ pour tout $x$ de $I$\n- $\\mathcal{C}_f$ est au-dessus de chacune de ses tangentes\n```",
+			"correction": {
+				"steps": [
+					"$f$ concave sur $I$ $\\iff$ $f'$ décroissante sur $I$ $\\iff$ $\\textcolor{{{color:primary.0}}}{f''\\leqslant 0}$ sur $I$ $\\iff$ $\\mathcal{C}_f$ en dessous de ses tangentes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v0 bonne",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v0 f′ ≥ 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v0 f″ croissante",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v1 bonne",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v1 f croissante",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v1 f′ décroissante",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v2 bonne",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v2 en dessous des tangentes",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v2 au-dessus des sécantes",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v3 bonne",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v3 f″(a)=0 seul",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v3 f′(a)=0",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v4 bonne",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v4 f′ croissante",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v4 au-dessus des tangentes",
+			"variationIndex": 4
+		}
+	]
+}

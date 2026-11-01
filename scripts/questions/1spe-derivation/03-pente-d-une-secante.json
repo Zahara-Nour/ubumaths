@@ -1,0 +1,193 @@
+{
+	"title": "Calculer la pente d'une sécante",
+	"description": "Coefficient directeur de la sécante (AB), A et B sur la courbe d'une fonction ; puis équation réduite de (AB)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Taux de variation",
+	"level": 3,
+	"delay": 75,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^3+n*x}}$, de courbe $\\mathcal{C}_f$. $A$ et $B$ sont les points de $\\mathcal{C}_f$ d'abscisses ${{a}}$ et ${{b}}$.\n\nCalcule le coefficient directeur de la sécante $(AB)$.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "n",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "a",
+					"expression": "-2..1"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+d"
+				},
+				{
+					"name": "fa",
+					"expression": "eval:a^3+n*a"
+				},
+				{
+					"name": "fb",
+					"expression": "eval:b^3+n*b"
+				}
+			],
+			"conditions": ["a != 0", "fa != 0", "abs(fb) <= 40"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(fb-fa)/d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A({{a}}\\,;{{fa}})$ et $B({{b}}\\,;{{fb}})$ : on calcule les ordonnées avec $f$.",
+					"Le coefficient directeur de $(AB)$ est le taux de variation de $f$ entre ${{a}}$ et ${{b}}$ : $$m=\\dfrac{y_B-y_A}{x_B-x_A}=\\dfrac{{{fb}}{{eval:-fa;+}}}{{{b}}{{eval:-a;+}}}=\\dfrac{{{eval:fb-fa}}}{{{d}}}=\\textcolor{{{color:primary.0}}}{{{eval:(fb-fa)/d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^2+n*x+c}}$, de courbe $\\mathcal{C}_f$. $A$ et $B$ sont les points de $\\mathcal{C}_f$ d'abscisses ${{a}}$ et ${{b}}$.\n\nCalcule le coefficient directeur $m$ de la sécante $(AB)$, puis donne son équation réduite.\n\n$m=?$\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "n",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "a",
+					"expression": "-3..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+d"
+				},
+				{
+					"name": "fa",
+					"expression": "eval:a^2+n*a+c"
+				},
+				{
+					"name": "fb",
+					"expression": "eval:b^2+n*b+c"
+				},
+				{
+					"name": "k",
+					"expression": "eval:a+b+n"
+				},
+				{
+					"name": "p",
+					"expression": "eval:fa-k*a"
+				}
+			],
+			"conditions": ["a != 0", "fa != 0", "k != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k}}"
+				},
+				{
+					"expectedAnswer": "{{eval:k*x+p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A({{a}}\\,;{{fa}})$ et $B({{b}}\\,;{{fb}})$ : $$m=\\dfrac{{{fb}}{{eval:-fa;+}}}{{{b}}{{eval:-a;+}}}=\\dfrac{{{eval:fb-fa}}}{{{d}}}=\\textcolor{{{color:primary.0}}}{{{k}}}$$",
+					"$(AB)$ passe par $A$ : $y={{k}}(x{{eval:-a;+}}){{eval:fa;+}}$, soit $$y=\\textcolor{{{color:primary.0}}}{{{eval:k*x+p}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(x) = x³ + x, entre 1 et 2 : 8",
+			"variationIndex": 0,
+			"variables": {
+				"n": "1",
+				"a": "1",
+				"d": "1",
+				"b": "2",
+				"fa": "2",
+				"fb": "10"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur de signe : −8",
+			"variationIndex": 0,
+			"variables": {
+				"n": "1",
+				"a": "1",
+				"d": "1",
+				"b": "2",
+				"fa": "2",
+				"fb": "10"
+			},
+			"answers": ["-8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x) = x² + x + 2, entre 1 et 2 : m = 4, y = 4x",
+			"variationIndex": 1,
+			"variables": {
+				"n": "1",
+				"c": "2",
+				"a": "1",
+				"d": "1",
+				"b": "2",
+				"fa": "4",
+				"fb": "8",
+				"k": "4",
+				"p": "0"
+			},
+			"answers": ["4", "4x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordonnée à l'origine f(a) : y = 4x + 4",
+			"variationIndex": 1,
+			"variables": {
+				"n": "1",
+				"c": "2",
+				"a": "1",
+				"d": "1",
+				"b": "2",
+				"fa": "4",
+				"fb": "8",
+				"k": "4",
+				"p": "0"
+			},
+			"answers": ["4", "4x+4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

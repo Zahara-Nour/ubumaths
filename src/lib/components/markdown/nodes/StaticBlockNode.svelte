@@ -29,6 +29,7 @@
 	import StatChart from './StatChart.svelte';
 	import FigureBlock from './FigureBlock.svelte';
 	import QrBlock from './QrBlock.svelte';
+	import ScratchBlock from './ScratchBlock.svelte';
 	import Horloge from './Horloge.svelte';
 	import Partage from './Partage.svelte';
 	import Espace from './Espace.svelte';
@@ -91,6 +92,8 @@
 	<StatChart {node} />
 {:else if node.type === 'qr'}
 	<QrBlock {node} />
+{:else if node.type === 'scratch'}
+	<ScratchBlock {node} />
 {:else if node.type === 'horloge'}
 	<Horloge {node} />
 {:else if node.type === 'partage'}

@@ -31,7 +31,9 @@
  * @module ubumark/parser/collection-parser
  */
 
+import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
+import { isMaskedValue } from '../utils/masked-value';
 import {
 	COLLECTION_BUILD_RANGE,
 	COLLECTION_CAPTION_MAX,
@@ -302,7 +304,8 @@ export function parseCollectionContent(source: string): CollectionNode {
 					sizeCm = parseSize(value);
 					break;
 				case 'construire':
-					build = parseBuild(value);
+					// Énoncé d'une évaluation notée : valeur de remplacement (`masked-value.ts`)
+					build = isMaskedValue(value) ? 1 : parseBuild(value);
 					break;
 				case 'case':
 					if (!INTEGER_REGEX.test(value)) {
@@ -423,9 +426,6 @@ export function hasCollectionToBuild(markdown: string): boolean {
 	return findBuildCollections(markdown).length > 0;
 }
 
-/** Une ligne sans son retrait ni ses `>` de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /**
  * Blocs ```collection à construire d'un texte, délimités comme le parseur (une
  * ligne vide suivie d'une clé reste dans un bloc fermé, Q66) ; en retrait ou
@@ -438,7 +438,7 @@ export function findBuildCollections(markdown: string): {
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
-	const plain = lines.map(unquoted);
+	const plain = lines.map(unnestedLine);
 	return findCollectionBlockSpans(plain).flatMap(({ startIndex, endIndex, closed }) => {
 		const body = plain.slice(startIndex + 1, closed ? endIndex : endIndex + 1);
 		if (!body.some((line) => /^construire\s*:/i.test(line))) return [];

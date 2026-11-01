@@ -1,0 +1,242 @@
+{
+	"title": "Repérer un nombre décimal",
+	"description": "Lire l'abscisse d'un point sur une demi-droite graduée : en dixièmes, en centièmes (droite agrandie), en demis ou en quarts",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{n}}\nend: {{eval:(10*n+15)/10;d}}\nstep: 0.1\nmajor: 10\npoints: A={{eval:(10*n+k)/10;d}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "0..8"
+				},
+				{
+					"name": "k",
+					"expression": "1..14"
+				}
+			],
+			"conditions": ["k!=10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10*n+k)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Entre deux entiers qui se suivent, l'unité est partagée en $10$ : chaque petit intervalle vaut $0.1$.",
+					"${{eval:(10*n+k)/10;d}}$, c'est ${{k}}$ petits intervalles à partir de ${{n}}$ : ${{n}} + {{k}} \\times 0.1 = \\textcolor{{{color:primary.0}}}{{{eval:(10*n+k)/10;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{eval:(10*a+b)/10;d}}\nend: {{eval:(100*a+10*b+15)/100;d}}\nstep: 0.01\nmajor: 10\nlabels: {{eval:(10*a+b)/10;d}}, {{eval:(10*a+b+1)/10;d}}\npoints: A={{eval:(100*a+10*b+k)/100;d}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..8"
+				},
+				{
+					"name": "k",
+					"expression": "1..14"
+				}
+			],
+			"conditions": ["k!=10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*a+10*b+k)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Entre ${{eval:(10*a+b)/10;d}}$ et ${{eval:(10*a+b+1)/10;d}}$, le dixième est partagé en $10$ : chaque petit intervalle vaut $0.01$.",
+					"${{eval:(100*a+10*b+k)/100;d}}$, c'est ${{k}}$ petits intervalles à partir de ${{eval:(10*a+b)/10;d}}$ : ${{eval:(10*a+b)/10;d}} + {{k}} \\times 0.01 = \\textcolor{{{color:primary.0}}}{{{eval:(100*a+10*b+k)/100;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: 0\nend: 4\nstep: {{eval:1/q;d}}\nmajor: {{q}}\npoints: A={{eval:k/q;d}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2|4"
+				},
+				{
+					"name": "k",
+					"expression": "1..{{eval:4*q-1}}"
+				}
+			],
+			"conditions": ["mod(k,q)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/q;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** L'unité est partagée en ${{q}}$ : chaque petit intervalle vaut ${{eval:1/q;d}}$.",
+					"${{eval:k/q;d}}$, c'est ${{k}}$ petits intervalles à partir de $0$ : ${{k}} \\times {{eval:1/q;d}} = \\textcolor{{{color:primary.0}}}{{{eval:k/q;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2,3",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"answers": ["2,3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,03 (centièmes)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"answers": ["2,03"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 (graduations comptées)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Après l'entier suivant : 3,3",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"k": "13"
+			},
+			"answers": ["3,3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,13",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"k": "13"
+			},
+			"answers": ["2,13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Loupe : 2,37",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"k": "7"
+			},
+			"answers": ["2,37"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 (intervalle lu 0,1)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"k": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,307",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"k": "7"
+			},
+			"answers": ["2,307"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Loupe, après le dixième suivant : 5,02",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "9",
+				"k": "12"
+			},
+			"answers": ["5,02"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Quarts : 0,75",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"k": "3"
+			},
+			"answers": ["0,75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,3 (intervalle lu 0,1)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"k": "3"
+			},
+			"answers": ["0,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Demis : 2,5",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"k": "5"
+			},
+			"answers": ["2,5"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

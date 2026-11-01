@@ -64,6 +64,7 @@ import { generateStatChartTypst } from './stat-chart-typst';
 import type { RangerNode } from '../types/ranger';
 import { displayedLabels } from '../utils/ranger';
 import { generateQrTypst } from './qr-typst';
+import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
 import { generatePartageTypst } from './partage-typst';
 import { generateEspaceTypst } from './espace-typst';
@@ -415,7 +416,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 			return generateTrigCircleTypst(node as unknown as TrigCircleNode);
 
 		case 'number-line':
-			return generateNumberLineTypst(node as unknown as NumberLineNode);
+			return generateNumberLineTypst(node as unknown as NumberLineNode, {
+				language: options.language
+			});
 
 		case 'courbe':
 			return generateCourbeTypst(node, { language: options.language });
@@ -428,6 +431,8 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 
 		case 'qr':
 			return generateQrTypst(node);
+		case 'scratch':
+			return generateScratchTypst(node);
 		case 'horloge':
 			return generateHorlogeTypst(node);
 		case 'partage':
@@ -498,10 +503,11 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 			// qu'un `]` d'intervalle (`]2 ; 3[`) fermerait trop tôt
 			let text = escapeTypstBrackets(unescapedContent);
 			if (node.bold) text = `*${text}*`;
+			// `;` final : sans lui, un `(`, `[` ou `.lettre` collé après serait lu comme la suite de l'appel
 			// Use #emph[] instead of _..._ for italic - more reliable in content blocks
-			if (node.italic) text = `#emph[${text}]`;
-			if (node.strikethrough) text = `#strike[${text}]`;
-			if (node.highlight) text = `#highlight[${text}]`;
+			if (node.italic) text = `#emph[${text}];`;
+			if (node.strikethrough) text = `#strike[${text}];`;
+			if (node.highlight) text = `#highlight[${text}];`;
 			return wrapInlineDetail(text, node.detail);
 		}
 

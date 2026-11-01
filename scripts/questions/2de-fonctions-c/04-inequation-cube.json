@@ -1,0 +1,229 @@
+{
+	"title": "Résoudre x³ < k",
+	"description": "Inéquation x³ < k (cubes parfaits) par la croissance de la fonction cube : k entier ou fraction, positif ou négatif, les quatre sens (pièges : k au lieu de sa racine cubique, sens changé, partie négative oubliée, crochets)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction cube",
+	"subdomain": "Résolution algébrique",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On note $f$ la fonction cube : $f(x)=x^3$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $x^3{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-4..4"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(r)^3"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;{{r}}[|{{if:s==1|]-\\infty;{{r}}]|{{if:s==2|]{{r}};+\\infty[|[{{r}};+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche d'abord le nombre dont le cube vaut ${{k}}$ : ${{r}}$, car $\\left({{r}}\\right)^3={{k}}$.",
+					"La fonction cube est **croissante** sur $\\mathbb{R}$ : elle **conserve** le sens. $x^3{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}\\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{r}}$.",
+					"Sur le graphique : on garde les abscisses des points de la courbe situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} la droite $y={{k}}$ ; {{if:s==0|l'abscisse de $A$ est **exclue**|{{if:s==1|l'abscisse de $A$ est **comprise**|{{if:s==2|l'abscisse de $A$ est **exclue**|l'abscisse de $A$ est **comprise**}}}}}}.",
+					"```courbe\nx: -5 ; 5\ny: {{eval:-max((k),-(k))-4}} ; {{eval:max((k),-(k))+4}}\nf(x) = x^3   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = x^3 sur [-100 ; {{r}}[   vert|{{if:s==1|h(x) = x^3 sur [-100 ; {{r}}]   vert|{{if:s==2|h(x) = x^3 sur ]{{r}} ; 100]   vert|h(x) = x^3 sur [{{r}} ; 100]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur [-100 ; {{r}}[   vert|{{if:s==1|t(x) = 0 sur [-100 ; {{r}}]   vert|{{if:s==2|t(x) = 0 sur ]{{r}} ; 100]   vert|t(x) = 0 sur [{{r}} ; 100]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\npoints: A({{r}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de la fonction cube, droite y = k en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{r}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{r}}\\right]|{{if:s==2|\\left]{{r}}\\,;+\\infty\\right[|\\left[{{r}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction cube : $f(x)=x^3$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $x^3{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(p)^3/(q)^3}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..4"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["gcd(p, q) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;{{eval:(p)/(q)}}[|{{if:s==1|]-\\infty;{{eval:(p)/(q)}}]|{{if:s==2|]{{eval:(p)/(q)}};+\\infty[|[{{eval:(p)/(q)}};+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche d'abord le nombre dont le cube vaut ${{eval:(p)^3/(q)^3}}$ : ${{eval:(p)/(q)}}$, car $\\left({{eval:(p)/(q)}}\\right)^3={{eval:(p)^3/(q)^3}}$.",
+					"La fonction cube est **croissante** sur $\\mathbb{R}$ : elle **conserve** le sens. $x^3{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(p)^3/(q)^3}}\\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(p)/(q)}}$.",
+					"Sur le graphique : on garde les abscisses des points de la courbe situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} la droite $y={{eval:(p)^3/(q)^3}}$ ; {{if:s==0|l'abscisse de $A$ est **exclue**|{{if:s==1|l'abscisse de $A$ est **comprise**|{{if:s==2|l'abscisse de $A$ est **exclue**|l'abscisse de $A$ est **comprise**}}}}}}.",
+					"```courbe\nx: -2 ; 2\ny: -4 ; 4\nf(x) = x^3   bleu   nom=C_f\ng(x) = ({{p}}/{{q}})^3   rouge   pointillé\n{{if:s==0|h(x) = x^3 sur [-100 ; {{p}}/{{q}}[   vert|{{if:s==1|h(x) = x^3 sur [-100 ; {{p}}/{{q}}]   vert|{{if:s==2|h(x) = x^3 sur ]{{p}}/{{q}} ; 100]   vert|h(x) = x^3 sur [{{p}}/{{q}} ; 100]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur [-100 ; {{p}}/{{q}}[   vert|{{if:s==1|t(x) = 0 sur [-100 ; {{p}}/{{q}}]   vert|{{if:s==2|t(x) = 0 sur ]{{p}}/{{q}} ; 100]   vert|t(x) = 0 sur [{{p}}/{{q}} ; 100]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\npoints: A({{p}}/{{q}} ; ({{p}}/{{q}})^3)\ntaille: moyenne\ndescription: Courbe de la fonction cube, droite y = k en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{eval:(p)/(q)}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{eval:(p)/(q)}}\\right]|{{if:s==2|\\left]{{eval:(p)/(q)}}\\,;+\\infty\\right[|\\left[{{eval:(p)/(q)}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x³ < 8 : S = ]−∞ ; 2[",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "8",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;2["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−2 ; 2[ (comme x² < 4)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "8",
+				"s": "0"
+			},
+			"answers": ["]-2;2["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; 8[",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "8",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;8["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : crochet fermé",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "8",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : [0 ; 2[",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"k": "8",
+				"s": "0"
+			},
+			"answers": ["[0;2["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x³ ⩾ −27 : S = [−3 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-3",
+				"k": "-27",
+				"s": "3"
+			},
+			"answers": ["[-3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens changé ]−∞ ; −3]",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-3",
+				"k": "-27",
+				"s": "3"
+			},
+			"answers": ["]-\\infty;-3]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ℝ (un cube serait positif)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-3",
+				"k": "-27",
+				"s": "3"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x³ ⩽ −1/8 : S = ]−∞ ; −1/2]",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-1",
+				"q": "2",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;-\\frac{1}{2}]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal ]−∞ ; −0,5]",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-1",
+				"q": "2",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;-0{,}5]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; −1/8]",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-1",
+				"q": "2",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;-\\frac{1}{8}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,305 @@
+{
+	"title": "Additionner des fractions de dénominateurs multiples",
+	"description": "Somme de fractions dont un dénominateur est multiple des autres : 3/2 + 7/8 = 19/8 ; 1/12 + 1/6 + 1/3 = 7/12 ; dénominateurs au plus 60, toute fraction égale juste",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Addition et Soustraction",
+	"level": 24,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{gn}}}{{{gd}}} + \\frac{{{dn}}}{{{dd}}} = ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..10"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b*k"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:2*b}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:2*d}}"
+				},
+				{
+					"name": "ak",
+					"expression": "eval:a*k"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:(1-s)*a+s*c"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:(1-s)*b+s*d"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:(1-s)*c+s*a"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:(1-s)*d+s*b"
+				}
+			],
+			"conditions": ["d<=60", "mod(a,b)!=0", "mod(c,d)!=0", "ak+c<=99"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:ak+c}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur d'abord.** ${{d}} = {{b}} \\times {{k}}$ : on écrit $\\frac{{{a}}}{{{b}}}$ en {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|{{if:d==20|vingtièmes|{{if:d==21|vingt et unièmes|{{if:d==22|vingt-deuxièmes|{{if:d==23|vingt-troisièmes|{{if:d==24|vingt-quatrièmes|{{if:d==25|vingt-cinquièmes|{{if:d==26|vingt-sixièmes|{{if:d==27|vingt-septièmes|{{if:d==28|vingt-huitièmes|{{if:d==29|vingt-neuvièmes|{{if:d==30|trentièmes|{{if:d==31|trente et unièmes|{{if:d==32|trente-deuxièmes|{{if:d==33|trente-troisièmes|{{if:d==34|trente-quatrièmes|{{if:d==35|trente-cinquièmes|{{if:d==36|trente-sixièmes|{{if:d==37|trente-septièmes|{{if:d==38|trente-huitièmes|{{if:d==39|trente-neuvièmes|{{if:d==40|quarantièmes|{{if:d==41|quarante et unièmes|{{if:d==42|quarante-deuxièmes|{{if:d==43|quarante-troisièmes|{{if:d==44|quarante-quatrièmes|{{if:d==45|quarante-cinquièmes|{{if:d==46|quarante-sixièmes|{{if:d==47|quarante-septièmes|{{if:d==48|quarante-huitièmes|{{if:d==49|quarante-neuvièmes|{{if:d==50|cinquantièmes|{{if:d==51|cinquante et unièmes|{{if:d==52|cinquante-deuxièmes|{{if:d==53|cinquante-troisièmes|{{if:d==54|cinquante-quatrièmes|{{if:d==55|cinquante-cinquièmes|{{if:d==56|cinquante-sixièmes|{{if:d==57|cinquante-septièmes|{{if:d==58|cinquante-huitièmes|{{if:d==59|cinquante-neuvièmes|soixantièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}, en multipliant le numérateur et le dénominateur par ${{k}}$.",
+					"$\\frac{{{a}}}{{{b}}} = \\frac{{{a}} \\times {{k}}}{{{b}} \\times {{k}}} = \\frac{{{ak}}}{{{d}}}$.",
+					"$$\\frac{{{ak}}}{{{d}}} + \\frac{{{c}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:ak+c}}}{{{d}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{c}}}{{{dg}}} + \\frac{{{b}}}{{{dm}}} + \\frac{{{a}}}{{{dp}}} = ?$$",
+			"variables": [
+				{
+					"name": "dp",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:dp*m"
+				},
+				{
+					"name": "dg",
+					"expression": "eval:dp*m*n"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:dp-1}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:dm-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:dg-1}}"
+				},
+				{
+					"name": "an",
+					"expression": "eval:a*m*n"
+				},
+				{
+					"name": "bn",
+					"expression": "eval:b*n"
+				}
+			],
+			"conditions": ["dg<=60", "gcd(a,dp)==1", "gcd(b,dm)==1", "gcd(c,dg)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:an+bn+c}}}{{{dg}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur d'abord.** ${{dg}}$ est un multiple de ${{dm}}$ et de ${{dp}}$ : on écrit les trois fractions en {{if:dg==2|demis|{{if:dg==3|tiers|{{if:dg==4|quarts|{{if:dg==5|cinquièmes|{{if:dg==6|sixièmes|{{if:dg==7|septièmes|{{if:dg==8|huitièmes|{{if:dg==9|neuvièmes|{{if:dg==10|dixièmes|{{if:dg==11|onzièmes|{{if:dg==12|douzièmes|{{if:dg==13|treizièmes|{{if:dg==14|quatorzièmes|{{if:dg==15|quinzièmes|{{if:dg==16|seizièmes|{{if:dg==17|dix-septièmes|{{if:dg==18|dix-huitièmes|{{if:dg==19|dix-neuvièmes|{{if:dg==20|vingtièmes|{{if:dg==21|vingt et unièmes|{{if:dg==22|vingt-deuxièmes|{{if:dg==23|vingt-troisièmes|{{if:dg==24|vingt-quatrièmes|{{if:dg==25|vingt-cinquièmes|{{if:dg==26|vingt-sixièmes|{{if:dg==27|vingt-septièmes|{{if:dg==28|vingt-huitièmes|{{if:dg==29|vingt-neuvièmes|{{if:dg==30|trentièmes|{{if:dg==31|trente et unièmes|{{if:dg==32|trente-deuxièmes|{{if:dg==33|trente-troisièmes|{{if:dg==34|trente-quatrièmes|{{if:dg==35|trente-cinquièmes|{{if:dg==36|trente-sixièmes|{{if:dg==37|trente-septièmes|{{if:dg==38|trente-huitièmes|{{if:dg==39|trente-neuvièmes|{{if:dg==40|quarantièmes|{{if:dg==41|quarante et unièmes|{{if:dg==42|quarante-deuxièmes|{{if:dg==43|quarante-troisièmes|{{if:dg==44|quarante-quatrièmes|{{if:dg==45|quarante-cinquièmes|{{if:dg==46|quarante-sixièmes|{{if:dg==47|quarante-septièmes|{{if:dg==48|quarante-huitièmes|{{if:dg==49|quarante-neuvièmes|{{if:dg==50|cinquantièmes|{{if:dg==51|cinquante et unièmes|{{if:dg==52|cinquante-deuxièmes|{{if:dg==53|cinquante-troisièmes|{{if:dg==54|cinquante-quatrièmes|{{if:dg==55|cinquante-cinquièmes|{{if:dg==56|cinquante-sixièmes|{{if:dg==57|cinquante-septièmes|{{if:dg==58|cinquante-huitièmes|{{if:dg==59|cinquante-neuvièmes|soixantièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}.",
+					"$\\frac{{{b}}}{{{dm}}} = \\frac{{{b}} \\times {{n}}}{{{dm}} \\times {{n}}} = \\frac{{{bn}}}{{{dg}}}$ et $\\frac{{{a}}}{{{dp}}} = \\frac{{{a}} \\times {{eval:m*n}}}{{{dp}} \\times {{eval:m*n}}} = \\frac{{{an}}}{{{dg}}}$.",
+					"$$\\frac{{{c}}}{{{dg}}} + \\frac{{{bn}}}{{{dg}}} + \\frac{{{an}}}{{{dg}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:an+bn+c}}}{{{dg}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/2 + 7/8 = 19/8",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"k": "4",
+				"d": "8",
+				"a": "3",
+				"c": "7",
+				"ak": "12",
+				"s": "0",
+				"gn": "3",
+				"gd": "2",
+				"dn": "7",
+				"dd": "8"
+			},
+			"answers": ["\\frac{19}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10/10 (numérateurs et dénominateurs ajoutés)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"k": "4",
+				"d": "8",
+				"a": "3",
+				"c": "7",
+				"ak": "12",
+				"s": "0",
+				"gn": "3",
+				"gd": "2",
+				"dn": "7",
+				"dd": "8"
+			},
+			"answers": ["\\frac{10}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10/8 (3/2 pas converti)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"k": "4",
+				"d": "8",
+				"a": "3",
+				"c": "7",
+				"ak": "12",
+				"s": "0",
+				"gn": "3",
+				"gd": "2",
+				"dn": "7",
+				"dd": "8"
+			},
+			"answers": ["\\frac{10}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 19/16 (dénominateur aussi multiplié)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"k": "4",
+				"d": "8",
+				"a": "3",
+				"c": "7",
+				"ak": "12",
+				"s": "0",
+				"gn": "3",
+				"gd": "2",
+				"dn": "7",
+				"dd": "8"
+			},
+			"answers": ["\\frac{19}{16}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/12 + 1/6 + 1/3 = 7/12",
+			"variationIndex": 1,
+			"variables": {
+				"dp": "3",
+				"m": "2",
+				"n": "2",
+				"dm": "6",
+				"dg": "12",
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"an": "4",
+				"bn": "2"
+			},
+			"answers": ["\\frac{7}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/21 (tout ajouté)",
+			"variationIndex": 1,
+			"variables": {
+				"dp": "3",
+				"m": "2",
+				"n": "2",
+				"dm": "6",
+				"dg": "12",
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"an": "4",
+				"bn": "2"
+			},
+			"answers": ["\\frac{3}{21}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/12 (rien converti)",
+			"variationIndex": 1,
+			"variables": {
+				"dp": "3",
+				"m": "2",
+				"n": "2",
+				"dm": "6",
+				"dg": "12",
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"an": "4",
+				"bn": "2"
+			},
+			"answers": ["\\frac{3}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "14/24 : fraction égale, acceptée",
+			"variationIndex": 1,
+			"variables": {
+				"dp": "3",
+				"m": "2",
+				"n": "2",
+				"dm": "6",
+				"dg": "12",
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"an": "4",
+				"bn": "2"
+			},
+			"answers": ["\\frac{14}{24}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

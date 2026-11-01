@@ -5,7 +5,9 @@
  * Pendant une évaluation, le serveur tire et corrige ; le navigateur ne reçoit
  * que ce qu'il faut pour afficher la question et y répondre. Construite en
  * LISTE BLANCHE, champ par champ : ni réponse attendue, ni correction, ni bon
- * choix d'une case choix, ni graine, ni variables tirées, ni règle de validation.
+ * choix d'une case choix, ni graine, ni variables tirées, ni règle de validation ;
+ * l'énoncé lui-même sans la valeur à trouver de ses blocs à geste
+ * (`maskGestureAnswers`).
  *
  * Pas d'identifiant de modèle non plus : avec lui, un élève retrouverait la
  * formule de la correction (les modèles publiés sont lisibles) et pourrait
@@ -23,6 +25,7 @@ import { unitKeysFor } from '$lib/questions/units/keyboard-units';
 import type { CapitalPairs } from '$lib/mathAST/parser/types';
 import type { ConstraintMode, GradeLevel, InstanceBlank, QuestionInstance } from './types';
 import { isWorkFigureBlank } from './graded-part';
+import { maskGestureAnswers } from './masked-statement';
 
 // Types
 export interface PublicBlank {
@@ -42,6 +45,17 @@ export interface PublicBlank {
 	choice?: { choices: string[]; multiple: boolean };
 	/** Figure de travail : jamais notée, peut rester vide (rien d'attendu à cacher) */
 	workFigure?: true;
+	/**
+	 * Figure à compléter (notée) : le fait seul, que l'énoncé montre déjà ; jamais
+	 * `construction` (son texte et ses vérifications disent la réponse). Sans lui,
+	 * l'écran la compterait comme une case écrite (aide, numéros des cases)
+	 */
+	figure?: true;
+	/**
+	 * Case d'un bloc à geste : le genre du bloc seul (`line`, `horloge`…), que l'énoncé
+	 * montre déjà ; sans lui, l'écran afficherait l'aide des cases écrites
+	 */
+	construire?: InstanceBlank['construire'];
 }
 
 export interface PublicQuestion {
@@ -81,6 +95,8 @@ function publicBlank(blank: InstanceBlank): PublicBlank {
 	if (blank.graphicalConfig) result.graphicalConfig = blank.graphicalConfig;
 	if (blank.answerKind) result.answerKind = blank.answerKind;
 	if (isWorkFigureBlank(blank)) result.workFigure = true;
+	else if (blank.construction) result.figure = true;
+	if (blank.construire) result.construire = blank.construire;
 	if (blank.choice) {
 		const { choices, order, multiple } = blank.choice;
 		result.choice = { choices: order.map((index) => choices[index]), multiple };
@@ -97,7 +113,8 @@ export function toPublicQuestion(
 		position: meta.position,
 		delaySeconds: meta.delaySeconds,
 		type: 'fill_in_blanks',
-		statement: instance.statement
+		// Les blocs à geste sans la valeur à trouver (`placer: A=?`) : chantier `fuite-enonce`
+		statement: maskGestureAnswers(instance.statement)
 	};
 	if (instance.exerciseInstruction) question.exerciseInstruction = instance.exerciseInstruction;
 	const spaces = instance.options?.constraints?.spaces;
@@ -145,10 +162,13 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 		...(blank.unit && { unit: blank.unit }),
 		...(blank.graphicalConfig && { graphicalConfig: blank.graphicalConfig }),
 		...(blank.answerKind && { answerKind: blank.answerKind }),
+		...(blank.construire && { construire: blank.construire }),
 		// Figure de travail : la figure vient de l'énoncé, la case dit seulement qu'elle n'est pas notée
 		...(blank.workFigure && {
 			construction: { source: '', checks: [], work: true as const }
 		}),
+		// Figure à compléter : la figure vient de l'énoncé, jugée par le serveur
+		...(blank.figure && { construction: { source: '', checks: [] } }),
 		// Ordre affiché = ordre d'origine du navigateur : les positions cochées partent telles quelles
 		...(blank.choice && {
 			choice: {

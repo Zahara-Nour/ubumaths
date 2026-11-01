@@ -3,8 +3,8 @@
  * =======================
  *
  * Server-side helpers for the kanban_boards / kanban_columns / kanban_cards
- * stack. Authorization is enforced by RLS at the DB level (see migration
- * `20260526190624_create_kanban_tables.sql`), but the API layer also runs
+ * stack. Authorization is enforced by RLS at the DB level (see the kanban policies
+ * in `supabase/migrations/`, baseline then later migrations), but the API layer also runs
  * explicit checks via the `assertBoard*` helpers below so we can surface
  * clear 403/404 responses rather than RLS silently filtering rows.
  *

@@ -1,0 +1,81 @@
+{
+	"id": "4dcbae71-f935-4792-93fe-0357b18e3511",
+	"title": "Coefficients binomiaux particuliers",
+	"description": "C(n, 0) = C(n, n) = 1 et C(n, 1) = n, sans formule",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Coefficients binomiaux",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Donne les coefficients binomiaux suivants.\n\n$\\binom{ {{n}} }{0}=?$ ; $\\binom{ {{n}} }{1}=?$ ; $\\binom{ {{n}} }{ {{n}} }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..40"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\binom{ {{n}} }{0}=\\textcolor{{{color:primary.0}}}{1}$ : un seul chemin sans succès (que des échecs).",
+					"$\\binom{ {{n}} }{1}=\\textcolor{{{color:primary.0}}}{{{n}}}$ : le succès unique peut être à l'une des ${{n}}$ épreuves.",
+					"$\\binom{ {{n}} }{ {{n}} }=\\textcolor{{{color:primary.0}}}{1}$ : un seul chemin où tout est succès."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1", "12", "1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "12"
+			},
+			"description": "v0 : n = 12 → 1 ; 12 ; 1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0", "12", "1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "12"
+			},
+			"description": "v0 : C(n, 0) = 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1", "12", "12"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "12"
+			},
+			"description": "v0 : C(n, n) = n",
+			"variationIndex": 0
+		}
+	]
+}

@@ -1,0 +1,137 @@
+{
+	"title": "Tracer une droite donnée par une équation cartésienne",
+	"description": "Choisir la droite tracée qui représente ax + by + c = 0 (b ≠ 0), en isolant y d'abord, pente entière puis fractionnaire (pièges : pente a/b, −b/a, signe de p)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Équations de droites",
+	"level": 7,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère du plan, on considère la droite $d$ d'équation ${{eval:-(m)*(b)}}x{{b;+}}y{{eval:-(p)*(b);+}}=0$.\n\nQuelle figure représente la droite $d$ ?\n\n````choix\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{m}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:(p)}}) et (1 ; {{eval:(p)+(m)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{eval:-(m)}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:(p)}}) et (1 ; {{eval:(p)+-(m)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{m}})*x+({{eval:-(p)}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:-(p)}}) et (1 ; {{eval:-(p)+(m)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{eval:-(m)}})*x+({{eval:-(p)}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:-(p)}}) et (1 ; {{eval:-(p)+-(m)}}).\n  ```\n````",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": ["abs((p)+(m)) <= 6", "abs((p)-(m)) <= 6"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole $y$ pour obtenir l'équation réduite :",
+					"$${{b}}y={{eval:(m)*(b)}}x{{eval:(p)*(b);+}}$$",
+					"{{if:b!=1|On divise par ${{b}}$ : }}$y={{m}}x{{p;+}}$.",
+					"Pour tracer $y=mx+p$ : on place le point $(0\\,;\\,p)$ sur l'axe des ordonnées, puis, en avançant de $1$, on monte de $m$ (on descend si $m<0$).",
+					"```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=d\npoints: A(0 ; {{p}}), B(1 ; {{eval:(p)+(m)}})\ntaille: moyenne\ndescription: Droite d et deux de ses points, A et B, d'abscisses 0 et 1.\n```"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, on considère la droite $d$ d'équation ${{a}}x{{b;+}}y{{eval:-(p)*(b);+}}=0$.\n\nQuelle figure représente la droite $d$ ?\n\n````choix\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{eval:-(a)}})/({{b}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite de pente {{eval:-(a)/(b)}} passant par le point (0 ; {{p}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{a}})/({{b}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite de pente {{eval:(a)/(b)}} passant par le point (0 ; {{p}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{eval:-(b)}})/({{a}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite de pente {{eval:-(b)/(a)}} passant par le point (0 ; {{p}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{eval:-(a)}})/({{b}})*x+({{eval:-(p)}})   bleu   nom=d\n  taille: petite\n  description: Droite de pente {{eval:-(a)/(b)}} passant par le point (0 ; {{eval:-(p)}}).\n  ```\n````",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": ["mod(a, b) != 0", "abs(a) != abs(b)", "abs((p)-(a)*abs(b)/(b)) <= 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole $y$ pour obtenir l'équation réduite :",
+					"$${{b}}y={{eval:-(a)}}x{{eval:(p)*(b);+}}$$",
+					"On divise par ${{b}}$ : $y={{eval:-(a)/(b)}}x{{p;+}}$.",
+					"La droite passe par $(0\\,;{{p}})$ et a pour pente ${{eval:-(a)/(b)}}$ : en avançant de ${{eval:abs(b)}}$, on {{if:(a)*(b)<0|monte|descend}} de ${{eval:abs(a)}}$.",
+					"```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{eval:-(a)}})/({{b}})*x+({{p}})   bleu   nom=d\npoints: A(0 ; {{p}}), B({{eval:abs(b)}} ; {{eval:(p)-(a)*abs(b)/(b)}})\ntaille: moyenne\ndescription: Droite d et deux de ses points, A et B, d'abscisses 0 et {{eval:abs(b)}}.\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x + y − 3 = 0 : la bonne",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-2",
+				"p": "3",
+				"b": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe de la pente",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-2",
+				"p": "3",
+				"b": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x + 3y + 3 = 0 : la bonne",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"p": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pente a/b",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"p": "-1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

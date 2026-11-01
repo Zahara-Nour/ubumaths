@@ -1,0 +1,232 @@
+{
+	"title": "Évolution à taux constant",
+	"description": "Évolutions successives à taux constant = suite géométrique : taux lu par le rapport de deux termes consécutifs (hausse, baisse), taux global de deux ou trois évolutions",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Modélisation",
+	"subdomain": "Évolutions successives",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Le nombre d'habitants d'une commune a été relevé trois années de suite :\n\n| Année | 2023 | 2024 | 2025 |\n| --- | --- | --- | --- |\n| Habitants | ${{eval:c*10000}}$ | ${{eval:c*100*(100+t)}}$ | ${{eval:c*(100+t)^2}}$ |\n\nLe nombre d'habitants évolue chaque année avec le même taux. Quel est ce taux ?\n\nLe nombre d'habitants augmente de $?\\,\\%$ par an.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le rapport de deux termes consécutifs est constant : $\\dfrac{{{eval:c*100*(100+t)}}}{{{eval:c*10000}}}=\\dfrac{{{eval:c*(100+t)^2}}}{{{eval:c*100*(100+t)}}}={{eval:1+t/100;d}}$.",
+					"Multiplier par ${{eval:1+t/100;d}}=1+\\dfrac{{{eval:t}}}{100}$, c'est augmenter de $\\textcolor{{{color:primary.0}}}{{{eval:t}}\\,\\%}$ : la suite est géométrique de raison ${{eval:1+t/100;d}}$."
+				]
+			}
+		},
+		{
+			"statement": "La valeur d'une machine a été estimée trois années de suite :\n\n| Année | 2023 | 2024 | 2025 |\n| --- | --- | --- | --- |\n| Valeur (en €) | ${{eval:c*10000}}$ | ${{eval:c*100*(100-t)}}$ | ${{eval:c*(100-t)^2}}$ |\n\nLa valeur baisse chaque année avec le même taux. Quel est ce taux ?\n\nLa valeur baisse de $?\\,\\%$ par an.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "t",
+					"expression": "2..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le rapport de deux termes consécutifs est constant : $\\dfrac{{{eval:c*100*(100-t)}}}{{{eval:c*10000}}}=\\dfrac{{{eval:c*(100-t)^2}}}{{{eval:c*100*(100-t)}}}={{eval:1-t/100;d}}$.",
+					"Multiplier par ${{eval:1-t/100;d}}=1-\\dfrac{{{eval:t}}}{100}$, c'est baisser de $\\textcolor{{{color:primary.0}}}{{{eval:t}}\\,\\%}$ : la suite est géométrique de raison ${{eval:1-t/100;d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le prix d'un abonnement augmente de ${{eval:t}}\\,\\%$ par an pendant deux années consécutives.\n\nDe quel pourcentage a-t-il augmenté en tout sur ces deux années ?\n\nLe prix a augmenté de $?\\,\\%$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*t+t^2/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Augmenter de ${{eval:t}}\\,\\%$, c'est multiplier par ${{eval:1+t/100;d}}$. Deux années de suite : on multiplie par ${{eval:1+t/100;d}}^2={{eval:(1+t/100)^2;d}}$.",
+					"Les pourcentages ne s'ajoutent pas : multiplier par ${{eval:(1+t/100)^2;d}}$, c'est augmenter de $\\textcolor{{{color:primary.0}}}{{{eval:2*t+t^2/100;d}}\\,\\%}$, et non de ${{eval:2*t}}\\,\\%$."
+				]
+			}
+		},
+		{
+			"statement": "Une population de bactéries augmente de ${{eval:t}}\\,\\%$ par heure pendant trois heures.\n\nDe quel pourcentage a-t-elle augmenté en tout sur ces trois heures ?\n\nLa population a augmenté de $?\\,\\%$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "10|20|50"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((1+t/100)^3-1)*100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Augmenter de ${{eval:t}}\\,\\%$, c'est multiplier par ${{eval:1+t/100;d}}$. Trois heures de suite : on multiplie par ${{eval:1+t/100;d}}^3={{eval:(1+t/100)^3;d}}$.",
+					"Les pourcentages ne s'ajoutent pas : multiplier par ${{eval:(1+t/100)^3;d}}$, c'est augmenter de $\\textcolor{{{color:primary.0}}}{{{eval:((1+t/100)^3-1)*100;d}}\\,\\%}$, et non de ${{eval:3*t}}\\,\\%$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "10 000 ; 10 400 ; 10 816 : 4 %",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"t": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le coefficient 1,04",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"t": "4"
+			},
+			"answers": ["1,04"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : l'écart 400",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"t": "4"
+			},
+			"answers": ["400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Baisse de 5 %",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"t": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coefficient 0,95",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"t": "5"
+			},
+			"answers": ["0,95"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 × 10 % : 21 %",
+			"variationIndex": 2,
+			"variables": {
+				"t": "10"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 20 %",
+			"variationIndex": 2,
+			"variables": {
+				"t": "10"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 × 15 % : 32,25 %",
+			"variationIndex": 2,
+			"variables": {
+				"t": "15"
+			},
+			"answers": ["32,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 × 10 % : 33,1 %",
+			"variationIndex": 3,
+			"variables": {
+				"t": "10"
+			},
+			"answers": ["33,1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30 %",
+			"variationIndex": 3,
+			"variables": {
+				"t": "10"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coefficient 1,331",
+			"variationIndex": 3,
+			"variables": {
+				"t": "10"
+			},
+			"answers": ["1,331"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -212,7 +212,6 @@ describe('Chat : le store client sur le canal privé', { timeout: 120_000 }, () 
 		// L'expéditeur vient de la ligne en base (`sender_id`). Son nom dépend de
 		// la lecture des profils (hors périmètre) : non asserté ici.
 		expect(recu!.sender_id).toBe(a.id);
-		expect(recu!.is_broadcast).toBeUndefined();
 	});
 
 	it('un signal forgé par un participant : B affiche la ligne de la base, jamais le payload', async () => {

@@ -1,0 +1,96 @@
+{
+	"id": "ea8d7ae6-6740-4abf-b488-cc55f8296add",
+	"title": "Loi géométrique : identifier la loi",
+	"description": "Rang du premier succès dans des épreuves indépendantes (dé à n faces)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Reconnaître une loi",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On lance un dé équilibré à ${{n}}$ faces, numérotées de $1$ à ${{n}}$, **jusqu'à** obtenir un ${{n}}$ pour la première fois, et on note $X$ le nombre de lancers effectués.\n\nQuelle est la loi de $X$ ?\n\n```choix\n- $\\mathcal{G}\\left(\\dfrac{1}{ {{n}} }\\right)$\n- $\\mathcal{G}\\left(\\dfrac{ {{eval:n-1}} }{ {{n}} }\\right)$\n- $\\mathcal{B}\\left({{n}}\\,;\\dfrac{1}{ {{n}} }\\right)$\n- La loi de Bernoulli de paramètre $\\dfrac{1}{ {{n}} }$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4|6|8|10|12|20"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On répète une épreuve de Bernoulli de succès « obtenir ${{n}}$ » ($p=\\dfrac{1}{ {{n}} }$), et $X$ est le **rang du premier succès**.",
+					"$X$ suit la loi géométrique $\\textcolor{{{color:primary.0}}}{\\mathcal{G}\\left(\\dfrac{1}{ {{n}} }\\right)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v0 : n=6, géométrique",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v0 : G(5/6)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v0 : binomiale",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v0 : Bernoulli",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "20"
+			},
+			"description": "v0 : n=20, géométrique",
+			"variationIndex": 0
+		}
+	]
+}

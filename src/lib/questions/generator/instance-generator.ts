@@ -51,6 +51,7 @@ import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
 import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { hasBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { hasCourbeToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { barsCaseCount } from '$lib/ubumark/utils/barres-placer';
 import {
 	findRangersToPlace,
@@ -63,7 +64,7 @@ import { rangerOrder } from '$lib/ubumark/utils/ranger';
 import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
 import { hasCubesToBuild, hasPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
 import type { RangerSign } from '$lib/ubumark/types/ranger';
-import { buildAnswerOf } from './build-answer';
+import { buildAnswerOf, MASKED_IN_TEMPLATE } from './build-answer';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
 import { divisionExpectedAnswers } from '$lib/ubumark/utils/operation-division-answer';
@@ -142,6 +143,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'partage') return 'la fraction du bloc partage (colorier:)';
 	if (kind === 'cubes') return 'la vue ou les vues du bloc cubes (dessiner:, retrouver:)';
 	if (kind === 'patron') return 'les faces du bloc patron (designer:, completer:)';
+	if (kind === 'courbe') return 'les coordonnées du point du repère (placer:)';
 	return `la valeur du bloc ${kind} (construire:)`;
 }
 
@@ -541,6 +543,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasLineToPlace(String(resolvedStatement)) ||
 				hasHorlogeToPlace(String(resolvedStatement)) ||
 				hasBarsToPlace(String(resolvedStatement)) ||
+				hasCourbeToPlace(String(resolvedStatement)) ||
 				hasRangerToPlace(String(resolvedStatement)) ||
 				hasPartageToColorier(String(resolvedStatement)) ||
 				hasCubesToBuild(String(resolvedStatement)) ||
@@ -617,6 +620,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				const index = Number(key);
 				const header = readConstructionHeader(source);
 				const errors = [...header.errors, ...parseFigureContent(header.figureSource).errors];
+				// `verifier: ?` : forme réservée à l'énoncé envoyé pendant une évaluation
+				if (header.spec.masked) errors.unshift({ message: MASKED_IN_TEMPLATE });
 				if (header.spec.caseIndex !== undefined) {
 					errors.unshift({
 						message: 'case: est posée automatiquement, retirer cette ligne du bloc'
@@ -719,7 +724,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push(
-						`${kind === 'cubes' || kind === 'patron' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+						`${kind === 'cubes' || kind === 'patron' || kind === 'courbe' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
 					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {
@@ -757,6 +762,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							const first = child.caseIndex;
 							if (child.placer === undefined || first === undefined) return [];
 							return child.placer.map((_, k) => first + k);
+						}
+						if (child.type === 'courbe') {
+							const first = child.caseIndex;
+							if (!child.spec?.placer || first === undefined) return [];
+							return child.spec.placer.map((_, k) => first + k);
 						}
 						if (child.type === 'horloge') {
 							return child.spec?.placer !== undefined && child.caseIndex !== undefined

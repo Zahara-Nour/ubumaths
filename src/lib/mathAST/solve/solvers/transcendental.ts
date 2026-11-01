@@ -545,7 +545,8 @@ function solveExponential(
 		try {
 			bNumeric = evaluateNodeToApproximatedNumber(offsetNode);
 		} catch {
-			bNumeric = 0;
+			// Décalage paramétré : pas de valeur approchée (V42)
+			bNumeric = NaN;
 		}
 		solution = divide(subtract(lnC, offsetNode), coeffNode, 'fraction');
 		approximate = (lnCNumeric - bNumeric) / aNumeric;
@@ -561,9 +562,13 @@ function solveExponential(
 		'detailed'
 	);
 
+	const parametric = Number.isNaN(approximate);
+
 	recorder.recordStep(
 		'isolate-variable',
-		`Solution: ${variable} = ${approximate.toPrecision(options.precision)}`,
+		parametric
+			? `Solution exprimée avec le paramètre`
+			: `Solution: ${variable} = ${approximate.toPrecision(options.precision)}`,
 		equals(varNode(variable), solution),
 		equals(varNode(variable), solutionSimplified),
 		'summarized'
@@ -576,7 +581,7 @@ function solveExponential(
 			{
 				value: solutionSimplified,
 				exact: true,
-				approximate
+				...(!parametric && { approximate })
 			}
 		],
 		equationType: 'exponential',
@@ -660,7 +665,8 @@ function solveLogarithmic(
 		try {
 			bNumeric = evaluateNodeToApproximatedNumber(offsetNode);
 		} catch {
-			bNumeric = 0;
+			// Décalage paramétré : pas de valeur approchée (V42)
+			bNumeric = NaN;
 		}
 		solution = divide(subtract(inverseNode, offsetNode), coeffNode, 'fraction');
 		approximate = (inverseNumeric - bNumeric) / aNumeric;
@@ -801,7 +807,8 @@ function solveTrigonometric(
 			try {
 				bNumeric = evaluateNodeToApproximatedNumber(offsetNode);
 			} catch {
-				bNumeric = 0;
+				// Décalage paramétré : pas de valeur approchée (V42)
+				bNumeric = NaN;
 			}
 			xNumeric = (uSol.numeric - bNumeric) / aNumeric;
 			xSymbolic = divide(subtract(uSol.symbolic, offsetNode), coeffNode, 'fraction');
