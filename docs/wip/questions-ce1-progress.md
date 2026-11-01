@@ -668,3 +668,7 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les cinq recom
   (le bloc lit `345c`). Corrigé du rendu en une seule étape (une étape `{{if:}}` vide restait affichée) ; objets à la
   mesure du billet (sucette pour 1 €, cahier pour 5 €).
 - 2026-11-01 : #2135 mergée (CI verte 14/14, revue : aucune, contenu) ; brouillons en prod à créer par David.
+- 2026-11-01 : `create-questions --publier` par David : 6 brouillons vérifiés au MCP (`3fa7e2b5`, `0942f96a`, `463d8266`,
+  `4cd0d93f`, `3c9711f9`, `19d80fc9`), catégories attendues (Pièces et billets 8 à 11, Rendre la monnaie 3, 4), sans nœud
+  ni tag, `updated_at` intact. Migration `20261101215100_questions_ce1_lot8_rangement_tags` (max des worktrees + 1 min)
+  et test : rouge sans (5 échecs sur 9), vert 9/9.
