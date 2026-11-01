@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2082._
+_Mis à jour le 2026-11-01, après #2093._
 
-- **État** : lot 3c (4 partages) en brouillon en prod ; migration de rangement mergée (#2082) puis renommée `20261101160400` (collision d'horodatage avec le lot 6 du CE1, § 11 quater) : PR de correction en cours.
-- **Prochaine action** : CI verte → merge ; David lance `pnpm db:migrate` depuis le dépôt principal ; relevé MCP (nœud + point, `updated_at` inchangé) ; page à cocher ; publication seulement après le `deploy:prod` du bloc ```partage.
-- **En attente de David** : le `db:migrate` après le merge.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; specs de coloriage ≤ 34 rangs (test `answer-complexity-corpus`) ; port 5177 pris par questions-4.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `fix/questions-cm1-lot3c-horodatage`.
+- **État** : lot 3c (4 partages) en brouillon en prod ; migration de rangement `20261101160400_questions_cm1_lot3c_rangement_tags` sur `main` (#2082, renommée par #2093 après une collision d'horodatage avec le lot 6 du CE1, § 11 quater), pas encore jouée.
+- **Prochaine action** : David lance `pnpm db:migrate` depuis le dépôt principal (jouera aussi `20261101160100`, 2de droites, d'une autre session) ; puis relevé MCP (4 modèles sur « définition », un point chacun, `updated_at` inchangé) ; page à cocher ; publication seulement après le `deploy:prod` du bloc ```partage.
+- **En attente de David** : le `db:migrate`.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (#2017, #2093) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; specs de coloriage ≤ 34 rangs (test `answer-complexity-corpus`) ; port 5177 pris par questions-4.
+- **Worktree / branche** : aucun (retiré après #2093).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -602,3 +602,4 @@ sans outil neuf ; « 1 + 3/4 » refusé (`requiredForm: 'fraction'`).
   `20261101160400` (max de `main`, des worktrees et des branches distantes : `160300`, ce2 lot 5,
   - 1 min) dans une PR de correction, AVANT tout `db:migrate`. Leçon : refaire le relevé des
     horodatages juste avant de merger, pas seulement à l'écriture.
+- #2093 mergée (CI verte) : plus aucun doublon de version sur `main`.
