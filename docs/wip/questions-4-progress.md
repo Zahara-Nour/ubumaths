@@ -7,14 +7,12 @@
 
 _Mis à jour le 2026-11-01, après #2133 (lot 8 écrit, mergé)._
 
-- **État** : lots 1 à 7 en prod et publiés, sauf les 2 volumes du lot 6 (brouillons, `publier-lot` en simulation
-  vert, § 40). Lot 8 « programmes de calcul et fonctions » : fichiers mergés (#2133, § 41), pas encore en prod.
+- **État** : lots 1 à 7 en prod et tous publiés (volumes du lot 6 publiés le 2026-11-01, § 40). Lot 8 « programmes de calcul et fonctions » : fichiers mergés (#2133, § 41), pas encore en prod.
 - **Prochaine action** : après le `--publier` de David, relever les 6 `id` (MCP), migration nœud + tag du lot 8
   (+ test d'intégration rouge sans elle, `security-auditor`), page à cocher (`page-a-cocher.ts --dir
-scripts/questions/4-lot-8` ; 063 et 064 dessinent des ` ```courbe `) ; vérifier au MCP les volumes du lot 6. Puis
+scripts/questions/4-lot-8` ; 063 et 064 dessinent des ` ```courbe `) . Puis
   lot 9 « pensée informatique » (065-067).
-- **En attente de David** : `publier-lot --dir scripts/questions/4-lot-6 --publier` (volumes) ;
-  `create-questions --dir scripts/questions/4-lot-8 --publier` (6 brouillons du lot 8).
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-8 --publier` (6 brouillons du lot 8).
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
   David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
   `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
@@ -1006,6 +1004,8 @@ Formule, tableau et graphique 1 (064) ; 063 au repère à placer (+ une variante
 - ` ```solide ` en prod (v0.59.0, `solide-parser.ts` sur `origin/production`). `publier-lot --dir
 scripts/questions/4-lot-6` en simulation (prod) : 6a770d04 et 35002b15 passent ; les 3 translations, déjà
   publiées, laissées telles quelles (le script les saute : plus besoin de dossier à part).
+- `publier-lot --publier` lancé par David : 5/5 publiés ; vérifié au MCP : 6a770d04 (niveau 1) et 35002b15 (niveau 2)
+  `published`. **Lot 6 clos.**
 
 ## 41. Lot 8 : écrit (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-8`, #2133)
 
