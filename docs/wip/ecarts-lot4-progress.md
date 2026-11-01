@@ -1,14 +1,14 @@
 ---
 title: Écarts, lot 4 (L10, L16, V65) — journal
 date: 2026-11-01
-status: en cours
+status: lot 4 mergé (#2131)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, avant la PR._
+_Mis à jour le 2026-11-01, après #2131._
 
-- **État** : L10 et L16 corrigés (tests rouges puis verts, typecheck 0) · **Prochaine action** : PR, CI, merge · **En attente de David** : V65 reste, voir plus bas · **Pièges en cours** : ne pas toucher `pedagogical-simplify/`, `simplify`, `tidy` (`fusion-moteurs`) · **Worktree / branche** : `../ubumaths-wt-ecarts-lot4` (`fix/ecarts-lot4`)
+- **État** : L10, L16 corrigés et mergés (#2131, pas en prod) ; revue sonnet : 1 finding corrigé, 4 relevés déjà sur main (plus bas) · **Prochaine action** : aucune dans ce lot ; suite du chantier dans [ecarts-a-trier-progress.md](ecarts-a-trier-progress.md) · **En attente de David** : V65 reste `|x^2-1|=3` (élargir `absolute-value.ts` au second degré ? reco : non) · **Pièges en cours** : aucun · **Worktree / branche** : retirés
 
 ---
 
