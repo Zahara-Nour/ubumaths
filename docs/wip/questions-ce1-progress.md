@@ -5,13 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, migration du lot 7 écrite (#2105)._
+_Mis à jour le 2026-11-01, après #2105._
 
 - **État** : lots 0 à 6 publiés (lot 6 : calcul posé et heure, 7 modèles, § 13, clos le 2026-11-01).
 - **Prochaine action** : lot 7 (données : 082, 106, 088, 089, 107, 081) — écrit (§ 14), #2102 mergée, 6 brouillons en prod ; migration nœud + tag
-  #2105 : `security-auditor`, CI verte → merge → `db:migrate` (4 conditions) → vérif MCP → page à cocher → `publier-lot` ;
+  #2105 mergée, 4 conditions réunies, **pas encore jouée** → `db:migrate` dès que 170000 (questions-4) et 183000
+  (questions-3) sont jouées par leurs sessions → vérif MCP → page à cocher → `publier-lot` ;
   puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : rien.
+- **En attente de David** : rien ; en attente des sessions questions-4 et questions-3 (leurs migrations).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
@@ -608,3 +609,6 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre rec
   `b4527dd3`, `bded0f4a`, `7369d049`, `29edb833`), catégories attendues, sans nœud ni tag, `updated_at` intact.
 - 2026-11-01 : migration `20261101190100_questions_ce1_lot7_rangement_tags` (max des worktrees + 1 min) et test :
   rouge sans (3 échecs, 4 non joués sur 9), vert 9/9 ; PR #2105.
+- 2026-11-01 : `security-auditor` sans finding (SQL exécuté identique au lot 6) ; #2105 mergée (CI verte 16/16).
+  `db:migrate` NON lancé : `20261101170000_questions_4_lot7` et `20261101183000_questions_3_lot6`, plus anciennes, pas
+  jouées en prod ; `db push` les jouerait aussi (`--include-all`). Attendre qu'elles le soient, puis `db:migrate`.
