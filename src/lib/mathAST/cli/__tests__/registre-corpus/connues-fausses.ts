@@ -31,8 +31,6 @@ export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'resoudre-07': 'structure : x = \\exponentialE^2 \\approx 7{,}39',
 	// `normalFormsEquivalent` rate sin² + cos² (carte ADR 0032 : `areEquivalent`)
 	'equivalent-04': 'valeur : \\text{faux}',
-	// Le registre ne lit pas la virgule décimale ; seul l'Atelier la traduit
-	'calcul-06': 'refus : « , » inattendu ici',
 	// Messages de refus (R6)
 	'refus-01': 'message : Commande inconnue : .foo — tape .help pour la liste',
 	'refus-02':

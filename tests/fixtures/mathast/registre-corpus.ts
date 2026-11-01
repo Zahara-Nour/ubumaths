@@ -27,7 +27,10 @@
 export interface RegistreCase {
 	/** `deriver-03` : stable, cité par les listes « connues fausses » */
 	readonly id: string;
-	/** La ligne telle que l'élève la tape dans l'Atelier, noms français */
+	/**
+	 * La ligne telle que la reçoit le registre : noms français, point décimal
+	 * (règle R-point : la virgule française est traduite par chaque outil)
+	 */
 	readonly ligne: string;
 	/** La réponse brute en LaTeX ; pour un refus, le message */
 	readonly attendu: string;
@@ -164,8 +167,8 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 		{ id: 'evaluer-07', ligne: '.évaluer (x+1)/(x-1) en x=3', attendu: '2' },
 		{
 			id: 'evaluer-08',
-			ligne: '.évaluer 3x^2 en x=0,5',
-			attendu: '0,75',
+			ligne: '.évaluer 3x^2 en x=0.5',
+			attendu: '0.75',
 			note: 'Un décimal tapé reste décimal (ADR 0032, S1).'
 		}
 	],
@@ -240,9 +243,9 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 		{ id: 'calcul-05', ligne: '(-3)^2', attendu: '9' },
 		{
 			id: 'calcul-06',
-			ligne: '0,1+0,2',
-			attendu: '0,3',
-			note: 'Virgule décimale française, décimal gardé (S1).'
+			ligne: '0.1+0.2',
+			attendu: '0.3',
+			note: 'Décimal gardé (S1). Point décimal : la virgule française est traduite par chaque outil (R-point).'
 		},
 		{ id: 'calcul-07', ligne: '3/4*8/9', attendu: '\\frac{2}{3}' },
 		{ id: 'calcul-08', ligne: 'e^0', attendu: '1' },

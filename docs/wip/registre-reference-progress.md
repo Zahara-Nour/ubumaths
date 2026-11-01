@@ -13,6 +13,10 @@ _Mis à jour le 2026-11-01, PR 0 codée et poussée, pas encore ouverte (aucune 
   « Juste » : 58/85 (`deriver`, `simplifier`, `resoudre`, `integrer`, `evaluer`, `taylor`,
   `domaine-02`). `domaine-01` « à revoir » : ℝ \ {0}, ℝ* ou réunion ? ma reco (ℝ \ {0}) sur la
   fiche ; `domaine-04` suivra la même forme.
+- **Règle R-point (David, 2026-11-01)** : le registre est la référence, au plus près de mathAST →
+  **point décimal** en entrée ET en sortie (`0.1+0.2` → `0.3`). La virgule française est traduite
+  par chaque outil (Atelier, calculatrice, `pnpm math`), jamais par le registre. Appliqué :
+  `calcul-06`, `evaluer-08` passés au point, écart `calcul-06` retiré, tests verts (178), page v11.
 - ⚠️ **Déjà tranché, NE PAS reposer** : ordre des termes (juge E1, il ignore l'ordre ; `1 + 1/x`
   non ajouté) ; pas de simplification qui change le domaine (S3), donc pas de `e^(ln x)` au
   corpus — les hypothèses viennent avec l'étape H.
@@ -20,7 +24,7 @@ _Mis à jour le 2026-11-01, PR 0 codée et poussée, pas encore ouverte (aucune 
   profondeur de ce qu'il faut transférer AVANT tout code, à rendre à David.
 - **Prochaine action** : relire `verdicts`, appliquer les corrections au corpus et aux listes
   `connues-fausses.ts`, relancer les tests ; quand les 85 sont « juste », ouvrir la PR 0, merger.
-- **En attente de David** : `domaine-01`, puis les 26 fiches restantes (`domaine-03` → `refus-04`).
+- **En attente de David** : 9 fiches (`calcul-06` → `calcul-10`, `refus-01` → `refus-04`) ; 76/85 « juste ».
 - **Règles du jour** : l'Atelier fait foi a priori (écart = règle citée + question) ; solutions
   en ordre croissant ; juge du corpus = E1 (`checkForm` sans remarque), pas de juge strict.
 - **Pièges en cours** : sonde de l'Atelier = fichier vitest jetable sous `src/` (~2 s) ; la page
