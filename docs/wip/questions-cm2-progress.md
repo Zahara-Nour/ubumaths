@@ -9,8 +9,8 @@
 _Mis à jour le 2026-11-01, après #2125 (rangement du 5b)._
 
 - **État** : lots 0 à 4 et 5a publiés ; 5b (calculs, 6 modèles) en brouillon en prod, rangé et tagué (#2125, vérifié MCP) ; page à cocher du 5b publiée : https://claude.ai/artifact/EBRtiBKNCcbaQynwCYUXKx (6 fiches, `verdicts` vide au départ).
-- **Prochaine action** : lire et compter les verdicts du 5b ; `publier-lot --dir scripts/questions/cm2-5b` en simulation ; puis lot suivant (§ 3 du journal : prochains points sans modèle).
-- **En attente de David** : relecture du 5b (page à cocher), puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-5b --publier`.
+- **Prochaine action** : après le `--publier` du 5b, vérifier `published` (MCP) ; puis lot suivant (§ 3 du journal : prochains points sans modèle).
+- **En attente de David** : 5b relu (6 OK sur 6, simulation : 6 passent) → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-5b --publier`.
 - **Pièges en cours** : homonymes du CM1 / de 6e signalés par la page à cocher (même titre, autre niveau : ids vérifiés) ; `reducedFractions: off` accepte toute fraction égale ; jamais `}}` collé dans un `{{if:}}` ; `db:migrate` refusé quand la prod a des migrations plus récentes → `--dry-run` puis `--include-all` si seule la nôtre manque ; worktree sans `supabase/.temp` → copier celui du dépôt principal pour `db push` ; dépôt principal à l'index occupé par une autre session → jouer depuis le worktree ; `git commit -m … -- <fichiers>` ; `Doc-inchangée:` dans un message de commit.
 - **Worktree / branche** : aucun (retiré après #2125).
 
@@ -544,3 +544,7 @@ modèles 6-11). Tableau du § 10 gardé.
 - Migration `20261101210500_questions_cm2_lot5b_rangement_tags.sql`, copie du 5a ; nœuds « Nombres et calculs > Fractions : calculs > addition et soustraction / multiplication / fraction d'une quantité ». Test `questions-cm2-lot5b-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges.
 - `security-auditor` : aucun finding ; CI verte, #2125 mergée. `db push --include-all` (dry-run d'abord : la nôtre seule), depuis le worktree (index du dépôt principal occupé par une autre session). MCP : 6 brouillons rangés et tagués, `updated_at` inchangé (15:41, création).
 - Page à cocher publiée (6 fiches ; alertes « homonyme » sur 4 : modèles de CM1 ou de 6e de même titre écartés, ids justes), rendu vérifié à 390 px : https://claude.ai/artifact/EBRtiBKNCcbaQynwCYUXKx ; `verdicts` vide au départ.
+
+### 10.8 Lot 5b : relecture (David, 2026-11-01)
+
+- 6 OK sur 6, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 6 brouillons passent le contrôle.
