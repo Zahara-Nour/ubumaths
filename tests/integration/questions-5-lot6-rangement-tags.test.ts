@@ -2,7 +2,7 @@
  * Chantier « questions-5 », lot 6 (données et probabilités) : nœuds et tags (Supabase local requis)
  * ===================================================================================================
  *
- * Migration `20261101170000_questions_5_lot6_rangement_tags` : une sous-notion neuve, « Statistiques >
+ * Migration `20261101180100_questions_5_lot6_rangement_tags` : une sous-notion neuve, « Statistiques >
  * Représenter des données > choisir une représentation », où passe le point 5-079 ; les 8 brouillons
  * du lot 6 (créés sans nœud ni tag) vont sur le nœud de leur point, tag posé (5-134, 5-080 et 5-083
  * pour deux modèles chacun, 5-139, 5-079, 5-082). Aucun niveau ni statut ne change. Décisions de
@@ -60,7 +60,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101170000_questions_5_lot6_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101180100_questions_5_lot6_rangement_tags.sql';
 /** Le lot, tel que relevé en prod le 2026-11-01 (tags en « programme§code »). */
 const LOT: Modele[] = JSON.parse(
 	readFileSync('tests/integration/fixtures/questions-5-lot6-rangement.json', 'utf-8')
