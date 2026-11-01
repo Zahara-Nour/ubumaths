@@ -1,0 +1,224 @@
+{
+	"id": "1277a5b6-b979-4e3b-b5b6-e10aedfbedfb",
+	"title": "Espace : calculer un produit scalaire",
+	"description": "Produit scalaire en repère orthonormé, à partir des coordonnées de deux vecteurs ou de trois points (AB·AC) (pièges : z oublié, OB·OC)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Produit scalaire",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u1*v1+u2*v2+u3*v3}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\\\{{v3}}\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "-6..6"
+				},
+				{
+					"name": "u2",
+					"expression": "-6..6"
+				},
+				{
+					"name": "u3",
+					"expression": "-6..6"
+				},
+				{
+					"name": "v1",
+					"expression": "-6..6"
+				},
+				{
+					"name": "v2",
+					"expression": "-6..6"
+				},
+				{
+					"name": "v3",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["u3 != 0", "v3 != 0"],
+			"correction": {
+				"steps": [
+					"Dans un repère orthonormé, $\\vec{u}\\cdot\\vec{v}=xx'+yy'+zz'$.",
+					"$\\vec{u}\\cdot\\vec{v}={{u1}}\\times{{v1;()}}+{{u2;()}}\\times{{v2;()}}+{{u3;()}}\\times{{v3;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:u1*v1+u2*v2+u3*v3}} }$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(bx-ax)*(cx-ax)+(by-ay)*(cy-ay)+(bz-az)*(cz-az)}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$ et $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$.\n\nCalcule $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "-5..5"
+				},
+				{
+					"name": "bx",
+					"expression": "-5..5"
+				},
+				{
+					"name": "by",
+					"expression": "-5..5"
+				},
+				{
+					"name": "bz",
+					"expression": "-5..5"
+				},
+				{
+					"name": "cx",
+					"expression": "-5..5"
+				},
+				{
+					"name": "cy",
+					"expression": "-5..5"
+				},
+				{
+					"name": "cz",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": [
+				"abs(bx-ax)+abs(by-ay)+abs(bz-az) > 0",
+				"abs(cx-ax)+abs(cy-ay)+abs(cz-az) > 0",
+				"az != 0"
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{eval:bx-ax}}\\\\{{eval:by-ay}}\\\\{{eval:bz-az}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{eval:cx-ax}}\\\\{{eval:cy-ay}}\\\\{{eval:cz-az}}\\end{pmatrix}$.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}={{eval:bx-ax}}\\times{{eval:cx-ax;()}}+{{eval:by-ay;()}}\\times{{eval:cy-ay;()}}+{{eval:bz-az;()}}\\times{{eval:cz-az;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:(bx-ax)*(cx-ax)+(by-ay)*(cy-ay)+(bz-az)*(cz-az)}} }$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"u1": "2",
+				"u2": "-1",
+				"u3": "3",
+				"v1": "4",
+				"v2": "5",
+				"v3": "-2"
+			},
+			"description": "v0 : -3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"u1": "2",
+				"u2": "-1",
+				"u3": "3",
+				"v1": "4",
+				"v2": "5",
+				"v3": "-2"
+			},
+			"description": "v0 : z oublié (3)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"u1": "2",
+				"u2": "-1",
+				"u3": "3",
+				"v1": "4",
+				"v2": "5",
+				"v3": "-2"
+			},
+			"description": "v0 : produits en croix mal appariés",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"bx": "3",
+				"by": "1",
+				"bz": "2",
+				"cx": "0",
+				"cy": "2",
+				"cz": "1"
+			},
+			"description": "v1 : 6",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"bx": "3",
+				"by": "1",
+				"bz": "2",
+				"cx": "0",
+				"cy": "2",
+				"cz": "1"
+			},
+			"description": "v1 : OB·OC au lieu de AB·AC",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"bx": "3",
+				"by": "1",
+				"bz": "2",
+				"cx": "0",
+				"cy": "2",
+				"cz": "1"
+			},
+			"description": "v1 : z oublié",
+			"variationIndex": 1
+		}
+	]
+}
