@@ -5,18 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2102._
+_Mis à jour le 2026-11-01, migration du lot 7 écrite (#2105)._
 
 - **État** : lots 0 à 6 publiés (lot 6 : calcul posé et heure, 7 modèles, § 13, clos le 2026-11-01).
-- **Prochaine action** : lot 7 (données : 082, 106, 088, 089, 107, 081) — écrit (§ 14), #2102 mergée → David lance `create-questions --dir scripts/questions/ce1-7 --publier` → migration nœud + tag ; puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : `create-questions --dir scripts/questions/ce1-7 --publier` (6 brouillons en prod).
+- **Prochaine action** : lot 7 (données : 082, 106, 088, 089, 107, 081) — écrit (§ 14), #2102 mergée, 6 brouillons en prod ; migration nœud + tag
+  #2105 : `security-auditor`, CI verte → merge → `db:migrate` (4 conditions) → vérif MCP → page à cocher → `publier-lot` ;
+  puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
   posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
   de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
   de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot7`, partie de `origin/main`). `!` de David :
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot7-rangement`). `!` de David :
   toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -602,3 +604,7 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre rec
   remplacée par une barre fausse ; à signaler, pas corrigé ici. `totaux: oui` ajoute la ligne ET la colonne Total.
   PR #2102 ouverte.
 - 2026-11-01 : #2102 mergée (CI verte 15/15) ; brouillons en prod à créer par David.
+- 2026-11-01 : `create-questions --publier` par David : 6 brouillons vérifiés au MCP (`f756fc4b`, `cb5a6a89`,
+  `b4527dd3`, `bded0f4a`, `7369d049`, `29edb833`), catégories attendues, sans nœud ni tag, `updated_at` intact.
+- 2026-11-01 : migration `20261101190100_questions_ce1_lot7_rangement_tags` (max des worktrees + 1 min) et test :
+  rouge sans (3 échecs, 4 non joués sur 9), vert 9/9 ; PR #2105.
