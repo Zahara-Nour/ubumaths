@@ -1,0 +1,345 @@
+{
+	"title": "Quelle fraction de la figure est coloriée ?",
+	"description": "Lire une fraction sur une figure partagée en parts égales (bande, disque, grille ; parts d'affilée ou éparpillées), jusqu'à 20 parts ; plusieurs bandes au-delà de 1 (7/4)",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Partage",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: {{if:k==0|bande|disque}} {{d}}\ngris: {{g}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "2..12"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d"
+				},
+				{
+					"name": "g",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{g}}}{{{N}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en ${{N}}$ parts égales** : une part, c'est $\\frac{1}{{{N}}}$ de la figure.",
+					"${{g}}$ part{{if:g>1|s sont coloriées|est coloriée}} : $\\textcolor{{{color:primary.0}}}{\\frac{{{g}}}{{{N}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: grille {{l}}×{{c}}\ngris: {{g}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..9"
+				},
+				{
+					"name": "l",
+					"expression": "{{if:j==0|2|{{if:j==1|2|{{if:j==2|2|{{if:j==3|3|{{if:j==4|3|{{if:j==5|2|{{if:j==6|3|{{if:j==7|4|{{if:j==8|4|2}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:j==0|3|{{if:j==1|4|{{if:j==2|5|{{if:j==3|3|{{if:j==4|4|{{if:j==5|6|{{if:j==6|5|{{if:j==7|4|{{if:j==8|5|10}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:l*c"
+				},
+				{
+					"name": "g",
+					"expression": "1..{{eval:N-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{g}}}{{{N}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en ${{l}} \\times {{c}} = {{N}}$ parts égales** : une part, c'est $\\frac{1}{{{N}}}$ de la figure.",
+					"${{g}}$ part{{if:g>1|s sont coloriées|est coloriée}} : $\\textcolor{{{color:primary.0}}}{\\frac{{{g}}}{{{N}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Chaque bande est une unité. Quelle fraction de l'unité est coloriée ?\n\n```partage\nforme: bande {{d}}\nunites: {{u}}\ngris: {{g}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "u",
+					"expression": "2..3"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:d+1}}..{{eval:u*d-1}}"
+				}
+			],
+			"conditions": ["mod(g,d)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{g}}}{{{d}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Chaque bande est partagée en ${{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de l'unité.",
+					"On compte toutes les parts coloriées, sur toutes les bandes : il y en a ${{g}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{g}}}{{{d}}}}$$",
+					"La fraction est plus grande que $1$ : plus d'une bande est coloriée."
+				]
+			}
+		},
+		{
+			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: {{if:e==0|bande 5|{{if:e==1|bande 7|{{if:e==2|bande 8|{{if:e==3|bande 9|{{if:e==4|bande 10|{{if:e==5|bande 12|{{if:e==6|grille 3×3|{{if:e==7|grille 2×4|{{if:e==8|grille 2×5|grille 3×4}}}}}}}}}}}}}}}}}}\ngris: {{if:g==2|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}|{{if:g==3|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}|{{if:g==4|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}|{{if:g==5|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}|{{if:g==6|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}|{{if:g==7|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}|{{if:g==8|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}|{{if:g==9|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}|{{if:g==10|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}, {{eval:mod(s+9*p,N)+1}}|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}, {{eval:mod(s+9*p,N)+1}}, {{eval:mod(s+10*p,N)+1}}}}}}}}}}}}}}}}}}}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "e",
+					"expression": "0..9"
+				},
+				{
+					"name": "N",
+					"expression": "{{if:e==0|5|{{if:e==1|7|{{if:e==2|8|{{if:e==3|9|{{if:e==4|10|{{if:e==5|12|{{if:e==6|9|{{if:e==7|8|{{if:e==8|10|12}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "g",
+					"expression": "2..{{eval:N-1}}"
+				},
+				{
+					"name": "p",
+					"expression": "2..{{eval:N-2}}"
+				},
+				{
+					"name": "s",
+					"expression": "0..{{eval:N-1}}"
+				}
+			],
+			"conditions": ["gcd(p,N)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{g}}}{{{N}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en ${{N}}$ parts égales** : une part, c'est $\\frac{1}{{{N}}}$ de la figure.",
+					"Les parts coloriées ne se suivent pas : on les compte une par une. Il y en a ${{g}}$ : $\\textcolor{{{color:primary.0}}}{\\frac{{{g}}}{{{N}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 parts sur 8 : 3/8",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"d": "8",
+				"N": "8",
+				"g": "3"
+			},
+			"answers": ["\\frac{3}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/5 (coloriées sur non coloriées)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"d": "8",
+				"N": "8",
+				"g": "3"
+			},
+			"answers": ["\\frac{3}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8/3 (inversée)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"d": "8",
+				"N": "8",
+				"g": "3"
+			},
+			"answers": ["\\frac{8}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4/8 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"d": "8",
+				"N": "8",
+				"g": "4"
+			},
+			"answers": ["\\frac{4}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/2 : même fraction, juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"d": "8",
+				"N": "8",
+				"g": "4"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 0,5 (écriture à virgule)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"d": "8",
+				"N": "8",
+				"g": "4"
+			},
+			"answers": ["0.5"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Grille 4×5 : 7/20",
+			"variationIndex": 1,
+			"variables": {
+				"j": "8",
+				"l": "4",
+				"c": "5",
+				"N": "20",
+				"g": "7"
+			},
+			"answers": ["\\frac{7}{20}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/9 (lignes plus colonnes)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "8",
+				"l": "4",
+				"c": "5",
+				"N": "20",
+				"g": "7"
+			},
+			"answers": ["\\frac{7}{9}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux bandes de 4, 7 parts : 7/4",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"u": "2",
+				"g": "7"
+			},
+			"answers": ["\\frac{7}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/8 (les deux bandes prises pour l'unité)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"u": "2",
+				"g": "7"
+			},
+			"answers": ["\\frac{7}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 1 + 3/4 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"u": "2",
+				"g": "7"
+			},
+			"answers": ["1+\\frac{3}{4}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Éparpillées, 3 parts sur 10 : 3/10",
+			"variationIndex": 3,
+			"variables": {
+				"e": "4",
+				"N": "10",
+				"g": "3",
+				"p": "3",
+				"s": "0"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/10 (un seul bloc compté)",
+			"variationIndex": 3,
+			"variables": {
+				"e": "4",
+				"N": "10",
+				"g": "3",
+				"p": "3",
+				"s": "0"
+			},
+			"answers": ["\\frac{1}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

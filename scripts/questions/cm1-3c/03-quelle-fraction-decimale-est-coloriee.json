@@ -1,0 +1,139 @@
+{
+	"title": "Quelle fraction décimale de la figure est coloriée ?",
+	"description": "Lire une fraction décimale sur une figure partagée en 10 parts (bande, disque) ou en 100 cases (grille 10 × 10) : 7/10, 37/100",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Partage",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle fraction de la figure est coloriée ? Écris-la sous la forme d'une fraction décimale.\n\n```partage\nforme: {{if:k==0|bande|disque}} 10\ngris: {{g}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "g",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{g}}}{10}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Partagée en $10$ parts égales, une part est un **dixième** ; en $100$, un **centième**.",
+					"La figure a $10$ parts, ${{g}}$ {{if:g>1|sont coloriées|est coloriée}} : $\\textcolor{{{color:primary.0}}}{\\frac{{{g}}}{10}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle fraction de la figure est coloriée ? Écris-la sous la forme d'une fraction décimale.\n\n```partage\nforme: grille 10×10\ngris: {{g}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1..99"
+				}
+			],
+			"conditions": ["mod(g,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{g}}}{100}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Partagée en $10$ parts égales, une part est un **dixième** ; en $100$, un **centième**.",
+					"La grille a $10 \\times 10 = 100$ cases. {{if:g>=10|On compte les lignes entières de $10$ cases, puis les cases qui restent : |}}${{g}}$ case{{if:g>1|s sont coloriées|est coloriée}}.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{g}}}{100}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 parts sur 10 : 7/10",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"g": "7"
+			},
+			"answers": ["\\frac{7}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/3 (coloriées sur non coloriées)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"g": "7"
+			},
+			"answers": ["\\frac{7}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 0,7 (écriture à virgule)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"g": "7"
+			},
+			"answers": ["0.7"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "37 cases : 37/100",
+			"variationIndex": 1,
+			"variables": {
+				"g": "37"
+			},
+			"answers": ["\\frac{37}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 37/10",
+			"variationIndex": 1,
+			"variables": {
+				"g": "37"
+			},
+			"answers": ["\\frac{37}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 0,37 (écriture à virgule)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "37"
+			},
+			"answers": ["0.37"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

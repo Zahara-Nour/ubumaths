@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 3c écrite (§ 11)._
+_Mis à jour le 2026-11-01, lot 3c écrit (§ 11 ter)._
 
-- **État** : lots 0, 1, 2, 3a et **3b publiés** (3b : 8 modèles, § 10 à 10 septies). #2040 et #2032 mergées, pas en prod.
-- **Prochaine action** : après la réponse de David au § 11, écrire le lot 3c (script `docs/wip/questions/lot-cm1-3c.py`, comme le 3b), brouillons sans attendre le `deploy:prod` du bloc ```partage, publication après.
-- **En attente de David** : les 3 questions du § 11 (sous-domaine « Partage », parts d'affilée ou éparpillées, « 1 + 3/4 »).
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; `gh pr checks` peut rester « pending » sur des 502 : suivre le run.
-- **Worktree / branche** : aucun (retiré après #2045).
+- **État** : lots 0 à 3b publiés ; lot 3c (partages, 4 modèles) écrit, PR ouverte (branche `content/questions-cm1-lot3c`).
+- **Prochaine action** : PR mergée → David lance `create-questions --publier` (`scripts/questions/cm1-3c`) ; puis migration de rangement (sous-notion « définition », points 145, 144, 150, 149), sur le gabarit du lot 3b ; publication seulement après le `deploy:prod` du bloc ```partage.
+- **En attente de David** : le `--publier` des 4 brouillons, une fois la PR mergée.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; port 5177 pris par questions-4 ; ```partage pas en prod.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1` · `content/questions-cm1-lot3c`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -558,3 +558,28 @@ Questions :
    « Écris-le sous la forme d'une fraction ») ? Reco : refusé ; entier + fraction est le point 147.
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 11 bis. Lot 3c : réponse de David (2026-11-01)
+
+« je te suis », en réponse aux trois questions du § 11 et à leurs recommandations : sous-domaine
+neuf « Partage » ; parts d'affilée, éparpillées dans une variation de plus si le tirage se fait
+sans outil neuf ; « 1 + 3/4 » refusé (`requiredForm: 'fraction'`).
+
+### 11 ter. Lot 3c — écriture (2026-11-01)
+
+- Script `docs/wip/questions/lot-cm1-3c.py` → `scripts/questions/cm1-3c/` (4 JSON),
+  `reducedFractions: off` partout.
+- **Éparpillées faites sans outil neuf** (145 V4) : rangs (s + i × p) mod N + 1, p premier avec N
+  (condition `gcd(p,N)==1`), sur des bandes et grilles de 5 à 12 parts.
+- **Écarts à la phase 0** : `requiredForm: 'fraction'` sur toutes les cases du 145, pas seulement
+  la V3 (0,5 refusé comme au 3b) ; énoncés « Colorie 3/8 de la figure » (et non « les 3/8 », faux
+  pour 1/100) ; 150 V2 sans multiple de 10 (ligne entière : déjà la V1 en dixièmes).
+- `question:specs` 300 tirages par variation : tout réussi (33 specs) ; « rien colorié » rend
+  `empty`, pas `incorrect`. `create-questions` en simulation (prod) : 4/4 verts.
+- Base locale : 4 brouillons. Aperçu admin (port 5178, largeur téléphone) : 145 éparpillées sur une
+  grille 3×4 (11/12) ; 144 « 6/5 » colorié en glissant sur deux bandes → juste ; 149 « 26/100 »,
+  une ligne coloriée → « Tu as colorié 10 parts sur 100 ; il fallait en colorier 26 (26/100). »,
+  figure juste dessinée.
+- **CI rouge, corrigée** : le test `answer-complexity-corpus` mesure aussi les réponses des specs de
+  coloriage (« 1, 2, …, 73 » : 281 caractères, marge ×3 sur 400 dépassée), alors que la garde Q58 ne
+  s'applique pas aux figures à colorier. Specs de grille ramenées à 23 et 32 cases (≤ 34 rangs).
