@@ -6,14 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2103 et le `--publier` du 5a._
+_Mis à jour le 2026-11-01, après #2117 (rangement du 5a) et la PR des fichiers du 5b._
 
-- **État** : lots 0 à 4 publiés ; lot 5 découpé (§ 10.1) ; 5a (sens : 013, 015, 016, 019 ×2) écrit, specs vertes, essayé en local ; fichiers mergés (**#2103**, CI verte après relance d'un job navigateur instable).
-- **Prochaine action** : migration de rangement ; page à cocher ; puis phase d'écriture du 5b (calculs : 020 ×2, 135 ×2, 021, 022, tableau du § 10).
-- **Brouillons 5a en prod** (vérifiés MCP, sans nœud ni tag) : 01 `702af2f7-e1d9-4fe6-99a8-887377fe9a70` (013) · 02 `74128182-6188-4a81-97d3-b197003dd7b5` (015) · 03 `544b98ec-a39f-4547-aa32-63d28f2059c5` (016) · 04 `6de641bd-a13d-477b-9eb5-2ac4fd5b5292` (019) · 05 `1c977b76-1bdc-4d6b-ba1d-222743866b11` (019).
-- **En attente de David** : rien.
-- **Pièges en cours** : `create-questions` retrouve un modèle par titre + catégorie + niveau ; `reducedFractions: off` accepte toute fraction égale (9/2 pour « cinquante-quatre douzièmes » : fractions à écrire irréductibles) ; spec `bad_form` = `constraintViolations: ['form']` ; libellé du point = consigne ; relever la prod avant toute écriture ; horodatages de migration partagés ; **commit dans le dépôt principal : toujours `git commit -m … -- <fichiers>`** (01ef189d9) ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI.
-- **Worktree / branche** : aucun (retiré après #2103) ; en recréer un pour la migration de rangement.
+- **État** : lots 0 à 4 publiés ; 5a rangé en prod (#2117, `db push --include-all`, vérifié MCP), page à cocher publiée : https://claude.ai/artifact/R6LqP4SYrAFf1Keor4Xdxo (5 fiches, `verdicts` vide au départ) ; 5b (calculs, 6 modèles) écrit, specs vertes, simulation prod « 6 à créer », essayé en local (§ 10.4), PR des fichiers ouverte.
+- **Prochaine action** : merger la PR du 5b ; lire et compter les verdicts du 5a ; puis rangement du 5b après son `--publier`.
+- **En attente de David** : relecture du 5a (page à cocher) ; `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-5b --publier` (brouillons en prod) une fois la PR du 5b mergée.
+- **Pièges en cours** : `create-questions` retrouve un modèle par titre + catégorie + niveau (homonymes du CM1 signalés par la page à cocher, ids vérifiés) ; `reducedFractions: off` accepte toute fraction égale ; jamais `}}` collé dans un `{{if:}}` (accolade de `\underbrace`) ; `db:migrate` refusé quand la prod a des migrations plus récentes → `--dry-run` puis `--include-all` si seule la nôtre manque ; commit dans le dépôt principal : `git commit -m … -- <fichiers>` ; `Doc-inchangée:` dans un message de commit ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot5b`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -520,3 +519,13 @@ modèles 6-11). Tableau du § 10 gardé.
 
 - Relevé MCP : 5 brouillons [CM2] sans nœud ni tag (ids du « Reprendre ici ») ; points 013 → définition, 015 → décomposition, 016 et 019 → ordre (notion « Fractions : sens et écritures »).
 - Migration `20261101191500_questions_cm2_lot5a_rangement_tags.sql` (190000-190200, 193000 et 200700 pris par d'autres sessions), copie du lot 4. Test `questions-cm2-lot5a-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges.
+- `security-auditor` : aucun finding. CI d'abord rouge (collision 190200 sur `main`, réglée par #2114 d'une autre session), verte après fusion de `main` ; #2117 mergée.
+- `db:migrate` : `DbPushMissingRemoteError` (la prod a des migrations plus récentes) ; `db push --include-all --dry-run` → la nôtre seule, puis jouée. MCP : 5 brouillons, chacun sur sa sous-notion avec son point, `updated_at` inchangé (14:06, création).
+- Page à cocher publiée (5 fiches ; alertes « homonyme » sur 01 et 02 : modèles du CM1 de même titre écartés, ids justes), rendu vérifié à 390 px : https://claude.ai/artifact/R6LqP4SYrAFf1Keor4Xdxo ; `verdicts` vide au départ.
+
+### 10.4 Lot 5b : écriture (2026-11-01)
+
+- Script `lot-cm2-5b.py` → `scripts/questions/cm2-5b/` (6 fichiers), jumeau du 5a. Niveaux relevés en prod : Addition et Soustraction 23 à 26, Multiplication 10, Fraction d'une quantité 7.
+- Choix d'écriture : additions à deux termes (d ≤ 60, somme des numérateurs ≤ 99) et à trois termes ; dénominateurs multiples : 3/2 + 7/8 (ordre d'affichage tiré) et 1/12 + 1/6 + 1/3 (chaîne dp | dp × m | dp × m × n, jamais `e`) ; soustraction multiple : on convertit le premier (5/6 − 1/12) ou le second (11/40 − 1/8) ; n × a/d (n 2..9) corrigé par l'addition itérée, accolade « n fois » au-delà de 5 termes ; fraction d'une quantité : objets (k 3..10) ou grandeurs g, kg, L, m, € (k 3, 4, 5, 10).
+- `question:specs` : 1 000 tirages par variation, 40 specs, tout vert ; `create-questions` en simulation (prod) : 6 à créer.
+- Local (port 5183, `admin@local.test`, Playwright iPhone 13) : pour chacun des 6, juste → « Juste », numérateur + 1 → « Faux ».
