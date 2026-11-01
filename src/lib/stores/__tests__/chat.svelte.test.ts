@@ -1098,16 +1098,6 @@ describe('Error Handling & Edge Cases', () => {
 		vi.clearAllMocks();
 	});
 
-	it.skip('should not send message if not in browser', async () => {
-		// SSR edge case - skip in browser environment tests
-		mockBrowser(false);
-		chatStore.init(supabase, userId, currentUser);
-
-		await chatStore.sendMessage(conversationId, 'Test');
-
-		expect(supabase.from).not.toHaveBeenCalled();
-	});
-
 	it('should not send message if not initialized', async () => {
 		mockBrowser(true);
 
@@ -1181,21 +1171,6 @@ describe('Phase 1: Initialization & Active Conversation', () => {
 
 			// Should log warning but not crash
 			expect(consoleSpy).toHaveBeenCalled();
-
-			consoleSpy.mockRestore();
-		});
-
-		it.skip('should not initialize on server', () => {
-			// SSR edge case - skip in browser environment tests
-			mockBrowser(false);
-
-			const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-			chatStore.init(supabase, userId, currentUser);
-
-			expect(consoleSpy).toHaveBeenCalledWith(
-				expect.stringContaining('Cannot initialize chat store on server')
-			);
 
 			consoleSpy.mockRestore();
 		});
@@ -1412,21 +1387,6 @@ describe('Phase 1: Initialization & Active Conversation', () => {
 			chatStore.setActiveConversation(null);
 
 			expect(chatStore.activeConversationId).toBe(null);
-		});
-
-		it.skip('should not set active conversation on server', () => {
-			// SSR edge case - skip in browser environment tests
-			mockBrowser(false);
-
-			const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-			chatStore.setActiveConversation('conv-1');
-
-			expect(consoleSpy).toHaveBeenCalledWith(
-				expect.stringContaining('Cannot set active conversation on server')
-			);
-
-			consoleSpy.mockRestore();
 		});
 	});
 });
@@ -1777,19 +1737,6 @@ describe('Phase 2: Conversation Management', () => {
 			const conversations = chatStore.conversations;
 			expect(conversations).toHaveLength(1);
 			expect(conversations[0].id).toBe('conv-1');
-		});
-
-		it.skip('should not load on server', async () => {
-			// SSR edge case - skip in browser environment tests
-			mockBrowser(false);
-
-			const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-			await chatStore.loadConversations();
-
-			expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Cannot load conversations'));
-
-			consoleSpy.mockRestore();
 		});
 	});
 
@@ -2236,19 +2183,6 @@ describe('Phase 3: Reactions & Reporting', () => {
 					})
 				);
 			}
-		});
-
-		it.skip('should not report on server', async () => {
-			// SSR edge case - skip in browser environment tests
-			mockBrowser(false);
-
-			const fetchMock = vi.fn();
-			globalThis.fetch = fetchMock;
-
-			const success = await chatStore.reportMessage('msg-1', 'spam');
-
-			expect(success).toBe(false);
-			expect(fetchMock).not.toHaveBeenCalled();
 		});
 	});
 });
