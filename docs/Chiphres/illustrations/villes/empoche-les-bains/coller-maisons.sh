@@ -24,5 +24,9 @@ while read -r nom cote x y; do
   magick "$tmp/carte.png" "$tmp/recolle.png" -geometry "+$x+$y" -composite "$tmp/carte.png"
   echo "✓ $nom"
 done < zones-maisons.txt
+# carré so : la retouche a fait de la petite maison au-dessus de la Villa une grande demeure en U, qui concurrençait la
+# Villa des Phynances ; on remet l'original sur l'îlot (David, 2026-11-01)
+magick carte-ia-original.jpeg -crop 60x46+293+521 +repage "$tmp/ilot.png"
+magick "$tmp/carte.png" "$tmp/ilot.png" -geometry +293+521 -composite "$tmp/carte.png"
 cp "$tmp/carte.png" carte-ville.png
 rm -rf "$tmp"
