@@ -24,7 +24,7 @@ export const QUESTIONS_5_LOT6 =
 	'supabase/migrations/20261101190200_questions_5_lot6_rangement_tags.sql';
 /** Sous-notions « limites usuelles » (×2) et « Limites de suites > croissances comparées », lot 2 de terminale spé. */
 export const QUESTIONS_TSPE_LOT2 =
-	'supabase/migrations/20261101224701_questions_tspe_lot2_rangement_tags.sql';
+	'supabase/migrations/20261101224702_questions_tspe_lot2_rangement_tags.sql';
 /** Du plus récent au plus ancien. */
 const LATER = [
 	QUESTIONS_TSPE_LOT2,

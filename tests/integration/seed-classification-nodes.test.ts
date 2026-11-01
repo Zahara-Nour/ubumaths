@@ -16,7 +16,7 @@
  * (« archives »), et le test les compare aussi. Depuis, 20261026170000 a créé la sous-notion
  * « Figures planes > reconnaître et nommer des formes » → 473 sous-notions actives ; puis
  * 20261101190200 « Représenter des données > choisir une représentation » → 474 ; puis
- * 20261101224701 « limites usuelles » (Limites de suites, Limites de fonctions) et
+ * 20261101224702 « limites usuelles » (Limites de suites, Limites de fonctions) et
  * « Limites de suites > croissances comparées » → 477.
  *
  * La preuve est INTÉGRALE, pas un échantillon : l'ensemble exact des chemins

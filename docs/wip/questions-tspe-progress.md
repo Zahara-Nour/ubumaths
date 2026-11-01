@@ -13,7 +13,7 @@
 _Mis à jour le 2026-11-01, migration du lot 2 en PR._
 
 - **État** : 4 brouillons du lot 2 créés en prod (3d7d1d25, 0fb97bb9, 6d611634, ae70373c) ; migration
-  `20261101224701_questions_tspe_lot2_rangement_tags.sql` (3 sous-notions, rangement, tags) + test 11/11, rouge
+  `20261101224702_questions_tspe_lot2_rangement_tags.sql` (3 sous-notions, rangement, tags) + test 11/11, rouge
   sans l'étape 5 ; branche `feat/questions-tspe-lot2-migration`.
 - **Prochaine action** : `security-auditor` sans bloquant → `pnpm check:migrations --pr <n>` → CI verte → merge →
   `db:migrate` depuis le dépôt principal → relire en base (MCP) → page à cocher, puis `publier-lot` (David).
@@ -22,7 +22,7 @@ _Mis à jour le 2026-11-01, migration du lot 2 en PR._
   clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
   principal ; en-tête ET corps de commit ≤ 100 caractères par ligne. **Migrations** : nom par
   `pnpm migration:horodatage`, à refaire si main a pris un horodatage plus récent entre-temps (renommé une fois,
-  224001 → 224701) ; `pnpm check:migrations` lit les commits ; CI Summary fait foi.
+  224001 → 224701 → 224702) ; `pnpm check:migrations` lit les commits ; CI Summary fait foi.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe`, `feat/questions-tspe-lot2-migration`.
 
 ## 1. Relevé (prod, 2026-10-29)
@@ -756,7 +756,7 @@ voient qu'après `publier-lot`).
 brouillon, [T_SPE], niveau 1, sans nœud ni tag (relu au MCP). Points : 402 et 576 sur « Suites > Limites de
 suites », 403 et 582 sur « Fonctions > Limites de fonctions » ; aucune des 3 sous-notions n'existait.
 
-**Migration** `20261101224701_questions_tspe_lot2_rangement_tags.sql` : gardes avant toute écriture (TOUT ou
+**Migration** `20261101224702_questions_tspe_lot2_rangement_tags.sql` : gardes avant toute écriture (TOUT ou
 RIEN, sans nœud ni tag, sous-notions absentes casse ignorée), 3 sous-notions en fin de notion, résolution stricte
 (point sur le nœud ou sa notion), rangement puis tags, `updated_at` préservé, rollback gardé en commentaire.
 Test `tests/integration/questions-tspe-lot2-rangement-tags.test.ts` : 11/11 ; **rouge** sans l'étape 5 (« lot
