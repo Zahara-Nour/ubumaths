@@ -6,15 +6,17 @@ status: phase 0 tranchée, PR 0 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR 0 codée et poussée, pas encore ouverte (aucune PR)._
+_Mis à jour le 2026-11-01, PR 0 codée et poussée, pas encore ouverte (aucune PR) ; étape H ajoutée._
 
 - **État** : branche à jour sur origin, tests verts (178), doc à jour. Page à cocher (v10) :
   https://claude.ai/artifact/RSWgLdsubFwGayPgQgCETo, base `verdicts` (lire avec ArtifactData).
-  Relu : `deriver-01…11` ; `deriver-10` corrigé ; `deriver-03`/`11` en « à corriger » avec ma
-  réponse (champ `reponse`) — attendus gardés, en attente qu'il les repasse en « juste ».
+  Relu et « juste » : `deriver-01…12` (`03`, `11` repassés, attendus gardés). Question sans
+  réponse (`deriver-11`) : ajouter `.dériver x+ln x` (rend `1 + 1/x`) au corpus ?
+- **Ajouté** : étape H, hypothèses `avec`/`dans` dans le registre (section dédiée) ; étude en
+  profondeur de ce qu'il faut transférer AVANT tout code, à rendre à David.
 - **Prochaine action** : relire `verdicts`, appliquer les corrections au corpus et aux listes
   `connues-fausses.ts`, relancer les tests ; quand les 85 sont « juste », ouvrir la PR 0, merger.
-- **En attente de David** : la relecture des fiches restantes (`deriver-12` → `refus-04`).
+- **En attente de David** : la relecture des fiches restantes (`deriver-13` → `refus-04`).
 - **Règles du jour** : l'Atelier fait foi a priori (écart = règle citée + question) ; solutions
   en ordre croissant ; juge du corpus = E1 (`checkForm` sans remarque), pas de juge strict.
 - **Pièges en cours** : sonde de l'Atelier = fichier vitest jetable sous `src/` (~2 s) ; la page
@@ -149,6 +151,35 @@ Réponses retenues, en gras sous chaque question.
 3. Commandes de Q1 descendues dans le registre, une PR par famille.
 4. `pnpm math` sur `WebReplEngine` (`repl.ts`, `cli.ts` réécrits) ; règle « ne plus sonder avec
    `pnpm math` » levée.
+
+H. **Hypothèses `avec` / `dans` dans le registre** (ajouté le 2026-11-01, voir la section dédiée
+plus bas) ; sa place par rapport à 1-3 sera fixée après l'étude.
+
+## Étape H — hypothèses `avec` / `dans` dans le registre (décidé le 2026-11-01)
+
+**Constat** (mesuré dans le code le 2026-11-01) : l'Atelier lit `avec CONDITION` / `dans
+ENSEMBLE` sur une expression tapée et sur `.simplifier`, `.factoriser`, `.développer`
+(`src/lib/atelier/hypotheses.ts`, chantier tidy-conditions, 2026-10-26) : `x/x avec x ≠ 0` → `1`,
+`ln(x²) avec x > 0` → `2 ln x`, `x > 1` admis. Le registre (`WebReplEngine`, commandes de
+`src/lib/mathAST/cli/commands/`) ne le lit pas : aucune trace de `avec` ni d'hypothèse. Le corpus de
+la PR 0 n'a aucune ligne à hypothèse.
+
+**Décision de David** (« ok ») : hors de la PR 0, mais dans le chantier (sinon l'Atelier redevient
+plus riche que la référence). Une PR à part :
+
+1. **Corpus d'abord** — 6 à 8 lignes validées sur la page à cocher (l'Atelier fait foi a priori) :
+   simplification à condition (`x/x avec x ≠ 0`, `ln(x²) avec x > 0`), une avec `x > 1`, une avec
+   `dans`, une où l'hypothèse ne suffit pas (écriture gardée + message), un refus de syntaxe.
+2. **Puis le code** — la lecture des hypothèses descend dans le registre, l'Atelier l'appelle au
+   lieu de la porter.
+
+**À faire AVANT d'écrire quoi que ce soit (demande de David) : étude en profondeur de ce qu'il faut
+transférer.** Pas seulement `hypotheses.ts` : suivre tout ce qui en dépend et tout ce dont il
+dépend dans `calcul.ts` (découpe de la ligne, boutons « Simplifier pour … », mode « garder
+l'écriture », note « on peut simplifier davantage »), `domain-guard.ts`, `simplify-steps.ts`,
+`factor-steps.ts` ; dire ce qui relève de la réponse brute (registre) et ce qui relève de la
+présentation (Atelier) ; où vit le module partagé (question ouverte). Rendre l'étude à David
+avant le code.
 
 ## PR 0 — le corpus (2026-11-01)
 
