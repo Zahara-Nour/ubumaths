@@ -1,0 +1,85 @@
+{
+	"id": "a26e6e50-aa5b-42d0-ac68-1e24a646345c",
+	"title": "Cardinal d'un produit cartésien",
+	"description": "Card(A × B) = Card A × Card B",
+	"grades": ["T_SPE"],
+	"theme": "Logique",
+	"domain": "Ensembles",
+	"subdomain": "Cardinal et produit cartésien",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*(k+1)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(k+1)^2}}"
+				}
+			],
+			"statement": "On considère les ensembles $A=\\{1;2;\\dots;{{m}}\\}$ et $B=\\{0;1;\\dots;{{k}}\\}$.\n\n$\\mathrm{Card}(A\\times B)=?$\n\n$\\mathrm{Card}(B\\times B)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "3..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathrm{Card}(A)={{m}}$ et $\\mathrm{Card}(B)={{eval:k+1}}$ : attention, $B$ contient $0$, il a ${{eval:k+1}}$ éléments et non ${{k}}$.",
+					"Un couple $(x\\,;\\,y)$ de $A\\times B$ s'obtient en choisissant $x$ parmi ${{m}}$ valeurs, puis $y$ parmi ${{eval:k+1}}$ valeurs : $\\mathrm{Card}(A\\times B)=\\mathrm{Card}(A)\\times\\mathrm{Card}(B)={{m}}\\times{{eval:k+1}}=\\textcolor{{{color:primary.0}}}{ {{eval:m*(k+1)}} }$.",
+					"De même, $\\mathrm{Card}(B\\times B)={{eval:k+1}}\\times{{eval:k+1}}=\\textcolor{{{color:primary.0}}}{ {{eval:(k+1)^2}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["16", "16"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"m": "4"
+			},
+			"description": "v0 : A={1..4}, B={0..3} : 16 et 16",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["12", "9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"m": "4"
+			},
+			"description": "v0 : 0 oublié dans B (12 et 9)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8", "8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"m": "4"
+			},
+			"description": "v0 : somme au lieu du produit (8 et 8)",
+			"variationIndex": 0
+		}
+	]
+}

@@ -1,0 +1,63 @@
+{
+	"id": "6a9a3d5b-cc46-4be3-83dd-f3e5490d2794",
+	"title": "Nombre de chemins d'un arbre à n niveaux",
+	"description": "2ⁿ chemins dans l'arbre de n lancers d'une pièce (pièges : 2n, n²)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Parties d'un ensemble",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n}}"
+				}
+			],
+			"statement": "On lance ${{n}}$ fois une pièce et on note la suite des résultats (Pile ou Face). On représente l'expérience par un arbre.\n\nCombien de chemins comporte cet arbre ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..10"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque lancer double le nombre de branches : chaque chemin est un ${{n}}$-uplet de $\\{P,F\\}$.",
+					"$2^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:2^n}}}$ chemins."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "4"
+			},
+			"description": "v0 : n = 4 → 16",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "4"
+			},
+			"description": "v0 : 2 × 4 = 8",
+			"variationIndex": 0
+		}
+	]
+}

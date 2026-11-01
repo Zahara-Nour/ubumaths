@@ -10,20 +10,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 0-trigo._
+_Mis à jour le 2026-11-01, lot 0-dénombrement commencé (§ 11)._
 
 - **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo **publiés** (107 modèles).
-  Rien en cours.
-- **Prochaine action** : lot 0-dénombrement (branche `feat/questions-tspe-lot0-denombrement`, déjà créée dans le
-  worktree) : relevé des brouillons T_SPE du dénombrement en base, instantané, vérification. Plus tard : migration Q3
-  (§ 1, § 7, § 8, § 9).
+  Lot 0-dénombrement : 26 brouillons relevés, instantané `scripts/questions/tspe-0-denombrement/` (§ 11).
+- **Prochaine action** : vérifier les 26 (specs, tirages contre les bornes TSPE et TCOMP), corriger, page à cocher.
+  Lots suivants : géométrie dans l'espace, probabilités. Plus tard : migration Q3.
 - **En attente de David** : rien.
-- **Pièges en cours** : `create-questions --publier` passe en mode auto, `publier-lot --publier` reste à David ;
+- **Pièges en cours** : `create-questions` et `publier-lot`, même en simulation → David (le mode auto les refuse) ;
   partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
-  worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; l'aperçu de `question:specs` mélange les
-  options d'une case choix : recouper l'indice avec la SOURCE ; branche poussée : `git merge origin/main`, pas de rebase.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot0-denombrement` (partie de `main`
-  après #2095).
+  worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ; le worktree n'a pas
+  de `.env` : `pnpm exec tsx --env-file=../ubumaths/.env …` (prod, lecture) ;
+  l'aperçu de `question:specs` mélange les options d'une case choix : recouper l'indice avec la SOURCE.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot0-denombrement`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -488,3 +487,13 @@ gardé (périodes autres que 2π, 7df468d6 et 5072030d).
 **Publication** (2026-11-01, #2095 mergée) : `create-questions --publier --mettre-a-jour` (3 mis à jour : 4c4d43dc,
 afd9b3ff et fece187e passés en `T_SPE` ; 20 identiques), `publier-lot` (simulation : 23 passent) puis `--publier`
 (David). Relu en base (MCP) : 23 / 23 `published`, C1 présente, ancien texte absent.
+
+## 11. Lot 0-dénombrement : vérification des brouillons
+
+_2026-11-01. 26 brouillons (relevé MCP : domaine « Dénombrement » et « Ensembles » de niveau `T_SPE`, plus tout modèle
+tagué d'un point du dénombrement) : 89d49fae (305), ed01a843, a26e6e50 (306), 67b349ab (307), dfb727cd (308),
+0965c56c, e76a43eb (309), dd23bf2d (311), 3aca54e9 (312), 7d9d9b81 (313), 4dcbae71 (314), 970dab52 (315),
+f796ffc0, b500b44e (318), 4a1deda8, 0feeabaf (319), 2bae040c (320), 8a6e41cc (322, approfondissement), 96be181c
+(323), a69dfde7 (325), c0b45c61 (542), 6a9a3d5b (543), 74604a26 (545), 0bde6091 (546), et ef3c495c (TCOMP-296 seul,
+Q3 → 316), 07ebdcbe (TCOMP-288 seul, Q3 → 614). Six en `T_COMP` aussi (rangés « Loi binomiale / Coefficients
+binomiaux ») : 4dcbae71, 970dab52, ef3c495c, 07ebdcbe. Instantané `scripts/questions/tspe-0-denombrement/` (prod)._

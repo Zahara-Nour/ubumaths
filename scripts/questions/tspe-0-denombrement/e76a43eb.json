@@ -1,0 +1,75 @@
+{
+	"id": "e76a43eb-2a92-4480-a596-0fe9a22fa6a4",
+	"title": "Arrangements : nombre de podiums",
+	"description": "Nombre de triplets ordonnés d'éléments distincts : n(n − 1)(n − 2) (piège : C(n, 3) pour un podium ordonné)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Coefficients binomiaux",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n-1)*(n-2)}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"statement": "${{n}}$ coureurs participent à une course. Combien de podiums (premier, deuxième, troisième) sont possibles ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un podium est un triplet **ordonné** de coureurs distincts : ${{n}}$ choix pour le premier, ${{eval:n-1}}$ pour le deuxième, ${{eval:n-2}}$ pour le troisième.",
+					"${{n}}\\times{{eval:n-1}}\\times{{eval:n-2}}=\\textcolor{{{color:primary.0}}}{{{eval:n*(n-1)*(n-2)}}}$ (et non $\\binom{ {{n}} }{3}$, qui compte les groupes de trois sans ordre)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["336"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "8"
+			},
+			"description": "v0 : 8 coureurs → 336",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["56"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "8"
+			},
+			"description": "v0 : C(8, 3) = 56 (ordre oublié)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["512"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "8"
+			},
+			"description": "v0 : 8³ (répétitions)",
+			"variationIndex": 0
+		}
+	]
+}
