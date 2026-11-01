@@ -133,6 +133,11 @@ const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
 		/Cannot evaluate derivative function '(\w+)'.*/,
 		"Dérivée $1' sans définition : définis d’abord $1, par exemple $1(x) = x^2"
 	],
+	// V46 : un refus de `.variations` (`\\frac{1}{|x|-2}`, bien lu), pas une faute de saisie
+	[
+		/^Cannot compute derivative$/,
+		'Je ne sais pas encore dériver cette fonction : son sens de variation n’est pas étudié'
+	],
 	[/Failed to parse expression/, 'Expression illisible'],
 	[/^Unknown error.*/, 'Erreur inconnue'],
 	[/^Example:/, 'Exemple :']

@@ -172,3 +172,17 @@ describe('les refus de .integrate, en français', () => {
 		expect(all).not.toMatch(INTEGRATION_ENGLISH);
 	});
 });
+
+// V46 (2026-10-13) : une expression bien lue mais que `.variations` ne sait pas dériver
+// répondait « Écriture non reconnue », qui fait croire à une faute de saisie
+describe('.variations refuse sans accuser la saisie', () => {
+	it.each(['.variations \\frac{1}{|x|-2}', '.variations |x^2-1|'])('%s', (input) => {
+		const line = run(input);
+
+		expect(line.success).toBe(false);
+		expect(line.error?.message).toBe(
+			'Je ne sais pas encore dériver cette fonction : son sens de variation n’est pas étudié'
+		);
+		expect(`${line.output}\n${line.error?.message ?? ''}`).not.toMatch(/non reconnue/);
+	});
+});
