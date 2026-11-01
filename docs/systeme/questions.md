@@ -781,8 +781,12 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
    `retrouver:`, cases retirées d'un ` ```patron ` `completer:`, `verifier:` d'une
    ` ```figure-a-completer `) ; la case garde le genre de son bloc (`construire`, ou `figure`
    pour une figure à compléter, jamais `construction`), pour le même écran qu'hors évaluation
-   (chantier [fuite-enonce](../wip/fuite-enonce-progress.md)). Limite : un point invisible
-   (`visible=faux`) d'une figure à compléter, posé sur la réponse, partirait tel quel.
+   (chantier [fuite-enonce](../archive/wip/fuite-enonce-progress.md)). Limite : un point invisible
+   (`visible=faux`) d'une figure à compléter, posé sur la réponse, partirait tel quel. Garde :
+   `findUnmaskedAnswers` relit l'énoncé à envoyer (texte seul, sans les masques) ; au tirage, une
+   question dont l'énoncé masqué dirait encore la réponse est écartée et journalisée comme une
+   génération impossible (`gestureAnswerLeaks`, la tentative ne se perd pas) ; `toPublicQuestion`
+   refuse de l'envoyer en dernier filet (reprise).
 9. **Carte de cours** : jamais dans une évaluation notée (`excludeCourseCards`), pas de spec ;
    `checkTemplate` vérifie seulement un recto et un verso non vides. Une carte de cours est
    toujours une question de cours.

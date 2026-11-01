@@ -68,6 +68,8 @@
 		"check:barrels": "tsx scripts/check-barrel-exports.ts",
 		"check:await-render": "tsx scripts/check-await-render.ts",
 		"check:integration-paths": "tsx scripts/check-integration-paths.ts",
+		"check:migrations": "bash scripts/garde-migrations-horodatage.sh",
+		"migration:horodatage": "bash scripts/garde-migrations-horodatage.sh --prochain",
 		"check:ubumark": "tsx scripts/check-ubumark.ts",
 		"fiche:verifier": "bash scripts/fiches/verifier-fiche.sh",
 		"db:migrate": "supabase db push",

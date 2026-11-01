@@ -311,6 +311,80 @@ function maskFigure(block: FoundBlock): MaskLine {
 	};
 }
 
+/** `A=? ; B=?`, `?` : chaque cible de la ligne est masquée */
+function allMasked(value: string): boolean {
+	return value
+		.split(';')
+		.every(
+			(part) =>
+				(part.includes('=') ? part.slice(part.indexOf('=') + 1) : part).trim() === MASKED_VALUE
+		);
+}
+
+/** Valeur de la ligne `clé:` d'un corps de bloc (null si la clé n'y est pas) */
+function valuesOf(body: string[], keys: readonly string[]): string[] {
+	return body.flatMap((line) => {
+		const key = keyOf(line);
+		if (key === null || !keys.includes(key)) return [];
+		return [ESPACE_KEY_LINE.exec(line.trim())![2]];
+	});
+}
+
+/** Barres : les données de `placer:` (toutes si le bloc ne se lit pas) finissent par `= ?` */
+function barsMasked(block: FoundBlock): boolean {
+	const spec = parseStatChartContent('barres', block.body.join('\n')).spec;
+	const ranks = spec
+		? new Set((spec.toPlace ?? []).map((rank) => spec.data[rank].line - 1))
+		: new Set(block.body.flatMap((line, rank) => (DATUM_LINE.test(line.trim()) ? [rank] : [])));
+	return [...ranks].every((rank) => /=\s*\?\s*$/.test(block.body[rank] ?? ''));
+}
+
+/** Assemblage à retrouver : aucune hauteur chiffrée (hors `0`) dans `hauteurs:` et ses rangées */
+function cubesMasked(block: FoundBlock): boolean {
+	if (valuesOf(block.body, ['retrouver']).length === 0) return true;
+	let inHeights = false;
+	return block.body.every((line) => {
+		const key = keyOf(line);
+		if (key !== null) inHeights = key === 'hauteurs';
+		const heights = key === null ? line : (ESPACE_KEY_LINE.exec(line.trim())?.[2] ?? '');
+		return !inHeights || !/[1-9]/.test(heights);
+	});
+}
+
+/**
+ * Les blocs à geste d'un énoncé À ENVOYER qui disent encore leur réponse (leur genre,
+ * dans l'ordre des genres). Lecture du texte, sans passer par les masques : un
+ * masque qui ne lit pas son bloc le laisse tel quel, cette garde le voit.
+ */
+export function findUnmaskedAnswers(statement: string): string[] {
+	const lines = statement.split('\n');
+	const choices = findChoiceBlocks(lines);
+	const inChoice = (block: FoundBlock) =>
+		choices.some((c) => block.startIndex > c.startIndex && block.startIndex <= c.endIndex);
+	const leaks = (kind: string, found: FoundBlock[], masked: (block: FoundBlock) => boolean) =>
+		found.some((block) => !inChoice(block) && !masked(block)) ? [kind] : [];
+	// Cubes, patron : un bloc cité ou en retrait n'a pas de case (refusé au générateur)
+	const own = (found: (FoundBlock & { nested: boolean })[]) => found.filter((b) => !b.nested);
+	const keyMasked = (keys: string[]) => (block: FoundBlock) =>
+		valuesOf(block.body, keys).every(allMasked);
+	return [
+		...leaks('line', findLinesToPlace(statement), keyMasked(['placer'])),
+		...leaks('courbe', findCourbesToPlace(statement), keyMasked(['placer'])),
+		...leaks('horloge', findHorlogesToPlace(statement), keyMasked(['placer'])),
+		...leaks('collection', findBuildCollections(statement), keyMasked(['construire'])),
+		...leaks('monnaie', findBuildMonnaies(statement), keyMasked(['construire'])),
+		...leaks('partage', findPartagesToColorier(statement), keyMasked(['colorier'])),
+		...leaks('barres', findBarsToPlace(statement), barsMasked),
+		...leaks('cubes', own(findCubesToBuild(statement)), cubesMasked),
+		...leaks('patron', own(findPatronsToBuild(statement)), (block) =>
+			valuesOf(block.body, ['completer']).every((v) =>
+				v.split(/\s+/).every((w) => w === MASKED_VALUE)
+			)
+		),
+		...leaks('figure-a-completer', findFiguresACompleter(lines), keyMasked(['verifier']))
+	];
+}
+
 /**
  * L'énoncé sans les valeurs que l'élève doit trouver dans ses blocs à geste.
  * Un énoncé sans bloc à geste revient tel quel.
