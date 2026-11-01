@@ -7,6 +7,8 @@
  * - la primitive rendue de chaque cas (coefficient ≠ 1) et l'absence de
  *   littéral `number` signé dans l'arbre ;
  * - une garde de source : plus aucun littéral de nœud dans l'intégrateur.
+ * Seule la garde de source était rouge avant le correctif : les cas de rendu
+ * protègent la forme, ils ne prouvent pas L31.
  */
 
 import { describe, it, expect } from 'vitest';

@@ -7,6 +7,8 @@
  *
  * On intercepte les substitutions faites par le moteur et on vérifie la forme
  * de chaque nœud substitué ; la valeur rendue reste assertée à côté.
+ * L'intercepteur voit TOUTES les substitutions d'`evaluateLimit`, pas seulement
+ * le point d'essai : un rouge ici peut venir d'une autre branche du moteur.
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
