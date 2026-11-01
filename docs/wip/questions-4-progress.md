@@ -5,17 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2133 (lot 8 écrit, mergé)._
+_Mis à jour le 2026-11-01, après #2133, #2143 et #2154 (lot 8 en prod, rangé)._
 
-- **État** : lots 1 à 7 en prod et tous publiés (volumes du lot 6 publiés le 2026-11-01, § 40). Lot 8 « programmes de calcul et fonctions » : fichiers mergés (#2133, § 41), pas encore en prod.
-- **Prochaine action** : après le `--publier` de David, relever les 6 `id` (MCP), migration nœud + tag du lot 8
-  (+ test d'intégration rouge sans elle, `security-auditor`), page à cocher (`page-a-cocher.ts --dir
-scripts/questions/4-lot-8` ; 063 et 064 dessinent des ` ```courbe `) . Puis
-  lot 9 « pensée informatique » (065-067).
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-8 --publier` (6 brouillons du lot 8).
+- **État** : lots 1 à 7 en prod et tous publiés. Lot 8 « programmes de calcul et fonctions » : 6 brouillons en prod,
+  rangés et tagués (migration `20261101223000` jouée, § 42), page à cocher publiée.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts` sur
+  https://claude.ai/artifact/1PCiWE8CmMGYPAZrBhdELD), les COMPTER ; « À revoir » → corriger (§ 7 de la démarche) ;
+  sinon `publier-lot --dir scripts/questions/4-lot-8` en simulation, puis David `--publier`. Ensuite lot 9 « pensée
+  informatique » (065-067), phase 0.
+- **En attente de David** : relecture de la page à cocher du lot 8.
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
   David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
-  `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
+  `origin/main` avant la CI (§ 34) et relever la dernière version jouée juste avant de pousser (§ 42) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
   COMMIT ; QCM = case choix ; un grand nombre s'écrit `10\,000` dans une spec ; tests navigateur de la CI parfois
   tombés (`wrapDynamicImport`) : relancer le job ; une borne qui ne repose que sur 2019/2016 : la signaler dans la
   phase 0 du lot qui s'en sert (§ 36).
@@ -1018,3 +1019,22 @@ scripts/questions/4-lot-6` en simulation (prod) : 6a770d04 et 35002b15 passent ;
   sortie) → `stdin=subprocess.DEVNULL`.
 - Écriture : 081 « développée et réduite » = `requiredForm: sum` (`3(2x+5)` → `bad_form`) ; 060 et 064 : le bon
   choix calculé par `{{if:…}}` quand il dépend du tirage (programme A ou B, température qui monte ou descend).
+
+## 42. Lot 8 : en prod, rangé, page à cocher (2026-11-01)
+
+- David a lancé `create-questions --publier` : 6 brouillons en [4], catégories et niveaux justes (MCP). Identifiants :
+  edcc194a (4-060), 15dd2a0f (4-081), bd2aa548 (4-061), cb545bd7 (4-062), 46ca97e7 (4-063), e678f1d0 (4-064).
+- #2143 : migration de rangement + test d'intégration (rouge sans elle : 2 échecs ; vert : 9/9) ; `security-auditor` :
+  aucun finding. CI : job d'intégration tombé (port 54322 déjà pris sur le runner), relancé, vert ; mergée.
+- **Collision d'horodatage** : `20261101215000` avait déjà été jouée en prod par `questions_1spe_suites_rangement_tags`
+  (même version, mergée juste avant) → `main` rouge pour toutes les sessions (migrations-horodatage-unique, garde
+  SECURITY DEFINER). Rien joué. #2154 : renommée `20261101223000` (après la dernière jouée, 220000), Lint d'abord
+  rouge sur le journal de questions-6 (corrigé sur `main`), rebase, CI verte, mergée ; sessions questions-1spe, -5, -6
+  prévenues (et averties que questions-5 #2146 et questions-6 #2153 prennent toutes deux `20261101220100`).
+- `db:migrate` (dépôt principal) : seule `20261101223000` en attente, `db push` sans `--include-all`. Vérifié au
+  MCP : 6 modèles sur Fonctions > Généralités sur les fonctions, un tag chacun (son point), `draft`.
+- Page à cocher : https://claude.ai/artifact/1PCiWE8CmMGYPAZrBhdELD (6 fiches, 26 exemples, aucune alerte ;
+  capacité `db`, `verdicts` vide). La page aplatit les listes à puces des énoncés (« - choisir un nombre ; - … ») :
+  dans l'appli (aperçu admin local), la liste est bien rendue (`<ul>`). Ports : 5176 pris par une autre session → 5178.
+- **Leçon** : relever la dernière version jouée en prod **et** les migrations de `origin/main` juste avant de
+  pousser une migration (une autre session peut merger la même version entre-temps).
