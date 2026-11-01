@@ -730,3 +730,5 @@ tag ne change aucune règle ; `a7dfe502` reste un brouillon, seuls son niveau et
    que d'en écrire un double. Recommandation : oui ; instantané d'abord, mise à jour par `--mettre-a-jour` (David).
 6. **Angles, sous-notion neuve** « Figures planes · Angles » (075, 087). Recommandation : oui (le CE2 et le cycle 3 la
    prolongent).
+
+Réponse de David (« je suis tes recos », 2026-11-01) : les six recommandations.

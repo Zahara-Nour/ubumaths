@@ -85,8 +85,12 @@ const GIVEN_VIEW_REGEX = /^([a-zà-ÿ]+)\s+(\d+(?:\s+\d+)*)$/i;
 /** Une ligne de geste (`dessiner:` ou `retrouver:`), qui fait du bloc une case */
 const TASK_LINE_REGEX = /^(dessiner|retrouver)\s*:/i;
 
-/** Une ligne de geste d'un patron (`designer:` ou `completer:`, lot 5) */
-const PATRON_TASK_LINE_REGEX = /^(designer|completer)\s*:/i;
+/**
+ * Une ligne de geste d'un patron (`designer:` ou `completer:`, lot 5), accents
+ * permis comme au parseur (`Compléter:` : sans eux, le bloc échappait au repérage,
+ * sans case et sans masque en évaluation — revue de #2145)
+ */
+const PATRON_TASK_LINE_REGEX = /^(d[eé]signer|compl[eé]ter)\s*:/i;
 
 // ============================================================================
 // DÉTECTION
