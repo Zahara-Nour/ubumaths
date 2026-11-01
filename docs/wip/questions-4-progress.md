@@ -5,16 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2089 et #2098 (lot 7 publié ; décisions du § 36)._
+_Mis à jour le 2026-11-01, phase 0 du lot 8 proposée (§ 39)._
 
-- **État** : lots 1 à 7 en prod ; publiés : lots 2 à 5, les 3 translations du lot 6, le lot 7 ; en brouillon : les 7
-  du lot 1 (jamais relus sur une page), les 2 volumes du lot 6.
-- **Prochaine action** (ordre validé, § 36) : 1) page à cocher du lot 1 **publiée** (§ 37,
-  https://claude.ai/artifact/5HUE7dJZTSixHHZgC85tAN) : **David** relit ; puis verdicts comptés, `publier-lot` en simulation, **David** `--publier` ; 2) petite PR
-  « sonde des figures » : `.sonde-figures-tmp.ts` (non suivi, dans le worktree) → `scripts/questions/sonde-figures.ts`
-  (`--dir`, `--montre`) + une ligne dans `docs/pratiques/couvrir-un-niveau.md` § 5, sans revue ; 3) phase 0 du lot 8
-  « programmes de calcul et fonctions » (060, 081, 061, 062, 063, 064).
-- **En attente de David** : la relecture du lot 1 (page du § 37). Volumes du lot 6 : après le `deploy:prod` qui livre ` ```solide `.
+- **État** : lots 1 à 7 en prod ; tous publiés sauf les 2 volumes du lot 6 (brouillons), débloqués : la prod v0.59.0
+  livre ` ```solide ` (et le repère à placer). Phase 0 du lot 8 écrite (§ 39).
+- **Prochaine action** : réponses de David au § 39.4, puis volumes du lot 6 (`publier-lot` sur un dossier avec 01 et
+  02 seulement) et écriture du lot 8 ; ensuite lot 9 « pensée informatique » (065-067).
+- **En attente de David** : les 4 questions du § 39.4 (modèles, catégories, repère à placer pour 063, volumes du lot 6).
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
   David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
   `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
@@ -921,3 +918,77 @@ Equations / Mettre en équation 3 ; 017 : forme puissance exigée quand la consi
   05818fa0 (4-014, brouillon de 4e) : c'est le bon modèle.
 - Publiée en artefact (capacité `db`) : https://claude.ai/artifact/5HUE7dJZTSixHHZgC85tAN ; collection `verdicts`
   vide à la publication.
+
+## 38. Lot 1 : publication bloquée par un niveau, sonde des figures (2026-11-01)
+
+- Verdicts lus en base : 7 documents, 7 « OK », aucun commentaire.
+- `publier-lot` en simulation : 6 passent, a635df43 « Fraction d'une fraction » refusé (niveau 5 de Fractions /
+  Calculer / Fraction d'une quantité pris par ece43e92, publié 6e ; niveaux 1 à 6 pris, relevé MCP). Question d'accès
+  posée avant le SQL, David : personne. Migration `20261101193000_questions_4_lot1_niveau` (5 → 7, calquée sur
+  `20261101190000_questions_1spe_derivation_niveau`), fichier 04 et `lot-4-1.py` au niveau 7 ; test d'intégration
+  6/6, rouge sans la migration (update neutralisé), restaurée d'une copie ; `security-auditor` : aucun finding
+  bloquant. #2109 mergée (CI verte).
+- `db:migrate` : depuis le worktree, `ProjectRefNotLinkedError` (seul le dépôt principal est lié) ; depuis le dépôt
+  principal, refusé : `20261101190200_questions_6_lot7_rangement_tags` (f2f01570e, session questions-6) a la même
+  version que `questions_5_lot6_rangement_tags`, déjà jouée → `duplicate key schema_migrations_pkey`. Rien de joué
+  (MCP : dernière version 20261101190200 = 5_lot6 ; a635df43 encore au niveau 5). Signalé à David.
+- Sonde des figures : `scripts/questions/sonde-figures.ts` + ligne au § 5 de `couvrir-un-niveau.md` (#2108, mergée,
+  sans revue) ; lot 6 : 0 problème (787 blocs) ; copie cassée : 1 problème, sortie 1.
+- Collision réglée par la session questions-6 (#2114, migration renommée `20261101200700`) ; son `db:migrate` a joué
+  aussi la nôtre (`20261101193000`). Vérifié au MCP : a635df43 au niveau 7, brouillon, `updated_at` inchangé
+  (2026-10-28), les 3 triggers actifs. `publier-lot` en simulation : 7 brouillons passent.
+- `publier-lot --publier` lancé par David : 7/7 publiés ; vérifié au MCP (7 `published`, a635df43 au niveau 7).
+
+## 39. Lot 8 (programmes de calcul et fonctions) : phase 0 (proposée le 2026-11-01)
+
+Lot 6 de l'ordre validé au § 5 bis ; numéroté 8 (la géométrie, passée devant, a pris 5 et 6). Prod en v0.59.0 : elle
+livre le repère à placer (` ```courbe ` + `placer:`, titres `axes:`, #2096) et ` ```solide ` → les 2 volumes du lot 6
+peuvent être publiés.
+
+### 39.1 Relevé (MCP, 2026-11-01)
+
+- Points du lot, tous sans modèle : 060, 081, 061, 062, 063, 064 ; tous sur le nœud Fonctions > Généralités sur les
+  fonctions. Aucun nœud à créer.
+- Voisins : 5-117 (programme traduit en **une expression numérique**, prévu par la session 5e, lot « Traduire en une
+  expression ») ; 5-092 à 5-098, 5-142, 5-143 (sans modèle) ; 3-039 (1 modèle : 6ad254b4 « Formule, tableau de
+  valeurs, courbe », Fonctions / Généralités / Représentations 1, notation `f(x)`) ; 4-021, 4-075 (Calcul littéral /
+  Produire une formule, lot 7 et lot 5).
+- Catégories : Fonctions / Généralités / Image et antécédent 1, Représentations 1 (3e), Lecture graphique 1-3 (2de) ;
+  aucune « Programmes de calcul », aucune « Dépendance ». Calcul littéral / Écrire / Formules 1-3 (5e).
+- Bornes (BO c4 p. 18-19 et décision de David du 2026-10-18, aucune ne repose sur 2019/2016 seuls) : 060 nombre
+  « simple » ; 061 programme « simple » ; 062, 063, 064, 081 : notation `A(c)`, `p(t)` permise dans l'énoncé, jamais
+  exigée dans la réponse ; **ni « image », ni « antécédent », ni `f : x ↦`** (3e). Double distributivité : 3e →
+  aucun programme qui demande de développer `(x + a)(x + b)` ou `(x + a)²`.
+
+### 39.2 Modèles proposés (6, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                              | Variations                                                                                                                                                                                                                                                                                                                                                                                                               | Réponse                                       |
+| ----- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| 060   | Appliquer un programme de calcul (Fonctions / Programmes de calcul / Appliquer, 1)      | 1) 3 étapes (× a, + b, × c) à un entier relatif de −10 à 10 ; 2) avec un carré (+ a, élever au carré, − b), départ de −6 à 6 ; 3) 4 étapes à un décimal simple (2,5 ; −1,5) ; 4) deux programmes A et B au même nombre : « lequel donne le plus grand résultat : A / B / les deux le même »                                                                                                                              | case · case choix                             |
+| 081   | Programme de calcul et lettre (Fonctions / Programmes de calcul / Appliquer, 2)         | départ x : 1) (× a, + b, × c) → toute expression égale à `c(ax+b)` ; 2) même programme, « développée et réduite » → `acx+bc` (forme exigée) ; 3) « quelle expression traduit le programme : `c(ax+b)` / `cax+b` / `ax+bc` / `a(x+b)c` » ; 4) (+ a, × b, − le nombre de départ) → `(b−1)x+ab` réduite                                                                                                                     | case (expression) · case choix                |
+| 061   | Remonter un programme de calcul (Fonctions / Programmes de calcul / Remonter, 1)        | départ entier relatif tiré d'abord : 1) 2 étapes (× a, + b), résultat donné → départ ; 2) 3 étapes (+ a, × b, − c) ; 3) « pour remonter, la première chose à faire est : soustraire b / diviser par a / ajouter b / multiplier par a » ; 4) « Léa trouve r ; quel nombre a-t-elle choisi ? » (programme avec division : ÷ a puis − b)                                                                                    | case · case choix                             |
+| 062   | Produire une formule (Fonctions / Dépendance / Formule, 1)                              | 1) taxi : prise en charge b €, a € par km : `P(d) = ?` → `b+ad` ; 2) rectangle de largeur x, longueur x + a : aire → `x(x+a)` (développée acceptée) ; 3) même forme : périmètre → `4x+2a` ; 4) réservoir de V L qui perd a L par minute : volume après t min → `V−at` ; 5) « quelle formule donne le prix de n places à a € avec b € de frais fixes : `an+b` / `(a+b)n` / `a+bn` / `abn` »                               | case (expression égale acceptée) · case choix |
+| 063   | Représenter une grandeur par un graphique (Fonctions / Dépendance / Graphique, 1)       | ` ```courbe ` + `placer:`, titres d'axes : 1) formule `P(n) = an + b` : place les points pour n = 0, 1, 2, 3 ; 2) tableau de valeurs donné (distance, temps) : place les 4 points ; 3) aire d'un carré de côté c : place c = 0..3 (pas une droite) ; 4) « quel graphique représente le prix en fonction de n » : 4 ` ```courbe ` (la bonne, pente et ordonnée à l'origine échangées, droite par l'origine, décroissante) | repère à placer · case choix                  |
+| 064   | Formule, tableau, graphique (Fonctions / Dépendance / Formule, tableau et graphique, 1) | même dépendance sous trois formes, contextes concrets : 1) formule → compléter un tableau (2 cases) ; 2) graphique → lire la valeur de la grandeur pour t donné ; 3) tableau → « quelle formule » (case choix) ; 4) formule → « quel tableau » (case choix, 4 tableaux) ; 5) « d'après le graphique, la grandeur augmente-t-elle quand t augmente : oui / non / ça dépend »                                              | case · case choix                             |
+
+- `testSpecs` d'erreurs typiques : 060 → `−3² = −9`, étape oubliée ; 081 → `cax+b` (priorité), `ax+bc` ; 061 →
+  opérations remontées dans le mauvais ordre, ou sans inverser ; 062 → `(a+b)d`, `2x+a` ; 063 → abscisse et ordonnée
+  échangées (phrase du juge) ; 064 → valeur lue pour la mauvaise grandeur.
+- Distinct du 3e 6ad254b4 : pas de `f(x)`, grandeurs concrètes et notation `P(n)` dans l'énoncé seulement ; distinct
+  de 5-117 : 081 travaille avec la lettre.
+- Sonde des courbes (`sonde-courbes.ts`) avant la page à cocher (063, 064 dessinent des ` ```courbe `).
+
+### 39.3 Question d'accès
+
+Comme les lots précédents : brouillons, puis migration nœud + tag ; **personne** ne gagne d'accès. À la
+publication, les élèves de 4e voient 6 modèles de plus.
+
+### 39.4 Questions à David
+
+1. Valider les 6 modèles du § 39.2 ?
+2. Catégories neuves : Fonctions / Programmes de calcul / Appliquer 1 (060) et 2 (081), Remonter 1 (061) ; Fonctions /
+   Dépendance / Formule 1 (062), Graphique 1 (063), Formule, tableau et graphique 1 (064) ?
+3. 063 : se servir du repère à placer (en prod depuis v0.59.0) plutôt que d'un seul QCM de graphiques (reco : oui,
+   c'est « représenter » pour de vrai) ?
+4. Lot 6 : publier les 2 volumes maintenant que ` ```solide ` est en prod (`publier-lot` sur un dossier avec 01 et 02
+   seulement), avant d'écrire le lot 8 (reco : oui) ?

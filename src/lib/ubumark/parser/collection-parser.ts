@@ -33,6 +33,7 @@
 
 import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
+import { isMaskedValue } from '../utils/masked-value';
 import {
 	COLLECTION_BUILD_RANGE,
 	COLLECTION_CAPTION_MAX,
@@ -303,7 +304,8 @@ export function parseCollectionContent(source: string): CollectionNode {
 					sizeCm = parseSize(value);
 					break;
 				case 'construire':
-					build = parseBuild(value);
+					// Énoncé d'une évaluation notée : valeur de remplacement (`masked-value.ts`)
+					build = isMaskedValue(value) ? 1 : parseBuild(value);
 					break;
 				case 'case':
 					if (!INTEGER_REGEX.test(value)) {

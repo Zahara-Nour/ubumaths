@@ -97,6 +97,7 @@ import { GEOMETRIC_MAX_K } from '$lib/statistics/geometric';
 import { UNIFORM_MAX_VALUES } from '$lib/statistics/uniform';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
 import { SCALE_STEPS, scaleAxis } from '../utils/barres-placer';
+import { isMaskedValue } from '../utils/masked-value';
 
 // ============================================================================
 // TYPES
@@ -3312,6 +3313,12 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				throw new LineError(`au plus ${limit} ${what} dans les ${KIND_NAME[kind]}`);
 			}
 
+			// Barre à construire d'un énoncé d'évaluation notée : effectif de remplacement
+			// (`masked-value.ts`), la barre se dessine en pointillés comme avant
+			if (kind === 'barres' && isMaskedValue(content.slice(separator + 1))) {
+				data.push({ label, value: 0, interval, line });
+				return;
+			}
 			const parsed = parseValue(content.slice(separator + 1));
 			if (unit !== null && unit.value !== parsed.unit) {
 				throw new LineError(

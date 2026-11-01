@@ -5,20 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 6 publié._
+_Mis à jour le 2026-11-01, après #2122 (bloc ```scratch mergé)._
 
-- **État** : lots 0 à 6 publiés en prod ; lot 6 : 7 modèles relus (7 OK) et publiés (§ 13.12).
-- **Prochaine action** : phase 0 du lot 7 (algorithmique, § 4 : 3-047, 3-048, 3-049) ; il restera ensuite le
-  lot 8 (outils C : boîte à moustaches, solides, chacun en chantier à part).
+- **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 3-047 à 3-050) : phase 0 validée (§ 14.6) ;
+  le bloc ` ```scratch ` est mergé (#2122, sur `main`, **pas en prod**).
+- **Prochaine action** : écrire le lot 7 (4 modèles, § 14.2 + 14.6) avec ` ```scratch ` ; brouillons
+  jusqu'au `deploy:prod` qui livre le bloc ; puis lot 8 (boîte à moustaches).
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; ` ```solide ` pas en prod (modèles qui s'en servent : brouillon
-  jusqu'au `deploy:prod`) ; étiquette d'un vecteur libre (`vecteur(dx, dy, ancre=…)`) : vérifier qu'un
-  `texte()` en LaTeX passe ; dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire ni virgule ;
-  aperçu admin sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le
-  worktree (`git push origin HEAD:main`) ; `db:migrate` depuis un worktree À JOUR d'`origin/main` ; réponse
-  décimale = fraction refusée (garder la fraction + `acceptDecimal`) ; `Doc-inchangée:` dans un COMMIT ;
-  `audit-question-draws` : faux positif « nombres juxtaposés » sur les blocs statistiques.
+  du mode auto → David les lance avec `!` ; dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire
+  ni virgule ; aperçu admin sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc
+  depuis le worktree (`git push origin HEAD:main`) ; `db:migrate` depuis un worktree À JOUR d'`origin/main` ;
+  réponse décimale = fraction refusée (garder la fraction + `acceptDecimal`) ; `Doc-inchangée:` dans un
+  COMMIT ; `%` refusé dans l'`eval` d'une variable ; `audit-question-draws` : faux positif « nombres
+  juxtaposés » sur les blocs statistiques.
 - **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -933,3 +933,76 @@ modèles publiés de plus, et c8306505 de 4e ; la 4e ne perd rien. Aucune règle
 - ` ```solide ` en prod depuis la v0.59.0 (`deploy:prod` du 2026-11-01, 14 h 44) : 3-019 et 3-020 publiés
   avec les autres. `publier-lot.ts` (simulation, puis `--publier`) lancé par David : 7/7 publiés ;
   relu au MCP : `published`, grades `['3']`.
+
+## 14. Lot 7 (algorithmique) : phase 0 proposée (2026-11-01)
+
+Relevé MCP du jour : **aucun modèle d'algorithmique en prod, à aucun niveau** — 3-047 à 3-051 à 0, et de
+même 4-065 à 4-069, 5-011, 5-101, 5-105, 5-106, 6-194 à 6-197, 6-210 (une quinzaine de points du cycle 4
+et de la 6e). Nœuds prêts (prod) : Algorithmique > Variables et instructions > variables et affectation
+(151ff8c9) ; > instructions conditionnelles (195147df) ; Algorithmique > Boucles > boucle non bornée (04da83a6).
+
+Source (exemples 2026, p. 49-50, PDF p. 48-49 du folio) : 3-047 « plusieurs variables au sein d'un même
+programme » ; 3-048 « un opérateur logique pour combiner deux conditions simples » ; 3-049 « répéter jusqu'à
+ce que », exemple du reste par soustractions successives ; 3-050 : bloc personnalisé (dessine carré).
+**Tous les programmes y sont en blocs Scratch.** L'appli ne rend un programme qu'en bloc de code ordinaire
+(texte monospace, coloré seulement pour python/js…) ; Blockly n'existe que sur `/dev/blockly` (éditeur, pas
+d'affichage dans une question).
+
+### 14.1 Le choix qui précède le lot : comment montrer le programme
+
+- **A. Texte** (classe A du § 3, telle que décidée) : bloc de code ordinaire, mots de Scratch en français et
+  retraits (`mettre reste à 17`, `répéter jusqu'à ce que reste < 5`, `dire reste`). Lot écrit tout de suite.
+  Écart : l'élève lit en classe des blocs colorés, ici du texte.
+- **B. Bloc neuf ` ```scratch `** (classe C, chantier à part) : programme écrit en texte dans l'énoncé
+  (syntaxe des `scratchblocks`, avec `{{variables}}`), dessiné en blocs Scratch (SVG). Bibliothèque
+  `scratchblocks` à évaluer (licence, langue française, taille, rendu serveur) — rien de vérifié encore.
+  Servirait aux ~15 points de la 6e à la 3e (et au CM2), et rendrait 3-050 évaluable (lire un programme à bloc
+  personnalisé). Lot 7 en brouillon jusqu'au `deploy:prod` du bloc.
+- **Recommandé : B**, chantier `bloc-scratch` d'abord (affichage seul, une PR et une page de démo), puis ce
+  lot. Écrire le lot en texte puis le réécrire coûterait deux fois.
+
+### 14.2 Modèles neufs (3, un par point) — le contenu ne dépend pas du choix 14.1
+
+| Point | Modèle (catégorie)                                                       | Variations                                                                                                                                                                                                                                                                                                                                      | Réponse             |
+| ----- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| 3-047 | Plusieurs variables (Algorithmique / Variables / Affectation, 1-2)       | 1) a ← n, b ← m, a ← a + b, b ← a − b : valeurs finales de a et de b (deux cases) ; 2) prix et quantité saisis, total ← prix × quantité, total ← total + port : « qu'affiche le programme si on saisit … » ; 3) échanger a et b : lequel des trois programmes y parvient (avec une variable c / sans / à l'envers) ; entiers ⩽ 20               | case nombre ; choix |
+| 3-048 | Conditions composées (Algorithmique / Instructions conditionnelles, 1-2) | 1) « (x > p) et (x < q) » pour x tiré : vraie ou fausse ; 2) même chose avec « ou » ; 3) programme `si … et … alors dire A sinon dire B` (âge et taille d'un manège) : que dit-il pour les valeurs saisies ; 4) quelle condition traduit « x est entre p et q, exclus » (et / ou, bornes inversées)                                             | choix               |
+| 3-049 | Boucle « répéter jusqu'à ce que » (Algorithmique / Boucles, 1-2)         | 1) reste par soustractions successives (exemple officiel ; n ⩽ 60, d de 3 à 9) : que dit le programme ; 2) combien de passages dans la boucle (le quotient) ; 3) compteur : i ← 0, répéter jusqu'à ce que i > s, ajouter k à i : valeur finale de i ; 4) doublement : x ← 1, jusqu'à ce que x > s, x ← 2x : valeur finale ; au plus 12 passages | case nombre         |
+
+Une seule opération logique par condition (borne de 3-048) ; pas de « non » (il ne combine pas deux conditions).
+Erreurs typiques (`testSpecs`) : 3-047 → l'ancienne valeur de a reprise après sa modification, b = m inchangé ;
+programme d'échange sans variable c ; 3-048 → « et » lu « ou », borne incluse ; 3-049 → arrêt un tour trop tôt
+(i = s au lieu du premier i > s), le nombre de départ pris pour le reste, passages comptés un de trop.
+
+### 14.3 Rangement
+
+3-047 → variables et affectation ; 3-048 → instructions conditionnelles ; 3-049 → boucle non bornée ; un tag
+chacun.
+
+### 14.4 Questions à David
+
+1. **§ 14.1 : texte (A) ou bloc ` ```scratch ` en chantier à part d'abord (B, recommandé) ?**
+2. § 14.2 : points, variations, formes de réponse à valider.
+3. Si B : 3-050 (bloc personnalisé) quitte la classe D et entre dans ce lot (lire un programme qui appelle
+   `dessine carré (côté)` : longueur du plus grand carré, nombre de carrés) ?
+
+### 14.5 Question d'accès
+
+Brouillons : personne ne lit rien de neuf. Rangement puis publication : élèves et prof de 3e voient 3 (ou 4)
+modèles publiés de plus. Aucune règle ne change.
+
+### 14.6 Décisions (David, 2026-11-01, « je te suis » sur les recommandations)
+
+- § 14.1 : **B** — chantier à part `bloc-scratch` d'abord (affichage d'un programme en blocs Scratch, à
+  commencer par l'évaluation de `scratchblocks` ; si elle échoue, retour à A). Lot 7 ensuite, en brouillon
+  jusqu'au `deploy:prod` du bloc.
+- § 14.2 validé ; 3-049 : boucle testée **avant** chaque passage, arrêt dès que la condition est vraie
+  (sémantique Scratch) ; l'arrêt un tour trop tôt parmi les erreurs typiques.
+- § 14.4.3 : **3-050 entre dans le lot** (lire un programme qui appelle `dessine carré (côté)` : longueur du
+  plus grand carré, nombre de carrés) → 4 modèles.
+- Ordre : `bloc-scratch`, lot 7, lot 8 (boîte à moustaches).
+
+### 14.7 Bloc ```scratch mergé (2026-11-01)
+
+- Chantier `bloc-scratch`, palier 1 : #2122 mergée (journal `bloc-scratch-progress.md`). Le lot 7 peut s'écrire ;
+  `check:ubumark` vérifie les programmes (instructions non reconnues), choix compris.

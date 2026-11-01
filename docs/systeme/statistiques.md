@@ -222,7 +222,9 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   générateur lit ses barres par `parseStatChartContent` (`generator/build-answer.ts`), l'effectif
   attendu est celui que le parseur a compté. Au premier niveau de l'énoncé seulement : en retrait,
   cité ou ouvert sur la ligne d'un item (`- ```barres`), `findBarsToPlace` le marque imbriqué et le
-  générateur le refuse (règle commune, `ubumark/parser/nested-line.ts`).
+  générateur le refuse (règle commune, `ubumark/parser/nested-line.ts`). En évaluation notée,
+  l'effectif d'une barre à construire part masqué (`Natation = ?`, lu comme 0 ; [ubumark.md](ubumark.md),
+  invariant 12).
 
 ## Invariants
 

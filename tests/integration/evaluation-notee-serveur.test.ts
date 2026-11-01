@@ -76,11 +76,14 @@ const FILL_ID = '0a11f0e0-0000-4000-8000-00000000e602';
 const MULTI_ID = '0a11f0e0-0000-4000-8000-00000000e603';
 /** Question à case « choix » (bloc ```choix, plusieurs réponses, mélangée) : bonnes 0 et 2 */
 const CHOICE_ID = '0a11f0e0-0000-4000-8000-00000000e604';
+/** Droite à placer (chantier `fuite-enonce`) : l'énoncé envoyé ne dit pas où vont A et B */
+const GESTE_ID = '0a11f0e0-0000-4000-8000-00000000e605';
 const THEME = 'ZZ Éval serveur';
 const FILL_CATEGORY = { theme: THEME, domain: 'Moitié', subdomain: 'Entiers', level: 1 };
 const QCM_CATEGORY = { theme: THEME, domain: 'Comparer', subdomain: 'Relatifs', level: 1 };
 const MULTI_CATEGORY = { theme: THEME, domain: 'Plusieurs', subdomain: 'Pairs', level: 1 };
 const CHOICE_CATEGORY = { theme: THEME, domain: 'Case choix', subdomain: 'Pairs', level: 1 };
+const GESTE_CATEGORY = { theme: THEME, domain: 'Droite', subdomain: 'Placer', level: 1 };
 const CATEGORIES = [
 	{ category: FILL_CATEGORY, quantity: 2, delay: 20 },
 	{ category: QCM_CATEGORY, quantity: 1, delay: 15 }
@@ -216,7 +219,7 @@ async function oracle(attemptId: string): Promise<QuestionInstance[]> {
 	const { data: templates } = await service
 		.from('question_templates')
 		.select('*')
-		.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID]);
+		.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID, GESTE_ID]);
 	const byId = new Map(
 		(templates as QuestionTemplateRow[]).map((t) => [t.id, toQuestionTemplate(t)])
 	);
@@ -350,7 +353,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 		await service
 			.from('question_templates')
 			.delete()
-			.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID]);
+			.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID, GESTE_ID]);
 	});
 
 	describe('Entraînement : démarrer → reprendre → envoyer (×2)', () => {
@@ -1081,6 +1084,70 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
 			const [row] = await answersOf(attempt.attemptId);
 			expect((row.user_answer as { value: unknown }).value).toEqual(['0;2']);
+		});
+	});
+
+	describe('fuite-enonce : l’énoncé d’un bloc à geste part sans la réponse', () => {
+		let gestureStudent: Person;
+		let assignmentId: string;
+
+		beforeAll(async () => {
+			gestureStudent = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: gestureStudent.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			await service.from('question_templates').delete().eq('id', GESTE_ID);
+			const { error } = await service.from('question_templates').insert({
+				id: GESTE_ID,
+				type: 'fill_in_blanks',
+				title: 'Droite à placer ZZ éval serveur',
+				...GESTE_CATEGORY,
+				grades: ['6'],
+				status: 'published',
+				variations: [
+					{
+						statement:
+							'Place le point A, double de 6, et le point B, triple de 5.\n\n```line\nstart: 0\nend: 20\nstep: 1\nlabels: 0, 10, 20\nplacer: A=12 ; B=15\n```'
+					}
+				]
+			});
+			expect(error, 'décor : modèle à droite à placer').toBeNull();
+
+			({ assignmentId } = await createEvaluation({
+				max_attempts: 2,
+				categories: [{ category: GESTE_CATEGORY, quantity: 1, delay: 20 }]
+			}));
+		}, 60_000);
+
+		it('démarrer : ni A=12 ni B=15 dans ce que reçoit l’élève, les noms restent', async () => {
+			const attempt = await start(gestureStudent, assignmentId);
+			const sent = JSON.stringify(attempt.questions);
+			expect(sent).not.toContain('A=12');
+			expect(sent).not.toContain('B=15');
+			expect(attempt.questions[0].statement).toContain('placer: A=? ; B=?');
+			// L'instance enregistrée, elle, garde la réponse (la correction en a besoin)
+			const [instance] = await oracle(attempt.attemptId);
+			expect(instance.statement).toContain('placer: A=12 ; B=15');
+		});
+
+		it('reprendre : le même énoncé masqué', async () => {
+			const attempt = await start(gestureStudent, assignmentId);
+			expect(attempt.questions[0].statement).toContain('placer: A=? ; B=?');
+			expect(JSON.stringify(attempt.questions)).not.toContain('A=12');
+		});
+
+		it('la correction ne change pas : les deux points justes → 1 point', async () => {
+			const attempt = await start(gestureStudent, assignmentId);
+			const [instance] = await oracle(attempt.attemptId);
+			const body = submitAttemptSchema.parse({
+				answers: [{ position: 0, ...rightAnswer(instance) }]
+			});
+			const result = await submitEvaluationAttempt(actors(gestureStudent), attempt.attemptId, body);
+			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
+			// Copie rendue après l'envoi : l'instance complète, réponse comprise
+			expect(result.questions[0].instance.statement).toContain('placer: A=12 ; B=15');
 		});
 	});
 });

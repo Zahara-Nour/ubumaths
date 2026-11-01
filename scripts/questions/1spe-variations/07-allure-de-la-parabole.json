@@ -1,0 +1,252 @@
+{
+	"title": "Allure de la parabole selon le signe de a",
+	"description": "Signe du coefficient de x² ⟹ parabole tournée vers le haut ou le bas : courbe à choisir (sommet par f′), sens de variation, forme factorisée k(u − x)(x + v)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Variations",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:s*m*x^2-2*s*m*al*x+s*m*al^2+be}}$.\n\nQuelle courbe peut représenter $f$ ?\n\n````choix\n- ```courbe\n  x: -5 ; 5\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = {{s}}*{{m}}*(x-({{al}}))^2+({{be}})   bleu\n  taille: petite\n  description: Parabole tournée vers {{if:s>0|le haut|le bas}}, de sommet d'abscisse {{al}}.\n  ```\n- ```courbe\n  x: -5 ; 5\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = -({{s}})*{{m}}*(x-({{al}}))^2+({{be}})   bleu\n  taille: petite\n  description: Parabole tournée vers {{if:s>0|le bas|le haut}}, de sommet d'abscisse {{al}}.\n  ```\n- ```courbe\n  x: -5 ; 5\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = {{s}}*{{m}}*(x-({{eval:-al}}))^2+({{be}})   bleu\n  taille: petite\n  description: Parabole tournée vers {{if:s>0|le haut|le bas}}, de sommet d'abscisse {{eval:-al}}.\n  ```\n- ```courbe\n  x: -5 ; 5\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = -({{s}})*{{m}}*(x-({{eval:-al}}))^2+({{be}})   bleu\n  taille: petite\n  description: Parabole tournée vers {{if:s>0|le bas|le haut}}, de sommet d'abscisse {{eval:-al}}.\n  ```\n````",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "m",
+					"expression": "1|2"
+				},
+				{
+					"name": "al",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "be",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": ["s*m*al^2 + be != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient de $x^2$ est ${{eval:s*m}}$, {{if:s>0|positif : la parabole est tournée vers le haut|négatif : la parabole est tournée vers le bas}}.",
+					"$f'(x)={{eval:2*s*m*x-2*s*m*al}}$ s'annule en $x={{al}}$ : c'est l'abscisse du sommet. $f$ est {{if:s>0|décroissante puis croissante|croissante puis décroissante}}.",
+					"La bonne courbe est $\\textcolor{{{color:primary.0}}}{\\text{tournée vers {{if:s>0|le haut|le bas}}, de sommet d'abscisse } {{al}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:s*m*x^2+b*x+c}}$.\n\nSur $\\mathbb{R}$, la fonction $f$ est :\n\n```choix\nmelanger: non\n- décroissante puis croissante\n- croissante puis décroissante\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "m",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-s)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:2*s*m*x+b}}$ : une fonction affine de coefficient directeur ${{eval:2*s*m}}$, {{if:s>0|négative puis positive|positive puis négative}}.",
+					"Le coefficient de $x^2$ est ${{eval:s*m}}$ : la parabole est tournée vers {{if:s>0|le haut|le bas}}.",
+					"$f$ est $\\textcolor{{{color:primary.0}}}{\\text{ {{if:s>0|décroissante puis croissante|croissante puis décroissante}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:s*m}}({{u}}-x)(x{{eval:v;+}})$.\n\nSa courbe est une parabole tournée :\n\n```choix\nmelanger: non\n- vers le haut\n- vers le bas\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "u",
+					"expression": "1..6"
+				},
+				{
+					"name": "v",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["u + v != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1+s)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le terme en $x^2$ vient de ${{eval:s*m}}\\times(-x)\\times x={{eval:-s*m}}x^2$ : le coefficient de $x^2$ est $a={{eval:-s*m}}$, {{if:s>0|négatif|positif}}.",
+					"La parabole est tournée $\\textcolor{{{color:primary.0}}}{\\text{vers {{if:s>0|le bas|le haut}} }}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Bonne courbe",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"m": "1",
+				"al": "2",
+				"be": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens inversé",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"m": "1",
+				"al": "2",
+				"be": "-1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sommet opposé",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"m": "1",
+				"al": "2",
+				"be": "-1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a > 0 : décroissante puis croissante",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"m": "2",
+				"b": "3",
+				"c": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a < 0 : croissante puis décroissante",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"m": "2",
+				"b": "3",
+				"c": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a < 0, erreur",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"m": "2",
+				"b": "3",
+				"c": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2(3 − x)(x + 1) : vers le bas",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"m": "2",
+				"u": "3",
+				"v": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vers le haut (k > 0 lu comme a)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"m": "2",
+				"u": "3",
+				"v": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2(3 − x)(x + 1) : vers le haut",
+			"variationIndex": 2,
+			"variables": {
+				"s": "-1",
+				"m": "2",
+				"u": "3",
+				"v": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

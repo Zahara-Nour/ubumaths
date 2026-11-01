@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour).
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour).
 
 ## À quoi ça sert
 
@@ -197,6 +197,7 @@ fermé »). Test : `__tests__/blocs-speciaux-listes.test.ts`.
 | `figure`, `figure-a-completer`, `figure-de-travail`                                                                       | `figure`                    | `figure-parser.ts`                                            | `FigureBlock.svelte`                                                                                              | `figure-typst.ts` (via registre)             |
 | `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`                                        | `StatChart.svelte`                                                                                                | `stat-chart-typst.ts`                        |
 | `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                                                | `QrBlock.svelte`                                                                                                  | `qr-typst.ts`                                |
+| `scratch`                                                                                                                 | `scratch`                   | `scratch-parser.ts`                                           | `ScratchBlock.svelte` (dessin : `utils/scratch-render.ts`)                                                        | `scratch-typst.ts` (texte)                   |
 | `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                                           | `Horloge.svelte`                                                                                                  | `horloge-typst.ts`                           |
 | `operation`                                                                                                               | `operation`                 | `operation-parser.ts`                                         | `Operation.svelte`                                                                                                | `operation-typst.ts`                         |
 | `collection`                                                                                                              | `collection`                | `collection-parser.ts`                                        | `Collection.svelte`                                                                                               | `collection-typst.ts`                        |
@@ -496,6 +497,33 @@ l'élève et au PDF. La matrice est calculée au rendu, pas au parseur (`uqr` ho
 PDF, le SVG du QR stylé ([QR codes](qr-codes.md#le-style-imposé)) est posé en image vectorielle
 (`#image(bytes(…), format: "svg")`), sans fichier ni paquet réseau ; compilation réelle testée (`qr-typst-compilation.test.ts`). Dans l'éditeur riche :
 bloc de code `qr`, bouton « Insérer un QR code ». Chat élève (rendu restreint) : jamais rendu.
+
+**Programme Scratch** (chantier `bloc-scratch`, palier 1, 2026-11-01) — `src/lib/ubumark/__tests__/scratch/` :
+
+```scratch
+quand le drapeau vert pressé
+mettre [a v] à (5)
+répéter jusqu'à ce que <(a) > [20]>
+mettre [a v] à ((a) * (2))
+fin
+dire (a)
+```
+
+Le corps du bloc **est** le programme, dans la syntaxe des `scratchblocks` (paquet `scratchblocks`,
+MIT, version épinglée), **en français seulement** : une instruction par ligne, `fin` ferme une
+boucle ou un `si`, une ligne vide sépare deux scripts (un `définir …` à côté du script qui
+l'appelle). Le parseur est léger : il garde le texte tel quel (`source`), signale seulement le bloc
+vide et le bloc non fermé ; fermé par le premier `` seul (texte libre : pas de règle Q66), une
+autre clôture rencontrée avant le rend non fermé (Q63). La vérification des instructions
+(`utils/scratch-check.ts` : instruction non reconnue, anglais compris, « fin » en trop, « sinon »
+sans « si », messages situés par ligne) et le dessin (`utils/scratch-render.ts`, style Scratch 3,
+échelle 0,675) sont chargés **à la demande, dans le navigateur seulement** : le dessin mesure le
+texte avec un canvas. Avant, et au rendu serveur : le programme en texte monospace. Erreur : messages
+pour le prof, « Programme indisponible » pour l'élève. Nom accessible : le programme en une ligne.
+Le dessin se réduit à la largeur de sa colonne (case choix comprise). Au PDF (palier 1) : le
+programme en texte brut ; le dessin en image SVG est l'objet du palier 2. `check:ubumark` vérifie
+les instructions, choix d'un ```` ``choix ```` compris. Éditeur riche : bloc de code `scratch`
+(aller-retour). Chat élève (rendu restreint) : jamais rendu. Aide : `/aide-ecriture/blocs/scratch`.
 
 **Horloge à aiguilles** (chantier [horloge](../wip/horloge-progress.md)) — `src/lib/ubumark/__tests__/horloge/` :
 
@@ -1091,6 +1119,17 @@ Points à retenir :
     `\np` à l'import LaTeX (`importers/latex/converters/`).
 11. **`builders/` ne calcule rien** : le tableau affiché vient de la grille de `mathAST` qui écrit
     aussi la conclusion ; recalculer les ferait diverger.
+12. **Valeur masquée `?` d'un bloc à geste** (chantier [fuite-enonce](../wip/fuite-enonce-progress.md)) :
+    l'énoncé envoyé pendant une évaluation notée remplace la valeur à trouver par `?`
+    (`placer: A=? ; B=?` en ` ```line ` / ` ```courbe `, `placer: ?` en ` ```horloge `,
+    `construire: ?`, `colorier: ?`, `Natation = ?` pour une barre de `placer:`). Les parseurs la
+    lisent comme une valeur de remplacement (`utils/masked-value.ts`) : mêmes noms, même nombre de
+    points ou de barres, même figure, aucune vérification de la valeur ; elle ne sert qu'au dessin
+    de la solution, jamais montré avant la correction du serveur. Écrite par un auteur, elle est
+    refusée par le générateur (`buildAnswerOf`). Monnaie à construire sans `réserve:` : l'énoncé masqué
+    écrit la réserve par défaut de la somme (`defaultReserve`, pièces de centimes comprises si elle en a),
+    sinon l'élève ne pourrait plus poser `3,45` (`maskMonnaie`, `masked-statement.ts`). Gardes : `questions/__tests__/masked-statement.test.ts`,
+    `FillBlanksInput-enonce-masque.svelte.test.ts` (même HTML avec l'instance complète).
 
 ## Comment étendre — nouveau bloc spécial
 

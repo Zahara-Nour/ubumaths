@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 1-dérivation (§ 18)._
+_Mis à jour le 2026-11-01, après #2119 (fichiers du lot 2-variations, § 19)._
 
-- **État** : lots 0 publiés, D3 joué, **lot 1-dérivation publié** (10 modèles, points 259, 268, 397, 388, 262, 390, 273, 263, 267, 269). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
-- **Prochaine action** : D7 (§ 5), lot neuf « variations et courbes » : points du § 3.6 (280, 399, 400, 282, 285, 286, 403), phase 0 à soumettre à David.
-- **En attente de David** : rien.
-- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** (l'index d'unicité ignore `grades`) ; `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères.
-- **Worktree / branche** : aucun.
+- **État** : lots 0 et lot 1-dérivation publiés ; **lot 2-variations écrit** (7 modèles, points 399, 280, 400, 282, 285, 286, 403 ; D25), simulation verte, essai en base locale fait, fichiers mergés (#2119). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-variations --publier` (dépôt principal) → migration de rangement (nœuds + tags) → page à cocher → `publier-lot`.
+- **En attente de David** : le `create-questions --publier` après le merge.
+- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** (l'index d'unicité ignore `grades`) ; `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères ; deux sous-catégories neuves (Généralités › Parité, Dérivation › Position relative) : nœuds des points = parité, position relative de deux courbes.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-variations`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -871,3 +871,41 @@ niveau 7, `draft`, `updated_at` inchangé, trigger actif, version 20261101190000
 
 **Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 10 / 10 publiés, statuts relus en base (MCP).
 **Lot 1-dérivation clos.**
+
+## 19. Lot 2-variations : variations et courbes (D7)
+
+_Relevé prod du 2026-11-01 (MCP) : les 7 points du § 3.6 toujours sans modèle ; voisins sans doublon : 80489c90
+« Lire le signe de a et de Δ sur une parabole » (sens inverse du 403), parité trigonométrique de T_SPE (18855802,
+4c4d43dc, gabarit de la case choix). Nœuds des points : Généralités › parité (399, 280), Dérivation › variations
+et extremums (400, 282, 285), Dérivation › position relative de deux courbes (286), Second degré › parabole (403).
+Niveaux pris (tous niveaux scolaires) : Dérivation › Variations 1 à 5, Polynôme du second degré › Variations 1._
+
+**Phase 0 (D25, David, 2026-11-01, « go » sur les recos)** : un modèle par point :
+
+| #   | Point | Modèle                                    | Catégorie (Fonctions › …), niveau         | Variations                                                                           | Réponse                    |
+| --- | ----- | ----------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------- |
+| 1   | 399   | Lire la parité sur une courbe             | Généralités › Parité (neuve), 1           | paire ; impaire ; axe x = h ; centre (0 ; c) ; f(−a) par la parité                   | case choix fixe ; case     |
+| 2   | 280   | Étudier la parité d'une fonction          | Généralités › Parité, 2                   | x⁴ − kx² + c ; x³ + kx ; x² + kx ; x/(x² + k) ; domaine non symétrique               | case f(−x) + case choix    |
+| 3   | 400   | Fonction de dérivée nulle                 | Dérivation › Variations, 6                | f(p) connaissant f(m) ; (x + a)² − x² − 2ax ; équation de la courbe                  | case ; 2 cases             |
+| 4   | 282   | Extrémum et tangente horizontale          | Dérivation › Variations, 7                | tangente en un extrémum ; k de x³ + kx ; abscisses (f′ = 6(x − r)(x − t)) ; (x − a)³ | 2 cases ; case ; Oui / Non |
+| 5   | 285   | Établir une inégalité par les variations  | Dérivation › Variations, 8                | x³ + 2a³ ≥ 3a²x ; eˣ ≥ 1 + x ; x + a²/x ≥ 2a                                         | 2 cases (x₀, minimum)      |
+| 6   | 286   | Position relative de deux courbes         | Dérivation › Position relative (neuve), 1 | x² et droite ; deux paraboles (f − g affine) ; x³ et a²x sur [0 ; +∞[                | case intervalle            |
+| 7   | 403   | Allure de la parabole selon le signe de a | Polynôme du second degré › Variations, 2  | 4 courbes (case choix) ; sens de variation ; k(u − x)(x + v)                         | case choix                 |
+
+Q1 (sous-catégories neuves) : oui. Q2 (case f(−x) avant le choix) : oui. Q3 (domaine non symétrique) : gardé.
+Question d'accès : personne ne lit rien de neuf (modèles neufs en brouillon ; la migration ne pose que nœud et tags).
+284 (optimisation) et 288 (Newton) hors lot (D4).
+
+**Écriture** : `docs/wip/questions/lot-1spe-variations.py` → `scripts/questions/1spe-variations/`. Simulation
+`create-questions` : 7 / 7 importables (61 specs) ; `sonde-courbes` : 0 problème (elle ne voit pas les courbes
+dans une case choix : celles du 07 vérifiées à l'aperçu) ; aperçus relus (scratchpad). Essai en base **locale** :
+07 joué (courbe juste après mélange : « Juste », corrigé affiché), tableaux du 05 rendus.
+
+**Pièges du lot** : intervalle en réponse = `blankDefaults.answerKind: intervalles` (sinon `bad_form`) ;
+(−x)/(x² + k) = `unoptimal_form` avec `constraintViolations: ['signs']` (la spec doit nommer la contrainte) ;
+tableau de variations à borne ouverte : `domain: ]0, [a, [+inf[` (le parseur ne coupe une virgule qu'avant un
+crochet : `]0, a, +inf[` donne un seul point, vu à l'aperçu) ; `pnpm exec svelte-kit sync` dans un worktree neuf
+avant `tsx` (sinon `$lib` introuvable).
+
+PR #2119 mergée (CI verte après deux relances du shard navigateur 1/2 : « Browser connection was closed », sans
+lien ; une première CI rouge venait d'une collision d'horodatage de migrations d'autres sessions, réglée sur `main`).

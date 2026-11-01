@@ -1,0 +1,192 @@
+{
+	"id": "dfb727cd-c55b-439c-8738-0e20484369c5",
+	"title": "Nombre de parties d'un ensemble : 2 puissance n",
+	"description": "Parties d'un ensemble à n éléments, garnitures (avec ou sans partie vide) (pièges : 2n, n², oubli ou ajout à tort de la partie vide)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Parties d'un ensemble",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n}}"
+				}
+			],
+			"statement": "Un ensemble $E$ contient ${{n}}$ éléments.\n\nCombien de parties (sous-ensembles) possède-t-il, en comptant l'ensemble vide et $E$ lui-même ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Former une partie, c'est décider pour chacun des ${{n}}$ éléments s'il est dedans ou non : $2$ choix, ${{n}}$ fois.",
+					"$2^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:2^n}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n}}"
+				}
+			],
+			"statement": "Une pizzeria propose ${{n}}$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) ; il peut aussi n'en prendre **aucune** (pizza nature).\n\nCombien de pizzas différentes peut-il commander ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..10"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une pizza correspond à une partie de l'ensemble des ${{n}}$ garnitures, la partie vide (pizza nature) comprise.",
+					"$2^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:2^n}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n-1}}"
+				}
+			],
+			"statement": "Une pizzeria propose ${{n}}$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) et en prend **au moins une**.\n\nCombien de pizzas différentes peut-il commander ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..10"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une pizza correspond à une partie **non vide** de l'ensemble des ${{n}}$ garnitures.",
+					"Il y a $2^{ {{n}} }$ parties, dont une seule vide : $2^{ {{n}} }-1=\\textcolor{{{color:primary.0}}}{{{eval:2^n-1}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["32"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "5"
+			},
+			"description": "v0 : n = 5 → 32",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2^5"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"n": "5"
+			},
+			"description": "v0 : écrit 2^5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5"
+			},
+			"description": "v0 : 2n = 10",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5"
+			},
+			"description": "v0 : n² = 25",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["31"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5"
+			},
+			"description": "v0 : 2⁵ − 1 (partie vide oubliée)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["64"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v1 : n = 6 → 64",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["63"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v1 : 63 (pizza nature oubliée)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["720"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v1 : 6! = 720",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["63"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v2 : n = 6 → 63",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["64"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v2 : 64 (pizza nature comptée)",
+			"variationIndex": 2
+		}
+	]
+}

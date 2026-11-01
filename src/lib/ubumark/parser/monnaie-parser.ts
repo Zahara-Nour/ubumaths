@@ -39,6 +39,7 @@
 
 import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
+import { isMaskedValue } from '../utils/masked-value';
 import { DEFAULT_RESERVE, fewestObjects } from '../utils/monnaie-construire';
 import {
 	amountWords,
@@ -341,6 +342,16 @@ function parseBuild(value: string): number {
 	return fromCents(cents);
 }
 
+/**
+ * Réserve d'un `construire:` sans `réserve:` : 1 à 50 €, plus les six pièces de
+ * centimes si la somme en a (décision 5). Somme masquée (évaluation notée) : celle
+ * d'aujourd'hui, l'énoncé masqué écrit sa réserve s'il le faut (`masked-statement.ts`).
+ */
+export function defaultReserve(build: number | undefined): number[] {
+	const withCents = build !== undefined && toCents(build) % 100 !== 0;
+	return withCents ? [...DEFAULT_RESERVE, ...MONNAIE_CENT_COINS] : [...DEFAULT_RESERVE];
+}
+
 /** `montant:` (en euros) → les coupures « le moins d'objets » (méthode gloutonne, exacte pour l'euro) */
 export function decomposeAmount(amount: number): MonnaieSet {
 	const notes: number[] = [];
@@ -399,6 +410,7 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 	let layout: MonnaieLayout = 'rangé';
 	let sizeCm: number | null = null;
 	let build: number | undefined;
+	let masked = false;
 	let reserve: number[] | undefined;
 	let caseIndex: number | undefined;
 	const seen = new Map<Key, number>();
@@ -451,7 +463,9 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 					sizeCm = parseSize(value);
 					break;
 				case 'construire':
-					build = parseBuild(value);
+					// Énoncé d'une évaluation notée : remplacée par la plus petite coupure (`masked-value.ts`)
+					masked = isMaskedValue(value);
+					build = masked ? 0 : parseBuild(value);
 					break;
 				case 'réserve':
 					reserve = parseReserve(value);
@@ -471,12 +485,9 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 
 	// Bloc à construire : plan vide, aucun ensemble dessiné (lues dans le forEach :
 	// TS les croit encore à leur valeur initiale)
-	const readBuild = build as number | undefined;
-	// Sans `réserve:`, une somme à centimes reçoit aussi les six pièces de centimes (décision 5)
-	const withCents = readBuild !== undefined && toCents(readBuild) % 100 !== 0;
-	const readReserve =
-		(reserve as number[] | undefined) ??
-		(withCents ? [...DEFAULT_RESERVE, ...MONNAIE_CENT_COINS] : [...DEFAULT_RESERVE]);
+	const writtenBuild = masked ? undefined : (build as number | undefined);
+	const readReserve = (reserve as number[] | undefined) ?? defaultReserve(writtenBuild);
+	const readBuild = masked ? Math.min(...readReserve) : writtenBuild;
 	const readCase = caseIndex as number | undefined;
 	const buildLine = seen.get('construire');
 	if (buildLine !== undefined) {
@@ -484,7 +495,7 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 			const line = seen.get(key);
 			if (line !== undefined) fail(line, `${key} : sans objet avec construire:${why}`);
 		}
-		if (errors.length === 0 && readBuild !== undefined) {
+		if (errors.length === 0 && readBuild !== undefined && !masked) {
 			const objects = fewestObjects(readBuild, readReserve);
 			const listed = `(${denominationList(readReserve)})`;
 			const sum = amountWords(toCents(readBuild));

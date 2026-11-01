@@ -205,6 +205,9 @@ export type { FigureNode, FigureHeader, FigureIssue, FigureSize, FigureWindow } 
 
 export type { QrNode, QrIssue } from './qr';
 
+// PROGRAMME SCRATCH (bloc ```scratch)
+export type { ScratchNode, ScratchIssue } from './scratch';
+
 // ============================================================================
 // HORLOGE (bloc ```horloge)
 // ============================================================================

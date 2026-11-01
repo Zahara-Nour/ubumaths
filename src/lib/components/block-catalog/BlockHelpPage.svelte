@@ -38,11 +38,18 @@
 	<p class="mb-8 text-muted-foreground">{entry.intro}</p>
 
 	<section class="mb-10">
-		<h2 class="mb-4 text-2xl font-semibold">Réglages</h2>
-		<p class="mb-4 text-muted-foreground">
-			Une ligne par réglage, écrite <code>clé: valeur</code>, entre la ligne d’ouverture et les
-			trois accents graves de fin.
-		</p>
+		{#if entry.settingsKind === 'instructions'}
+			<h2 class="mb-4 text-2xl font-semibold">Instructions</h2>
+			<p class="mb-4 text-muted-foreground">
+				Une instruction par ligne, entre la ligne d’ouverture et les trois accents graves de fin.
+			</p>
+		{:else}
+			<h2 class="mb-4 text-2xl font-semibold">Réglages</h2>
+			<p class="mb-4 text-muted-foreground">
+				Une ligne par réglage, écrite <code>clé: valeur</code>, entre la ligne d’ouverture et les
+				trois accents graves de fin.
+			</p>
+		{/if}
 		{#each entry.settingGroups as group, index (index)}
 			{#if group.title}
 				<h3 class="mt-6 mb-2 text-lg font-semibold">{group.title}</h3>
@@ -51,24 +58,37 @@
 				<Table.Root>
 					<Table.Header>
 						<Table.Row>
-							<Table.Head>Clé</Table.Head>
-							<Table.Head>Valeurs</Table.Head>
-							<Table.Head>Par défaut</Table.Head>
-							<Table.Head>Effet</Table.Head>
+							{#if entry.settingsKind === 'instructions'}
+								<Table.Head>Instruction</Table.Head>
+								<Table.Head>Ce qu’on y écrit</Table.Head>
+								<Table.Head>Effet</Table.Head>
+							{:else}
+								<Table.Head>Clé</Table.Head>
+								<Table.Head>Valeurs</Table.Head>
+								<Table.Head>Par défaut</Table.Head>
+								<Table.Head>Effet</Table.Head>
+							{/if}
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
 						{#each group.settings as setting (setting.key)}
 							<Table.Row>
-								<Table.Cell class="align-top"><code>{setting.key}:</code></Table.Cell>
-								<Table.Cell class="align-top whitespace-normal">{setting.values}</Table.Cell>
-								<Table.Cell class="align-top whitespace-normal">
-									{#if setting.defaultValue === null}
-										<strong>obligatoire</strong>
-									{:else}
-										{setting.defaultValue}
-									{/if}
-								</Table.Cell>
+								{#if entry.settingsKind === 'instructions'}
+									<Table.Cell class="align-top whitespace-normal"
+										><code>{setting.key}</code></Table.Cell
+									>
+									<Table.Cell class="align-top whitespace-normal">{setting.values}</Table.Cell>
+								{:else}
+									<Table.Cell class="align-top"><code>{setting.key}:</code></Table.Cell>
+									<Table.Cell class="align-top whitespace-normal">{setting.values}</Table.Cell>
+									<Table.Cell class="align-top whitespace-normal">
+										{#if setting.defaultValue === null}
+											<strong>obligatoire</strong>
+										{:else}
+											{setting.defaultValue}
+										{/if}
+									</Table.Cell>
+								{/if}
 								<Table.Cell class="align-top whitespace-normal">{setting.description}</Table.Cell>
 							</Table.Row>
 						{/each}
