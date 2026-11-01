@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01.
 
 ## À quoi ça sert
 
@@ -325,6 +325,35 @@ y: -8 ; 12
 f(x) = x^2 - 2
 ```
 ````
+
+**Titres d'axes** — `axes: x = Durée (min) ; y = Température (°C)` (un axe ou les deux, 60 caractères
+au plus, `spec.axisTitles`), au bout de chaque axe, à l'écran (`Courbe.svelte`) et au PDF
+(`courbe-typst.ts`, chaîne Typst entre guillemets : un `#` ou un `[` ne casse pas la fiche). Refusé :
+titre vide, axe nommé deux fois, autre axe que x ou y.
+
+**Repère à placer** (chantier [points-repere](../wip/points-repere-progress.md), CM1-136, 5-128…) —
+`src/lib/ubumark/__tests__/courbe/courbe-placer.test.ts`, `CourbePlacer.svelte.test.ts` :
+`placer: A=(2 ; 3) ; B=(-1 ; 2)` dans un ` ```courbe ` (nœud : `spec.placer`, liste de `CourbeTarget`
+`name`, `x`, `y` ; `caseIndex` lu de `case: N`, posée par le générateur ; `placer: (2 ; 3)` = un point
+au nom vide). Virgule décimale permise dans `placer:` et `grille:` (pas dans `x:` / `y:`). Refusé :
+plus de 6 points, nom autre qu'une lettre majuscule, nom en double, point sans nom dès qu'il y en a
+deux, nom déjà pris par `points:`, cible hors de la fenêtre ou **hors d'un nœud de la grille** (pas de
+`grille:`, sinon le pas automatique `courbeGridSteps`, le même que la grille dessinée) ; `case:` sans
+`placer:`. Courbes, `points:` donnés et asymptotes permis à côté. `Courbe.svelte` passe la main à
+`CourbePlacer.svelte`, qui dessine le nœud **sans** `placer` (la cible n'entre jamais dans le DOM) et
+les points de l'élève par la prop `marks` : toucher le repère pose le point actif sur le nœud le plus
+proche (`nearestNode`), il se glisse ; toucher un point posé (moins de 18 px) le reprend ; une
+étiquette-bouton par point (`aria-pressed`, A active au départ, poser active le suivant non placé) ;
+clavier : flèches = un cran (`moveByStep`), Début = l'origine, sinon le nœud bas-gauche (`startNode`) ;
+zone `role="slider"`, `aria-valuetext` « point A en (2 ; 3) » (position de l'élève). Pas de pointillés
+de lecture vers les axes (décision Q6). Calcul pur `utils/courbe-placer.ts` : réponse `pointAnswer`
+(`'1.5;-0.5'`), lecture `readPointAnswer`, juge `isPlacedPointCorrect` (nombres comparés),
+`pointText` (`(1,5 ; -0,5)`), phrases `placedPointMistake`. Dans une question : une phrase par point
+faux (« Tu as placé A en (3 ; 1). », « Tu n'as pas placé C. », et quand x et y sont échangés « … : tu
+as échangé l'abscisse et l'ordonnée. ») ; cadre rouge dès qu'un point est faux, vert si tous sont
+justes ; le repère juste à côté, points nommés en vert. Hors question : le même geste, rien de jugé.
+PDF : le repère sans les points (l'enfant fait ses croix) ; option `solved` de `courbe-typst.ts` qui
+dessine les points attendus, qu'aucun corrigé imprimé n'appelle encore.
 
 **Figure** (en-tête, `---`, puis script du DSL de `geometry-core` — doc :
 [dsl-builtins](geometrie/dsl-builtins.md)) — `src/lib/ubumark/__tests__/figure/figure-markdown-to-typst.test.ts` :

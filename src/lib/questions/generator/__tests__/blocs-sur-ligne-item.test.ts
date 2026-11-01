@@ -27,6 +27,7 @@ describe('bloc à case ouvert sur la ligne d’un item : refusé, aucune case', 
 		['partage', '```partage', ['colorier: 1/2']],
 		['cubes', '```cubes', ['hauteurs: 1', 'dessiner: face']],
 		['patron', '```patron', ['solide: cube', 'completer: 5']],
+		['courbe', '```courbe', ['x: -5 ; 5', 'y: -4 ; 4', 'placer: A=(2 ; 3)']],
 		['operation', '```operation', ['calcul: 45 + 37']],
 		[
 			'figure-a-completer',

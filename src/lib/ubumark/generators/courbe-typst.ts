@@ -27,6 +27,11 @@ import { buildCourbeScene, type ScenePoint } from '../utils/courbe-scene';
 export interface CourbeTypstOptions {
 	/** Langue du document : séparateur décimal des graduations */
 	language?: string;
+	/**
+	 * Corrigé : les points à placer (`placer:`) sont dessinés. Sans cette option
+	 * (énoncé), le repère reste vide : l'élève fait ses croix.
+	 */
+	solved?: boolean;
 }
 
 /** Largeur du cadre en cm ; une colonne de fiche fait ~8,7 cm. Partagée avec les diagrammes statistiques. */
@@ -47,6 +52,11 @@ const UNAVAILABLE =
 // ============================================================================
 // AIDE
 // ============================================================================
+
+/** Texte libre (titre d'axe) en chaîne Typst : jamais interprété comme du balisage */
+function typstString(text: string): string {
+	return `"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
 
 function fmt(n: number): string {
 	const s = n.toFixed(3).replace(/\.?0+$/, '');
@@ -119,6 +129,23 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 	lines.push(
 		`  line((${ay}, 0), (${ay}, ${fmt(H + 0.35)}), stroke: 0.6pt, mark: (end: ">", fill: black))`
 	);
+
+	// Titres des axes (`axes:`) : au bout de chaque axe, du côté des flèches
+	const titles = node.spec.axisTitles;
+	if (titles?.x) {
+		lines.push('  // titre axe x');
+		lines.push(
+			`  content((${fmt(W)}, ${fmt(Number(ax) + 0.08)}), anchor: "south-east", text(size: 7.5pt, ${typstString(titles.x)}))`
+		);
+	}
+	if (titles?.y) {
+		lines.push('  // titre axe y');
+		// Axe y dans la moitié droite (fenêtre toute négative) : titre à sa gauche, sinon il sort du cadre
+		const right = Number(ay) > W / 2;
+		lines.push(
+			`  content((${fmt(Number(ay) + (right ? -0.1 : 0.1))}, ${fmt(H + 0.3)}), anchor: "${right ? 'south-east' : 'south-west'}", text(size: 7.5pt, ${typstString(titles.y)}))`
+		);
+	}
 
 	// Graduations
 	lines.push('  // graduations');
@@ -241,6 +268,20 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 		lines.push(
 			`  content((${fmt(Number(X(p.x)) + 0.08)}, ${fmt(Number(Y(p.y)) + 0.08)}), anchor: "south-west", text(size: 8pt, style: "italic")[${p.name}])`
 		);
+	}
+
+	// Corrigé : les points attendus (jamais dans l'énoncé)
+	if (options.solved) {
+		for (const t of node.spec.placer ?? []) {
+			const color = TYPST_COLORS.vert;
+			lines.push(`  // solution ${t.name}`);
+			lines.push(`  circle(${P(t)}, radius: 0.06, fill: ${color}, stroke: none)`);
+			if (t.name !== '') {
+				lines.push(
+					`  content((${fmt(Number(X(t.x)) + 0.08)}, ${fmt(Number(Y(t.y)) + 0.08)}), anchor: "south-west", text(size: 8pt, style: "italic", fill: ${color})[${t.name}])`
+				);
+			}
+		}
 	}
 
 	// Noms des courbes

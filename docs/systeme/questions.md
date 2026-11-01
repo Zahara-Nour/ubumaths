@@ -31,7 +31,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -309,25 +309,30 @@ question dont les seules cases sont des figures de travail est refusée
 diagramme en barres à construire (```barres, `placer: Natation ; Danse`), au premier
 niveau, sinon échec (`buildBlanks`, genre et texte du bloc), compte aussi pour
 **une** case, `case: N` posé dans le bloc ; une droite à plusieurs points (`placer: A=3 ; B=7`) compte
-une case par point, N, N + 1…, seul N posé (`buildBlanks[…].point`, rang du point) ; un diagramme en
+une case par point, N, N + 1…, seul N posé (`buildBlanks[…].point`, rang du point) ; un repère à placer
+(```courbe, `placer: A=(2 ; 3) ; B=(-1 ; 2)`) de même, une case par point ; un diagramme en
 barres, une case par barre à construire, dans l'ordre des données (`point` : rang de la barre),
 précédées d'une case pour l'échelle avec `axe: à choisir` (`barsCaseCount`) ;
 nombre de cases : `buildCaseCount`. Sa réponse attendue
 est la valeur `N` du bloc (droite : la graduation du point, écrite par `placerAnswer` ; horloge : l'heure
 sur le cadran de 12, `'2 h 25'` pour `placer: 14 h 25`, écrite par `timeText` ; barres : l'effectif de
-la barre, `'8'`, et pour la case de l'échelle la plus petite où tout rentre, `'5'` (`adaptedScale`) ; lecture commune
+la barre, `'8'`, et pour la case de l'échelle la plus petite où tout rentre, `'5'` (`adaptedScale`) ;
+repère : les coordonnées du point en point décimal, `'1.5;-0.5'`, écrites par `pointAnswer` ; lecture commune
 `generator/build-answer.ts`, `buildAnswerOf(kind, source, point)`), jamais
 du modèle (`blanks[]` peut l'omettre, une réponse écrite est refusée, `case:` écrite aussi, bloc en
 erreur, non fermé ou avec `options.orderIndependent` → échec). Le bloc est délimité comme le parseur
-(`findBuildCollections`, `findBuildMonnaies`, `findLinesToPlace`, `findHorlogesToPlace`, `findBarsToPlace` : une ligne vide suivie d'une clé reste dans un bloc
+(`findBuildCollections`, `findBuildMonnaies`, `findLinesToPlace`, `findHorlogesToPlace`, `findBarsToPlace`, `findCourbesToPlace` : une ligne vide suivie d'une clé reste dans un bloc
 fermé) ; l'énoncé numéroté est relu par `parseMarkdown` : une case dont le bloc n'est pas lu à l'écran
-(fence de fin en retrait, bloc montré dans un bloc de code) → échec. La case est `type: 'math'`, `construire: 'collection' | 'monnaie' | 'line' | 'horloge' | 'barres' | 'partage'` (`BuildKind` ; messages
-au prof par `buildKindName` : « droite graduée », « horloge », « diagramme en barres »), jugée comme une case ordinaire : l'élève répond
+(fence de fin en retrait, bloc montré dans un bloc de code) → échec. La case est `type: 'math'`, `construire: 'collection' | 'monnaie' | 'line' | 'horloge' | 'barres' | 'partage' | 'courbe'` (`BuildKind` ; messages
+au prof par `buildKindName` : « droite graduée », « horloge », « diagramme en barres », « repère »), jugée comme une case ordinaire : l'élève répond
 par la valeur qu'il a posée (`'34'`, `'35'` €, graduation `'7'`, hauteur de barre `'8'`, `''` plan vide,
 aucun point ou barre pas construite).
 Horloge à placer : case `type: 'text'` (une heure n'est pas un calcul), réponse de l'élève = les crans
 des deux aiguilles (`'47 25'`, `-` pour une aiguille pas posée), juge à part (`isPlacedTimeCorrect`,
 `utils/horloge-placer.ts`, dans `validateSingleBlank` et `validateBlankValue`).
+Repère à placer : case `type: 'text'`, réponse de l'élève `x;y` (`''` point pas posé), juge à part aux
+deux mêmes endroits (`isPlacedPointCorrect`, `utils/courbe-placer.ts` : les nombres comparés, `2.0;3`
+vaut `2;3`).
 Étiquettes à ranger (```ranger, chantier `reponses-a-placer` § 21, 22 ; `ranger-parser.ts`,
 `findRangersToPlace`) : le prof écrit les étiquettes dans le **bon** ordre ; une case par place
 (`buildCaseCount` = nombre d'étiquettes, `point` = rang de la place), `type: 'text'`,
@@ -436,6 +441,7 @@ Natures de réponse :
 | Collection à construire     | bloc ```collection (`construire: N`)         | case ordinaire : la valeur posée, composition libre (`collection-construire.ts`)                                                                                                    |
 | Monnaie à construire        | bloc ```monnaie (`construire: N`)            | case ordinaire : la somme posée, coupures libres dans la réserve (`monnaie-construire.ts`)                                                                                          |
 | Droite à placer             | bloc ```line (`placer: N`)                   | case ordinaire : la graduation du point de l'élève (`number-line-placer.ts`), exacte, sans tolérance ; une case par point                                                           |
+| Repère à placer             | bloc ```courbe (`placer: A=(2 ; 3)`)         | `isPlacedPointCorrect` (`courbe-placer.ts`) : les deux coordonnées exactes, aimant aux nœuds de la grille ; une case par point                                                      |
 | Barres à construire         | bloc ```barres (`placer: Danse`, `axe:`)     | case ordinaire : la hauteur posée (`barres-placer.ts`), aimant à l'unité ; une case par barre                                                                                       |
 | Étiquettes à ranger         | bloc ```ranger (`- …`, `signe: <`)           | égalité stricte : la position affichée de l'étiquette posée ; une case par place                                                                                                    |
 | Horloge à placer            | bloc ```horloge (`placer: 9 h 25`)           | `isPlacedTimeCorrect` (`horloge-placer.ts`) : grande aiguille sur la minute ; petite pile sur l'heure à minutes = 0, entre deux heures sinon, ou sur le cran de sa vraie place      |
@@ -616,7 +622,9 @@ de l'élève (et son échelle écrite, « Une graduation vaut 5. »), ou `StatCh
 barres justes (`solvedSpec` : à la bonne échelle quand elle était à choisir) ; étiquettes à ranger, ``ranger, de même : UNE
 ligne `build`, `answers` par place, et `expected` (la bonne position de chaque place, que le bloc ne dit
 pas) ; `RangerPlacer` verrouillé avec les places de l'élève, fausses marquées, et le rangement juste
-dessous) : une ligne `build` (genre, texte
+dessous ; repère à placer, ``courbe `placer:`, de même : UN repère, `answers` par point, « Tu n'as rien
+placé. » quand aucun n'est posé ; `CourbePlacer` verrouillé avec les points de l'élève et ses phrases
+`placedPointMistake`, ou le repère avec les points justes, nommés) : une ligne `build` (genre, texte
 du bloc sans `case:`, valeur posée), sur le même patron que la figure. `BuildAnswer.svelte` dessine le
 plan **verrouillé, sans réserve** : la construction de l'élève (cadre vert si juste ; faux : « Tu as
 posé 32 €. » ou « Ta collection vaut 32. » et une construction juste à côté), ou la construction juste
