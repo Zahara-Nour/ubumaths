@@ -2,7 +2,7 @@
  * Chantier « questions-cm1 », lot 4b : nœud et tag de 6 modèles neufs (Supabase local requis)
  * ======================================================================================
  *
- * Migration `20261101224100_questions_cm1_lot4b_rangement_tags` : les 6 brouillons de
+ * Migration `20261101224701_questions_cm1_lot4b_rangement_tags` : les 6 brouillons de
  * calcul posé créés le 2026-11-01 par scripts/create-questions.ts (sans nœud ni tag) vont sur une
  * sous-notion (celle de leur point, ou une sous-notion de la notion où le point est posé : 050,
  * 165) et reçoivent ce point, un seul (ADR 0020).
@@ -39,7 +39,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101224100_questions_cm1_lot4b_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101224701_questions_cm1_lot4b_rangement_tags.sql';
 const LONGUEURS = 'Grandeurs et mesures > Longueurs';
 /** Le lot : identifiant créé en prod le 2026-11-01, nœud et points attendus. */
 const LOT: { id: string; noeud: string; code: string }[] = [
