@@ -5,19 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR de contenu 06-07 en ```ranger ouverte._
+_Mis à jour le 2026-11-01, après #2078._
 
 - **État** : lots 1 à 6b publiés ; lot 7 « Droite graduée et ordre » mergé (#2057), pas en prod. Reprise de 06 et 07
-  en ```ranger : migration de contenu `20261101121300_questions_6_ranger_contenu` (§ 17), PR ouverte.
-- **Prochaine action** : CI verte + `security-auditor` → merge → `db:migrate` depuis le dépôt principal → MCP
-  (contenu « après », statut, tags). Puis `deploy:prod` (David) → David lance `create-questions --dir
-scripts/questions/6-droite-ordre --publier` → relever les `id` → migration nœud + tag → page à cocher → publication.
-- **En attente de David** : `deploy:prod` (refusé par le classifieur du mode auto le 2026-11-01 : à lancer avec
-  `! pnpm deploy:prod`) ; verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
+  en ```ranger mergée (#2078, § 17) : migration `20261101121300_questions_6_ranger_contenu` PAS encore jouée.
+- **Prochaine action** : réponse de David à la question d'accès → `db:migrate` depuis le dépôt principal → MCP
+  (contenu « après » : md5 a8867274…, 1758ed86… ; statut, tags). Puis `deploy:prod` (David) → David lance
+  `create-questions --dir scripts/questions/6-droite-ordre --publier` → relever les `id` → migration nœud + tag →
+  page à cocher → publication.
+- **En attente de David** : question d'accès de #2078 (« personne ne lit rien de plus » : à confirmer) ; `deploy:prod`
+  (refusé par le classifieur du mode auto : `! pnpm deploy:prod`) ; verdicts de 02, 03, 04 sur `/dev/modeles`.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
-  `e`. `releve-prod.ts` : `multiple_answers` retirée (colonne supprimée, #2009). `Doc-inchangée:` va dans un message
-  de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
-- **Worktree / branche** : `../ubumaths-wt-questions-6` · `content/questions-6-ranger-06-07`.
+  `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
+- **Worktree / branche** : aucun (retiré après #2078).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1121,3 +1121,6 @@ visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migratio
 - Test `questions-6-ranger-contenu` (`decrireLotModifier`, taille 2) : rouge contre une migration vide (6 échecs),
   12 verts avec (16 sautés : propres aux neufs). `question:specs --file` : 150/150 tirages, « importable », 06 et 07.
 - Question d'accès : personne ne gagne d'accès ; aucun exercice perdu (mêmes variations, autre geste de réponse).
+- `security-auditor` : aucun bloquant (même patron que les scissions, md5 « avant » = prod, rollback juste) ; un
+  Faible corrigé (en-tête du test copié des scissions). CI verte, #2078 mergée. `db:migrate` suspendu : la question
+  d'accès de cette migration n'a pas été posée en phase 0 (la reprise y était prévue sans migration).
