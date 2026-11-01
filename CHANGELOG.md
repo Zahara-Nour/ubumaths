@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.61.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.60.0...v0.61.0) (2026-11-01)
+
+### ✨ Features
+
+- **questions:** cm1, lot 4b, nœud et tag des 6 modèles de calcul posé ([c61add3](https://github.com/Zahara-Nour/ubumaths/commit/c61add388f3a28093508fe4a36bd8cffc74cece9)), closes [#2149](https://github.com/Zahara-Nour/ubumaths/issues/2149)
+- **questions:** lot 6b du ce2, contenances et durées en brouillon ([bbdad5b](https://github.com/Zahara-Nour/ubumaths/commit/bbdad5baf3e9fd8d53944d864a1eb71140f4a0bd))
+- **questions:** terminale spé, lot 2, sous-notions, rangement et tags (migration) ([7144363](https://github.com/Zahara-Nour/ubumaths/commit/71443636a9f7ee862f6e390aa95320e7b730e6a3))
+
+### 🐛 Bug Fixes
+
+- **migrations:** horodatage tiré au hasard (1 à 59 s) quand main est en avance ([ae6eafd](https://github.com/Zahara-Nour/ubumaths/commit/ae6eafd53c5fe12a21ed31b1e95e039a3d4173a1))
+- **questions:** cm1 lot 4b, migration renumérotée 20261101224100 (collision avec [#2158](https://github.com/Zahara-Nour/ubumaths/issues/2158)) ([3aa3b61](https://github.com/Zahara-Nour/ubumaths/commit/3aa3b61837efe25b2f8bb554a5b46fde082e2387))
+- **questions:** cm1 lot 4b, migration renumérotée 20261101224701 (après 6e lot 8) ([bd33b9b](https://github.com/Zahara-Nour/ubumaths/commit/bd33b9b2aeef3d10d55722357806f6a338014ba6))
+- **questions:** cm1 lot 4b, migration renumérotée 20261101224702 (224701 prise par 1re spé) ([3917da9](https://github.com/Zahara-Nour/ubumaths/commit/3917da9caa40d6bdfa495e48bda209f1845584c3))
+- **questions:** cm1 lot 4b, migration renumérotée 20261101224741 (224702 prise par terminale spé) ([2a9ff1b](https://github.com/Zahara-Nour/ubumaths/commit/2a9ff1b091291f3ee55b617c7988cba932ad91d5))
+- **questions:** message du rollback du lot 2 de terminale spé remis à l'endroit ([34f4d8b](https://github.com/Zahara-Nour/ubumaths/commit/34f4d8b9c8af8e52066bf2ea49859703102354b8))
+- **questions:** migration du lot 2 de terminale spé renommée 224702 (collision avec 1re spé) ([ac5b93b](https://github.com/Zahara-Nour/ubumaths/commit/ac5b93b9f5a45c5bb5138eee89a5f1156c78bd94))
+- **questions:** migration du lot 2 de terminale spé renommée après celle de 6e ([810664e](https://github.com/Zahara-Nour/ubumaths/commit/810664eb8611e738a254061410201771be04593d))
+
+### 📚 Documentation
+
+- **wip:** migrations-alea clos après [#2177](https://github.com/Zahara-Nour/ubumaths/issues/2177), journal archivé ([37160e6](https://github.com/Zahara-Nour/ubumaths/commit/37160e6ae9af6940bff177ae220668d452be8aa4))
+- **wip:** migrations-alea, bloc Reprendre ici de clôture ([7ba0e0a](https://github.com/Zahara-Nour/ubumaths/commit/7ba0e0aea63130e0d61b648282b7567d83d78b86))
+- **wip:** questions-ce2, lot 6b écrit, reprise ([a7e03c7](https://github.com/Zahara-Nour/ubumaths/commit/a7e03c7cac783f67312f39b8324436780e4c676d))
+- **wip:** questions-cm1, reprendre ici (pr 2159 en attente) ([daec9cb](https://github.com/Zahara-Nour/ubumaths/commit/daec9cbfced35d3ac48c3eaf1bc0414d10ae39ac))
+- **wip:** questions-tspe, lot 2 rangé et tagué en prod ([#2173](https://github.com/Zahara-Nour/ubumaths/issues/2173)) ([b63deca](https://github.com/Zahara-Nour/ubumaths/commit/b63deca7c0ac6c113919b5dfce74e0f1f75285a8))
+- **wip:** questions-tspe, migration du lot 2 écrite ([fcc9fce](https://github.com/Zahara-Nour/ubumaths/commit/fcc9fce0c596cbb2f77585d8945048c746e631da))
+
 ## [0.60.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.59.0...v0.60.0) (2026-11-01)
 
 ### ✨ Features
