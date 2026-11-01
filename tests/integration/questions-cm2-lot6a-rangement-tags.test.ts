@@ -2,7 +2,7 @@
  * Chantier « questions-cm2 », lot 6a : nœud et tag de 7 modèles neufs (Supabase local requis)
  * ======================================================================================
  *
- * Migration `20261101224702_questions_cm2_lot6a_rangement_tags` : les 7 brouillons de
+ * Migration `20261101224703_questions_cm2_lot6a_rangement_tags` : les 7 brouillons de
  * fractions décimales créés le 2026-11-01 par scripts/create-questions.ts (sans nœud ni tag) vont
  * sur la sous-notion de leur point et reçoivent ce point, un seul (ADR 0020).
  * Décision de David (journal docs/wip/questions-cm2-progress.md § 11 et 11.1).
@@ -38,7 +38,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101224702_questions_cm2_lot6a_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101224703_questions_cm2_lot6a_rangement_tags.sql';
 const LONGUEURS = 'Grandeurs et mesures > Longueurs';
 /** Le lot : identifiant créé en prod le 2026-11-01, nœud et points attendus. */
 const LOT: { id: string; noeud: string; code: string }[] = [
