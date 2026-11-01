@@ -272,7 +272,7 @@ jobs:
     # 15 min like the rest of this workflow. The build takes 2-4 min normally;
     # 10 left no room for a slow runner and cancelled the job mid-build.
     timeout-minutes: 15
-    # Seul `needs:` admis : `version` (raccourci du commit de version, ~15 s).
+    # Seul `needs:` admis : `version` (porte de la CI et allègement de main, ~15 s).
     # Sinon ce job est autonome — checkout, install, build, garde de
     # chunk — il ne consomme aucun artefact de lint ni de typecheck. L'y enchaîner
     # n'économisait que des minutes de RUNNER quand lint échoue, au prix de

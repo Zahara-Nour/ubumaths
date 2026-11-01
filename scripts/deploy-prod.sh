@@ -2,7 +2,8 @@
 # `pnpm deploy:prod` — mettre le site à jour, avec une nouvelle version (ADR 0021).
 #
 # Vercel ne déploie que la branche `production`. Ce script :
-#   1. choisit le dernier commit de main vérifié par la CI (« CI Summary » vert),
+#   1. choisit le dernier commit de main à « CI Summary » vert (CI allégée de
+#      main : typecheck et build ; le reste a tourné sur la PR),
 #      en enjambant les commits de doc qui le suivent ; CI en cours → l'attend,
 #      sous le verrou « deploy » (au plus DEPLOY_PROD_ATTENTE_MAX s) ;
 #   2. crée la version (`pnpm release` : numéro, CHANGELOG, tag) et la pousse
@@ -114,7 +115,7 @@ while :; do
 			break
 			;;
 		absent)
-			sans_ci "$c" || arreter "⛔ Commit de code sans « $CHECK » : $(decrire "$c")" "La CI ne l'a pas vérifié. Rien n'est créé."
+			sans_ci "$c" || arreter "⛔ Commit de code sans « $CHECK » : $(decrire "$c")" "Sa CI n'a pas tourné. Rien n'est créé."
 			[ "$attendu_main" -gt 0 ] || echo "↷ enjambé (doc seule, sans CI) : $(decrire "$c")"
 			;;
 		pending)
@@ -180,7 +181,10 @@ while :; do
 	etat="$(etat_ci "$version")"
 	case "$etat" in
 	success) break ;;
-	failure | cancelled | timed_out) arreter "⛔ « $CHECK » = $etat sur la version $(decrire "$version")." "Rien n'est mis en prod." ;;
+	# Seule CI complète de main : deux PR vertes chacune peuvent casser ici une fois
+	# réunies. La version et son tag restent (GitHub Release comprise) ; la suivante
+	# prendra le numéro d'après.
+	failure | cancelled | timed_out) arreter "⛔ « $CHECK » = $etat sur la version $(decrire "$version")." "Rien n'est mis en prod. Lire la CI de la version, corriger par une PR, merger, puis relancer pnpm deploy:prod." ;;
 	esac
 	[ "$attendu" -lt "$ATTENTE_MAX" ] ||
 		arreter "⏳ CI de la version toujours pas verte après ${ATTENTE_MAX} s." "Relancer pnpm deploy:prod plus tard : la version existe, seule la mise en prod reste."
