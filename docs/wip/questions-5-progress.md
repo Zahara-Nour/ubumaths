@@ -5,21 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 6 écrit (PR des fichiers ouverte)._
+_Mis à jour le 2026-11-01, après #2088._
 
 - **État** : lots 1 à 5 publiés ; **lot 6 « Données et probabilités »** (8 modèles, § 17) écrit, simulation prod
-  verte (64 specs), joué en base locale ; PR des fichiers `feat/questions-5-lot6`.
-- **Prochaine action** : merge de la PR, puis David : `create-questions --dir scripts/questions/5-donnees-probabilites
+  verte (64 specs), joué en base locale ; fichiers mergés (#2088).
+- **Prochaine action** : David : `create-questions --dir scripts/questions/5-donnees-probabilites
 --publier` ; relever les `id`, migration nœud + tag (sous-notion neuve « choisir une représentation »), page à
   cocher. Puis lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092, 098 ; recoupe 6-140 / 6-141), lot 8
   « Opérations » (001, 002, 005, 116, 117).
-- **En attente de David** : le `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31) visait-il une autre session (3e,
+- **En attente de David** : `create-questions --publier` du lot 6 ; le `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31) visait-il une autre session (3e,
   lot 5) ? (résultat juste, audit sans bloquant).
 - **Pièges en cours** : horodatage `max + 1 min` au moment du merge (`--include-all`) ; `publier-lot.ts` en
   simulation passe pour moi, `--publier` et `create-questions --publier` = David avec `!` ; gras contenant une
   formule ; jamais `e` ni `i` ; degrés en `^{\circ}` ; `plusieurs: oui` ajoute déjà « Coche la ou les bonnes
   réponses » (ne pas écrire « Coche toutes… ») ; cases manquées d'un choix multiple = `unoptimal_form` (½).
-- **Worktree / branche** : `ubumaths-wt-questions-5` · `feat/questions-5-lot6` ; `supabase/.temp` retiré le
+- **Worktree / branche** : `ubumaths-wt-questions-5` (HEAD détaché sur `main`, branche du lot 6 supprimée) ; `supabase/.temp` retiré le
   2026-11-01 (accord de David), copie dans le scratchpad de la session.
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -454,3 +454,4 @@ Relevé : aucun modèle sur les 6 points ; 6e « Fréquence » (fraction seule),
 - Base locale : 8 créés, aperçu admin joué (tableau d'effectifs, choix multiple). Corrigé en route : « Coche
   toutes… » doublait la consigne de l'appli → questions (« Quelles phrases sont vraies ? ») ; corrigé « 7/25 =
   7/25 » quand la fraction est irréductible → conditionnel au PGCD.
+- #2088 (fichiers) mergée, CI verte (2026-11-01).
