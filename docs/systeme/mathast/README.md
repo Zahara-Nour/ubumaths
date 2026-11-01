@@ -576,8 +576,10 @@ la valeur exacte) ; oracle : `comp-16` (1/(1 − ln x)) n'est plus un refus conn
 `SolveResult.domainUnresolved` (absent si le domaine est exact) et la console refuse une
 identité sur un tel domaine, avec ou sans `dans`, au lieu de « S = ℝ » ou de tout l'intervalle.
 Les solutions finies sont vérifiées sur l'équation elle-même (`filterSolutionsByDefinition`,
-`solve.ts`, 2026-11-01) : non définie au point et de part et d'autre, ou en un pôle, la solution
-est écartée (`2√(x⁵−x+1)/√(x⁵−x+1) = x + 4` rendait x = −2, où x⁵ − x + 1 = −29) ; une solution
+`solve.ts`, 2026-11-01) : chaque fonction, quotient ou puissance est évaluée à part avec ses
+opérandes (`definitionChecks`) ; interdite au point et de part et d'autre, ou en un pôle, la
+solution est écartée (`2√(x⁵−x+1)/√(x⁵−x+1) = x + 4` rendait x = −2, où x⁵ − x + 1 = −29). Un
+dépassement flottant (`e^{900}`, `x^{200}` en 100) ne conclut rien (revue #2064) ; une solution
 paramétrée ou une équation à plusieurs lettres n'est pas vérifiée. Reste (V45) : les autres
 lecteurs de `solve` (atelier `engineSaysAllReals`, signe, variations) ignorent le champ.
 Écart V47 (2026-10-13) : **les inéquations lisent le domaine de définition sur l'inéquation
@@ -1870,7 +1872,8 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
   d'identité ne touchent plus un nombre seul (`factoriserIdentityRules`, mesuré : `x(1-1)` →
   0 étape). Les règles d'origine gardent ce défaut là où elles servent encore (`simplify`, sous
   barrière de coût) ; la boucle s'arrête toujours sans le signaler.
-- Cubique à trois racines réelles irrationnelles (`handleCubicThreeReal`, `x^3-3x+1=0`) : les
+- Cubique à trois racines réelles irrationnelles (`handleCubicThreeReal`, `x^3-3x+1=0`) et
+  quartique résolue en flottants (`numericToSymbolic`, `quartic.ts`, `x^4-x-3=0`) : les
   racines sont des flottants arrondis à 10 décimales, marqués `exact: false` depuis L27
   (2026-11-01), mais `canonicalForm` les écrit en fraction décimale géante
   (`-\dfrac{36706743}{19531250}`) au lieu de la forme trigonométrique exacte (relevé le

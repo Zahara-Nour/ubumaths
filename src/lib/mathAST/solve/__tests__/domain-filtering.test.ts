@@ -543,4 +543,16 @@ describe('Contrainte de domaine non résolue : solution vérifiée (V45)', () =>
 		const result = solveX(latex);
 		expect(result.solutions.map((s) => s.approximate)).toEqual([value]);
 	});
+
+	// Revue #2064 : un terme qui déborde (e^{900}, 100^{200}) donnait Inf − Inf = NaN
+	// sur toute l'équation, et de vraies solutions étaient déclarées hors domaine
+	it.each([
+		['\\frac{e^{x^2}\\sqrt{x^5-x+1}}{\\sqrt{x^5-x+1}}=e^{900}', 30],
+		['\\frac{x^{200}\\sqrt{x^5-x+1}}{\\sqrt{x^5-x+1}}=10^{400}', 100]
+	])('%s : dépassement flottant, la solution %d est gardée', (latex, value) => {
+		const result = solveX(latex);
+		const kept = result.solutions.map((s) => s.approximate ?? NaN);
+		expect(kept.some((v) => Math.abs(v - value) < 1e-6)).toBe(true);
+		expect(result.status).not.toBe('no-solution');
+	});
 });

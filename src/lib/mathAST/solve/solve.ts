@@ -89,7 +89,7 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { computeNumericValue } from '../eval/numeric-value';
 import { compile } from '../eval/compile';
 import { hasIndexedVariables, indexVariables } from '../eval/index-variables';
-import { findFirst } from '../transforms';
+import { findFirst, findNodes } from '../transforms';
 import {
 	normalize,
 	normalFormsEquivalent,
@@ -1842,11 +1842,17 @@ function filterSolutionsByDomain(
  * filtrage par domaine ne les voit pas : x = −2 pour
  * `2√(x⁵−x+1)/√(x⁵−x+1) = x + 4` (V45).
  *
- * L'expression est évaluée en la solution. Non définie (NaN) au point ET de
- * part et d'autre, la solution est hors de l'ensemble de définition ; une
- * borne (radicande nul arrondi en −10⁻¹⁷) reste gardée. Une valeur infinie
- * au point est un pôle : écartée. Solutions paramétrées, équation à
- * plusieurs lettres ou expression non compilable : rien n'est écarté.
+ * Chaque opération porteuse d'une contrainte (fonction, quotient, puissance)
+ * est évaluée À PART, avec ses opérandes : opérandes finis et résultat NaN
+ * (√ d'un négatif, ln d'un négatif, 0/0), ou ln/log de 0, c'est une valeur
+ * interdite ; quotient par 0 ou 0 à une puissance négative, un pôle. Un
+ * résultat infini d'opérandes finis (e^{900}, 100^{200}) est un DÉPASSEMENT
+ * flottant : on ne conclut pas — évaluer toute l'équation donnait Inf − Inf =
+ * NaN et écartait de vraies solutions (revue #2064). Interdite au point ET de
+ * part et d'autre, la solution est écartée ; une borne (radicande nul arrondi
+ * en −10⁻¹⁷) reste gardée. Un pôle au point est écarté. Solutions
+ * paramétrées, équation à plusieurs lettres ou nœud non compilable : rien
+ * n'est écarté.
  */
 function filterSolutionsByDefinition(
 	result: SolveResult,
@@ -1857,24 +1863,17 @@ function filterSolutionsByDefinition(
 	if (result.status === 'infinite' || result.solutions.length === 0) return result;
 	const letters = getVariables(expr);
 	if (letters.size !== 1 || !letters.has(variable)) return result;
-	let at: (x: number) => number;
-	try {
-		const compiled = compile(expr);
-		at = (x) => compiled({ [variable]: x });
-	} catch {
-		return result;
-	}
-	// undefined : évaluation impossible, on ne conclut pas
-	const valueAt = (x: number): number | undefined => {
-		try {
-			return at(x);
-		} catch {
-			return undefined;
+
+	const checks = definitionChecks(expr, variable);
+	if (checks.length === 0) return result;
+	const verdictAt = (x: number): 'defined' | 'forbidden' | 'pole' => {
+		let forbidden = false;
+		for (const check of checks) {
+			const verdict = check(x);
+			if (verdict === 'pole') return 'pole';
+			if (verdict === 'forbidden') forbidden = true;
 		}
-	};
-	const defined = (x: number): boolean => {
-		const value = valueAt(x);
-		return value === undefined || Number.isFinite(value);
+		return forbidden ? 'forbidden' : 'defined';
 	};
 
 	const kept: Solution[] = [];
@@ -1885,9 +1884,12 @@ function filterSolutionsByDefinition(
 			continue;
 		}
 		const delta = 1e-9 * Math.max(1, Math.abs(x));
-		const value = valueAt(x);
-		const pole = value !== undefined && Math.abs(value) === Infinity;
-		const outside = !defined(x) && !defined(x - delta) && !defined(x + delta);
+		const atPoint = verdictAt(x);
+		const pole = atPoint === 'pole';
+		const outside =
+			atPoint === 'forbidden' &&
+			verdictAt(x - delta) !== 'defined' &&
+			verdictAt(x + delta) !== 'defined';
 		if (pole || outside) {
 			recorder.recordStep(
 				'domain-exclusion',
@@ -1905,6 +1907,63 @@ function filterSolutionsByDefinition(
 	const status: import('./types').SolutionStatus =
 		kept.length === 0 ? 'no-solution' : kept.length === 1 ? 'unique' : result.status;
 	return { ...result, solutions: kept, status };
+}
+
+type DefinitionVerdict = 'defined' | 'forbidden' | 'pole' | 'unknown';
+
+/**
+ * Les vérifications de `filterSolutionsByDefinition` : une par fonction,
+ * quotient ou puissance de l'expression qui contient l'inconnue. Chacune
+ * évalue le nœud et ses opérandes en x ; un opérande non fini, une
+ * évaluation qui lève ou un dépassement flottant rendent `unknown`.
+ */
+function definitionChecks(
+	expr: MathNode,
+	variable: string
+): Array<(x: number) => DefinitionVerdict> {
+	const checks: Array<(x: number) => DefinitionVerdict> = [];
+	const nodes = findNodes(
+		expr,
+		(n) =>
+			(n.type === 'function' || n.type === 'division' || n.type === 'superscript') &&
+			getVariables(n).has(variable)
+	);
+	for (const node of nodes) {
+		const operands: readonly MathNode[] =
+			node.type === 'function'
+				? node.args
+				: node.type === 'division'
+					? [node.numerator, node.denominator]
+					: node.type === 'superscript'
+						? [node.base, node.superscript]
+						: [];
+		let evaluators: Array<(scope: Record<string, number>) => number>;
+		try {
+			evaluators = [compile(node), ...operands.map((operand) => compile(operand))];
+		} catch {
+			continue;
+		}
+		checks.push((x) => {
+			let values: number[];
+			try {
+				values = evaluators.map((evaluate) => evaluate({ [variable]: x }));
+			} catch {
+				return 'unknown';
+			}
+			const [value, ...operandValues] = values;
+			if (!operandValues.every(Number.isFinite)) return 'unknown';
+			if (Number.isNaN(value)) return 'forbidden';
+			if (Number.isFinite(value)) return 'defined';
+			// Infini d'opérandes finis : pôle, ln 0, ou simple dépassement
+			if (node.type === 'division' && operandValues[1] === 0) return 'pole';
+			if (node.type === 'superscript' && operandValues[0] === 0) return 'pole';
+			if (node.type === 'function' && /^(ln|log)/.test(node.name) && operandValues[0] === 0) {
+				return 'forbidden';
+			}
+			return 'unknown';
+		});
+	}
+	return checks;
 }
 
 // =============================================================================
