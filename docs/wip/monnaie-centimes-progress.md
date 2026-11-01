@@ -12,9 +12,9 @@ status: en cours
 
 _Mis à jour le 2026-11-01, à l'ouverture._
 
-- **État** : phase 0 validée (« je te suis » : les six recommandations du § 3), rien n'est codé.
-- **Prochaine action** : tests rouges → code → PR.
-- **En attente de David** : rien.
+- **État** : codé, tests verts (serveur 134 monnaie, écran 21), doc à jour ; revue `code-reviewer` (Opus) lancée le 2026-11-01, résultat perdu au `/clear` → **la relancer** (même brief : flottants, `fewestCoupures`, juge `3,45` / `35`, `readAmount`).
+- **Prochaine action** : relancer et corriger la revue → PR → CI → merge ; puis lot monnaie du CE1 (session `questions-ce1`).
+- **En attente de David** : avis sur les captures (doré un peu kaki en clair ; « 500 » du coin d'un billet au ras du bord).
 - **Pièges en cours** : les modèles du CP (`construire: 35`, `montant: 48`) ne doivent pas bouger, ni leur réponse
   `35` ; la scène est commune avec ` ```collection ` (ses tests doivent rester verts).
 - **Worktree / branche** : `../ubumaths-wt-monnaie-centimes` (`feat/monnaie-centimes`).
@@ -94,3 +94,10 @@ Ce que demandent les points (bornes `cycle2.json`) : « valeur en euros et centi
 
 - 2026-11-01 : chantier ouvert (worktree, branche), relevé du code, phase 0 écrite.
 - 2026-11-01 : phase 0 validée par David (« je te suis »).
+- 2026-11-01 : tests rouges (`monnaie-centimes.test.ts`, module absent), puis code : `utils/monnaie-valeurs.ts`
+  (centimes entiers, `readAmount`, `amountAnswer`, `amountWords`, `denominationLabel` / `Name`, `coinFamily`),
+  parseur, construction (programmation dynamique en centimes, pas = pgcd), scène (diamètres 14 → 17,6 pour 1 c → 50 c),
+  écran (cuivre / doré), PDF (deux gris), réponse attendue `3,45`. 11 anciens tests réécrits (ils exigeaient
+  « pas encore disponible » et 100 €). `check:incremental` 0, cliquet tenu. Doc : `ubumark.md`, `questions.md`.
+- 2026-11-01 : captures 390 px clair / sombre (test navigateur temporaire, retiré) : valeurs lisibles sur toutes les
+  pièces ; doré kaki en clair, coin « 500 » au ras du bord → à montrer à David.
