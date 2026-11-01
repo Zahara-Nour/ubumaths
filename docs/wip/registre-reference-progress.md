@@ -308,6 +308,10 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
 - **Relecture, 2e passage** : 82/108. Tranché : `plafond-02` → **1000** (règle « calcul puis
   mesure » contre l'Atelier) ; `plafond-04` écriture gardée avec `/` OK ; `comparer-13` refus OK ;
   familles 4, 5, 7 entières OK. Répondu, en attente : `signes-06` (pas de réduction par 2 qui fait
-  apparaître x+1 en haut et en bas, revue 2026-10-20 + Q9) ; `grandeurs-01` (mon avis : garder
+  apparaître x+1 en haut et en bas) — **ma 1re raison était fausse** (« inviterait à barrer », David :
+  x/x est déjà gardé) ; vraie raison : garde-fou technique de tidy (tidy-spec § réduction, 4fd94d6bd :
+  réduction sur le terme accumulé, x+1 deviendrait le même facteur et s'annulerait). David veut
+  peut-être `(x+1)/(2(x+1))` → changement de tidy, PR à part ; en attente ; `grandeurs-01` (David :
+  « je ne sais pas encore ») (mon avis : garder
   12000 m, unité choisie seulement par un calcul, `.convertir` sinon ; tidy-units:24 = écart de
   tidy à signaler). Reste : `grands-09`, `grandeurs-02…11`, `approche-01…15`.
