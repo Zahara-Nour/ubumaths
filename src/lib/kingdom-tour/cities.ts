@@ -111,7 +111,7 @@ export const CITIES: City[] = [
 				labelAt: { x: 603, y: 748 },
 				targets: [{ cx: 602, cy: 677, rx: 46, ry: 46 }],
 				description:
-					'Une petite arène ronde, où l’on vient jouer. Le Père Ubu y crie plus fort que tout le monde.'
+					'Une petite arène ronde, où l’on vient jouer. Le Père Ubu, tout excité, y accueille les joueurs.'
 			},
 			{
 				id: 'gazette',
@@ -120,7 +120,7 @@ export const CITIES: City[] = [
 				labelAt: { x: 322, y: 602 },
 				targets: [{ cx: 366, cy: 514, rx: 34, ry: 58 }],
 				description:
-					'L’imprimerie du Shtam, la gazette du Royaume. Ses presses tournent jour et nuit pour annoncer les nouvelles des six Provinces.'
+					'L’imprimerie du Shtam, la gazette du Royaume, et ses presses, d’où sortent les nouvelles des six Provinces.'
 			},
 			{
 				id: 'bibliotheque',

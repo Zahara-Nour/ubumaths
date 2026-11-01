@@ -117,9 +117,11 @@
 	.places > li.selected {
 		@apply border-primary bg-primary/5;
 	}
+	/* app.css grossit les <h2> de <main> : une classe l'emporte, en gardant l'échelle A−/A+ */
 	h2 {
-		@apply text-lg font-semibold text-foreground;
+		@apply font-semibold text-foreground;
 		font-family: 'Lora', Georgia, serif;
+		font-size: calc(1.125rem * var(--font-scale, 1)) !important;
 	}
 	.description {
 		@apply mt-1 text-foreground/80;

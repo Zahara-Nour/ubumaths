@@ -20,7 +20,7 @@ export interface KingdomLabel {
 	x: number;
 	y: number;
 	/** Classe de style : Province, capitale, Sandomir, eau, pays voisin, cartouche */
-	kind: 'province' | 'capital' | 'royal' | 'water' | 'neighbour' | 'title';
+	kind: 'province' | 'capital' | 'royal' | 'water' | 'neighbour' | 'inset' | 'title';
 	anchor?: 'start' | 'end';
 	rotate?: number;
 }
@@ -58,8 +58,8 @@ export const PROVINCE_AREAS: Record<ProvinceId, string> = {
 
 /** Le nom de chaque Province, posé au milieu de sa surface */
 export const PROVINCE_LABELS: Record<ProvinceId, KingdomLabel> = {
-	yoyolande: { text: 'YOYOLANDE', x: 2100, y: 1300, kind: 'province' },
-	bedonstan: { text: 'BEDONSTAN', x: 3050, y: 1480, kind: 'province' },
+	yoyolande: { text: 'YOYOLANDE', x: 1900, y: 1300, kind: 'province' },
+	bedonstan: { text: 'BEDONSTAN', x: 3090, y: 1490, kind: 'province' },
 	glitchistan: { text: 'GLITCHISTAN', x: 3150, y: 2560, kind: 'province' },
 	patatovie: { text: 'PATATOVIE', x: 2560, y: 3200, kind: 'province' },
 	nombrilie: { text: 'NOMBRILIE', x: 1980, y: 2330, kind: 'province' },
@@ -83,8 +83,8 @@ export const OTHER_LABELS: KingdomLabel[] = [
 	{ text: 'Vistule', x: 2660, y: 2830, kind: 'water', rotate: -10 },
 	{ text: 'Pythagoriades', x: 3080, y: 1010, kind: 'neighbour' },
 	{ text: 'Lithuanie', x: 3950, y: 520, kind: 'neighbour' },
-	{ text: 'Empire du Czar', x: 3960, y: 2000, kind: 'neighbour' },
-	{ text: 'Isle de la Réunion', x: 3781, y: 3010, kind: 'capital' },
-	{ text: 'Pataphysique', x: 3781, y: 3090, kind: 'capital' },
+	{ text: 'Empire du Czar', x: 3920, y: 2000, kind: 'neighbour' },
+	{ text: 'Isle de la Réunion', x: 3781, y: 2990, kind: 'inset' },
+	{ text: 'Pataphysique', x: 3781, y: 3080, kind: 'inset' },
 	{ text: 'ROYAUME DE POLOGNE', x: 817, y: 3395, kind: 'title' }
 ];

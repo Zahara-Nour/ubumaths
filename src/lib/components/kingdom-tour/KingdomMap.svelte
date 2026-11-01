@@ -126,10 +126,10 @@ Props :
 		transition: fill-opacity 0.5s;
 	}
 	a:hover .area {
-		fill-opacity: 0.12;
+		fill-opacity: 0.18;
 	}
 	.area.current {
-		fill-opacity: 0.22;
+		fill-opacity: 0.32;
 	}
 
 	/* Noms : ceux de la carte validée, agrandis pour rester lisibles sur un téléphone */
@@ -141,7 +141,7 @@ Props :
 		stroke-linejoin: round;
 	}
 	.province {
-		font-size: 150px;
+		font-size: 124px;
 		font-weight: bold;
 		letter-spacing: 18px;
 		stroke-width: 22px;
@@ -152,13 +152,13 @@ Props :
 		fill: var(--color-primary);
 	}
 	.capital {
-		font-size: 112px;
+		font-size: 100px;
 		font-style: italic;
 		stroke-width: 18px;
 		stroke-opacity: 0.85;
 	}
 	.royal {
-		font-size: 140px;
+		font-size: 120px;
 		font-weight: bold;
 		stroke-width: 22px;
 		stroke-opacity: 0.85;
@@ -172,16 +172,35 @@ Props :
 		letter-spacing: 12px;
 	}
 	.neighbour {
-		font-size: 100px;
+		font-size: 90px;
 		font-style: italic;
 		stroke-width: 14px;
 		stroke-opacity: 0.6;
 	}
+	.inset {
+		font-size: 76px;
+		font-style: italic;
+		stroke-width: 12px;
+		stroke-opacity: 0.85;
+	}
 	.title {
-		font-size: 70px;
+		font-size: 60px;
 		font-weight: bold;
 		letter-spacing: 5px;
 		stroke: none;
+	}
+	/* Téléphone : la carte fait 350 px de large, les noms grossissent encore */
+	@media (max-width: 639px) {
+		.province {
+			font-size: 140px;
+			letter-spacing: 10px;
+		}
+		.capital {
+			font-size: 124px;
+		}
+		.royal {
+			font-size: 150px;
+		}
 	}
 	a {
 		cursor: pointer;

@@ -13,9 +13,11 @@ import { PROVINCES } from '../tour';
 
 // Functions
 
-/** Les sommets d'un chemin SVG fait de M, L (et d'un arc final, dont on garde l'extrémité) */
+/** Les sommets d'un chemin SVG fait de M, L et d'un arc final (dont on garde l'extrémité) */
 function vertices(d: string): [number, number][] {
-	return [...d.matchAll(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g)].map((m) => [
+	// Les rayons d'un arc (« A250,250 0 0 0 x,y ») ne sont pas un sommet
+	const withoutRadii = d.replace(/A[\d.]+,[\d.]+ [\d.]+ [01] [01] /g, 'L');
+	return [...withoutRadii.matchAll(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g)].map((m) => [
 		Number(m[1]),
 		Number(m[2])
 	]);
