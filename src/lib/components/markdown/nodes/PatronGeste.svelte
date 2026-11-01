@@ -2,7 +2,7 @@
 	PatronGeste — patron à geste (```patron + `designer:` / `completer:`)
 	=====================================================================
 
-	Chantier `solides`, lot 5 (`docs/wip/solides-progress.md` § 10).
+	Chantier `solides`, lot 5 (`docs/archive/wip/solides-progress.md` § 10).
 
 	- `designer: opposee` (`voisines`, `sommet A`, `face EFGH`) : le patron du
 	  lot 4 ; toucher une face la sélectionne, la retoucher la désélectionne

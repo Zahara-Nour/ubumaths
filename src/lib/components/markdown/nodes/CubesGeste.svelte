@@ -2,7 +2,7 @@
 	CubesGeste — assemblage de cubes à geste (```cubes + `dessiner:` / `retrouver:`)
 	===============================================================================
 
-	Chantier `solides`, lot 2 (`docs/wip/solides-progress.md` § 7).
+	Chantier `solides`, lot 2 (`docs/archive/wip/solides-progress.md` § 7).
 
 	- `dessiner: face` : la perspective, et à côté un quadrillage vide plus grand
 	  que la vue d'un carreau de chaque côté. Toucher un carreau le colorie, le

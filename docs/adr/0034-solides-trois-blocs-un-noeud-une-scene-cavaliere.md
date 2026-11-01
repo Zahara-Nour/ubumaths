@@ -1,6 +1,7 @@
 # 0034 — Solides : trois blocs, un nœud, une scène cavalière
 
-- **Statut** : acceptée — mise en œuvre en cours (chantier solides ; journal : `docs/wip/solides-progress.md`)
+- **Statut** : acceptée — mise en œuvre terminée le 2026-11-01 (chantier solides, #2003→#2046 ; journal
+  archivé : `docs/archive/wip/solides-progress.md`)
 - **Date** : 2026-10-30 · **Décidée par** : David (« je te suis » aux questions Q1, Q2 et Q5 de la phase 0,
   qui portaient chacune une recommandation)
 

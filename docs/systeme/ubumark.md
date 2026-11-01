@@ -561,7 +561,7 @@ _Plusieurs figures_ (`unites: N`, de 1 à 5 ; absent = 1) : N figures identiques
 > les rangs à 5 figures (la réponse attendue ne dit pas combien sont dessinées). Correction : « Tu as colorié
 > 5 parts ; il fallait en colorier 7 (7/4, chaque figure a 4 parts). », figures justes unités pleines d'abord.
 
-**Assemblage de cubes** (chantier [solides](../wip/solides-progress.md), lot 1 : affichage ; lot 2 : gestes ;
+**Assemblage de cubes** (chantier [solides](../archive/wip/solides-progress.md), lot 1 : affichage ; lot 2 : gestes ;
 [ADR 0034](../adr/0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)) — `src/lib/ubumark/__tests__/espace/` :
 
 ````text
@@ -612,7 +612,7 @@ descendre d'un cube seule) ; vide : « Tu n'as rien colorié. » / « Tu n'as pa
 (`generateEspaceTypst(node, { solved })`) : figures côte à côte, titrées ; quadrillage vide ou vue grisée,
 vue de dessus vide ou hauteurs écrites. Le corrigé (`solved`) est prêt mais **pas encore branché** dans la fiche (`typst-generator.ts` appelle sans option), comme pour ``partage.
 
-**Solide en perspective cavalière** (chantier [solides](../wip/solides-progress.md), lot 3 : affichage, § 8 du
+**Solide en perspective cavalière** (chantier [solides](../archive/wip/solides-progress.md), lot 3 : affichage, § 8 du
 journal) — `src/lib/ubumark/__tests__/espace/solide-*.test.ts` :
 
 ````text
@@ -659,7 +659,7 @@ boule coupée : sans équateur. `cotes:` écrit la **distance du plan** (pavé :
 posés en tournant autour du point jusqu'à ne toucher aucune étiquette (`overlaps`). Nom accessible : « coupé
 par un plan », noms de la section et distance — **jamais la nature de la section** (réponse de 3e-020).
 
-**Patron d'un solide** (chantier [solides](../wip/solides-progress.md), lot 4 : affichage, § 9 du journal) —
+**Patron d'un solide** (chantier [solides](../archive/wip/solides-progress.md), lot 4 : affichage, § 9 du journal) —
 `src/lib/ubumark/__tests__/espace/patron-*.test.ts` :
 
 ````text
@@ -1134,5 +1134,14 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
   comme le PDF. Test : `components/markdown/__tests__/encadre-langue.svelte.test.ts`.
 - Typst : `#emph[…]`, `#strike[…]`, `#highlight[…]` d'un texte en ligne se terminent par `;`
   (L19, 2026-11-01), pour qu'un `(`, `[` ou `.lettre` collé après ne soit pas lu comme leur suite.
+- **Option à geste dans un choix** (`- ```horloge` + `placer:`, ou un ` ```cubes ` / ` ```patron `
+  à geste comme option d'un ` ````choix `) : le générateur masque le choix avant de chercher les
+  gestes, d'où ni refus ni case (la spécification des gestes dit « refusé »). Trou relevé le
+  2026-11-01 (#2065), pas encore corrigé : la décision revient à David.
+- ` ```ranger ` dans une liste sort en bloc de code (absent de `SPECIAL_BLOCK_KINDS`) : ne touche que
+  le cours ; dans une question, il est refusé de toute façon.
+- Blocs d'espace, laissés tels quels : la cote d'un cylindre coupé parallèlement à l'axe est posée sous
+  la base, loin de son court trait quand la distance est petite. Restes hors chantier : voir l'en-tête
+  du [journal archivé](../archive/wip/solides-progress.md).
 - `latex-generator.ts` (export `.tex`) et ses générateurs `*-latex.ts` n'ont pas d'appelant hors
   du module ni de leurs tests (grep du 2026-10-10) : export en sommeil ou mort, à trancher.
