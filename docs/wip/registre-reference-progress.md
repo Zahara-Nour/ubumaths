@@ -300,3 +300,7 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
   avec `/` ou `\frac` ? · `grandeurs-01` 12000 m gardé ou → 12 km (tidy-units:24) ? ·
   `grandeurs-11` décimale d'une grandeur avec unité ? · `comparer-13` `2 \approx 2` → refus du
   registre ? · `approche-09` `decimal` en texte (`8.7700*10^9`) ou LaTeX (`8.7700 \times 10^{9}`) ?
+- **Relecture en cours (2026-11-01)** : 20/108 fiches (`decimal-01…14`, `grands-01…06`), 17 OK.
+  Questions de David répondues sur la page (champ `reponse`) : `decimal-07` (0,5(x+1) non
+  distribué : tidy ne développe pas, comme 3(x+1)) → OK ; `decimal-10` (0,5/x : Q9 de
+  simplify-carte) et `grands-06` (2,5×10⁻³ gardé : Q24) → en attente de sa relecture de la réponse.
