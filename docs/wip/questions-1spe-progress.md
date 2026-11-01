@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2104 (niveau de d2bca2d8)._
+_Mis à jour le 2026-11-01, après le `--include-all` (niveau de d2bca2d8 joué)._
 
-- **État** : lot 1-dérivation (10 brouillons, § 18) rangé et tagué, relu : **10 « ok » sur 10**. Simulation `publier-lot` : d2bca2d8 refusé (niveau 6 pris par 8b599a53, `T_SPE`) → migration `20261101190000_questions_1spe_derivation_niveau.sql` (6 → 7) mergée (#2104), **pas encore jouée** : bloquée derrière `20261101170000` de questions-4 ; **David lance `pnpm exec supabase db push --include-all`** (depuis le dépôt principal), qui jouera aussi la mienne.
-- **Prochaine action** : une fois les migrations jouées (`--include-all` lancé par David), relire d2bca2d8 au niveau 7 (MCP), relancer `publier-lot --dir scripts/questions/1spe-derivation` (simulation), puis David lance `--publier`. Lot suivant de D7 : variations et courbes (§ 3.6).
-- **En attente de David** : `db push --include-all`, puis `publier-lot --publier` après la simulation verte.
+- **État** : lot 1-dérivation (10 brouillons, § 18) rangé, tagué, relu (10 « ok »), d2bca2d8 au niveau 7 en prod ; simulation `publier-lot` verte (10 / 10).
+- **Prochaine action** : David lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-derivation --publier` ; relire les 10 statuts `published` (MCP) ; clore le lot. Puis lot suivant de D7 : variations et courbes (§ 3.6), phase 0.
+- **En attente de David** : `publier-lot --publier`.
 - **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères.
 - **Worktree / branche** : aucun.
 
@@ -864,3 +864,7 @@ scolaires confondus** (l'index d'unicité ignore `grades`).
 pendant `RichTextEditor`, sans lien). `db push --dry-run` : `DbPushMissingRemoteError`, bloquée derrière
 `20261101170000_questions_4_lot7_rangement_tags.sql` (session questions-4, pas encore jouée) ; précédent du 2026-10-27 :
 la session propriétaire joue son `--include-all` ; questions-4 le réserve à David (son journal) et lui a donné la commande.
+
+`db push --include-all` lancé par David le 2026-11-01 (170000, 183000, 190000, 190100). Relu en base (MCP) : d2bca2d8 au
+niveau 7, `draft`, `updated_at` inchangé, trigger actif, version 20261101190000 enregistrée. Simulation `publier-lot` :
+**10 brouillons passent le contrôle**.
