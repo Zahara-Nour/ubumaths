@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2178 (lot 6b mergé), PR de rangement en cours._
+_Mis à jour le 2026-11-01, après #2180 (rangement du lot 6b mergé)._
 
-- **État** : lots 1 à 6a en prod et publiés. Lot 6b : 4 brouillons créés en prod par David (2026-11-01), sans nœud ni
-  tag ; migration de rangement + test d'intégration écrits (rouge sans la migration, 9 verts avec), PR ouverte.
-- **Prochaine action** : PR de rangement verte → merge → `db:migrate` (David, `!`) → page à cocher → publication
+- **État** : lots 1 à 6a en prod et publiés. Lot 6b : 4 brouillons créés en prod, migration de rangement mergée
+  (#2180) mais **pas encore poussée en base**.
+- **Prochaine action** : David lance `! pnpm db:migrate` (si « inserted before the last migration » : `--dry-run
+--include-all`, relire, puis `--include-all`) → relevé MCP (4 nœuds, 4 tags) → page à cocher → publication
   (`publier-lot`, niveaux relevés juste avant).
-- **En attente de David** : `db:migrate` après le merge (`!`).
+- **En attente de David** : `db:migrate`.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente ; `--publier` refusé par le classifieur
-  (`!`) ; commitlint : sujet sans majuscule ; pas de mention Claude.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2-6b` · `feat/questions-ce2-lot6b-rangement`.
+  (`!`) ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; pas de mention Claude.
+- **Worktree / branche** : aucun (à créer pour la suite si du code est touché).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
