@@ -792,7 +792,8 @@ réponse. `opposee` / `voisines` exigent **une** face marquée ; les noms se lis
 défaut les noms par défaut (ABCDEFGH, ABCDEF, SABCD, SABC) d'un sommet laissé sans nom ; refusé sur un faux
 patron et le cylindre. `completer: 4` (1 à `PATRON_COMPLETE_MAX` = 3 cases, cube seulement, vrai patron) : les
 cases retirées, les faces restantes reliées ; refusé avec `sommets:`, `faces: numeros`, `marquer:`, `cotes:`
-(ils diraient où va la face). Réponses (`patron-gestes.ts`, pur) : `designer:` → numéros des faces touchées,
+(ils diraient où va la face). Les deux clés se repèrent aussi accentuées (`Compléter:`, `désigner:`),
+comme le parseur les lit. Réponses (`patron-gestes.ts`, pur) : `designer:` → numéros des faces touchées,
 croissants (`'2,4'`), juste si mêmes faces (`isDesignerCorrect`) ; `completer:` → le quadrillage de travail
 (`completerFrame` : la grille **telle que dessinée**, tournée / retournée, recadrée sur les faces **données**
 — un vide d'un seul côté montrerait la face manquante — et agrandie d'autant de cases que de faces retirées), `1` = donnée, `2` = posée (`'00000/00100/21110/00100/00000'`), juste si les 6 faces se
