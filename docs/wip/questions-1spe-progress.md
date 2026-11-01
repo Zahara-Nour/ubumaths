@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 2-variations (§ 19)._
+_Mis à jour le 2026-11-01, lot 3-suites écrit (§ 20), PR des fichiers à ouvrir._
 
-- **État** : lots 0, lot 1-dérivation et **lot 2-variations publiés** (7 modèles, points 399, 280, 400, 282, 285, 286, 403 ; #2119, #2126). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
-- **Prochaine action** : D7 (§ 5), lot suivant « suites : modélisation et algorithmes » (214, 217, 372, 374, 375, 369, 378 ; motifs 370, 222, 376 sur bloc), phase 0 à soumettre à David.
-- **En attente de David** : rien.
+- **État** : lots 0, 1-dérivation, 2-variations publiés. **Lot 3-suites** (10 modèles, points 214, 217, 372, 374, 375, 378, 369, 370, 222, 376) écrit : simulation 10 / 10 (90 specs), `sonde-figures` 0 problème, joué en base locale.
+- **Prochaine action** : PR des fichiers → merge → David lance `create-questions --dir scripts/questions/1spe-suites --publier` → migration nœud + tags → page à cocher → publication.
+- **En attente de David** : rien (après le merge : le `--publier` des brouillons).
 - **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` lancés par David ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET de tous les worktrees ; corps de commit : lignes ≤ 100 caractères ; PR de migration : ligne `Doc-inchangée:` dans un commit (garde de `base-de-donnees.md`) ; intégration = workflow à part, attendre son run ; dépôt principal souvent encombré par d'autres sessions (ne commiter que ses fichiers).
-- **Worktree / branche** : aucun (worktree `questions-1spe` retiré après le lot 2).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-suites`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -931,3 +931,42 @@ sur 3fa3af6c, à jouer dans l'aperçu ; collection `verdicts` vide à la publica
 
 **Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 7 / 7 publiés, statuts relus en base (MCP).
 **Lot 2-variations clos.**
+
+## 20. Lot 3-suites : modélisation, algorithmes, motifs (D7)
+
+_Relevé prod du 2026-11-01 (MCP) : les 10 points toujours sans modèle. Voisins à ne pas répéter : aeb1389d
+(pourcentage → raison, uₙ ; 379), 31a77ba9 (`terme(n)` Python, u ← au + b ; 236), ca8f40c2 (f(x + 1)/f(x) pour
+e^{ax} ; 293). Niveaux pris (tous niveaux scolaires) : Suites › Seuil et algorithmes › Algorithmes 1 et 2 ;
+Fonctions › Fonction exponentielle › Suites et modélisation 1 et 2. **Aucun modèle de la prod n'attend uₙ dans
+une réponse.**_
+
+**Phase 0 (D26, David, 2026-11-01, « je valide » sur les recos)** : un modèle par point.
+
+| #   | Point | Modèle                                        | Catégorie, niveau                                              | Réponse                       |
+| --- | ----- | --------------------------------------------- | -------------------------------------------------------------- | ----------------------------- |
+| 1   | 214   | Évolution à accroissement constant            | Suites › Modélisation › Évolutions successives (neuve), 1      | case                          |
+| 2   | 217   | Évolution à taux constant                     | Suites › Modélisation › Évolutions successives, 2              | case « ? % »                  |
+| 3   | 372   | Suite arithmétique et fonction affine         | Suites › Suites arithmétiques › Fonction affine (neuve), 1     | 2 cases ; case y =            |
+| 4   | 374   | Évolution exponentielle et suite géométrique  | Fonctions › Fonction exponentielle › Suites et modélisation, 3 | case arrondie ; case exacte   |
+| 5   | 375   | De l'énoncé à l'expression de la suite        | Suites › Modélisation › De l'énoncé à la suite (neuve), 1      | case uₙ ; 2 cases récurrence  |
+| 6   | 378   | Termes d'une suite donnée par un algorithme   | Suites › Seuil et algorithmes › Algorithmes, 3                 | case                          |
+| 7   | 369   | Reconnaître la suite que génère un algorithme | Suites › Seuil et algorithmes › Algorithmes, 4                 | case ; 2 cases ; choix + case |
+| 8   | 370   | Motif : nombre d'éléments à une étape         | Suites › Apprivoiser › Motifs (neuve), 1                       | case                          |
+| 9   | 222   | Motif : relation explicite                    | Suites › Apprivoiser › Motifs, 2                               | case en n (toute écriture)    |
+| 10  | 376   | Motif : relation de récurrence                | Suites › Apprivoiser › Motifs, 3                               | case « uₙ + ? »               |
+
+Q1 (récurrence en réponse) : deux cases « uₙ₊₁ = ? × uₙ + ? » ; le 10 garde « uₙ + ? » (une case en n). Q2 (motifs) :
+` ```figure `, étapes 1 à 3 dessinées fixes, seules l'étape demandée et la numérotation (dès 0 ou dès 1) varient. Q3
+(quatre catégories neuves) : oui. Question d'accès : personne ne lit rien de neuf (brouillons ; la migration ne pose
+que nœud et tags).
+
+**Écriture** : `docs/wip/questions/lot-1spe-suites.py` → `scripts/questions/1spe-suites/`. Simulation
+`create-questions` : 10 / 10 importables (90 specs) ; `sonde-figures` : 0 problème ; aperçus relus (scratchpad). Essai
+en base **locale** : 09 (carré dès 0, « (n+1)^2 » : Juste) et 07 (langage naturel, choix + raison : Juste) joués ;
+08 (allumettes, croix), 04 (virgule dans l'exposant) regardés.
+
+**Pièges du lot** : forme « u₁ + (n − 1)r » et « (n² + n)/2 » refusées en `bad_form` → `requiredForm: {pattern: 'u'}`
+(toute écriture) sur ces cases ; décimaux : les formules passent en virgule au rendu, **pas un bloc de code** (langage
+naturel en entiers, décimaux en Python) ; points du DSL de taille fixe, minuscules dans une grande fenêtre → jetons
+`cercle(Q, 0.3)` + `style(…)` (`cercle(O, r)` refuse les arguments de style) ; fenêtre de figure : rapport ≤ 4
+(marge ajoutée) ; serveur de dev d'un worktree : `localhost`, pas `127.0.0.1`.

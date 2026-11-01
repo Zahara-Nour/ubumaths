@@ -1,0 +1,222 @@
+{
+	"title": "Termes d'une suite donnée par un algorithme",
+	"description": "Calculer des termes : langage naturel avec ← (u ← u² − c), liste Python construite par append (indice à partir de 0), boucle à deux variables (a, b = b, a + b)",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Seuil et algorithmes",
+	"subdomain": "Algorithmes",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On considère l'algorithme suivant, écrit en langage naturel.\n\n```\nu ← {{eval:a}}\nPour i allant de 1 à 3 :\n    u ← u² − {{eval:c}}\nFin Pour\nAfficher u\n```\n\nQuelle valeur est affichée ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "w1",
+					"expression": "a^2-c"
+				},
+				{
+					"name": "w2",
+					"expression": "w1^2-c"
+				},
+				{
+					"name": "w3",
+					"expression": "w2^2-c"
+				}
+			],
+			"conditions": ["abs(w3) <= 2000", "w1 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:w3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle est parcourue trois fois ; on calcule $u$ à chaque passage.",
+					"Passage 1 : $u={{eval:a}}^2-{{eval:c}}={{eval:w1}}$. Passage 2 : $u={{if:w1<0|({{eval:w1}})|{{eval:w1}}}}^2-{{eval:c}}={{eval:w2}}$.",
+					"Passage 3 : $u={{if:w2<0|({{eval:w2}})|{{eval:w2}}}}^2-{{eval:c}}=\\textcolor{{{color:primary.0}}}{{{eval:w3}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\nL = [{{eval:a}}]\nfor k in range(1, 5):\n    L.append(L[k - 1] + {{eval:b}} * k)\n```\n\nQue vaut `L[{{eval:q}}]` à la fin du programme ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "3|4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b*q*(q+1)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La liste commence par `L[0] = {{eval:a}}`. À chaque tour, on ajoute à la fin le dernier élément augmenté de ${{eval:b}}\\times k$.",
+					"`L[1]` $={{eval:a+b}}$, `L[2]` $={{eval:a+3*b}}$, `L[3]` $={{eval:a+6*b}}$, `L[4]` $={{eval:a+10*b}}$.",
+					"Les indices commencent à $0$ : `L[{{eval:q}}]` $=\\textcolor{{{color:primary.0}}}{{{eval:a+b*q*(q+1)/2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\na, b = {{eval:p}}, {{eval:s}}\nfor i in range({{eval:n}}):\n    a, b = b, a + b\nprint(a)\n```\n\nQuelle valeur est affichée ?\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "s",
+					"expression": "1..4"
+				},
+				{
+					"name": "n",
+					"expression": "4|5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n-2)*p+(2*n-5)*s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque tour, `a` prend la valeur de `b`, et `b` la somme des deux : chaque terme est la somme des deux précédents.",
+					"Valeurs successives de `a` : ${{eval:p}}$, ${{eval:s}}$, ${{eval:p+s}}$, ${{eval:p+2*s}}$, ${{eval:2*p+3*s}}$, ${{eval:3*p+5*s}}$…",
+					"Après ${{eval:n}}$ tours, `a` vaut $\\textcolor{{{color:primary.0}}}{{{eval:(n-2)*p+(2*n-5)*s}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u = 2, c = 1 : 3, 8, 63",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"w1": "3",
+				"w2": "8",
+				"w3": "63"
+			},
+			"answers": ["63"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux passages",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"w1": "3",
+				"w2": "8",
+				"w3": "63"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "L[3] = 2 + 6 × 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"q": "3"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : L[3] pris pour le 3e élément",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"q": "3"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "L[4] = 2 + 10 × 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"q": "4"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1, 1, n = 5 : 8",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"s": "1",
+				"n": "5"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b au lieu de a",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"s": "1",
+				"n": "5"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2, 3, n = 4 : 13",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"s": "3",
+				"n": "4"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

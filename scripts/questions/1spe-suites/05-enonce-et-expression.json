@@ -1,0 +1,271 @@
+{
+	"title": "De l'énoncé à l'expression de la suite",
+	"description": "Traduire un énoncé en langage naturel : forme explicite (u₀ ou u₁ premier terme), relation de récurrence uₙ₊₁ = a × uₙ + b (deux cases)",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Modélisation",
+	"subdomain": "De l'énoncé à la suite",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Léa a ${{eval:a}}~\\unit{€}$ sur son compte en janvier, et y verse ${{eval:r}}~\\unit{€}$ à la fin de chaque mois. On note $u_n$ la somme sur son compte $n$ mois après janvier, avec $u_0={{eval:a}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..150"
+				},
+				{
+					"name": "r",
+					"expression": "10..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}+{{eval:r}}n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque mois, la somme augmente de ${{eval:r}}$ : $(u_n)$ est arithmétique de raison ${{eval:r}}$ et de premier terme $u_0={{eval:a}}$.",
+					"$$u_n=u_0+nr=\\textcolor{{{color:primary.0}}}{{{eval:a}}+{{eval:r}}n}$$"
+				]
+			}
+		},
+		{
+			"statement": "Un lac contient ${{eval:n0}}$ poissons. Chaque année, ${{eval:p}}\\,\\%$ des poissons meurent, puis on en introduit ${{eval:100*j}}$. On note $u_n$ le nombre de poissons au bout de $n$ années.\n\nComplète la relation de récurrence.\n\n$u_{n+1}=?\\times u_n+?$",
+			"variables": [
+				{
+					"name": "n0",
+					"expression": "2000..6000"
+				},
+				{
+					"name": "p",
+					"expression": "10|15|20|25|30"
+				},
+				{
+					"name": "j",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-p/100;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:100*j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Perdre ${{eval:p}}\\,\\%$ des poissons, c'est multiplier leur nombre par $1-\\dfrac{{{eval:p}}}{100}={{eval:1-p/100;d}}$.",
+					"On ajoute ensuite les ${{eval:100*j}}$ poissons introduits : $u_{n+1}=\\textcolor{{{color:primary.0}}}{{{eval:1-p/100;d}}}\\times u_n+\\textcolor{{{color:primary.1}}}{{{eval:100*j}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un site compte ${{eval:a}}$ inscrits le premier jour. Chaque jour, le nombre d'inscrits {{if:k==2|double|triple}}, puis ${{eval:d}}$ personnes se désinscrivent. On note $u_n$ le nombre d'inscrits le $n$-ième jour.\n\nComplète la relation de récurrence.\n\n$u_{n+1}=?\\times u_n+?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..80"
+				},
+				{
+					"name": "k",
+					"expression": "2|3"
+				},
+				{
+					"name": "d",
+					"expression": "2..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k}}"
+				},
+				{
+					"expectedAnswer": "{{eval:-d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre d'inscrits {{if:k==2|double|triple}} : on multiplie $u_n$ par ${{eval:k}}$.",
+					"${{eval:d}}$ personnes partent : on retranche ${{eval:d}}$, c'est-à-dire qu'on ajoute ${{eval:-d}}$.",
+					"$$u_{n+1}=\\textcolor{{{color:primary.0}}}{{{eval:k}}}\\times u_n\\textcolor{{{color:primary.1}}}{-{{eval:d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Hugo prépare un semi-marathon. La première semaine, il court ${{eval:a}}~\\unit{km}$ ; chaque semaine, il court ${{eval:r}}~\\unit{km}$ de plus que la semaine précédente. On note $u_n$ la distance courue la $n$-ième semaine, avec $u_1={{eval:a}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "8..15"
+				},
+				{
+					"name": "r",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["a > r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-r}}+{{eval:r}}n",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_n)$ est arithmétique de raison ${{eval:r}}$, mais son premier terme est $u_1={{eval:a}}$ : de $u_1$ à $u_n$, on ajoute $n-1$ fois la raison.",
+					"$u_n=u_1+(n-1)r={{eval:a}}+{{eval:r}}(n-1)$.",
+					"$$u_n=\\textcolor{{{color:primary.0}}}{{{eval:r}}n+{{eval:a-r}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "120 + 25n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "120",
+				"r": "25"
+			},
+			"answers": ["120+25n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture 25n + 120",
+			"variationIndex": 0,
+			"variables": {
+				"a": "120",
+				"r": "25"
+			},
+			"answers": ["25n+120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 25 + 120n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "120",
+				"r": "25"
+			},
+			"answers": ["25+120n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Lac 20 %, +300 : 0,8 et 300",
+			"variationIndex": 1,
+			"variables": {
+				"n0": "5000",
+				"p": "20",
+				"j": "3"
+			},
+			"answers": ["0,8", "300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,2 (le taux)",
+			"variationIndex": 1,
+			"variables": {
+				"n0": "5000",
+				"p": "20",
+				"j": "3"
+			},
+			"answers": ["0,2", "300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −0,2",
+			"variationIndex": 1,
+			"variables": {
+				"n0": "5000",
+				"p": "20",
+				"j": "3"
+			},
+			"answers": ["-0,2", "300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Double, −5 : 2 et −5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"k": "2",
+				"d": "5"
+			},
+			"answers": ["2", "-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : +5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"k": "2",
+				"d": "5"
+			},
+			"answers": ["2", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u₁ = 10, +3 : 3n + 7",
+			"variationIndex": 3,
+			"variables": {
+				"a": "10",
+				"r": "3"
+			},
+			"answers": ["3n+7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture 10 + 3(n − 1)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "10",
+				"r": "3"
+			},
+			"answers": ["10+3(n-1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 + 3n (u₀ supposé)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "10",
+				"r": "3"
+			},
+			"answers": ["10+3n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
