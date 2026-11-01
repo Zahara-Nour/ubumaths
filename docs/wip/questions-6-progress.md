@@ -1247,6 +1247,9 @@ toutes distinctes, chaque leurre du 3 v1 a une vue différente des vues données
 - David lance `create-questions --publier` : 01 ce3c4e11, 02 763d1183, 03 37c6852c, 04 650dcfc6, 05 0464c3f6, en
   brouillon. MCP : 5 brouillons, `['6']`, niveaux 1, 2, 3, 1, 2, sans nœud ni tag ; points actifs sur des
   **notions** (6-181, 6-208, 6-209 → « Géométrie > Solides » ; 6-154, 6-155 → « Grandeurs et mesures > Volumes »).
-- Migration `20261101215200_questions_6_lot8_rangement_tags` (patron du lot 7, résolution du chemin jusqu'à la
-  notion ; horodatage = dernière jouée en prod 215100 + 1 min) ; test `questions-6-lot8-rangement-tags` : 8 rouges
+- Migration `20261101220100_questions_6_lot8_rangement_tags` (patron du lot 7, résolution du chemin jusqu'à la
+  notion ; horodatage 215200 d’abord, pris de vitesse par 220000 (questions-tspe) : renommée 220100, dernière jouée en prod + 1 min, relevée juste avant le push) ; test `questions-6-lot8-rangement-tags` : 8 rouges
   contre une migration vidée, 14 verts avec.
+- Revue `security-auditor` : aucun bloquant ; un Important corrigé (horodatage antérieur à 220000, déjà jouée :
+  renommée 220100) ; un Faible laissé (branches « point sur un autre nœud » et « chemin introuvable » de la
+  résolution non testées, déjà le cas au lot 7 ; le code les refuse).
