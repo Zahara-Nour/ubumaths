@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, correction de 040 / 118 / 041 (§ 9.5) en PR._
+_Mis à jour le 2026-11-01, après #2086._
 
-- **État** : lots 1-3 publiés. Lot 4 : 7 brouillons rangés et tagués (#2060) ; 040, 118, 041 corrigés (variation 1 = un nombre ENTIER d'unités, § 9.5), PR ouverte sur `fix/questions-cm2-entier-decimal`. Page à cocher : https://claude.ai/artifact/GbuqmaxXKnTHhZSdy3ppbL
-- **Prochaine action** : PR mergée → David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-4 --publier --mettre-a-jour` (simulation : 3 ↻, 4 =) ; vérifier au MCP ; remettre à zéro les verdicts de 040 / 118 / 041 et republier la page ; relire `verdicts` (compter 7) ; puis `publier-lot`.
+- **État** : lots 1-3 publiés. Lot 4 : 7 brouillons rangés et tagués (#2060) ; 040, 118, 041 corrigés (variation 1 = un nombre ENTIER d'unités, § 9.5), #2086 mergée. Page à cocher : https://claude.ai/artifact/GbuqmaxXKnTHhZSdy3ppbL
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-4 --publier --mettre-a-jour` (simulation : 3 ↻, 4 =) ; vérifier au MCP ; remettre à zéro les verdicts de 040 / 118 / 041 et republier la page ; relire `verdicts` (compter 7) ; puis `publier-lot`.
 - **En attente de David** : le `--mettre-a-jour` ; relecture des autres fiches du lot 4.
 - **Pièges en cours** : `create-questions` retrouve un modèle par son TITRE (titre changé = doublon) ; `curriculum_points` sans colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal `{{eval:…;d}}` ; variable `e` = Euler ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI ; worktree neuf → `svelte-kit sync` avant `question:specs`.
-- **Worktree / branche** : `ubumaths-wt-questions-cm2` · `fix/questions-cm2-entier-decimal`.
+- **Worktree / branche** : aucun (retiré après #2086).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
