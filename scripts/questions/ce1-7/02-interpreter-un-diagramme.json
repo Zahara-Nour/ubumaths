@@ -1,0 +1,337 @@
+{
+	"title": "Que dit le diagramme en barres ?",
+	"description": "Le plus choisi, le moins choisi (case choix), combien de plus, combien en tout",
+	"grades": ["CE1"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "Diagrammes en barres",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici le diagramme en barres « Sport préféré ».\n\n```barres\ntitre: Sport préféré\naxes: Sport ; Élèves\nFootball = {{a}}\nDanse = {{b}}\nJudo = {{c}}\nNatation = {{d}}\naxe: 0 à 15\n```\n\nQuel sport est le plus choisi ?\n\n```choix\nmelanger: non\n- Football\n- Danse\n- Judo\n- Natation\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..15"
+				},
+				{
+					"name": "b",
+					"expression": "2..15"
+				},
+				{
+					"name": "c",
+					"expression": "2..15"
+				},
+				{
+					"name": "d",
+					"expression": "2..15"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:a>b && a>c && a>d|0|{{if:b>a && b>c && b>d|1|{{if:c>a && c>b && c>d|2|3}}}}}}"
+				}
+			],
+			"conditions": [
+				"(a-b)*(a-b) > 0",
+				"(a-c)*(a-c) > 0",
+				"(a-d)*(a-d) > 0",
+				"(b-c)*(b-c) > 0",
+				"(b-d)*(b-d) > 0",
+				"(c-d)*(c-d) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre la plus haute.",
+					"Le sport le plus choisi est {{if:r==0|le football|{{if:r==1|la danse|{{if:r==2|le judo|la natation}}}}}} : ${{eval:((a)*(r-1)*(r-2)*(r-3)/(-6)+(b)*(r-0)*(r-2)*(r-3)/(2)+(c)*(r-0)*(r-1)*(r-3)/(-2)+(d)*(r-0)*(r-1)*(r-2)/(6))}}$ élèves."
+				]
+			}
+		},
+		{
+			"statement": "Voici le diagramme en barres « Fruit préféré ».\n\n```barres\ntitre: Fruit préféré\naxes: Fruit ; Élèves\nPomme = {{a}}\nBanane = {{b}}\nFraise = {{c}}\nOrange = {{d}}\naxe: 0 à 15\n```\n\nQuel fruit est le moins choisi ?\n\n```choix\nmelanger: non\n- Pomme\n- Banane\n- Fraise\n- Orange\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..15"
+				},
+				{
+					"name": "b",
+					"expression": "2..15"
+				},
+				{
+					"name": "c",
+					"expression": "2..15"
+				},
+				{
+					"name": "d",
+					"expression": "2..15"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:a<b && a<c && a<d|0|{{if:b<a && b<c && b<d|1|{{if:c<a && c<b && c<d|2|3}}}}}}"
+				}
+			],
+			"conditions": [
+				"(a-b)*(a-b) > 0",
+				"(a-c)*(a-c) > 0",
+				"(a-d)*(a-d) > 0",
+				"(b-c)*(b-c) > 0",
+				"(b-d)*(b-d) > 0",
+				"(c-d)*(c-d) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre la moins haute.",
+					"Le fruit le moins choisi est {{if:r==0|la pomme|{{if:r==1|la banane|{{if:r==2|la fraise|l'orange}}}}}} : ${{eval:((a)*(r-1)*(r-2)*(r-3)/(-6)+(b)*(r-0)*(r-2)*(r-3)/(2)+(c)*(r-0)*(r-1)*(r-3)/(-2)+(d)*(r-0)*(r-1)*(r-2)/(6))}}$ élèves."
+				]
+			}
+		},
+		{
+			"statement": "Voici le diagramme en barres « Animal préféré ».\n\n```barres\ntitre: Animal préféré\naxes: Animal ; Élèves\nChat = {{a}}\nChien = {{b}}\nLapin = {{c}}\naxe: 0 à 20\n```\n\nCombien d'élèves de plus ont choisi le chat plutôt que le lapin ?\n\n$?$ élèves de plus",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..20"
+				},
+				{
+					"name": "b",
+					"expression": "2..20"
+				},
+				{
+					"name": "c",
+					"expression": "2..15"
+				}
+			],
+			"conditions": ["a-c >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit les deux barres : ${{a}}$ élèves pour le chat, ${{c}}$ pour le lapin.",
+					"On calcule l'écart : ${{a}} - {{c}} = {{eval:a-c}}$.",
+					"${{eval:a-c}}$ élèves de plus ont choisi le chat."
+				]
+			}
+		},
+		{
+			"statement": "Voici le diagramme en barres « Couleur préférée ».\n\n```barres\ntitre: Couleur préférée\naxes: Couleur ; Élèves\nRouge = {{a}}\nBleu = {{b}}\nVert = {{c}}\nJaune = {{d}}\naxe: 0 à 20\n```\n\nCombien d'élèves ont répondu en tout ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..20"
+				},
+				{
+					"name": "b",
+					"expression": "2..20"
+				},
+				{
+					"name": "c",
+					"expression": "2..20"
+				},
+				{
+					"name": "d",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+c+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit chaque barre : ${{a}}$, ${{b}}$, ${{c}}$ et ${{d}}$.",
+					"On additionne : ${{a}} + {{b}} + {{c}} + {{d}} = {{eval:a+b+c+d}}$.",
+					"${{eval:a+b+c+d}}$ élèves ont répondu."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : le football, le plus choisi",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "7",
+				"c": "4",
+				"d": "9",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la natation (le dernier)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "7",
+				"c": "4",
+				"d": "9",
+				"r": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le judo (le moins choisi)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "7",
+				"c": "4",
+				"d": "9",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La natation, le plus choisi",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "7",
+				"c": "4",
+				"d": "13",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "La banane, le moins choisi",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "3",
+				"c": "11",
+				"d": "6",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la fraise (le plus choisi)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "3",
+				"c": "11",
+				"d": "6",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Chat 14, lapin 6 : 8 de plus",
+			"variationIndex": 2,
+			"variables": {
+				"a": "14",
+				"b": "9",
+				"c": "6"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 14 (le chat seul)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "14",
+				"b": "9",
+				"c": "6"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 20 (la somme)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "14",
+				"b": "9",
+				"c": "6"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "En tout : 12 + 7 + 15 + 9 = 43",
+			"variationIndex": 3,
+			"variables": {
+				"a": "12",
+				"b": "7",
+				"c": "15",
+				"d": "9"
+			},
+			"answers": ["43"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une barre oubliée (34)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "12",
+				"b": "7",
+				"c": "15",
+				"d": "9"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le nombre de barres (4)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "12",
+				"b": "7",
+				"c": "15",
+				"d": "9"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
