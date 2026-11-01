@@ -8,7 +8,7 @@ status: en cours
 
 _Mis à jour le 2026-11-01, avant la PR._
 
-- **État** : L10 et L16 corrigés (tests rouges puis verts, typecheck 0) · **Prochaine action** : sonder V65 reste (`|x^2-1|=3` non résolue), l'ajouter au lot si c'est petit, sinon PR · **En attente de David** : rien · **Pièges en cours** : ne pas toucher `pedagogical-simplify/`, `simplify`, `tidy` (`fusion-moteurs`) · **Worktree / branche** : `../ubumaths-wt-ecarts-lot4` (`fix/ecarts-lot4`)
+- **État** : L10 et L16 corrigés (tests rouges puis verts, typecheck 0) · **Prochaine action** : PR, CI, merge · **En attente de David** : V65 reste, voir plus bas · **Pièges en cours** : ne pas toucher `pedagogical-simplify/`, `simplify`, `tidy` (`fusion-moteurs`) · **Worktree / branche** : `../ubumaths-wt-ecarts-lot4` (`fix/ecarts-lot4`)
 
 ---
 
@@ -19,3 +19,7 @@ _Mis à jour le 2026-11-01, avant la PR._
 ## L16
 
 `parseWithSpanMarks` (`ubumark/parser/markdown-parser.ts`) remplace la découpe des deux passes (`{.rappel}` puis `{.def}`) : chaque marquage devient son texte entre deux bornes de la zone à usage privé d'Unicode (une plage par passe, les deux s'imbriquent), la mise en forme est lue sur le texte entier, puis les nœuds texte sont redécoupés aux bornes. Borne restée dans un nœud non textuel (texte d'un lien) : effacée. Tests : 3 rouges sans le correctif (`lexicon-marks.test.ts`, `detail-callouts.test.ts`) ; suite ubumark, lexique, fiches, typst, correction : verte.
+
+## V65 reste : `|x^2-1|=3` — non fait, à David
+
+`solve/absolute-value.ts` borne VOLONTAIREMENT le périmètre aux arguments affines (V40, « cas des élèves » ; `|x² − 1| = 3` y est cité comme refus voulu), et `pedagogical-solve/absolute-value` lit la même analyse (`analyzeAbsoluteValue`). Élargir au second degré = rouvrir ce choix : à trancher par David (reco : laisser le refus, sauf demande d'exercices de 1re qui en ont besoin).
