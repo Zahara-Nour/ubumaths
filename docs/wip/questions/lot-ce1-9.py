@@ -314,7 +314,7 @@ def coords(k, presets):
             for s in range(n)]
 
 
-def points(k, presets, noms='abcdefgh', visible=False):
+def points(k, presets, noms='abcdfghj', visible=False):
     lignes = []
     for nom, (x, y) in zip(noms, coords(k, presets)):
         style = '' if visible else ', visible=faux'
@@ -328,7 +328,7 @@ VAR_COULEUR = var('c', '1..4')
 
 def polygone(k, presets, description):
     n = len(presets[0])
-    noms = 'abcdefgh'[:n]
+    noms = 'abcdfghj'[:n]
     return ('```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: ' + description + '\n---\n'
             + '\n'.join(points(k, presets)) + '\n'
             + f'q = polygone({", ".join(noms)}, {COULEUR}, epaisseur=2)\n```')
@@ -425,7 +425,7 @@ def etiquettes(k, presets, lettres, ecart=0.5):
 
 def figure_nommee(k, presets, lettres, description, extra=()):
     n = len(presets[0])
-    noms = 'abcdefgh'[:n]
+    noms = 'abcdfghj'[:n]
     pts = [f'{nom} = point({x}, {y}, couleur="noir", etiquette="aucune")'
            for nom, (x, y) in zip(noms, coords(k, presets))]
     return ('```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: ' + description + '\n---\n'
@@ -714,7 +714,7 @@ def angles_de(classe):
                   'obtus': 110 <= a <= 155}[classe]
             hauteur = max(0, u[1], v[1]) - min(0, u[1], v[1])
             largeur = max(0, u[0], v[0]) - min(0, u[0], v[0])
-            if ok and hauteur <= 5 and largeur <= 8 and (v, u) not in [(p[1], p[0]) for p in out]:
+            if ok and hauteur <= 5 and largeur <= 8 and (v, u) not in out:
                 out.append((u, v))
     return out
 

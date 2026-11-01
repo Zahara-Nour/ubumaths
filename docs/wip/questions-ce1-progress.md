@@ -732,3 +732,14 @@ tag ne change aucune règle ; `a7dfe502` reste un brouillon, seuls son niveau et
    prolongent).
 
 Réponse de David (« je suis tes recos », 2026-11-01) : les six recommandations.
+
+- 2026-11-01 : lot 9 écrit (`lot-ce1-9.py`, `scripts/questions/ce1-9/`) : 9 modèles, 81 specs, simulation 9/9,
+  `question:specs` 6 600 tirages verts ; 9 brouillons en base locale. Figures : positions précalculées (gardes en
+  Python : dans la fenêtre, angles à 20° au moins de 90°, un seul angle droit au bon sommet), toutes dessinées sur une
+  planche (rendu `dessinerBlocs`) et relues ; blocs ` ```partage ` parsés sur 200 tirages par variation, sans erreur ;
+  coloriage 2/6 joué dans l'aperçu : juste. **Pièges trouvés** : un point nommé `e` (5e sommet) cassait la figure
+  sans que la simulation ni les specs ne le voient (seul le rendu le dit) → noms `abcdfghj` ; filtre de doublons
+  inversé (angles droits répétés). La page à cocher ne dessine pas ` ```partage ` (« non dessiné ») : à ajouter au
+  script avant de la publier, ou fractions jouées dans l'aperçu.
+- 2026-11-01 : PAUSE CI demandée par David (session migrations-collision, relayée par questions-1spe) : rien poussé ;
+  au « go » : `git merge origin/main`, push, PR.
