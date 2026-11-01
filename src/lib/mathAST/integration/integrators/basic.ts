@@ -230,8 +230,9 @@ function isTangent(expr: MathNode, variable: string): { arg: MathNode } | null {
 /**
  * k/(x² + c) → k·arctan(x/a)/a, où a² = c (règle arctan).
  *
- * - k : tout facteur sans la variable (`1`, `2`, `a`) — V64, revue de V61 :
- *   seul k = 1 était lu.
+ * - k : tout facteur sans la variable (`1`, `2`, `a`, `2a`) — V64, revue de
+ *   V61 : seul k = 1 était lu. Pas une somme (`a + 1`), que la primitive
+ *   écrirait développée.
  * - c : un nombre carré parfait (`4` → a = 2 ; un autre nombre passe par les
  *   éléments simples), une puissance paire d'un paramètre (`a^2` → a,
  *   `a^4` → a², avec un carré parfait devant : `4a^2` → 2a). Un c de signe
@@ -249,6 +250,9 @@ function isArctanPattern(
 	if (expr.type !== 'division') return null;
 	const numerator = expr.numerator;
 	if (containsVariable(numerator, variable)) return null;
+	// Un numérateur somme (`(a+1)/(x^2+9)`) serait développé terme à terme : refusé
+	const top = ungrouped(numerator);
+	if (top.type === 'addition' || top.type === 'subtraction') return null;
 	const k = isNumber(numerator) && numerator.value === '1' ? null : numerator;
 
 	// `1/(x^2+a^2)` tapé en notation maison : le dénominateur arrive entre

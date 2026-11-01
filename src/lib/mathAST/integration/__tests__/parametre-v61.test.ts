@@ -74,11 +74,15 @@ describe('x^a de 1 à 2 : 1^{a+1} réduit', () => {
 
 describe('les refus des intégrateurs, en français', () => {
 	// `3/(x^2+a^2)` est calculé depuis V64 ; `1/(x^2+b)` reste refusé (signe de b inconnu)
-	it.each(['1/(x^2+a^2+1)', '1/(x^2+b)', '1/(x^2+2x+a^2)', '1/(x^3+a)'])('%s', (input) => {
-		const result = integrate(typed(input), { variable: 'x' });
-		expect(result.status).toBe('unsupported');
-		expect(result.error ?? '').not.toMatch(/\b(Unable|Not a|not yet|pattern|integrator)\b/);
-	});
+	// `(a+1)/(x^2+9)` : numérateur somme, que la primitive écrirait développée (revue de #2097)
+	it.each(['1/(x^2+a^2+1)', '1/(x^2+b)', '1/(x^2+2x+a^2)', '(a+1)/(x^2+9)', '1/(x^3+a)'])(
+		'%s',
+		(input) => {
+			const result = integrate(typed(input), { variable: 'x' });
+			expect(result.status).toBe('unsupported');
+			expect(result.error ?? '').not.toMatch(/\b(Unable|Not a|not yet|pattern|integrator)\b/);
+		}
+	);
 });
 
 describe('V64 : la règle arctan lit un coefficient et un a² écrit autrement', () => {

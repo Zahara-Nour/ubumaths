@@ -64,13 +64,19 @@ export function stepsAsShown(
 	const solved = solvedBoundWritten(last.after, value);
 	if (solved === null) return shown;
 	// La forme résolue paraît aussi dans l'`after` de l'étape qui l'obtient
-	// (« On divise… ») et dans le `before` de « Solution » (son rendu le lit)
+	// (« On divise… ») et dans le `before` de « Solution » (son rendu le lit).
+	// Jamais la première étape : elle montre l'équation TAPÉE, qui peut déjà
+	// être résolue (`x = \dfrac{6}{3}` reste écrit tel quel, revue de #2097)
 	const isSolved = (node: RelationNode): boolean => nodesEqual(node, last.after);
-	return shown.map((step, index) => ({
-		...step,
-		before: isSolved(steps[index].before) ? solved : step.before,
-		after: isSolved(steps[index].after) ? solved : step.after
-	}));
+	return shown.map((step, index) =>
+		index === 0
+			? step
+			: {
+					...step,
+					before: isSolved(steps[index].before) ? solved : step.before,
+					after: isSolved(steps[index].after) ? solved : step.after
+				}
+	);
 }
 
 /** `x = c` ou `x ⋚ c` (c sans inconnue), c écrit par `value` ; sinon `null`. */

@@ -196,6 +196,11 @@ describe('.résoudre — V32 : la dernière étape du premier degré s’écrit 
 		expect(flat(last('3x=-\\pi').expressionLatex)).toBe(flat(solved('3x=-\\pi').answer));
 	});
 
+	it('x = 6/3 tapé : la première étape garde l’équation tapée (revue de #2097)', () => {
+		const { steps } = solved('x=\\dfrac{6}{3}');
+		expect(flat(steps[0].expressionLatex)).toBe('x=\\dfrac{6}{3}');
+	});
+
 	it('2x = √3 : x = √3/2, la ligne et la dernière étape d’accord', () => {
 		expect(shown('2x=\\sqrt{3}')).not.toContain('\\dfrac{1}{2}\\sqrt{3}');
 		expect(flat(last('2x=\\sqrt{3}').expressionLatex)).toBe('x=\\dfrac{\\sqrt{3}}{2}');

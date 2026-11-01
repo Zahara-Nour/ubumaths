@@ -43,3 +43,7 @@ Restes, à David :
 - `(x+1)^a` de 0 à 1 : refus gardé (honnête, hors lycée).
 - `sqrt(a) x`, `ln(a) x` de 0 à 1 sans condition : **à corriger**, lot 3 (conditions de l'atelier lues aussi dans les arguments de `\sqrt` et `\ln`).
 - Ligne `\dfrac{1}{3}x^3` contre étapes `\dfrac{x^3}{3}` : pour `fusion-moteurs` (deux moteurs).
+
+## Revue de #2097 (code-reviewer, opus)
+
+Aucune primitive ni solution fausse. Corrigé : (1) la première étape d'une équation tapée déjà résolue (`x = \dfrac{6}{3}`) était réécrite en `x = 2` — l'étape 0 n'est plus touchée ; (2) un numérateur somme (`(a+1)/(x^2+9)`) donnait une primitive juste mais développée — refusé, comme sur main. Noté sans correction : `1/(x^2+i^2)` → `i·arctan(ix)`, faux sur ℝ, déjà sur main (exotique).
