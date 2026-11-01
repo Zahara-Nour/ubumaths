@@ -6,17 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 7 validée (§ 44), 7 A écrit (§ 45)._
+_Mis à jour le 2026-11-01, lot 7 écrit (§ 45 à 47), #2164 ouverte._
 
 - **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) écrit : 7 A PR #2164, 7 B (§ 46) et 7 C (§ 47) sur
   branches empilées.
-- **Prochaine action** : merger #2164, puis rebaser et ouvrir 7 B, puis 7 C ; ensuite brouillons en prod (David), migration, page à cocher.
+- **Prochaine action** : merger #2164 (CI verte), puis rebaser et ouvrir 7 B, puis 7 C ; ensuite brouillons en
+  prod (David), migration, page à cocher. **Décidé par David (2026-11-01)** : avant la relecture du lot 7,
+  faire dessiner les tableaux ` ```variation ` par `page-a-cocher.ts` (15 fiches sur 21 en ont ; alerte
+  « bloc variation non dessiné » aujourd'hui) — PR de code à part.
 - **En attente de David** : rien.
 - **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main`, des worktrees ET de la prod
   — désormais `pnpm migration:horodatage` et `pnpm check:migrations --pr <n>` avant le merge (#2165) ;
   `page-a-cocher.ts` voit des défauts de fenêtre que `sonde-courbes` ne voit pas : la lancer avant la PR ;
   `db push`, `--publier` → David avec `!` ; worktree neuf → `pnpm exec svelte-kit sync`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-lot7a`, `…-lot7b`, `…-lot7c`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-lot7a` (#2164), `…-lot7b`, `…-lot7c`
+  (empilées, commitées, non poussées) ; 21 brouillons en base LOCALE seulement.
 
 ## 1. Relevé (prod, 2026-10-27)
 
