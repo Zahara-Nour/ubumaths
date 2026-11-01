@@ -9,8 +9,8 @@
 _Mis à jour le 2026-11-01, après #2125 (rangement du 5b)._
 
 - **État** : lots 0 à 4 et 5a publiés ; 5b (calculs, 6 modèles) en brouillon en prod, rangé et tagué (#2125, vérifié MCP) ; page à cocher du 5b publiée : https://claude.ai/artifact/EBRtiBKNCcbaQynwCYUXKx (6 fiches, `verdicts` vide au départ).
-- **Prochaine action** : après le `--publier` du 5b, vérifier `published` (MCP) ; puis lot suivant (§ 3 du journal : prochains points sans modèle).
-- **En attente de David** : 5b relu (6 OK sur 6, simulation : 6 passent) → `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-5b --publier`.
+- **Prochaine action** : migration de niveau de `cf85bd1b` (022) 7 → 8 + fichier `06-…json` (une PR), après la question d'accès ; puis `publier-lot` en simulation ; puis lot suivant (§ 3 du journal : prochains points sans modèle).
+- **En attente de David** : question d'accès de la migration de niveau (« personne », proposé) ; ensuite `publier-lot --dir scripts/questions/cm2-5b --publier`.
 - **Pièges en cours** : homonymes du CM1 / de 6e signalés par la page à cocher (même titre, autre niveau : ids vérifiés) ; `reducedFractions: off` accepte toute fraction égale ; jamais `}}` collé dans un `{{if:}}` ; `db:migrate` refusé quand la prod a des migrations plus récentes → `--dry-run` puis `--include-all` si seule la nôtre manque ; worktree sans `supabase/.temp` → copier celui du dépôt principal pour `db push` ; dépôt principal à l'index occupé par une autre session → jouer depuis le worktree ; `git commit -m … -- <fichiers>` ; `Doc-inchangée:` dans un message de commit.
 - **Worktree / branche** : aucun (retiré après #2125).
 
@@ -547,4 +547,4 @@ modèles 6-11). Tableau du § 10 gardé.
 
 ### 10.8 Lot 5b : relecture (David, 2026-11-01)
 
-- 6 OK sur 6, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 6 brouillons passent le contrôle.
+- 6 OK sur 6, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : **refus** de `cf85bd1b` — niveau 7 de Fractions / Calculer / Fraction d'une quantité pris par `a635df43` « Fraction d'une fraction » (4e, passé de 5 à 7 puis publié le 2026-11-01 par `questions-4`, migration `20261101193000`, après mon relevé). Rien publié. Correction : niveau 8 (libre), migration + fichier.
