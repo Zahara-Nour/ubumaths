@@ -9,9 +9,9 @@ _Mis à jour le 2026-11-01, phase 0 du lot 8 proposée (§ 39)._
 
 - **État** : lots 1 à 7 en prod ; tous publiés sauf les 2 volumes du lot 6 (brouillons), débloqués : la prod v0.59.0
   livre ` ```solide ` (et le repère à placer). Phase 0 du lot 8 écrite (§ 39).
-- **Prochaine action** : réponses de David au § 39.4, puis volumes du lot 6 (`publier-lot` sur un dossier avec 01 et
-  02 seulement) et écriture du lot 8 ; ensuite lot 9 « pensée informatique » (065-067).
-- **En attente de David** : les 4 questions du § 39.4 (modèles, catégories, repère à placer pour 063, volumes du lot 6).
+- **Prochaine action** : écrire le lot 8 (§ 39.2, décisions sous le § 39.4) dans le worktree, branche
+  `feat/questions-4-lot-8` ; ensuite lot 9 « pensée informatique » (065-067).
+- **En attente de David** : `publier-lot --dir scripts/questions/4-lot-6 --publier` (volumes, simulation verte, § 40).
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
   David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
   `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
@@ -992,3 +992,14 @@ publication, les élèves de 4e voient 6 modèles de plus.
    c'est « représenter » pour de vrai) ?
 4. Lot 6 : publier les 2 volumes maintenant que ` ```solide ` est en prod (`publier-lot` sur un dossier avec 01 et 02
    seulement), avant d'écrire le lot 8 (reco : oui) ?
+
+**Décisions de David (2026-11-01, « je te suis »)** : les 6 modèles du § 39.2 ; catégories Fonctions / Programmes de
+calcul / Appliquer 1 (060) et 2 (081), Remonter 1 (061), Fonctions / Dépendance / Formule 1 (062), Graphique 1 (063),
+Formule, tableau et graphique 1 (064) ; 063 au repère à placer (+ une variante à choix de graphiques) ; volumes du lot
+6 publiés avant d'écrire le lot 8.
+
+## 40. Lot 6 : publication des volumes (2026-11-01)
+
+- ` ```solide ` en prod (v0.59.0, `solide-parser.ts` sur `origin/production`). `publier-lot --dir
+scripts/questions/4-lot-6` en simulation (prod) : 6a770d04 et 35002b15 passent ; les 3 translations, déjà
+  publiées, laissées telles quelles (le script les saute : plus besoin de dossier à part).
