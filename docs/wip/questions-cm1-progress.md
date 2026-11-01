@@ -595,3 +595,5 @@ sans outil neuf ; « 1 + 3/4 » refusé (`requiredForm: 'fraction'`).
 - Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
 - `security-auditor` : aucun finding bloquant (diff au gabarit 3b : seuls ids, codes, sous-notions, comptes
   et commentaires changent) ; l'en-tête du test qui disait « 8 modèles » est corrigé.
+- #2082, CI 1 : garde de doc rouge (`Doc-inchangée:` mise dans la PR au lieu d'un commit, corrigé) ;
+  tests navigateur en échec sur `wrapDynamicImport` (comme au 3b, sans lien), relancés.
