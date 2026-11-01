@@ -899,11 +899,14 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
   `NumberLinePlacer.svelte` et `construire: 'line'`) ; `NumberLineInput.svelte` a été retiré.
 - **Réponses à placer, restes du chantier** (clos le 2026-10-29, journal
   `docs/archive/wip/reponses-a-placer-progress.md`) : pas de trotteuse sur l'horloge (secondes de
-  CM2-083 non plaçables) ; au doigt, le glisser qui suit la pose d'un point absent sur une droite attend un
-  peu (relâcher et reprendre) ; CP-058 (alignement à la règle) relève de la figure de travail
-  (`figure-et-choix`), pas d'un geste à placer. Contenu à faire par les sessions « questions » : les
-  modèles « ranger » encore en case (6e 06 et 07, CP, CE1, CM2) à réécrire en ```ranger (au moins
-  3 étiquettes) ; aucun modèle n'utilise encore `axe: à choisir` (CE2-082).
+  CM2-083 non plaçables) ; pas de point à placer sur le cercle trigonométrique (bloc `trig`, 1re spé
+  306 : même geste que l'horloge, un angle sur un cercle ; prévu par `questions-1spe` D5 pour la phase 0
+  des aiguilles, jamais versé — à faire avec la trotteuse dans un petit chantier à part) ; au doigt, le
+  glisser qui suit la pose d'un point absent sur une droite attend un peu (relâcher et reprendre) ;
+  CP-058 (alignement à la règle) relève de la figure de travail (`figure-et-choix`), pas d'un geste à
+  placer. Contenu à faire par les sessions « questions » : les modèles « ranger » encore en case (6e 06
+  et 07, CP, CE1, CM2) à réécrire en ```ranger (au moins 3 étiquettes) ; aucun modèle n'utilise encore
+  `axe: à choisir` (CE2-082).
 - `question_templates.type` existe en base, mais le code déduit le type de la structure
   (`getQuestionType`). CONTEXT.md liste encore des types TinyMath (`numerical_exact`…) absents de
   `QuestionType`.

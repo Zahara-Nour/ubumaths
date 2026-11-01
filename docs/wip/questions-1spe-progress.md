@@ -195,7 +195,8 @@ _Posées le 2026-10-27. Recommandations de Claude validées par David le 2026-10
 - **D4 — Points P** hors chantier (5a89b292 couvre déjà le résultat de 308 / 411).
 - **D5 — Outils C.** « Tracer une droite / une tangente » (433, 271) : un chantier commun avec la seconde
   (2-316, 2-445). « Placer un point sur le cercle » (306) : à verser dans la phase 0 des aiguilles de
-  `reponses-a-placer` (§ 6.1, même geste : un angle sur un cercle).
+  `reponses-a-placer` (§ 6.1, même geste : un angle sur un cercle). ⚠️ Jamais versé (chantier clos le
+  2026-10-29) : noté dans « Écarts connus » de `docs/systeme/questions.md`, geste à créer dans un chantier à part.
 - **D6 — QCM** : case choix, en brouillon jusqu'au `deploy:prod` de `figure-et-choix` ; seuls 403, 296, 407 en
   ont besoin, placés en fin d'ordre.
 - **D7 — Ordre** : brouillons par thème → migration des tags (D3) → dérivation → variations et courbes → suites
