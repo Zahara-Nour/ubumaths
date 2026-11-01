@@ -1029,3 +1029,12 @@ une page à cocher.
 - #2139 : CI verte, `security-auditor` sans finding bloquant (code identique au lot 5, état prod relu), mergée.
   `db:migrate` refusé : la prod a déjà 20261101215000 (1re spé, autre session) → `--include-all` ; à blanc :
   seule 20261101213600 part ; le `db push` réel est refusé par le classifieur, à lancer par David.
+- `db push --include-all` lancé par David : 20261101213600 jouée (avec 20261101215100 du CE1, mergée entre-temps
+  sur `main` ; session CE1 prévenue). MCP : les 20 en `draft`, bon nœud, un seul tag, le bon, `updated_at` préservé.
+
+## 42. Lot 6, page à cocher et fenêtre du 6 C-06 (2026-11-01)
+
+- `page-a-cocher.ts` sur les 20 (copie, préfixes `a-`/`b-`/`c-`) : une alerte sur 6 C-06 (f(x) < k, méthode
+  adaptée) — l'axe des abscisses, où l'ensemble est repassé en vert, sort de la fenêtre quand k et c sont loin de
+  0 (`sonde-courbes` ne le voit pas). Fenêtre y élargie pour contenir 0 ; specs 11/11, sonde 0 problème, page
+  sans alerte. Fichier corrigé à remettre en prod : `create-questions --mettre-a-jour` (David).

@@ -587,7 +587,7 @@ MODELES.append(modele(
 ADAPTE_INEQ = 'Résous dans $\\mathbb{R}$ l\'inéquation $f(x)' + signe() + '{{k}}$.' + S_EGAL
 DIVISE_POSITIF = ('On **isole** la fonction de référence ; quand on divise par ${{a}}$, un nombre **positif**,'
                   ' le sens **ne change pas**.')
-FENETRE_Y_F = '{{eval:min((k),(c))-4}} ; {{eval:max((k),(c))+4}}'
+FENETRE_Y_F = '{{eval:min(0,min((k),(c)))-3}} ; {{eval:max(0,max((k),(c)))+3}}'
 ENS_CARRE = entre_ou_dehors('-{{r}}', '{{r}}')
 ENS_RACINE = intervalles_racine('{{eval:(m)^2}}')
 ENS_CUBE = intervalles('{{r}}')
