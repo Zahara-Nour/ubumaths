@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, jeu local du 6a fini, PR du 6a à ouvrir._
+_Mis à jour le 2026-11-01, PR #2156 ouverte (CI en cours)._
 
-- **État** : lots 0 à 5 publiés. Lot 6a (fractions décimales, 7 modèles) écrit, specs vertes, **jeu local fini pour les 7** (§ 11.2) ; 02 corrigé (V4 débordait à 390 px). Brouillons à jour en base **locale**.
-- **Prochaine action** : PR des fichiers (revue : aucune), CI, merge ; puis David lance `create-questions --dir scripts/questions/cm2-6a --publier` (simulation d'abord, niveaux relevés juste avant) ; puis migration de rangement (nœud + tag), page à cocher, publication ; ensuite phase d'écriture du 6b (décimaux).
+- **État** : lots 0 à 5 publiés. Lot 6a (fractions décimales, 7 modèles) : jeu local fini pour les 7 (§ 11.2), **PR #2156 ouverte** ; 1re CI rouge à cause de `main` (migration `20261101215000` en double, réglée par #2154), `origin/main` fusionné dans la branche (93f7b80d2), 2e CI en cours.
+- **Prochaine action** : `gh pr checks 2156` ; vert → `gh pr merge 2156 --merge` ; puis David lance `create-questions --dir scripts/questions/cm2-6a --publier` (simulation d'abord, niveaux relevés juste avant) ; puis migration de rangement (nœud + tag), page à cocher, publication ; ensuite écriture du 6b (décimaux).
 - **En attente de David** : le `--publier` du 6a, après le merge.
-- **Pièges en cours** : `spacesFromFourDigits` → réponses des specs en `1\,000` ; homonymes du CM1 sur la page à cocher (mêmes titres) ; `db:migrate` : `--dry-run` puis `--include-all` ; `git commit -m … -- <fichiers>` ; jeu local : `jouer.mjs` (scratchpad, perdu au `/clear`) — une case dans un champ = `setPromptValue`, même s'il n'y a qu'un champ.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2` · `feat/questions-cm2-lot6a` (serveur local 5183 à arrêter).
+- **Pièges en cours** : **migrations (règle du 2026-11-01, #2165)** : horodatage par `pnpm migration:horodatage`, jamais « max + 1 » à la main ; `pnpm check:migrations --pr <n>` avant le merge ; si le 1er job CI « Commit de version ? » échoue, tout est sauté → le lire ; `git merge origin/main` avant d'écrire la migration. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page à cocher ; `db:migrate` : `--dry-run` puis `--include-all` ; `git commit -m … -- <fichiers>` ; jeu local : `jouer.mjs` (scratchpad, perdu au `/clear`) — case dans un champ = `setPromptValue`, même avec un seul champ.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2` · `feat/questions-cm2-lot6a`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
