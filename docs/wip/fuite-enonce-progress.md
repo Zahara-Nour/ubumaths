@@ -198,3 +198,12 @@ Recos données à David après #2130, « go » : garde point invisible **non** (
 - Tests : `masked-statement-garde.test.ts` (11 genres nommés non masqués, rien une fois masqués, bloc
   illisible nommé, choix et gestes sans réponse ignorés), `public-question-garde.test.ts` (masque remplacé par
   l'identité : erreur qui nomme le bloc ; rouge sans la garde).
+
+**Revues de #2145 (2026-11-01).** security-auditor (Opus) : aucun bloquant ; erreur de `toPublicQuestion` =
+500 générique (pas de `handleError`), rien ne sort. code-reviewer (Opus) : aucun faux positif (14 exemples du
+catalogue, 300 instances de la base locale, variantes) ; **faux négatif corrigé** : `Compléter:` accentué,
+accepté par le parseur, échappait au repérage (`PATRON_TASK_LINE_REGEX`) → ni case ni masque ; repérage accentué
+
+- test. Laissés : (a) une reprise dont le masque casserait après coup rend 500 à chaque fois (tentative bloquée,
+  pas de fuite ; 0 tentative d'évaluation en prod) — à reprendre si ça arrive : écarter la question à la reprise ;
+  (b) l'écart au tirage n'a pas de test d'intégration (5 lignes, relues par les deux revues).
