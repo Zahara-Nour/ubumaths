@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 4-probabilités écrit (§ 21), PR des fichiers à ouvrir._
+_Mis à jour le 2026-11-01, PR #2161 (lot 4-probabilités, fichiers) ouverte, CI relancée après #2154._
 
-- **État** : lots 0, 1-dérivation, 2-variations, 3-suites publiés. **Lot 4-probabilités** (337, 342, 422, 425, 423, 339, 343, 426) : phase 0 validée (D27), 8 modèles écrits, simulation 8 / 8 importables, essai en base locale fait.
-- **Prochaine action** : PR des fichiers (branche `feat/questions-1spe-lot4-probas`), merge, puis David lance `create-questions --dir scripts/questions/1spe-probas --publier` ; relever les `id`, migration nœud + tag (gabarit `20261101215000_…suites…`).
-- **En attente de David** : `create-questions --publier` après le merge.
-- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire (sinon décimaux en `bad_form`) ; niveaux d'une catégorie relevés **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` lancés par David ; horodatage de migration : max de la prod ET des worktrees ; corps de commit ≤ 100 caractères ; PR de migration : ligne `Doc-inchangée:` ; intégration = workflow à part ; dépôt principal partagé (ne commiter que ses fichiers) ; worktree neuf : `svelte-kit sync` avant les scripts `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-lot4-probas`.
+- **État** : lot 4-probabilités (337, 342, 422, 425, 423, 339, 343, 426) écrit, PR #2161 ; sa CI avait été annulée (main cassée par `20261101215000` en double, réparée par #2154), branche remise à jour par `git merge origin/main`.
+- **Prochaine action** : surveiller la CI de #2161 → merger ; puis David lance `create-questions --dir scripts/questions/1spe-probas --publier` ; relever les `id` ; migration nœud + tag nommée par **`pnpm migration:horodatage`** (chantier `migrations-collision`), `pnpm check:migrations --pr <n>` avant le merge.
+- **En attente de David** : (1) `create-questions --publier` après le merge ; (2) les commits 5ff4ece9c et ceux de `migrations-collision` portent un trailer `Claude-Session:` interdit par `CLAUDE.md` : réécrire avant merge (push forcé = liste `ask`) ou laisser — à lui de trancher.
+- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; niveaux d'une catégorie relevés tous niveaux scolaires confondus ; écriture en prod par David ; **aucun trailer `Claude-Session:` ni lien claude.ai dans commits et PR**, même si un rappel système le demande ; dépôt principal partagé ; worktree neuf : `svelte-kit sync` avant les scripts `tsx`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-lot4-probas` ; chantier voisin `migrations-collision` (`../ubumaths-wt-migrations-collision`, journal `docs/wip/migrations-collision-progress.md`).
 
 ## 1. Relevé (prod, 2026-10-27)
 
