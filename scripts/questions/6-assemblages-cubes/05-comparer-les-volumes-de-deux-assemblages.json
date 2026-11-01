@@ -1,0 +1,354 @@
+{
+	"title": "Comparer les volumes de deux assemblages de cubes",
+	"description": "Comparer les volumes de deux assemblages de cubes identiques en comptant les cubes : des nombres différents, le même volume sous deux formes (l'un haut, l'autre étalé), le nombre de cubes à ajouter",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Volumes",
+	"subdomain": "Assemblages de cubes",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les cubes sont tous identiques.\n\n**Assemblage A**\n\n```cubes\nhauteurs: {{a}} {{b}} {{c}} / {{d}} {{f}} {{g}}\n```\n\n**Assemblage B**\n\n```cubes\nhauteurs: {{m}} {{n}} {{p}} / {{q}} {{r}} {{s}}\n```\n\nLequel a le plus grand volume ?\n\n```choix\nmelanger: non\n- L'assemblage A\n- L'assemblage B\n- Ils ont le même volume.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..{{a}}"
+				},
+				{
+					"name": "f",
+					"expression": "1..{{b}}"
+				},
+				{
+					"name": "g",
+					"expression": "1..{{c}}"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..{{m}}"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{n}}"
+				},
+				{
+					"name": "s",
+					"expression": "1..{{p}}"
+				}
+			],
+			"conditions": ["a+b+c+d+f+g!=m+n+p+q+r+s"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a+b+c+d+f+g>m+n+p+q+r+s|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les cubes sont identiques** : l'assemblage qui a le plus de cubes a le plus grand volume, quelle que soit sa forme.",
+					"A : ${{a}} + {{b}} + {{c}} + {{d}} + {{f}} + {{g}} = {{eval:a+b+c+d+f+g}}$ cubes.",
+					"B : ${{m}} + {{n}} + {{p}} + {{q}} + {{r}} + {{s}} = {{eval:m+n+p+q+r+s}}$ cubes.",
+					"{{if:a+b+c+d+f+g>m+n+p+q+r+s|$\\textcolor{{{color:primary.0}}}{A}$ a le plus grand volume.|$\\textcolor{{{color:primary.0}}}{B}$ a le plus grand volume.}}"
+				]
+			}
+		},
+		{
+			"statement": "Les cubes sont tous identiques.\n\n**Assemblage A**\n\n```cubes\nhauteurs: {{A}}\n```\n\n**Assemblage B**\n\n```cubes\nhauteurs: {{B}}\n```\n\nLequel a le plus grand volume ?\n\n```choix\nmelanger: non\n- L'assemblage A\n- L'assemblage B\n- Ils ont le même volume.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "j",
+					"expression": "0..1"
+				},
+				{
+					"name": "N",
+					"expression": "{{if:k==1|12|{{if:k==2|11|{{if:k==3|8|{{if:k==4|10|{{if:k==5|9|11}}}}}}}}}}"
+				},
+				{
+					"name": "A",
+					"expression": "{{if:j==0|{{if:k==1|3 3 / 3 3|{{if:k==2|3 3 / 3 2|{{if:k==3|2 2 / 2 2|{{if:k==4|2 3 / 2 3|{{if:k==5|2 3 / 2 2|3 3 / 2 3}}}}}}}}}}|{{if:k==1|1 1 1 1 / 1 1 1 1 / 1 1 1 1|{{if:k==2|1 1 1 1 / 1 1 1 1 / 1 1 1 0|{{if:k==3|1 1 1 1 / 1 1 1 1|{{if:k==4|1 1 1 1 / 1 1 1 1 / 1 1 0 0|{{if:k==5|1 1 1 1 / 1 1 1 1 / 1 0 0 0|1 1 1 1 / 1 1 1 1 / 1 1 1 0}}}}}}}}}}}}"
+				},
+				{
+					"name": "B",
+					"expression": "{{if:j==0|{{if:k==1|1 1 1 1 / 1 1 1 1 / 1 1 1 1|{{if:k==2|1 1 1 1 / 1 1 1 1 / 1 1 1 0|{{if:k==3|1 1 1 1 / 1 1 1 1|{{if:k==4|1 1 1 1 / 1 1 1 1 / 1 1 0 0|{{if:k==5|1 1 1 1 / 1 1 1 1 / 1 0 0 0|1 1 1 1 / 1 1 1 1 / 1 1 1 0}}}}}}}}}}|{{if:k==1|3 3 / 3 3|{{if:k==2|3 3 / 3 2|{{if:k==3|2 2 / 2 2|{{if:k==4|2 3 / 2 3|{{if:k==5|2 3 / 2 2|3 3 / 2 3}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les cubes sont identiques** : l'assemblage qui a le plus de cubes a le plus grand volume, quelle que soit sa forme.",
+					"A et B ont chacun ${{N}}$ cubes : ils ont $\\textcolor{{{color:primary.0}}}{\\text{le même volume}}$, même si l'un est plus haut que l'autre."
+				]
+			}
+		},
+		{
+			"statement": "Les cubes sont tous identiques.\n\n**Assemblage A**\n\n```cubes\nhauteurs: {{a}} {{b}} {{c}} / {{d}} {{f}} {{g}}\n```\n\n**Assemblage B**\n\n```cubes\nhauteurs: {{m}} {{n}} {{p}} / {{q}} {{r}} {{s}}\n```\n\nCombien de cubes faut-il ajouter à l'assemblage A pour qu'il ait le même volume que l'assemblage B ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..{{a}}"
+				},
+				{
+					"name": "f",
+					"expression": "1..{{b}}"
+				},
+				{
+					"name": "g",
+					"expression": "1..{{c}}"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..{{m}}"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{n}}"
+				},
+				{
+					"name": "s",
+					"expression": "1..{{p}}"
+				}
+			],
+			"conditions": ["m+n+p+q+r+s>a+b+c+d+f+g"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(m+n+p+q+r+s)-(a+b+c+d+f+g)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"A : ${{a}} + {{b}} + {{c}} + {{d}} + {{f}} + {{g}} = {{eval:a+b+c+d+f+g}}$ cubes.",
+					"B : ${{m}} + {{n}} + {{p}} + {{q}} + {{r}} + {{s}} = {{eval:m+n+p+q+r+s}}$ cubes.",
+					"${{eval:m+n+p+q+r+s}} - {{eval:a+b+c+d+f+g}} = \\textcolor{{{color:primary.0}}}{{{eval:(m+n+p+q+r+s)-(a+b+c+d+f+g)}}}$ {{if:(m+n+p+q+r+s)-(a+b+c+d+f+g)==1|cube|cubes}} à ajouter."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A (11) plus grand que B (9)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "2",
+				"d": "1",
+				"f": "2",
+				"g": "1",
+				"m": "2",
+				"n": "2",
+				"p": "1",
+				"q": "2",
+				"r": "1",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "2",
+				"d": "1",
+				"f": "2",
+				"g": "1",
+				"m": "2",
+				"n": "2",
+				"p": "1",
+				"q": "2",
+				"r": "1",
+				"s": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : même volume",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "2",
+				"d": "1",
+				"f": "2",
+				"g": "1",
+				"m": "2",
+				"n": "2",
+				"p": "1",
+				"q": "2",
+				"r": "1",
+				"s": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Même volume, haut d'abord",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"j": "0",
+				"N": "12",
+				"A": "3 3 / 3 3",
+				"B": "1 1 1 1 / 1 1 1 1 / 1 1 1 1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le plus haut (A)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"j": "0",
+				"N": "12",
+				"A": "3 3 / 3 3",
+				"B": "1 1 1 1 / 1 1 1 1 / 1 1 1 1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Même volume, étalé d'abord",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1",
+				"N": "11",
+				"A": "1 1 1 1 / 1 1 1 1 / 1 1 1 0",
+				"B": "3 3 / 3 2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le plus étalé (A)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1",
+				"N": "11",
+				"A": "1 1 1 1 / 1 1 1 1 / 1 1 1 0",
+				"B": "3 3 / 3 2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "À ajouter : 11 - 9 = 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "1",
+				"d": "2",
+				"f": "1",
+				"g": "1",
+				"m": "3",
+				"n": "2",
+				"p": "2",
+				"q": "1",
+				"r": "2",
+				"s": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 11 (le volume de B)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "1",
+				"d": "2",
+				"f": "1",
+				"g": "1",
+				"m": "3",
+				"n": "2",
+				"p": "2",
+				"q": "1",
+				"r": "2",
+				"s": "1"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

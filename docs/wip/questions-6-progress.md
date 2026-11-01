@@ -5,15 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 8 proposée._
+_Mis à jour le 2026-11-01, lot 8 écrit (PR des fichiers)._
 
-- **État** : lots 1 à 7 publiés ; relevé : 42 points sans modèle publié (§ 19) ; v0.59.0 en prod.
-- **Prochaine action** : lot 8 « Assemblages de cubes » (154, 155, 181, 208, 209), phase 0 au § 20.
-- **En attente de David** : les 3 questions du § 20 (lot 8 ?, fuite des hauteurs en évaluation, validation).
+- **État** : lots 1 à 7 publiés ; lot 8 « Assemblages de cubes » (154, 155, 181, 208, 209) écrit et joué en
+  local (§ 20.1), PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR ; puis David lance `create-questions --publier` (brouillons en prod),
+  migration nœud + tag, page à cocher. **Publication après le `deploy:prod` qui livre #2130.**
+- **En attente de David** : rien pour l'instant.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage
   de migration = dernière de `main` + 1 min.
-- **Worktree / branche** : aucun (retirés après #2114 et #2112).
+- **Worktree / branche** : `../ubumaths-wt-questions-6` · `content/questions-6-lot8`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1211,3 +1213,28 @@ de l'auteur seuls jusqu'à la publication ; la migration ne fait que ranger et t
    ne les masque pas, lot 2 de `fuite-enonce`, en cours). Pour `retrouver:` (3, v2-v3), c'est la réponse.
    Publier quand même (hors évaluation, rien ne change) ou garder 3 en brouillon jusqu'au lot 2 ?
 3. Valider la phase 0 (5 modèles, niveaux, variations) ?
+
+**Réponses de David (2026-11-01)** : recommandations suivies, « je valide ». (1) Lot 8 = assemblages de cubes.
+(2) Publication du lot **après le `deploy:prod` qui livre #2130** (mergée le 2026-11-01 : `retrouver:` masqué en
+évaluation) ; reste accepté : les hauteurs des dessins en options d'un choix restent lisibles dans les données (même
+classe que les choix d'horloges). (3) Phase 0 validée telle quelle ; garde-fous du script : les quatre vues du 2 v4
+toutes distinctes, chaque leurre du 3 v1 a une vue différente des vues données.
+
+### 20.1 Écriture (2026-11-01)
+
+- `docs/wip/questions/lot-8-assemblages-cubes.py scripts/questions` → 5 modèles dans
+  `scripts/questions/6-assemblages-cubes/`. `question:specs` à 300 tirages par variation : 49 specs vertes,
+  4 800 tirages réussis ; `create-questions` en simulation contre la prod : 5 « à créer ».
+- Catégories neuves : Géométrie / Solides / Assemblages de cubes (niveaux 1-3), Grandeurs / Volumes / Assemblages
+  de cubes (1-2). Aucun modèle ```cubes en prod avant ce lot.
+- Assemblages montrés en perspective : piles de devant tirées **sous** celles du fond (`d` de 1 à `{{a}}`) : le
+  dessus de chaque pile se voit (compte et vues sans ambiguïté), aucun tirage rejeté. Choix entre dessins
+  (2 v4, 3 v1, 5 v2) : catalogues tirés par le script (graine fixe) et choisis par `k` (`{{if:k==1|…}}`
+  imbriqués) ; le script vérifie que les quatre vues du 2 v4 sont distinctes et que chaque leurre du 3 v1 a une
+  vue différente. Vues recalculées par le script (`vue`) ; les specs `dessiner:` / `retrouver:` vérifient
+  l'accord avec le juge (dont « une autre réponse juste » pour `retrouver:`).
+- **Nouvelle sonde** `scripts/questions/sonde-cubes.ts` : les specs ne voient pas un bloc ```cubes d'affichage
+  en erreur ; 300 tirages par modèle, 3 184 blocs lus, 0 problème.
+- Base locale : 5 brouillons ; aperçu admin à 390 px (Playwright hors dépôt) : chaque variation tirée et vue ;
+  justes jugées justes (compte, volume, comparaison, `dessiner:` face / dessus / droite, `retrouver:` face et
+  face + droite), fausses jugées fausses ; rendu des perspectives, des vues en options et des corrections lu.
