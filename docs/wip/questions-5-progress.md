@@ -7,14 +7,12 @@
 
 _Mis à jour le 2026-11-01, après #2116._
 
-- **État** : lots 1 à 5 publiés ; **lot 6** (8 modèles, § 17) en prod en brouillons, rangés, tagués, relus 8/8 ok ;
-  collision de niveau réglée (#2116 mergée, migration `20261101200800` jouée, 8190200a au niveau 3, vérifié MCP) ;
-  simulation `publier-lot` : **8 brouillons passent**. **Phase 0 du lot 7 validée** (§ 18, 6 modèles).
-- **Prochaine action** : David : `! pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/5-donnees-probabilites --publier` ; vérifier `published` au MCP. Puis **écrire le lot 7**
+- **État** : lots 1 à **6 publiés** (lot 6 : 8/8, vérifié MCP le 2026-11-01, après #2116 qui a réglé la collision
+  de niveau). **Phase 0 du lot 7 validée** (§ 18, 6 modèles).
+- **Prochaine action** : **écrire le lot 7**
   (§ 18) : branche `content/questions-5-lot7` depuis le worktree, `docs/wip/questions/lot-5-proportionnalite.py`,
   simulation `create-questions` + `publier-lot`. Ensuite lot 8 « Opérations » (001, 002, 005, 116, 117).
-- **En attente de David** : le `--publier` du lot 6 ; le `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31)
+- **En attente de David** : le `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31)
   visait-il une autre session ? (résultat juste).
 - **Pièges en cours** : horodatage = `max + 1 min` de `origin/main` JUSTE AVANT le merge, et `main` avance pendant
   la CI → `db:migrate --include-all --dry-run` d'abord (une autre session peut l'avoir jouée) ; deux modèles d'un
@@ -515,3 +513,7 @@ Calcul littéral › Écrire › Formules 1-3, nœud = notion Algèbre › Calcu
 - #2116 mergée (CI verte après la mise à jour sur `main` : les échecs venaient du doublon 5e / 6e) ; migration
   renommée `20261101200800` ; jouée en prod par le `db:migrate --include-all` d'une autre session (dry-run : à
   jour) ; vérifié MCP : 8190200a niveau 3, `updated_at` intact. Simulation `publier-lot` : 8/8 passent.
+
+### Lot 6 : publication (2026-11-01)
+
+- David : `publier-lot.ts --publier` → 8/8 publiés ; vérifié au MCP (`status = published` pour les 8).
