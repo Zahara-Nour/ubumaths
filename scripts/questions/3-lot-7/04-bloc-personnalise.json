@@ -1,0 +1,217 @@
+{
+	"title": "Bloc personnalisé",
+	"description": "Lire un programme Scratch qui définit et appelle un bloc personnalisé « dessine carré » : côté du plus grand carré, nombre de carrés, longueur tracée",
+	"grades": ["3"],
+	"theme": "Algorithmique",
+	"domain": "Structurer un programme",
+	"subdomain": "Bloc personnalisé",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le programme ci-dessous utilise un bloc personnalisé « dessine carré ».\n\n```scratch\ndéfinir dessine carré (côté)\nrépéter (4) fois\navancer de (côté) pas\ntourner ↻ de (90) degrés\nfin\n\nquand le drapeau vert pressé\nstylo en position d'écriture\nmettre [c v] à ({{a}})\nrépéter ({{n}}) fois\ndessine carré (c)\najouter ({{k}}) à [c v]\nfin\n```\n\nQuelle est la longueur du côté du **plus grand** carré dessiné (en pas) ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..40"
+				},
+				{
+					"name": "n",
+					"expression": "3..6"
+				},
+				{
+					"name": "k",
+					"expression": "5..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+(n-1)*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le bloc « dessine carré (côté) » est **défini** une fois (en haut) : il trace un carré dont le côté est la valeur donnée entre parenthèses à chaque **appel**.",
+					"La boucle appelle ${{n}}$ fois le bloc, avec $c = {{a}}$, puis ${{eval:a+k}}$, ${{eval:a+2*k}}$, … : $c$ augmente de ${{k}}$ **après** chaque carré.",
+					"Le dernier carré (le ${{n}}$e) a pour côté ${{a}} + {{eval:n-1}} \\times {{k}} = {{eval:a+(n-1)*k}}$ ; l'ajout qui suit ne dessine plus rien.",
+					"Le plus grand carré a un côté de $\\textcolor{{{color:primary.0}}}{{{eval:a+(n-1)*k}}}$ pas."
+				]
+			}
+		},
+		{
+			"statement": "Le programme ci-dessous utilise un bloc personnalisé « dessine carré ».\n\n```scratch\ndéfinir dessine carré (côté)\nrépéter (4) fois\navancer de (côté) pas\ntourner ↻ de (90) degrés\nfin\n\nquand le drapeau vert pressé\nstylo en position d'écriture\nmettre [c v] à ({{a}})\nrépéter jusqu'à ce que <(c) > [{{s}}]>\ndessine carré (c)\najouter ({{k}}) à [c v]\nfin\n```\n\nCombien de carrés le programme dessine-t-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..30"
+				},
+				{
+					"name": "k",
+					"expression": "5..15"
+				},
+				{
+					"name": "s",
+					"expression": "60..120"
+				}
+			],
+			"conditions": ["floor((s-a)/k)+1>=3", "floor((s-a)/k)+1<=10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor((s-a)/k)+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le bloc « dessine carré (côté) » est **défini** une fois (en haut) : il trace un carré dont le côté est la valeur donnée entre parenthèses à chaque **appel**.",
+					"Les carrés ont pour côtés ${{a}}$, ${{eval:a+k}}$, ${{eval:a+2*k}}$, … tant que $c \\leqslant {{s}}$ (la condition est testée avant chaque passage).",
+					"Le dernier côté dessiné est ${{eval:a+floor((s-a)/k)*k}} \\leqslant {{s}}$ ; le suivant, ${{eval:a+(floor((s-a)/k)+1)*k}}$, dépasse ${{s}}$ : la boucle s'arrête.",
+					"De ${{a}}$ à ${{eval:a+floor((s-a)/k)*k}}$ de ${{k}}$ en ${{k}}$ : ${{eval:floor((s-a)/k)}} + 1 = \\textcolor{{{color:primary.0}}}{{{eval:floor((s-a)/k)+1}}}$ carrés."
+				]
+			}
+		},
+		{
+			"statement": "Le programme ci-dessous utilise un bloc personnalisé « dessine carré ».\n\n```scratch\ndéfinir dessine carré (côté)\nrépéter (4) fois\navancer de (côté) pas\ntourner ↻ de (90) degrés\nfin\n\nquand le drapeau vert pressé\nstylo en position d'écriture\ndessine carré ({{a}})\ndessine carré ({{b}})\n```\n\nQuelle longueur le stylo trace-t-il en tout (en pas) ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..60"
+				},
+				{
+					"name": "b",
+					"expression": "10..60"
+				}
+			],
+			"conditions": ["a!=b", "a%10==0 or b%10==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*(a+b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le bloc « dessine carré (côté) » est **défini** une fois (en haut) : il trace un carré dont le côté est la valeur donnée entre parenthèses à chaque **appel**.",
+					"Un appel « dessine carré (côté) » avance $4$ fois de *côté* pas : il trace $4 \\times$ *côté* pas.",
+					"Premier appel : $4 \\times {{a}} = {{eval:4*a}}$ pas ; second appel : $4 \\times {{b}} = {{eval:4*b}}$ pas.",
+					"En tout : ${{eval:4*a}} + {{eval:4*b}} = \\textcolor{{{color:primary.0}}}{{{eval:4*(a+b)}}}$ pas."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = 20, 4 carrés, +10 : 50",
+			"variationIndex": 0,
+			"variables": {
+				"a": "20",
+				"n": "4",
+				"k": "10"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le dernier ajout compté (60)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "20",
+				"n": "4",
+				"k": "10"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le premier carré (20)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "20",
+				"n": "4",
+				"k": "10"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 20, +10, jusqu'à > 75 : 6 carrés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "20",
+				"k": "10",
+				"s": "75"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un carré de moins (5)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "20",
+				"k": "10",
+				"s": "75"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un carré de trop (7)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "20",
+				"k": "10",
+				"s": "75"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carrés de 30 et 50 : 320",
+			"variationIndex": 2,
+			"variables": {
+				"a": "30",
+				"b": "50"
+			},
+			"answers": ["320"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les côtés seuls (80)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "30",
+				"b": "50"
+			},
+			"answers": ["80"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le premier carré seul (120)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "30",
+				"b": "50"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

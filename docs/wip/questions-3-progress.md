@@ -5,21 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2122 (bloc ```scratch mergé)._
+_Mis à jour le 2026-11-01, lot 7 écrit (PR à ouvrir)._
 
-- **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 3-047 à 3-050) : phase 0 validée (§ 14.6) ;
-  le bloc ` ```scratch ` est mergé (#2122, sur `main`, **pas en prod**).
-- **Prochaine action** : écrire le lot 7 (4 modèles, § 14.2 + 14.6) avec ` ```scratch ` ; brouillons
-  jusqu'au `deploy:prod` qui livre le bloc ; puis lot 8 (boîte à moustaches).
-- **En attente de David** : rien.
+- **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 3-047 à 3-050, 4 modèles en blocs
+  ` ```scratch `) écrit (§ 14.8), branche `content/questions-3-lot7`.
+- **Prochaine action** : PR des fichiers, merge ; puis attendre le `deploy:prod` qui livre ` ```scratch `
+  (pas en prod) avant le `--publier` de David ; rangement ; page à cocher. Puis lot 8 (boîte à moustaches).
+- **En attente de David** : nœud de 3-050 (bloc personnalisé) — aucun nœud de l'arbre ne convient (§ 14.8).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire
-  ni virgule ; aperçu admin sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc
-  depuis le worktree (`git push origin HEAD:main`) ; `db:migrate` depuis un worktree À JOUR d'`origin/main` ;
-  réponse décimale = fraction refusée (garder la fraction + `acceptDecimal`) ; `Doc-inchangée:` dans un
-  COMMIT ; `%` refusé dans l'`eval` d'une variable ; `audit-question-draws` : faux positif « nombres
-  juxtaposés » sur les blocs statistiques.
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
+  du mode auto → David les lance avec `!` ; aperçu admin : serveur lancé avec `--host 127.0.0.1` ;
+  worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree (`git push origin
+HEAD:main`) ; `db:migrate` depuis un worktree À JOUR d'`origin/main` ; `Doc-inchangée:` dans un COMMIT ;
+  `%` refusé dans l'`eval` d'une variable ; `audit-question-draws` : faux positifs « nombres juxtaposés »
+  (blocs statistiques) et « gabarit non résolu » sur `<<` (Scratch).
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, `content/questions-3-lot7`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -1006,3 +1005,24 @@ modèles publiés de plus. Aucune règle ne change.
 
 - Chantier `bloc-scratch`, palier 1 : #2122 mergée (journal `bloc-scratch-progress.md`). Le lot 7 peut s'écrire ;
   `check:ubumark` vérifie les programmes (instructions non reconnues), choix compris.
+
+### 14.8 Lot 7 : écrit (2026-11-01)
+
+- `docs/wip/questions/lot-3-7.py` → `scripts/questions/3-lot-7/` (4 JSON, 14 variations, 40 specs) ;
+  `create-questions` en simulation vert. Branche `content/questions-3-lot7`.
+- Modèles : 3-047 (3 var. : a et b après affectations, programme de prix avec saisies, échange : 3
+  programmes en options), 3-048 (4 var. : et, ou, manège, traduire « strictement compris » : 4 conditions
+  en options), 3-049 (4 var. : reste officiel, nombre de passages, compteur, doublement), 3-050 (3 var. :
+  côté du plus grand carré, nombre de carrés, longueur tracée ; `définir dessine carré` dans le bloc).
+- Vérifs : sonde (scratchpad, supprimée) 300 tirages par modèle, chaque programme passé à
+  `checkScratchProgram`, choix compris (≈ 1 600 programmes) : **0 défaut** ; `check:ubumark` sur 320 tirages
+  (énoncé + corrigé) : 0 problème ; `audit-question-draws` 300 : 0 défaut hors faux positif `<<`.
+- **Pièges mesurés** : `$quantité$`, `$total$`, `$réponse$` lus en lettres découpées → noms de variables
+  en _italique_ hors des formules ; `col('\text{…}')` hors de `$…$` s'affichait en brut → réponses en
+  texte en **gras** ; « + 0 » quand la division tombe juste → `{{if:r>0|…|}}`.
+- Aperçu admin local (`127.0.0.1:5176`) : 3-049 v1 (programme officiel dessiné), 3-048 v4 (4 conditions
+  dessinées en options, D juste), 3-050 v1 (bloc `définir` au-dessus du script).
+- **À trancher (David)** : nœud de 3-050. L'arbre (prod) n'a, sous Algorithmique, que Boucles,
+  Variables et instructions, Fonctions Python, Listes, Préalgorithmique ; « Fonctions Python › définir une
+  fonction » est propre à Python. Recommandé : sous-notion neuve « Variables et instructions › blocs
+  personnalisés » (la même migration que le rangement) ; autre choix : « Boucles › boucle bornée ».

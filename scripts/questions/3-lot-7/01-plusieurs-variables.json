@@ -1,0 +1,215 @@
+{
+	"title": "Plusieurs variables",
+	"description": "Suivre un programme Scratch à plusieurs variables : valeurs finales après des affectations successives, programme de calcul avec saisies, échange de deux variables",
+	"grades": ["3"],
+	"theme": "Algorithmique",
+	"domain": "Variables et instructions",
+	"subdomain": "Variables et affectation",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un programme qui utilise deux variables $a$ et $b$.\n\n```scratch\nmettre [a v] à ({{n}})\nmettre [b v] à ({{m}})\nmettre [a v] à ((a) + (b))\nmettre [b v] à ((a) - (b))\n```\n\nQuelles sont les valeurs de $a$ et de $b$ à la fin du programme ?\n\n$a = ?$ et $b = ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..20"
+				},
+				{
+					"name": "m",
+					"expression": "2..20"
+				}
+			],
+			"conditions": ["n!=m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+m}}"
+				},
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les instructions s'exécutent **dans l'ordre**, et chaque affectation remplace l'ancienne valeur.",
+					"Après les deux premières lignes : $a = {{n}}$ et $b = {{m}}$.",
+					"Ligne 3 : $a$ prend la valeur $a + b = {{n}} + {{m}} = {{eval:n+m}}$.",
+					"Ligne 4 : $b$ prend la valeur $a - b$, calculée avec la **nouvelle** valeur de $a$ : ${{eval:n+m}} - {{m}} = {{n}}$.",
+					"À la fin : $\\textcolor{{{color:primary.0}}}{a = {{eval:n+m}}}$ et $\\textcolor{{{color:primary.0}}}{b = {{n}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un commerçant utilise ce programme pour calculer le prix à payer, frais de port compris.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Prix d'un objet ?] et attendre\nmettre [prix v] à (réponse)\ndemander [Nombre d'objets ?] et attendre\nmettre [quantité v] à (réponse)\nmettre [total v] à ((prix) * (quantité))\nmettre [total v] à ((total) + ({{f}}))\ndire (total)\n```\n\nOn saisit ${{p}}$ puis ${{q}}$. Que dit le programme à la fin ?\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..15"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "f",
+					"expression": "3..9"
+				}
+			],
+			"conditions": ["p!=q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*q+f}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La variable *prix* vaut ${{p}}$ et la variable *quantité* vaut ${{q}}$.",
+					"*total* prend d'abord la valeur *prix* × *quantité* : ${{p}} \\times {{q}} = {{eval:p*q}}$.",
+					"Puis *total* prend la valeur *total* + ${{f}}$ : ${{eval:p*q}} + {{f}} = {{eval:p*q+f}}$.",
+					"Le programme dit $\\textcolor{{{color:primary.0}}}{{{eval:p*q+f}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Au départ, la variable $a$ vaut ${{n}}$ et la variable $b$ vaut ${{m}}$. Lequel de ces programmes **échange** leurs valeurs (à la fin, $a$ vaut ${{m}}$ et $b$ vaut ${{n}}$) ?\n\n````choix\n- ```scratch\n  mettre [c v] à (a)\n  mettre [a v] à (b)\n  mettre [b v] à (c)\n  ```\n- ```scratch\n  mettre [a v] à (b)\n  mettre [b v] à (a)\n  ```\n- ```scratch\n  mettre [c v] à (a)\n  mettre [b v] à (c)\n  mettre [a v] à (b)\n  ```\n````",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..20"
+				},
+				{
+					"name": "m",
+					"expression": "2..20"
+				}
+			],
+			"conditions": ["n!=m"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec deux affectations seulement (`a` ← `b`, puis `b` ← `a`), l'ancienne valeur de $a$ est **perdue** dès la première ligne : $a$ et $b$ valent tous deux ${{m}}$.",
+					"Il faut une troisième variable $c$ pour **garder** l'ancienne valeur de $a$ : $c = {{n}}$, puis $a = {{m}}$, puis $b = c = {{n}}$.",
+					"Dans l'ordre « $c$ ← $a$, $b$ ← $c$, $a$ ← $b$ », $b$ prend ${{n}}$ puis $a$ prend la nouvelle valeur de $b$ : les deux valent ${{n}}$.",
+					"Le bon programme : **c ← a, puis a ← b, puis b ← c**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "n = 5, m = 3 : a = 8, b = 5",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"m": "3"
+			},
+			"answers": ["8", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b inchangé (b = 3)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"m": "3"
+			},
+			"answers": ["8", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b calculé avec l'ancien a (5 − 3 = 2)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"m": "3"
+			},
+			"answers": ["8", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Prix 4, 3 objets, port 6 : 18",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4",
+				"q": "3",
+				"f": "6"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : port oublié (12)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4",
+				"q": "3",
+				"f": "6"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tout ajouté (13)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4",
+				"q": "3",
+				"f": "6"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Échange avec c",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"m": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans variable c",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"m": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : avec c, mais à l'envers",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"m": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
