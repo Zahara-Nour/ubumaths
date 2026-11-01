@@ -5,16 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, migration de rangement du lot 7 écrite (PR à ouvrir)._
+_Mis à jour le 2026-11-01, PR #2146 (rangement du lot 7) ouverte, CI en cours._
 
 - **État** : lots 1 à 6 publiés. **Lot 7** : 6 brouillons en prod (§ 18.2) ; migration nœud + tag
-  `20261101224000_questions_5_lot7_rangement_tags` écrite, test vert, preuve rouge faite (§ 18.3).
-- **Prochaine action** : PR → CI → merge → `db:migrate` (dry-run d'abord) → vérifier au MCP ; puis page à cocher,
-  puis `publier-lot`. Ensuite lot 8 « Opérations » (001, 002, 005, 116, 117).
+  `20261101224000_questions_5_lot7_rangement_tags` dans **#2146** (§ 18.3). Les 4 conditions du `db:migrate`
+  autonome sont réunies (choix A, preuve rouge, `security-auditor` sans bloquant, additive + rollback).
+- **Prochaine action** : CI de #2146 verte → `git merge origin/main` → `pnpm check:migrations --pr 2146` (règle
+  de #2165 ; renommer si refus par `pnpm migration:horodatage`, jamais à la main) → merge → `db:migrate` depuis
+  la branche mergée (`--include-all --dry-run` d'abord) → vérifier au MCP. Puis page à cocher, `publier-lot`,
+  lot 8 « Opérations » (001, 002, 005, 116, 117).
 - **En attente de David** : 02 (deux cases sur deux lignes) à essayer à la main dans l'aperçu : au pilotage
   Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
-- **Pièges en cours** : horodatage = `max + 1 min` de `origin/main` JUSTE AVANT le merge, `db:migrate
---include-all --dry-run` d'abord ; `--publier` = David ; prix en euros → `zeros: off` ; jamais `e`.
+- **Pièges en cours** : collisions d'horodatage entre sessions (3 renommages aujourd'hui) → nouvelles règles
+  #2165 (`migration:horodatage`, `check:migrations`, porte « Commit de version ? » en tête de CI) ;
+  `--publier` = David ; prix en euros → `zeros: off` ; jamais `e`.
 - **Worktree / branche** : `ubumaths-wt-questions-5`, branche `content/questions-5-lot7-rangement`.
 
 ## 1. Relevé (prod, 2026-10-28)
