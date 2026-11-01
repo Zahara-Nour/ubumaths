@@ -5,19 +5,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2052 et #2054 (lot 6 relu, translations publiées)._
+_Mis à jour le 2026-11-01, après #2089 (lot 7 écrit, mergé)._
 
-- **État** : lots 1 à 6 en prod (lot 1 en brouillon, lots 2 à 5 publiés) ; lot 6 : 5/5 « OK » à la relecture, les
-  3 translations (030, 031, 032) publiées par David, vérifié au MCP (§ 31) ; les 2 volumes (029, 076) en brouillon.
-- **Prochaine action** : après le `deploy:prod` qui livre ` ```solide ` : voir les 2 volumes dessinés en prod, puis
-  `publier-lot` sur un dossier qui ne contient que 01 et 02 du lot 6 ; ensuite, choisir le lot 7.
-- **En attente de David** : garder la sonde des figures comme outil (`sonde-figures.ts`, petite PR à
-  part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication des 7
-  brouillons du lot 1 ; revoir ou non les 14 bornes du cycle 4 qui ne reposent que sur un document 2019/2016 (§ 27).
-- **Pièges en cours** : `mtexte()` refusé dans une figure de question, invisible pour `question:specs` (§ 26) ;
-  90dca27a et acbd2280 (4-005) partiront en 3e ; `db:migrate` peut exiger `--include-all` : **réservé à David** (oublié
-  au lot 5, § 27, et au lot 6, § 30 : migration d'une autre session horodatée après la mienne) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un COMMIT, pas dans la PR ;
-  horodatages de migration : vérifier les PR ouvertes des autres sessions ; QCM = case choix.
+- **État** : lots 1 à 6 en prod (lot 1 en brouillon, 2 volumes du lot 6 en brouillon) ; lot 7 « puissances, racines,
+  calcul littéral » (017, 018, 020, 021, 023, 071) écrit et mergé (#2089), pas encore en prod (§ 33).
+- **Prochaine action** : **David** lance
+  `cd ../ubumaths-wt-questions-4 && pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-7 --publier` ;
+  je relève les 6 `id`, puis migration nœud + tag (gabarit `20261101120000_questions_4_lot6_rangement_tags.sql`),
+  page à cocher (rendu jamais vu à l'écran : Chrome en panne pendant l'écriture). Volumes du lot 6 : après le
+  `deploy:prod` qui livre ` ```solide `.
+- **En attente de David** : le `--publier` ci-dessus ; garder la sonde des figures comme outil (`sonde-figures.ts`,
+  petite PR à part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ;
+  publication des 7 brouillons du lot 1 ; revoir ou non les 14 bornes du cycle 4 sur un document 2019/2016 (§ 27).
+- **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db:migrate` peut exiger `--include-all` :
+  **réservé à David** (§ 27, § 30) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
+  COMMIT ; horodatages de migration : vérifier les PR ouvertes des autres sessions ; QCM = case choix ; un grand nombre
+  s'écrit `10\,000` dans une spec (sans espace : `unoptimal_form`) ; tests navigateur de la CI parfois tombés
+  (`wrapDynamicImport`) : relancer le job.
 - **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
@@ -864,3 +868,16 @@ les élèves de 4e voient 6 modèles de plus.
 / Puissance d'un produit 2, Puissances / Problèmes / Situations 1, Racines carrées / Apprivoiser / Encadrer 1, Calcul
 littéral / Produire une formule / Pairs et impairs 1, Calcul littéral / Raisonner / Démontrer 1, Calcul littéral /
 Equations / Mettre en équation 3 ; 017 : forme puissance exigée quand la consigne la demande.
+
+## 33. Lot 7 : écrit (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-7`, #2089)
+
+- Script `docs/wip/questions/lot-4-7.py` → `scripts/questions/4-lot-7/` (6 fichiers). `question:specs` : 69 specs
+  vertes, tous les tirages réussis ; `create-questions` (simulation, prod) : 6 « à créer ».
+- Base locale : 6 brouillons créés ; **aperçu admin non joué** (Chrome n'ouvrait pas la page, deux essais) : rendu à
+  voir dans la page à cocher.
+- Ajustements à l'écriture : 7 776 au lieu de `6^5` → `bad_form` avec la violation `form` ; `10000` sans espace →
+  `unoptimal_form`, spec écrite `10\,000` ; variations à réponse libre sans `?` dans l'énoncé → « Blank count
+  mismatch » (case ajoutée : « Le nombre pair suivant est $?$. »…) ; `form` et `products` coupées pour 021 et 023
+  (`2(n+1)`, `3(n+1)` acceptés).
+- CI : job « Client Tests (browser, shard 1/2) » tombé (`wrapDynamicImport`, 54 fichiers non chargés, 1 844 tests
+  verts), relancé, vert ; mergée.
