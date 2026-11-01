@@ -311,7 +311,12 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
   apparaître x+1 en haut et en bas) — **ma 1re raison était fausse** (« inviterait à barrer », David :
   x/x est déjà gardé) ; vraie raison : garde-fou technique de tidy (tidy-spec § réduction, 4fd94d6bd :
   réduction sur le terme accumulé, x+1 deviendrait le même facteur et s'annulerait). David veut
-  peut-être `(x+1)/(2(x+1))` → changement de tidy, PR à part ; en attente ; `grandeurs-01` (David :
+  peut-être `(x+1)/(2(x+1))`. **Vérifié (David : « tidy ne doit pas changer le domaine, on a ajouté
+  des contraintes, vérifie »)** : `2(x+1)/(4(x+1))` → tidy `(x+1)/(2(x+1))`, avec conditions `1/2`
+  (x ≠ −1) ; `(2x+2)/(4(x+1))` → inchangé dans les deux. Le garde-fou de `mergeFactors` (10-20) date
+  d'avant S3/`keepDomain` (1394b7343, 10-23) ; son exception ne couvre qu'une base déjà écrite des
+  deux côtés. Reste à corriger (contraire à « la réduction ne dépend pas de l'écriture »). Proposé :
+  attendu `(x+1)/(2(x+1))`, les deux outils connus faux, correction de tidy en PR à part ; en attente ; `grandeurs-01` (David :
   « je ne sais pas encore ») (mon avis : garder
   12000 m, unité choisie seulement par un calcul, `.convertir` sinon ; tidy-units:24 = écart de
   tidy à signaler). Reste : `grands-09`, `grandeurs-02…11`, `approche-01…15`.
