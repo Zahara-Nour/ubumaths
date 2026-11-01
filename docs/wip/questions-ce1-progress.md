@@ -5,19 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 6 publié._
+_Mis à jour le 2026-11-01, phase 0 du lot 7 écrite._
 
 - **État** : lots 0 à 6 publiés (lot 6 : calcul posé et heure, 7 modèles, § 13, clos le 2026-11-01).
-- **Prochaine action** : lot 7 (données : 082, 106, 088, 089, 107, 081) — phase 0 à écrire (relevé MCP, tableau,
-  questions à David) ; puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : rien.
+- **Prochaine action** : lot 7 (données : 082, 106, 088, 089, 107, 081) — phase 0 écrite (§ 14), réponses de David
+  attendues, puis écrire `lot-ce1-7.py` → `scripts/questions/ce1-7/` ; puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
+- **En attente de David** : les 4 questions du § 14.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
   posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
   de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
   de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `docs/questions-ce1-lot6-relecture`, vide : en partir une neuve sur `origin/main` pour le lot 7). `!` de David :
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot7`, partie de `origin/main`). `!` de David :
   toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -554,3 +554,42 @@ David ; un vrai ambre demanderait du code.
   les 3 opérations posées non dessinées (à jouer dans l'aperçu), homonyme CP `0f7381e6` écarté pour l'addition (juste).
 - 2026-11-01 : relecture 7/7 OK (verdicts comptés en base, aucun commentaire) ; `publier-lot` simulé (7 passent), puis
   `--publier` par David : 7/7 publiés, vérifié au MCP (publiés, rangés, tagués). Lot 6 clos.
+
+## 14. Lot 7 : données — phase 0 (2026-11-01)
+
+Relevé MCP du 2026-11-01 : **aucun** diagramme en barres en base, à aucun niveau (CP-072 et CE2-082 sans modèle) ;
+`Représenter des données · Tableaux · 1` (CP-068, `7752c23e`), `Représenter des données · Tableau à double entrée · 1, 2`
+(CP-069, CP-084). Nœuds des 6 points présents : « Représenter des données › diagrammes en barres » (082, 106, 088),
+« › tableaux » (081), « › tableau à double entrée » (089, 107). Outils : ` ```barres ` (lecture ; `axe: 0 à 15` gradue
+de un en un ; `placer:` = barres à monter, `données:` = série brute que l'élève compte), ` ```tableau-croise `
+(`lignes:`, `colonnes:`, `totaux: oui`, `masquer: Ligne/Colonne` = case `?`), tableau markdown à cases `$?$` (CP-068),
+case `choix`. Bornes (BO c2 p.38) : caractère à 2 à 5 valeurs, moins de 100 individus, axe gradué de un en un ;
+tableau à double entrée avec totaux (filles / garçons × 4 modes de transport, total 282).
+
+| Fichier                            | Point   | Catégorie · niveau                                         | Variations                                                                                                                                                                  |
+| ---------------------------------- | ------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-lire-un-diagramme-en-barres`   | CE1-082 | Représenter des données · Diagrammes en barres · 1 (neuve) | « Combien d'élèves ont choisi le foot ? » [_] : 3 barres (sports, 2 à 12) ; 4 barres (fruits, jusqu'à 15) ; 5 barres (animaux, axe 0 à 20) ; valeurs non écrites            |
+| `02-interpreter-un-diagramme`      | CE1-106 | Représenter des données · Diagrammes en barres · 2         | le plus choisi (case choix des noms) ; le moins choisi ; « combien de plus que » [_] ; « combien d'élèves en tout » [_] (total < 100) ; effectifs tous différents           |
+| `03-construire-un-diagramme`       | CE1-088 | Représenter des données · Diagrammes en barres · 3         | tableau d'effectifs donné, 2 barres à monter (les autres dessinées) ; toutes les barres (3 à 4) ; série brute (`données:`, 12 à 20 réponses) à compter puis construire      |
+| `04-ranger-dans-un-tableau`        | CE1-081 | Représenter des données · Tableaux · 2                     | liste de réponses (« Léa : chat, Tom : chien… », 12 à 25) → colonne « Nombre d'élèves » du tableau [_] par ligne ; 3, 4 puis 5 valeurs ; avec une ligne Total               |
+| `05-lire-un-tableau-double-entree` | CE1-089 | Représenter des données · Tableau à double entrée · 3      | filles / garçons × lundi… jeudi (cantine) : « combien de filles le mardi ? » [_] ; transport × filles / garçons avec totaux : lire une case, puis un total                  |
+| `06-interpreter-un-tableau`        | CE1-107 | Représenter des données · Tableau à double entrée · 4      | quel jour le plus d'élèves (totaux affichés, case choix) ; sans totaux (il faut additionner) ; case masquée retrouvée par le total [_] ; « combien de garçons de plus » [_] |
+
+Erreurs typiques dans les `testSpecs` : trait voisin lu (±1) ; catégorie voisine lue ; le plus grand nombre de
+l'énoncé plutôt que la plus haute barre ; total qui oublie une barre ; écart répondu par une des deux valeurs ; ligne et
+colonne inversées (garçons du mardi au lieu des filles) ; total de la ligne au lieu de la colonne ; case masquée = total.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **081 « produire un tableau »** : l'élève compte une liste de réponses et remplit la colonne des effectifs d'un
+   tableau déjà tracé (noms écrits), comme CP-068 en plus grand ; tracer le tableau lui-même n'a pas d'outil.
+   Recommandation : oui.
+2. **Axe gradué de un en un** (borne BO) : les barres vont au plus à 20 (au-delà l'axe devient illisible au doigt),
+   même si la population peut aller jusqu'à 99 au total. Recommandation : 20 au plus par barre, total < 100.
+3. **Tableau à double entrée** : cases de 5 à 99, totaux jusqu'à 1 000 (l'exemple du BO a 282, le CE1 va à 1 000) ?
+   Recommandation : oui, sommes à deux chiffres d'abord (cases ≤ 60), puis le tableau du BO (total ~ 300).
+4. **Catégories** : neuve « Représenter des données · Diagrammes en barres · 1 à 3 » ; les tableaux continuent le CP
+   (« Tableaux · 2 », « Tableau à double entrée · 3, 4 »). Recommandation : oui (même règle qu'aux lots 5 bis et 6).
