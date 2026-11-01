@@ -91,13 +91,20 @@ add(f'<rect width="{W}" height="{H}" fill="{mix(GOLD, 0.2, mix(GREEN, 0.25))}"/>
 water = mix(SEA, 0.45)
 rng = random.Random(5)
 
-# relief : les deux pentes qui montent se teintent de brun (vers les sommets), les deux vallées restent vertes
-add('<defs>'
-    f'<radialGradient id="ne" cx="0.92" cy="0.08" r="0.75"><stop offset="0" stop-color="{mix(BROWN, 0.45)}"/>'
-    f'<stop offset="1" stop-color="{mix(BROWN, 0.45)}" stop-opacity="0"/></radialGradient>'
-    f'<radialGradient id="sw" cx="0.1" cy="0.9" r="0.6"><stop offset="0" stop-color="{mix(BROWN, 0.35)}"/>'
-    f'<stop offset="1" stop-color="{mix(BROWN, 0.35)}" stop-opacity="0"/></radialGradient></defs>')
-add(f'<rect width="{W}" height="{H}" fill="url(#ne)"/><rect width="{W}" height="{H}" fill="url(#sw)"/>')
+# relief : teinte d'altitude de la selle, lissée (brun vers les deux sommets, vert dans les deux vallées) ; la ville
+# en fait partie (essai Nano Banana du 2026-11-01 : sans relief DANS la référence, la ville est posée sur un plat)
+add('<defs><filter id="flou" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="14"/>'
+    '</filter></defs>')
+tint = ['<g filter="url(#flou)">']
+for gx in range(-20, W + 21, 20):
+    for gy in range(-20, H + 21, 20):
+        u, v = local(gx, gy)
+        z = max(-1.6, min(1.6, (v * v - u * u) / (1.6 * R_WALL * R_WALL)))
+        if z > 0:
+            tint.append(f'<circle cx="{gx}" cy="{gy}" r="16" fill="{mix(BROWN, 0.6)}" opacity="{min(z, 1) * 0.75:.2f}"/>')
+        else:
+            tint.append(f'<circle cx="{gx}" cy="{gy}" r="16" fill="{mix(GREEN, 0.55)}" opacity="{min(-z, 1) * 0.4:.2f}"/>')
+add(''.join(tint) + '</g>')
 
 # hachures de pente : de courts traits dans le sens de la pente, autour des deux sommets
 for (px, py), rmin, rmax in (((900, 100), 230, 420), ((110, 890), 120, 300)):
@@ -118,6 +125,25 @@ for _ in range(220):
     add(f'<path d="M{x - 4:.1f},{y:.1f} L{x - 1:.1f},{y - 6:.1f} M{x:.1f},{y:.1f} L{x:.1f},{y - 8:.1f} '
         f'M{x + 4:.1f},{y:.1f} L{x + 1:.1f},{y - 6:.1f}" stroke="{mix(GREEN, 0.7)}" stroke-width="1.2" fill="none"/>')
 
+# les deux arêtes rocheuses qui montent de l'enceinte vers les sommets : rochers et éboulis le long de la crête
+for direction, vmax in ((1, 640), (-1, 560)):
+    for _ in range(90):
+        v = direction * rng.uniform(R_WALL - 10, vmax)
+        width = 40 + (abs(v) - R_WALL) * 0.2
+        u = rng.gauss(0, width / 2)
+        x, y = world(u, v)
+        if not (10 < x < W - 10 and 10 < y < H - 10) or in_city(x, y, -22):
+            continue
+        r = rng.uniform(5, 11)
+        rock = [(x + r * math.cos(t) * rng.uniform(0.7, 1.1), y + r * math.sin(t) * rng.uniform(0.6, 1.0))
+                for t in (0, 1.1, 2.2, 3.3, 4.4, 5.4)]
+        add(f'<path d="{path(rock, True)}" fill="{mix(STONE, 0.7)}" stroke="{INK}" stroke-width="1"/>'
+            f'<path d="M{rock[0][0]:.1f},{rock[0][1]:.1f} L{rock[1][0]:.1f},{rock[1][1]:.1f} L{rock[2][0]:.1f},'
+            f'{rock[2][1]:.1f} L{x:.1f},{y:.1f} Z" fill="{mix(INK, 0.5)}" opacity="0.5"/>')
+        for _ in range(2):  # éboulis
+            add(f'<circle cx="{x + rng.uniform(-14, 14):.1f}" cy="{y + rng.uniform(-14, 14):.1f}" r="1.4" '
+                f'fill="{mix(INK, 0.6)}"/>')
+
 # les Pythagoriades, au nord-est : vraies montagnes rocheuses aux sommets enneigés
 PEAKS = [(700, 70, 70), (830, 120, 95), (950, 60, 80), (960, 230, 85), (880, 330, 60), (620, 20, 45)]
 for x, y, s in sorted(PEAKS, key=lambda p: p[1]):
@@ -132,11 +158,14 @@ for x, y, s in sorted(PEAKS, key=lambda p: p[1]):
         f'L{x + s * 0.1:.1f},{y - s * 0.05:.1f} L{x - s * 0.05:.1f},{y - s * 0.2:.1f} L{x - s * 0.17:.1f},{y - s * 0.05:.1f} Z" '
         f'fill="{PAPER}" stroke="{INK}" stroke-width="1.1"/>')
 
-# la butte du sud-ouest : rocheuse, plus basse, sans neige
-for x, y, s in ((95, 880, 55), (175, 935, 42), (40, 960, 35)):
-    add(f'<path d="M{x - s:.1f},{y + s * 0.6:.1f} Q{x - s * 0.4:.1f},{y - s * 0.5:.1f} {x:.1f},{y - s * 0.55:.1f} '
-        f'Q{x + s * 0.5:.1f},{y - s * 0.4:.1f} {x + s:.1f},{y + s * 0.6:.1f} Z" fill="{mix(BROWN, 0.45)}" '
-        f'stroke="{INK}" stroke-width="1.4"/>')
+# le sommet du sud-ouest : rocheux, plus bas que les Pythagoriades, sans neige
+for x, y, s in ((60, 880, 60), (150, 830, 80), (230, 930, 55)):
+    base = y + s * 0.9
+    add(f'<path d="M{x - s:.1f},{base:.1f} L{x - s * 0.45:.1f},{y + s * 0.15:.1f} L{x:.1f},{y - s * 0.45:.1f} '
+        f'L{x + s * 0.4:.1f},{y + s * 0.05:.1f} L{x + s * 0.95:.1f},{base:.1f} Z" fill="{mix(BROWN, 0.5)}" '
+        f'stroke="{INK}" stroke-width="1.6"/>')
+    add(f'<path d="M{x:.1f},{y - s * 0.45:.1f} L{x + 0.6 * s * 0.95:.1f},{base:.1f} L{x + s * 0.95:.1f},{base:.1f} '
+        f'L{x + s * 0.4:.1f},{y + s * 0.05:.1f} Z" fill="{mix(INK, 0.45)}" opacity="0.6"/>')
 
 # lacs ordinaires dans la steppe
 for x, y, rx, ry in ((200, 120, 62, 30), (90, 520, 40, 26)):
@@ -165,7 +194,7 @@ for gx, gy in ((120, 300), (300, 60), (60, 700), (400, 830), (600, 830), (900, 6
             f'stroke-width="1"/>')
 
 # le sol de la ville : terre battue claire
-add(f'<path d="{path(WALL, True)}" fill="{mix(GOLD, 0.14)}"/>')
+add(f'<path d="{path(WALL, True)}" fill="{mix(GOLD, 0.14)}" opacity="0.3"/>')
 
 # rues
 street = mix(BROWN, 0.3)
@@ -176,19 +205,32 @@ MAIN = [world(-APOTHEM - 30, 0), world(APOTHEM + 30, 0)]
 ROAD_NW = [world(-APOTHEM, 0), (250, 255), (140, 220), (-20, 230)]
 ROAD_SE = [world(APOTHEM, 0), (820, 820), (1020, 1000)]
 # courbes de niveau v² − u² = ±a² : les rues qui suivent la courbure (hyperboles)
-CONTOURS = []
-for a, sign in ((70, 1), (150, 1), (160, -1)):
-    if True:
-        for side in (1, -1):
-            pts = []
-            for k in range(-60, 61):
-                t = k * 4
-                u, v = (t, side * math.sqrt(a * a + t * t)) if sign > 0 else (side * math.sqrt(a * a + t * t), t)
-                x, y = world(u, v)
-                if in_city(x, y, 18):
-                    pts.append((x, y))
-            CONTOURS.append(pts)
+def contour(a, sign, side, margin):
+    pts = []
+    for k in range(-60, 61):
+        t = k * 4
+        u, v = (t, side * math.sqrt(a * a + t * t)) if sign > 0 else (side * math.sqrt(a * a + t * t), t)
+        x, y = world(u, v)
+        if in_city(x, y, margin):
+            pts.append((x, y))
+    return pts
+
+
+CONTOURS = [contour(a, sign, side, 18) for a, sign in ((70, 1), (150, 1), (160, -1)) for side in (1, -1)]
 STREETS = [MAIN] + CONTOURS
+# terrasses : murs de soutènement le long des courbes de niveau, entre les rues ; ombre portée du côté qui descend
+TERRACES = [contour(a, sign, side, 14) for a, sign in ((110, 1), (195, 1), (105, -1), (215, -1)) for side in (1, -1)]
+TERRACES = [t for t in TERRACES if len(t) > 2]
+for pts in TERRACES:
+    shadow = []
+    for x, y in pts:
+        u, v = local(x, y)
+        gx, gy = -2 * u * EU[0] + 2 * v * EV[0], -2 * u * EU[1] + 2 * v * EV[1]  # vers le haut
+        n = math.hypot(gx, gy) or 1
+        shadow.append((x - 6 * gx / n, y - 6 * gy / n))
+    add(f'<path d="{path(shadow)}" fill="none" stroke="{mix(INK, 0.55)}" stroke-width="9" opacity="0.55"/>')
+    add(f'<path d="{path(pts)}" fill="none" stroke="{INK}" stroke-width="6"/>')
+    add(f'<path d="{path(pts)}" fill="none" stroke="{mix(STONE, 0.85)}" stroke-width="3.5"/>')
 for pts in [ROAD_NW, ROAD_SE]:
     add(f'<path d="{smooth(pts)}" fill="none" stroke="{street}" stroke-width="13"/>')
 for pts in STREETS:
@@ -233,6 +275,8 @@ def occupied(x, y, margin=0):
     if not academy_free(x, y) or not tri_free(x, y):
         return True
     if any(dist_to(pts, x, y) < 14 + margin for pts in STREETS if pts):
+        return True
+    if any(dist_to(pts, x, y) < 10 + margin for pts in TERRACES):
         return True
     return not in_city(x, y, 20 + margin)
 
@@ -283,6 +327,7 @@ for pts in STREETS:
             r = min(w, h) / 2 + 2
             if (not in_city(hx, hy, 22) or not academy_free(hx, hy) or not tri_free(hx, hy)
                     or any(dist_to(q, hx, hy) < width / 2 + h / 2 + 1 for q in STREETS if q is not pts)
+                    or any(dist_to(q, hx, hy) < h / 2 + 7 for q in TERRACES)
                     or any(math.hypot(hx - px, hy - py) < r + pr for px, py, pr in PLACED)):
                 acc = 4
                 continue
