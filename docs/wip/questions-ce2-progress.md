@@ -6,21 +6,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, migration du lot 5 en PR._
+_Mis à jour le 2026-11-01, après #2090._
 
-- **État** : lots 1 à 4 publiés en prod ; lot 5 (problèmes, 12 modèles) : brouillons créés en prod (2026-11-01),
-  migration nœud + tag `20261101180100` en PR (test rouge sans, vert avec).
-- **Prochaine action** : CI verte → merger → `db:migrate` (`--dry-run` d'abord ; condition 3 : `security-auditor`
-  sans finding bloquant) → relevé MCP → page à cocher → `publier-lot` en simulation puis `--publier` (David, `!`).
-  En parallèle, dans des sessions à part : `choix-correction` (§ 8), puis `centaines:` + milliers de `collection`
-  et barres à monter.
+- **État** : lots 1 à 4 publiés en prod ; lot 5 (problèmes, 12 modèles) : brouillons créés, rangés et tagués en prod
+  (#2081, #2090 ; migration `20261101180100` jouée), toujours `draft`. Aucun worktree en cours.
+- **Prochaine action** : David relit la page à cocher (`~/Downloads/relecture-ce2-5.html`, 12 fiches) → je corrige
+  ce qu'il note → `publier-lot` en simulation (niveaux relevés dans la catégorie JUSTE avant) → `--publier` (David,
+  `!`). En parallèle, dans des sessions à part : `choix-correction` (§ 8), puis `centaines:` + milliers de
+  `collection` et barres à monter. Ensuite lot 6 : grandeurs (longueurs, masses, contenances, durées).
 - **En attente de David** : relecture de la page à cocher ; dire si la correction du produit cartésien en phrases
   suffit (sinon outil neuf).
 - **Pièges en cours** : `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les
-  lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente ; horodatage = max de la PROD ET des
-  worktrees + 1 min ; niveaux relevés dans la catégorie JUSTE avant la publication ; commitlint : sujet sans
-  majuscule (même « CE2 »), corps ≤ 100 car. ; worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot5-rangement`.
+  lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente ; horodatage = max de la PROD, de `main`,
+  des worktrees ET des branches distantes + 1 min (`git ls-tree` sur `git branch -r`) ; niveaux relevés dans la
+  catégorie JUSTE avant la publication ; commitlint : sujet sans majuscule (même « CE2 »), corps ≤ 100 car. ;
+  `Doc-inchangée:` va dans un COMMIT, pas dans la PR ; après un rebase, pas de `--force` : repartir de l'état distant.
+- **Worktree / branche** : aucun (prochain : `../ubumaths-wt-questions-ce2`). Reste en local une branche rebasée
+  `feat/questions-ce2-lot5-rangement` (`-d` refuse, sans intérêt) : à supprimer par David si besoin.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -442,3 +444,7 @@ totale ≤ 1 000 pour le nombre de parts. Question d'accès : personne ne lit ri
   rouge sans (5 échecs sur 9), vert 9/9. Nœuds relevés : 029 → parties-tout (y compris le modèle des fractions,
   `4f47f8d6`), 079 et 033 → comparaison, 030 et 032 → en deux étapes ou plus, 031 → multiplicatifs, 034 → produits
   cartésiens. `check:incremental` 0 erreur, cliquet tenu.
+- 2026-11-01 : #2090 mergée (CI verte au 3e passage : garde « doc à jour » → `Doc-inchangée` dans un commit ;
+  horodatage `160300` → `180100`, la `160400` de `main` passait avant). `db:migrate` (David) : `180100` seule jouée.
+  Relevé MCP : 12 modèles `draft`, nœuds et points voulus, `updated_at` inchangé. Page à cocher générée (3 alertes
+  « homonyme » = les modèles CE1 de même titre, écartés à raison).
