@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 4 publié._
+_Mis à jour le 2026-11-01, lot 5a écrit (PR en cours)._
 
-- **État** : lots 0 à 4 publiés (lot 4 : 7 modèles, publiés, rangés, tagués, relevé MCP du 2026-11-01 ; 040 / 118 / 041 corrigés par #2086, § 9.5).
-- **Prochaine action** : phase 0 du lot 5, fractions (points 013, 015, 016, 019, 020, 135, 021, 022, § 3) — relevé MCP d'abord, puis proposition à David ; prévenir la session `questions-cm1` (son lot 3a touche aussi les fractions).
-- **En attente de David** : rien.
-- **Pièges en cours** : `create-questions` retrouve un modèle par son TITRE (titre changé = doublon) ; libellé du point = consigne : le BO de CM2 se lit au pied de la lettre (§ 9.5) ; `curriculum_points` sans colonne `label` ; tags dans `question_template_points` ; relever la prod avant toute écriture ; horodatages de migration partagés ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal `{{eval:…;d}}` ; variable `e` = Euler ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI ; worktree neuf → `svelte-kit sync` avant `question:specs`.
-- **Worktree / branche** : aucun.
+- **État** : lots 0 à 4 publiés ; lot 5 découpé (§ 10.1) ; 5a (sens : 013, 015, 016, 019 ×2) écrit, specs vertes, essayé en local, PR des fichiers en cours.
+- **Prochaine action** : CI verte → merge ; David lance `create-questions --dir scripts/questions/cm2-5a --publier` ; relevé MCP des `id` ; migration de rangement ; page à cocher ; puis phase d'écriture du 5b (calculs : 020 ×2, 135 ×2, 021, 022, tableau du § 10).
+- **En attente de David** : rien pour l'instant.
+- **Pièges en cours** : `create-questions` retrouve un modèle par titre + catégorie + niveau ; `reducedFractions: off` accepte toute fraction égale (9/2 pour « cinquante-quatre douzièmes » : fractions à écrire irréductibles) ; spec `bad_form` = `constraintViolations: ['form']` ; libellé du point = consigne ; relever la prod avant toute écriture ; horodatages de migration partagés ; **commit dans le dépôt principal : toujours `git commit -m … -- <fichiers>`** (01ef189d9) ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `content/questions-cm2-lot5a`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -493,3 +493,24 @@ publication.
 **À trancher** : (a) 021 : modèle neuf (#10) à côté des deux existants, ou rien ? (b) réponses
 des sommes / différences : toute fraction égale acceptée (6/4 pour 3/2), ou forme imposée ?
 (c) découpage : 11 modèles en un lot, ou 5a (sens : 1-5) et 5b (calculs : 6-11) ?
+
+### 10.1 Lot 5 : décisions (David, 2026-11-01)
+
+Recommandations suivies (« tes recos ? » puis « go ») : (a) CM2-021 → modèle neuf (#10), corrigé
+par l'addition itérée, à côté de `e320755f` / `8fa3108c` ; (b) toute fraction égale acceptée
+(`reducedFractions: off`) ; (c) deux lots : **5a** (sens, modèles 1-5) puis **5b** (calculs,
+modèles 6-11). Tableau du § 10 gardé.
+
+### 10.2 Lot 5a : écriture (2026-11-01)
+
+- Script `lot-cm2-5a.py` → `scripts/questions/cm2-5a/` (5 fichiers), jumeau de `lot-cm1-3a.py`
+  (nombres en lettres jusqu'à 60, parts jusqu'aux soixantièmes, tirés par Python) et des
+  comparaisons de `lot-6-fractions.py`. `question:specs` : 1 000 tirages par variation, 36 specs,
+  tout vert ; `create-questions` en simulation (prod) : 5 à créer.
+- Mesuré : `reducedFractions: off` accepte 9/2 pour « cinquante-quatre douzièmes » → « écrire en
+  chiffres » tire des fractions irréductibles ; « 3 + 7/25 » recopiée et « 3,28 » → `bad_form`
+  (message de forme), 164/50 accepté. Comparaison à multiple commun : partie entière w tirée
+  d'abord (sinon 48 tirages sur 2 000 échouaient).
+- Local (port 5183, `admin@local.test`, Playwright iPhone 13) : lecture en lettres sur deux lignes
+  lisible (« cinquante-sept vingt-neuvièmes ») ; comparer : bon signe → « Juste », mauvais →
+  « Faux » ; encadrer 137/25 : 4 et 5 → « Faux », corrigé 5 < 137/25 < 6.

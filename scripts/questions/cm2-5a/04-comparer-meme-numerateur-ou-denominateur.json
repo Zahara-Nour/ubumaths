@@ -1,0 +1,215 @@
+{
+	"title": "Comparer deux fractions de même numérateur ou de même dénominateur",
+	"description": "Comparer deux fractions de même dénominateur (23/40 et 31/40) ou de même numérateur (17/12 et 17/8) ; dénominateur au plus 60",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 15,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "10..60"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:2*b-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:2*b-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:(1-s)*a+s*c"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:(1-s)*b+s*d"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:(1-s)*c+s*a"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:(1-s)*d+s*b"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*dd-dn*gd)+1"
+				}
+			],
+			"conditions": ["a!=c", "abs(a-c)<=9", "mod(a,b)!=0", "mod(c,b)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur.** Les deux fractions comptent des parts de même taille, des {{if:b==2|demis|{{if:b==3|tiers|{{if:b==4|quarts|{{if:b==5|cinquièmes|{{if:b==6|sixièmes|{{if:b==7|septièmes|{{if:b==8|huitièmes|{{if:b==9|neuvièmes|{{if:b==10|dixièmes|{{if:b==11|onzièmes|{{if:b==12|douzièmes|{{if:b==13|treizièmes|{{if:b==14|quatorzièmes|{{if:b==15|quinzièmes|{{if:b==16|seizièmes|{{if:b==17|dix-septièmes|{{if:b==18|dix-huitièmes|{{if:b==19|dix-neuvièmes|{{if:b==20|vingtièmes|{{if:b==21|vingt et unièmes|{{if:b==22|vingt-deuxièmes|{{if:b==23|vingt-troisièmes|{{if:b==24|vingt-quatrièmes|{{if:b==25|vingt-cinquièmes|{{if:b==26|vingt-sixièmes|{{if:b==27|vingt-septièmes|{{if:b==28|vingt-huitièmes|{{if:b==29|vingt-neuvièmes|{{if:b==30|trentièmes|{{if:b==31|trente et unièmes|{{if:b==32|trente-deuxièmes|{{if:b==33|trente-troisièmes|{{if:b==34|trente-quatrièmes|{{if:b==35|trente-cinquièmes|{{if:b==36|trente-sixièmes|{{if:b==37|trente-septièmes|{{if:b==38|trente-huitièmes|{{if:b==39|trente-neuvièmes|{{if:b==40|quarantièmes|{{if:b==41|quarante et unièmes|{{if:b==42|quarante-deuxièmes|{{if:b==43|quarante-troisièmes|{{if:b==44|quarante-quatrièmes|{{if:b==45|quarante-cinquièmes|{{if:b==46|quarante-sixièmes|{{if:b==47|quarante-septièmes|{{if:b==48|quarante-huitièmes|{{if:b==49|quarante-neuvièmes|{{if:b==50|cinquantièmes|{{if:b==51|cinquante et unièmes|{{if:b==52|cinquante-deuxièmes|{{if:b==53|cinquante-troisièmes|{{if:b==54|cinquante-quatrièmes|{{if:b==55|cinquante-cinquièmes|{{if:b==56|cinquante-sixièmes|{{if:b==57|cinquante-septièmes|{{if:b==58|cinquante-huitièmes|{{if:b==59|cinquante-neuvièmes|soixantièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} : la plus grande est celle qui a le plus grand numérateur.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				},
+				{
+					"name": "b",
+					"expression": "2..29"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:b+1}}..30"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:(1-s)*a+s*c"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:(1-s)*b+s*d"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:(1-s)*c+s*a"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:(1-s)*d+s*b"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*dd-dn*gd)+1"
+				}
+			],
+			"conditions": ["mod(a,b)!=0", "mod(a,d)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même numérateur.** Partager l'unité en ${{d}}$ donne des parts plus petites qu'en ${{b}}$ : $\\frac{1}{{{d}}} < \\frac{1}{{{b}}}$. Avec ${{a}}$ parts de chaque côté, $\\frac{{{a}}}{{{d}}} < \\frac{{{a}}}{{{b}}}$.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "23/40 < 31/40",
+			"variationIndex": 0,
+			"variables": {
+				"b": "40",
+				"a": "23",
+				"c": "31",
+				"d": "40",
+				"s": "0",
+				"gn": "23",
+				"gd": "40",
+				"dn": "31",
+				"dd": "40",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 23/40 > 31/40",
+			"variationIndex": 0,
+			"variables": {
+				"b": "40",
+				"a": "23",
+				"c": "31",
+				"d": "40",
+				"s": "0",
+				"gn": "23",
+				"gd": "40",
+				"dn": "31",
+				"dd": "40",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "17/12 < 17/8",
+			"variationIndex": 1,
+			"variables": {
+				"a": "17",
+				"b": "8",
+				"d": "12",
+				"c": "17",
+				"s": "1",
+				"gn": "17",
+				"gd": "12",
+				"dn": "17",
+				"dd": "8",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 17/12 > 17/8 (« 12 > 8 »)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "17",
+				"b": "8",
+				"d": "12",
+				"c": "17",
+				"s": "1",
+				"gn": "17",
+				"gd": "12",
+				"dn": "17",
+				"dd": "8",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
