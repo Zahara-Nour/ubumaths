@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, pendant l'écriture du 6a._
+_Mis à jour le 2026-11-01, jeu local du 6a fini, PR du 6a à ouvrir._
 
-- **État** : lots 0 à 5 publiés. Lot 6 validé (§ 11, 11.1) : 6a (fractions décimales, 7 modèles) écrit, specs vertes, simulation prod « 7 à créer », brouillons en base **locale** ; jeu local fait pour 01, 04, 06 (0,985 → message de forme), 07 (rendu 390 px), 02 en partie (§ 11.2).
-- **Prochaine action** : finir le jeu local de 02 (V4, deux cases), 03, 05 ; script Playwright `jouer.mjs` dans le scratchpad, perdu au `/clear` : setPromptValue sur le `math-field`, réponse lue sous « Réponse attendue » (une case) ou « Trou n : » ; à éclaircir : 03 V2, « 1509 » sans espace a donné un verdict ni « Juste » ni « Faux » (sans doute « mal espacé », à regarder), « 1501 » → « Juste » ; puis PR des fichiers (revue : aucune), merge, David lance `create-questions --dir scripts/questions/cm2-6a --publier`.
-- **En attente de David** : rien.
-- **Pièges en cours** : `spacesFromFourDigits` → réponses des specs en `1\,000` ; relever les niveaux de la catégorie juste avant `--publier` ; homonymes du CM1 sur la page à cocher (mêmes titres) ; `db:migrate` : `--dry-run` puis `--include-all` ; `git commit -m … -- <fichiers>`.
+- **État** : lots 0 à 5 publiés. Lot 6a (fractions décimales, 7 modèles) écrit, specs vertes, **jeu local fini pour les 7** (§ 11.2) ; 02 corrigé (V4 débordait à 390 px). Brouillons à jour en base **locale**.
+- **Prochaine action** : PR des fichiers (revue : aucune), CI, merge ; puis David lance `create-questions --dir scripts/questions/cm2-6a --publier` (simulation d'abord, niveaux relevés juste avant) ; puis migration de rangement (nœud + tag), page à cocher, publication ; ensuite phase d'écriture du 6b (décimaux).
+- **En attente de David** : le `--publier` du 6a, après le merge.
+- **Pièges en cours** : `spacesFromFourDigits` → réponses des specs en `1\,000` ; homonymes du CM1 sur la page à cocher (mêmes titres) ; `db:migrate` : `--dry-run` puis `--include-all` ; `git commit -m … -- <fichiers>` ; jeu local : `jouer.mjs` (scratchpad, perdu au `/clear`) — une case dans un champ = `setPromptValue`, même s'il n'y a qu'un champ.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm2` · `feat/questions-cm2-lot6a` (serveur local 5183 à arrêter).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -617,3 +617,4 @@ décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 
 - Script `lot-cm2-6a.py` → `scripts/questions/cm2-6a/` (7 fichiers), jumeau de `lot-cm1-3b.py` (millièmes en plus, nombres en lettres jusqu'à 9 999, « mille » invariable). `question:specs` : 1 000 tirages par variation, 54 specs, tout vert ; `create-questions` en simulation (prod) : 7 à créer.
 - Pièges mesurés : `spacesFromFourDigits` → réponses des specs écrites `1\,000`, `\frac{207}{1\,000}` (sinon `unoptimal_form`) ; l'affichage met les espaces seul. Comparer : numérateur tiré entre 70 % et 130 % de a × m (au-delà, 53/10 contre 785/100 ne piège plus). Ranger : positions affichées retrouvées en essayant les 24 permutations.
 - Local (port 5183, `admin@local.test`, 390 px) : ranger lisible (1 381/1 000 espacé) ; intercaler, 0,985 → « Faux » + « La réponse doit être écrite sous forme de fraction » (décision c) ; lire en case « choix » : une seule option juste sur 6 tirages.
+- Jeu local, suite (2026-11-01, après le `/clear`) : **02** V4 (regrouper, deux cases) : la ligne « 21 millièmes = ? centièmes et ? millièmes » débordait du champ à 390 px (le « 21 » coupé) → le nombre passe dans la phrase (« Complète : 21 millièmes, c'est… »), le champ garde « ? centièmes et ? millièmes » (340 px) ; (2, 1) juste, (1, 2) faux ; V1 à V3 entre 269 et 304 px. **03** : V1 (quatre cases, 358 px) juste / chiffres échangés faux / 0 + 19/10 faux ; V2 : « 1\,509 » juste, « 1509 » → ½ point « Les chiffres sont mal espacés » (le « 1501 → Juste » d'avant le `/clear` venait du script : `setValue` au lieu de `setPromptValue`). « 1\ 509 » → faux « forme demandée », mais l'élève ne peut pas le taper (la barre d'espace donne `\,`). À noter pour plus tard : dans « Ta réponse », 1509 s'affiche espacé « 1 509 », donc l'élève ne voit pas ce qui a coûté le demi-point. **05** : V1 (297/100) 2 et 3 juste, 29 et 30 faux ; V2 3 et 4 juste, 32 et 33 / 4 et 3 / 2 et 3 faux, 0 < 527/1 000 < 1 juste.
