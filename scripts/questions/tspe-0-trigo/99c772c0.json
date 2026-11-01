@@ -1,0 +1,151 @@
+{
+	"id": "99c772c0-3a0c-4f63-b01e-a7da4de812c4",
+	"title": "Équations trigonométriques sans solution",
+	"description": "cos x = k avec |k| > 1, sin x = ±3/2 ou ±5/2 : ensemble vide",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Équations",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\varnothing"
+				}
+			],
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $-1\\leqslant \\cos x\\leqslant 1$ : aucun point du cercle n'a pour abscisse ${{k}}$.",
+					"```trig\nequation: cos(x) = {{k}}\nmode: points\nmesures: principales\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\varnothing }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\varnothing"
+				}
+			],
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x={{eval:p/2}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "3|5|-3|-5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $-1\\leqslant \\sin x\\leqslant 1$ ; or $\\left|{{eval:p/2}}\\right|>1$ : aucun point du cercle n'a pour ordonnée ${{eval:p/2}}$.",
+					"```trig\nequation: sin(x) = {{p}}/2\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\varnothing }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "cos x = 2 : ensemble vide",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\emptyset"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "\\emptyset",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\{\\}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "accolades vides",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "0 au lieu de ∅",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\pi;\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "tout l'intervalle",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "-3"
+			},
+			"description": "sin x = -3/2 : ensemble vide",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\{\\frac{3\\pi}{2}\\}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "-3"
+			},
+			"description": "solution « 3π/2 » (ordonnée -1)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[0;2\\pi["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "-3"
+			},
+			"description": "[0;2π[ au lieu de ∅",
+			"variationIndex": 1
+		}
+	]
+}
