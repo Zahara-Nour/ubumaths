@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2052 et #2054 (lot 6 rangé en prod, page à cocher publiée)._
+_Mis à jour le 2026-11-01, après #2052 et #2054 (lot 6 relu, translations publiées)._
 
-- **État** : lots 1 à 5 en prod (lot 1 en brouillon, lots 2 à 5 publiés) ; lot 5 « Pythagore et triangles » (033, 034,
-  035, 036, 037, 072, 075) : 7/7 « OK » à la relecture, publiés par David, vérifié au MCP (§ 27).
-- **Prochaine action** : lot 6 en relecture sur la page à cocher (§ 31) ; lire les verdicts, puis publier les
-  3 modèles de translation ; les 2 de volume attendent le `deploy:prod` qui livre ` ```solide `.
+- **État** : lots 1 à 6 en prod (lot 1 en brouillon, lots 2 à 5 publiés) ; lot 6 : 5/5 « OK » à la relecture, les
+  3 translations (030, 031, 032) publiées par David, vérifié au MCP (§ 31) ; les 2 volumes (029, 076) en brouillon.
+- **Prochaine action** : après le `deploy:prod` qui livre ` ```solide ` : voir les 2 volumes dessinés en prod, puis
+  `publier-lot` sur un dossier qui ne contient que 01 et 02 du lot 6 ; ensuite, choisir le lot 7.
 - **En attente de David** : garder la sonde des figures comme outil (`sonde-figures.ts`, petite PR à
   part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication des 7
   brouillons du lot 1 ; revoir ou non les 14 bornes du cycle 4 qui ne reposent que sur un document 2019/2016 (§ 27).
@@ -805,3 +805,6 @@ des modèles de volume déjà en base ; aucun niveau pris dans ces catégories, 
   `verdicts` vide à la publication).
 - Alertes : 4-029 et 4-076, « bloc solide non dessiné » (la page ne sait pas dessiner ` ```solide `) ; le rendu des
   pyramides et du cône a été vu en local à 390 px (§ 29), pas encore en prod (bloc non livré).
+- Relecture : 5 verdicts lus en base, 5 « OK », aucun commentaire. `publier-lot` ne prend qu'un dossier entier : les 3
+  fichiers de translation copiés seuls dans un dossier du scratchpad, simulation (3 passent), lancé par David avec
+  `--publier` ; vérifié au MCP : 0150ef82, c8306505, e7ef2835 publiés ; 6a770d04 et 35002b15 toujours en brouillon.
