@@ -5,13 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2078 et son `db:migrate`._
+_Mis à jour le 2026-11-01, après #2078 et la v0.59.0._
 
-- **État** : lots 1 à 6b publiés ; lot 7 « Droite graduée et ordre » mergé (#2057), pas en prod. Reprise de 06 et 07
-  en ```ranger mergée (#2078, § 17) et jouée en prod (MCP : contenu « après », `published`, tags inchangés).
-- **Prochaine action** : `deploy:prod` (David) → David lance `create-questions --dir scripts/questions/6-droite-ordre
---publier` → relever les `id` → migration nœud + tag → page à cocher → publication.
-- **En attente de David** : `deploy:prod` (refusé par le classifieur du mode auto : `! pnpm deploy:prod` ; `main` doit être propre).
+- **État** : lots 1 à 6b publiés ; 06 et 07 en ```ranger en prod (#2078, migration jouée) ; verdicts 02-04 validés.
+  Lot 7 « Droite graduée et ordre » (#2057) livré en prod avec la v0.59.0 (`deploy:prod` du 2026-11-01).
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/6-droite-ordre --publier` → relever
+  les `id` → migration nœud + tag → page à cocher → publication.
+- **En attente de David** : le `--publier` ci-dessus ; décision sur le verrou de `deploy:prod` (attendre la CI sous
+  verrou au lieu de s'arrêter, cf. § 17) — hors chantier.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
 - **Worktree / branche** : aucun (retiré après #2078).
@@ -1127,3 +1128,6 @@ visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migratio
   `published`, niveaux 1 et 2, tags 6-134 et 6-204, ```ranger présent.
 - Verdicts de `revue-modeles` de 02, 03, 04 (c9c3a8a3, 378aa770, afebbb91) passés en « validé » sur demande de David
   (commentaires gardés), depuis `/dev/modeles` dans son Chrome ; MCP : `valide`, 2026-11-01.
+
+- `deploy:prod` → v0.59.0 (8a0d772e8). Une heure d'attente : chaque merge d'une autre session relançait la CI de
+  `main`, et le script s'arrête (verrou rendu) au lieu d'attendre. Proposé à David : attendre la CI sous le verrou.
