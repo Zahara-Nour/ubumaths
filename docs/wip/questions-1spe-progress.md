@@ -839,3 +839,7 @@ b359cd25 267, e9fe1a28 269), relus en base (MCP) : `draft`, `1_SPE`, niveaux éc
 migration (5 / 10, restauré d'une copie, identique). Nœuds relus en prod : Fonctions › Dérivation › taux de variation
 (259, 268, 397, 388), approximation affine (262, 390, 273), fonctions dérivées (263), dérivabilité en un point (267),
 nombre dérivé (269).
+
+`security-auditor` (Opus) : aucun finding bloquant (écart au gabarit limité aux données, `1_SPE` et au compte ; gardes
+mesurées en prod, MCP) ; un faible hérité du gabarit (trigger `updated_at` à relire, `tgenabled = 'O'`, après
+application).
