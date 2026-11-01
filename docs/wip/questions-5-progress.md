@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2146 (rangement du lot 7) ouverte, CI en cours._
+_Mis à jour le 2026-11-01, PR #2146 ouverte ; **CI annulée : PAUSE CI** demandée par la session `migrations-collision` (runners saturés). Ni push ni merge avant son « go » ; au go : `git merge origin/main` + push → CI relancée (run annulé ≠ rouge)._
 
 - **État** : lots 1 à 6 publiés. **Lot 7** : 6 brouillons en prod (§ 18.2) ; migration nœud + tag
   `20261101224000_questions_5_lot7_rangement_tags` dans **#2146** (§ 18.3). Les 4 conditions du `db:migrate`
   autonome sont réunies (choix A, preuve rouge, `security-auditor` sans bloquant, additive + rollback).
-- **Prochaine action** : CI de #2146 verte → `git merge origin/main` → `pnpm check:migrations --pr 2146` (règle
+- **Prochaine action** : (après le « go ») CI de #2146 verte → `git merge origin/main` → `pnpm check:migrations --pr 2146` (règle
   de #2165 ; renommer si refus par `pnpm migration:horodatage`, jamais à la main) → merge → `db:migrate` depuis
   la branche mergée (`--include-all --dry-run` d'abord) → vérifier au MCP. Puis page à cocher, `publier-lot`,
   lot 8 « Opérations » (001, 002, 005, 116, 117).
