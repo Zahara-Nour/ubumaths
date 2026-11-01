@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2070._
+_Mis à jour le 2026-11-01, après #2070 (brouillons du 3c en prod)._
 
-- **État** : lots 0 à 3b publiés ; lot 3c (partages, 4 modèles, § 11 à 11 ter) mergé (#2070), pas encore en base de prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-3c --publier` (depuis le dépôt principal) ; puis relevé MCP des 4 ids, migration de rangement (sous-notion « définition », points 145, 144, 150, 149) sur le gabarit du lot 3b, dans un worktree neuf ; publication seulement après le `deploy:prod` du bloc ```partage.
-- **En attente de David** : le `--publier` des 4 brouillons.
+- **État** : lot 3c (4 partages) en brouillon en prod (`--publier` du 2026-11-01) ; migration de rangement `20261101141600_questions_cm1_lot3c_rangement_tags` écrite et prouvée (§ 11 quater), PR en cours.
+- **Prochaine action** : CI verte → merge ; David lance `pnpm db:migrate` depuis le dépôt principal ; relevé MCP (nœud + point, `updated_at` inchangé) ; page à cocher ; publication seulement après le `deploy:prod` du bloc ```partage.
+- **En attente de David** : le `db:migrate` après le merge.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; specs de coloriage ≤ 34 rangs (test `answer-complexity-corpus`) ; port 5177 pris par questions-4.
-- **Worktree / branche** : aucun (retiré après #2070).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `chore/questions-cm1-lot3c-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -583,3 +583,13 @@ sans outil neuf ; « 1 + 3/4 » refusé (`requiredForm: 'fraction'`).
 - **CI rouge, corrigée** : le test `answer-complexity-corpus` mesure aussi les réponses des specs de
   coloriage (« 1, 2, …, 73 » : 281 caractères, marge ×3 sur 400 dépassée), alors que la garde Q58 ne
   s'applique pas aux figures à colorier. Specs de grille ramenées à 23 et 32 cases (≤ 34 rangs).
+
+### 11 quater. Lot 3c — brouillons en prod, rangement et tags (2026-11-01)
+
+- `--publier` lancé par David : 4 brouillons créés — `092b310c` (CM1-145), `14a2d26f` (CM1-144),
+  `60ce79bb` (CM1-150), `fe91cbd9` (CM1-149). Relevé MCP : `draft`, [CM1], sans nœud ni point ;
+  les 4 points sur le nœud de CM1-023 (« définition »), sans aucun modèle.
+- Migration `20261101141600_questions_cm1_lot3c_rangement_tags` et son test générés du gabarit du
+  lot 3b (script en scratchpad, remplacements comptés) ; horodatage = max (`20261101141500`,
+  cm2 lot 4) + 1 min.
+- Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
