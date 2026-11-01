@@ -144,7 +144,7 @@ forme: 7
 5. **Ordre des lots** (§ 3) : d'accord, ou les patrons du cube (cours moyen, 4 points) avant le ` ```solide ` ?
 
 **Réponse de David (2026-10-30)** : « je te suis » — les cinq recommandations sont retenues : cavalière
-partout (Q1), trois mots / un nœud `espace` / un ADR (Q2, [ADR 0034](../adr/0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)),
+partout (Q1), trois mots / un nœud `espace` / un ADR (Q2, [ADR 0034](../../adr/0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)),
 « mêmes vues » (Q3), perspective à compléter hors chantier (Q4), ordre des lots du § 3 (Q5).
 
 ## 6. Lot 1 — ` ```cubes `, affichage (spécification)
