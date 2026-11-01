@@ -159,3 +159,47 @@ describe('bloc ouvert sur la ligne de l’item', () => {
 		expect(nodes.map((n) => n.type)).toEqual(['paragraph']);
 	});
 });
+
+/**
+ * Corps de bloc fait de lignes `- …` (```ranger, ```choix) dans un item : ces
+ * lignes ne sont pas des sous-items tant que le bloc est ouvert (revue #2065).
+ */
+describe('bloc dans un item, corps en lignes « - »', () => {
+	const firstItem = (lines: string[]) =>
+		(parseMarkdown(lines.join('\n')).children[0] as ListNode).items[0].children as BlockNode[];
+
+	it('ouvert sur la ligne de l’item : un seul bloc, pas de sous-liste', () => {
+		const nodes = firstItem(['- ```ranger', '  - 3', '  - 1', '  - 2', '  ```']);
+
+		// ```ranger n'est pas lu dans une liste (absent de SPECIAL_BLOCK_KINDS) : un seul
+		// bloc, jamais une sous-liste ni un ``` affiché en paragraphe
+		expect(nodes).toHaveLength(1);
+		expect(nodes[0].type).not.toBe('list');
+	});
+
+	it('en retrait sous « - texte » : texte puis un seul bloc', () => {
+		const nodes = firstItem(['- Range :', '', '  ```ranger', '  - 3', '  - 1', '  ```']);
+
+		expect(nodes).toHaveLength(2);
+		expect(nodes.map((n) => n.type)).not.toContain('list');
+	});
+
+	it('bloc python dont le code a une ligne « - x » : un seul bloc de code', () => {
+		const nodes = firstItem(['- ```python', '  - x', '  ```']);
+
+		expect(nodes.map((n) => n.type)).toEqual(['code-block']);
+	});
+
+	it('vraiment non fermé : l’item suivant, à la marge, reste un item', () => {
+		const list = parseMarkdown(['- ```python', '  x = 1', '- Second item'].join('\n'))
+			.children[0] as ListNode;
+
+		expect(list.items).toHaveLength(2);
+	});
+
+	it('`- ~~~ x` (texte, pas une langue) : reste du texte', () => {
+		const nodes = firstItem(['- ~~~ x', '  suite']);
+
+		expect(nodes.map((n) => n.type)).not.toContain('code-block');
+	});
+});
