@@ -1,0 +1,586 @@
+{
+	"title": "Litres, décilitres et centilitres",
+	"description": "1 L = 10 dL = 100 cL ; 1 dL = 10 cL ; 780 cL = 7 L + 80 cL ; 35 dL = 3 L + 5 dL",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Contenances",
+	"subdomain": "Unités",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n$1~\\unit{{{if:s==1|L|{{if:s==2|L|dL}}}}} = ?~\\text{{{if:s==1|dL|{{if:s==2|cL|cL}}}}}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==2|100|10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Entre ces deux unités, il faut multiplier par {{if:s==1|10|{{if:s==2|100|10}}}} : un {{if:s==1|litre vaut 10 décilitres|{{if:s==2|litre vaut 100 centilitres|décilitre vaut 10 centilitres}}}}.",
+					"$$1~\\unit{{{if:s==1|L|{{if:s==2|L|dL}}}}} = \\textcolor{{{color:primary.0}}}{{{if:s==1|10|{{if:s==2|100|10}}}}}~\\unit{{{if:s==1|dL|{{if:s==2|cL|cL}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{L} = ?~\\text{dL}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un litre, c'est $10~\\unit{dL}$ : ${{a}}~\\unit{L}$, c'est ${{a}}$ fois $10~\\unit{dL}$.",
+					"$${{a}}~\\unit{L} = \\textcolor{{{color:primary.0}}}{{{eval:10*a}}}~\\unit{dL}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{L} = ?~\\text{cL}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un litre, c'est $100~\\unit{cL}$ : ${{a}}~\\unit{L}$, c'est ${{a}}$ fois $100~\\unit{cL}$.",
+					"$${{a}}~\\unit{L} = \\textcolor{{{color:primary.0}}}{{{eval:100*a}}}~\\unit{cL}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{dL} = ?~\\text{cL}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un décilitre, c'est $10~\\unit{cL}$ : ${{a}}~\\unit{dL}$, c'est ${{a}}$ fois $10~\\unit{cL}$.",
+					"$${{a}}~\\unit{dL} = \\textcolor{{{color:primary.0}}}{{{eval:10*a}}}~\\unit{cL}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{L} = ?~\\text{dL} = ?~\\text{cL}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:100*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un litre, c'est $10~\\unit{dL}$ et c'est $100~\\unit{cL}$.",
+					"$${{a}}~\\unit{L} = \\textcolor{{{color:primary.0}}}{{{eval:10*a}}}~\\unit{dL} = \\textcolor{{{color:primary.0}}}{{{eval:100*a}}}~\\unit{cL}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:10*a}}~\\unit{dL} = ?~\\text{L}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dix décilitres font un litre : dans ${{eval:10*a}}~\\unit{dL}$, il y a ${{a}}$ fois dix décilitres.",
+					"$${{eval:10*a}}~\\unit{dL} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{L}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:100*a}}~\\unit{cL} = ?~\\text{L}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Cent centilitres font un litre : dans ${{eval:100*a}}~\\unit{cL}$, il y a ${{a}}$ fois cent centilitres.",
+					"$${{eval:100*a}}~\\unit{cL} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{L}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:10*a}}~\\unit{cL} = ?~\\text{dL}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dix centilitres font un décilitre : dans ${{eval:10*a}}~\\unit{cL}$, il y a ${{a}}$ fois dix centilitres.",
+					"$${{eval:10*a}}~\\unit{cL} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{dL}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:100*a+b}}~\\unit{cL} = ?~\\text{L} + ?~\\text{cL}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans ${{eval:100*a+b}}~\\unit{cL}$, il y a ${{a}}$ fois cent centilitres, c'est-à-dire ${{a}}~\\unit{L}$, et il reste ${{b}}~\\unit{cL}$.",
+					"$${{eval:100*a+b}}~\\unit{cL} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{L} + \\textcolor{{{color:primary.0}}}{{{b}}}~\\unit{cL}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:10*a+b}}~\\unit{dL} = ?~\\text{L} + ?~\\text{dL}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans ${{eval:10*a+b}}~\\unit{dL}$, il y a ${{a}}$ fois dix décilitres, c'est-à-dire ${{a}}~\\unit{L}$, et il reste ${{b}}~\\unit{dL}$.",
+					"$${{eval:10*a+b}}~\\unit{dL} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{L} + \\textcolor{{{color:primary.0}}}{{{b}}}~\\unit{dL}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{L} + {{b}}~\\unit{cL} = ?~\\text{cL}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit d'abord les litres en centilitres : ${{a}}~\\unit{L} = {{eval:100*a}}~\\unit{cL}$.",
+					"Puis on ajoute les centilitres :",
+					"$${{eval:100*a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:100*a+b}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 L = 10 dL",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 L = 100 cL",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 L = 10 cL",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 dL = 10 cL",
+			"variationIndex": 0,
+			"variables": {
+				"s": "3"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 dL = 100 cL",
+			"variationIndex": 0,
+			"variables": {
+				"s": "3"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 L = 70 dL",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 L = 7 dL",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 L = 700 cL",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["700"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 L = 70 cL",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "25 dL = 250 cL",
+			"variationIndex": 3,
+			"variables": {
+				"a": "25"
+			},
+			"answers": ["250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 25 dL = 25 cL",
+			"variationIndex": 3,
+			"variables": {
+				"a": "25"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 L = 70 dL = 700 cL",
+			"variationIndex": 4,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["70", "700"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dL et cL échangés",
+			"variationIndex": 4,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["700", "70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "70 dL = 7 L",
+			"variationIndex": 5,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 70 dL = 700 L",
+			"variationIndex": 5,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["700"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "700 cL = 7 L",
+			"variationIndex": 6,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 700 cL = 70 L",
+			"variationIndex": 6,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "250 cL = 25 dL",
+			"variationIndex": 7,
+			"variables": {
+				"a": "25"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 250 cL = 2 500 dL",
+			"variationIndex": 7,
+			"variables": {
+				"a": "25"
+			},
+			"answers": ["2500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 780 cL = 7 L + 80 cL",
+			"variationIndex": 8,
+			"variables": {
+				"a": "7",
+				"b": "80"
+			},
+			"answers": ["7", "80"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 780 cL = 78 L + 0 cL",
+			"variationIndex": 8,
+			"variables": {
+				"a": "7",
+				"b": "80"
+			},
+			"answers": ["78", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "705 cL = 7 L + 5 cL",
+			"variationIndex": 8,
+			"variables": {
+				"a": "7",
+				"b": "5"
+			},
+			"answers": ["7", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 705 cL = 70 L + 5 cL",
+			"variationIndex": 8,
+			"variables": {
+				"a": "7",
+				"b": "5"
+			},
+			"answers": ["70", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "35 dL = 3 L + 5 dL",
+			"variationIndex": 9,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["3", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 35 dL = 5 L + 3 dL",
+			"variationIndex": 9,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["5", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 L + 80 cL = 780 cL",
+			"variationIndex": 10,
+			"variables": {
+				"a": "7",
+				"b": "80"
+			},
+			"answers": ["780"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 L + 80 cL = 87 cL",
+			"variationIndex": 10,
+			"variables": {
+				"a": "7",
+				"b": "80"
+			},
+			"answers": ["87"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 L + 5 cL = 705 cL",
+			"variationIndex": 10,
+			"variables": {
+				"a": "7",
+				"b": "5"
+			},
+			"answers": ["705"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 L + 5 cL = 750 cL (zéro mal placé)",
+			"variationIndex": 10,
+			"variables": {
+				"a": "7",
+				"b": "5"
+			},
+			"answers": ["750"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
