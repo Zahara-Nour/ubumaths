@@ -1,0 +1,156 @@
+{
+	"title": "Probabilité lue sur le tableau",
+	"description": "Deux épreuves indépendantes représentées par un tableau : probabilité d'une somme de deux dés (issues équiprobables), probabilité d'une réunion lue sur le tableau des probabilités",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Épreuves indépendantes",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On lance un dé rouge et un dé bleu, tous deux équilibrés, à quatre faces. Les faces du dé rouge portent les nombres $1$, $2$, $3$ et $4$ ; celles du dé bleu, les nombres ${{eval:m}}$, ${{eval:m+1}}$, ${{eval:m+2}}$ et ${{eval:m+3}}$. On note la somme des deux nombres obtenus.\n\nLe tableau donne toutes les issues (ligne : dé rouge ; colonne : dé bleu).\n\n| $+$ | ${{eval:m+0}}$ | ${{eval:m+1}}$ | ${{eval:m+2}}$ | ${{eval:m+3}}$ |\n| --- | --- | --- | --- | --- |\n| $1$ | ${{eval:1+m+0}}$ | ${{eval:1+m+1}}$ | ${{eval:1+m+2}}$ | ${{eval:1+m+3}}$ |\n| $2$ | ${{eval:2+m+0}}$ | ${{eval:2+m+1}}$ | ${{eval:2+m+2}}$ | ${{eval:2+m+3}}$ |\n| $3$ | ${{eval:3+m+0}}$ | ${{eval:3+m+1}}$ | ${{eval:3+m+2}}$ | ${{eval:3+m+3}}$ |\n| $4$ | ${{eval:4+m+0}}$ | ${{eval:4+m+1}}$ | ${{eval:4+m+2}}$ | ${{eval:4+m+3}}$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité que la somme soit égale à ${{eval:m+4+d}}$ : $?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "0..3"
+				},
+				{
+					"name": "d",
+					"expression": "-3..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(4-abs(d))/16}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux dés sont équilibrés et indépendants : les $4\\times4=16$ cases du tableau sont des issues équiprobables.",
+					"La somme ${{eval:m+4+d}}$ apparaît dans ${{eval:4-abs(d)}}$ case(s).",
+					"Probabilité : $\\dfrac{{{eval:4-abs(d)}}}{16}=\\textcolor{{{color:primary.0}}}{{{eval:(4-abs(d))/16}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$A$ et $B$ sont deux événements **indépendants** tels que $P(A)={{eval:a/10;d}}$ et $P(B)={{eval:c/10;d}}$. Voici le tableau des probabilités.\n\n| | $B$ | $\\overline{B}$ | Total |\n| --- | --- | --- | --- |\n| $A$ | ${{eval:a*c/100;d}}$ | ${{eval:a*(10-c)/100;d}}$ | ${{eval:a/10;d}}$ |\n| $\\overline{A}$ | ${{eval:(10-a)*c/100;d}}$ | ${{eval:(10-a)*(10-c)/100;d}}$ | ${{eval:1-a/10;d}}$ |\n| Total | ${{eval:c/10;d}}$ | ${{eval:1-c/10;d}}$ | $1$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A\\cup B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["a != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/10+c/10-a*c/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A\\cup B$ est réalisé par les cases $A\\cap B$, $A\\cap\\overline{B}$ et $\\overline{A}\\cap B$ (toutes sauf $\\overline{A}\\cap\\overline{B}$).",
+					"$P(A\\cup B)=1-P(\\overline{A}\\cap\\overline{B})=1-{{eval:(10-a)*(10-c)/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:a/10+c/10-a*c/100;d}}}$.",
+					"On retrouve $P(A)+P(B)-P(A\\cap B)={{eval:a/10;d}}+{{eval:c/10;d}}-{{eval:a*c/100;d}}={{eval:a/10+c/10-a*c/100;d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Somme 5, dé bleu 1 à 4 : 4/16",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1",
+				"d": "0"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Somme 3, dé bleu 1 à 4 : 2/16",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1",
+				"d": "-2"
+			},
+			"answers": ["\\frac{1}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1",
+				"d": "-2"
+			},
+			"answers": ["0{,}125"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 / nombre de sommes",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1",
+				"d": "-2"
+			},
+			"answers": ["\\frac{1}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,3 et 0,6 : 0,72",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "6"
+			},
+			"answers": ["0{,}72"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(A) + P(B)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "6"
+			},
+			"answers": ["0{,}9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P(A ∩ B)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "6"
+			},
+			"answers": ["0{,}18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
