@@ -10,19 +10,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 0-trigo validé par David (§ 10)._
+_Mis à jour le 2026-11-01, après #2095._
 
 - **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives **publiés** (84 modèles). Lot 0-trigo
-  (23 brouillons, § 10) **validé en bloc par David** ; une correction (C1) et deux niveaux changés dans les fichiers.
-- **Prochaine action** : merger la PR de l'instantané ; puis David lance `create-questions --publier --mettre-a-jour`
-  (C1 + niveaux de fece187e, afd9b3ff) et `publier-lot` (simulation puis `--publier`) ; relire le statut en base. Lot
-  suivant : dénombrement. Plus tard : migration Q3.
-- **En attente de David** : `create-questions --mettre-a-jour` puis `publier-lot` du lot 0-trigo.
+  (23 brouillons, § 10) validé par David, instantané mergé (#2095), **pas encore en base** (C1 + niveaux).
+- **Prochaine action** : David lance `create-questions --publier --mettre-a-jour` puis `publier-lot` (simulation, puis
+  `--publier`) sur `scripts/questions/tspe-0-trigo/` ; relire le statut en base (23 `published`, C1 présente,
+  fece187e et afd9b3ff en `T_SPE`). Ensuite : lot 0-dénombrement. Plus tard : migration Q3.
+- **En attente de David** : ces deux commandes du lot 0-trigo.
 - **Pièges en cours** : `create-questions` et `publier-lot`, même en simulation → David (le mode auto les refuse) ;
   partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
-  worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ;
-  l'aperçu de `question:specs` mélange les options d'une case choix : recouper l'indice avec la SOURCE.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot0-trigo`.
+  worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; l'aperçu de `question:specs` mélange les
+  options d'une case choix : recouper l'indice avec la SOURCE ; branche poussée : `git merge origin/main`, pas de rebase.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot0-denombrement` (partie de `main`
+  après #2095).
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -477,4 +478,9 @@ fichiers corrigés.
 
 **Relecture** : David valide les 23 fiches en bloc (2026-11-01, « je valide toute la relecture », sans passer par la
 page : `verdicts` restée vide). Q-T1 et Q-T2 : les modèles concernés (42f091c1, 7df468d6, 5072030d) sont validés tels
-quels, donc gardés (recommandation suivie).
+quels, donc gardés.
+
+**D-T1 (David, 2026-11-01, « je suis tes recos pour les questions »)** : Q-T1 gardé (cos(2x) = a, 42f091c1) ; Q-T2
+gardé (périodes autres que 2π, 7df468d6 et 5072030d).
+
+**PR** : #2095 mergée le 2026-11-01 (CI rouge d'abord sur une collision d'horodatage de `main`, réglée par #2093).
