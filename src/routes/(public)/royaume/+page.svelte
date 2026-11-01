@@ -184,8 +184,8 @@
 				<h2 id="provinces-title">Six Provinces, un Royaume</h2>
 				<p class="intro">
 					Le Royaume compte six Provinces, une par grand domaine des maths, chacune avec son
-					gouverneur, sa capitale et sa devise. Elles s’enroulent autour de Sandomir, la ville en
-					spirale, et du Trône Royal en son centre.
+					gouverneur, sa capitale et sa devise. Elles se rejoignent à Sandomir, la ville en spirale,
+					au cœur du Royaume. Chaque ville a sa carte : clique sur son nom.
 				</p>
 			</div>
 			<ProvinceMap />

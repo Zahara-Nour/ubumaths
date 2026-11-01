@@ -69,7 +69,7 @@ describe('/royaume/[ville]', () => {
 	it('un clic sur un lieu de la carte met sa fiche en évidence', async () => {
 		const city = cityOf('sandomir');
 		const screen = await renderCity(city.slug);
-		const target = screen.container.querySelector<SVGElement>('[data-place="caserne"]');
+		const target = screen.container.querySelector<SVGElement>('ellipse[data-place="caserne"]');
 		expect(target).not.toBeNull();
 		await userEvent.click(target as SVGElement);
 		const current = screen.container.querySelectorAll(
@@ -82,7 +82,7 @@ describe('/royaume/[ville]', () => {
 
 	it('un lieu à plusieurs cibles (les six ponts) se choisit par chacune', async () => {
 		const screen = await renderCity('sinusborg');
-		const targets = screen.container.querySelectorAll('[data-place="ponts-du-delta"]');
+		const targets = screen.container.querySelectorAll('ellipse[data-place="ponts-du-delta"]');
 		expect(targets.length).toBe(6);
 		await userEvent.click(targets[5] as SVGElement);
 		expect(screen.container.querySelector('li[aria-current="true"]')?.id).toBe(

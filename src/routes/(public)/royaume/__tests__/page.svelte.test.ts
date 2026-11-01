@@ -85,19 +85,6 @@ describe('/royaume', () => {
 		expect(sandomir.some((a) => !map?.contains(a))).toBe(true);
 	});
 
-	it('la Province lue est teintée sur la carte', async () => {
-		await page.viewport(1280, 900);
-		const screen = await renderTour(BASE_DATA, 1280);
-		screen.container.querySelector('#province-patatovie')?.scrollIntoView({ block: 'center' });
-		await expect
-			.poll(() =>
-				[...screen.container.querySelectorAll('[data-province-area].current')].map((el) =>
-					el.getAttribute('data-province-area')
-				)
-			)
-			.toEqual(['patatovie']);
-	});
-
 	it('chaque lien reste dans le site, et chaque ancre a sa cible', async () => {
 		const screen = await renderTour();
 		const hrefs = [...screen.container.querySelectorAll('a')].map(

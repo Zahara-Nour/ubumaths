@@ -143,6 +143,7 @@ export const SITEMAP_PAGES: SitemapPage[] = [
  */
 export const SITEMAP_DYNAMIC_ROUTES: SitemapDynamicRoute[] = [
 	{ route: '/shtam/[slug]', source: 'articles du Shtam parus (publishedArticles)' },
+	{ route: '/royaume/[ville]', source: 'villes du Royaume, liste fixe (CITIES)' },
 	{
 		route: '/glossaire/[slug]',
 		source: 'termes visibles du glossaire, sauf renvois nus, lus en anonyme (fetchGlossaryPages)'

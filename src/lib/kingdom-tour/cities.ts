@@ -74,7 +74,7 @@ export const CITIES: City[] = [
 		name: 'Sandomir',
 		province: null,
 		intro:
-			'La capitale du Royaume, bâtie en spirale au point où se rejoignent les six Provinces, sans appartenir à aucune.',
+			'Une ville en spirale, bâtie au point où se rejoignent les six Provinces, sans appartenir à aucune.',
 		image: '/images/royaume/carte-sandomir.webp',
 		places: [
 			{
@@ -155,8 +155,7 @@ export const CITIES: City[] = [
 		slug: 'empoche-les-bains',
 		name: 'Empoche-les-Bains',
 		province: 'nombrilie',
-		intro:
-			'Capitale de la Nombrilie : une station thermale de 1880, au fond d’une vallée boisée, où tout se paie.',
+		intro: 'Une station thermale de 1880, au fond d’une vallée boisée, où tout se paie.',
 		image: '/images/royaume/carte-empoche-les-bains.webp',
 		places: [
 			{
@@ -217,8 +216,7 @@ export const CITIES: City[] = [
 		slug: 'lobatchevsk',
 		name: 'Lobatchevsk',
 		province: 'bedonstan',
-		intro:
-			'Capitale du Bedonstan, bâtie sur un col en forme de selle de cheval, au pied des Pythagoriades.',
+		intro: 'Une ville bâtie sur un col en forme de selle de cheval, au pied des Pythagoriades.',
 		image: '/images/royaume/carte-lobatchevsk.webp',
 		places: [
 			{
@@ -285,8 +283,7 @@ export const CITIES: City[] = [
 		slug: 'sinusborg',
 		name: 'Sinusborg',
 		province: 'yoyolande',
-		intro:
-			'Capitale de la Yoyolande : un port nordique bâti sur les îles du delta de la Vistule, où tout monte et descend.',
+		intro: 'Un port nordique bâti sur les îles du delta de la Vistule, où tout monte et descend.',
 		image: '/images/royaume/carte-sinusborg.webp',
 		places: [
 			{
@@ -345,8 +342,7 @@ export const CITIES: City[] = [
 		slug: 'bonneteau-sur-vistule',
 		name: 'Bonneteau-sur-Vistule',
 		province: 'pifometrie',
-		intro:
-			'Capitale de la Pifométrie : une ville de tripots, bâtie sur les deux rives d’un grand méandre de la Vistule.',
+		intro: 'Une ville de tripots, bâtie sur les deux rives d’un grand méandre de la Vistule.',
 		image: '/images/royaume/carte-bonneteau-sur-vistule.webp',
 		places: [
 			{
@@ -403,7 +399,7 @@ export const CITIES: City[] = [
 		name: 'Turingrad',
 		province: 'glitchistan',
 		intro:
-			'Capitale du Glitchistan : une ville de brique et de fonte, coupée par la Vistule canalisée, où des tubes de laiton relient tous les toits.',
+			'Une ville de brique et de fonte, coupée par la Vistule canalisée, où des tubes de laiton relient tous les toits.',
 		image: '/images/royaume/carte-turingrad.webp',
 		places: [
 			{
@@ -466,7 +462,7 @@ export const CITIES: City[] = [
 		name: 'Cracovenn',
 		province: 'patatovie',
 		intro:
-			'Capitale de la Patatovie : trois enceintes rondes qui se chevauchent, de brique, de pierre et de bois. La ville est un diagramme de Venn habitable.',
+			'Trois enceintes rondes qui se chevauchent, de brique, de pierre et de bois : la ville est un diagramme de Venn habitable.',
 		image: '/images/royaume/carte-cracovenn.webp',
 		places: [
 			{
@@ -509,7 +505,22 @@ export const CITIES: City[] = [
 	}
 ];
 
+/** « de la Nombrilie », « du Bedonstan » : les deux provinces en -stan sont masculines */
+const OF_PROVINCE: Record<ProvinceId, string> = {
+	nombrilie: 'de la Nombrilie',
+	bedonstan: 'du Bedonstan',
+	yoyolande: 'de la Yoyolande',
+	pifometrie: 'de la Pifométrie',
+	glitchistan: 'du Glitchistan',
+	patatovie: 'de la Patatovie'
+};
+
 // Functions
+
+/** « Capitale du Glitchistan », « Capitale du Royaume » */
+export function capitalTitle(city: City): string {
+	return `Capitale ${city.province ? OF_PROVINCE[city.province] : 'du Royaume'}`;
+}
 
 export function cityBySlug(slug: string): City | undefined {
 	return CITIES.find((city) => city.slug === slug);
