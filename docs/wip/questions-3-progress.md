@@ -5,18 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2049._
+_Mis à jour le 2026-11-01, après #2069._
 
-- **État** : lot 5 écrit (§ 12.7), fichiers mergés (#2049, CI verte).
-- **Prochaine action** : après le `--publier` de David, relever les 6 ids en prod (MCP), puis migration de
-  rangement : 6 nœuds + tags (§ 12), et ccb51039 / 76f5f143 en grades `['4', '3']` + tags 3-036 / 3-063.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-5 --publier`.
+- **État** : lot 5 rangé en prod (#2059, migration jouée, § 12.10) ; corrigé de 3-035 v2 corrigé dans le
+  fichier (#2069) ; page à cocher https://claude.ai/artifact/CJ17SXoC5SjnCQQhdM4MYn publiée, 0 verdict.
+- **Prochaine action** : après la mise à jour de la prod et la relecture de David, compter les verdicts
+  (`ArtifactData list verdicts`), corriger les « À revoir », puis `publier-lot.ts --dir
+scripts/questions/3-lot-5` (simulation) et `--publier` par David. Ensuite : lot 6 du § 4 (translation,
+  vecteurs, sphère).
+- **En attente de David** : `create-questions --dir scripts/questions/3-lot-5 --publier --mettre-a-jour`
+  (dépôt principal à jour), puis la relecture de la page.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
   dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
   sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree
   (`git push origin HEAD:main`) ; le worktree n'avait pas `supabase/.temp` (lien du projet) : copié du dépôt
-  principal, et `db:migrate` se lance depuis un worktree À JOUR d'`origin/main`.
+  principal, et `db:migrate` se lance depuis un worktree À JOUR d'`origin/main` ; réponse attendue décimale = fraction refusée (garder la fraction + `acceptDecimal`) ; `Doc-inchangée:` dans un COMMIT ; `audit-question-draws` : faux positif « nombres juxtaposés » sur les blocs statistiques.
 - **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
