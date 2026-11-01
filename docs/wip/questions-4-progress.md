@@ -1003,3 +1003,15 @@ Formule, tableau et graphique 1 (064) ; 063 au repère à placer (+ une variante
 - ` ```solide ` en prod (v0.59.0, `solide-parser.ts` sur `origin/production`). `publier-lot --dir
 scripts/questions/4-lot-6` en simulation (prod) : 6a770d04 et 35002b15 passent ; les 3 translations, déjà
   publiées, laissées telles quelles (le script les saute : plus besoin de dossier à part).
+
+## 41. Lot 8 : écrit (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-8`, #2133)
+
+- Script `docs/wip/questions/lot-4-8.py` → `scripts/questions/4-lot-8/` (6 fichiers). `question:specs` : 64 specs
+  vertes, 1 300 tirages réussis ; `sonde-courbes` : 0 problème (344 blocs) ; `create-questions` (simulation, prod) :
+  6 « à créer ».
+- Base locale : 6 brouillons créés ; aperçu admin du repère à placer joué (`admin@local.test`) : rendu juste, titres
+  d'axes, un point faux → « Faux », « Tu as placé D en (3 ; 8). ».
+- Piège : `pnpm exec prettier` lancé par `subprocess.run` attendait sur l'entrée standard (script bloqué, sans
+  sortie) → `stdin=subprocess.DEVNULL`.
+- Écriture : 081 « développée et réduite » = `requiredForm: sum` (`3(2x+5)` → `bad_form`) ; 060 et 064 : le bon
+  choix calculé par `{{if:…}}` quand il dépend du tirage (programme A ou B, température qui monte ou descend).
