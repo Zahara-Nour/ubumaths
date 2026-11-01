@@ -11,7 +11,7 @@ un point par modèle :
 | 5  | 1SPE-262 | Fonction affine tangente                      | Approximation affine, 1            |
 | 6  | 1SPE-390 | Approximation affine de f(a + h)              | Approximation affine, 2            |
 | 7  | 1SPE-273 | Valeur approchée de f(a + h)                  | Approximation affine, 3            |
-| 8  | 1SPE-263 | Ensemble de dérivabilité                      | Fonctions dérivées, 6              |
+| 8  | 1SPE-263 | Ensemble de dérivabilité                      | Fonctions dérivées, 7 (6 pris, D24) |
 | 9  | 1SPE-267 | Dérivabilité de la valeur absolue en 0        | Dérivabilité en un point, 1        |
 | 10 | 1SPE-269 | Interpréter le nombre dérivé en contexte      | Nombre dérivé, 4                   |
 
@@ -466,7 +466,7 @@ V263_PUISSANCE = v263('\\dfrac{1}{x^2}', R_ETOILE,
 MODELES.append(modele(
     '08-ensemble-de-derivabilite', 'Ensemble de dérivabilité',
     'Ensemble sur lequel une fonction de référence est dérivable (1/x, √x, x³, 1/x²), case choix',
-    'Fonctions dérivées', 6, [V263_INVERSE, V263_RACINE, V263_CUBE, V263_PUISSANCE],
+    'Fonctions dérivées', 7, [V263_INVERSE, V263_RACINE, V263_CUBE, V263_PUISSANCE],
     [spec('Inverse : ℝ*', 0, {}, '0', 'correct'),
      spec('Erreur : ℝ', 0, {}, '1', 'incorrect'),
      spec('Racine : ]0 ; +∞[', 1, {}, '0', 'correct'),

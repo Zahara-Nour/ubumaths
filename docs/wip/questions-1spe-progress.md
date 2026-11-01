@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2092 (lot 1-dérivation, § 18)._
+_Mis à jour le 2026-11-01, après la publication du lot 1-dérivation (§ 18)._
 
-- **État** : lots 0 publiés, D3 joué. **Lot 1-dérivation** (10 modèles neufs, points 259 à 397 du § 3.5) mergé (#2092), fichiers dans `scripts/questions/1spe-derivation/`, pas encore en base. Brouillons de 1re spé restants (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
-- **Prochaine action** : David lance, depuis le dépôt principal, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-derivation --publier` ; puis relire les ids en base, migration de rangement (nœuds + tags, worktree neuf), page à cocher, `publier-lot`.
-- **En attente de David** : le `--publier` du lot.
-- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères (commitlint).
-- **Worktree / branche** : aucun (retiré après #2092).
+- **État** : lots 0 publiés, D3 joué, **lot 1-dérivation publié** (10 modèles, points 259, 268, 397, 388, 262, 390, 273, 263, 267, 269). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
+- **Prochaine action** : D7 (§ 5), lot neuf « variations et courbes » : points du § 3.6 (280, 399, 400, 282, 285, 286, 403), phase 0 à soumettre à David.
+- **En attente de David** : rien.
+- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** (l'index d'unicité ignore `grades`) ; `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -795,7 +795,7 @@ corps de la migration (suite principale tombée au `beforeAll`, 5 branches d'éc
 #2085 mergée (CI verte). `db:migrate` le 2026-11-01 : seule cette migration en attente (dry-run), jouée ; relu en base (MCP) :
 f1440b52 = 1SPE-396, 318ea542 = 1SPE-283, statut, niveaux et `updated_at` inchangés. **D3 clos.**
 
-## 18. Lot 1-dérivation : taux, sécantes, approximation (10 modèles neufs)
+## 18. Lot 1-dérivation : taux, sécantes, approximation (CLOS : 10 publiés le 2026-11-01, #2092, #2101, #2104)
 
 _Relevé prod du 2026-11-01 (MCP) : 396 déjà couvert (f1440b52, D3) ; 10 points sans modèle, aucun titre voisin dans
 les autres niveaux. Case choix en prod depuis v0.57.1 (#2019) : D6 levée pour ce lot._
@@ -829,3 +829,45 @@ modèle 06 (les fausses valeurs restent fausses : `1 + 2h + h²`, `1 + h`).
 
 **Suite** : PR des fichiers → David lance `create-questions --dir scripts/questions/1spe-derivation --publier` →
 migration de rangement (nœuds + tags, ids relus en base) → page à cocher → `publier-lot`.
+
+**Création en prod (2026-11-01)** : `create-questions --publier` lancé par David après #2092 : 10 brouillons
+(de73e71d 259, 286a68a8 268, 9f072622 397, 8a384698 388, be57bd36 262, 5be4ac71 390, 2067f7a4 273, d2bca2d8 263,
+b359cd25 267, e9fe1a28 269), relus en base (MCP) : `draft`, `1_SPE`, niveaux écrits, sans nœud ni tag.
+
+**Rangement** : migration `20261101180000_questions_1spe_derivation_rangement_tags.sql` (gabarit : 2de, droites) +
+`tests/integration/questions-1spe-derivation-rangement-tags.test.ts` : 10 / 10 verts ; rouge sans le corps de la
+migration (5 / 10, restauré d'une copie, identique). Nœuds relus en prod : Fonctions › Dérivation › taux de variation
+(259, 268, 397, 388), approximation affine (262, 390, 273), fonctions dérivées (263), dérivabilité en un point (267),
+nombre dérivé (269).
+
+`security-auditor` (Opus) : aucun finding bloquant (écart au gabarit limité aux données, `1_SPE` et au compte ; gardes
+mesurées en prod, MCP) ; un faible hérité du gabarit (trigger `updated_at` à relire, `tgenabled = 'O'`, après
+application).
+
+#2101 mergée (CI verte). `db:migrate` le 2026-11-01 : seule cette migration en attente (dry-run), jouée ; relu en base
+(MCP) : 10 modèles sur leur nœud, un point chacun, `draft`, `updated_at` inchangé, trigger actif (`O`).
+
+Page à cocher : https://claude.ai/artifact/Q4kLqL6qnRz5DA18ivqkJP (10 fiches, aucune alerte ; collection `verdicts` vide
+à la publication).
+
+**Verdicts (2026-11-01)** : 10 « ok » sur 10, aucun commentaire (lus en base de la page, comptés).
+
+**Simulation `publier-lot`** : 1 refus, d2bca2d8 (Ensemble de dérivabilité) : Fonctions / Dérivation / Fonctions
+dérivées, niveau 6, déjà occupé par 8b599a53 « Dériver g(ax + b) » (publié, `T_SPE` : mon relevé des niveaux ne
+regardait que `1_SPE`). **D24 (David, 2026-11-01, « oui »)** : niveau 6 → 7 (premier libre) ; question d'accès :
+personne. Migration `20261101190000_questions_1spe_derivation_niveau.sql` + `tests/integration/
+questions-1spe-derivation-niveau.test.ts` : 6 / 6 verts, rouge sans le corps (2 échecs, 3 sautés), restauré d'une copie.
+Fichier du lot au niveau 7 (clé de `publier-lot`). **Piège** : relever les niveaux de la catégorie **tous niveaux
+scolaires confondus** (l'index d'unicité ignore `grades`).
+
+`security-auditor` (Opus) : aucun finding bloquant. #2104 mergée (CI verte après une relance : connexion au navigateur fermée
+pendant `RichTextEditor`, sans lien). `db push --dry-run` : `DbPushMissingRemoteError`, bloquée derrière
+`20261101170000_questions_4_lot7_rangement_tags.sql` (session questions-4, pas encore jouée) ; précédent du 2026-10-27 :
+la session propriétaire joue son `--include-all` ; questions-4 le réserve à David (son journal) et lui a donné la commande.
+
+`db push --include-all` lancé par David le 2026-11-01 (170000, 183000, 190000, 190100). Relu en base (MCP) : d2bca2d8 au
+niveau 7, `draft`, `updated_at` inchangé, trigger actif, version 20261101190000 enregistrée. Simulation `publier-lot` :
+**10 brouillons passent le contrôle**.
+
+**Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 10 / 10 publiés, statuts relus en base (MCP).
+**Lot 1-dérivation clos.**

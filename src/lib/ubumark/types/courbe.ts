@@ -171,6 +171,25 @@ export interface CourbeTangent {
 	line: number;
 }
 
+/**
+ * Point à placer par l'élève (`placer: A=(2 ; 3)`, une question) : toujours sur
+ * un nœud de la grille et dans la fenêtre (vérifié à l'analyse). Nom vide pour
+ * un point seul écrit sans nom (`placer: (2 ; 3)`). Jamais dessiné : c'est la
+ * réponse attendue.
+ */
+export interface CourbeTarget {
+	name: string;
+	x: number;
+	y: number;
+	line: number;
+}
+
+/** Titres des axes (`axes: x = Durée (min) ; y = Température (°C)`), null : pas de titre */
+export interface CourbeAxisTitles {
+	x: string | null;
+	y: string | null;
+}
+
 /** Figure complète, valide : tout ce qu'il faut pour construire la scène. */
 export interface CourbeSpec {
 	window: CourbeWindow;
@@ -185,6 +204,14 @@ export interface CourbeSpec {
 	tangents?: CourbeTangent[];
 	size: CourbeSize;
 	description: string | null;
+	/**
+	 * Points à placer (`placer:`, 1 à 6), dans l'ordre écrit : les RÉPONSES
+	 * attendues. L'écran ne doit jamais les dessiner ni les écrire dans le DOM
+	 * (chantier `docs/wip/points-repere-progress.md`).
+	 */
+	placer?: CourbeTarget[];
+	/** Titres des axes (`axes:`) ; absent sans la clé */
+	axisTitles?: CourbeAxisTitles;
 }
 
 // ============================================================================
@@ -217,6 +244,11 @@ export interface CourbeNode extends BaseNode {
 	spec: CourbeSpec | null;
 	errors: CourbeIssue[];
 	warnings: CourbeIssue[];
+	/**
+	 * Repère à points à placer dans une question : première case (`case: N`,
+	 * posée par le générateur) ; le point k a la case N + k
+	 */
+	caseIndex?: number;
 }
 
 export interface CourbeBlockRange {
@@ -243,6 +275,10 @@ export const COURBE_LIMITS = {
 	asymptotes: 20,
 	areas: 10,
 	tangents: 10,
+	/** Points à placer par l'élève (`placer:`) */
+	targets: 6,
+	/** Longueur d'un titre d'axe (`axes:`) */
+	axisTitle: 60,
 	sequences: 10,
 	/** Termes CALCULÉS par suite (premier terme de la récurrence compris) */
 	sequenceTerms: 200,

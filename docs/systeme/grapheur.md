@@ -178,7 +178,9 @@ Lecture d'un terme : le survol montre la **valeur exacte** (`exact.ts`, plafonds
 `décimale → exacte → disparue`. Les étiquettes figées ne sont **jamais sérialisées**.
 
 Le moteur de suites sert aussi le bloc ubumark ` ```courbe ` (`src/lib/ubumark/parser/courbe-parser.ts`,
-`src/lib/ubumark/utils/courbe-scene.ts`) : le modifier, c'est modifier ce bloc.
+`src/lib/ubumark/utils/courbe-scene.ts`) : le modifier, c'est modifier ce bloc. Ce bloc a aussi son
+geste « placer des points » et ses titres d'axes, décrits dans [ubumark](ubumark.md) (Repère à placer) :
+le pas de grille automatique (`courbeGridSteps`) y est partagé par la scène, le parseur et l'écran.
 
 ### Échantillonnage et fidélité du tracé
 

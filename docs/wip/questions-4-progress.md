@@ -5,23 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2089 (lot 7 écrit, mergé)._
+_Mis à jour le 2026-11-01, après #2089 et #2098 (lot 7 publié ; décisions du § 36)._
 
-- **État** : lots 1 à 6 en prod (lot 1 en brouillon, 2 volumes du lot 6 en brouillon) ; lot 7 « puissances, racines,
-  calcul littéral » (017, 018, 020, 021, 023, 071) écrit et mergé (#2089), pas encore en prod (§ 33).
-- **Prochaine action** : **David** lance
-  `cd ../ubumaths-wt-questions-4 && pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-7 --publier` ;
-  je relève les 6 `id`, puis migration nœud + tag (gabarit `20261101120000_questions_4_lot6_rangement_tags.sql`),
-  page à cocher (rendu jamais vu à l'écran : Chrome en panne pendant l'écriture). Volumes du lot 6 : après le
-  `deploy:prod` qui livre ` ```solide `.
-- **En attente de David** : le `--publier` ci-dessus ; garder la sonde des figures comme outil (`sonde-figures.ts`,
-  petite PR à part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ;
-  publication des 7 brouillons du lot 1 ; revoir ou non les 14 bornes du cycle 4 sur un document 2019/2016 (§ 27).
-- **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db:migrate` peut exiger `--include-all` :
-  **réservé à David** (§ 27, § 30) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
-  COMMIT ; horodatages de migration : vérifier les PR ouvertes des autres sessions ; QCM = case choix ; un grand nombre
-  s'écrit `10\,000` dans une spec (sans espace : `unoptimal_form`) ; tests navigateur de la CI parfois tombés
-  (`wrapDynamicImport`) : relancer le job.
+- **État** : lots 1 à 7 en prod ; publiés : lots 2 à 5, les 3 translations du lot 6, le lot 7 ; en brouillon : les 7
+  du lot 1 (jamais relus sur une page), les 2 volumes du lot 6.
+- **Prochaine action** (ordre validé, § 36) : 1) page à cocher du lot 1 **publiée** (§ 37,
+  https://claude.ai/artifact/5HUE7dJZTSixHHZgC85tAN) : **David** relit ; puis verdicts comptés, `publier-lot` en simulation, **David** `--publier` ; 2) petite PR
+  « sonde des figures » : `.sonde-figures-tmp.ts` (non suivi, dans le worktree) → `scripts/questions/sonde-figures.ts`
+  (`--dir`, `--montre`) + une ligne dans `docs/pratiques/couvrir-un-niveau.md` § 5, sans revue ; 3) phase 0 du lot 8
+  « programmes de calcul et fonctions » (060, 081, 061, 062, 063, 064).
+- **En attente de David** : la relecture du lot 1 (page du § 37). Volumes du lot 6 : après le `deploy:prod` qui livre ` ```solide `.
+- **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
+  David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
+  `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
+  COMMIT ; QCM = case choix ; un grand nombre s'écrit `10\,000` dans une spec ; tests navigateur de la CI parfois
+  tombés (`wrapDynamicImport`) : relancer le job ; une borne qui ne repose que sur 2019/2016 : la signaler dans la
+  phase 0 du lot qui s'en sert (§ 36).
 - **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
@@ -881,3 +880,44 @@ Equations / Mettre en équation 3 ; 017 : forme puissance exigée quand la consi
   (`2(n+1)`, `3(n+1)` acceptés).
 - CI : job « Client Tests (browser, shard 1/2) » tombé (`wrapDynamicImport`, 54 fichiers non chargés, 1 844 tests
   verts), relancé, vert ; mergée.
+
+## 34. Lot 7 : en prod, rangé, page à cocher (2026-11-01)
+
+- David a lancé `create-questions --publier` : 6 brouillons en [4], niveaux et catégories justes (MCP). Identifiants :
+  2e9b26b0 (4-017), 0fe6015f (4-018), 207d451a (4-020), 9a06de2e (4-021), 43c4f21f (4-023), 5e2db3d1 (4-071).
+- #2098 : migration `20261101170000_questions_4_lot7_rangement_tags` + test d'intégration (rouge sans elle : 3 échecs,
+  4 non joués ; vert avec : 9/9) ; `security-auditor` : aucun finding bloquant. CI d'abord rouge : la branche portait
+  deux migrations d'autres sessions au même horodatage (`20261101141600`, corrigé sur `main` par #2093) → rebase sur
+  `origin/main`, CI verte, mergée.
+- `db push` : la mienne était plus ancienne que `20261101180000` déjà jouée → `--include-all` nécessaire. Les sessions
+  questions-1spe et questions-ce1, bloquées derrière, m'ont demandé de le lancer (décision du 2026-10-27 en mémoire) ;
+  refusé, ce journal le réserve à David. **David** l'a lancé : jouées 170000 (la mienne), 183000 (questions-3), 190000
+  (questions-1spe), 190100 (questions-ce1). Vérifié au MCP : 6 modèles sur le nœud de leur point, un tag chacun,
+  `updated_at` inchangé, toujours en brouillon.
+- Page à cocher : https://claude.ai/artifact/4RgNcVwHUsdXQAjFSWMSEs (6 fiches, 27 exemples ; capacité `db`, base
+  `verdicts` vide à la publication). Alerte : homonyme « Puissance d'un produit » de 2de (04b1cc7f, niveau 1) écarté,
+  c'est voulu (le nôtre est le niveau 2).
+
+## 35. Lot 7 : relecture et publication (2026-11-01)
+
+- Verdicts lus en base : 6 documents, 6 « OK », aucun commentaire.
+- `publier-lot` en simulation (6 passent), lancé par David avec `--publier` : 6/6 publiés ; vérifié au MCP.
+
+## 36. Décisions de David (2026-11-01, « je suis tes recos »)
+
+1. **Sonde des figures** : gardée comme outil → `scripts/questions/sonde-figures.ts` (calquée sur `sonde-courbes.ts`),
+   ligne dans la démarche (`couvrir-un-niveau.md` § 5 : lot qui dessine des figures → sonde, 0 problème avant la page à
+   cocher) ; petite PR sans revue.
+2. **Lot 1** : page à cocher d'abord (jamais relu sur une page : elle n'existait pas au lot 1), puis publication par
+   `publier-lot`.
+3. **14 bornes 2019/2016 seules** : pas de revue en bloc ; chacune est signalée dans la phase 0 du lot qui s'en sert,
+   David tranche alors. Question retirée de « En attente ».
+4. Ordre : page à cocher du lot 1, PR de la sonde, phase 0 du lot 8.
+
+## 37. Lot 1 : page à cocher (2026-11-01)
+
+- `page-a-cocher.ts --dir scripts/questions/4-lot-1` (base prod, lecture seule) : 7 fiches, toutes `draft`, toutes
+  appariées. Une alerte : homonyme 93998734 (niveau 3) écarté pour « Problèmes avec des fractions » ; la fiche garde
+  05818fa0 (4-014, brouillon de 4e) : c'est le bon modèle.
+- Publiée en artefact (capacité `db`) : https://claude.ai/artifact/5HUE7dJZTSixHHZgC85tAN ; collection `verdicts`
+  vide à la publication.

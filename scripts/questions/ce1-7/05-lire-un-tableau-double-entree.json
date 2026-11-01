@@ -1,0 +1,434 @@
+{
+	"title": "Lis le tableau à double entrée",
+	"description": "Filles et garçons à la cantine, jour par jour ; modes de transport avec totaux (BO, total 282) : une case, puis un total",
+	"grades": ["CE1"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "Tableau à double entrée",
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Ce tableau donne le nombre d'élèves qui mangent à la cantine, chaque jour.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\ncoin: Élèves \\ Jour\n```\n\nCombien de {{if:q==0|filles|garçons}} mangent à la cantine {{if:j==0|le lundi|{{if:j==1|le mardi|{{if:j==2|le jeudi|le vendredi}}}}}} ?\n\n$?$ {{if:q==0|filles|garçons}}",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "5..60"
+				},
+				{
+					"name": "f2",
+					"expression": "5..60"
+				},
+				{
+					"name": "f3",
+					"expression": "5..60"
+				},
+				{
+					"name": "f4",
+					"expression": "5..60"
+				},
+				{
+					"name": "g1",
+					"expression": "5..60"
+				},
+				{
+					"name": "g2",
+					"expression": "5..60"
+				},
+				{
+					"name": "g3",
+					"expression": "5..60"
+				},
+				{
+					"name": "g4",
+					"expression": "5..60"
+				},
+				{
+					"name": "q",
+					"expression": "0..1"
+				},
+				{
+					"name": "j",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-q)*((f1)*(j-1)*(j-2)*(j-3)/(-6)+(f2)*(j-0)*(j-2)*(j-3)/(2)+(f3)*(j-0)*(j-1)*(j-3)/(-2)+(f4)*(j-0)*(j-1)*(j-2)/(6))+q*((g1)*(j-1)*(j-2)*(j-3)/(-6)+(g2)*(j-0)*(j-2)*(j-3)/(2)+(g3)*(j-0)*(j-1)*(j-3)/(-2)+(g4)*(j-0)*(j-1)*(j-2)/(6))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On prend la ligne des {{if:q==0|filles|garçons}} et la colonne {{if:j==0|du lundi|{{if:j==1|du mardi|{{if:j==2|du jeudi|du vendredi}}}}}}.",
+					"La case où elles se croisent : ${{eval:(1-q)*((f1)*(j-1)*(j-2)*(j-3)/(-6)+(f2)*(j-0)*(j-2)*(j-3)/(2)+(f3)*(j-0)*(j-1)*(j-3)/(-2)+(f4)*(j-0)*(j-1)*(j-2)/(6))+q*((g1)*(j-1)*(j-2)*(j-3)/(-6)+(g2)*(j-0)*(j-2)*(j-3)/(2)+(g3)*(j-0)*(j-1)*(j-3)/(-2)+(g4)*(j-0)*(j-1)*(j-2)/(6))}}$."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne la façon dont les élèves de l'école viennent le matin.\n\n```tableau-croise\nlignes: À pied ; Vélo ; Voiture ; Bus\ncolonnes: Filles ; Garçons\nÀ pied = {{f1}} ; {{g1}}\nVélo = {{f2}} ; {{g2}}\nVoiture = {{f3}} ; {{g3}}\nBus = {{f4}} ; {{g4}}\ncoin: Transport \\ Élèves\ntotaux: oui\n```\n\nCombien de {{if:q==0|filles|garçons}} viennent {{if:j==0|à pied|{{if:j==1|à vélo|{{if:j==2|en voiture|en bus}}}}}} ?\n\n$?$ {{if:q==0|filles|garçons}}",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "10..60"
+				},
+				{
+					"name": "f2",
+					"expression": "10..60"
+				},
+				{
+					"name": "f3",
+					"expression": "10..60"
+				},
+				{
+					"name": "f4",
+					"expression": "10..60"
+				},
+				{
+					"name": "g1",
+					"expression": "10..60"
+				},
+				{
+					"name": "g2",
+					"expression": "10..60"
+				},
+				{
+					"name": "g3",
+					"expression": "10..60"
+				},
+				{
+					"name": "g4",
+					"expression": "10..60"
+				},
+				{
+					"name": "q",
+					"expression": "0..1"
+				},
+				{
+					"name": "j",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-q)*((f1)*(j-1)*(j-2)*(j-3)/(-6)+(f2)*(j-0)*(j-2)*(j-3)/(2)+(f3)*(j-0)*(j-1)*(j-3)/(-2)+(f4)*(j-0)*(j-1)*(j-2)/(6))+q*((g1)*(j-1)*(j-2)*(j-3)/(-6)+(g2)*(j-0)*(j-2)*(j-3)/(2)+(g3)*(j-0)*(j-1)*(j-3)/(-2)+(g4)*(j-0)*(j-1)*(j-2)/(6))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On prend la ligne « {{if:j==0|À pied|{{if:j==1|Vélo|{{if:j==2|Voiture|Bus}}}}}} » et la colonne des {{if:q==0|filles|garçons}}.",
+					"La case où elles se croisent : ${{eval:(1-q)*((f1)*(j-1)*(j-2)*(j-3)/(-6)+(f2)*(j-0)*(j-2)*(j-3)/(2)+(f3)*(j-0)*(j-1)*(j-3)/(-2)+(f4)*(j-0)*(j-1)*(j-2)/(6))+q*((g1)*(j-1)*(j-2)*(j-3)/(-6)+(g2)*(j-0)*(j-2)*(j-3)/(2)+(g3)*(j-0)*(j-1)*(j-3)/(-2)+(g4)*(j-0)*(j-1)*(j-2)/(6))}}$."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne la façon dont les élèves de l'école viennent le matin.\n\n```tableau-croise\nlignes: À pied ; Vélo ; Voiture ; Bus\ncolonnes: Filles ; Garçons\nÀ pied = {{f1}} ; {{g1}}\nVélo = {{f2}} ; {{g2}}\nVoiture = {{f3}} ; {{g3}}\nBus = {{f4}} ; {{g4}}\ncoin: Transport \\ Élèves\ntotaux: oui\n```\n\n{{if:t==0|Combien d'élèves viennent {{if:j==0|à pied|{{if:j==1|à vélo|{{if:j==2|en voiture|en bus}}}}}} ?|Combien de {{if:q==0|filles|garçons}} y a-t-il en tout ?}}\n\n$?$ {{if:t==0|élèves|{{if:q==0|filles|garçons}}}}",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "10..90"
+				},
+				{
+					"name": "f2",
+					"expression": "10..90"
+				},
+				{
+					"name": "f3",
+					"expression": "10..90"
+				},
+				{
+					"name": "f4",
+					"expression": "10..90"
+				},
+				{
+					"name": "g1",
+					"expression": "10..90"
+				},
+				{
+					"name": "g2",
+					"expression": "10..90"
+				},
+				{
+					"name": "g3",
+					"expression": "10..90"
+				},
+				{
+					"name": "g4",
+					"expression": "10..90"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "q",
+					"expression": "0..1"
+				},
+				{
+					"name": "j",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-t)*((f1+g1)*(j-1)*(j-2)*(j-3)/(-6)+(f2+g2)*(j-0)*(j-2)*(j-3)/(2)+(f3+g3)*(j-0)*(j-1)*(j-3)/(-2)+(f4+g4)*(j-0)*(j-1)*(j-2)/(6))+t*((1-q)*(f1+f2+f3+f4)+q*(g1+g2+g3+g4))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:t==0|On prend la ligne « {{if:j==0|À pied|{{if:j==1|Vélo|{{if:j==2|Voiture|Bus}}}}}} », jusqu'à la colonne Total.|On prend la colonne des {{if:q==0|filles|garçons}}, jusqu'à la ligne Total.}}",
+					"Le total : ${{eval:(1-t)*((f1+g1)*(j-1)*(j-2)*(j-3)/(-6)+(f2+g2)*(j-0)*(j-2)*(j-3)/(2)+(f3+g3)*(j-0)*(j-1)*(j-3)/(-2)+(f4+g4)*(j-0)*(j-1)*(j-2)/(6))+t*((1-q)*(f1+f2+f3+f4)+q*(g1+g2+g3+g4))}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : les filles le mardi, 31",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "24",
+				"f2": "31",
+				"f3": "18",
+				"f4": "27",
+				"g1": "29",
+				"g2": "22",
+				"g3": "35",
+				"g4": "20",
+				"q": "0",
+				"j": "1",
+				"n": "31"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les garçons du mardi (22)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "24",
+				"f2": "31",
+				"f3": "18",
+				"f4": "27",
+				"g1": "29",
+				"g2": "22",
+				"g3": "35",
+				"g4": "20",
+				"q": "0",
+				"j": "1",
+				"n": "31"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les filles du lundi (24)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "24",
+				"f2": "31",
+				"f3": "18",
+				"f4": "27",
+				"g1": "29",
+				"g2": "22",
+				"g3": "35",
+				"g4": "20",
+				"q": "0",
+				"j": "1",
+				"n": "31"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Les garçons le jeudi, 35",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "24",
+				"f2": "31",
+				"f3": "18",
+				"f4": "27",
+				"g1": "29",
+				"g2": "22",
+				"g3": "35",
+				"g4": "20",
+				"q": "1",
+				"j": "2",
+				"n": "35"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Garçons à vélo, 23",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40",
+				"q": "1",
+				"j": "1",
+				"n": "23"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le total du vélo (38)",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40",
+				"q": "1",
+				"j": "1",
+				"n": "23"
+			},
+			"answers": ["38"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Filles en bus, 41",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40",
+				"q": "0",
+				"j": "3",
+				"n": "41"
+			},
+			"answers": ["41"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Total de la ligne voiture, 83",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40",
+				"q": "0",
+				"j": "2",
+				"t": "0",
+				"n": "83"
+			},
+			"answers": ["83"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les filles en voiture (47)",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40",
+				"q": "0",
+				"j": "2",
+				"t": "0",
+				"n": "83"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Total des garçons, 141",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40",
+				"q": "1",
+				"j": "0",
+				"t": "1",
+				"n": "141"
+			},
+			"answers": ["141"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le total de l'école (282)",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "38",
+				"f2": "15",
+				"f3": "47",
+				"f4": "41",
+				"g1": "42",
+				"g2": "23",
+				"g3": "36",
+				"g4": "40",
+				"q": "1",
+				"j": "0",
+				"t": "1",
+				"n": "141"
+			},
+			"answers": ["282"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

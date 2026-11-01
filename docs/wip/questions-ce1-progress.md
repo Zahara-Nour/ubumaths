@@ -5,19 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 7 écrite._
+_Mis à jour le 2026-11-01, lot 7 publié._
 
-- **État** : lots 0 à 6 publiés (lot 6 : calcul posé et heure, 7 modèles, § 13, clos le 2026-11-01).
-- **Prochaine action** : lot 7 (données : 082, 106, 088, 089, 107, 081) — phase 0 écrite (§ 14), réponses de David
-  attendues, puis écrire `lot-ce1-7.py` → `scripts/questions/ce1-7/` ; puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : les 4 questions du § 14.
+- **État** : lots 0 à 7 publiés (lot 7 : données, 6 modèles, § 14, clos le 2026-11-01).
+- **Prochaine action** : chantier `monnaie-centimes` (à part : ` ```monnaie ` sans centimes ni billets de 200 / 500 €,
+  § 12), puis lot monnaie (054, 055, 056, 057, 086), puis lots 8 et 9 (§ 12) — phase 0 à écrire.
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
   posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
   de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
   de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot7`, partie de `origin/main`). `!` de David :
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot7-rangement`, mergée : en partir une neuve sur `origin/main`). `!` de David :
   toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -593,3 +593,28 @@ tag ne change aucune règle.
    Recommandation : oui, sommes à deux chiffres d'abord (cases ≤ 60), puis le tableau du BO (total ~ 300).
 4. **Catégories** : neuve « Représenter des données · Diagrammes en barres · 1 à 3 » ; les tableaux continuent le CP
    (« Tableaux · 2 », « Tableau à double entrée · 3, 4 »). Recommandation : oui (même règle qu'aux lots 5 bis et 6).
+
+Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre recommandations.
+
+- 2026-11-01 : lot 7 écrit (`lot-ce1-7.py`, `scripts/questions/ce1-7/`), `question:specs` 56/56 (800 tirages), simulation
+  6/6 ; 6 brouillons en base locale, joués dans l'aperçu admin (barres montées justes, case choix du tableau juste).
+  Valeur choisie par un indice : polynôme de Lagrange en `{{eval:}}` ; série brute : indicatrices (CP-068). Trouvé :
+  une barre **non construite** parmi d'autres est jugée « forme non optimale », pas « faux » (juge commun) — spec
+  remplacée par une barre fausse ; à signaler, pas corrigé ici. `totaux: oui` ajoute la ligne ET la colonne Total.
+  PR #2102 ouverte.
+- 2026-11-01 : #2102 mergée (CI verte 15/15) ; brouillons en prod à créer par David.
+- 2026-11-01 : `create-questions --publier` par David : 6 brouillons vérifiés au MCP (`f756fc4b`, `cb5a6a89`,
+  `b4527dd3`, `bded0f4a`, `7369d049`, `29edb833`), catégories attendues, sans nœud ni tag, `updated_at` intact.
+- 2026-11-01 : migration `20261101190100_questions_ce1_lot7_rangement_tags` (max des worktrees + 1 min) et test :
+  rouge sans (3 échecs, 4 non joués sur 9), vert 9/9 ; PR #2105.
+- 2026-11-01 : `security-auditor` sans finding (SQL exécuté identique au lot 6) ; #2105 mergée (CI verte 16/16).
+  `db:migrate` NON lancé : `20261101170000_questions_4_lot7` et `20261101183000_questions_3_lot6`, plus anciennes, pas
+  jouées en prod ; `db push` les jouerait aussi (`--include-all`). Attendre qu'elles le soient, puis `db:migrate`.
+- 2026-11-01 : accord des sessions questions-3 et questions-4 ; `db:migrate --include-all` par David depuis main : 170000,
+  183000, 190000 (1re spé, signalée à sa session) et la nôtre 190100 appliquées. Vérifié au MCP : 6/6 sur le nœud de leur
+  point, un tag chacun, brouillons, `updated_at` intact. Page à cocher publiée
+  (https://claude.ai/artifact/C4GhFJ83yChjuhs9KCYu64) ; alertes : 5 modèles à blocs `barres` / `tableau-croise` non
+  dessinés par le script → liens vers l'aperçu admin en prod dans l'intro.
+- 2026-11-01 : relecture 6/6 OK (verdicts comptés en base, aucun commentaire) ; catégories relevées avant publication,
+  sans collision ; `publier-lot` simulé (6 passent), puis `--publier` par David : 6/6 publiés, vérifié au MCP (publiés,
+  rangés, tagués). Lot 7 clos. Reste signalé : une barre non construite parmi d'autres jugée « forme non optimale ».

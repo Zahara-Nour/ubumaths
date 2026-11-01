@@ -74,6 +74,7 @@
 	import Operation from '$lib/components/markdown/nodes/Operation.svelte';
 	import Collection from '$lib/components/markdown/nodes/Collection.svelte';
 	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
+	import Courbe from '$lib/components/markdown/nodes/Courbe.svelte';
 	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
 	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
 	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
@@ -216,6 +217,7 @@
 		if (node.type === 'collection') return node.caseIndex !== undefined;
 		if (node.type === 'number-line') return node.caseIndex !== undefined;
 		if (node.type === 'horloge') return node.caseIndex !== undefined;
+		if (node.type === 'courbe') return node.caseIndex !== undefined;
 		if (node.type === 'partage') return node.caseIndex !== undefined;
 		if (node.type === 'espace') return node.caseIndex !== undefined;
 		if (node.type === 'stat-chart') return node.caseIndex !== undefined;
@@ -891,6 +893,27 @@
 						<NumberLine
 							{node}
 							answers={node.placer.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'courbe' && node.caseIndex !== undefined && node.spec?.placer !== undefined}
+				<!-- Repère à points à placer : l'élève pose ses points, une case par point
+				     (N, N + 1…), les coordonnées de chacun sont sa réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.spec.placer.length}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le repère avec les points justes -->
+					<BuildAnswer kind="courbe" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<Courbe
+							{node}
+							answers={node.spec.placer.map((_, k) => ({
 								value: inputStates[firstCase + k]?.value ?? '',
 								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
 								disabled: flashMode || effectiveDisabled,

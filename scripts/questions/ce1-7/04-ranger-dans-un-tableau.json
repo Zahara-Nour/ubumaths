@@ -1,0 +1,542 @@
+{
+	"title": "Range les réponses dans un tableau",
+	"description": "Compter une liste de réponses (12, 16, 20 élèves ; 3 à 5 valeurs) et remplir la colonne des effectifs, avec une ligne Total",
+	"grades": ["CE1"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "Tableaux",
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On a demandé à $12$ élèves leur animal préféré.\n\nLéa : {{if:s1==1|chat|{{if:s1==2|chien|lapin}}}} · Tom : {{if:s2==1|chat|{{if:s2==2|chien|lapin}}}} · Inès : {{if:s3==1|chat|{{if:s3==2|chien|lapin}}}} · Noah : {{if:s4==1|chat|{{if:s4==2|chien|lapin}}}} · Jade : {{if:s5==1|chat|{{if:s5==2|chien|lapin}}}} · Adam : {{if:s6==1|chat|{{if:s6==2|chien|lapin}}}} · Lina : {{if:s7==1|chat|{{if:s7==2|chien|lapin}}}} · Hugo : {{if:s8==1|chat|{{if:s8==2|chien|lapin}}}} · Zoé : {{if:s9==1|chat|{{if:s9==2|chien|lapin}}}} · Rayan : {{if:s10==1|chat|{{if:s10==2|chien|lapin}}}} · Emma : {{if:s11==1|chat|{{if:s11==2|chien|lapin}}}} · Sacha : {{if:s12==1|chat|{{if:s12==2|chien|lapin}}}}\n\nCompte et complète le tableau.\n\n| Animal | Nombre d'élèves |\n|---|---|\n| Chat | $?$ |\n| Chien | $?$ |\n| Lapin | $?$ |\n",
+			"variables": [
+				{
+					"name": "s1",
+					"expression": "1..3"
+				},
+				{
+					"name": "s2",
+					"expression": "1..3"
+				},
+				{
+					"name": "s3",
+					"expression": "1..3"
+				},
+				{
+					"name": "s4",
+					"expression": "1..3"
+				},
+				{
+					"name": "s5",
+					"expression": "1..3"
+				},
+				{
+					"name": "s6",
+					"expression": "1..3"
+				},
+				{
+					"name": "s7",
+					"expression": "1..3"
+				},
+				{
+					"name": "s8",
+					"expression": "1..3"
+				},
+				{
+					"name": "s9",
+					"expression": "1..3"
+				},
+				{
+					"name": "s10",
+					"expression": "1..3"
+				},
+				{
+					"name": "s11",
+					"expression": "1..3"
+				},
+				{
+					"name": "s12",
+					"expression": "1..3"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:(s1-2)*(s1-3)/(2)+(s2-2)*(s2-3)/(2)+(s3-2)*(s3-3)/(2)+(s4-2)*(s4-3)/(2)+(s5-2)*(s5-3)/(2)+(s6-2)*(s6-3)/(2)+(s7-2)*(s7-3)/(2)+(s8-2)*(s8-3)/(2)+(s9-2)*(s9-3)/(2)+(s10-2)*(s10-3)/(2)+(s11-2)*(s11-3)/(2)+(s12-2)*(s12-3)/(2)"
+				},
+				{
+					"name": "n2",
+					"expression": "eval:(s1-1)*(s1-3)/(-1)+(s2-1)*(s2-3)/(-1)+(s3-1)*(s3-3)/(-1)+(s4-1)*(s4-3)/(-1)+(s5-1)*(s5-3)/(-1)+(s6-1)*(s6-3)/(-1)+(s7-1)*(s7-3)/(-1)+(s8-1)*(s8-3)/(-1)+(s9-1)*(s9-3)/(-1)+(s10-1)*(s10-3)/(-1)+(s11-1)*(s11-3)/(-1)+(s12-1)*(s12-3)/(-1)"
+				},
+				{
+					"name": "n3",
+					"expression": "eval:(s1-1)*(s1-2)/(2)+(s2-1)*(s2-2)/(2)+(s3-1)*(s3-2)/(2)+(s4-1)*(s4-2)/(2)+(s5-1)*(s5-2)/(2)+(s6-1)*(s6-2)/(2)+(s7-1)*(s7-2)/(2)+(s8-1)*(s8-2)/(2)+(s9-1)*(s9-2)/(2)+(s10-1)*(s10-2)/(2)+(s11-1)*(s11-2)/(2)+(s12-1)*(s12-2)/(2)"
+				}
+			],
+			"conditions": ["n1 >= 1", "n2 >= 1", "n3 >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n1}}"
+				},
+				{
+					"expectedAnswer": "{{n2}}"
+				},
+				{
+					"expectedAnswer": "{{n3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte chaque réponse : chat ${{n1}}$ ; chien ${{n2}}$ ; lapin ${{n3}}$.",
+					"On vérifie : ${{n1}} + {{n2}} + {{n3}} = 12$, autant que d'élèves."
+				]
+			}
+		},
+		{
+			"statement": "On a demandé à $16$ élèves leur fruit préféré.\n\nLéa : {{if:s1==1|pomme|{{if:s1==2|banane|{{if:s1==3|fraise|orange}}}}}} · Tom : {{if:s2==1|pomme|{{if:s2==2|banane|{{if:s2==3|fraise|orange}}}}}} · Inès : {{if:s3==1|pomme|{{if:s3==2|banane|{{if:s3==3|fraise|orange}}}}}} · Noah : {{if:s4==1|pomme|{{if:s4==2|banane|{{if:s4==3|fraise|orange}}}}}} · Jade : {{if:s5==1|pomme|{{if:s5==2|banane|{{if:s5==3|fraise|orange}}}}}} · Adam : {{if:s6==1|pomme|{{if:s6==2|banane|{{if:s6==3|fraise|orange}}}}}} · Lina : {{if:s7==1|pomme|{{if:s7==2|banane|{{if:s7==3|fraise|orange}}}}}} · Hugo : {{if:s8==1|pomme|{{if:s8==2|banane|{{if:s8==3|fraise|orange}}}}}} · Zoé : {{if:s9==1|pomme|{{if:s9==2|banane|{{if:s9==3|fraise|orange}}}}}} · Rayan : {{if:s10==1|pomme|{{if:s10==2|banane|{{if:s10==3|fraise|orange}}}}}} · Emma : {{if:s11==1|pomme|{{if:s11==2|banane|{{if:s11==3|fraise|orange}}}}}} · Sacha : {{if:s12==1|pomme|{{if:s12==2|banane|{{if:s12==3|fraise|orange}}}}}} · Mila : {{if:s13==1|pomme|{{if:s13==2|banane|{{if:s13==3|fraise|orange}}}}}} · Nolan : {{if:s14==1|pomme|{{if:s14==2|banane|{{if:s14==3|fraise|orange}}}}}} · Chloé : {{if:s15==1|pomme|{{if:s15==2|banane|{{if:s15==3|fraise|orange}}}}}} · Malo : {{if:s16==1|pomme|{{if:s16==2|banane|{{if:s16==3|fraise|orange}}}}}}\n\nCompte et complète le tableau.\n\n| Fruit | Nombre d'élèves |\n|---|---|\n| Pomme | $?$ |\n| Banane | $?$ |\n| Fraise | $?$ |\n| Orange | $?$ |\n| **Total** | $?$ |\n",
+			"variables": [
+				{
+					"name": "s1",
+					"expression": "1..4"
+				},
+				{
+					"name": "s2",
+					"expression": "1..4"
+				},
+				{
+					"name": "s3",
+					"expression": "1..4"
+				},
+				{
+					"name": "s4",
+					"expression": "1..4"
+				},
+				{
+					"name": "s5",
+					"expression": "1..4"
+				},
+				{
+					"name": "s6",
+					"expression": "1..4"
+				},
+				{
+					"name": "s7",
+					"expression": "1..4"
+				},
+				{
+					"name": "s8",
+					"expression": "1..4"
+				},
+				{
+					"name": "s9",
+					"expression": "1..4"
+				},
+				{
+					"name": "s10",
+					"expression": "1..4"
+				},
+				{
+					"name": "s11",
+					"expression": "1..4"
+				},
+				{
+					"name": "s12",
+					"expression": "1..4"
+				},
+				{
+					"name": "s13",
+					"expression": "1..4"
+				},
+				{
+					"name": "s14",
+					"expression": "1..4"
+				},
+				{
+					"name": "s15",
+					"expression": "1..4"
+				},
+				{
+					"name": "s16",
+					"expression": "1..4"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:(s1-2)*(s1-3)*(s1-4)/(-6)+(s2-2)*(s2-3)*(s2-4)/(-6)+(s3-2)*(s3-3)*(s3-4)/(-6)+(s4-2)*(s4-3)*(s4-4)/(-6)+(s5-2)*(s5-3)*(s5-4)/(-6)+(s6-2)*(s6-3)*(s6-4)/(-6)+(s7-2)*(s7-3)*(s7-4)/(-6)+(s8-2)*(s8-3)*(s8-4)/(-6)+(s9-2)*(s9-3)*(s9-4)/(-6)+(s10-2)*(s10-3)*(s10-4)/(-6)+(s11-2)*(s11-3)*(s11-4)/(-6)+(s12-2)*(s12-3)*(s12-4)/(-6)+(s13-2)*(s13-3)*(s13-4)/(-6)+(s14-2)*(s14-3)*(s14-4)/(-6)+(s15-2)*(s15-3)*(s15-4)/(-6)+(s16-2)*(s16-3)*(s16-4)/(-6)"
+				},
+				{
+					"name": "n2",
+					"expression": "eval:(s1-1)*(s1-3)*(s1-4)/(2)+(s2-1)*(s2-3)*(s2-4)/(2)+(s3-1)*(s3-3)*(s3-4)/(2)+(s4-1)*(s4-3)*(s4-4)/(2)+(s5-1)*(s5-3)*(s5-4)/(2)+(s6-1)*(s6-3)*(s6-4)/(2)+(s7-1)*(s7-3)*(s7-4)/(2)+(s8-1)*(s8-3)*(s8-4)/(2)+(s9-1)*(s9-3)*(s9-4)/(2)+(s10-1)*(s10-3)*(s10-4)/(2)+(s11-1)*(s11-3)*(s11-4)/(2)+(s12-1)*(s12-3)*(s12-4)/(2)+(s13-1)*(s13-3)*(s13-4)/(2)+(s14-1)*(s14-3)*(s14-4)/(2)+(s15-1)*(s15-3)*(s15-4)/(2)+(s16-1)*(s16-3)*(s16-4)/(2)"
+				},
+				{
+					"name": "n3",
+					"expression": "eval:(s1-1)*(s1-2)*(s1-4)/(-2)+(s2-1)*(s2-2)*(s2-4)/(-2)+(s3-1)*(s3-2)*(s3-4)/(-2)+(s4-1)*(s4-2)*(s4-4)/(-2)+(s5-1)*(s5-2)*(s5-4)/(-2)+(s6-1)*(s6-2)*(s6-4)/(-2)+(s7-1)*(s7-2)*(s7-4)/(-2)+(s8-1)*(s8-2)*(s8-4)/(-2)+(s9-1)*(s9-2)*(s9-4)/(-2)+(s10-1)*(s10-2)*(s10-4)/(-2)+(s11-1)*(s11-2)*(s11-4)/(-2)+(s12-1)*(s12-2)*(s12-4)/(-2)+(s13-1)*(s13-2)*(s13-4)/(-2)+(s14-1)*(s14-2)*(s14-4)/(-2)+(s15-1)*(s15-2)*(s15-4)/(-2)+(s16-1)*(s16-2)*(s16-4)/(-2)"
+				},
+				{
+					"name": "n4",
+					"expression": "eval:(s1-1)*(s1-2)*(s1-3)/(6)+(s2-1)*(s2-2)*(s2-3)/(6)+(s3-1)*(s3-2)*(s3-3)/(6)+(s4-1)*(s4-2)*(s4-3)/(6)+(s5-1)*(s5-2)*(s5-3)/(6)+(s6-1)*(s6-2)*(s6-3)/(6)+(s7-1)*(s7-2)*(s7-3)/(6)+(s8-1)*(s8-2)*(s8-3)/(6)+(s9-1)*(s9-2)*(s9-3)/(6)+(s10-1)*(s10-2)*(s10-3)/(6)+(s11-1)*(s11-2)*(s11-3)/(6)+(s12-1)*(s12-2)*(s12-3)/(6)+(s13-1)*(s13-2)*(s13-3)/(6)+(s14-1)*(s14-2)*(s14-3)/(6)+(s15-1)*(s15-2)*(s15-3)/(6)+(s16-1)*(s16-2)*(s16-3)/(6)"
+				}
+			],
+			"conditions": ["n1 >= 1", "n2 >= 1", "n3 >= 1", "n4 >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n1}}"
+				},
+				{
+					"expectedAnswer": "{{n2}}"
+				},
+				{
+					"expectedAnswer": "{{n3}}"
+				},
+				{
+					"expectedAnswer": "{{n4}}"
+				},
+				{
+					"expectedAnswer": "16"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte chaque réponse : pomme ${{n1}}$ ; banane ${{n2}}$ ; fraise ${{n3}}$ ; orange ${{n4}}$.",
+					"On vérifie : ${{n1}} + {{n2}} + {{n3}} + {{n4}} = 16$, autant que d'élèves.",
+					"La ligne Total : les $16$ élèves."
+				]
+			}
+		},
+		{
+			"statement": "On a demandé à $20$ élèves leur couleur préférée.\n\nLéa : {{if:s1==1|rouge|{{if:s1==2|bleu|{{if:s1==3|vert|{{if:s1==4|jaune|violet}}}}}}}} · Tom : {{if:s2==1|rouge|{{if:s2==2|bleu|{{if:s2==3|vert|{{if:s2==4|jaune|violet}}}}}}}} · Inès : {{if:s3==1|rouge|{{if:s3==2|bleu|{{if:s3==3|vert|{{if:s3==4|jaune|violet}}}}}}}} · Noah : {{if:s4==1|rouge|{{if:s4==2|bleu|{{if:s4==3|vert|{{if:s4==4|jaune|violet}}}}}}}} · Jade : {{if:s5==1|rouge|{{if:s5==2|bleu|{{if:s5==3|vert|{{if:s5==4|jaune|violet}}}}}}}} · Adam : {{if:s6==1|rouge|{{if:s6==2|bleu|{{if:s6==3|vert|{{if:s6==4|jaune|violet}}}}}}}} · Lina : {{if:s7==1|rouge|{{if:s7==2|bleu|{{if:s7==3|vert|{{if:s7==4|jaune|violet}}}}}}}} · Hugo : {{if:s8==1|rouge|{{if:s8==2|bleu|{{if:s8==3|vert|{{if:s8==4|jaune|violet}}}}}}}} · Zoé : {{if:s9==1|rouge|{{if:s9==2|bleu|{{if:s9==3|vert|{{if:s9==4|jaune|violet}}}}}}}} · Rayan : {{if:s10==1|rouge|{{if:s10==2|bleu|{{if:s10==3|vert|{{if:s10==4|jaune|violet}}}}}}}} · Emma : {{if:s11==1|rouge|{{if:s11==2|bleu|{{if:s11==3|vert|{{if:s11==4|jaune|violet}}}}}}}} · Sacha : {{if:s12==1|rouge|{{if:s12==2|bleu|{{if:s12==3|vert|{{if:s12==4|jaune|violet}}}}}}}} · Mila : {{if:s13==1|rouge|{{if:s13==2|bleu|{{if:s13==3|vert|{{if:s13==4|jaune|violet}}}}}}}} · Nolan : {{if:s14==1|rouge|{{if:s14==2|bleu|{{if:s14==3|vert|{{if:s14==4|jaune|violet}}}}}}}} · Chloé : {{if:s15==1|rouge|{{if:s15==2|bleu|{{if:s15==3|vert|{{if:s15==4|jaune|violet}}}}}}}} · Malo : {{if:s16==1|rouge|{{if:s16==2|bleu|{{if:s16==3|vert|{{if:s16==4|jaune|violet}}}}}}}} · Louna : {{if:s17==1|rouge|{{if:s17==2|bleu|{{if:s17==3|vert|{{if:s17==4|jaune|violet}}}}}}}} · Yanis : {{if:s18==1|rouge|{{if:s18==2|bleu|{{if:s18==3|vert|{{if:s18==4|jaune|violet}}}}}}}} · Rose : {{if:s19==1|rouge|{{if:s19==2|bleu|{{if:s19==3|vert|{{if:s19==4|jaune|violet}}}}}}}} · Ilyes : {{if:s20==1|rouge|{{if:s20==2|bleu|{{if:s20==3|vert|{{if:s20==4|jaune|violet}}}}}}}}\n\nCompte et complète le tableau.\n\n| Couleur | Nombre d'élèves |\n|---|---|\n| Rouge | $?$ |\n| Bleu | $?$ |\n| Vert | $?$ |\n| Jaune | $?$ |\n| Violet | $?$ |\n",
+			"variables": [
+				{
+					"name": "s1",
+					"expression": "1..5"
+				},
+				{
+					"name": "s2",
+					"expression": "1..5"
+				},
+				{
+					"name": "s3",
+					"expression": "1..5"
+				},
+				{
+					"name": "s4",
+					"expression": "1..5"
+				},
+				{
+					"name": "s5",
+					"expression": "1..5"
+				},
+				{
+					"name": "s6",
+					"expression": "1..5"
+				},
+				{
+					"name": "s7",
+					"expression": "1..5"
+				},
+				{
+					"name": "s8",
+					"expression": "1..5"
+				},
+				{
+					"name": "s9",
+					"expression": "1..5"
+				},
+				{
+					"name": "s10",
+					"expression": "1..5"
+				},
+				{
+					"name": "s11",
+					"expression": "1..5"
+				},
+				{
+					"name": "s12",
+					"expression": "1..5"
+				},
+				{
+					"name": "s13",
+					"expression": "1..5"
+				},
+				{
+					"name": "s14",
+					"expression": "1..5"
+				},
+				{
+					"name": "s15",
+					"expression": "1..5"
+				},
+				{
+					"name": "s16",
+					"expression": "1..5"
+				},
+				{
+					"name": "s17",
+					"expression": "1..5"
+				},
+				{
+					"name": "s18",
+					"expression": "1..5"
+				},
+				{
+					"name": "s19",
+					"expression": "1..5"
+				},
+				{
+					"name": "s20",
+					"expression": "1..5"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:(s1-2)*(s1-3)*(s1-4)*(s1-5)/(24)+(s2-2)*(s2-3)*(s2-4)*(s2-5)/(24)+(s3-2)*(s3-3)*(s3-4)*(s3-5)/(24)+(s4-2)*(s4-3)*(s4-4)*(s4-5)/(24)+(s5-2)*(s5-3)*(s5-4)*(s5-5)/(24)+(s6-2)*(s6-3)*(s6-4)*(s6-5)/(24)+(s7-2)*(s7-3)*(s7-4)*(s7-5)/(24)+(s8-2)*(s8-3)*(s8-4)*(s8-5)/(24)+(s9-2)*(s9-3)*(s9-4)*(s9-5)/(24)+(s10-2)*(s10-3)*(s10-4)*(s10-5)/(24)+(s11-2)*(s11-3)*(s11-4)*(s11-5)/(24)+(s12-2)*(s12-3)*(s12-4)*(s12-5)/(24)+(s13-2)*(s13-3)*(s13-4)*(s13-5)/(24)+(s14-2)*(s14-3)*(s14-4)*(s14-5)/(24)+(s15-2)*(s15-3)*(s15-4)*(s15-5)/(24)+(s16-2)*(s16-3)*(s16-4)*(s16-5)/(24)+(s17-2)*(s17-3)*(s17-4)*(s17-5)/(24)+(s18-2)*(s18-3)*(s18-4)*(s18-5)/(24)+(s19-2)*(s19-3)*(s19-4)*(s19-5)/(24)+(s20-2)*(s20-3)*(s20-4)*(s20-5)/(24)"
+				},
+				{
+					"name": "n2",
+					"expression": "eval:(s1-1)*(s1-3)*(s1-4)*(s1-5)/(-6)+(s2-1)*(s2-3)*(s2-4)*(s2-5)/(-6)+(s3-1)*(s3-3)*(s3-4)*(s3-5)/(-6)+(s4-1)*(s4-3)*(s4-4)*(s4-5)/(-6)+(s5-1)*(s5-3)*(s5-4)*(s5-5)/(-6)+(s6-1)*(s6-3)*(s6-4)*(s6-5)/(-6)+(s7-1)*(s7-3)*(s7-4)*(s7-5)/(-6)+(s8-1)*(s8-3)*(s8-4)*(s8-5)/(-6)+(s9-1)*(s9-3)*(s9-4)*(s9-5)/(-6)+(s10-1)*(s10-3)*(s10-4)*(s10-5)/(-6)+(s11-1)*(s11-3)*(s11-4)*(s11-5)/(-6)+(s12-1)*(s12-3)*(s12-4)*(s12-5)/(-6)+(s13-1)*(s13-3)*(s13-4)*(s13-5)/(-6)+(s14-1)*(s14-3)*(s14-4)*(s14-5)/(-6)+(s15-1)*(s15-3)*(s15-4)*(s15-5)/(-6)+(s16-1)*(s16-3)*(s16-4)*(s16-5)/(-6)+(s17-1)*(s17-3)*(s17-4)*(s17-5)/(-6)+(s18-1)*(s18-3)*(s18-4)*(s18-5)/(-6)+(s19-1)*(s19-3)*(s19-4)*(s19-5)/(-6)+(s20-1)*(s20-3)*(s20-4)*(s20-5)/(-6)"
+				},
+				{
+					"name": "n3",
+					"expression": "eval:(s1-1)*(s1-2)*(s1-4)*(s1-5)/(4)+(s2-1)*(s2-2)*(s2-4)*(s2-5)/(4)+(s3-1)*(s3-2)*(s3-4)*(s3-5)/(4)+(s4-1)*(s4-2)*(s4-4)*(s4-5)/(4)+(s5-1)*(s5-2)*(s5-4)*(s5-5)/(4)+(s6-1)*(s6-2)*(s6-4)*(s6-5)/(4)+(s7-1)*(s7-2)*(s7-4)*(s7-5)/(4)+(s8-1)*(s8-2)*(s8-4)*(s8-5)/(4)+(s9-1)*(s9-2)*(s9-4)*(s9-5)/(4)+(s10-1)*(s10-2)*(s10-4)*(s10-5)/(4)+(s11-1)*(s11-2)*(s11-4)*(s11-5)/(4)+(s12-1)*(s12-2)*(s12-4)*(s12-5)/(4)+(s13-1)*(s13-2)*(s13-4)*(s13-5)/(4)+(s14-1)*(s14-2)*(s14-4)*(s14-5)/(4)+(s15-1)*(s15-2)*(s15-4)*(s15-5)/(4)+(s16-1)*(s16-2)*(s16-4)*(s16-5)/(4)+(s17-1)*(s17-2)*(s17-4)*(s17-5)/(4)+(s18-1)*(s18-2)*(s18-4)*(s18-5)/(4)+(s19-1)*(s19-2)*(s19-4)*(s19-5)/(4)+(s20-1)*(s20-2)*(s20-4)*(s20-5)/(4)"
+				},
+				{
+					"name": "n4",
+					"expression": "eval:(s1-1)*(s1-2)*(s1-3)*(s1-5)/(-6)+(s2-1)*(s2-2)*(s2-3)*(s2-5)/(-6)+(s3-1)*(s3-2)*(s3-3)*(s3-5)/(-6)+(s4-1)*(s4-2)*(s4-3)*(s4-5)/(-6)+(s5-1)*(s5-2)*(s5-3)*(s5-5)/(-6)+(s6-1)*(s6-2)*(s6-3)*(s6-5)/(-6)+(s7-1)*(s7-2)*(s7-3)*(s7-5)/(-6)+(s8-1)*(s8-2)*(s8-3)*(s8-5)/(-6)+(s9-1)*(s9-2)*(s9-3)*(s9-5)/(-6)+(s10-1)*(s10-2)*(s10-3)*(s10-5)/(-6)+(s11-1)*(s11-2)*(s11-3)*(s11-5)/(-6)+(s12-1)*(s12-2)*(s12-3)*(s12-5)/(-6)+(s13-1)*(s13-2)*(s13-3)*(s13-5)/(-6)+(s14-1)*(s14-2)*(s14-3)*(s14-5)/(-6)+(s15-1)*(s15-2)*(s15-3)*(s15-5)/(-6)+(s16-1)*(s16-2)*(s16-3)*(s16-5)/(-6)+(s17-1)*(s17-2)*(s17-3)*(s17-5)/(-6)+(s18-1)*(s18-2)*(s18-3)*(s18-5)/(-6)+(s19-1)*(s19-2)*(s19-3)*(s19-5)/(-6)+(s20-1)*(s20-2)*(s20-3)*(s20-5)/(-6)"
+				},
+				{
+					"name": "n5",
+					"expression": "eval:(s1-1)*(s1-2)*(s1-3)*(s1-4)/(24)+(s2-1)*(s2-2)*(s2-3)*(s2-4)/(24)+(s3-1)*(s3-2)*(s3-3)*(s3-4)/(24)+(s4-1)*(s4-2)*(s4-3)*(s4-4)/(24)+(s5-1)*(s5-2)*(s5-3)*(s5-4)/(24)+(s6-1)*(s6-2)*(s6-3)*(s6-4)/(24)+(s7-1)*(s7-2)*(s7-3)*(s7-4)/(24)+(s8-1)*(s8-2)*(s8-3)*(s8-4)/(24)+(s9-1)*(s9-2)*(s9-3)*(s9-4)/(24)+(s10-1)*(s10-2)*(s10-3)*(s10-4)/(24)+(s11-1)*(s11-2)*(s11-3)*(s11-4)/(24)+(s12-1)*(s12-2)*(s12-3)*(s12-4)/(24)+(s13-1)*(s13-2)*(s13-3)*(s13-4)/(24)+(s14-1)*(s14-2)*(s14-3)*(s14-4)/(24)+(s15-1)*(s15-2)*(s15-3)*(s15-4)/(24)+(s16-1)*(s16-2)*(s16-3)*(s16-4)/(24)+(s17-1)*(s17-2)*(s17-3)*(s17-4)/(24)+(s18-1)*(s18-2)*(s18-3)*(s18-4)/(24)+(s19-1)*(s19-2)*(s19-3)*(s19-4)/(24)+(s20-1)*(s20-2)*(s20-3)*(s20-4)/(24)"
+				}
+			],
+			"conditions": ["n1 >= 1", "n2 >= 1", "n3 >= 1", "n4 >= 1", "n5 >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n1}}"
+				},
+				{
+					"expectedAnswer": "{{n2}}"
+				},
+				{
+					"expectedAnswer": "{{n3}}"
+				},
+				{
+					"expectedAnswer": "{{n4}}"
+				},
+				{
+					"expectedAnswer": "{{n5}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte chaque réponse : rouge ${{n1}}$ ; bleu ${{n2}}$ ; vert ${{n3}}$ ; jaune ${{n4}}$ ; violet ${{n5}}$.",
+					"On vérifie : ${{n1}} + {{n2}} + {{n3}} + {{n4}} + {{n5}} = 20$, autant que d'élèves."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12 élèves : 6, 4, 2",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "1",
+				"s2": "2",
+				"s3": "1",
+				"s4": "3",
+				"s5": "1",
+				"s6": "2",
+				"s7": "1",
+				"s8": "3",
+				"s9": "2",
+				"s10": "1",
+				"s11": "2",
+				"s12": "1",
+				"n1": "6",
+				"n2": "4",
+				"n3": "2"
+			},
+			"answers": ["6", "4", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un chat oublié (5)",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "1",
+				"s2": "2",
+				"s3": "1",
+				"s4": "3",
+				"s5": "1",
+				"s6": "2",
+				"s7": "1",
+				"s8": "3",
+				"s9": "2",
+				"s10": "1",
+				"s11": "2",
+				"s12": "1",
+				"n1": "6",
+				"n2": "4",
+				"n3": "2"
+			},
+			"answers": ["5", "4", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : chiens et lapins inversés",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "1",
+				"s2": "2",
+				"s3": "1",
+				"s4": "3",
+				"s5": "1",
+				"s6": "2",
+				"s7": "1",
+				"s8": "3",
+				"s9": "2",
+				"s10": "1",
+				"s11": "2",
+				"s12": "1",
+				"n1": "6",
+				"n2": "4",
+				"n3": "2"
+			},
+			"answers": ["6", "2", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "16 élèves, avec le total",
+			"variationIndex": 1,
+			"variables": {
+				"s1": "1",
+				"s2": "2",
+				"s3": "3",
+				"s4": "4",
+				"s5": "1",
+				"s6": "1",
+				"s7": "2",
+				"s8": "3",
+				"s9": "1",
+				"s10": "4",
+				"s11": "2",
+				"s12": "1",
+				"s13": "3",
+				"s14": "1",
+				"s15": "2",
+				"s16": "4",
+				"n1": "6",
+				"n2": "4",
+				"n3": "3",
+				"n4": "3"
+			},
+			"answers": ["6", "4", "3", "3", "16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : total = nombre de lignes (4)",
+			"variationIndex": 1,
+			"variables": {
+				"s1": "1",
+				"s2": "2",
+				"s3": "3",
+				"s4": "4",
+				"s5": "1",
+				"s6": "1",
+				"s7": "2",
+				"s8": "3",
+				"s9": "1",
+				"s10": "4",
+				"s11": "2",
+				"s12": "1",
+				"s13": "3",
+				"s14": "1",
+				"s15": "2",
+				"s16": "4",
+				"n1": "6",
+				"n2": "4",
+				"n3": "3",
+				"n4": "3"
+			},
+			"answers": ["6", "4", "3", "3", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "20 élèves, 5 couleurs",
+			"variationIndex": 2,
+			"variables": {
+				"s1": "1",
+				"s2": "2",
+				"s3": "3",
+				"s4": "4",
+				"s5": "5",
+				"s6": "1",
+				"s7": "2",
+				"s8": "2",
+				"s9": "3",
+				"s10": "1",
+				"s11": "5",
+				"s12": "2",
+				"s13": "4",
+				"s14": "1",
+				"s15": "2",
+				"s16": "3",
+				"s17": "5",
+				"s18": "2",
+				"s19": "1",
+				"s20": "4",
+				"n1": "5",
+				"n2": "6",
+				"n3": "3",
+				"n4": "3",
+				"n5": "3"
+			},
+			"answers": ["5", "6", "3", "3", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une réponse comptée deux fois",
+			"variationIndex": 2,
+			"variables": {
+				"s1": "1",
+				"s2": "2",
+				"s3": "3",
+				"s4": "4",
+				"s5": "5",
+				"s6": "1",
+				"s7": "2",
+				"s8": "2",
+				"s9": "3",
+				"s10": "1",
+				"s11": "5",
+				"s12": "2",
+				"s13": "4",
+				"s14": "1",
+				"s15": "2",
+				"s16": "3",
+				"s17": "5",
+				"s18": "2",
+				"s19": "1",
+				"s20": "4",
+				"n1": "5",
+				"n2": "6",
+				"n3": "3",
+				"n4": "3",
+				"n5": "3"
+			},
+			"answers": ["5", "7", "3", "3", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

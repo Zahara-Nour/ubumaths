@@ -1,0 +1,131 @@
+{
+	"title": "Point d'une courbe : image et antécédent",
+	"description": "Traduire « A(a ; b) appartient à C_f » : f(a) = b, image, antécédent ; point de la courbe connaissant f(a) = b (pièges : coordonnées échangées, image et antécédent confondus)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Définition et courbe",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère une fonction $f$ et sa courbe représentative $\\mathcal{C}_f$. Le point $A({{a}}\\,;\\,{{b}})$ appartient à $\\mathcal{C}_f$.\n\nQuelles phrases sont vraies ?\n\n```choix\nplusieurs: oui\n- $f({{a}})={{b}}$\n- $f({{b}})={{a}}$\n- ${{b}}$ est l'image de ${{a}}$ par $f$\n- ${{a}}$ est l'image de ${{b}}$ par $f$\n- ${{a}}$ est un antécédent de ${{b}}$ par $f$\n- ${{b}}$ est un antécédent de ${{a}}$ par $f$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9!0"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9!0"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0;2;4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A(x\\,;\\,y)$ est sur $\\mathcal{C}_f$ si et seulement si $y=f(x)$ : l'**abscisse** est le nombre de départ, l'**ordonnée** son image.",
+					"Ici $\\textcolor{{{color:primary.0}}}{f({{a}})={{b}}}$ : \\textcolor{{{color:primary.0}}}{${{b}}$ est l'image de ${{a}}$}, et \\textcolor{{{color:primary.0}}}{${{a}}$ est un antécédent de ${{b}}$}."
+				]
+			}
+		},
+		{
+			"statement": "On considère une fonction $f$ telle que $f({{a}})={{b}}$.\n\nQuel point appartient à la courbe représentative $\\mathcal{C}_f$ de $f$ ?\n\n```choix\n- $A({{a}}\\,;\\,{{b}})$\n- $B({{b}}\\,;\\,{{a}})$\n- $C({{a}}\\,;\\,0)$\n- $D(0\\,;\\,{{b}})$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9!0"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9!0"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le point de $\\mathcal{C}_f$ d'abscisse $x$ a pour ordonnée $f(x)$.",
+					"Ici $f({{a}})={{b}}$ : le point $\\textcolor{{{color:primary.0}}}{A({{a}}\\,;\\,{{b}})}$ est sur $\\mathcal{C}_f$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(2) = −5, image, antécédent",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-5"
+			},
+			"answers": ["0;2;4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(−5) = 2 coché",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-5"
+			},
+			"answers": ["0;1;2;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : image et antécédent échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-5"
+			},
+			"answers": ["0;3;5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(2 ; −5)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B(−5 ; 2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

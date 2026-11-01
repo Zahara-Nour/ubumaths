@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25 ; étapes du solveur écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; inconnue divisée multipliée, membre factorisé défait, Q51-Q52, 2026-10-25 ; puissance d'exposant n/2 écrite avec une racine carrée par `tidy`, quotient et produit de puissances de même base dans `.simplifier`, lot 5f-5, 2026-10-25 ; évaluateur flottant unique des limites (`sin²`, `cos⁻¹`, `∛`), lot 6a, 2026-10-25 ; conditions de `tidyWithConditions` écrites aux points irrationnels, `tan`/`arcsin` (tidy-conditions § 5, 2026-10-26) ; limites en −∞ de (−∞)ⁿ, u^{p/q} hors du domaine, inverse d'une somme à conjuguer, V67-V69, 2026-10-26 ; eᵘ d'une forme indéterminée, polynôme × exponentielle, V68, 2026-10-27 ; u^{−n} en un point où u s'annule lu 1/uⁿ, zéro sans signe d'un facteur sin / cos d'argument non borné, V70-V71, 2026-10-27 ; signe inconnu d'un paramètre jamais lu positif par `normalizeExtended`, coefficient littéral du terme dominant, limites-parametres, 2026-10-27 ; valeurs remarquables de sin, cos, tan dans `reduire`, `auto`, `.développer`, `.résoudre`, 2026-10-27 ; inconnues indicées dans `solve`, solution vérifiée sur une contrainte non résolue, décalage paramétré sans `approximate`, racine de cubique arrondie non exacte, V13/V45/V42/L27, 2026-11-01 ; `\imaginaryI`, `\exponentialE` lus par rd, nœuds de la fabrique dans `partial-fractions.ts` et le point d'essai de |f| des limites, 2026-11-01).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25 ; étapes du solveur écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; inconnue divisée multipliée, membre factorisé défait, Q51-Q52, 2026-10-25 ; puissance d'exposant n/2 écrite avec une racine carrée par `tidy`, quotient et produit de puissances de même base dans `.simplifier`, lot 5f-5, 2026-10-25 ; évaluateur flottant unique des limites (`sin²`, `cos⁻¹`, `∛`), lot 6a, 2026-10-25 ; conditions de `tidyWithConditions` écrites aux points irrationnels, `tan`/`arcsin` (tidy-conditions § 5, 2026-10-26) ; limites en −∞ de (−∞)ⁿ, u^{p/q} hors du domaine, inverse d'une somme à conjuguer, V67-V69, 2026-10-26 ; eᵘ d'une forme indéterminée, polynôme × exponentielle, V68, 2026-10-27 ; u^{−n} en un point où u s'annule lu 1/uⁿ, zéro sans signe d'un facteur sin / cos d'argument non borné, V70-V71, 2026-10-27 ; signe inconnu d'un paramètre jamais lu positif par `normalizeExtended`, coefficient littéral du terme dominant, limites-parametres, 2026-10-27 ; valeurs remarquables de sin, cos, tan dans `reduire`, `auto`, `.développer`, `.résoudre`, 2026-10-27 ; inconnues indicées dans `solve`, solution vérifiée sur une contrainte non résolue, décalage paramétré sans `approximate`, racine de cubique arrondie non exacte, V13/V45/V42/L27, 2026-11-01 ; forme résolue du 1er degré, coefficient devant dans une somme de primitives, règle arctan à coefficient, V32/V27/V64, 2026-11-01 ; `\imaginaryI`, `\exponentialE` lus par rd, nœuds de la fabrique dans `partial-fractions.ts` et le point d'essai de |f| des limites, 2026-11-01).
 
 ## À quoi ça sert
 
@@ -1235,8 +1235,10 @@ division par un nombre, identités).
   brutes de la formule restent non calculées. **Inéquations comprises** (Q50, 2026-10-25) : mêmes
   règles pour les étapes (`x² − 0,5 < 0`, `x < 0,3`), et les racines des tableaux de signes
   (`quadratic-sign-table`, `rational-domain-restriction`, `rational-locate-roots`,
-  `rational-sign-table`) passent par `exactValueToShow`, comme la borne de la forme résolue
-  d'une inéquation du 1er degré, qui ne conclut pas (`2x < √2` → `x < √2/2`). L'ensemble solution, chaîne écrite par
+  `rational-sign-table`) passent par `exactValueToShow`, comme la forme résolue du 1er degré,
+  qui ne conclut pas (`2x < √2` → `x < √2/2` ; V32, 2026-11-01 : `3x = −π` → `x = −π/3`, et non
+  `-\dfrac{1}{3}\pi`, dans l'étape qui l'obtient comme dans « Solution », dont le rendu lit
+  `before`). L'ensemble solution, chaîne écrite par
   le pipeline (`describeDomain`, `_helpers.ts`), écrit ses bornes par `exactValueToShow`, en
   décimal si l'inéquation tape un décimal : `]−√2/2 ; √2/2[`, `](1 − √5)/2 ; (1 + √5)/2[`,
   `]1/2 ; +∞[` en vraie fraction (avant : `1 / 2` en texte), `[−0,5 ; 0,5]`. Tests :
@@ -1339,7 +1341,12 @@ division par un nombre, identités).
   éventuel (`singleCoefficientTerm` : `\dfrac{1}{2}e^{2x}`, `-\dfrac{1}{3}\cos(3x+1)`),
   gardé tel quel si le coefficient est réduit (un `\dfrac{2}{4}e^x` devient
   `\dfrac{1}{2}e^x` par l'étape) ; un coefficient pas encore calculé
-  (`\dfrac{1}{4}\dfrac{x^2}{2}`) passe par `tidy`. **Exponentielle commune** (lot 4 de
+  (`\dfrac{1}{4}\dfrac{x^2}{2}`) passe par `tidy`. **Dans une somme** (V27, 2026-11-01), chaque
+  terme « coefficient rationnel × fonction » (un appel, `\ln`, `\sin`… ou `e^{u}`) que `tidy`
+  écrit en fraction (`\dfrac{e^{2x}}{2}`) reprend l'écriture d'un terme seul, coefficient devant
+  (`coefficientFirstForm`) : `\dfrac{1}{2}e^{2x} + \ln|x|`, `\sin x - \dfrac{1}{4}\cos(2x)` ;
+  une puissance de x ou de u garde la sienne (`\dfrac{x^3}{3}`, `\dfrac{(2x+1)^4}{8}`), comme
+  un terme seul. **Exponentielle commune** (lot 4 de
   l'ADR 0024, `developAndFactor`) : l'étape développe (intention `developper`), puis met en
   facteur, par `factoriser`, la `e^{u}` que portent au moins deux termes (exposants comparés par
   `areEquivalent`, écrits partout comme dans la primitive brute) : ∫x²eˣ → `(x^2-2x+2)e^x`,
@@ -1440,7 +1447,12 @@ division par un nombre, identités).
 - **Intégrales à paramètre** (V61, 2026-10-14) : la règle arctan (`isArctanPattern`,
   `integrators/basic.ts`) déballe les parenthèses du dénominateur — `1/(x^2+a^2)` tapé en
   notation maison arrive en `delimiter` et n'était pas reconnu (« Unable to factor
-  denominator ») ; numérateur 1 seulement (`3/(x^2+a^2)`, `1/(x^2+a^2+1)` restent refusés).
+  denominator ») ; depuis V64 (2026-11-01), le numérateur est tout facteur sans la variable
+  (`3/(x^2+a^2)` → 3arctan(x/a)/a, `a/(x^2+a^2)` → arctan(x/a)) et a² se lit aussi en
+  puissance paire ou avec un carré parfait devant (`a^4` → a = a², `4a^2` → a = 2a). Restent
+  refusés, honnêtement : un terme constant de signe inconnu (`1/(x^2+b)`, `1/(x^2+2x+a^2)`) et
+  `1/(x^2+a^2+1)` (a = √(a² + 1) serait juste, mais la ligne la rationalise en une écriture
+  illisible).
   La valeur symbolique de `integrateDefinite` réduit `1^u` en 1 (`withoutPowersOfOne` :
   `x^a` de 1 à 2 → (2^{a+1} − 1)/(a + 1)). Les refus des intégrateurs sont écrits en français
   à la source (partial-fractions, trig-substitution, basic), comme le reste du module :

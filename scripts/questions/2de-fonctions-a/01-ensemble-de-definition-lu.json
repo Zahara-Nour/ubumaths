@@ -1,0 +1,254 @@
+{
+	"title": "Lire l'ensemble de définition sur une courbe",
+	"description": "Ensemble de définition lu sur la courbe : intervalle fermé, semi-ouvert (disque vide), réunion de deux intervalles (pièges : crochets inversés, ordonnées lues au lieu des abscisses)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Définition et courbe",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:(a)-1}} ; {{eval:(b)+1}}\ny: {{eval:min(-1,(m)-1)}} ; {{eval:max(1,(m)+5)}}\ngrille: 1 ; 1\nf(x) = {{m}}+0.25*(x-({{a}})/2-({{b}})/2)^2 sur [{{a}} ; {{b}}]   bleu\ntaille: moyenne\ndescription: Courbe d'une fonction f, d'abscisses allant de {{a}} à {{b}}, extrémités comprises (disques pleins).\n```\n\nSur quel ensemble la fonction $f$ est-elle définie ?\n\nUn disque plein est un point de la courbe ; un disque vide est un point exclu.\n\n$\\mathcal{D}_f=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..-1"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "m",
+					"expression": "-3..0"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{a}};{{b}}]",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est définie pour les abscisses des points de la courbe : on lit les abscisses de ses extrémités. Disque plein : la borne est **comprise** (crochet tourné vers le nombre) ; disque vide : elle est **exclue**.",
+					"Ici les deux extrémités, d'abscisses ${{a}}$ et ${{b}}$, sont des disques pleins : $\\mathcal{D}_f=\\textcolor{{{color:primary.0}}}{\\left[{{a}}\\,;{{b}}\\right]}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:(a)-1}} ; {{eval:(b)+1}}\ny: {{eval:min(-1,(m)-1)}} ; {{eval:max(1,(m)+5)}}\ngrille: 1 ; 1\nf(x) = {{m}}+0.25*(x-({{a}})/2-({{b}})/2)^2 sur {{if:g==0|[|]}}{{a}} ; {{b}}{{if:g==0|[|]}}   bleu\ntaille: moyenne\ndescription: Courbe d'une fonction f, d'abscisses allant de {{a}} à {{b}} ; {{if:g==0|disque plein en {{a}}, disque vide en {{b}}|disque vide en {{a}}, disque plein en {{b}}}}.\n```\n\nSur quel ensemble la fonction $f$ est-elle définie ?\n\nUn disque plein est un point de la courbe ; un disque vide est un point exclu.\n\n$\\mathcal{D}_f=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..-1"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "m",
+					"expression": "-3..0"
+				},
+				{
+					"name": "g",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:g==0|[|]}}{{a}};{{b}}{{if:g==0|[|]}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est définie pour les abscisses des points de la courbe : on lit les abscisses de ses extrémités. Disque plein : la borne est **comprise** (crochet tourné vers le nombre) ; disque vide : elle est **exclue**.",
+					"{{if:g==0|En ${{a}}$ le disque est plein, en ${{b}}$ il est vide|En ${{a}}$ le disque est vide, en ${{b}}$ il est plein}} : $\\mathcal{D}_f=\\textcolor{{{color:primary.0}}}{\\left{{if:g==0|[|]}}{{a}}\\,;{{b}}\\right{{if:g==0|[|]}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:(a)-1}} ; {{eval:(d)+1}}\ny: -4 ; 4\ngrille: 1 ; 1\nf(x) = 0.5*x+3 sur [{{a}} ; {{b}}]   bleu\ng(x) = 2-x sur ]{{c}} ; {{d}}]   bleu\ntaille: moyenne\ndescription: Courbe d'une fonction f en deux morceaux : de {{a}} à {{b}}, disques pleins aux deux bouts ; de {{c}} à {{d}}, disque vide en {{c}} et plein en {{d}}.\n```\n\nSur quel ensemble la fonction $f$ est-elle définie ?\n\nUn disque plein est un point de la courbe ; un disque vide est un point exclu.\n\n$\\mathcal{D}_f=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..-4"
+				},
+				{
+					"name": "b",
+					"expression": "-2..-1"
+				},
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "4..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{a}};{{b}}]\\cup]{{c}};{{d}}]",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est définie pour les abscisses des points de la courbe : on lit les abscisses de ses extrémités. Disque plein : la borne est **comprise** (crochet tourné vers le nombre) ; disque vide : elle est **exclue**.",
+					"La courbe a deux morceaux : $f$ est définie sur la **réunion** des deux intervalles.",
+					"$\\mathcal{D}_f=\\textcolor{{{color:primary.0}}}{\\left[{{a}}\\,;{{b}}\\right]\\cup\\left]{{c}}\\,;{{d}}\\right]}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "[−3 ; 4]",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "4",
+				"m": "-1"
+			},
+			"answers": ["[-3;4]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochets ouverts",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "4",
+				"m": "-1"
+			},
+			"answers": ["]-3;4["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans crochets",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "4",
+				"m": "-1"
+			},
+			"answers": ["-3;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[−2 ; 3[",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"m": "0",
+				"g": "0"
+			},
+			"answers": ["[-2;3["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : borne exclue comprise",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"m": "0",
+				"g": "0"
+			},
+			"answers": ["[-2;3]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "]−2 ; 3]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"m": "0",
+				"g": "1"
+			},
+			"answers": ["]-2;3]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochets inversés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"m": "0",
+				"g": "1"
+			},
+			"answers": ["[-2;3["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[−5 ; −2] ∪ ]1 ; 4]",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-5",
+				"b": "-2",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["[-5;-2]\\cup]1;4]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul intervalle [−5 ; 4]",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-5",
+				"b": "-2",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["[-5;4]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 compris",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-5",
+				"b": "-2",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["[-5;-2]\\cup[1;4]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
