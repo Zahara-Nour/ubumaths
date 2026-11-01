@@ -1,0 +1,245 @@
+{
+	"title": "Ensemble de définition d'un quotient",
+	"description": "Valeurs interdites d'une fonction quotient : dénominateur x − c, ax + b (valeur fractionnaire), produit (x − p)(x − q) ; ℝ privé des valeurs interdites (pièges : signe de la valeur, numérateur annulé, {3} au lieu de ℝ \\ {3})",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Définition et courbe",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)=\\dfrac{ {{a}}x{{b;+}} }{x{{eval:-(c);+}}}$.\n\nDétermine l'ensemble de définition de $f$.\n\n$\\mathcal{D}_f=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["(a)*(c)+(b) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\mathbb{R}\\setminus\\{ {{c}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un quotient n'existe que si son **dénominateur n'est pas nul** : on cherche les valeurs interdites.",
+					"$$x{{eval:-(c);+}}=0\\iff x={{c}}$$",
+					"${{c}}$ est la seule valeur interdite : $\\mathcal{D}_f=\\textcolor{{{color:primary.0}}}{\\mathbb{R}\\setminus\\{ {{c}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)=\\dfrac{x{{b;+}} }{ {{a}}x{{d;+}} }$.\n\nDétermine l'ensemble de définition de $f$.\n\n$\\mathcal{D}_f=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["mod(d, a) != 0", "(b)*(a) != (d)"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\mathbb{R}\\setminus\\{ {{eval:-(d)/(a)}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un quotient n'existe que si son **dénominateur n'est pas nul** : on cherche les valeurs interdites.",
+					"$${{a}}x{{d;+}}=0\\iff{{a}}x={{eval:-(d)}}\\iff x={{eval:-(d)/(a)}}$$",
+					"$\\mathcal{D}_f=\\textcolor{{{color:primary.0}}}{\\mathbb{R}\\setminus\\left\\{ {{eval:-(d)/(a)}} \\right\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)=\\dfrac{ {{k}} }{(x{{eval:-(p);+}})(x{{eval:-(q);+}})}$.\n\nDétermine l'ensemble de définition de $f$.\n\n$\\mathcal{D}_f=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "p",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "q",
+					"expression": "-6..6!0"
+				}
+			],
+			"conditions": ["p != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\mathbb{R}\\setminus\\{ {{p}} ; {{q}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un quotient n'existe que si son **dénominateur n'est pas nul** : on cherche les valeurs interdites.",
+					"Le dénominateur est un produit : il est nul si et seulement si l'un de ses facteurs est nul.",
+					"$$(x{{eval:-(p);+}})(x{{eval:-(q);+}})=0\\iff x={{p}}\\ \\text{ou}\\ x={{q}}$$",
+					"$\\mathcal{D}_f=\\textcolor{{{color:primary.0}}}{\\mathbb{R}\\setminus\\{ {{eval:min(p,q)}} ; {{eval:max(p,q)}} \\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(2x + 1)/(x − 3) → ℝ \\ {3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{3\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Réunion ]−∞ ; 3[ ∪ ]3 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"answers": ["]-\\infty;3[\\cup]3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe (ℝ \\ {−3})",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{-3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la valeur interdite seule",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"answers": ["\\{3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ℝ",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x + 1)/(2x − 5) → ℝ \\ {5/2}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"d": "-5",
+				"b": "1"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{\\frac{5}{2}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : valeur du numérateur (ℝ \\ {−1})",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"d": "-5",
+				"b": "1"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{-1\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4/((x + 2)(x − 1)) → ℝ \\ {−2 ; 1}",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"p": "-2",
+				"q": "1"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{-2;1\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une seule valeur",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"p": "-2",
+				"q": "1"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{1\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signes (ℝ \\ {2 ; −1})",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"p": "-2",
+				"q": "1"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{2;-1\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
