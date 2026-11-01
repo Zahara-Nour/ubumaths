@@ -9,12 +9,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2101 et le `db:migrate` du rangement._
+_Mis à jour le 2026-11-01, après #2104 (niveau de d2bca2d8)._
 
-- **État** : lot 1-dérivation (10 brouillons, § 18) créé en prod, rangé et tagué (#2101, migration jouée et relue). Page à cocher publiée : https://claude.ai/artifact/Q4kLqL6qnRz5DA18ivqkJP. Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 10) ; « À revoir » → corriger (`--mettre-a-jour`) ; puis simulation `publier-lot --dir scripts/questions/1spe-derivation`. Lot suivant de D7 : variations et courbes (§ 3.6).
-- **En attente de David** : relecture de la page, puis `publier-lot --publier`.
-- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères (commitlint).
+- **État** : lot 1-dérivation (10 brouillons, § 18) rangé et tagué, relu : **10 « ok » sur 10**. Simulation `publier-lot` : d2bca2d8 refusé (niveau 6 pris par 8b599a53, `T_SPE`) → migration `20261101190000_questions_1spe_derivation_niveau.sql` (6 → 7) mergée (#2104), **pas encore jouée** : bloquée derrière `20261101170000` de questions-4 (prévenue).
+- **Prochaine action** : une fois les deux migrations jouées (`--include-all` par questions-4), relire d2bca2d8 au niveau 7 (MCP), relancer `publier-lot --dir scripts/questions/1spe-derivation` (simulation), puis David lance `--publier`. Lot suivant de D7 : variations et courbes (§ 3.6).
+- **En attente de David** : `publier-lot --publier`, après la simulation verte.
+- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -859,3 +859,8 @@ personne. Migration `20261101190000_questions_1spe_derivation_niveau.sql` + `tes
 questions-1spe-derivation-niveau.test.ts` : 6 / 6 verts, rouge sans le corps (2 échecs, 3 sautés), restauré d'une copie.
 Fichier du lot au niveau 7 (clé de `publier-lot`). **Piège** : relever les niveaux de la catégorie **tous niveaux
 scolaires confondus** (l'index d'unicité ignore `grades`).
+
+`security-auditor` (Opus) : aucun finding bloquant. #2104 mergée (CI verte après une relance : connexion au navigateur fermée
+pendant `RichTextEditor`, sans lien). `db push --dry-run` : `DbPushMissingRemoteError`, bloquée derrière
+`20261101170000_questions_4_lot7_rangement_tags.sql` (session questions-4, pas encore jouée) ; précédent du 2026-10-27 :
+la session propriétaire joue son `--include-all`. questions-4 prévenue (2026-11-01).
