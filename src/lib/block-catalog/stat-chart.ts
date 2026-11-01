@@ -655,7 +655,7 @@ export const boxPlotEntry: BlockCatalogEntry = {
 					values: 'les boîtes à construire : Notes ; Neptune, ou toutes',
 					defaultValue: 'aucune',
 					description:
-						'L’élève voit l’axe et le nom de la boîte ; il choisit un trait (Min, Q1, Médiane, Q3, Max) puis touche l’axe pour le poser, aimanté aux graduations. Les valeurs écrites sont l’attendu, jamais affichées avant la correction. Cinq cases par boîte (note partielle) ; des traits dans le désordre sont faux. Exige axe: (calculé, il trahirait le minimum et le maximum), et chaque valeur sur une graduation ; refusé avec valeurs: oui. Avec données:, l’élève calcule les quartiles de la série (écrite dans la consigne) puis construit. Sur le PDF, l’axe et le nom seuls : l’enfant dessine.'
+						'L’élève voit l’axe et le nom de la boîte ; il choisit un trait (Min, Q1, Médiane, Q3, Max) puis touche l’axe pour le poser, aimanté aux graduations. Les valeurs écrites sont l’attendu, jamais affichées avant la correction. Cinq cases par boîte (note partielle) ; des traits dans le désordre sont faux. Exige axe: (calculé, il trahirait le minimum et le maximum), et chaque valeur sur une graduation ; refusé avec valeurs: oui. Avec données:, l’élève calcule les quartiles de la série (écrite dans la consigne) puis construit ; une série tirée au hasard de taille paire peut avoir une médiane au demi (12,5) : graduer de 0,5 en 0,5, ou garder une taille impaire, sinon la question est refusée pour ce tirage. Sur le PDF, l’axe et le nom seuls : l’enfant dessine.'
 				}
 			]
 		}

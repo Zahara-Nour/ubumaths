@@ -16,6 +16,7 @@ import type { ResolvedMarkdown } from '$lib/ubumark';
 import type { InstanceBlank, QuestionTemplate } from '$lib/questions/types';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { templateMarkdown } from '$lib/ubumark';
+import { validateAnswer } from '$lib/utils/answer-validator';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {
@@ -264,6 +265,52 @@ describe('FillBlanksInput — boîte à construire', () => {
 		const root = screen.container;
 		expect(root.querySelector('svg[role="slider"]')).toBeNull();
 		expect(root.querySelectorAll('rect.stat-boite')).toHaveLength(1);
+	});
+});
+
+describe('Boîte à construire — décimaux et négatifs, du geste au jugement', () => {
+	it('axe -5 à 5 de 0,5 en 0,5 : -3,5 posé au clavier est écrit comme l’attendu, jugé juste', async () => {
+		const source = ['axe: -5 à 5, de 0,5 en 0,5', 'A = -3,5 ; -1 ; 0,5 ; 2 ; 4,5', 'placer: A'];
+		const generated = generateInstance(
+			{
+				id: 'test-boite-decimaux',
+				title: 'Construire',
+				status: 'draft',
+				variations: [
+					{ statement: templateMarkdown(['```boite-a-moustaches', ...source, '```'].join('\n')) }
+				],
+				grades: ['3'],
+				theme: 'Test',
+				domain: 'Test',
+				level: 1
+			} as QuestionTemplate,
+			42
+		);
+		if (!generated.success) throw new Error(generated.errors.join(' ; '));
+		const instance = generated.instance;
+		expect(instance.blanks?.map((b) => b.expectedAnswer)).toEqual([
+			'-3.5',
+			'-1',
+			'0.5',
+			'2',
+			'4.5'
+		]);
+		const values: string[] = [];
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				statement: instance.statement,
+				blanks: instance.blanks ?? [],
+				values,
+				validationResults: []
+			}
+		});
+		drawing(screen.container).focus();
+		// Début : -5, puis trois crans : -3,5
+		await userEvent.keyboard('{Home}{ArrowRight}{ArrowRight}{ArrowRight}');
+		await expect.poll(() => values[0]).toBe('-3.5');
+		const answers = ['-3.5', '-1', '0.5', '2', '4.5'];
+		expect(validateAnswer(answers, instance, answers).status).toBe('correct');
 	});
 });
 

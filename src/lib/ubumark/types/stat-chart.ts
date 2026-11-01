@@ -317,7 +317,7 @@ export interface BoxPlotData {
 	fromData: boolean;
 	/**
 	 * Boîtes à construire par l'élève (`placer:`, palier 2) : leurs rangs dans
-	 * `boxes`, dans l'ordre de l'auteur ; absent ou null : boîtes à lire
+	 * `boxes`, dans l'ordre des boîtes du bloc ; absent ou null : boîtes à lire
 	 */
 	toPlace?: number[] | null;
 }

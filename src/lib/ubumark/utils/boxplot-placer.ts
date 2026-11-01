@@ -56,7 +56,7 @@ export interface BoxToPlace {
 
 // Functions
 
-/** Les boîtes à construire, dans l'ordre de l'auteur (celui des cases) */
+/** Les boîtes à construire, dans l'ordre des boîtes du bloc (celui des cases) */
 export function boxesToPlace(spec: StatChartSpec): BoxToPlace[] {
 	const plot = spec.boxPlot;
 	if (!plot) return [];

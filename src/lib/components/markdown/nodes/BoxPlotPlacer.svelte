@@ -67,6 +67,8 @@
 
 	/** Marges : celles de `BoxPlotChart.svelte` */
 	const PAD_MIN = 12;
+	/** Boîte sans nom parmi plusieurs à construire (`placer: toutes`) : bouton et phrases */
+	const UNNAMED_BOX = 'sans nom';
 	const PAD_TOP = 4;
 	const TICK_LABELS_PX = 26;
 	const AXIS_TITLE_PX = 18;
@@ -133,7 +135,7 @@
 							boxTraitMistake(
 								trait,
 								labelOf(values[k][j]),
-								targets.length > 1 ? (target.name ?? '') : null
+								targets.length > 1 ? (target.name ?? UNNAMED_BOX) : null
 							)
 						]
 					: []
@@ -302,7 +304,7 @@
 								disabled={locked}
 								onclick={() => (chosenBox = k)}
 							>
-								{target.name ?? ''}
+								{target.name ?? UNNAMED_BOX}
 							</button>
 						{/each}
 					</div>
