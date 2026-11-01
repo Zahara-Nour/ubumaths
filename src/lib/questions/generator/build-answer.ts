@@ -22,6 +22,7 @@
 import type { BuildKind } from '../types';
 import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
 import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
+import { amountAnswer, toCents } from '$lib/ubumark/utils/monnaie-valeurs';
 import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
@@ -171,5 +172,8 @@ export function buildAnswerOf(
 	if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
 	if (node.errors.length > 0) return { errors: node.errors.map((e) => e.message) };
 	if (node.spec?.build === undefined) return { errors: [] };
-	return { answer: String(node.spec.build) };
+	// Monnaie : `3,45` (virgule, deux chiffres), une somme entière reste `35`
+	return {
+		answer: kind === 'monnaie' ? amountAnswer(toCents(node.spec.build)) : String(node.spec.build)
+	};
 }

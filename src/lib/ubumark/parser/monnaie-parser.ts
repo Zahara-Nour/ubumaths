@@ -10,18 +10,20 @@
  * taille: 6cm
  * ```
  *
- * - `billets:` (5, 10, 20, 50, 100) et `pièces:` (1, 2), en euros : au moins
- *   l'une des deux, ou `montant:` (0 à 100, le bloc choisit les coupures,
- *   « le moins d'objets »), jamais mêlé aux deux autres. Une liste `20 10 10`
- *   ou une forme comptée `2×10` (`x` et `*` valent `×`) ; un ensemble par
- *   valeur séparée par `;` (1 à 3), vide admis ; une ligne absente vaut
- *   « aucun ». 100 € et 30 objets au plus par ensemble.
+ * - `billets:` (5, 10, 20, 50, 100, 200, 500 €) et `pièces:` (1, 2 € ; 1, 2,
+ *   5, 10, 20, 50 c écrites `50c` ou `50 c`) : au moins l'une des deux, ou
+ *   `montant:` (0 à 1 000 €, écrit `3,45`, `3 € 45 c` ou `345c` ; le bloc
+ *   choisit les coupures, « le moins d'objets »), jamais mêlé aux deux autres.
+ *   Une liste `20 10 10` ou une forme comptée `2×10` (`x` et `*` valent `×`) ;
+ *   un ensemble par valeur séparée par `;` (1 à 3), vide admis ; une ligne
+ *   absente vaut « aucun ». 1 000 € et 30 objets au plus par ensemble.
  * - Le reste est facultatif ; une clé inconnue ou une valeur hors liste est
- *   une erreur située, jamais un réglage ignoré. Centimes (`50c`) et billets
- *   de 200 et 500 € : « pas encore disponible » (CE1, plus tard).
- * - `construire: 35` (1 à 100 €) : l'élève construit la somme sur un plan vide,
- *   avec les coupures de `réserve: 1 2 5 10 20` (défaut : 1, 2, 5, 10, 20,
- *   50 €) ; `billets:`, `pièces:`, `montant:`, `légendes:` et `disposition:`
+ *   une erreur située, jamais un réglage ignoré. Les valeurs du nœud sont en
+ *   euros (`0.5` = 50 c), les calculs en centimes (`utils/monnaie-valeurs.ts`).
+ * - `construire: 35` ou `construire: 3,45` (1 c à 1 000 €) : l'élève construit
+ *   la somme sur un plan vide, avec les coupures de `réserve: 1 2 5 10 20`
+ *   (défaut : 1, 2, 5, 10, 20, 50 €, et les six pièces de centimes si la somme
+ *   en a) ; `billets:`, `pièces:`, `montant:`, `légendes:` et `disposition:`
  *   sont alors sans objet. Une somme infaisable avec la réserve en 30 objets au
  *   plus est une erreur. `case: N` est posée par le générateur de questions,
  *   jamais par l'auteur (chantier `docs/wip/construire-progress.md` § 6).
@@ -40,14 +42,23 @@ import { specialBlockEnd } from './unclosed-block';
 import { isMaskedValue } from '../utils/masked-value';
 import { DEFAULT_RESERVE, fewestObjects } from '../utils/monnaie-construire';
 import {
+	amountWords,
+	denominationLabel,
+	denominationList,
+	fromCents,
+	isCents,
+	readAmount,
+	toCents
+} from '../utils/monnaie-valeurs';
+import {
 	MONNAIE_BUILD_RANGE,
 	MONNAIE_CAPTION_MAX,
+	MONNAIE_CENT_COINS,
 	MONNAIE_COINS,
 	MONNAIE_LAYOUTS,
 	MONNAIE_LIMITS,
 	MONNAIE_MAX_SETS,
 	MONNAIE_NOTES,
-	MONNAIE_RESERVED_NOTES,
 	MONNAIE_SIZE_CM,
 	type MonnaieBlockRange,
 	type MonnaieIssue,
@@ -68,9 +79,6 @@ const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 
 /** Un nombre entier écrit en chiffres */
 const INTEGER_REGEX = /^\d+$/;
-
-/** Des centimes : `50c`, `50 c`, `0,50` */
-const CENTS_REGEX = /^\d+\s*c$|^\d+[.,]\d+$/i;
 
 /** `3cm`, `2,5 cm` */
 const SIZE_REGEX = /^(\d+(?:[.,]\d+)?)\s*cm$/i;
@@ -126,7 +134,21 @@ const NOT_WITH_BUILD: Partial<Record<Key, string>> = {
 /** Toutes les coupures, de la plus grande à la plus petite (décomposition de `montant:`) */
 const DENOMINATIONS = [...MONNAIE_NOTES, ...MONNAIE_COINS];
 
-const EXISTING = `pièces : ${[...MONNAIE_COINS].reverse().join(', ')} ; billets : ${[...MONNAIE_NOTES].reverse().join(', ')}`;
+const EXISTING = `pièces : ${denominationList(MONNAIE_COINS)} ; billets : ${denominationList(MONNAIE_NOTES)}`;
+
+/** Un montant calculé resté en fraction : `{{eval:345/100}}` donne `\dfrac{69}{20}` (revue M1) */
+const FRACTION_REGEX = /\\[dt]?frac\b/;
+
+const FRACTION_HINT =
+	'une fraction n’est pas un montant ; écris {{eval:…;d}} pour un résultat décimal, ex. {{eval:p/100;d}}';
+
+/** Plafond d'un ensemble, en centimes */
+const MAX_CENTS = MONNAIE_LIMITS.total * 100;
+
+/** `50 c` → `50c` : la valeur et son unité restent un seul mot */
+function joinCents(text: string): string {
+	return text.replace(/(\d)\s+c\b/gi, '$1c');
+}
 
 // ============================================================================
 // DÉTECTION
@@ -212,32 +234,30 @@ function splitSets(value: string): string[] {
 	return parts;
 }
 
-/** Une coupure écrite (`10`, `10€`) : sa valeur, vérifiée du bon genre */
+/** Une coupure écrite (`10`, `10€`, `50c`) : sa valeur en euros, vérifiée du bon genre */
 function readDenomination(raw: string, kind: 'billets' | 'pièces' | 'réserve'): number {
-	const text = raw.replace(/€$/, '').trim();
-	if (CENTS_REGEX.test(text)) {
-		throw new LineError(`« ${raw} » : centimes pas encore disponibles (euros entiers seulement)`);
+	const cents = readAmount(raw);
+	if (cents === null) {
+		throw new LineError(`« ${raw} » : écris la valeur en euros ou en centimes, ex. ${kind}: 10 5`);
 	}
-	if (!INTEGER_REGEX.test(text)) {
-		throw new LineError(`« ${raw} » : écris la valeur en euros, ex. ${kind}: 10 5`);
-	}
-	const value = Number(text);
+	const value = fromCents(cents);
 	const isNote = (MONNAIE_NOTES as readonly number[]).includes(value);
 	const isCoin = (MONNAIE_COINS as readonly number[]).includes(value);
-	if ((MONNAIE_RESERVED_NOTES as readonly number[]).includes(value)) {
-		throw new LineError(`billet de ${value} € : pas encore disponible (${EXISTING})`);
-	}
+	const label = isCents(value) ? denominationLabel(value) : amountWords(cents);
 	if (kind === 'billets' && isCoin) {
 		throw new LineError(
-			`${value} € est une pièce : écris-la dans pièces: (forme comptée : quantité d'abord, ex. 3×2)`
+			`${label} est une pièce : écris-la dans pièces: (forme comptée : quantité d'abord, ex. 3×2)`
 		);
 	}
 	if (kind === 'pièces' && isNote) {
+		// `pièces: 5` : l'auteur voulait peut-être 5 centimes (revue M2)
+		const centsCoin = (MONNAIE_COINS as readonly number[]).includes(fromCents(value));
 		throw new LineError(
-			`${value} € est un billet : écris-le dans billets: (forme comptée : quantité d'abord, ex. 2×10)`
+			`${label} est un billet : écris-le dans billets: (forme comptée : quantité d'abord, ex. 2×10)` +
+				(centsCoin ? ` ; pour ${value} centimes, écris ${value}c` : '')
 		);
 	}
-	if (!isNote && !isCoin) throw new LineError(`${value} € n'existe pas (${EXISTING})`);
+	if (!isNote && !isCoin) throw new LineError(`${label} n'existe pas (${EXISTING})`);
 	return value;
 }
 
@@ -247,7 +267,7 @@ function readDenomination(raw: string, kind: 'billets' | 'pièces' | 'réserve')
  */
 function parseDenominations(value: string, kind: 'billets' | 'pièces'): number[][] {
 	return splitSets(value).map((part) => {
-		const tokens = part
+		const tokens = joinCents(part)
 			.replace(/\s*[×xX*]\s*/g, '×')
 			.split(/\s+/)
 			// `10 €` : le signe seul ne compte pas
@@ -269,25 +289,30 @@ function parseDenominations(value: string, kind: 'billets' | 'pièces'): number[
 	});
 }
 
-/** Des montants `48 ; 30`, chacun entier de 0 à 100 */
+/** Des montants `48 ; 3,45 ; 60c`, chacun de 0 à 1 000 €, en euros */
 function parseAmounts(value: string): number[] {
 	return splitSets(value).map((part) => {
-		const text = part.replace(/€$/, '').trim();
-		if (CENTS_REGEX.test(text)) {
-			throw new LineError(`montant « ${part} » : centimes pas encore disponibles`);
+		const cents = readAmount(part);
+		if (cents === null && FRACTION_REGEX.test(part)) {
+			throw new LineError(`montant « ${part} » : ${FRACTION_HINT}`);
 		}
-		if (!INTEGER_REGEX.test(text) || Number(text) > MONNAIE_LIMITS.total) {
+		if (cents === null) {
 			throw new LineError(
-				`montant « ${part} » : écris un nombre entier d'euros de 0 à ${MONNAIE_LIMITS.total}`
+				`montant « ${part} » : écris un montant en euros et centimes, ex. 3,45 ou 3 € 45 c (2 chiffres après la virgule au plus)`
 			);
 		}
-		return Number(text);
+		if (cents > MAX_CENTS) {
+			throw new LineError(`montant « ${part} » : de 0 à ${amountWords(MAX_CENTS)} au plus`);
+		}
+		return fromCents(cents);
 	});
 }
 
 /** Coupures permises (`réserve: 1 2 5 10`) : existantes, une fois chacune, de la plus grande à la plus petite */
 function parseReserve(value: string): number[] {
-	const tokens = value.split(/\s+/).filter((token) => token !== '' && token !== '€');
+	const tokens = joinCents(value)
+		.split(/\s+/)
+		.filter((token) => token !== '' && token !== '€');
 	if (tokens.length === 0) {
 		throw new LineError('réserve vide : écris les coupures permises, ex. réserve: 1 2 5 10');
 	}
@@ -295,37 +320,48 @@ function parseReserve(value: string): number[] {
 	for (const token of tokens) {
 		const denomination = readDenomination(token, 'réserve');
 		if (values.includes(denomination)) {
-			throw new LineError(`réserve : ${denomination} € écrit deux fois`);
+			throw new LineError(`réserve : ${denominationLabel(denomination)} écrit deux fois`);
 		}
 		values.push(denomination);
 	}
 	return values.sort((a, b) => b - a);
 }
 
-/** Somme à construire : entier d'euros de 1 à 100 */
+/** Somme à construire, de 1 c à 1 000 €, en euros */
 function parseBuild(value: string): number {
-	const text = value.replace(/€$/, '').trim();
-	if (CENTS_REGEX.test(text)) {
-		throw new LineError(`construire « ${value} » : centimes pas encore disponibles`);
+	const cents = readAmount(value);
+	if (cents === null && FRACTION_REGEX.test(value)) {
+		throw new LineError(`construire « ${value} » : ${FRACTION_HINT}`);
 	}
 	const { min, max } = MONNAIE_BUILD_RANGE;
-	if (!INTEGER_REGEX.test(text) || Number(text) < min || Number(text) > max) {
+	if (cents === null || cents < toCents(min) || cents > toCents(max)) {
 		throw new LineError(
-			`construire « ${value} » : écris un nombre entier d'euros de ${min} à ${max}`
+			`construire « ${value} » : écris une somme de ${amountWords(toCents(min))} à ${amountWords(toCents(max))}, ex. 35 ou 3,45`
 		);
 	}
-	return Number(text);
+	return fromCents(cents);
 }
 
-/** `montant:` → les coupures « le moins d'objets » (méthode gloutonne, exacte pour l'euro) */
+/**
+ * Réserve d'un `construire:` sans `réserve:` : 1 à 50 €, plus les six pièces de
+ * centimes si la somme en a (décision 5). Somme masquée (évaluation notée) : celle
+ * d'aujourd'hui, l'énoncé masqué écrit sa réserve s'il le faut (`masked-statement.ts`).
+ */
+export function defaultReserve(build: number | undefined): number[] {
+	const withCents = build !== undefined && toCents(build) % 100 !== 0;
+	return withCents ? [...DEFAULT_RESERVE, ...MONNAIE_CENT_COINS] : [...DEFAULT_RESERVE];
+}
+
+/** `montant:` (en euros) → les coupures « le moins d'objets » (méthode gloutonne, exacte pour l'euro) */
 export function decomposeAmount(amount: number): MonnaieSet {
 	const notes: number[] = [];
 	const coins: number[] = [];
-	let rest = amount;
+	let rest = toCents(amount);
 	for (const value of DENOMINATIONS) {
-		while (rest >= value) {
+		const cents = toCents(value);
+		while (rest >= cents) {
 			((MONNAIE_NOTES as readonly number[]).includes(value) ? notes : coins).push(value);
-			rest -= value;
+			rest -= cents;
 		}
 	}
 	return { notes, coins };
@@ -449,8 +485,9 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 
 	// Bloc à construire : plan vide, aucun ensemble dessiné (lues dans le forEach :
 	// TS les croit encore à leur valeur initiale)
-	const readReserve = (reserve as number[] | undefined) ?? [...DEFAULT_RESERVE];
-	const readBuild = masked ? Math.min(...readReserve) : (build as number | undefined);
+	const writtenBuild = masked ? undefined : (build as number | undefined);
+	const readReserve = (reserve as number[] | undefined) ?? defaultReserve(writtenBuild);
+	const readBuild = masked ? Math.min(...readReserve) : writtenBuild;
 	const readCase = caseIndex as number | undefined;
 	const buildLine = seen.get('construire');
 	if (buildLine !== undefined) {
@@ -460,13 +497,14 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 		}
 		if (errors.length === 0 && readBuild !== undefined && !masked) {
 			const objects = fewestObjects(readBuild, readReserve);
-			const listed = `(${[...readReserve].reverse().join(', ')} €)`;
+			const listed = `(${denominationList(readReserve)})`;
+			const sum = amountWords(toCents(readBuild));
 			if (objects === Infinity) {
-				fail(buildLine, `${readBuild} € ne se fait pas avec la réserve ${listed}`);
+				fail(buildLine, `${sum} ne se fait pas avec la réserve ${listed}`);
 			} else if (objects > MONNAIE_LIMITS.objects) {
 				fail(
 					buildLine,
-					`${readBuild} € demande plus de ${MONNAIE_LIMITS.objects} objets avec la réserve ${listed}`
+					`${sum} demande plus de ${MONNAIE_LIMITS.objects} objets avec la réserve ${listed}`
 				);
 			}
 		}
@@ -521,10 +559,10 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 			const line = seen.get('pièces') ?? seen.get('billets') ?? 1;
 			sets.forEach((set, i) => {
 				const where = sets!.length > 1 ? ` (ensemble ${i + 1})` : '';
-				const total = [...set.notes, ...set.coins].reduce((sum, v) => sum + v, 0);
+				const total = [...set.notes, ...set.coins].reduce((sum, v) => sum + toCents(v), 0);
 				const objects = set.notes.length + set.coins.length;
-				if (total > MONNAIE_LIMITS.total) {
-					fail(line, `${total} €${where} : ${MONNAIE_LIMITS.total} € au plus`);
+				if (total > MAX_CENTS) {
+					fail(line, `${amountWords(total)}${where} : ${amountWords(MAX_CENTS)} au plus`);
 				} else if (objects > MONNAIE_LIMITS.objects) {
 					fail(line, `${objects} objets${where} : ${MONNAIE_LIMITS.objects} au plus`);
 				}

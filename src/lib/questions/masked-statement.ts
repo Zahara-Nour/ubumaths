@@ -11,7 +11,7 @@
  * le serveur juge sur l'instance complète.
  *
  * Masqué : ```line et ```courbe (`placer:`), ```horloge (`placer:`), ```collection et
- * ```monnaie (`construire:`), ```partage (`colorier:`), ```barres (effectifs des
+ * ```monnaie (`construire:`, avec sa réserve par défaut écrite : `maskMonnaie`), ```partage (`colorier:`), ```barres (effectifs des
  * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus).
  * Pas encore (lot 2 du chantier) : ```cubes, ```patron `completer:`,
  * ```figure-a-completer.
@@ -28,7 +28,8 @@ import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
-import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
+import { defaultReserve, findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
+import { fromCents, isCents, readAmount, toCents } from '$lib/ubumark/utils/monnaie-valeurs';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { findBarsToPlace, parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 import { findChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
@@ -47,6 +48,7 @@ type MaskLine = (line: string, rank: number) => string | null;
 const PLACER_LINE = /^(placer\s*:)(.*)$/i;
 const BUILD_LINE = /^(construire\s*:)(.*)$/i;
 const COLORIER_LINE = /^(colorier\s*:)(.*)$/i;
+const RESERVE_LINE = /^réserve\s*:/i;
 /** `A=3` sur une droite : le nom avant `=` */
 const NAMED_TARGET = /^([^=\s]+)\s*=/;
 /** Donnée d'un diagramme (`Natation = 8`) : un `=` sans `:` avant (pas une option) */
@@ -103,6 +105,26 @@ function maskLines(
 }
 
 /**
+ * Monnaie à construire : `construire: ?`. Sans `réserve:`, la réserve par défaut
+ * dépend de la somme (pièces de centimes si elle en a, chantier `monnaie-centimes`) :
+ * l'énoncé masqué l'écrit, pour que l'élève ait la même réserve qu'à l'entraînement.
+ */
+function maskMonnaie(block: FoundBlock): MaskLine {
+	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
+	if (block.body.some((line) => RESERVE_LINE.test(line.trim()))) return build;
+	return (line, rank) => {
+		const masked = build(line, rank);
+		if (masked === null) return null;
+		const cents = readAmount(BUILD_LINE.exec(line.trim())![2]);
+		if (cents === null) return masked;
+		const reserve = defaultReserve(fromCents(cents))
+			.map((value) => (isCents(value) ? `${toCents(value)}c` : String(value)))
+			.join(' ');
+		return `${masked}\nréserve: ${reserve}`;
+	};
+}
+
+/**
  * Diagramme à construire : la ligne `catégorie = effectif` de chaque barre de
  * `placer:` (rangs lus par le parseur) devient `catégorie = ?`
  */
@@ -139,7 +161,7 @@ export function maskGestureAnswers(statement: string): string {
 	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, () => MASKED_VALUE));
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	maskBlocks(findBuildCollections(statement), () => build);
-	maskBlocks(findBuildMonnaies(statement), () => build);
+	maskBlocks(findBuildMonnaies(statement), maskMonnaie);
 	maskBlocks(findPartagesToColorier(statement), () => keyLine(COLORIER_LINE, () => MASKED_VALUE));
 	maskBlocks(findBarsToPlace(statement), maskBars);
 	return lines.join('\n');

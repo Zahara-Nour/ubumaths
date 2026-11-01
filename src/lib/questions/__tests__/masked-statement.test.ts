@@ -163,6 +163,20 @@ describe('collection et monnaie à construire', () => {
 		expect(node.errors).toEqual([]);
 		expect(node.spec!.reserve).toEqual(before.spec!.reserve);
 	});
+
+	// Chantier monnaie-centimes : la réserve par défaut dépend de la somme (décision 5) ;
+	// masquée, la somme ne la donne plus : l'énoncé écrit la réserve de l'écran d'entraînement
+	for (const build of ['3,45', '35']) {
+		it(`monnaie sans réserve: (construire: ${build}) : la même réserve`, () => {
+			const { full, statement } = sent(`Paie.\n\n${block('monnaie', `construire: ${build}`)}`);
+			expect(statement).toContain('construire: ?');
+			expect(statement).not.toContain(build);
+			const before = parseMonnaieContent(body(full.statement, 'monnaie'));
+			const node = parseMonnaieContent(body(statement, 'monnaie'));
+			expect(node.errors).toEqual([]);
+			expect(node.spec!.reserve).toEqual(before.spec!.reserve);
+		});
+	}
 });
 
 describe('figure à colorier (```partage)', () => {

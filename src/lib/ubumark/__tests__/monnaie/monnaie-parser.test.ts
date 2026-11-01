@@ -134,7 +134,7 @@ describe('bloc ```monnaie — erreurs (le nœud reste, avec son message)', () =>
 		const node = parse('pièces: 3');
 		expect(node.spec).toBeNull();
 		expect(messages(node)).toEqual([
-			"Ligne 1 : 3 € n'existe pas (pièces : 1, 2 ; billets : 5, 10, 20, 50, 100)"
+			"Ligne 1 : 3 € n'existe pas (pièces : 1 c, 2 c, 5 c, 10 c, 20 c, 50 c, 1 €, 2 € ; billets : 5 €, 10 €, 20 €, 50 €, 100 €, 200 €, 500 €)"
 		]);
 	});
 
@@ -145,16 +145,18 @@ describe('bloc ```monnaie — erreurs (le nœud reste, avec son message)', () =>
 		expect(messages(parse('pièces: 5'))).toEqual([expect.stringContaining('5 € est un billet')]);
 	});
 
-	it.each(['50c', '0,50', '1.20'])('centimes « %s » : pas encore disponibles', (value) => {
-		const node = parse(`pièces: ${value}`);
-		expect(node.spec).toBeNull();
-		expect(messages(node)).toEqual([expect.stringContaining('pas encore disponible')]);
+	it.each(['50c', '0,50', '0.5'])('pièce de 50 c écrite « %s »', (value) => {
+		expect(parse(`pièces: ${value}`).spec?.sets).toEqual([{ notes: [], coins: [0.5] }]);
 	});
 
-	it.each([200, 500])('billet de %i € : réservé', (value) => {
-		expect(messages(parse(`billets: ${value}`))).toEqual([
-			expect.stringContaining('pas encore disponible')
+	it('somme qui n’est pas une pièce : « 1,20 »', () => {
+		expect(messages(parse('pièces: 1.20'))).toEqual([
+			expect.stringContaining("1 € et 20 c n'existe pas")
 		]);
+	});
+
+	it.each([200, 500])('billet de %i € (CE1)', (value) => {
+		expect(parse(`billets: ${value}`).spec?.sets).toEqual([{ notes: [value], coins: [] }]);
 	});
 
 	it.each(['2,5×1', '-1×2', 'trois×2', '{{n}}×2'])('quantité illisible : « %s »', (token) => {
@@ -168,10 +170,12 @@ describe('bloc ```monnaie — erreurs (le nœud reste, avec son message)', () =>
 		expect(parse('billets: {{b}}').spec).toBeNull();
 	});
 
-	it('plus de 100 € par ensemble', () => {
-		const node = parse('billets: 100 ; 10', 'pièces: 1 ; 2');
+	it('plus de 1 000 € par ensemble', () => {
+		const node = parse('billets: 500 500 ; 10', 'pièces: 1 ; 2');
 		expect(node.spec).toBeNull();
-		expect(messages(node)).toEqual([expect.stringContaining('101 € (ensemble 1) : 100 € au plus')]);
+		expect(messages(node)).toEqual([
+			expect.stringContaining('1 001 € (ensemble 1) : 1 000 € au plus')
+		]);
 	});
 
 	it('plus de 30 objets par ensemble, même écrits un à un ou d’un coup', () => {
@@ -182,9 +186,11 @@ describe('bloc ```monnaie — erreurs (le nœud reste, avec son message)', () =>
 	});
 
 	it('montant hors bornes ou illisible', () => {
-		expect(messages(parse('montant: 101'))).toEqual([expect.stringContaining('de 0 à 100')]);
-		expect(messages(parse('montant: 4,50'))).toEqual([
-			expect.stringContaining('pas encore disponible')
+		expect(messages(parse('montant: 1001'))).toEqual([
+			expect.stringContaining('de 0 à 1 000 € au plus')
+		]);
+		expect(messages(parse('montant: quatre'))).toEqual([
+			expect.stringContaining('écris un montant en euros et centimes')
 		]);
 	});
 

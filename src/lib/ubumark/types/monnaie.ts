@@ -2,12 +2,14 @@
  * Bloc ```monnaie — types
  * =======================
  *
- * Pièces et billets fictifs en euros, à lire ou comparer (CP-043, CP-042,
- * CP-044 et CP-071 en partie ; phase 0 : `docs/archive/wip/monnaie-progress.md`) :
+ * Pièces et billets fictifs en euros et centimes, à lire ou comparer (CP-043,
+ * CP-042, CP-044 et CP-071 en partie ; CE1-054 à 057, 086 ; phase 0 :
+ * `docs/archive/wip/monnaie-progress.md`, centimes :
+ * `docs/wip/monnaie-centimes-progress.md`) :
  *
  * ```monnaie
  * billets: 20 10 10 ; 1×50
- * pièces: 3×2 1 ;
+ * pièces: 3×2 1 50c ;
  * disposition: rangé | mélangé
  * légendes: Léa ; Tom
  * ```
@@ -30,14 +32,19 @@ import type { BaseNode } from './ast';
 // VALEURS
 // ============================================================================
 
-/** Pièces de la v1, en euros (décision 2) */
-export const MONNAIE_COINS = [2, 1] as const;
+/**
+ * Pièces, en euros, de la plus grande à la plus petite : 1 et 2 € (CP), puis les
+ * six pièces de centimes (CE1, chantier `docs/wip/monnaie-centimes-progress.md`).
+ * Les valeurs restent en euros dans le nœud (`0.5` = 50 c) ; tout calcul se fait
+ * en centimes entiers (`utils/monnaie-valeurs.ts`)
+ */
+export const MONNAIE_COINS = [2, 1, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01] as const;
 
-/** Billets de la v1, en euros (décision 2) */
-export const MONNAIE_NOTES = [100, 50, 20, 10, 5] as const;
+/** Pièces de centimes, de la plus grande à la plus petite */
+export const MONNAIE_CENT_COINS = [0.5, 0.2, 0.1, 0.05, 0.02, 0.01] as const;
 
-/** Billets qui existent mais viendront avec un lot CE1 (plafond 1 000 €) */
-export const MONNAIE_RESERVED_NOTES = [200, 500] as const;
+/** Billets, en euros, du plus grand au plus petit (200 et 500 € : CE1, plafond 1 000 €) */
+export const MONNAIE_NOTES = [500, 200, 100, 50, 20, 10, 5] as const;
 
 /**
  * Largeur d'un ensemble « pleine largeur », en cm : 8 cm (écran et PDF), 10 cm
@@ -52,13 +59,16 @@ export const MONNAIE_SIZE_CM = { min: 2, max: 12, default: 8, choice: 10 } as co
 /** Ensembles d'un bloc (comparaison) */
 export const MONNAIE_MAX_SETS = 3;
 
-/** Bornes d'un ensemble : CP, montants jusqu'à 100 € ; 30 objets au plus (décision 5) */
-export const MONNAIE_LIMITS = { total: 100, objects: 30 } as const;
+/** Bornes d'un ensemble : 1 000 € (CE1, décision c2-1) ; 30 objets au plus (décision 5) */
+export const MONNAIE_LIMITS = { total: 1000, objects: 30 } as const;
 
-/** Somme à construire (`construire:`), en euros */
-export const MONNAIE_BUILD_RANGE = { min: 1, max: 100 } as const;
+/** Somme à construire (`construire:`), en euros : de 1 c à 1 000 € */
+export const MONNAIE_BUILD_RANGE = { min: 0.01, max: 1000 } as const;
 
-/** Coupures permises par défaut d'un bloc à construire, de la plus grande à la plus petite */
+/**
+ * Coupures permises par défaut d'un bloc à construire, de la plus grande à la plus
+ * petite ; une somme à centimes y ajoute `MONNAIE_CENT_COINS`
+ */
 export const MONNAIE_DEFAULT_RESERVE = [50, 20, 10, 5, 2, 1] as const;
 
 /** Longueur maximale d'une légende, en caractères */
