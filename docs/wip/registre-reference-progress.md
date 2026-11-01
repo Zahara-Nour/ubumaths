@@ -6,19 +6,19 @@ status: phase 0 tranchée, PR 0 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR 0 codée, pas encore ouverte._
+_Mis à jour le 2026-11-01, PR 0 codée et poussée, pas encore ouverte (aucune PR)._
 
-- **État** : PR 0 commitée et poussée sur la branche : champ `answer` du registre, corpus de
-  85 lignes, deux tests (registre, Atelier) avec listes « connues fausses », doc à jour. Page à
-  cocher publiée : https://claude.ai/artifact/RSWgLdsubFwGayPgQgCETo (base `verdicts`).
-- **Prochaine action** : lire la base `verdicts` (ArtifactData), appliquer les corrections de
-  David au corpus et aux listes, relancer les tests, puis ouvrir la PR 0 et merger (CI verte).
-- **En attente de David** : la validation des attendus (11/85 relus le 2026-11-01 ; 14 fiches
-  posent une question).
-- **Règle de David (2026-11-01)** : a priori la réponse de l'Atelier fait foi (temps passé
-  dessus) ; un écart se cite (règle écrite) et se tranche ensemble. `deriver-10` corrigé ainsi.
-- **Pièges en cours** : `tsx` lance `WebReplEngine` seul (< 1 s), pas l'Atelier (`$state is not
-defined`) ; une sonde de l'Atelier passe par vitest (fichier jetable sous `src/`, ~2 s).
+- **État** : branche à jour sur origin, tests verts (178), doc à jour. Page à cocher (v10) :
+  https://claude.ai/artifact/RSWgLdsubFwGayPgQgCETo, base `verdicts` (lire avec ArtifactData).
+  Relu : `deriver-01…11` ; `deriver-10` corrigé ; `deriver-03`/`11` en « à corriger » avec ma
+  réponse (champ `reponse`) — attendus gardés, en attente qu'il les repasse en « juste ».
+- **Prochaine action** : relire `verdicts`, appliquer les corrections au corpus et aux listes
+  `connues-fausses.ts`, relancer les tests ; quand les 85 sont « juste », ouvrir la PR 0, merger.
+- **En attente de David** : la relecture des fiches restantes (`deriver-12` → `refus-04`).
+- **Règles du jour** : l'Atelier fait foi a priori (écart = règle citée + question) ; solutions
+  en ordre croissant ; juge du corpus = E1 (`checkForm` sans remarque), pas de juge strict.
+- **Pièges en cours** : sonde de l'Atelier = fichier vitest jetable sous `src/` (~2 s) ; la page
+  rend les formules avec MathJax SVG (`fontCache: 'local'`, sans MathML caché).
 - **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
 
 ---
