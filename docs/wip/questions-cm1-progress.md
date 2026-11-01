@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 4._
+_Mis à jour le 2026-11-01, phase 0 du lot 4b proposée._
 
 - **État** : lot 4 (décimaux) FINI — 8 modèles publiés en prod (8/8 « OK » sur la page à cocher, 8 `published` relus au MCP, rangés et tagués).
-- **Prochaine action** : phase 0 du **lot 4b — calcul posé** (165, 052 décimaux ; 050, 051, 053 entiers et division euclidienne ; bloc ```operation), décidé au § 12 bis ; puis 5 grandeurs (ordre du § 4 bis).
-- **En attente de David** : rien.
+- **Prochaine action** : après la réponse de David, écrire le lot 4b — calcul posé (6 modèles, § 13 : 050, 165 ×2, 051, 052, 053 ; bloc ```operation) ; puis 5 grandeurs (ordre du § 4 bis).
+- **En attente de David** : les 3 questions du § 13 (poser fait par le bloc ; deux méthodes de soustraction ; 050 / 165 sous les sous-notions).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
 - **Worktree / branche** : aucun (retiré après #2124).
 
@@ -737,3 +737,52 @@ juste après le lot 4.
 - Page à cocher : 8 verdicts « OK », sans commentaire (comptés dans `verdicts`). Simulation
   `publier-lot --dir scripts/questions/cm1-4` : 8 brouillons passent ; `--publier` lancé par David ;
   8 `published` relus au MCP, toujours rangés et tagués. Lot 4 fini.
+
+## 13. Lot 4b — calcul posé : phase 0 (à valider)
+
+Relevé MCP du 2026-11-01 : les 5 points ont 0 modèle. Nœuds des points : 050 et 165 sur la **notion**
+« Nombres et calculs > Décimaux : calculs » ; 052 sur « Décimaux : calculs › multiplication » (26 modèles,
+niveaux 1 à 9) ; 051 sur « Entiers : multiplication › calcul posé » (vide) ; 053 sur « Entiers : division ›
+calcul posé » (vide ; la division posée de 6e `3c9284c5` est rangée sous « division euclidienne »). Modèles
+posés en prod : CP-016, CE1-022, CE1-100 (deux méthodes), 6-123 ; aucune multiplication posée nulle part.
+Le CE2 (019, multiplication posée) n'est pas encore écrit.
+
+Bornes `cycle3.json`, CM1 : 050 décimaux à deux décimales au plus, entiers mêlés, trois termes au plus
+(56,75 + 234 + 0,8) ; 165 deux décimales au plus (34,5 − 2,58) ; 051 trois chiffres × trois chiffres
+(876 × 208), produit ≤ 999 999 ; 052 facteur entier 2 à 9, décimal à deux décimales au plus (7 × 46,55 ;
+8 × 17,3) ; 053 diviseur 2 à 9, dividende entier de cinq chiffres au plus (9 456 ÷ 7).
+
+Outil : ` ```operation ` (en prod), tout ce qu'il faut y est : trois termes et virgules alignées
+(addition), `méthode: compensation | cassage` (soustraction), virgule du produit posée par l'élève et
+« virgule oubliée » signalée (multiplication), potence à deux cases quotient + reste (division
+euclidienne). Retenues à remplir par défaut (aide, jamais jugée). Réponse = cases du résultat seules ;
+énoncé « Pose et calcule. » (CE1) ou « Pose et effectue la division euclidienne. » (6e).
+
+| #   | Point   | Nœud (sous-notion)                     | Modèle                                                | Variations, plages                                                                                                                                                                                                                                                                                    | Niveau |
+| --- | ------- | -------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1   | CM1-050 | Décimaux : calculs › addition          | Poser une addition de nombres décimaux                | V1 deux termes à deux décimales, retenues (45,78 + 26,57) ; V2 décimales en nombre différent (34,5 + 2,58) ; V3 entier + décimal (234 + 5,68) ; V4 trois termes, entier mêlé (56,75 + 234 + 0,8) ; parties entières ≤ 999. Specs : retenue oubliée, chiffres alignés à droite (6,03 pour 34,5 + 2,58) | 8      |
+| 2   | CM1-165 | Décimaux : calculs › soustraction      | Poser une soustraction de décimaux (par compensation) | V1 mêmes décimales, une ou deux retenues (52,34 − 17,58) ; V2 le premier a moins de décimales (34,5 − 2,58) ; V3 entier − décimal (25 − 3,46) ; premier ≤ 999,99. Specs : plus petit chiffre ôté du plus grand (32,08 pour 34,5 − 2,58)                                                               | 7      |
+| 3   | CM1-165 | Décimaux : calculs › soustraction      | Poser une soustraction de décimaux (par cassage)      | mêmes variations, `méthode: cassage`                                                                                                                                                                                                                                                                  | 8      |
+| 4   | CM1-051 | Entiers : multiplication › calcul posé | Poser une multiplication de deux entiers              | V1 2 chiffres × 2 chiffres (48 × 37) ; V2 3 × 2 (347 × 26) ; V3 3 × 3 avec un 0 au milieu du multiplicateur (876 × 208 : ligne du 0 sautée). Specs : décalage oublié (2 776 pour 347 × 26), retenue oubliée                                                                                           | 1      |
+| 5   | CM1-052 | Décimaux : calculs › multiplication    | Poser la multiplication d'un décimal par un entier    | V1 une décimale (8 × 17,3) ; V2 deux décimales (7 × 46,55) ; V3 produit terminé par 0 (4 × 12,35 = 49,40, « 49,4 » juste) ; entier 2 à 9, partie entière 1 à 99. Specs : virgule oubliée (32 585), virgule mal placée (3 258,5)                                                                       | 10     |
+| 6   | CM1-053 | Entiers : division › calcul posé       | Poser une division euclidienne                        | V1 3 chiffres, quotient à 2 chiffres (157 ÷ 6) ; V2 4 chiffres (9 456 ÷ 7) ; V3 un 0 au quotient (2 418 ÷ 4 = 604 reste 2) ; V4 5 chiffres (23 875 ÷ 6) ; diviseur 2 à 9. Specs : reste ≥ diviseur, 0 oublié au quotient (64)                                                                         | 1      |
+
+Corrigés : étapes colonne par colonne (retenues, compensation ou cassage), produits partiels écrits pour
+la multiplication, « on compte les décimales » pour 052, égalité `N = (d × q) + r` pour 053.
+
+Questions :
+
+1. **« Poser »** : le bloc pose l'opération lui-même (virgules alignées) ; l'élève effectue. Aligner les
+   virgules, la vraie difficulté de 050 et 165, n'est donc pas évalué (même limite qu'au CE1 et en 6e).
+   Reco : l'accepter, le corrigé commence par « on aligne les virgules ». Un geste « poser soi-même »
+   serait un outil neuf (classe C, chantier à part).
+2. **Soustraction : un modèle par méthode** (compensation, cassage), comme au CE1, le prof choisit celle de
+   sa classe ? Ou un seul (compensation, défaut du bloc) ? Reco : deux, comme au CE1.
+3. **050 et 165 rangés sous « addition » / « soustraction »** de « Décimaux : calculs » plutôt que sur la
+   notion nue : leur point est sur la notion, la règle des tags l'admet (point sur le nœud du modèle ou sa
+   notion, vérifié dans `question_template_points_check_rules` en prod). Reco : sous-notions.
+
+À noter : « Entiers : multiplication › calcul posé » est vide ; le CM1 y prend le niveau 1, la
+multiplication posée du CE2 (019) devra s'insérer avant (renumérotation par sa propre migration).
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
