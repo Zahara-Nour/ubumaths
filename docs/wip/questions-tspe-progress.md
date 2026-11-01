@@ -14,9 +14,11 @@ _Mis à jour le 2026-11-01, lot 0-dénombrement commencé (§ 11)._
 
 - **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo **publiés** (107 modèles).
   Lot 0-dénombrement : 26 brouillons relevés, instantané `scripts/questions/tspe-0-denombrement/` (§ 11).
-- **Prochaine action** : vérifier les 26 (specs, tirages contre les bornes TSPE et TCOMP), corriger, page à cocher.
+- **Prochaine action** : #2110 (instantané + C1-C9) à merger ; relecture de David (page à cocher, § 11), Q-D1 ; puis
+  David lance `create-questions --publier --mettre-a-jour` et `publier-lot` (simulation puis `--publier`).
   Lots suivants : géométrie dans l'espace, probabilités. Plus tard : migration Q3.
-- **En attente de David** : rien.
+- **En attente de David** : relecture des 26 fiches (page à cocher, § 11) et Q-D1 (ordre des niveaux, coefficients
+  binomiaux).
 - **Pièges en cours** : `create-questions` et `publier-lot`, même en simulation → David (le mode auto les refuse) ;
   partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
   worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ; le worktree n'a pas
@@ -540,3 +542,8 @@ proposé : chemins 1, cas particuliers 2, symétrie 3, Pascal 4. Recommandé : o
 
 **Pour la migration Q3** : ef3c495c → 316, 07ebdcbe → 614 (D3, inchangé) ; 4dcbae71 pourrait aussi porter 288
 (déjà là) ; rien de nouveau.
+
+**Page à cocher** : https://claude.ai/artifact/4t7Q3PGfNDJwymHikGujKh (26 fiches, aucune alerte), collection `verdicts`
+vide à la publication. Les 9 retouches ne sont pas encore en base : la page montre déjà les fichiers corrigés.
+
+**PR** : #2110.
