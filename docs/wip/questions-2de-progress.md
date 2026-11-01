@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2139 (migration du lot 6, mergée)._
+_Mis à jour le 2026-11-01, après la publication du lot 6 (§ 43)._
 
-- **État** : lot 6 : les 20 modèles en prod en brouillon (§ 41) ; migration nœud + tag mergée (#2139), audit
-  sans finding bloquant, PAS ENCORE jouée en prod.
-- **Prochaine action** : après le `db push` de David, vérifier par MCP (20 `draft`, bon nœud, un seul tag,
-  `updated_at` préservé), puis page à cocher des 20 (trois dossiers, préfixes `a-`/`b-`/`c-`).
-- **En attente de David** : `! pnpm exec supabase db push --include-all` (la prod a déjà 20261101215000, venue
-  d'une autre session ; à blanc : seule 20261101213600 part).
-- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main`, des worktrees ET de la prod ;
-  `page-a-cocher.ts` ne prend qu'un `--dir` ; `db push` et `--publier` → David avec `!`.
-- **Worktree / branche** : aucun (retiré après #2139).
+- **État** : lots 1 à 6 publiés (lot 6 : 20 modèles, #2106, #2113, #2134, migration #2139, correctif #2152).
+- **Prochaine action** : lot 7 « Signes et variations » (§ 4 ; § 3.9, plus 2-329 déplacé du lot 6, L6-b) :
+  relevé MCP, puis phase 0 à faire valider par David.
+- **En attente de David** : rien.
+- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main`, des worktrees ET de la prod
+  (sinon `db push --include-all`, qui emporte aussi les migrations mergées par d'autres sessions) ;
+  `page-a-cocher.ts` voit des défauts de fenêtre que `sonde-courbes` ne voit pas : la lancer avant la PR ;
+  `db push`, `--publier` → David avec `!` ; worktree neuf → `pnpm exec svelte-kit sync`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1029,3 +1029,114 @@ une page à cocher.
 - #2139 : CI verte, `security-auditor` sans finding bloquant (code identique au lot 5, état prod relu), mergée.
   `db:migrate` refusé : la prod a déjà 20261101215000 (1re spé, autre session) → `--include-all` ; à blanc :
   seule 20261101213600 part ; le `db push` réel est refusé par le classifieur, à lancer par David.
+- `db push --include-all` lancé par David : 20261101213600 jouée (avec 20261101215100 du CE1, mergée entre-temps
+  sur `main` ; session CE1 prévenue). MCP : les 20 en `draft`, bon nœud, un seul tag, le bon, `updated_at` préservé.
+
+## 42. Lot 6, page à cocher et fenêtre du 6 C-06 (2026-11-01)
+
+- `page-a-cocher.ts` sur les 20 (copie, préfixes `a-`/`b-`/`c-`) : une alerte sur 6 C-06 (f(x) < k, méthode
+  adaptée) — l'axe des abscisses, où l'ensemble est repassé en vert, sort de la fenêtre quand k et c sont loin de
+  0 (`sonde-courbes` ne le voit pas). Fenêtre y élargie pour contenir 0 ; specs 11/11, sonde 0 problème, page
+  sans alerte. Fichier corrigé à remettre en prod : `create-questions --mettre-a-jour` (David).
+- Page à cocher (20 fiches, sans alerte après le correctif) : https://claude.ai/artifact/H73An65fF3K7fkeZRMpYU5
+- #2152 mergée (CI : `wrapDynamicImport`, vert à la relance) ; 06 remis en prod par David
+  (`create-questions --mettre-a-jour`) ; MCP : fenêtre corrigée en base, toujours rangé et tagué.
+
+## 43. Lot 6 publié (2026-11-01)
+
+- David valide le lot sur la page. Simulation `publier-lot` des trois dossiers : 8 + 6 + 6 passent le contrôle.
+- Publication par David (`publier-lot --publier`, trois dossiers) : 8/8, 6/6, 6/6 ; MCP : les 20 `published`.
+- Leçon : lancer `page-a-cocher.ts` en local AVANT la PR des fichiers (alerte de fenêtre vue trop tard ici,
+  d'où un correctif et un `--mettre-a-jour`).
+
+## 44. Lot 7 « Signes et variations » : relevé et phase 0 (proposée le 2026-11-01, à valider)
+
+**Relevé MCP (prod, 2026-11-01)** : **21 points sans modèle** — 329, 475, 476, 352, 268, 426 (signes) ; 330,
+446, 337, 449, 450, 451 (tableaux de signes) ; 345, 473, 346, 349, 350, 354, 355, 356, 477 (variations,
+extrémums). Déjà couverts : 2-347 (09f0c9ec), 2-474 (ae0ad163), **2-348** (7c0ee046, « sens de variation
+d'une fonction affine », publié : le § 3.9 le comptait à tort sans modèle). **2-350** n'a aucun modèle (le
+§ 6 le prévoyait au lot 2 bis, il n'y a pas été écrit). **2-357** est un point-démonstration (bornes) → P,
+sans modèle (Q2), et non A comme l'écrivait le § 3.9. 2-351 hors appli (Q6) ; 353, 358-363 = P.
+
+Nœuds des points : Algèbre › Inéquations : produit et quotient › tableau de signes (268, 426, 330, 446, 337,
+449, 450, 451) ; Fonctions › Généralités › signe (329, **476**) · › variations (345, 473, 349, 356, 477) ·
+› extremums (346, 350) ; Fonctions affines › variations et signe (352) ; Fonction valeur absolue (notion : 475) · › variations (354) ; Fonction carré › variations (355).
+
+**Bornes** : facteurs = expressions affines et fonctions de référence, pas de trinôme non factorisé (268, 426,
+330, 446, 337, 449-451) ; quotient : valeur interdite exclue ; quatre sens (l2-3) ; fonctions de référence =
+affines, carré, inverse, valeur absolue — ni √ ni cube (l2-2) ; 352 : affines seulement ; 345, 346 : sur un
+intervalle.
+
+**Outils** (en prod) : ` ```variation ` (signes et flèches, `{{…}}` accepté), ` ```courbe `, case choix (avec
+dessins de courbes dans les choix), case `intervalles`. Patrons : 1re spé b48d72dd (signe en case choix),
+T_SPE 21840f6c (tableau ↔ courbes en case choix). Q4 : **cases sous le tableau**.
+
+**Phase 0 proposée** : un modèle par point, niveau `['2']`, brouillons, 21 modèles en trois PR de fichiers.
+
+Lot 7 A « Signes » (6) :
+
+1. **2-329 · Signe des fonctions de référence** : « pour x < 0, 1/x est… », « x² est… sur ℝ », « |x| … »
+   (case choix : strictement positif / positif ou nul / négatif / change de signe) ; variation : signe d'une
+   image (1/(−3), (−2)², |−5|) sans calcul.
+2. **2-475 · Signe de |x|** : tableau de signes de |x| à choisir (case choix entre 4 tableaux) ; « |x| = 0
+   pour x = ? ».
+3. **2-476 · Signe de x²** : même forme ; piège −x² et (x − a)² en niveau 2.
+4. **2-352 · Affine : variations, signe, droite** : f(x) = mx + p ; trois cases : sens de variation (choix),
+   valeur qui annule (−p/m), signe de f sur ]−∞ ; −p/m[ (choix + / −) ; niveau 2 : la droite donnée en
+   ` ```courbe `, mêmes cases.
+5. **2-268 · Signe de A(x)B(x), sans tableau** : (ax + b)(cx + d) en un x donné, puis sur un intervalle où
+   les deux facteurs gardent leur signe (règle des signes) ; case choix + / − / 0.
+6. **2-426 · Signe de A(x)/B(x), sans tableau** : même forme, valeur interdite comprise (« n'existe pas »).
+
+Lot 7 B « Tableaux de signes, résolutions » (6) — le tableau des facteurs est donné en ` ```variation `,
+réponses en cases dessous :
+
+7. **2-330 · Tableau de signes d'un produit** : (ax + b)(cx + d), puis k(ax + b), puis x(ax + b) ; cases :
+   valeurs qui annulent (dans l'ordre), signe sur chacun des trois intervalles (case choix + / −).
+8. **2-446 · Tableau de signes d'un quotient** : (ax + b)/(cx + d) ; cases : valeur qui annule, valeur
+   interdite, signes ; erreur typique : 0 mis sous la valeur interdite.
+9. **2-337 · f(x) = 0, f produit** : tableau complet donné → S = ? (case `intervalles`, `{a ; b}`).
+10. **2-449 · f(x) = 0, f quotient** : tableau complet donné → S = {a} (piège : la valeur interdite n'est pas
+    solution).
+11. **2-450 · f(x) > 0, f produit** : quatre sens, tableau complet donné → S en réunion d'intervalles ;
+    niveau 2 : seulement les facteurs donnés, signe du produit à faire.
+12. **2-451 · f(x) > 0, f quotient** : quatre sens ; crochet toujours ouvert à la valeur interdite.
+
+Lot 7 C « Variations et extrémums » (9) :
+
+13. **2-345 · Croissante, décroissante, monotone sur un intervalle** : ` ```courbe ` ; « f est … sur
+    [a ; b] » (case choix : croissante / décroissante / ni l'une ni l'autre) ; variation : traduction
+    « a < b ⇒ f(a) ? f(b) ».
+14. **2-473 · Tableau de variations** : tableau donné → « sur quel intervalle f est-elle croissante ? »
+    (case `intervalles`), image d'une borne lue.
+15. **2-346 · Maximum, minimum sur un intervalle** : tableau donné → maximum de f sur [a ; b] (valeur),
+    atteint en x = ? ; sur un sous-intervalle (le max n'est plus le même).
+16. **2-349 · Courbe ↔ tableau** : courbe donnée → choisir le tableau (case choix entre 4 tableaux) ; et
+    l'inverse (tableau → choisir la courbe, comme 21840f6c).
+17. **2-350 · Extrémums lus sur la courbe** : ` ```courbe ` sur [a ; b] → max, min, et où.
+18. **2-354 · Variations de |x|** : tableau de variations à choisir ; « |x| est décroissante sur ? »
+    (case `intervalles`).
+19. **2-355 · Variations de x²** : même forme ; minimum 0 atteint en 0.
+20. **2-356 · Comparer f(a) et f(b) numériquement** : f carré, inverse, |x| ; a, b de même signe puis de
+    signes contraires (carré : comparer les distances à 0) ; case choix <, =, > ; corrigé par le sens de
+    variation sur l'intervalle qui contient a et b.
+21. **2-477 · Comparer f(a) et f(b) graphiquement** : ` ```courbe ` de la fonction, points d'abscisses a
+    et b marqués ; case choix <, =, >.
+
+- **Corrigé** : tableau complet dessiné ; règle des signes écrite ; pour les variations, la propriété citée.
+- **Erreurs typiques en specs** : ordre des valeurs qui annulent inversé ; 0 sous la valeur interdite ;
+  valeur interdite incluse dans S ; crochet fermé en ±∞ ; sens non changé pour m < 0 ; x² < 0 « pour
+  x < 0 » ; (−3)² < (−2)² « car −3 < −2 ».
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L7-a — 2-268 / 2-330 et 2-426 / 2-446** : deux points par forme (Algèbre et Fonctions, même nœud).
+  → Je recommande **268, 426 = signe sans tableau** (en un point, sur un intervalle) et **330, 446 = le
+  tableau**.
+- **L7-b — Signe dans une case** : case choix « + / − » par intervalle (une case par intervalle).
+  → Je recommande **oui** (Q4 : cases sous le tableau) ; le tableau à compléter reste le futur outil.
+- **L7-c — 2-357 et 2-348** : 2-357 passe en P (point-démonstration), 2-348 est déjà couvert (7c0ee046).
+  → Je recommande **aucun modèle neuf** pour l'un comme pour l'autre.
+- **L7-d — Découpage** : 7 A (6), 7 B (6), 7 C (9) : trois PR de fichiers, une migration, une page à cocher.
+  → Je recommande **oui** (comme le lot 6).
