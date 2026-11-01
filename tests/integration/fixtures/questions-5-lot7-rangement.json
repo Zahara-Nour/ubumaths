@@ -1,0 +1,68 @@
+[
+	{
+		"id": "06df72fd-21ad-4c0e-9f3b-13dcfa03a015",
+		"noeudAvant": null,
+		"noeudApres": "Proportionnalité > Situations de proportionnalité > caractérisation",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-087"]
+	},
+	{
+		"id": "2cc9db57-609f-4b07-9749-3ca403d9d2a3",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Généralités sur les fonctions",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-098"]
+	},
+	{
+		"id": "950cfa36-7eb8-44ba-9912-21c5e42d3bd9",
+		"noeudAvant": null,
+		"noeudApres": "Proportionnalité > Pourcentages > calculs de pourcentages",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-140"]
+	},
+	{
+		"id": "ade95ae4-5374-4bb3-b31b-02b61e3c1ccc",
+		"noeudAvant": null,
+		"noeudApres": "Proportionnalité > Pourcentages > calculs de pourcentages",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-086"]
+	},
+	{
+		"id": "ef08a256-64ee-49d4-aad7-d87a8a9d7d02",
+		"noeudAvant": null,
+		"noeudApres": "Proportionnalité > Pourcentages > calculs de pourcentages",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-085"]
+	},
+	{
+		"id": "fa0c8afd-e769-4717-ae69-a8c96f9cca27",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Généralités sur les fonctions",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-092"]
+	}
+]

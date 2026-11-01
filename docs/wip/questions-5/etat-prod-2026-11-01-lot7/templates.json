@@ -1,0 +1,1224 @@
+[
+	{
+		"id": "06df72fd-21ad-4c0e-9f3b-13dcfa03a015",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 90,
+		"theme": "Proportionnalité",
+		"domain": "Situations de proportionnalité",
+		"subdomain": "Définition",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0;2;4"
+					}
+				],
+				"statement": "Dans quelles situations les deux grandeurs sont-elles proportionnelles ?\n\n```choix\nplusieurs: oui\n- Le prix payé et la masse de pommes achetée, à $2~\\unit{€}$ le kilogramme.\n- La taille d'un enfant et son âge.\n- La quantité de farine et le nombre de crêpes, en suivant toujours la même recette.\n- Le prix d'une course en taxi et la distance parcourue, avec $3~\\unit{€}$ de prise en charge puis $2~\\unit{€}$ par kilomètre.\n- Sur une carte, la distance mesurée sur la carte et la distance réelle.\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Situation de proportionnalité.** Deux grandeurs sont proportionnelles quand on obtient l'une en multipliant l'autre toujours par le même nombre : si l'une double, l'autre double aussi, et pour $0$ de l'une, on a $0$ de l'autre.",
+						"Pommes : $2$ kg coûtent $4~\\unit{€}$, $4$ kg coûtent $8~\\unit{€}$ : on multiplie toujours par $2$. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$.",
+						"Crêpes : pour deux fois plus de crêpes, il faut deux fois plus de farine. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$. Carte : l'échelle multiplie toutes les distances par le même nombre. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$.",
+						"Taille et âge : un enfant de $10$ ans ne mesure pas deux fois la taille qu'il avait à $5$ ans. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$. Taxi : pour $0$ km, on paie déjà $3~\\unit{€}$. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1;3;4"
+					}
+				],
+				"statement": "Dans quelles situations les deux grandeurs sont-elles proportionnelles ?\n\n```choix\nplusieurs: oui\n- Le prix à la piscine et le nombre d'entrées, avec un abonnement de $20~\\unit{€}$ puis $4~\\unit{€}$ par entrée.\n- La distance parcourue et la durée du trajet, pour un train qui roule toujours à $120~\\unit{km/h}$.\n- La masse d'une personne et sa taille.\n- Le prix payé et le nombre de cahiers achetés, à $2~\\unit{€}$ le cahier.\n- La quantité de sucre et le nombre de gâteaux, en suivant toujours la même recette.\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Situation de proportionnalité.** Deux grandeurs sont proportionnelles quand on obtient l'une en multipliant l'autre toujours par le même nombre : si l'une double, l'autre double aussi, et pour $0$ de l'une, on a $0$ de l'autre.",
+						"Train : en $2$ h, il parcourt $240$ km ; en $3$ h, $360$ km : on multiplie toujours par $120$. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$. Cahiers et gâteaux : deux fois plus de cahiers coûtent deux fois plus cher, deux fois plus de gâteaux demandent deux fois plus de sucre. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$.",
+						"Piscine : $1$ entrée coûte $24~\\unit{€}$, $2$ entrées $28~\\unit{€}$, pas le double. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$. Masse et taille : deux personnes de même taille n'ont pas forcément la même masse. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0;2"
+					}
+				],
+				"statement": "Dans quelles situations les deux grandeurs sont-elles proportionnelles ?\n\n```choix\nplusieurs: oui\n- Le prix d'un plein d'essence et le nombre de litres, à $1{,}80~\\unit{€}$ le litre.\n- La température extérieure et l'heure de la journée.\n- Sur un plan à l'échelle $\\dfrac{1}{100}$, la longueur d'une pièce sur le plan et sa longueur réelle.\n- La distance parcourue par une randonneuse et la durée de sa marche, avec des pauses, des montées et des descentes.\n- Le prix d'une location de vélo et le nombre d'heures, avec $5~\\unit{€}$ d'assurance puis $3~\\unit{€}$ par heure.\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**Situation de proportionnalité.** Deux grandeurs sont proportionnelles quand on obtient l'une en multipliant l'autre toujours par le même nombre : si l'une double, l'autre double aussi, et pour $0$ de l'une, on a $0$ de l'autre.",
+						"Essence : $10$ litres coûtent $18~\\unit{€}$, $20$ litres $36~\\unit{€}$. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$. Plan : chaque longueur réelle vaut $100$ fois celle du plan. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$.",
+						"Température : elle monte puis redescend dans la journée. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$. Randonnée : la vitesse change (pauses, montées), la distance n'est pas la durée multipliée par un même nombre. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$. Vélo : pour $0$ h, on paie déjà $5~\\unit{€}$. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Reconnaître des situations de proportionnalité",
+		"description": "Dire si deux grandeurs sont proportionnelles dans des contextes concrets : prix au kilo, recette, vitesse constante, échelle (oui) ; âge et taille, taxi, abonnement (non)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0;2;4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Série 1 : 0, 2, 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0;2;3;4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : le taxi",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0;2"],
+				"expected": {
+					"status": "unoptimal_form"
+				},
+				"variables": {},
+				"description": "Oubli de la carte : partiel",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1;3;4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Série 2 : 1, 3, 4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0;1;3;4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : l'abonnement",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0;2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Série 3 : 0, 2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0;2;3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : la randonnée",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "2cc9db57-609f-4b07-9749-3ca403d9d2a3",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"products": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["5"],
+		"delay": 60,
+		"theme": "Calcul littéral",
+		"domain": "Écrire",
+		"subdomain": "Formules",
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}n"
+					}
+				],
+				"statement": "Un cahier coûte ${{k}}~\\unit{€}$. Écris le prix $p$ à payer, en euros, pour $n$ cahiers.\n\n$p = ?$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Écrire une formule.** On fait le calcul avec un exemple (pour $2$, pour $3$…), puis on remplace le nombre par la lettre. On peut supprimer le signe $\\times$ devant une lettre : $3 \\times n$ s'écrit $3n$.",
+						"Pour $2$ cahiers : ${{k}} \\times 2$ ; pour $n$ cahiers : ${{k}} \\times n$, donc $p = \\textcolor{{{color:primary.0}}}{{{k}}n}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}+{{b}}n"
+					}
+				],
+				"statement": "À la médiathèque, l'inscription coûte ${{a}}~\\unit{€}$, puis chaque film emprunté coûte ${{b}}~\\unit{€}$. Écris le prix $p$ à payer, en euros, pour $n$ films.\n\n$p = ?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..10"
+					},
+					{
+						"name": "b",
+						"expression": "2..5"
+					}
+				],
+				"conditions": ["a!=b"],
+				"correction": {
+					"steps": [
+						"**Écrire une formule.** On fait le calcul avec un exemple (pour $2$, pour $3$…), puis on remplace le nombre par la lettre. On peut supprimer le signe $\\times$ devant une lettre : $3 \\times n$ s'écrit $3n$.",
+						"Pour $3$ films : ${{a}} + {{b}} \\times 3$ ; pour $n$ films : ${{a}} + {{b}} \\times n$, donc $p = \\textcolor{{{color:primary.0}}}{{{a}} + {{b}}n}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{v}}t"
+					}
+				],
+				"statement": "Une voiture roule toujours à ${{v}}~\\unit{km/h}$. Écris la distance $d$ parcourue, en kilomètres, en $t$ heures.\n\n$d = ?$",
+				"variables": [
+					{
+						"name": "v",
+						"expression": "50|60|70|80|90|110|130"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Écrire une formule.** On fait le calcul avec un exemple (pour $2$, pour $3$…), puis on remplace le nombre par la lettre. On peut supprimer le signe $\\times$ devant une lettre : $3 \\times n$ s'écrit $3n$.",
+						"En $1$ h, elle parcourt ${{v}}$ km ; en $2$ h, ${{v}} \\times 2$ km ; en $t$ heures, ${{v}} \\times t$ km, donc $d = \\textcolor{{{color:primary.0}}}{{{v}}t}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{g}}n"
+					}
+				],
+				"statement": "Une recette de crêpes demande ${{g}}~\\unit{g}$ de farine par personne. Écris la masse $m$ de farine, en grammes, pour $n$ personnes.\n\n$m = ?$",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "40|50|60|75|80|100"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Écrire une formule.** On fait le calcul avec un exemple (pour $2$, pour $3$…), puis on remplace le nombre par la lettre. On peut supprimer le signe $\\times$ devant une lettre : $3 \\times n$ s'écrit $3n$.",
+						"Pour $4$ personnes : ${{g}} \\times 4$ ; pour $n$ personnes : ${{g}} \\times n$, donc $m = \\textcolor{{{color:primary.0}}}{{{g}}n}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Écrire une formule reliant deux grandeurs",
+		"description": "Écrire la formule qui relie deux grandeurs dans un contexte concret : prix de n cahiers (3n), inscription et films (5 + 2n), distance à vitesse constante (60t)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3n"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Cahiers à 3 € : 3n",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3\\times n"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Cahiers à 3 € : 3 × n",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["n\\times3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Cahiers à 3 € : n × 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["n+3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : n + 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : 3 (une valeur)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3n^2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : 3n² ",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+2n"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "2"
+				},
+				"description": "Médiathèque : 5 + 2n",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2n+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "2"
+				},
+				"description": "Médiathèque : 2n + 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7n"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "2"
+				},
+				"description": "Erreur : 7n",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5n+2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "2"
+				},
+				"description": "Erreur : 5n + 2 (inversé)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2n"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "2"
+				},
+				"description": "Erreur : 2n (oubli de l'inscription)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["60t"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"v": "60"
+				},
+				"description": "Voiture à 60 km/h : 60t",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["60+t"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"v": "60"
+				},
+				"description": "Erreur : 60 + t",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{t}{60}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"v": "60"
+				},
+				"description": "Erreur : t/60",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["50n"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "50"
+				},
+				"description": "Recette 50 g : 50n",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["50+n"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "50"
+				},
+				"description": "Erreur : 50 + n",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "950cfa36-7eb8-44ba-9912-21c5e42d3bd9",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["5"],
+		"delay": 45,
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Calculer",
+		"level": 8,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q/100;d}}"
+					}
+				],
+				"statement": "Calcule $1~\\%$ de ${{q}}$.\n\n$?$",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "100..3000"
+					}
+				],
+				"conditions": ["q%10==0"],
+				"correction": {
+					"steps": [
+						"**1 %.** Prendre $1~\\%$ d'une quantité, c'est en prendre $1$ sur $100$ : on la divise par $100$.",
+						"$1~\\%$ de ${{q}}$, c'est ${{q}} \\div 100 = \\textcolor{{{color:primary.0}}}{{{eval:q/100;d}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q/100;d}}"
+					}
+				],
+				"statement": "Un vélo coûte ${{q}}~\\unit{€}$.\n\nCombien représente $1~\\%$ de son prix ?\n\n$?~\\unit{€}$",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "150..990"
+					}
+				],
+				"conditions": ["q%10==0"],
+				"correction": {
+					"steps": [
+						"**1 %.** Prendre $1~\\%$ d'une quantité, c'est en prendre $1$ sur $100$ : on la divise par $100$.",
+						"${{q}} \\div 100 = \\textcolor{{{color:primary.0}}}{{{eval:q/100;d}}}$ : $1~\\%$ du prix, c'est $\\textcolor{{{color:primary.0}}}{{{eval:q/100;d}}}~\\unit{€}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q/100}}"
+					},
+					{
+						"expectedAnswer": "{{eval:p*q/100}}"
+					}
+				],
+				"statement": "On veut calculer ${{p}}~\\%$ de ${{q}}$ en passant par $1~\\%$.\n\n$1~\\%$ de ${{q}}$ $= ?$\n\n${{p}}~\\%$ de ${{q}}$ $= ?$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "2|3|4|6|7|8|9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "q",
+						"expression": "eval:100*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**1 %.** Prendre $1~\\%$ d'une quantité, c'est en prendre $1$ sur $100$ : on la divise par $100$.",
+						"$1~\\%$ de ${{q}}$ : ${{q}} \\div 100 = \\textcolor{{{color:primary.0}}}{{{eval:q/100}}}$.",
+						"${{p}}~\\%$, c'est ${{p}}$ fois $1~\\%$ : ${{p}} \\times {{eval:q/100}} = \\textcolor{{{color:primary.1}}}{{{eval:p*q/100}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Calculer 1 % d'une quantité",
+		"description": "Calculer 1 % d'une quantité en la divisant par 100 (1 % de 350 = 3,5), puis s'en servir pour un autre pourcentage (7 % de 300 = 7 × 3 = 21)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3,5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"q": "350"
+				},
+				"description": "1 % de 350 : 3,5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["35"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"q": "350"
+				},
+				"description": "Erreur : 35 (divisé par 10)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0,35"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"q": "350"
+				},
+				"description": "Erreur : 0,35 (divisé par 1 000)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"q": "2400"
+				},
+				"description": "1 % de 2 400 : 24",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4,8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"q": "480"
+				},
+				"description": "Vélo 480 € : 4,8",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4,80"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"q": "480"
+				},
+				"description": "Vélo 480 € : 4,80",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["479"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"q": "480"
+				},
+				"description": "Erreur : 479 (moins 1)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3", "21"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "3",
+					"p": "7",
+					"q": "300"
+				},
+				"description": "7 % de 300 : 3 puis 21",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3", "10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"p": "7",
+					"q": "300"
+				},
+				"description": "Erreur : 7 % de 300 = 7 + 3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3", "293"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"p": "7",
+					"q": "300"
+				},
+				"description": "Erreur : 7 % de 300 = 300 − 7",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "ade95ae4-5374-4bb3-b31b-02b61e3c1ccc",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 90,
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Proportion",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}"
+					}
+				],
+				"statement": "Lors de l'élection des délégués, Malik a obtenu ${{n}}$ voix sur ${{t}}$.\n\nQuel pourcentage des voix a-t-il obtenu ?\n\n$?~\\%$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "24|30|36|40|48|60|80"
+					},
+					{
+						"name": "p",
+						"expression": "10|20|25|30|40|60|70|75|80|90"
+					},
+					{
+						"name": "n",
+						"expression": "eval:p*t/100"
+					}
+				],
+				"conditions": ["(p*t)%100==0"],
+				"correction": {
+					"steps": [
+						"**Proportion en pourcentage.** On écrit la proportion sous forme de fraction, on la calcule en nombre décimal, puis on lit le nombre de centièmes : $0{,}25 = \\dfrac{25}{100} = 25~\\%$.",
+						"$\\dfrac{{{n}}}{{{t}}} = {{n}} \\div {{t}} = {{eval:n/t;d}} = \\dfrac{{{p}}}{100}$, soit $\\textcolor{{{color:primary.0}}}{{{p}}~\\%}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}"
+					}
+				],
+				"statement": "À un questionnaire de ${{t}}$ questions, Jade a donné ${{n}}$ bonnes réponses.\n\nQuel pourcentage de bonnes réponses a-t-elle obtenu ?\n\n$?~\\%$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "24|30|36|40|48|60|80"
+					},
+					{
+						"name": "p",
+						"expression": "10|20|25|30|40|60|70|75|80|90"
+					},
+					{
+						"name": "n",
+						"expression": "eval:p*t/100"
+					}
+				],
+				"conditions": ["(p*t)%100==0"],
+				"correction": {
+					"steps": [
+						"**Proportion en pourcentage.** On écrit la proportion sous forme de fraction, on la calcule en nombre décimal, puis on lit le nombre de centièmes : $0{,}25 = \\dfrac{25}{100} = 25~\\%$.",
+						"$\\dfrac{{{n}}}{{{t}}} = {{n}} \\div {{t}} = {{eval:n/t;d}} = \\dfrac{{{p}}}{100}$, soit $\\textcolor{{{color:primary.0}}}{{{p}}~\\%}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}"
+					}
+				],
+				"statement": "Un club de sport compte ${{t}}$ adhérents, dont ${{n}}$ font de la natation.\n\nQuel pourcentage des adhérents fait de la natation ?\n\n$?~\\%$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "24|30|36|40|48|60|80"
+					},
+					{
+						"name": "p",
+						"expression": "10|20|25|30|40|60|70|75|80|90"
+					},
+					{
+						"name": "n",
+						"expression": "eval:p*t/100"
+					}
+				],
+				"conditions": ["(p*t)%100==0"],
+				"correction": {
+					"steps": [
+						"**Proportion en pourcentage.** On écrit la proportion sous forme de fraction, on la calcule en nombre décimal, puis on lit le nombre de centièmes : $0{,}25 = \\dfrac{25}{100} = 25~\\%$.",
+						"$\\dfrac{{{n}}}{{{t}}} = {{n}} \\div {{t}} = {{eval:n/t;d}} = \\dfrac{{{p}}}{100}$, soit $\\textcolor{{{color:primary.0}}}{{{p}}~\\%}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Exprimer une proportion en pourcentage",
+		"description": "Exprimer une part en pourcentage quand le tout n'est ni un diviseur ni un multiple de 100 (6 voix sur 24 = 25 % ; 22 sur 40 = 55 %)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "6",
+					"p": "25",
+					"t": "24"
+				},
+				"description": "6 sur 24 : 25 %",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "6",
+					"p": "25",
+					"t": "24"
+				},
+				"description": "Erreur : 6 (l'effectif)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0,25"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "6",
+					"p": "25",
+					"t": "24"
+				},
+				"description": "Erreur : 0,25 (la proportion)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "6",
+					"p": "25",
+					"t": "24"
+				},
+				"description": "Erreur : 18 (les autres voix)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "18",
+					"p": "60",
+					"t": "30"
+				},
+				"description": "18 sur 30 : 60 %",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "18",
+					"p": "60",
+					"t": "30"
+				},
+				"description": "Erreur : 12 (30 − 18)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "28",
+					"p": "70",
+					"t": "40"
+				},
+				"description": "28 sur 40 : 70 %",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["28"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "28",
+					"p": "70",
+					"t": "40"
+				},
+				"description": "Erreur : 28",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "ef08a256-64ee-49d4-aad7-d87a8a9d7d02",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["5"],
+		"delay": 90,
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Problèmes",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10*x/100;d}}"
+					},
+					{
+						"expectedAnswer": "{{eval:x-10*x/100;d}}"
+					}
+				],
+				"statement": "Un pantalon coûte ${{x}}~\\unit{€}$. Pendant les soldes, son prix baisse de $10~\\%$.\n\nMontant de la réduction : $?~\\unit{€}$\n\nPrix payé : $?~\\unit{€}$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "20..90"
+					}
+				],
+				"conditions": ["x%5==0"],
+				"correction": {
+					"steps": [
+						"**Réduction.** La réduction est le pourcentage du prix de départ ; le prix payé est le prix de départ moins la réduction.",
+						"Réduction : $10~\\%$ de ${{x}}$, c'est ${{x}} \\div 10 = \\textcolor{{{color:primary.0}}}{{{eval:10*x/100;d}}}~\\unit{€}$.",
+						"Prix payé : ${{x}} - {{eval:10*x/100;d}} = \\textcolor{{{color:primary.1}}}{{{eval:x-10*x/100;d}}}~\\unit{€}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:25*x/100;d}}"
+					},
+					{
+						"expectedAnswer": "{{eval:x-25*x/100;d}}"
+					}
+				],
+				"statement": "Une paire de chaussures coûte ${{x}}~\\unit{€}$. Pendant les soldes, son prix baisse de $25~\\%$.\n\nMontant de la réduction : $?~\\unit{€}$\n\nPrix payé : $?~\\unit{€}$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "40..120"
+					}
+				],
+				"conditions": ["x%4==0"],
+				"correction": {
+					"steps": [
+						"**Réduction.** La réduction est le pourcentage du prix de départ ; le prix payé est le prix de départ moins la réduction.",
+						"Réduction : $25~\\%$, c'est le quart : ${{x}} \\div 4 = \\textcolor{{{color:primary.0}}}{{{eval:25*x/100;d}}}~\\unit{€}$.",
+						"Prix payé : ${{x}} - {{eval:25*x/100;d}} = \\textcolor{{{color:primary.1}}}{{{eval:x-25*x/100;d}}}~\\unit{€}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:50*x/100;d}}"
+					},
+					{
+						"expectedAnswer": "{{eval:x-50*x/100;d}}"
+					}
+				],
+				"statement": "Un jeu vidéo coûte ${{x}}~\\unit{€}$. Pendant les soldes, son prix baisse de $50~\\%$.\n\nMontant de la réduction : $?~\\unit{€}$\n\nPrix payé : $?~\\unit{€}$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "20..80"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Réduction.** La réduction est le pourcentage du prix de départ ; le prix payé est le prix de départ moins la réduction.",
+						"Réduction : $50~\\%$, c'est la moitié : ${{x}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{eval:50*x/100;d}}}~\\unit{€}$.",
+						"Prix payé : ${{x}} - {{eval:50*x/100;d}} = \\textcolor{{{color:primary.1}}}{{{eval:x-50*x/100;d}}}~\\unit{€}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Utiliser un pourcentage : réduction",
+		"description": "Calculer une réduction de 10 %, 25 % ou 50 % et le prix payé (25 % de 60 € = 15 € ; prix payé 45 €), sans coefficient multiplicateur",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4,5", "40,5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"x": "45"
+				},
+				"description": "10 % de 45 € : 4,5 et 40,5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10", "35"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"x": "45"
+				},
+				"description": "Erreur : réduction de 10 €",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4,5", "4,5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"x": "45"
+				},
+				"description": "Erreur : prix payé = la réduction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["15", "45"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"x": "60"
+				},
+				"description": "25 % de 60 € : 15 et 45",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["25", "35"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"x": "60"
+				},
+				"description": "Erreur : 25 € de réduction",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["15", "75"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"x": "60"
+				},
+				"description": "Erreur : prix payé 75 (ajouté)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["17,5", "17,5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"x": "35"
+				},
+				"description": "50 % de 35 € : 17,5 et 17,5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["50", "35"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"x": "35"
+				},
+				"description": "Erreur : 50 % = 50 €",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4,50", "40,50"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"x": "45"
+				},
+				"description": "10 % de 45 € : 4,50 et 40,50",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "fa0c8afd-e769-4717-ae69-a8c96f9cca27",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["5"],
+		"delay": 30,
+		"theme": "Calcul littéral",
+		"domain": "Écrire",
+		"subdomain": "Formules",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "La formule ${{if:k==0|p = 2n|{{if:k==1|d = 60t|{{if:k==2|A = c \\times c|m = 250x}}}}}}$ exprime :\n\n```choix\nmelanger: non\n- ${{if:k==0|p|{{if:k==1|d|{{if:k==2|A|m}}}}}}$ en fonction de ${{if:k==0|n|{{if:k==1|t|{{if:k==2|c|x}}}}}}$\n- ${{if:k==0|n|{{if:k==1|t|{{if:k==2|c|x}}}}}}$ en fonction de ${{if:k==0|p|{{if:k==1|d|{{if:k==2|A|m}}}}}}$\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "0..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**« En fonction de ».** Exprimer une grandeur $A$ en fonction d'une grandeur $B$, c'est écrire une formule qui donne $A$ quand on connaît $B$ : $A$ est seule d'un côté du signe $=$, et $B$ est dans le calcul.",
+						"Dans ${{if:k==0|p = 2n|{{if:k==1|d = 60t|{{if:k==2|A = c \\times c|m = 250x}}}}}}$, on calcule ${{if:k==0|p|{{if:k==1|d|{{if:k==2|A|m}}}}}}$ à partir de ${{if:k==0|n|{{if:k==1|t|{{if:k==2|c|x}}}}}}$ : la formule exprime $\\textcolor{{{color:primary.0}}}{{{if:k==0|p|{{if:k==1|d|{{if:k==2|A|m}}}}}}\\text{ en fonction de }{{if:k==0|n|{{if:k==1|t|{{if:k==2|c|x}}}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Les pommes coûtent ${{k}}~\\unit{€}$ le kilogramme. On veut exprimer le prix $p$ à payer, en euros, **en fonction de** la masse $m$ achetée, en kilogrammes.\n\nQuelle formule convient ?\n\n```choix\n- $p = {{k}}m$\n- $m = {{k}}p$\n- $m = \\dfrac{p}{{{k}}}$\n- $p = m + {{k}}$\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**« En fonction de ».** Exprimer une grandeur $A$ en fonction d'une grandeur $B$, c'est écrire une formule qui donne $A$ quand on connaît $B$ : $A$ est seule d'un côté du signe $=$, et $B$ est dans le calcul.",
+						"Le prix, c'est ${{k}}$ fois la masse : $p = {{k}} \\times m$, qui s'écrit $\\textcolor{{{color:primary.0}}}{p = {{k}}m}$.",
+						"$m = \\dfrac{p}{{{k}}}$ est juste aussi, mais elle exprime $m$ en fonction de $p$ : ce n'est pas ce qu'on demande."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "On veut calculer le prix à payer **en fonction du** nombre de places de cinéma achetées.\n\nQue calcule-t-on, et à partir de quoi ?\n\n```choix\nmelanger: non\n- On calcule le prix à partir du nombre de places.\n- On calcule le nombre de places à partir du prix.\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"**« En fonction de ».** Exprimer une grandeur $A$ en fonction d'une grandeur $B$, c'est écrire une formule qui donne $A$ quand on connaît $B$ : $A$ est seule d'un côté du signe $=$, et $B$ est dans le calcul.",
+						"Le prix est exprimé en fonction du nombre de places : $\\textcolor{{{color:primary.0}}}{\\text{on calcule le prix à partir du nombre de places}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Employer « en fonction de »",
+		"description": "Comprendre « exprimer A en fonction de B » : la formule p = 2n exprime p en fonction de n ; choisir la formule qui exprime le prix en fonction de la masse",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "0"
+				},
+				"description": "p = 2n : p en fonction de n",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "0"
+				},
+				"description": "Erreur : n en fonction de p",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "A = c × c : A en fonction de c",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Pommes 3 € : p = 3m",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : m = p/3 (à l'envers)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : p = m + 3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Cinéma : le prix",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : le nombre de places",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	}
+]

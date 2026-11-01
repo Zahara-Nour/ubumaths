@@ -1,0 +1,4909 @@
+[
+	{
+		"id": "0049d7a3-e462-42b5-b270-b8a15fcda402",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Fonction valeur absolue",
+		"archived_at": null
+	},
+	{
+		"id": "004c80bd-60ad-439e-af23-6d337b22da4b",
+		"parent_id": "c52467bf-0747-479e-a922-77656f92a224",
+		"kind": "subnotion",
+		"name": "rendre la monnaie",
+		"archived_at": null
+	},
+	{
+		"id": "005d8d34-f7bb-41cf-8847-73039db0107a",
+		"parent_id": "4c4951c2-b67d-433e-980e-cba64674d5df",
+		"kind": "subnotion",
+		"name": "calculer un terme",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "00793e66-e266-425e-9c31-8dc2a3a0fc71",
+		"parent_id": "c90700c5-6111-437b-b66f-fdc76f3b1720",
+		"kind": "subnotion",
+		"name": "reconnaître",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "008029cb-f064-42a3-b10e-6d3f9f05f000",
+		"parent_id": "13aae839-2131-4770-b3b3-9d3c938f9250",
+		"kind": "subnotion",
+		"name": "structure d'une récurrence",
+		"archived_at": null
+	},
+	{
+		"id": "008e6bed-8051-4f28-af2e-bf0660c68fd5",
+		"parent_id": "7112e074-dccc-47b4-bcbc-0d3c217d24a1",
+		"kind": "subnotion",
+		"name": "escalier",
+		"archived_at": null
+	},
+	{
+		"id": "00e93253-361f-49ee-8e41-50894700822b",
+		"parent_id": "a469c6fa-06e2-4581-a972-7ccfa7143c6e",
+		"kind": "subnotion",
+		"name": "x³ = k, x³ < k",
+		"archived_at": null
+	},
+	{
+		"id": "012c4882-0827-4056-a55a-747aec68ad16",
+		"parent_id": "3355b3a5-d66a-4409-b02b-21db0e0ddb31",
+		"kind": "subnotion",
+		"name": "suites géométriques",
+		"archived_at": null
+	},
+	{
+		"id": "01303d39-dbe9-4183-b3bf-ed703598aec1",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Fonctions affines",
+		"archived_at": null
+	},
+	{
+		"id": "01588967-fa80-404b-94e0-163fabfdea35",
+		"parent_id": "d5f49f81-c74a-4e91-a2ec-405f6962c296",
+		"kind": "subnotion",
+		"name": "courbes et repères",
+		"archived_at": null
+	},
+	{
+		"id": "0233dbba-2c37-4b57-a00a-deefaee7e85d",
+		"parent_id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"kind": "subnotion",
+		"name": "différence",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "026bc8f6-abd3-42fb-87e8-43eac50c6ca4",
+		"parent_id": "4c009853-c441-4457-9496-e7c20b5b45b7",
+		"kind": "subnotion",
+		"name": "caractérisation",
+		"archived_at": null
+	},
+	{
+		"id": "031111fc-29ad-4a04-a01c-556f51fc08b7",
+		"parent_id": "fef2a93e-22b4-48b3-9dd4-2bd1b043e9dc",
+		"kind": "subnotion",
+		"name": "variations",
+		"archived_at": null
+	},
+	{
+		"id": "03cd572e-8168-4031-bf0b-38c444ddca02",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Repérage dans l'espace",
+		"archived_at": null
+	},
+	{
+		"id": "0437884a-1089-4db7-8d0e-135585b00995",
+		"parent_id": "841b9ac9-0d08-4d54-bffa-d6b9fb2170d8",
+		"kind": "notion",
+		"name": "Divisibilité",
+		"archived_at": null
+	},
+	{
+		"id": "0440f40d-9150-4dc7-915d-a473affcbcae",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Puissances : calculs",
+		"archived_at": null
+	},
+	{
+		"id": "04611ba1-d281-4554-90ab-5b8b158d24cd",
+		"parent_id": "e03bc9cc-2d87-4695-8950-bcae08f39d5e",
+		"kind": "subnotion",
+		"name": "conversions",
+		"archived_at": null
+	},
+	{
+		"id": "0482ff25-66a4-4e74-a2fc-76c192b704c9",
+		"parent_id": "d6f7ed4d-66c0-477e-9037-a1b0ca7a36ec",
+		"kind": "subnotion",
+		"name": "forme (v′∘u)×u′",
+		"archived_at": null
+	},
+	{
+		"id": "0490ccb0-a61b-4176-b679-5aac1c28b616",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "produits particuliers",
+		"archived_at": null
+	},
+	{
+		"id": "04cc82a4-eca1-4ac2-bad6-e0555a806566",
+		"parent_id": "e03bc9cc-2d87-4695-8950-bcae08f39d5e",
+		"kind": "subnotion",
+		"name": "calcul de durées",
+		"archived_at": null
+	},
+	{
+		"id": "04da83a6-8fb2-4896-b4ae-834eade061c1",
+		"parent_id": "81cb906e-734b-4d92-b444-e64b917ed75d",
+		"kind": "subnotion",
+		"name": "boucle non bornée",
+		"archived_at": null
+	},
+	{
+		"id": "04dccdc8-5d48-4dfd-be6d-a030e0774251",
+		"parent_id": "58838eda-abe1-4bc2-9dca-207f19d3e176",
+		"kind": "subnotion",
+		"name": "solution générale",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "04e2ad60-cbc1-416e-a6f8-4e0257c67b4c",
+		"parent_id": "923c4069-8aaf-4b21-addf-74599b601bdc",
+		"kind": "subnotion",
+		"name": "fonction réciproque",
+		"archived_at": null
+	},
+	{
+		"id": "04f3bf0d-71d1-4c76-b01d-174867712ff5",
+		"parent_id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"kind": "subnotion",
+		"name": "dénombrement",
+		"archived_at": null
+	},
+	{
+		"id": "055fbf18-0547-4c59-8b44-c38611750f64",
+		"parent_id": "5c6cb025-fb7c-458b-ab90-06ae6f329e11",
+		"kind": "subnotion",
+		"name": "loi uniforme discrète",
+		"archived_at": null
+	},
+	{
+		"id": "059b0190-891b-41a0-9c73-ed91bd94b48e",
+		"parent_id": "57453fce-aabe-4909-be20-5ed46a437d0e",
+		"kind": "notion",
+		"name": "Échelle d'une carte",
+		"archived_at": null
+	},
+	{
+		"id": "05c3048e-6cbc-4110-845f-ade63096906e",
+		"parent_id": "40a5df0a-110f-43f1-b046-3eb898c7c3d7",
+		"kind": "subnotion",
+		"name": "dérivée d'une fonction intégrale",
+		"archived_at": null
+	},
+	{
+		"id": "069f81b0-ec73-461e-85e4-9759baa37bb2",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Dénombrement",
+		"archived_at": null
+	},
+	{
+		"id": "06ff2476-e4f4-4aab-9673-fc88c4f7aac1",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Logique",
+		"archived_at": null
+	},
+	{
+		"id": "0722144d-3ebc-4f73-b45b-6bc2cae1cc1d",
+		"parent_id": "923c4069-8aaf-4b21-addf-74599b601bdc",
+		"kind": "subnotion",
+		"name": "lecture graphique",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "0772a048-8204-4d05-869d-14301df6c1e9",
+		"parent_id": "3a3a3e35-b1f9-49c9-8c70-24d9aa7d3ccf",
+		"kind": "subnotion",
+		"name": "ax + b < cx + d",
+		"archived_at": null
+	},
+	{
+		"id": "07994980-c335-4083-9f99-1a57cfaf7c47",
+		"parent_id": "68973ff5-f847-491c-b602-375673d5d080",
+		"kind": "subnotion",
+		"name": "condition nécessaire, condition suffisante",
+		"archived_at": null
+	},
+	{
+		"id": "07fc439e-82c8-44ad-9690-2d3ed144b52d",
+		"parent_id": "b6b9da4f-d0f5-495e-828a-286c76dc8192",
+		"kind": "subnotion",
+		"name": "reconnaître le modèle",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "08368588-4a6f-4483-aefa-8afab0fcd80c",
+		"parent_id": "cef797b1-4c6f-4796-8a20-8273fc381e9a",
+		"kind": "subnotion",
+		"name": "droite des milieux",
+		"archived_at": null
+	},
+	{
+		"id": "091bc001-bf79-42b3-8ac0-33046883d0e5",
+		"parent_id": "8f7d9107-69f8-42ab-bfaa-db1f65e8b5dd",
+		"kind": "subnotion",
+		"name": "coordonnées",
+		"archived_at": null
+	},
+	{
+		"id": "09df373e-f121-4e58-b77b-3b4a4efa76fb",
+		"parent_id": "6c27a9d8-d9e5-4132-a1f2-4768e5f342d1",
+		"kind": "subnotion",
+		"name": "chaînes et cycles",
+		"archived_at": null
+	},
+	{
+		"id": "0adbade6-ccd6-459e-8902-7c20b5154e63",
+		"parent_id": "f4c26640-7694-416f-b89a-b066e7f4928d",
+		"kind": "subnotion",
+		"name": "réciproque de l'exponentielle",
+		"archived_at": null
+	},
+	{
+		"id": "0b3a8645-fb75-4635-9864-68c6b38cd859",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "triple et tiers",
+		"archived_at": null
+	},
+	{
+		"id": "0bce32b6-7733-45f8-8dd3-ee91dc35eced",
+		"parent_id": "7ed1251c-fd0a-4319-8715-aeac8e2dee22",
+		"kind": "subnotion",
+		"name": "reconnaître",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "0bd9281a-de1a-4990-8386-f01fad5e42c3",
+		"parent_id": "d5dc9b32-c6e7-4a02-959a-b659ba2cc494",
+		"kind": "subnotion",
+		"name": "parabole",
+		"archived_at": null
+	},
+	{
+		"id": "0c77615b-8e29-4928-892b-670c55da2d7a",
+		"parent_id": "9bf01295-e760-4f2d-9054-55abe581a376",
+		"kind": "notion",
+		"name": "Ensembles de nombres",
+		"archived_at": null
+	},
+	{
+		"id": "0cad3e5b-da0a-4b01-8529-1a6d9ab12c2f",
+		"parent_id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"kind": "subnotion",
+		"name": "calcul astucieux",
+		"archived_at": null
+	},
+	{
+		"id": "0cc8d703-c7f8-42e9-970e-1d4af24901d1",
+		"parent_id": "83a394d1-ba60-4dcc-82b5-642908b88925",
+		"kind": "subnotion",
+		"name": "positivité et inégalités",
+		"archived_at": null
+	},
+	{
+		"id": "0cd5774a-31b9-4b3f-9a9d-75dee0a31d05",
+		"parent_id": "68973ff5-f847-491c-b602-375673d5d080",
+		"kind": "subnotion",
+		"name": "équivalence",
+		"archived_at": null
+	},
+	{
+		"id": "0cdcfb86-cd9a-4674-a1ae-4e72db9611d9",
+		"parent_id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"kind": "subnotion",
+		"name": "tables",
+		"archived_at": null
+	},
+	{
+		"id": "0d6f039b-4d7e-4079-8d46-598033d41768",
+		"parent_id": "101154f4-1d22-498e-9b1c-5f087ec5707c",
+		"kind": "notion",
+		"name": "Contenances",
+		"archived_at": null
+	},
+	{
+		"id": "0e0e12ea-72d4-40d5-a45f-fbbc1a9990e8",
+		"parent_id": "933094d2-56ef-4c43-9658-18b9e9294354",
+		"kind": "subnotion",
+		"name": "calcul",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "0e9a8fa4-5f56-482f-b1ca-d04cca03dc60",
+		"parent_id": "34971ab0-5b2c-4dfd-bb9c-674a2877d9a3",
+		"kind": "subnotion",
+		"name": "frises et pavages",
+		"archived_at": null
+	},
+	{
+		"id": "0f7186ff-d0a9-4502-87b4-360cb31912f0",
+		"parent_id": "bfe69202-e5bb-4f9b-9f5e-6ce92f176542",
+		"kind": "notion",
+		"name": "Suites arithmético-géométriques",
+		"archived_at": null
+	},
+	{
+		"id": "0f961289-d6d5-4527-97c5-9df46222de3f",
+		"parent_id": "d56d6f94-b1b0-4924-9477-7d23bbc684ea",
+		"kind": "subnotion",
+		"name": "produit",
+		"archived_at": null
+	},
+	{
+		"id": "101154f4-1d22-498e-9b1c-5f087ec5707c",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Grandeurs et mesures",
+		"archived_at": null
+	},
+	{
+		"id": "118848df-8268-46f0-a73f-0d01947def44",
+		"parent_id": "b6b9da4f-d0f5-495e-828a-286c76dc8192",
+		"kind": "subnotion",
+		"name": "dénombrer avec contraintes",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "12708842-17ff-4f7c-97bd-ee0bba6e333f",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Matrices",
+		"archived_at": null
+	},
+	{
+		"id": "13322c55-ec45-43c5-9c84-3fb034df583e",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Produit scalaire",
+		"archived_at": null
+	},
+	{
+		"id": "13aae839-2131-4770-b3b3-9d3c938f9250",
+		"parent_id": "bfe69202-e5bb-4f9b-9f5e-6ce92f176542",
+		"kind": "notion",
+		"name": "Raisonnement par récurrence",
+		"archived_at": null
+	},
+	{
+		"id": "144df13a-2426-4590-a64f-d2d75bedf097",
+		"parent_id": "01303d39-dbe9-4183-b3bf-ed703598aec1",
+		"kind": "subnotion",
+		"name": "fonction linéaire",
+		"archived_at": null
+	},
+	{
+		"id": "145027b5-b412-43a2-9e90-a2b86d82438d",
+		"parent_id": "c3205350-1c8b-404c-bf3c-a0b59bf69318",
+		"kind": "subnotion",
+		"name": "somme et relation de Chasles",
+		"archived_at": null
+	},
+	{
+		"id": "1492dc67-e345-414a-b2b0-6d51d796dfb3",
+		"parent_id": "600d983b-da8d-4d22-8c9a-e5e8eda869fa",
+		"kind": "notion",
+		"name": "Inégalités",
+		"archived_at": null
+	},
+	{
+		"id": "151ff8c9-578e-4031-9ce9-ec65ce077e26",
+		"parent_id": "506c3771-9751-41eb-9608-6a318fc7c280",
+		"kind": "subnotion",
+		"name": "variables et affectation",
+		"archived_at": null
+	},
+	{
+		"id": "1579f50e-2fa9-4ab4-b52a-e48cf39981d5",
+		"parent_id": "361f21bd-e59e-4cd2-892c-48b467c42a31",
+		"kind": "subnotion",
+		"name": "somme et produit par un réel",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "158e4a89-9807-481e-8a65-1aa37497eb38",
+		"parent_id": "83a0aeef-1abe-444e-b386-846a49017d1e",
+		"kind": "subnotion",
+		"name": "calcul posé",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "164a7ff1-cfba-441f-b79c-95c8ded95501",
+		"parent_id": "12708842-17ff-4f7c-97bd-ee0bba6e333f",
+		"kind": "notion",
+		"name": "Transformations du plan",
+		"archived_at": null
+	},
+	{
+		"id": "165f30d8-7132-46e5-a194-5fa009b579ae",
+		"parent_id": "069f81b0-ec73-461e-85e4-9759baa37bb2",
+		"kind": "notion",
+		"name": "Arrangements et permutations",
+		"archived_at": null
+	},
+	{
+		"id": "1695224c-39c5-46cb-9727-c53d04d364ee",
+		"parent_id": "ea762fa7-0f08-4ac2-a885-e328dd3d2da1",
+		"kind": "subnotion",
+		"name": "courbe",
+		"archived_at": null
+	},
+	{
+		"id": "1756bff9-41ce-4a0c-9bb4-4f4d40b86675",
+		"parent_id": "c1718129-d89c-4291-8015-905e41307b0d",
+		"kind": "subnotion",
+		"name": "forme fractionnaire",
+		"archived_at": null
+	},
+	{
+		"id": "1756e07f-a3e1-4474-8d40-26a90f4360f6",
+		"parent_id": "aa4502ec-8825-4779-aaad-9911829c204f",
+		"kind": "notion",
+		"name": "y′ = ay + b",
+		"archived_at": null
+	},
+	{
+		"id": "17987933-6e37-44f1-9b8b-05941722f52b",
+		"parent_id": "63af2945-e48e-4883-bf28-4cca6b57fdba",
+		"kind": "subnotion",
+		"name": "produit nul",
+		"archived_at": null
+	},
+	{
+		"id": "17e866a3-f184-4d42-99f1-b928fda1129d",
+		"parent_id": "773d6f5c-62be-43a9-93bf-30d1b7cdf906",
+		"kind": "subnotion",
+		"name": "boule",
+		"archived_at": null
+	},
+	{
+		"id": "17ebe7a5-b2e6-4a69-939c-fde0f48bd788",
+		"parent_id": "26ca7245-f68b-423b-a1e3-ba8f10edb5f4",
+		"kind": "subnotion",
+		"name": "équations",
+		"archived_at": null
+	},
+	{
+		"id": "181f37e9-bca9-4892-833d-d0ae51dd751b",
+		"parent_id": "600a88c8-4245-4105-a587-bcccb20d079d",
+		"kind": "subnotion",
+		"name": "mettre en inéquation",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "18f23b21-103b-4fac-8be5-e10c205a7027",
+		"parent_id": "d248afdc-5843-4f0c-aad4-d6f775511ea8",
+		"kind": "subnotion",
+		"name": "comparer des images",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "18fac696-97b0-4c0f-9577-2491f4fb0262",
+		"parent_id": "492d0ee4-d488-4a34-877d-6c569bbd881d",
+		"kind": "subnotion",
+		"name": "point moyen",
+		"archived_at": null
+	},
+	{
+		"id": "195147df-81b9-4bc6-8470-6ebc4ad72174",
+		"parent_id": "506c3771-9751-41eb-9608-6a318fc7c280",
+		"kind": "subnotion",
+		"name": "instructions conditionnelles",
+		"archived_at": null
+	},
+	{
+		"id": "19b33d1b-7881-4b68-ad4c-271178ca9f72",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Racines carrées : sens et écritures",
+		"archived_at": null
+	},
+	{
+		"id": "1a226dac-41db-486b-84e0-55fa4b9da7cd",
+		"parent_id": "0440f40d-9150-4dc7-915d-a473affcbcae",
+		"kind": "subnotion",
+		"name": "mélange",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "1a3ed5f7-33e6-4cb5-8dcc-f334f2a99287",
+		"parent_id": "0437884a-1089-4db7-8d0e-135585b00995",
+		"kind": "subnotion",
+		"name": "pair ou impair",
+		"archived_at": null
+	},
+	{
+		"id": "1b4cc141-9672-44b4-bc4d-6292e0036738",
+		"parent_id": "64989d55-dbb7-49e7-ba4a-38211c6395f0",
+		"kind": "subnotion",
+		"name": "dérivée seconde",
+		"archived_at": null
+	},
+	{
+		"id": "1b5da00f-8824-424b-8c8a-c2a75635ead0",
+		"parent_id": "affd3833-ad6d-49e0-9e86-dc1449e7b1ec",
+		"kind": "subnotion",
+		"name": "quotient",
+		"archived_at": null
+	},
+	{
+		"id": "1d272a38-b800-463d-b14a-0967dc35bfa0",
+		"parent_id": "a365eb71-f060-4094-a0cb-19ef20f48a0d",
+		"kind": "subnotion",
+		"name": "définition",
+		"archived_at": null
+	},
+	{
+		"id": "1df44081-d11c-4dbb-9a4a-03c4c3f8cf8c",
+		"parent_id": "83a394d1-ba60-4dcc-82b5-642908b88925",
+		"kind": "subnotion",
+		"name": "méthode des rectangles",
+		"archived_at": null
+	},
+	{
+		"id": "1f0316af-18fd-40db-8c32-4f72e78d77f8",
+		"parent_id": "81bb757f-9084-4de7-ac7e-196aec4852ea",
+		"kind": "subnotion",
+		"name": "notation scientifique",
+		"archived_at": null
+	},
+	{
+		"id": "1f4923e1-dcdc-408e-8535-cd1697bdb7ff",
+		"parent_id": "6dd4513e-9f0e-44c9-afb7-4558826dabd3",
+		"kind": "subnotion",
+		"name": "argument",
+		"archived_at": null
+	},
+	{
+		"id": "2024c53b-9570-44e8-a8bb-6ba938b51982",
+		"parent_id": "06ff2476-e4f4-4aab-9673-fc88c4f7aac1",
+		"kind": "notion",
+		"name": "Proposition mathématique",
+		"archived_at": null
+	},
+	{
+		"id": "20901f3c-0801-4b82-9701-2bc81b72d608",
+		"parent_id": "6924738e-9806-4033-98a9-44a4b9ff2a78",
+		"kind": "subnotion",
+		"name": "tableau croisé d'effectifs",
+		"archived_at": null
+	},
+	{
+		"id": "20b2daba-a64f-4020-96a7-8b13cad55139",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Fractions : calculs",
+		"archived_at": null
+	},
+	{
+		"id": "20e4f657-f2de-4636-bcfd-eae928e2fc4e",
+		"parent_id": "e567352e-4416-438b-a4a3-bc2d817f8231",
+		"kind": "subnotion",
+		"name": "patrons",
+		"archived_at": null
+	},
+	{
+		"id": "216be680-7c1e-49a3-81da-b35407dab3d0",
+		"parent_id": "cef797b1-4c6f-4796-8a20-8273fc381e9a",
+		"kind": "subnotion",
+		"name": "réciproque",
+		"archived_at": null
+	},
+	{
+		"id": "217d0af1-a4e1-4635-80da-c5c68c154aa0",
+		"parent_id": "f4c26640-7694-416f-b89a-b066e7f4928d",
+		"kind": "subnotion",
+		"name": "logarithme décimal",
+		"archived_at": null
+	},
+	{
+		"id": "21894096-a555-414a-b94f-9a77cf5bdfa8",
+		"parent_id": "acb6a17e-fce8-4647-86bc-972dfdad0c8f",
+		"kind": "subnotion",
+		"name": "appartenance à une courbe",
+		"archived_at": null
+	},
+	{
+		"id": "2189dba9-ba3e-40a1-92f1-705c221e1ba6",
+		"parent_id": "12708842-17ff-4f7c-97bd-ee0bba6e333f",
+		"kind": "notion",
+		"name": "Systèmes linéaires",
+		"archived_at": null
+	},
+	{
+		"id": "21c04da9-4d4b-4d5d-b523-1c3e205a6496",
+		"parent_id": "e31afec7-a8fe-4363-8046-974bc89f6c54",
+		"kind": "subnotion",
+		"name": "k-uplets",
+		"archived_at": null
+	},
+	{
+		"id": "21d40810-8b89-48c9-bbe6-c2b376e1f90c",
+		"parent_id": "f4c26640-7694-416f-b89a-b066e7f4928d",
+		"kind": "subnotion",
+		"name": "courbe",
+		"archived_at": null
+	},
+	{
+		"id": "2210901a-acae-4a4c-8624-c68d9594c314",
+		"parent_id": "12708842-17ff-4f7c-97bd-ee0bba6e333f",
+		"kind": "notion",
+		"name": "Calcul matriciel",
+		"archived_at": null
+	},
+	{
+		"id": "2227286b-1607-4e9b-8df7-e0020ae7805b",
+		"parent_id": "2210901a-acae-4a4c-8624-c68d9594c314",
+		"kind": "subnotion",
+		"name": "inverse",
+		"archived_at": null
+	},
+	{
+		"id": "22819fae-c673-4631-86be-20272ae1e654",
+		"parent_id": "54b0242b-0477-4443-a9d4-f7b09a9ddbae",
+		"kind": "subnotion",
+		"name": "déciles et rapport interdécile",
+		"archived_at": null
+	},
+	{
+		"id": "22a537d4-61b5-4100-9d68-7e8f6d360505",
+		"parent_id": "e03bc9cc-2d87-4695-8950-bcae08f39d5e",
+		"kind": "subnotion",
+		"name": "lecture de l'heure",
+		"archived_at": null
+	},
+	{
+		"id": "22c59f26-5179-4a95-a1c1-f51246ccf307",
+		"parent_id": "b019d46b-b5b7-4e57-a358-170e53a20969",
+		"kind": "subnotion",
+		"name": "formule du binôme",
+		"archived_at": null
+	},
+	{
+		"id": "233d6b1b-cfd9-4fd6-9655-209506598322",
+		"parent_id": "acb6a17e-fce8-4647-86bc-972dfdad0c8f",
+		"kind": "subnotion",
+		"name": "images et antécédents",
+		"archived_at": null
+	},
+	{
+		"id": "243d931b-ccac-4c32-bf80-5a9ffed42db7",
+		"parent_id": "67a1e1b0-16da-47ad-b560-b797d241b980",
+		"kind": "subnotion",
+		"name": "forme exponentielle",
+		"archived_at": null
+	},
+	{
+		"id": "2444927b-3202-4866-a5cf-25e852b1706a",
+		"parent_id": "83a0aeef-1abe-444e-b386-846a49017d1e",
+		"kind": "subnotion",
+		"name": "addition",
+		"archived_at": null
+	},
+	{
+		"id": "2472a2e3-5807-4054-848d-8030f45ce821",
+		"parent_id": "1492dc67-e345-414a-b2b0-6d51d796dfb3",
+		"kind": "subnotion",
+		"name": "comparaison et encadrement",
+		"archived_at": null
+	},
+	{
+		"id": "256f3dec-faad-4447-889f-553fd4096453",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Racines carrées : calculs",
+		"archived_at": null
+	},
+	{
+		"id": "25782409-8b1a-4e0b-99a7-55c016557592",
+		"parent_id": "f140657a-524a-4506-8df5-302a9fc2d540",
+		"kind": "subnotion",
+		"name": "sans parenthèses",
+		"archived_at": null
+	},
+	{
+		"id": "25ab4618-41ed-41b4-80d6-e328339635cc",
+		"parent_id": "12708842-17ff-4f7c-97bd-ee0bba6e333f",
+		"kind": "notion",
+		"name": "Suites et matrices",
+		"archived_at": null
+	},
+	{
+		"id": "25b5d574-e6e9-4faf-bb44-330281429eea",
+		"parent_id": "ce9818ba-e994-4b63-bd17-80833260506d",
+		"kind": "subnotion",
+		"name": "isoler une variable",
+		"archived_at": null
+	},
+	{
+		"id": "25eb2be0-3947-4ac6-9518-b8f988383c1f",
+		"parent_id": "df0b929e-ea8b-4f76-a7e3-8c19c7886184",
+		"kind": "subnotion",
+		"name": "égalité de fractions",
+		"archived_at": null
+	},
+	{
+		"id": "261efa4d-c37e-4d37-91ec-8634f50a3fcc",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "calcul posé",
+		"archived_at": null
+	},
+	{
+		"id": "26b15bc5-3885-432e-9cb7-518da9d73fd0",
+		"parent_id": "13322c55-ec45-43c5-9c84-3fb034df583e",
+		"kind": "subnotion",
+		"name": "lieux de points",
+		"archived_at": null
+	},
+	{
+		"id": "26ca7245-f68b-423b-a1e3-ba8f10edb5f4",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Fonctions trigonométriques",
+		"archived_at": null
+	},
+	{
+		"id": "26ec6c98-5274-44e1-8b6c-14349d0217f9",
+		"parent_id": "0c77615b-8e29-4928-892b-670c55da2d7a",
+		"kind": "subnotion",
+		"name": "intervalles",
+		"archived_at": null
+	},
+	{
+		"id": "27425ad9-ea54-4b6d-89aa-fb79616e8dda",
+		"parent_id": "8809d4ee-ab67-4036-b312-868a4e848110",
+		"kind": "subnotion",
+		"name": "calcul d'angles",
+		"archived_at": null
+	},
+	{
+		"id": "27c598fc-c0e7-4922-8738-380a21ec1c6c",
+		"parent_id": "704c7760-9f25-4fa0-8e6b-9f2b1795c543",
+		"kind": "subnotion",
+		"name": "indices",
+		"archived_at": null
+	},
+	{
+		"id": "27cfa383-c6aa-4119-924f-da51d50bb236",
+		"parent_id": "923c4069-8aaf-4b21-addf-74599b601bdc",
+		"kind": "subnotion",
+		"name": "continuité en un point",
+		"archived_at": null
+	},
+	{
+		"id": "2863ddce-7549-440b-bdbf-72d7a9ab6641",
+		"parent_id": "d56d6f94-b1b0-4924-9477-7d23bbc684ea",
+		"kind": "subnotion",
+		"name": "carré",
+		"archived_at": null
+	},
+	{
+		"id": "2872ee83-b40c-429b-bd0e-af50bdfc9ed2",
+		"parent_id": "704c7760-9f25-4fa0-8e6b-9f2b1795c543",
+		"kind": "subnotion",
+		"name": "taux d'évolution moyen",
+		"archived_at": null
+	},
+	{
+		"id": "2885b693-ca36-442b-bf45-1b51d4bb9bf5",
+		"parent_id": "9bf01295-e760-4f2d-9054-55abe581a376",
+		"kind": "notion",
+		"name": "Opérations sur les ensembles",
+		"archived_at": null
+	},
+	{
+		"id": "28de56e3-64d8-4a43-97cd-a070b551fbe1",
+		"parent_id": "0437884a-1089-4db7-8d0e-135585b00995",
+		"kind": "subnotion",
+		"name": "multiples et diviseurs",
+		"archived_at": null
+	},
+	{
+		"id": "29609fdb-7291-4f70-9214-07b218a3fe39",
+		"parent_id": "390f3077-a13b-4556-9e85-e304a77c71c5",
+		"kind": "subnotion",
+		"name": "disque",
+		"archived_at": null
+	},
+	{
+		"id": "29d6c61a-f032-4164-bf7e-3e269d70d5db",
+		"parent_id": "2189dba9-ba3e-40a1-92f1-705c221e1ba6",
+		"kind": "subnotion",
+		"name": "écriture matricielle",
+		"archived_at": null
+	},
+	{
+		"id": "2a7e8723-a8be-4cf5-bfe3-25535d883534",
+		"parent_id": "d56d6f94-b1b0-4924-9477-7d23bbc684ea",
+		"kind": "subnotion",
+		"name": "sommes algébriques",
+		"archived_at": null
+	},
+	{
+		"id": "2a86a152-3e07-4da7-ada4-7c0b32639dc4",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "approximation affine",
+		"archived_at": null
+	},
+	{
+		"id": "2ad3ea7d-8da3-4604-9e81-494df29935b8",
+		"parent_id": "c3205350-1c8b-404c-bf3c-a0b59bf69318",
+		"kind": "subnotion",
+		"name": "coordonnées",
+		"archived_at": null
+	},
+	{
+		"id": "2adca282-538d-4779-81aa-84b368d1765f",
+		"parent_id": "c90700c5-6111-437b-b66f-fdc76f3b1720",
+		"kind": "subnotion",
+		"name": "somme des termes",
+		"archived_at": null
+	},
+	{
+		"id": "2ba0557b-7f27-484b-b83a-d1a9f5152000",
+		"parent_id": "3355b3a5-d66a-4409-b02b-21db0e0ddb31",
+		"kind": "subnotion",
+		"name": "définition",
+		"archived_at": null
+	},
+	{
+		"id": "2c0359a2-edd8-4827-9dcc-b36e5de3d43f",
+		"parent_id": "ce9818ba-e994-4b63-bd17-80833260506d",
+		"kind": "subnotion",
+		"name": "factorisation",
+		"archived_at": null
+	},
+	{
+		"id": "2c566c85-ae7f-42cb-90cc-9dcdcee9219e",
+		"parent_id": "84fd6b08-6662-4e17-a661-66f035004091",
+		"kind": "subnotion",
+		"name": "cercle",
+		"archived_at": null
+	},
+	{
+		"id": "2c5a0016-5e1d-47da-b482-298ef55fe954",
+		"parent_id": "ce9818ba-e994-4b63-bd17-80833260506d",
+		"kind": "subnotion",
+		"name": "substitution",
+		"archived_at": null
+	},
+	{
+		"id": "2ce80985-7af6-4a68-a51b-926066a13131",
+		"parent_id": "06ff2476-e4f4-4aab-9673-fc88c4f7aac1",
+		"kind": "notion",
+		"name": "Raisonnements",
+		"archived_at": null
+	},
+	{
+		"id": "2d14fb5c-ed63-4d93-a22b-b273e3cace24",
+		"parent_id": "f4c26640-7694-416f-b89a-b066e7f4928d",
+		"kind": "subnotion",
+		"name": "dérivée",
+		"archived_at": null
+	},
+	{
+		"id": "2e16dd97-faa3-4f3d-9bd5-e6a5ebcadd90",
+		"parent_id": "8f71054a-d8a4-429f-8829-b6eead9c6cd8",
+		"kind": "subnotion",
+		"name": "parallélogramme",
+		"archived_at": null
+	},
+	{
+		"id": "2e77d4d9-646d-495e-b379-b662f7947a4f",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "variations et extremums",
+		"archived_at": null
+	},
+	{
+		"id": "2e8fffa8-99c2-4048-a96a-a3311925645f",
+		"parent_id": "bfe69202-e5bb-4f9b-9f5e-6ce92f176542",
+		"kind": "notion",
+		"name": "Modèles d'évolution",
+		"archived_at": null
+	},
+	{
+		"id": "2fa8e507-20f2-4cb1-b95e-ec43eaab12a3",
+		"parent_id": "8f7d9107-69f8-42ab-bfaa-db1f65e8b5dd",
+		"kind": "subnotion",
+		"name": "positions relatives et intersections",
+		"archived_at": null
+	},
+	{
+		"id": "3007b5e2-42da-4668-bade-161dd3008281",
+		"parent_id": "390f3077-a13b-4556-9e85-e304a77c71c5",
+		"kind": "subnotion",
+		"name": "carré",
+		"archived_at": null
+	},
+	{
+		"id": "30509bf4-7b4c-4b9d-8dcb-523cd2293c4d",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Homothéties",
+		"archived_at": null
+	},
+	{
+		"id": "30897b1d-e910-4196-8cf0-408d71ea0315",
+		"parent_id": "20b2daba-a64f-4020-96a7-8b13cad55139",
+		"kind": "subnotion",
+		"name": "fraction d'une quantité",
+		"archived_at": null
+	},
+	{
+		"id": "3106a8c5-e074-465f-8860-a83f55541b7e",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Triangles semblables",
+		"archived_at": null
+	},
+	{
+		"id": "3192673a-3aa3-4d7c-a26c-4425a5fccbb9",
+		"parent_id": "e6e7e3e3-bf3c-482c-8e47-275a639b9bfe",
+		"kind": "subnotion",
+		"name": "formes indéterminées",
+		"archived_at": null
+	},
+	{
+		"id": "320aaed2-0b03-4c5b-829e-8d85af280187",
+		"parent_id": "4c4951c2-b67d-433e-980e-cba64674d5df",
+		"kind": "subnotion",
+		"name": "représentation graphique",
+		"archived_at": null
+	},
+	{
+		"id": "3348f05d-f360-4a7d-adfc-139267556d04",
+		"parent_id": "ae405fc5-82cd-4617-9715-35b430ed916e",
+		"kind": "subnotion",
+		"name": "sommets, arêtes, degré",
+		"archived_at": null
+	},
+	{
+		"id": "3355b3a5-d66a-4409-b02b-21db0e0ddb31",
+		"parent_id": "bfe69202-e5bb-4f9b-9f5e-6ce92f176542",
+		"kind": "notion",
+		"name": "Limites de suites",
+		"archived_at": null
+	},
+	{
+		"id": "33ccee06-0f34-47f6-91a7-a1c47a88eb3b",
+		"parent_id": "4b942a44-3384-4c6b-aad5-b4824b0b8df1",
+		"kind": "subnotion",
+		"name": "loi des grands nombres",
+		"archived_at": null
+	},
+	{
+		"id": "34971ab0-5b2c-4dfd-bb9c-674a2877d9a3",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Translations",
+		"archived_at": null
+	},
+	{
+		"id": "34c0ff1a-0aad-407f-b7cc-5054fd3f5339",
+		"parent_id": "acb6a17e-fce8-4647-86bc-972dfdad0c8f",
+		"kind": "subnotion",
+		"name": "variations",
+		"archived_at": null
+	},
+	{
+		"id": "34c8c2c8-8911-4952-bd9a-edbe69e61552",
+		"parent_id": "51bba43f-bb50-41e8-8e91-865ffc8e1fc1",
+		"kind": "subnotion",
+		"name": "discriminant",
+		"archived_at": null
+	},
+	{
+		"id": "35cfd263-d25e-4680-ae51-471ef852b8ac",
+		"parent_id": "13322c55-ec45-43c5-9c84-3fb034df583e",
+		"kind": "subnotion",
+		"name": "angles et longueurs",
+		"archived_at": null
+	},
+	{
+		"id": "361f21bd-e59e-4cd2-892c-48b467c42a31",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Vecteurs : avec coordonnées",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "36608d52-f715-4304-8b89-58d150a96484",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "décomposition",
+		"archived_at": null
+	},
+	{
+		"id": "3670bf65-5802-4c13-bee7-bcc56dbb1f8e",
+		"parent_id": "ae405fc5-82cd-4617-9715-35b430ed916e",
+		"kind": "subnotion",
+		"name": "graphe orienté",
+		"archived_at": null
+	},
+	{
+		"id": "36b77182-25f4-4c04-946c-c3f4b7657818",
+		"parent_id": "059b0190-891b-41a0-9c73-ed91bd94b48e",
+		"kind": "subnotion",
+		"name": "trouver l'échelle",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "3779c173-0f56-45f8-9c44-0e4b841c5fb1",
+		"parent_id": "13322c55-ec45-43c5-9c84-3fb034df583e",
+		"kind": "subnotion",
+		"name": "expressions du produit scalaire",
+		"archived_at": null
+	},
+	{
+		"id": "38228cd1-5020-4e7e-b715-72856672d35b",
+		"parent_id": "4c009853-c441-4457-9496-e7c20b5b45b7",
+		"kind": "subnotion",
+		"name": "ratio",
+		"archived_at": null
+	},
+	{
+		"id": "3854295b-677f-44bc-9eb2-9b5c717c81c8",
+		"parent_id": "f104427e-c80c-4880-b58a-c7364d3eeaa2",
+		"kind": "notion",
+		"name": "Préalgorithmique",
+		"archived_at": null
+	},
+	{
+		"id": "3890b49e-ea75-49dd-8ecf-8a82671a79f1",
+		"parent_id": "7ed1251c-fd0a-4319-8715-aeac8e2dee22",
+		"kind": "subnotion",
+		"name": "somme des termes",
+		"archived_at": null
+	},
+	{
+		"id": "38aa84a9-03fc-4cbe-8ea6-d9035e251b4d",
+		"parent_id": "643eeae7-a419-4e25-8481-63bfe0c39a80",
+		"kind": "subnotion",
+		"name": "tableau de signes",
+		"archived_at": null
+	},
+	{
+		"id": "38df7701-00d0-4de9-aa37-ba9bd728d012",
+		"parent_id": "643eeae7-a419-4e25-8481-63bfe0c39a80",
+		"kind": "subnotion",
+		"name": "inéquation produit",
+		"archived_at": null
+	},
+	{
+		"id": "390f3077-a13b-4556-9e85-e304a77c71c5",
+		"parent_id": "101154f4-1d22-498e-9b1c-5f087ec5707c",
+		"kind": "notion",
+		"name": "Périmètres",
+		"archived_at": null
+	},
+	{
+		"id": "392180f1-d2ad-492b-bec2-6a70380a9818",
+		"parent_id": "e00fbb8a-3363-4fdf-9881-420651325080",
+		"kind": "notion",
+		"name": "Échantillonnage",
+		"archived_at": null
+	},
+	{
+		"id": "3a3a3e35-b1f9-49c9-8c70-24d9aa7d3ccf",
+		"parent_id": "600d983b-da8d-4d22-8c9a-e5e8eda869fa",
+		"kind": "notion",
+		"name": "Inéquations : premier degré",
+		"archived_at": null
+	},
+	{
+		"id": "3a568642-c000-4ab5-9b5a-6bd2407eb49a",
+		"parent_id": "83a0aeef-1abe-444e-b386-846a49017d1e",
+		"kind": "subnotion",
+		"name": "calcul astucieux",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "3a5aebf2-a60c-4c61-8eff-5e692e19ccea",
+		"parent_id": "57453fce-aabe-4909-be20-5ed46a437d0e",
+		"kind": "notion",
+		"name": "Pourcentages",
+		"archived_at": null
+	},
+	{
+		"id": "3a66f13e-8bcd-4388-9eca-3a9fb794c7e1",
+		"parent_id": "256f3dec-faad-4447-889f-553fd4096453",
+		"kind": "subnotion",
+		"name": "techniques de calcul",
+		"archived_at": null
+	},
+	{
+		"id": "3ab80199-a846-480e-8bb7-a24e4128b401",
+		"parent_id": "63c70a3e-cff0-4093-a093-07ae901c00e4",
+		"kind": "subnotion",
+		"name": "intersections",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "3aeddcd0-fd34-427e-b37b-13ec1e84612e",
+		"parent_id": "4bc9c80f-4b16-42e3-a81a-ba3489b32797",
+		"kind": "subnotion",
+		"name": "norme et distance",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "3c25de19-b78c-4195-aac9-b0c13c49ec73",
+		"parent_id": "df0b929e-ea8b-4f76-a7e3-8c19c7886184",
+		"kind": "subnotion",
+		"name": "décomposition",
+		"archived_at": null
+	},
+	{
+		"id": "3cfed021-5c0a-4150-8b81-2558a8561682",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "dérivabilité en un point",
+		"archived_at": null
+	},
+	{
+		"id": "3d618858-8ef7-4f3b-ac02-2ebe129c25b3",
+		"parent_id": "f104427e-c80c-4880-b58a-c7364d3eeaa2",
+		"kind": "notion",
+		"name": "Listes",
+		"archived_at": null
+	},
+	{
+		"id": "3d8c7968-52dd-44cf-8eec-141f261d7cea",
+		"parent_id": "aefbc76d-af7a-41c9-b8d6-fe1a017e6d2e",
+		"kind": "subnotion",
+		"name": "équations diophantiennes",
+		"archived_at": null
+	},
+	{
+		"id": "3dc5bb7e-6b09-41e0-97a4-98a440ac81c3",
+		"parent_id": "f4d9a099-6f97-4dcb-8cc9-a9eaa78d9db7",
+		"kind": "subnotion",
+		"name": "ax + b = cx + d",
+		"archived_at": null
+	},
+	{
+		"id": "3dfa48d4-de94-494c-8611-17fa789dc731",
+		"parent_id": "4b942a44-3384-4c6b-aad5-b4824b0b8df1",
+		"kind": "subnotion",
+		"name": "Bienaymé-Tchebychev",
+		"archived_at": null
+	},
+	{
+		"id": "3e2f28ab-8ab7-469a-bb82-bfb19b4ed4f3",
+		"parent_id": "df0b929e-ea8b-4f76-a7e3-8c19c7886184",
+		"kind": "subnotion",
+		"name": "simplification",
+		"archived_at": null
+	},
+	{
+		"id": "401e157f-9477-41ab-b86d-4e8b3b45eb40",
+		"parent_id": "63af2945-e48e-4883-bf28-4cca6b57fdba",
+		"kind": "subnotion",
+		"name": "équation quotient",
+		"archived_at": null
+	},
+	{
+		"id": "40a4c3c7-b9fe-4643-ac73-d20b7b48a157",
+		"parent_id": "67a1e1b0-16da-47ad-b560-b797d241b980",
+		"kind": "subnotion",
+		"name": "forme trigonométrique",
+		"archived_at": null
+	},
+	{
+		"id": "40a5df0a-110f-43f1-b046-3eb898c7c3d7",
+		"parent_id": "e27a4755-c362-4e46-b5e1-3ee2581dabe3",
+		"kind": "notion",
+		"name": "Fonction intégrale",
+		"archived_at": null
+	},
+	{
+		"id": "40a7c860-8472-4303-a39d-34980fa8a200",
+		"parent_id": "99d61abc-f362-43c1-b745-d3e3da9003dd",
+		"kind": "notion",
+		"name": "Variables aléatoires",
+		"archived_at": null
+	},
+	{
+		"id": "41026638-14a2-4b1c-8767-85e1ea185d3f",
+		"parent_id": "d5dc9b32-c6e7-4a02-959a-b659ba2cc494",
+		"kind": "subnotion",
+		"name": "formes",
+		"archived_at": null
+	},
+	{
+		"id": "4146b480-1e24-4338-aa8c-673814c62b39",
+		"parent_id": "2e8fffa8-99c2-4048-a96a-a3311925645f",
+		"kind": "subnotion",
+		"name": "algorithmes",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "41a2f42a-5052-4826-bc3b-b67fab9c83a3",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Géométrie repérée",
+		"archived_at": null
+	},
+	{
+		"id": "41b6bef6-7831-49e9-a44f-7700a39207e9",
+		"parent_id": "83a0aeef-1abe-444e-b386-846a49017d1e",
+		"kind": "subnotion",
+		"name": "multiplication",
+		"archived_at": null
+	},
+	{
+		"id": "42286194-7a27-4722-b0d4-72e64512bcd1",
+		"parent_id": "4bc9c80f-4b16-42e3-a81a-ba3489b32797",
+		"kind": "subnotion",
+		"name": "équation cartésienne d'un plan",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "429a84a5-9dfa-48df-80a1-0849005916e7",
+		"parent_id": "4f73aa09-f9ab-46ce-9272-7d58131da814",
+		"kind": "subnotion",
+		"name": "primalité",
+		"archived_at": null
+	},
+	{
+		"id": "42dffc12-7fcf-47ff-9ddf-c027ecdcf6cb",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "fonctions composées",
+		"archived_at": null
+	},
+	{
+		"id": "43e77a02-9eee-498f-927d-0f1ed8623672",
+		"parent_id": "b019d46b-b5b7-4e57-a358-170e53a20969",
+		"kind": "subnotion",
+		"name": "calculs",
+		"archived_at": null
+	},
+	{
+		"id": "44206987-801c-459c-bae7-648c7b9a2d84",
+		"parent_id": "ea762fa7-0f08-4ac2-a885-e328dd3d2da1",
+		"kind": "subnotion",
+		"name": "propriétés algébriques",
+		"archived_at": null
+	},
+	{
+		"id": "449e0fb8-72d2-4db3-a686-341c2282e011",
+		"parent_id": "4c4951c2-b67d-433e-980e-cba64674d5df",
+		"kind": "subnotion",
+		"name": "explicite ou par récurrence",
+		"archived_at": null
+	},
+	{
+		"id": "45184632-f878-4a46-94a4-cbbf3906a930",
+		"parent_id": "b0d50484-f7a8-4afd-83e0-c4349028cf7a",
+		"kind": "subnotion",
+		"name": "combinaisons",
+		"archived_at": null
+	},
+	{
+		"id": "45aaf8a1-2b9d-4d36-9024-632b682b2cdd",
+		"parent_id": "7f0932c3-16c8-4311-9864-f98d073bef9c",
+		"kind": "subnotion",
+		"name": "expression de la loi",
+		"archived_at": null
+	},
+	{
+		"id": "4613ccc8-5835-40e5-95ce-72d929a799f7",
+		"parent_id": "f294eccf-0283-4e82-afc8-8a9947ea57e9",
+		"kind": "subnotion",
+		"name": "calculer",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "4663e194-454c-4264-9bc3-e9c027a992e7",
+		"parent_id": "84fd6b08-6662-4e17-a661-66f035004091",
+		"kind": "subnotion",
+		"name": "polygones réguliers",
+		"archived_at": null
+	},
+	{
+		"id": "46725fad-119b-4aab-ab22-b9024bd502ee",
+		"parent_id": "915e7000-caf2-465e-b6f5-eaa803f4b691",
+		"kind": "subnotion",
+		"name": "en deux étapes ou plus",
+		"archived_at": null
+	},
+	{
+		"id": "46768b38-3bf4-4404-80a3-7e5a7e01eee0",
+		"parent_id": "83a394d1-ba60-4dcc-82b5-642908b88925",
+		"kind": "subnotion",
+		"name": "relation de Chasles",
+		"archived_at": null
+	},
+	{
+		"id": "46d5e0b8-d1fa-4564-9669-5fd5c7fb972f",
+		"parent_id": "68973ff5-f847-491c-b602-375673d5d080",
+		"kind": "subnotion",
+		"name": "implication",
+		"archived_at": null
+	},
+	{
+		"id": "476ce05e-94d1-496f-9d16-d1ec12ce562b",
+		"parent_id": "0437884a-1089-4db7-8d0e-135585b00995",
+		"kind": "subnotion",
+		"name": "critères de divisibilité",
+		"archived_at": null
+	},
+	{
+		"id": "477fe077-a729-4cf0-9273-33823adb1aa5",
+		"parent_id": "2210901a-acae-4a4c-8624-c68d9594c314",
+		"kind": "subnotion",
+		"name": "opérations",
+		"archived_at": null
+	},
+	{
+		"id": "479f44aa-a7f3-4711-848f-591724611b74",
+		"parent_id": "83a0aeef-1abe-444e-b386-846a49017d1e",
+		"kind": "subnotion",
+		"name": "distributivité",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "47c3b363-5e0c-41b0-abf5-1c5c79e6122a",
+		"parent_id": "c1718129-d89c-4291-8015-905e41307b0d",
+		"kind": "subnotion",
+		"name": "droite graduée",
+		"archived_at": null
+	},
+	{
+		"id": "47f43989-d4fd-439d-b8a8-3d9bf5dcdd67",
+		"parent_id": "d5f49f81-c74a-4e91-a2ec-405f6962c296",
+		"kind": "subnotion",
+		"name": "diagrammes en barres",
+		"archived_at": null
+	},
+	{
+		"id": "48ac0925-94eb-4f00-9496-cf6efa6d4e21",
+		"parent_id": "40a7c860-8472-4303-a39d-34980fa8a200",
+		"kind": "subnotion",
+		"name": "jeux et gains",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "48cfe88f-7e6b-423d-aa6d-ac2815335415",
+		"parent_id": "51bba43f-bb50-41e8-8e91-865ffc8e1fc1",
+		"kind": "subnotion",
+		"name": "mettre en équation",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "48eb82b3-3890-41b7-88e8-63c663a5151a",
+		"parent_id": "3355b3a5-d66a-4409-b02b-21db0e0ddb31",
+		"kind": "subnotion",
+		"name": "suites majorées, minorées",
+		"archived_at": null
+	},
+	{
+		"id": "492d0ee4-d488-4a34-877d-6c569bbd881d",
+		"parent_id": "e00fbb8a-3363-4fdf-9881-420651325080",
+		"kind": "notion",
+		"name": "Statistique à deux variables",
+		"archived_at": null
+	},
+	{
+		"id": "499c1a03-66f3-4dd8-a55d-a140e000690a",
+		"parent_id": "3106a8c5-e074-465f-8860-a83f55541b7e",
+		"kind": "subnotion",
+		"name": "cas d'égalité des triangles",
+		"archived_at": null
+	},
+	{
+		"id": "49cafc5f-958a-4766-8d24-8de51abd4c9b",
+		"parent_id": "b0d50484-f7a8-4afd-83e0-c4349028cf7a",
+		"kind": "subnotion",
+		"name": "coefficients binomiaux",
+		"archived_at": null
+	},
+	{
+		"id": "49cf382a-1b34-4ce0-8979-305adbdf1074",
+		"parent_id": "6b00cf7d-3928-4080-a857-e5a3fff307c0",
+		"kind": "subnotion",
+		"name": "appeler une fonction",
+		"archived_at": null
+	},
+	{
+		"id": "4a484842-06eb-4b0c-8ee3-45748cf25cc7",
+		"parent_id": "0f7186ff-d0a9-4502-87b4-360cb31912f0",
+		"kind": "subnotion",
+		"name": "suite auxiliaire",
+		"archived_at": null
+	},
+	{
+		"id": "4add3625-1672-4354-8e0c-8037eab0a4aa",
+		"parent_id": "01303d39-dbe9-4183-b3bf-ed703598aec1",
+		"kind": "subnotion",
+		"name": "équations",
+		"archived_at": null
+	},
+	{
+		"id": "4b4437d2-1738-4875-9f18-3aa66eedd60b",
+		"parent_id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"kind": "subnotion",
+		"name": "double et moitié",
+		"archived_at": null
+	},
+	{
+		"id": "4b942a44-3384-4c6b-aad5-b4824b0b8df1",
+		"parent_id": "99d61abc-f362-43c1-b745-d3e3da9003dd",
+		"kind": "notion",
+		"name": "Sommes et concentration",
+		"archived_at": null
+	},
+	{
+		"id": "4bc9c80f-4b16-42e3-a81a-ba3489b32797",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Orthogonalité : avec coordonnées",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "4bf312a9-14ec-4869-8783-cfa7873bcf8f",
+		"parent_id": "51bba43f-bb50-41e8-8e91-865ffc8e1fc1",
+		"kind": "subnotion",
+		"name": "se ramener au second degré",
+		"archived_at": null
+	},
+	{
+		"id": "4c009853-c441-4457-9496-e7c20b5b45b7",
+		"parent_id": "57453fce-aabe-4909-be20-5ed46a437d0e",
+		"kind": "notion",
+		"name": "Situations de proportionnalité",
+		"archived_at": null
+	},
+	{
+		"id": "4c2e809b-040c-48ab-8386-b12e13951050",
+		"parent_id": "8f7d9107-69f8-42ab-bfaa-db1f65e8b5dd",
+		"kind": "subnotion",
+		"name": "coplanarité et décomposition",
+		"archived_at": null
+	},
+	{
+		"id": "4c4951c2-b67d-433e-980e-cba64674d5df",
+		"parent_id": "bfe69202-e5bb-4f9b-9f5e-6ce92f176542",
+		"kind": "notion",
+		"name": "Généralités sur les suites",
+		"archived_at": null
+	},
+	{
+		"id": "4c66581e-278f-4a76-bf63-ca26cd040c4d",
+		"parent_id": "8f71054a-d8a4-429f-8829-b6eead9c6cd8",
+		"kind": "subnotion",
+		"name": "carré",
+		"archived_at": null
+	},
+	{
+		"id": "4ca0318e-b40f-496c-8ce4-003b3bfb7be0",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Symétrie axiale",
+		"archived_at": null
+	},
+	{
+		"id": "4cb8e77b-ecb1-45cf-8a69-ef123d15357c",
+		"parent_id": "4c009853-c441-4457-9496-e7c20b5b45b7",
+		"kind": "subnotion",
+		"name": "quatrième proportionnelle",
+		"archived_at": null
+	},
+	{
+		"id": "4ccb2162-d568-49db-9001-ef3c3f2bbf9a",
+		"parent_id": "1756e07f-a3e1-4474-8d40-26a90f4360f6",
+		"kind": "subnotion",
+		"name": "solution générale",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "4d3274bd-3897-4db3-ad7e-73ddf35924a7",
+		"parent_id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"kind": "subnotion",
+		"name": "somme",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "4d461e9a-831c-4079-b4cd-33d705bded3f",
+		"parent_id": "67a8665d-7ee5-43df-8ed0-9230d57035df",
+		"kind": "subnotion",
+		"name": "réciproque",
+		"archived_at": null
+	},
+	{
+		"id": "4dc14ca4-be3b-4050-a114-1d7d52d408c8",
+		"parent_id": "101154f4-1d22-498e-9b1c-5f087ec5707c",
+		"kind": "notion",
+		"name": "Masses",
+		"archived_at": null
+	},
+	{
+		"id": "4e37c6c4-ae69-4506-9252-c0d0c1725567",
+		"parent_id": "a469c6fa-06e2-4581-a972-7ccfa7143c6e",
+		"kind": "subnotion",
+		"name": "variations",
+		"archived_at": null
+	},
+	{
+		"id": "4e871e12-4abf-4dd3-bea7-933b1d08877b",
+		"parent_id": "40a7c860-8472-4303-a39d-34980fa8a200",
+		"kind": "subnotion",
+		"name": "loi d'une variable aléatoire",
+		"archived_at": null
+	},
+	{
+		"id": "4eb20dcf-a706-4d5b-a639-45816d694ef2",
+		"parent_id": "704c7760-9f25-4fa0-8e6b-9f2b1795c543",
+		"kind": "subnotion",
+		"name": "variations en pourcentage",
+		"archived_at": null
+	},
+	{
+		"id": "4ed9009f-dc00-4e62-86d2-1ab0bcd7a2ed",
+		"parent_id": "c90700c5-6111-437b-b66f-fdc76f3b1720",
+		"kind": "subnotion",
+		"name": "définition",
+		"archived_at": null
+	},
+	{
+		"id": "4efb9dac-32f5-4af2-be68-e3a06d67dcb1",
+		"parent_id": "915e7000-caf2-465e-b6f5-eaa803f4b691",
+		"kind": "subnotion",
+		"name": "multiplicatifs",
+		"archived_at": null
+	},
+	{
+		"id": "4f4657c2-1475-4503-a848-a5896eb80c5c",
+		"parent_id": "51bba43f-bb50-41e8-8e91-865ffc8e1fc1",
+		"kind": "subnotion",
+		"name": "équations incomplètes",
+		"archived_at": null
+	},
+	{
+		"id": "4f60ebf4-e50e-4488-97fd-e3f050cf3f40",
+		"parent_id": "84fd6b08-6662-4e17-a661-66f035004091",
+		"kind": "subnotion",
+		"name": "médiatrice et bissectrice",
+		"archived_at": null
+	},
+	{
+		"id": "4f73aa09-f9ab-46ce-9272-7d58131da814",
+		"parent_id": "841b9ac9-0d08-4d54-bffa-d6b9fb2170d8",
+		"kind": "notion",
+		"name": "Nombres premiers",
+		"archived_at": null
+	},
+	{
+		"id": "4f874e6f-9172-46cc-a35d-2c7fe38cafe5",
+		"parent_id": "2024c53b-9570-44e8-a8bb-6ba938b51982",
+		"kind": "subnotion",
+		"name": "statut des lettres et des égalités",
+		"archived_at": null
+	},
+	{
+		"id": "4fc7371b-52a9-4289-8dfd-593c64fd26a6",
+		"parent_id": "40a7c860-8472-4303-a39d-34980fa8a200",
+		"kind": "subnotion",
+		"name": "variance et écart-type",
+		"archived_at": null
+	},
+	{
+		"id": "500ebf21-54e4-493d-ac41-abe90b3a2fb6",
+		"parent_id": "b9a04f0b-b5cc-4a36-91a2-5c52a5572a37",
+		"kind": "subnotion",
+		"name": "coder un déplacement",
+		"archived_at": null
+	},
+	{
+		"id": "506c3771-9751-41eb-9608-6a318fc7c280",
+		"parent_id": "f104427e-c80c-4880-b58a-c7364d3eeaa2",
+		"kind": "notion",
+		"name": "Variables et instructions",
+		"archived_at": null
+	},
+	{
+		"id": "50ec5c7a-f73c-4599-92f0-82f52be5c111",
+		"parent_id": "affd3833-ad6d-49e0-9e86-dc1449e7b1ec",
+		"kind": "subnotion",
+		"name": "calcul posé",
+		"archived_at": null
+	},
+	{
+		"id": "5162a5d5-6926-4aba-8c97-d534c11455d8",
+		"parent_id": "e6e7e3e3-bf3c-482c-8e47-275a639b9bfe",
+		"kind": "subnotion",
+		"name": "asymptotes",
+		"archived_at": null
+	},
+	{
+		"id": "51b02c02-fae2-45e5-aec0-4699f0c37d7e",
+		"parent_id": "83a394d1-ba60-4dcc-82b5-642908b88925",
+		"kind": "subnotion",
+		"name": "linéarité",
+		"archived_at": null
+	},
+	{
+		"id": "51bba43f-bb50-41e8-8e91-865ffc8e1fc1",
+		"parent_id": "600d983b-da8d-4d22-8c9a-e5e8eda869fa",
+		"kind": "notion",
+		"name": "Équations : second degré",
+		"archived_at": null
+	},
+	{
+		"id": "51c396af-438d-4b70-9e45-0dc7ffb39549",
+		"parent_id": "7ed1251c-fd0a-4319-8715-aeac8e2dee22",
+		"kind": "subnotion",
+		"name": "terme général",
+		"archived_at": null
+	},
+	{
+		"id": "52e22cd5-41f6-42fc-b5b7-024e84a89e9e",
+		"parent_id": "affd3833-ad6d-49e0-9e86-dc1449e7b1ec",
+		"kind": "subnotion",
+		"name": "division euclidienne",
+		"archived_at": null
+	},
+	{
+		"id": "52f15108-5231-47e5-96c6-bd133a6617fe",
+		"parent_id": "ef42f135-69a9-41ce-a7d5-9b2c5df5d0cb",
+		"kind": "subnotion",
+		"name": "équiprobabilité",
+		"archived_at": null
+	},
+	{
+		"id": "5384bd2c-38a3-4689-83c8-f9caac606736",
+		"parent_id": "9bf01295-e760-4f2d-9054-55abe581a376",
+		"kind": "notion",
+		"name": "Cardinal et produit cartésien",
+		"archived_at": null
+	},
+	{
+		"id": "54b0242b-0477-4443-a9d4-f7b09a9ddbae",
+		"parent_id": "e00fbb8a-3363-4fdf-9881-420651325080",
+		"kind": "notion",
+		"name": "Indicateurs",
+		"archived_at": null
+	},
+	{
+		"id": "55d886a9-a6e9-493c-bf1d-907f186b7eb7",
+		"parent_id": "bcb29656-0514-476a-8618-1bd9cbac179b",
+		"kind": "subnotion",
+		"name": "état stable",
+		"archived_at": null
+	},
+	{
+		"id": "56c23935-532b-41de-bbe0-ed48b08e46a2",
+		"parent_id": "361f21bd-e59e-4cd2-892c-48b467c42a31",
+		"kind": "subnotion",
+		"name": "colinéarité et déterminant",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "56e495a5-ffa7-4a4e-a950-b59d7acbfb15",
+		"parent_id": "63af2945-e48e-4883-bf28-4cca6b57fdba",
+		"kind": "subnotion",
+		"name": "x² = a",
+		"archived_at": null
+	},
+	{
+		"id": "57453fce-aabe-4909-be20-5ed46a437d0e",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Proportionnalité",
+		"archived_at": null
+	},
+	{
+		"id": "57c3b791-3675-4303-9513-d2a7c4b89a33",
+		"parent_id": "0049d7a3-e462-42b5-b270-b8a15fcda402",
+		"kind": "subnotion",
+		"name": "définition et distance",
+		"archived_at": null
+	},
+	{
+		"id": "58838eda-abe1-4bc2-9dca-207f19d3e176",
+		"parent_id": "aa4502ec-8825-4779-aaad-9911829c204f",
+		"kind": "notion",
+		"name": "y′ = ay",
+		"archived_at": null
+	},
+	{
+		"id": "58f09eb0-1e34-4241-b10b-77d6b07a065f",
+		"parent_id": "2ce80985-7af6-4a68-a51b-926066a13131",
+		"kind": "subnotion",
+		"name": "disjonction de cas",
+		"archived_at": null
+	},
+	{
+		"id": "59390f36-91cf-4214-a5ae-bf6e6e385094",
+		"parent_id": "f941c737-8f57-4fa1-aaa5-fa65a684b1e8",
+		"kind": "subnotion",
+		"name": "affixes et distances",
+		"archived_at": null
+	},
+	{
+		"id": "59d5a739-5752-479f-a98d-221acc3ae3f6",
+		"parent_id": "ce9818ba-e994-4b63-bd17-80833260506d",
+		"kind": "subnotion",
+		"name": "réduction",
+		"archived_at": null
+	},
+	{
+		"id": "5a6cdff9-5986-4651-935d-394122caacf3",
+		"parent_id": "06ff2476-e4f4-4aab-9673-fc88c4f7aac1",
+		"kind": "notion",
+		"name": "Quantificateurs et négation",
+		"archived_at": null
+	},
+	{
+		"id": "5ac82044-a866-4723-8f80-465779049f9a",
+		"parent_id": "8f7d9107-69f8-42ab-bfaa-db1f65e8b5dd",
+		"kind": "subnotion",
+		"name": "vecteurs de l'espace",
+		"archived_at": null
+	},
+	{
+		"id": "5b23f7ba-e6fc-43c1-b8c2-44f522bd4aeb",
+		"parent_id": "d5f49f81-c74a-4e91-a2ec-405f6962c296",
+		"kind": "subnotion",
+		"name": "tableaux",
+		"archived_at": null
+	},
+	{
+		"id": "5b46a0b3-1f67-4c81-a83a-3df8f851126b",
+		"parent_id": "f941c737-8f57-4fa1-aaa5-fa65a684b1e8",
+		"kind": "subnotion",
+		"name": "alignement et orthogonalité",
+		"archived_at": null
+	},
+	{
+		"id": "5bddf441-baa0-4909-9860-dc7e4a6cc114",
+		"parent_id": "c90700c5-6111-437b-b66f-fdc76f3b1720",
+		"kind": "subnotion",
+		"name": "calculer un terme",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "5becbd79-dfa5-4993-8183-f0b54ac23357",
+		"parent_id": "e567352e-4416-438b-a4a3-bc2d817f8231",
+		"kind": "subnotion",
+		"name": "perspective cavalière",
+		"archived_at": null
+	},
+	{
+		"id": "5c40b039-4d9e-42fc-9864-fcfd6ab5bf68",
+		"parent_id": "d93b2714-2329-4e92-9d2b-d56752d11a1c",
+		"kind": "subnotion",
+		"name": "équations ax ≡ b [n]",
+		"archived_at": null
+	},
+	{
+		"id": "5c6cb025-fb7c-458b-ab90-06ae6f329e11",
+		"parent_id": "99d61abc-f362-43c1-b745-d3e3da9003dd",
+		"kind": "notion",
+		"name": "Autres lois",
+		"archived_at": null
+	},
+	{
+		"id": "5c77fa6c-c841-48d1-900d-2c4ed647cfe3",
+		"parent_id": "0f7186ff-d0a9-4502-87b4-360cb31912f0",
+		"kind": "subnotion",
+		"name": "solution constante",
+		"archived_at": null
+	},
+	{
+		"id": "5cc5fd1c-d2c0-4cb9-9c5d-7caaebb65142",
+		"parent_id": "c3205350-1c8b-404c-bf3c-a0b59bf69318",
+		"kind": "subnotion",
+		"name": "égalité de vecteurs",
+		"archived_at": null
+	},
+	{
+		"id": "5d0029cf-79b8-4628-978c-789df16aa964",
+		"parent_id": "77bce7c1-9774-44f8-a188-e497a50632d7",
+		"kind": "subnotion",
+		"name": "produit scalaire dans l'espace",
+		"archived_at": null
+	},
+	{
+		"id": "5e07bbe6-5657-4873-a2a1-225d3124682b",
+		"parent_id": "923c4069-8aaf-4b21-addf-74599b601bdc",
+		"kind": "subnotion",
+		"name": "valeurs intermédiaires",
+		"archived_at": null
+	},
+	{
+		"id": "5e281132-f3db-412c-862b-e57a93fe366b",
+		"parent_id": "68973ff5-f847-491c-b602-375673d5d080",
+		"kind": "subnotion",
+		"name": "réciproque",
+		"archived_at": null
+	},
+	{
+		"id": "5e8f25d1-a620-4282-9d70-da57a5b91e6d",
+		"parent_id": "19b33d1b-7881-4b68-ad4c-271178ca9f72",
+		"kind": "subnotion",
+		"name": "égalités",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "5f04a70b-5a2d-4899-acbc-d874c11b3801",
+		"parent_id": "0049d7a3-e462-42b5-b270-b8a15fcda402",
+		"kind": "subnotion",
+		"name": "variations",
+		"archived_at": null
+	},
+	{
+		"id": "5f8914a5-7353-4030-9389-93b598f08215",
+		"parent_id": "101154f4-1d22-498e-9b1c-5f087ec5707c",
+		"kind": "notion",
+		"name": "Unités et conversions",
+		"archived_at": null
+	},
+	{
+		"id": "5fb8ad18-8e0a-4a89-9828-e6ad2bf89017",
+		"parent_id": "84fd6b08-6662-4e17-a661-66f035004091",
+		"kind": "subnotion",
+		"name": "angles droits",
+		"archived_at": null
+	},
+	{
+		"id": "5fed3dde-0161-484e-9f71-97a74d00bf8d",
+		"parent_id": "c3205350-1c8b-404c-bf3c-a0b59bf69318",
+		"kind": "subnotion",
+		"name": "colinéarité",
+		"archived_at": null
+	},
+	{
+		"id": "5fefc39e-2d5c-47a3-b1dd-2cb772c5a881",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Graphes",
+		"archived_at": null
+	},
+	{
+		"id": "600a88c8-4245-4105-a587-bcccb20d079d",
+		"parent_id": "600d983b-da8d-4d22-8c9a-e5e8eda869fa",
+		"kind": "notion",
+		"name": "Inéquations : second degré",
+		"archived_at": null
+	},
+	{
+		"id": "600d983b-da8d-4d22-8c9a-e5e8eda869fa",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Algèbre",
+		"archived_at": null
+	},
+	{
+		"id": "603fba3a-b87d-44f6-a656-cfd2e33be342",
+		"parent_id": "f4d9a099-6f97-4dcb-8cc9-a9eaa78d9db7",
+		"kind": "subnotion",
+		"name": "ax + b = c",
+		"archived_at": null
+	},
+	{
+		"id": "60634fe1-2dd3-4fa6-9aa9-1340700de1a0",
+		"parent_id": "165f30d8-7132-46e5-a194-5fa009b579ae",
+		"kind": "subnotion",
+		"name": "factorielle",
+		"archived_at": null
+	},
+	{
+		"id": "607fd944-ac11-49d9-9625-0ad246b63a54",
+		"parent_id": "83a394d1-ba60-4dcc-82b5-642908b88925",
+		"kind": "subnotion",
+		"name": "par une primitive",
+		"archived_at": null
+	},
+	{
+		"id": "608b4ed1-64b8-4376-aa57-f0dba8010d07",
+		"parent_id": "c787b75d-e412-4b0b-a7dd-4987f18c2499",
+		"kind": "subnotion",
+		"name": "1/x = k, 1/x < k",
+		"archived_at": null
+	},
+	{
+		"id": "60c84755-f27d-4111-9819-26a5dec79db8",
+		"parent_id": "2024c53b-9570-44e8-a8bb-6ba938b51982",
+		"kind": "subnotion",
+		"name": "et, ou, non",
+		"archived_at": null
+	},
+	{
+		"id": "61a67215-f01f-4373-abbe-874c73f915ab",
+		"parent_id": "41a2f42a-5052-4826-bc3b-b67fab9c83a3",
+		"kind": "subnotion",
+		"name": "intersection de deux droites",
+		"archived_at": null
+	},
+	{
+		"id": "61aaeaa9-33cf-4147-bc08-ce66e50c5ec4",
+		"parent_id": "492d0ee4-d488-4a34-877d-6c569bbd881d",
+		"kind": "subnotion",
+		"name": "ajustement affine",
+		"archived_at": null
+	},
+	{
+		"id": "61acfd7a-5d80-462c-941b-45fc9c313a3c",
+		"parent_id": "392180f1-d2ad-492b-bec2-6a70380a9818",
+		"kind": "subnotion",
+		"name": "estimation d'une proportion",
+		"archived_at": null
+	},
+	{
+		"id": "61b5373f-cee3-4b2c-a969-e43faf614e31",
+		"parent_id": "2e8fffa8-99c2-4048-a96a-a3311925645f",
+		"kind": "subnotion",
+		"name": "pourcentages",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "621ae782-ed58-4869-83b7-39fec3edb215",
+		"parent_id": "87b911ae-e40a-4459-b9cc-a6fd1115c8b2",
+		"kind": "subnotion",
+		"name": "tableaux croisés",
+		"archived_at": null
+	},
+	{
+		"id": "622672f6-ed20-49d4-990c-a78e69b2f514",
+		"parent_id": "2ce80985-7af6-4a68-a51b-926066a13131",
+		"kind": "subnotion",
+		"name": "par contraposée",
+		"archived_at": null
+	},
+	{
+		"id": "62ad4a4b-d704-423e-99fc-54c6f2e701a8",
+		"parent_id": "81cb906e-734b-4d92-b444-e64b917ed75d",
+		"kind": "subnotion",
+		"name": "boucle bornée",
+		"archived_at": null
+	},
+	{
+		"id": "62d06c13-cebd-4644-9085-483e798d338c",
+		"parent_id": "f5a107a9-b42c-4a6e-9bcd-92fb1b3aa4f9",
+		"kind": "subnotion",
+		"name": "nombre de chaînes de longueur n",
+		"archived_at": null
+	},
+	{
+		"id": "635fd87a-a4b1-401e-9eca-07c5d01575e6",
+		"parent_id": "8f7d9107-69f8-42ab-bfaa-db1f65e8b5dd",
+		"kind": "subnotion",
+		"name": "représentation paramétrique",
+		"archived_at": null
+	},
+	{
+		"id": "63af2945-e48e-4883-bf28-4cca6b57fdba",
+		"parent_id": "600d983b-da8d-4d22-8c9a-e5e8eda869fa",
+		"kind": "notion",
+		"name": "Équations : produit et quotient",
+		"archived_at": null
+	},
+	{
+		"id": "63b6ea38-1619-4faa-9fff-9bf04c77f9fe",
+		"parent_id": "2885b693-ca36-442b-bf45-1b51d4bb9bf5",
+		"kind": "subnotion",
+		"name": "complémentaire",
+		"archived_at": null
+	},
+	{
+		"id": "63c70a3e-cff0-4093-a093-07ae901c00e4",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Espace : avec coordonnées",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "63e3a973-dd18-43a2-b3ad-52f6ba48e62f",
+		"parent_id": "cef797b1-4c6f-4796-8a20-8273fc381e9a",
+		"kind": "subnotion",
+		"name": "calcul de longueurs",
+		"archived_at": null
+	},
+	{
+		"id": "643eeae7-a419-4e25-8481-63bfe0c39a80",
+		"parent_id": "600d983b-da8d-4d22-8c9a-e5e8eda869fa",
+		"kind": "notion",
+		"name": "Inéquations : produit et quotient",
+		"archived_at": null
+	},
+	{
+		"id": "64788977-1d07-4db7-b510-690f5958be15",
+		"parent_id": "83a0aeef-1abe-444e-b386-846a49017d1e",
+		"kind": "subnotion",
+		"name": "double et moitié",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "649073f5-cfcb-4e0c-a9db-65231c8f8f2c",
+		"parent_id": "c3205350-1c8b-404c-bf3c-a0b59bf69318",
+		"kind": "subnotion",
+		"name": "translation et vecteur",
+		"archived_at": null
+	},
+	{
+		"id": "64989d55-dbb7-49e7-ba4a-38211c6395f0",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Convexité",
+		"archived_at": null
+	},
+	{
+		"id": "65b240f6-1112-4c18-a083-ba90002dee94",
+		"parent_id": "b8f0930d-9cb7-4a83-8930-08be0513cf1b",
+		"kind": "subnotion",
+		"name": "allure des courbes",
+		"archived_at": null
+	},
+	{
+		"id": "65d5e095-2294-414e-b869-6574028badc2",
+		"parent_id": "26ca7245-f68b-423b-a1e3-ba8f10edb5f4",
+		"kind": "subnotion",
+		"name": "angles associés",
+		"archived_at": null
+	},
+	{
+		"id": "6674a0eb-a289-46fb-abbf-15b0b27ab724",
+		"parent_id": "e31afec7-a8fe-4363-8046-974bc89f6c54",
+		"kind": "subnotion",
+		"name": "principes additif et multiplicatif",
+		"archived_at": null
+	},
+	{
+		"id": "66bba873-56d3-4301-a38d-dcdcf1f2a03f",
+		"parent_id": "26ca7245-f68b-423b-a1e3-ba8f10edb5f4",
+		"kind": "subnotion",
+		"name": "inéquations",
+		"archived_at": null
+	},
+	{
+		"id": "672d1502-aae4-42ce-bc76-25051ee26958",
+		"parent_id": "d73c0be5-89b9-472e-993b-cde1695d72d1",
+		"kind": "subnotion",
+		"name": "comparaison et mesure",
+		"archived_at": null
+	},
+	{
+		"id": "6788d3d0-a735-46df-9af2-d494b891a53e",
+		"parent_id": "1492dc67-e345-414a-b2b0-6d51d796dfb3",
+		"kind": "subnotion",
+		"name": "règles de calcul",
+		"archived_at": null
+	},
+	{
+		"id": "67a1e1b0-16da-47ad-b560-b797d241b980",
+		"parent_id": "ffbc0a33-4d20-4610-ad0f-6f702e981622",
+		"kind": "notion",
+		"name": "Formes trigo. et exponentielle",
+		"archived_at": null
+	},
+	{
+		"id": "67a8665d-7ee5-43df-8ed0-9230d57035df",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Théorème de Pythagore",
+		"archived_at": null
+	},
+	{
+		"id": "67c9888e-f15c-4bb8-81c6-28d6ff624089",
+		"parent_id": "7edbe90f-eb83-4186-9014-8a8f2fbddd84",
+		"kind": "subnotion",
+		"name": "aire algébrique",
+		"archived_at": null
+	},
+	{
+		"id": "68193c10-5d02-4e90-aab4-72a2906d4f97",
+		"parent_id": "390f3077-a13b-4556-9e85-e304a77c71c5",
+		"kind": "subnotion",
+		"name": "rectangle",
+		"archived_at": null
+	},
+	{
+		"id": "6834fc82-4e41-4c01-9af5-318cb94588d2",
+		"parent_id": "2885b693-ca36-442b-bf45-1b51d4bb9bf5",
+		"kind": "subnotion",
+		"name": "différence",
+		"archived_at": null
+	},
+	{
+		"id": "68548051-5211-4709-8f2b-736aa40a1fde",
+		"parent_id": "84fd6b08-6662-4e17-a661-66f035004091",
+		"kind": "subnotion",
+		"name": "constructions",
+		"archived_at": null
+	},
+	{
+		"id": "68973ff5-f847-491c-b602-375673d5d080",
+		"parent_id": "06ff2476-e4f4-4aab-9673-fc88c4f7aac1",
+		"kind": "notion",
+		"name": "Implication et équivalence",
+		"archived_at": null
+	},
+	{
+		"id": "6924738e-9806-4033-98a9-44a4b9ff2a78",
+		"parent_id": "e00fbb8a-3363-4fdf-9881-420651325080",
+		"kind": "notion",
+		"name": "Tableaux croisés",
+		"archived_at": null
+	},
+	{
+		"id": "693da656-88cf-4b32-8215-6dfa91c4ce3f",
+		"parent_id": "77bce7c1-9774-44f8-a188-e497a50632d7",
+		"kind": "subnotion",
+		"name": "orthogonalité de droites et plans",
+		"archived_at": null
+	},
+	{
+		"id": "69493900-72c8-4eda-bdfd-1054fe86d9b4",
+		"parent_id": "0d6f039b-4d7e-4079-8d46-598033d41768",
+		"kind": "subnotion",
+		"name": "unités et conversions",
+		"archived_at": null
+	},
+	{
+		"id": "695a1def-4bd4-4e52-98c0-b1f7d5710339",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "quadruple et quart",
+		"archived_at": null
+	},
+	{
+		"id": "6a3afdaa-f175-4fba-99b1-12ed67a41082",
+		"parent_id": "77bce7c1-9774-44f8-a188-e497a50632d7",
+		"kind": "subnotion",
+		"name": "sphère",
+		"archived_at": null
+	},
+	{
+		"id": "6ae0c243-e5bc-4083-b739-d5886a99a8dd",
+		"parent_id": "7ed1251c-fd0a-4319-8715-aeac8e2dee22",
+		"kind": "subnotion",
+		"name": "définition",
+		"archived_at": null
+	},
+	{
+		"id": "6b00cf7d-3928-4080-a857-e5a3fff307c0",
+		"parent_id": "f104427e-c80c-4880-b58a-c7364d3eeaa2",
+		"kind": "notion",
+		"name": "Fonctions Python",
+		"archived_at": null
+	},
+	{
+		"id": "6c27a9d8-d9e5-4132-a1f2-4768e5f342d1",
+		"parent_id": "5fefc39e-2d5c-47a3-b1dd-2cb772c5a881",
+		"kind": "notion",
+		"name": "Chaînes et connexité",
+		"archived_at": null
+	},
+	{
+		"id": "6c6fdc04-5359-41d3-a274-fa4f6154ff3e",
+		"parent_id": "256f3dec-faad-4447-889f-553fd4096453",
+		"kind": "subnotion",
+		"name": "propriétés",
+		"archived_at": null
+	},
+	{
+		"id": "6ce95f7a-c7b2-410e-814e-e46c04ac3b67",
+		"parent_id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"kind": "subnotion",
+		"name": "écritures",
+		"archived_at": null
+	},
+	{
+		"id": "6dc85352-4b5c-43cf-9cfa-2b9654f97129",
+		"parent_id": "0440f40d-9150-4dc7-915d-a473affcbcae",
+		"kind": "subnotion",
+		"name": "puissance de puissance",
+		"archived_at": null
+	},
+	{
+		"id": "6dd4513e-9f0e-44c9-afb7-4558826dabd3",
+		"parent_id": "ffbc0a33-4d20-4610-ad0f-6f702e981622",
+		"kind": "notion",
+		"name": "Module et argument",
+		"archived_at": null
+	},
+	{
+		"id": "6f113931-e786-4fc6-b4e6-89a0feed19e8",
+		"parent_id": "3355b3a5-d66a-4409-b02b-21db0e0ddb31",
+		"kind": "subnotion",
+		"name": "opérations",
+		"archived_at": null
+	},
+	{
+		"id": "704c7760-9f25-4fa0-8e6b-9f2b1795c543",
+		"parent_id": "57453fce-aabe-4909-be20-5ed46a437d0e",
+		"kind": "notion",
+		"name": "Évolutions",
+		"archived_at": null
+	},
+	{
+		"id": "7112e074-dccc-47b4-bcbc-0d3c217d24a1",
+		"parent_id": "bfe69202-e5bb-4f9b-9f5e-6ce92f176542",
+		"kind": "notion",
+		"name": "Suites récurrentes",
+		"archived_at": null
+	},
+	{
+		"id": "717c9f23-fbde-4444-804c-6fb51394ae9a",
+		"parent_id": "c1718129-d89c-4291-8015-905e41307b0d",
+		"kind": "subnotion",
+		"name": "décomposition",
+		"archived_at": null
+	},
+	{
+		"id": "71f16931-3821-4a2b-bdb3-ed785d2aedae",
+		"parent_id": "4c009853-c441-4457-9496-e7c20b5b45b7",
+		"kind": "subnotion",
+		"name": "coefficient de proportionnalité",
+		"archived_at": null
+	},
+	{
+		"id": "72117e2f-c29a-4ee9-b629-f10338844a9e",
+		"parent_id": "acb6a17e-fce8-4647-86bc-972dfdad0c8f",
+		"kind": "subnotion",
+		"name": "signe",
+		"archived_at": null
+	},
+	{
+		"id": "731d1b43-43de-4d7b-985e-36aa00a2be4d",
+		"parent_id": "26ca7245-f68b-423b-a1e3-ba8f10edb5f4",
+		"kind": "subnotion",
+		"name": "parité et périodicité",
+		"archived_at": null
+	},
+	{
+		"id": "7540aaa9-1c9b-45f0-a990-74bec0a32de5",
+		"parent_id": "d5dc9b32-c6e7-4a02-959a-b659ba2cc494",
+		"kind": "subnotion",
+		"name": "somme et produit des racines",
+		"archived_at": null
+	},
+	{
+		"id": "765e86f9-ed84-4b45-b954-e0936e9077d2",
+		"parent_id": "d5f49f81-c74a-4e91-a2ec-405f6962c296",
+		"kind": "subnotion",
+		"name": "fréquences cumulées",
+		"archived_at": null
+	},
+	{
+		"id": "76deef90-fd3c-4870-86c2-6598ba17e6e1",
+		"parent_id": "0f7186ff-d0a9-4502-87b4-360cb31912f0",
+		"kind": "subnotion",
+		"name": "limite",
+		"archived_at": null
+	},
+	{
+		"id": "76ec9d1e-69f3-4a44-9b08-2cce73793294",
+		"parent_id": "600d983b-da8d-4d22-8c9a-e5e8eda869fa",
+		"kind": "notion",
+		"name": "Premiers pas algébriques",
+		"archived_at": null
+	},
+	{
+		"id": "773d6f5c-62be-43a9-93bf-30d1b7cdf906",
+		"parent_id": "101154f4-1d22-498e-9b1c-5f087ec5707c",
+		"kind": "notion",
+		"name": "Volumes",
+		"archived_at": null
+	},
+	{
+		"id": "77ae5451-0978-412b-94f1-a17e12322ed2",
+		"parent_id": "76ec9d1e-69f3-4a44-9b08-2cce73793294",
+		"kind": "subnotion",
+		"name": "égalités à trous",
+		"archived_at": null
+	},
+	{
+		"id": "77b8ebc6-eb7a-4311-ab17-a07dff35fcb4",
+		"parent_id": "7f0932c3-16c8-4311-9864-f98d073bef9c",
+		"kind": "subnotion",
+		"name": "schéma de Bernoulli",
+		"archived_at": null
+	},
+	{
+		"id": "77bce7c1-9774-44f8-a188-e497a50632d7",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Orthogonalité et distances dans l'espace",
+		"archived_at": null
+	},
+	{
+		"id": "77e6b717-302d-4d25-9bbd-d7a8f37d080d",
+		"parent_id": "b8f0930d-9cb7-4a83-8930-08be0513cf1b",
+		"kind": "subnotion",
+		"name": "notion de solution",
+		"archived_at": null
+	},
+	{
+		"id": "7855ef87-35da-4b40-b1dc-6df8bdf88589",
+		"parent_id": "54b0242b-0477-4443-a9d4-f7b09a9ddbae",
+		"kind": "subnotion",
+		"name": "moyenne",
+		"archived_at": null
+	},
+	{
+		"id": "78b687d6-deb3-4c7d-9d4a-2400e903386e",
+		"parent_id": "f4d9a099-6f97-4dcb-8cc9-a9eaa78d9db7",
+		"kind": "subnotion",
+		"name": "ax = b",
+		"archived_at": null
+	},
+	{
+		"id": "791e7312-fbcd-4fa7-a0c0-54e82300f638",
+		"parent_id": "392180f1-d2ad-492b-bec2-6a70380a9818",
+		"kind": "subnotion",
+		"name": "fluctuation",
+		"archived_at": null
+	},
+	{
+		"id": "794d04f6-7bf8-4694-9f1e-95e462adfe1c",
+		"parent_id": "6924738e-9806-4033-98a9-44a4b9ff2a78",
+		"kind": "subnotion",
+		"name": "fréquences marginales et conditionnelles",
+		"archived_at": null
+	},
+	{
+		"id": "794ece06-8908-4b6b-822d-2a8514cc0dbe",
+		"parent_id": "97a91bc8-2594-4024-bd7c-6eccc491e92e",
+		"kind": "subnotion",
+		"name": "comparaison",
+		"archived_at": null
+	},
+	{
+		"id": "796fa8b6-1d32-4fac-a11d-c3d7f4fa06b0",
+		"parent_id": "933094d2-56ef-4c43-9658-18b9e9294354",
+		"kind": "subnotion",
+		"name": "interprétation",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "79a5ec75-b67e-4787-87e1-d76e9facf094",
+		"parent_id": "e567352e-4416-438b-a4a3-bc2d817f8231",
+		"kind": "subnotion",
+		"name": "sections planes",
+		"archived_at": null
+	},
+	{
+		"id": "7b98a5c5-2d80-4889-bcc5-ca81bac3575e",
+		"parent_id": "acb6a17e-fce8-4647-86bc-972dfdad0c8f",
+		"kind": "subnotion",
+		"name": "extremums",
+		"archived_at": null
+	},
+	{
+		"id": "7c57ad6a-aa3a-4c55-8a84-be948bd6b4b6",
+		"parent_id": "643eeae7-a419-4e25-8481-63bfe0c39a80",
+		"kind": "subnotion",
+		"name": "inéquation quotient",
+		"archived_at": null
+	},
+	{
+		"id": "7cbc2d4e-0a64-44a6-a950-b7e7069fb433",
+		"parent_id": "87b911ae-e40a-4459-b9cc-a6fd1115c8b2",
+		"kind": "subnotion",
+		"name": "probabilités totales",
+		"archived_at": null
+	},
+	{
+		"id": "7ce298e8-2844-4f80-b964-9c384e805a7b",
+		"parent_id": "c3205350-1c8b-404c-bf3c-a0b59bf69318",
+		"kind": "subnotion",
+		"name": "produit par un réel",
+		"archived_at": null
+	},
+	{
+		"id": "7e573da7-10dc-4ada-88bb-95d6efd9922b",
+		"parent_id": "01303d39-dbe9-4183-b3bf-ed703598aec1",
+		"kind": "subnotion",
+		"name": "expression et droite",
+		"archived_at": null
+	},
+	{
+		"id": "7e5dc2c7-9060-4a2d-8d9a-38fed678ae54",
+		"parent_id": "7edbe90f-eb83-4186-9014-8a8f2fbddd84",
+		"kind": "subnotion",
+		"name": "aire entre deux courbes",
+		"archived_at": null
+	},
+	{
+		"id": "7e865f34-3f39-425c-9cba-1b58b6e259d0",
+		"parent_id": "2e8fffa8-99c2-4048-a96a-a3311925645f",
+		"kind": "subnotion",
+		"name": "placements",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "7ed1251c-fd0a-4319-8715-aeac8e2dee22",
+		"parent_id": "bfe69202-e5bb-4f9b-9f5e-6ce92f176542",
+		"kind": "notion",
+		"name": "Suites arithmétiques",
+		"archived_at": null
+	},
+	{
+		"id": "7edbe90f-eb83-4186-9014-8a8f2fbddd84",
+		"parent_id": "e27a4755-c362-4e46-b5e1-3ee2581dabe3",
+		"kind": "notion",
+		"name": "Intégrale et aire",
+		"archived_at": null
+	},
+	{
+		"id": "7ef22166-7f21-454d-81a8-467eef53adc7",
+		"parent_id": "3d618858-8ef7-4f3b-ac02-2ebe129c25b3",
+		"kind": "subnotion",
+		"name": "parcourir une liste",
+		"archived_at": null
+	},
+	{
+		"id": "7f0932c3-16c8-4311-9864-f98d073bef9c",
+		"parent_id": "99d61abc-f362-43c1-b745-d3e3da9003dd",
+		"kind": "notion",
+		"name": "Loi binomiale",
+		"archived_at": null
+	},
+	{
+		"id": "7f3ef718-852b-456a-bd02-ae574e6a69dc",
+		"parent_id": "87b911ae-e40a-4459-b9cc-a6fd1115c8b2",
+		"kind": "subnotion",
+		"name": "épreuves indépendantes successives",
+		"archived_at": null
+	},
+	{
+		"id": "7f69bff9-54d6-49c5-8677-df6afc6281e0",
+		"parent_id": "059b0190-891b-41a0-9c73-ed91bd94b48e",
+		"kind": "subnotion",
+		"name": "utiliser l'échelle",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "7f7ee0a5-60a6-4cf5-ba27-7d1937be225c",
+		"parent_id": "df0b929e-ea8b-4f76-a7e3-8c19c7886184",
+		"kind": "subnotion",
+		"name": "forme décimale",
+		"archived_at": null
+	},
+	{
+		"id": "7ffd3da1-b9fc-455e-a34e-add3cda6f341",
+		"parent_id": "84fd6b08-6662-4e17-a661-66f035004091",
+		"kind": "subnotion",
+		"name": "coniques",
+		"archived_at": null
+	},
+	{
+		"id": "805bcf96-6730-46a7-9999-80822b7805dc",
+		"parent_id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"kind": "subnotion",
+		"name": "ordinaux et rangs",
+		"archived_at": null
+	},
+	{
+		"id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Géométrie",
+		"archived_at": null
+	},
+	{
+		"id": "80ab5ac7-c0a5-4414-aaa5-c1b352b998b7",
+		"parent_id": "c787b75d-e412-4b0b-a7dd-4987f18c2499",
+		"kind": "subnotion",
+		"name": "comparer des images",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "81bb757f-9084-4de7-ac7e-196aec4852ea",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Puissances : sens et écritures",
+		"archived_at": null
+	},
+	{
+		"id": "81cb906e-734b-4d92-b444-e64b917ed75d",
+		"parent_id": "f104427e-c80c-4880-b58a-c7364d3eeaa2",
+		"kind": "notion",
+		"name": "Boucles",
+		"archived_at": null
+	},
+	{
+		"id": "81dc08e8-71fe-4efa-a421-dc1d75fbd611",
+		"parent_id": "5c6cb025-fb7c-458b-ab90-06ae6f329e11",
+		"kind": "subnotion",
+		"name": "loi uniforme continue",
+		"archived_at": null
+	},
+	{
+		"id": "81e9d4ef-83e5-4904-a139-4b0a2d38f07d",
+		"parent_id": "f941c737-8f57-4fa1-aaa5-fa65a684b1e8",
+		"kind": "subnotion",
+		"name": "ensembles de points",
+		"archived_at": null
+	},
+	{
+		"id": "82defed1-2781-4e09-9013-49ce6fda08bc",
+		"parent_id": "c787b75d-e412-4b0b-a7dd-4987f18c2499",
+		"kind": "subnotion",
+		"name": "variations",
+		"archived_at": null
+	},
+	{
+		"id": "82ec743b-5746-4969-9ee8-85811830bde0",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "calcul astucieux",
+		"archived_at": null
+	},
+	{
+		"id": "82f5536e-0b7e-4a17-8fb6-d27df31a86a6",
+		"parent_id": "b8f0930d-9cb7-4a83-8930-08be0513cf1b",
+		"kind": "subnotion",
+		"name": "méthode d'Euler",
+		"archived_at": null
+	},
+	{
+		"id": "83a0aeef-1abe-444e-b386-846a49017d1e",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Décimaux : calculs",
+		"archived_at": null
+	},
+	{
+		"id": "83a394d1-ba60-4dcc-82b5-642908b88925",
+		"parent_id": "e27a4755-c362-4e46-b5e1-3ee2581dabe3",
+		"kind": "notion",
+		"name": "Calcul d'intégrales",
+		"archived_at": null
+	},
+	{
+		"id": "841b9ac9-0d08-4d54-bffa-d6b9fb2170d8",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Arithmétique",
+		"archived_at": null
+	},
+	{
+		"id": "8445a032-09ce-4eb3-bf34-703bfc97fa5b",
+		"parent_id": "d5dc9b32-c6e7-4a02-959a-b659ba2cc494",
+		"kind": "subnotion",
+		"name": "variations",
+		"archived_at": null
+	},
+	{
+		"id": "84d96a67-04c3-4bcf-b637-d0f0e090d9fa",
+		"parent_id": "773d6f5c-62be-43a9-93bf-30d1b7cdf906",
+		"kind": "subnotion",
+		"name": "conversions",
+		"archived_at": null
+	},
+	{
+		"id": "84fd6b08-6662-4e17-a661-66f035004091",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Figures planes",
+		"archived_at": null
+	},
+	{
+		"id": "8540bd91-6167-44be-b0ce-f22d2771b1d5",
+		"parent_id": "bcb29656-0514-476a-8618-1bd9cbac179b",
+		"kind": "subnotion",
+		"name": "distribution après n transitions",
+		"archived_at": null
+	},
+	{
+		"id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Entiers : multiplication",
+		"archived_at": null
+	},
+	{
+		"id": "86c820fa-3aa8-4c4e-b1e5-edcccd6328d4",
+		"parent_id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"kind": "subnotion",
+		"name": "triple et tiers",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "87b1415f-ae2c-4d8f-bd32-7df50de92b9a",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "tables",
+		"archived_at": null
+	},
+	{
+		"id": "87b911ae-e40a-4459-b9cc-a6fd1115c8b2",
+		"parent_id": "99d61abc-f362-43c1-b745-d3e3da9003dd",
+		"kind": "notion",
+		"name": "Probabilités conditionnelles",
+		"archived_at": null
+	},
+	{
+		"id": "8809d4ee-ab67-4036-b312-868a4e848110",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Trigonométrie du triangle rectangle",
+		"archived_at": null
+	},
+	{
+		"id": "883b5c2e-93c3-42f8-9f07-78b89d4798fe",
+		"parent_id": "c1718129-d89c-4291-8015-905e41307b0d",
+		"kind": "subnotion",
+		"name": "arrondis et ordres de grandeur",
+		"archived_at": null
+	},
+	{
+		"id": "88b4c7fb-941a-4526-9ee0-6655b4f07979",
+		"parent_id": "affd3833-ad6d-49e0-9e86-dc1449e7b1ec",
+		"kind": "subnotion",
+		"name": "calcul réfléchi",
+		"archived_at": null
+	},
+	{
+		"id": "88f73ff0-dbc1-44ff-b20b-f8ba1ade6d80",
+		"parent_id": "8f7d9107-69f8-42ab-bfaa-db1f65e8b5dd",
+		"kind": "subnotion",
+		"name": "colinéarité et alignement",
+		"archived_at": null
+	},
+	{
+		"id": "892e4d01-7dce-4e31-9242-046c28a418e9",
+		"parent_id": "84fd6b08-6662-4e17-a661-66f035004091",
+		"kind": "subnotion",
+		"name": "triangles",
+		"archived_at": null
+	},
+	{
+		"id": "89798048-ae78-417d-98b3-b92ce3296957",
+		"parent_id": "c1718129-d89c-4291-8015-905e41307b0d",
+		"kind": "subnotion",
+		"name": "ordre",
+		"archived_at": null
+	},
+	{
+		"id": "8979b5db-6f0e-4143-a855-11977185199e",
+		"parent_id": "bcb29656-0514-476a-8618-1bd9cbac179b",
+		"kind": "subnotion",
+		"name": "graphe probabiliste",
+		"archived_at": null
+	},
+	{
+		"id": "8a06f704-d530-481f-b480-fa4ae6bf2edf",
+		"parent_id": "0c77615b-8e29-4928-892b-670c55da2d7a",
+		"kind": "subnotion",
+		"name": "nombres irrationnels",
+		"archived_at": null
+	},
+	{
+		"id": "8a0faff5-7ada-420d-aafa-bf49278f60a6",
+		"parent_id": "d248afdc-5843-4f0c-aad4-d6f775511ea8",
+		"kind": "subnotion",
+		"name": "définition et courbe",
+		"archived_at": null
+	},
+	{
+		"id": "8ad1bede-c22b-41cb-aaaf-722031519380",
+		"parent_id": "84fd6b08-6662-4e17-a661-66f035004091",
+		"kind": "subnotion",
+		"name": "propriétés",
+		"archived_at": null
+	},
+	{
+		"id": "8b7735a6-c9e6-4ca4-b6b2-250d0e93f7b7",
+		"parent_id": "f294eccf-0283-4e82-afc8-8a9947ea57e9",
+		"kind": "subnotion",
+		"name": "convertir",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "8bbc723f-36b2-4942-8df2-4b7c4f2e0862",
+		"parent_id": "97a91bc8-2594-4024-bd7c-6eccc491e92e",
+		"kind": "subnotion",
+		"name": "mesure en degrés",
+		"archived_at": null
+	},
+	{
+		"id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Entiers : numération",
+		"archived_at": null
+	},
+	{
+		"id": "8cb01be9-5277-4b8d-ad84-49f504a2d611",
+		"parent_id": "e6e7e3e3-bf3c-482c-8e47-275a639b9bfe",
+		"kind": "subnotion",
+		"name": "opérations",
+		"archived_at": null
+	},
+	{
+		"id": "8d1d42b2-d921-4c35-8bea-97787cfb1a4a",
+		"parent_id": "5f8914a5-7353-4030-9389-93b598f08215",
+		"kind": "subnotion",
+		"name": "unités composées",
+		"archived_at": null
+	},
+	{
+		"id": "8e239f0a-1c56-4f29-a3cd-870cb2787f0c",
+		"parent_id": "01303d39-dbe9-4183-b3bf-ed703598aec1",
+		"kind": "subnotion",
+		"name": "variations et signe",
+		"archived_at": null
+	},
+	{
+		"id": "8e38be58-3ad5-407a-9c03-c483bff8d5dd",
+		"parent_id": "7ed1251c-fd0a-4319-8715-aeac8e2dee22",
+		"kind": "subnotion",
+		"name": "calculer un terme",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "8e601d16-b887-4181-8ba4-0d2a171f17af",
+		"parent_id": "84fd6b08-6662-4e17-a661-66f035004091",
+		"kind": "subnotion",
+		"name": "parallélogrammes",
+		"archived_at": null
+	},
+	{
+		"id": "8e87ba03-9ea5-4fba-b274-bb4a23d2db8d",
+		"parent_id": "67a8665d-7ee5-43df-8ed0-9230d57035df",
+		"kind": "subnotion",
+		"name": "calcul de longueurs",
+		"archived_at": null
+	},
+	{
+		"id": "8e93b86a-5aff-4b3b-bebc-e3a2beb97e5f",
+		"parent_id": "4b942a44-3384-4c6b-aad5-b4824b0b8df1",
+		"kind": "subnotion",
+		"name": "espérance et variance d'une somme",
+		"archived_at": null
+	},
+	{
+		"id": "8f71054a-d8a4-429f-8829-b6eead9c6cd8",
+		"parent_id": "101154f4-1d22-498e-9b1c-5f087ec5707c",
+		"kind": "notion",
+		"name": "Aires",
+		"archived_at": null
+	},
+	{
+		"id": "8f7d9107-69f8-42ab-bfaa-db1f65e8b5dd",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Espace",
+		"archived_at": null
+	},
+	{
+		"id": "8fcef944-e827-48d3-9dc4-28499672372e",
+		"parent_id": "5a6cdff9-5986-4651-935d-394122caacf3",
+		"kind": "subnotion",
+		"name": "pour tout, il existe",
+		"archived_at": null
+	},
+	{
+		"id": "90a65a19-c21b-4851-8ed8-b68a83cf6012",
+		"parent_id": "20b2daba-a64f-4020-96a7-8b13cad55139",
+		"kind": "subnotion",
+		"name": "division",
+		"archived_at": null
+	},
+	{
+		"id": "90a9e724-48cc-41b4-b229-5c773574d2f3",
+		"parent_id": "a365eb71-f060-4094-a0cb-19ef20f48a0d",
+		"kind": "subnotion",
+		"name": "ordre",
+		"archived_at": null
+	},
+	{
+		"id": "915e7000-caf2-465e-b6f5-eaa803f4b691",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Problèmes arithmétiques",
+		"archived_at": null
+	},
+	{
+		"id": "918e4a82-0b8a-41f4-887d-c992a31f0c38",
+		"parent_id": "8f71054a-d8a4-429f-8829-b6eead9c6cd8",
+		"kind": "subnotion",
+		"name": "unités et conversions",
+		"archived_at": null
+	},
+	{
+		"id": "923c4069-8aaf-4b21-addf-74599b601bdc",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Continuité",
+		"archived_at": null
+	},
+	{
+		"id": "9246bb43-3377-48ed-8448-9bc930aa748e",
+		"parent_id": "d5f49f81-c74a-4e91-a2ec-405f6962c296",
+		"kind": "subnotion",
+		"name": "histogrammes",
+		"archived_at": null
+	},
+	{
+		"id": "9283c10f-aefc-4592-be61-71e1718ee07a",
+		"parent_id": "ea762fa7-0f08-4ac2-a885-e328dd3d2da1",
+		"kind": "subnotion",
+		"name": "équations et inéquations",
+		"archived_at": null
+	},
+	{
+		"id": "933094d2-56ef-4c43-9658-18b9e9294354",
+		"parent_id": "e27a4755-c362-4e46-b5e1-3ee2581dabe3",
+		"kind": "notion",
+		"name": "Valeur moyenne",
+		"archived_at": null
+	},
+	{
+		"id": "93d0747b-f8df-4478-b98f-d8c51a1b4cfa",
+		"parent_id": "5384bd2c-38a3-4689-83c8-f9caac606736",
+		"kind": "subnotion",
+		"name": "produit cartésien",
+		"archived_at": null
+	},
+	{
+		"id": "93d7c87b-041e-4cbc-a124-b643b29ad72c",
+		"parent_id": "41a2f42a-5052-4826-bc3b-b67fab9c83a3",
+		"kind": "subnotion",
+		"name": "vecteur directeur",
+		"archived_at": null
+	},
+	{
+		"id": "93e24669-703f-4080-a994-7ff79cb0fe42",
+		"parent_id": "923c4069-8aaf-4b21-addf-74599b601bdc",
+		"kind": "subnotion",
+		"name": "encadrement d'une solution",
+		"archived_at": null
+	},
+	{
+		"id": "93f2261e-b00d-40a2-84f6-8f5663a87795",
+		"parent_id": "ce9818ba-e994-4b63-bd17-80833260506d",
+		"kind": "subnotion",
+		"name": "expressions fractionnaires",
+		"archived_at": null
+	},
+	{
+		"id": "93f9cd31-7003-46b4-b51c-84da7d570582",
+		"parent_id": "600a88c8-4245-4105-a587-bcccb20d079d",
+		"kind": "subnotion",
+		"name": "inéquations du second degré",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "940cf7df-187e-4bf9-baca-c6f0fd529954",
+		"parent_id": "8f71054a-d8a4-429f-8829-b6eead9c6cd8",
+		"kind": "subnotion",
+		"name": "disque",
+		"archived_at": null
+	},
+	{
+		"id": "948c8b72-f671-4d2c-aace-4c14d51d7b06",
+		"parent_id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"kind": "subnotion",
+		"name": "décomposition",
+		"archived_at": null
+	},
+	{
+		"id": "95c61310-b86d-49f4-a02e-0aab67893a76",
+		"parent_id": "0c77615b-8e29-4928-892b-670c55da2d7a",
+		"kind": "subnotion",
+		"name": "ℕ, ℤ, 𝔻, ℚ, ℝ",
+		"archived_at": null
+	},
+	{
+		"id": "961e9594-bf2b-47fd-a89e-63ee66c93a23",
+		"parent_id": "83a0aeef-1abe-444e-b386-846a49017d1e",
+		"kind": "subnotion",
+		"name": "soustraction",
+		"archived_at": null
+	},
+	{
+		"id": "96c1d264-f14d-4d20-b385-bfc5b4fc131b",
+		"parent_id": "87b911ae-e40a-4459-b9cc-a6fd1115c8b2",
+		"kind": "subnotion",
+		"name": "indépendance",
+		"archived_at": null
+	},
+	{
+		"id": "96c8b0bd-2b1b-4dcd-be85-08f385fa55e0",
+		"parent_id": "c787b75d-e412-4b0b-a7dd-4987f18c2499",
+		"kind": "subnotion",
+		"name": "définition et courbe",
+		"archived_at": null
+	},
+	{
+		"id": "96ed75d2-ef1b-4f2a-bc18-05f05286cb50",
+		"parent_id": "40a7c860-8472-4303-a39d-34980fa8a200",
+		"kind": "subnotion",
+		"name": "compléter une loi",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "975f7bc1-6e4a-4f10-92ea-313c12077cf1",
+		"parent_id": "4dc14ca4-be3b-4050-a114-1d7d52d408c8",
+		"kind": "subnotion",
+		"name": "comparaison et mesure",
+		"archived_at": null
+	},
+	{
+		"id": "97a91bc8-2594-4024-bd7c-6eccc491e92e",
+		"parent_id": "101154f4-1d22-498e-9b1c-5f087ec5707c",
+		"kind": "notion",
+		"name": "Angles",
+		"archived_at": null
+	},
+	{
+		"id": "97e09917-2931-435f-9224-ce18d43e0fd0",
+		"parent_id": "26ca7245-f68b-423b-a1e3-ba8f10edb5f4",
+		"kind": "subnotion",
+		"name": "cercle et radians",
+		"archived_at": null
+	},
+	{
+		"id": "97ed51ec-1f15-4458-b21a-03862c032ec5",
+		"parent_id": "54b0242b-0477-4443-a9d4-f7b09a9ddbae",
+		"kind": "subnotion",
+		"name": "médiane",
+		"archived_at": null
+	},
+	{
+		"id": "97f382ce-4e7b-4449-821e-a7d2d66e1eff",
+		"parent_id": "3a3a3e35-b1f9-49c9-8c70-24d9aa7d3ccf",
+		"kind": "subnotion",
+		"name": "mettre en inéquation",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "98347c35-969c-47a9-8645-3cad75d32a33",
+		"parent_id": "84fd6b08-6662-4e17-a661-66f035004091",
+		"kind": "subnotion",
+		"name": "perpendiculaires et parallèles",
+		"archived_at": null
+	},
+	{
+		"id": "984cf553-c2e1-4a7e-b948-c5525c26c69d",
+		"parent_id": "54b0242b-0477-4443-a9d4-f7b09a9ddbae",
+		"kind": "subnotion",
+		"name": "écart-type",
+		"archived_at": null
+	},
+	{
+		"id": "9910b648-e692-4e78-a5b4-ea82bd3da38c",
+		"parent_id": "e6e7e3e3-bf3c-482c-8e47-275a639b9bfe",
+		"kind": "subnotion",
+		"name": "limite en un point",
+		"archived_at": null
+	},
+	{
+		"id": "99d61abc-f362-43c1-b745-d3e3da9003dd",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Probabilités",
+		"archived_at": null
+	},
+	{
+		"id": "9ab3a0d8-7a2c-4a7a-973f-92c9a6a757ab",
+		"parent_id": "81bb757f-9084-4de7-ac7e-196aec4852ea",
+		"kind": "subnotion",
+		"name": "définition",
+		"archived_at": null
+	},
+	{
+		"id": "9b78f06c-8579-4d0d-a7a5-15957e6545f2",
+		"parent_id": "6b00cf7d-3928-4080-a857-e5a3fff307c0",
+		"kind": "subnotion",
+		"name": "définir une fonction",
+		"archived_at": null
+	},
+	{
+		"id": "9bf01295-e760-4f2d-9054-55abe581a376",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Ensembles",
+		"archived_at": null
+	},
+	{
+		"id": "9c161ddf-c87a-4238-93fd-d1be1eacea85",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "position relative de deux courbes",
+		"archived_at": null
+	},
+	{
+		"id": "9cad2e9a-b1e9-4fb5-b3ad-f95ebf718f53",
+		"parent_id": "773d6f5c-62be-43a9-93bf-30d1b7cdf906",
+		"kind": "subnotion",
+		"name": "prisme et cylindre",
+		"archived_at": null
+	},
+	{
+		"id": "9cd705c7-7d19-4f32-a739-b66dee8863ee",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "optimisation",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "9d1e864d-b530-4d3e-9677-2d71c566d46c",
+		"parent_id": "773d6f5c-62be-43a9-93bf-30d1b7cdf906",
+		"kind": "subnotion",
+		"name": "pyramide et cône",
+		"archived_at": null
+	},
+	{
+		"id": "9d557b8b-4d86-4ebc-8af6-0205e8beb750",
+		"parent_id": "58838eda-abe1-4bc2-9dca-207f19d3e176",
+		"kind": "subnotion",
+		"name": "condition initiale",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "9e567f65-f137-4506-b044-d4fff7be5d9d",
+		"parent_id": "ea762fa7-0f08-4ac2-a885-e328dd3d2da1",
+		"kind": "subnotion",
+		"name": "croissance et décroissance exponentielles",
+		"archived_at": null
+	},
+	{
+		"id": "9ebf797e-aaf1-4cd9-869e-274d84f46d63",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "double et moitié",
+		"archived_at": null
+	},
+	{
+		"id": "9f11f79d-6065-4361-a40f-df8d9dd52a9a",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "fonctions dérivées",
+		"archived_at": null
+	},
+	{
+		"id": "9f59bc2b-0a83-479d-b925-f17908e0cd79",
+		"parent_id": "fef2a93e-22b4-48b3-9dd4-2bd1b043e9dc",
+		"kind": "subnotion",
+		"name": "définition et courbe",
+		"archived_at": null
+	},
+	{
+		"id": "9fef7e49-c75c-4398-a129-4d34f8a237de",
+		"parent_id": "4c4951c2-b67d-433e-980e-cba64674d5df",
+		"kind": "subnotion",
+		"name": "deviner le terme général",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "a00ab395-6daf-4881-b803-a957d0c3f768",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "puissances de 10",
+		"archived_at": null
+	},
+	{
+		"id": "a013145c-68ee-4c45-aba0-2fa403973841",
+		"parent_id": "3a5aebf2-a60c-4c61-8eff-5e692e19ccea",
+		"kind": "subnotion",
+		"name": "calculs de pourcentages",
+		"archived_at": null
+	},
+	{
+		"id": "a0af80e2-1d9f-422d-af34-cac19100a1cd",
+		"parent_id": "3d618858-8ef7-4f3b-ac02-2ebe129c25b3",
+		"kind": "subnotion",
+		"name": "liste en compréhension",
+		"archived_at": null
+	},
+	{
+		"id": "a28ed7e6-64a8-4d1c-b6dd-0d5ebfc2bd0f",
+		"parent_id": "ae53fc6c-6e51-42a7-be58-456b58984e02",
+		"kind": "subnotion",
+		"name": "solution particulière donnée",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "a32cbcaa-b2a3-47b5-bd41-186a634093dc",
+		"parent_id": "0440f40d-9150-4dc7-915d-a473affcbcae",
+		"kind": "subnotion",
+		"name": "quotient de puissances",
+		"archived_at": null
+	},
+	{
+		"id": "a365eb71-f060-4094-a0cb-19ef20f48a0d",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Relatifs : sens et écritures",
+		"archived_at": null
+	},
+	{
+		"id": "a3b9edc2-900a-4982-bdf4-b14940642ac3",
+		"parent_id": "b019d46b-b5b7-4e57-a358-170e53a20969",
+		"kind": "subnotion",
+		"name": "inverse et quotient",
+		"archived_at": null
+	},
+	{
+		"id": "a469c6fa-06e2-4581-a972-7ccfa7143c6e",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Fonction cube",
+		"archived_at": null
+	},
+	{
+		"id": "a4c971ee-ce04-4d1b-bf4f-22653977b4b7",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "opérations sur les dérivées",
+		"archived_at": null
+	},
+	{
+		"id": "a50d6c5b-c057-4ff8-b092-f22062253d2f",
+		"parent_id": "165f30d8-7132-46e5-a194-5fa009b579ae",
+		"kind": "subnotion",
+		"name": "arrangements",
+		"archived_at": null
+	},
+	{
+		"id": "a6415b05-cbd1-48cf-a626-bc3313c8d87d",
+		"parent_id": "d6f7ed4d-66c0-477e-9037-a1b0ca7a36ec",
+		"kind": "subnotion",
+		"name": "formes u′eᵘ, 2uu′, u′/u",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "a67c5c19-8f35-4ede-a8ec-7838e59b0d64",
+		"parent_id": "165f30d8-7132-46e5-a194-5fa009b579ae",
+		"kind": "subnotion",
+		"name": "permutations",
+		"archived_at": null
+	},
+	{
+		"id": "a6d00328-4702-40ed-afbc-839673b0ee60",
+		"parent_id": "83a394d1-ba60-4dcc-82b5-642908b88925",
+		"kind": "subnotion",
+		"name": "intégration par parties",
+		"archived_at": null
+	},
+	{
+		"id": "a71c3140-1000-46ee-94aa-6934cf284c8c",
+		"parent_id": "4c4951c2-b67d-433e-980e-cba64674d5df",
+		"kind": "subnotion",
+		"name": "sens de variation",
+		"archived_at": null
+	},
+	{
+		"id": "a751dbea-ec1a-4e53-b0fc-14299cf28f91",
+		"parent_id": "2e8fffa8-99c2-4048-a96a-a3311925645f",
+		"kind": "subnotion",
+		"name": "seuil",
+		"archived_at": null
+	},
+	{
+		"id": "a7bf7a0e-c26e-461e-bfbb-1af7b6e6a6e2",
+		"parent_id": "b9a04f0b-b5cc-4a36-91a2-5c52a5572a37",
+		"kind": "subnotion",
+		"name": "positions et plans",
+		"archived_at": null
+	},
+	{
+		"id": "a83bbf6f-a5ef-421d-b3e0-1f3ea393bdff",
+		"parent_id": "19b33d1b-7881-4b68-ad4c-271178ca9f72",
+		"kind": "subnotion",
+		"name": "réduire",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "a8ba5733-3f7a-4342-b07e-b6f9a892bc3b",
+		"parent_id": "5384bd2c-38a3-4689-83c8-f9caac606736",
+		"kind": "subnotion",
+		"name": "cardinal",
+		"archived_at": null
+	},
+	{
+		"id": "a908a9af-dab2-4159-a78f-827d47597fcd",
+		"parent_id": "e31afec7-a8fe-4363-8046-974bc89f6c54",
+		"kind": "subnotion",
+		"name": "parties d'un ensemble",
+		"archived_at": null
+	},
+	{
+		"id": "a91e2bf0-3a85-497e-9b85-08ca2f92f3a8",
+		"parent_id": "5c6cb025-fb7c-458b-ab90-06ae6f329e11",
+		"kind": "subnotion",
+		"name": "loi exponentielle",
+		"archived_at": null
+	},
+	{
+		"id": "a94dbe75-d2b3-4dc8-b20f-c51c764045b5",
+		"parent_id": "4c009853-c441-4457-9496-e7c20b5b45b7",
+		"kind": "subnotion",
+		"name": "appliquer",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "a9591f17-6267-46c8-bcad-9b6e1e644e6b",
+		"parent_id": "67a1e1b0-16da-47ad-b560-b797d241b980",
+		"kind": "subnotion",
+		"name": "formules d'addition et de duplication",
+		"archived_at": null
+	},
+	{
+		"id": "a95bae6c-0be9-4cde-b5db-74a1035dbef1",
+		"parent_id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"kind": "subnotion",
+		"name": "ordre",
+		"archived_at": null
+	},
+	{
+		"id": "a96ca5c4-229b-48af-87ae-119c7e7610f0",
+		"parent_id": "ef42f135-69a9-41ce-a7d5-9b2c5df5d0cb",
+		"kind": "subnotion",
+		"name": "probabilité simple",
+		"archived_at": null
+	},
+	{
+		"id": "a9995d6c-06d7-4857-b8b3-4235f8b07453",
+		"parent_id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"kind": "subnotion",
+		"name": "calcul posé",
+		"archived_at": null
+	},
+	{
+		"id": "aa1217ed-f9a7-4794-8329-f32797215ba8",
+		"parent_id": "7f0932c3-16c8-4311-9864-f98d073bef9c",
+		"kind": "subnotion",
+		"name": "espérance et variance",
+		"archived_at": null
+	},
+	{
+		"id": "aa4502ec-8825-4779-aaad-9911829c204f",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Équations différentielles",
+		"archived_at": null
+	},
+	{
+		"id": "ab358f48-e478-4197-bb50-e1c61d0b417d",
+		"parent_id": "ce9818ba-e994-4b63-bd17-80833260506d",
+		"kind": "subnotion",
+		"name": "écriture simplifiée",
+		"archived_at": null
+	},
+	{
+		"id": "ac847ecb-9fb2-4760-a94a-d45becd614f7",
+		"parent_id": "3d618858-8ef7-4f3b-ac02-2ebe129c25b3",
+		"kind": "subnotion",
+		"name": "créer une liste",
+		"archived_at": null
+	},
+	{
+		"id": "acb6a17e-fce8-4647-86bc-972dfdad0c8f",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Généralités sur les fonctions",
+		"archived_at": null
+	},
+	{
+		"id": "ad32128c-7476-443e-89e3-1a9b301e9e2f",
+		"parent_id": "ce9818ba-e994-4b63-bd17-80833260506d",
+		"kind": "subnotion",
+		"name": "identités remarquables",
+		"archived_at": null
+	},
+	{
+		"id": "ad6244a4-ba93-425a-8712-d14d2bfe29ef",
+		"parent_id": "25ab4618-41ed-41b4-80d6-e328339635cc",
+		"kind": "subnotion",
+		"name": "suites couplées",
+		"archived_at": null
+	},
+	{
+		"id": "adf1a8de-5846-435c-925f-83b5a8dc768c",
+		"parent_id": "7edbe90f-eb83-4186-9014-8a8f2fbddd84",
+		"kind": "subnotion",
+		"name": "lecture graphique",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "ae405fc5-82cd-4617-9715-35b430ed916e",
+		"parent_id": "5fefc39e-2d5c-47a3-b1dd-2cb772c5a881",
+		"kind": "notion",
+		"name": "Vocabulaire des graphes",
+		"archived_at": null
+	},
+	{
+		"id": "ae53fc6c-6e51-42a7-be58-456b58984e02",
+		"parent_id": "aa4502ec-8825-4779-aaad-9911829c204f",
+		"kind": "notion",
+		"name": "y′ = ay + f",
+		"archived_at": null
+	},
+	{
+		"id": "ae67e98f-5588-45e0-a23e-cd6eece43dc8",
+		"parent_id": "e567352e-4416-438b-a4a3-bc2d817f8231",
+		"kind": "subnotion",
+		"name": "propriétés",
+		"archived_at": null
+	},
+	{
+		"id": "aec06198-49de-47d8-b09a-8c835a0b6bbc",
+		"parent_id": "d56d6f94-b1b0-4924-9477-7d23bbc684ea",
+		"kind": "subnotion",
+		"name": "quotient",
+		"archived_at": null
+	},
+	{
+		"id": "aed5064f-d478-4fd7-a15d-5386e73b63bc",
+		"parent_id": "492d0ee4-d488-4a34-877d-6c569bbd881d",
+		"kind": "subnotion",
+		"name": "changement de variable",
+		"archived_at": null
+	},
+	{
+		"id": "aefbc76d-af7a-41c9-b8d6-fe1a017e6d2e",
+		"parent_id": "841b9ac9-0d08-4d54-bffa-d6b9fb2170d8",
+		"kind": "notion",
+		"name": "PGCD, Bézout et Gauss",
+		"archived_at": null
+	},
+	{
+		"id": "af1a8e34-bf80-4889-932f-76b85d254012",
+		"parent_id": "97a91bc8-2594-4024-bd7c-6eccc491e92e",
+		"kind": "subnotion",
+		"name": "construction",
+		"archived_at": null
+	},
+	{
+		"id": "af99d415-0eaa-4424-a3f0-9807acd40449",
+		"parent_id": "b6b9da4f-d0f5-495e-828a-286c76dc8192",
+		"kind": "subnotion",
+		"name": "algorithmique",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "afb47328-0a7c-44c8-9428-80111f5caee4",
+		"parent_id": "41a2f42a-5052-4826-bc3b-b67fab9c83a3",
+		"kind": "subnotion",
+		"name": "milieu et distance",
+		"archived_at": null
+	},
+	{
+		"id": "afbcd648-55c3-41ed-9ecf-64da22229487",
+		"parent_id": "54b0242b-0477-4443-a9d4-f7b09a9ddbae",
+		"kind": "subnotion",
+		"name": "quartiles",
+		"archived_at": null
+	},
+	{
+		"id": "affd3833-ad6d-49e0-9e86-dc1449e7b1ec",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Entiers : division",
+		"archived_at": null
+	},
+	{
+		"id": "b019d46b-b5b7-4e57-a358-170e53a20969",
+		"parent_id": "ffbc0a33-4d20-4610-ad0f-6f702e981622",
+		"kind": "notion",
+		"name": "Forme algébrique",
+		"archived_at": null
+	},
+	{
+		"id": "b0787a89-0c90-4d8f-8a44-dcb71727abc5",
+		"parent_id": "915e7000-caf2-465e-b6f5-eaa803f4b691",
+		"kind": "subnotion",
+		"name": "produits cartésiens",
+		"archived_at": null
+	},
+	{
+		"id": "b0d50484-f7a8-4afd-83e0-c4349028cf7a",
+		"parent_id": "069f81b0-ec73-461e-85e4-9759baa37bb2",
+		"kind": "notion",
+		"name": "Combinaisons",
+		"archived_at": null
+	},
+	{
+		"id": "b1201df6-de70-431c-9caa-2c2f7d7b3a18",
+		"parent_id": "4b942a44-3384-4c6b-aad5-b4824b0b8df1",
+		"kind": "subnotion",
+		"name": "échantillons",
+		"archived_at": null
+	},
+	{
+		"id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Fonctions",
+		"archived_at": null
+	},
+	{
+		"id": "b1884eb8-deea-4bc9-9e46-c262eb647734",
+		"parent_id": "4b942a44-3384-4c6b-aad5-b4824b0b8df1",
+		"kind": "subnotion",
+		"name": "inégalité de concentration",
+		"archived_at": null
+	},
+	{
+		"id": "b2173033-3c0f-424f-9380-73838306bc7a",
+		"parent_id": "d56d6f94-b1b0-4924-9477-7d23bbc684ea",
+		"kind": "subnotion",
+		"name": "différences",
+		"archived_at": null
+	},
+	{
+		"id": "b2ac7ef7-e37f-4a0b-80f4-a453c41724e0",
+		"parent_id": "7ed1251c-fd0a-4319-8715-aeac8e2dee22",
+		"kind": "subnotion",
+		"name": "raison",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "b30f8ceb-58d1-4d97-a319-45bb6dd9fc55",
+		"parent_id": "2ce80985-7af6-4a68-a51b-926066a13131",
+		"kind": "subnotion",
+		"name": "contre-exemple",
+		"archived_at": null
+	},
+	{
+		"id": "b428ad5b-fde6-4ff5-a8c0-93844c22c1e9",
+		"parent_id": "d5dc9b32-c6e7-4a02-959a-b659ba2cc494",
+		"kind": "subnotion",
+		"name": "racines",
+		"archived_at": null
+	},
+	{
+		"id": "b43e40ab-8f4c-448e-a92a-89144d6d8577",
+		"parent_id": "fef2a93e-22b4-48b3-9dd4-2bd1b043e9dc",
+		"kind": "subnotion",
+		"name": "x² = k, x² < k",
+		"archived_at": null
+	},
+	{
+		"id": "b480f7d5-642f-4b6e-b474-e2c7087023d5",
+		"parent_id": "8f71054a-d8a4-429f-8829-b6eead9c6cd8",
+		"kind": "subnotion",
+		"name": "triangle rectangle",
+		"archived_at": null
+	},
+	{
+		"id": "b4ef88bd-90a8-4323-b133-a3f2f282f809",
+		"parent_id": "7f0932c3-16c8-4311-9864-f98d073bef9c",
+		"kind": "subnotion",
+		"name": "coefficients binomiaux",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "b4fc1620-36e3-4a5d-b885-8080e6142b30",
+		"parent_id": "2ce80985-7af6-4a68-a51b-926066a13131",
+		"kind": "subnotion",
+		"name": "par équivalence",
+		"archived_at": null
+	},
+	{
+		"id": "b5b42982-2c36-44bf-a658-8a2d4ae6e941",
+		"parent_id": "13322c55-ec45-43c5-9c84-3fb034df583e",
+		"kind": "subnotion",
+		"name": "propriétés",
+		"archived_at": null
+	},
+	{
+		"id": "b6a784a9-d16f-4c47-b4d8-7fe539da8a08",
+		"parent_id": "d6f7ed4d-66c0-477e-9037-a1b0ca7a36ec",
+		"kind": "subnotion",
+		"name": "primitives : notion",
+		"archived_at": null
+	},
+	{
+		"id": "b6b9da4f-d0f5-495e-828a-286c76dc8192",
+		"parent_id": "069f81b0-ec73-461e-85e4-9759baa37bb2",
+		"kind": "notion",
+		"name": "Problèmes de dénombrement",
+		"archived_at": null
+	},
+	{
+		"id": "b6c274da-6978-4c64-965f-b69d00024d9b",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "nombre dérivé",
+		"archived_at": null
+	},
+	{
+		"id": "b71cd23f-5064-411e-82e7-f1784df56d66",
+		"parent_id": "76ec9d1e-69f3-4a44-9b08-2cce73793294",
+		"kind": "subnotion",
+		"name": "nombre inconnu",
+		"archived_at": null
+	},
+	{
+		"id": "b7c2160d-953a-4d67-ac1f-c5dcacfa9ef6",
+		"parent_id": "63c70a3e-cff0-4093-a093-07ae901c00e4",
+		"kind": "subnotion",
+		"name": "positions relatives par le calcul",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "b8bf2b58-e194-481e-9785-f771f46df574",
+		"parent_id": "df0b929e-ea8b-4f76-a7e3-8c19c7886184",
+		"kind": "subnotion",
+		"name": "définition",
+		"archived_at": null
+	},
+	{
+		"id": "b8f0930d-9cb7-4a83-8930-08be0513cf1b",
+		"parent_id": "aa4502ec-8825-4779-aaad-9911829c204f",
+		"kind": "notion",
+		"name": "Généralités",
+		"archived_at": null
+	},
+	{
+		"id": "b99215bd-1094-4ae1-94b0-e163661fd8bb",
+		"parent_id": "87b911ae-e40a-4459-b9cc-a6fd1115c8b2",
+		"kind": "subnotion",
+		"name": "inversion du conditionnement",
+		"archived_at": null
+	},
+	{
+		"id": "b9a04f0b-b5cc-4a36-91a2-5c52a5572a37",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Repérage et déplacements",
+		"archived_at": null
+	},
+	{
+		"id": "b9c11229-7a50-46dd-9a3a-20de123f0539",
+		"parent_id": "c52467bf-0747-479e-a922-77656f92a224",
+		"kind": "subnotion",
+		"name": "pièces et billets",
+		"archived_at": null
+	},
+	{
+		"id": "b9e416fb-7074-4f5c-aeba-347c3d1f4536",
+		"parent_id": "ae53fc6c-6e51-42a7-be58-456b58984e02",
+		"kind": "subnotion",
+		"name": "solution générale",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "ba16f838-55ac-4080-8a04-d851d9e92809",
+		"parent_id": "81bb757f-9084-4de7-ac7e-196aec4852ea",
+		"kind": "subnotion",
+		"name": "puissances de 10",
+		"archived_at": null
+	},
+	{
+		"id": "ba3205ae-97dc-4c6c-abef-189e283a124a",
+		"parent_id": "3355b3a5-d66a-4409-b02b-21db0e0ddb31",
+		"kind": "subnotion",
+		"name": "comparaison et encadrement",
+		"archived_at": null
+	},
+	{
+		"id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Nombres et calculs",
+		"archived_at": null
+	},
+	{
+		"id": "ba8077bb-4aa8-473e-ae4f-c4a38b2a32ca",
+		"parent_id": "20b2daba-a64f-4020-96a7-8b13cad55139",
+		"kind": "subnotion",
+		"name": "multiplication",
+		"archived_at": null
+	},
+	{
+		"id": "bae1ecd2-3289-476a-bb3b-2f583022f773",
+		"parent_id": "2ce80985-7af6-4a68-a51b-926066a13131",
+		"kind": "subnotion",
+		"name": "par l'absurde",
+		"archived_at": null
+	},
+	{
+		"id": "bb08fec7-b330-4ce2-9292-92fc48df2f43",
+		"parent_id": "19b33d1b-7881-4b68-ad4c-271178ca9f72",
+		"kind": "subnotion",
+		"name": "définition",
+		"archived_at": null
+	},
+	{
+		"id": "bb441284-1276-4b20-8558-08bff4e0f30e",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "carrés",
+		"archived_at": null
+	},
+	{
+		"id": "bb6041aa-f295-4b56-85d3-7a34b76cb3bd",
+		"parent_id": "64989d55-dbb7-49e7-ba4a-38211c6395f0",
+		"kind": "subnotion",
+		"name": "caractérisations",
+		"archived_at": null
+	},
+	{
+		"id": "bbcc89b8-7dc1-48c8-a3bb-6188b8386097",
+		"parent_id": "f140657a-524a-4506-8df5-302a9fc2d540",
+		"kind": "subnotion",
+		"name": "avec parenthèses",
+		"archived_at": null
+	},
+	{
+		"id": "bbf8c49f-fadc-446d-90d5-9b48c945a733",
+		"parent_id": "d5f49f81-c74a-4e91-a2ec-405f6962c296",
+		"kind": "subnotion",
+		"name": "tableau à double entrée",
+		"archived_at": null
+	},
+	{
+		"id": "bc3aa4f7-de4f-4dfd-a486-8ca57c0a2919",
+		"parent_id": "2210901a-acae-4a4c-8624-c68d9594c314",
+		"kind": "subnotion",
+		"name": "puissances de matrices",
+		"archived_at": null
+	},
+	{
+		"id": "bca720f8-b4b9-4d2b-a318-196f507e5819",
+		"parent_id": "aefbc76d-af7a-41c9-b8d6-fe1a017e6d2e",
+		"kind": "subnotion",
+		"name": "théorèmes de Bézout et de Gauss",
+		"archived_at": null
+	},
+	{
+		"id": "bcb29656-0514-476a-8618-1bd9cbac179b",
+		"parent_id": "5fefc39e-2d5c-47a3-b1dd-2cb772c5a881",
+		"kind": "notion",
+		"name": "Chaînes de Markov",
+		"archived_at": null
+	},
+	{
+		"id": "bcd6323e-77da-4716-9dfc-62f7e98817d8",
+		"parent_id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"kind": "subnotion",
+		"name": "droite graduée",
+		"archived_at": null
+	},
+	{
+		"id": "bcdc9545-3bfd-4498-9156-3bab9a9da86c",
+		"parent_id": "3d618858-8ef7-4f3b-ac02-2ebe129c25b3",
+		"kind": "subnotion",
+		"name": "éléments et indices",
+		"archived_at": null
+	},
+	{
+		"id": "bd13a6e2-ec26-4837-bb91-2cb906bbe45b",
+		"parent_id": "76ec9d1e-69f3-4a44-9b08-2cce73793294",
+		"kind": "subnotion",
+		"name": "programmes de calcul",
+		"archived_at": null
+	},
+	{
+		"id": "bd15426a-f613-44ac-a8b8-0e9ab52753d6",
+		"parent_id": "20b2daba-a64f-4020-96a7-8b13cad55139",
+		"kind": "subnotion",
+		"name": "addition et soustraction",
+		"archived_at": null
+	},
+	{
+		"id": "bd40dcfd-07f7-4342-938d-c034044fe3eb",
+		"parent_id": "1492dc67-e345-414a-b2b0-6d51d796dfb3",
+		"kind": "subnotion",
+		"name": "signe d'une expression",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "be72fee4-5d32-4494-b9b2-b63c3545e7f7",
+		"parent_id": "40a7c860-8472-4303-a39d-34980fa8a200",
+		"kind": "subnotion",
+		"name": "espérance",
+		"archived_at": null
+	},
+	{
+		"id": "be9a1d55-0b78-444e-a5a9-fbaf37015c93",
+		"parent_id": "506c3771-9751-41eb-9608-6a318fc7c280",
+		"kind": "subnotion",
+		"name": "types",
+		"archived_at": null
+	},
+	{
+		"id": "bf025b93-4cd1-4a8f-974c-13fc028d0a2a",
+		"parent_id": "0c77615b-8e29-4928-892b-670c55da2d7a",
+		"kind": "subnotion",
+		"name": "appartenance et inclusion",
+		"archived_at": null
+	},
+	{
+		"id": "bf58fad3-00b6-4476-825e-e92647abdd36",
+		"parent_id": "b019d46b-b5b7-4e57-a358-170e53a20969",
+		"kind": "subnotion",
+		"name": "équations",
+		"archived_at": null
+	},
+	{
+		"id": "bf76cfc3-c293-417c-a623-2a7cb502072a",
+		"parent_id": "ef42f135-69a9-41ce-a7d5-9b2c5df5d0cb",
+		"kind": "subnotion",
+		"name": "événements",
+		"archived_at": null
+	},
+	{
+		"id": "bf80307e-eda5-45c8-b6bc-f440128f3a86",
+		"parent_id": "25ab4618-41ed-41b4-80d6-e328339635cc",
+		"kind": "subnotion",
+		"name": "modélisation",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "bfe69202-e5bb-4f9b-9f5e-6ce92f176542",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Suites",
+		"archived_at": null
+	},
+	{
+		"id": "c0113c26-326a-42de-b261-1025cde739e1",
+		"parent_id": "d5dc9b32-c6e7-4a02-959a-b659ba2cc494",
+		"kind": "subnotion",
+		"name": "signe",
+		"archived_at": null
+	},
+	{
+		"id": "c0eabbd0-20af-4ca0-8b7d-cdea05531e2a",
+		"parent_id": "d93b2714-2329-4e92-9d2b-d56752d11a1c",
+		"kind": "subnotion",
+		"name": "petit théorème de Fermat",
+		"archived_at": null
+	},
+	{
+		"id": "c11e4d4e-c768-4003-8fe2-3ac04fbbee3f",
+		"parent_id": "b019d46b-b5b7-4e57-a358-170e53a20969",
+		"kind": "subnotion",
+		"name": "conjugaison",
+		"archived_at": null
+	},
+	{
+		"id": "c128fb52-9689-4232-a364-56307bd8b101",
+		"parent_id": "d5f49f81-c74a-4e91-a2ec-405f6962c296",
+		"kind": "subnotion",
+		"name": "diagrammes circulaires",
+		"archived_at": null
+	},
+	{
+		"id": "c1701651-2bf4-42d7-9122-45597fe46fcc",
+		"parent_id": "83a394d1-ba60-4dcc-82b5-642908b88925",
+		"kind": "subnotion",
+		"name": "suites d'intégrales",
+		"archived_at": null
+	},
+	{
+		"id": "c1718129-d89c-4291-8015-905e41307b0d",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Décimaux : numération",
+		"archived_at": null
+	},
+	{
+		"id": "c185c955-8e75-4c4b-b261-0e7915696cab",
+		"parent_id": "ea762fa7-0f08-4ac2-a885-e328dd3d2da1",
+		"kind": "subnotion",
+		"name": "fonctions x ↦ aˣ",
+		"archived_at": null
+	},
+	{
+		"id": "c1a01819-c975-42ac-b756-2d427c826be9",
+		"parent_id": "83a0aeef-1abe-444e-b386-846a49017d1e",
+		"kind": "subnotion",
+		"name": "division",
+		"archived_at": null
+	},
+	{
+		"id": "c1f3c530-0799-4937-9909-d54bcf8112d1",
+		"parent_id": "e6e7e3e3-bf3c-482c-8e47-275a639b9bfe",
+		"kind": "subnotion",
+		"name": "croissances comparées",
+		"archived_at": null
+	},
+	{
+		"id": "c3205350-1c8b-404c-bf3c-a0b59bf69318",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Vecteurs",
+		"archived_at": null
+	},
+	{
+		"id": "c330a893-8601-416f-8608-e2282da79fed",
+		"parent_id": "76ec9d1e-69f3-4a44-9b08-2cce73793294",
+		"kind": "subnotion",
+		"name": "suites de motifs",
+		"archived_at": null
+	},
+	{
+		"id": "c391c985-cf13-4a9d-b5d4-5f52a0dda8ce",
+		"parent_id": "67a1e1b0-16da-47ad-b560-b797d241b980",
+		"kind": "subnotion",
+		"name": "formules d'Euler",
+		"archived_at": null
+	},
+	{
+		"id": "c3aa972a-deb8-48a7-897b-7bfde628714a",
+		"parent_id": "20b2daba-a64f-4020-96a7-8b13cad55139",
+		"kind": "subnotion",
+		"name": "inverse",
+		"archived_at": null
+	},
+	{
+		"id": "c3bb466a-2100-4e96-bb5c-b92d14848fca",
+		"parent_id": "acb6a17e-fce8-4647-86bc-972dfdad0c8f",
+		"kind": "subnotion",
+		"name": "parité",
+		"archived_at": null
+	},
+	{
+		"id": "c44d8781-973c-4f39-8628-c5f92c30b435",
+		"parent_id": "f941c737-8f57-4fa1-aaa5-fa65a684b1e8",
+		"kind": "subnotion",
+		"name": "angles et quotient",
+		"archived_at": null
+	},
+	{
+		"id": "c47307d0-fbf8-4a46-8a13-0dea9356ed95",
+		"parent_id": "704c7760-9f25-4fa0-8e6b-9f2b1795c543",
+		"kind": "subnotion",
+		"name": "évolutions successives et réciproque",
+		"archived_at": null
+	},
+	{
+		"id": "c5066dfa-b654-4205-a228-29a352db725d",
+		"parent_id": "41a2f42a-5052-4826-bc3b-b67fab9c83a3",
+		"kind": "subnotion",
+		"name": "projeté orthogonal",
+		"archived_at": null
+	},
+	{
+		"id": "c52467bf-0747-479e-a922-77656f92a224",
+		"parent_id": "101154f4-1d22-498e-9b1c-5f087ec5707c",
+		"kind": "notion",
+		"name": "Monnaie",
+		"archived_at": null
+	},
+	{
+		"id": "c65b77e2-5643-4dc4-9494-03dde1351033",
+		"parent_id": "ea762fa7-0f08-4ac2-a885-e328dd3d2da1",
+		"kind": "subnotion",
+		"name": "variations",
+		"archived_at": null
+	},
+	{
+		"id": "c686ea35-288c-46b1-b08c-cb8e7a5d2224",
+		"parent_id": "8f71054a-d8a4-429f-8829-b6eead9c6cd8",
+		"kind": "subnotion",
+		"name": "triangle quelconque",
+		"archived_at": null
+	},
+	{
+		"id": "c6f85504-5fc8-4a84-80f9-bdae43ac6262",
+		"parent_id": "f5a107a9-b42c-4a6e-9bcd-92fb1b3aa4f9",
+		"kind": "subnotion",
+		"name": "matrice d'adjacence",
+		"archived_at": null
+	},
+	{
+		"id": "c6fa8c5f-dc91-4591-92a9-0f606170f92b",
+		"parent_id": "d6f7ed4d-66c0-477e-9037-a1b0ca7a36ec",
+		"kind": "subnotion",
+		"name": "sinus et cosinus",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "c787b75d-e412-4b0b-a7dd-4987f18c2499",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Fonction inverse",
+		"archived_at": null
+	},
+	{
+		"id": "c7ec7e0c-9204-4371-8e51-c42cc5f2d160",
+		"parent_id": "ea762fa7-0f08-4ac2-a885-e328dd3d2da1",
+		"kind": "subnotion",
+		"name": "dérivée",
+		"archived_at": null
+	},
+	{
+		"id": "c8115a0d-3e01-4ce2-a744-4b29df13935a",
+		"parent_id": "d73c0be5-89b9-472e-993b-cde1695d72d1",
+		"kind": "subnotion",
+		"name": "unités et conversions",
+		"archived_at": null
+	},
+	{
+		"id": "c89807d4-9675-4618-8c93-e548d36cc5e8",
+		"parent_id": "773d6f5c-62be-43a9-93bf-30d1b7cdf906",
+		"kind": "subnotion",
+		"name": "cube et pavé",
+		"archived_at": null
+	},
+	{
+		"id": "c89e6615-e4f2-447e-baba-ac49c14dee5a",
+		"parent_id": "c90700c5-6111-437b-b66f-fdc76f3b1720",
+		"kind": "subnotion",
+		"name": "terme général",
+		"archived_at": null
+	},
+	{
+		"id": "c8e55d9c-225d-4dd8-a74e-1cfc5e99a72c",
+		"parent_id": "1756e07f-a3e1-4474-8d40-26a90f4360f6",
+		"kind": "subnotion",
+		"name": "condition initiale",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "c90700c5-6111-437b-b66f-fdc76f3b1720",
+		"parent_id": "bfe69202-e5bb-4f9b-9f5e-6ce92f176542",
+		"kind": "notion",
+		"name": "Suites géométriques",
+		"archived_at": null
+	},
+	{
+		"id": "c91cf084-9f70-49ed-bb1c-4a962fd70718",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "étude de fonction",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "c98df3fb-5709-4c78-a174-cc0788d8bcb6",
+		"parent_id": "f941c737-8f57-4fa1-aaa5-fa65a684b1e8",
+		"kind": "subnotion",
+		"name": "racines de l'unité",
+		"archived_at": null
+	},
+	{
+		"id": "c9e0c49a-85f8-4534-b0dc-d7d81f44f6fe",
+		"parent_id": "5c6cb025-fb7c-458b-ab90-06ae6f329e11",
+		"kind": "subnotion",
+		"name": "fonction de répartition",
+		"archived_at": null
+	},
+	{
+		"id": "cae98e82-def6-4a87-9996-8b31960f3375",
+		"parent_id": "c90700c5-6111-437b-b66f-fdc76f3b1720",
+		"kind": "subnotion",
+		"name": "raison",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "cb12c9a6-fd51-42ef-92ac-12c5e41d8e94",
+		"parent_id": "8809d4ee-ab67-4036-b312-868a4e848110",
+		"kind": "subnotion",
+		"name": "calcul de longueurs",
+		"archived_at": null
+	},
+	{
+		"id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Dérivation",
+		"archived_at": null
+	},
+	{
+		"id": "ce0c25dc-ccf4-4492-8375-2644e653a64a",
+		"parent_id": "87b911ae-e40a-4459-b9cc-a6fd1115c8b2",
+		"kind": "subnotion",
+		"name": "problèmes en contexte",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "ce18c06a-2bc1-48b3-8d06-870198f43f76",
+		"parent_id": "67a1e1b0-16da-47ad-b560-b797d241b980",
+		"kind": "subnotion",
+		"name": "formule de Moivre",
+		"archived_at": null
+	},
+	{
+		"id": "ce9818ba-e994-4b63-bd17-80833260506d",
+		"parent_id": "600d983b-da8d-4d22-8c9a-e5e8eda869fa",
+		"kind": "notion",
+		"name": "Calcul littéral",
+		"archived_at": null
+	},
+	{
+		"id": "cef797b1-4c6f-4796-8a20-8273fc381e9a",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Théorème de Thalès",
+		"archived_at": null
+	},
+	{
+		"id": "cf1c1205-9b37-4732-b98e-bec326c137a3",
+		"parent_id": "392180f1-d2ad-492b-bec2-6a70380a9818",
+		"kind": "subnotion",
+		"name": "simulation",
+		"archived_at": null
+	},
+	{
+		"id": "cf45bf17-a4f0-490f-8ef9-a80e3f5fbb1e",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Symétrie centrale",
+		"archived_at": null
+	},
+	{
+		"id": "cf78c8e3-daa6-48e2-ab01-dc6e80c67ae0",
+		"parent_id": "64989d55-dbb7-49e7-ba4a-38211c6395f0",
+		"kind": "subnotion",
+		"name": "inégalités de convexité",
+		"archived_at": null
+	},
+	{
+		"id": "d04f8c65-cc93-432a-bf13-1efd30a63386",
+		"parent_id": "41a2f42a-5052-4826-bc3b-b67fab9c83a3",
+		"kind": "subnotion",
+		"name": "équations de droites",
+		"archived_at": null
+	},
+	{
+		"id": "d101bb12-4dfd-4e7a-9b95-72795c37a430",
+		"parent_id": "c3205350-1c8b-404c-bf3c-a0b59bf69318",
+		"kind": "subnotion",
+		"name": "combinaison linéaire",
+		"archived_at": null
+	},
+	{
+		"id": "d115cdbc-44fb-4c6f-9aeb-a23c4a780474",
+		"parent_id": "e567352e-4416-438b-a4a3-bc2d817f8231",
+		"kind": "subnotion",
+		"name": "perspective centrale",
+		"archived_at": null
+	},
+	{
+		"id": "d18ae9ce-c842-424d-9f31-d40e51c81cd2",
+		"parent_id": "c1718129-d89c-4291-8015-905e41307b0d",
+		"kind": "subnotion",
+		"name": "écritures",
+		"archived_at": null
+	},
+	{
+		"id": "d1c5d2c7-712e-4078-a5c0-01aeb07202f5",
+		"parent_id": "41a2f42a-5052-4826-bc3b-b67fab9c83a3",
+		"kind": "subnotion",
+		"name": "équation de cercle",
+		"archived_at": null
+	},
+	{
+		"id": "d1f3d20f-4d9c-4ae4-b503-42a7e28a0a4d",
+		"parent_id": "d93b2714-2329-4e92-9d2b-d56752d11a1c",
+		"kind": "subnotion",
+		"name": "congruences",
+		"archived_at": null
+	},
+	{
+		"id": "d248afdc-5843-4f0c-aad4-d6f775511ea8",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Fonction racine carrée",
+		"archived_at": null
+	},
+	{
+		"id": "d2b9dcfc-bf66-41e1-b222-e546c1bbc1a2",
+		"parent_id": "5a6cdff9-5986-4651-935d-394122caacf3",
+		"kind": "subnotion",
+		"name": "négation d'une proposition",
+		"archived_at": null
+	},
+	{
+		"id": "d3759728-d642-4de7-b01a-7c794281feed",
+		"parent_id": "5c6cb025-fb7c-458b-ab90-06ae6f329e11",
+		"kind": "subnotion",
+		"name": "espérance et variance",
+		"archived_at": null
+	},
+	{
+		"id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Entiers : addition et soustraction",
+		"archived_at": null
+	},
+	{
+		"id": "d53dce13-7a03-4878-9db2-bea96f7e197d",
+		"parent_id": "b9a04f0b-b5cc-4a36-91a2-5c52a5572a37",
+		"kind": "subnotion",
+		"name": "coordonnées dans le plan",
+		"archived_at": null
+	},
+	{
+		"id": "d56d6f94-b1b0-4924-9477-7d23bbc684ea",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Relatifs : calculs",
+		"archived_at": null
+	},
+	{
+		"id": "d5dc9b32-c6e7-4a02-959a-b659ba2cc494",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Second degré",
+		"archived_at": null
+	},
+	{
+		"id": "d5e105f2-757b-4fd7-a8da-fcbee7cacd64",
+		"parent_id": "8f71054a-d8a4-429f-8829-b6eead9c6cd8",
+		"kind": "subnotion",
+		"name": "rectangle",
+		"archived_at": null
+	},
+	{
+		"id": "d5f49f81-c74a-4e91-a2ec-405f6962c296",
+		"parent_id": "e00fbb8a-3363-4fdf-9881-420651325080",
+		"kind": "notion",
+		"name": "Représenter des données",
+		"archived_at": null
+	},
+	{
+		"id": "d6f7ed4d-66c0-477e-9037-a1b0ca7a36ec",
+		"parent_id": "aa4502ec-8825-4779-aaad-9911829c204f",
+		"kind": "notion",
+		"name": "y′ = f",
+		"archived_at": null
+	},
+	{
+		"id": "d726173f-bba1-4497-86f1-76ac73306903",
+		"parent_id": "c3205350-1c8b-404c-bf3c-a0b59bf69318",
+		"kind": "subnotion",
+		"name": "norme",
+		"archived_at": null
+	},
+	{
+		"id": "d73c0be5-89b9-472e-993b-cde1695d72d1",
+		"parent_id": "101154f4-1d22-498e-9b1c-5f087ec5707c",
+		"kind": "notion",
+		"name": "Longueurs",
+		"archived_at": null
+	},
+	{
+		"id": "d73c91a2-355d-465e-9be4-00c84bfb0b6f",
+		"parent_id": "64989d55-dbb7-49e7-ba4a-38211c6395f0",
+		"kind": "subnotion",
+		"name": "point d'inflexion",
+		"archived_at": null
+	},
+	{
+		"id": "d73e6ca0-25cb-400b-95d9-9f1fc1e97520",
+		"parent_id": "a365eb71-f060-4094-a0cb-19ef20f48a0d",
+		"kind": "subnotion",
+		"name": "droite graduée",
+		"archived_at": null
+	},
+	{
+		"id": "d77439a1-594c-4947-b8da-51d2198e7e28",
+		"parent_id": "f4d9a099-6f97-4dcb-8cc9-a9eaa78d9db7",
+		"kind": "subnotion",
+		"name": "mettre en équation",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "d78d5a6b-77f9-4e62-a472-655fd0432479",
+		"parent_id": "b0d50484-f7a8-4afd-83e0-c4349028cf7a",
+		"kind": "subnotion",
+		"name": "triangle de Pascal",
+		"archived_at": null
+	},
+	{
+		"id": "d8014b42-3550-41bb-8998-eb3140546bbc",
+		"parent_id": "4f73aa09-f9ab-46ce-9272-7d58131da814",
+		"kind": "subnotion",
+		"name": "décomposition en facteurs premiers",
+		"archived_at": null
+	},
+	{
+		"id": "d8492cb6-7b80-461d-9a38-378366a5b0dd",
+		"parent_id": "0437884a-1089-4db7-8d0e-135585b00995",
+		"kind": "subnotion",
+		"name": "division euclidienne",
+		"archived_at": null
+	},
+	{
+		"id": "d86c81aa-42e8-40a7-9e89-1de80aff78a9",
+		"parent_id": "3355b3a5-d66a-4409-b02b-21db0e0ddb31",
+		"kind": "subnotion",
+		"name": "convergence monotone",
+		"archived_at": null
+	},
+	{
+		"id": "d92ea7f1-bf6b-417f-91a7-03980808a3e6",
+		"parent_id": "5f8914a5-7353-4030-9389-93b598f08215",
+		"kind": "subnotion",
+		"name": "unités simples",
+		"archived_at": null
+	},
+	{
+		"id": "d93b2714-2329-4e92-9d2b-d56752d11a1c",
+		"parent_id": "841b9ac9-0d08-4d54-bffa-d6b9fb2170d8",
+		"kind": "notion",
+		"name": "Congruences",
+		"archived_at": null
+	},
+	{
+		"id": "d9d60116-6408-4c67-bad6-e2998d9aee2f",
+		"parent_id": "2210901a-acae-4a4c-8624-c68d9594c314",
+		"kind": "subnotion",
+		"name": "produit",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "da9d04e7-1292-40c6-baf5-c1c3ca81becc",
+		"parent_id": "c1718129-d89c-4291-8015-905e41307b0d",
+		"kind": "subnotion",
+		"name": "encadrement",
+		"archived_at": null
+	},
+	{
+		"id": "dacfeff0-0e33-466d-bce9-1abf37240b1b",
+		"parent_id": "77bce7c1-9774-44f8-a188-e497a50632d7",
+		"kind": "subnotion",
+		"name": "projeté orthogonal",
+		"archived_at": null
+	},
+	{
+		"id": "dae7b3f1-f2c2-4c31-85e6-0949d23ecd43",
+		"parent_id": "f4c26640-7694-416f-b89a-b066e7f4928d",
+		"kind": "subnotion",
+		"name": "propriétés algébriques",
+		"archived_at": null
+	},
+	{
+		"id": "db29cbb6-64c2-4b18-b5f6-0a76531574a8",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "taux de variation",
+		"archived_at": null
+	},
+	{
+		"id": "dbc9c8bb-ea8f-48ae-82ae-95d4729d059a",
+		"parent_id": "d6f7ed4d-66c0-477e-9037-a1b0ca7a36ec",
+		"kind": "subnotion",
+		"name": "primitives des fonctions de référence",
+		"archived_at": null
+	},
+	{
+		"id": "dca13a87-8e37-4223-a4a4-e2c30c6af45c",
+		"parent_id": "df0b929e-ea8b-4f76-a7e3-8c19c7886184",
+		"kind": "subnotion",
+		"name": "droite graduée",
+		"archived_at": null
+	},
+	{
+		"id": "de32728f-68c4-4769-89f9-185a0bd56ab6",
+		"parent_id": "df0b929e-ea8b-4f76-a7e3-8c19c7886184",
+		"kind": "subnotion",
+		"name": "ordre",
+		"archived_at": null
+	},
+	{
+		"id": "df0b929e-ea8b-4f76-a7e3-8c19c7886184",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Fractions : sens et écritures",
+		"archived_at": null
+	},
+	{
+		"id": "dff63701-ad52-458d-a827-12f9f527ff57",
+		"parent_id": "aefbc76d-af7a-41c9-b8d6-fe1a017e6d2e",
+		"kind": "subnotion",
+		"name": "PGCD",
+		"archived_at": null
+	},
+	{
+		"id": "dffd548b-4a55-4631-b468-8d2c3f5286b6",
+		"parent_id": "5c6cb025-fb7c-458b-ab90-06ae6f329e11",
+		"kind": "subnotion",
+		"name": "densité et aire",
+		"archived_at": null
+	},
+	{
+		"id": "e00fbb8a-3363-4fdf-9881-420651325080",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Statistiques",
+		"archived_at": null
+	},
+	{
+		"id": "e03bc9cc-2d87-4695-8950-bcae08f39d5e",
+		"parent_id": "101154f4-1d22-498e-9b1c-5f087ec5707c",
+		"kind": "notion",
+		"name": "Durées",
+		"archived_at": null
+	},
+	{
+		"id": "e11a0649-391b-4a93-8f27-f352f071f6cd",
+		"parent_id": "26ca7245-f68b-423b-a1e3-ba8f10edb5f4",
+		"kind": "subnotion",
+		"name": "dérivées et variations",
+		"archived_at": null
+	},
+	{
+		"id": "e1dc7fcc-c4bf-4ad1-af8a-1e8277f264cf",
+		"parent_id": "d5f49f81-c74a-4e91-a2ec-405f6962c296",
+		"kind": "subnotion",
+		"name": "effectifs et fréquences",
+		"archived_at": null
+	},
+	{
+		"id": "e1e716d6-61d1-4a9e-b9c4-607469463883",
+		"parent_id": "f140657a-524a-4506-8df5-302a9fc2d540",
+		"kind": "subnotion",
+		"name": "écriture d'une expression",
+		"archived_at": null
+	},
+	{
+		"id": "e27a4755-c362-4e46-b5e1-3ee2581dabe3",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Intégration",
+		"archived_at": null
+	},
+	{
+		"id": "e31afec7-a8fe-4363-8046-974bc89f6c54",
+		"parent_id": "069f81b0-ec73-461e-85e4-9759baa37bb2",
+		"kind": "notion",
+		"name": "Principes de dénombrement",
+		"archived_at": null
+	},
+	{
+		"id": "e388ea1e-1be2-4bb0-aa87-f8e4936c98e4",
+		"parent_id": "2189dba9-ba3e-40a1-92f1-705c221e1ba6",
+		"kind": "subnotion",
+		"name": "résolution",
+		"archived_at": null
+	},
+	{
+		"id": "e3b66731-139d-42ef-9ba5-71cfa5bcc03c",
+		"parent_id": "492d0ee4-d488-4a34-877d-6c569bbd881d",
+		"kind": "subnotion",
+		"name": "nuage de points",
+		"archived_at": null
+	},
+	{
+		"id": "e3d5ad7a-425e-4ca8-9d19-a6709b70bd14",
+		"parent_id": "0049d7a3-e462-42b5-b270-b8a15fcda402",
+		"kind": "subnotion",
+		"name": "équations et inéquations",
+		"archived_at": null
+	},
+	{
+		"id": "e3f91bf9-e5d6-4edd-821c-ab6f973b7476",
+		"parent_id": "01303d39-dbe9-4183-b3bf-ed703598aec1",
+		"kind": "subnotion",
+		"name": "coefficient directeur et ordonnée à l'origine",
+		"archived_at": null
+	},
+	{
+		"id": "e42dc1fd-380d-468c-81ef-cd6bdb186df5",
+		"parent_id": "492d0ee4-d488-4a34-877d-6c569bbd881d",
+		"kind": "subnotion",
+		"name": "coefficient de corrélation",
+		"archived_at": null
+	},
+	{
+		"id": "e44bd5b7-6f1c-4298-a9e7-941e628d5870",
+		"parent_id": "eb27b3d1-aaf1-4a1b-b700-381bbbad8ada",
+		"kind": "subnotion",
+		"name": "racines d'un polynôme",
+		"archived_at": null
+	},
+	{
+		"id": "e48121fd-dc80-46d0-9735-3f01e61896a9",
+		"parent_id": "e6e7e3e3-bf3c-482c-8e47-275a639b9bfe",
+		"kind": "subnotion",
+		"name": "comparaison et encadrement",
+		"archived_at": null
+	},
+	{
+		"id": "e50f72be-53ba-4964-b05e-97e7bcb41f4b",
+		"parent_id": "5c6cb025-fb7c-458b-ab90-06ae6f329e11",
+		"kind": "subnotion",
+		"name": "absence de mémoire",
+		"archived_at": null
+	},
+	{
+		"id": "e516a19a-dea9-48f8-9894-a307f1acd801",
+		"parent_id": "915e7000-caf2-465e-b6f5-eaa803f4b691",
+		"kind": "subnotion",
+		"name": "optimisation",
+		"archived_at": null
+	},
+	{
+		"id": "e567352e-4416-438b-a4a3-bc2d817f8231",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Solides",
+		"archived_at": null
+	},
+	{
+		"id": "e6186567-5fa4-45a9-b1dc-4daa8726db2a",
+		"parent_id": "41a2f42a-5052-4826-bc3b-b67fab9c83a3",
+		"kind": "subnotion",
+		"name": "vecteur normal et équation de droite",
+		"archived_at": null
+	},
+	{
+		"id": "e6e7e3e3-bf3c-482c-8e47-275a639b9bfe",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Limites de fonctions",
+		"archived_at": null
+	},
+	{
+		"id": "e71ca26c-f980-45e8-8174-293b18b44262",
+		"parent_id": "808d6f9c-1b5d-4796-86dd-0bdb185b34f1",
+		"kind": "notion",
+		"name": "Rotations",
+		"archived_at": null
+	},
+	{
+		"id": "e75cd688-c73a-42b8-ab24-4c9516a55608",
+		"parent_id": "6c27a9d8-d9e5-4132-a1f2-4768e5f342d1",
+		"kind": "subnotion",
+		"name": "connexité",
+		"archived_at": null
+	},
+	{
+		"id": "e7f414da-e4fa-49cb-9b96-b1b2e0f1068d",
+		"parent_id": "ccfd8ed9-1edf-411b-a540-f41afd66103a",
+		"kind": "subnotion",
+		"name": "tangente",
+		"archived_at": null
+	},
+	{
+		"id": "e9f8063d-9434-4f94-bc32-207596b1f1aa",
+		"parent_id": "eb27b3d1-aaf1-4a1b-b700-381bbbad8ada",
+		"kind": "subnotion",
+		"name": "degré 3 et factorisation",
+		"archived_at": null
+	},
+	{
+		"id": "ea03e599-1f39-4172-a5b7-1a78e670b4a8",
+		"parent_id": "54b0242b-0477-4443-a9d4-f7b09a9ddbae",
+		"kind": "subnotion",
+		"name": "étendue",
+		"archived_at": null
+	},
+	{
+		"id": "ea2e92ec-8c8a-4e8c-bdbb-e264730533f4",
+		"parent_id": "d93b2714-2329-4e92-9d2b-d56752d11a1c",
+		"kind": "subnotion",
+		"name": "chiffrement",
+		"archived_at": null
+	},
+	{
+		"id": "ea5971b4-0faa-43ba-9275-762abc484fc8",
+		"parent_id": "7112e074-dccc-47b4-bcbc-0d3c217d24a1",
+		"kind": "subnotion",
+		"name": "point fixe",
+		"archived_at": null
+	},
+	{
+		"id": "ea762fa7-0f08-4ac2-a885-e328dd3d2da1",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Fonction exponentielle",
+		"archived_at": null
+	},
+	{
+		"id": "ea8ac6bd-60f9-4a70-8d62-04d87faba5a3",
+		"parent_id": "0d6f039b-4d7e-4079-8d46-598033d41768",
+		"kind": "subnotion",
+		"name": "comparaison et mesure",
+		"archived_at": null
+	},
+	{
+		"id": "eab18112-d59d-4eec-9454-c9aec7404615",
+		"parent_id": "3a3a3e35-b1f9-49c9-8c70-24d9aa7d3ccf",
+		"kind": "subnotion",
+		"name": "ax + b < c",
+		"archived_at": null
+	},
+	{
+		"id": "eb27b3d1-aaf1-4a1b-b700-381bbbad8ada",
+		"parent_id": "ffbc0a33-4d20-4610-ad0f-6f702e981622",
+		"kind": "notion",
+		"name": "Équations polynomiales",
+		"archived_at": null
+	},
+	{
+		"id": "ebfc9230-6a59-4a79-8693-a7ce2dde2a96",
+		"parent_id": "7f0932c3-16c8-4311-9864-f98d073bef9c",
+		"kind": "subnotion",
+		"name": "intervalle de fluctuation",
+		"archived_at": null
+	},
+	{
+		"id": "ec6ac29c-0448-4e89-8708-6b4d858bd8f0",
+		"parent_id": "84fd6b08-6662-4e17-a661-66f035004091",
+		"kind": "subnotion",
+		"name": "reconnaître et nommer des formes",
+		"archived_at": null
+	},
+	{
+		"id": "ec848949-90ea-4a2a-8ad5-bb84e70a67c3",
+		"parent_id": "3355b3a5-d66a-4409-b02b-21db0e0ddb31",
+		"kind": "subnotion",
+		"name": "formes indéterminées",
+		"archived_at": null
+	},
+	{
+		"id": "eca7dd32-3471-4e94-9ffa-3e9c6aa12d55",
+		"parent_id": "3a5aebf2-a60c-4c61-8eff-5e692e19ccea",
+		"kind": "subnotion",
+		"name": "définition",
+		"archived_at": null
+	},
+	{
+		"id": "ed363eac-c55c-4010-9cd9-23fc9e590231",
+		"parent_id": "6dd4513e-9f0e-44c9-afb7-4558826dabd3",
+		"kind": "subnotion",
+		"name": "module",
+		"archived_at": null
+	},
+	{
+		"id": "ed8918f5-1ba7-4958-873e-8a2a80505cf7",
+		"parent_id": "915e7000-caf2-465e-b6f5-eaa803f4b691",
+		"kind": "subnotion",
+		"name": "comparaison",
+		"archived_at": null
+	},
+	{
+		"id": "ee19292d-43df-49ba-8dd1-3ff5c6ab536e",
+		"parent_id": "fef2a93e-22b4-48b3-9dd4-2bd1b043e9dc",
+		"kind": "subnotion",
+		"name": "comparer des images",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "ee1b508c-10fc-4bc1-aac3-ca62f9bdd855",
+		"parent_id": "5c6cb025-fb7c-458b-ab90-06ae6f329e11",
+		"kind": "subnotion",
+		"name": "loi géométrique",
+		"archived_at": null
+	},
+	{
+		"id": "ee6b005b-726d-4836-9a78-dc271e7259cf",
+		"parent_id": "f4c26640-7694-416f-b89a-b066e7f4928d",
+		"kind": "subnotion",
+		"name": "équations et inéquations",
+		"archived_at": null
+	},
+	{
+		"id": "ee8abe8b-368f-4037-a4b2-9a3cab1d1afa",
+		"parent_id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"kind": "subnotion",
+		"name": "complément",
+		"archived_at": null
+	},
+	{
+		"id": "eea9d03f-00e0-460a-9592-2ee06359966b",
+		"parent_id": "d248afdc-5843-4f0c-aad4-d6f775511ea8",
+		"kind": "subnotion",
+		"name": "variations",
+		"archived_at": null
+	},
+	{
+		"id": "ef2c791a-1e59-4fb4-89e9-6c8de870f7f1",
+		"parent_id": "933094d2-56ef-4c43-9658-18b9e9294354",
+		"kind": "subnotion",
+		"name": "encadrement",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "ef42f135-69a9-41ce-a7d5-9b2c5df5d0cb",
+		"parent_id": "99d61abc-f362-43c1-b745-d3e3da9003dd",
+		"kind": "notion",
+		"name": "Expériences aléatoires",
+		"archived_at": null
+	},
+	{
+		"id": "ef6c2622-e0de-437d-9856-df01cc0a597e",
+		"parent_id": "d5f49f81-c74a-4e91-a2ec-405f6962c296",
+		"kind": "subnotion",
+		"name": "choisir une représentation",
+		"archived_at": null
+	},
+	{
+		"id": "ef839fcb-f5f5-4382-8f4c-132524041988",
+		"parent_id": "bcb29656-0514-476a-8618-1bd9cbac179b",
+		"kind": "subnotion",
+		"name": "matrice de transition",
+		"archived_at": null
+	},
+	{
+		"id": "efaa7907-2a24-49dc-bb2e-f0c85c41fa56",
+		"parent_id": "68973ff5-f847-491c-b602-375673d5d080",
+		"kind": "subnotion",
+		"name": "contraposée",
+		"archived_at": null
+	},
+	{
+		"id": "f034e8dc-4220-4b1c-b271-84d0bd917e01",
+		"parent_id": "c52467bf-0747-479e-a922-77656f92a224",
+		"kind": "subnotion",
+		"name": "euros et centimes",
+		"archived_at": null
+	},
+	{
+		"id": "f088a9e8-cf14-44a4-a8f2-75996251cf51",
+		"parent_id": "4bc9c80f-4b16-42e3-a81a-ba3489b32797",
+		"kind": "subnotion",
+		"name": "coordonnées du projeté orthogonal",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "f097a63d-e748-4282-99b0-a06239c4b97d",
+		"parent_id": "acb6a17e-fce8-4647-86bc-972dfdad0c8f",
+		"kind": "subnotion",
+		"name": "ensemble de définition",
+		"archived_at": null
+	},
+	{
+		"id": "f0fdc54e-1f65-4d99-8068-e02e1c316b1d",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "distributivité",
+		"archived_at": null
+	},
+	{
+		"id": "f104427e-c80c-4880-b58a-c7364d3eeaa2",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Algorithmique",
+		"archived_at": null
+	},
+	{
+		"id": "f140657a-524a-4506-8df5-302a9fc2d540",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Entiers : priorités opératoires",
+		"archived_at": null
+	},
+	{
+		"id": "f1546aeb-eccd-4025-83dd-7141c9f7dc36",
+		"parent_id": "164a7ff1-cfba-441f-b79c-95c8ded95501",
+		"kind": "subnotion",
+		"name": "matrice d'une transformation",
+		"archived_at": null
+	},
+	{
+		"id": "f1e92f10-d38a-4380-8931-9999da4b9dad",
+		"parent_id": "915e7000-caf2-465e-b6f5-eaa803f4b691",
+		"kind": "subnotion",
+		"name": "parties-tout",
+		"archived_at": null
+	},
+	{
+		"id": "f2167091-16be-4aa5-8f14-d44522dcd8ab",
+		"parent_id": "54b0242b-0477-4443-a9d4-f7b09a9ddbae",
+		"kind": "subnotion",
+		"name": "boîte à moustaches",
+		"archived_at": null
+	},
+	{
+		"id": "f294eccf-0283-4e82-afc8-8a9947ea57e9",
+		"parent_id": "57453fce-aabe-4909-be20-5ed46a437d0e",
+		"kind": "notion",
+		"name": "Vitesse",
+		"archived_at": null
+	},
+	{
+		"id": "f3a922c4-4d93-418e-8569-d1783202b058",
+		"parent_id": "77bce7c1-9774-44f8-a188-e497a50632d7",
+		"kind": "subnotion",
+		"name": "vecteur normal et équation cartésienne",
+		"archived_at": null
+	},
+	{
+		"id": "f3e4bee0-dc79-4d45-9ad2-540640df7c3b",
+		"parent_id": "acb6a17e-fce8-4647-86bc-972dfdad0c8f",
+		"kind": "subnotion",
+		"name": "équations et inéquations f(x) = k",
+		"archived_at": null
+	},
+	{
+		"id": "f3f0d5ce-7921-4106-b764-44648cc9b12e",
+		"parent_id": "ce9818ba-e994-4b63-bd17-80833260506d",
+		"kind": "subnotion",
+		"name": "opposé d'une expression",
+		"archived_at": null
+	},
+	{
+		"id": "f4827c99-56b6-4452-9e46-695d5249d7bf",
+		"parent_id": "4dc14ca4-be3b-4050-a114-1d7d52d408c8",
+		"kind": "subnotion",
+		"name": "unités et conversions",
+		"archived_at": null
+	},
+	{
+		"id": "f4c26640-7694-416f-b89a-b066e7f4928d",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Logarithmes",
+		"archived_at": null
+	},
+	{
+		"id": "f4d9a099-6f97-4dcb-8cc9-a9eaa78d9db7",
+		"parent_id": "600d983b-da8d-4d22-8c9a-e5e8eda869fa",
+		"kind": "notion",
+		"name": "Équations : premier degré",
+		"archived_at": null
+	},
+	{
+		"id": "f4da2a61-7ab6-4654-9c50-ad208794c4a4",
+		"parent_id": "7f0932c3-16c8-4311-9864-f98d073bef9c",
+		"kind": "subnotion",
+		"name": "reconnaître une loi",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "f5a107a9-b42c-4a6e-9bcd-92fb1b3aa4f9",
+		"parent_id": "5fefc39e-2d5c-47a3-b1dd-2cb772c5a881",
+		"kind": "notion",
+		"name": "Matrice d'adjacence",
+		"archived_at": null
+	},
+	{
+		"id": "f5dfa3d0-00e2-48aa-97ac-f4e20559e203",
+		"parent_id": "ce9818ba-e994-4b63-bd17-80833260506d",
+		"kind": "subnotion",
+		"name": "développement",
+		"archived_at": null
+	},
+	{
+		"id": "f60254be-c49e-4d3f-869c-8f4fc6fa4c4f",
+		"parent_id": "e567352e-4416-438b-a4a3-bc2d817f8231",
+		"kind": "subnotion",
+		"name": "constructions",
+		"archived_at": null
+	},
+	{
+		"id": "f62d68d0-0ba6-42f4-9bf2-47ffcdfc7816",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "produit",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "f713c47b-7fdc-4dc8-a683-fc5fc86a339d",
+		"parent_id": "0440f40d-9150-4dc7-915d-a473affcbcae",
+		"kind": "subnotion",
+		"name": "produit de puissances",
+		"archived_at": null
+	},
+	{
+		"id": "f7e20059-daa8-400c-bab1-42c02f37f252",
+		"parent_id": "26ca7245-f68b-423b-a1e3-ba8f10edb5f4",
+		"kind": "subnotion",
+		"name": "cosinus et sinus d'un réel",
+		"archived_at": null
+	},
+	{
+		"id": "f89f6cd6-416b-44ba-9e86-c2dbd011cdc5",
+		"parent_id": "eb27b3d1-aaf1-4a1b-b700-381bbbad8ada",
+		"kind": "subnotion",
+		"name": "second degré",
+		"archived_at": null
+	},
+	{
+		"id": "f92ee100-8145-475e-8df6-e7603fb23094",
+		"parent_id": "d56d6f94-b1b0-4924-9477-7d23bbc684ea",
+		"kind": "subnotion",
+		"name": "sommes",
+		"archived_at": null
+	},
+	{
+		"id": "f941c737-8f57-4fa1-aaa5-fa65a684b1e8",
+		"parent_id": "ffbc0a33-4d20-4610-ad0f-6f702e981622",
+		"kind": "notion",
+		"name": "Interprétation géométrique",
+		"archived_at": null
+	},
+	{
+		"id": "f9f20b89-f681-4985-b1f0-882f75ea8132",
+		"parent_id": "77bce7c1-9774-44f8-a188-e497a50632d7",
+		"kind": "subnotion",
+		"name": "angles",
+		"archived_at": null
+	},
+	{
+		"id": "fa23577f-a1a8-45da-bff7-c073fed2e3f3",
+		"parent_id": "87b911ae-e40a-4459-b9cc-a6fd1115c8b2",
+		"kind": "subnotion",
+		"name": "arbres pondérés",
+		"archived_at": null
+	},
+	{
+		"id": "fa9ac153-e5ee-4d46-8579-ffcdead2aff0",
+		"parent_id": "2885b693-ca36-442b-bf45-1b51d4bb9bf5",
+		"kind": "subnotion",
+		"name": "union et intersection",
+		"archived_at": null
+	},
+	{
+		"id": "fb5cc28e-c4f7-4b6b-a03f-e9c1d289b180",
+		"parent_id": "ae405fc5-82cd-4617-9715-35b430ed916e",
+		"kind": "subnotion",
+		"name": "modélisation par un graphe",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "fd147a7f-8417-4041-b758-21dcd9693875",
+		"parent_id": "83a0aeef-1abe-444e-b386-846a49017d1e",
+		"kind": "subnotion",
+		"name": "puissances de 10",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "fdb1a062-2b96-41f0-b37c-da3cf23b9583",
+		"parent_id": "0049d7a3-e462-42b5-b270-b8a15fcda402",
+		"kind": "subnotion",
+		"name": "courbe",
+		"archived_at": null
+	},
+	{
+		"id": "fed47fed-b918-4c94-87b7-8a96b37e1025",
+		"parent_id": "64989d55-dbb7-49e7-ba4a-38211c6395f0",
+		"kind": "subnotion",
+		"name": "lecture graphique",
+		"archived_at": "2026-10-10T08:32:00.965187+00:00"
+	},
+	{
+		"id": "fee494e2-ff92-4406-bde4-f7debea7ddea",
+		"parent_id": "ef42f135-69a9-41ce-a7d5-9b2c5df5d0cb",
+		"kind": "subnotion",
+		"name": "fréquences",
+		"archived_at": null
+	},
+	{
+		"id": "fee697d2-11a9-4782-95fd-d6e37728c06f",
+		"parent_id": "a469c6fa-06e2-4581-a972-7ccfa7143c6e",
+		"kind": "subnotion",
+		"name": "définition et courbe",
+		"archived_at": null
+	},
+	{
+		"id": "fef2a93e-22b4-48b3-9dd4-2bd1b043e9dc",
+		"parent_id": "b138aafc-ad8a-4c13-8865-46fa2684e888",
+		"kind": "notion",
+		"name": "Fonction carré",
+		"archived_at": null
+	},
+	{
+		"id": "ffaf9751-e5f7-4961-b273-69fcdbea0631",
+		"parent_id": "d248afdc-5843-4f0c-aad4-d6f775511ea8",
+		"kind": "subnotion",
+		"name": "√x = k, √x < k",
+		"archived_at": null
+	},
+	{
+		"id": "ffbc0a33-4d20-4610-ad0f-6f702e981622",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Nombres complexes",
+		"archived_at": null
+	}
+]
