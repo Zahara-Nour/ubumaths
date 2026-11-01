@@ -6,17 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR des fichiers du lot 5 A (§ 31)._
+_Mis à jour le 2026-11-01, après #2077._
 
-- **État** : lots 1 à 4 publiés ; lot 5 « Droites » validé (§ 30) ; 5 A écrit, joué en local, commité et poussé (branche).
-- **Prochaine action** : ouvrir la PR des fichiers 5 A (revue : aucune, contenu ; `Doc-inchangée: contenu`), CI
-  verte, merge ; puis David lance `create-questions --publier` sur
-  `scripts/questions/2de-droites-a` ; ensuite écrire le lot 5 B (10 modèles, § 30).
-- **En attente de David** : le `--publier` du lot 5 A, après le merge.
+- **État** : lots 1 à 4 publiés ; lot 5 « Droites » validé (§ 30) ; fichiers 5 A (6 modèles) mergés sur `main` (#2077), pas encore en prod.
+- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/2de-droites-a` ; je vérifie
+  en prod ; ensuite écrire le lot 5 B (10 modèles, § 30) sur une nouvelle branche `feat/questions-2de-lot-5b`.
+- **En attente de David** : le `--publier` du lot 5 A.
 - **Pièges en cours** : horodatage = max + 1 min de `origin/main` ET des worktrees ; `migration list
 --linked` avant `db:migrate` ; `page-a-cocher.ts` ne prend qu'un `--dir` ; `svelte-kit sync` dans un worktree
   neuf avant `pnpm tsx` (`$lib` introuvable sinon).
-- **Worktree / branche** : `ubumaths-wt-questions-2de` · `feat/questions-2de-lot-5a`.
+- **Worktree / branche** : `ubumaths-wt-questions-2de` · `feat/questions-2de-lot-5a` (mergée, à remplacer par `lot-5b`).
 
 ## 1. Relevé (prod, 2026-10-27)
 
