@@ -1,0 +1,315 @@
+{
+	"title": "Appliquer un programme de calcul",
+	"description": "Appliquer un programme de calcul à plusieurs étapes à un nombre donné : entier relatif, décimal simple, avec un carré ; comparer deux programmes",
+	"grades": ["4"],
+	"theme": "Fonctions",
+	"domain": "Programmes de calcul",
+	"subdomain": "Appliquer",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre ;\n- le multiplier par ${{a}}$ ;\n- ajouter ${{b}}$ ;\n- multiplier le résultat par ${{c}}$.\n\nApplique ce programme au nombre ${{n}}$.\n\nRésultat : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "-10..10"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "r1",
+					"expression": "eval:a*n"
+				},
+				{
+					"name": "r2",
+					"expression": "eval:a*n+b"
+				}
+			],
+			"conditions": ["n!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*(a*n+b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Programme de calcul.** On applique les étapes **dans l'ordre**, chacune au résultat de la précédente.",
+					"$${{if:n<0|({{n}})|{{n}}}} \\times {{a}} = {{r1}}$$",
+					"$${{r1}} + {{b}} = {{r2}}$$",
+					"$${{if:r2<0|({{r2}})|{{r2}}}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:c*(a*n+b)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre ;\n- ajouter ${{a}}$ ;\n- élever le résultat au carré ;\n- soustraire ${{b}}$.\n\nApplique ce programme au nombre ${{n}}$.\n\nRésultat : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "-6..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n+a"
+				}
+			],
+			"conditions": ["n!=0", "r!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n+a)^2-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Programme de calcul.** On applique les étapes **dans l'ordre**, chacune au résultat de la précédente.",
+					"$${{n}} + {{a}} = {{r}}$$",
+					"$${{if:r<0|({{r}})|{{r}}}}^2 = {{eval:r^2}}$${{if:r<0| Le carré d'un nombre négatif est **positif**.|}}",
+					"$${{eval:r^2}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:r^2-b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre ;\n- le multiplier par $4$ ;\n- soustraire ${{a}}$ ;\n- multiplier le résultat par $3$.\n\nApplique ce programme au nombre ${{eval:(2*m+1)/2;d}}$.\n\nRésultat : $?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "eval:4*m+2-a"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*(4*m+2-a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Programme de calcul.** On applique les étapes **dans l'ordre**, chacune au résultat de la précédente.",
+					"$${{eval:(2*m+1)/2;d}} \\times 4 = {{eval:4*m+2}}$$",
+					"$${{eval:4*m+2}} - {{a}} = {{q}}$$",
+					"$${{if:q<0|({{q}})|{{q}}}} \\times 3 = \\textcolor{{{color:primary.0}}}{{{eval:3*q}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici deux programmes de calcul.\n\n**Programme A** : choisir un nombre ; le multiplier par ${{a}}$ ; ajouter ${{b}}$.\n\n**Programme B** : choisir un nombre ; ajouter ${{c}}$ ; multiplier le résultat par ${{d}}$.\n\nOn choisit le nombre ${{n}}$ au départ. Quel programme donne le plus grand résultat ?\n\n```choix\n- {{if:ra>rb|Le programme A.|Le programme B.}}\n- {{if:ra>rb|Le programme B.|Le programme A.}}\n- Les deux programmes donnent le même résultat.\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "-6..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "ra",
+					"expression": "eval:a*n+b"
+				},
+				{
+					"name": "rb",
+					"expression": "eval:(n+c)*d"
+				},
+				{
+					"name": "ra1",
+					"expression": "eval:a*n"
+				},
+				{
+					"name": "rb1",
+					"expression": "eval:n+c"
+				}
+			],
+			"conditions": ["ra!=rb", "n!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Programme de calcul.** On applique les étapes **dans l'ordre**, chacune au résultat de la précédente.",
+					"Programme A : ${{if:n<0|({{n}})|{{n}}}} \\times {{a}} = {{ra1}}$, puis ${{ra1}} + {{b}} = \\textcolor{{{color:primary.1}}}{{{ra}}}$.",
+					"Programme B : ${{n}} + {{c}} = {{rb1}}$, puis ${{if:rb1<0|({{rb1}})|{{rb1}}}} \\times {{d}} = \\textcolor{{{color:primary.2}}}{{{rb}}}$.",
+					"{{if:ra>rb|${{ra}} > {{rb}}$ : \\textcolor{{{color:primary.0}}}{\\text{le programme A}}.|${{rb}} > {{ra}}$ : \\textcolor{{{color:primary.0}}}{\\text{le programme B}}.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(−3 × 4 + 5) × 2 = −14",
+			"variationIndex": 0,
+			"variables": {
+				"n": "-3",
+				"a": "4",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["-14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernière étape oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"n": "-3",
+				"a": "4",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["-7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe",
+			"variationIndex": 0,
+			"variables": {
+				"n": "-3",
+				"a": "4",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−5 + 2)² − 4 = 5",
+			"variationIndex": 1,
+			"variables": {
+				"n": "-5",
+				"a": "2",
+				"b": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3² = −9",
+			"variationIndex": 1,
+			"variables": {
+				"n": "-5",
+				"a": "2",
+				"b": "4"
+			},
+			"answers": ["-13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2,5 × 4 − 3) × 3 = 21",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"a": "3"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,5 × 4 − 3 × 3 = 1",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"a": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le bon programme",
+			"variationIndex": 3,
+			"variables": {
+				"n": "2",
+				"a": "5",
+				"b": "1",
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'autre",
+			"variationIndex": 3,
+			"variables": {
+				"n": "2",
+				"a": "5",
+				"b": "1",
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le même",
+			"variationIndex": 3,
+			"variables": {
+				"n": "2",
+				"a": "5",
+				"b": "1",
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
