@@ -121,6 +121,15 @@ interface StatText {
 		/** Loi normale : les deux classes du bord comptent ce qui dépasse μ ± 3σ */
 		overflowBoth: (low: string, below: string, high: string, beyond: string) => string;
 	};
+	/** Boîte à moustaches ; nombres déjà écrits selon la langue */
+	boxPlot: {
+		title: string;
+		/**
+		 * Phrase lue par le lecteur d'écran, une par boîte : « Boîte Nautic :
+		 * minimum 28, premier quartile 30, … » ; sans nom, « Boîte à moustaches : … »
+		 */
+		sentence: (name: string | null, values: readonly string[]) => string;
+	};
 	/** Nuage de points (```nuage, manche 15) ; nombres déjà écrits selon la langue */
 	scatter: {
 		title: string;
@@ -250,6 +259,11 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			overflowBoth: (low, below, high, beyond) =>
 				`la première classe compte aussi les tirages en deçà de ${low} (ici ${below}), la dernière ceux au-delà de ${high} (ici ${beyond})`
 		},
+		boxPlot: {
+			title: 'Boîte à moustaches',
+			sentence: (name, [min, q1, median, q3, max]) =>
+				`${name === null ? 'Boîte à moustaches' : `Boîte ${name}`} : minimum ${min}, premier quartile ${q1}, médiane ${median}, troisième quartile ${q3}, maximum ${max}.`
+		},
 		scatter: {
 			title: 'Nuage de points',
 			points: (count) => `Nuage de ${count} points`,
@@ -365,6 +379,11 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 				`the last class also counts the draws beyond ${bound} (here ${count})`,
 			overflowBoth: (low, below, high, beyond) =>
 				`the first class also counts the draws below ${low} (here ${below}), the last those beyond ${high} (here ${beyond})`
+		},
+		boxPlot: {
+			title: 'Box plot',
+			sentence: (name, [min, q1, median, q3, max]) =>
+				`${name === null ? 'Box plot' : `Box ${name}`}: minimum ${min}, lower quartile ${q1}, median ${median}, upper quartile ${q3}, maximum ${max}.`
 		},
 		scatter: {
 			title: 'Scatter plot',

@@ -11,7 +11,7 @@ couvre:
 
 # Statistiques et probabilités (`src/lib/statistics/`)
 
-> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23 ; barres à construire le 2026-10-28 ; échelle à choisir le 2026-10-29. Usage dans l'atelier : [atelier.md](atelier.md)
+> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23 ; barres à construire le 2026-10-28 ; échelle à choisir le 2026-10-29 ; boîte à moustaches le 2026-11-01. Usage dans l'atelier : [atelier.md](atelier.md)
 > (§ « Liens avec `mathAST` et `statistics` ») ; syntaxe des blocs statistiques :
 > [ubumark.md](ubumark.md) (genres de `stat-chart`). Cette doc ne décrit que le **calcul**.
 
@@ -64,7 +64,8 @@ Seul import hors du module : `RandomSource` de `src/lib/utils/random.ts` (chemin
 
 - `summarizeList(values)` → `Outcome<Summary> | null` : effectif, moyenne, médiane, min, max,
   étendue, variance, écart type, Q1, Q3, écart interquartile, D1, D9. `describeList` en est la
-  version sans message (`Summary | null`).
+  version sans message (`Summary | null`) ; le bloc ` ```boite-a-moustaches ` l'appelle pour sa
+  boîte `données:` (min, `q1`, `median`, `q3`, max), sans autre calcul de quartile.
 - `summarizeTable(values, counts)` → `Outcome<FrequencyTable>` : lignes triées et **fusionnées**
   par valeur (fréquence, effectif cumulé, fréquences cumulées croissante et décroissante) + le
   `Summary`. Les effectifs peuvent être des pourcentages (seules les proportions comptent).
@@ -277,7 +278,8 @@ loi normale par `src/lib/atelier/__tests__/loi-normale.test.ts`.
 Aucune ADR. Décisions de David consignées dans les journaux archivés :
 [outils-statistiques](../archive/wip/outils-statistiques-progress.md) (quartiles du programme,
 médiane jamais « Q2 », arrondis d'affichage Q13, vocabulaire, boîte à moustaches hors
-périmètre), [v2](../archive/wip/outils-statistiques-v2-progress.md) (simulation à graine,
+périmètre — dessinée depuis par le bloc ` ```boite-a-moustaches `, chantier
+[boite-a-moustaches](../wip/boite-a-moustaches-progress.md), 2026-11-01), [v2](../archive/wip/outils-statistiques-v2-progress.md) (simulation à graine,
 fractions de liste), [loi binomiale](../archive/wip/loi-binomiale-progress.md) (calcul exact,
 intervalle Q140, pas de liste créée par une loi — Q142),
 [lois discrètes](../archive/wip/lois-discretes-progress.md),
