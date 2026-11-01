@@ -6,18 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR des fichiers du lot 5 B (§ 32)._
+_Mis à jour le 2026-11-01, après #2079._
 
-- **État** : lots 1 à 4 publiés ; 5 A mergé (#2077), PAS encore en prod (MCP : aucun des 6 titres) ; 5 B
-  (10 modèles) écrit, joué en local, commité sur `feat/questions-2de-lot-5b`.
-- **Prochaine action** : PR des fichiers 5 B (revue : aucune, contenu ; `Doc-inchangée: contenu`), CI verte,
-  merge ; puis David lance `create-questions --publier` sur `2de-droites-a` ET `2de-droites-b` ; ensuite
-  migration nœud + tag des 16 brouillons du lot 5, puis page à cocher.
-- **En attente de David** : les deux `--publier` (5 A, puis 5 B après le merge).
+- **État** : lots 1 à 4 publiés ; fichiers 5 A (#2077, 6 modèles) et 5 B (#2079, 10 modèles) mergés sur
+  `main`, AUCUN encore en prod (MCP : aucun titre du 5 A en base).
+- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/2de-droites-a` puis
+  `scripts/questions/2de-droites-b` ; je vérifie en prod (MCP) ; ensuite migration nœud + tag des 16 brouillons
+  du lot 5 (nœuds au § 30), sur une nouvelle branche, puis page à cocher.
+- **En attente de David** : les deux `--publier`.
 - **Pièges en cours** : `\textcolor` bloque `cleanCoefficients` → coefficients colorés par `{{if:…}}`
-  (`tete`/`suite`/`cst` du script 5 B) ; `\iff` suivi d'une lettre casse le LaTeX ; spec `bad_form` →
-  `constraintViolations: ["form"]` ; horodatage de migration = max + 1 min de `origin/main` ET des worktrees.
-- **Worktree / branche** : `ubumaths-wt-questions-2de` · `feat/questions-2de-lot-5b`.
+  (`tete`/`suite`/`cst` du script 5 B) ; spec `bad_form` → `constraintViolations: ["form"]` ; horodatage de
+  migration = max + 1 min de `origin/main` ET des worktrees ; `migration list --linked` avant `db:migrate` ;
+  `page-a-cocher.ts` ne prend qu'un `--dir`.
+- **Worktree / branche** : aucun (worktree retiré après #2079) ; prochaine branche `feat/questions-2de-rangement-droites`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
