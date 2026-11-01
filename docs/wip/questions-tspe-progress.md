@@ -10,17 +10,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2148 (migration Q3 jouée en prod)._
+_Mis à jour le 2026-11-01, lot 2 écrit (§ 15), PR #2160 ouverte, CI annulée._
 
-- **État** : lots 0 et 1 finis. Q3 révisée (D-Q3, § 14) et ordre D-D1 en prod (`db:migrate` du 2026-11-01, relu au
-  MCP : 10 / 10 conformes, trigger `updated_at` actif).
-- **Prochaine action** : lot 2 du § 4 (limites : capacités 402, 576, 403, 582, catégorie A) : relevé, phase 0 à
-  faire valider par David. Nouveau worktree depuis `origin/main`.
-- **En attente de David** : rien.
-- **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) : le vérifier avant de proposer un
-  point ; le **niveau est dans la clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ;
-  `db:migrate` depuis le dépôt principal (worktree non lié à Supabase) ; en-tête de commit ≤ 100 caractères.
-- **Worktree / branche** : aucun (retiré après #2148).
+- **État** : lot 2 (limites : 402, 576, 403, 582) écrit dans `scripts/questions/tspe-2-limites/` (script
+  `docs/wip/questions/lot-tspe-limites.py`), 52 specs vertes, essai en base locale joué dans l'aperçu. PR #2160 :
+  CI **annulée** à la demande de la session `questions-1spe` (main cassée, migration en double 20261101215000).
+- **D'abord** : #2154 mergée ; attendre le merge de **#2165** (`gh pr view 2165`), puis `git merge origin/main`,
+  `git push` (2 commits de journal restés locaux), surveiller la CI de #2160, merger si verte.
+- **Prochaine action** : #2160 mergée → **David** lance `set -a; . ./.env; set +a` puis
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-2-limites --publier` → relever les `id` →
+  migration : 3 sous-notions neuves + rangement + tags (§ 15).
+- **En attente de David** : la création des 4 brouillons en prod (après le merge).
+- **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
+  clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
+  principal ; en-tête de commit ≤ 100 caractères ; worktree neuf : `pnpm exec svelte-kit sync` avant
+  `question:specs` (sinon `$lib` introuvable). **Migrations (règles du 2026-11-01, #2165)** : nom par
+  `pnpm migration:horodatage` (jamais « max + 1 » à la main) ; `pnpm check:migrations --pr <n>` avant le merge ;
+  CI rouge sans jobs → lire le 1er job (« Commit de version ? ») ; après #2165, `git merge origin/main` ici.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe`, `feat/questions-tspe-lot2`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -716,3 +723,35 @@ explicite ajouté (test 15/15).
 **PR** : #2148 mergée le 2026-11-01 (CI verte après relance d'un job navigateur : erreur d'outillage
 `wrapDynamicImport`, 169 fichiers verts). **`db:migrate`** le 2026-11-01 depuis le dépôt principal ; relu en base :
 tags, nœud et niveaux visés sur les 10 modèles, 970dab52 resté au niveau 3.
+
+## 15. Lot 2 : limites, capacités (402, 576, 403, 582)
+
+_2026-11-01. Relevé MCP : 402 et 576 sur la notion « Limites de suites », 403 et 582 sur « Limites de fonctions »
+(tag permis depuis toute sous-notion). Voisins à ne pas répéter : 94e4d691, 806c10f4 (sommes), c611f92b (formes
+indéterminées, suites), b97dabe1 (croissances comparées, fonctions), 98ba277c, 7063979e (comparaison, suites).
+« Limites de fonctions › comparaison et encadrement » était vide._
+
+**Décisions (David, 2026-11-01, « go » sur les recos)** :
+
+- **D-L1 rangement A** : trois sous-notions neuves, créées par la migration : « limites usuelles » sous Limites de
+  suites et sous Limites de fonctions, « croissances comparées » sous Limites de suites ; chaque modèle au niveau 1.
+  Aucun modèle publié renuméroté.
+- **D-L2** : sin et cos exclus (lts-5) ; la fonction bornée g (v3 de M4) tient leur rôle.
+- **D-L3** : variations de la phase 0 sans ajout ; la variante « on ne peut pas conclure » (case choix) est
+  écartée, à reprendre plus tard si David la veut.
+- Niveau `T_SPE` seul ; réponse en case (nombre, +∞, −∞).
+
+| #   | Point    | Titre                                                | Rangement visé                                       |
+| --- | -------- | ---------------------------------------------------- | ---------------------------------------------------- |
+| M1  | TSPE-402 | Limites usuelles d'une suite                         | Limites de suites › limites usuelles, 1              |
+| M2  | TSPE-576 | Croissances comparées : suites                       | Limites de suites › croissances comparées, 1         |
+| M3  | TSPE-403 | Limites usuelles d'une fonction                      | Limites de fonctions › limites usuelles, 1           |
+| M4  | TSPE-582 | Limite d'une fonction par comparaison ou encadrement | Limites de fonctions › comparaison et encadrement, 1 |
+
+**Écriture** : `question:specs` 12 + 11 + 18 + 11 specs vertes, 850 tirages ; signe calculé de M3 (`sg`, parité et
+côté de 0) vérifié sur 24 cas sans le fournir. Corrigé après relecture des tirages : « u_n = 1 × nᵖ/eⁿ » et
+« 1/(−8) » dans M2. Base locale : 4 brouillons créés, M3 et M4 joués dans l'aperçu (réponse fausse refusée, rendu
+de l'encadrement en bloc).
+
+**Question d'accès** (migration à venir) : personne ne gagne ni ne perd d'accès (brouillons ; les élèves ne les
+voient qu'après `publier-lot`).

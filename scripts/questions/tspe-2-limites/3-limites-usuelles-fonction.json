@@ -1,0 +1,395 @@
+{
+	"title": "Limites usuelles d'une fonction",
+	"description": "Limite de k·xⁿ en −∞, de k/xⁿ en 0 (à droite ou à gauche) et en ±∞, de k√x en +∞, de k/√x en 0, de k·eˣ en ±∞ (pièges : parité de n, côté de 0, signe de k, eˣ → 0 en −∞)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Limites de fonctions",
+	"subdomain": "Limites usuelles",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}{{if:n==1|x|x^{ {{n}} }}}$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..5"
+				},
+				{
+					"name": "sg",
+					"expression": "{{eval:sign(k)*(-1)^n}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:sg>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:n%2==0|L'exposant ${{n}}$ est pair : $\\displaystyle\\lim_{x\\to-\\infty}{{if:n==1|x|x^{ {{n}} }}}=+\\infty$.|L'exposant ${{n}}$ est impair : $\\displaystyle\\lim_{x\\to-\\infty}{{if:n==1|x|x^{ {{n}} }}}=-\\infty$.}}",
+					"On multiplie par ${{k}}$ : {{if:k>0|le signe ne change pas.|le signe change.}}",
+					"$$\\displaystyle\\lim_{x\\to-\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{if:sg>0|+\\infty|-\\infty}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)=\\dfrac{ {{k}} }{{{if:n==1|x|x^{ {{n}} }}}}$.\n\nDétermine la limite de $f$ en $0$ (on a $x{{if:c==0|>|<}}0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..4"
+				},
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "sg",
+					"expression": "{{eval:sign(k)*(1-2*c)^n}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:sg>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand $x$ tend vers $0$, ${{if:n==1|x|x^{ {{n}} }}}$ tend vers $0$ {{if:c==0|en restant positif (car $x>0$)|{{if:n%2==0|en restant positif (exposant pair)|en restant négatif (exposant impair, $x<0$)}}}} : $\\dfrac{1}{{{if:n==1|x|x^{ {{n}} }}}}$ tend vers {{if:c==0|$+\\infty$|{{if:n%2==0|$+\\infty$|$-\\infty$}}}}.",
+					"On multiplie par ${{k}}$ : {{if:k>0|le signe ne change pas.|le signe change.}}",
+					"$$\\displaystyle\\lim_{x\\to0}f(x)=\\textcolor{{{color:primary.0}}}{{{if:sg>0|+\\infty|-\\infty}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)=\\dfrac{ {{k}} }{{{if:n==1|x|x^{ {{n}} }}}}$.\n\nDétermine la limite de $f$ en ${{if:c==0|+\\infty|-\\infty}}$.\n\n$\\displaystyle\\lim_{x\\to{{if:c==0|+\\infty|-\\infty}}}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..4"
+				},
+				{
+					"name": "c",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{if:n==1|x|x^{ {{n}} }}}$ tend vers l'infini, donc $\\dfrac{1}{{{if:n==1|x|x^{ {{n}} }}}}$ tend vers $0$.",
+					"Multiplier par ${{k}}$ ne change pas une limite nulle.",
+					"$$\\displaystyle\\lim_{x\\to{{if:c==0|+\\infty|-\\infty}}}f(x)=\\textcolor{{{color:primary.0}}}{0}$$"
+				]
+			}
+		},
+		{
+			"statement": "{{if:s==0|Soit $f$ la fonction définie sur $\\left[0\\,;+\\infty\\right[$ par $f(x)={{if:k==1||{{if:k==-1|-|{{k}}}}}}\\sqrt{x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$|Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\dfrac{ {{k}} }{\\sqrt{x}}$.\n\nDétermine la limite de $f$ en $0$ (on a $x>0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$}}",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==0|$\\displaystyle\\lim_{x\\to+\\infty}\\sqrt{x}=+\\infty$ (limite usuelle).|Quand $x$ tend vers $0$ avec $x>0$, $\\sqrt{x}$ tend vers $0$ en restant positif : $\\displaystyle\\lim_{x\\to0}\\dfrac{1}{\\sqrt{x}}=+\\infty$.}}",
+					"On multiplie par ${{k}}$ : {{if:k>0|le signe ne change pas.|le signe change.}}",
+					"$$\\displaystyle\\lim_{x\\to{{if:s==0|+\\infty|0}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:k>0|+\\infty|-\\infty}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:k==1||{{if:k==-1|-|{{k}}}}}}e^{x}$.\n\nDétermine la limite de $f$ en ${{if:c==0|+\\infty|-\\infty}}$.\n\n$\\displaystyle\\lim_{x\\to{{if:c==0|+\\infty|-\\infty}}}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:c==0|{{if:k>0|+\\infty|-\\infty}}|0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:c==0|$\\displaystyle\\lim_{x\\to+\\infty}e^{x}=+\\infty$ (limite usuelle).|$\\displaystyle\\lim_{x\\to-\\infty}e^{x}=0$ (limite usuelle).}}",
+					"{{if:c==0|On multiplie par ${{k}}$ : {{if:k>0|le signe ne change pas.|le signe change.}}|Multiplier par ${{k}}$ ne change pas une limite nulle.}}",
+					"$$\\displaystyle\\lim_{x\\to{{if:c==0|+\\infty|-\\infty}}}f(x)=\\textcolor{{{color:primary.0}}}{{{if:c==0|{{if:k>0|+\\infty|-\\infty}}|0}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 3x² en −∞ → +∞",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"n": "2",
+				"sg": "1"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 3x³ en −∞ → −∞",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"n": "3",
+				"sg": "-1"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 3x³, parité oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"n": "3",
+				"sg": "-1"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : −2x⁵ en −∞ → +∞",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-2",
+				"n": "5",
+				"sg": "1"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 4/x³, x < 0 → −∞",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"n": "3",
+				"c": "1",
+				"sg": "-1"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 4/x³, x < 0, côté oublié",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"n": "3",
+				"c": "1",
+				"sg": "-1"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : −4/x², x < 0 → −∞",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-4",
+				"n": "2",
+				"c": "1",
+				"sg": "-1"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : −4/x, x > 0 → −∞",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-4",
+				"n": "1",
+				"c": "0",
+				"sg": "-1"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 0",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"n": "3",
+				"c": "1",
+				"sg": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 5/x² en +∞ → 0",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5",
+				"n": "2",
+				"c": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : −5/x³ en −∞ → 0",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-5",
+				"n": "3",
+				"c": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : +∞",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5",
+				"n": "2",
+				"c": "0"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : −3√x en +∞ → −∞",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-3",
+				"s": "0"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 2/√x en 0 → +∞",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"s": "1"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 2/√x en 0, 0",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : −2eˣ en +∞ → −∞",
+			"variationIndex": 4,
+			"variables": {
+				"k": "-2",
+				"c": "0"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : 6eˣ en −∞ → 0",
+			"variationIndex": 4,
+			"variables": {
+				"k": "6",
+				"c": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : eˣ en −∞ pris pour −∞",
+			"variationIndex": 4,
+			"variables": {
+				"k": "6",
+				"c": "1"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
