@@ -21,7 +21,7 @@ export const QUESTIONS_CP_FORMES =
 	'supabase/migrations/20261026170000_questions_cp_formes_et_niveaux.sql';
 /** Sous-notion « Statistiques > Représenter des données > choisir une représentation » (5-079) et lot 6 de la 5e. */
 export const QUESTIONS_5_LOT6 =
-	'supabase/migrations/20261101180100_questions_5_lot6_rangement_tags.sql';
+	'supabase/migrations/20261101190200_questions_5_lot6_rangement_tags.sql';
 /** Du plus récent au plus ancien. */
 const LATER = [QUESTIONS_5_LOT6, QUESTIONS_CP_FORMES, PASSE_LYCEE_LIBELLES, PASSE_LYCEE];
 

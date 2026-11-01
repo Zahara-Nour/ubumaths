@@ -461,7 +461,7 @@ Relevé : aucun modèle sur les 6 points ; 6e « Fréquence » (fraction seule),
 - David `create-questions --publier` → 21ebfb57 (01), c73289f0 (02), 087c7c9c (03), 8190200a (04), ccb8407b (05),
   0d7dca16 (06), 5d0dc0e5 (07), f4f0d076 (08), brouillons sans nœud ni tag.
 - Relevé `questions-5/etat-prod-2026-11-01-lot6/` ; générateur `questions-5/lot-6-rangement.py` → migration
-  `20261101180100_questions_5_lot6_rangement_tags` + fixture. Nouveau : la migration CRÉE la sous-notion
+  `20261101190200_questions_5_lot6_rangement_tags` + fixture. Nouveau : la migration CRÉE la sous-notion
   « Statistiques > Représenter des données > choisir une représentation » et y passe le point 5-079 (seul point de
   la notion qui en relève ; 5-075 « recueillir et organiser » reste sur la notion) ; rollback : point remis,
   sous-notion supprimée (refus si elle porte autre chose).
@@ -472,4 +472,4 @@ Relevé : aucun modèle sur les 6 points ; 6e « Fréquence » (fraction seule),
   (`defaireSiAppliquee`), migration ajoutée à `tests/helpers/database/later-migrations.ts` (comme celle des formes
   du CP), fixtures `arbre-notions-seed.json` (+ la sous-notion, 474) et `seed-cycle4-points.json` (5-079) mises à
   jour. Vérifié en appliquant la migration à la base locale (`docker exec supabase_db_ubumaths psql`), 7 fichiers
-  / 99 tests verts, puis défaite par son rollback. Renommée `20261101180100` (après `180000` arrivée sur main).
+  / 99 tests verts, puis défaite par son rollback. Renommée `20261101190200` (après `180000` arrivée sur main).

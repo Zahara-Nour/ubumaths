@@ -15,7 +15,7 @@
  * archivé reste en base (ADR 0019) : la copie figée les liste à part
  * (« archives »), et le test les compare aussi. Depuis, 20261026170000 a créé la sous-notion
  * « Figures planes > reconnaître et nommer des formes » → 473 sous-notions actives ; puis
- * 20261101180100 « Représenter des données > choisir une représentation » → 474.
+ * 20261101190200 « Représenter des données > choisir une représentation » → 474.
  *
  * La preuve est INTÉGRALE, pas un échantillon : l'ensemble exact des chemins
  * « branche > notion > sous-notion » du JSON source
