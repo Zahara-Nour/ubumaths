@@ -1,0 +1,189 @@
+{
+	"id": "f01270c2-3c63-45c5-bfbb-8233154fadc6",
+	"title": "Coefficient d'une primitive de la forme u′eᵘ",
+	"description": "Trouver k pour que k·eᵘ soit une primitive de f : diviser par le facteur manquant de u′ (piège : multiplier)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Formes u′eᵘ, 2uu′, u′/u",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1/a}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}}$.\n\nDétermine le réel $k$ tel que la fonction $F$ définie par $F(x)=k\\,e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}}$ soit une primitive de $f$ sur $\\mathbb{R}$.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)={{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}$, on a $u'(x)={{eval:a}}$ et $(e^{u})'=u'e^{u}$.",
+					"$F'(x)=k\\times{{eval:a;()}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}}$. Pour que $F'=f$, il faut ${{eval:a}}k=1$, soit $k=\\textcolor{{{color:primary.0}}}{{{eval:1/a}}}$.",
+					"On divise par $u'$ : on ne multiplie pas."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/2}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:c==1|x}}{{if:c==-1|-x}}{{if:c!=1 && c!=-1|{{eval:c}}x}}e^{x^2}$.\n\nDétermine le réel $k$ tel que la fonction $F$ définie par $F(x)=k\\,e^{x^2}$ soit une primitive de $f$ sur $\\mathbb{R}$.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)=x^2$, $u'(x)=2x$ et $(e^{u})'=u'e^{u}$ : $F'(x)=k\\times 2x\\,e^{x^2}=2k\\,x\\,e^{x^2}$.",
+					"Il faut $2k={{eval:c}}$, soit $k=\\textcolor{{{color:primary.0}}}{{{eval:c/2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"description": "v0 : e^{3x+1} → 1/3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"description": "v0 : multiplié par u' au lieu de diviser",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"description": "v0 : coefficient oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "0"
+			},
+			"description": "v0 : a=-2 → −1/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-0.5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "0"
+			},
+			"description": "v0 : a=-2, décimal",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "0"
+			},
+			"description": "v0 : a=-2, signe oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "6"
+			},
+			"description": "v1 : 6x e^{x²} → 3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "6"
+			},
+			"description": "v1 : multiplié par 2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "1"
+			},
+			"description": "v1 : x e^{x²} → 1/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1"
+			},
+			"description": "v1 : c recopié",
+			"variationIndex": 1
+		}
+	]
+}
