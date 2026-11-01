@@ -6,12 +6,12 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, garde en cours (après #2130)._
+_Mis à jour le 2026-11-01, PR #2145 ouverte (garde)._
 
-- **État** : lots 1 (#2120) et 2 (#2130) mergés, pas en prod. Garde contre un masque cassé codée (§ 9), PR à ouvrir.
-- **Prochaine action** : PR de la garde, revues, CI, merge ; puis clôture du chantier (archivage du journal).
-- **En attente de David** : rien (garde point invisible : non, décidé le 2026-11-01).
-- **Pièges en cours** : forme masquée dans une option de ```choix non refusée (§ 8) ; la garde lit le texte, pas les parseurs : un nouveau bloc à geste doit y être ajouté.
+- **État** : lots 1 (#2120) et 2 (#2130) mergés, pas en prod. PR #2145 (garde contre un masque cassé + `Compléter:` accentué repéré) : revues faites (aucun bloquant restant), CI relancée sur `7e295c6bd` après le correctif de main (#2154).
+- **Prochaine action** : lire la CI de #2145 (`gh pr checks 2145`) ; verte → `gh pr merge 2145 --merge`, branche supprimée, worktree retiré ; puis clôture du chantier (archivage du journal).
+- **En attente de David** : rien.
+- **Pièges en cours** : nouvelles règles CI du 2026-11-01 (si CI rouge : lire d'abord le job « Commit de version ? ») ; la garde lit le texte : un nouveau bloc à geste doit y être ajouté ; reprise bloquée si un masque casse après coup (§ 9).
 - **Worktree / branche** : `../ubumaths-wt-fuite-enonce` · `fix/fuite-enonce-garde`.
 
 ---
