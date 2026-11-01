@@ -1,0 +1,63 @@
+{
+	"id": "c0b45c61-a141-4ef5-8ec6-4a319f7bd75c",
+	"title": "Nombre de mots binaires de longueur n",
+	"description": "2ⁿ mots binaires de longueur n (pièges : 2n, n²)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Parties d'un ensemble",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n}}"
+				}
+			],
+			"statement": "Un mot binaire est une suite de chiffres $0$ ou $1$.\n\nCombien de mots binaires de longueur ${{n}}$ existe-t-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..16"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un mot binaire de longueur ${{n}}$ est un ${{n}}$-uplet de $\\{0,1\\}$ (c'est aussi une partie de $\\{1,\\dots,{{n}}\\}$ : les positions des $1$).",
+					"$2^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:2^n}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["256"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "8"
+			},
+			"description": "v0 : n = 8 → 256",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["64"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "8"
+			},
+			"description": "v0 : 8² = 64",
+			"variationIndex": 0
+		}
+	]
+}
