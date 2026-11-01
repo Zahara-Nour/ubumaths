@@ -5,12 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 6 écrit (§ 13.7)._
+_Mis à jour le 2026-11-01, après #2091._
 
-- **État** : lot 6 (translation, vecteurs, sphère, sections) **écrit** (§ 13.7), 7 modèles, PR des fichiers.
-- **Prochaine action** : CI verte → merge → David lance `create-questions --dir scripts/questions/3-lot-6
---publier` → relever les `id` → migration de rangement (7 + c8306505 partagé).
-- **En attente de David** : rien avant le merge.
+- **État** : lot 6 (translation, vecteurs, sphère, sections) **mergé** (#2091, § 13.8), 7 modèles, pas encore en prod.
+- **Prochaine action** : après le `--publier` de David, relever les 7 `id` au MCP, relevé `etat-prod-…-3e-lot6`,
+  migration de rangement (7 nœuds + tags, c8306505 en grades `['4', '3']` + tag 3-024), page à cocher.
+- **En attente de David** : `git pull` dans le dépôt principal, puis
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-6 --publier`.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; ` ```solide ` pas en prod (modèles qui s'en servent : brouillon
   jusqu'au `deploy:prod`) ; étiquette d'un vecteur libre (`vecteur(dx, dy, ancre=…)`) : vérifier qu'un
@@ -888,3 +889,8 @@ modèles publiés de plus, et c8306505 de 4e ; la 4e ne perd rien. Aucune règle
 - Base locale : 7 brouillons. Aperçu admin (`127.0.0.1:5176`) : 3-025 v2 (quadrillage, GH = u, KL = −u),
   3-026 v1 (points, R = A + u + v), 3-020 v2 (cylindre ⊥, disque teinté) et v4 (boule, R = 10, d = 6).
   Retouche : choix « un disque de rayon r cm, comme la base » (la parenthèse coupait la ligne).
+
+### 13.8 Lot 6 : fichiers mergés (2026-11-01)
+
+- #2091 mergée (CI verte). Attendu : `create-questions --dir scripts/questions/3-lot-6 --publier` lancé par
+  David depuis le dépôt principal à jour (`git pull` d'abord).
