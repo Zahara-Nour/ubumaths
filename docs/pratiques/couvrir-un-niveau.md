@@ -217,7 +217,7 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
    tout ou rien, `updated_at` préservé, rollback en commentaire) et son test
    `tests/integration/questions-cp-c-rangement-tags.test.ts` (copies des vrais identifiants, la
    migration rejouée depuis son fichier). Test **rouge sans la migration**, puis vert.
-   Nom du fichier : l'heure réelle, `date -u +%Y%m%d%H%M%S` (jamais « max + 1 », collision du
+   Nom du fichier : l'heure réelle, `pnpm migration:horodatage` (jamais « max + 1 », collision du
    2026-11-01).
 4. `security-auditor` (sans finding bloquant), CI verte, `pnpm check:migrations --pr <n>`, merge,
    `pnpm db:migrate` depuis le dépôt

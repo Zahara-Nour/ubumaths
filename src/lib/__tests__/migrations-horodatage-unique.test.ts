@@ -22,7 +22,7 @@ describe('supabase/migrations', () => {
 		const duplicates = [...byVersion.values()].filter((files) => files.length > 1);
 		expect(
 			duplicates,
-			'renommer la plus récente avec l’heure réelle : date -u +%Y%m%d%H%M%S'
+			'renommer la plus récente avec l’heure réelle : pnpm migration:horodatage'
 		).toEqual([]);
 	});
 });

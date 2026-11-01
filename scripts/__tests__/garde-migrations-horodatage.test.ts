@@ -13,7 +13,8 @@
  * - deux migrations neuves au même horodatage → refusé ;
  * - doublon déjà sur main, sans rapport avec la branche → passe ;
  * - `--pr <n>` : lit la tête de la PR sur origin (refs/pull/<n>/head) ;
- * - sans origin → passe, avec un avertissement.
+ * - sans origin → passe, avec un avertissement ;
+ * - `--prochain` : heure réelle UTC, ou dernière migration + 1 s si main est en avance.
  *
  * Dépôts jetables (un dépôt nu tient lieu de GitHub) : git ne tourne jamais
  * hors du dossier temporaire.
@@ -114,7 +115,7 @@ describe('garde-migrations-horodatage', () => {
 		expect(r.stderr).toMatch(
 			/20261101215000 est déjà pris sur origin\/main par 20261101215000_lot_b\.sql/
 		);
-		expect(r.stderr).toMatch(/date -u \+%Y%m%d%H%M%S/);
+		expect(r.stderr).toMatch(/pnpm migration:horodatage/);
 	});
 
 	it('plus ancienne que la dernière migration de main : refusé', () => {
@@ -161,5 +162,22 @@ describe('garde-migrations-horodatage', () => {
 		const r = garde(moi);
 		expect(r.status).toBe(0);
 		expect(r.stderr).toMatch(/injoignable/);
+	});
+
+	it('--prochain : heure réelle UTC quand main est dans le passé', () => {
+		const r = spawnSync('bash', [SCRIPT, '--prochain'], { cwd: moi, env: env(), encoding: 'utf8' });
+		expect(r.status).toBe(0);
+		const v = r.stdout.trim();
+		expect(v).toMatch(/^\d{14}$/);
+		expect(v > '20261101100000').toBe(true);
+	});
+
+	it('--prochain : dernière migration + 1 s quand main est en avance sur l’horloge', () => {
+		migration(autre, '29991231235900_futur.sql');
+		git(autre, 'push', '-q', 'origin', 'main');
+		const r = spawnSync('bash', [SCRIPT, '--prochain'], { cwd: moi, env: env(), encoding: 'utf8' });
+		expect(r.stdout.trim()).toBe('29991231235901');
+		migration(moi, '29991231235901_lot_a.sql');
+		expect(garde(moi).status).toBe(0);
 	});
 });

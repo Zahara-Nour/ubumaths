@@ -11,6 +11,11 @@
 #
 #   bash scripts/garde-migrations-horodatage.sh          # HEAD (hook pre-push)
 #   bash scripts/garde-migrations-horodatage.sh --pr 12  # la PR 12, juste avant `gh pr merge`
+#   bash scripts/garde-migrations-horodatage.sh --prochain  # l'horodatage à donner à une migration neuve
+#
+# `--prochain` (`pnpm migration:horodatage`) : l'heure réelle UTC, ou la dernière migration
+# connue + 1 s si main est « en avance » sur l'horloge (horodatages ronds posés à la main
+# avant la règle du 2026-11-01). Jamais un nombre rond « max + 1 » choisi à la main.
 #
 # Refuse (exit 1) :
 #   - une migration neuve dont l'horodatage est déjà pris sur origin/main ;
@@ -26,19 +31,26 @@ set -uo pipefail
 DOSSIER=supabase/migrations
 
 pr=""
-if [ "${1:-}" = "--pr" ]; then
+prochain=""
+if [ "${1:-}" = "--prochain" ]; then
+	prochain=1
+elif [ "${1:-}" = "--pr" ]; then
 	pr="${2:-}"
 	if ! [[ "$pr" =~ ^[0-9]+$ ]]; then
-		echo "usage : garde-migrations-horodatage.sh [--pr <numéro>]" >&2
+		echo "usage : garde-migrations-horodatage.sh [--pr <numéro> | --prochain]" >&2
 		exit 2
 	fi
 fi
 
 # Réseau qui ne répond pas : on n'attend pas le délai de connexion SSH.
+# (remote en https : on abandonne si le débit reste nul 5 s).
 export GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh} -o ConnectTimeout=5"
-if ! git fetch -q origin main 2>/dev/null || ! git rev-parse -q --verify origin/main >/dev/null; then
-	echo "⚠️  garde des migrations : origin/main injoignable, horodatages non vérifiés." >&2
-	exit 0
+if ! git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=5 fetch -q origin main 2>/dev/null || ! git rev-parse -q --verify origin/main >/dev/null; then
+	if [ -z "$prochain" ]; then
+		echo "⚠️  garde des migrations : origin/main injoignable, horodatages non vérifiés." >&2
+		exit 0
+	fi
+	echo "⚠️  origin/main injoignable : horodatage calculé sur la copie locale de main." >&2
 fi
 
 cible=HEAD
@@ -55,6 +67,18 @@ liste() {
 }
 
 sur_main="$(liste origin/main)"
+
+if [ -n "$prochain" ]; then
+	# Dernière migration connue : main ou la branche (ses migrations neuves comprises).
+	dernier="$( (printf '%s\n' "$sur_main"; liste HEAD) | cut -d_ -f1 | grep -E '^[0-9]{14}$' | sort | tail -1)"
+	maintenant="$(date -u +%Y%m%d%H%M%S)"
+	if [ -z "$dernier" ] || [[ "$maintenant" > "$dernier" ]]; then
+		echo "$maintenant"
+	else
+		echo $((10#$dernier + 1))
+	fi
+	exit 0
+fi
 sur_cible="$(liste "$cible")"
 neuves="$(comm -13 <(printf '%s\n' "$sur_main") <(printf '%s\n' "$sur_cible") | sed '/^$/d')"
 
@@ -85,7 +109,7 @@ done
 
 if [ "$erreurs" -ne 0 ]; then
 	echo "   Renommer la migration (et son test d'intégration, qui la rejoue par son nom) avec" >&2
-	echo "   l'heure réelle : date -u +%Y%m%d%H%M%S — jamais un nombre rond « max + 1 »." >&2
+	echo "   l'horodatage que donne : pnpm migration:horodatage — jamais un nombre rond choisi à la main." >&2
 	exit 1
 fi
 exit 0
