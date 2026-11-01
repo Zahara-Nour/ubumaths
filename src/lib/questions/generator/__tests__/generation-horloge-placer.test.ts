@@ -80,6 +80,19 @@ describe('horloge à placer : la case et sa réponse', () => {
 		expect(isBlankValueCorrect('10 25', instance.blanks![0], instance)).toBe(false);
 	});
 
+	it('trotteuse : réponse `2 h 25 min 40 s`, trois aiguilles jugées (cercle-trotteuse)', () => {
+		const instance = generate(template({ statement: clock('placer: 14 h 25 min 40 s') }));
+		expect(instance.blanks?.[0]).toMatchObject({
+			type: 'text',
+			expectedAnswer: '2 h 25 min 40 s',
+			construire: 'horloge'
+		});
+		expect(validateAnswer('12 25 40', instance, '12 25 40').status).toBe('correct');
+		expect(validateAnswer('12 25 41', instance, '12 25 41').isCorrect).toBe(false);
+		expect(validateAnswer('12 25', instance, '12 25').isCorrect).toBe(false);
+		expect(isBlankValueCorrect('12 25 40', instance.blanks![0], instance)).toBe(true);
+	});
+
 	it('variables résolues avant le bloc', () => {
 		const instance = generate(
 			template({

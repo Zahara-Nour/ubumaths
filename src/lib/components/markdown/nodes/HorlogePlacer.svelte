@@ -19,6 +19,9 @@
 	  des deux aiguilles, `handsAnswer`), jugée par `isPlacedTimeCorrect`. Faux :
 	  la phrase de `handsMistakes` et le cadran juste à côté.
 	- Sans `answer` (aperçu du prof, cours) : le même geste, rien de jugé.
+	- Heure à secondes (`placer: 9 h 25 min 40 s`, chantier
+	  `docs/wip/cercle-trotteuse-progress.md`) : une troisième aiguille, la
+	  trotteuse, et une troisième étiquette ; réponse `"47 25 40"`.
 
 	@module components/markdown/nodes/HorlogePlacer
 -->
@@ -32,6 +35,7 @@
 	import {
 		buildHorlogeScene,
 		handTip,
+		secondTailOf,
 		HORLOGE_FONT,
 		HORLOGE_STROKE,
 		HORLOGE_VIEW,
@@ -48,7 +52,7 @@
 	} from '$lib/ubumark/utils/horloge-placer';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
-	type Hand = 'hour' | 'minute';
+	type Hand = 'hour' | 'minute' | 'second';
 
 	interface Props {
 		/** Horloge à placer (`spec.placer` défini) */
@@ -65,11 +69,26 @@
 	const VIEW_BOX = `${-HORLOGE_VIEW.half} ${-HORLOGE_VIEW.half} ${2 * HORLOGE_VIEW.half} ${2 * HORLOGE_VIEW.half}`;
 	/** Écart (en crans) sous lequel toucher une aiguille posée la reprend */
 	const GRAB_TICKS = 3;
-	const HANDS: Hand[] = ['hour', 'minute'];
-	const HAND_NAMES: Record<Hand, string> = { hour: 'petite aiguille', minute: 'grande aiguille' };
+	const HAND_NAMES: Record<Hand, string> = {
+		hour: 'petite aiguille',
+		minute: 'grande aiguille',
+		second: 'trotteuse'
+	};
+	/** Ce que vaut un cran, pour les boutons ◀ ▶ */
+	const TICK_NAMES: Record<Hand, string> = { hour: 'minute', minute: 'minute', second: 'seconde' };
+	/** Après la pose d'une aiguille en attente : la suivante encore en attente, dans cet ordre */
+	const PLACING_ORDER: Hand[] = ['minute', 'hour', 'second'];
+	const STROKES: Record<Hand, number> = {
+		hour: HORLOGE_STROKE.hourHand,
+		minute: HORLOGE_STROKE.minuteHand,
+		second: HORLOGE_STROKE.secondHand
+	};
 
 	let spec = $derived(node.spec!);
 	let expected = $derived<HorlogeTime>(spec.placer!);
+	/** Heure à secondes : la trotteuse est à poser aussi */
+	let withSecond = $derived(expected.seconds !== undefined);
+	let handKinds = $derived<Hand[]>(withSecond ? ['hour', 'minute', 'second'] : ['hour', 'minute']);
 	/** Le cadran sans aiguilles : traits et chiffres */
 	let dial = $derived(buildHorlogeScene(spec, null));
 	let solution = $derived(buildHorlogeScene(spec, expected));
@@ -79,7 +98,7 @@
 	 * Crans des aiguilles : relus quand la valeur de la case change (case remise à
 	 * vide, composant remonté), réassignés à chaque geste (dérivé modifiable)
 	 */
-	let hands = $derived<HorlogeHands>(handsOfAnswer(answer?.value ?? ''));
+	let hands = $derived<HorlogeHands>(handsOfAnswer(answer?.value ?? '', withSecond));
 	/** Aiguille que le geste tourne : la grande au départ */
 	let active = $state<Hand>('minute');
 	let locked = $derived(answer?.disabled ?? false);
@@ -93,23 +112,39 @@
 
 	/** Position de l'aiguille active, dite par le lecteur d'écran (jamais l'heure attendue) */
 	let valueText = $derived.by(() => {
-		const tick = hands[active];
+		const tick = tickOfHand(active);
 		const name = HAND_NAMES[active];
 		if (tick === null) return `${name} pas placée`;
 		if (active === 'minute') return `${name} sur la minute ${tick}`;
+		if (active === 'second') return `${name} sur la seconde ${tick}`;
 		const hour = Math.floor(tick / 5) || 12;
 		if (tick % 5 === 0) return `${name} sur le ${hour}`;
 		return `${name} entre le ${hour} et le ${(hour % 12) + 1}`;
 	});
 
-	function other(hand: Hand): Hand {
-		return hand === 'hour' ? 'minute' : 'hour';
+	/** Cran d'une aiguille ; null : en attente */
+	function tickOfHand(hand: Hand): number | null {
+		return hands[hand] ?? null;
+	}
+
+	/** Les aiguilles autres que l'active : dessinées dessous */
+	let others = $derived(handKinds.filter((hand) => hand !== active));
+
+	/** La prochaine aiguille encore en attente, après `hand` dans l'ordre de pose */
+	function nextWaiting(hand: Hand): Hand | null {
+		const order = PLACING_ORDER.filter((h) => handKinds.includes(h));
+		const start = order.indexOf(hand);
+		for (let i = 1; i < order.length; i++) {
+			const next = order[(start + i) % order.length];
+			if (tickOfHand(next) === null) return next;
+		}
+		return null;
 	}
 
 	function place(hand: Hand, tick: number) {
 		if (locked) return;
 		const next = ((tick % HAND_TICKS) + HAND_TICKS) % HAND_TICKS;
-		if (hands[hand] === next) return;
+		if (tickOfHand(hand) === next) return;
 		hands = { ...hands, [hand]: next };
 		answer?.onChange(handsAnswer(hands));
 	}
@@ -136,9 +171,9 @@
 	 * active en attente : jamais de reprise, le toucher la pose
 	 */
 	function grabbedAt(tick: number): Hand | null {
-		if (hands[active] === null) return null;
-		const near = HANDS.filter((hand) => {
-			const at = hands[hand];
+		if (tickOfHand(active) === null) return null;
+		const near = handKinds.filter((hand) => {
+			const at = tickOfHand(hand);
 			return at !== null && tickDistance(at, tick) <= GRAB_TICKS;
 		});
 		if (near.includes(active)) return active;
@@ -155,7 +190,7 @@
 			active = grabbed;
 			placingNew = false;
 		} else {
-			placingNew = hands[active] === null;
+			placingNew = tickOfHand(active) === null;
 		}
 		place(active, tick);
 		dragging = true;
@@ -169,14 +204,14 @@
 	}
 
 	function handlePointerUp() {
-		if (dragging && placingNew && hands[other(active)] === null) active = other(active);
+		if (dragging && placingNew) active = nextWaiting(active) ?? active;
 		dragging = false;
 		placingNew = false;
 	}
 
 	/** Un cran ; aiguille en attente : elle part du 12 */
 	function stepBy(delta: 1 | -1) {
-		place(active, (hands[active] ?? 0) + delta);
+		place(active, (tickOfHand(active) ?? 0) + delta);
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -222,17 +257,21 @@
 {/snippet}
 
 {#snippet hand(kind: Hand, tick: number | null)}
-	{@const tip = handTip(kind, tickAngle(tick ?? 0))}
+	{@const angle = tickAngle(tick ?? 0)}
+	{@const tip = handTip(kind, angle)}
+	<!-- La trotteuse part de son contrepoids, de l'autre côté du centre -->
+	{@const start = kind === 'second' ? secondTailOf(angle) : { x: 0, y: 0 }}
 	<line
 		class="horloge-aiguille"
 		class:horloge-aiguille-heures={kind === 'hour'}
 		class:horloge-aiguille-minutes={kind === 'minute'}
+		class:horloge-aiguille-secondes={kind === 'second'}
 		class:horloge-aiguille-attente={tick === null}
-		x1="0"
-		y1="0"
+		x1={start.x}
+		y1={start.y}
 		x2={tip.x}
 		y2={tip.y}
-		stroke-width={kind === 'hour' ? HORLOGE_STROKE.hourHand : HORLOGE_STROKE.minuteHand}
+		stroke-width={STROKES[kind]}
 	/>
 {/snippet}
 
@@ -254,7 +293,7 @@
 			aria-label="{HORLOGE_ARIA_LABEL} : {HAND_NAMES[active]}"
 			aria-valuemin={0}
 			aria-valuemax={HAND_TICKS - 1}
-			aria-valuenow={hands[active] ?? undefined}
+			aria-valuenow={tickOfHand(active) ?? undefined}
 			aria-valuetext={valueText}
 			aria-disabled={locked}
 			onpointerdown={handlePointerDown}
@@ -265,8 +304,10 @@
 		>
 			{@render face(dial)}
 			<!-- L'aiguille active par-dessus : on voit celle qu'on tourne -->
-			{@render hand(other(active), hands[other(active)])}
-			{@render hand(active, hands[active])}
+			{#each others as kind (kind)}
+				{@render hand(kind, tickOfHand(kind))}
+			{/each}
+			{@render hand(active, tickOfHand(active))}
 			<circle class="horloge-axe" r={HORLOGE_STROKE.center} />
 		</svg>
 	</div>
@@ -278,12 +319,12 @@
 		<!-- Étiquettes puis ◀ ▶ : deux rangées, qui tiennent sur un téléphone -->
 		<div class="flex flex-col items-center gap-2">
 			<div class="flex gap-1" role="group" aria-label="Aiguille à tourner">
-				{#each HANDS as kind (kind)}
+				{#each handKinds as kind (kind)}
 					<button
 						type="button"
 						class="placer-etiquette flex min-h-11 items-center justify-center rounded-md border px-3 text-sm font-semibold"
 						class:placer-etiquette-active={kind === active}
-						class:placer-etiquette-absente={hands[kind] === null}
+						class:placer-etiquette-absente={tickOfHand(kind) === null}
 						aria-pressed={kind === active}
 						disabled={locked}
 						onclick={() => (active = kind)}
@@ -296,7 +337,7 @@
 				<button
 					type="button"
 					class="placer-cran flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-background text-lg hover:bg-muted disabled:opacity-40"
-					aria-label="Reculer la {HAND_NAMES[active]} d’une minute"
+					aria-label="Reculer la {HAND_NAMES[active]} d’une {TICK_NAMES[active]}"
 					disabled={locked}
 					onclick={() => stepBy(-1)}
 				>
@@ -305,7 +346,7 @@
 				<button
 					type="button"
 					class="placer-cran flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-background text-lg hover:bg-muted disabled:opacity-40"
-					aria-label="Avancer la {HAND_NAMES[active]} d’une minute"
+					aria-label="Avancer la {HAND_NAMES[active]} d’une {TICK_NAMES[active]}"
 					disabled={locked}
 					onclick={() => stepBy(1)}
 				>
@@ -354,6 +395,16 @@
 						x2={solution.hourHand.x}
 						y2={solution.hourHand.y}
 						stroke-width={HORLOGE_STROKE.hourHand}
+					/>
+				{/if}
+				{#if solution.secondHand && solution.secondTail}
+					<line
+						class="horloge-aiguille horloge-aiguille-secondes"
+						x1={solution.secondTail.x}
+						y1={solution.secondTail.y}
+						x2={solution.secondHand.x}
+						y2={solution.secondHand.y}
+						stroke-width={HORLOGE_STROKE.secondHand}
 					/>
 				{/if}
 				<circle class="horloge-axe" r={HORLOGE_STROKE.center} />
@@ -438,6 +489,11 @@
 	/* La seule couleur d'accent : la petite aiguille */
 	.horloge-aiguille-heures {
 		stroke: var(--color-primary);
+	}
+
+	/* Trotteuse : fine, avec contrepoids ; reconnue à sa forme, pas à une couleur de plus */
+	.horloge-aiguille-secondes {
+		stroke: var(--color-foreground);
 	}
 
 	/* Aiguille en attente sur le 12 : grisée, en pointillés */

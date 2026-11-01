@@ -7,7 +7,7 @@
  * chiffres. Ni paquet, ni image : les chiffres prennent la police du document.
  *
  * Noir sur blanc : la petite aiguille se distingue par sa forme (courte,
- * épaisse), pas par la couleur — une photocopie reste lisible.
+ * épaisse), la trotteuse aussi (fine, avec un contrepoids), pas par la couleur — une photocopie reste lisible.
  *
  * Légendes en chaînes Typst littérales : rien n'y est lu comme du balisage.
  * Un bloc en erreur devient le cadre neutre « Horloge indisponible » — jamais
@@ -104,6 +104,18 @@ function clockTypst(spec: HorlogeSpec, time: HorlogeTime | null, sizeCm: number)
 	if (scene.hourHand !== null) {
 		parts.push(
 			segment(0, 0, scene.hourHand.x, scene.hourHand.y, stroke(HORLOGE_STROKE.hourHand, 'black'))
+		);
+	}
+	// Trotteuse : fine, par-dessus, avec son contrepoids
+	if (scene.secondHand !== null && scene.secondTail !== null) {
+		parts.push(
+			segment(
+				scene.secondTail.x,
+				scene.secondTail.y,
+				scene.secondHand.x,
+				scene.secondHand.y,
+				stroke(HORLOGE_STROKE.secondHand, 'black')
+			)
 		);
 	}
 	const dot = HORLOGE_STROKE.center * k;

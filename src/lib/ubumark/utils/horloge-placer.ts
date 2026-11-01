@@ -14,6 +14,11 @@
  *   être pile sur l'heure si minutes = 0, strictement entre deux heures sinon ;
  *   le juge accepte aussi le cran de sa vraie place (`trueHourTick`).
  *
+ * Trotteuse (chantier `docs/wip/cercle-trotteuse-progress.md`) : une heure à
+ * secondes (`placer: 9 h 25 min 40 s`) ajoute une TROISIÈME aiguille, jugée à la
+ * seconde exacte ; réponse `"47 25 40"`, réponse attendue `"9 h 25 min 40 s"`.
+ * Sans secondes, rien ne change.
+ *
  * Calcul pur, sans Svelte.
  *
  * @module ubumark/utils/horloge-placer
@@ -23,10 +28,14 @@ import type { HorlogeTime } from '../types/horloge';
 
 // Types
 
-/** Crans des deux aiguilles (0 = le 12, 5 = le 1…) ; null : aiguille pas posée */
+/**
+ * Crans des aiguilles (0 = le 12, 5 = le 1…) ; null : aiguille pas posée.
+ * `second` absent : horloge sans trotteuse (heure sans secondes)
+ */
 export interface HorlogeHands {
 	hour: number | null;
 	minute: number | null;
+	second?: number | null;
 }
 
 // Constantes
@@ -37,8 +46,9 @@ export const HAND_TICKS = 60;
 /** Crans entre deux heures */
 const TICKS_PER_HOUR = HAND_TICKS / 12;
 
-const ANSWER_REGEX = /^(\d+|-) (\d+|-)$/;
+const ANSWER_REGEX = /^(\d+|-) (\d+|-)(?: (\d+|-))?$/;
 const TIME_REGEX = /^(\d+) h(?: (\d+))?$/;
+const TIME_WITH_SECONDS_REGEX = /^(\d+) h (\d+) min (\d+) s$/;
 
 export const NOTHING_PLACED = 'Tu n’as rien placé.';
 
@@ -57,8 +67,12 @@ export function tickOfAngle(angle: number): number {
 
 /** Réponse de la case ; '' quand aucune aiguille n'est posée */
 export function handsAnswer(hands: HorlogeHands): string {
-	if (hands.hour === null && hands.minute === null) return '';
-	return `${hands.hour ?? '-'} ${hands.minute ?? '-'}`;
+	const withSecond = hands.second !== undefined;
+	if (hands.hour === null && hands.minute === null && (!withSecond || hands.second === null)) {
+		return '';
+	}
+	const base = `${hands.hour ?? '-'} ${hands.minute ?? '-'}`;
+	return withSecond ? `${base} ${hands.second ?? '-'}` : base;
 }
 
 function tickOf(text: string): number | null {
@@ -67,16 +81,23 @@ function tickOf(text: string): number | null {
 	return tick < HAND_TICKS ? tick : null;
 }
 
-/** Aiguilles d'une réponse ; illisible : aucune aiguille posée */
-export function handsOfAnswer(answer: string): HorlogeHands {
+/**
+ * Aiguilles d'une réponse ; illisible : aucune aiguille posée. `withSecond` :
+ * horloge à trotteuse — une réponse vide ou illisible rend aussi `second: null`
+ */
+export function handsOfAnswer(answer: string, withSecond = false): HorlogeHands {
+	const none: HorlogeHands = withSecond
+		? { hour: null, minute: null, second: null }
+		: { hour: null, minute: null };
 	const match = ANSWER_REGEX.exec(answer.trim());
-	if (!match) return { hour: null, minute: null };
-	const hour = tickOf(match[1]);
-	const minute = tickOf(match[2]);
-	if ((match[1] !== '-' && hour === null) || (match[2] !== '-' && minute === null)) {
-		return { hour: null, minute: null };
-	}
-	return { hour, minute };
+	if (!match) return none;
+	const parts = match[3] === undefined ? [match[1], match[2]] : [match[1], match[2], match[3]];
+	const ticks = parts.map(tickOf);
+	if (parts.some((part, i) => part !== '-' && ticks[i] === null)) return none;
+	const [hour, minute, second] = ticks;
+	return match[3] === undefined && !withSecond
+		? { hour, minute }
+		: { hour, minute, second: second ?? null };
 }
 
 /** Heure du cadran de 12 : 0 h et 12 h → 12, 14 h → 2 */
@@ -93,21 +114,28 @@ export function readHands(hands: HorlogeHands): HorlogeTime | null {
 	if (hands.hour === null || hands.minute === null) return null;
 	const onHour = hands.hour % TICKS_PER_HOUR === 0;
 	if (onHour !== (hands.minute === 0)) return null;
-	return { hours: dialHour(Math.floor(hands.hour / TICKS_PER_HOUR)), minutes: hands.minute };
+	const time = { hours: dialHour(Math.floor(hands.hour / TICKS_PER_HOUR)), minutes: hands.minute };
+	if (hands.second === undefined) return time;
+	if (hands.second === null) return null;
+	return { ...time, seconds: hands.second };
 }
 
 /**
  * Une heure sur le cadran de 12, écrite pour l'élève ET comme réponse attendue
- * d'une horloge à placer : `9 h`, `9 h 05`, `2 h 25` (pour 14 h 25)
+ * d'une horloge à placer : `9 h`, `9 h 05`, `2 h 25` (pour 14 h 25) ; avec des
+ * secondes, toutes les unités écrites : `9 h 25 min 40 s`, `9 h 0 min 7 s`
  */
 export function timeText(time: HorlogeTime): string {
 	const hours = dialHour(time.hours);
+	if (time.seconds !== undefined) return `${hours} h ${time.minutes} min ${time.seconds} s`;
 	if (time.minutes === 0) return `${hours} h`;
 	return `${hours} h ${String(time.minutes).padStart(2, '0')}`;
 }
 
-/** L'heure d'une réponse attendue (`9 h 25`) ; null si illisible */
+/** L'heure d'une réponse attendue (`9 h 25`, `9 h 25 min 40 s`) ; null si illisible */
 export function timeOfAnswer(text: string): HorlogeTime | null {
+	const full = TIME_WITH_SECONDS_REGEX.exec(text.trim());
+	if (full) return { hours: Number(full[1]), minutes: Number(full[2]), seconds: Number(full[3]) };
 	const match = TIME_REGEX.exec(text.trim());
 	if (!match) return null;
 	return { hours: Number(match[1]), minutes: match[2] === undefined ? 0 : Number(match[2]) };
@@ -116,6 +144,9 @@ export function timeOfAnswer(text: string): HorlogeTime | null {
 function sameTime(a: HorlogeTime, b: HorlogeTime): boolean {
 	return dialHour(a.hours) === dialHour(b.hours) && a.minutes === b.minutes;
 }
+
+const SECOND_SWAPPED =
+	'Tu as inversé la grande aiguille et la trotteuse : la trotteuse montre les secondes.';
 
 /** Cran le plus proche de la vraie place de la petite aiguille (9 h 05 : 45,4 → 45) */
 export function trueHourTick(time: HorlogeTime): number {
@@ -132,8 +163,9 @@ export function trueHourTick(time: HorlogeTime): number {
 export function isPlacedTimeCorrect(answer: string, expected: string): boolean {
 	const time = timeOfAnswer(expected);
 	if (time === null) return false;
-	const hands = handsOfAnswer(answer);
+	const hands = handsOfAnswer(answer, time.seconds !== undefined);
 	if (hands.minute !== time.minutes) return false;
+	if (time.seconds !== undefined && hands.second !== time.seconds) return false;
 	if (hands.hour === trueHourTick(time)) return true;
 	const read = readHands(hands);
 	return read !== null && sameTime(read, time);
@@ -144,6 +176,18 @@ export function handsMistakes(hands: HorlogeHands, expected: HorlogeTime): strin
 	if (hands.hour === null && hands.minute === null) return [NOTHING_PLACED];
 	if (hands.hour === null) return ['Tu n’as pas placé la petite aiguille.'];
 	if (hands.minute === null) return ['Tu n’as pas placé la grande aiguille.'];
+	if (expected.seconds !== undefined) {
+		if (hands.second === null || hands.second === undefined) {
+			return ['Tu n’as pas placé la trotteuse.'];
+		}
+		if (
+			hands.minute === expected.seconds &&
+			hands.second === expected.minutes &&
+			hands.minute !== hands.second
+		) {
+			return [SECOND_SWAPPED];
+		}
+	}
 	// Inversées : la petite sur la minute attendue, la grande dans le secteur de l'heure
 	const hourStart = (dialHour(expected.hours) % 12) * TICKS_PER_HOUR;
 	const minuteInHourSector = hands.minute >= hourStart && hands.minute < hourStart + TICKS_PER_HOUR;

@@ -6,14 +6,17 @@ status: phase 0
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, à l'ouverture._
+_Mis à jour le 2026-11-01, PR 1 (trotteuse) codée, pas encore de PR ouverte._
 
-- **État** : phase 0 écrite (§ 3, § 4), rien codé.
-- **Prochaine action** : réponses de David aux questions § 5, puis PR 1 (trotteuse) tests rouges d'abord.
-- **En attente de David** : questions § 5 (Q1 à Q9).
-- **Pièges en cours** : un geste ne doit jamais donner la réponse (ni à l'écran, ni dans le DOM, ni dans
-  l'énoncé masqué, `maskGestureAnswers`) ; lancer `pnpm types:cliquet` avant la PR.
-- **Worktree / branche** : `../ubumaths-wt-cercle-trotteuse` · `feat/cercle-trotteuse` (port 5176).
+- **État** : PR 1 codée et commitée sur la branche (§ 7) : tests verts (serveur 13 383, client 861),
+  `check:incremental` 0, `types:cliquet` tenu, `docs:check-a-jour` OK. **Pas encore vu dans l'appli** (port
+  5176 pris par une autre session).
+- **Prochaine action** : voir la trotteuse en vrai (port libre ≥ 5177, `/aide-ecriture/blocs/horloge`, lire +
+  placer), puis `code-reviewer` (Sonnet), ouvrir la PR, CI, merge. Ensuite PR 2 (cercle trigo, § 4, § 6).
+- **En attente de David** : rien.
+- **Pièges en cours** : un geste ne doit jamais donner la réponse (énoncé masqué : `placer: ? s` pour une heure à
+  secondes) ; client vitest : « Orchestrator not found » = bug de Vitest, relancer par dossier.
+- **Worktree / branche** : `../ubumaths-wt-cercle-trotteuse` · `feat/cercle-trotteuse`.
 
 ---
 
@@ -141,3 +144,33 @@ bloc (`pi/3`, `-5*pi/4`, `13*pi/6`, `90°`).
 **Les deux**
 
 9. **Ordre** : trotteuse d'abord (petite, prolonge un geste en prod), puis cercle (reco) ?
+
+## 6. Décisions (David, 2026-11-01 : « Oui, les 9 recos »)
+
+1. Écriture `9 h 25 min 40 s` (`9 h`, `9 h 25`, `9 h 25 min` restent valables).
+2. Avec des secondes, la grande aiguille reste **pile sur sa minute**.
+3. Trotteuse dessinée **seulement quand des secondes sont écrites** (pas de réglage).
+4. Trotteuse jugée à la **seconde exacte**, sans tolérance (60 crans).
+5. Cercle : **24 crans de π/12**, graduations sans étiquettes.
+6. Repères : axes + 0, π/2, π, 3π/2 étiquetés.
+7. Phrase de correction en **mesure principale** ]−π ; π].
+8. **Plusieurs points** par cercle dès la PR 2.
+9. Ordre : **trotteuse (PR 1)**, puis cercle (PR 2).
+
+## 7. PR 1 — trotteuse (2026-11-01)
+
+- Types : `HorlogeTime.seconds?` (absent = pas de trotteuse) ; `HORLOGE_MASKED_WITH_SECONDS = '? s'`.
+- Parseur : `9 h 25 min`, `9 h 25 min 40 s` (`9 h 40 s` refusé, jamais lu 9 h 4 min 0 s) ; secondes 0-59 ;
+  secondes + `minutes: cachées` refusé ; `maskedPlacerValue`, `isMaskedPlacerValue`. Ancien test « `9 h 30 min`
+  illisible » remplacé par `9 h 40 s` (décision 1).
+- Scène : `secondAngle`, `secondHand`, `secondTail` (contrepoids) ; grande aiguille pile sur sa minute. Typst :
+  trotteuse noire, fine.
+- Juge `horloge-placer.ts` : réponse `'47 25 40'`, `handsOfAnswer(answer, withSecond)`, `timeText`
+  `9 h 25 min 40 s`, seconde exacte ; phrases : trotteuse pas posée, grande et trotteuse inversées.
+- Écran : `HorlogePlacer.svelte` (3e étiquette « trotteuse », ordre de pose grande → petite → trotteuse, ◀ ▶
+  « d'une seconde ») ; `Horloge.svelte` dessine la trotteuse ; trotteuse couleur du texte (une seule couleur
+  d'accent, la petite aiguille).
+- Masquage : `masked-statement.ts` → `placer: ? s` ; garde `findUnmaskedAnswers` l'accepte.
+- Page d'aide (`block-catalog/horloge.ts`) : réglages + exemple « Avec la trotteuse ». Doc : `ubumark.md`,
+  `questions.md`.
+- Tests : `horloge-trotteuse.test.ts` (21, rouges d'abord : 19/21), générateur (+1), `HorlogePlacer.svelte.test.ts` (+5).

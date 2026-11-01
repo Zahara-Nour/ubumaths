@@ -234,3 +234,70 @@ describe('BuildAnswer — horloge à placer', () => {
 		expect(root.querySelector('.placer-juste')).not.toBeNull();
 	});
 });
+
+describe('Horloge à placer — trotteuse (chantier cercle-trotteuse)', () => {
+	it('trois aiguilles en attente ; grande, puis petite, puis trotteuse', async () => {
+		const { probe, answer } = answerProbe();
+		const screen = await render(HorlogePlacer, {
+			target: mainElement(),
+			props: { node: node('placer: 9 h 25 min 40 s'), answer: answer() }
+		});
+		const root = screen.container;
+		expect(waiting(root)).toBe(3);
+		expect(button(root, 'trotteuse')).toBeDefined();
+		tapAt(root, 25);
+		await expect.poll(() => probe.value).toBe('- 25 -');
+		tapAt(root, 47);
+		await expect.poll(() => probe.value).toBe('47 25 -');
+		await expect.poll(() => dial(root).getAttribute('aria-valuetext')).toBe('trotteuse pas placée');
+		tapAt(root, 40);
+		await expect.poll(() => probe.value).toBe('47 25 40');
+		expect(waiting(root)).toBe(0);
+		expect(dial(root).getAttribute('aria-valuetext')).toBe('trotteuse sur la seconde 40');
+	});
+
+	it('◀ ▶ de la trotteuse : d’une seconde', async () => {
+		const { probe, answer } = answerProbe();
+		const screen = await render(HorlogePlacer, {
+			target: mainElement(),
+			props: { node: node('placer: 9 h 0 min 5 s'), answer: answer() }
+		});
+		const root = screen.container;
+		await userEvent.click(button(root, 'trotteuse'));
+		await userEvent.click(button(root, 'Avancer la trotteuse d’une seconde'));
+		expect(probe.changes).toEqual(['- - 1']);
+	});
+
+	it('sans secondes : deux étiquettes seulement', async () => {
+		const { answer } = answerProbe();
+		const screen = await render(HorlogePlacer, {
+			target: mainElement(),
+			props: { node: node('placer: 9 h 25'), answer: answer() }
+		});
+		const labels = [...screen.container.querySelectorAll('.placer-etiquette')].map((b) =>
+			b.textContent?.trim()
+		);
+		expect(labels).toEqual(['petite aiguille', 'grande aiguille']);
+	});
+
+	it('jamais l’heure attendue dans le DOM, secondes comprises', async () => {
+		const { answer } = answerProbe();
+		const screen = await render(HorlogePlacer, {
+			target: mainElement(),
+			props: { node: node('placer: 9 h 25 min 40 s'), answer: answer() }
+		});
+		expect(screen.container.innerHTML).not.toMatch(/40 s|25 min|9 h 25/);
+	});
+
+	it('cours : une horloge à lire à secondes dessine la trotteuse', async () => {
+		const screen = await render(MarkdownRenderer, {
+			target: mainElement(),
+			props: {
+				content: ['```horloge', 'heure: 9 h 25 min 40 s', '```'].join('\n') as ResolvedMarkdown
+			}
+		});
+		await expect
+			.poll(() => screen.container.querySelectorAll('line.horloge-aiguille-secondes').length)
+			.toBe(1);
+	});
+});
