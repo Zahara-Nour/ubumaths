@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 4 écrit (PR des fichiers)._
+_Mis à jour le 2026-11-01, après #2056 ; migration de rangement du lot 4 en PR._
 
-- **État** : lots 1, 2 et 3 publiés (lot 3 : seconde relecture de ÷ 4 et ÷ 8 OK, 5 verdicts OK comptés ; `publier-lot --publier` lancé par David le 2026-11-01, 5 `published` vérifiés au MCP).
-- **Prochaine action** : lot 4 (calcul mental sur les décimaux, 7 modèles, § 9) — merger la PR des fichiers, puis David : `create-questions --dir scripts/questions/cm2-4 --publier` (brouillons), puis migration nœud + tag.
-- **En attente de David** : après le merge, `create-questions --publier` du lot 4.
+- **État** : lots 1, 2 et 3 publiés. Lot 4 (calcul mental sur les décimaux, 7 modèles, § 9) : fichiers mergés (#2056), 7 brouillons créés en prod par David le 2026-11-01 ; migration de rangement `20261101141500` en PR (§ 9.3).
+- **Prochaine action** : merger la PR de rangement, `db:migrate` depuis le dépôt principal (vérifier d'abord les migrations en attente), vérifier au MCP ; puis page à cocher du lot 4 (`scripts/questions/cm2-4`).
+- **En attente de David** : rien (la relecture viendra avec la page à cocher).
 - **Pièges en cours** : `curriculum_points` n'a pas de colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces ; variable `e` = Euler ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `content/questions-cm2-lot4`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot4-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -414,3 +414,9 @@ Recommandations suivies (« tes recos ? » puis « je te suis ») : tableau du �
 - Script `lot-cm2-4.py` → `scripts/questions/cm2-4/` (7 fichiers) ; `question:specs` 1 000 tirages par variation, tout vert ; `create-questions` en simulation (prod) : 7 à créer.
 - Pièges : variable **`e` = Euler** (partie entière renommée `w`) ; nom à deux lettres (`nc`) évité ; nombres tirés en entiers (millièmes, centièmes) et affichés par `{{eval:…;d}}` ; rang nommé par `{{if:}}` imbriqués ; « 2, c'est 2 unités » retiré du corrigé quand on ajoute des unités ; condition `N>=10^j` (pas « le chiffre des milliers de 12,3 est 0 »).
 - Local (port 5183, `admin@local.test`, Playwright iPhone 13) : énoncés à virgule, espaces dès 4 chiffres (9 820,9 − 5 000) ; corrigés relus dans le rendu (retenue 6 865,7 + 200 ; moitié 7,9 = 7,8 + 0,1).
+- #2056 mergée (CI verte).
+
+### 9.3 Lot 4 : rangement (2026-11-01)
+
+- David : `create-questions --dir scripts/questions/cm2-4 --publier` ; relevé MCP : 7 brouillons [CM2] sans nœud ni tag — `f73f7bba` (040), `eca617ae` (118), `8f2aff1d` (041), `7b0b17fd` (048), `3437286f` (049), `0fad085e` (051), `6721b7cc` (052).
+- Migration `20261101141500_questions_cm2_lot4_rangement_tags.sql` (12:00, 12:01 et 13:00 pris par d'autres sessions), copie du lot 3b du CM1 (brouillons neufs seuls) ; nœuds « Nombres et calculs > Décimaux : calculs > addition / soustraction / multiplication / division ». Test `questions-cm2-lot4-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges.
