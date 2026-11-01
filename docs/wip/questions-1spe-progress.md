@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2126 et `db:migrate` (lot 2-variations rangé, page à cocher publiée, § 19)._
+_Mis à jour le 2026-11-01, après la publication du lot 2-variations (§ 19)._
 
-- **État** : lots 0 et lot 1-dérivation publiés ; **lot 2-variations écrit** (7 modèles, points 399, 280, 400, 282, 285, 286, 403 ; D25), simulation verte, essai en base locale fait, fichiers mergés (#2119). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
-- **Prochaine action** : lire et compter les verdicts de la page à cocher (https://claude.ai/artifact/8NHxAarnojjKMkiodNmioo), corriger s'il y a lieu → simulation `publier-lot --dir scripts/questions/1spe-variations` → David lance `--publier`.
-- **En attente de David** : la relecture des 7 fiches sur la page à cocher.
-- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** (l'index d'unicité ignore `grades`) ; `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères ; deux sous-catégories neuves (Généralités › Parité, Dérivation › Position relative) : nœuds des points = parité, position relative de deux courbes.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (branches mergées, à retirer en fin de lot).
+- **État** : lots 0, lot 1-dérivation et **lot 2-variations publiés** (7 modèles, points 399, 280, 400, 282, 285, 286, 403 ; #2119, #2126). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
+- **Prochaine action** : D7 (§ 5), lot suivant « suites : modélisation et algorithmes » (214, 217, 372, 374, 375, 369, 378 ; motifs 370, 222, 376 sur bloc), phase 0 à soumettre à David.
+- **En attente de David** : rien.
+- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` lancés par David ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET de tous les worktrees ; corps de commit : lignes ≤ 100 caractères ; PR de migration : ligne `Doc-inchangée:` dans un commit (garde de `base-de-donnees.md`) ; intégration = workflow à part, attendre son run ; dépôt principal souvent encombré par d'autres sessions (ne commiter que ses fichiers).
+- **Worktree / branche** : aucun (worktree `questions-1spe` retiré après le lot 2).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -925,3 +925,9 @@ trigger actif (`O`), version 20261101212000 enregistrée.
 
 Page à cocher : https://claude.ai/artifact/8NHxAarnojjKMkiodNmioo (7 fiches ; alerte : bloc `variation` non dessiné
 sur 3fa3af6c, à jouer dans l'aperçu ; collection `verdicts` vide à la publication).
+
+**Verdicts (2026-11-01)** : 7 « ok » sur 7, aucun commentaire (lus en base de la page, comptés). Simulation
+`publier-lot` : **7 brouillons passent le contrôle**.
+
+**Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 7 / 7 publiés, statuts relus en base (MCP).
+**Lot 2-variations clos.**
