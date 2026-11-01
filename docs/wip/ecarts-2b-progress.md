@@ -1,14 +1,14 @@
 ---
 title: Écarts, lot 2b (V32, V27, V64) — journal
 date: 2026-11-01
-status: en cours
+status: lot 2b mergé (#2097)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, avant la PR._
+_Mis à jour le 2026-11-01, après #2097._
 
-- **État** : V32, V27, V64 corrigés et commités, doc mathAST à jour · **Prochaine action** : PR, revue `code-reviewer` (opus : intégration), merge · **En attente de David** : rien (restes de V64 tranchés, § Décisions) · **Ensuite** : lot 3, conditions « (a ⩾ 0) » / « (a > 0) » des arguments de `\sqrt` / `\ln` dans l'Atelier, PR à part · **Pièges en cours** : ne pas toucher `pedagogical-simplify/`, `simplify`, `tidy` (chantier `fusion-moteurs`) · **Worktree / branche** : `../ubumaths-wt-ecarts-2b` / `fix/ecarts-2b`
+- **État** : V32, V27, V64 corrigés et mergés (#2097, pas en prod) ; revue opus faite, ses 2 findings corrigés · **Prochaine action** : lot 3, conditions « (a ⩾ 0) » / « (a > 0) » des arguments de `\sqrt` / `\ln` dans l'Atelier (`introducedConditions`, `src/lib/atelier/calcul.ts`), nouveau worktree `ecarts-conditions` · **En attente de David** : rien · **Pièges en cours** : ne pas toucher `pedagogical-simplify/`, `simplify`, `tidy` (`fusion-moteurs`) ; une collision d'horodatage de migration sur `main` peut rougir la CI → fusionner `origin/main` · **Worktree / branche** : retirés
 
 ---
 
