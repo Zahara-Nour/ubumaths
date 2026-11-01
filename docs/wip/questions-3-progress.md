@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2091._
+_Mis à jour le 2026-11-01, rangement du lot 6 écrit._
 
-- **État** : lot 6 (translation, vecteurs, sphère, sections) **mergé** (#2091, § 13.8), 7 modèles, pas encore en prod.
-- **Prochaine action** : après le `--publier` de David, relever les 7 `id` au MCP, relevé `etat-prod-…-3e-lot6`,
-  migration de rangement (7 nœuds + tags, c8306505 en grades `['4', '3']` + tag 3-024), page à cocher.
-- **En attente de David** : `git pull` dans le dépôt principal, puis
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-6 --publier`.
+- **État** : lot 6 : 7 brouillons en prod ; migration de rangement écrite, auditée (§ 13.9), PR ouverte.
+- **Prochaine action** : CI verte → merge → David lance `db:migrate` → vérifier au MCP (nœuds, tags,
+  c8306505 en `['4', '3']`) → page à cocher (7 fiches ; 3-019 v2 et 3-020 : ` ```solide `, brouillon jusqu'au
+  `deploy:prod`).
+- **En attente de David** : `db:migrate` après le merge (depuis le worktree à jour d'`origin/main`).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; ` ```solide ` pas en prod (modèles qui s'en servent : brouillon
   jusqu'au `deploy:prod`) ; étiquette d'un vecteur libre (`vecteur(dx, dy, ancre=…)`) : vérifier qu'un
@@ -894,3 +894,19 @@ modèles publiés de plus, et c8306505 de 4e ; la 4e ne perd rien. Aucune règle
 
 - #2091 mergée (CI verte). Attendu : `create-questions --dir scripts/questions/3-lot-6 --publier` lancé par
   David depuis le dépôt principal à jour (`git pull` d'abord).
+
+### 13.9 Lot 6 : en prod, rangement écrit (2026-11-01)
+
+- `create-questions --publier` lancé par David : 7 brouillons, vérifiés au MCP (`draft`, grades `['3']`, niveau
+  1, sans nœud ni tag) : ff3bd841-6d22-40f6-a4e3-4ddc7e017905 (3-025) · 787cc937-5bc7-435f-9a63-7d4d0f102ea1
+  (3-026) · d157dfb2-3666-484d-93f9-9fe46a0e2fcf (3-027) · 6bcb3535-6632-4659-9a83-23a740b8e685 (3-018) ·
+  cd756e21-af71-4922-8106-8387658a45e1 (3-019) · 87f79961-03c8-44af-98b5-438165d2f689 (3-021) ·
+  7bb95104-9256-4bdb-a481-bdd2aae66a67 (3-020).
+- Relevé `etat-prod-2026-11-01-3e-lot6/` (8 modèles : les 7 + c8306505, publié, grades `['4']`, tag 4-031) ;
+  `lot-rangement-3-6.py` (copie du 3-5) écrit `20261101170000_questions_3_lot6_rangement_tags.sql` (après
+  `20261101160400`, la plus récente des PR ouvertes) et la fixture : 7 rangés, 1 niveau (3e ajoutée), 8 tags
+  posés, 1 gardé. ff3bd841 sur la sous-notion « Vecteurs > égalité de vecteurs » (le point 3-025 vit sur la
+  notion).
+- `questions-3-lot6-rangement-tags.test.ts` : 20 verts ; corps de la migration vidé : 9 rouges, 7 sautés.
+- `security-auditor` : aucun bloquant, rien à corriger (écart au gabarit : commentaires, données, compteurs ;
+  prod relue au MCP = relevé). Remarque : pluriels figés du bilan généré (« 1 gardés »), cosmétique.
