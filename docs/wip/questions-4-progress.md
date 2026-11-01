@@ -808,3 +808,54 @@ des modèles de volume déjà en base ; aucun niveau pris dans ces catégories, 
 - Relecture : 5 verdicts lus en base, 5 « OK », aucun commentaire. `publier-lot` ne prend qu'un dossier entier : les 3
   fichiers de translation copiés seuls dans un dossier du scratchpad, simulation (3 passent), lancé par David avec
   `--publier` ; vérifié au MCP : 0150ef82, c8306505, e7ef2835 publiés ; 6a770d04 et 35002b15 toujours en brouillon.
+
+## 32. Lot 7 (puissances, racines, calcul littéral) : phase 0 (proposée le 2026-11-01)
+
+Lot 5 de l'ordre validé au § 5 bis (« puissances et calcul littéral ») ; la géométrie, passée devant, a pris les
+numéros 5 et 6. Les 2 volumes du lot 6 attendent toujours le `deploy:prod` qui livre ` ```solide ` (prod en v0.58.0).
+
+### 32.1 Relevé (MCP, 2026-11-01)
+
+- Points du lot, tous encore sans modèle : 017, 018, 020, 021, 023, 071. Voisins : 016 (2), 019 (4), 022 (2),
+  024 (12), 070 (6).
+- Nœuds : 017 → Puissances : calculs > produit de puissances ; 018 → Puissances : calculs ; 020 → Racines carrées :
+  sens et écritures > définition ; 021, 023 → Algèbre > Calcul littéral ; 071 → Équations : premier degré >
+  ax + b = cx + d. Aucun nœud à créer.
+- Catégories voisines : Puissances / Calculer / Puissance d'un produit 1 (2de, littéral `(kx)^n`) ; Puissances /
+  Problèmes / Notation scientifique 1 (3e) ; Racines carrées / Problèmes / Aire et côté 1 (3e) ; Calcul littéral /
+  Equations / Mettre en équation 1-2 (5e, ` ```choix `) ; Calcul littéral / Raisonner / Contre-exemple 1 (5e) ;
+  Calcul littéral / Produire une formule / Aires 1 (4e, lot 5).
+- Bornes : exposants entiers naturels (016-018) ; 017 `(ab)ⁿ = aⁿbⁿ` (accompagnement 2026 ; Repères 2019 : formules
+  « pas un attendu », contradiction déjà notée) ; 020 encadrement par deux entiers consécutifs (aire 20 → entre 4 et 5) ;
+  021 pair 2n, impair 2n + 1 ; 023 équivalence de programmes, somme de 3 consécutifs ; 071 coefficients entiers relatifs,
+  pas de x² ni de produit nul.
+
+### 32.2 Modèles proposés (6, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                               | Variations                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Réponse                                       |
+| ----- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| 017   | Puissance d'un produit (Puissances / Calculer / Puissance d'un produit, 2)               | a, b de 2 à 5, n de 2 à 6 : 1) `(3 × 4)^2 = 3^? × 4^?` ; 2) `2^5 × 3^5` en une seule puissance → `6^5` ; 3) calcul astucieux `2^4 × 5^4` → 10 000 (via `10^4`) ; 4) « `(2 × 3)^4` est égal à : `2^4 × 3^4` / `2 × 3^4` / `2^4 × 3` / `6^8` »                                                                                                                                                                                                                                             | case (puissance exigée en 2) · case choix     |
+| 018   | Problèmes avec des puissances (Puissances / Problèmes / Situations, 1)                   | 1) des bactéries doublent chaque heure : nombre après n heures (n de 3 à 10), écrit en puissance de 2 puis en valeur ; 2) chaîne de messages, chacun prévient 3 personnes : au tour n ; 3) cadenas à k molettes de 10 chiffres → `10^k` codes ; 4) cube d'arête `10^k` cm → volume `10^{3k}` cm³ ; 5) « quelle expression donne le nombre de … : `2^n` / `2n` / `n^2` »                                                                                                                  | case · case choix                             |
+| 020   | Encadrer une racine carrée (Racines carrées / Apprivoiser / Encadrer, 1)                 | n entier de 2 à 143, pas un carré : 1) `? < √n < ?` (deux entiers consécutifs) ; 2) carré d'aire n cm² : son côté est compris entre ? et ? cm ; 3) « `√20` est compris entre : 4 et 5 / 10 et 11 / 19 et 21 / 2 et 3 » (la moitié, les voisins de n)                                                                                                                                                                                                                                     | case (2 trous) · case choix                   |
+| 021   | Pairs et impairs (Calcul littéral / Produire une formule / Pairs et impairs, 1)          | n entier : 1) « quelle expression est toujours paire : 2n / n + 2 / n² / 2n + 1 » ; 2) idem impaire ; 3) le nombre pair qui suit 2n → `2n+2` ; 4) l'impair qui suit 2n + 1 → `2n+3` ; 5) tester la vraisemblance : « Tom dit que n + 1 est toujours impair ; pour n = 3 ? » → Tom a tort (case choix)                                                                                                                                                                                    | case choix · case (expression égale acceptée) |
+| 023   | Démontrer avec le calcul littéral (Calcul littéral / Raisonner / Démontrer, 1)           | 1) `n + (n+1) + (n+2)` réduit → `3n+3` ; 2) « quelle écriture prouve que cette somme est un multiple de 3 : `3(n+1)` / `3n+1` / `n^3+3` / `3+n` » ; 3) programmes A (ajouter a, multiplier par k, soustraire k·a) et B (multiplier par k) : résultat de A réduit → `kx`, puis « que conclure : toujours le même résultat / seulement pour x = … / jamais » ; 4) deux pairs 2n + 2m = 2(n + m) ; 5) « lequel est une démonstration : essai sur 3 exemples / calcul littéral pour tout n » | case (expression) · case choix                |
+| 071   | Mettre en équation ax + b = cx + d (Calcul littéral / Equations / Mettre en équation, 3) | solution entière positive tirée d'abord : 1) deux tarifs (abonnement b + a € la séance, ou c € la séance) : quelle équation donne l'égalité des prix ? ; 2) idem, combien de séances ? ; 3) nombre mystère (« × a + b » donne autant que « × c + d ») : équation puis nombre ; 4) deux réservoirs (b L + a L/min, d L + c L/min) : au bout de combien de minutes le même volume ?                                                                                                        | case choix (équation) · case (solution)       |
+
+- `testSpecs` d'erreurs typiques : 017 → `6^8` (exposants ajoutés), `2 × 3^4` ; 018 → `2n`, `n^2` ; 020 → moitié de n,
+  bornes inversées, √n arrondi seul ; 021 → `n+2` pair ; 023 → `3n+1` ; 071 → `ax = cx + b`, solution d'une autre équation.
+- À vérifier à l'écriture : 017 v2 refuse 7 776 quand la puissance est demandée (forme exigée) ; 021 et 023 acceptent
+  toute expression égale (`2(n+1)` pour `2n+2`) ; 020 deux trous ordonnés.
+
+### 32.3 Question d'accès
+
+Comme les lots précédents : brouillons, puis migration nœud + tag ; **personne** ne gagne d'accès. À la publication,
+les élèves de 4e voient 6 modèles de plus.
+
+### 32.4 Questions à David
+
+1. Valider les 6 modèles du § 32.2 ?
+2. Catégories : Puissances / Calculer / Puissance d'un produit **2** (le 1 est le modèle littéral de 2de) ; neuves :
+   Puissances / Problèmes / Situations 1, Racines carrées / Apprivoiser / Encadrer 1, Calcul littéral / Produire une
+   formule / Pairs et impairs 1, Calcul littéral / Raisonner / Démontrer 1 ; Calcul littéral / Equations / Mettre en
+   équation **3** (après les 1-2 de 5e) ?
+3. 017 : exiger la forme puissance quand la consigne la demande (reco : oui, la valeur seule va au corrigé) ?
