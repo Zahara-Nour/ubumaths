@@ -1,0 +1,260 @@
+{
+	"title": "Poser une division euclidienne",
+	"description": "Division euclidienne posée, diviseur à un chiffre : 157 ÷ 6 ; 9 456 ÷ 7 ; un 0 au quotient (2 418 ÷ 4) ; cinq chiffres (23 875 ÷ 6)",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Calcul posé",
+	"level": 1,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et effectue la division euclidienne.\n\n```operation\ncalcul: {{N}} ÷ {{d}}\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "11..99"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "0..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["N >= 100", "N <= 999", "mod(q,10) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser ${{N}}$ par ${{d}}$, c'est trouver le quotient et le reste tels que ${{N}} = ({{d}} \\times \\text{quotient}) + \\text{reste}$, avec un reste plus petit que ${{d}}$.",
+					"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"Le quotient est $\\textcolor{{{color:primary.0}}}{{{q}}}$, le reste $\\textcolor{{{color:primary.1}}}{{{r}}}$, plus petit que ${{d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pose et effectue la division euclidienne.\n\n```operation\ncalcul: {{N}} ÷ {{d}}\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "112..4999"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "0..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["N >= 1000", "N <= 9999"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser ${{N}}$ par ${{d}}$, c'est trouver le quotient et le reste tels que ${{N}} = ({{d}} \\times \\text{quotient}) + \\text{reste}$, avec un reste plus petit que ${{d}}$.",
+					"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"Le quotient est $\\textcolor{{{color:primary.0}}}{{{q}}}$, le reste $\\textcolor{{{color:primary.1}}}{{{r}}}$, plus petit que ${{d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pose et effectue la division euclidienne.\n\n```operation\ncalcul: {{N}} ÷ {{d}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "eval:100*c+u"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "0..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["N >= 1000", "N <= 9999"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser ${{N}}$ par ${{d}}$, c'est trouver le quotient et le reste tels que ${{N}} = ({{d}} \\times \\text{quotient}) + \\text{reste}$, avec un reste plus petit que ${{d}}$.",
+					"Au milieu, le dividende partiel est plus petit que ${{d}}$ : on écrit $0$ au quotient avant d'abaisser le chiffre suivant.",
+					"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"Le quotient est $\\textcolor{{{color:primary.0}}}{{{q}}}$, le reste $\\textcolor{{{color:primary.1}}}{{{r}}}$, plus petit que ${{d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pose et effectue la division euclidienne.\n\n```operation\ncalcul: {{N}} ÷ {{d}}\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1112..49999"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "0..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["N >= 10000", "N <= 99999"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser ${{N}}$ par ${{d}}$, c'est trouver le quotient et le reste tels que ${{N}} = ({{d}} \\times \\text{quotient}) + \\text{reste}$, avec un reste plus petit que ${{d}}$.",
+					"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"Le quotient est $\\textcolor{{{color:primary.0}}}{{{q}}}$, le reste $\\textcolor{{{color:primary.1}}}{{{r}}}$, plus petit que ${{d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "157 ÷ 6 = 26 reste 1",
+			"variationIndex": 0,
+			"variables": {
+				"q": "26",
+				"d": "6",
+				"r": "1",
+				"N": "157"
+			},
+			"answers": ["26", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : reste plus grand que le diviseur, 25 reste 7",
+			"variationIndex": 0,
+			"variables": {
+				"q": "26",
+				"d": "6",
+				"r": "1",
+				"N": "157"
+			},
+			"answers": ["25", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 9 456 ÷ 7 = 1 350 reste 6",
+			"variationIndex": 1,
+			"variables": {
+				"q": "1350",
+				"d": "7",
+				"r": "6",
+				"N": "9456"
+			},
+			"answers": ["1 350", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : reste faux, 1 350 reste 5",
+			"variationIndex": 1,
+			"variables": {
+				"q": "1350",
+				"d": "7",
+				"r": "6",
+				"N": "9456"
+			},
+			"answers": ["1 350", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 418 ÷ 4 = 604 reste 2",
+			"variationIndex": 2,
+			"variables": {
+				"c": "6",
+				"u": "4",
+				"q": "604",
+				"d": "4",
+				"r": "2",
+				"N": "2418"
+			},
+			"answers": ["604", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 oublié au quotient, 64 reste 2",
+			"variationIndex": 2,
+			"variables": {
+				"c": "6",
+				"u": "4",
+				"q": "604",
+				"d": "4",
+				"r": "2",
+				"N": "2418"
+			},
+			"answers": ["64", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "23 875 ÷ 6 = 3 979 reste 1",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3979",
+				"d": "6",
+				"r": "1",
+				"N": "23875"
+			},
+			"answers": ["3 979", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 978 reste 7",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3979",
+				"d": "6",
+				"r": "1",
+				"N": "23875"
+			},
+			"answers": ["3 978", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

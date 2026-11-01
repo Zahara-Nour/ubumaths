@@ -1,0 +1,374 @@
+{
+	"title": "Dessiner une vue d'un assemblage de cubes",
+	"description": "Colorier sur un quadrillage la vue de face, de dessus, de droite ou de gauche d'un assemblage de cubes dessiné en perspective ; dans l'autre sens, reconnaître sa vue de face",
+	"grades": ["6"],
+	"theme": "Géométrie",
+	"domain": "Solides",
+	"subdomain": "Assemblages de cubes",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Colorie la vue de face de cet assemblage de cubes.\n\n```cubes\nhauteurs: {{a}} {{b}} {{c}} / {{d}} {{f}} {{g}}\ndessiner: face\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "f",
+					"expression": "0..3"
+				},
+				{
+					"name": "g",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Vue de face.** On regarde l'assemblage de devant : chaque colonne montre sa pile la plus haute, les piles de derrière se cachent derrière celles de devant."
+				]
+			}
+		},
+		{
+			"statement": "Colorie la vue de dessus de cet assemblage de cubes.\n\n```cubes\nhauteurs: {{a}} {{b}} {{c}} / {{d}} {{f}} {{g}} / {{m}} {{n}} {{p}}\ndessiner: dessus\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2"
+				},
+				{
+					"name": "b",
+					"expression": "1..2"
+				},
+				{
+					"name": "c",
+					"expression": "1..2"
+				},
+				{
+					"name": "d",
+					"expression": "0..{{a}}"
+				},
+				{
+					"name": "f",
+					"expression": "0..{{b}}"
+				},
+				{
+					"name": "g",
+					"expression": "0..{{c}}"
+				},
+				{
+					"name": "m",
+					"expression": "0..{{d}}"
+				},
+				{
+					"name": "n",
+					"expression": "0..{{f}}"
+				},
+				{
+					"name": "p",
+					"expression": "0..{{g}}"
+				}
+			],
+			"conditions": ["m*n*p==0", "m+n+p>=1"],
+			"correction": {
+				"steps": [
+					"**Vue de dessus.** On regarde l'assemblage d'en haut : un carré par pile, quelle que soit sa hauteur ; la rangée du fond est en haut du dessin."
+				]
+			}
+		},
+		{
+			"statement": "Colorie la vue {{if:s==0|de droite|de gauche}} de cet assemblage de cubes.\n\n```cubes\nhauteurs: {{a}} {{b}} / {{c}} {{d}} / {{f}} {{g}}\ndessiner: {{if:s==0|droite|gauche}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{a}}"
+				},
+				{
+					"name": "d",
+					"expression": "1..{{b}}"
+				},
+				{
+					"name": "f",
+					"expression": "1..{{c}}"
+				},
+				{
+					"name": "g",
+					"expression": "1..{{d}}"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				}
+			],
+			"conditions": ["max(a,b)!=max(f,g)"],
+			"correction": {
+				"steps": [
+					"**Vue de {{if:s==0|droite|gauche}}.** On regarde l'assemblage par la {{if:s==0|droite|gauche}} : chaque rangée (du devant au fond) montre sa pile la plus haute ; le devant est {{if:s==0|à gauche|à droite}} du dessin."
+				]
+			}
+		},
+		{
+			"statement": "Quel dessin est la vue de face de cet assemblage de cubes ?\n\n```cubes\nhauteurs: {{H}}\n```\n\n````choix\n- ```cubes\n  hauteurs: {{H}}\n  vue: face\n  ```\n- ```cubes\n  hauteurs: {{H}}\n  vue: dessus\n  ```\n- ```cubes\n  hauteurs: {{H}}\n  vue: droite\n  ```\n- ```cubes\n  hauteurs: {{V}}\n  vue: face\n  ```\n````",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..8"
+				},
+				{
+					"name": "H",
+					"expression": "{{if:k==1|1 3 2 / 1 1 2|{{if:k==2|3 3 3 / 3 1 3|{{if:k==3|3 2 3 / 3 2 1|{{if:k==4|3 2 2 / 2 2 2|{{if:k==5|3 3 3 / 3 3 1|{{if:k==6|2 1 1 / 2 1 1|{{if:k==7|3 3 2 / 1 3 1|3 1 1 / 1 1 1}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "V",
+					"expression": "{{if:k==1|1 2 2 / 1 2 2|{{if:k==2|3 2 3 / 3 1 3|{{if:k==3|3 3 3 / 3 2 1|{{if:k==4|3 2 3 / 2 2 2|{{if:k==5|3 3 2 / 3 3 1|{{if:k==6|2 1 2 / 2 0 1|{{if:k==7|3 3 1 / 2 3 1|3 1 2 / 1 1 0}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Vue de face.** On regarde l'assemblage de devant : chaque colonne montre sa pile la plus haute, les piles de derrière se cachent derrière celles de devant.",
+					"Les autres dessins : la vue de dessus, la vue de droite, et la vue de face d'un assemblage qui a un cube de plus ou de moins."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Face, piles 1 3 2 (devant 2 0 1) : 010/111/111",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"c": "2",
+				"d": "2",
+				"f": "0",
+				"g": "1"
+			},
+			"answers": ["010/111/111"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Face, dessin décalé dans le quadrillage : juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"c": "2",
+				"d": "2",
+				"f": "0",
+				"g": "1"
+			},
+			"answers": ["00000/00100/01110/01110/00000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la rangée de devant dessinée (2 0 1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"c": "2",
+				"d": "2",
+				"f": "0",
+				"g": "1"
+			},
+			"answers": ["100/101"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien colorié : vide",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"c": "2",
+				"d": "2",
+				"f": "0",
+				"g": "1"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "Dessus : 111/110/100",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "1",
+				"d": "2",
+				"f": "1",
+				"g": "0",
+				"m": "1",
+				"n": "0",
+				"p": "0"
+			},
+			"answers": ["111/110/100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur dessus : toutes les cases",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "1",
+				"d": "2",
+				"f": "1",
+				"g": "0",
+				"m": "1",
+				"n": "0",
+				"p": "0"
+			},
+			"answers": ["111/111/111"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur dessus : la vue de face",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "1",
+				"d": "2",
+				"f": "1",
+				"g": "0",
+				"m": "1",
+				"n": "0",
+				"p": "0"
+			},
+			"answers": ["110/111"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Droite : 001/011/111",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "2",
+				"d": "2",
+				"f": "1",
+				"g": "1",
+				"s": "0"
+			},
+			"answers": ["001/011/111"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vue de gauche à la place de la droite",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "2",
+				"d": "2",
+				"f": "1",
+				"g": "1",
+				"s": "0"
+			},
+			"answers": ["100/110/111"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Gauche : 100/110/111",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "2",
+				"d": "2",
+				"f": "1",
+				"g": "1",
+				"s": "1"
+			},
+			"answers": ["100/110/111"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Choix : la vue de face",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"H": "1 3 2 / 1 1 2",
+				"V": "1 2 2 / 1 2 2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur choix : la vue de dessus",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"H": "1 3 2 / 1 1 2",
+				"V": "1 2 2 / 1 2 2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur choix : la face d'un autre assemblage",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"H": "1 3 2 / 1 1 2",
+				"V": "1 2 2 / 1 2 2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

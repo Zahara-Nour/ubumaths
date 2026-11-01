@@ -1,0 +1,160 @@
+{
+	"title": "Poser une soustraction de nombres décimaux (par cassage)",
+	"description": "Soustraction posée de décimaux, méthode par cassage : 52,34 − 17,58 ; 34,5 − 2,58 ; 25 − 3,46",
+	"grades": ["CM1"],
+	"theme": "Décimaux",
+	"domain": "Soustraire",
+	"subdomain": "Calcul posé",
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{eval:C/100;d}} − {{eval:D/100;d}}\nméthode: cassage\n```",
+			"variables": [
+				{
+					"name": "C",
+					"expression": "2001..9999"
+				},
+				{
+					"name": "D",
+					"expression": "1001..9999"
+				}
+			],
+			"conditions": ["mod(C,10) != 0", "mod(D,10) != 0", "mod(D,10) > mod(C,10)", "C - D >= 100"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centièmes sous centièmes, dixièmes sous dixièmes, unités sous unités.",
+					"Quand on ne peut pas ôter le chiffre du bas, on casse une unité de la colonne de gauche : elle vaut $10$ dans la colonne où l'on calcule.",
+					"Centièmes : on ne peut pas ôter ${{eval:mod(D,10)}}$ de ${{eval:mod(C,10)}}$ : on calcule ${{eval:mod(C,10)+10}} - {{eval:mod(D,10)}} = {{eval:mod(C,10)+10-mod(D,10)}}$.",
+					"On calcule comme avec des nombres entiers, colonne par colonne, en partant de la droite ; la virgule du résultat se place sous les autres virgules.",
+					"$${{eval:C/100;d}} - {{eval:D/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(C-D)/100;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{eval:T/10;d}} − {{eval:D/100;d}}\nméthode: cassage\n```",
+			"variables": [
+				{
+					"name": "T",
+					"expression": "101..999"
+				},
+				{
+					"name": "D",
+					"expression": "101..9999"
+				}
+			],
+			"conditions": ["mod(T,10) != 0", "mod(D,10) != 0", "10*T - D >= 100"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centièmes sous centièmes, dixièmes sous dixièmes, unités sous unités.",
+					"${{eval:T/10;d}}$ n'a pas de centièmes : sa case des centièmes est vide, elle compte pour $0$ (on peut penser ${{eval:T/10;d}}0$).",
+					"Quand on ne peut pas ôter le chiffre du bas, on casse une unité de la colonne de gauche : elle vaut $10$ dans la colonne où l'on calcule.",
+					"Centièmes : on ne peut pas ôter ${{eval:mod(D,10)}}$ de $0$ : on calcule $10 - {{eval:mod(D,10)}} = {{eval:10-mod(D,10)}}$.",
+					"On calcule comme avec des nombres entiers, colonne par colonne, en partant de la droite ; la virgule du résultat se place sous les autres virgules.",
+					"$${{eval:T/10;d}} - {{eval:D/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(10*T-D)/100;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{n}} − {{eval:D/100;d}}\nméthode: cassage\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "11..99"
+				},
+				{
+					"name": "D",
+					"expression": "101..999"
+				}
+			],
+			"conditions": ["mod(D,10) != 0", "100*n - D >= 100"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centièmes sous centièmes, dixièmes sous dixièmes, unités sous unités.",
+					"${{n}}$ est entier : on peut penser ${{n}}{,}00$, ses cases des dixièmes et des centièmes comptent pour $0$.",
+					"Quand on ne peut pas ôter le chiffre du bas, on casse une unité de la colonne de gauche : elle vaut $10$ dans la colonne où l'on calcule.",
+					"On calcule comme avec des nombres entiers, colonne par colonne, en partant de la droite ; la virgule du résultat se place sous les autres virgules.",
+					"$${{n}} - {{eval:D/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(100*n-D)/100;d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "52,34 − 17,58 = 34,76",
+			"variationIndex": 0,
+			"variables": {
+				"C": "5234",
+				"D": "1758"
+			},
+			"answers": ["34,76"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit chiffre ôté du plus grand, 52,34 − 17,58 = 45,24",
+			"variationIndex": 0,
+			"variables": {
+				"C": "5234",
+				"D": "1758"
+			},
+			"answers": ["45,24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 34,5 − 2,58 = 31,92",
+			"variationIndex": 1,
+			"variables": {
+				"T": "345",
+				"D": "258"
+			},
+			"answers": ["31,92"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 − 0 au lieu de 0 − 8, 34,5 − 2,58 = 32,08",
+			"variationIndex": 1,
+			"variables": {
+				"T": "345",
+				"D": "258"
+			},
+			"answers": ["32,08"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "25 − 3,46 = 21,54",
+			"variationIndex": 2,
+			"variables": {
+				"n": "25",
+				"D": "346"
+			},
+			"answers": ["21,54"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 25 − 3,46 = 22,46 (décimales recopiées)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "25",
+				"D": "346"
+			},
+			"answers": ["22,46"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

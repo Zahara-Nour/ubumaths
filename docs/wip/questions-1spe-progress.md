@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, migration de rangement du lot 3-suites écrite (§ 20)._
+_Mis à jour le 2026-11-01, après la publication du lot 3-suites (§ 20)._
 
-- **État** : lots 0, 1-dérivation, 2-variations publiés. **Lot 3-suites** (10 modèles, points 214, 217, 372, 374, 375, 378, 369, 370, 222, 376) écrit : simulation 10 / 10 (90 specs), `sonde-figures` 0 problème, joué en base locale.
-- **Prochaine action** : PR de la migration de rangement (branche `feat/questions-1spe-suites-tags`) → CI verte (intégration comprise) → merge → `db:migrate` depuis le dépôt principal → relecture MCP → page à cocher → publication.
-- **En attente de David** : rien (brouillons créés en prod ; ensuite : verdicts de la page à cocher, puis `publier-lot --publier`).
+- **État** : lots 0, 1-dérivation, 2-variations et **lot 3-suites publiés** (10 modèles, points 214, 217, 372, 374, 375, 378, 369, 370, 222, 376 ; #2136, #2140, #2147). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
+- **Prochaine action** : D7 (§ 5), lot suivant « probabilités : partition, Bernoulli, arbres et tableaux » (337, 339, 426, 422, 342, 343, 423, 425), phase 0 à soumettre à David.
+- **En attente de David** : rien.
 - **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` lancés par David ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET de tous les worktrees ; corps de commit : lignes ≤ 100 caractères ; PR de migration : ligne `Doc-inchangée:` dans un commit (garde de `base-de-donnees.md`) ; intégration = workflow à part, attendre son run ; dépôt principal souvent encombré par d'autres sessions (ne commiter que ses fichiers).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe` branche `feat/questions-1spe-suites-tags`.
+- **Worktree / branche** : aucun (worktree `questions-1spe` retiré après le lot 3).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -982,3 +982,24 @@ b6753dff 217, bd27e002 372, 22141fa4 374, 45da9678 375, 4a51f887 378, 81322162 3
 `tests/integration/questions-1spe-suites-rangement-tags.test.ts` : 10 / 10 verts ; rouge sans le corps de la migration
 (5 échecs), restauré d'une copie, identique (`cmp`). Chemins et points résolus en prod (MCP, 10 / 10).
 `security-auditor` (Opus) : aucun finding.
+
+#2140 mergée (CI verte, intégration comprise). `db:migrate` le 2026-11-01 : seule cette migration en attente (dry-run),
+jouée ; relu en base (MCP) : 10 modèles sur le nœud de leur point, un tag chacun, `draft`, `updated_at` inchangé,
+trigger actif (`O`), version 20261101215000 enregistrée.
+
+Page à cocher : https://claude.ai/artifact/CtFnS8fnNFwzB8waeyax8D (10 fiches, aucune alerte ; collection `verdicts`
+vide à la publication). **Défaut vu sur la page** : le triangle de points (08, 09, 10) penchait à droite (lignes
+décalées au lieu d'être centrées, introduit en retournant la pointe vers le haut). Corrigé dans le script ;
+instantané `questions-1spe/etat-prod-2026-11-01-triangle/` (relevé par `questions-6/releve-prod.ts`, md5 de
+`variations` et `test_specs` = prod, passés par `jsonb` dans le Postgres local) ; David relance
+`create-questions --publier --mettre-a-jour` (brouillons). Limites de la **page** seule (l'appli rend bien) : bloc de
+code sans langage (langage naturel) et code en ligne `` `L[4]` `` affichés bruts.
+
+#2147 mergée (triangle centré) ; `create-questions --publier --mettre-a-jour` lancé par David : 08, 09, 10 mis à jour,
+md5 de `variations` en base = fichiers, nœud, niveau, tag et statut inchangés (MCP).
+
+**Verdicts (2026-11-01)** : 10 « ok » sur 10, aucun commentaire (lus en base de la page, comptés). Simulation
+`publier-lot` : 10 brouillons passent le contrôle.
+
+**Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 10 / 10 publiés, statuts relus en base (MCP).
+**Lot 3-suites clos.**

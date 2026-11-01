@@ -5,14 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2128 et la décision sur 3-050._
+_Mis à jour le 2026-11-01, après #2151 (boîte à moustaches, palier 1)._
 
 - **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 3-047 à 3-050, 4 modèles en blocs
   ` ```scratch `) écrit et mergé (#2128, § 14.8-14.9) ; pas encore en base de prod.
-- **Prochaine action** : phase 0 du lot 8 = chantier à part `boite-a-moustaches` (bloc d'affichage,
-  puis geste « construire » ; 3-062 lire, 3-030 construire ; sert aussi en 2de). Relevé du 2026-11-01 :
-  **rien n'existe** (aucun bloc, aucun `stat-chart` ; `statistiques.md` la dit hors périmètre). Lot 7 :
-  attendre le `deploy:prod` de ` ```scratch `, puis `create-questions --dir scripts/questions/3-lot-7
+- **Prochaine action** : lot 8 = chantier à part `boite-a-moustaches` : phase 0 validée, palier 1
+  (affichage) mergé (#2151) ; reste le palier 2 (construire, 3-030), puis la phase 0 du lot 8 (3-062, 3-030).
+  Lot 7 : attendre le `deploy:prod` de ` ```scratch `, puis `create-questions --dir scripts/questions/3-lot-7
 --publier` (David), rangement (avec la sous-notion neuve, § 14.10), page à cocher.
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
