@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du 5b : lot 5 (fractions) clos._
+_Mis à jour le 2026-11-01, pendant l'écriture du 6a._
 
-- **État** : lots 0 à 5 publiés (5a : 5 modèles, 5b : 6 modèles, rangés et tagués, vérifiés MCP).
-- **Prochaine action** : lot suivant — relire le § 3 (points sans modèle restants), proposer la phase 0 du lot 6 à David.
+- **État** : lots 0 à 5 publiés. Lot 6 validé (§ 11, 11.1) : 6a (fractions décimales, 7 modèles) écrit, specs vertes, simulation prod « 7 à créer », brouillons en base **locale** ; jeu local fait pour 01, 04, 06 (0,985 → message de forme), 07 (rendu 390 px), 02 en partie (§ 11.2).
+- **Prochaine action** : finir le jeu local de 02 (V4, deux cases), 03, 05 ; script Playwright `jouer.mjs` dans le scratchpad, perdu au `/clear` : setPromptValue sur le `math-field`, réponse lue sous « Réponse attendue » (une case) ou « Trou n : » ; puis PR des fichiers (revue : aucune), merge, David lance `create-questions --dir scripts/questions/cm2-6a --publier`.
 - **En attente de David** : rien.
-- **Pièges en cours** : niveau relevé puis pris par une autre session avant la publication → relever les niveaux de la catégorie juste avant `--publier` ; homonymes du CM1 / de 6e signalés par la page à cocher (même titre, autre niveau : ids vérifiés) ; `reducedFractions: off` accepte toute fraction égale ; jamais `}}` collé dans un `{{if:}}` ; `db:migrate` refusé quand la prod a des migrations plus récentes → `--dry-run` puis `--include-all` si seule la nôtre manque ; worktree sans `supabase/.temp` → copier celui du dépôt principal pour `db push` ; dépôt principal à l'index occupé par une autre session → jouer depuis le worktree ; `git commit -m … -- <fichiers>` ; `Doc-inchangée:` dans un message de commit.
-- **Worktree / branche** : aucun (retiré après #2125).
+- **Pièges en cours** : `spacesFromFourDigits` → réponses des specs en `1\,000` ; relever les niveaux de la catégorie juste avant `--publier` ; homonymes du CM1 sur la page à cocher (mêmes titres) ; `db:migrate` : `--dry-run` puis `--include-all` ; `git commit -m … -- <fichiers>`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2` · `feat/questions-cm2-lot6a` (serveur local 5183 à arrêter).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -611,3 +611,9 @@ Recommandations suivies (« tes recos ? » puis « je valide ») : (a) deux lots
 décimales, modèles 1-7) puis **6b** (décimaux, modèles 8-13) ; (b) #12 garde une fraction décimale
 parmi les cinq nombres ; (c) #13 accepte aussi l'écriture fractionnaire, #6 exige une fraction
 décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 gardé.
+
+### 11.2 Lot 6a : écriture (2026-11-01)
+
+- Script `lot-cm2-6a.py` → `scripts/questions/cm2-6a/` (7 fichiers), jumeau de `lot-cm1-3b.py` (millièmes en plus, nombres en lettres jusqu'à 9 999, « mille » invariable). `question:specs` : 1 000 tirages par variation, 54 specs, tout vert ; `create-questions` en simulation (prod) : 7 à créer.
+- Pièges mesurés : `spacesFromFourDigits` → réponses des specs écrites `1\,000`, `\frac{207}{1\,000}` (sinon `unoptimal_form`) ; l'affichage met les espaces seul. Comparer : numérateur tiré entre 70 % et 130 % de a × m (au-delà, 53/10 contre 785/100 ne piège plus). Ranger : positions affichées retrouvées en essayant les 24 permutations.
+- Local (port 5183, `admin@local.test`, 390 px) : ranger lisible (1 381/1 000 espacé) ; intercaler, 0,985 → « Faux » + « La réponse doit être écrite sous forme de fraction » (décision c) ; lire en case « choix » : une seule option juste sur 6 tirages.
