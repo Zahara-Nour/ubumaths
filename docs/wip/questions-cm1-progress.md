@@ -812,3 +812,17 @@ CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « �
   corrigé : virgules alignées et carreaux vides (34,5 ; 13 − 4,43), produits partiels en cases d'aide
   (605 × 303), potence à 4 chiffres qui défile dans son cadre (page sans défilement horizontal), corrigés à
   virgule.
+
+### 13 quater. Lot 4b — brouillons en prod, rangement et tags (2026-11-01)
+
+- `create-questions --publier` lancé par David. MCP : 6 brouillons [CM1], sans nœud ni tag, créés à
+  18:11 UTC, niveaux 1 (cassage 2) dans les catégories « Calcul posé ». Ids : `39e7d0a5-c605-4e1c-b0db-91a67f53f117`
+  (addition), `613817ea-58af-4c94-b82a-a2dba19e687a` (soustraction, compensation), `1ed5202f-d031-4964-8f4b-a8dc0ade21c5`
+  (soustraction, cassage), `e8086f21-13e4-4adf-8691-347c65f88258` (multiplication d'entiers),
+  `c3246792-8dbf-4afb-8ad5-33c6f37feeb0` (décimal × entier), `4b666c28-0357-41b6-ae08-daae13ac0642` (division).
+- Migration `20261101223100_questions_cm1_lot4b_rangement_tags` et son test, générés du gabarit du lot 4
+  (remplacements vérifiés au `diff`). **Seul écart de logique** : le point est cherché sur le nœud du
+  modèle OU sur sa notion (050 et 165 sont posés sur la notion « Décimaux : calculs », leurs modèles sous
+  « addition » / « soustraction »), comme la règle des tags l'admet ; test ajouté : un point posé ailleurs
+  fait échouer la migration. Horodatage : max `20261101223000` (4e, lot 8) + 1 min.
+- Test d'intégration : rouge sans le corps de la migration (6 échecs), 10/10 vert avec.
