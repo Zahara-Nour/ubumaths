@@ -1,0 +1,143 @@
+{
+	"title": "Relier courbe et tableau de variations",
+	"description": "Choisir le tableau de variations d'une courbe, puis la courbe d'un tableau (pièges : flèches à l'envers, abscisse et ordonnée du sommet échangées, extremum mal placé)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Variations",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:(h)-4}}\\,;{{eval:(h)+4}}\\right]$.\n\n```courbe\nx: {{eval:(h)-5}} ; {{eval:(h)+5}}\ny: {{eval:(k)-5+4*(s)}} ; {{eval:(k)+5+4*(s)}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*(x-({{h}}))^2+({{k}}) sur [{{eval:(h)-4}} ; {{eval:(h)+4}}]   bleu\ntaille: moyenne\ndescription: Parabole tournée vers le {{if:s>0|haut|bas}}, de sommet ({{h}} ; {{k}}), tracée de {{eval:(h)-4}} à {{eval:(h)+4}}.\n```\n\nQuel est le tableau de variations de $f$ ?\n\n````choix\n- ```variation\n  variable: x\n  domain: {{eval:(h)-4}}, {{h}}, {{eval:(h)+4}}\n\n  variation: f(x)\n    {{eval:(h)-4}}: {{eval:(k)+8*(s)}}, {{if:s>0|top|bottom}}\n    {{h}}: {{k}}, {{if:s>0|bottom|top}}\n    {{eval:(h)+4}}: {{eval:(k)+8*(s)}}, {{if:s>0|top|bottom}}\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:(h)-4}}, {{h}}, {{eval:(h)+4}}\n\n  variation: f(x)\n    {{eval:(h)-4}}: {{eval:(k)-8*(s)}}, {{if:s>0|bottom|top}}\n    {{h}}: {{k}}, {{if:s>0|top|bottom}}\n    {{eval:(h)+4}}: {{eval:(k)-8*(s)}}, {{if:s>0|bottom|top}}\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:(k)-4}}, {{k}}, {{eval:(k)+4}}\n\n  variation: f(x)\n    {{eval:(k)-4}}: {{eval:(k)+8*(s)}}, {{if:s>0|top|bottom}}\n    {{k}}: {{h}}, {{if:s>0|bottom|top}}\n    {{eval:(k)+4}}: {{eval:(k)+8*(s)}}, {{if:s>0|top|bottom}}\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:(h)-4}}, {{eval:(h)+4}}\n\n  variation: f(x)\n    {{eval:(h)-4}}: {{eval:(k)-8*(s)}}, {{if:s>0|bottom|top}}\n    {{eval:(h)+4}}: {{eval:(k)+8*(s)}}, {{if:s>0|top|bottom}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3"
+				},
+				{
+					"name": "s",
+					"expression": "-1|1"
+				}
+			],
+			"conditions": ["h != k"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe {{if:s>0|descend jusqu'au sommet puis monte|monte jusqu'au sommet puis descend}} : le tableau a deux flèches, qui changent de sens en $x={{h}}$, abscisse du sommet, où $f({{h}})={{k}}$.",
+					"```variation\nvariable: x\ndomain: {{eval:(h)-4}}, {{h}}, {{eval:(h)+4}}\n\nvariation: f(x)\n  {{eval:(h)-4}}: {{eval:(k)+8*(s)}}, {{if:s>0|top|bottom}}\n  {{h}}: {{k}}, {{if:s>0|bottom|top}}\n  {{eval:(h)+4}}: {{eval:(k)+8*(s)}}, {{if:s>0|top|bottom}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "Voici le tableau de variations d'une fonction $f$ définie sur $\\left[{{eval:(h)-4}}\\,;{{eval:(h)+4}}\\right]$.\n\n```variation\nvariable: x\ndomain: {{eval:(h)-4}}, {{h}}, {{eval:(h)+4}}\n\nvariation: f(x)\n  {{eval:(h)-4}}: {{eval:(k)+8*(s)}}, {{if:s>0|top|bottom}}\n  {{h}}: {{k}}, {{if:s>0|bottom|top}}\n  {{eval:(h)+4}}: {{eval:(k)+8*(s)}}, {{if:s>0|top|bottom}}\n```\n\nQuelle courbe peut représenter $f$ ?\n\n````choix\n- ```courbe\n  x: {{eval:(h)-5}} ; {{eval:(h)+5}}\n  y: {{eval:(k)-5+4*(s)}} ; {{eval:(k)+5+4*(s)}}\n  grille: 1 ; 1\n  f(x) = {{s}}*0.5*(x-({{h}}))^2+({{k}}) sur [{{eval:(h)-4}} ; {{eval:(h)+4}}]   bleu\n  taille: petite\n  description: Parabole tournée vers le {{if:s>0|haut|bas}}, de sommet ({{h}} ; {{k}}), tracée de {{eval:(h)-4}} à {{eval:(h)+4}}.\n  ```\n- ```courbe\n  x: {{eval:(h)-5}} ; {{eval:(h)+5}}\n  y: {{eval:(k)-5+4*(s)}} ; {{eval:(k)+5+4*(s)}}\n  grille: 1 ; 1\n  f(x) = -({{s}})*0.5*(x-({{h}}))^2+({{k}})+8*({{s}}) sur [{{eval:(h)-4}} ; {{eval:(h)+4}}]   bleu\n  taille: petite\n  description: Parabole tournée vers le {{if:s>0|bas|haut}}, de sommet ({{h}} ; {{eval:(k)+8*(s)}}).\n  ```\n- ```courbe\n  x: {{eval:(h)-5}} ; {{eval:(h)+5}}\n  y: {{eval:(k)-5+4*(s)}} ; {{eval:(k)+5+4*(s)}}\n  grille: 1 ; 1\n  f(x) = {{s}}*0.5*(x-({{h}})-2)^2+({{k}}) sur [{{eval:(h)-4}} ; {{eval:(h)+4}}]   bleu\n  taille: petite\n  description: Parabole tournée vers le {{if:s>0|haut|bas}}, de sommet ({{eval:(h)+2}} ; {{k}}).\n  ```\n- ```courbe\n  x: {{eval:(h)-5}} ; {{eval:(h)+5}}\n  y: {{eval:(k)-5+4*(s)}} ; {{eval:(k)+5+4*(s)}}\n  grille: 1 ; 1\n  f(x) = {{s}}*(x-({{h}}))+({{k}})+4*({{s}}) sur [{{eval:(h)-4}} ; {{eval:(h)+4}}]   bleu\n  taille: petite\n  description: Droite {{if:s>0|montante|descendante}} passant par ({{h}} ; {{eval:(k)+4*(s)}}).\n  ```\n````",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3"
+				},
+				{
+					"name": "s",
+					"expression": "-1|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe doit {{if:s>0|descendre jusqu'en $x={{h}}$ puis monter|monter jusqu'en $x={{h}}$ puis descendre}}, et passer par le point $({{h}}\\,;{{k}})$ : c'est la parabole de sommet $\\textcolor{{{color:primary.0}}}{({{h}}\\,;{{k}})}$.",
+					"```courbe\nx: {{eval:(h)-5}} ; {{eval:(h)+5}}\ny: {{eval:(k)-5+4*(s)}} ; {{eval:(k)+5+4*(s)}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*(x-({{h}}))^2+({{k}}) sur [{{eval:(h)-4}} ; {{eval:(h)+4}}]   bleu\ntaille: moyenne\ndescription: Parabole tournée vers le {{if:s>0|haut|bas}}, de sommet ({{h}} ; {{k}}), tracée de {{eval:(h)-4}} à {{eval:(h)+4}}.\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le bon tableau",
+			"variationIndex": 0,
+			"variables": {
+				"h": "1",
+				"k": "-2",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : flèches à l'envers",
+			"variationIndex": 0,
+			"variables": {
+				"h": "1",
+				"k": "-2",
+				"s": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sommet échangé",
+			"variationIndex": 0,
+			"variables": {
+				"h": "1",
+				"k": "-2",
+				"s": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La bonne courbe",
+			"variationIndex": 1,
+			"variables": {
+				"h": "-1",
+				"k": "2",
+				"s": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sommet décalé",
+			"variationIndex": 1,
+			"variables": {
+				"h": "-1",
+				"k": "2",
+				"s": "-1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
