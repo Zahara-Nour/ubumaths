@@ -3039,6 +3039,8 @@ function parseBoxAxis(raw: string): NonNullable<BoxPlotData['axis']> {
 /** Les cinq valeurs d'une ligne de boîte, vérifiées une à une puis dans l'ordre */
 function parseBoxValues(raw: string): BoxPlotBox['values'] {
 	const texts = raw.split(';');
+	// Un point-virgule final ne compte pas, comme dans `données:`
+	if (texts.length > 1 && texts.at(-1)!.trim() === '') texts.pop();
 	if (texts.length !== 5) {
 		throw new LineError(
 			`${texts.length} valeur${texts.length > 1 ? 's' : ''} : en écrire 5 (minimum ; Q1 ; médiane ; Q3 ; maximum)`

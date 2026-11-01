@@ -101,6 +101,12 @@ describe('```boite-a-moustaches — analyse', () => {
 		expect(specOf('A = 2 ; 2 ; 5 ; 5 ; 9').boxPlot!.boxes[0].values).toEqual([2, 2, 5, 5, 9]);
 	});
 
+	it('un point-virgule final ne compte pas (comme dans `données:`)', () => {
+		expect(specOf('A = 28 ; 30 ; 37 ; 45 ; 58 ;').boxPlot!.boxes[0].values).toEqual([
+			28, 30, 37, 45, 58
+		]);
+	});
+
 	it('`données:` : une boîte sans nom, les cinq valeurs de describe.ts', () => {
 		const box = specOf(SERIES).boxPlot!.boxes[0];
 		const s = describeList([3, 5, 7, 8, 12, 13, 14, 18, 21])!;
