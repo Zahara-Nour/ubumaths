@@ -27,6 +27,8 @@
 	import MonnaieConstruire from '$lib/components/markdown/nodes/MonnaieConstruire.svelte';
 	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
 	import NumberLinePlacer from '$lib/components/markdown/nodes/NumberLinePlacer.svelte';
+	import Courbe from '$lib/components/markdown/nodes/Courbe.svelte';
+	import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
 	import Horloge from '$lib/components/markdown/nodes/Horloge.svelte';
 	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
 	import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
@@ -88,6 +90,7 @@
 	let collection = $derived(kind === 'collection' ? parseCollectionContent(source) : null);
 	let monnaie = $derived(kind === 'monnaie' ? parseMonnaieContent(source) : null);
 	let line = $derived(kind === 'line' ? parseNumberLineContent(source).node : null);
+	let courbe = $derived(kind === 'courbe' ? parseCourbeContent(source) : null);
 	let horloge = $derived(kind === 'horloge' ? parseHorlogeContent(source) : null);
 	let barres = $derived(kind === 'barres' ? parseStatChartContent('barres', source) : null);
 	let ranger = $derived(kind === 'ranger' ? parseRangerContent(source) : null);
@@ -120,6 +123,17 @@
 				points: line.placer.map((t) => ({ label: t.name, value: t.value, color: 'vert' }))
 			}}
 			pointsOnLine
+		/>
+	{/if}
+{:else if courbe?.spec?.placer !== undefined}
+	{@const spec = courbe.spec}
+	{#if lineCases}
+		<Courbe node={courbe} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- Le repère avec les points justes, sans `placer:` : dessiné seul -->
+		<Courbe
+			node={{ ...courbe, spec: { ...spec, placer: undefined } }}
+			marks={spec.placer!.map((t) => ({ name: t.name, x: t.x, y: t.y, color: 'vert' }))}
 		/>
 	{/if}
 {:else if barres?.spec?.toPlace}

@@ -5,19 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2057._
+_Mis à jour le 2026-11-01, après #2107, #2114 et #2112._
 
-- **État** : lots 1 à 6b publiés. Lot 7 « Droite graduée et ordre » mergé (#2057, § 16) : 4 modèles dans
-  `scripts/questions/6-droite-ordre/` + correctif de la virgule des graduations du bloc ```line (pas encore en prod).
-- **Prochaine action** : `deploy:prod` (David) → David lance `create-questions --dir scripts/questions/6-droite-ordre
---publier` → relever les `id` → migration nœud + tag → page à cocher → publication.
-  En parallèle : PR de contenu de 06 et 07 en ```ranger (migration, patron § 12.5) ; changement du script et des JSON
-  prêt dans `docs/wip/questions-6/reprise-06-07-ranger.patch` (`git apply`, specs vertes au 2026-11-01).
-- **En attente de David** : `deploy:prod` ; verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
-- **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs`. Jamais de variable
-  `e`. Aperçu piloté : `math-field.math-prompt-block` + `setPromptValue`, boutons par rôle (copies cachées).
-  `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
-- **Worktree / branche** : aucun (retiré après #2057).
+- **État** : lots 1 à 6b publiés ; 06-07 en ```ranger en prod (#2078) ; v0.59.0 en prod. Lot 7 : 4 brouillons en prod
+  (8adac6d1, 0ce253ea, 5f9ba34d, 92db5823), rangés et tagués (migration `20261101200700_…`, MCP vérifié, § 18).
+- **Prochaine action** : lire les verdicts de la page à cocher (`ArtifactData list verdicts`, compter 4/4) → « À revoir »
+  = corriger (§ 7) → `publier-lot` en simulation → publication.
+- **En attente de David** : relecture du lot 7 sur https://claude.ai/artifact/Rm831MzHvVCQFwVH6GBGq9 (blocs droite et
+  ```ranger non dessinés : les jouer dans l'aperçu admin).
+
+  ```
+- **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
+  `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
+- **Worktree / branche** : aucun (retirés après #2114 et #2112).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1109,3 +1109,49 @@ visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migratio
   rendue hors `MarkdownRenderer` retombe sur la virgule (repli français de `readContentLocale`).
 - PR en conflit (`ubumark.md`, ligne d'en-tête) : la CI ne partait pas ; `origin/main` fusionnée, CI verte, #2057
   mergée.
+
+## 17. Reprise de 06 et 07 en ```ranger (2026-11-01)
+
+- Patch `reprise-06-07-ranger.patch` appliqué (script `lot-6-fractions.py` et les deux JSON), puis retiré.
+- Relevé prod (`releve-prod.ts`, base `cnevnzsvixxpnurautls`) → `etat-prod-2026-11-01-ranger/` ; md5 MCP des
+  variations : 83c835bb `ec65e0e3…`, c360d588 `c729d962…`. Tags relevés 6-134, 6-204.
+- `lot-contenu-6-ranger.py` → `20261101121300_questions_6_ranger_contenu` : 2 MODIFIER, variations et specs remplacées
+  par la source ; le script exige que la prod soit EXACTEMENT l'ancienne source (`origin/main`), titre et description
+  inchangés. Horodatage postérieur à la dernière migration de `main` (collisions entre sessions).
+- Test `questions-6-ranger-contenu` (`decrireLotModifier`, taille 2) : rouge contre une migration vide (6 échecs),
+  12 verts avec (16 sautés : propres aux neufs). `question:specs --file` : 150/150 tirages, « importable », 06 et 07.
+- Question d'accès : personne ne gagne d'accès ; aucun exercice perdu (mêmes variations, autre geste de réponse).
+- `security-auditor` : aucun bloquant (même patron que les scissions, md5 « avant » = prod, rollback juste) ; un
+  Faible corrigé (en-tête du test copié des scissions). CI verte, #2078 mergée. `db:migrate` suspendu : la question
+  d'accès de cette migration n'a pas été posée en phase 0 (la reprise y était prévue sans migration).
+- Question d'accès confirmée par David (« je te suis »). `db:migrate` refusé (horodatage 121300 antérieur à une
+  migration déjà jouée, 141500, d'une autre session : prendre l'horodatage le plus récent de `main` + 1, pas l'heure)
+  → David a lancé `pnpm db:migrate --include-all` (seul ce fichier). MCP : md5 a8867274…, 1758ed86… = « après »,
+  `published`, niveaux 1 et 2, tags 6-134 et 6-204, ```ranger présent.
+- Verdicts de `revue-modeles` de 02, 03, 04 (c9c3a8a3, 378aa770, afebbb91) passés en « validé » sur demande de David
+  (commentaires gardés), depuis `/dev/modeles` dans son Chrome ; MCP : `valide`, 2026-11-01.
+
+- `deploy:prod` → v0.59.0 (8a0d772e8). Une heure d'attente : chaque merge d'une autre session relançait la CI de
+  `main`, et le script s'arrête (verrou rendu) au lieu d'attendre. Proposé à David : attendre la CI sous le verrou.
+
+## 18. Lot 7 : brouillons en prod et rangement (2026-11-01)
+
+- Simulation `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-droite-ordre` : 4 « à créer » ; David
+  lance `--publier` : 01 8adac6d1, 02 0ce253ea, 03 5f9ba34d, 04 92db5823, en brouillon. (Le script n'est pas dans
+  `package.json` : `pnpm create-questions` échoue.)
+- MCP : 4 brouillons, `['6']`, niveaux 1, 2, 7, 4 ; sans nœud ni tag. Points : 6-108, 6-107 → « Nombres et calculs >
+  Décimaux : numération > droite graduée » ; 6-128 → « … > Fractions : sens et écritures > droite graduée » ; 6-110
+  → « … > Décimaux : numération > ordre ».
+- Migration `20261101200700_questions_6_lot7_rangement_tags` (patron du lot 6b ; 1re version en 190200, prise en prod par questions-5 → renommée 200700 ; horodatage = dernière de `main` +
+  1 min) ; test `questions-6-lot7-rangement-tags` : 8 rouges contre une migration vide, 14 verts avec.
+- Revue `security-auditor` : aucun bloquant. CI verte, #2107 mergée. `db:migrate` REFUSÉ : 20261101190200 déjà pris
+  en prod par `questions_5_lot6_rangement_tags` (transaction annulée, rien d'appliqué, vérifié au MCP). Renommée
+  20261101200700 (#2114, CI verte, mergée) ; `db:migrate` : jouée, avec au passage
+  `20261101193000_questions_4_lot1_niveau` (mergée, pas encore jouée : session questions-4 prévenue). MCP : les 4
+  sur leur nœud, un tag chacun (6-108, 6-107, 6-128, 6-110), `updated_at` préservé, trigger `O`.
+- Hors chantier, demandé par David : #2112 (`deploy:prod` attend la CI de `main` sous le verrou, au plus 25 min ;
+  commits en cause nommés si `main` local diffère). 1re CI rouge à cause du doublon 190200 alors sur `main` ;
+  `origin/main` fusionnée, CI verte, mergée.
+- Page à cocher générée depuis `main` (8b5d227c7), publiée (`db`, 0 verdict) :
+  https://claude.ai/artifact/Rm831MzHvVCQFwVH6GBGq9. Alertes : bloc line (01-03) et ```ranger (04) non dessinés ;
+  homonyme 2af5f9fe (« Ranger des nombres décimaux », CM1, brouillon de questions-cm1, niveau 5) écarté à raison.

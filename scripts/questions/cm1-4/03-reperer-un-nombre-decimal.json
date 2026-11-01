@@ -1,0 +1,207 @@
+{
+	"title": "Repérer un point par un nombre décimal",
+	"description": "Lire le nombre décimal qui repère un point d'une demi-droite graduée en dixièmes (2,8), ou d'un morceau agrandi gradué en centièmes (2,37 ; 339,16)",
+	"grades": ["CM1"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 3,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{q}}\nend: {{eval:q+1}}\nstep: 0.1\nmajor: 10\npoints: A={{x}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "0..20"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:q+k/10;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De ${{q}}$ à ${{eval:q+1}}$, l'unité est partagée en $10$ : chaque petit intervalle vaut $0.1$.",
+					"$A$ est ${{k}}$ petit{{if:k>1|s|}} intervalle{{if:k>1|s|}} après ${{q}}$ : ${{q}} + {{k}} \\times 0.1 = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{lo}}\nend: {{hi}}\nstep: 0.01\nmajor: 10\nlabels: {{lo}}, {{hi}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..999"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:a+b/10;d"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:a+(b+1)/10;d"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+b/10+k/100;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De ${{lo}}$ à ${{hi}}$, il y a un dixième, partagé en $10$ : chaque petit intervalle vaut $0.01$.",
+					"$A$ est ${{k}}$ petit{{if:k>1|s|}} intervalle{{if:k>1|s|}} après ${{lo}}$ : ${{lo}} + {{k}} \\times 0.01 = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A repère 2,8",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"k": "8",
+				"x": "2.8"
+			},
+			"answers": ["2,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,8 (unités oubliées)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"k": "8",
+				"x": "2.8"
+			},
+			"answers": ["0,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,08",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"k": "8",
+				"x": "2.8"
+			},
+			"answers": ["2,08"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A repère 2,37",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"k": "7",
+				"lo": "2.3",
+				"hi": "2.4",
+				"x": "2.37"
+			},
+			"answers": ["2,37"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,7 (départ oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"k": "7",
+				"lo": "2.3",
+				"hi": "2.4",
+				"x": "2.37"
+			},
+			"answers": ["2,7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,307",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"k": "7",
+				"lo": "2.3",
+				"hi": "2.4",
+				"x": "2.37"
+			},
+			"answers": ["2,307"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,4 (dixième suivant)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"k": "7",
+				"lo": "2.3",
+				"hi": "2.4",
+				"x": "2.37"
+			},
+			"answers": ["2,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A repère 339,16",
+			"variationIndex": 1,
+			"variables": {
+				"a": "339",
+				"b": "1",
+				"k": "6",
+				"lo": "339.1",
+				"hi": "339.2",
+				"x": "339.16"
+			},
+			"answers": ["339,16"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

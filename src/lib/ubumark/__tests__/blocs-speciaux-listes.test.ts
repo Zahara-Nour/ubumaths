@@ -99,3 +99,107 @@ describe('ce qui ne change pas dans une liste', () => {
 		expect(nodes.map((n) => n.type)).toEqual(['paragraph', 'probability-tree', 'code-block']);
 	});
 });
+
+/**
+ * Bloc ouvert sur la ligne même de l'item (`- ```cubes`, `1. ```horloge`) :
+ * l'ouverture et le corps finissaient dans deux paragraphes séparés, le bloc
+ * était lu vide (« bloc non fermé »). La forme « - texte » puis le bloc en
+ * retrait marchait déjà.
+ */
+describe('bloc ouvert sur la ligne de l’item', () => {
+	const itemNodes = (md: string) => (parseMarkdown(md).children[0] as ListNode).items[0].children;
+
+	it.each([
+		['cubes', 'espace', ['- ```cubes', '  hauteurs: 2 1', '  ```']],
+		['horloge', 'horloge', ['- ```horloge', '  heure: 9 h', '  ```']],
+		['partage', 'partage', ['1. ```partage', '   forme: bande 8', '   ```']],
+		['solide', 'espace', ['- ```solide', '  forme: pyramide carree 4 3', '  ```']],
+		['python', 'code-block', ['- ```python', '  print(1)', '  ```']]
+	])('%s : un seul nœud, sans erreur', (_, type, lines) => {
+		const nodes = itemNodes(lines.join('\n'));
+
+		expect(nodes.map((n) => n.type)).toEqual([type]);
+		expect(JSON.stringify(nodes)).not.toContain('non fermé');
+		expect(JSON.stringify(nodes)).not.toContain('```');
+	});
+
+	it('ligne vide dans le bloc, texte en retrait après, item suivant', () => {
+		const md = [
+			'- ```variation',
+			'  variable: x',
+			'  domain: -inf, 0, +inf',
+			'',
+			'  sign: f(x)',
+			'    -inf,0: +',
+			'    0: z',
+			'    0,+inf: -',
+			'  ```',
+			'',
+			'  Voici la suite',
+			'- Second item'
+		].join('\n');
+		const list = parseMarkdown(md).children[0] as ListNode;
+
+		expect(list.items).toHaveLength(2);
+		expect(list.items[0].children.map((n) => n.type)).toEqual(['variation-table', 'paragraph']);
+		expect(paragraphWith(list.items[0].children as BlockNode[], 'Voici la suite')).toBeDefined();
+	});
+
+	it('vraiment non fermé : un seul bloc en erreur, le texte de l’item suivant intact', () => {
+		const md = ['- ```horloge', '  heure: 9 h', '- Second item'].join('\n');
+		const list = parseMarkdown(md).children[0] as ListNode;
+
+		expect(list.items).toHaveLength(2);
+		expect(paragraphWith(list.items[1].children as BlockNode[], 'Second item')).toBeDefined();
+	});
+
+	it('code en ligne ```x``` sur la ligne de l’item : reste du texte', () => {
+		const nodes = itemNodes('- le code ```x``` ici');
+
+		expect(nodes.map((n) => n.type)).toEqual(['paragraph']);
+	});
+});
+
+/**
+ * Corps de bloc fait de lignes `- …` (```ranger, ```choix) dans un item : ces
+ * lignes ne sont pas des sous-items tant que le bloc est ouvert (revue #2065).
+ */
+describe('bloc dans un item, corps en lignes « - »', () => {
+	const firstItem = (lines: string[]) =>
+		(parseMarkdown(lines.join('\n')).children[0] as ListNode).items[0].children as BlockNode[];
+
+	it('ouvert sur la ligne de l’item : un seul bloc, pas de sous-liste', () => {
+		const nodes = firstItem(['- ```ranger', '  - 3', '  - 1', '  - 2', '  ```']);
+
+		// ```ranger n'est pas lu dans une liste (absent de SPECIAL_BLOCK_KINDS) : un seul
+		// bloc, jamais une sous-liste ni un ``` affiché en paragraphe
+		expect(nodes).toHaveLength(1);
+		expect(nodes[0].type).not.toBe('list');
+	});
+
+	it('en retrait sous « - texte » : texte puis un seul bloc', () => {
+		const nodes = firstItem(['- Range :', '', '  ```ranger', '  - 3', '  - 1', '  ```']);
+
+		expect(nodes).toHaveLength(2);
+		expect(nodes.map((n) => n.type)).not.toContain('list');
+	});
+
+	it('bloc python dont le code a une ligne « - x » : un seul bloc de code', () => {
+		const nodes = firstItem(['- ```python', '  - x', '  ```']);
+
+		expect(nodes.map((n) => n.type)).toEqual(['code-block']);
+	});
+
+	it('vraiment non fermé : l’item suivant, à la marge, reste un item', () => {
+		const list = parseMarkdown(['- ```python', '  x = 1', '- Second item'].join('\n'))
+			.children[0] as ListNode;
+
+		expect(list.items).toHaveLength(2);
+	});
+
+	it('`- ~~~ x` (texte, pas une langue) : reste du texte', () => {
+		const nodes = firstItem(['- ~~~ x', '  suite']);
+
+		expect(nodes.map((n) => n.type)).not.toContain('code-block');
+	});
+});

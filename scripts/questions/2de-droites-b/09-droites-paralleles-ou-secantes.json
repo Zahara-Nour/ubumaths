@@ -1,0 +1,294 @@
+{
+	"title": "Deux droites données par leurs équations : parallèles ou sécantes ?",
+	"description": "Positions relatives de deux droites par leurs équations (deux cartésiennes : déterminant des vecteurs directeurs ; réduite et cartésienne : pentes) ; m pour que deux droites soient parallèles (pièges : pente a/b, vecteur (a ; b))",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Positions relatives",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère du plan, on considère les droites $d$ : ${{a}}x{{b;+}}y{{c;+}}=0$ et $d'$ : ${{eval:(t)*(a)}}x{{bb;+}}y{{cc;+}}=0$.\n\nLes droites $d$ et $d'$ sont-elles parallèles ou sécantes ?\n\n```choix\nmelanger: non\n- Parallèles\n- Sécantes\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				},
+				{
+					"name": "t",
+					"expression": "-3|-2|2|3"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "bb",
+					"expression": "eval:(t)*(b)+(1-(w))*(s)"
+				},
+				{
+					"name": "cc",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["bb != 0", "cc != (t)*(c)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(w)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{u}\\begin{pmatrix}{{eval:-(b)}}\\\\{{a}}\\end{pmatrix}$ dirige $d$ et $\\vec{v}\\begin{pmatrix}{{eval:-(bb)}}\\\\{{eval:(t)*(a)}}\\end{pmatrix}$ dirige $d'$. Les droites sont parallèles si et seulement si ces vecteurs sont colinéaires.",
+					"$$\\det(\\vec{u},\\vec{v})={{eval:-(b)}}\\times{{eval:(t)*(a);()}}-{{a;()}}\\times{{eval:-(bb);()}}={{eval:(a)*(bb)-(t)*(a)*(b)}}$$",
+					"{{if:w==1|Le déterminant est nul : **$d$ et $d'$ sont parallèles**.|Le déterminant n'est pas nul : **$d$ et $d'$ sont sécantes**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, on considère les droites $d$ : $y={{m}}x{{p;+}}$ et $d'$ : ${{a}}x{{b;+}}y{{c;+}}=0$.\n\nLes droites $d$ et $d'$ sont-elles parallèles ou sécantes ?\n\n```choix\nmelanger: non\n- Parallèles\n- Sécantes\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "p",
+					"expression": "-5..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "a",
+					"expression": "eval:-((m)+(1-(w))*(s))*(b)"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["a != 0", "c != -(p)*(b)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(w)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux droites non parallèles à l'axe des ordonnées sont parallèles si et seulement si elles ont la même pente. La pente de $d$ est ${{m}}$.",
+					"Pour $d'$, on isole $y$ : ${{b}}y={{eval:-(a)}}x{{eval:-(c);+}}$, donc $y={{eval:-(a)/(b)}}x{{eval:-(c)/(b);+}}$ : sa pente est ${{eval:-(a)/(b)}}$.",
+					"{{if:w==1|Même pente : **$d$ et $d'$ sont parallèles**.|Pentes différentes : **$d$ et $d'$ sont sécantes**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, on considère les droites $d$ : $mx{{beta;+}}y-1=0$, où $m$ est un nombre réel, et $d'$ : ${{a}}x{{b;+}}y{{c;+}}=0$.\n\nDétermine $m$ pour que $d$ et $d'$ soient parallèles.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "beta",
+					"expression": "2..4"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)*(beta)/(b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{u}\\begin{pmatrix}{{eval:-(beta)}}\\\\m\\end{pmatrix}$ dirige $d$ et $\\vec{v}\\begin{pmatrix}{{eval:-(b)}}\\\\{{a}}\\end{pmatrix}$ dirige $d'$. Les droites sont parallèles si et seulement si $\\det(\\vec{u},\\vec{v})=0$ :",
+					"$${{eval:-(beta)}}\\times{{a;()}}-m\\times{{eval:-(b);()}}=0\\quad\\text{soit}\\quad{{b}}m={{eval:(a)*(beta)}}$$",
+					"donc $m=\\textcolor{{{color:primary.0}}}{{{eval:(a)*(beta)/(b)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x − 3y + 1 = 0 et 4x − 6y + 5 = 0 : parallèles",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"t": "2",
+				"w": "1",
+				"s": "1",
+				"bb": "-6",
+				"cc": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4x − 5y + 5 = 0 : sécantes",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"t": "2",
+				"w": "0",
+				"s": "1",
+				"bb": "-5",
+				"cc": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "« Parallèles » faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"t": "2",
+				"w": "0",
+				"s": "1",
+				"bb": "-5",
+				"cc": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = 2x + 1 et −2x + y + 3 = 0 : parallèles",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "1",
+				"b": "1",
+				"w": "1",
+				"s": "1",
+				"a": "-2",
+				"c": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−3x + y + 3 = 0 : sécantes",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "1",
+				"b": "1",
+				"w": "0",
+				"s": "1",
+				"a": "-3",
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "mx + 2y − 1 = 0 ∥ 3x − 4y + 1 = 0 → −3/2",
+			"variationIndex": 2,
+			"variables": {
+				"beta": "2",
+				"a": "3",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["-\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal −1,5",
+			"variationIndex": 2,
+			"variables": {
+				"beta": "2",
+				"a": "3",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["-1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe (3/2)",
+			"variationIndex": 2,
+			"variables": {
+				"beta": "2",
+				"a": "3",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : m = a (3)",
+			"variationIndex": 2,
+			"variables": {
+				"beta": "2",
+				"a": "3",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

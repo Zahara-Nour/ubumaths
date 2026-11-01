@@ -64,6 +64,7 @@ import { generateStatChartTypst } from './stat-chart-typst';
 import type { RangerNode } from '../types/ranger';
 import { displayedLabels } from '../utils/ranger';
 import { generateQrTypst } from './qr-typst';
+import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
 import { generatePartageTypst } from './partage-typst';
 import { generateEspaceTypst } from './espace-typst';
@@ -430,6 +431,8 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 
 		case 'qr':
 			return generateQrTypst(node);
+		case 'scratch':
+			return generateScratchTypst(node);
 		case 'horloge':
 			return generateHorlogeTypst(node);
 		case 'partage':

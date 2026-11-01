@@ -1,0 +1,192 @@
+{
+	"title": "Encadrer une fraction entre deux entiers consécutifs",
+	"description": "Encadrer une fraction par deux entiers consécutifs à l'aide des tables (5 < 43/8 < 6) ou des multiples de 12, 15, 20, 25, 50, 60 (3 < 86/25 < 4)",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Encadre cette fraction par deux nombres entiers qui se suivent.\n\n$$? < \\frac{{{a}}}{{{d}}} < ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..10"
+				},
+				{
+					"name": "q",
+					"expression": "3..9"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "a",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Combien d'unités ?** Une unité, c'est $\\frac{{{d}}}{{{d}}}$. On cherche le multiple de ${{d}}$ juste avant ${{a}}$ : ${{a}} = {{q}} \\times {{d}} + {{r}}$.",
+					"$$\\frac{{{a}}}{{{d}}} = \\frac{{{eval:q*d}}}{{{d}}} + \\frac{{{r}}}{{{d}}} = {{q}} + \\frac{{{r}}}{{{d}}}$$",
+					"$\\frac{{{r}}}{{{d}}}$ est entre $0$ et $1$, donc $\\textcolor{{{color:primary.0}}}{{{q}}} < \\frac{{{a}}}{{{d}}} < \\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Encadre cette fraction par deux nombres entiers qui se suivent.\n\n$$? < \\frac{{{a}}}{{{d}}} < ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "12|15|20|25|50|60"
+				},
+				{
+					"name": "q",
+					"expression": "1..5"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "a",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"conditions": ["a<=200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Combien d'unités ?** Une unité, c'est $\\frac{{{d}}}{{{d}}}$. On cherche le multiple de ${{d}}$ juste avant ${{a}}$ : ${{a}} = {{q}} \\times {{d}} + {{r}}$.",
+					"$$\\frac{{{a}}}{{{d}}} = \\frac{{{eval:q*d}}}{{{d}}} + \\frac{{{r}}}{{{d}}} = {{q}} + \\frac{{{r}}}{{{d}}}$$",
+					"$\\frac{{{r}}}{{{d}}}$ est entre $0$ et $1$, donc $\\textcolor{{{color:primary.0}}}{{{q}}} < \\frac{{{a}}}{{{d}}} < \\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5 < 43/8 < 6",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"q": "5",
+				"dm": "7",
+				"r": "3",
+				"a": "43"
+			},
+			"answers": ["5", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 et 43 (dénominateur et numérateur)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"q": "5",
+				"dm": "7",
+				"r": "3",
+				"a": "43"
+			},
+			"answers": ["8", "43"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 et 5 (décalé d'un)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"q": "5",
+				"dm": "7",
+				"r": "3",
+				"a": "43"
+			},
+			"answers": ["4", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5 et 7 (pas consécutifs)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"q": "5",
+				"dm": "7",
+				"r": "3",
+				"a": "43"
+			},
+			"answers": ["5", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 < 86/25 < 4",
+			"variationIndex": 1,
+			"variables": {
+				"d": "25",
+				"q": "3",
+				"dm": "24",
+				"r": "11",
+				"a": "86"
+			},
+			"answers": ["3", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 et 5",
+			"variationIndex": 1,
+			"variables": {
+				"d": "25",
+				"q": "3",
+				"dm": "24",
+				"r": "11",
+				"a": "86"
+			},
+			"answers": ["4", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

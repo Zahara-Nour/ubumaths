@@ -1,0 +1,219 @@
+{
+	"title": "Problèmes mixtes en deux ou trois étapes",
+	"description": "Multiplications, additions et soustractions : 4 tables de 6 et 7 tables de 4 ; 6 cahiers à 4 € sur un billet de 50 € ; un cinéma avec balcon et places réservées",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Deux étapes",
+	"level": 9,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans un restaurant, il y a ${{g}}$ tables de ${{n}}$ personnes et ${{h}}$ tables de ${{m}}$ personnes.\n\nCombien ce restaurant peut-il recevoir de clients ?\n\nIl peut recevoir $?$ clients.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "h",
+					"expression": "2..9"
+				},
+				{
+					"name": "m",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["g * n + h * m < 100", "n != m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g*n+h*m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en trois étapes. Les tables de ${{n}}$ personnes : ${{g}} \\times {{n}} = {{eval:g*n}}$.",
+					"Les tables de ${{m}}$ personnes : ${{h}} \\times {{m}} = {{eval:h*m}}$.",
+					"Puis on ajoute les deux : ${{eval:g*n}} + {{eval:h*m}} = \\textcolor{{{color:primary.0}}}{{{eval:g*n+h*m}}}$.",
+					"Le restaurant peut recevoir ${{eval:g*n+h*m}}$ clients."
+				]
+			}
+		},
+		{
+			"statement": "Max achète ${{g}}$ cahiers à ${{p}}~\\unit{€}$ chacun. Il paie avec un billet de ${{B}}~\\unit{€}$.\n\nCombien le vendeur doit-il lui rendre ?\n\nLe vendeur rend $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "3..9"
+				},
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "B",
+					"expression": "50|100"
+				}
+			],
+			"conditions": ["g * p <= B - 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:B-g*p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. D'abord le prix des ${{g}}$ cahiers : ${{g}}$ fois ${{p}}~\\unit{€}$.",
+					"$${{g}} \\times {{p}} = {{eval:g*p}}$$",
+					"Puis le vendeur rend ce qui manque pour aller de ${{eval:g*p}}~\\unit{€}$ à ${{B}}~\\unit{€}$ : on enlève.",
+					"$${{B}} - {{eval:g*p}} = \\textcolor{{{color:primary.0}}}{{{eval:B-g*p}}}$$",
+					"Le vendeur rend ${{eval:B-g*p}}~\\unit{€}$ à Max."
+				]
+			}
+		},
+		{
+			"statement": "Une salle de cinéma a ${{g}}$ rangées de ${{n}}$ places et un balcon de ${{h}}$ rangées de ${{m}}$ places. ${{r}}$ places sont déjà réservées.\n\nCombien de places reste-t-il à vendre ?\n\nIl reste $?$ places à vendre.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..8"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "h",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "5..40"
+				}
+			],
+			"conditions": ["g * n + h * m < 100", "g * n + h * m - r >= 5", "n != m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g*n+h*m-r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en trois étapes. Les places de la salle : ${{g}} \\times {{n}} = {{eval:g*n}}$ ; celles du balcon : ${{h}} \\times {{m}} = {{eval:h*m}}$.",
+					"Toutes les places : ${{eval:g*n}} + {{eval:h*m}} = {{eval:g*n+h*m}}$.",
+					"Puis on enlève les places réservées : ${{eval:g*n+h*m}} - {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:g*n+h*m-r}}}$.",
+					"Il reste ${{eval:g*n+h*m-r}}$ places à vendre."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 4 tables de 6 et 7 tables de 4 = 52",
+			"variationIndex": 0,
+			"variables": {
+				"g": "4",
+				"n": "6",
+				"h": "7",
+				"m": "4"
+			},
+			"answers": ["52"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : BO, une seule multiplication (28)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "4",
+				"n": "6",
+				"h": "7",
+				"m": "4"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : BO, tables comptées (11)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "4",
+				"n": "6",
+				"h": "7",
+				"m": "4"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cahiers : 50 − 6 × 4 = 26",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"p": "4",
+				"B": "50"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cahiers, 50 − 6 − 4 (40)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"p": "4",
+				"B": "50"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cinéma : 4 × 8 + 3 × 6 − 12 = 38",
+			"variationIndex": 2,
+			"variables": {
+				"g": "4",
+				"n": "8",
+				"h": "3",
+				"m": "6",
+				"r": "12"
+			},
+			"answers": ["38"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cinéma, réservées non retirées (50)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "4",
+				"n": "8",
+				"h": "3",
+				"m": "6",
+				"r": "12"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

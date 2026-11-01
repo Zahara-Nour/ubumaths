@@ -1,0 +1,275 @@
+{
+	"title": "Résoudre f(x) = k (fonction affine)",
+	"description": "Fonction affine donnée par son expression : résoudre f(x) = k (solution entière, puis fractionnaire) ; antécédent de k (pièges : signe en changeant de membre, f(k) au lieu de résoudre, « 4 » sans accolades)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonctions affines",
+	"subdomain": "Résolution algébrique",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction affine $f$ définie sur $\\mathbb{R}$ par $f(x)={{eval:(m)*x+(p)}}$.\n\nRésous dans $\\mathbb{R}$ l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "m",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "-9..9!0"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(m)*(r)+(p)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{r}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $f(x)$ par son expression : on résout une équation du premier degré. $f$ est affine et non constante, l'équation a **une seule** solution.",
+					"$${{eval:(m)*x+(p)}}={{k}}\\iff {{eval:(m)*x}}={{eval:(k)-(p)}}\\iff x={{r}}$$",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{r}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction affine $f$ définie sur $\\mathbb{R}$ par $f(x)={{eval:(m)*x+(p)}}$.\n\nRésous dans $\\mathbb{R}$ l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "m",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["mod((k)-(p), m) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:((k)-(p))/(m)}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $f(x)$ par son expression : on résout une équation du premier degré. $f$ est affine et non constante, l'équation a **une seule** solution.",
+					"$${{eval:(m)*x+(p)}}={{k}}\\iff {{eval:(m)*x}}={{eval:(k)-(p)}}\\iff x=\\dfrac{ {{eval:(k)-(p)}} }{ {{m}} }={{eval:((k)-(p))/(m)}}$$",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{ {{eval:((k)-(p))/(m)}} \\right\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction affine $f$ définie sur $\\mathbb{R}$ par $f(x)={{eval:(m)*x+(p)}}$.\n\nDétermine l'antécédent de ${{k}}$ par $f$.\n\nL'antécédent de ${{k}}$ par $f$ est $?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "m",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["k != p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((k)-(p))/(m)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un antécédent de ${{k}}$ est un nombre $x$ tel que $f(x)={{k}}$ : on résout cette équation.",
+					"$${{eval:(m)*x+(p)}}={{k}}\\iff {{eval:(m)*x}}={{eval:(k)-(p)}}\\iff x=\\textcolor{{{color:primary.0}}}{{{eval:((k)-(p))/(m)}}}$$",
+					"$f$ est affine et non constante : ${{k}}$ a **un seul** antécédent."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3x − 2 = 10 : S = {4}",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"r": "4",
+				"p": "-2",
+				"k": "10"
+			},
+			"answers": ["\\{4\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe en changeant de membre {8/3}",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"r": "4",
+				"p": "-2",
+				"k": "10"
+			},
+			"answers": ["\\{\\frac{8}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(10) = 28",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"r": "4",
+				"p": "-2",
+				"k": "10"
+			},
+			"answers": ["\\{28\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans accolades",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"r": "4",
+				"p": "-2",
+				"k": "10"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−4x + 1 = 7 : S = {−3/2}",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-4",
+				"p": "1",
+				"k": "7"
+			},
+			"answers": ["\\{-\\frac{3}{2}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal {−1,5}",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-4",
+				"p": "1",
+				"k": "7"
+			},
+			"answers": ["\\{-1{,}5\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu {3/2}",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-4",
+				"p": "1",
+				"k": "7"
+			},
+			"answers": ["\\{\\frac{3}{2}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe en changeant de membre {−2}",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-4",
+				"p": "1",
+				"k": "7"
+			},
+			"answers": ["\\{-2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x − 5 = 3 : antécédent 4",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "-5",
+				"k": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : image f(3) = 1",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "-5",
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe (−1)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "-5",
+				"k": "3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

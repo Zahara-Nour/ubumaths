@@ -220,7 +220,11 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   construire (`placer:`, `axe:` jusqu'à 100 au plus, `STAT_CHART_LIMITS.placeAxisMax`, ou
   `axe: à choisir` : l'élève choisit l'échelle, case en plus — [ubumark.md](ubumark.md)) aussi : le
   générateur lit ses barres par `parseStatChartContent` (`generator/build-answer.ts`), l'effectif
-  attendu est celui que le parseur a compté.
+  attendu est celui que le parseur a compté. Au premier niveau de l'énoncé seulement : en retrait,
+  cité ou ouvert sur la ligne d'un item (`- ```barres`), `findBarsToPlace` le marque imbriqué et le
+  générateur le refuse (règle commune, `ubumark/parser/nested-line.ts`). En évaluation notée,
+  l'effectif d'une barre à construire part masqué (`Natation = ?`, lu comme 0 ; [ubumark.md](ubumark.md),
+  invariant 12).
 
 ## Invariants
 
@@ -294,7 +298,7 @@ exacts, jamais les arrondis affichés). Variance de population : 2026-09-16.
   `Fraction` : l'appelant convertit.
 - La binomiale n'a pas d'échantillonneur propre : la scène la tire comme loi finie, avec les
   probabilités exactes de `binomialDistribution`.
-- `atMost`, `findThreshold` et `MAX_COMPUTED_VALUE` ne servent qu'à l'intérieur du module,
-  bien qu'exportés.
+- `atMost` et `findThreshold` ne servent qu'à l'intérieur du module (`binomial.ts`, `geometric.ts`),
+  bien qu'exportés ; `MAX_COMPUTED_VALUE` n'est plus exporté.
 
 Vérifié contre le code le 2026-10-10.

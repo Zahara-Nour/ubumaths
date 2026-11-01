@@ -1,0 +1,269 @@
+{
+	"title": "Résoudre |x| < k",
+	"description": "Inéquation |x| < k par la distance à 0 : k > 0 (entre −k et k, ou en dehors, les quatre sens), k < 0 (∅ ou ℝ), k = 0 ({0}, ℝ \\ {0}, ∅, ℝ) (pièges : un seul côté, crochets, ∅ et ℝ confondus)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Valeur absolue",
+	"subdomain": "Résolution algébrique",
+	"level": 1,
+	"delay": 75,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $\\lvert x\\rvert{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-{{k}};{{k}}[|{{if:s==1|[-{{k}};{{k}}]|{{if:s==2|]-\\infty;-{{k}}[\\cup]{{k}};+\\infty[|]-\\infty;-{{k}}]\\cup[{{k}};+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert x\\rvert$ est la **distance** entre $x$ et $0$ sur la droite graduée. On cherche {{if:s==0|les nombres à une distance de $0$ **strictement inférieure** à ${{k}}$ : ceux situés strictement entre $-{{k}}$ et ${{k}}$|{{if:s==1|les nombres à une distance de $0$ **inférieure ou égale** à ${{k}}$ : ceux situés entre $-{{k}}$ et ${{k}}$, bornes comprises|{{if:s==2|les nombres à une distance de $0$ **strictement supérieure** à ${{k}}$ : ceux situés strictement avant $-{{k}}$ ou strictement après ${{k}}$|les nombres à une distance de $0$ **supérieure ou égale** à ${{k}}$ : ceux situés avant $-{{k}}$ ou après ${{k}}$, bornes comprises}}}}}}.",
+					"```courbe\nx: -8 ; 8\ny: -2 ; 8\ngrille: 1 ; 1\nf(x) = abs(x)   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = abs(x) sur ]-{{k}} ; {{k}}[   vert|{{if:s==1|h(x) = abs(x) sur [-{{k}} ; {{k}}]   vert|{{if:s==2|h(x) = abs(x) sur [-20 ; -{{k}}[   vert|h(x) = abs(x) sur [-20 ; -{{k}}]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur ]-{{k}} ; {{k}}[   vert|{{if:s==1|t(x) = 0 sur [-{{k}} ; {{k}}]   vert|{{if:s==2|t(x) = 0 sur [-20 ; -{{k}}[   vert|t(x) = 0 sur [-20 ; -{{k}}]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2|j(x) = abs(x) sur ]{{k}} ; 20]   vert|j(x) = abs(x) sur [{{k}} ; 20]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2|u(x) = 0 sur ]{{k}} ; 20]   vert|u(x) = 0 sur [{{k}} ; 20]   vert}}}}}}\npoints: A({{eval:-(k)}} ; {{k}}), B({{k}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de la valeur absolue, droite y = {{k}} en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"Sur la courbe de $x\\mapsto\\lvert x\\rvert$, on lit la même chose : les points situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} la droite $y={{k}}$ ; {{if:s==0|les abscisses des points d'intersection sont **exclues**|{{if:s==1|les abscisses des points d'intersection sont **comprises**|{{if:s==2|les abscisses des points d'intersection sont **exclues**|les abscisses des points d'intersection sont **comprises**}}}}}}.",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-{{k}}\\,;{{k}}\\right[|{{if:s==1|\\left[-{{k}}\\,;{{k}}\\right]|{{if:s==2|\\left]-\\infty\\,;-{{k}}\\right[\\cup\\left]{{k}}\\,;+\\infty\\right[|\\left]-\\infty\\,;-{{k}}\\right]\\cup\\left[{{k}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $\\lvert x\\rvert{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "-9..-1"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|\\varnothing|{{if:s==1|\\varnothing|{{if:s==2|\\mathbb{R}|\\mathbb{R}}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert x\\rvert$ est la **distance** entre $x$ et $0$ sur la droite graduée. Une distance n'est **jamais négative** : pour tout réel $x$, $\\lvert x\\rvert\\geqslant 0>{{k}}$.",
+					"{{if:s==0|Aucun réel n'est solution. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==1|Aucun réel n'est solution. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==2|Tous les réels sont solutions. $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$.|Tous les réels sont solutions. $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$.}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $\\lvert x\\rvert{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|\\varnothing|{{if:s==1|\\{0\\}|{{if:s==2|\\mathbb{R}\\setminus\\{0\\}|\\mathbb{R}}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert x\\rvert$ est la **distance** entre $x$ et $0$ sur la droite graduée. Elle n'est jamais négative, et elle vaut $0$ seulement pour $x=0$.",
+					"{{if:s==0|Aucune distance n'est strictement négative : aucun réel n'est solution. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==1|Une distance ne peut être que nulle : seul $0$ est solution. $S=\\textcolor{{{color:primary.0}}}{\\{0\\}}$.|{{if:s==2|La distance est strictement positive pour tout $x$ sauf $0$. $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}\\setminus\\{0\\}}$.|Une distance est toujours positive ou nulle : tous les réels sont solutions. $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$.}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "|x| ⩽ 3 : S = [−3 ; 3]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"s": "1"
+			},
+			"answers": ["[-3;3]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochets ouverts",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"s": "1"
+			},
+			"answers": ["]-3;3["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; 3]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;3]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "|x| > 5 : S = ]−∞ ; −5[ ∪ ]5 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"s": "2"
+			},
+			"answers": ["]-\\infty;-5[\\cup]5;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]5 ; +∞[ seulement",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"s": "2"
+			},
+			"answers": ["]5;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]−5 ; 5[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"s": "2"
+			},
+			"answers": ["]-5;5["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "|x| < −2 : S = ∅",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"s": "0"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−2 ; 2[",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"s": "0"
+			},
+			"answers": ["]-2;2["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "|x| ⩾ −2 : S = ℝ",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"s": "3"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"s": "3"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "|x| ⩽ 0 : S = {0}",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "|x| > 0 : S = ℝ \\ {0}",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Réunion ]−∞ ; 0[ ∪ ]0 ; +∞[",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["]-\\infty;0[\\cup]0;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

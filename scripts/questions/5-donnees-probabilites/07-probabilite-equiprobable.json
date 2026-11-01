@@ -1,0 +1,273 @@
+{
+	"title": "Probabilité : issues équiprobables",
+	"description": "Calculer la probabilité d'un évènement à plusieurs issues quand elles sont équiprobables : nombre pair au dé (3/6), jeton d'une couleur, voyelle d'un mot",
+	"grades": ["5"],
+	"theme": "Probabilités",
+	"domain": "Expériences aléatoires",
+	"subdomain": "équiprobabilité",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On lance un dé équilibré à ${{n}}$ faces, numérotées de $1$ à ${{n}}$.\n\nQuelle est la probabilité d'obtenir {{if:k==0|un nombre pair|un multiple de $3$}} ? Donne-la sous forme de fraction.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6|8|10|12"
+				},
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "f",
+					"expression": "eval:{{if:k==0|n/2|floor(n/3)}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{{{f}}}{{{n}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Issues équiprobables.** Quand toutes les issues ont la même chance de sortir : $P = \\dfrac{\\text{nombre d'issues favorables}}{\\text{nombre total d'issues}}$.",
+					"Le dé est équilibré : les ${{n}}$ issues sont équiprobables. {{if:k==0|Il y a ${{f}}$ nombres pairs|Il y a ${{f}}$ multiples de $3$}} entre $1$ et ${{n}}$.",
+					"{{if:gcd(f,n)!=1|$P = \\dfrac{{{f}}}{{{n}}} = \\textcolor{{{color:primary.0}}}{{{eval:(f)/(n)}}}$ (la fraction $\\dfrac{{{f}}}{{{n}}}$ est juste aussi)|$P = \\textcolor{{{color:primary.0}}}{\\dfrac{{{f}}}{{{n}}}}$}}."
+				]
+			}
+		},
+		{
+			"statement": "Un sac contient ${{r}}$ jetons rouges, ${{v}}$ jetons verts et ${{j}}$ jetons jaunes, indiscernables au toucher. On tire un jeton au hasard.\n\nQuelle est la probabilité de tirer un jeton **{{if:k==0|rouge|vert}}** ? Donne-la sous forme de fraction.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "v",
+					"expression": "1..9"
+				},
+				{
+					"name": "j",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "x",
+					"expression": "eval:{{if:k==0|r|v}}"
+				},
+				{
+					"name": "t",
+					"expression": "eval:r+v+j"
+				}
+			],
+			"conditions": ["r!=v", "v!=j", "r!=j"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{{{x}}}{{{t}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Issues équiprobables.** Quand toutes les issues ont la même chance de sortir : $P = \\dfrac{\\text{nombre d'issues favorables}}{\\text{nombre total d'issues}}$.",
+					"Il y a ${{t}}$ jetons en tout, dont ${{x}}$ {{if:k==0|rouges|verts}}.",
+					"{{if:gcd(x,t)!=1|$P = \\dfrac{{{x}}}{{{t}}} = \\textcolor{{{color:primary.0}}}{{{eval:(x)/(t)}}}$ (la fraction $\\dfrac{{{x}}}{{{t}}}$ est juste aussi)|$P = \\textcolor{{{color:primary.0}}}{\\dfrac{{{x}}}{{{t}}}}$}}."
+				]
+			}
+		},
+		{
+			"statement": "On écrit les lettres du mot **{{if:k==0|MATHEMATIQUES|{{if:k==1|PROBABILITE|EXERCICE}}}}** sur des cartons identiques, un carton par lettre, et on en tire un au hasard.\n\nQuelle est la probabilité de tirer une **voyelle** ? Donne-la sous forme de fraction.\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "{{if:k==0|13|{{if:k==1|11|8}}}}"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:k==0|6|{{if:k==1|5|4}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{{{f}}}{{{t}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Issues équiprobables.** Quand toutes les issues ont la même chance de sortir : $P = \\dfrac{\\text{nombre d'issues favorables}}{\\text{nombre total d'issues}}$.",
+					"Il y a ${{t}}$ cartons, dont ${{f}}$ portent une voyelle.",
+					"{{if:gcd(f,t)!=1|$P = \\dfrac{{{f}}}{{{t}}} = \\textcolor{{{color:primary.0}}}{{{eval:(f)/(t)}}}$ (la fraction $\\dfrac{{{f}}}{{{t}}}$ est juste aussi)|$P = \\textcolor{{{color:primary.0}}}{\\dfrac{{{f}}}{{{t}}}}$}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Dé 6, pair : 3/6",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"k": "0",
+				"f": "3"
+			},
+			"answers": ["\\frac{3}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Dé 6, pair : 1/2",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"k": "0",
+				"f": "3"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 0,5 au lieu d'une fraction",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"k": "0",
+				"f": "3"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : 1/6 (une issue)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"k": "0",
+				"f": "3"
+			},
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 (le nombre d'issues)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"k": "0",
+				"f": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dé 10, multiple de 3 : 3/10",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10",
+				"k": "1",
+				"f": "3"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Sac 3 rouges, 5 verts, 2 jaunes : 3/10",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"v": "5",
+				"j": "2",
+				"k": "0",
+				"x": "3",
+				"t": "10"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/7 (sur les autres)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"v": "5",
+				"j": "2",
+				"k": "0",
+				"x": "3",
+				"t": "10"
+			},
+			"answers": ["\\frac{3}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/3 (une couleur sur trois)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"v": "5",
+				"j": "2",
+				"k": "0",
+				"x": "3",
+				"t": "10"
+			},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "EXERCICE : 4/8",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"t": "8",
+				"f": "4"
+			},
+			"answers": ["\\frac{4}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2/8 (voyelles différentes)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"t": "8",
+				"f": "4"
+			},
+			"answers": ["\\frac{2}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -388,7 +388,6 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
    décider par David. Le drapeau, lui, est testé par toutes les routes `/api/google/**` (B8,
    `src/routes/api/google/__tests__/interrupteur-google.test.ts` : 403 pour chaque méthode, sauf
    `auth/disconnect` et `auth/status`).
-5. **Kanban** : l'en-tête de `src/lib/server/kanban.ts` cite une migration d'avant le baseline.
-6. **Diaporamas** : l'annotation (`AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore`)
+5. **Diaporamas** : l'annotation (`AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore`)
    n'est montée que par la démo `/dev/diaporama` (remise en place le 2026-10-11) ;
    la brancher dans les carnets ou les séries en classe serait un choix de produit.

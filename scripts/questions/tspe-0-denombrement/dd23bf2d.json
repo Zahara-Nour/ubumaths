@@ -1,0 +1,79 @@
+{
+	"id": "dd23bf2d-2c62-4441-9b3d-fa73c1130107",
+	"title": "Permutations : ranger n objets",
+	"description": "n! façons de ranger n objets distincts",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Coefficients binomiaux",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{f}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"statement": "De combien de façons peut-on ranger ${{n}}$ livres différents sur une étagère ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..7"
+				},
+				{
+					"name": "f",
+					"expression": "{{eval:factorial(n)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un rangement est une permutation des ${{n}}$ livres ; $n$ objets ont $n!$ permutations.",
+					"${{n}}!=\\textcolor{{{color:primary.0}}}{{{f}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["120"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "5"
+			},
+			"description": "v0 : 5! = 120",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3125"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5"
+			},
+			"description": "v0 : 5⁵",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5!"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "5"
+			},
+			"description": "v0 : 5! (notation acceptée)",
+			"variationIndex": 0
+		}
+	]
+}

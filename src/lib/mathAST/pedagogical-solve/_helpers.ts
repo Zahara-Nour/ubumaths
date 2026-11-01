@@ -27,13 +27,14 @@ import {
 } from '../factory';
 import { computeDomain } from '../domain/compute';
 import { isUniversal } from '../domain/algebra';
-import { flattenSumShallow } from '../flatten';
+import { flattenSumShallow, unflattenSum } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
 import { unwrapGrouping, unwrapGroupingMembers } from '../solve/classify';
 import { canonicalForm } from '../normal';
 import { constantSign } from '../common/constant-sign';
 import { literalNumberValue } from '../common/numeric';
 import { tidy } from '../tidy';
+import { isMultiplication } from '../guards';
 import { InequalityNotSolvable } from '../solve/inequality/types';
 import { getVariables } from '../eval/substitute';
 import { toLatex } from '../latex-generator';
@@ -198,9 +199,52 @@ export function rejectForbiddenValues(inequality: RelationNode, variable: string
 // Bilateral operations on equations
 // =============================================================================
 
-/** Add `operand` to both sides and canonicalize the result. */
-export function addToBothSides(eq: RelationNode, operand: MathNode): RelationNode {
-	return canonEquation(relation(eq.relation, add(eq.left, operand), add(eq.right, operand)));
+/**
+ * Add `operand` to both sides and canonicalize the result. Avec `variable`, les termes en x
+ * restés séparés sont regroupés (`groupVariableTerms`, écart V52).
+ */
+export function addToBothSides(
+	eq: RelationNode,
+	operand: MathNode,
+	variable?: string
+): RelationNode {
+	const sum = canonEquation(relation(eq.relation, add(eq.left, operand), add(eq.right, operand)));
+	if (variable === undefined) return sum;
+	return relation(
+		sum.relation,
+		groupVariableTerms(sum.left, variable),
+		groupVariableTerms(sum.right, variable)
+	);
+}
+
+/**
+ * Le coefficient somme d'un terme `(a)·x` tel que l'écrit `groupVariableTerms`
+ * (`\left( 9 - \pi \right) x` → `9 - \pi`), ou `null`.
+ */
+export function groupedCoefficient(node: MathNode, variable: string): MathNode | null {
+	if (!isMultiplication(node)) return null;
+	const { left, right } = node;
+	const isSum = left.type === 'addition' || left.type === 'subtraction';
+	const isX = right.type === 'variable' && right.name === variable;
+	return isSum && isX && !containsVariable(left, variable) ? left : null;
+}
+
+/**
+ * Les termes en x d'un membre, regroupés en un seul `(a)·x` quand `canonicalForm` les a
+ * laissés séparés : un coefficient irrationnel (`-\pi x + 9x` → `\left( 9 - \pi \right) x`,
+ * écart V52). Rangé par `tidy`, comme l'opérande de `movedTerm`. Un seul terme en x, ou un
+ * coefficient qui dépend de x : le membre tel quel.
+ */
+export function groupVariableTerms(side: MathNode, variable: string): MathNode {
+	const terms = flattenSumShallow(side);
+	const xTerms = terms.filter(({ term }) => containsVariable(term, variable));
+	const xSum = unflattenSum(xTerms);
+	if (xTerms.length < 2 || xSum === null) return side;
+	const coefficient = canonicalForm(divide(xSum, varNode(variable), 'fraction'));
+	if (containsVariable(coefficient, variable)) return side;
+	const grouped = multiply(tidy(coefficient), varNode(variable), 'implicit');
+	const constTerms = terms.filter(({ term }) => !containsVariable(term, variable));
+	return unflattenSum([{ sign: '+', term: grouped }, ...constTerms]) ?? grouped;
 }
 
 /** Divide both sides by `divisor` and canonicalize. */

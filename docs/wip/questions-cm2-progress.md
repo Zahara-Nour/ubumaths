@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2056 ; migration de rangement du lot 4 en PR._
+_Mis à jour le 2026-11-01, après #2125 (rangement du 5b)._
 
-- **État** : lots 1, 2 et 3 publiés. Lot 4 (calcul mental sur les décimaux, 7 modèles, § 9) : fichiers mergés (#2056), 7 brouillons créés en prod par David le 2026-11-01 ; migration de rangement `20261101141500` en PR (§ 9.3).
-- **Prochaine action** : merger la PR de rangement, `db:migrate` depuis le dépôt principal (vérifier d'abord les migrations en attente), vérifier au MCP ; puis page à cocher du lot 4 (`scripts/questions/cm2-4`).
-- **En attente de David** : rien (la relecture viendra avec la page à cocher).
-- **Pièges en cours** : `curriculum_points` n'a pas de colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces ; variable `e` = Euler ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot4-rangement`.
+- **État** : lots 0 à 4 et 5a publiés ; 5b (calculs, 6 modèles) en brouillon en prod, rangé et tagué (#2125, vérifié MCP) ; page à cocher du 5b publiée : https://claude.ai/artifact/EBRtiBKNCcbaQynwCYUXKx (6 fiches, `verdicts` vide au départ).
+- **Prochaine action** : migration de niveau de `cf85bd1b` (022) 7 → 8 + fichier `06-…json` (une PR), après la question d'accès ; puis `publier-lot` en simulation ; puis lot suivant (§ 3 du journal : prochains points sans modèle).
+- **En attente de David** : question d'accès de la migration de niveau (« personne », proposé) ; ensuite `publier-lot --dir scripts/questions/cm2-5b --publier`.
+- **Pièges en cours** : homonymes du CM1 / de 6e signalés par la page à cocher (même titre, autre niveau : ids vérifiés) ; `reducedFractions: off` accepte toute fraction égale ; jamais `}}` collé dans un `{{if:}}` ; `db:migrate` refusé quand la prod a des migrations plus récentes → `--dry-run` puis `--include-all` si seule la nôtre manque ; worktree sans `supabase/.temp` → copier celui du dépôt principal pour `db push` ; dépôt principal à l'index occupé par une autre session → jouer depuis le worktree ; `git commit -m … -- <fichiers>` ; `Doc-inchangée:` dans un message de commit.
+- **Worktree / branche** : aucun (retiré après #2125).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -420,3 +420,131 @@ Recommandations suivies (« tes recos ? » puis « je te suis ») : tableau du �
 
 - David : `create-questions --dir scripts/questions/cm2-4 --publier` ; relevé MCP : 7 brouillons [CM2] sans nœud ni tag — `f73f7bba` (040), `eca617ae` (118), `8f2aff1d` (041), `7b0b17fd` (048), `3437286f` (049), `0fad085e` (051), `6721b7cc` (052).
 - Migration `20261101141500_questions_cm2_lot4_rangement_tags.sql` (12:00, 12:01 et 13:00 pris par d'autres sessions), copie du lot 3b du CM1 (brouillons neufs seuls) ; nœuds « Nombres et calculs > Décimaux : calculs > addition / soustraction / multiplication / division ». Test `questions-cm2-lot4-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges.
+- #2060 mergée **avec la garde « doc à jour » rouge** (ma faute : `gh pr view … && gh pr merge` enchaînés ; `Doc-inchangée:` mis dans la description de la PR au lieu d'un message de commit). Seule cette garde était rouge ; la migration n'est pas en cause. Signalé à David.
+- `db:migrate` : `DbPushMissingRemoteError` (20261101120000 de `questions-4` mergée, pas jouée) ; David a lancé `db push --include-all` (120000 + 141500). Vérifié au MCP : 7 brouillons, chacun sur sa sous-notion avec son point, `updated_at` inchangé, trigger `updated_at` actif (`O`).
+- Page à cocher publiée (7 fiches, aucune alerte), rendu vérifié à 390 px : https://claude.ai/artifact/GbuqmaxXKnTHhZSdy3ppbL ; `verdicts` vide au départ.
+
+### 9.4 Lot 4 : premiers commentaires (David, 2026-11-01)
+
+- `f73f7bba` (040) À revoir : « il n'y a pas de nombre entier dans la variation 1 » ; `eca617ae` (118) : « même remarque » (sans verdict). `8f2aff1d` (041) a la même V1.
+- Origine : bornes c3-2 (décision de David du 2026-10-18) — « nombre entier » lu comme k unités de numération, d'après les exemples de réussite CM2 2025 p. 8 (4,452 + 0,03 ; 0,457 − 3/1 000 ; 4,45 + 0,8).
+- Question posée, **sans réponse** : 1. garder cette lecture et la rendre visible (titre « Ajouter un nombre entier d'unités, de dixièmes, de centièmes… », corrigé « 0,03, c'est un nombre entier de centièmes : 3 ») — **ma recommandation** ; 2. lecture littérale : V1 retirée des trois modèles (seulement unités à milliers) ; 3. séparer : 040 / 118 / 041 sur les entiers seuls, un modèle à part pour dixièmes / centièmes / millièmes.
+
+### 9.5 Lot 4 : 040 / 118 / 041, un nombre entier (David, 2026-11-01)
+
+- David : « que dit la consigne ? il faut qu'il y ait une cohérence entre la consigne et les questions ». Le BO de CM2 dit « ajouter ou soustraire **un nombre entier** à un nombre décimal » ; celui de CM1 écrit en toutes lettres « un nombre entier … d'unités, de dizaines, de centaines, **de dixièmes ou de centièmes** ». Lecture littérale retenue (« ok ») : la décision c3-2 du 2026-10-18 est remplacée.
+- Variation 1 refaite : k unités (k de 1 à 9) ajoutées à / retirées d'un décimal à 2 ou 3 décimales (4,452 + 3 ; 0,45 + 2 ; 8,694 − 6 ; retenue : 8,45 + 3 = 11,45). Variation 2 : dizaines à milliers seulement (les unités sont en V1). Aux unités, 0 est un vrai chiffre (condition `j==3||N>=10^j`).
+- Titres gardés (« Ajouter / Retirer des unités d'un seul rang », justes) : `create-questions` retrouve le modèle par son titre, un nouveau titre aurait créé un doublon sur un niveau pris.
+- Bornes CM2-040 / 041 / 118 de `cycle3.json` corrigées. `question:specs` : 1 000 tirages par variation, 8 specs par modèle, tout vert ; simulation prod : 3 à mettre à jour, 4 inchangés.
+- David : `create-questions --publier --mettre-a-jour` → 3 mis à jour, 4 inchangés ; simulation suivante : 7 identiques. MCP : contenu neuf (conditions `j==3||N>=10^j`, `mod(N,100)!=0`), statut brouillon, nœud et point inchangés. Verdicts de `f73f7bba` et `eca617ae` supprimés (aucun pour `8f2aff1d`) ; page régénérée (7 fiches, aucune alerte) et republiée à la même adresse.
+
+### 9.6 Lot 4 : publication (2026-11-01)
+
+- Relecture de David : 7 OK sur 7, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 7 passent ; David lance `--publier` : 7/7 publiés. MCP : 7 `published`, 7 rangés, 7 tagués.
+
+## 10. Lot 5 — fractions : phase 0 (proposée le 2026-11-01)
+
+Relevé MCP du 2026-11-01 sur les 8 points prévus (§ 3) : **CM2-021** a déjà `e320755f` (entier × 1/b)
+et `8fa3108c` (entier × c/b), venus du CM1 au lot 0 ; leurs lettres a, b, c ne sont pas déclarées
+(plages implicites) et leur corrigé est « a × c / b », pas l'addition itérée des exemples de réussite.
+Les **7 autres** n'ont aucun modèle : 013, 015, 016, 019, 020, 135, 022. Le lot 3a du CM1 (fractions)
+est publié : rien en cours chez `questions-cm1` sur ces sous-notions.
+
+Le BO du CM2 (`CM2-nombres.md`) : dénominateurs **≤ 60** (CM1 : ≤ 20) ; fraction d'une quantité
+avec **n'importe quel numérateur** (CM1 : fractions unitaires seules) ; multiples communs (< 15) au
+service de la comparaison et de l'addition. Exemples de réussite CM2 2025 p. 4-5 (lus dans le PDF) :
+58/7 = 8 + 2/7 ; 43/8 entre 5 et 6 ; 17/12 et 17/8 ; 7/4 et 17/10, 13/2 et 20/3 (multiple commun
+≤ 60, cas simples) ; 3/2 + 7/8, 5/6 − 1/12, 11/40 − 1/8 (l'un multiple de l'autre, tables) ;
+3 × 5/4 = 5/4 + 5/4 + 5/4 ; 2/3 de 12 œufs, 3/10 de 500 g, 2/5 de 60 kg.
+
+Modèles CM2 voisins (CM1) relus : `a2b41659` (lire / écrire, d ≤ 20), `f1a880e9` (q + r/d, d ≤ 20),
+`b2b5320f` (encadrer, d ≤ 10), `9089828a` / `0d4765d8` (comparer, même num. ou dén., QCM),
+`acfdddb3` / `884908d3` (addition, soustraction, d ≤ 20), `ef1ed0ce` (fraction unitaire d'une
+quantité). Forme « signe » des comparaisons de 6e (`afebbb91`, `228b1620`, `259a0b26`) : case
+« choix » `<` / `=` / `>`, `melanger: non`.
+
+| #   | Point   | Modèle                                                                                                                                                                                      | Sous-notion, niveau (thème Fractions)       |
+| --- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 1   | CM2-013 | « Lire et écrire une fraction » : V1 écrire en chiffres « cinquante-trois douzièmes » (d 2..60, n 1..99, n ≠ d) ; V2 « Comment lit-on 5/3 ? » en case « choix » (inversée, cardinal, n + 1) | définition — Apprivoiser/Ecriture 8         |
+| 2   | CM2-015 | « Écrire un entier plus une fraction comme une fraction » : V1 q + r/d = ?/d (d 2..10, q 2..9) ; V2 fraction entière à écrire (d jusqu'à 60 : 12, 15, 20, 25, 30, 40, 50, 60 ; q 1..4)      | décomposition — Apprivoiser/Décomposition 7 |
+| 3   | CM2-016 | « Encadrer une fraction entre deux entiers consécutifs » : V1 d 2..10, a jusqu'à 99 (43/8) ; V2 d 11..60 « de table » (12, 15, 20, 25, 50, 60 ; q 1..5)                                     | ordre — Apprivoiser/Encadrer 5              |
+| 4   | CM2-019 | « Comparer deux fractions de même numérateur ou de même dénominateur » : 17/12 … 17/8 ; 23/40 … 31/40 ; signe en case « choix »                                                             | ordre — Apprivoiser/Comparer 15             |
+| 5   | CM2-019 | « Comparer deux fractions de dénominateurs différents » : V1 l'un multiple de l'autre (7/4 … 17/12) ; V2 multiple commun ≤ 60, cas simples (7/4 … 17/10 ; 13/2 … 20/3) ; « = » possible     | ordre — Apprivoiser/Comparer 16             |
+| 6   | CM2-020 | « Additionner des fractions de même dénominateur » : V1 deux termes (d ≤ 60) ; V2 trois termes                                                                                              | add./soustr. — Calculer/Add. et Soustr. 23  |
+| 7   | CM2-020 | « Additionner des fractions de dénominateurs multiples » : V1 3/2 + 7/8 (tables) ; V2 trois termes liés (1/12 + 1/6 + 1/3)                                                                  | add./soustr. — 24                           |
+| 8   | CM2-135 | « Soustraire des fractions de même dénominateur » (d ≤ 60)                                                                                                                                  | add./soustr. — 25                           |
+| 9   | CM2-135 | « Soustraire des fractions de dénominateurs multiples » : 5/6 − 1/12 ; 11/40 − 1/8                                                                                                          | add./soustr. — 26                           |
+| 10  | CM2-021 | « Multiplier une fraction par un entier » : 3 × 5/4 (entier 2..9, d ≤ 60), corrigé par l'addition itérée                                                                                    | multiplication — Calculer/Multiplication 10 |
+| 11  | CM2-022 | « Calculer une fraction d'une quantité » : V1 quantité (2/3 de 12 œufs ; numérateur ≥ 2) ; V2 grandeur (3/10 de 500 g ; 2/5 de 60 kg)                                                       | fraction d'une quantité — 7                 |
+
+Corrigés : 2, 3 → q = q × d / d (58/7 = 56/7 + 2/7) ; 4 → parts de même taille / même nombre de
+parts ; 5, 7, 9 → on change de dénominateur en le disant (7/4 = 35/20) ; 10 → « trois fois cinq
+quarts, c'est quinze quarts » ; 11 → un tiers de 12, c'est 4 ; deux tiers, c'est 2 × 4. Erreurs
+typiques en `testSpecs` : num. et dén. additionnés (3/4 + 1/4 = 4/8), q + r au lieu de q × d + r
+(5 + 3/4 = 8/4), encadrement décalé d'un, numérateur seul multiplié oublié (3 × 5/4 = 15/12),
+fraction unitaire seule (2/3 de 12 = 4).
+
+Niveaux : les plus hauts pris dans chaque sous-notion (anciennes colonnes) + 1 ; « Add. et Soustr. »
+22 est un brouillon de CE2 → 23 à 26.
+
+**Question d'accès** : brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la
+publication.
+
+**À trancher** : (a) 021 : modèle neuf (#10) à côté des deux existants, ou rien ? (b) réponses
+des sommes / différences : toute fraction égale acceptée (6/4 pour 3/2), ou forme imposée ?
+(c) découpage : 11 modèles en un lot, ou 5a (sens : 1-5) et 5b (calculs : 6-11) ?
+
+### 10.1 Lot 5 : décisions (David, 2026-11-01)
+
+Recommandations suivies (« tes recos ? » puis « go ») : (a) CM2-021 → modèle neuf (#10), corrigé
+par l'addition itérée, à côté de `e320755f` / `8fa3108c` ; (b) toute fraction égale acceptée
+(`reducedFractions: off`) ; (c) deux lots : **5a** (sens, modèles 1-5) puis **5b** (calculs,
+modèles 6-11). Tableau du § 10 gardé.
+
+### 10.2 Lot 5a : écriture (2026-11-01)
+
+- Script `lot-cm2-5a.py` → `scripts/questions/cm2-5a/` (5 fichiers), jumeau de `lot-cm1-3a.py`
+  (nombres en lettres jusqu'à 60, parts jusqu'aux soixantièmes, tirés par Python) et des
+  comparaisons de `lot-6-fractions.py`. `question:specs` : 1 000 tirages par variation, 36 specs,
+  tout vert ; `create-questions` en simulation (prod) : 5 à créer.
+- Mesuré : `reducedFractions: off` accepte 9/2 pour « cinquante-quatre douzièmes » → « écrire en
+  chiffres » tire des fractions irréductibles ; « 3 + 7/25 » recopiée et « 3,28 » → `bad_form`
+  (message de forme), 164/50 accepté. Comparaison à multiple commun : partie entière w tirée
+  d'abord (sinon 48 tirages sur 2 000 échouaient).
+- Local (port 5183, `admin@local.test`, Playwright iPhone 13) : lecture en lettres sur deux lignes
+  lisible (« cinquante-sept vingt-neuvièmes ») ; comparer : bon signe → « Juste », mauvais →
+  « Faux » ; encadrer 137/25 : 4 et 5 → « Faux », corrigé 5 < 137/25 < 6.
+
+### 10.3 Lot 5a : rangement (2026-11-01)
+
+- Relevé MCP : 5 brouillons [CM2] sans nœud ni tag (ids du « Reprendre ici ») ; points 013 → définition, 015 → décomposition, 016 et 019 → ordre (notion « Fractions : sens et écritures »).
+- Migration `20261101191500_questions_cm2_lot5a_rangement_tags.sql` (190000-190200, 193000 et 200700 pris par d'autres sessions), copie du lot 4. Test `questions-cm2-lot5a-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges.
+- `security-auditor` : aucun finding. CI d'abord rouge (collision 190200 sur `main`, réglée par #2114 d'une autre session), verte après fusion de `main` ; #2117 mergée.
+- `db:migrate` : `DbPushMissingRemoteError` (la prod a des migrations plus récentes) ; `db push --include-all --dry-run` → la nôtre seule, puis jouée. MCP : 5 brouillons, chacun sur sa sous-notion avec son point, `updated_at` inchangé (14:06, création).
+- Page à cocher publiée (5 fiches ; alertes « homonyme » sur 01 et 02 : modèles du CM1 de même titre écartés, ids justes), rendu vérifié à 390 px : https://claude.ai/artifact/R6LqP4SYrAFf1Keor4Xdxo ; `verdicts` vide au départ.
+
+### 10.4 Lot 5b : écriture (2026-11-01)
+
+- Script `lot-cm2-5b.py` → `scripts/questions/cm2-5b/` (6 fichiers), jumeau du 5a. Niveaux relevés en prod : Addition et Soustraction 23 à 26, Multiplication 10, Fraction d'une quantité 7.
+- Choix d'écriture : additions à deux termes (d ≤ 60, somme des numérateurs ≤ 99) et à trois termes ; dénominateurs multiples : 3/2 + 7/8 (ordre d'affichage tiré) et 1/12 + 1/6 + 1/3 (chaîne dp | dp × m | dp × m × n, jamais `e`) ; soustraction multiple : on convertit le premier (5/6 − 1/12) ou le second (11/40 − 1/8) ; n × a/d (n 2..9) corrigé par l'addition itérée, accolade « n fois » au-delà de 5 termes ; fraction d'une quantité : objets (k 3..10) ou grandeurs g, kg, L, m, € (k 3, 4, 5, 10).
+- `question:specs` : 1 000 tirages par variation, 40 specs, tout vert ; `create-questions` en simulation (prod) : 6 à créer.
+- Local (port 5183, `admin@local.test`, Playwright iPhone 13) : pour chacun des 6, juste → « Juste », numérateur + 1 → « Faux ».
+
+### 10.5 Lot 5a : relecture (David, 2026-11-01)
+
+- 5 OK sur 5, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 5 brouillons passent le contrôle.
+
+### 10.6 Lot 5a : publication (2026-11-01)
+
+- David lance `publier-lot --publier` : 5/5 publiés. MCP : 5 `published`, 5 rangés, 5 tagués.
+
+### 10.7 Lot 5b : rangement (2026-11-01)
+
+- David : `create-questions --dir scripts/questions/cm2-5b --publier` ; relevé MCP : 6 brouillons [CM2] sans nœud ni tag — `13ccf7b1` (020, même dén.), `1170d061` (020, multiples), `a14767bc` (135, même dén.), `edb7fca8` (135, multiples), `c257a672` (021), `cf85bd1b` (022).
+- Migration `20261101210500_questions_cm2_lot5b_rangement_tags.sql`, copie du 5a ; nœuds « Nombres et calculs > Fractions : calculs > addition et soustraction / multiplication / fraction d'une quantité ». Test `questions-cm2-lot5b-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges.
+- `security-auditor` : aucun finding ; CI verte, #2125 mergée. `db push --include-all` (dry-run d'abord : la nôtre seule), depuis le worktree (index du dépôt principal occupé par une autre session). MCP : 6 brouillons rangés et tagués, `updated_at` inchangé (15:41, création).
+- Page à cocher publiée (6 fiches ; alertes « homonyme » sur 4 : modèles de CM1 ou de 6e de même titre écartés, ids justes), rendu vérifié à 390 px : https://claude.ai/artifact/EBRtiBKNCcbaQynwCYUXKx ; `verdicts` vide au départ.
+
+### 10.8 Lot 5b : relecture (David, 2026-11-01)
+
+- 6 OK sur 6, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : **refus** de `cf85bd1b` — niveau 7 de Fractions / Calculer / Fraction d'une quantité pris par `a635df43` « Fraction d'une fraction » (4e, passé de 5 à 7 puis publié le 2026-11-01 par `questions-4`, migration `20261101193000`, après mon relevé). Rien publié. Correction : niveau 8 (libre), migration + fichier.

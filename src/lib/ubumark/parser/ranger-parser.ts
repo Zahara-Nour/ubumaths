@@ -23,6 +23,7 @@
  * @module ubumark/parser/ranger-parser
  */
 
+import { unnestedLine } from './nested-line';
 import type { RangerNode, RangerSign, RangerSpec } from '../types/ranger';
 import { RANGER_MAX_LABELS, RANGER_MIN_LABELS } from '../utils/ranger';
 
@@ -71,9 +72,6 @@ export function findRangerBlocks(lines: readonly string[]): RangerBlockRange[] {
 	return ranges;
 }
 
-/** Ligne vue sans retrait ni marque de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /**
  * Les blocs ranger d'un énoncé (tous portent des cases) : corps sans clôtures,
  * fermeture, et `nested` pour un bloc en retrait ou cité (l'élève ne pourrait pas
@@ -86,7 +84,7 @@ export function findRangersToPlace(markdown: string): {
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
-	const plain = lines.map(unquoted);
+	const plain = lines.map(unnestedLine);
 	return findRangerBlocks(plain).map((range) => ({
 		startIndex: range.startIndex,
 		body: plain.slice(range.startIndex + 1, range.closed ? range.endIndex : range.endIndex + 1),

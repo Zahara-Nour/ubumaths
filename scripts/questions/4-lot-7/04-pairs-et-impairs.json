@@ -1,0 +1,238 @@
+{
+	"title": "Pairs et impairs",
+	"description": "Écrire un nombre pair 2n, un nombre impair 2n + 1, et tester une affirmation : quelle expression est toujours paire ? le pair qui suit 2n ? « n + 1 est toujours impair » ?",
+	"grades": ["4"],
+	"theme": "Calcul littéral",
+	"domain": "Produire une formule",
+	"subdomain": "Pairs et impairs",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"form": "off",
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "$n$ désigne un nombre entier.\n\nQuelle expression désigne toujours un nombre pair ?\n\n```choix\n- $2n$\n- $n + 2$\n- $n^2$\n- $2n + 1$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pairs et impairs.** $n$ désigne un nombre entier. Un nombre pair s'écrit $2n$ ; un nombre impair s'écrit $2n + 1$.",
+					"$\\textcolor{{{color:primary.0}}}{2n}$ est un multiple de $2$ : il est toujours pair.",
+					"Les autres ne le sont pas toujours : pour $n = 3$, $n + 2 = 5$, $n^2 = 9$ et $2n + 1 = 7$ sont impairs."
+				]
+			}
+		},
+		{
+			"statement": "$n$ désigne un nombre entier.\n\nQuelle expression désigne toujours un nombre impair ?\n\n```choix\n- $2n + 1$\n- $n + 1$\n- $3n$\n- $2n + 2$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pairs et impairs.** $n$ désigne un nombre entier. Un nombre pair s'écrit $2n$ ; un nombre impair s'écrit $2n + 1$.",
+					"$\\textcolor{{{color:primary.0}}}{2n + 1}$ est un nombre pair augmenté de $1$ : il est toujours impair.",
+					"Les autres ne le sont pas toujours : pour $n = 3$, $n + 1 = 4$ est pair ; pour $n = 2$, $3n = 6$ est pair ; $2n + 2 = 2(n + 1)$ est toujours pair."
+				]
+			}
+		},
+		{
+			"statement": "$n$ désigne un nombre entier : $2n$ est donc un nombre pair.\n\nÉcris, en fonction de $n$, le nombre pair qui suit $2n$.\n\nLe nombre pair suivant est $?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2n+2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pairs et impairs.** $n$ désigne un nombre entier. Un nombre pair s'écrit $2n$ ; un nombre impair s'écrit $2n + 1$.",
+					"Les nombres pairs vont de $2$ en $2$ : le suivant de $2n$ est $2n + 2$.",
+					"Exemple : pour $n = 5$, $2n = 10$ et le nombre pair suivant est $12 = 10 + 2$.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{2n + 2}$ (on peut aussi écrire $2(n + 1)$)."
+				]
+			}
+		},
+		{
+			"statement": "$n$ désigne un nombre entier : $2n + 1$ est donc un nombre impair.\n\nÉcris, en fonction de $n$, le nombre impair qui suit $2n + 1$.\n\nLe nombre impair suivant est $?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2n+3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pairs et impairs.** $n$ désigne un nombre entier. Un nombre pair s'écrit $2n$ ; un nombre impair s'écrit $2n + 1$.",
+					"Les nombres impairs vont de $2$ en $2$ : le suivant de $2n + 1$ est $2n + 1 + 2$.",
+					"Exemple : pour $n = 5$, $2n + 1 = 11$ et le nombre impair suivant est $13 = 11 + 2$.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{2n + 3}$."
+				]
+			}
+		},
+		{
+			"statement": "Tom affirme : « Pour tout nombre entier $n$, le nombre $n + 1$ est impair. »\n\nQue penser de cette affirmation ?\n\n```choix\n- Elle est fausse : pour $n = {{a}}$, $n + 1 = {{eval:a+1}}$ est pair.\n- Elle est vraie : pour $n = {{b}}$, $n + 1 = {{eval:b+1}}$ est impair.\n- Elle est vraie pour tous les nombres entiers.\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:2*j+1"
+				},
+				{
+					"name": "h",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:2*h"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tester une affirmation.** Un seul exemple qui ne marche pas suffit à prouver qu'une affirmation « pour tout $n$ » est fausse ; des exemples qui marchent ne prouvent rien.",
+					"Pour $n = {{a}}$ : $n + 1 = {{eval:a+1}}$, qui est pair.",
+					"L'affirmation est donc $\\textcolor{{{color:primary.0}}}{\\text{fausse}}$ : $n + 1$ est impair seulement quand $n$ est pair."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n + 2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2n + 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n + 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2n + 2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2n+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Autre écriture : 2(n + 1)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2(n+1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2n + 1 (l'entier suivant)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2n+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n + 2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["n+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2n + 3",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2n+3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2n + 2",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2n+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Fausse : contre-exemple",
+			"variationIndex": 4,
+			"variables": {
+				"j": "2",
+				"a": "5",
+				"h": "3",
+				"b": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vraie sur un exemple",
+			"variationIndex": 4,
+			"variables": {
+				"j": "2",
+				"a": "5",
+				"h": "3",
+				"b": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

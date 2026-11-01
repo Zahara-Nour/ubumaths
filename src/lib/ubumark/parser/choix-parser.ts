@@ -24,6 +24,7 @@
  */
 
 import type { ChoiceNode } from '../types/choix';
+import { NESTED_PREFIX } from './nested-line';
 
 // Types
 export interface ChoiceBlockRange {
@@ -62,8 +63,8 @@ export interface ChoiceBlock extends ChoiceBlockSpec {
 // Constantes
 /** Ouverture au premier niveau : ```choix, ````choix… */
 const OPEN_REGEX = /^(`{3,})choix\s*$/;
-/** La même, en retrait (liste) ou citée */
-const NESTED_OPEN_REGEX = /^(?:\s+|\s*>\s*)`{3,}choix\s*$/;
+/** La même, en retrait (liste), sur la ligne d'un item ou citée */
+const NESTED_OPEN_REGEX = new RegExp(`^${NESTED_PREFIX}\`{3,}choix\\s*$`);
 const ITEM_REGEX = /^-(?:[ \t](.*))?$/;
 const SETTING_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 const CASE_INDEX_REGEX = /^\d{1,3}$/;

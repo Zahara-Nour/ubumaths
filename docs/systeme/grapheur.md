@@ -178,7 +178,11 @@ Lecture d'un terme : le survol montre la **valeur exacte** (`exact.ts`, plafonds
 `décimale → exacte → disparue`. Les étiquettes figées ne sont **jamais sérialisées**.
 
 Le moteur de suites sert aussi le bloc ubumark ` ```courbe ` (`src/lib/ubumark/parser/courbe-parser.ts`,
-`src/lib/ubumark/utils/courbe-scene.ts`) : le modifier, c'est modifier ce bloc.
+`src/lib/ubumark/utils/courbe-scene.ts`) : le modifier, c'est modifier ce bloc. Ce bloc a aussi son
+geste « placer des points » et ses titres d'axes, décrits dans [ubumark](ubumark.md) (Repère à placer) :
+le pas de grille automatique (`courbeGridSteps`) y est partagé par la scène, le parseur et l'écran.
+En évaluation notée, `placer: A=? ; B=?` (coordonnées masquées) se lit aussi : point de remplacement,
+ni nœud ni fenêtre vérifiés ([ubumark](ubumark.md), invariant 12).
 
 ### Échantillonnage et fidélité du tracé
 
@@ -370,7 +374,6 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
 
 ## Écarts connus
 
-- **`src/lib/components/grapheur/index.ts`** (barillet) n'a aucun importeur.
 - Les ré-exports `viewport.ts`, `bezier.ts`, `colors.ts` de `src/lib/grapheur/` sont des
   survivances « rétrocompatibilité » ; le code importe tantôt eux, tantôt `geometry-core`.
 - Une somme de pôles périodiques et isolés (tan(x) + 1/(x − 3)) : `getAllDiscontinuities` ne

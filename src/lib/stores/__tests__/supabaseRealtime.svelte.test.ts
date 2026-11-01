@@ -450,53 +450,12 @@ describe('Edge Cases & Error Handling', () => {
 		vi.clearAllMocks();
 	});
 
-	it.skip('should not create channel if not in browser', () => {
-		// SSR edge case - skip in browser environment tests
-		mockBrowser(false);
-		supabaseRealtimeManager.init(supabase, userId);
-
-		expect(() => {
-			supabaseRealtimeManager.createChannel('test-channel');
-		}).toThrow('Impossible de créer un canal côté serveur');
-	});
-
-	it.skip('should not subscribe if not in browser', async () => {
-		// SSR edge case - skip in browser environment tests
-		mockBrowser(false);
-		supabaseRealtimeManager.init(supabase, userId);
-
-		await supabaseRealtimeManager.subscribeChannel('test-channel');
-
-		// Should return early without throwing
-		expect(supabase.channel).not.toHaveBeenCalled();
-	});
-
-	it.skip('should not unsubscribe if not in browser', async () => {
-		// SSR edge case - skip in browser environment tests
-		mockBrowser(false);
-		supabaseRealtimeManager.init(supabase, userId);
-
-		await supabaseRealtimeManager.unsubscribeChannel('test-channel');
-
-		expect(supabase.removeChannel).not.toHaveBeenCalled();
-	});
-
 	it('should handle unsubscribe for non-existent channel gracefully', async () => {
 		mockBrowser(true);
 		supabaseRealtimeManager.init(supabase, userId);
 
 		// Should not throw
 		await expect(supabaseRealtimeManager.unsubscribeChannel('non-existent')).resolves.not.toThrow();
-	});
-
-	it.skip('should not disconnect if not in browser', async () => {
-		// SSR edge case - skip in browser environment tests
-		mockBrowser(false);
-		supabaseRealtimeManager.init(supabase, userId);
-
-		await supabaseRealtimeManager.disconnect();
-
-		expect(supabase.removeChannel).not.toHaveBeenCalled();
 	});
 
 	it('should handle disconnect when not initialized', async () => {
@@ -639,16 +598,6 @@ describe('Initialization', () => {
 		await supabaseRealtimeManager.disconnect();
 		restoreBrowser();
 		vi.clearAllMocks();
-	});
-
-	it.skip('should not initialize if not in browser', () => {
-		// SSR edge case - skip in browser environment tests
-		mockBrowser(false);
-
-		supabaseRealtimeManager.init(supabase, userId);
-
-		// Should not set up connection
-		expect(supabaseRealtimeManager.connectionStatus).toBe('disconnected');
 	});
 
 	it('should initialize with connecting status', () => {

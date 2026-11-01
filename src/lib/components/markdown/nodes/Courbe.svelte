@@ -15,15 +15,24 @@
 
 	@module components/markdown/nodes/Courbe
 -->
+<script module lang="ts">
+	import type { CourbeColor } from '$lib/ubumark/types/courbe';
+
+	/** Point posé par-dessus la figure (repère à points à placer) : disque coloré et nom */
+	export interface CourbeMark {
+		name: string;
+		x: number;
+		y: number;
+		color: CourbeColor;
+	}
+</script>
+
 <script lang="ts">
-	import {
-		COURBE_COLORS,
-		type CourbeColor,
-		type CourbeLabel,
-		type CourbeNode
-	} from '$lib/ubumark/types/courbe';
+	import { COURBE_COLORS, type CourbeLabel, type CourbeNode } from '$lib/ubumark/types/courbe';
 	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
-	import { buildCourbeScene, type ScenePoint } from '$lib/ubumark/utils/courbe-scene';
+	import { buildCourbeScene, COURBE_PAD, type ScenePoint } from '$lib/ubumark/utils/courbe-scene';
+	import CourbePlacer from './CourbePlacer.svelte';
+	import type { BuildCase } from './CollectionConstruire.svelte';
 	import { readContentLocale } from '../content-locale';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
@@ -32,13 +41,26 @@
 		node: CourbeNode;
 		/** Forcer l'affichage des erreurs d'auteur ; sinon, contexte du renderer (élève par défaut) */
 		showErrors?: boolean;
+		/** Points posés par-dessus la figure (repère à points à placer) */
+		marks?: CourbeMark[];
+		/** Repère à points à placer, dans une question : une case par point */
+		answers?: BuildCase[];
+		/** false : repère seul, sans étiquettes de points (copie corrigée) */
+		showControls?: boolean;
 		class?: string;
 	}
 
-	let { node, showErrors, class: className = '' }: Props = $props();
+	let {
+		node,
+		showErrors,
+		marks = [],
+		answers,
+		showControls = true,
+		class: className = ''
+	}: Props = $props();
 
 	/** Marge autour du cadre, en px, pour les étiquettes */
-	const PAD = 26;
+	const PAD = COURBE_PAD;
 
 	/** Décalage des rangs u_k de l'escalier sous l'axe, en px (sous les graduations) */
 	const RANK_OFFSET = 26;
@@ -64,10 +86,12 @@
 	let errorsVisible = $derived(showErrors ?? authoring());
 	/** Budget du document (nombre de blocs, temps cumulé) partagé avec ```figure */
 	const budget = readRenderBudget();
-	let admitted = $derived(budget()?.admits(node) ?? true);
+	/** Repère à points à placer : c'est la figure dérivée de `CourbePlacer` qui compte au budget */
+	let toPlace = $derived(node.spec?.placer !== undefined);
+	let admitted = $derived(toPlace || (budget()?.admits(node) ?? true));
 	let computed = $derived.by(() => {
 		const spec = node.spec;
-		if (!spec || !admitted) return null;
+		if (!spec || !admitted || toPlace) return null;
 		return withinBudget(budget(), () => buildCourbeScene(spec, { locale: locale() }));
 	});
 	let overBudget = $derived(node.spec !== null && computed === null);
@@ -75,6 +99,7 @@
 	let shownErrors = $derived(overBudget ? [{ message: OVER_BUDGET_MESSAGE }] : node.errors);
 	let warnings = $derived([...node.warnings, ...(scene?.warnings ?? [])]);
 
+	let axisTitles = $derived(node.spec?.axisTitles);
 	let width = $derived(scene?.pixelSize.width ?? 0);
 	let height = $derived(scene?.pixelSize.height ?? 0);
 	/** Place sous le cadre pour les rangs u_k quand l'axe des abscisses est en bas */
@@ -109,7 +134,9 @@
 	}
 </script>
 
-{#if scene}
+{#if toPlace}
+	<CourbePlacer {node} {answers} {showErrors} {showControls} class={className} />
+{:else if scene}
 	<figure class="courbe-figure {className}">
 		<svg
 			role="img"
@@ -157,6 +184,26 @@
 					) + 3.5},{PAD - 5}"
 				/>
 			</g>
+
+			<!-- Titres des axes (`axes:`), au bout de chaque axe -->
+			{#if axisTitles?.x}
+				<text
+					class="courbe-titre-axe"
+					x={PAD + width}
+					y={sy(scene.axes.xAxisY) - 7}
+					text-anchor="end">{axisTitles.x}</text
+				>
+			{/if}
+			{#if axisTitles?.y}
+				<!-- Axe y dans la moitié droite (fenêtre toute négative) : titre à sa gauche, sinon il sort du cadre -->
+				{@const yAxisRight = sx(scene.axes.yAxisX) > PAD + width / 2}
+				<text
+					class="courbe-titre-axe"
+					x={sx(scene.axes.yAxisX) + (yAxisRight ? -8 : 8)}
+					y={PAD - 13}
+					text-anchor={yAxisRight ? 'end' : 'start'}>{axisTitles.y}</text
+				>
+			{/if}
 
 			<!-- Graduations -->
 			<g class="courbe-graduations" aria-hidden="true">
@@ -303,6 +350,25 @@
 				<text class="courbe-point-nom" x={sx(p.x) + 5} y={sy(p.y) - 5}>{p.name}</text>
 			{/each}
 
+			<!-- Points posés (repère à points à placer) -->
+			{#each marks as m, i (i)}
+				<circle
+					class="courbe-pose"
+					cx={sx(m.x)}
+					cy={sy(m.y)}
+					r="4.5"
+					style:fill={COLOR_VAR[m.color]}
+				/>
+				{#if m.name !== ''}
+					<text
+						class="courbe-pose-nom"
+						x={sx(m.x) + 7}
+						y={sy(m.y) - 7}
+						style:fill={COLOR_VAR[m.color]}>{m.name}</text
+					>
+				{/if}
+			{/each}
+
 			<!-- Noms des courbes -->
 			{#each scene.curveLabels as l, i (i)}
 				<text class="courbe-nom" x={sx(l.x) + 6} y={sy(l.y) - 6} style:fill={COLOR_VAR[l.color]}
@@ -442,6 +508,22 @@
 		fill: var(--color-foreground);
 		font-size: 12px;
 		font-style: italic;
+	}
+
+	.courbe-titre-axe {
+		fill: var(--color-foreground);
+		font-size: 11px;
+	}
+
+	.courbe-pose {
+		stroke: var(--color-background);
+		stroke-width: 1.25;
+	}
+
+	.courbe-pose-nom {
+		font-size: 13px;
+		font-style: italic;
+		font-weight: 600;
 	}
 
 	.courbe-nom {

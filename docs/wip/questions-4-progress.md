@@ -5,21 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 6 écrit, en PR._
+_Mis à jour le 2026-11-01, phase 0 du lot 8 proposée (§ 39)._
 
-- **État** : lots 1 à 5 en prod (lot 1 en brouillon, lots 2 à 5 publiés) ; lot 5 « Pythagore et triangles » (033, 034,
-  035, 036, 037, 072, 075) : 7/7 « OK » à la relecture, publiés par David, vérifié au MCP (§ 27).
-- **Prochaine action** : lot 6 (translations et volumes) écrit (§ 29), PR des fichiers à merger ; ensuite David lance
-  `create-questions --publier` (brouillons), puis migration nœud + tag. Les 2 modèles de volume attendent un `deploy:prod`
-  (bloc ` ```solide `) pour être publiés.
-- **En attente de David** : garder la sonde des figures comme outil (`sonde-figures.ts`, petite PR à
-  part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication des 7
-  brouillons du lot 1 ; revoir ou non les 14 bornes du cycle 4 qui ne reposent que sur un document 2019/2016 (§ 27).
-- **Pièges en cours** : `mtexte()` refusé dans une figure de question, invisible pour `question:specs` (§ 26) ;
-  90dca27a et acbd2280 (4-005) partiront en 3e ; `db:migrate` peut exiger `--include-all` : **réservé à David** (oublié
-  au lot 5, § 27) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un COMMIT, pas dans la PR ;
-  horodatages de migration : vérifier les PR ouvertes des autres sessions ; QCM = case choix.
-- **Worktree / branche** : `../ubumaths-wt-questions-4`, branche `feat/questions-4-lot-6`.
+- **État** : lots 1 à 7 en prod ; tous publiés sauf les 2 volumes du lot 6 (brouillons), débloqués : la prod v0.59.0
+  livre ` ```solide ` (et le repère à placer). Phase 0 du lot 8 écrite (§ 39).
+- **Prochaine action** : réponses de David au § 39.4, puis volumes du lot 6 (`publier-lot` sur un dossier avec 01 et
+  02 seulement) et écriture du lot 8 ; ensuite lot 9 « pensée informatique » (065-067).
+- **En attente de David** : les 4 questions du § 39.4 (modèles, catégories, repère à placer pour 063, volumes du lot 6).
+- **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
+  David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
+  `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
+  COMMIT ; QCM = case choix ; un grand nombre s'écrit `10\,000` dans une spec ; tests navigateur de la CI parfois
+  tombés (`wrapDynamicImport`) : relancer le job ; une borne qui ne repose que sur 2019/2016 : la signaler dans la
+  phase 0 du lot qui s'en sert (§ 36).
+- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -787,3 +786,209 @@ des modèles de volume déjà en base ; aucun niveau pris dans ces catégories, 
   points (sommets masqués) ; figures du 030 placées par le script (quadrillage 18 × 11, cas vérifiés : dans la fenêtre,
   disjoints, flèche à part) ; flèche A → D retirée du 032 (elle traversait le triangle) ; « π × 12 » rendu
   `unoptimal_form` (contrainte `products`), spec ajustée ; π s'écrit `\pi` dans un eval.
+
+## 30. Lot 6 : en prod, rangé (2026-11-01)
+
+- #2052 mergée (fichiers) ; David a lancé `create-questions --publier` depuis le worktree : 5 brouillons en [4], niveaux
+  et catégories justes. Identifiants : 6a770d04 (4-029), 35002b15 (4-076), 0150ef82 (4-030), c8306505 (4-031),
+  e7ef2835 (4-032).
+- #2054 mergée (migration `20261101120000_questions_4_lot6_rangement_tags` + test d'intégration : rouge sans elle 5/9,
+  vert avec 9/9 ; `security-auditor` : aucun finding bloquant). `db push` refusé (DbPushMissingRemoteError) : la session
+  5e avait joué `20261101120100` entre-temps. **David** a lancé `db push --include-all` (jouées : la mienne et
+  `20261101141500` de la session cm2, à sa demande). Vérifié au MCP : 5 modèles sur le nœud de leur point, un tag
+  chacun, `updated_at` inchangé, toujours en brouillon.
+- CI : deux jobs de tests navigateur tombés sans lien avec le lot (navigateur fermé, job annulé), relancés, verts.
+
+## 31. Lot 6 : page à cocher (2026-11-01)
+
+- Page à cocher : https://claude.ai/artifact/7Sg6YAf4QPCNUnSoFzFLTT (5 fiches, 23 exemples ; capacité `db`, base
+  `verdicts` vide à la publication).
+- Alertes : 4-029 et 4-076, « bloc solide non dessiné » (la page ne sait pas dessiner ` ```solide `) ; le rendu des
+  pyramides et du cône a été vu en local à 390 px (§ 29), pas encore en prod (bloc non livré).
+- Relecture : 5 verdicts lus en base, 5 « OK », aucun commentaire. `publier-lot` ne prend qu'un dossier entier : les 3
+  fichiers de translation copiés seuls dans un dossier du scratchpad, simulation (3 passent), lancé par David avec
+  `--publier` ; vérifié au MCP : 0150ef82, c8306505, e7ef2835 publiés ; 6a770d04 et 35002b15 toujours en brouillon.
+
+## 32. Lot 7 (puissances, racines, calcul littéral) : phase 0 (proposée le 2026-11-01)
+
+Lot 5 de l'ordre validé au § 5 bis (« puissances et calcul littéral ») ; la géométrie, passée devant, a pris les
+numéros 5 et 6. Les 2 volumes du lot 6 attendent toujours le `deploy:prod` qui livre ` ```solide ` (prod en v0.58.0).
+
+### 32.1 Relevé (MCP, 2026-11-01)
+
+- Points du lot, tous encore sans modèle : 017, 018, 020, 021, 023, 071. Voisins : 016 (2), 019 (4), 022 (2),
+  024 (12), 070 (6).
+- Nœuds : 017 → Puissances : calculs > produit de puissances ; 018 → Puissances : calculs ; 020 → Racines carrées :
+  sens et écritures > définition ; 021, 023 → Algèbre > Calcul littéral ; 071 → Équations : premier degré >
+  ax + b = cx + d. Aucun nœud à créer.
+- Catégories voisines : Puissances / Calculer / Puissance d'un produit 1 (2de, littéral `(kx)^n`) ; Puissances /
+  Problèmes / Notation scientifique 1 (3e) ; Racines carrées / Problèmes / Aire et côté 1 (3e) ; Calcul littéral /
+  Equations / Mettre en équation 1-2 (5e, ` ```choix `) ; Calcul littéral / Raisonner / Contre-exemple 1 (5e) ;
+  Calcul littéral / Produire une formule / Aires 1 (4e, lot 5).
+- Bornes : exposants entiers naturels (016-018) ; 017 `(ab)ⁿ = aⁿbⁿ` (accompagnement 2026 ; Repères 2019 : formules
+  « pas un attendu », contradiction déjà notée) ; 020 encadrement par deux entiers consécutifs (aire 20 → entre 4 et 5) ;
+  021 pair 2n, impair 2n + 1 ; 023 équivalence de programmes, somme de 3 consécutifs ; 071 coefficients entiers relatifs,
+  pas de x² ni de produit nul.
+
+### 32.2 Modèles proposés (6, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                               | Variations                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Réponse                                       |
+| ----- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| 017   | Puissance d'un produit (Puissances / Calculer / Puissance d'un produit, 2)               | a, b de 2 à 5, n de 2 à 6 : 1) `(3 × 4)^2 = 3^? × 4^?` ; 2) `2^5 × 3^5` en une seule puissance → `6^5` ; 3) calcul astucieux `2^4 × 5^4` → 10 000 (via `10^4`) ; 4) « `(2 × 3)^4` est égal à : `2^4 × 3^4` / `2 × 3^4` / `2^4 × 3` / `6^8` »                                                                                                                                                                                                                                             | case (puissance exigée en 2) · case choix     |
+| 018   | Problèmes avec des puissances (Puissances / Problèmes / Situations, 1)                   | 1) des bactéries doublent chaque heure : nombre après n heures (n de 3 à 10), écrit en puissance de 2 puis en valeur ; 2) chaîne de messages, chacun prévient 3 personnes : au tour n ; 3) cadenas à k molettes de 10 chiffres → `10^k` codes ; 4) cube d'arête `10^k` cm → volume `10^{3k}` cm³ ; 5) « quelle expression donne le nombre de … : `2^n` / `2n` / `n^2` »                                                                                                                  | case · case choix                             |
+| 020   | Encadrer une racine carrée (Racines carrées / Apprivoiser / Encadrer, 1)                 | n entier de 2 à 143, pas un carré : 1) `? < √n < ?` (deux entiers consécutifs) ; 2) carré d'aire n cm² : son côté est compris entre ? et ? cm ; 3) « `√20` est compris entre : 4 et 5 / 10 et 11 / 19 et 21 / 2 et 3 » (la moitié, les voisins de n)                                                                                                                                                                                                                                     | case (2 trous) · case choix                   |
+| 021   | Pairs et impairs (Calcul littéral / Produire une formule / Pairs et impairs, 1)          | n entier : 1) « quelle expression est toujours paire : 2n / n + 2 / n² / 2n + 1 » ; 2) idem impaire ; 3) le nombre pair qui suit 2n → `2n+2` ; 4) l'impair qui suit 2n + 1 → `2n+3` ; 5) tester la vraisemblance : « Tom dit que n + 1 est toujours impair ; pour n = 3 ? » → Tom a tort (case choix)                                                                                                                                                                                    | case choix · case (expression égale acceptée) |
+| 023   | Démontrer avec le calcul littéral (Calcul littéral / Raisonner / Démontrer, 1)           | 1) `n + (n+1) + (n+2)` réduit → `3n+3` ; 2) « quelle écriture prouve que cette somme est un multiple de 3 : `3(n+1)` / `3n+1` / `n^3+3` / `3+n` » ; 3) programmes A (ajouter a, multiplier par k, soustraire k·a) et B (multiplier par k) : résultat de A réduit → `kx`, puis « que conclure : toujours le même résultat / seulement pour x = … / jamais » ; 4) deux pairs 2n + 2m = 2(n + m) ; 5) « lequel est une démonstration : essai sur 3 exemples / calcul littéral pour tout n » | case (expression) · case choix                |
+| 071   | Mettre en équation ax + b = cx + d (Calcul littéral / Equations / Mettre en équation, 3) | solution entière positive tirée d'abord : 1) deux tarifs (abonnement b + a € la séance, ou c € la séance) : quelle équation donne l'égalité des prix ? ; 2) idem, combien de séances ? ; 3) nombre mystère (« × a + b » donne autant que « × c + d ») : équation puis nombre ; 4) deux réservoirs (b L + a L/min, d L + c L/min) : au bout de combien de minutes le même volume ?                                                                                                        | case choix (équation) · case (solution)       |
+
+- `testSpecs` d'erreurs typiques : 017 → `6^8` (exposants ajoutés), `2 × 3^4` ; 018 → `2n`, `n^2` ; 020 → moitié de n,
+  bornes inversées, √n arrondi seul ; 021 → `n+2` pair ; 023 → `3n+1` ; 071 → `ax = cx + b`, solution d'une autre équation.
+- À vérifier à l'écriture : 017 v2 refuse 7 776 quand la puissance est demandée (forme exigée) ; 021 et 023 acceptent
+  toute expression égale (`2(n+1)` pour `2n+2`) ; 020 deux trous ordonnés.
+
+### 32.3 Question d'accès
+
+Comme les lots précédents : brouillons, puis migration nœud + tag ; **personne** ne gagne d'accès. À la publication,
+les élèves de 4e voient 6 modèles de plus.
+
+### 32.4 Questions à David
+
+1. Valider les 6 modèles du § 32.2 ?
+2. Catégories : Puissances / Calculer / Puissance d'un produit **2** (le 1 est le modèle littéral de 2de) ; neuves :
+   Puissances / Problèmes / Situations 1, Racines carrées / Apprivoiser / Encadrer 1, Calcul littéral / Produire une
+   formule / Pairs et impairs 1, Calcul littéral / Raisonner / Démontrer 1 ; Calcul littéral / Equations / Mettre en
+   équation **3** (après les 1-2 de 5e) ?
+3. 017 : exiger la forme puissance quand la consigne la demande (reco : oui, la valeur seule va au corrigé) ?
+
+**Décisions de David (2026-11-01, « je suis tes recos »)** : les 6 modèles du § 32.2 ; catégories Puissances / Calculer
+/ Puissance d'un produit 2, Puissances / Problèmes / Situations 1, Racines carrées / Apprivoiser / Encadrer 1, Calcul
+littéral / Produire une formule / Pairs et impairs 1, Calcul littéral / Raisonner / Démontrer 1, Calcul littéral /
+Equations / Mettre en équation 3 ; 017 : forme puissance exigée quand la consigne la demande.
+
+## 33. Lot 7 : écrit (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-7`, #2089)
+
+- Script `docs/wip/questions/lot-4-7.py` → `scripts/questions/4-lot-7/` (6 fichiers). `question:specs` : 69 specs
+  vertes, tous les tirages réussis ; `create-questions` (simulation, prod) : 6 « à créer ».
+- Base locale : 6 brouillons créés ; **aperçu admin non joué** (Chrome n'ouvrait pas la page, deux essais) : rendu à
+  voir dans la page à cocher.
+- Ajustements à l'écriture : 7 776 au lieu de `6^5` → `bad_form` avec la violation `form` ; `10000` sans espace →
+  `unoptimal_form`, spec écrite `10\,000` ; variations à réponse libre sans `?` dans l'énoncé → « Blank count
+  mismatch » (case ajoutée : « Le nombre pair suivant est $?$. »…) ; `form` et `products` coupées pour 021 et 023
+  (`2(n+1)`, `3(n+1)` acceptés).
+- CI : job « Client Tests (browser, shard 1/2) » tombé (`wrapDynamicImport`, 54 fichiers non chargés, 1 844 tests
+  verts), relancé, vert ; mergée.
+
+## 34. Lot 7 : en prod, rangé, page à cocher (2026-11-01)
+
+- David a lancé `create-questions --publier` : 6 brouillons en [4], niveaux et catégories justes (MCP). Identifiants :
+  2e9b26b0 (4-017), 0fe6015f (4-018), 207d451a (4-020), 9a06de2e (4-021), 43c4f21f (4-023), 5e2db3d1 (4-071).
+- #2098 : migration `20261101170000_questions_4_lot7_rangement_tags` + test d'intégration (rouge sans elle : 3 échecs,
+  4 non joués ; vert avec : 9/9) ; `security-auditor` : aucun finding bloquant. CI d'abord rouge : la branche portait
+  deux migrations d'autres sessions au même horodatage (`20261101141600`, corrigé sur `main` par #2093) → rebase sur
+  `origin/main`, CI verte, mergée.
+- `db push` : la mienne était plus ancienne que `20261101180000` déjà jouée → `--include-all` nécessaire. Les sessions
+  questions-1spe et questions-ce1, bloquées derrière, m'ont demandé de le lancer (décision du 2026-10-27 en mémoire) ;
+  refusé, ce journal le réserve à David. **David** l'a lancé : jouées 170000 (la mienne), 183000 (questions-3), 190000
+  (questions-1spe), 190100 (questions-ce1). Vérifié au MCP : 6 modèles sur le nœud de leur point, un tag chacun,
+  `updated_at` inchangé, toujours en brouillon.
+- Page à cocher : https://claude.ai/artifact/4RgNcVwHUsdXQAjFSWMSEs (6 fiches, 27 exemples ; capacité `db`, base
+  `verdicts` vide à la publication). Alerte : homonyme « Puissance d'un produit » de 2de (04b1cc7f, niveau 1) écarté,
+  c'est voulu (le nôtre est le niveau 2).
+
+## 35. Lot 7 : relecture et publication (2026-11-01)
+
+- Verdicts lus en base : 6 documents, 6 « OK », aucun commentaire.
+- `publier-lot` en simulation (6 passent), lancé par David avec `--publier` : 6/6 publiés ; vérifié au MCP.
+
+## 36. Décisions de David (2026-11-01, « je suis tes recos »)
+
+1. **Sonde des figures** : gardée comme outil → `scripts/questions/sonde-figures.ts` (calquée sur `sonde-courbes.ts`),
+   ligne dans la démarche (`couvrir-un-niveau.md` § 5 : lot qui dessine des figures → sonde, 0 problème avant la page à
+   cocher) ; petite PR sans revue.
+2. **Lot 1** : page à cocher d'abord (jamais relu sur une page : elle n'existait pas au lot 1), puis publication par
+   `publier-lot`.
+3. **14 bornes 2019/2016 seules** : pas de revue en bloc ; chacune est signalée dans la phase 0 du lot qui s'en sert,
+   David tranche alors. Question retirée de « En attente ».
+4. Ordre : page à cocher du lot 1, PR de la sonde, phase 0 du lot 8.
+
+## 37. Lot 1 : page à cocher (2026-11-01)
+
+- `page-a-cocher.ts --dir scripts/questions/4-lot-1` (base prod, lecture seule) : 7 fiches, toutes `draft`, toutes
+  appariées. Une alerte : homonyme 93998734 (niveau 3) écarté pour « Problèmes avec des fractions » ; la fiche garde
+  05818fa0 (4-014, brouillon de 4e) : c'est le bon modèle.
+- Publiée en artefact (capacité `db`) : https://claude.ai/artifact/5HUE7dJZTSixHHZgC85tAN ; collection `verdicts`
+  vide à la publication.
+
+## 38. Lot 1 : publication bloquée par un niveau, sonde des figures (2026-11-01)
+
+- Verdicts lus en base : 7 documents, 7 « OK », aucun commentaire.
+- `publier-lot` en simulation : 6 passent, a635df43 « Fraction d'une fraction » refusé (niveau 5 de Fractions /
+  Calculer / Fraction d'une quantité pris par ece43e92, publié 6e ; niveaux 1 à 6 pris, relevé MCP). Question d'accès
+  posée avant le SQL, David : personne. Migration `20261101193000_questions_4_lot1_niveau` (5 → 7, calquée sur
+  `20261101190000_questions_1spe_derivation_niveau`), fichier 04 et `lot-4-1.py` au niveau 7 ; test d'intégration
+  6/6, rouge sans la migration (update neutralisé), restaurée d'une copie ; `security-auditor` : aucun finding
+  bloquant. #2109 mergée (CI verte).
+- `db:migrate` : depuis le worktree, `ProjectRefNotLinkedError` (seul le dépôt principal est lié) ; depuis le dépôt
+  principal, refusé : `20261101190200_questions_6_lot7_rangement_tags` (f2f01570e, session questions-6) a la même
+  version que `questions_5_lot6_rangement_tags`, déjà jouée → `duplicate key schema_migrations_pkey`. Rien de joué
+  (MCP : dernière version 20261101190200 = 5_lot6 ; a635df43 encore au niveau 5). Signalé à David.
+- Sonde des figures : `scripts/questions/sonde-figures.ts` + ligne au § 5 de `couvrir-un-niveau.md` (#2108, mergée,
+  sans revue) ; lot 6 : 0 problème (787 blocs) ; copie cassée : 1 problème, sortie 1.
+- Collision réglée par la session questions-6 (#2114, migration renommée `20261101200700`) ; son `db:migrate` a joué
+  aussi la nôtre (`20261101193000`). Vérifié au MCP : a635df43 au niveau 7, brouillon, `updated_at` inchangé
+  (2026-10-28), les 3 triggers actifs. `publier-lot` en simulation : 7 brouillons passent.
+- `publier-lot --publier` lancé par David : 7/7 publiés ; vérifié au MCP (7 `published`, a635df43 au niveau 7).
+
+## 39. Lot 8 (programmes de calcul et fonctions) : phase 0 (proposée le 2026-11-01)
+
+Lot 6 de l'ordre validé au § 5 bis ; numéroté 8 (la géométrie, passée devant, a pris 5 et 6). Prod en v0.59.0 : elle
+livre le repère à placer (` ```courbe ` + `placer:`, titres `axes:`, #2096) et ` ```solide ` → les 2 volumes du lot 6
+peuvent être publiés.
+
+### 39.1 Relevé (MCP, 2026-11-01)
+
+- Points du lot, tous sans modèle : 060, 081, 061, 062, 063, 064 ; tous sur le nœud Fonctions > Généralités sur les
+  fonctions. Aucun nœud à créer.
+- Voisins : 5-117 (programme traduit en **une expression numérique**, prévu par la session 5e, lot « Traduire en une
+  expression ») ; 5-092 à 5-098, 5-142, 5-143 (sans modèle) ; 3-039 (1 modèle : 6ad254b4 « Formule, tableau de
+  valeurs, courbe », Fonctions / Généralités / Représentations 1, notation `f(x)`) ; 4-021, 4-075 (Calcul littéral /
+  Produire une formule, lot 7 et lot 5).
+- Catégories : Fonctions / Généralités / Image et antécédent 1, Représentations 1 (3e), Lecture graphique 1-3 (2de) ;
+  aucune « Programmes de calcul », aucune « Dépendance ». Calcul littéral / Écrire / Formules 1-3 (5e).
+- Bornes (BO c4 p. 18-19 et décision de David du 2026-10-18, aucune ne repose sur 2019/2016 seuls) : 060 nombre
+  « simple » ; 061 programme « simple » ; 062, 063, 064, 081 : notation `A(c)`, `p(t)` permise dans l'énoncé, jamais
+  exigée dans la réponse ; **ni « image », ni « antécédent », ni `f : x ↦`** (3e). Double distributivité : 3e →
+  aucun programme qui demande de développer `(x + a)(x + b)` ou `(x + a)²`.
+
+### 39.2 Modèles proposés (6, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                              | Variations                                                                                                                                                                                                                                                                                                                                                                                                               | Réponse                                       |
+| ----- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| 060   | Appliquer un programme de calcul (Fonctions / Programmes de calcul / Appliquer, 1)      | 1) 3 étapes (× a, + b, × c) à un entier relatif de −10 à 10 ; 2) avec un carré (+ a, élever au carré, − b), départ de −6 à 6 ; 3) 4 étapes à un décimal simple (2,5 ; −1,5) ; 4) deux programmes A et B au même nombre : « lequel donne le plus grand résultat : A / B / les deux le même »                                                                                                                              | case · case choix                             |
+| 081   | Programme de calcul et lettre (Fonctions / Programmes de calcul / Appliquer, 2)         | départ x : 1) (× a, + b, × c) → toute expression égale à `c(ax+b)` ; 2) même programme, « développée et réduite » → `acx+bc` (forme exigée) ; 3) « quelle expression traduit le programme : `c(ax+b)` / `cax+b` / `ax+bc` / `a(x+b)c` » ; 4) (+ a, × b, − le nombre de départ) → `(b−1)x+ab` réduite                                                                                                                     | case (expression) · case choix                |
+| 061   | Remonter un programme de calcul (Fonctions / Programmes de calcul / Remonter, 1)        | départ entier relatif tiré d'abord : 1) 2 étapes (× a, + b), résultat donné → départ ; 2) 3 étapes (+ a, × b, − c) ; 3) « pour remonter, la première chose à faire est : soustraire b / diviser par a / ajouter b / multiplier par a » ; 4) « Léa trouve r ; quel nombre a-t-elle choisi ? » (programme avec division : ÷ a puis − b)                                                                                    | case · case choix                             |
+| 062   | Produire une formule (Fonctions / Dépendance / Formule, 1)                              | 1) taxi : prise en charge b €, a € par km : `P(d) = ?` → `b+ad` ; 2) rectangle de largeur x, longueur x + a : aire → `x(x+a)` (développée acceptée) ; 3) même forme : périmètre → `4x+2a` ; 4) réservoir de V L qui perd a L par minute : volume après t min → `V−at` ; 5) « quelle formule donne le prix de n places à a € avec b € de frais fixes : `an+b` / `(a+b)n` / `a+bn` / `abn` »                               | case (expression égale acceptée) · case choix |
+| 063   | Représenter une grandeur par un graphique (Fonctions / Dépendance / Graphique, 1)       | ` ```courbe ` + `placer:`, titres d'axes : 1) formule `P(n) = an + b` : place les points pour n = 0, 1, 2, 3 ; 2) tableau de valeurs donné (distance, temps) : place les 4 points ; 3) aire d'un carré de côté c : place c = 0..3 (pas une droite) ; 4) « quel graphique représente le prix en fonction de n » : 4 ` ```courbe ` (la bonne, pente et ordonnée à l'origine échangées, droite par l'origine, décroissante) | repère à placer · case choix                  |
+| 064   | Formule, tableau, graphique (Fonctions / Dépendance / Formule, tableau et graphique, 1) | même dépendance sous trois formes, contextes concrets : 1) formule → compléter un tableau (2 cases) ; 2) graphique → lire la valeur de la grandeur pour t donné ; 3) tableau → « quelle formule » (case choix) ; 4) formule → « quel tableau » (case choix, 4 tableaux) ; 5) « d'après le graphique, la grandeur augmente-t-elle quand t augmente : oui / non / ça dépend »                                              | case · case choix                             |
+
+- `testSpecs` d'erreurs typiques : 060 → `−3² = −9`, étape oubliée ; 081 → `cax+b` (priorité), `ax+bc` ; 061 →
+  opérations remontées dans le mauvais ordre, ou sans inverser ; 062 → `(a+b)d`, `2x+a` ; 063 → abscisse et ordonnée
+  échangées (phrase du juge) ; 064 → valeur lue pour la mauvaise grandeur.
+- Distinct du 3e 6ad254b4 : pas de `f(x)`, grandeurs concrètes et notation `P(n)` dans l'énoncé seulement ; distinct
+  de 5-117 : 081 travaille avec la lettre.
+- Sonde des courbes (`sonde-courbes.ts`) avant la page à cocher (063, 064 dessinent des ` ```courbe `).
+
+### 39.3 Question d'accès
+
+Comme les lots précédents : brouillons, puis migration nœud + tag ; **personne** ne gagne d'accès. À la
+publication, les élèves de 4e voient 6 modèles de plus.
+
+### 39.4 Questions à David
+
+1. Valider les 6 modèles du § 39.2 ?
+2. Catégories neuves : Fonctions / Programmes de calcul / Appliquer 1 (060) et 2 (081), Remonter 1 (061) ; Fonctions /
+   Dépendance / Formule 1 (062), Graphique 1 (063), Formule, tableau et graphique 1 (064) ?
+3. 063 : se servir du repère à placer (en prod depuis v0.59.0) plutôt que d'un seul QCM de graphiques (reco : oui,
+   c'est « représenter » pour de vrai) ?
+4. Lot 6 : publier les 2 volumes maintenant que ` ```solide ` est en prod (`publier-lot` sur un dossier avec 01 et 02
+   seulement), avant d'écrire le lot 8 (reco : oui) ?

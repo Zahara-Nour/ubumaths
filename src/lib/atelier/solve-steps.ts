@@ -85,9 +85,6 @@ const CONCLUSIONS: ReadonlySet<string> = new Set([
 	// est versé au lot mathAST.
 ]);
 
-/** Des lettres qui ne sont pas des paramètres : e (Euler), i, π. */
-const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
-
 /**
  * Ce qu'une résolution donne à afficher : la réponse pour la ligne, les étapes
  * pour le dépliage.
@@ -233,9 +230,7 @@ export function solveSteps(
 		// Une autre lettre que l'inconnue (`b*x+5=14`, ou `3 = 2t` résolue en x) :
 		// équation à paramètre, repli sur le moteur (L3)
 		// `x_1` est une autre lettre que x (`variablesOf`) : une équation à paramètre
-		const others = [...variablesOf(node, undefined)].filter(
-			(name) => name !== variable && !CONSTANT_NAMES.has(name)
-		);
+		const others = [...variablesOf(node, undefined)].filter((name) => name !== variable);
 		if (others.length > 0) return null;
 
 		const typedRelation: RelationNode = node;

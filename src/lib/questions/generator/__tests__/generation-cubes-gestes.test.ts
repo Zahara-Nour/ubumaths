@@ -1,6 +1,6 @@
 /**
  * Question à assemblage de cubes à geste (` ```cubes ` + `dessiner:` /
- * `retrouver:`, chantier `solides`, `docs/wip/solides-progress.md` § 7)
+ * `retrouver:`, chantier `solides`, `docs/archive/wip/solides-progress.md` § 7)
  *
  * Même patron que la figure à colorier : le bloc compte pour une case ; sa
  * réponse attendue est lue du bloc, jamais écrite dans le modèle ; la réponse de

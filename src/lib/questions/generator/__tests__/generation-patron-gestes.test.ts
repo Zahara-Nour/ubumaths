@@ -1,6 +1,6 @@
 /**
  * Question à patron à geste (` ```patron ` + `designer:` / `completer:`,
- * chantier `solides`, `docs/wip/solides-progress.md` § 10)
+ * chantier `solides`, `docs/archive/wip/solides-progress.md` § 10)
  *
  * Même patron que l'assemblage de cubes à geste : le bloc compte pour une case ;
  * sa réponse attendue est lue du bloc (calculée par le pliage), jamais écrite

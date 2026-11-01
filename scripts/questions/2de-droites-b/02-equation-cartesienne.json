@@ -1,0 +1,329 @@
+{
+	"title": "Équation cartésienne d'une droite",
+	"description": "Point sur une droite ax + by + c = 0 ? ; c pour qu'un point soit sur la droite ; équation cartésienne tirée d'une réduite, pente entière ou fractionnaire (pièges : coordonnées échangées, signe de c, membre droit non nul)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Équations de droites",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère du plan, la droite $d$ a pour équation ${{a}}x{{b;+}}y{{c;+}}=0$.\n\nLe point $M({{xm}}\\,;\\,{{ym}})$ appartient-il à la droite $d$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "xm",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "ym",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "c",
+					"expression": "eval:-((a)*(xm)+(b)*(ym))+(1-(w))*(s)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(w)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$M$ appartient à $d$ si et seulement si ses coordonnées vérifient l'équation : on remplace $x$ par ${{xm}}$ et $y$ par ${{ym}}$.",
+					"$${{a}}\\times{{xm;()}}{{b;+}}\\times{{ym;()}}{{c;+}}={{eval:(a)*(xm)+(b)*(ym)+(c)}}$$",
+					"{{if:w==1|On trouve $0$ : **$M$ appartient à $d$**.|On ne trouve pas $0$ : **$M$ n'appartient pas à $d$**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, on considère la droite $d$ d'équation ${{a}}x{{b;+}}y+c=0$, où $c$ est un nombre réel.\n\nDétermine $c$ pour que le point $M({{xm}}\\,;\\,{{ym}})$ appartienne à $d$.\n\n$c=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "xm",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "ym",
+					"expression": "-5..5!0"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-((a)*(xm)+(b)*(ym))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$M$ appartient à $d$ si et seulement si ses coordonnées vérifient l'équation :",
+					"$${{a}}\\times{{xm;()}}{{b;+}}\\times{{ym;()}}+c=0\\quad\\text{soit}\\quad{{eval:(a)*(xm)+(b)*(ym)}}+c=0$$",
+					"donc $c=\\textcolor{{{color:primary.0}}}{{{eval:-((a)*(xm)+(b)*(ym))}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, la droite $d$ a pour équation $y={{m}}x{{p;+}}$.\n\nDonne une **équation cartésienne** de la droite $d$.\n\n$?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}x-y{{p;+}}=0",
+					"answerKind": "equation",
+					"requiredForm": "cartesienne"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une équation cartésienne s'écrit $ax+by+c=0$ : on passe tous les termes dans le même membre.",
+					"$$y={{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{m}}x}}{{if:m< -1|{{m}}x}}{{if:p>0|+{{p}}}}{{if:p< 0|{{p}}}}\\iff\\textcolor{{{color:primary.0}}}{{{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{m}}x}}{{if:m< -1|{{m}}x}}-y{{if:p>0|+{{p}}}}{{if:p< 0|{{p}}}}=0}$$",
+					"Toute équation proportionnelle est aussi juste, par exemple ${{eval:-(m)}}x+y{{eval:-(p);+}}=0$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, la droite $d$ a pour équation $y={{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{ {{q}} }x{{p;+}}$.\n\nDonne une **équation cartésienne** de la droite $d$.\n\n$?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "n",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "qp",
+					"expression": "eval:(q)*(p)"
+				}
+			],
+			"conditions": ["mod(n, q) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}x{{eval:-(q);+}}y{{eval:(q)*(p);+}}=0",
+					"answerKind": "equation",
+					"requiredForm": "cartesienne"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie les deux membres par ${{q}}$, puis on passe tous les termes dans le même membre :",
+					"$${{q}}y={{if:n==1|x}}{{if:n==-1|-x}}{{if:n>1|{{n}}x}}{{if:n< -1|{{n}}x}}{{if:qp>0|+{{qp}}}}{{if:qp< 0|{{qp}}}}\\iff\\textcolor{{{color:primary.0}}}{{{if:n==1|x}}{{if:n==-1|-x}}{{if:n>1|{{n}}x}}{{if:n< -1|{{n}}x}}-{{q}}y{{if:qp>0|+{{qp}}}}{{if:qp< 0|{{qp}}}}=0}$$",
+					"Toute équation proportionnelle est aussi juste."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "M(3 ; 4) sur 2x − 3y + 6 = 0 : « Oui »",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"xm": "3",
+				"ym": "4",
+				"w": "1",
+				"s": "1",
+				"c": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2x − 3y + 8 = 0 : « Non »",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"xm": "3",
+				"ym": "4",
+				"w": "0",
+				"s": "2",
+				"c": "8"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "« Oui » faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"xm": "3",
+				"ym": "4",
+				"w": "0",
+				"s": "2",
+				"c": "8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x − 3y + c = 0, M(1 ; −2) → −8",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"xm": "1",
+				"ym": "-2"
+			},
+			"answers": ["-8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe (8)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"xm": "1",
+				"ym": "-2"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = 3x − 2 → 3x − y − 2 = 0",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"p": "-2"
+			},
+			"answers": ["3x-y-2=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Proportionnelle −3x + y + 2 = 0",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"p": "-2"
+			},
+			"answers": ["-3x+y+2=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme réduite refusée",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"p": "-2"
+			},
+			"answers": ["y=3x-2"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Membre droit non nul refusé",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"p": "-2"
+			},
+			"answers": ["3x-y=2"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : signe de c (3x − y + 2 = 0)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"p": "-2"
+			},
+			"answers": ["3x-y+2=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = 2/3 x + 1 → 2x − 3y + 3 = 0",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"n": "2",
+				"p": "1"
+			},
+			"answers": ["2x-3y+3=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p non multiplié (2x − 3y + 1 = 0)",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"n": "2",
+				"p": "1"
+			},
+			"answers": ["2x-3y+1=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

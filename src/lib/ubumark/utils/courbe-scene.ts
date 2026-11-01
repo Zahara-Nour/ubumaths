@@ -135,6 +135,15 @@ export const COURBE_PIXEL_WIDTH: Record<CourbeSize, number> = {
 
 const ASPECT_RATIO = 3 / 4;
 
+/** Marge autour du cadre à l'écran, en px, pour les graduations et les titres d'axes */
+export const COURBE_PAD = 26;
+
+/** Cadre de la figure à l'écran, en px (la fenêtre de l'auteur le remplit) */
+export function courbeFrame(size: CourbeSize): { width: number; height: number } {
+	const width = COURBE_PIXEL_WIDTH[size] ?? COURBE_PIXEL_WIDTH.moyenne;
+	return { width, height: width * ASPECT_RATIO };
+}
+
 /** Écart visé entre deux lignes de grille automatiques, en px */
 const AUTO_GRID_TARGET_PX = 40;
 
@@ -210,6 +219,28 @@ function piTickLabel(k: number, ratio: { p: number; q: number }): string {
 	const n = Math.abs(num);
 	const head = n === 1 ? 'π' : `${n}π`;
 	return den === 1 ? `${sign}${head}` : `${sign}${head}/${den}`;
+}
+
+/**
+ * Pas de la grille, par axe : `grille:` de l'auteur, sinon le pas automatique,
+ * calculé sur la taille FIXE de la figure (jamais sur sa largeur à l'écran) :
+ * les nœuds où l'élève pose ses points (`placer:`) sont les mêmes partout.
+ */
+export function courbeGridSteps(spec: Pick<CourbeSpec, 'window' | 'grid' | 'size'>): {
+	x: number;
+	y: number;
+} {
+	const width = COURBE_PIXEL_WIDTH[spec.size] ?? COURBE_PIXEL_WIDTH.moyenne;
+	const height = width * ASPECT_RATIO;
+	const w = spec.window;
+	return {
+		x:
+			spec.grid?.x ??
+			computeGridStep(width / (w.xMax - w.xMin), { targetPx: AUTO_GRID_TARGET_PX }).major,
+		y:
+			spec.grid?.y ??
+			computeGridStep(height / (w.yMax - w.yMin), { targetPx: AUTO_GRID_TARGET_PX }).major
+	};
 }
 
 /** Multiples entiers du pas compris dans [min ; max] (aussi la grille du bloc ```figure) */
@@ -573,12 +604,7 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 	const warnings: CourbeIssue[] = [];
 
 	// Grille : donnée par l'auteur, sinon calculée par axe (repère anisotrope).
-	const xStep =
-		spec.grid?.x ??
-		computeGridStep(width / (w.xMax - w.xMin), { targetPx: AUTO_GRID_TARGET_PX }).major;
-	const yStep =
-		spec.grid?.y ??
-		computeGridStep(height / (w.yMax - w.yMin), { targetPx: AUTO_GRID_TARGET_PX }).major;
+	const { x: xStep, y: yStep } = courbeGridSteps(spec);
 	const xs = multiples(xStep, w.xMin, w.xMax);
 	const ys = multiples(yStep, w.yMin, w.yMax);
 

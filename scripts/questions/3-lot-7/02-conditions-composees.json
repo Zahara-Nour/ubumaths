@@ -1,0 +1,287 @@
+{
+	"title": "Conditions composées",
+	"description": "Lire une condition composée avec « et » ou « ou » dans un programme Scratch : ce que dit le programme selon les valeurs, traduire « strictement compris entre »",
+	"grades": ["3"],
+	"theme": "Algorithmique",
+	"domain": "Variables et instructions",
+	"subdomain": "Instructions conditionnelles",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Que dit ce programme ?\n\n```scratch\nmettre [x v] à ({{x}})\nsi <<(x) > [{{p}}]> et <(x) < [{{q}}]>> alors\ndire [Oui]\nsinon\ndire [Non]\nfin\n```\n\n````choix\n- « {{if:x>p and x<q|Oui|Non}} »\n- « {{if:x>p and x<q|Non|Oui}} »\n````",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+5"
+				},
+				{
+					"name": "dx",
+					"expression": "-2..7"
+				},
+				{
+					"name": "x",
+					"expression": "eval:p+dx"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une condition « … **et** … » est vraie seulement si **les deux** conditions sont vraies.",
+					"$x = {{x}}$ : « $x > {{p}}$ » est {{if:x>p|vraie|fausse}} ; « $x < {{q}}$ » est {{if:x<q|vraie|fausse}}.",
+					"La condition composée est donc {{if:x>p and x<q|vraie|fausse}} : le programme dit **« {{if:x>p and x<q|Oui|Non}} »**."
+				]
+			}
+		},
+		{
+			"statement": "Que dit ce programme ?\n\n```scratch\nmettre [x v] à ({{x}})\nsi <<(x) < [{{p}}]> ou <(x) > [{{q}}]>> alors\ndire [Oui]\nsinon\ndire [Non]\nfin\n```\n\n````choix\n- « {{if:x<p or x>q|Oui|Non}} »\n- « {{if:x<p or x>q|Non|Oui}} »\n````",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+5"
+				},
+				{
+					"name": "dx",
+					"expression": "-2..7"
+				},
+				{
+					"name": "x",
+					"expression": "eval:p+dx"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une condition « … **ou** … » est vraie dès qu'**au moins une** des deux conditions est vraie.",
+					"$x = {{x}}$ : « $x < {{p}}$ » est {{if:x<p|vraie|fausse}} ; « $x > {{q}}$ » est {{if:x>q|vraie|fausse}}.",
+					"La condition composée est donc {{if:x<p or x>q|vraie|fausse}} : le programme dit **« {{if:x<p or x>q|Oui|Non}} »**."
+				]
+			}
+		},
+		{
+			"statement": "Ce programme décide si un enfant peut monter dans un manège.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Quel est ton âge ?] et attendre\nmettre [âge v] à (réponse)\ndemander [Quelle est ta taille en cm ?] et attendre\nmettre [taille v] à (réponse)\nsi <<(âge) > [{{A}}]> et <(taille) > [{{T}}]>> alors\ndire [Tu peux monter]\nsinon\ndire [Pas encore]\nfin\n```\n\nUn enfant saisit ${{a}}$ pour son âge et ${{t}}$ pour sa taille. Que dit le programme ?\n\n````choix\n- « {{if:a>A and t>T|Tu peux monter|Pas encore}} »\n- « {{if:a>A and t>T|Pas encore|Tu peux monter}} »\n````",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "7..10"
+				},
+				{
+					"name": "T",
+					"expression": "120..140"
+				},
+				{
+					"name": "a",
+					"expression": "6..13"
+				},
+				{
+					"name": "dt",
+					"expression": "-12..12"
+				},
+				{
+					"name": "t",
+					"expression": "eval:T+dt"
+				}
+			],
+			"conditions": ["dt!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il faut **les deux** : âge $> {{A}}$ **et** taille $> {{T}}$.",
+					"Âge ${{a}}$ : « ${{a}} > {{A}}$ » est {{if:a>A|vraie|fausse}} ; taille ${{t}}$ : « ${{t}} > {{T}}$ » est {{if:t>T|vraie|fausse}}.",
+					"Le programme dit **« {{if:a>A and t>T|Tu peux monter|Pas encore}} »**."
+				]
+			}
+		},
+		{
+			"statement": "Quelle condition est vraie exactement quand $x$ est **strictement compris** entre ${{p}}$ et ${{q}}$ ?\n\n````choix\n- ```scratch\n  <<(x) > [{{p}}]> et <(x) < [{{q}}]>>\n  ```\n- ```scratch\n  <<(x) > [{{p}}]> ou <(x) < [{{q}}]>>\n  ```\n- ```scratch\n  <<(x) < [{{p}}]> et <(x) > [{{q}}]>>\n  ```\n- ```scratch\n  <<(x) < [{{p}}]> ou <(x) > [{{q}}]>>\n  ```\n````",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "dq",
+					"expression": "3..9"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+dq"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« $x$ est strictement compris entre ${{p}}$ et ${{q}}$ » signifie : $x > {{p}}$ **et** $x < {{q}}$ (les deux à la fois).",
+					"Avec « ou », $x = {{eval:q+5}}$ conviendrait (car ${{eval:q+5}} > {{p}}$) : la condition serait vraie pour tous les nombres.",
+					"La bonne condition : **(x > {{p}}) et (x < {{q}})**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "et, x dedans : Oui",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"dx": "2",
+				"x": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : et lu ou (x = 10)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"dx": "7",
+				"x": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : borne incluse (x = 3)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"dx": "0",
+				"x": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ou, x dehors : Oui",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"dx": "7",
+				"x": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ou lu et (x = 10)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"dx": "7",
+				"x": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Manège : 12 ans, 130 cm, seuils 8 et 135 → Pas encore",
+			"variationIndex": 2,
+			"variables": {
+				"A": "8",
+				"T": "135",
+				"a": "12",
+				"dt": "-5",
+				"t": "130"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une seule condition suffit",
+			"variationIndex": 2,
+			"variables": {
+				"A": "8",
+				"T": "135",
+				"a": "12",
+				"dt": "-5",
+				"t": "130"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Traduire : (x > p) et (x < q)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3",
+				"dq": "5",
+				"q": "8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ou à la place de et",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3",
+				"dq": "5",
+				"q": "8"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bornes inversées",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3",
+				"dq": "5",
+				"q": "8"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

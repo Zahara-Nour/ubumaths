@@ -1,6 +1,6 @@
 /**
  * Bloc ```patron + `designer:` / `completer:` — analyse, réponses et jugement
- * (spécification : `docs/wip/solides-progress.md` § 10)
+ * (spécification : `docs/archive/wip/solides-progress.md` § 10)
  */
 
 import { describe, expect, it } from 'vitest';

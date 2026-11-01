@@ -155,13 +155,14 @@ describe('Monnaie à construire — le geste (Q1, Q2)', () => {
 		expect(plan(root).getAttribute('aria-label') ?? '').not.toMatch(/\d/);
 	});
 
-	it('plafond : au-delà de 100 €, le bouton se grise', async () => {
+	it('plafond : au-delà de 1 000 €, le bouton se grise', async () => {
 		const screen = await render(Monnaie, {
 			target: mainElement(),
 			props: { node: node('construire: 35') }
 		});
 		const root = screen.container;
-		await userEvent.click(button(root, 'Ajouter un billet de 50 €'));
+		// 19 × 50 + 2 × 20 = 990 € : 20 € de plus passerait 1 000 €
+		for (let i = 0; i < 19; i++) await userEvent.click(button(root, 'Ajouter un billet de 50 €'));
 		await userEvent.click(button(root, 'Ajouter un billet de 20 €'));
 		await userEvent.click(button(root, 'Ajouter un billet de 20 €'));
 		expect(button(root, 'Ajouter un billet de 20 €').disabled).toBe(true);
@@ -374,5 +375,53 @@ describe('FillBlanksInput — bloc ```monnaie à construire', () => {
 		await userEvent.keyboard('trente{Enter}');
 		expect(submitted).toBe(0);
 		expect(document.activeElement).toBe(button(screen.container, 'Ajouter un billet de 50 €'));
+	});
+});
+
+describe('Monnaie à construire — centimes (docs/wip/monnaie-centimes-progress.md § 2)', () => {
+	it('poser 2 € + 1 € + 20 c + 20 c + 5 c : réponse 3,45, « 50 c » écrit sur les pièces', async () => {
+		const { probe, answer } = answerProbe();
+		const screen = await render(Monnaie, {
+			target: mainElement(),
+			props: { node: node('construire: 3,45', 'réserve: 2 1 50c 20c 5c'), answer: answer() }
+		});
+		const root = screen.container;
+		await userEvent.click(button(root, 'Ajouter une pièce de 2 €'));
+		await userEvent.click(button(root, 'Ajouter une pièce de 1 €'));
+		await userEvent.click(button(root, 'Ajouter une pièce de 20 centimes'));
+		await userEvent.click(button(root, 'Ajouter une pièce de 20 centimes'));
+		await userEvent.click(button(root, 'Ajouter une pièce de 5 centimes'));
+		expect(probe.value).toBe('3,45');
+		expect(placed(root)).toEqual(['2 €', '1 €', '20 c', '20 c', '5 c']);
+		expect(root.textContent ?? '').not.toMatch(/3,45/);
+	});
+
+	it('fausse : « Tu as posé 3 € et 40 c. », la construction juste à côté', async () => {
+		const screen = await render(Monnaie, {
+			target: mainElement(),
+			props: {
+				node: node('construire: 3,45', 'réserve: 2 1 50c 20c 5c'),
+				answer: { value: '3,40', isCorrect: false, disabled: true, onChange: () => {} }
+			}
+		});
+		const root = screen.container;
+		expect(root.textContent).toContain('Tu as posé 3 € et 40 c.');
+		const solution = root.querySelector('.construire-correction svg')!;
+		expect(
+			[...solution.querySelectorAll('.monnaie-objet')].map(
+				(g) => g.querySelector('text')?.textContent
+			)
+		).toEqual(['2 €', '1 €', '20 c', '20 c', '5 c']);
+	});
+
+	it('pièces de centimes cuivre et dorées', async () => {
+		const screen = await render(Monnaie, {
+			target: mainElement(),
+			props: { node: node('pièces: 1 50c 5c') }
+		});
+		const root = screen.container;
+		expect(root.querySelectorAll('.monnaie-piece-dore')).toHaveLength(1);
+		expect(root.querySelectorAll('.monnaie-piece-cuivre')).toHaveLength(1);
+		expect(root.querySelectorAll('.monnaie-piece-euro')).toHaveLength(1);
 	});
 });

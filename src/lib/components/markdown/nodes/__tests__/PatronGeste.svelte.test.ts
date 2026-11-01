@@ -1,6 +1,6 @@
 /**
  * Patron à geste à l'écran (```patron + `designer:` / `completer:`, chantier
- * `solides`, `docs/wip/solides-progress.md` § 10) : toucher des faces, poser les
+ * `solides`, `docs/archive/wip/solides-progress.md` § 10) : toucher des faces, poser les
  * faces manquantes, noms accessibles, correction.
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).

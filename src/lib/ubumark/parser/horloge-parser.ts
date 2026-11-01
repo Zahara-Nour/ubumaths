@@ -30,7 +30,9 @@
  * @module ubumark/parser/horloge-parser
  */
 
+import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
+import { isMaskedValue } from '../utils/masked-value';
 import {
 	HORLOGE_CAPTION_MAX,
 	HORLOGE_MAX_CLOCKS,
@@ -133,9 +135,6 @@ export function findHorlogeBlocks(lines: string[]): HorlogeBlockRange[] {
 	return blocks;
 }
 
-/** Ligne vue sans retrait ni marque de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /**
  * Les horloges à placer (`placer:`) d'un énoncé, délimitées comme le parseur :
  * corps sans clôtures, fermeture, et `nested` pour un bloc en retrait ou cité
@@ -148,7 +147,7 @@ export function findHorlogesToPlace(markdown: string): {
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
-	const plain = lines.map(unquoted);
+	const plain = lines.map(unnestedLine);
 	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
 	let i = 0;
 	while (i < plain.length) {
@@ -326,7 +325,8 @@ export function parseHorlogeContent(source: string): HorlogeNode {
 					if (value.includes(';')) {
 						throw new LineError('une seule heure à placer par horloge (un bloc par horloge)');
 					}
-					placer = parseTime(value);
+					// Énoncé d'une évaluation notée : heure de remplacement (`masked-value.ts`)
+					placer = isMaskedValue(value) ? { hours: 12, minutes: 0 } : parseTime(value);
 					placerLine = lineNo;
 					break;
 				case 'case':

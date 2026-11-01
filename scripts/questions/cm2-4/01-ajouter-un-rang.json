@@ -1,6 +1,6 @@
 {
 	"title": "Ajouter des unités d'un seul rang",
-	"description": "Sans retenue : dixièmes, centièmes, millièmes (4,452 + 0,03) ; unités à milliers (1 462,5 + 3 000)",
+	"description": "Sans retenue : des unités (4,452 + 3 ; 0,45 + 2) ; des dizaines, centaines, milliers (1 462,5 + 3 000)",
 	"grades": ["CM2"],
 	"theme": "Décimaux",
 	"domain": "Additionner",
@@ -31,7 +31,7 @@
 				},
 				{
 					"name": "d3",
-					"expression": "1..9"
+					"expression": "0..9"
 				},
 				{
 					"name": "N",
@@ -39,7 +39,7 @@
 				},
 				{
 					"name": "j",
-					"expression": "0..2"
+					"expression": "3"
 				},
 				{
 					"name": "k",
@@ -58,7 +58,7 @@
 					"expression": "eval:N+k*10^j"
 				}
 			],
-			"conditions": ["c+k<=9", "N>=10^j"],
+			"conditions": ["c+k<=9", "j==3||N>=10^j", "mod(N,100)!=0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:R/1000;d}}"
@@ -93,7 +93,7 @@
 				},
 				{
 					"name": "j",
-					"expression": "3..6"
+					"expression": "4..6"
 				},
 				{
 					"name": "k",
@@ -112,7 +112,7 @@
 					"expression": "eval:N+k*10^j"
 				}
 			],
-			"conditions": ["c+k<=9", "N>=10^j"],
+			"conditions": ["c+k<=9", "j==3||N>=10^j"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:R/1000;d}}"
@@ -129,30 +129,30 @@
 	],
 	"testSpecs": [
 		{
-			"description": "4,452 + 0,03 = 4,482",
+			"description": "4,452 + 3 = 7,452",
 			"variationIndex": 0,
 			"variables": {
 				"w": "4",
 				"d1": "4",
 				"d2": "5",
 				"d3": "2",
-				"j": "1",
+				"j": "3",
 				"k": "3"
 			},
-			"answers": ["4,482"],
+			"answers": ["7,452"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "Erreur : 4,452 + 0,03 → 4,455 (mauvais rang)",
+			"description": "Erreur : 4,452 + 3 → 4,455 (ajouté aux millièmes)",
 			"variationIndex": 0,
 			"variables": {
 				"w": "4",
 				"d1": "4",
 				"d2": "5",
 				"d3": "2",
-				"j": "1",
+				"j": "3",
 				"k": "3"
 			},
 			"answers": ["4,455"],
@@ -161,33 +161,49 @@
 			}
 		},
 		{
-			"description": "Erreur : 4,452 + 0,03 → 4,752 (mauvais rang)",
+			"description": "Erreur : 4,452 + 3 → 4,482 (ajouté aux centièmes)",
 			"variationIndex": 0,
 			"variables": {
 				"w": "4",
 				"d1": "4",
 				"d2": "5",
 				"d3": "2",
-				"j": "1",
+				"j": "3",
 				"k": "3"
 			},
-			"answers": ["4,752"],
+			"answers": ["4,482"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "0,457 + 0,002 = 0,459",
+			"description": "0,45 + 2 = 2,45",
 			"variationIndex": 0,
 			"variables": {
 				"w": "0",
 				"d1": "4",
 				"d2": "5",
-				"d3": "7",
-				"j": "0",
+				"d3": "0",
+				"j": "3",
 				"k": "2"
 			},
-			"answers": ["0,459"],
+			"answers": ["2,45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 12,34 + 7 = 19,34",
+			"variationIndex": 0,
+			"variables": {
+				"w": "12",
+				"d1": "3",
+				"d2": "4",
+				"d3": "0",
+				"j": "3",
+				"k": "7"
+			},
+			"answers": ["19,34"],
 			"expected": {
 				"status": "correct"
 			}
@@ -223,16 +239,16 @@
 			}
 		},
 		{
-			"description": "borne : 12,3 + 7 = 19,3",
+			"description": "borne : 12,3 + 70 = 82,3",
 			"variationIndex": 1,
 			"variables": {
 				"h": "2",
 				"w": "12",
 				"d1": "3",
-				"j": "3",
+				"j": "4",
 				"k": "7"
 			},
-			"answers": ["19,3"],
+			"answers": ["82,3"],
 			"expected": {
 				"status": "correct"
 			}

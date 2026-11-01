@@ -1,0 +1,208 @@
+{
+	"id": "95f04c3e-03e1-4db4-a16e-36b713a2273f",
+	"title": "Espace : projeté orthogonal sur un plan",
+	"description": "Coordonnées du projeté orthogonal H d'un point sur un plan d'équation donnée (pièges : M recopié, symétrique)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Projeté orthogonal",
+	"level": 3,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{hx}}"
+				},
+				{
+					"expectedAnswer": "{{hy}}"
+				},
+				{
+					"expectedAnswer": "{{hz}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et le point $M({{mx}}\\,;\\,{{my}}\\,;\\,{{mz}})$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $\\mathcal{P}$.\n\n$H(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "hx",
+					"expression": "-4..4"
+				},
+				{
+					"name": "hy",
+					"expression": "-4..4"
+				},
+				{
+					"name": "hz",
+					"expression": "-4..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:-(a*hx+b*hy+c*hz)}}"
+				},
+				{
+					"name": "mx",
+					"expression": "{{eval:hx+k*a}}"
+				},
+				{
+					"name": "my",
+					"expression": "{{eval:hy+k*b}}"
+				},
+				{
+					"name": "mz",
+					"expression": "{{eval:hz+k*c}}"
+				},
+				{
+					"name": "mk",
+					"expression": "{{eval:-k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le projeté $H$ est le point d'intersection de $\\mathcal{P}$ et de la droite passant par $M$ de vecteur directeur $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$ : $H({{if:mx!=0|{{mx}}}}{{if:a==1|{{if:mx!=0|+}}t}}{{if:a==-1|-t}}{{if:a>1|{{if:mx!=0|+}}{{a}}t}}{{if:a< -1|{{a}}t}}{{if:a==0|{{if:mx==0|0}}}}\\,;\\,{{if:my!=0|{{my}}}}{{if:b==1|{{if:my!=0|+}}t}}{{if:b==-1|-t}}{{if:b>1|{{if:my!=0|+}}{{b}}t}}{{if:b< -1|{{b}}t}}{{if:b==0|{{if:my==0|0}}}}\\,;\\,{{if:mz!=0|{{mz}}}}{{if:c==1|{{if:mz!=0|+}}t}}{{if:c==-1|-t}}{{if:c>1|{{if:mz!=0|+}}{{c}}t}}{{if:c< -1|{{c}}t}}{{if:c==0|{{if:mz==0|0}}}})$ pour un réel $t$.",
+					"En reportant dans l'équation de $\\mathcal{P}$ : ${{eval:a^2+b^2+c^2}}t{{eval:a*mx+b*my+c*mz+d;+}}=0$, donc $t={{mk}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{ H({{hx}}\\,;\\,{{hy}}\\,;\\,{{hz}}) }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{mx}}"
+				},
+				{
+					"expectedAnswer": "{{my}}"
+				},
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le point $M({{mx}}\\,;\\,{{my}}\\,;\\,{{mz}})$ et le plan $\\mathcal{P}$ d'équation $z={{h}}$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $\\mathcal{P}$.\n\n$H(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "mx",
+					"expression": "-5..5"
+				},
+				{
+					"name": "my",
+					"expression": "-5..5"
+				},
+				{
+					"name": "mz",
+					"expression": "-5..5"
+				},
+				{
+					"name": "h",
+					"expression": "-4..4"
+				}
+			],
+			"conditions": ["mz != h"],
+			"correction": {
+				"steps": [
+					"$\\vec{k}\\begin{pmatrix}0\\\\0\\\\1\\end{pmatrix}$ est normal au plan d'équation $z={{h}}$ : $H$ a les mêmes abscisse et ordonnée que $M$, et sa cote vaut ${{h}}$.",
+					"$\\textcolor{{{color:primary.0}}}{ H({{mx}}\\,;\\,{{my}}\\,;\\,{{h}}) }$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1", "0", "2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"k": "1",
+				"hx": "1",
+				"hy": "0",
+				"hz": "2"
+			},
+			"description": "v0 : H(1 ; 0 ; 2)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2", "2", "1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"k": "1",
+				"hx": "1",
+				"hy": "0",
+				"hz": "2"
+			},
+			"description": "v0 : M recopié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0", "-2", "3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"k": "1",
+				"hx": "1",
+				"hy": "0",
+				"hz": "2"
+			},
+			"description": "v0 : symétrique de M (t doublé)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2", "-3", "1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "1",
+				"mx": "2",
+				"my": "-3",
+				"mz": "4"
+			},
+			"description": "v1 : H(2 ; -3 ; 1)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2", "-3", "0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "1",
+				"mx": "2",
+				"my": "-3",
+				"mz": "4"
+			},
+			"description": "v1 : projeté sur (Oxy) (cote 0)",
+			"variationIndex": 1
+		}
+	]
+}

@@ -681,7 +681,8 @@ export type ResolvedVariable = SharedResolvedVariable;
  * (```collection, ```monnaie, `construire:`) ou à placer (```line, ```horloge,
  * ```barres, `placer:`), des étiquettes à ranger (```ranger), ou une figure à colorier
  * (```partage, `colorier:`), ou un assemblage de cubes à geste (```cubes, `dessiner:` / `retrouver:`),
- * ou un patron à geste (```patron, `designer:` / `completer:`)
+ * ou un patron à geste (```patron, `designer:` / `completer:`), ou des points à placer
+ * dans un repère (```courbe, `placer:`)
  */
 export type BuildKind =
 	| 'collection'
@@ -692,7 +693,8 @@ export type BuildKind =
 	| 'ranger'
 	| 'partage'
 	| 'cubes'
-	| 'patron';
+	| 'patron'
+	| 'courbe';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
@@ -702,6 +704,7 @@ export function buildKindName(kind: BuildKind): string {
 	if (kind === 'partage') return 'figure à colorier';
 	if (kind === 'cubes') return 'assemblage de cubes';
 	if (kind === 'patron') return 'patron à geste';
+	if (kind === 'courbe') return 'repère';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 
@@ -709,8 +712,8 @@ export function buildKindName(kind: BuildKind): string {
  * Le bloc se joue en plaçant un objet (point, aiguilles) plutôt qu'en construisant ;
  * un diagramme en barres (`placer:`) se construit
  */
-export function isPlaceKind(kind: BuildKind): kind is 'line' | 'horloge' {
-	return kind === 'line' || kind === 'horloge';
+export function isPlaceKind(kind: BuildKind): kind is 'line' | 'horloge' | 'courbe' {
+	return kind === 'line' || kind === 'horloge' || kind === 'courbe';
 }
 
 export interface InstanceBlank extends CalculusBlankFields {
@@ -750,7 +753,10 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * une translation près, ou les mêmes vues. Patron à geste (```patron, `designer: opposee`,
 	 * `completer: 4`) : réponse attendue = les faces à toucher (`2,4`) ou le quadrillage du
 	 * patron du prof (`0010/0112/0010`), juge à part (`isPatronAnswerCorrect`) : mêmes faces,
-	 * ou toute pose qui se plie en cube.
+	 * ou toute pose qui se plie en cube. Points à placer dans un repère (```courbe,
+	 * `placer: A=(2 ; 3) ; B=(-1 ; 2)`) : une case par point, réponse = ses coordonnées en
+	 * point décimal (`2;3`, `1.5;-0.5`, `pointAnswer`), l'élève pose le point sur un nœud de
+	 * la grille, juge à part (`isPlacedPointCorrect`) : les nombres exacts.
 	 */
 	construire?: BuildKind;
 	/**

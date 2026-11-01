@@ -5,13 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 5 bis._
+_Mis à jour le 2026-11-01, lot 7 publié._
 
-- **État** : lots 0 à 5 bis publiés. Lot 5 bis (masses, monnaie, durées) : 9 modèles publiés le 2026-11-01, rangés et tagués (#2028, #2030), page à cocher relue 9/9 OK.
-- **Prochaine action** : selon le § 4 bis, lots à outils existants, puis lots à QCM.
+- **État** : lots 0 à 7 publiés (lot 7 : données, 6 modèles, § 14, clos le 2026-11-01).
+- **Prochaine action** : chantier `monnaie-centimes` (à part : ` ```monnaie ` sans centimes ni billets de 200 / 500 €,
+  § 12), puis lot monnaie (054, 055, 056, 057, 086), puis lots 8 et 9 (§ 12) — phase 0 à écrire.
 - **En attente de David** : rien.
-- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur → `prettier --write` ; prix : `euros()` en centimes, `zeros: off` ; MathLive dans Chrome : taper par `key` (`6 , 6 5`) ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (sur `feat/questions-ce1-lot5bis-rangement`, mergée : en partir d'une neuve sur `origin/main` ; supprimer `feat/questions-ce1-lot5bis` et `-rangement` avec `branch -d`). `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
+- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
+  `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
+  non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
+  posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
+  de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
+  de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot7-rangement`, mergée : en partir une neuve sur `origin/main`). `!` de David :
+  toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -449,3 +456,165 @@ Réponse de David : les quatre recommandations (« je valide »).
   rouge sans (5 échecs sur 9), vert 9/9 ; `security-auditor` sans finding ; #2030 mergée (CI verte).
 - 2026-10-30 : `db:migrate` par David (avec les migrations 3e lot 4b et 6e lot 6b d'autres sessions) ; vérifié au MCP :
   9/9 sur le nœud de leur point, un tag chacun, `updated_at` = `created_at` ; page à cocher publiée, aucune alerte.
+
+## 12. Lots à outils existants — découpage (David, 2026-11-01)
+
+Relevé des outils le 2026-11-01 (`ubumark.md`, en-tête « Vérifié contre le code ») : depuis le § 3, plusieurs outils C
+existent — horloge à placer (060), `barres` à construire (088), ` ```partage ` + `colorier:` (095, 097), ` ```cubes `
+avec `dessiner:` / `retrouver:` (079), ` ```solide `, ` ```patron `. Seul manque `centaines:` de `collection` (001-003).
+
+Recommandations suivies (« je suis tes recos ») :
+
+1. Lots à outils existants, 10 points au plus : **6** calcul posé et monnaie → **7** heure et données → **8** fractions
+   dessinées et géométrie → **9** espace et mesure.
+2. 079 (assemblages de cubes, classé D) repris au lot 9 avec ` ```cubes `.
+3. `centaines:` de `collection` (001, 002) : petit chantier à part, plus tard.
+
+⚠️ **Monnaie : centimes indisponibles.** ` ```monnaie ` n'a ni centimes (`50c` : « pas encore disponible (CE1, plus
+tard) », `monnaie-parser.ts`) ni billets de 200 / 500 € ; `construire:` va de 1 à 100 € entiers. Or 054, 055, 056,
+057 et 086 ont tous pour borne « euros et centimes, ou écriture à virgule » (BO c2 p.28 ; 056 : « pas de pièce de
+1 € »). Ils passent en **C** (outil à prolonger) ; le lot 6 tel quel ne se fait pas → question à David.
+
+| Lot | Thème                            | Points                                              |
+| --- | -------------------------------- | --------------------------------------------------- |
+| 6   | calcul posé (+ monnaie ?)        | 022, 100 ; 054, 055, 056, 057, 086 si centimes      |
+| 7   | heure et données                 | 059, 060, 063, 104 ; 082, 106, 088 ; 089, 107, 081  |
+| 8   | fractions dessinées et géométrie | 096, 098, 095, 097 ; 069, 070, 105 ; 075, 087 ; 073 |
+| 9   | espace et mesure                 | 044 ; 064, 065 ; 079 ; 076, 077 ; 080               |
+
+David (2026-11-01, « tes recos ? » puis « go ») : **A** — lot 6 resserré sur le calcul posé et l'heure, lot 7 les
+données (082, 106, 088, 089, 107, 081), chantier `monnaie-centimes` à part puis lot monnaie (054, 055, 056, 057, 086),
+puis lots 8 et 9.
+
+## 13. Lot 6 : calcul posé et heure — phase 0 (2026-11-01)
+
+Relevé MCP du 2026-11-01 : `Addition · Calcul posé · 1` (CP, `0f7381e6`) ; aucune soustraction posée ; `Durées · Lire
+l'heure · 1, 2` (CP) ; `Durées · Calculer · 1-8` (6e). Nœuds des 6 points présents : « Entiers : addition et
+soustraction › calcul posé » (022, 100), « Durées › lecture de l'heure » (059, 060), « Durées › calcul de durées »
+(063, 104). Outils : ` ```operation ` (cases du résultat, `retenues:`, `méthode: cassage | compensation`),
+` ```horloge ` (`heure:` 1 à 4 cadrans avec `légendes:`, `placer:` = aiguilles à poser, déjà prévu pour CE1-060).
+Bornes : somme ≤ 1 000, 2 ou 3 termes (245 + 437 ; 218 + 48 ; 76 + 7 + 568) ; soustraction ≤ 1 000 ; heures entières,
+demies, quarts, < 24 (« 2 heures et quart » = 14 h 15) ; durées dans la même journée (8 h 30 → 8 h 45 ; 15 h 45 →
+16 h 15 ; midi → 20 h ; 2 heures et 130 minutes).
+
+| Fichier                              | Point   | Catégorie · niveau                     | Variations                                                                                                                                                          |
+| ------------------------------------ | ------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-addition-posee`                  | CE1-022 | Addition · Calcul posé · 2             | 3 + 3 chiffres (245 + 437) ; 3 + 2 (218 + 48) ; 3 termes (76 + 7 + 568) ; retenue aux centaines (somme 1 000 au plus) ; `retenues: oui`                             |
+| `02-soustraction-posee-cassage`      | CE1-100 | Soustraction · Calcul posé · 1 (neuve) | 3 − 2 chiffres, un échange (352 − 27) ; 3 − 3, deux échanges (532 − 178) ; zéro au milieu (504 − 37) ; `méthode: cassage`                                           |
+| `03-soustraction-posee-compensation` | CE1-100 | Soustraction · Calcul posé · 2         | mêmes nombres, `méthode: compensation`                                                                                                                              |
+| `04-lire-l-heure`                    | CE1-059 | Durées · Lire l'heure · 3              | « Il est [_] h [_]. » : et demie (8 h 30), et quart (3 h 15), moins le quart (8 h 45, petite aiguille presque sur le 9) ; « C'est l'après-midi » → 14 h 15, 16 h 30 |
+| `05-placer-les-aiguilles`            | CE1-060 | Durées · Lire l'heure · 4              | `placer:` : heure juste, et demie, et quart, moins le quart (« 9 h moins le quart » → 8 h 45), après-midi (15 h 30 se place sur le 3)                               |
+| `06-duree-ecoulee`                   | CE1-063 | Durées · Durée écoulée · 1 (neuve)     | deux cadrans `Début ; Fin` : 8 h 30 → 8 h 45 ([_] min) ; 15 h 45 → 16 h 15 (passage de l'heure) ; midi → 20 h ([_] h) ; 9 h 15 → 11 h 45 ([_] h [_] min)            |
+| `07-comparer-des-durees`             | CE1-104 | Durées · Durée écoulée · 2             | quatre cadrans (film, match) → choix « le film / le match / autant » ; 2 heures ou 130 minutes : la plus longue ; 1 h 30 ou 90 min (égalité)                        |
+
+Erreurs typiques dans les `testSpecs` : retenue oubliée (245 + 437 = 672) ; plus petit chiffre ôté du plus grand
+(352 − 27 = 335) ; zéro mal échangé (504 − 37 = 577) ; 8 h 45 lu 9 h 45 ; aiguilles inversées (3 h 15 lu 3 h) ;
+14 h 15 répondu 2 h 15 ; 15 h 45 → 16 h 15 = 70 min (soustraction décimale) ; 2 h = 200 min.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **Soustraction : deux modèles** (cassage, compensation), le prof choisit la méthode de sa classe, plutôt qu'un seul
+   qui mêlerait les deux ? Recommandation : deux (sept modèles au lot).
+2. **Après-midi sur un cadran de 12** : l'énoncé dit « c'est l'après-midi », la réponse est 14 h 15 (exemple du BO),
+   et 2 h 15 est ambre avec le message « l'après-midi, on compte après 12 » ? Recommandation : oui ; le cadran
+   `cadran: 24` reste pour plus tard.
+3. **Catégorie neuve « Durées · Durée écoulée »** plutôt que `Durées · Calculer · 9-10` après la 6e ? Recommandation :
+   neuve (même règle qu'au lot 5 bis).
+4. **Durée : unité de la réponse selon la variation** ([_] min sous l'heure, [_] h [_] min au-delà) plutôt que toujours
+   en minutes ? Recommandation : selon la variation, comme on le dit à l'oral.
+
+Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre recommandations.
+
+⚠️ Question 2, écart à la décision : le juge n'a **pas d'ambre pour une valeur fausse** (une règle de validation ne peut
+que refuser, avec son message). 2 h 15 l'après-midi est donc **faux, avec le message** « L'après-midi, on compte après
+midi : 2 heures de l'après-midi, c'est 14 h » (règle `custom` `answer != {{h}}` sur la case des heures). À confirmer par
+David ; un vrai ambre demanderait du code.
+
+- 2026-11-01 : lot 6 écrit (`lot-ce1-6.py`, `scripts/questions/ce1-6/`), simulation 7/7 (66 specs), `question:specs`
+  verts (30 à 40 tirages par variation) ; 7 brouillons en base locale. Pièges trouvés : une case d'opération posée n'a
+  **pas** d'`expectedAnswer` (le bloc la calcule) ; un `{{if:}}` dont la condition contient un `{{eval:}}` n'est **pas
+  résolu** (« heure: if:0==0 ») et les specs restent vertes → relire les blocs rendus (`--apercu`) ; dans `placer:`,
+  écrire `9 h 0`. Aperçu admin : aiguilles 11 h 45 jugées justes ; 710 − 246 = 464 juste, cases d'échange au-dessus ;
+  quatre cadrans du film et du match lisibles.
+- 2026-11-01 : #2071 mergée (CI verte après deux relances du shard navigateur 2/2 : installation de Chromium
+  bloquée, puis `page-demo-lexique` en échec, sans lien avec le lot) ; brouillons en prod à créer par David.
+- 2026-11-01 : `create-questions --publier` par David : 7 brouillons vérifiés au MCP (`c26cc664`, `1e66bb1f`,
+  `92caa903`, `e3d11972`, `d478935f`, `24a86a39`, `739d58e3`), sans nœud ni tag, `updated_at` intact.
+- 2026-11-01 : migration `20261101141600_questions_ce1_lot6_rangement_tags` (max des worktrees + 1 min) et test :
+  rouge sans (5 échecs sur 9), vert 9/9.
+- 2026-11-01 : David valide « 2 h 15 l'après-midi = **faux avec message** » (pas d'ambre : toucherait au juge commun,
+  chantier à part si un jour on veut l'ambre pour les erreurs typiques). Remarque non bloquante de `security-auditor`
+  (le rollback retirerait un même tag posé à la main entre-temps) acceptée, comme au lot 5 bis.
+- 2026-11-01 : #2083 mergée (CI verte 16/16) ; `db:migrate --include-all` par David (une migration 1re spé plus
+  récente déjà jouée, la nôtre seule appliquée) ; vérifié au MCP : 7/7 sur le nœud de leur point, un tag chacun,
+  `updated_at` = `created_at`. Page à cocher publiée (https://claude.ai/artifact/NtdykbdR6MZfDfChmD2woM) ; alertes :
+  les 3 opérations posées non dessinées (à jouer dans l'aperçu), homonyme CP `0f7381e6` écarté pour l'addition (juste).
+- 2026-11-01 : relecture 7/7 OK (verdicts comptés en base, aucun commentaire) ; `publier-lot` simulé (7 passent), puis
+  `--publier` par David : 7/7 publiés, vérifié au MCP (publiés, rangés, tagués). Lot 6 clos.
+
+## 14. Lot 7 : données — phase 0 (2026-11-01)
+
+Relevé MCP du 2026-11-01 : **aucun** diagramme en barres en base, à aucun niveau (CP-072 et CE2-082 sans modèle) ;
+`Représenter des données · Tableaux · 1` (CP-068, `7752c23e`), `Représenter des données · Tableau à double entrée · 1, 2`
+(CP-069, CP-084). Nœuds des 6 points présents : « Représenter des données › diagrammes en barres » (082, 106, 088),
+« › tableaux » (081), « › tableau à double entrée » (089, 107). Outils : ` ```barres ` (lecture ; `axe: 0 à 15` gradue
+de un en un ; `placer:` = barres à monter, `données:` = série brute que l'élève compte), ` ```tableau-croise `
+(`lignes:`, `colonnes:`, `totaux: oui`, `masquer: Ligne/Colonne` = case `?`), tableau markdown à cases `$?$` (CP-068),
+case `choix`. Bornes (BO c2 p.38) : caractère à 2 à 5 valeurs, moins de 100 individus, axe gradué de un en un ;
+tableau à double entrée avec totaux (filles / garçons × 4 modes de transport, total 282).
+
+| Fichier                            | Point   | Catégorie · niveau                                         | Variations                                                                                                                                                                  |
+| ---------------------------------- | ------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-lire-un-diagramme-en-barres`   | CE1-082 | Représenter des données · Diagrammes en barres · 1 (neuve) | « Combien d'élèves ont choisi le foot ? » [_] : 3 barres (sports, 2 à 12) ; 4 barres (fruits, jusqu'à 15) ; 5 barres (animaux, axe 0 à 20) ; valeurs non écrites            |
+| `02-interpreter-un-diagramme`      | CE1-106 | Représenter des données · Diagrammes en barres · 2         | le plus choisi (case choix des noms) ; le moins choisi ; « combien de plus que » [_] ; « combien d'élèves en tout » [_] (total < 100) ; effectifs tous différents           |
+| `03-construire-un-diagramme`       | CE1-088 | Représenter des données · Diagrammes en barres · 3         | tableau d'effectifs donné, 2 barres à monter (les autres dessinées) ; toutes les barres (3 à 4) ; série brute (`données:`, 12 à 20 réponses) à compter puis construire      |
+| `04-ranger-dans-un-tableau`        | CE1-081 | Représenter des données · Tableaux · 2                     | liste de réponses (« Léa : chat, Tom : chien… », 12 à 25) → colonne « Nombre d'élèves » du tableau [_] par ligne ; 3, 4 puis 5 valeurs ; avec une ligne Total               |
+| `05-lire-un-tableau-double-entree` | CE1-089 | Représenter des données · Tableau à double entrée · 3      | filles / garçons × lundi… jeudi (cantine) : « combien de filles le mardi ? » [_] ; transport × filles / garçons avec totaux : lire une case, puis un total                  |
+| `06-interpreter-un-tableau`        | CE1-107 | Représenter des données · Tableau à double entrée · 4      | quel jour le plus d'élèves (totaux affichés, case choix) ; sans totaux (il faut additionner) ; case masquée retrouvée par le total [_] ; « combien de garçons de plus » [_] |
+
+Erreurs typiques dans les `testSpecs` : trait voisin lu (±1) ; catégorie voisine lue ; le plus grand nombre de
+l'énoncé plutôt que la plus haute barre ; total qui oublie une barre ; écart répondu par une des deux valeurs ; ligne et
+colonne inversées (garçons du mardi au lieu des filles) ; total de la ligne au lieu de la colonne ; case masquée = total.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **081 « produire un tableau »** : l'élève compte une liste de réponses et remplit la colonne des effectifs d'un
+   tableau déjà tracé (noms écrits), comme CP-068 en plus grand ; tracer le tableau lui-même n'a pas d'outil.
+   Recommandation : oui.
+2. **Axe gradué de un en un** (borne BO) : les barres vont au plus à 20 (au-delà l'axe devient illisible au doigt),
+   même si la population peut aller jusqu'à 99 au total. Recommandation : 20 au plus par barre, total < 100.
+3. **Tableau à double entrée** : cases de 5 à 99, totaux jusqu'à 1 000 (l'exemple du BO a 282, le CE1 va à 1 000) ?
+   Recommandation : oui, sommes à deux chiffres d'abord (cases ≤ 60), puis le tableau du BO (total ~ 300).
+4. **Catégories** : neuve « Représenter des données · Diagrammes en barres · 1 à 3 » ; les tableaux continuent le CP
+   (« Tableaux · 2 », « Tableau à double entrée · 3, 4 »). Recommandation : oui (même règle qu'aux lots 5 bis et 6).
+
+Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre recommandations.
+
+- 2026-11-01 : lot 7 écrit (`lot-ce1-7.py`, `scripts/questions/ce1-7/`), `question:specs` 56/56 (800 tirages), simulation
+  6/6 ; 6 brouillons en base locale, joués dans l'aperçu admin (barres montées justes, case choix du tableau juste).
+  Valeur choisie par un indice : polynôme de Lagrange en `{{eval:}}` ; série brute : indicatrices (CP-068). Trouvé :
+  une barre **non construite** parmi d'autres est jugée « forme non optimale », pas « faux » (juge commun) — spec
+  remplacée par une barre fausse ; à signaler, pas corrigé ici. `totaux: oui` ajoute la ligne ET la colonne Total.
+  PR #2102 ouverte.
+- 2026-11-01 : #2102 mergée (CI verte 15/15) ; brouillons en prod à créer par David.
+- 2026-11-01 : `create-questions --publier` par David : 6 brouillons vérifiés au MCP (`f756fc4b`, `cb5a6a89`,
+  `b4527dd3`, `bded0f4a`, `7369d049`, `29edb833`), catégories attendues, sans nœud ni tag, `updated_at` intact.
+- 2026-11-01 : migration `20261101190100_questions_ce1_lot7_rangement_tags` (max des worktrees + 1 min) et test :
+  rouge sans (3 échecs, 4 non joués sur 9), vert 9/9 ; PR #2105.
+- 2026-11-01 : `security-auditor` sans finding (SQL exécuté identique au lot 6) ; #2105 mergée (CI verte 16/16).
+  `db:migrate` NON lancé : `20261101170000_questions_4_lot7` et `20261101183000_questions_3_lot6`, plus anciennes, pas
+  jouées en prod ; `db push` les jouerait aussi (`--include-all`). Attendre qu'elles le soient, puis `db:migrate`.
+- 2026-11-01 : accord des sessions questions-3 et questions-4 ; `db:migrate --include-all` par David depuis main : 170000,
+  183000, 190000 (1re spé, signalée à sa session) et la nôtre 190100 appliquées. Vérifié au MCP : 6/6 sur le nœud de leur
+  point, un tag chacun, brouillons, `updated_at` intact. Page à cocher publiée
+  (https://claude.ai/artifact/C4GhFJ83yChjuhs9KCYu64) ; alertes : 5 modèles à blocs `barres` / `tableau-croise` non
+  dessinés par le script → liens vers l'aperçu admin en prod dans l'intro.
+- 2026-11-01 : relecture 6/6 OK (verdicts comptés en base, aucun commentaire) ; catégories relevées avant publication,
+  sans collision ; `publier-lot` simulé (6 passent), puis `--publier` par David : 6/6 publiés, vérifié au MCP (publiés,
+  rangés, tagués). Lot 7 clos. Reste signalé : une barre non construite parmi d'autres jugée « forme non optimale ».

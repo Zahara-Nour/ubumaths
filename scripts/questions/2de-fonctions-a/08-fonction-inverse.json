@@ -1,0 +1,174 @@
+{
+	"title": "La fonction inverse",
+	"description": "Reconnaître l'hyperbole de x ↦ 1/x ; ensemble de définition ℝ \\ {0} ; image d'une fraction (pièges : hyperbole de −1/x, 0 compris, signe changé, opposé au lieu de l'inverse)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction inverse",
+	"subdomain": "Courbe",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle figure représente la fonction inverse $x\\mapsto\\dfrac{1}{x}$ ?\n\n````choix\n- ```courbe\n  x: -4 ; 4\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = 1/x   bleu\n  taille: petite\n  description: Hyperbole en deux branches, l'une pour x > 0 au-dessus de l'axe des abscisses, l'autre pour x < 0 en dessous ; passe par (1 ; 1) et (−1 ; −1).\n  ```\n- ```courbe\n  x: -4 ; 4\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = -1/x   bleu\n  taille: petite\n  description: Hyperbole en deux branches, l'une pour x > 0 sous l'axe des abscisses, l'autre pour x < 0 au-dessus ; passe par (1 ; −1) et (−1 ; 1).\n  ```\n- ```courbe\n  x: -4 ; 4\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = x^2   bleu\n  taille: petite\n  description: Parabole tournée vers le haut, sommet à l'origine.\n  ```\n- ```courbe\n  x: -4 ; 4\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = abs(x)   bleu\n  taille: petite\n  description: Courbe en V, pointe à l'origine.\n  ```\n````",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{x}$ n'existe pas pour $x=0$ : la courbe a **deux branches**. $\\dfrac{1}{x}$ est du signe de $x$ : la branche des $x>0$ est au-dessus de l'axe des abscisses, celle des $x<0$ en dessous.",
+					"```courbe\nx: -4 ; 4\ny: -4 ; 4\ngrille: 1 ; 1\nf(x) = 1/x   bleu   nom=C_f\npoints: A(1 ; 1), B(-1 ; -1)\ntaille: moyenne\ndescription: Hyperbole de la fonction inverse, passant par (1 ; 1), (2 ; 0,5), (−1 ; −1) et (−2 ; −0,5).\n```"
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction inverse : $f(x)=\\dfrac{1}{x}$.\n\nSur quel ensemble la fonction $f$ est-elle définie ?\n\n$\\mathcal{D}_f=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\mathbb{R}\\setminus\\{0\\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ne peut pas diviser par $0$ : $0$ n'a pas d'image, tout autre réel en a une.",
+					"$\\mathcal{D}_f=\\textcolor{{{color:primary.0}}}{\\mathbb{R}\\setminus\\{0\\}}$, qu'on écrit aussi $\\left]-\\infty\\,;0\\right[\\cup\\left]0\\,;+\\infty\\right[$."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction inverse : $f(x)=\\dfrac{1}{x}$.\n\nCalcule l'image de ${{if:sg<0|-}}\\dfrac{ {{p}} }{ {{q}} }$ par $f$.\n\n$f\\left({{if:sg<0|-}}\\dfrac{ {{p}} }{ {{q}} }\\right)=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": ["gcd(p, q) == 1", "p != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(sg)*(q)/(p)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'inverse d'une fraction s'obtient en échangeant numérateur et dénominateur ; le signe ne change pas.",
+					"$$f\\left({{if:sg<0|-}}\\dfrac{ {{p}} }{ {{q}} }\\right)=\\dfrac{1}{ {{if:sg<0|-}}\\dfrac{ {{p}} }{ {{q}} } }=\\textcolor{{{color:primary.0}}}{{{eval:(sg)*(q)/(p)}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "L'hyperbole de 1/x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : hyperbole de −1/x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ℝ \\ {0}",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\mathbb{R}\\setminus\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Réunion ]−∞ ; 0[ ∪ ]0 ; +∞[",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["]-\\infty;0[\\cup]0;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]0 ; +∞[",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["]0;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/(−2/3) = −3/2",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"sg": "-1"
+			},
+			"answers": ["-\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe (3/2)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"sg": "-1"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : opposé (2/3)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"sg": "-1"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

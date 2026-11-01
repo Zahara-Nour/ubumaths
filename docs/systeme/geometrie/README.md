@@ -488,7 +488,5 @@ RBush, `validation/` branché sur des exercices.
   l'atelier, lui, la dessine (marching squares).
 - `GeometryCanvas` écrit l'étiquette d'une courbe implicite avec `svg.label`, que
   `implicitCurveToSVG` ne rend pas : le nom ne s'affiche pas (et le `<text>` n'a pas de `y`).
-- Messages d'erreur périmés : la forme `point(s.value, 0)` (seuls `.x` / `.y` existent) et
-  l'exemple `style(P, couleur="red", taille=4)` (`taille` n'est pas un argument de style).
 
 Historique (audits de mai 2026, journaux de chantier) : `docs/archive/` — ne décrit pas le code actuel.

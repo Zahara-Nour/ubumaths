@@ -88,7 +88,8 @@ import { containsDecimal, solveConstantBaseExponential } from './constant-base-e
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { computeNumericValue } from '../eval/numeric-value';
 import { compile } from '../eval/compile';
-import { findFirst } from '../transforms';
+import { hasIndexedVariables, indexVariables } from '../eval/index-variables';
+import { findFirst, findNodes } from '../transforms';
 import {
 	normalize,
 	normalFormsEquivalent,
@@ -1835,9 +1836,178 @@ function filterSolutionsByDomain(
 	return { ...result, solutions: kept, status: newStatus, domain };
 }
 
+/**
+ * Écarte les solutions où l'expression n'est pas définie, quand le domaine
+ * calculé est TROP GRAND (contrainte non résolue : `x^5 − x + 1 > 0`). Le
+ * filtrage par domaine ne les voit pas : x = −2 pour
+ * `2√(x⁵−x+1)/√(x⁵−x+1) = x + 4` (V45).
+ *
+ * Chaque opération porteuse d'une contrainte (fonction, quotient, puissance)
+ * est évaluée À PART, avec ses opérandes : opérandes finis et résultat NaN
+ * (√ d'un négatif, ln d'un négatif, 0/0), ou ln/log de 0, c'est une valeur
+ * interdite ; quotient par 0 ou 0 à une puissance négative, un pôle. Un
+ * résultat infini d'opérandes finis (e^{900}, 100^{200}) est un DÉPASSEMENT
+ * flottant : on ne conclut pas — évaluer toute l'équation donnait Inf − Inf =
+ * NaN et écartait de vraies solutions (revue #2064). Interdite au point ET de
+ * part et d'autre, la solution est écartée ; une borne (radicande nul arrondi
+ * en −10⁻¹⁷) reste gardée. Un pôle au point est écarté. Solutions
+ * paramétrées, équation à plusieurs lettres ou nœud non compilable : rien
+ * n'est écarté.
+ */
+function filterSolutionsByDefinition(
+	result: SolveResult,
+	expr: MathNode,
+	variable: string,
+	recorder: import('./types').SolveStepRecorder
+): SolveResult {
+	if (result.status === 'infinite' || result.solutions.length === 0) return result;
+	const letters = getVariables(expr);
+	if (letters.size !== 1 || !letters.has(variable)) return result;
+
+	const checks = definitionChecks(expr, variable);
+	if (checks.length === 0) return result;
+	const verdictAt = (x: number): 'defined' | 'forbidden' | 'pole' => {
+		let forbidden = false;
+		for (const check of checks) {
+			const verdict = check(x);
+			if (verdict === 'pole') return 'pole';
+			if (verdict === 'forbidden') forbidden = true;
+		}
+		return forbidden ? 'forbidden' : 'defined';
+	};
+
+	const kept: Solution[] = [];
+	for (const sol of result.solutions) {
+		const x = sol.approximate;
+		if (x === undefined || !Number.isFinite(x) || getVariables(sol.value).size > 0) {
+			kept.push(sol);
+			continue;
+		}
+		const delta = 1e-9 * Math.max(1, Math.abs(x));
+		const atPoint = verdictAt(x);
+		const pole = atPoint === 'pole';
+		const outside =
+			atPoint === 'forbidden' &&
+			verdictAt(x - delta) !== 'defined' &&
+			verdictAt(x + delta) !== 'defined';
+		if (pole || outside) {
+			recorder.recordStep(
+				'domain-exclusion',
+				`${variable} = ${x.toPrecision(6)} est exclu du domaine`,
+				sol.value,
+				sol.value,
+				'summarized'
+			);
+		} else {
+			kept.push(sol);
+		}
+	}
+	if (kept.length === result.solutions.length) return result;
+
+	const status: import('./types').SolutionStatus =
+		kept.length === 0 ? 'no-solution' : kept.length === 1 ? 'unique' : result.status;
+	return { ...result, solutions: kept, status };
+}
+
+type DefinitionVerdict = 'defined' | 'forbidden' | 'pole' | 'unknown';
+
+/**
+ * Les vérifications de `filterSolutionsByDefinition` : une par fonction,
+ * quotient ou puissance de l'expression qui contient l'inconnue. Chacune
+ * évalue le nœud et ses opérandes en x ; un opérande non fini, une
+ * évaluation qui lève ou un dépassement flottant rendent `unknown`.
+ */
+function definitionChecks(
+	expr: MathNode,
+	variable: string
+): Array<(x: number) => DefinitionVerdict> {
+	const checks: Array<(x: number) => DefinitionVerdict> = [];
+	const nodes = findNodes(
+		expr,
+		(n) =>
+			(n.type === 'function' || n.type === 'division' || n.type === 'superscript') &&
+			getVariables(n).has(variable)
+	);
+	for (const node of nodes) {
+		const operands: readonly MathNode[] =
+			node.type === 'function'
+				? node.args
+				: node.type === 'division'
+					? [node.numerator, node.denominator]
+					: node.type === 'superscript'
+						? [node.base, node.superscript]
+						: [];
+		let evaluators: Array<(scope: Record<string, number>) => number>;
+		try {
+			evaluators = [compile(node), ...operands.map((operand) => compile(operand))];
+		} catch {
+			continue;
+		}
+		checks.push((x) => {
+			let values: number[];
+			try {
+				values = evaluators.map((evaluate) => evaluate({ [variable]: x }));
+			} catch {
+				return 'unknown';
+			}
+			const [value, ...operandValues] = values;
+			if (!operandValues.every(Number.isFinite)) return 'unknown';
+			if (Number.isNaN(value)) return 'forbidden';
+			if (Number.isFinite(value)) return 'defined';
+			// Infini d'opérandes finis : pôle, ln 0, ou simple dépassement
+			if (node.type === 'division' && operandValues[1] === 0) return 'pole';
+			if (node.type === 'superscript' && operandValues[0] === 0) return 'pole';
+			if (node.type === 'function' && /^(ln|log)/.test(node.name) && operandValues[0] === 0) {
+				return 'forbidden';
+			}
+			return 'unknown';
+		});
+	}
+	return checks;
+}
+
 // =============================================================================
 // Longueurs de segments
 // =============================================================================
+
+/**
+ * Le résultat d'une résolution menée sur des inconnues indicées aplaties
+ * (`indexVariables`) : chaque variable `x_1` redevient l'indice écrit, dans
+ * les solutions, les conditions, les familles périodiques et les étapes. Le
+ * nom de l'inconnue reste `x_1`, celui qu'un appelant passe en `variable`.
+ */
+function withIndexedRestored(
+	result: SolveResult,
+	restore: (node: MathNode) => MathNode
+): SolveResult {
+	const restoreSolution = (solution: Solution): Solution => ({
+		...solution,
+		value: restore(solution.value),
+		...(solution.condition && { condition: restore(solution.condition) })
+	});
+	const restoreFamily = (family: PeriodicSolutionFamily): PeriodicSolutionFamily => ({
+		...family,
+		baseSolutions: family.baseSolutions.map(restoreSolution),
+		period: restore(family.period)
+	});
+	return {
+		...result,
+		solutions: result.solutions.map(restoreSolution),
+		steps: result.steps.map((step) => ({
+			...step,
+			before: restore(step.before),
+			after: restore(step.after),
+			...(step.operand && { operand: restore(step.operand) })
+		})),
+		...(result.periodicSolutions && {
+			periodicSolutions: restoreFamily(result.periodicSolutions)
+		}),
+		...(result.droppedPeriodicSolutions && {
+			droppedPeriodicSolutions: restoreFamily(result.droppedPeriodicSolutions)
+		}),
+		...(result.displayFamilies && { displayFamilies: result.displayFamilies.map(restoreFamily) })
+	};
+}
 
 /**
  * Le résultat d'une résolution menée sur des longueurs devenues variables
@@ -2114,6 +2284,23 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 			return restored;
 		}
 		return keepPositiveLength(restored, lengths.node, result.variable, lengths.segments, opts);
+	}
+
+	// Inconnues indicées (`x_1`, `u_n`) : chacune devient UNE variable, nommée
+	// par son LaTeX (`x_1`), comme dans la console ; on résout, puis on rend
+	// l'indice tel qu'écrit. Sans ça, le parseur lit `x_1` comme un indice de
+	// base `x` : `x_1 + 1 = 3` répondait « non supporte » (V13). Une variable
+	// demandée qui disparaîtrait à l'aplatissement (`x` pour `x_1 = 2`) garde
+	// l'arbre d'origine.
+	if (hasIndexedVariables(equation)) {
+		const indexed = indexVariables(equation);
+		const flatVariables = getVariables(indexed.node);
+		if (
+			isRelation(indexed.node) &&
+			(opts.variable === undefined || flatVariables.has(opts.variable))
+		) {
+			return withIndexedRestored(solve(indexed.node, options), indexed.restore);
+		}
 	}
 
 	const refusal = reservedVariableRefusal(opts.variable, equation);
@@ -2421,8 +2608,12 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	}
 
 	result = filterSolutionsByDomain(result, domain, variable, domainRecorder);
-	// Domaine incomplet : le dire, jamais le présenter comme exact (V45)
-	if (domainUnresolved !== undefined) result = { ...result, domainUnresolved };
+	// Domaine incomplet : le dire, jamais le présenter comme exact, et vérifier
+	// chaque solution sur l'équation elle-même (V45)
+	if (domainUnresolved !== undefined) {
+		result = filterSolutionsByDefinition(result, expr, variable, domainRecorder);
+		result = { ...result, domainUnresolved };
+	}
 
 	// Append any exclusion steps
 	const exclusionSteps = domainRecorder

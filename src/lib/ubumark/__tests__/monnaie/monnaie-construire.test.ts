@@ -40,26 +40,22 @@ describe('construire: — analyse', () => {
 		expect(parse('construire: 35', 'reserve: 10 5').spec?.reserve).toEqual([10, 5]);
 	});
 
-	it('somme de 1 à 100 €, entière', () => {
+	it('somme de 1 c à 1 000 € (centimes : monnaie-centimes.test.ts)', () => {
 		expect(parse('construire: 100').errors).toEqual([]);
+		expect(parse('construire: 50c').errors).toEqual([]);
 		expect(messages(parse('construire: 0'))).toEqual([
-			"Ligne 1 : construire « 0 » : écris un nombre entier d'euros de 1 à 100"
+			'Ligne 1 : construire « 0 » : écris une somme de 1 c à 1 000 €, ex. 35 ou 3,45'
 		]);
-		expect(messages(parse('construire: 101'))).toEqual([
-			"Ligne 1 : construire « 101 » : écris un nombre entier d'euros de 1 à 100"
-		]);
-		expect(messages(parse('construire: 50c'))).toEqual([
-			'Ligne 1 : construire « 50c » : centimes pas encore disponibles'
+		expect(messages(parse('construire: 1001'))).toEqual([
+			'Ligne 1 : construire « 1001 » : écris une somme de 1 c à 1 000 €, ex. 35 ou 3,45'
 		]);
 	});
 
 	it('réserve : coupures existantes, une fois chacune', () => {
 		expect(messages(parse('construire: 35', 'réserve: 3'))).toEqual([
-			"Ligne 2 : 3 € n'existe pas (pièces : 1, 2 ; billets : 5, 10, 20, 50, 100)"
+			"Ligne 2 : 3 € n'existe pas (pièces : 1 c, 2 c, 5 c, 10 c, 20 c, 50 c, 1 €, 2 € ; billets : 5 €, 10 €, 20 €, 50 €, 100 €, 200 €, 500 €)"
 		]);
-		expect(messages(parse('construire: 35', 'réserve: 200'))).toEqual([
-			'Ligne 2 : billet de 200 € : pas encore disponible (pièces : 1, 2 ; billets : 5, 10, 20, 50, 100)'
-		]);
+		expect(parse('construire: 35', 'réserve: 200 20 10 5').errors).toEqual([]);
 		expect(messages(parse('construire: 35', 'réserve: 5 5'))).toEqual([
 			'Ligne 2 : réserve : 5 € écrit deux fois'
 		]);
@@ -74,7 +70,7 @@ describe('construire: — analyse', () => {
 
 	it('somme impossible avec la réserve, ou en plus de 30 objets : refusée', () => {
 		expect(messages(parse('construire: 1', 'réserve: 2 5'))).toEqual([
-			'Ligne 1 : 1 € ne se fait pas avec la réserve (2, 5 €)'
+			'Ligne 1 : 1 € ne se fait pas avec la réserve (2 €, 5 €)'
 		]);
 		expect(messages(parse('construire: 35', 'réserve: 1'))).toEqual([
 			'Ligne 1 : 35 € demande plus de 30 objets avec la réserve (1 €)'
@@ -138,9 +134,9 @@ describe('construire: — la construction de l’élève', () => {
 		expect(removeFromBuild(build, 50)).toEqual(build);
 	});
 
-	it('plafonds : jamais au-delà de 100 € ni de 30 objets', () => {
-		expect(BUILD_LIMITS).toEqual({ total: 100, objects: 30 });
-		const full = { notes: [50, 20, 20], coins: [2, 2, 2] };
+	it('plafonds : jamais au-delà de 1 000 € ni de 30 objets', () => {
+		expect(BUILD_LIMITS).toEqual({ total: 1000, objects: 30 });
+		const full = { notes: [500, 200, 200, 50, 20, 20], coins: [2, 2, 2] };
 		expect(canAdd(full, 2)).toBe(true);
 		expect(canAdd(full, 5)).toBe(false);
 		expect(addToBuild(full, 5)).toEqual(full);

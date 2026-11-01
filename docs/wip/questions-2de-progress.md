@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2048 (vecteurs en deux trous, § 28)._
+_Mis à jour le 2026-11-01, #2113 (6 B) ouverte, CI rouge à cause de `main` (§ 39)._
 
-- **État** : lots 1, 2, 2 bis A et B, 3 publiés. Lot 4 (A #2008, B #1999, correctif #1997) : 11 brouillons
-  rangés et tagués en prod (#2014, migration `20261030160100` jouée par David, vérifiée au MCP).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 11) ; « À revoir » → § 7 de
-  la démarche ; tout OK → `publier-lot.ts` simulé sur `2de-vecteurs-a` puis `2de-vecteurs-b`.
-- **En attente de David** : relecture de la page à cocher (01 à 04 refaits, à relire) https://claude.ai/artifact/6WwvVGdVFZG1RUj8iWFbwo,
-  puis `publier-lot.ts --publier` (les deux dossiers).
-- **Pièges en cours** : horodatage = max + 1 min de `origin/main` ET des worktrees ; `migration list
---linked` avant `db:migrate` (migrations d'autres sessions en file → David tranche qui le lance).
-- **Worktree / branche** : `ubumaths-wt-questions-2de` gardé (détaché sur `main`) pour `publier-lot.ts`.
+- **État** : lots 1 à 5 publiés ; lot 6 : 6 A mergé (#2106), 6 B en PR (§ 39) ; rien du lot 6 en prod.
+- **Prochaine action** : relancer la CI de #2113 quand `main` est réparée, merger ; écrire 6 C (racine, cube, méthode adaptée : 6 modèles, § 37) dans
+  un worktree neuf ; puis brouillons, migration et page à cocher pour les 20.
+- **En attente de David** : collision sur `main` : `20261101190200` porté par deux migrations (5e lot 6, 6e lot 7,
+  #2107) → `migration-versions.test.ts` rouge pour toutes les PR ; à réparer par la session 5e ou 6e.
+- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ; `page-a-cocher.ts`
+  ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une copie, désormais trois dossiers) ; `db:migrate` et
+  `--publier` refusés par le classifieur → David les lance avec `!` ; worktree neuf → `pnpm exec svelte-kit sync`
+  avant les scripts `tsx` (`$lib` introuvable sinon).
+- **Worktree / branche** : `ubumaths-wt-questions-2de` · `feat/questions-2de-fonctions-b`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -690,3 +691,304 @@ doublée d'une variation à calcul.
   `create-questions --publier --mettre-a-jour` : 4 mis à jour ; relecture : 7 « déjà en base » identiques,
   MCP : brouillons, nœud « coordonnées » et tag gardés. Page à cocher régénérée (même lien, version 2),
   verdicts de 01 et 02 supprimés.
+
+## 29. Lot 4 publié (2026-11-01)
+
+- Page à cocher : 11/11 OK, sans commentaire (01 à 04 relus dans leur version à deux trous).
+- `publier-lot.ts` simulé vert sur `2de-vecteurs-a` (7) et `2de-vecteurs-b` (4), puis lancé par David avec
+  `--publier` : MCP, les 11 `published`.
+- Worktree `ubumaths-wt-questions-2de` retiré.
+
+## 30. Lot 5 « Droites » : relevé et phase 0 (proposée le 2026-11-01, à valider)
+
+**Relevé MCP (prod, 2026-11-01)** : 16 points de « Droites du plan ». 15 sans modèle (311, 312, 439, 313, 314,
+440, 441, 315, 442, 443, 444, 316, 445, 317, 319) ; 2-318 a un modèle (336451af, f et g affines, « parallèles ? »
+en case choix, sans variation à calcul) ; 2-320 = P (démonstration, Q2). Nœuds : Géométrie › Géométrie repérée ›
+vecteur directeur (311, 315, 442, 443, 444) / équations de droites (312, 439, 314, 440, 441, 316, 445) /
+intersection de deux droites (318, 319) ; 2-313 → Fonctions › Fonctions affines › coefficient directeur et
+ordonnée à l'origine ; 2-317 → Géométrie › Vecteurs › colinéarité.
+
+**Voisins en prod** : 2-303 « Trois points alignés ? » et 2-437 « Deux droites parallèles ? » (lot 4 B, par le
+déterminant) ; 09f0c9ec « Déterminer le coefficient directeur » (2de, images PNG, tagué 2-347) ; 3e : lecture
+du coefficient directeur sur un ` ```courbe ` (0d0e88f5, b9771108 : patron de 2-315).
+
+**Outils (tous en prod)** : case `answerKind: "equation"` (droite jugée sur ses points : y = 2x + 1 et
+4x − 2y + 2 = 0 tous deux justes ; `requiredForm` `reduite` / `cartesienne` possible ; patron
+`geometrie-reperee-1spe/A-02`) ; ` ```courbe ` (droites, points, grille) ; case choix, dessins de ` ```courbe `
+dans les choix (patron `fonctions-terminale/C-06`) ; case `vecteur` en mode `colineaire` (une seule case :
+tout vecteur colinéaire juste). **Classe** : tout en A ou B ; 2-316 et 2-445 (tracer) en case choix entre
+courbes (Q5).
+
+**Phase 0 proposée** : 16 modèles neufs, un par point, niveau `['2']`, brouillons. Catégorie neuve
+Géométrie › Droites du plan › Pente et vecteur directeur / Équations de droites / Positions relatives.
+Coordonnées entières de −9 à 9 d'abord, puis pentes fractionnaires.
+
+Lot 5 A « pente et vecteur directeur » (6) :
+
+1. **2-313 · Pente par deux points** : A, B → m = (y_B − y_A)/(x_B − x_A) ; entière, puis fractionnaire ;
+   puis « la droite (AB) a-t-elle une pente ? » quand x_A = x_B (case choix, corrigé : parallèle à l'axe des
+   ordonnées).
+2. **2-315 · Pente lue sur un graphique** : ` ```courbe ` d'une droite, pente entière puis fractionnaire
+   (deux points à coordonnées entières marqués), négative ; corrigé : deux points, déplacements.
+3. **2-442 · Pente lue sur une équation** : y = mx + p (m ≠ coefficient de tête : y = 3 − 2x) ; puis
+   cartésienne ax + by + c = 0 → −a/b.
+4. **2-311 · Vecteur directeur (connaissance)** : A, B donnés, « lesquels sont des vecteurs directeurs de
+   (AB) ? » (case choix, `plusieurs: oui` : AB⃗, BA⃗, 2AB⃗, et des leurres (x_B + x_A ; …), (Δy ; Δx)).
+5. **2-443 · Vecteur directeur lu sur une équation** : cartésienne → (−b ; a) ; réduite → (1 ; m).
+6. **2-444 · Vecteur directeur lu sur un graphique** : ` ```courbe `, deux points de la droite.
+
+Lot 5 B « équations, tracés, positions relatives » (10) :
+
+7. **2-439 · Équation réduite** : « le point A est-il sur d : y = 2x − 1 ? » (case choix + calcul de
+   l'ordonnée du point d'abscisse donnée) ; réduite d'une cartésienne (2x + y − 3 = 0 → y = −2x + 3),
+   `requiredForm: reduite` ; droite verticale x = c.
+8. **2-312 · Équation cartésienne** : « M appartient-il à d : 2x − 3y + 6 = 0 ? » ; écrire une cartésienne
+   d'une réduite, `requiredForm: cartesienne`.
+9. **2-441 · Point et pente** → équation (case `equation`, forme libre).
+10. **2-314 · Deux points** → équation (forme libre) ; variation x_A = x_B → x = c.
+11. **2-440 · Point et vecteur directeur** → équation (forme libre), corrigé par det(AM⃗, u⃗) = 0.
+12. **2-316 · Tracer depuis l'équation réduite** : case choix entre 4 ` ```courbe ` (bonne, pente au signe
+    changé, p et m échangés, p au signe changé).
+13. **2-445 · Tracer depuis l'équation cartésienne** : même forme, b ≠ 0 (le bloc ne trace pas de verticale).
+14. **2-317 · Alignement par une équation** : équation de (AB) écrite, C dessus ou non (case choix) ; puis
+    ordonnée de C pour qu'il soit sur (AB). Le corrigé passe par l'équation, pour se distinguer de 2-303.
+15. **2-318 · Parallèles ou sécantes** (2e modèle) : droites par équations cartésiennes ou réduite + cartésienne
+    (case choix) ; puis m pour que d : mx + 2y − 1 = 0 soit parallèle à d′.
+16. **2-319 · Point d'intersection** : deux réduites → (x ; y) en deux trous ; entier puis fractionnaire ;
+    une droite verticale x = c.
+
+- **Corrigé** : formule écrite puis appliquée, résultat coloré ; oui/non justifié par le calcul ; chaque
+  modèle à case choix oui/non a une variation à calcul (L4-d).
+- **Erreurs typiques en specs** : Δx/Δy au lieu de Δy/Δx ; y_B − y_A sur x_A − x_B ; pente a/b au lieu de
+  −a/b ; vecteur (b ; a) ou (a ; −b) au lieu de (−b ; a) ; p de signe faux ; point d'intersection donné par
+  x seul ; équation passant par un seul des deux points.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L5-a — Un vecteur directeur n'est pas unique** (2-443, 2-444). Deux trous dans la colonne (§ 28) ne
+  savent juger qu'une réponse ; tout vecteur colinéaire est juste. → Je recommande la **case `vecteur` en mode
+  `colineaire`** (une case, (2 ; 6) et (1 ; 3) justes), le seul jugement qui accepte toutes les bonnes
+  réponses ; autre voie : deux trous avec l'abscisse imposée (u⃗(1 ; ?)), juste mais qui souffle la méthode.
+- **L5-b — Forme de l'équation** (2-314, 440, 441) : → Je recommande **forme libre** (réduite ou cartésienne,
+  le BO ne fixe pas la forme), la forme imposée seulement dans 2-439 et 2-312 où elle est l'objet du point.
+- **L5-c — Deux lots** : 5 A (6 modèles), puis 5 B (10) ? → Je recommande **oui**.
+- **L5-d — 09f0c9ec** (lecture de pente sur image, tagué 2-347 « m taux d'accroissement ») : le laisser tel
+  quel ? → Je recommande **oui** : il lit une fonction affine (branche Fonctions), le nouveau 2-315 lit une
+  droite.
+
+**Décisions de David (2026-11-01)** : phase 0 validée avec mes quatre recommandations — L5-a case `vecteur`
+en mode `colineaire` (2-443, 2-444) ; L5-b forme libre (2-314, 440, 441), forme imposée en 2-439 et 2-312 ;
+L5-c lots 5 A (6) puis 5 B (10) ; L5-d 09f0c9ec laissé tel quel.
+
+## 31. Lot 5 A, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-droites-a-2de.py` → `scripts/questions/2de-droites-a/` (6 modèles, 14 variations,
+  43 specs). Catégorie neuve Géométrie › Droites du plan › Pente et vecteur directeur (niveaux 1 à 6, libres
+  en prod). `cleanCoefficients` pour les équations tirées.
+- `create-questions` en simulation : tout vert ; `sonde-courbes` : 0 problème (902 blocs sur 300 tirages).
+- Relecture des tirages : « m = 5/1 » (01) et « y = 3/−4 x » (03) corrigés en valeurs calculées.
+- Base locale : 6 brouillons ; aperçu joué : 02 (−1/2 lu sur la droite, « Juste »), 05 (y = 5x + 1, réponse
+  (−2 ; −10) colinéaire « Juste »), 04 (choix mélangés, les trois vecteurs directeurs « coché, juste »).
+
+## 32. Lot 5 B, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-droites-b-2de.py` → `scripts/questions/2de-droites-b/` (10 modèles, 27 variations,
+  77 specs). Catégories neuves Géométrie › Droites du plan › Équations de droites (01 à 07, niveaux 1 à 7 :
+  2-439, 312, 441, 314, 440, 316, 445) et › Positions relatives (08 à 10, niveaux 1 à 3 : 2-317, 318, 319).
+  Cases `equation` posées case par case (`answerKind` dans la case, pas en `blankDefaults` : les modèles
+  mêlent choix et calcul) ; `requiredForm` réduite (01) et cartésienne (02) seulement.
+- `question-specs` : 77/77, tirages tous réussis ; `sonde-courbes` : 0 problème ; `create-questions` en
+  simulation contre la prod : « 10 à créer ».
+- Relecture des tirages (`apercu-fichiers.ts`, nouveau : aperçu par variation des fichiers d'un lot) :
+  `y=1x-2` dans `\textcolor` (le nettoyage ne passe pas la couleur) → coefficients par `{{if:…}}` ;
+  `15--3` et `-4\times(-8)--4` → `{{k;()}}` ; `\iffx` → espace, étape `1x = …` sautée si m1 − m2 = 1 ;
+  `y+0` → coordonnées non nulles.
+- MCP (prod) : aucun modèle du lot 5 A en base, le `--publier` de David reste à faire.
+- Base locale : 10 brouillons ; aperçu joué : 06 (y = −2x + 4, quatre droites dessinées, A « coché, juste ») ;
+  01 v3 (12x − 3y − 18 = 0 : `y=6+4x` « Juste », `4x-y+6=0` « Faux » avec le message de forme réduite) ;
+  10 v3 (x = −4 et y = −4x − 2 : I(−4 ; 14) en deux cases « Juste »).
+
+## 33. Lot 5, brouillons en prod (2026-11-01)
+
+David a lancé `create-questions --publier` sur `2de-droites-a` puis `2de-droites-b` : 16 créés. MCP : 16
+`draft`, niveau `['2']`, niveaux 1 à 6 / 1 à 7 / 1 à 3 dans leurs trois catégories.
+
+| Fichier                                 | Point | id                                   |
+| --------------------------------------- | ----- | ------------------------------------ |
+| A-01 pente par deux points              | 2-313 | 7d6cf480-b062-4e45-a593-2e85fbeb28b3 |
+| A-02 pente lue sur un graphique         | 2-315 | f381c646-80fa-4cd2-86c0-0c3d9ad934be |
+| A-03 pente lue sur une équation         | 2-442 | 49df6491-f424-4560-8fba-a9c302449e3d |
+| A-04 vecteurs directeurs                | 2-311 | 7d605742-cf00-4282-b56c-c99aee16ad14 |
+| A-05 vecteur directeur sur une équation | 2-443 | 36c21f21-fee5-4d2e-a191-364b42039cd1 |
+| A-06 vecteur directeur sur un graphique | 2-444 | 2540ca82-26ca-443e-a5f7-5f87a49629e3 |
+| B-01 équation réduite                   | 2-439 | 7f308eb4-40f9-408e-9c71-012464d0f79d |
+| B-02 équation cartésienne               | 2-312 | 7c0f1c1a-e415-499c-97ac-cb6060f99105 |
+| B-03 point et pente                     | 2-441 | e6552232-b549-4966-8863-1cba6f945fcc |
+| B-04 deux points                        | 2-314 | 6e074f0e-0c3a-41b8-b70a-82cb402494b3 |
+| B-05 point et vecteur directeur         | 2-440 | d8a958ba-c6f2-4e6b-b4c9-ee7b370cc03e |
+| B-06 tracer, équation réduite           | 2-316 | 8d4bd94d-73f7-4589-8b3f-67c84edcf778 |
+| B-07 tracer, équation cartésienne       | 2-445 | 2cfae58d-7fdb-45f7-8ea1-777a4a307b5a |
+| B-08 alignement par une équation        | 2-317 | 7a3b209d-05b1-400d-98ba-e57d85639d05 |
+| B-09 parallèles ou sécantes             | 2-318 | c23f5a94-269d-4f2d-915a-ca234cec67a6 |
+| B-10 point d'intersection               | 2-319 | 718b7183-415b-4a86-bbf1-70a3c1eb0c6c |
+
+## 34. Lot 5, migration nœud + tag (2026-11-01)
+
+- Relevé MCP avant le SQL : les 16 en `draft`, sans nœud, sans tag ; chaque point sur le nœud du § 30.
+  Question d'accès : tranchée en phase 0 (§ 30, personne).
+- Migration `20261101160100_questions_2de_droites_rangement_tags` et
+  `tests/integration/questions-2de-droites-rangement-tags.test.ts`, générés depuis ceux du lot 4 (seul le lot
+  change). Rouge sans la migration (fichier vidé : 3 échecs, 5 sautés) ; vert avec : 10/10.
+- `security-auditor` : aucun finding (même code exécutable que le lot 4, gardes et rollback vérifiés, état prod
+  relu par MCP). PR #2087.
+- #2087 mergée (CI : `Doc-inchangée:` à mettre dans un commit, pas dans le corps de PR ; `/demo/editeur`
+  instable, vert à la relance). `db:migrate` : bloqué d'abord par une collision 20261101141600 (CE1 / CM1, levée
+  par #2093), puis refusé par le classifieur ; joué par David avec 160400 (CM1). MCP : 16 `draft`, bon nœud, un
+  seul tag, le bon, `updated_at` préservé.
+
+## 35. Lot 5, page à cocher (2026-11-01)
+
+- `page-a-cocher.ts` sur les 16 fichiers des deux dossiers réunis (copie dans le scratchpad, préfixes `a-`/`b-`) :
+  les 16 ids du § 33 retrouvés, `draft`, aucune alerte. Page (capacité `db`, collection `verdicts` vide au
+  départ) : https://claude.ai/artifact/YYe7XgNAqZa9ZmStmPGcci
+- Publication : `publier-lot.ts` une fois par dossier (`2de-droites-a`, puis `2de-droites-b`).
+
+## 36. Lot 5 publié (2026-11-01)
+
+- David valide le lot en bloc (aucun verdict sur la page). `publier-lot.ts` en simulation : 6/6 et 10/10 passent ;
+  `--publier` lancé par David sur `2de-droites-a` puis `2de-droites-b` : 16/16 publiés. MCP : 16 `published`.
+
+## 37. Lot 6 « Fonctions de référence, résolutions » : relevé et phase 0 (validée le 2026-11-01)
+
+**Relevé MCP (prod, 2026-11-01)** : sur les points du § 3.8 hors lecture graphique, **21 sans modèle** :
+325, 326, 327, 331, 447, 329, 333, 334, 335, 336, 448, 455, 457, 460, 461, 463, 466, 467, 469, 470, 472. Déjà couverts : 2-328 (bba95c2d), 2-339 (75fe996a), 2-458 (62b99aa7), **2-464** (419887ff et
+b0ef6947, « Division (2) », b/x = k, publiés, rangés « 1/x = k, 1/x < k » : pas de modèle neuf). 2-452, 2-454
+hors appli (Q6) ; 2-495 = P (Q2).
+
+Nœuds des points : Généralités › (notion) 325 · ensemble de définition 326 · appartenance à une courbe 327,
+331, 447 · signe 329 · équations et inéquations f(x) = k 336, 448 ; Fonctions affines › équations 455, 457 ;
+Fonction valeur absolue (notion) 333 · › équations et inéquations 460 ; Fonction carré › définition et courbe
+334 · › x² = k, x² < k 461, 463 ; Fonction inverse › définition et courbe 335 · › 1/x = k, 1/x < k 466 ;
+racine carrée › √x = k, √x < k 467, 469 ; cube › x³ = k, x³ < k 470, 472.
+
+**Voisins** : 2-281 x² = a (lot 2, Calcul littéral) ; 2-265/266/431 premier degré (lot 2) ; lecture graphique
+des mêmes fonctions (lot 2 bis, catégories « Lecture graphique ») ; 3e : 7407f328 « La courbe de la fonction
+carré » (3-046, case choix de courbes, patron de 2-334).
+
+**Bornes** : l2-1 (|x| = k, |x| < k seulement, pas |2x − 1| < 3) ; l2-2 (√x et x³ seulement en résolution ;
+domaine de √(x − 2) hors 2de ; 2-326 = dénominateur non nul) ; l2-3 (quatre sens) ; 2-447 : une abscisse
+seulement si f(x) = b est d'un type du programme.
+
+**Outils** (tous en prod) : case `intervalles` (S = ?, `{…}`, ∅, ℝ, réunion, ℝ \ {a}) ; ` ```courbe ` ; case
+choix avec dessins de ` ```courbe ` dans les choix (lot 5, B-06).
+
+**Phase 0 proposée** : un modèle par point, niveau `['2']`, brouillons, réponse `S = ?` en case `intervalles`
+sauf mention.
+
+Lot 6 A « Généralités et courbes de référence » (8) — Fonctions › Généralités › « Définition et courbe »
+(1 à 5) ; « Courbe » de chaque fonction :
+
+1. **2-325 · Ensemble de définition lu** : ` ```courbe ` tracée sur [a ; b], puis sur une réunion de deux
+   intervalles (bornes ouvertes / fermées marquées) → « f est définie sur ? ».
+2. **2-327 · Traduire « A(a ; b) ∈ C_f »** : case choix `plusieurs: oui` (f(a) = b ✔, « b est l'image de
+   a » ✔, « a est un antécédent de b » ✔ ; f(b) = a, « a est l'image de b »… ✘).
+3. **2-331 · Appartenance par le calcul** : f polynôme (2x² − 3x + 1, affine, (x − 1)(x + 2)), A donné ;
+   deux cases : f(x_A) = ? puis « A ∈ C_f ? » (case choix) ; variation 1/x et quotient a/(x − c).
+4. **2-447 · Coordonnées d'un point de la courbe** : ordonnée du point d'abscisse a ; abscisse(s) des points
+   d'ordonnée b quand f(x) = b est du programme (affine → `{…}` à un élément ; f(x) = x² + c → deux points).
+5. **2-326 · Ensemble de définition d'un quotient** : (2x + 1)/(x − 3) → ℝ \ {3} ; dénominateur ax + b
+   (valeur fractionnaire) ; produit (x − p)(x − q) au dénominateur → ℝ \ {p ; q}.
+6. **2-333 · Fonction valeur absolue** : case choix entre 4 courbes (|x|, −|x|, x², y = x) ; puis « pour
+   x < 0, |x| = ? » (case choix : −x ✔, x, 1/x, 0).
+7. **2-334 · Fonction carré** : case choix entre 4 courbes (x², −x², |x|, 1/x) ; puis image d'un négatif
+   (−3)² et piège −3².
+8. **2-335 · Fonction inverse** : case choix entre 4 courbes (1/x, −1/x, x², |x|) ; puis ensemble de
+   définition ℝ \ {0} ; image d'une fraction (1/(2/3)).
+
+Lot 6 B « Résolutions : affine, |x|, carré, inverse » (6) — sous-catégorie « Résolution algébrique » de chaque
+fonction, niveaux 1 (équation) et 2 (inéquation) :
+
+9. **2-455 · f affine, f(x) = k** : f(x) = mx + p donnée, « résoudre f(x) = k » ; solution entière, puis
+   fractionnaire ; « antécédent de k par f ».
+10. **2-457 · f affine, f(x) < k** : quatre sens tirés, m < 0 (sens qui change).
+11. **2-460 · |x| < k** : k > 0, quatre sens (]−k ; k[, ]−∞ ; −k] ∪ [k ; +∞[…) ; k < 0 (∅ ou ℝ) ; k = 0
+    ({0}, ℝ \ {0}, ∅, ℝ). Corrigé : distance à 0 sur la droite graduée.
+12. **2-461 · x² = k (fonction carré)** : voir L6-a.
+13. **2-463 · x² < k** : k carré parfait, quatre sens ; k non carré (√5) ; k < 0, k = 0.
+14. **2-466 · 1/x < k** : k ∈ {±½, ±1, ±2, ±3, ±4}, quatre sens : 1/x < 2 → ]−∞ ; 0[ ∪ ]½ ; +∞[ ; 1/x > −2 →
+    ]−∞ ; −½[ ∪ ]0 ; +∞[… Corrigé : signe de x, puis décroissance sur chaque intervalle, courbe et droite y = k.
+
+Lot 6 C « Résolutions : racine, cube, méthode au choix » (6) :
+
+15. **2-467 · √x = k** : k entier, décimal (√x = 1,2 → {1,44}), fraction ; k < 0 → ∅.
+16. **2-469 · √x < k** : [0 ; k²[, [k² ; +∞[… ; k < 0 (∅, [0 ; +∞[). Piège : oublier x ⩾ 0.
+17. **2-470 · x³ = k** : voir L6-c.
+18. **2-472 · x³ < k** : par la croissance de x ↦ x³, quatre sens.
+19. **2-336 · f(x) = k, méthode adaptée** : voir L6-d.
+20. **2-448 · f(x) < k, méthode adaptée** : voir L6-d.
+
+- **Corrigé** : méthode écrite (propriété de la fonction : croissance, décroissance, signe), résultat coloré ;
+  pour les inéquations, courbe + droite y = k en pointillé, partie solution repassée (comme le lot 2 bis).
+- **Erreurs typiques en specs** : oubli de la solution négative (x² = 9 → {3}) ; x² < 9 → ]−∞ ; 3[ ; √x < 2 →
+  ]−∞ ; 4[ ; 1/x < 2 → ]½ ; +∞[ seul (oubli des négatifs) ; 0 inclus pour 1/x ; |x| > 3 → ]3 ; +∞[ ; crochet
+  du mauvais côté ; sens non changé pour m < 0 ; « 3 » sans accolades ; ℝ \ {3} écrit {3}.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L6-a — 2-461 x² = k contre 2-281 x² = a** (lot 2, déjà écrit : carré parfait, √a, a ⩽ 0). → Je recommande
+  un modèle **distinct, du côté fonction** : « antécédents de k par la fonction carré », k fraction (9/4) et
+  décimal (0,49), puis f(x) = x² + c = k ; corrigé par la symétrie de la parabole. (Réutiliser le modèle de 2-281 est exclu : un
+  modèle porte un seul point par programme, ADR 0020.)
+- **L6-b — 2-329 « signe des fonctions de référence »** : 2-475 (signe de |x|) et 2-476 (signe de x²) sont
+  au lot 7. → Je recommande de **déplacer 2-329 au lot 7** (tous les signes ensemble) ; le lot 6 passe à 20.
+- **L6-c — 2-470, 2-472 cube** : la racine cubique ∛ n'est pas au BO de 2de. → Je recommande **cubes
+  parfaits seulement** (entiers −125 à 125, fractions 8/27, décimaux 0,008), sans ∛.
+- **L6-d — 2-336, 2-448 « méthode adaptée »** : le graphique est déjà fait (2-338, 2-453, lot 2 bis). → Je
+  recommande des **f données par leur expression, qui se ramènent à un type du programme** : 2x² + 1 = 19,
+  3/x − 1 = 5, 2√x + 1 = 7 (et < k) ; pas de |x| décalé (l2-1). Le corrigé nomme le type.
+- **L6-e — Découpage** : 6 A (8), 6 B (6), 6 C (6) : trois PR de fichiers, puis une migration nœud + tag et une
+  page à cocher pour les 20 ? → Je recommande **oui** (comme le lot 5).
+
+**Décisions de David (2026-11-01)** : phase 0 validée avec mes cinq recommandations — L6-a 2-461 modèle
+distinct côté fonction ; L6-b 2-329 déplacé au lot 7 (lot 6 = 20 modèles : 6 A = 8, 6 B = 6, 6 C = 6) ; L6-c cubes parfaits
+seulement ; L6-d expressions qui se ramènent à un type du programme ; L6-e trois PR de fichiers, une migration,
+une page à cocher.
+
+## 38. Lot 6 A, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-fonctions-a-2de.py` → `scripts/questions/2de-fonctions-a/` (8 modèles, 23 variations,
+  64 specs). Catégories : Fonctions › Généralités › « Définition et courbe » (01 à 05, niveaux 1 à 5 : 2-325, 327,
+  331, 447, 326) ; « Courbe » de Valeur absolue (niv. 1, 2-333), Fonction carré (niv. 2, 2-334 ; le niv. 1 est le
+  modèle de 3e 7407f328), Fonction inverse (niv. 1, 2-335). Cases posées case par case (nombre, choix, ensemble).
+- `question:specs` : 64/64, tirages tous réussis ; `sonde-courbes` : 0 problème (300 tirages) ; `create-questions`
+  en simulation contre la prod : « 8 à créer ».
+- Relecture des tirages : centre de la parabole rendu en `\dfrac` dans le bloc (illisible) → milieu laissé dans
+  l'expression ; « −4×(−4) » → « (−4)×(−4) ».
+- Base locale : 8 brouillons ; aperçu joué : 01 (réunion, réponse fausse « Faux » avec « La valeur de la borne est
+  incorrecte », puis [−3 ; 2[ « Juste ») ; 05 (ℝ\{−5} tapé avec `\backslash`, « Juste ») ; 08 (quatre courbes
+  dessinées et mélangées, hyperbole cochée « Juste », corrigé avec la courbe). **Défaut vu à l'aperçu** :
+  l'étiquette 𝒞_f se pose près d'une extrémité et ressemble à un disque vide → retirée des courbes de 01.
+- #2106 mergée (CI : `/demo/lexique` en échec sur le runner, `wrapDynamicImport`, vert à la relance).
+
+## 39. Lot 6 B, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-fonctions-b-2de.py` → `scripts/questions/2de-fonctions-b/` (6 modèles, 17 variations,
+  75 specs). Catégories (relevé prod : aucune n'existait) : « Résolution algébrique » de Fonctions affines (niv. 1
+  2-455, niv. 2 2-457), Valeur absolue (niv. 1 2-460), Fonction carré (niv. 1 2-461, niv. 2 2-463), Fonction
+  inverse (niv. 1 2-466). |x| et 1/x n'ont que l'inéquation, d'où le niveau 1 (|x| = k = 2-458 et 1/x = k = 2-464
+  sont déjà couverts ailleurs).
+- Relevé avant d'écrire : « Fonctions affines › Equations » niv. 2 (75fe996a) est 2-339 (graphique), « Valeur
+  absolue › Equations » 1 et 2 sont 2-458 et 2-420 : pas de doublon.
+- Écart au § 37 : le corrigé de |x| < k dit la distance à 0 mais dessine le V (` ```courbe `, ensemble repassé
+  sur l'axe des abscisses) : ` ```line ` ne trace pas d'intervalle.
+- `question:specs` 75/75, tirages tous réussis ; `sonde-courbes` 0 problème (1 800 tirages) ; `create-questions`
+  en simulation contre la prod : « 6 à créer ».
+- Relecture des tirages : « aucun les réels négatifs sont solutions » → phrases entières selon le sens.
+- Base locale : 6 brouillons ; aperçu joué : 06 (k = 0,5 rendu « 0,5 » ; [0 ; 2] « Faux » avec « Tu as inclus une
+  borne qui devrait être exclue », ]0 ; 2] « Juste » ; corrigé : hyperbole, disque vide en 0) ; corrigés de 02
+  (m < 0), 03 (|x| ⩽ 3), 04 (1,69), 05 (√14 dans le bloc) dessinés comme prévu.
+- #2113 : CI rouge sans lien avec le lot — `migration-versions` (collision `20261101190200` sur `main`, 5e lot 6 et
+  6e lot 7), `wrapDynamicImport` (client, connu, vert à la relance), « Garde SECURITY DEFINER » (à relire après la
+  réparation de `main`).

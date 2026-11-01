@@ -1,0 +1,187 @@
+{
+	"id": "0cbbbe91-9898-4c47-bc12-85766ed3de9e",
+	"title": "Primitive de la forme 2uu′",
+	"description": "Reconnaître 2uu′ (à un facteur constant près), primitive quelconque ou fixée par F(x₀) = y₀",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Formes u′eᵘ, 2uu′, u′/u",
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "(x^2+{{eval:m}})^2{{if:y0-m^2>0|+{{eval:y0-m^2}}}}{{if:y0-m^2<0|{{eval:y0-m^2}}}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=4x(x^2+{{eval:m}})$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)={{eval:y0}}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "y0",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["y0 != m^2"],
+			"correction": {
+				"steps": [
+					"Avec $u(x)=x^2+{{eval:m}}$, $u'(x)=2x$ : $f(x)=2\\times 2x(x^2+{{eval:m}})=2u'(x)u(x)$, de primitive $u^2$.",
+					"$F(x)=(x^2+{{eval:m}})^2+k$ et $F(0)={{eval:m^2}}+k={{eval:y0}}$, donc $k={{eval:y0-m^2}}$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{(x^2+{{eval:m}})^2{{if:y0-m^2>0|+{{eval:y0-m^2}}}}{{if:y0-m^2<0|{{eval:y0-m^2}}}}}$ (développer n'est pas nécessaire)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"integrand": "4x(x^2+{{eval:m}})",
+					"answerKind": "primitive",
+					"expectedAnswer": "(x^2+{{eval:m}})^2"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=4x(x^2+{{eval:m}})$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)=x^2+{{eval:m}}$, $u'(x)=2x$ : $f(x)=2u'(x)u(x)$, et une primitive de $2u'u$ est $u^2$.",
+					"Une primitive de $f$ est $F(x)=\\textcolor{{{color:primary.0}}}{(x^2+{{eval:m}})^2}$ (à une constante près)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["(x^2+1)^2+2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "1",
+				"y0": "3"
+			},
+			"description": "v0 : 4x(x²+1), F(0)=3 → (x²+1)²+2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x^4+2x^2+3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "1",
+				"y0": "3"
+			},
+			"description": "v0 : développé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2(x^2+1)^2+1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "1",
+				"y0": "3"
+			},
+			"description": "v0 : coefficient 2 de trop",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(x^2+2)^2+1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "2",
+				"y0": "1"
+			},
+			"description": "v0 : condition traitée sans u(0)²",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(x^2+2)^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "2"
+			},
+			"description": "v1 (ouverte) f=4x(x²+2) : primitive modèle",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["x^4+4x^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "2"
+			},
+			"description": "v1 (ouverte) f=4x(x²+2) : forme développée, autre constante",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(x^2+2)^2+C"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "2"
+			},
+			"description": "v1 (ouverte) f=4x(x²+2) : avec +C",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["12x^2+8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "2"
+			},
+			"description": "v1 (ouverte) f=4x(x²+2) : dérivée au lieu de primitive (message)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2(x^2+2)^2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "2"
+			},
+			"description": "v1 (ouverte) f=4x(x²+2) : coefficient 2 en trop",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{(x^2+2)^3}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "2"
+			},
+			"description": "v1 (ouverte) f=4x(x²+2) : non-primitive",
+			"variationIndex": 1
+		}
+	]
+}

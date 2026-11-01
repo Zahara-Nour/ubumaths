@@ -1,0 +1,223 @@
+{
+	"title": "Fonction affine tangente",
+	"description": "Fonction affine tangente x ↦ f(a) + f′(a)(x − a), sous forme réduite, pour le carré, le cube, l'inverse et la racine carrée",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Approximation affine",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^2$.\n\nDonne, sous forme réduite, la fonction affine tangente $g$ à $f$ en ${{a}}$.\n\n$g(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a*x-a^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction affine tangente à $f$ en $a$ est $g(x)=f(a)+f'(a)(x-a)$.",
+					"Ici $f({{a}})={{eval:a^2}}$ et $f'({{a}})={{eval:2*a}}$, donc $g(x)={{eval:a^2}}+\\left({{eval:2*a}}\\right)(x{{eval:-a;+}})$.",
+					"$$g(x)=\\textcolor{{{color:primary.0}}}{{{eval:2*a*x-a^2}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^3$.\n\nDonne, sous forme réduite, la fonction affine tangente $g$ à $f$ en ${{a}}$.\n\n$g(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*a^2*x-2*a^3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction affine tangente à $f$ en $a$ est $g(x)=f(a)+f'(a)(x-a)$.",
+					"Ici $f({{a}})={{eval:a^3}}$ et $f'({{a}})={{eval:3*a^2}}$, donc $g(x)={{eval:a^3}}+\\left({{eval:3*a^2}}\\right)(x{{eval:-a;+}})$.",
+					"$$g(x)=\\textcolor{{{color:primary.0}}}{{{eval:3*a^2*x-2*a^3}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)=\\dfrac{1}{x}$.\n\nDonne, sous forme réduite, la fonction affine tangente $g$ à $f$ en ${{a}}$.\n\n$g(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-x/a^2+2/a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction affine tangente à $f$ en $a$ est $g(x)=f(a)+f'(a)(x-a)$.",
+					"Ici $f({{a}})={{eval:1/a}}$ et $f'({{a}})={{eval:-1/a^2}}$, donc $g(x)={{eval:1/a}}+\\left({{eval:-1/a^2}}\\right)(x{{eval:-a;+}})$.",
+					"$$g(x)=\\textcolor{{{color:primary.0}}}{{{eval:-x/a^2+2/a}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f(x)=\\sqrt{x}$.\n\nDonne, sous forme réduite, la fonction affine tangente $g$ à $f$ en ${{a}}$.\n\n$g(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:r^2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x/(2*r)+r/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction affine tangente à $f$ en $a$ est $g(x)=f(a)+f'(a)(x-a)$, avec $f'(x)=\\dfrac{1}{2\\sqrt{x}}$.",
+					"Ici $f({{a}})={{r}}$ et $f'({{a}})=\\dfrac{1}{{{eval:2*r}}}$.",
+					"$$g(x)=\\textcolor{{{color:primary.0}}}{{{eval:x/(2*r)+r/2}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carré en 3 : 6x − 9",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["6x-9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur de signe : 6x + 9",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["6x+9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cube en 1 : 3x − 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1"
+			},
+			"answers": ["3x-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f′(a) seul, 3x",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1"
+			},
+			"answers": ["3x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Inverse en 2 : −x/4 + 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["-\\frac{1}{4}x+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Inverse : autre écriture",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["1-\\frac{x}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur de signe sur f′ : x/4 + 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["\\frac{1}{4}x+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Racine en 4 : x/4 + 1",
+			"variationIndex": 3,
+			"variables": {
+				"r": "2",
+				"a": "4"
+			},
+			"answers": ["\\frac{x}{4}+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + f(a) seul, x/4 + 2",
+			"variationIndex": 3,
+			"variables": {
+				"r": "2",
+				"a": "4"
+			},
+			"answers": ["\\frac{x}{4}+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

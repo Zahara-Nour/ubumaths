@@ -1,0 +1,571 @@
+{
+	"title": "Somme de deux vecteurs",
+	"description": "Construire la somme de deux vecteurs en enchaînant deux translations, sur un quadrillage",
+	"grades": ["3"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs",
+	"subdomain": "Somme",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On applique au point $A$ la translation de vecteur $\\vec{u}$, puis la translation de vecteur $\\vec{v}$. Quel point obtient-on ?\n\n```figure\nfenetre: 0 ; 25 ; 0 ; 14\ngrille: 1\ndescription: Quadrillage : les vecteurs u et v, le point A et quatre points M, N, P et R.\n---\nvecteur({{eval:ux}}, {{eval:uy}}, ancre=(4, 10))\ntexte({{eval:round(100*(4+(ux)/2-0.7*(uy)/sqrt((ux)^2+(uy)^2)))/100;d}}, {{eval:round(100*(10+(uy)/2+0.7*(ux)/sqrt((ux)^2+(uy)^2)))/100;d}}, \"u⃗\")\nvecteur({{eval:vx}}, {{eval:vy}}, ancre=(4, 4))\ntexte({{eval:round(100*(4+(vx)/2-0.7*(vy)/sqrt((vx)^2+(vy)^2)))/100;d}}, {{eval:round(100*(4+(vy)/2+0.7*(vx)/sqrt((vx)^2+(vy)^2)))/100;d}}, \"v⃗\")\nA = point({{ax}}, {{ay}}, etiquette=\"bas\")\nM = point({{eval:x0}}, {{eval:y0}}, etiquette=\"haut\")\nN = point({{eval:x1}}, {{eval:y1}}, etiquette=\"haut\")\nP = point({{eval:x2}}, {{eval:y2}}, etiquette=\"haut\")\nR = point({{eval:x3}}, {{eval:y3}}, etiquette=\"haut\")\n```\n\n```choix\n- le point ${{if:p==0|M|}}{{if:p==1|N|}}{{if:p==2|P|}}{{if:p==3|R|}}$\n- le point ${{if:p==0|N|}}{{if:p==1|P|}}{{if:p==2|R|}}{{if:p==3|M|}}$\n- le point ${{if:p==0|P|}}{{if:p==1|R|}}{{if:p==2|M|}}{{if:p==3|N|}}$\n- le point ${{if:p==0|R|}}{{if:p==1|M|}}{{if:p==2|N|}}{{if:p==3|P|}}$\n```",
+			"variables": [
+				{
+					"name": "ux",
+					"expression": "-3..3"
+				},
+				{
+					"name": "uy",
+					"expression": "-3..3"
+				},
+				{
+					"name": "vx",
+					"expression": "-3..3"
+				},
+				{
+					"name": "vy",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ax",
+					"expression": "14..18"
+				},
+				{
+					"name": "ay",
+					"expression": "5..9"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				},
+				{
+					"name": "k0",
+					"expression": "{{if:p==0|0|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|1|}}"
+				},
+				{
+					"name": "cu0",
+					"expression": "{{if:k0==0|1|}}{{if:k0==1|1|}}{{if:k0==2|-1|}}{{if:k0==3|1|}}"
+				},
+				{
+					"name": "cv0",
+					"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|1|}}{{if:k0==3|0|}}"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:ax+cu0*ux+cv0*vx"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:ay+cu0*uy+cv0*vy"
+				},
+				{
+					"name": "k1",
+					"expression": "{{if:p==0|1|}}{{if:p==1|0|}}{{if:p==2|3|}}{{if:p==3|2|}}"
+				},
+				{
+					"name": "cu1",
+					"expression": "{{if:k1==0|1|}}{{if:k1==1|1|}}{{if:k1==2|-1|}}{{if:k1==3|1|}}"
+				},
+				{
+					"name": "cv1",
+					"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|1|}}{{if:k1==3|0|}}"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:ax+cu1*ux+cv1*vx"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:ay+cu1*uy+cv1*vy"
+				},
+				{
+					"name": "k2",
+					"expression": "{{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|0|}}{{if:p==3|3|}}"
+				},
+				{
+					"name": "cu2",
+					"expression": "{{if:k2==0|1|}}{{if:k2==1|1|}}{{if:k2==2|-1|}}{{if:k2==3|1|}}"
+				},
+				{
+					"name": "cv2",
+					"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|1|}}{{if:k2==3|0|}}"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:ax+cu2*ux+cv2*vx"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:ay+cu2*uy+cv2*vy"
+				},
+				{
+					"name": "k3",
+					"expression": "{{if:p==0|3|}}{{if:p==1|2|}}{{if:p==2|1|}}{{if:p==3|0|}}"
+				},
+				{
+					"name": "cu3",
+					"expression": "{{if:k3==0|1|}}{{if:k3==1|1|}}{{if:k3==2|-1|}}{{if:k3==3|1|}}"
+				},
+				{
+					"name": "cv3",
+					"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|1|}}{{if:k3==3|0|}}"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:ax+cu3*ux+cv3*vx"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:ay+cu3*uy+cv3*vy"
+				}
+			],
+			"conditions": [
+				"ux*ux+uy*uy>=2",
+				"vx*vx+vy*vy>=2",
+				"ux*vy-uy*vx!=0",
+				"x0>=9",
+				"x0<=24",
+				"y0>=1",
+				"y0<=13",
+				"x1>=9",
+				"x1<=24",
+				"y1>=1",
+				"y1<=13",
+				"x2>=9",
+				"x2<=24",
+				"y2>=1",
+				"y2<=13",
+				"x3>=9",
+				"x3<=24",
+				"y3>=1",
+				"y3<=13",
+				"abs(x0-x1)+abs(y0-y1)>=2",
+				"abs(x0-x2)+abs(y0-y2)>=2",
+				"abs(x0-x3)+abs(y0-y3)>=2",
+				"abs(x1-x2)+abs(y1-y2)>=2",
+				"abs(x1-x3)+abs(y1-y3)>=2",
+				"abs(x2-x3)+abs(y2-y3)>=2",
+				"ax+ux>=9",
+				"ax+ux<=24",
+				"ay+uy>=1",
+				"ay+uy<=13"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Enchaîner la translation de vecteur $\\vec{u}$ et celle de vecteur $\\vec{v}$, c'est appliquer la translation de vecteur $\\vec{u} + \\vec{v}$.",
+					"Depuis $A$ : $\\vec{u}$ fait {{eval:abs(ux)}} carreau(x) vers la {{if:ux>0|droite|gauche}} et {{eval:abs(uy)}} vers le {{if:uy>0|haut|bas}}, puis $\\vec{v}$ fait {{eval:abs(vx)}} carreau(x) vers la {{if:vx>0|droite|gauche}} et {{eval:abs(vy)}} vers le {{if:vy>0|haut|bas}}.",
+					"On arrive au point \\textcolor{{{color:primary.0}}}{{{if:p==0|M|}}{{if:p==1|N|}}{{if:p==2|P|}}{{if:p==3|R|}}}."
+				]
+			}
+		},
+		{
+			"statement": "Lequel de ces vecteurs est égal à $\\vec{u} + \\vec{v}$ ?\n\n```figure\nfenetre: 0 ; 22 ; 0 ; 15\ngrille: 1\ndescription: Quadrillage : les vecteurs u et v et quatre vecteurs CD, EF, GH et KL.\n---\nvecteur({{eval:ux}}, {{eval:uy}}, ancre=(4, 11))\ntexte({{eval:round(100*(4+(ux)/2-0.7*(uy)/sqrt((ux)^2+(uy)^2)))/100;d}}, {{eval:round(100*(11+(uy)/2+0.7*(ux)/sqrt((ux)^2+(uy)^2)))/100;d}}, \"u⃗\")\nvecteur({{eval:vx}}, {{eval:vy}}, ancre=(4, 4))\ntexte({{eval:round(100*(4+(vx)/2-0.7*(vy)/sqrt((vx)^2+(vy)^2)))/100;d}}, {{eval:round(100*(4+(vy)/2+0.7*(vx)/sqrt((vx)^2+(vy)^2)))/100;d}}, \"v⃗\")\nC = point(11, 11, etiquette=\"{{if:d0y>0|bas|haut}}\")\nD = point({{eval:11+d0x}}, {{eval:11+d0y}}, etiquette=\"{{if:d0y>0|haut|bas}}\")\nvecteur(C, D)\nE = point(18, 11, etiquette=\"{{if:d1y>0|bas|haut}}\")\nF = point({{eval:18+d1x}}, {{eval:11+d1y}}, etiquette=\"{{if:d1y>0|haut|bas}}\")\nvecteur(E, F)\nG = point(11, 4, etiquette=\"{{if:d2y>0|bas|haut}}\")\nH = point({{eval:11+d2x}}, {{eval:4+d2y}}, etiquette=\"{{if:d2y>0|haut|bas}}\")\nvecteur(G, H)\nK = point(18, 4, etiquette=\"{{if:d3y>0|bas|haut}}\")\nL = point({{eval:18+d3x}}, {{eval:4+d3y}}, etiquette=\"{{if:d3y>0|haut|bas}}\")\nvecteur(K, L)\n```\n\n```choix\n- ${{if:p==0|\\overrightarrow{CD}|}}{{if:p==1|\\overrightarrow{EF}|}}{{if:p==2|\\overrightarrow{GH}|}}{{if:p==3|\\overrightarrow{KL}|}}$\n- ${{if:p==0|\\overrightarrow{EF}|}}{{if:p==1|\\overrightarrow{GH}|}}{{if:p==2|\\overrightarrow{KL}|}}{{if:p==3|\\overrightarrow{CD}|}}$\n- ${{if:p==0|\\overrightarrow{GH}|}}{{if:p==1|\\overrightarrow{KL}|}}{{if:p==2|\\overrightarrow{CD}|}}{{if:p==3|\\overrightarrow{EF}|}}$\n- ${{if:p==0|\\overrightarrow{KL}|}}{{if:p==1|\\overrightarrow{CD}|}}{{if:p==2|\\overrightarrow{EF}|}}{{if:p==3|\\overrightarrow{GH}|}}$\n```",
+			"variables": [
+				{
+					"name": "ux",
+					"expression": "-3..3"
+				},
+				{
+					"name": "uy",
+					"expression": "-3..3"
+				},
+				{
+					"name": "vx",
+					"expression": "-3..3"
+				},
+				{
+					"name": "vy",
+					"expression": "-3..3"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				},
+				{
+					"name": "k0",
+					"expression": "{{if:p==0|0|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|1|}}"
+				},
+				{
+					"name": "ax0",
+					"expression": "{{if:k0==0|1|}}{{if:k0==1|1|}}{{if:k0==2|-1|}}{{if:k0==3|-1|}}"
+				},
+				{
+					"name": "bx0",
+					"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|1|}}{{if:k0==3|-1|}}"
+				},
+				{
+					"name": "ay0",
+					"expression": "{{if:k0==0|1|}}{{if:k0==1|1|}}{{if:k0==2|-1|}}{{if:k0==3|-1|}}"
+				},
+				{
+					"name": "by0",
+					"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|1|}}{{if:k0==3|-1|}}"
+				},
+				{
+					"name": "d0x",
+					"expression": "eval:ax0*ux+bx0*vx"
+				},
+				{
+					"name": "d0y",
+					"expression": "eval:ay0*uy+by0*vy"
+				},
+				{
+					"name": "k1",
+					"expression": "{{if:p==0|1|}}{{if:p==1|0|}}{{if:p==2|3|}}{{if:p==3|2|}}"
+				},
+				{
+					"name": "ax1",
+					"expression": "{{if:k1==0|1|}}{{if:k1==1|1|}}{{if:k1==2|-1|}}{{if:k1==3|-1|}}"
+				},
+				{
+					"name": "bx1",
+					"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|1|}}{{if:k1==3|-1|}}"
+				},
+				{
+					"name": "ay1",
+					"expression": "{{if:k1==0|1|}}{{if:k1==1|1|}}{{if:k1==2|-1|}}{{if:k1==3|-1|}}"
+				},
+				{
+					"name": "by1",
+					"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|1|}}{{if:k1==3|-1|}}"
+				},
+				{
+					"name": "d1x",
+					"expression": "eval:ax1*ux+bx1*vx"
+				},
+				{
+					"name": "d1y",
+					"expression": "eval:ay1*uy+by1*vy"
+				},
+				{
+					"name": "k2",
+					"expression": "{{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|0|}}{{if:p==3|3|}}"
+				},
+				{
+					"name": "ax2",
+					"expression": "{{if:k2==0|1|}}{{if:k2==1|1|}}{{if:k2==2|-1|}}{{if:k2==3|-1|}}"
+				},
+				{
+					"name": "bx2",
+					"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|1|}}{{if:k2==3|-1|}}"
+				},
+				{
+					"name": "ay2",
+					"expression": "{{if:k2==0|1|}}{{if:k2==1|1|}}{{if:k2==2|-1|}}{{if:k2==3|-1|}}"
+				},
+				{
+					"name": "by2",
+					"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|1|}}{{if:k2==3|-1|}}"
+				},
+				{
+					"name": "d2x",
+					"expression": "eval:ax2*ux+bx2*vx"
+				},
+				{
+					"name": "d2y",
+					"expression": "eval:ay2*uy+by2*vy"
+				},
+				{
+					"name": "k3",
+					"expression": "{{if:p==0|3|}}{{if:p==1|2|}}{{if:p==2|1|}}{{if:p==3|0|}}"
+				},
+				{
+					"name": "ax3",
+					"expression": "{{if:k3==0|1|}}{{if:k3==1|1|}}{{if:k3==2|-1|}}{{if:k3==3|-1|}}"
+				},
+				{
+					"name": "bx3",
+					"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|1|}}{{if:k3==3|-1|}}"
+				},
+				{
+					"name": "ay3",
+					"expression": "{{if:k3==0|1|}}{{if:k3==1|1|}}{{if:k3==2|-1|}}{{if:k3==3|-1|}}"
+				},
+				{
+					"name": "by3",
+					"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|1|}}{{if:k3==3|-1|}}"
+				},
+				{
+					"name": "d3x",
+					"expression": "eval:ax3*ux+bx3*vx"
+				},
+				{
+					"name": "d3y",
+					"expression": "eval:ay3*uy+by3*vy"
+				}
+			],
+			"conditions": [
+				"ux*ux+uy*uy>=2",
+				"vx*vx+vy*vy>=2",
+				"ux*vy-uy*vx!=0",
+				"abs(ux+vx)<=3",
+				"abs(uy+vy)<=3",
+				"abs(ux-vx)<=3",
+				"abs(uy-vy)<=3",
+				"uy+vy!=0",
+				"uy-vy!=0",
+				"ux+vx!=0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{u} + \\vec{v}$ est le vecteur de la translation qui enchaîne celle de vecteur $\\vec{u}$ et celle de vecteur $\\vec{v}$ : on met les deux déplacements bout à bout.",
+					"$\\vec{u}$ fait {{eval:abs(ux)}} carreau(x) vers la {{if:ux>0|droite|gauche}} et {{eval:abs(uy)}} vers le {{if:uy>0|haut|bas}} ; $\\vec{v}$ fait {{eval:abs(vx)}} carreau(x) vers la {{if:vx>0|droite|gauche}} et {{eval:abs(vy)}} vers le {{if:vy>0|haut|bas}}.",
+					"Bout à bout : $\\vec{u} + \\vec{v}$ fait {{eval:abs((ux+vx))}} carreau(x) vers la {{if:(ux+vx)>0|droite|gauche}} et {{eval:abs((uy+vy))}} vers le {{if:(uy+vy)>0|haut|bas}}, comme $\\textcolor{{{color:primary.0}}}{{{if:p==0|\\overrightarrow{CD}|}}{{if:p==1|\\overrightarrow{EF}|}}{{if:p==2|\\overrightarrow{GH}|}}{{if:p==3|\\overrightarrow{KL}|}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On applique la translation de vecteur $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$, puis la translation de vecteur $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$. Par quelle translation unique peut-on les remplacer ?\n\n```choix\n- la translation de vecteur $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$\n- la translation de vecteur $\\overrightarrow{{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$\n- la translation de vecteur $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n- la translation de vecteur $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La première translation envoie ${{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}$ sur ${{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}$, la seconde envoie ${{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}$ sur ${{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}$.",
+					"Les deux enchaînées envoient ${{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}$ sur ${{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}$ : c'est la translation de vecteur $\\textcolor{{{color:primary.0}}}{\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}}$, et $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} = \\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Image par u puis v",
+			"variationIndex": 0,
+			"variables": {
+				"ux": "2",
+				"uy": "1",
+				"vx": "1",
+				"vy": "-3",
+				"ax": "15",
+				"ay": "7",
+				"p": "1",
+				"k0": "3",
+				"cu0": "1",
+				"cv0": "0",
+				"x0": "17",
+				"y0": "8",
+				"k1": "0",
+				"cu1": "1",
+				"cv1": "1",
+				"x1": "18",
+				"y1": "5",
+				"k2": "1",
+				"cu2": "1",
+				"cv2": "-1",
+				"x2": "16",
+				"y2": "11",
+				"k3": "2",
+				"cu3": "-1",
+				"cv3": "1",
+				"x3": "14",
+				"y3": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u − v",
+			"variationIndex": 0,
+			"variables": {
+				"ux": "2",
+				"uy": "1",
+				"vx": "1",
+				"vy": "-3",
+				"ax": "15",
+				"ay": "7",
+				"p": "1",
+				"k0": "3",
+				"cu0": "1",
+				"cv0": "0",
+				"x0": "17",
+				"y0": "8",
+				"k1": "0",
+				"cu1": "1",
+				"cv1": "1",
+				"x1": "18",
+				"y1": "5",
+				"k2": "1",
+				"cu2": "1",
+				"cv2": "-1",
+				"x2": "16",
+				"y2": "11",
+				"k3": "2",
+				"cu3": "-1",
+				"cv3": "1",
+				"x3": "14",
+				"y3": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u seul",
+			"variationIndex": 0,
+			"variables": {
+				"ux": "2",
+				"uy": "1",
+				"vx": "1",
+				"vy": "-3",
+				"ax": "15",
+				"ay": "7",
+				"p": "1",
+				"k0": "3",
+				"cu0": "1",
+				"cv0": "0",
+				"x0": "17",
+				"y0": "8",
+				"k1": "0",
+				"cu1": "1",
+				"cv1": "1",
+				"x1": "18",
+				"y1": "5",
+				"k2": "1",
+				"cu2": "1",
+				"cv2": "-1",
+				"x2": "16",
+				"y2": "11",
+				"k3": "2",
+				"cu3": "-1",
+				"cv3": "1",
+				"x3": "14",
+				"y3": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u + v : bonne case",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"ux": "1",
+				"uy": "2",
+				"vx": "2",
+				"vy": "-1",
+				"k0": "1",
+				"ax0": "1",
+				"bx0": "-1",
+				"ay0": "1",
+				"by0": "-1",
+				"d0x": "-1",
+				"d0y": "3",
+				"k1": "2",
+				"ax1": "-1",
+				"bx1": "1",
+				"ay1": "-1",
+				"by1": "1",
+				"d1x": "1",
+				"d1y": "-3",
+				"k2": "3",
+				"ax2": "-1",
+				"bx2": "-1",
+				"ay2": "-1",
+				"by2": "-1",
+				"d2x": "-3",
+				"d2y": "-1",
+				"k3": "0",
+				"ax3": "1",
+				"bx3": "1",
+				"ay3": "1",
+				"by3": "1",
+				"d3x": "3",
+				"d3y": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u − v",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"ux": "1",
+				"uy": "2",
+				"vx": "2",
+				"vy": "-1",
+				"k0": "1",
+				"ax0": "1",
+				"bx0": "-1",
+				"ay0": "1",
+				"by0": "-1",
+				"d0x": "-1",
+				"d0y": "3",
+				"k1": "2",
+				"ax1": "-1",
+				"bx1": "1",
+				"ay1": "-1",
+				"by1": "1",
+				"d1x": "1",
+				"d1y": "-3",
+				"k2": "3",
+				"ax2": "-1",
+				"bx2": "-1",
+				"ay2": "-1",
+				"by2": "-1",
+				"d2x": "-3",
+				"d2y": "-1",
+				"k3": "0",
+				"ax3": "1",
+				"bx3": "1",
+				"ay3": "1",
+				"by3": "1",
+				"d3x": "3",
+				"d3y": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB puis BC : AC",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : CA",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

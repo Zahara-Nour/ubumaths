@@ -16,7 +16,8 @@
  * - Bloc ```collection ou ```monnaie à construire (`construire: N`) → UNE case, `case: N`
  *   posé dans le bloc ; droite à placer (```line, `placer: A=3 ; B=7`) → une case par point,
  *   N, N + 1…, seul N est posé ; diagramme en barres à construire (```barres, `placer:`) →
- *   une case par barre, de même
+ *   une case par barre, de même ; repère à points à placer (```courbe, `placer: A=(2 ; 3)`)
+ *   → une case par point, de même (refusé aussi comme option d'un bloc choix)
  * - Bloc ```figure-a-completer → UNE case (la figure de l'élève), `case: N` posé dans le bloc ;
  *   son contenu est mis à l'abri : ni `?` ni `[_]` n'y crée de case
  * - Bloc ```figure-de-travail → de même UNE case, jamais notée (l'élève trace pour vérifier)
@@ -36,6 +37,8 @@ import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { findCubesToBuild, findPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
+import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
+import { NESTED_PREFIX } from '$lib/ubumark/parser/nested-line';
 import { buildCaseCount } from './build-answer';
 import { buildKindName, type BuildKind } from '../types';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
@@ -232,6 +235,11 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 	const prefix = `Case ${caseIndex + 1} (bloc choix) :`;
 	const errors: string[] = [];
 	if (!block.closed) errors.push(`${prefix} ${CHOICE_BLOCK_UNCLOSED_MESSAGE}`);
+	// Repère à points à placer en option : le choix est mis à l'abri avant le repérage
+	// des gestes, le repère n'aurait pas de case (jamais jugé)
+	if (findCourbesToPlace(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('courbe')}`);
+	}
 	parseChoiceBody(block.body).choices.forEach((choice, index) => {
 		if (choiceHasBlank(choice)) {
 			errors.push(
@@ -245,9 +253,10 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 /** Fence d'ouverture d'un bloc ```figure-a-completer ou ```figure-de-travail, au premier niveau seulement */
 const CONSTRUCTION_FENCE_REGEX = /^```(figure-a-completer|figure-de-travail)\s*$/;
 
-/** La même, en retrait (liste) ou citée : le bloc ne peut pas porter de case */
-const NESTED_CONSTRUCTION_FENCE_REGEX =
-	/^(?:\s+|\s*>\s*)```(figure-a-completer|figure-de-travail)\s*$/;
+/** La même, en retrait (liste), sur la ligne d'un item ou citée : le bloc ne peut pas porter de case */
+const NESTED_CONSTRUCTION_FENCE_REGEX = new RegExp(
+	`^${NESTED_PREFIX}\`\`\`(figure-a-completer|figure-de-travail)\\s*$`
+);
 
 /** Marque d'un bloc ```figure-a-completer ou ```figure-de-travail mis à l'abri : début, rang du bloc, fin */
 const CONSTRUCTION_MARK_START = '\u0000construction:';
@@ -318,8 +327,8 @@ function restoreConstructionBlock(block: ConstructionBlock, caseIndex: number): 
 /** Fence d'ouverture d'un bloc ```operation, au premier niveau seulement */
 const OPERATION_FENCE_REGEX = /^```operation\s*$/;
 
-/** La même, en retrait (liste) ou citée : le bloc ne peut pas porter de case */
-const NESTED_OPERATION_FENCE_REGEX = /^(?:\s+|\s*>\s*)```operation\s*$/;
+/** La même, en retrait (liste), sur la ligne d'un item ou citée : le bloc ne peut pas porter de case */
+const NESTED_OPERATION_FENCE_REGEX = new RegExp(`^${NESTED_PREFIX}\`\`\`operation\\s*$`);
 
 /** Marque provisoire de la case d'un bloc, remplacée par `case: N` à son rang */
 const OPERATION_CASE_MARK = '\u0000operation-case\u0000';
@@ -339,7 +348,8 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	ranger: 'Des étiquettes à ranger',
 	partage: 'Une figure à colorier',
 	cubes: 'Un assemblage de cubes à geste',
-	patron: 'Un patron à geste'
+	patron: 'Un patron à geste',
+	courbe: 'Un repère à points à placer'
 };
 
 const buildNestedMessage = (kind: BuildKind) =>
@@ -456,7 +466,8 @@ function markBuildBlocks(statement: string): {
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
-		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const }))
+		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
+		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
 	const marked = found.filter((b) => !b.nested);
@@ -633,17 +644,21 @@ export function assignBlankIndices(
 						buildBlanks[counter] = {
 							kind: build.kind,
 							source: build.source,
-							...((build.kind === 'line' || build.kind === 'barres' || build.kind === 'ranger') && {
+							...((build.kind === 'line' ||
+								build.kind === 'barres' ||
+								build.kind === 'ranger' ||
+								build.kind === 'courbe') && {
 								point
 							})
 						};
 						counter++;
 						// Horloge : la réponse est une heure (`9 h 25`), étiquettes : une position
 						// (`2`), figure à colorier : des rangs (`1, 4`), assemblage de cubes : un
-						// quadrillage ou des hauteurs, patron : des faces ou un quadrillage ;
-						// jamais lues comme un calcul
+						// quadrillage ou des hauteurs, patron : des faces ou un quadrillage,
+						// point d'un repère : ses coordonnées (`2;3`) ; jamais lues comme un calcul
 						blankTypes.push(
 							build.kind === 'horloge' ||
+								build.kind === 'courbe' ||
 								build.kind === 'ranger' ||
 								build.kind === 'partage' ||
 								build.kind === 'cubes' ||

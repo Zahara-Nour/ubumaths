@@ -117,7 +117,7 @@
 			"correction": {
 				"steps": [
 					"Plus on répète l'expérience, plus la fréquence observée se rapproche de la probabilité.",
-					"La meilleure estimation est donc la fréquence sur le plus grand nombre de lancers : \\textcolor{{{color:primary.0}}}{$0{,}{{K}}$}, pour $10\\,000$ lancers."
+					"La meilleure estimation est donc la fréquence sur le plus grand nombre de lancers : $\\textcolor{{{color:primary.0}}}{0{,}{{K}}}$, pour $10\\,000$ lancers."
 				]
 			}
 		},

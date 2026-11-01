@@ -1,0 +1,215 @@
+{
+	"title": "Calculer une fraction d'une quantité",
+	"description": "Deux tiers de 12 œufs, trois dixièmes de 500 g : fraction de numérateur au moins 2 d'une quantité ou d'une grandeur, résultat entier",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Fraction d'une quantité",
+	"level": 7,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule $\\frac{{{m}}}{{{k}}}$ de ${{n}}$ {{if:o==0|œufs|{{if:o==1|billes|{{if:o==2|élèves|{{if:o==3|images|timbres}}}}}}}}.\n\n$\\frac{{{m}}}{{{k}}}$ de ${{n}}$ {{if:o==0|œufs|{{if:o==1|billes|{{if:o==2|élèves|{{if:o==3|images|timbres}}}}}}}}, c'est $?$ {{if:o==0|œufs|{{if:o==1|billes|{{if:o==2|élèves|{{if:o==3|images|timbres}}}}}}}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..10"
+				},
+				{
+					"name": "m",
+					"expression": "2..{{eval:k-1}}"
+				},
+				{
+					"name": "p",
+					"expression": "2..10"
+				},
+				{
+					"name": "n",
+					"expression": "eval:k*p"
+				},
+				{
+					"name": "o",
+					"expression": "0..4"
+				}
+			],
+			"conditions": ["gcd(m,k)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction d'une quantité.** $\\frac{1}{{{k}}}$ de ${{n}}$, c'est partager en ${{k}}$ parts égales : ${{n}} \\div {{k}} = {{p}}$.",
+					"$\\frac{{{m}}}{{{k}}}$, c'est ${{m}}$ parts : ${{m}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{eval:m*p}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule $\\frac{{{m}}}{{{k}}}$ de ${{n}}$ {{if:u==0|g|{{if:u==1|kg|{{if:u==2|L|{{if:u==3|m|€}}}}}}}}.\n\n$\\frac{{{m}}}{{{k}}}$ de ${{n}}$ {{if:u==0|g|{{if:u==1|kg|{{if:u==2|L|{{if:u==3|m|€}}}}}}}}, c'est $?$ {{if:u==0|g|{{if:u==1|kg|{{if:u==2|L|{{if:u==3|m|€}}}}}}}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3|4|5|10"
+				},
+				{
+					"name": "m",
+					"expression": "2..{{eval:k-1}}"
+				},
+				{
+					"name": "p",
+					"expression": "5|10|12|15|20|25|50|100"
+				},
+				{
+					"name": "n",
+					"expression": "eval:k*p"
+				},
+				{
+					"name": "u",
+					"expression": "0..4"
+				}
+			],
+			"conditions": ["gcd(m,k)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction d'une quantité.** $\\frac{1}{{{k}}}$ de ${{n}}$, c'est partager en ${{k}}$ parts égales : ${{n}} \\div {{k}} = {{p}}$.",
+					"$\\frac{{{m}}}{{{k}}}$, c'est ${{m}}$ parts : ${{m}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{eval:m*p}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2/3 de 12 œufs : 8",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"m": "2",
+				"p": "4",
+				"n": "12",
+				"o": "0"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (une part seulement)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"m": "2",
+				"p": "4",
+				"n": "12",
+				"o": "0"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 (12 ÷ 2)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"m": "2",
+				"p": "4",
+				"n": "12",
+				"o": "0"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 24 (12 × 2)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"m": "2",
+				"p": "4",
+				"n": "12",
+				"o": "0"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/10 de 500 g : 150",
+			"variationIndex": 1,
+			"variables": {
+				"k": "10",
+				"m": "3",
+				"p": "50",
+				"n": "500",
+				"u": "0"
+			},
+			"answers": ["150"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 50 (une part seulement)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "10",
+				"m": "3",
+				"p": "50",
+				"n": "500",
+				"u": "0"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2/5 de 60 kg : 24",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "2",
+				"p": "12",
+				"n": "60",
+				"u": "1"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30 (60 ÷ 2)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "2",
+				"p": "12",
+				"n": "60",
+				"u": "1"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

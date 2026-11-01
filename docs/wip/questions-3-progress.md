@@ -5,18 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2049._
+_Mis à jour le 2026-11-01, après #2128._
 
-- **État** : lot 5 écrit (§ 12.7), fichiers mergés (#2049, CI verte).
-- **Prochaine action** : après le `--publier` de David, relever les 6 ids en prod (MCP), puis migration de
-  rangement : 6 nœuds + tags (§ 12), et ccb51039 / 76f5f143 en grades `['4', '3']` + tags 3-036 / 3-063.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-5 --publier`.
+- **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 3-047 à 3-050, 4 modèles en blocs
+  ` ```scratch `) écrit et mergé (#2128, § 14.8-14.9) ; pas encore en base de prod.
+- **Prochaine action** : attendre le `deploy:prod` qui livre ` ```scratch ` ; puis David lance
+  `create-questions --dir scripts/questions/3-lot-7 --publier` ; rangement (migration) ; page à cocher.
+  En attendant : lot 8 (boîte à moustaches), phase 0.
+- **En attente de David** : nœud de 3-050 (bloc personnalisé) — aucun nœud de l'arbre ne convient (§ 14.8).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
-  dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
-  sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree
-  (`git push origin HEAD:main`) ; le worktree n'avait pas `supabase/.temp` (lien du projet) : copié du dépôt
-  principal, et `db:migrate` se lance depuis un worktree À JOUR d'`origin/main`.
+  du mode auto → David les lance avec `!` ; aperçu admin : serveur lancé avec `--host 127.0.0.1` ;
+  worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree (`git push origin
+HEAD:main`) ; `db:migrate` depuis un worktree À JOUR d'`origin/main` ; `Doc-inchangée:` dans un COMMIT ;
+  `%` refusé dans l'`eval` d'une variable ; `audit-question-draws` : faux positifs « nombres juxtaposés »
+  (blocs statistiques) et « gabarit non résolu » sur `<<` (Scratch).
 - **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -760,3 +762,273 @@ publiés de plus, et 2 de 4e (§ 12.1) ; la 4e ne perd rien. Aucune règle ne ch
 ### 12.8 Lot 5 : fichiers mergés (2026-11-01)
 
 - #2049 mergée (CI verte). Attendu : `create-questions --publier` lancé par David.
+
+### 12.9 Lot 5 : en prod, rangement écrit (2026-11-01)
+
+- `create-questions --publier` lancé par David (depuis le dépôt principal, après un `pull` : le premier essai
+  n'y trouvait pas le dossier) : 6 brouillons, vérifiés au MCP (`draft`, grades `['3']`, niveau 1, sans nœud
+  ni tag) : cd2ffd9b-287b-4409-9384-9060b5ad3fe0 (3-033) · 6acde723-b599-40ec-99b5-eb22f3c578a4 (3-028) ·
+  96992ea8-a78f-433d-90e4-5824ed7afb45 (3-056) · acaa7317-3003-4b1a-bde4-ac95bcd3016c (3-029) ·
+  c7928fc7-836c-4422-9972-ec3d0b567af1 (3-034) · 302655b9-3be3-485c-9d68-0a5fcf49dad4 (3-035).
+- Relevé `etat-prod-2026-11-01-3e-lot5/` (8 modèles : les 6 + ccb51039, 76f5f143, publiés, grades `['4']`,
+  tags 4-057 / 4-080) ; `lot-rangement-3-5.py` (copie du 4b) écrit
+  `20261101130000_questions_3_lot5_rangement_tags.sql` (après `20261101120000`, questions-4 lot 6, le plus
+  récent de toutes les branches) et la fixture : 6 rangés, 2 niveaux (3e ajoutée), 8 tags posés, 2 gardés.
+- `questions-3-lot5-rangement-tags.test.ts` : 20 verts ; corps de la migration vidé : 9 rouges et la suite
+  principale en échec. Cas neuf : tag d'avant (4-057) retiré depuis le relevé.
+- `security-auditor` : aucun bloquant, rien à corriger (diff avec le gabarit 4b : données seules ; gardes,
+  ordre des écritures et trigger des tags vérifiés). R1 prise : le commentaire du rollback dit de mesurer
+  les usages en 3e de ccb51039 / 76f5f143 avant de les rendre à la seule 4e. R2 (pas de test d'accès par
+  de vrais clients) et R3 (verrou du `disable trigger`, déjà au gabarit) : remarques, rien à faire.
+- PR #2059. Premier passage de la CI : Lint rouge (garde « doc à jour » : `base-de-donnees.md` couvre les
+  migrations ; la ligne `Doc-inchangée:` doit être dans un **commit**, pas dans la description de la PR) ;
+  Client Tests shard 1 rouge (`wrapDynamicImport` indéfini, aucun fichier client dans la PR).
+
+### 12.10 Lot 5 : migration jouée, page à cocher (2026-11-01)
+
+- #2059 mergée ; `pnpm db:migrate --include-all` lancé par David. MCP : `20261101130000` inscrite ; les 6
+  brouillons à leur nœud (§ 12), un tag chacun ; ccb51039 et 76f5f143 en grades `['4', '3']`, tags
+  3-036,4-057 et 3-063,4-080, `published` ; `updated_at` inchangé partout.
+- Page à cocher : https://claude.ai/artifact/CJ17SXoC5SjnCQQhdM4MYn (capacité `db`, collection `verdicts`
+  vide au départ). Les blocs ` ```effectifs `, ` ```barres `, ` ```probtree ` n'y sont pas dessinés (source
+  montrée, alerte sur 4 fiches). ccb51039 / 76f5f143 hors page (déjà publiés et relus en 4e).
+- Trouvé en relisant la page : corrigé de 3-035 v2, `\textcolor` posé autour de `$…$` (hors formule) →
+  corrigé dans le fichier (#2069) ; la prod attend `create-questions --publier --mettre-a-jour`.
+
+### 12.11 Lot 5 : relu (2026-11-01)
+
+- `ArtifactData list verdicts` : 6 documents, tous `ok`, sans commentaire (les 6 fiches de la page ;
+  ccb51039 / 76f5f143 hors page).
+- MCP : 302655b9 (3-035) a encore l'ancien corrigé (`updated_at` 2026-10-31 23:26) → la mise à jour
+  `--mettre-a-jour` reste à lancer avant la publication.
+
+### 12.12 Lot 5 : publié (2026-11-01)
+
+- David : `create-questions --publier --mettre-a-jour` → 302655b9 mis à jour (MCP : nouveau corrigé,
+  `updated_at` 11:34) ; `publier-lot.ts` simulation (6 passent) puis `--publier` → 6/6.
+- MCP : cd2ffd9b, 6acde723, 96992ea8, acaa7317, c7928fc7, 302655b9 `published`, grades `['3']`.
+
+## 13. Lot 6 (translation, vecteurs, sphère, lot 6 du § 4) : phase 0 proposée (2026-11-01)
+
+Relevé MCP du jour : les 7 points du lot (3-018, 3-019, 3-021, 3-024 à 3-027) n'ont **aucun modèle**, ni 3-020.
+Proches, en 4e (publiés le 2026-10-31, session 4e) : c8306505 « Translation et parallélogramme » (4-031 :
+ABDC parallélogramme, image de C, frise ; ` ```figure ` `grille: 1` + `vecteur(A, B)` + ` ```choix `),
+0150ef82 « Effet d'une translation » (4-030), e7ef2835 « Ce que conserve une translation » (4-032).
+Volumes : 47971d3d / 55b26d32 cylindre (5-053, exact / π ≈ 3,14), 35002b15 cône (4-076, brouillon).
+
+Outils : ` ```figure ` sur quadrillage (`vecteur(A, B)`, `vecteur(dx, dy, ancre=…)`) + ` ```choix ` ;
+` ```solide ` `boule r` et `section:` (boule `d`, `0` = grand cercle ; pavé, cylindre) — **pas encore en prod**
+(chantier `solides`, 23 commits après v0.58.0) : les modèles qui s'en servent restent en brouillon jusqu'au
+`deploy:prod`. **Changement depuis le § 3** : 3-020 (sections) était classé C ; ` ```solide ` le couvre
+désormais (son nom accessible tait la nature de la section, « réponse de 3e-020 »).
+
+Nœuds (prod) : 3-025 → Vecteurs > égalité de vecteurs (5cc5fd1c) ; 3-026, 3-027 → Vecteurs > somme et
+relation de Chasles (145027b5) ; 3-021 → Volumes > boule (17e866a3) ; 3-018, 3-019 → Solides > propriétés
+(ae67e98f) ; 3-020 → Solides > sections planes (79a5ec75) ; c8306505 garde le sien.
+
+### 13.1 Translation : 3-024
+
+**Recommandé : aucun modèle neuf.** c8306505 passe en grades `['4', '3']` et reçoit le tag 3-024 en plus de
+4-031 (son contenu est la définition du point : « C a pour image l'unique D tel que ABDC soit un
+parallélogramme » ; précédents ccb51039 / 76f5f143, § 12.1).
+
+### 13.2 Modèles neufs (6, un par point ; 7 avec 3-020)
+
+| Point | Modèle (catégorie)                                                          | Variations                                                                                                                                                                                                                                                                                                                     | Réponse                   |
+| ----- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------- |
+| 3-025 | Vecteurs égaux, opposés, nul (Géométrie / Vecteurs / Égalité, 1)            | quadrillage, vecteur $\vec u$ et 4 vecteurs numérotés : 1) lequel est égal à $\vec u$ ; 2) lequel est l'opposé de $\vec u$ ; 3) parallélogramme ABCD : $\vec{AB} = ?$ parmi $\vec{DC}$, $\vec{CD}$, $\vec{AD}$, $\vec{BC}$ ; 4) « $\vec{AB} = \vec 0$ » : A = B, AB = 0 cm… (choix)                                            | choix                     |
+| 3-026 | Somme de deux vecteurs (Géométrie / Vecteurs / Somme, 1)                    | quadrillage, $\vec u$, $\vec v$, point A : 1) image de A par la translation de vecteur $\vec u$ puis celle de vecteur $\vec v$ (choix entre 4 points) ; 2) quel vecteur numéroté est $\vec u + \vec v$ ; 3) translation de vecteur $\vec{AB}$ puis $\vec{BC}$ = translation de vecteur ? ($\vec{AC}$, $\vec{CA}$, $\vec{BC}$…) | choix                     |
+| 3-027 | Relation de Chasles (Géométrie / Vecteurs / Chasles, 1-2)                   | 1) $\vec{AB} + \vec{BC}$ ; 2) trois termes $\vec{AB} + \vec{BC} + \vec{CD}$ ; 3) $\vec{AB} + \vec{BA}$ (= $\vec 0$) ; 4) termes dans le désordre $\vec{BC} + \vec{AB}$ ; lettres tirées                                                                                                                                        | choix (4 vecteurs)        |
+| 3-018 | Boule ou sphère ? (Géométrie / Solides / Sphère et boule, 1)                | sphère de centre O, rayon r : 1) OM = d, M est-il sur la sphère, à l'intérieur, à l'extérieur (d < r, = r, > r) ; 2) « l'ensemble des points M tels que OM = r » / « OM ⩽ r » : sphère, boule, cercle, disque ; texte seul (pas de ` ```solide `)                                                                              | choix                     |
+| 3-019 | Grands cercles et diamètre (Géométrie / Solides / Sphère et boule, 1)       | 1) rayon → diamètre, diamètre → rayon ; 2) ` ```solide boule ` coupée par le centre (`section: 0`) : rayon du grand cercle (= r) ; 3) la Terre : équateur, méridien, parallèle de latitude 45° — lesquels sont des grands cercles (`plusieurs: oui`)                                                                           | case nombre ; choix       |
+| 3-021 | Volume d'une boule (Grandeurs / Volumes / Boule, 1-2)                       | V = 4/3 π r³ : 1) valeur exacte en fonction de π (r multiple de 3 → coefficient entier) ; 2) arrondi au cm³ ; 3) diamètre donné ; 4) demi-boule                                                                                                                                                                                | case (exacte ou arrondie) |
+| 3-020 | Sections de solides (Géométrie / Solides / Sections, 1-2) — **si § 13.4.2** | ` ```solide ` coupé : 1) pavé ‖ à une face : nature (rectangle) et dimensions = celles de la face ; 2) cylindre ⊥ à l'axe : disque de même rayon ; 3) cylindre ‖ à l'axe : rectangle, une dimension = hauteur ; 4) boule à d du centre : cercle, rayon par Pythagore (R, d entiers d'un triplet)                               | choix ; case nombre       |
+
+Erreurs typiques (`testSpecs`) : 3-025 → le vecteur de même direction mais de sens contraire, $\vec{CD}$ au
+lieu de $\vec{DC}$ ; 3-026 → $\vec u - \vec v$, le seul $\vec v$ ; 3-027 → $\vec{CA}$, $\vec{BB}$ ; 3-018 →
+boule / sphère inversées ; 3-019 → le diamètre pris pour le rayon, le parallèle compté grand cercle ; 3-021 →
+4/3 π r² ou π r³, le diamètre mis à la place du rayon ; 3-020 → le rayon de la boule pour celui de la section.
+
+### 13.3 Rangement
+
+Chacun sur le nœud de son point (relevé ci-dessus), un tag par modèle ; c8306505 : grades et tag 3-024 dans
+la même migration.
+
+### 13.4 Questions à David
+
+1. § 13.1 : c8306505 partagé avec la 3e (grades 4 et 3, tags 4-031 et 3-024), plutôt qu'un modèle neuf ?
+2. **3-020 (sections) dans ce lot**, maintenant que ` ```solide ` sait couper ? Il resterait en brouillon,
+   comme 3-019 v2, jusqu'au `deploy:prod` qui livre le bloc.
+3. Valider le § 13.2 : points, variations, formes de réponse. Vecteurs en **choix** partout (pas de saisie
+   de $\vec{AC}$ dans une case).
+4. 3-021 : valeur exacte « en fonction de π » (36π, 32/3 π acceptés) et arrondi, comme le cylindre de 5e ?
+
+### 13.5 Question d'accès
+
+Brouillons : personne ne lit rien de neuf. Rangement puis publication : élèves et prof de 3e voient 6 (ou 7)
+modèles publiés de plus, et c8306505 de 4e ; la 4e ne perd rien. Aucune règle ne change.
+
+### 13.6 Décisions (David, 2026-11-01, « je te suis » sur les recommandations)
+
+- § 13.1 : c8306505 partagé (grades `['4', '3']`, tag 3-024 en plus de 4-031), dans la migration de rangement.
+- § 13.2 validé ; **3-020 ajouté au lot** (7 modèles) ; vecteurs toujours en choix.
+- 3-021 : exact (r multiple de 3 → coefficient entier ; une variation en fraction, 32/3 π) et arrondi au cm³.
+- Hors lot : la PR `fix` qui refuse une option à geste dans un ` ```choix ` (question restée ouverte du
+  chantier `solides`) — recommandée, à faire à part.
+
+### 13.7 Lot 6 : écrit (2026-11-01)
+
+- `docs/wip/questions/lot-3-6.py` → `scripts/questions/3-lot-6/` (7 JSON, 25 variations, 65 specs) ;
+  `create-questions` en simulation vert. Branche `content/questions-3-lot6`.
+- **Pièges mesurés** : `%` refusé dans l'`eval` d'une variable (« Unexpected token ») — admis dans les
+  conditions ; la case de chaque vecteur est donc choisie par `{{if}}` sur p. Choix à plusieurs réponses : une
+  partie seulement des bonnes = `unoptimal_form` (incomplet), pas `incorrect`.
+- Sonde (scratchpad, supprimée) : 300 tirages par variation, blocs ` ```figure ` (scène construite, ni erreur
+  ni avertissement), ` ```solide ` (parseur + scène), choix sans doublon, gabarits résolus : **0 défaut**.
+- Base locale : 7 brouillons. Aperçu admin (`127.0.0.1:5176`) : 3-025 v2 (quadrillage, GH = u, KL = −u),
+  3-026 v1 (points, R = A + u + v), 3-020 v2 (cylindre ⊥, disque teinté) et v4 (boule, R = 10, d = 6).
+  Retouche : choix « un disque de rayon r cm, comme la base » (la parenthèse coupait la ligne).
+
+### 13.8 Lot 6 : fichiers mergés (2026-11-01)
+
+- #2091 mergée (CI verte). Attendu : `create-questions --dir scripts/questions/3-lot-6 --publier` lancé par
+  David depuis le dépôt principal à jour (`git pull` d'abord).
+
+### 13.9 Lot 6 : en prod, rangement écrit (2026-11-01)
+
+- `create-questions --publier` lancé par David : 7 brouillons, vérifiés au MCP (`draft`, grades `['3']`, niveau
+  1, sans nœud ni tag) : ff3bd841-6d22-40f6-a4e3-4ddc7e017905 (3-025) · 787cc937-5bc7-435f-9a63-7d4d0f102ea1
+  (3-026) · d157dfb2-3666-484d-93f9-9fe46a0e2fcf (3-027) · 6bcb3535-6632-4659-9a83-23a740b8e685 (3-018) ·
+  cd756e21-af71-4922-8106-8387658a45e1 (3-019) · 87f79961-03c8-44af-98b5-438165d2f689 (3-021) ·
+  7bb95104-9256-4bdb-a481-bdd2aae66a67 (3-020).
+- Relevé `etat-prod-2026-11-01-3e-lot6/` (8 modèles : les 7 + c8306505, publié, grades `['4']`, tag 4-031) ;
+  `lot-rangement-3-6.py` (copie du 3-5) écrit `20261101183000_questions_3_lot6_rangement_tags.sql` (d'abord
+  `170000` ; renommée après l'arrivée sur main de `180000` (1re spé) et `180100` pris par la PR ce2 lot 5) et la fixture : 7 rangés, 1 niveau (3e ajoutée), 8 tags
+  posés, 1 gardé. ff3bd841 sur la sous-notion « Vecteurs > égalité de vecteurs » (le point 3-025 vit sur la
+  notion).
+- `questions-3-lot6-rangement-tags.test.ts` : 20 verts ; corps de la migration vidé : 9 rouges, 7 sautés.
+- `security-auditor` : aucun bloquant, rien à corriger (écart au gabarit : commentaires, données, compteurs ;
+  prod relue au MCP = relevé). Remarque : pluriels figés du bilan généré (« 1 gardés »), cosmétique.
+- CI #2100, 1er passage : 6 rouges, tous dus à main (`20261101141600` en double, corrigé par #2093) →
+  `origin/main` fusionnée, migration renommée `183000`. Vu en passant : les PR ouvertes 4e lot 7 et 5e lot 6
+  prennent toutes deux `20261101170000` (signalé à David).
+
+### 13.10 Lot 6 : migration jouée (2026-11-01)
+
+- #2100 mergée (2e passage de CI vert). `db push --include-all` lancé par David depuis la session questions-ce1
+  (170000 questions-4, 183000 la nôtre, 190000 1re spé, 190100 ce1, jouées ensemble).
+- MCP : `20261101183000` inscrite ; les 7 brouillons à leur nœud (§ 13), un tag chacun ; c8306505 en grades
+  `['4', '3']`, tags 3-024,4-031, `published` ; `updated_at` inchangé partout.
+
+### 13.11 Lot 6 : page à cocher publiée (2026-11-01)
+
+- `page-a-cocher.ts --dir scripts/questions/3-lot-6` (lecture prod) : 7 fiches, 25 exemples ; artefact
+  https://claude.ai/artifact/KtNscSpDBynm4Baw36Vftn (capacité `db`, collection `verdicts` vide au départ).
+- Alertes : 3-019 et 3-020, bloc ` ```solide ` non dessiné par la page (montré en source) → les jouer dans
+  l'aperçu admin **local** (le bloc n'est pas en prod).
+
+### 13.12 Lot 6 : relu et publié (2026-11-01)
+
+- Page à cocher : 7 verdicts « OK » sur 7, sans commentaire (`ArtifactData list verdicts`).
+- ` ```solide ` en prod depuis la v0.59.0 (`deploy:prod` du 2026-11-01, 14 h 44) : 3-019 et 3-020 publiés
+  avec les autres. `publier-lot.ts` (simulation, puis `--publier`) lancé par David : 7/7 publiés ;
+  relu au MCP : `published`, grades `['3']`.
+
+## 14. Lot 7 (algorithmique) : phase 0 proposée (2026-11-01)
+
+Relevé MCP du jour : **aucun modèle d'algorithmique en prod, à aucun niveau** — 3-047 à 3-051 à 0, et de
+même 4-065 à 4-069, 5-011, 5-101, 5-105, 5-106, 6-194 à 6-197, 6-210 (une quinzaine de points du cycle 4
+et de la 6e). Nœuds prêts (prod) : Algorithmique > Variables et instructions > variables et affectation
+(151ff8c9) ; > instructions conditionnelles (195147df) ; Algorithmique > Boucles > boucle non bornée (04da83a6).
+
+Source (exemples 2026, p. 49-50, PDF p. 48-49 du folio) : 3-047 « plusieurs variables au sein d'un même
+programme » ; 3-048 « un opérateur logique pour combiner deux conditions simples » ; 3-049 « répéter jusqu'à
+ce que », exemple du reste par soustractions successives ; 3-050 : bloc personnalisé (dessine carré).
+**Tous les programmes y sont en blocs Scratch.** L'appli ne rend un programme qu'en bloc de code ordinaire
+(texte monospace, coloré seulement pour python/js…) ; Blockly n'existe que sur `/dev/blockly` (éditeur, pas
+d'affichage dans une question).
+
+### 14.1 Le choix qui précède le lot : comment montrer le programme
+
+- **A. Texte** (classe A du § 3, telle que décidée) : bloc de code ordinaire, mots de Scratch en français et
+  retraits (`mettre reste à 17`, `répéter jusqu'à ce que reste < 5`, `dire reste`). Lot écrit tout de suite.
+  Écart : l'élève lit en classe des blocs colorés, ici du texte.
+- **B. Bloc neuf ` ```scratch `** (classe C, chantier à part) : programme écrit en texte dans l'énoncé
+  (syntaxe des `scratchblocks`, avec `{{variables}}`), dessiné en blocs Scratch (SVG). Bibliothèque
+  `scratchblocks` à évaluer (licence, langue française, taille, rendu serveur) — rien de vérifié encore.
+  Servirait aux ~15 points de la 6e à la 3e (et au CM2), et rendrait 3-050 évaluable (lire un programme à bloc
+  personnalisé). Lot 7 en brouillon jusqu'au `deploy:prod` du bloc.
+- **Recommandé : B**, chantier `bloc-scratch` d'abord (affichage seul, une PR et une page de démo), puis ce
+  lot. Écrire le lot en texte puis le réécrire coûterait deux fois.
+
+### 14.2 Modèles neufs (3, un par point) — le contenu ne dépend pas du choix 14.1
+
+| Point | Modèle (catégorie)                                                       | Variations                                                                                                                                                                                                                                                                                                                                      | Réponse             |
+| ----- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| 3-047 | Plusieurs variables (Algorithmique / Variables / Affectation, 1-2)       | 1) a ← n, b ← m, a ← a + b, b ← a − b : valeurs finales de a et de b (deux cases) ; 2) prix et quantité saisis, total ← prix × quantité, total ← total + port : « qu'affiche le programme si on saisit … » ; 3) échanger a et b : lequel des trois programmes y parvient (avec une variable c / sans / à l'envers) ; entiers ⩽ 20               | case nombre ; choix |
+| 3-048 | Conditions composées (Algorithmique / Instructions conditionnelles, 1-2) | 1) « (x > p) et (x < q) » pour x tiré : vraie ou fausse ; 2) même chose avec « ou » ; 3) programme `si … et … alors dire A sinon dire B` (âge et taille d'un manège) : que dit-il pour les valeurs saisies ; 4) quelle condition traduit « x est entre p et q, exclus » (et / ou, bornes inversées)                                             | choix               |
+| 3-049 | Boucle « répéter jusqu'à ce que » (Algorithmique / Boucles, 1-2)         | 1) reste par soustractions successives (exemple officiel ; n ⩽ 60, d de 3 à 9) : que dit le programme ; 2) combien de passages dans la boucle (le quotient) ; 3) compteur : i ← 0, répéter jusqu'à ce que i > s, ajouter k à i : valeur finale de i ; 4) doublement : x ← 1, jusqu'à ce que x > s, x ← 2x : valeur finale ; au plus 12 passages | case nombre         |
+
+Une seule opération logique par condition (borne de 3-048) ; pas de « non » (il ne combine pas deux conditions).
+Erreurs typiques (`testSpecs`) : 3-047 → l'ancienne valeur de a reprise après sa modification, b = m inchangé ;
+programme d'échange sans variable c ; 3-048 → « et » lu « ou », borne incluse ; 3-049 → arrêt un tour trop tôt
+(i = s au lieu du premier i > s), le nombre de départ pris pour le reste, passages comptés un de trop.
+
+### 14.3 Rangement
+
+3-047 → variables et affectation ; 3-048 → instructions conditionnelles ; 3-049 → boucle non bornée ; un tag
+chacun.
+
+### 14.4 Questions à David
+
+1. **§ 14.1 : texte (A) ou bloc ` ```scratch ` en chantier à part d'abord (B, recommandé) ?**
+2. § 14.2 : points, variations, formes de réponse à valider.
+3. Si B : 3-050 (bloc personnalisé) quitte la classe D et entre dans ce lot (lire un programme qui appelle
+   `dessine carré (côté)` : longueur du plus grand carré, nombre de carrés) ?
+
+### 14.5 Question d'accès
+
+Brouillons : personne ne lit rien de neuf. Rangement puis publication : élèves et prof de 3e voient 3 (ou 4)
+modèles publiés de plus. Aucune règle ne change.
+
+### 14.6 Décisions (David, 2026-11-01, « je te suis » sur les recommandations)
+
+- § 14.1 : **B** — chantier à part `bloc-scratch` d'abord (affichage d'un programme en blocs Scratch, à
+  commencer par l'évaluation de `scratchblocks` ; si elle échoue, retour à A). Lot 7 ensuite, en brouillon
+  jusqu'au `deploy:prod` du bloc.
+- § 14.2 validé ; 3-049 : boucle testée **avant** chaque passage, arrêt dès que la condition est vraie
+  (sémantique Scratch) ; l'arrêt un tour trop tôt parmi les erreurs typiques.
+- § 14.4.3 : **3-050 entre dans le lot** (lire un programme qui appelle `dessine carré (côté)` : longueur du
+  plus grand carré, nombre de carrés) → 4 modèles.
+- Ordre : `bloc-scratch`, lot 7, lot 8 (boîte à moustaches).
+
+### 14.7 Bloc ```scratch mergé (2026-11-01)
+
+- Chantier `bloc-scratch`, palier 1 : #2122 mergée (journal `bloc-scratch-progress.md`). Le lot 7 peut s'écrire ;
+  `check:ubumark` vérifie les programmes (instructions non reconnues), choix compris.
+
+### 14.8 Lot 7 : écrit (2026-11-01)
+
+- `docs/wip/questions/lot-3-7.py` → `scripts/questions/3-lot-7/` (4 JSON, 14 variations, 40 specs) ;
+  `create-questions` en simulation vert. Branche `content/questions-3-lot7`.
+- Modèles : 3-047 (3 var. : a et b après affectations, programme de prix avec saisies, échange : 3
+  programmes en options), 3-048 (4 var. : et, ou, manège, traduire « strictement compris » : 4 conditions
+  en options), 3-049 (4 var. : reste officiel, nombre de passages, compteur, doublement), 3-050 (3 var. :
+  côté du plus grand carré, nombre de carrés, longueur tracée ; `définir dessine carré` dans le bloc).
+- Vérifs : sonde (scratchpad, supprimée) 300 tirages par modèle, chaque programme passé à
+  `checkScratchProgram`, choix compris (≈ 1 600 programmes) : **0 défaut** ; `check:ubumark` sur 320 tirages
+  (énoncé + corrigé) : 0 problème ; `audit-question-draws` 300 : 0 défaut hors faux positif `<<`.
+- **Pièges mesurés** : `$quantité$`, `$total$`, `$réponse$` lus en lettres découpées → noms de variables
+  en _italique_ hors des formules ; `col('\text{…}')` hors de `$…$` s'affichait en brut → réponses en
+  texte en **gras** ; « + 0 » quand la division tombe juste → `{{if:r>0|…|}}`.
+- Aperçu admin local (`127.0.0.1:5176`) : 3-049 v1 (programme officiel dessiné), 3-048 v4 (4 conditions
+  dessinées en options, D juste), 3-050 v1 (bloc `définir` au-dessus du script).
+- **À trancher (David)** : nœud de 3-050. L'arbre (prod) n'a, sous Algorithmique, que Boucles,
+  Variables et instructions, Fonctions Python, Listes, Préalgorithmique ; « Fonctions Python › définir une
+  fonction » est propre à Python. Recommandé : sous-notion neuve « Variables et instructions › blocs
+  personnalisés » (la même migration que le rangement) ; autre choix : « Boucles › boucle bornée ».
+
+### 14.9 Lot 7 : fichiers mergés (2026-11-01)
+
+- #2128 mergée (CI verte au 1er passage). ` ```scratch ` pas en prod : `create-questions --publier` après le
+  `deploy:prod` qui le livre (David), depuis le dépôt principal à jour.

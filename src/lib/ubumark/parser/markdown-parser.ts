@@ -92,6 +92,12 @@ import {
 } from './number-line-parser';
 import { findQrBlocks, parseQr, parseQrContent, isQrBlockStart } from './qr-parser';
 import {
+	findScratchBlocks,
+	parseScratch,
+	parseScratchContent,
+	isScratchBlockStart
+} from './scratch-parser';
+import {
 	findHorlogeBlocks,
 	parseHorloge,
 	parseHorlogeContent,
@@ -506,6 +512,7 @@ function parseBlocks(
 	const trigCircleBlocks = findTrigCircleBlocks(lines);
 	const numberLineBlocks = findNumberLineBlocks(lines);
 	const qrBlocks = findQrBlocks(lines);
+	const scratchBlocks = findScratchBlocks(lines);
 	const horlogeBlocks = findHorlogeBlocks(lines);
 	const partageBlocks = findPartageBlocks(lines);
 	const espaceBlocks = findEspaceBlocks(lines);
@@ -531,6 +538,7 @@ function parseBlocks(
 		{ ranges: trigCircleBlocks, parse: parseTrigCircle, language: 'trig' },
 		{ ranges: numberLineBlocks, parse: parseNumberLine, language: 'line' },
 		{ ranges: qrBlocks, parse: parseQr, language: 'qr' },
+		{ ranges: scratchBlocks, parse: parseScratch, language: 'scratch' },
 		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' },
 		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
 		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
@@ -601,6 +609,7 @@ function parseBlocks(
 			...trigCircleBlocks,
 			...numberLineBlocks,
 			...qrBlocks,
+			...scratchBlocks,
 			...horlogeBlocks,
 			...partageBlocks,
 			...espaceBlocks,
@@ -621,6 +630,7 @@ function parseBlocks(
 			...findTrigCircleBlocks(originalLines),
 			...findNumberLineBlocks(originalLines),
 			...findQrBlocks(originalLines),
+			...findScratchBlocks(originalLines),
 			...findHorlogeBlocks(originalLines),
 			...findPartageBlocks(originalLines),
 			...findEspaceBlocks(originalLines),
@@ -1697,6 +1707,12 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'qr'
 	},
 	{
+		is: isScratchBlockStart,
+		find: findScratchBlocks,
+		parse: parseScratch,
+		language: 'scratch'
+	},
+	{
 		is: isHorlogeBlockStart,
 		find: findHorlogeBlocks,
 		parse: parseHorloge,
@@ -1940,6 +1956,9 @@ function parseContentWithCodeBlocks(
 			if (result.node) {
 				blocks.push(result.node);
 			}
+		} else if (language === 'scratch') {
+			// Programme Scratch dans un item de liste : toujours un nœud, même en erreur
+			blocks.push(parseScratchContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'qr') {
 			// QR code dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseQrContent(restoreMathPlaceholders(code, placeholders)));

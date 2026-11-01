@@ -28,6 +28,7 @@
  * @module ubumark/parser/number-line-parser
  */
 
+import { unnestedLine } from './nested-line';
 import type {
 	NumberLineNode,
 	NumberLineConfig,
@@ -44,6 +45,7 @@ import type {
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { specialBlockEnd } from './unclosed-block';
+import { isMaskedValue } from '../utils/masked-value';
 
 /** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
 const BLOCK_KEYS = [
@@ -290,9 +292,14 @@ const NAMED_TARGET = /^([^=\s]+)\s*=\s*(.+)$/;
 
 /**
  * Les points de `placer:` (`7`, ou `A=3 ; B=7`) ; null si l'écriture est refusée
- * (messages ajoutés à `errors`)
+ * (messages ajoutés à `errors`). Valeur masquée (`A=?`, énoncé d'une évaluation
+ * notée) : `masked`, la valeur de remplacement, même objet pour tous (`masked-value.ts`)
  */
-function parseTargets(expr: string, errors: NumberLineParseError[]): NumberLineTarget[] | null {
+function parseTargets(
+	expr: string,
+	errors: NumberLineParseError[],
+	masked: NumberLineValue
+): NumberLineTarget[] | null {
 	const parts = expr.split(';').map((part) => part.trim());
 	if (parts.some((part) => part === '')) {
 		errors.push({ message: `placer : ${expr} — point vide (un « ; » en trop ?)` });
@@ -318,7 +325,12 @@ function parseTargets(expr: string, errors: NumberLineParseError[]): NumberLineT
 			errors.push({ message: `placer : le point ${name} est nommé deux fois` });
 			return null;
 		}
-		const value = resolveExpression(named ? named[2] : part, errors);
+		const written = named ? named[2] : part;
+		if (isMaskedValue(written)) {
+			targets.push({ name, value: masked });
+			continue;
+		}
+		const value = resolveExpression(written, errors);
 		if (!value) return null;
 		targets.push({ name, value });
 	}
@@ -582,8 +594,10 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 	}
 
 	// Droite à placer : chaque point sur une graduation de la droite, seuls points dessinés
-	const placer = placerExpr !== undefined ? parseTargets(placerExpr, errors) : null;
+	const placer = placerExpr !== undefined ? parseTargets(placerExpr, errors, startVal) : null;
 	for (const target of placer ?? []) {
+		// Valeur masquée : rien à vérifier, le modèle d'origine l'a été au générateur
+		if (target.value === startVal) continue;
 		const targetErrors = placerErrors(target, startNum, endNum, stepNum, scale, points.length > 0);
 		errors.push(...targetErrors);
 		if (targetErrors.length > 0) break;
@@ -633,9 +647,6 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 // DROITES À PLACER D'UN ÉNONCÉ
 // ============================================================================
 
-/** Ligne vue sans retrait ni marque de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /**
  * Les droites à placer (`placer:`) d'un énoncé, délimitées comme le parseur :
  * corps sans clôtures, fermeture, et `nested` pour un bloc en retrait ou cité
@@ -648,7 +659,7 @@ export function findLinesToPlace(markdown: string): {
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
-	const plain = lines.map(unquoted);
+	const plain = lines.map(unnestedLine);
 	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
 	let i = 0;
 	while (i < plain.length) {

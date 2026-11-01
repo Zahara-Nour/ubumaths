@@ -1,0 +1,215 @@
+{
+	"title": "Encadrer une racine carrée",
+	"description": "Encadrer la racine carrée d'un entier par deux entiers consécutifs : 4 < √20 < 5 ; côté d'un carré d'aire 20 cm²",
+	"grades": ["4"],
+	"theme": "Racines carrées",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète avec deux nombres entiers consécutifs.\n\n$$? < \\sqrt{ {{n}} } < ?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..11"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:2*m}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:m*m+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				},
+				{
+					"expectedAnswer": "{{eval:m+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Encadrer une racine carrée.** On cherche les deux carrés parfaits qui entourent le nombre : si $m^2 < n < (m+1)^2$, alors $m < \\sqrt{n} < m + 1$.",
+					"$$\\textcolor{{{color:primary.1}}}{{{eval:m*m}}} < {{n}} < \\textcolor{{{color:primary.1}}}{{{eval:(m+1)^2}}}$$ car ${{m}}^{ 2 } = {{eval:m*m}}$ et ${{eval:m+1}}^{ 2 } = {{eval:(m+1)^2}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{m}}} < \\sqrt{ {{n}} } < \\textcolor{{{color:primary.0}}}{{{eval:m+1}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Un carré a une aire de ${{n}}~\\unit{cm^2}$.\n\nEntre quels nombres entiers consécutifs la longueur de son côté est-elle comprise ?\n\nLe côté mesure entre $?~\\unit{cm}$ et $?~\\unit{cm}$.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..11"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:2*m}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:m*m+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				},
+				{
+					"expectedAnswer": "{{eval:m+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Côté et aire.** Le côté d'un carré d'aire ${{n}}~\\unit{cm^2}$ mesure $\\sqrt{ {{n}} }~\\unit{cm}$.",
+					"**Encadrer une racine carrée.** On cherche les deux carrés parfaits qui entourent le nombre : si $m^2 < n < (m+1)^2$, alors $m < \\sqrt{n} < m + 1$.",
+					"$$\\textcolor{{{color:primary.1}}}{{{eval:m*m}}} < {{n}} < \\textcolor{{{color:primary.1}}}{{{eval:(m+1)^2}}}$$ car ${{m}}^{ 2 } = {{eval:m*m}}$ et ${{eval:m+1}}^{ 2 } = {{eval:(m+1)^2}}$.",
+					"Le côté mesure entre $\\textcolor{{{color:primary.0}}}{{{m}}}~\\unit{cm}$ et $\\textcolor{{{color:primary.0}}}{{{eval:m+1}}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"statement": "$\\sqrt{ {{n}} }$ est compris entre :\n\n```choix\n- ${{m}}$ et ${{eval:m+1}}$\n- ${{eval:floor(n/2)}}$ et ${{eval:floor(n/2)+1}}$\n- ${{eval:n-1}}$ et ${{eval:n+1}}$\n- ${{eval:m-1}}$ et ${{m}}$\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..11"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:2*m}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:m*m+r"
+				}
+			],
+			"conditions": ["floor(n/2)>m+1"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Encadrer une racine carrée.** On cherche les deux carrés parfaits qui entourent le nombre : si $m^2 < n < (m+1)^2$, alors $m < \\sqrt{n} < m + 1$.",
+					"$$\\textcolor{{{color:primary.1}}}{{{eval:m*m}}} < {{n}} < \\textcolor{{{color:primary.1}}}{{{eval:(m+1)^2}}}$$ car ${{m}}^{ 2 } = {{eval:m*m}}$ et ${{eval:m+1}}^{ 2 } = {{eval:(m+1)^2}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{m}}} < \\sqrt{ {{n}} } < \\textcolor{{{color:primary.0}}}{{{eval:m+1}}}$$",
+					"La racine carrée n'est pas la moitié : $\\sqrt{ {{n}} } \\neq {{n}} \\div 2$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 < √20 < 5",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"r": "4",
+				"n": "20"
+			},
+			"answers": ["4", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bornes inversées",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"r": "4",
+				"n": "20"
+			},
+			"answers": ["5", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la moitié, 10 et 11",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"r": "4",
+				"n": "20"
+			},
+			"answers": ["10", "11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 16 et 25 (les carrés)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"r": "4",
+				"n": "20"
+			},
+			"answers": ["16", "25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Aire 20 cm² : entre 4 et 5 cm",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"r": "4",
+				"n": "20"
+			},
+			"answers": ["4", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 19 et 21",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"r": "4",
+				"n": "20"
+			},
+			"answers": ["19", "21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√20 : entre 4 et 5",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"r": "4",
+				"n": "20"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la moitié",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"r": "4",
+				"n": "20"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

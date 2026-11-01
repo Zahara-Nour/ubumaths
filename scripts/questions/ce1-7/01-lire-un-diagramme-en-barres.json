@@ -1,0 +1,298 @@
+{
+	"title": "Lis le diagramme en barres",
+	"description": "Lire l'effectif d'une barre, axe gradué de un en un : 3, 4 puis 5 barres (sports, fruits, animaux), 20 au plus par barre",
+	"grades": ["CE1"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "Diagrammes en barres",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici le diagramme en barres « Sport préféré ».\n\n```barres\ntitre: Sport préféré\naxes: Sport ; Élèves\nFootball = {{a}}\nDanse = {{b}}\nJudo = {{c}}\naxe: 0 à 12\n```\n\nCombien d'élèves ont choisi {{if:k==0|le football|{{if:k==1|la danse|le judo}}}} ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..12"
+				},
+				{
+					"name": "c",
+					"expression": "2..12"
+				},
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((a)*(k-1)*(k-2)/(2)+(b)*(k-0)*(k-2)/(-1)+(c)*(k-0)*(k-1)/(2))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre {{if:k==0|« Football »|{{if:k==1|« Danse »|« Judo »}}}}.",
+					"L'axe est gradué de un en un : chaque trait compte pour $1$ élève.",
+					"Le haut de la barre arrive au trait ${{eval:((a)*(k-1)*(k-2)/(2)+(b)*(k-0)*(k-2)/(-1)+(c)*(k-0)*(k-1)/(2))}}$ : ${{eval:((a)*(k-1)*(k-2)/(2)+(b)*(k-0)*(k-2)/(-1)+(c)*(k-0)*(k-1)/(2))}}$ élèves ont choisi {{if:k==0|le football|{{if:k==1|la danse|le judo}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici le diagramme en barres « Fruit préféré ».\n\n```barres\ntitre: Fruit préféré\naxes: Fruit ; Élèves\nPomme = {{a}}\nBanane = {{b}}\nFraise = {{c}}\nOrange = {{d}}\naxe: 0 à 15\n```\n\nCombien d'élèves ont choisi {{if:k==0|la pomme|{{if:k==1|la banane|{{if:k==2|la fraise|l'orange}}}}}} ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..15"
+				},
+				{
+					"name": "b",
+					"expression": "2..15"
+				},
+				{
+					"name": "c",
+					"expression": "2..15"
+				},
+				{
+					"name": "d",
+					"expression": "2..15"
+				},
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((a)*(k-1)*(k-2)*(k-3)/(-6)+(b)*(k-0)*(k-2)*(k-3)/(2)+(c)*(k-0)*(k-1)*(k-3)/(-2)+(d)*(k-0)*(k-1)*(k-2)/(6))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre {{if:k==0|« Pomme »|{{if:k==1|« Banane »|{{if:k==2|« Fraise »|« Orange »}}}}}}.",
+					"L'axe est gradué de un en un : chaque trait compte pour $1$ élève.",
+					"Le haut de la barre arrive au trait ${{eval:((a)*(k-1)*(k-2)*(k-3)/(-6)+(b)*(k-0)*(k-2)*(k-3)/(2)+(c)*(k-0)*(k-1)*(k-3)/(-2)+(d)*(k-0)*(k-1)*(k-2)/(6))}}$ : ${{eval:((a)*(k-1)*(k-2)*(k-3)/(-6)+(b)*(k-0)*(k-2)*(k-3)/(2)+(c)*(k-0)*(k-1)*(k-3)/(-2)+(d)*(k-0)*(k-1)*(k-2)/(6))}}$ élèves ont choisi {{if:k==0|la pomme|{{if:k==1|la banane|{{if:k==2|la fraise|l'orange}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici le diagramme en barres « Animal préféré ».\n\n```barres\ntitre: Animal préféré\naxes: Animal ; Élèves\nChat = {{a}}\nChien = {{b}}\nLapin = {{c}}\nPoisson = {{d}}\nCheval = {{g}}\naxe: 0 à 20\n```\n\nCombien d'élèves ont choisi {{if:k==0|le chat|{{if:k==1|le chien|{{if:k==2|le lapin|{{if:k==3|le poisson|le cheval}}}}}}}} ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..20"
+				},
+				{
+					"name": "b",
+					"expression": "2..20"
+				},
+				{
+					"name": "c",
+					"expression": "2..20"
+				},
+				{
+					"name": "d",
+					"expression": "2..20"
+				},
+				{
+					"name": "g",
+					"expression": "2..20"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:((a)*(k-1)*(k-2)*(k-3)*(k-4)/(24)+(b)*(k-0)*(k-2)*(k-3)*(k-4)/(-6)+(c)*(k-0)*(k-1)*(k-3)*(k-4)/(4)+(d)*(k-0)*(k-1)*(k-2)*(k-4)/(-6)+(g)*(k-0)*(k-1)*(k-2)*(k-3)/(24))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la barre {{if:k==0|« Chat »|{{if:k==1|« Chien »|{{if:k==2|« Lapin »|{{if:k==3|« Poisson »|« Cheval »}}}}}}}}.",
+					"L'axe est gradué de un en un : chaque trait compte pour $1$ élève.",
+					"Le haut de la barre arrive au trait ${{eval:((a)*(k-1)*(k-2)*(k-3)*(k-4)/(24)+(b)*(k-0)*(k-2)*(k-3)*(k-4)/(-6)+(c)*(k-0)*(k-1)*(k-3)*(k-4)/(4)+(d)*(k-0)*(k-1)*(k-2)*(k-4)/(-6)+(g)*(k-0)*(k-1)*(k-2)*(k-3)/(24))}}$ : ${{eval:((a)*(k-1)*(k-2)*(k-3)*(k-4)/(24)+(b)*(k-0)*(k-2)*(k-3)*(k-4)/(-6)+(c)*(k-0)*(k-1)*(k-3)*(k-4)/(4)+(d)*(k-0)*(k-1)*(k-2)*(k-4)/(-6)+(g)*(k-0)*(k-1)*(k-2)*(k-3)/(24))}}$ élèves ont choisi {{if:k==0|le chat|{{if:k==1|le chien|{{if:k==2|le lapin|{{if:k==3|le poisson|le cheval}}}}}}}}."
+				]
+			},
+			"conditions": ["a+b+c+d+g < 100"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : le football, 8 élèves",
+			"variationIndex": 0,
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "11",
+				"k": "0",
+				"n": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : trait voisin (9)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "11",
+				"k": "0",
+				"n": "8"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : barre voisine (la danse, 5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "11",
+				"k": "0",
+				"n": "8"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le judo, 11 élèves",
+			"variationIndex": 0,
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "11",
+				"k": "2",
+				"n": "11"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "La fraise, 14 élèves",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "9",
+				"c": "14",
+				"d": "6",
+				"k": "2",
+				"n": "14"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus haute barre (14) plutôt que la banane",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "9",
+				"c": "14",
+				"d": "6",
+				"k": "1",
+				"n": "9"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "L'orange, 6 élèves",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "9",
+				"c": "14",
+				"d": "6",
+				"k": "3",
+				"n": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Le cheval, 17 élèves",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "7",
+				"c": "4",
+				"d": "9",
+				"g": "17",
+				"k": "4",
+				"n": "17"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 16 (un trait de moins)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "7",
+				"c": "4",
+				"d": "9",
+				"g": "17",
+				"k": "4",
+				"n": "17"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le chat, 12 élèves",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "7",
+				"c": "4",
+				"d": "9",
+				"g": "17",
+				"k": "0",
+				"n": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -90,7 +90,6 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 
 | Fichier                                              | Rôle                                                                                                                                                                                                                                                                            |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/server/worksheets/instance-generator.ts`    | `generateWorksheetInstance`, `generatePreviewInstance` : `InstanceData` par élève, graine selon `variant_mode` (`none`, `individual`, `n_versions`, `group`).                                                                                                                   |
 | `src/lib/server/worksheets/assignment-access.ts`     | `resolveAssignmentAccess` : RPC `can_access_assignment`, puis `can_read_assignment` (relecture d'un ancien membre).                                                                                                                                                             |
 | `src/lib/server/worksheets/assignment-classes.ts`    | `fetchAssignmentClasses`, `fetchClassesByAssignment`, `formatClassNames` (jonction `worksheet_assignment_classes`).                                                                                                                                                             |
 | `src/lib/server/worksheets/correction-release.ts`    | Libération de la correction : `canAccessCorrections`, `releaseCorrections`, `revokeCorrections`, `updateCorrectionSettings`, `getCorrectionReleaseStatus`.                                                                                                                      |
@@ -115,7 +114,7 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
   une séance visible du cahier partagé (`resolveWorksheetByShareToken`, `security definer`) ; même
   404 pour tout refus.
 - API : `src/routes/api/worksheets/` (CRUD, `sections/`, `exercises/`, `duplicate/`,
-  `exercise-number/[number]/`, `assignments/`, `instances/`, `templates/`, `pdf/`,
+  `exercise-number/[number]/`, `assignments/`, `templates/`, `pdf/`,
   `print-settings/` : taille du texte d'un élève, GET / PUT),
   `src/routes/api/student/worksheets/` (vue résolue, signalements),
   `src/routes/api/teacher/chapters/[id]/worksheets/` (fiche dans un chapitre).
@@ -186,7 +185,7 @@ worksheets (type, status, config jsonb, translations, style_id, school_id)
   (`generic_functions`) suivent l'exercice jusqu'au PDF. Le **sens de `AB`** (longueur ou produit,
   `capital_pairs`) aussi : résolu depuis le thème de l'exercice (`exerciseCapitalPairs`,
   `Graphes et matrices` ou physique → produit, sinon longueur), à la génération de l'instance
-  (`instance-generator`, `buildWorksheetCopy`) et par les API qui composent la vue élève
+  (`buildWorksheetCopy`) et par les API qui composent la vue élève
   (`StudentExerciseView.capital_pairs` : le sens, pas le thème). Une instance stockée sans le
   champ s'imprime comme avant (produit).
 - **Instance par élève** : à l'ouverture, l'API élève prend la ligne `worksheet_instances` si elle
@@ -631,6 +630,10 @@ retenue non dessinées : l'élève écrit sur papier libre), une **collection** 
 des **pièces et billets** (` ```monnaie `) une **figure partagée en parts égales** (` ```partage `, parts coloriées grisées) et un **assemblage de cubes** (` ```cubes `, faces en trois gris) sont aussi du Typst natif et comptent chacune pour une figure dans ces cadres → [ubumark.md](ubumark.md).
 Des **étiquettes à ranger** (` ```ranger `) : étiquettes encadrées puis places en pointillés, Typst
 natif, deux lignes dans les cadres de réponse.
+Un **programme Scratch** (` ```scratch `, palier 1) sort en texte brut monospace, clôture plus
+longue que toute suite d'accents graves du programme (le dessin en blocs n'existe qu'à l'écran),
+et compte une ligne par ligne du programme dans les cadres de réponse ; en erreur, « Programme
+indisponible ».
 
 **Version anglaise** ([journal](../archive/wip/worksheet-english-progress.md)) : la langue est
 `worksheets.config.language` (`fr` par défaut), lue par `worksheetLocale`. Elle pilote **tout** le
@@ -741,8 +744,7 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
   `copies-par-eleve-destinataires` (archivé exclu, élève refusé).
 - `src/lib/worksheets/__tests__/` : `exercise-numbering.test.ts`, `student-worksheet-typst.test.ts`,
   `serie-automatismes.test.ts`, `exercise-edit-link.test.ts`.
-- Serveur : `src/lib/server/worksheets/__tests__/instance-generator.test.ts`,
-  `assignment-access.test.ts` ; `src/lib/server/validation/__tests__/worksheet-language.test.ts` ;
+- Serveur : `src/lib/server/worksheets/__tests__/assignment-access.test.ts` ; `src/lib/server/validation/__tests__/worksheet-language.test.ts` ;
   `src/lib/types/__tests__/worksheet-translations.test.ts` ;
   `src/routes/api/worksheets/[id]/assignments/__tests__/closed-class.test.ts`.
 - Rendu Typst des blocs : `src/lib/ubumark/generators/__tests__/` et
@@ -777,9 +779,8 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
 1. **Plus de copie individuelle à imprimer pour une affectation individualisée** : le lot ZIP vit sur
    la page de la fiche, hors affectation (même copie pour tous). Sans effet aujourd'hui (aucun
    exercice à variables en prod, mesuré le 2026-10-11).
-2. **Restes du tirage d'avant l'ADR 0023, sans appelant vivant** : `generateWorksheetInstance`
-   (`src/lib/server/worksheets/instance-generator.ts`, lit `variant_mode`), routes
-   `api/worksheets/[id]/instances`, `[id]/preview`, `VariantPreview.svelte`. Ménage à part.
+2. ~~Restes du tirage d'avant l'ADR 0023~~ : **retirés** (`worksheets/instance-generator.ts`,
+   routes `api/worksheets/[id]/instances` et `[id]/preview`, `VariantPreview.svelte`).
 3. **`worksheet_instances` vide (0 ligne) et sans écrivain**, encore lue par `correction-release.ts`
    (décompte, toujours 0). Sa suppression est destructive : décision de David.
 4. ~~Routes PDF serveur mortes~~ : **corrigé** (K11, 2026-10-12), `api/worksheets/[id]/pdf` et

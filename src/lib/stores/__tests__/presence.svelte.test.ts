@@ -681,18 +681,6 @@ describe('Edge Cases & Error Handling', () => {
 		vi.clearAllMocks();
 	});
 
-	it.skip('should not start tracking if not in browser', async () => {
-		// SSR edge case - skip in browser environment tests
-		// This is tested indirectly by the actual code working in production SSR
-		mockBrowser(false);
-		presenceManager.init(supabase, userId);
-
-		await presenceManager.startPresenceTracking(['friend-1']);
-
-		// Should not call supabaseRealtimeManager methods
-		expect(supabase.channel).not.toHaveBeenCalled();
-	});
-
 	it('should not start tracking if not initialized', async () => {
 		mockBrowser(true);
 
@@ -708,16 +696,6 @@ describe('Edge Cases & Error Handling', () => {
 		presenceManager.init(supabase, userId);
 
 		expect(initSpy).toHaveBeenCalledWith(supabase, userId);
-	});
-
-	it.skip('should not stop tracking if not in browser', async () => {
-		// SSR edge case - skip in browser environment tests
-		mockBrowser(false);
-		presenceManager.init(supabase, userId);
-
-		await presenceManager.stopPresenceTracking();
-
-		expect(supabase.rpc).not.toHaveBeenCalled();
 	});
 
 	it('should handle RPC error when marking offline on stop', async () => {
@@ -748,16 +726,6 @@ describe('Edge Cases & Error Handling', () => {
 
 		// Should not throw, should still start heartbeat
 		await expect(presenceManager.startPresenceTracking([])).resolves.not.toThrow();
-	});
-
-	it.skip('should not update friend list if not in browser', async () => {
-		// SSR edge case - skip in browser environment tests
-		mockBrowser(false);
-		presenceManager.init(supabase, userId);
-
-		await presenceManager.updateFriendList(['friend-1']);
-
-		expect(supabase.channel).not.toHaveBeenCalled();
 	});
 });
 
