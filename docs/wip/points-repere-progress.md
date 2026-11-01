@@ -6,14 +6,17 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 1 en PR._
+_Mis à jour le 2026-11-01, après #2096._
 
-- **État** : lot 1 (`placer:` + `axes:` dans ` ```courbe `) codé, revu (Opus), PR ouverte ; § 7.
-- **Prochaine action** : merger le lot 1 quand la CI est verte, puis lot 2 (`tracer:` une droite).
-- **En attente de David** : essai sur le serveur de test (5177) ; corrigé PDF des blocs à placer (§ 7).
-- **Pièges en cours** : un geste ne doit jamais donner la réponse (ni à l'écran, ni dans un attribut lu) ;
-  la CI « Client Tests » peut tomber pour l'infra (`wrapDynamicImport`) : lire le log, puis relancer.
-- **Worktree / branche** : `ubumaths-wt-points-repere` · `feat/points-repere`.
+- **État** : lot 1 (`placer:` + `axes:` dans ` ```courbe `) mergé (#2096), pas en prod ; restes au § 7.
+- **Prochaine action** : APRÈS le chantier `fuite-enonce` (décision Q4 de David, 2026-11-01), lot 2
+  (`tracer:` une droite, § 3) dans un worktree neuf `ubumaths-wt-points-repere` depuis `origin/main`.
+- **En attente de David** : essai du repère à placer (dev, puis prod après deploy) ; corrigé PDF des blocs à
+  placer, à brancher le jour d'un corrigé imprimé (§ 7).
+- **Pièges en cours** : un geste ne doit jamais donner la réponse (ni à l'écran, ni dans un attribut lu, ni
+  dans l'énoncé public : chantier `fuite-enonce`) ; CI « Client Tests » `wrapDynamicImport` = infra ;
+  lancer `pnpm types:cliquet` avant la PR (oublié au lot 1).
+- **Worktree / branche** : aucun (retiré après #2096).
 
 ---
 
