@@ -14,7 +14,9 @@ _Mis à jour le 2026-11-01, après #2133, #2143 et #2154 (lot 8 en prod, rangé)
   sinon `publier-lot --dir scripts/questions/4-lot-8` en simulation, puis David `--publier`. Ensuite lot 9 « pensée
   informatique » (065-067), phase 0.
 - **En attente de David** : relecture de la page à cocher du lot 8.
-- **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
+- **Pièges en cours** : migrations, dès #2165 mergée (règle de David, 2026-11-01) : horodatage par `pnpm
+migration:horodatage` (jamais un nombre rond choisi à la main), `pnpm check:migrations --pr <n>` avant `gh pr merge`,
+  premier job de CI = porte des horodatages (`git merge origin/main` dans le worktree d'abord) ; `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
   David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
   `origin/main` avant la CI (§ 34) et relever la dernière version jouée juste avant de pousser (§ 42) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
   COMMIT ; QCM = case choix ; un grand nombre s'écrit `10\,000` dans une spec ; tests navigateur de la CI parfois
