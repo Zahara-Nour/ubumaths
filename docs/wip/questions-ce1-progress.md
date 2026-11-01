@@ -518,3 +518,17 @@ tag ne change aucune règle.
    neuve (même règle qu'au lot 5 bis).
 4. **Durée : unité de la réponse selon la variation** ([_] min sous l'heure, [_] h [_] min au-delà) plutôt que toujours
    en minutes ? Recommandation : selon la variation, comme on le dit à l'oral.
+
+Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre recommandations.
+
+⚠️ Question 2, écart à la décision : le juge n'a **pas d'ambre pour une valeur fausse** (une règle de validation ne peut
+que refuser, avec son message). 2 h 15 l'après-midi est donc **faux, avec le message** « L'après-midi, on compte après
+midi : 2 heures de l'après-midi, c'est 14 h » (règle `custom` `answer != {{h}}` sur la case des heures). À confirmer par
+David ; un vrai ambre demanderait du code.
+
+- 2026-11-01 : lot 6 écrit (`lot-ce1-6.py`, `scripts/questions/ce1-6/`), simulation 7/7 (66 specs), `question:specs`
+  verts (30 à 40 tirages par variation) ; 7 brouillons en base locale. Pièges trouvés : une case d'opération posée n'a
+  **pas** d'`expectedAnswer` (le bloc la calcule) ; un `{{if:}}` dont la condition contient un `{{eval:}}` n'est **pas
+  résolu** (« heure: if:0==0 ») et les specs restent vertes → relire les blocs rendus (`--apercu`) ; dans `placer:`,
+  écrire `9 h 0`. Aperçu admin : aiguilles 11 h 45 jugées justes ; 710 − 246 = 464 juste, cases d'échange au-dessus ;
+  quatre cadrans du film et du match lisibles.
