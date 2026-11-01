@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 3-suites écrit (§ 20), PR des fichiers à ouvrir._
+_Mis à jour le 2026-11-01, après #2136 (fichiers du lot 3-suites mergés)._
 
 - **État** : lots 0, 1-dérivation, 2-variations publiés. **Lot 3-suites** (10 modèles, points 214, 217, 372, 374, 375, 378, 369, 370, 222, 376) écrit : simulation 10 / 10 (90 specs), `sonde-figures` 0 problème, joué en base locale.
-- **Prochaine action** : PR des fichiers → merge → David lance `create-questions --dir scripts/questions/1spe-suites --publier` → migration nœud + tags → page à cocher → publication.
-- **En attente de David** : rien (après le merge : le `--publier` des brouillons).
+- **Prochaine action** : relire en base (MCP) les 10 brouillons créés par David, puis migration nœud + tags (gabarit : lot 2-variations) → page à cocher → publication.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-suites --publier` (brouillons en prod).
 - **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` lancés par David ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET de tous les worktrees ; corps de commit : lignes ≤ 100 caractères ; PR de migration : ligne `Doc-inchangée:` dans un commit (garde de `base-de-donnees.md`) ; intégration = workflow à part, attendre son run ; dépôt principal souvent encombré par d'autres sessions (ne commiter que ses fichiers).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-suites`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (branche `feat/questions-1spe-suites` mergée ; la migration partira d'une branche neuve).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -970,3 +970,5 @@ en base **locale** : 09 (carré dès 0, « (n+1)^2 » : Juste) et 07 (langage na
 naturel en entiers, décimaux en Python) ; points du DSL de taille fixe, minuscules dans une grande fenêtre → jetons
 `cercle(Q, 0.3)` + `style(…)` (`cercle(O, r)` refuse les arguments de style) ; fenêtre de figure : rapport ≤ 4
 (marge ajoutée) ; serveur de dev d'un worktree : `localhost`, pas `127.0.0.1`.
+
+PR #2136 mergée (CI verte du premier coup).
